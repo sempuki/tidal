@@ -1,6 +1,6 @@
 # Q-0240: Can a program deduce the arguments of a class template through an alias template?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** CTAD-14, `tests/templates/class-template-deduction/alias-template.cpp`, `alias-template-fixed-argument.cpp`, `alias-template-fixed-argument-exact.cpp`, `alias-template-guides.cpp`, `alias-template-unreachable.cpp`, `template-template-parameter-alias.cpp`, `list-single-specialization-alias.cpp`
 
 ## Context
@@ -29,15 +29,17 @@ The tests above and the grid `forms.json` (column "alias template").
 3. Deduction works through each alias, but an argument for a fixed
    position must have exactly the fixed type (EDG 7.0).
 
-## Provisional answer
+## Answer
 
 Yes; Clang 22 and GCC agree, Clang 18 and EDG 7.0 differ (option 1). The newest compilers of two families agree, and the source
 reader's inventory (items B2 to B8) describes the derived guides.
 Clang 18 and EDG 7.0 are older or partial implementations.
 
-The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 accept all three forms, and EDG 7.0 rejects an argument that converts to the fixed type, so two families disagree on that form. Clang 18 rejects every form. CTAD-P2 supports the provisional answer. An alias template gets the guides of its class template, matched to the alias (CTAD-14), and a guide's parameter of a fixed type takes an argument that converts to it, as any function parameter does. EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/status.md`).
+The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 accept all three forms, and EDG 7.0 rejects an argument that converts to the fixed type, so two families disagree on that form. Clang 18 rejects every form. CTAD-P2 supports the provisional answer. An alias template gets the guides of its class template, matched to the alias (CTAD-14), and a guide's parameter of a fixed type takes an argument that converts to it, as any function parameter does. EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/decisions/pending.md`).
 
 Kept on 2026-11-03. The source-reader gap review of question cluster 5 agrees with option 1.
+
+Settled on 2026-11-03 under decision 0054. The source-reader gap review of question cluster 5 (`reports/review/2026-11-03-gap-review-question-cluster-5.md`) supports this answer with no doubt, and CTAD-P2 gives the same answer: an alias template gets the guides of its class template, and a parameter of a fixed type takes an argument that converts to it. EDG 7.0 still differs. Tidal records EDG's result as a deviation, as for the compiler-defect entries Q-0002 and Q-0003, and the tests keep their overrides for EDG. Clang 18 rejects every form.
 
 ## Opinions
 

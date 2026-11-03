@@ -49,6 +49,8 @@ The question stays open under decision 0051 (2026-11-03). Clang 22 finds the cal
 
 Kept on 2026-11-03. The source-reader gap review of question cluster 3 reads the reference as supporting option 1, and the reference has an example of this pair of templates that it marks ambiguous. ORD-5 limits the compared types to the parameters with call arguments, but the pack tie-breaker is a separate step that looks at the whole declaration, so ORD-5 gives no support for option 2.
 
+Kept open on 2026-11-03 under decision 0054, because two of the newest families differ from the answer in at least one form, and the rule records one differing family.
+
 ## Opinions
 
 ### Gap review, 2026-11-03

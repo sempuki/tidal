@@ -1,6 +1,6 @@
 # Q-0219: Does partial ordering choose among placement deallocation function templates?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** DED-39, `tests/templates/deduction/placement-deallocation-ordered.cpp`, `tests/templates/deduction/placement-deallocation-ordered-instantiation.cpp`
 
 ## Context
@@ -36,7 +36,7 @@ describe partial ordering in this context.
 1. Partial ordering chooses the more specialized template (GCC, EDG).
 2. Two matching templates give no deallocation function (Clang).
 
-## Provisional answer
+## Answer
 
 Yes; GCC and EDG agree, Clang calls none (option 1). GCC and EDG agree, and the gap review describes the same use
 of partial ordering.
@@ -44,6 +44,8 @@ of partial ordering.
 The question stays open under decision 0051 (2026-11-03). GCC 16 calls the template with `T*`, EDG 7.0 instantiates the same template (`placement-deallocation-ordered-instantiation.cpp`), and Clang 22 calls no deallocation function, so two families disagree. ORD-P1 supports the provisional answer. Its table lists the placement deallocation match as a context of partial ordering. Items M7 and M10 of the gap review describe the same use.
 
 Kept on 2026-11-03. The source-reader gap review of question cluster 3 agrees with option 1. The review limits the ordering step to templates, which Q-0220 follows.
+
+Settled on 2026-11-03 under decision 0054. The source-reader gap review of question cluster 3 (`reports/review/2026-11-03-gap-review-question-cluster-3.md`) supports this answer with no doubt, and ORD-P1 gives the same answer: its table lists the placement deallocation match as a context of partial ordering. Clang 22 still differs. Tidal records Clang's result as a deviation, as for the compiler-defect entries Q-0002 and Q-0003, and the tests keep their overrides for Clang.
 
 ## Opinions
 

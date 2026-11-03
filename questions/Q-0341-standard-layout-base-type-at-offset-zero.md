@@ -52,6 +52,8 @@ object and each base share the first member's address. The queries
 differ, and no test can show the property, so the question stays
 provisional.
 
+Kept open on 2026-11-03 under decision 0054, because two of the newest families differ from the answer in at least one form, and the rule records one differing family.
+
 ## Opinions
 
 ### Gap review, 2026-11-03

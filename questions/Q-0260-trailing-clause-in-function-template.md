@@ -1,6 +1,6 @@
 # Q-0260: Can a lambda or a member of a local class inside a function template have a trailing requires clause?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** CPT-11, CNS-18, `tests/templates/concepts/trailing-clause-lambda.cpp`, `tests/templates/concepts/trailing-clause-local-class.cpp`, `tests/templates/constraints/lambda-conversion.cpp`, `tests/templates/concepts/trailing-clause-member-initializer-lambda.cpp`
 
 ## Context
@@ -25,13 +25,15 @@ The four tests above. EDG also rejects the clause on a lambda in a default membe
    function template, so the clause has template arguments to check.
 2. Not valid (EDG).
 
-## Provisional answer
+## Answer
 
 Yes; Clang and GCC agree, EDG differs (option 1). Two of three implementations agree, and the case is the same as a member of a class nested in a class template.
 
-The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 accept the clause on the lambda and on the member of the local class, and EDG 7.0 rejects it, so two families disagree. CPT-P1 supports the provisional answer. A trailing requires clause constrains a function that is declared inside a templated entity, and the body of a function template is one (CPT-11). EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/status.md`).
+The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 accept the clause on the lambda and on the member of the local class, and EDG 7.0 rejects it, so two families disagree. CPT-P1 supports the provisional answer. A trailing requires clause constrains a function that is declared inside a templated entity, and the body of a function template is one (CPT-11). EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/decisions/pending.md`).
 
 Kept on 2026-11-03. The source-reader gap review of question cluster 5 agrees with option 1.
+
+Settled on 2026-11-03 under decision 0054. The source-reader gap review of question cluster 5 (`reports/review/2026-11-03-gap-review-question-cluster-5.md`) supports this answer with no doubt, and CPT-P1 gives the same answer: a trailing requires clause constrains a function declared inside a templated entity. EDG 7.0 still differs. Tidal records EDG's result as a deviation, as for the compiler-defect entries Q-0002 and Q-0003, and the tests keep their overrides for EDG.
 
 ## Opinions
 

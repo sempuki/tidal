@@ -1,6 +1,6 @@
 # Q-0163: Does the result tie-breaker prefer the identity to a function pointer conversion?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** OVL-26, `tests/foundations/overload-resolution/tie-conversion-result-templates.cpp`, `tests/foundations/overload-resolution/tie-conversion-result-noexcept.cpp`
 
 ## Context
@@ -34,12 +34,14 @@ describes the identity as the better result.
 2. A function pointer conversion ties with the identity in the result
    (EDG).
 
-## Provisional answer
+## Answer
 
 Yes; Clang and GCC agree, EDG differs (option 1). Two of three implementations agree, the gap review describes
 it, and the answer matches the ranking of arguments.
 
 The question stays open under decision 0051 (2026-11-03). EDG 7.0 finds the two results ambiguous, and Clang 22 and GCC 16 prefer the identity, so two families disagree. The provisional answer follows ICS-26. The identity is a subsequence of a function pointer conversion, so the identity is better, as every compiler finds for arguments (`subsequence-function-pointer.cpp`). OVL-26 compares the results as standard sequences. Item O-3 of the gap review gives the same answer.
+
+Settled on 2026-11-03 under decision 0054. The source-reader gap review of question cluster 2 (`reports/review/2026-11-03-gap-review-question-cluster-2.md`) supports this answer with no doubt, and OVL-P3 gives the same answer: step 2a compares the two results as standard sequences (ICS-P5), and the identity is better than a function pointer conversion. EDG 7.0 still differs. Tidal records EDG's result as a deviation, as for the compiler-defect entries Q-0002 and Q-0003, and the tests keep their overrides for EDG.
 
 ## Opinions
 

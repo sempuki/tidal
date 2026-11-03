@@ -46,6 +46,8 @@ and the two members have the same type and the same attribute. The
 queries differ, and no test can show the property, so the question
 stays provisional.
 
+Kept open on 2026-11-03 under decision 0054, because no principle gives the answer. UNI-P6 does not name the attribute, and only UNI-15 does.
+
 ## Opinions
 
 ### Gap review, 2026-11-03

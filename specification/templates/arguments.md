@@ -546,11 +546,14 @@ Use<Small> m;                  // rejected: Small is a concept
 The results are in `tests/RESULTS.md`. All eight compilers agree on 82
 of 88 tests.
 
-The questions of the cluster of EDG differences (cluster 5) on this page
-stay open under decision 0051: {question}`Q-0170` and
-{question}`Q-0201`. On 2026-11-03, Clang 22 and GCC 16 still agree with
-the provisional answer of each, and EDG 7.0 still differs. Reporting
-these EDG differences to the EDG project waits on the maintainer.
+{question}`Q-0170` settled on 2026-11-03 under decision 0054. The
+source-reader gap review of question cluster 5 supports its answer with
+no doubt, and TARG-P2 gives the same answer. EDG 7.0 still differs, and
+the test keeps its override for EDG. {question}`Q-0201` stays open,
+because the same review reads it with doubt. On 2026-11-03, Clang 22 and
+GCC 16 still agree with its provisional answer, and EDG 7.0 still
+differs. Reporting these EDG differences to the EDG project waits on the
+maintainer (`documentation/decisions/pending.md`).
 
 The clean-room writer probed template-ids, argument kinds, and constant
 arguments with Clang 22, GCC 16, and EDG 7.0, and checked the tests on

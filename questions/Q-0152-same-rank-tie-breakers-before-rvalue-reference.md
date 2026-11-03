@@ -51,6 +51,8 @@ then belong to the rank step, which is where ICS-27 already puts them.
 
 The question stays open under decision 0051 (2026-11-03). The order grid, run again on 2026-11-03, gives the table above. Clang 22 follows option 1 on every row. GCC 16 applies ICS-28 before ICS-34, and ICS-31 before ICS-28. EDG 7.0 applies ICS-28 before each same-rank tie-breaker. So two families disagree on each part. For the first part, the provisional answer follows ICS-27 and ICS-P5. The same-rank tie-breakers refine the rank, so they belong to the rank step, and the reference steps 4d to 4g come after the conversions are compared. For the second part, every compiler applies ICS-28 before ICS-30 (`rvalue-reference-before-cv.cpp`), and the answer keeps the two cv-qualifier steps, ICS-31 and ICS-30, after ICS-28. Items O1 and O2 of the gap review give the same order.
 
+Kept open on 2026-11-03 under decision 0054, because the gap review does not support the answer with no doubt (it reads with doubt, weakly, unclearly, or for only part of the question).
+
 ## Opinions
 
 ### Gap review, 2026-11-03

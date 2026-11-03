@@ -1,6 +1,6 @@
 # Q-0255: Must the exception specification of an explicit instantiation match the template?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** INST-22, `tests/templates/instantiation/explicit-exception-specification-differs.cpp`
 
 ## Context
@@ -28,13 +28,15 @@ specification must match.
 1. A stated exception specification must match (Clang, EDG).
 2. The exception specification of an explicit instantiation is ignored (GCC).
 
-## Provisional answer
+## Answer
 
 Yes; Clang and EDG agree, GCC differs (option 1). Two of three implementations and the gap review agree.
 
 The question stays open under decision 0051 (2026-11-03). GCC 16 accepts the `noexcept` that differs, and Clang 22 and EDG 7.0 reject it, so two families disagree. Probes of 2026-11-03 give the same split for `noexcept(false)` on a template declared `noexcept`, for a class template's member function, and for an explicit instantiation declaration. INST-P3 supports the provisional answer through INST-22. An explicit instantiation names a specialization whose type the template already gives, and the exception specification is part of that type.
 
 Kept on 2026-11-03. The source-reader gap review of question cluster 6 (`reports/review/2026-11-03-gap-review-question-cluster-6.md`) agrees with option 1. INST-22 keeps the check of a stated exception specification.
+
+Settled on 2026-11-03 under decision 0054. The source-reader gap review of question cluster 6 (`reports/review/2026-11-03-gap-review-question-cluster-6.md`) supports this answer with no doubt, and INST-P3 gives the same answer: the exception specification is part of the type that the template already gives the specialization. GCC 16 still differs. Tidal records GCC's result as a deviation, as for the compiler-defect entries Q-0002 and Q-0003, and the tests keep their overrides for GCC.
 
 ## Opinions
 

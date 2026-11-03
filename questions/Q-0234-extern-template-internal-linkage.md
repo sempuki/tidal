@@ -42,6 +42,8 @@ The question stays open under decision 0051 (2026-11-03). Clang 22 rejects every
 
 Kept on 2026-11-03. The source-reader gap review of question cluster 6 (`reports/review/2026-11-03-gap-review-question-cluster-6.md`) agrees with option 1 for each form. INST-29 stays a `reject` rule.
 
+Kept open on 2026-11-03 under decision 0054, because two of the newest families differ from the answer in at least one form, and the rule records one differing family.
+
 ## Opinions
 
 ### Gap review, 2026-11-03

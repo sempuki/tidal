@@ -47,6 +47,8 @@ Every compiler prefers the reference with fewer cv-qualifiers below the top leve
 
 The question stays open under decision 0051 (2026-11-03). Clang 22 finds a tie, and GCC 16 and EDG 7.0 prefer the known bound, so two families disagree. A probe of 2026-11-03 gives the same split for a braced list and for an xvalue.
 
+Kept open on 2026-11-03 under decision 0054, because the question waits on the maintainer (`documentation/decisions/pending.md`).
+
 ## Opinions
 
 ### Gap review, 2026-11-03

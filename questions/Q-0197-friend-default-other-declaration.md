@@ -41,6 +41,8 @@ Changed on 2026-11-03. The source-reader gap review of question cluster 5 (`repo
 
 The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 accept the other declaration, before or after the class, and EDG 7.0 rejects it, so two families disagree. The front end accepts the two tests, so `tools/frontend_check.py` reports them as missed rejections. This goes to item FE.
 
+Kept open on 2026-11-03 under decision 0054, because the question waits on the maintainer (`documentation/decisions/pending.md`).
+
 ## Opinions
 
 ### Gap review, 2026-11-03

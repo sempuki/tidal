@@ -60,6 +60,8 @@ Changed on 2026-11-03. The source-reader gap review of question cluster 4 (`repo
 
 The question stays open under decision 0051 (2026-11-03). GCC 16 and EDG 7.0 accept the `constinit` class with a trivial default constructor, at namespace scope, as a `static` variable in a block, and as an array, and Clang 22 rejects all three, so two families disagree. The review's doubt is whether a call of a trivial constructor, which does nothing, counts as an initialization. `tools/frontend_check.py` reports that the front end passes the four tests.
 
+Kept open on 2026-11-03 under decision 0054, because the gap review does not support the answer with no doubt (it reads with doubt, weakly, unclearly, or for only part of the question).
+
 ## Opinions
 
 ### Gap review, 2026-11-03

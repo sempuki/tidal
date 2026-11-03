@@ -50,6 +50,8 @@ Changed on 2026-11-03. The source-reader gap review of question cluster 2 (`repo
 
 The question stays open under decision 0051 (2026-11-03). Clang 22 chooses `take(int)`, and GCC 16 and EDG 7.0 choose the initializer list, so two families disagree.
 
+Kept open on 2026-11-03 under decision 0054, because two of the newest families differ from the answer in at least one form, and the rule records one differing family.
+
 ## Opinions
 
 ### Gap review, 2026-11-03

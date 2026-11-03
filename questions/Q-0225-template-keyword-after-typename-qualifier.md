@@ -45,6 +45,8 @@ The question stays open under decision 0051 (2026-11-03). Clang 22 and EDG 7.0 a
 
 Kept on 2026-11-03. The source-reader gap review of question cluster 6 (`reports/review/2026-11-03-gap-review-question-cluster-6.md`) reads the reference as supporting option 2. In that reading, a `<` after the last name in a type-only position starts an argument list without the keyword. These positions include the name after `typename`, a base list, and a parameter type. The same reading makes `T::box<int>` valid as an alias target without `typename`, and every compiler rejects that form. Clang 22 and EDG 7.0 follow option 1. GCC 16 follows option 2, except for the alias target without `typename`. DEP-P5 keeps option 1. The program states that a dependent name is a template, and `typename` or a type-only position states only that the whole name is a type. Option 2 would have to keep the alias target without `typename` not valid to match any compiler, and no principle of Tidal separates that position from the others. The alias target without `typename` is on the maintainer's list in `documentation/status.md`, because every compiler rejects it and the review reads it as valid.
 
+Kept open on 2026-11-03 under decision 0054, because the question waits on the maintainer (`documentation/decisions/pending.md`).
+
 ## Opinions
 
 ### Gap review, 2026-11-03

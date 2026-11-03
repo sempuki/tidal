@@ -31,9 +31,11 @@ for an alias template (Q-0271).
 No; Clang and GCC agree, EDG differs (option 1). Two of three implementations agree, and the gap review
 predicts the same result.
 
-The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 reject the expansion at the definition, and EDG 7.0 accepts it, so two families disagree. PACK-P1 supports the provisional answer. Its exception PACK-11 treats a concept as it treats an alias template, and Q-0271 is settled for the alias template with every compiler rejecting. EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/status.md`).
+The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 reject the expansion at the definition, and EDG 7.0 accepts it, so two families disagree. PACK-P1 supports the provisional answer. Its exception PACK-11 treats a concept as it treats an alias template, and Q-0271 is settled for the alias template with every compiler rejecting. EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/decisions/pending.md`).
 
 Kept on 2026-11-03. The source-reader gap review of question cluster 5 finds no clear reading. PACK-P1 and the settled answer of Q-0271 for alias templates keep option 1.
+
+Kept open on 2026-11-03 under decision 0054, because the gap review does not support the answer with no doubt (it reads with doubt, weakly, unclearly, or for only part of the question).
 
 ## Opinions
 

@@ -28,6 +28,8 @@ out of range.
 Implementation-defined (option 1). This option matches the run-time behavior of every compiler on
 IEEE targets, and two of three implementations during constant evaluation.
 
+Kept open on 2026-11-03 under decision 0054, because the gap review does not support the answer with no doubt (it reads with doubt, weakly, unclearly, or for only part of the question).
+
 ## Opinions
 
 ### Gap review summary, 2026-10-30

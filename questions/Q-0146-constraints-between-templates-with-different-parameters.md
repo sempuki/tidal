@@ -1,6 +1,6 @@
 # Q-0146: Which conditions must two functions meet before their constraints decide between them?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** ORD-13, OVL-30, OVL-41, `tests/foundations/overload-resolution/tie-constraints-different-parameters.cpp`, `tests/foundations/overload-resolution/tie-constraints-default-parameter.cpp`, `tests/foundations/overload-resolution/tie-constraints-ellipsis.cpp`, `tests/templates/ordering/constraints-default-parameter.cpp`, `tests/templates/ordering/constraints-different-heads.cpp`, `tests/templates/ordering/constraints-conversion-results-differ.cpp`
 
 ## Context
@@ -54,14 +54,16 @@ describes the two plain-function calls as ambiguous.
    GCC).
 2. Constraints decide whenever the other steps tie (EDG).
 
-## Provisional answer
+## Answer
 
 The conditions of ORD-13: same parameter lists, heads, and conversion results; Clang 22 and GCC agree, EDG differs (option 1). Clang 22 and GCC agree on every row, and the sanitized Clang
 source and the gap review describe the same conditions.
 
-The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 find every row of the table ambiguous, and EDG 7.0 lets the constraint decide in every row, so two families disagree. Probes of `T` against `const T&`, `f(int)` against `f(const int&)`, and `f(int)` against `f(int, int = 0)` give the same split. ORD-P2 and CNS-P4 support the provisional answer. Step 0 of CNS-P4 requires the function parameters of two templates to correspond before their constraints are compared, and ORD-P2 lets constraints decide only when the heads and the parameter lists are the same. EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/status.md`).
+The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 find every row of the table ambiguous, and EDG 7.0 lets the constraint decide in every row, so two families disagree. Probes of `T` against `const T&`, `f(int)` against `f(const int&)`, and `f(int)` against `f(int, int = 0)` give the same split. ORD-P2 and CNS-P4 support the provisional answer. Step 0 of CNS-P4 requires the function parameters of two templates to correspond before their constraints are compared, and ORD-P2 lets constraints decide only when the heads and the parameter lists are the same. EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/decisions/pending.md`).
 
 Kept on 2026-11-03. The source-reader gap review of question cluster 5 agrees with option 1.
+
+Settled on 2026-11-03 under decision 0054. The source-reader gap review of question cluster 5 (`reports/review/2026-11-03-gap-review-question-cluster-5.md`) supports this answer with no doubt, and ORD-P2 and CNS-P4 give the same answer: constraints decide only when the heads and the parameter lists correspond. EDG 7.0 still differs. Tidal records EDG's result as a deviation, as for the compiler-defect entries Q-0002 and Q-0003, and the tests keep their overrides for EDG.
 
 ## Opinions
 

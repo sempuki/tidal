@@ -37,6 +37,8 @@ direct-initialization only.
 
 The question stays open under decision 0051 (2026-11-03). Clang 22 accepts, and GCC 16 and EDG 7.0 reject, so two families disagree. The provisional answer follows ICS-45, which gives `explicit` conversion functions to direct initialization only. Copy-list-initialization is a form of copy initialization, and every compiler keeps `explicit` conversion functions out of copy initialization without braces (`init-copy-explicit-conversion.cpp`).
 
+Kept open on 2026-11-03 under decision 0054, because no principle gives the answer. OVL-P2 and ICS-P1 do not say which initializations can use an `explicit` conversion function, and only ICS-45 and OVL-40 do.
+
 ## Opinions
 
 ### Gap review, 2026-11-03

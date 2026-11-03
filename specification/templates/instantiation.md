@@ -628,22 +628,36 @@ int p = Price<shop::Item>::value;        // 3: cost is declared before the point
 The results are in `tests/RESULTS.md`. All eight compilers agree on 112
 of 134 tests.
 
-The questions of the cluster of EDG differences (cluster 5) on this page
-stay open under decision 0051: {question}`Q-0231`, {question}`Q-0235`,
-{question}`Q-0237`, and {question}`Q-0256`. On 2026-11-03, Clang 22 and
-GCC 16 still agree with the provisional answer of each, and EDG 7.0
-still differs. Reporting these EDG differences to the EDG project waits
-on the maintainer. The source-reader gap review of the cluster
+Seven questions on this page settled on 2026-11-03 under decision 0054.
+For each, a source-reader gap review supports the answer with no doubt,
+and a principle gives the same answer:
+
+| Question | Principle | Family that still differs |
+|---|---|---|
+| {question}`Q-0231` | INST-P2 | EDG 7.0 |
+| {question}`Q-0236` | INST-P3 | Clang 22 |
+| {question}`Q-0237` | INST-P3 | EDG 7.0 |
+| {question}`Q-0254` | INST-P3 | GCC 16 |
+| {question}`Q-0255` | INST-P3 | GCC 16 |
+| {question}`Q-0256` | INST-P3 | EDG 7.0; GCC 16 for a type other than the deduced one |
+| {question}`Q-0257` | INST-P4 | none; every compiler rejects, which INST-32 allows |
+
+Each test keeps its override for the family that differs. Reporting the
+EDG differences to the EDG project waits on the maintainer
+(`documentation/decisions/pending.md`).
+
+{question}`Q-0235` of the cluster of EDG differences (cluster 5) stays
+open. The source-reader gap review of the cluster
 (`reports/review/2026-11-03-gap-review-question-cluster-5.md`) reads
 Q-0235 as EDG does, with doubt, and that question waits on the
-maintainer too.
+maintainer.
 
-The questions of the cluster of template syntax corners (cluster 6) on
-this page stay open under decision 0051: {question}`Q-0233`,
-{question}`Q-0234`, {question}`Q-0236`, {question}`Q-0254`,
-{question}`Q-0255`, and
-{question}`Q-0346`. On
-2026-11-03, Clang 22, GCC 16, and EDG 7.0 still split on each of them.
+The other questions of the cluster of template syntax corners (cluster
+6) on this page stay open: {question}`Q-0233`, {question}`Q-0234`, and
+{question}`Q-0346`. On 2026-11-03, Clang 22, GCC 16, and EDG 7.0 still
+split on each of them. Q-0234 stays open under decision 0054 too,
+because GCC 16 and EDG 7.0 both differ from it for a class and a
+variable.
 {question}`Q-0235`, {question}`Q-0237`, and {question}`Q-0256` belong
 to the same cluster and keep their cluster 5 notes. For
 {question}`Q-0235`, a probe of that day found that Clang 22 joins EDG

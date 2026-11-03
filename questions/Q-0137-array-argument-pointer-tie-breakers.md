@@ -36,6 +36,8 @@ lvalue transformations out of every comparison.
 
 The question stays open under decision 0051 (2026-11-03). GCC 16 finds both calls ambiguous, and Clang 22 and EDG 7.0 apply the tie-breakers, so two families disagree. The provisional answer follows ICS-26, which compares two standard sequences without their lvalue transformations. An array argument then ranks as a pointer argument does, and every compiler applies ICS-33 and ICS-36 to a pointer argument.
 
+Kept open on 2026-11-03 under decision 0054, because the gap review does not support the answer with no doubt (it reads with doubt, weakly, unclearly, or for only part of the question).
+
 ## Opinions
 
 ### Gap review, 2026-11-03

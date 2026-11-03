@@ -1,6 +1,6 @@
 # Q-0215: Are default template arguments substituted before the check of parameters with no template parameter?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** DED-28, `tests/templates/deduction/substitution-default-before-check.cpp`
 
 ## Context
@@ -41,14 +41,16 @@ describes the order of option 1.
 2. The parameters with no template parameter are checked before any
    substitution (EDG).
 
-## Provisional answer
+## Answer
 
 Yes; Clang and GCC agree, EDG checks first (option 1). Clang and GCC agree, and the gap review describes the same
 order.
 
-The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 substitute the default first and reject the program at the error in `Bad<int>`, and EDG 7.0 checks the first argument first and calls the fallback, so two families disagree. DED-P2 supports the provisional answer. Its step 5 substitutes the defaults of the template parameters before it checks the parameters that hold no template parameter (DED-28), and CNS-P3 forms the defaults before the check of constraints in the same way. EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/status.md`).
+The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 substitute the default first and reject the program at the error in `Bad<int>`, and EDG 7.0 checks the first argument first and calls the fallback, so two families disagree. DED-P2 supports the provisional answer. Its step 5 substitutes the defaults of the template parameters before it checks the parameters that hold no template parameter (DED-28), and CNS-P3 forms the defaults before the check of constraints in the same way. EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/decisions/pending.md`).
 
 Kept on 2026-11-03. The source-reader gap review of question cluster 5 agrees with option 1.
+
+Settled on 2026-11-03 under decision 0054. The source-reader gap review of question cluster 5 (`reports/review/2026-11-03-gap-review-question-cluster-5.md`) supports this answer with no doubt, and DED-P2 gives the same answer: its step 5 substitutes the defaults before it checks the parameters that hold no template parameter. EDG 7.0 still differs. Tidal records EDG's result as a deviation, as for the compiler-defect entries Q-0002 and Q-0003, and the tests keep their overrides for EDG.
 
 ## Opinions
 

@@ -1,6 +1,6 @@
 # Q-0283: Does an implementation diagnose a use of a template template parameter that fails the parameter's own constraints?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** CNS-38, `tests/templates/constraints/template-template-parameter-constraint-use.cpp`
 
 ## Context
@@ -33,15 +33,17 @@ one that needs no diagnostic.
 3. The use is valid, and only the argument template's constraints
    apply (Clang, GCC).
 
-## Provisional answer
+## Answer
 
 No diagnostic required; EDG diagnoses (option 1). The parameter's constraints describe every argument the
 template can receive, so a use that fails them can never be valid. The
 compilers differ only in whether they diagnose the use.
 
-The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 accept the definition, and EDG 7.0 rejects it, so the newest versions give two outcomes. A probe with an argument template that has no constraint gives the same split. Option 1 is the only option that all three outcomes fit, and the standing rule asks for one outcome. CNS-P3 supports the provisional answer. Its table makes a use of a template template parameter with independent arguments that fail the parameter's constraints not valid, with no diagnostic required (CNS-38). EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/status.md`).
+The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 accept the definition, and EDG 7.0 rejects it, so the newest versions give two outcomes. A probe with an argument template that has no constraint gives the same split. Option 1 is the only option that all three outcomes fit, and the standing rule asks for one outcome. CNS-P3 supports the provisional answer. Its table makes a use of a template template parameter with independent arguments that fail the parameter's constraints not valid, with no diagnostic required (CNS-38). EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/decisions/pending.md`).
 
 Kept on 2026-11-03. The source-reader gap review of question cluster 5 agrees with option 1.
+
+Settled on 2026-11-03 under decision 0054. The source-reader gap review of question cluster 5 (`reports/review/2026-11-03-gap-review-question-cluster-5.md`) supports this answer with no doubt, and CNS-P3 gives the same answer: a use of a template template parameter whose independent arguments fail its constraints is not valid, with no diagnostic required. No family differs from the answer. Clang 22 and GCC 16 accept the program and EDG 7.0 rejects it, and a `no-diagnostic` rule allows both results. The tests keep their overrides for EDG, which record its rejection.
 
 ## Opinions
 

@@ -51,6 +51,8 @@ The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 fi
 
 Kept on 2026-11-03. The source-reader gap review of question cluster 3 agrees with option 1.
 
+Kept open on 2026-11-03 under decision 0054, because no principle on the ordering page gives the answer. ORD-P1 does not say which kind of reference the object parameter is, and ICS-P3 on the conversion-sequences page does.
+
 ## Opinions
 
 ### Gap review, 2026-11-03

@@ -47,6 +47,8 @@ Changed on 2026-11-03 for `(&f)()` with no argument. Front-end finding G103 (`re
 
 The question stays open under decision 0051 (2026-11-03). The newest versions split three ways. GCC 16 rejects every form. Clang 22 rejects the parenthesized form and accepts `&f`. EDG 7.0 accepts both forms with no argument and stops with an internal error with an argument. A probe of 2026-11-03 gives the table above.
 
+Kept open on 2026-11-03 under decision 0054, because the gap review does not support the answer with no doubt (it reads with doubt, weakly, unclearly, or for only part of the question).
+
 ## Opinions
 
 ### Gap review, 2026-11-03

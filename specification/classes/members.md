@@ -592,7 +592,10 @@ of 125 tests.
   they compare the address of a standard-layout object with the address
   of its first member or of its base, each converted to `const void*`.
   EDG gives `false`. All three give `true` for an array and its first
-  element ({question}`Q-0338`).
+  element ({question}`Q-0338`). Q-0338 settled on 2026-11-03 under
+  decision 0054. The source-reader gap review of item O supports its
+  answer with no doubt, and CLS-P4 gives the same answer. The test
+  keeps its override for EDG.
 - CLS-33: an empty standard-layout base takes no bytes on every
   compiler, also in a class with a virtual function or with members in
   two accesses.

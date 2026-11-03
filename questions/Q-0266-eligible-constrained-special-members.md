@@ -31,9 +31,11 @@ The four tests above. In `eligible-unsatisfied-more-constrained.cpp` the user-pr
 
 Yes; Clang and GCC agree, EDG differs (option 1). Two of three implementations agree, and EDG already selects destructors by their constraints.
 
-The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 treat the defaulted constructor as the trivial one, and EDG 7.0 deletes the union's constructor, so two families disagree. CNS-P3 supports the provisional answer. A special member function whose constraints fail is not eligible (CNS-21), and EDG 7.0 already chooses destructors by their constraints (CNS-19). EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/status.md`).
+The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 treat the defaulted constructor as the trivial one, and EDG 7.0 deletes the union's constructor, so two families disagree. CNS-P3 supports the provisional answer. A special member function whose constraints fail is not eligible (CNS-21), and EDG 7.0 already chooses destructors by their constraints (CNS-19). EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/decisions/pending.md`).
 
 Kept on 2026-11-03. The source-reader gap review of question cluster 5 agrees with option 1 for the copy constructor and has no clear reading for the default constructor. CNS-P3 keeps option 1 for both, because a special member whose constraints fail is not eligible.
+
+Kept open on 2026-11-03 under decision 0054, because the gap review does not support the answer with no doubt (it reads with doubt, weakly, unclearly, or for only part of the question).
 
 ## Opinions
 

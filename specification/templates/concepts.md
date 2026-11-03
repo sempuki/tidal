@@ -615,11 +615,20 @@ template <class T> concept Old [[deprecated]] = true;   // the attribute apperta
 The results are in `tests/RESULTS.md`. All eight compilers agree on 105
 of 122 tests.
 
-The questions of the cluster of EDG differences (cluster 5) on this page
-stay open under decision 0051: {question}`Q-0260` and
-{question}`Q-0286`. On 2026-11-03, Clang 22 and GCC 16 still agree with
-the provisional answer of each, and EDG 7.0 still differs. Reporting
-these EDG differences to the EDG project waits on the maintainer.
+Four questions on this page settled on 2026-11-03 under decision 0054.
+For each, a source-reader gap review supports the answer with no doubt,
+and a principle gives the same answer:
+
+| Question | Principle | Family that still differs |
+|---|---|---|
+| {question}`Q-0260` | CPT-P1 | EDG 7.0 |
+| {question}`Q-0281` | {principle}`CNS-P1` | EDG 7.0 |
+| {question}`Q-0285` | {principle}`CNS-P1` | EDG 7.0 |
+| {question}`Q-0286` | CPT-P1 | EDG 7.0 |
+
+Each test keeps its override for EDG. Reporting these EDG differences to
+the EDG project waits on the maintainer
+(`documentation/decisions/pending.md`).
 
 The clean-room writer probed each rule with Clang 18 and 22, GCC 14 and
 16, the host Clang and GCC, and EDG 7.0, and checked each test on the
@@ -639,9 +648,8 @@ words, for example "concept cannot have associated constraints" and
   review expected a split there (item 27).
 - CPT-19: EDG orders two variadic templates whose packs have the type
   constraints `A` and `AB` in its C++23 mode. Clang and GCC find the
-  call ambiguous ({question}`Q-0285`). Q-0285 stays open under
-  decision 0051, because on 2026-11-03 EDG 7.0 still differs from
-  Clang 22 and GCC 16.
+  call ambiguous ({question}`Q-0285`). On 2026-11-03 EDG 7.0 still differs from
+  Clang 22 and GCC 16. Q-0285 is settled under decision 0054.
 - CPT-21: every compiler drops a function template whose constant
   argument fails the placeholder's constraint, and chooses another
   candidate.

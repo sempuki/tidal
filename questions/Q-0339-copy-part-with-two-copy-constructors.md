@@ -64,6 +64,8 @@ the byte copy of `Holder` does what its copy constructor does. Clang
 follows option 1 in every case, EDG follows option 2 in every case, and
 GCC splits, so the question stays provisional.
 
+Kept open on 2026-11-03 under decision 0054, because two of the newest families differ from the answer in at least one form, and the rule records one differing family.
+
 ## Opinions
 
 ### Gap review, 2026-11-03

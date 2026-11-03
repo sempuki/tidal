@@ -628,12 +628,19 @@ Bases c{List<X, Y, Z>{}, Y{}};    // rejected: Y stands where X is fixed
 The results are in `tests/RESULTS.md`. All eight compilers agree on 95
 of 116 tests.
 
-The questions of the cluster of EDG differences (cluster 5) on this page
-stay open under decision 0051: {question}`Q-0240`, {question}`Q-0277`,
-{question}`Q-0278`, {question}`Q-0279`, and {question}`Q-0280`. On
-2026-11-03, Clang 22 and GCC 16 still agree with the provisional answer
-of each, and EDG 7.0 still differs. Reporting these EDG differences to
-the EDG project waits on the maintainer. The source-reader gap review
+Two questions of the cluster of EDG differences (cluster 5) on this
+page settled on 2026-11-03 under decision 0054: {question}`Q-0240`,
+where CTAD-P2 gives the answer, and {question}`Q-0279`, where CTAD-P3
+gives it. For each, the source-reader gap review of the cluster supports
+the answer with no doubt. EDG 7.0 still differs on both, and the tests
+keep their overrides for EDG.
+
+The other questions of the cluster stay open: {question}`Q-0277`,
+{question}`Q-0278`, and {question}`Q-0280`. On 2026-11-03, Clang 22
+and GCC 16 still agree with the provisional answer of each, and EDG 7.0
+still differs. Reporting these EDG differences to the EDG project waits
+on the maintainer (`documentation/decisions/pending.md`). The review
+reads Q-0278 with doubt. The source-reader gap review
 of the cluster (`reports/review/2026-11-03-gap-review-question-cluster-5.md`)
 reads two answers against every compiler. In Q-0277 it reads the first
 form as giving `Three<char>`, and in Q-0280 it reads the two guide

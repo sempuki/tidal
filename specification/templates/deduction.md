@@ -720,11 +720,19 @@ all<long>(1, 'c');              // Ts = long, char
 The results are in `tests/RESULTS.md`. All eight compilers agree on 112
 of 121 tests.
 
-The questions of the cluster of EDG differences (cluster 5) on this page
-stay open under decision 0051: {question}`Q-0208` and
-{question}`Q-0215`. On 2026-11-03, Clang 22 and GCC 16 still agree with
-the provisional answer of each, and EDG 7.0 still differs. Reporting
-these EDG differences to the EDG project waits on the maintainer.
+Three questions on this page settled on 2026-11-03 under decision 0054.
+For each, a source-reader gap review supports the answer with no doubt,
+and a principle gives the same answer:
+
+| Question | Principle | Family that still differs |
+|---|---|---|
+| {question}`Q-0208` | DED-P3 | EDG 7.0 |
+| {question}`Q-0215` | DED-P2 | EDG 7.0 |
+| {question}`Q-0219` | {principle}`ORD-P1` | Clang 22 |
+
+Each test keeps its override for the family that differs. Reporting the
+EDG differences to the EDG project waits on the maintainer
+(`documentation/decisions/pending.md`).
 
 The clean-room writer probed each step with Clang 22, GCC 16, and EDG
 7.0, and checked the tests and grids on the eight
@@ -761,9 +769,9 @@ grids below.
   less specialized template holds a failing `static_assert`, and a probe
   with the `static_assert` in the other template fails on EDG. Clang
   warns that two functions match and calls neither
-  ({question}`Q-0219`). Q-0219 and Q-0220 stay open under decision 0051,
-  because on 2026-11-03 Clang 22 still differs from GCC 16 and
-  EDG 7.0.
+  ({question}`Q-0219`). On 2026-11-03 Clang 22 still differs from
+  GCC 16 and EDG 7.0. Q-0219 is settled under decision 0054, and Q-0220
+  stays open, because its review reads it with doubt.
 - DED-39: when a function and a template both match, no compiler
   instantiates the template. The body of the template in
   `throw-placement-function-before-template-instantiation.cpp` fails

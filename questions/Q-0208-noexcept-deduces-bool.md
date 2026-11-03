@@ -1,6 +1,6 @@
 # Q-0208: Does the noexcept of a function type give a value to a bool constant parameter?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** DED-11, `tests/templates/deduction/match-noexcept.cpp`
 
 ## Context
@@ -29,15 +29,17 @@ behavior.
 2. The `noexcept` gives no value, and the parameter needs an explicit
    argument (EDG).
 
-## Provisional answer
+## Answer
 
 Yes; Clang and GCC agree, EDG differs (option 1). Two of three implementations and the inventory agree. The
 `noexcept` is part of the function type (ICS-1 lets it drop in
 a conversion), so the position matches like the other parts of the type.
 
-The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 give `B` the value of the argument's `noexcept`, and EDG 7.0 finds no match, so two families disagree. DED-P3 supports the provisional answer. Matching takes a type apart along its structure, and its table lists `noexcept(B)` of a function type as a position that gives `B` a value (DED-11). EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/status.md`).
+The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 give `B` the value of the argument's `noexcept`, and EDG 7.0 finds no match, so two families disagree. DED-P3 supports the provisional answer. Matching takes a type apart along its structure, and its table lists `noexcept(B)` of a function type as a position that gives `B` a value (DED-11). EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/decisions/pending.md`).
 
 Kept on 2026-11-03. The source-reader gap review of question cluster 5 agrees with option 1.
+
+Settled on 2026-11-03 under decision 0054. The source-reader gap review of question cluster 5 (`reports/review/2026-11-03-gap-review-question-cluster-5.md`) supports this answer with no doubt, and DED-P3 gives the same answer: its table lists `noexcept(B)` of a function type as a position that gives `B` a value. EDG 7.0 still differs. Tidal records EDG's result as a deviation, as for the compiler-defect entries Q-0002 and Q-0003, and the tests keep their overrides for EDG.
 
 ## Opinions
 

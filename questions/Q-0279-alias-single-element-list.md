@@ -1,6 +1,6 @@
 # Q-0279: Does one element of the class type skip the initializer-list phase through an alias template?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** CTAD-18, `tests/templates/class-template-deduction/list-single-specialization-alias.cpp`
 
 ## Context
@@ -28,14 +28,16 @@ the initializer-list phase applies also through an alias.
    (Clang 22, GCC).
 2. The initializer-list guide is tried first through an alias (EDG).
 
-## Provisional answer
+## Answer
 
 Yes; Clang 22 and GCC agree, EDG differs (option 1). Two of three implementations agree, and the gap review
 predicts the same result.
 
-The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 deduce `List<int>` through the alias, and EDG 7.0 deduces `List<List<int>>`, so two families disagree. Clang 18 rejects the alias. CTAD-P3 supports the provisional answer. An alias template gets the guides of its class template (CTAD-14), so the choice among the guides runs as it does without the alias (CTAD-18). EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/status.md`).
+The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 deduce `List<int>` through the alias, and EDG 7.0 deduces `List<List<int>>`, so two families disagree. Clang 18 rejects the alias. CTAD-P3 supports the provisional answer. An alias template gets the guides of its class template (CTAD-14), so the choice among the guides runs as it does without the alias (CTAD-18). EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/decisions/pending.md`).
 
 Kept on 2026-11-03. The source-reader gap review of question cluster 5 agrees with option 1.
+
+Settled on 2026-11-03 under decision 0054. The source-reader gap review of question cluster 5 (`reports/review/2026-11-03-gap-review-question-cluster-5.md`) supports this answer with no doubt, and CTAD-P3 gives the same answer: the alias gets the guides of its class template, so the choice among them runs as without the alias. EDG 7.0 still differs. Tidal records EDG's result as a deviation, as for the compiler-defect entries Q-0002 and Q-0003, and the tests keep their overrides for EDG. Clang 18 rejects the alias.
 
 ## Opinions
 

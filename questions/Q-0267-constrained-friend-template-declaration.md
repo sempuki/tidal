@@ -1,6 +1,6 @@
 # Q-0267: Must a friend template whose constraint uses the enclosing class's template parameter be a definition?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** CNS-31, `tests/templates/constraints/friend-template-declaration.cpp`
 
 ## Context
@@ -21,13 +21,15 @@ The test above. Every compiler rejects a friend that is not a template, has a tr
    class then declares its own template.
 2. A declaration is enough (EDG).
 
-## Provisional answer
+## Answer
 
 Yes; Clang and GCC agree, EDG differs (option 1). Two of three implementations agree, and the same rule applies to a friend that is not a template.
 
-The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 reject the friend template declaration, and EDG 7.0 accepts it, so two families disagree. CNS-P5 supports the provisional answer. A friend whose constraint names the class's template parameters is defined in the class, so each specialization of the class defines its own function (CNS-31). EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/status.md`).
+The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 reject the friend template declaration, and EDG 7.0 accepts it, so two families disagree. CNS-P5 supports the provisional answer. A friend whose constraint names the class's template parameters is defined in the class, so each specialization of the class defines its own function (CNS-31). EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/decisions/pending.md`).
 
 Kept on 2026-11-03. The source-reader gap review of question cluster 5 agrees with option 1.
+
+Settled on 2026-11-03 under decision 0054. The source-reader gap review of question cluster 5 (`reports/review/2026-11-03-gap-review-question-cluster-5.md`) supports this answer with no doubt, and CNS-P5 gives the same answer: a friend whose constraint names the class's template parameters is defined in the class. EDG 7.0 still differs. Tidal records EDG's result as a deviation, as for the compiler-defect entries Q-0002 and Q-0003, and the tests keep their overrides for EDG.
 
 ## Opinions
 

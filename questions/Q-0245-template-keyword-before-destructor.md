@@ -1,6 +1,6 @@
 # Q-0245: Can the keyword template come before a destructor name?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** DEP-34, `tests/templates/dependent-names/template-keyword-destructor.cpp`
 
 ## Context
@@ -25,13 +25,15 @@ accepts `p->T::template ~T()`, and Clang and GCC reject it.
 1. The keyword is not valid before a destructor name (Clang, GCC).
 2. The keyword is accepted and has no effect (EDG).
 
-## Provisional answer
+## Answer
 
 No; Clang and GCC agree, EDG differs (option 1). Two of three implementations and the gap review agree.
 
-The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 reject the keyword before the destructor name, and EDG 7.0 accepts it, so two families disagree. A probe of `p->T::template ~T()` gives the same split. DEP-P5 supports the provisional answer. The keyword `template` tells the parser that a template-id follows, and a destructor name is no template-id, so DEP-34 is an exception of DEP-P5. EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/status.md`).
+The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 reject the keyword before the destructor name, and EDG 7.0 accepts it, so two families disagree. A probe of `p->T::template ~T()` gives the same split. DEP-P5 supports the provisional answer. The keyword `template` tells the parser that a template-id follows, and a destructor name is no template-id, so DEP-34 is an exception of DEP-P5. EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/decisions/pending.md`).
 
 Kept on 2026-11-03. The source-reader gap review of question cluster 5 agrees with option 1.
+
+Settled on 2026-11-03 under decision 0054. The source-reader gap review of question cluster 5 (`reports/review/2026-11-03-gap-review-question-cluster-5.md`) supports this answer with no doubt, and DEP-P5 gives the same answer: the keyword tells the parser that a template-id follows, and a destructor name is no template-id (DEP-34 is its exception). EDG 7.0 still differs. Tidal records EDG's result as a deviation, as for the compiler-defect entries Q-0002 and Q-0003, and the tests keep their overrides for EDG.
 
 ## Opinions
 

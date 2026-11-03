@@ -48,6 +48,8 @@ No; only a function that returns an lvalue reference serves it (option 1). GCC a
 
 The question was split from Q-0156 on 2026-11-03. The source-reader gap review of question cluster 2 (`reports/review/2026-11-03-gap-review-question-cluster-2.md`) reads the reference as supporting option 1, weakly, and calls the literal reading a possible gap, since an lvalue reference to `const` can bind to an rvalue. For the xvalue result, EDG joins Clang, so the answer there rests on GCC and OVL-15 alone.
 
+Kept open on 2026-11-03 under decision 0054, because the gap review does not support the answer with no doubt (it reads with doubt, weakly, unclearly, or for only part of the question).
+
 ## Opinions
 
 ### Gap review, 2026-11-03

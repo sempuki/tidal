@@ -42,6 +42,8 @@ the calls with no `this`, on which every compiler agrees.
 
 The question stays open under decision 0051 (2026-11-03). GCC 16 rejects the call, and Clang 22 and EDG 7.0 call the static `f(int)`, so two families disagree. The provisional answer follows OVL-P2 and OVL-3. `*this` is the implied object argument only for members of its class or of a base. Here the call has no object, and OVL-3 gives the result that every compiler gives in a static member function of `Outer`. Item E-2 of the gap review gives the same answer.
 
+Kept open on 2026-11-03 under decision 0054, because two of the newest families differ from the answer in at least one form, and the rule records one differing family.
+
 ## Opinions
 
 ### Gap review, 2026-11-03

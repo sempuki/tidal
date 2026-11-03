@@ -1,6 +1,6 @@
 # Q-0281: Is a function template with a constrained constant parameter more constrained than the same template with `auto`?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** CNS-1, CNS-23, CPT-21, `tests/templates/constraints/constant-placeholder-more-constrained.cpp`
 
 ## Context
@@ -33,15 +33,17 @@ placeholder as a constraint of the template.
 2. The type constraint is checked only for the argument's type, and
    takes no part in the comparison (Clang 18, GCC 14, EDG).
 
-## Provisional answer
+## Answer
 
 Yes; Clang 22 and GCC 16 agree, Clang 18, GCC 14, and EDG differ (option 1). The newest Clang and GCC agree, every compiler already drops
 the candidate when the constraint fails, and a type constraint on a
 type parameter takes part in the comparison in the same way.
 
-The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 choose the constrained template, and EDG 7.0 finds the call ambiguous, so two families disagree. Clang 18 and GCC 14 agree with EDG. CNS-P1 supports the provisional answer. Step 1a collects the type constraints of constant parameters into the associated constraints, so the comparison of CNS-P4 sees them (CNS-23). EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/status.md`).
+The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 choose the constrained template, and EDG 7.0 finds the call ambiguous, so two families disagree. Clang 18 and GCC 14 agree with EDG. CNS-P1 supports the provisional answer. Step 1a collects the type constraints of constant parameters into the associated constraints, so the comparison of CNS-P4 sees them (CNS-23). EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/decisions/pending.md`).
 
 Kept on 2026-11-03. The source-reader gap review of question cluster 5 agrees with option 1.
+
+Settled on 2026-11-03 under decision 0054. The source-reader gap review of question cluster 5 (`reports/review/2026-11-03-gap-review-question-cluster-5.md`) supports this answer with no doubt, and CNS-P1 gives the same answer: its step 1a collects the type constraints of constant parameters into the associated constraints. EDG 7.0 still differs. Tidal records EDG's result as a deviation, as for the compiler-defect entries Q-0002 and Q-0003, and the tests keep their overrides for EDG. Clang 18 and GCC 14 agree with EDG.
 
 ## Opinions
 

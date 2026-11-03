@@ -40,6 +40,8 @@ ICS-14, where the object slot of a static member takes no part.
 
 The question stays open under decision 0051 (2026-11-03). GCC 16 gives the call an lvalue object, and Clang 22 and EDG 7.0 do not, so two families disagree. A probe of 2026-11-03 confirms the split for `S::put(1)` at namespace scope. The provisional answer follows OVL-P1, which checks for an object in step 4, after the best function is chosen. A made-up object in step 2 would remove a member before that check.
 
+Kept open on 2026-11-03 under decision 0054, because the gap review does not support the answer with no doubt (it reads with doubt, weakly, unclearly, or for only part of the question).
+
 ## Opinions
 
 ### Gap review, 2026-11-03

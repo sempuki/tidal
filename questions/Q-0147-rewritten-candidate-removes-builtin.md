@@ -39,6 +39,8 @@ describes the removal this way.
 
 The question stays open under decision 0051 (2026-11-03). GCC 16 keeps the built-in candidate, and Clang 22 and EDG 7.0 remove it, so two families disagree. No principle on Tidal's pages separates the options. The provisional answer rests on the two families and on item BI-5 of the inventory.
 
+Kept open on 2026-11-03 under decision 0054, because no principle on the page separates the options.
+
 ## Opinions
 
 ### Gap review, 2026-11-03

@@ -42,6 +42,8 @@ The test in **Affects**, with an override for GCC 14, and
 The base keeps its padding (option 1). The newest version of each
 compiler family gives this layout. GCC 14 made the other choice.
 
+Kept open on 2026-11-03 under decision 0054, because the review reads both options as allowed, and item TP of decision 0054 sets the matrix layout.
+
 ## Opinions
 
 ### Gap review, 2026-11-03

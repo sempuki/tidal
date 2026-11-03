@@ -38,6 +38,8 @@ The question stays open under decision 0051 (2026-11-01). Every newest version a
 
 Kept on 2026-11-03. The source-reader gap review of question cluster 1 (`reports/review/2026-11-01-gap-review-question-cluster-1.md`) reads the reference as supporting option 2 only weakly, on a strict reading, since the reference does not mention template template parameters. Clang 22, GCC 16, and EDG 7.0 deduce through both forms, and Clang 18 differs only on the alias form, for a reason that Q-0240 covers. Option 2 would make CTAD-1 reject a program that every implementation accepts. The specification follows the shared behavior until the maintainer decides, as for Q-0300.
 
+Kept open on 2026-11-03 under decision 0054, because the question waits on the maintainer (`documentation/decisions/pending.md`).
+
 ## Opinions
 
 ### Gap review, 2026-11-01

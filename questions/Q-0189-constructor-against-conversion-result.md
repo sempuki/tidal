@@ -41,6 +41,8 @@ The question stays open under decision 0051 (2026-11-03). Clang 22 finds the two
 
 Kept on 2026-11-03. The source-reader gap review of question cluster 2 (`reports/review/2026-11-03-gap-review-question-cluster-2.md`) finds the reference unclear. A strict reading, in which the result tie-breaker needs a return type, gives option 2. The reference also says that the chosen constructor gives a value of the target type, which fits option 1. With the reference unclear, the answer keeps GCC 16, EDG 7.0, and OVL-26 with ICS-27, where the constructor's result is the target itself.
 
+Kept open on 2026-11-03 under decision 0054, because the gap review does not support the answer with no doubt (it reads with doubt, weakly, unclearly, or for only part of the question).
+
 ## Opinions
 
 ### Gap review, 2026-11-03

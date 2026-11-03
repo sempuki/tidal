@@ -67,6 +67,8 @@ The question stays open under decision 0051 (2026-11-03). The newest versions st
 
 Kept on 2026-11-03. The source-reader gap review of question cluster 4 agrees with option 1, with doubt. The review notes that the front end's interpreter rejects the read of the nested temporary with OBJ-2, and the provisional answer allows that read when both temporaries have a `const` type. This mismatch goes to item FE.
 
+Kept open on 2026-11-03 under decision 0054, because the gap review does not support the answer with no doubt (it reads with doubt, weakly, unclearly, or for only part of the question).
+
 ## Opinions
 
 ### Gap review, 2026-11-03

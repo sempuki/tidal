@@ -1,6 +1,6 @@
 # Q-0211: Are the parameters of a swapped candidate reversed for partial ordering?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** ORD-7, `tests/templates/ordering/reversed-candidate.cpp`
 
 ## Context
@@ -35,7 +35,7 @@ inventory describes the behavior.
    (Clang, EDG).
 2. Partial ordering compares the parameters in declared order (GCC).
 
-## Provisional answer
+## Answer
 
 Yes; Clang and EDG agree, GCC differs (option 1). Two of three implementations and the inventory agree. The
 reversal compares the parameters that meet the same operand.
@@ -43,6 +43,8 @@ reversal compares the parameters that meet the same operand.
 The question stays open under decision 0051 (2026-11-03). Clang 22 and EDG 7.0 choose the swapped candidate, and GCC 16 chooses the written candidate, so two families disagree. ORD-P1 supports the provisional answer. In a call, the types that take part are the parameters that meet the call's arguments, and the reversal pairs each parameter with the operand that it meets. Item L7 of the inventory and item O11 of the gap review describe the same reversal.
 
 Kept on 2026-11-03. The source-reader gap review of question cluster 3 agrees with option 1.
+
+Settled on 2026-11-03 under decision 0054. The source-reader gap review of question cluster 3 (`reports/review/2026-11-03-gap-review-question-cluster-3.md`) supports this answer with no doubt, and ORD-P1 gives the same answer: for a swapped rewritten candidate, the swapped parameters are reversed. GCC 16 still differs. Tidal records GCC's result as a deviation, as for the compiler-defect entries Q-0002 and Q-0003, and the tests keep their overrides for GCC.
 
 ## Opinions
 

@@ -357,20 +357,26 @@ Pair<int*, int*> c;                                   // C, more specialized tha
 The results are in `tests/RESULTS.md`. All eight compilers agree on 31
 of 42 tests.
 
-The questions of the partial-ordering cluster on this page stay open
-under decision 0051: {question}`Q-0211`, {question}`Q-0214`,
-{question}`Q-0216`, {question}`Q-0217`, {question}`Q-0218`, and
-{question}`Q-0293`. On 2026-11-03, Clang 22, GCC 16, and EDG 7.0 still
-split on each of them. The provisional answers of Q-0216, Q-0217, and
-Q-0218 follow Clang against GCC and EDG, and the gap review of
-2026-10-31 describes Clang's behavior in each. The cluster's gap review
-should weigh option 2 of Q-0216, which ORD-5 fits.
+Two questions on this page settled on 2026-11-03 under decision 0054.
+For each, a source-reader gap review supports the answer with no doubt,
+and a principle gives the same answer:
 
-The question of the cluster of EDG differences (cluster 5) on this page,
-{question}`Q-0146`, stays open under decision 0051. On 2026-11-03, Clang
-22 and GCC 16 still agree with its provisional answer, and EDG 7.0 still
-differs. Reporting this EDG difference to the EDG project waits on the
-maintainer.
+| Question | Principle | Family that still differs |
+|---|---|---|
+| {question}`Q-0146` | ORD-P2, {principle}`CNS-P4` | EDG 7.0 |
+| {question}`Q-0211` | ORD-P1 | GCC 16 |
+
+Each test keeps its override for the family that differs. Reporting the
+EDG difference of Q-0146 to the EDG project waits on the maintainer
+(`documentation/decisions/pending.md`).
+
+The other questions of the partial-ordering cluster stay open:
+{question}`Q-0214`, {question}`Q-0216`, {question}`Q-0217`,
+{question}`Q-0218`, and {question}`Q-0293`. On 2026-11-03, Clang 22,
+GCC 16, and EDG 7.0 still split on each of them. The provisional
+answers of Q-0216, Q-0217, and Q-0218 follow Clang against GCC and EDG,
+and the gap review of question cluster 3 supports each of them, Q-0218
+with a small doubt.
 
 The clean-room writer probed each step and tie-breaker with Clang 22,
 GCC 16, and EDG 7.0, and checked the tests and grids on the eight

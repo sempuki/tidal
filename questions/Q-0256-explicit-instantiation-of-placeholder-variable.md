@@ -1,6 +1,6 @@
 # Q-0256: How does an explicit instantiation name a variable template declared with auto?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** INST-22, `tests/templates/instantiation/explicit-placeholder-variable.cpp`
 
 ## Context
@@ -26,13 +26,15 @@ other forms.
 1. The explicit instantiation writes the deduced type (Clang, GCC).
 2. The explicit instantiation writes `auto` (EDG).
 
-## Provisional answer
+## Answer
 
 With the deduced type; Clang and GCC agree, EDG differs (option 1). Two of three implementations and the gap review agree. GCC also accepts a type other than the deduced one, and INST-22 does not allow it.
 
-The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 accept the deduced type `int`, and EDG 7.0 rejects it, so two families disagree. Probes give the recorded results for the other forms: EDG 7.0 alone accepts `auto`, and GCC 16 alone accepts `long`. INST-P3 supports the provisional answer. An explicit instantiation names the type of the specialization (INST-22), and the specialization of a variable template has the deduced type. EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/status.md`).
+The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 accept the deduced type `int`, and EDG 7.0 rejects it, so two families disagree. Probes give the recorded results for the other forms: EDG 7.0 alone accepts `auto`, and GCC 16 alone accepts `long`. INST-P3 supports the provisional answer. An explicit instantiation names the type of the specialization (INST-22), and the specialization of a variable template has the deduced type. EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/decisions/pending.md`).
 
 Kept on 2026-11-03. The source-reader gap review of question cluster 5 agrees with option 1.
+
+Settled on 2026-11-03 under decision 0054. The source-reader gap review of question cluster 5 (`reports/review/2026-11-03-gap-review-question-cluster-5.md`) supports this answer with no doubt, and INST-P3 gives the same answer: an explicit instantiation names the type of the specialization, which is the deduced type. EDG 7.0 still rejects the deduced type and accepts `auto`, and GCC 16 still accepts another type. Tidal records each result as a deviation, as for the compiler-defect entries Q-0002 and Q-0003, and the test keeps its override for EDG.
 
 ## Opinions
 

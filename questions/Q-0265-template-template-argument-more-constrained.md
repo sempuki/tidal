@@ -1,6 +1,6 @@
 # Q-0265: Can a template template argument be more constrained than its parameter?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** CNS-25, `tests/templates/constraints/template-template-more-constrained.cpp`
 
 ## Context
@@ -26,13 +26,15 @@ The test above. Every compiler accepts an argument that is less constrained than
    with an argument that the argument template does not accept.
 2. Valid (Clang 18, EDG).
 
-## Provisional answer
+## Answer
 
 No; Clang 22 and GCC agree, Clang 18 and EDG differ (option 1). The current Clang and GCC agree, and the rule keeps a use of the parameter inside the template valid.
 
-The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 reject the more constrained argument, and EDG 7.0 accepts it, so two families disagree. Clang 18 also accepts it. CNS-P4 supports the provisional answer. A template template parameter must be at least as constrained as its argument (CNS-25), because the template can use the parameter with an argument that a more constrained argument template does not accept. EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/status.md`).
+The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 reject the more constrained argument, and EDG 7.0 accepts it, so two families disagree. Clang 18 also accepts it. CNS-P4 supports the provisional answer. A template template parameter must be at least as constrained as its argument (CNS-25), because the template can use the parameter with an argument that a more constrained argument template does not accept. EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/decisions/pending.md`).
 
 Kept on 2026-11-03. The source-reader gap review of question cluster 5 agrees with option 1.
+
+Settled on 2026-11-03 under decision 0054. The source-reader gap review of question cluster 5 (`reports/review/2026-11-03-gap-review-question-cluster-5.md`) supports this answer with no doubt, and CNS-P4 gives the same answer: a template template parameter must be at least as constrained as its argument. EDG 7.0 still differs. Tidal records EDG's result as a deviation, as for the compiler-defect entries Q-0002 and Q-0003, and the tests keep their overrides for EDG. Clang 18 accepts the argument too.
 
 ## Opinions
 

@@ -1,6 +1,6 @@
 # Q-0229: Does an alias template specialization name the current instantiation?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** DEP-15, `tests/templates/dependent-names/current-instantiation-alias.cpp`
 
 ## Context
@@ -28,15 +28,17 @@ specialization names the current instantiation.
 2. The alias names a dependent specialization that is not the current
    instantiation (EDG).
 
-## Provisional answer
+## Answer
 
 Yes; Clang and GCC agree, EDG differs (option 1). Clang treats every case as the current instantiation, and
 the inventory agrees. GCC's rejection of a dependent base member
 through the alias is a separate defect under DEP-18.
 
-The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 accept the member type through `Same<T>` without `typename`, and EDG 7.0 asks for `typename`, so two families disagree. Probes of the other two columns give the recorded results: Clang 22 and GCC 16 reject the missing member while EDG 7.0 and GCC 14 accept it, and GCC 16 alone rejects the member of a dependent base. DEP-P4 supports the provisional answer. Its table names the current instantiation by any name for `Box<T>`, and `Same<T>` is the same type as `Box<T>`. EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/status.md`).
+The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 accept the member type through `Same<T>` without `typename`, and EDG 7.0 asks for `typename`, so two families disagree. Probes of the other two columns give the recorded results: Clang 22 and GCC 16 reject the missing member while EDG 7.0 and GCC 14 accept it, and GCC 16 alone rejects the member of a dependent base. DEP-P4 supports the provisional answer. Its table names the current instantiation by any name for `Box<T>`, and `Same<T>` is the same type as `Box<T>`. EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/decisions/pending.md`).
 
 Kept on 2026-11-03. The source-reader gap review of question cluster 5 agrees with option 1.
+
+Settled on 2026-11-03 under decision 0054. The source-reader gap review of question cluster 5 (`reports/review/2026-11-03-gap-review-question-cluster-5.md`) supports this answer with no doubt, and DEP-P4 gives the same answer: its table names the current instantiation by any name for `Box<T>`, and `Same<T>` is the same type. EDG 7.0 still differs in the first two columns, and GCC 16 still rejects the member of a dependent base, a separate defect under DEP-18. Tidal records each result as a deviation, as for the compiler-defect entries Q-0002 and Q-0003, and the test keeps its override for EDG.
 
 ## Opinions
 

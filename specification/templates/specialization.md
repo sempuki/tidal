@@ -549,11 +549,16 @@ template <class T> template <> int Store<T>::Slot<int>::put();   // rejected
 The results are in `tests/RESULTS.md`. All eight compilers agree on 80
 of 93 tests.
 
-The questions of the cluster of EDG differences (cluster 5) on this page
-stay open under decision 0051: {question}`Q-0172` and
-{question}`Q-0203`. On 2026-11-03, Clang 22 and GCC 16 still agree with
-the provisional answer of each, and EDG 7.0 still differs. Reporting
-these EDG differences to the EDG project waits on the maintainer.
+Two questions on this page settled on 2026-11-03 under decision 0054:
+{question}`Q-0172`, where TSP-P1 gives the answer, and
+{question}`Q-0292`, where TSP-P3 gives it. For each, the source-reader
+gap review of question cluster 5 supports the answer with no doubt. EDG
+7.0 still differs on both, and the tests keep their overrides for EDG.
+{question}`Q-0203` stays open, because the same review reads it with
+doubt. On 2026-11-03, Clang 22 and GCC 16 still agree with its
+provisional answer, and EDG 7.0 still differs. Reporting these EDG
+differences to the EDG project waits on the maintainer
+(`documentation/decisions/pending.md`).
 
 The clean-room writer probed explicit and partial specializations with
 Clang 22, GCC 16, and EDG 7.0, and checked the tests on the eight

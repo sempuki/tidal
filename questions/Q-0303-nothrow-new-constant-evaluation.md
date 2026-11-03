@@ -34,6 +34,8 @@ The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 ev
 
 Kept on 2026-11-03. The source-reader gap review of question cluster 4 agrees with option 1.
 
+Kept open on 2026-11-03 under decision 0054, because no principle on the page gives the answer by itself. NEW-P4 keeps placement forms out of constant evaluation and does not separate the nothrow forms.
+
 ## Opinions
 
 ### Gap review, 2026-11-03

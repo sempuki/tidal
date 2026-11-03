@@ -1,6 +1,6 @@
 # Q-0292: Can a partial specialization repeat the primary template's parameters when it is not more constrained?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** CNS-36, TSP-11, `tests/templates/constraints/partial-specialization-not-more-constrained.cpp`
 
 ## Context
@@ -29,14 +29,16 @@ have the same constraint (`partial-specialization-same-constraints.cpp`).
    would be ambiguous.
 2. Valid (EDG).
 
-## Provisional answer
+## Answer
 
 No; Clang and GCC agree, EDG differs (option 1). Two of three implementations agree, and EDG rejects the case
 with equal constraints.
 
-The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 reject the partial specialization, and EDG 7.0 accepts it, so two families disagree. TSP-P3 supports the provisional answer. A partial specialization whose argument list is just the primary template's parameters must be more constrained than the primary template, or it covers no argument list that the primary template does not (CNS-36, TSP-11). EDG 7.0 rejects the same form with equal constraints. EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/status.md`).
+The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 reject the partial specialization, and EDG 7.0 accepts it, so two families disagree. TSP-P3 supports the provisional answer. A partial specialization whose argument list is just the primary template's parameters must be more constrained than the primary template, or it covers no argument list that the primary template does not (CNS-36, TSP-11). EDG 7.0 rejects the same form with equal constraints. EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/decisions/pending.md`).
 
 Kept on 2026-11-03. The source-reader gap review of question cluster 5 agrees with option 1.
+
+Settled on 2026-11-03 under decision 0054. The source-reader gap review of question cluster 5 (`reports/review/2026-11-03-gap-review-question-cluster-5.md`) supports this answer with no doubt, and TSP-P3 gives the same answer: a partial specialization that repeats the primary template's parameters must be more constrained. EDG 7.0 still differs. Tidal records EDG's result as a deviation, as for the compiler-defect entries Q-0002 and Q-0003, and the tests keep their overrides for EDG.
 
 ## Opinions
 

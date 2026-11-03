@@ -1,6 +1,6 @@
 # Q-0144: Does a const object get a surrogate from a conversion function that is not const?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** OVL-6, `tests/foundations/overload-resolution/surrogate-qualifiers.cpp`
 
 ## Context
@@ -30,12 +30,14 @@ G-10 of the overload resolution inventory.
    include those of the object (Clang, EDG).
 2. Every conversion function gives a surrogate (GCC).
 
-## Provisional answer
+## Answer
 
 No; Clang and EDG agree, GCC differs (option 1). Two of three implementations agree, and the inventory states
 the condition.
 
 The question stays open under decision 0051 (2026-11-03). GCC 16 keeps the surrogate, and Clang 22 and EDG 7.0 do not, so two families disagree. The provisional answer follows ICS-13 and OVL-23. The object of a surrogate converts by the conversion function, whose implicit object parameter is an lvalue reference to the class without `const`. A `const` object cannot bind that reference (ICS-12), so the surrogate has no sequence for the object. GCC itself rejects the `const` object for the conversion function when the surrogate is the only candidate.
+
+Settled on 2026-11-03 under decision 0054. The source-reader gap review of question cluster 2 (`reports/review/2026-11-03-gap-review-question-cluster-2.md`) supports this answer with no doubt, and OVL-P2 gives the same answer: the object meets the object parameter of the conversion function (ICS-13), and a `const` object has no sequence to a parameter without `const`. GCC 16 still differs. Tidal records GCC's result as a deviation, as for the compiler-defect entries Q-0002 and Q-0003, and the tests keep their overrides for GCC.
 
 ## Opinions
 

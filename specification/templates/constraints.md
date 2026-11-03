@@ -717,18 +717,32 @@ decltype(&Box<long>::get)               // int (Box<long>::*)(): the clause is n
 The results are in `tests/RESULTS.md`. All eight compilers agree on 99
 of 125 tests.
 
-The questions of the cluster of EDG differences (cluster 5) on this page
-stay open under decision 0051: {question}`Q-0260`, {question}`Q-0265`,
-{question}`Q-0266`, {question}`Q-0267`, {question}`Q-0268`,
-{question}`Q-0281`, {question}`Q-0282`, {question}`Q-0283`,
-{question}`Q-0284`, and {question}`Q-0292`. On 2026-11-03, Clang 22 and
-GCC 16 still agree with the provisional answer of each, and EDG 7.0
-still differs. In Q-0283, EDG 7.0 diagnoses a program that needs no
-diagnostic, so the outcomes of all three families fit the provisional
-answer, and the outcomes still differ. Reporting these EDG differences
-to the EDG project waits on the maintainer. The source-reader gap review
-of the cluster (`reports/review/2026-11-03-gap-review-question-cluster-5.md`)
-reads Q-0282 as EDG and GCC 14 do, with doubt. CPT-21 and CNS-1 keep
+Nine questions on this page settled on 2026-11-03 under decision 0054.
+For each, a source-reader gap review supports the answer with no doubt,
+and a principle gives the same answer:
+
+| Question | Principle | Family that still differs |
+|---|---|---|
+| {question}`Q-0260` | {principle}`CPT-P1` | EDG 7.0 |
+| {question}`Q-0265` | CNS-P4 | EDG 7.0 |
+| {question}`Q-0267` | CNS-P5 | EDG 7.0 |
+| {question}`Q-0268` | CNS-P5 | EDG 7.0 |
+| {question}`Q-0281` | CNS-P1 | EDG 7.0 |
+| {question}`Q-0283` | CNS-P3 | none; EDG 7.0 diagnoses a program that needs no diagnostic |
+| {question}`Q-0284` | CNS-P1 | EDG 7.0 |
+| {question}`Q-0285` | CNS-P1 | EDG 7.0 |
+| {question}`Q-0292` | CNS-P3, {principle}`TSP-P3` | EDG 7.0 |
+
+Each test keeps its override for EDG. Reporting these EDG differences to
+the EDG project waits on the maintainer
+(`documentation/decisions/pending.md`).
+
+{question}`Q-0266` and {question}`Q-0282` stay open. On 2026-11-03,
+Clang 22 and GCC 16 still agree with the provisional answer of each,
+and EDG 7.0 still differs. The source-reader gap review of the cluster
+(`reports/review/2026-11-03-gap-review-question-cluster-5.md`) finds the
+default-constructor part of Q-0266 unclear, and it reads Q-0282 as EDG
+and GCC 14 do, with doubt. CPT-21 and CNS-1 keep
 the order of the head, which Clang 22 and GCC 16 follow.
 
 The clean-room writer probed each rule with Clang 18 and 22, GCC 14 and

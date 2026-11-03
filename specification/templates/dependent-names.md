@@ -790,19 +790,28 @@ The results are in `tests/RESULTS.md`. All eight compilers agree on 100
 of 121 tests.
 
 The questions of the cluster of EDG differences (cluster 5) on this page
-stay open under decision 0051: {question}`Q-0224`, {question}`Q-0229`,
-and {question}`Q-0245`. On 2026-11-03, Clang 22 and GCC 16 still agree
-with the provisional answer of each, and EDG 7.0 still differs.
-Reporting these EDG differences to the EDG project waits on the
-maintainer.
+settled on 2026-11-03 under decision 0054. For each, the source-reader
+gap review of question cluster 5 supports the answer with no doubt, and
+a principle gives the same answer:
+
+| Question | Principle | Family that still differs |
+|---|---|---|
+| {question}`Q-0224` | DEP-P5 | EDG 7.0 |
+| {question}`Q-0229` | DEP-P4 | EDG 7.0; GCC 16 for a member of a dependent base (DEP-18) |
+| {question}`Q-0245` | DEP-P5 | EDG 7.0 |
+
+Each test keeps its override for the family that differs. Reporting the
+EDG differences to the EDG project waits on the maintainer
+(`documentation/decisions/pending.md`).
 
 The questions of the cluster of template syntax corners (cluster 6) on
-this page stay open under decision 0051: {question}`Q-0225`,
-{question}`Q-0226`, and {question}`Q-0227`. On 2026-11-03, Clang 22,
-GCC 16, and EDG 7.0 still split on each of them, and the probes of that
-day added no case where the three agree with a provisional answer.
-{question}`Q-0224` and {question}`Q-0245` belong to the same cluster
-and keep their cluster 5 notes. The source-reader gap review of the
+this page stay open: {question}`Q-0225`, {question}`Q-0226`, and
+{question}`Q-0227`. On 2026-11-03, Clang 22, GCC 16, and EDG 7.0 still
+split on each of them, and the probes of that day added no case where
+the three agree with a provisional answer. Q-0227 stays open under
+decision 0054 too, because GCC 16 and EDG 7.0 both differ from it for a
+member function. {question}`Q-0224` and {question}`Q-0245` belong to
+the same cluster and keep their cluster 5 notes. The source-reader gap review of the
 cluster (`reports/review/2026-11-03-gap-review-question-cluster-6.md`)
 agrees with Q-0227. It reads Q-0225 as GCC 16 does, and it also reads
 `T::box<int>` as valid in the target of an alias declaration, which
@@ -811,7 +820,7 @@ Clang 22 and EDG 7.0 do. The review rejects every form of Q-0226, as
 Clang 22 does. For the deduced form, it relies in part on the reading
 of Q-0243 that Tidal does not follow. DEP-26 keeps the deduced form, as GCC 16 and EDG 7.0 do. The alias
 target of Q-0225 waits on the maintainer, and the deduced form of
-Q-0226 waits with Q-0243.
+Q-0226 waits with Q-0243 (`documentation/decisions/pending.md`).
 
 The clean-room writer probed each rule with the eight baseline
 compilers and the two `-O2` report compilers, and wrote the grids

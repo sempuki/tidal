@@ -42,6 +42,8 @@ The question stays open under decision 0051 (2026-11-03). GCC 16 accepts `static
 
 Kept on 2026-11-03. The source-reader gap review of question cluster 6 (`reports/review/2026-11-03-gap-review-question-cluster-6.md`) agrees with option 1. Its side note asks whether an explicit instantiation of a variable template declared `thread_local` must repeat the keyword. That depends on the doubt of Q-0203. INST-25 allows `thread_local` and does not require it.
 
+Kept open on 2026-11-03 under decision 0054, because the gap review does not support the answer with no doubt (it reads with doubt, weakly, unclearly, or for only part of the question).
+
 ## Opinions
 
 ### Gap review, 2026-11-03

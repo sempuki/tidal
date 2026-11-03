@@ -857,22 +857,30 @@ Inputs: edg-overload, clang-diag-sema.
 
 ### Divergences
 
-The questions of the tie-breaker cluster on this page stay open under
-decision 0051: {question}`Q-0138`, {question}`Q-0139`,
-{question}`Q-0144`, {question}`Q-0145`, {question}`Q-0147`,
-{question}`Q-0148`, {question}`Q-0159`, {question}`Q-0161`,
-{question}`Q-0163`, {question}`Q-0187`, and {question}`Q-0189`. On
-2026-11-03, Clang 22, GCC 16, and EDG 7.0 still split on each of them.
-The source-reader gap review of the cluster
+Five questions on this page settled on 2026-11-03 under decision 0054.
+For each, a source-reader gap review supports the answer with no doubt,
+and a principle gives the same answer:
+
+| Question | Principle | Family that still differs |
+|---|---|---|
+| {question}`Q-0138` | OVL-P3, step 2b | Clang 22 |
+| {question}`Q-0139` | OVL-P3, steps 1 and 3 | GCC 16 |
+| {question}`Q-0144` | OVL-P2 | GCC 16 |
+| {question}`Q-0146` | {principle}`ORD-P2`, {principle}`CNS-P4` | EDG 7.0 |
+| {question}`Q-0163` | OVL-P3, step 2a | EDG 7.0 |
+
+Each test keeps its override for the family that differs. Reporting the
+EDG difference of Q-0146 to the EDG project waits on the maintainer
+(`documentation/decisions/pending.md`).
+
+The other questions of the tie-breaker cluster stay open:
+{question}`Q-0145`, {question}`Q-0147`, {question}`Q-0148`,
+{question}`Q-0159`, {question}`Q-0161`, {question}`Q-0187`, and
+{question}`Q-0189`. On 2026-11-03, Clang 22, GCC 16, and EDG 7.0 still
+split on each of them. The source-reader gap review of the cluster
 (`reports/review/2026-11-03-gap-review-question-cluster-2.md`) leans
 against Q-0161 for the unqualified form, and OVL-21 follows that
 reading. The review finds the reference unclear on Q-0189.
-
-The question of the cluster of EDG differences (cluster 5) on this page,
-{question}`Q-0146`, stays open under decision 0051. On 2026-11-03, Clang
-22 and GCC 16 still agree with its provisional answer, and EDG 7.0 still
-differs. Reporting this EDG difference to the EDG project waits on the
-maintainer.
 
 - OVL-27, OVL-28, OVL-29: the kind of function reference prefers one
   conversion function, and a template tie-breaker prefers the other.

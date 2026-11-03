@@ -47,6 +47,8 @@ Kept on 2026-11-03 for the reference that binds a temporary. The same review agr
 
 The question stays open under decision 0051 (2026-11-03). For the array bound, Clang 22 prefers the known bound, and GCC 16 and EDG 7.0 find a tie. For the reference that binds a temporary, EDG 7.0 finds a tie, and Clang 22 and GCC 16 prefer the reference. So two families disagree on each case.
 
+Kept open on 2026-11-03 under decision 0054, because two of the newest families differ from the answer in at least one form, and the rule records one differing family.
+
 ## Opinions
 
 ### Gap review, 2026-11-03

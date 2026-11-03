@@ -49,6 +49,8 @@ The question stays open under decision 0051 (2026-11-03). GCC 16 accepts the dat
 
 Kept on 2026-11-03. The source-reader gap review of question cluster 6 (`reports/review/2026-11-03-gap-review-question-cluster-6.md`) agrees with option 1 on the keyword rule, and so with the rejection of the data member after `.` and of the static data member. The review rejects the class template with deduced arguments on two other rules. The keyword has no place before the name of a deduced class type, and the qualifier of a deduced class type must not be dependent. With those rules, the results match Clang 22 in every column (option 3). The second rule is the reading of Q-0243, which Tidal does not follow, because every compiler accepts `typename Outer<T>::In x(1);`. Against the first rule, DEP-P5 treats the keyword `template` only as a mark that the name is a template, and here the name is a class template. Q-0243 keeps the form with the keyword on that ground, and GCC 16 and EDG 7.0 accept it. DEP-26 keeps option 1. A decision on Q-0243 settles the deduced form of this question too (`documentation/status.md`).
 
+Kept open on 2026-11-03 under decision 0054, because the question waits on the maintainer (`documentation/decisions/pending.md`).
+
 ## Opinions
 
 ### Gap review, 2026-11-03

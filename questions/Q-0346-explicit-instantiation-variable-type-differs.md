@@ -48,6 +48,8 @@ The question stays open under decision 0051 (2026-11-03). GCC 16 accepts every c
 
 Kept on 2026-11-03. The source-reader gap review of question cluster 6 (`reports/review/2026-11-03-gap-review-question-cluster-6.md`) agrees with option 1, with doubt for a bound where the template states none. The review's reading of how an initializer fixes the bound points to option 1, and Clang 22 follows it. INST-22 stays.
 
+Kept open on 2026-11-03 under decision 0054, because the gap review does not support the answer with no doubt (it reads with doubt, weakly, unclearly, or for only part of the question).
+
 ## Opinions
 
 ### Gap review, 2026-11-03

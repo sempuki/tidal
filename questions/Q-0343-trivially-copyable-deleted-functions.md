@@ -50,6 +50,8 @@ describes this limit, and CPY-P6 says that a class that forbids copies
 does not get the byte-copy promise. The compilers' queries disagree,
 and no test can show the effect, so the question stays provisional.
 
+Kept open on 2026-11-03 under decision 0054, because the question waits on the maintainer (`documentation/decisions/pending.md`).
+
 ## Opinions
 
 ### Gap review, 2026-11-03

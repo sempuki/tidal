@@ -1,6 +1,6 @@
 # Q-0138: Does the kind of a function reference break a tie between two conversion functions?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** OVL-15, OVL-29, `tests/foundations/overload-resolution/tie-function-reference-kind.cpp`, `tests/foundations/overload-resolution/reference-function-both-kinds.cpp`
 
 ## Context
@@ -40,12 +40,14 @@ describes the tie-breaker.
 2. Each kind of reference takes only its own kind of conversion
    function, and no tie-breaker applies (Clang).
 
-## Provisional answer
+## Answer
 
 Yes; GCC and EDG agree, Clang differs (option 1). Two of three implementations agree, and the inventory and the
 gap review describe the tie-breaker.
 
 The question stays open under decision 0051 (2026-11-03). Clang 22 finds the binding of `F&&` ambiguous and gives `F&` no conversion that returns `F&&`. GCC 16 and EDG 7.0 follow option 1, so two families disagree. The provisional answer follows the model of the values page, where each listed expression that refers to a function is an lvalue, also a cast to an rvalue reference to a function type (VC-14). By that model, the result of `operator F&&()` is a function lvalue, and an lvalue reference to `F` binds it directly.
+
+Settled on 2026-11-03 under decision 0054. The source-reader gap review of question cluster 2 (`reports/review/2026-11-03-gap-review-question-cluster-2.md`) supports this answer with no doubt, and OVL-P3 gives the same answer: its step 2b prefers the conversion function that returns the target's kind of function reference. Clang 22 still differs. Tidal records Clang's result as a deviation, as for the compiler-defect entries Q-0002 and Q-0003, and the tests keep their overrides for Clang.
 
 ## Opinions
 

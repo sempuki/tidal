@@ -1,6 +1,6 @@
 # Q-0284: Does the mapping of an atomic constraint hold only the template parameters that its expression uses?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** CNS-4, CNS-7, `tests/templates/constraints/mapping-unused-parameter.cpp`, `tests/templates/constraints/mapping-unused-parameter-not-substituted.cpp`
 
 ## Context
@@ -37,14 +37,16 @@ parameters that occur in the expression.
    (Clang 22, GCC).
 2. The mapping holds every parameter of the concept (EDG).
 
-## Provisional answer
+## Answer
 
 Yes; Clang 22 and GCC agree, EDG and Clang 18 differ (option 1). The newest Clang and GCC agree on both cases, and the review
 describes the same model.
 
-The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 choose the second template and find `Outer<int>` satisfied, and EDG 7.0 finds the call ambiguous and `Outer<int>` not satisfied, so two families disagree. Clang 18 agrees with EDG on the second case. CNS-P1 supports the provisional answer. The mapping of an atomic constraint holds only the parameters that its expression uses, so two concept-ids that differ only in an unused argument give one atomic constraint (CNS-4). EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/status.md`).
+The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 choose the second template and find `Outer<int>` satisfied, and EDG 7.0 finds the call ambiguous and `Outer<int>` not satisfied, so two families disagree. Clang 18 agrees with EDG on the second case. CNS-P1 supports the provisional answer. The mapping of an atomic constraint holds only the parameters that its expression uses, so two concept-ids that differ only in an unused argument give one atomic constraint (CNS-4). EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/decisions/pending.md`).
 
 Kept on 2026-11-03. The source-reader gap review of question cluster 5 agrees with option 1.
+
+Settled on 2026-11-03 under decision 0054. The source-reader gap review of question cluster 5 (`reports/review/2026-11-03-gap-review-question-cluster-5.md`) supports this answer with no doubt, and CNS-P1 gives the same answer: the mapping holds only the parameters that the expression uses. EDG 7.0 still differs. Tidal records EDG's result as a deviation, as for the compiler-defect entries Q-0002 and Q-0003, and the tests keep their overrides for EDG. Clang 18 agrees with EDG on the second case.
 
 ## Opinions
 

@@ -48,6 +48,8 @@ class-properties inventory names only the default constructor, GCC
 agrees, and the jump skips no construction. The destructor runs at
 the end of the block in either case.
 
+Kept open on 2026-11-03 under decision 0054, because the question waits on the maintainer (`documentation/decisions/pending.md`).
+
 ## Opinions
 
 ### Gap review, 2026-11-03

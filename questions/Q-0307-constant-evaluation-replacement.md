@@ -49,6 +49,8 @@ The question stays open under decision 0051 (2026-11-03). Clang 22, GCC 16, and 
 
 Kept on 2026-11-03. The source-reader gap review of question cluster 4 agrees with option 1.
 
+Kept open on 2026-11-03 under decision 0054, because the question waits on the maintainer (`documentation/decisions/pending.md`).
+
 ## Opinions
 
 ### Gap review, 2026-11-03

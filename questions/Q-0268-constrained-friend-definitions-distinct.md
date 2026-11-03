@@ -1,6 +1,6 @@
 # Q-0268: Are the constrained friend definitions of two class specializations two functions?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** CNS-32, `tests/templates/constraints/friend-definition-per-specialization.cpp`, `tests/templates/constraints/friend-distinct-from-namespace.cpp`
 
 ## Context
@@ -24,13 +24,15 @@ The first test above. In `friend-distinct-from-namespace.cpp`, a namespace templ
    declarations have different constraints.
 2. One function, defined twice (EDG).
 
-## Provisional answer
+## Answer
 
 Yes; Clang and GCC agree, EDG differs (option 1). Two of three implementations agree, and CNS-31 requires the friend to be a definition for this reason.
 
-The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 accept the two definitions, and EDG 7.0 rejects the second, so two families disagree. CNS-P5 supports the provisional answer. Each specialization of the class defines its own constrained friend, which no declaration outside the class redeclares (CNS-32). EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/status.md`).
+The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 accept the two definitions, and EDG 7.0 rejects the second, so two families disagree. CNS-P5 supports the provisional answer. Each specialization of the class defines its own constrained friend, which no declaration outside the class redeclares (CNS-32). EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/decisions/pending.md`).
 
 Kept on 2026-11-03. The source-reader gap review of question cluster 5 agrees with option 1.
+
+Settled on 2026-11-03 under decision 0054. The source-reader gap review of question cluster 5 (`reports/review/2026-11-03-gap-review-question-cluster-5.md`) supports this answer with no doubt, and CNS-P5 gives the same answer: each specialization of the class defines its own constrained friend. EDG 7.0 still differs. Tidal records EDG's result as a deviation, as for the compiler-defect entries Q-0002 and Q-0003, and the tests keep their overrides for EDG.
 
 ## Opinions
 
