@@ -29,6 +29,19 @@ address, and no other complete object shares that address. An object
 of scalar type has a lifetime that starts with its storage, so the
 object can exist with no value yet.
 
+These events end the lifetime of an object:
+
+| Event | Objects | Rule |
+|---|---|---|
+| Control leaves the block | automatic objects | OBJ-3 |
+| The full expression ends | temporaries | OBJ-9 |
+| `delete` | dynamic objects | OBJ-5 |
+| The program or the thread ends | static and thread objects | OBJ-4 |
+| An explicit destructor call | any object | {rule}`DTOR-6` |
+| The enclosing object or array ends | subobjects and elements | OBJ-1, OBJ-6 |
+| Another object takes the storage | any object | OBJ-10, {rule}`STG-6` |
+| The storage is released, without a destructor call | any object | {rule}`STG-27` |
+
 A class object is built from its subobjects, and the lifetimes of the
 subobjects nest inside the lifetime of the class object. So the
 constructor body and the destructor body both see complete parts:
@@ -91,10 +104,12 @@ these cases.
 
 :::{rule} OBJ-1
 :kind: required
-:tests: foundations/objects/lifetime-begins-after-init.cpp foundations/objects/members-subobjects-end-after-body.cpp foundations/objects/scalar-lifetime-with-storage.cpp foundations/objects/construction-order.cpp
+:tests: foundations/objects/lifetime-begins-after-init.cpp foundations/objects/members-subobjects-end-after-body.cpp foundations/objects/scalar-lifetime-with-storage.cpp foundations/objects/construction-order.cpp exceptions/unwinding/delegating-target-completed-destructor-runs.cpp
 
 The lifetime of a class object begins when its constructor completes
-and ends when its destructor completes. Its bases and members are
+and ends when its destructor completes. For a delegating constructor,
+the lifetime begins when the target constructor completes
+({rule}`UNW-2`). Its bases and members are
 initialized before the constructor body runs and destroyed after the
 destructor body runs. The bases come first, in the order of the base
 list, then the members, in the order of their declarations. Destruction
@@ -104,12 +119,15 @@ its storage is obtained, before the object has a value.
 
 :::{rule} OBJ-3
 :kind: required
-:tests: foundations/objects/block-reverse-order.cpp foundations/objects/nested-block-ends-first.cpp foundations/objects/early-return-destroys.cpp foundations/objects/loop-body-each-iteration.cpp foundations/objects/constant-evaluation-same-order.cpp
+:tests: foundations/objects/block-reverse-order.cpp foundations/objects/nested-block-ends-first.cpp foundations/objects/early-return-destroys.cpp foundations/objects/loop-body-each-iteration.cpp foundations/objects/constant-evaluation-same-order.cpp foundations/objects/unbraced-substatement-ends-object.cpp
 
 Objects with automatic storage duration are destroyed when control
 leaves their block, in the reverse of the order of their construction.
-This rule applies to a `return`, to each iteration of a loop, and to
-constant evaluation. The rule assumes that a function body runs to its
+A branch or a loop body without braces counts as a block here
+({rule}`IF-8`, {rule}`LOOP-4`). This rule applies to every exit, such as
+the end of the block, a jump, a `return`, an exception, and the end of
+each iteration of a loop. The rule also applies to constant
+evaluation. The rule assumes that a function body runs to its
 end without suspension *(coroutines referenced)*.
 :::
 
@@ -243,8 +261,8 @@ int main() {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 41
-of 43 tests. EDG runs no programs, so its results for the run tests say
+The results are in `tests/RESULTS.md`. All eight compilers agree on 43
+of 45 tests. EDG runs no programs, so its results for the run tests say
 only that the programs are valid.
 
 - OBJ-11: the test accepts either construction point. Three containers

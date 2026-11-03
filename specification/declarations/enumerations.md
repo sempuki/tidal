@@ -35,7 +35,7 @@ freely their values convert.
 :::
 
 :::{principle} ENUM-P3
-:rules: ENUM-4 ENUM-17 ENUM-5 ENUM-6 ENUM-21 ENUM-7 ENUM-18 ENUM-8 ENUM-19
+:rules: ENUM-4 ENUM-17 ENUM-5 ENUM-22 ENUM-6 ENUM-21 ENUM-7 ENUM-18 ENUM-8 ENUM-19
 
 The underlying type holds the values.
 
@@ -44,8 +44,9 @@ The underlying type holds the values.
 | Underlying type | Known from the first declaration | A type wide enough, chosen by the implementation |
 | Values of the enumeration | Every value of the type | Only the bits the enumerators need. A value outside that range has no meaning. |
 
-When the type is known from the first declaration, the enumeration can
-be declared before its enumerators, and an integer in braces can
+When the type is known from the first declaration, the enumeration is
+{term}`complete` from that declaration on, so the enumeration can be
+declared before its enumerators, and an integer in braces can
 initialize a variable of the enumeration type. A cast to such an
 enumeration converts the value to the underlying type, so every integer
 gives a value of the enumeration. An enumeration that the program
@@ -59,9 +60,10 @@ cast is undefined.
 .. productionlist:: tidal
    enum_def: `enum_head` [":" `type_specifiers`]
            :    "{" [`enumerator` {"," `enumerator`} [","]] "}"
-   enum_opaque: `enum_head` ":" `type_specifiers` ";"
-              : | ("enum" "class" | "enum" "struct") `identifier` ";"
-   enum_head: "enum" ["class" | "struct"] {`attribute_spec`} [[`nested_name`] `identifier`]
+   enum_opaque: "enum" ["class" | "struct"] {`attribute_spec`} [`nested_name`] `identifier`
+              :    [":" `type_specifiers`] ";"
+   enum_head: "enum" {`attribute_spec`} [[`nested_name`] `identifier`]
+            : | "enum" ("class" | "struct") {`attribute_spec`} [`nested_name`] `identifier`
    enumerator: `identifier` {`attribute_spec`} ["=" `constant_expr`]
 ```
 
@@ -170,12 +172,15 @@ definition. ENUM-18 lists what such a declaration needs.
 
 :::{rule} ENUM-18
 :kind: reject
-:tests: declarations/enumerations/opaque-unscoped-without-type.cpp declarations/enumerations/opaque-mismatch.cpp declarations/enumerations/redeclare-scoped-as-unscoped.cpp
+:tests: declarations/enumerations/opaque-unscoped-without-type.cpp declarations/enumerations/opaque-mismatch.cpp declarations/enumerations/redeclare-scoped-as-unscoped.cpp declarations/type-names/enum-fixed-mismatch.cpp declarations/type-names/enum-fixed-after-not-fixed.cpp declarations/type-names/enum-scoped-long-then-default.cpp declarations/type-names/enum-scoped-mismatch.cpp declarations/type-names/forward-enum-base-mismatch.cpp declarations/type-names/forward-enum-no-base.cpp
 
 If an enumeration is declared without its enumerators (ENUM-7), its
 underlying type must be known, so the enumeration must be scoped or have
 `: type`. All declarations must agree on scoped or unscoped and on the
-underlying type.
+underlying type. A declaration without `: type` gives a scoped
+enumeration the type `int` and gives an unscoped enumeration no fixed
+type. So after `enum E : int;`, the definition `enum E { a };` is not
+valid.
 :::
 
 :::{rule} ENUM-8
@@ -217,22 +222,25 @@ ENUM-20 lists what is not valid.
 In `using enum E;` (ENUM-9), `E` must be an enumeration. No enumerator
 name of `E` can be declared already in that scope.
 
-The enumeration must be complete at the `using enum` declaration. An
-opaque declaration is not enough ({question}`Q-0047`).
+The enumerators of `E` must be declared at the `using enum`
+declaration, so the definition of `E` must come before it. An opaque
+declaration makes `E` {term}`complete` and declares no enumerator
+({question}`Q-0047`).
 :::
 
 :::{rule} ENUM-10
 :kind: required
-:tests: declarations/enumerations/distinct-types.cpp declarations/enumerations/enumerator-type-inside-list.cpp declarations/enumerations/enumerator-type-char-initializer.cpp declarations/enumerations/enumerator-type-enum-initializer.cpp declarations/enumerations/enumerator-type-short-initializer.cpp
+:tests: declarations/enumerations/fixed-complete-inside-list.cpp declarations/enumerations/distinct-types.cpp declarations/enumerations/enumerator-type-inside-list.cpp declarations/enumerations/enumerator-type-char-initializer.cpp declarations/enumerations/enumerator-type-enum-initializer.cpp declarations/enumerations/enumerator-type-short-initializer.cpp
 
 Each enumeration is a distinct type. The enumeration is different from
 its underlying type and from all other enumerations. After the closing
 brace, an enumerator has the type of its enumeration. Unary `+` on an
 unscoped value gives its promoted integer type.
 
-Inside the enumerator list, the enumeration is not complete, so an
-enumerator has another type there. Every scoped enumeration has a fixed
-underlying type.
+Inside the enumerator list, an enumerator has another type. An
+enumeration without a fixed underlying type is not {term}`complete`
+there. An enumeration with a fixed underlying type is complete there.
+Every scoped enumeration has a fixed underlying type.
 
 | Underlying type | Enumerator | Type inside the list |
 |---|---|---|
@@ -261,6 +269,18 @@ that expression, the name refers to an outer entity with that name.
 
 ## Runtime Behavior
 
+:::{rule} ENUM-22
+:kind: required
+:tests: declarations/enumerations/cast-in-range.cpp declarations/enumerations/cast-fixed-any-value.cpp declarations/enumerations/empty-enum-range.cpp
+
+The values of an enumeration are these:
+
+- With a fixed underlying type, all values of that type.
+- Without a fixed underlying type, the values of the smallest set of
+  bits that can represent all its enumerators.
+- Without enumerators and without a fixed type, the values 0 and 1.
+:::
+
 :::{rule} ENUM-21
 :kind: required
 :tests: declarations/enumerations/cast-fixed-converts-to-underlying.cpp
@@ -275,16 +295,13 @@ conversion. The integer can be outside the range of the underlying type.
 
 :::{rule} ENUM-6
 :kind: undefined
-:tests: declarations/enumerations/cast-in-range.cpp declarations/enumerations/cast-out-of-range.cpp declarations/enumerations/cast-fixed-any-value.cpp declarations/enumerations/empty-enum-range.cpp declarations/enumerations/cast-out-of-range-sanitizer.cpp
+:tests: declarations/enumerations/cast-out-of-range.cpp declarations/enumerations/cast-out-of-range-sanitizer.cpp declarations/enumerations/bytes-out-of-range-sanitizer.cpp
 
-An enumeration with a fixed underlying type can hold all values of that
-type. An enumeration without a fixed underlying type holds the values of
-the smallest set of bits that can represent all its enumerators. If a
-program converts a value outside that range to the enumeration, the
-behavior is undefined.
-
-An enumeration without enumerators and without a fixed type can hold the
-values 0 and 1.
+If a program converts a value that is not a value of the enumeration
+(ENUM-22) to the enumeration, the behavior is undefined. If an object of
+an enumeration type gets such a value by other means, such as a copy of
+the bytes of another object, a read of the object is undefined
+({question}`Q-0336`).
 :::
 
 ## Implementation Requirements
@@ -334,7 +351,8 @@ G g8 = static_cast<G>(8);      // undefined
 U u = static_cast<U>(300);     // 44: 300 converts to unsigned char
 
 enum class H : int;            // declared before the definition
-H h{5};                        // valid: fixed underlying type
+H h{5};                        // valid: H is complete, with a fixed type
+using enum H;                  // rejected: no enumerator of H is declared yet
 
 using enum Color;
 Color k = Red;                 // Red without Color::
@@ -353,7 +371,7 @@ static_assert(sizeof names / sizeof names[0] ==
 
 ## Evidence
 
-All eight compilers agree on 56 of 59 tests. The results are in
+All eight compilers agree on 64 of 67 tests. The results are in
 `tests/RESULTS.md`.
 
 - **ENUM-5.** With `-fshort-enums`, Clang and GCC give `enum { S = 1 }`
@@ -371,6 +389,13 @@ All eight compilers agree on 56 of 59 tests. The results are in
   and GCC (`-fsanitize=undefined`) does not stop the conversion of an
   out-of-range value. The sanitizer stops at the first read of the
   stored value ("load of value 5, which is not a valid value for type").
+  The sanitizer stops the same read when the value came from the bytes
+  of an `int` ({question}`Q-0336`).
+- **ENUM-10.** Clang and GCC accept `sizeof` of an enumeration with a
+  fixed underlying type inside its own enumerator list, and reject it
+  for an enumeration without one.
+- **TR-12.** Clang and GCC reject `enum class` and `enum struct` with
+  no name.
 - **ENUM-2.** Clang and GCC accept arithmetic between two different
   unscoped enumerations under `-pedantic-errors`, with a deprecation
   warning that is on by default. EDG accepts it too.

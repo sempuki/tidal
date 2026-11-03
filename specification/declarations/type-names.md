@@ -75,11 +75,12 @@ not valid, and an implementation need not notice ({principle}`NAM-P4`).
                   : | "enum" [`nested_name`] `identifier`
    class_key: "class" | "struct" | "union"
    forward_class: `class_key` `identifier` ";"
-   opaque_enum: "enum" ["class" | "struct"] `identifier` [":" `type_specifiers`] ";"
 ```
 
 A *forward declaration* declares a class or enumeration without its
-body. The class is incomplete until its definition.
+body. The production `enum_opaque` of {doc}`/declarations/enumerations`
+gives the forward declaration of an enumeration. The class is
+incomplete until its definition.
 
 ## Constraints
 
@@ -206,7 +207,7 @@ These rules apply to forward declarations and complete types:
 
 :::{rule} TYN-7
 :kind: reject
-:tests: declarations/type-names/class-redefinition.cpp declarations/type-names/enum-fixed-mismatch.cpp declarations/type-names/enum-fixed-after-not-fixed.cpp declarations/type-names/enum-scoped-long-then-default.cpp declarations/type-names/enum-scoped-mismatch.cpp declarations/type-names/forward-class-function-definition-param.cpp declarations/type-names/forward-class-incomplete-use.cpp declarations/type-names/forward-class-object.cpp declarations/type-names/forward-enum-base-mismatch.cpp declarations/type-names/forward-enum-no-base.cpp declarations/type-names/forward-nested-wrong-scope.cpp declarations/type-names/elaborated-qualified-declaration-only.cpp declarations/type-names/definition-incomplete-return.cpp
+:tests: declarations/type-names/class-redefinition.cpp declarations/type-names/forward-class-function-definition-param.cpp declarations/type-names/forward-class-incomplete-use.cpp declarations/type-names/forward-class-object.cpp declarations/type-names/forward-nested-wrong-scope.cpp declarations/type-names/elaborated-qualified-declaration-only.cpp declarations/type-names/definition-incomplete-return.cpp
 
 A program must not:
 
@@ -216,14 +217,10 @@ A program must not:
 - declare only a class key and a qualified name, as a declaration on its
   own ({question}`Q-0093`),
 - define a class two times,
-- declare an unscoped enumeration without a body and without a fixed
-  underlying type,
-- declare an enumeration again as scoped after unscoped, or the reverse,
-- declare an enumeration again with a different underlying type. A
-  declaration without `: type` gives a scoped enumeration the type `int`
-  and gives an unscoped enumeration no fixed type. So after
-  `enum E : int;`, the definition `enum E { a };` is not valid.
 - define a nested class that its enclosing class does not declare.
+
+{rule}`ENUM-18` gives the rules for an enumeration declared without its
+body and declared again.
 :::
 
 ## Implementation Requirements
@@ -273,8 +270,8 @@ void post(Packet* p) {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 60
-of 64 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 54
+of 58 tests.
 
 - TYN-5: GCC rejects the class, for a type name and for a function name
   that a later data member changes. Clang and EDG accept the class

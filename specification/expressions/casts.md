@@ -264,7 +264,7 @@ the characters of a string literal (decision 0052).
 The behavior is undefined in these cases:
 
 - `static_cast` converts a value outside the range of an enumeration
-  without a fixed underlying type ({question}`Q-0017`).
+  without a fixed underlying type ({rule}`ENUM-6`, {question}`Q-0017`).
 - A `static_cast` to a derived class `D` applies to an object that is
   not a base subobject of a `D`.
 :::

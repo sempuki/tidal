@@ -57,6 +57,8 @@ that keep the exception object what it is:
 - adding cv-qualifiers,
 - going from a derived class to an accessible unambiguous base,
 - adjusting a pointer's qualification or pointee base,
+- dropping `noexcept` from a pointer to a function,
+- adjusting the qualification of a pointer to member,
 - the decay of an array or function to a pointer.
 
 Arithmetic conversions and user-defined conversions change the value, so
@@ -68,7 +70,8 @@ handler receives:
 | By value | A copy, which slices a derived exception to the base |
 | By reference | The exception object itself, which the handler can change before passing the object on |
 
-If the copy for a by-value handler throws, the program ends.
+A by-value handler needs a copy constructor that it can use. If the copy
+for a by-value handler throws, the program ends.
 
 The handler's parameter is a declaration of a narrow kind. The parameter
 has:
@@ -86,7 +89,9 @@ The try block and each handler are scopes of their own
 in the handlers of the try block or after the try block, and a handler's
 parameter belongs to that handler alone, so two handlers can use one
 name. Control can leave a handler by any jump, and the objects of the
-handler end as they would on any exit ({principle}`OBJ-P2`). Control
+handler end as they would on any exit ({principle}`OBJ-P2`). These
+objects end while the exception is still handled, so their destructors
+can rethrow the exception. Control
 cannot enter a try block or a handler by a jump, because entering a
 handler without an exception, or a try block past its start, has no
 meaning.
@@ -95,15 +100,17 @@ meaning.
 :::{principle} TRY-P4
 :rules: TRY-8
 
-While a handler runs, the exception it caught is still the current
-exception. `throw` with no operand passes that same object on to the
+While a handler runs, the exception it caught is the
+{term}`handled exception`. `throw` with no operand passes that same object on to the
 next enclosing try block, from the handler or from any function the
 handler calls, and a change made through a reference parameter goes with
-the object. A throw of a new value from a handler also goes outward. The
+the object. A handler that starts inside another handler has its own
+handled exception until it ends. Then the outer handler's exception is
+the handled exception again. A throw of a new value from a handler also goes outward. The
 handlers of the same try block are not candidates for an exception that
 one of these handlers throws. Leaving the handler by any route ends the
-handled exception. `throw` with no operand and no current exception has
-nothing to pass on, so the program ends.
+handled exception. `throw` with no operand and no handled exception has
+nothing to pass on, so the program ends ({rule}`THR-7`).
 :::
 
 :::{principle} TRY-P5
@@ -158,7 +165,7 @@ the last handler of its try block.
 
 :::{rule} TRY-5
 :kind: reject
-:tests: exceptions/handlers/param-abstract-reference-ok.cpp exceptions/handlers/param-abstract.cpp exceptions/handlers/param-array-decays-to-pointer.cpp exceptions/handlers/param-auto.cpp exceptions/handlers/param-function-type.cpp exceptions/handlers/param-incomplete-pointer.cpp exceptions/handlers/param-incomplete.cpp exceptions/handlers/param-incomplete-reference.cpp exceptions/handlers/param-function-decays-to-pointer.cpp exceptions/handlers/param-qualified-name.cpp exceptions/handlers/param-reference-to-unknown-bound-array.cpp exceptions/handlers/param-rvalue-reference.cpp exceptions/handlers/param-unnamed.cpp exceptions/handlers/param-void.cpp
+:tests: exceptions/handlers/param-deleted-copy.cpp exceptions/handlers/param-private-copy.cpp exceptions/handlers/param-abstract-reference-ok.cpp exceptions/handlers/param-abstract.cpp exceptions/handlers/param-array-decays-to-pointer.cpp exceptions/handlers/param-auto.cpp exceptions/handlers/param-function-type.cpp exceptions/handlers/param-incomplete-pointer.cpp exceptions/handlers/param-incomplete.cpp exceptions/handlers/param-incomplete-reference.cpp exceptions/handlers/param-function-decays-to-pointer.cpp exceptions/handlers/param-qualified-name.cpp exceptions/handlers/param-reference-to-unknown-bound-array.cpp exceptions/handlers/param-rvalue-reference.cpp exceptions/handlers/param-unnamed.cpp exceptions/handlers/param-void.cpp
 
 The handler parameter must not:
 
@@ -168,7 +175,9 @@ The handler parameter must not:
   bound, or the type `void`,
 - have a qualified name or `auto`.
 
-An array type or a function type decays to a pointer, as in a function
+The copy constructor of a handler parameter of class type by value must
+be usable and accessible, also when the operand of the `throw` is a
+prvalue. An array type or a function type decays to a pointer, as in a function
 parameter. A pointer to `void` is valid. The parameter can have no name.
 The `exception_decl` production derives no storage class and no default
 argument ({rule}`TR-12`).
@@ -219,7 +228,7 @@ without an exception, no handler runs.
 
 :::{rule} TRY-2
 :kind: required
-:tests: exceptions/handlers/match-ambiguous-base-no.cpp exceptions/handlers/match-array-decays.cpp exceptions/handlers/match-base-by-reference.cpp exceptions/handlers/match-base-by-value-slices.cpp exceptions/handlers/match-cv-qualified.cpp exceptions/handlers/match-function-decays.cpp exceptions/handlers/match-no-arithmetic-conversion.cpp exceptions/handlers/match-no-user-conversion.cpp exceptions/handlers/match-nonconst-reference-to-exception-object.cpp exceptions/handlers/match-nullptr-to-pointer.cpp exceptions/handlers/match-pointer-qualification.cpp exceptions/handlers/match-pointer-to-base.cpp exceptions/handlers/match-private-base-no.cpp exceptions/handlers/match-void-pointer.cpp exceptions/handlers/match-void-pointer-keeps-const.cpp exceptions/handlers/match-function-pointer-not-void.cpp exceptions/handlers/match-void-pointer-from-pointer-to-pointer.cpp
+:tests: exceptions/handlers/match-ambiguous-base-no.cpp exceptions/handlers/match-array-decays.cpp exceptions/handlers/match-base-by-reference.cpp exceptions/handlers/match-base-by-value-slices.cpp exceptions/handlers/match-cv-qualified.cpp exceptions/handlers/match-function-decays.cpp exceptions/handlers/match-no-arithmetic-conversion.cpp exceptions/handlers/match-no-user-conversion.cpp exceptions/handlers/match-nonconst-reference-to-exception-object.cpp exceptions/handlers/match-nullptr-to-pointer.cpp exceptions/handlers/match-pointer-qualification.cpp exceptions/handlers/match-pointer-to-base.cpp exceptions/handlers/match-private-base-no.cpp exceptions/handlers/match-void-pointer.cpp exceptions/handlers/match-void-pointer-keeps-const.cpp exceptions/handlers/match-function-pointer-not-void.cpp exceptions/handlers/match-void-pointer-from-pointer-to-pointer.cpp exceptions/handlers/match-noexcept-function-pointer.cpp exceptions/handlers/match-nullptr-to-member-pointer.cpp exceptions/handlers/match-member-pointer-qualification.cpp exceptions/handlers/match-member-pointer-no-base-to-derived.cpp
 
 A handler with parameter type `T` matches an exception object of type
 `E` if one of these holds:
@@ -232,13 +241,19 @@ A handler with parameter type `T` matches an exception object of type
   - a conversion to a pointer to a base class that is accessible and
     unambiguous,
   - a conversion of a pointer to an object type to a pointer to `void`
-    with the same or more cv-qualifiers.
-- `T` is a pointer and `E` is the type of `nullptr`.
+    with the same or more cv-qualifiers,
+  - a conversion of a pointer to a `noexcept` function to a pointer to
+    a function without `noexcept`.
+- `T` and `E` are pointers to members, and `E` converts to `T` by a
+  qualification conversion.
+- `T` is a pointer or a pointer to member, and `E` is the type of
+  `nullptr`.
 - `E` is an array or function type and `T` is the pointer that `E`
   decays to.
 
 An arithmetic conversion or a user-defined conversion does not make a
-match. A handler by value copies the exception object, and a copy to a
+match. A pointer to a member of a base does not match a handler for a
+pointer to a member of a derived class. A handler by value copies the exception object, and a copy to a
 base type slices the object. A handler by reference refers to the
 exception object, also through a reference that is not `const`.
 :::
@@ -256,31 +271,32 @@ The try block and each handler are scopes.
 
 :::{rule} TRY-15
 :kind: required
-:tests: exceptions/handlers/break-out-of-handler.cpp exceptions/handlers/goto-out-of-handler.cpp exceptions/handlers/return-from-handler.cpp
+:tests: exceptions/handlers/break-out-of-handler.cpp exceptions/handlers/goto-out-of-handler.cpp exceptions/handlers/return-from-handler.cpp exceptions/handlers/continue-out-of-handler.cpp exceptions/handlers/handler-local-destructor-rethrows.cpp
 
 A handler can end early with one of these:
 
 - `return`,
 - `break`,
+- `continue`,
 - `goto`.
 
-The local objects of the handler then end, last made first, and the
-exception that the handler was handling is over.
+When a handler ends by any route, its local objects end first, last made
+first ({rule}`OBJ-3`). The handled exception of the handler ends after
+them, so a destructor of such an object can still rethrow the exception.
 :::
 
 :::{rule} TRY-8
 :kind: required
-:tests: exceptions/handlers/handler-not-active-for-own-throw.cpp exceptions/handlers/nested-try-in-handler.cpp exceptions/handlers/rethrow-copy-not-modified.cpp exceptions/handlers/rethrow-from-called-function.cpp exceptions/handlers/rethrow-modified-reference.cpp exceptions/handlers/rethrow-outside-handler-terminates.cpp exceptions/handlers/rethrow-to-enclosing.cpp exceptions/handlers/throw-new-from-handler.cpp
+:tests: exceptions/handlers/handler-not-active-for-own-throw.cpp exceptions/handlers/nested-try-in-handler.cpp exceptions/handlers/rethrow-copy-not-modified.cpp exceptions/handlers/rethrow-from-called-function.cpp exceptions/handlers/rethrow-modified-reference.cpp exceptions/handlers/rethrow-to-enclosing.cpp exceptions/handlers/throw-new-from-handler.cpp exceptions/handlers/rethrow-after-inner-handler-ends.cpp
 
-`throw` with no operand rethrows the exception that the innermost active
-handler caught, to the next enclosing try block. The rethrow can occur
-in the handler or in a function that the handler calls. A change made to
-the exception object through a reference parameter is kept, and a change
-to a by-value parameter is not. A `throw` of a new value in a handler
-leaves the handler, and the other handlers of the same try block do not
-catch the new exception. A try block inside a handler catches its own
-exceptions. If no exception is being handled, `throw` with no operand
-ends the program.
+`throw` with no operand rethrows the {term}`handled exception`
+({rule}`THR-6`) to the next enclosing try block. The rethrow can occur
+in the handler or in a function that the handler calls. A change to a
+by-value parameter does not reach the exception object. A `throw` of a
+new value in a handler leaves the handler, and the other handlers of
+the same try block do not catch the new exception. A try block inside a
+handler catches its own exceptions. {rule}`THR-7` gives a rethrow with
+no handled exception.
 :::
 
 :::{rule} TRY-9
@@ -384,8 +400,8 @@ struct Widget {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 76
-of 78 tests. EDG runs no programs, so its results for the run tests say
+The results are in `tests/RESULTS.md`. All eight compilers agree on 84
+of 86 tests. EDG runs no programs, so its results for the run tests say
 only that the programs are valid, and the harness sees a terminating
 program only as a nonzero exit.
 
@@ -401,6 +417,20 @@ program only as a nonzero exit.
 - TRY-5: GCC rejects a qualified name in a handler parameter as a
   syntax error, where it expects a name without a qualifier. Clang and
   EDG say that the name cannot be qualified.
+- TRY-2: Clang and GCC match a thrown `nullptr` with a handler for a
+  pointer to member, a pointer to member with a handler that adds
+  `const`, and a pointer to a `noexcept` function with a handler for a
+  pointer to a function without `noexcept`. Neither matches a pointer to
+  a member of a base with a handler for a pointer to a member of a
+  derived class.
+- TRY-5: Clang and GCC reject a by-value handler parameter whose copy
+  constructor is deleted or private, also when the thrown operand is a
+  prvalue.
+- TRY-8: after a handler inside another handler ends, a rethrow in the
+  outer handler passes on the outer exception, on Clang and GCC.
+- TRY-15: on Clang and GCC, the destructor of a handler's local object
+  can rethrow the handled exception and catch it, so the exception is
+  still handled while the local objects end.
 - TRY-18: Clang and GCC end the program when the copy into a by-value
   handler parameter throws, also when an enclosing try block has a
   matching handler.

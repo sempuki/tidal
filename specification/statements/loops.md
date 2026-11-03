@@ -112,11 +112,12 @@ The condition of `do` must be an expression.
 
 :::{rule} LOOP-1
 :kind: required
-:tests: statements/loops/while-basic.cpp statements/loops/while-condition-declaration.cpp
+:tests: statements/loops/while-basic.cpp statements/loops/while-condition-declaration.cpp statements/loops/while-condition-destroyed-after-body.cpp
 
 `while` evaluates its condition before each iteration. The body executes
 if the value is `true`. A condition declaration is created and destroyed
-in each iteration.
+in each iteration. The variable is destroyed after the objects of the
+body.
 :::
 
 :::{rule} LOOP-2
@@ -165,6 +166,8 @@ do {} while (int x = 0);      // rejected: do needs an expression
 
 The results are in `tests/RESULTS.md`.
 
+- LOOP-1: Clang and GCC destroy the objects of a `while` body, then
+  the condition variable, in each iteration.
 - LOOP-3: GCC 14 destroys a `for` condition variable before the iteration
   expression. GCC 16 and Clang destroy the variable after. EDG does not
   run the test. During constant evaluation EDG destroys the variable

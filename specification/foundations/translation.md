@@ -198,7 +198,7 @@ program there.
 
 :::{rule} TR-12
 :kind: reject
-:tests: foundations/translation/grammar-for-constexpr.cpp foundations/translation/grammar-else-without-if.cpp foundations/translation/grammar-mismatched-bracket.cpp foundations/translation/grammar-missing-operand.cpp exceptions/handlers/param-default-argument.cpp exceptions/handlers/param-storage-class.cpp
+:tests: foundations/translation/grammar-for-constexpr.cpp foundations/translation/grammar-else-without-if.cpp foundations/translation/grammar-mismatched-bracket.cpp foundations/translation/grammar-missing-operand.cpp exceptions/handlers/param-default-argument.cpp exceptions/handlers/param-storage-class.cpp declarations/enumerations/scoped-unnamed.cpp
 
 The tokens of each translation unit must form a sequence of zero or
 more `declaration` that the grammar derives. The grammar is the set of
@@ -318,8 +318,8 @@ int at_run_time = half(9);    // the same function, at run time
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 36
-of 37 tests. EDG takes no optimization flag, so the three `-O2` tests
+The results are in `tests/RESULTS.md`. All eight compilers agree on 37
+of 38 tests. EDG takes no optimization flag, so the three `-O2` tests
 are skipped there. EDG runs and links no programs, so its results for
 the run and link tests say only that the programs are valid.
 
@@ -396,9 +396,12 @@ and Clang warns with no flag.
 | {rule}`ODR-11` | on: `-Wundefined-internal`, an error under `-pedantic-errors` | on, with no flag name, an error under `-pedantic-errors`; `-Wall` or `-Wunused-function` replaces the warning with a `-Wunused-function` warning, which stays a warning |
 | {rule}`OPR-9` | on: `-Wuser-defined-literals`; with no space after `""`, also an error with no flag: `-Wreserved-user-defined-literal` | on: `-Wliteral-suffix` |
 | {rule}`PRIM-13` | on: `-Wmultichar`, `-Wliteral-range` | on: `-Wmultichar`, `-Woverflow` |
+| {rule}`REF-15` | on: `-Wdangling-field` | no warning |
 | {rule}`SEQ-7` | on: `-Wunsequenced` | `-Wall`: `-Wsequence-point` |
 | {rule}`SHF-9` | on: `-Wshift-count-overflow`, `-Wshift-count-negative` | on: `-Wshift-count-overflow`, `-Wshift-count-negative` |
 | {rule}`STMT-4` | on: `-Wunused-value` | `-Wall`: `-Wunused-value` |
+| {rule}`SW-7` | on: `-Wswitch` | `-Wall`: `-Wswitch` |
+| {rule}`SW-8` | on: `-Wswitch` | `-Wall`: `-Wswitch` |
 | {rule}`TRY-4` | on: `-Wexceptions` | on: `-Wexceptions` |
 | {rule}`TRY-12` | on: `-Wreturn-type` | no warning |
 | {rule}`TRY-13` | on: `-Wexceptions` | no warning |

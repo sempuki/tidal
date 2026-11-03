@@ -502,7 +502,7 @@ A destructor works in the opposite order to a constructor:
 2. the data members are destroyed, last declared first,
 3. the direct bases are destroyed, last listed first.
 
-In a block, the variable constructed last is destroyed first. Array
+{rule}`OBJ-3` gives the order of the variables of a block. Array
 elements are destroyed from the last element to the first, also for
 `delete[]`.
 :::
@@ -532,13 +532,19 @@ is also undefined.
 
 :::{rule} DTOR-7
 :kind: undefined
-:tests: classes/constructors/double-destroy-constant.cpp foundations/storage/member-call-after-end-constant.cpp classes/constructors/double-destroy-sanitizer.cpp
+:tests: classes/constructors/double-destroy-constant.cpp foundations/storage/member-call-after-end-constant.cpp classes/constructors/double-destroy-sanitizer.cpp classes/constructors/double-destroy-trivial-constant.cpp classes/constructors/parameter-destroyed-by-callee-constant.cpp
 
 If a program destroys an object a second time, or calls a member
 function of the object, after its destructor runs, the behavior is
-undefined. A second destruction happens, for example, at the end of
-the block after an explicit destructor call ({question}`Q-0054`). These
-rules cover the other uses:
+undefined. The rule holds for a destructor of any kind, trivial or
+not. A second destruction happens, for example, in these cases:
+
+- at the end of the block after an explicit destructor call
+  ({question}`Q-0054`),
+- when the caller ends a parameter object that the called function
+  already destroyed ({rule}`VC-10`).
+
+These rules cover the other uses:
 
 - {rule}`OBJ-2` for a read or write of the object,
 - {rule}`NEW-5` for a second `delete` of a dynamic object.
@@ -630,7 +636,7 @@ Span g{{1}};   // Span(int): {1} gives an int directly (ICS-15). The
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 160
-of 170 tests.
+of 172 tests.
 
 - CTOR-23 and DTOR-9: the tests observe triviality through JMP-6 and
   UNI-3. A jump past a declaration is valid only for a trivial default
@@ -642,7 +648,9 @@ of 170 tests.
 - CTOR-14: Clang and EDG reject an indirect delegation cycle. GCC accepts
   it ({question}`Q-0053`).
 - DTOR-7: EDG 7.0 accepts a second destruction during constant evaluation
-  ({question}`Q-0054`).
+  ({question}`Q-0054`). Clang and GCC reject it for a trivial destructor
+  too, and for a parameter object that the called function destroyed
+  before the caller ends it.
 - DTOR-3: Clang rejects an array `new` of a class with a deleted
   destructor. GCC and EDG accept it ({question}`Q-0082`).
 - CTOR-18: EDG accepts the nested default member initializer. Clang and

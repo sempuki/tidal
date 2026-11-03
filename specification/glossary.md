@@ -87,6 +87,17 @@ class template argument deduction
   initializer, when the program writes the template name with no
   argument list ({rule}`CTAD-1`).
 
+complete
+  Said of a type whose size and layout the implementation knows. A class
+  is complete after its definition ({rule}`TYN-6`). An enumeration with
+  a fixed underlying type is complete from its first declaration on,
+  also inside its enumerator list. An enumeration without a fixed
+  underlying type is complete after its closing brace ({rule}`ENUM-10`).
+  An opaque enumeration declaration ({rule}`ENUM-7`) makes the
+  enumeration complete and declares no enumerator, so a use that needs
+  the enumerators needs the definition ({rule}`ENUM-20`,
+  {rule}`NAM-16`).
+
 concept
   A named constraint on template arguments, defined with `concept` at
   namespace scope ({rule}`CPT-1`).
@@ -215,6 +226,11 @@ discarded statement
     definition.
   - In a template, a discarded statement is not instantiated.
 
+dynamic type
+  The type of the {term}`most derived class` object that a glvalue refers
+  to. A virtual call uses the dynamic type ({rule}`VIRT-1`), and the
+  static type of the glvalue can be a base of the dynamic type.
+
 eligible
   Said of a special member function that is not deleted, whose
   constraints are satisfied, and that no special member of the same
@@ -223,6 +239,11 @@ eligible
 ellipsis conversion sequence
   The sequence of an argument that matches the `...` of a function. It is
   worse than every other sequence ({rule}`ICS-6`, {rule}`ICS-21`).
+
+exception object
+  The object that a `throw` makes from its operand ({rule}`THR-1`). The
+  implementation provides its storage, and the object ends when the
+  last {term}`handler` for it ends ({rule}`THR-8`).
 
 explicit instantiation
   A declaration that starts with `template` or `extern template` and no
@@ -275,6 +296,19 @@ fundamental alignment
   alignment is an *extended alignment*, which `new` also supports
   ({rule}`ALN-4`). The largest fundamental alignment is 16 on the x86-64
   targets ({rule}`ALN-5`).
+
+handled exception
+  The {term}`exception object` of the {term}`handler` that started most
+  recently and has not ended. A handler starts when its parameter is
+  initialized and ends when control leaves its block by any route
+  ({rule}`TRY-15`). When an inner handler ends, the exception of the
+  outer handler is the handled exception again. A rethrow passes on the
+  handled exception ({rule}`THR-6`, {rule}`TRY-8`).
+
+handler
+  A `catch` clause of a try block: a parameter declaration and a block.
+  The first handler whose parameter type matches the exception object
+  runs ({rule}`TRY-1`, {rule}`TRY-2`).
 
 header
   A file that holds declarations for several translation units to
@@ -511,10 +545,28 @@ satisfied
   Said of a constraint that is true for the given template arguments
   ({rule}`CNS-5` to {rule}`CNS-7`).
 
+scalar type
+  An {term}`arithmetic type`, an enumeration, a pointer, a pointer to
+  member, or `std::nullptr_t`, with any cv-qualifiers.
+  {doc}`/foundations/types` lists the fundamental types. A scalar object
+  has no parts, and its lifetime starts with its storage
+  ({rule}`OBJ-1`).
+
 sequence rank
   The rank of a {term}`standard conversion sequence`: exact match,
   promotion, or conversion. The worst conversion in the sequence gives
   the rank ({rule}`ICS-2`).
+
+special member function
+  One of the six member functions that the implementation can declare
+  for a class:
+
+  - the {term}`default constructor` ({rule}`CTOR-2`),
+  - the copy constructor ({rule}`CPY-1`),
+  - the move constructor ({rule}`CPY-2`),
+  - the copy assignment operator and the move assignment operator
+    ({rule}`CPY-3`),
+  - the destructor ({rule}`DTOR-1`).
 
 specialization
   The class, function, variable, or type that a template and one list

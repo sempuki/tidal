@@ -260,8 +260,8 @@ rule also applies in an unnamed namespace ({question}`Q-0045`).
 
 A block-scope variable without `static`, `thread_local`, or `extern` has
 {term}`automatic storage`. Each pass through its declaration creates a
-new object, and the object ends when control leaves the block. In a
-block, the object that is created last ends first.
+new object, and the object ends when control leaves the block
+({rule}`OBJ-3`).
 :::
 
 :::{rule} STO-2

@@ -323,7 +323,7 @@ implicit-lifetime type, and STG-28 gives the elements of other arrays.
 
 :::{rule} STG-9
 :kind: required
-:tests: foundations/storage/replace-variable-old-name.cpp foundations/storage/replace-object-with-const-member.cpp foundations/storage/replace-const-member-constant.cpp foundations/storage/replace-through-reference-constant.cpp foundations/storage/replace-array-element-constant.cpp foundations/storage/assignment-by-destroy-and-construct.cpp
+:tests: foundations/storage/replace-variable-old-name.cpp foundations/storage/replace-object-with-const-member.cpp foundations/storage/replace-const-member-constant.cpp foundations/storage/replace-through-reference-constant.cpp foundations/storage/replace-array-element-constant.cpp foundations/storage/assignment-by-destroy-and-construct.cpp foundations/storage/replace-variable-then-scope-end.cpp
 
 A new object in the storage of an old object replaces the old object
 if these conditions hold:
@@ -522,7 +522,9 @@ Some variables have a class type whose destructor is not trivial, and
 static, thread, or automatic storage duration. If the storage of such
 a variable holds no object of its type when the implicit destructor
 call happens, the behavior is undefined. An exit from the block by an
-exception counts.
+exception counts. {rule}`DTOR-7` also covers a variable whose object
+has ended and whose storage holds no other object, as after an
+explicit destructor call. DTOR-7 covers a destructor of any kind.
 :::
 
 :::{rule} STG-22
@@ -743,8 +745,8 @@ template <class T> void destroy_all(T* first, int n) {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 67
-of 70 tests. EDG runs no programs, so its results for the run tests say
+The results are in `tests/RESULTS.md`. All eight compilers agree on 68
+of 71 tests. EDG runs no programs, so its results for the run tests say
 only that the programs are valid.
 
 - Constant evaluation: in C++23 mode no compiler in the matrix accepts

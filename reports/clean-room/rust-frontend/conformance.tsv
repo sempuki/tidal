@@ -213,6 +213,7 @@ pass	classes/constructors/deleted-dtor-temporary.cpp
 pass	classes/constructors/deleted-dtor-variable.cpp
 pass	classes/constructors/double-destroy-constant.cpp
 pass	classes/constructors/double-destroy-sanitizer.cpp
+pass	classes/constructors/double-destroy-trivial-constant.cpp
 pass	classes/constructors/dtor-address.cpp
 pass	classes/constructors/dtor-call-via-alias.cpp
 pass	classes/constructors/dtor-call-wrong-type.cpp
@@ -278,6 +279,7 @@ pass	classes/constructors/no-implicit-default-with-copy-ctor.cpp
 pass	classes/constructors/no-implicit-default-with-ctor.cpp
 pass	classes/constructors/one-user-conversion-plus-standard.cpp
 pass	classes/constructors/one-user-conversion.cpp
+pass	classes/constructors/parameter-destroyed-by-callee-constant.cpp
 pass	classes/constructors/private-dtor-member.cpp
 pass	classes/constructors/private-dtor-sizeof.cpp
 pass	classes/constructors/private-dtor-variable.cpp
@@ -364,6 +366,7 @@ pass	classes/conversion-functions/virtual-conversion.cpp
 pass	classes/copy-move/assign-result-lvalue.cpp
 pass	classes/copy-move/cast-move-only-accepted.cpp
 pass	classes/copy-move/cast-on-return-no-warning.cpp
+MISSED-REJECT	classes/copy-move/class-template-ctor-by-value.cpp
 pass	classes/copy-move/const-member-assign.cpp
 pass	classes/copy-move/const-member-move-assign.cpp
 pass	classes/copy-move/const-rvalue-picks-copy.cpp
@@ -876,6 +879,7 @@ unsupported	classes/virtual/call-during-construction-constant.cpp
 pass	classes/virtual/call-during-construction.cpp
 pass	classes/virtual/call-during-destruction.cpp
 pass	classes/virtual/call-during-member-init.cpp
+pass	classes/virtual/call-on-other-object-during-construction.cpp
 pass	classes/virtual/call-returning-abstract.cpp
 pass	classes/virtual/const-qualifier-must-match.cpp
 pass	classes/virtual/consteval-overrides-virtual.cpp
@@ -1292,6 +1296,7 @@ pass	declarations/declarators/void-parameter-list.cpp
 pass	declarations/declarators/void-parameter-named.cpp
 pass	declarations/declarators/void-parameter-with-others.cpp
 MISSED-REJECT	declarations/declarators/volatile-return-deprecated.cpp
+FALSE-REJECT	declarations/enumerations/bytes-out-of-range-sanitizer.cpp
 pass	declarations/enumerations/cast-fixed-any-value.cpp
 pass	declarations/enumerations/cast-fixed-converts-to-underlying.cpp
 pass	declarations/enumerations/cast-in-range.cpp
@@ -1312,6 +1317,7 @@ pass	declarations/enumerations/enumerator-type-inside-list.cpp
 pass	declarations/enumerations/enumerator-type-short-initializer.cpp
 pass	declarations/enumerations/enumerator-values.cpp
 pass	declarations/enumerations/fixed-bool.cpp
+pass	declarations/enumerations/fixed-complete-inside-list.cpp
 pass	declarations/enumerations/fixed-underlying-narrowing.cpp
 pass	declarations/enumerations/fixed-underlying-non-integral.cpp
 pass	declarations/enumerations/fixed-underlying.cpp
@@ -1338,6 +1344,7 @@ pass	declarations/enumerations/scoped-no-arithmetic.cpp
 pass	declarations/enumerations/scoped-no-conversion.cpp
 pass	declarations/enumerations/scoped-not-condition.cpp
 pass	declarations/enumerations/scoped-not-logical.cpp
+MISSED-REJECT	declarations/enumerations/scoped-unnamed.cpp
 pass	declarations/enumerations/scoped-value-too-large.cpp
 pass	declarations/enumerations/unscoped-converts-to-int.cpp
 pass	declarations/enumerations/unscoped-name-conflict.cpp
@@ -1456,6 +1463,7 @@ pass	declarations/functions/definitions/redefinition.cpp
 pass	declarations/functions/definitions/return-type-mismatch.cpp
 pass	declarations/functions/definitions/same-parameter-types-one-function.cpp
 pass	declarations/functions/definitions/same-parameter-types-two-definitions.cpp
+MISSED-REJECT	declarations/functions/definitions/switch-every-enumerator-no-return.cpp
 pass	declarations/functions/definitions/typedef-function-definition.cpp
 pass	declarations/functions/definitions/unnamed-parameters.cpp
 pass	declarations/functions/deleted/address-of-deleted.cpp
@@ -2029,6 +2037,7 @@ pass	exceptions/handlers/case-into-handler.cpp
 pass	exceptions/handlers/catch-all-not-last.cpp
 pass	exceptions/handlers/catch-all-only.cpp
 pass	exceptions/handlers/catch-all.cpp
+pass	exceptions/handlers/continue-out-of-handler.cpp
 pass	exceptions/handlers/ctor-try-block-member-named-in-handler.cpp
 pass	exceptions/handlers/ctor-try-block-member-use-warns.cpp
 pass	exceptions/handlers/ctor-try-block-members-destroyed-first.cpp
@@ -2048,6 +2057,7 @@ pass	exceptions/handlers/goto-into-handler.cpp
 pass	exceptions/handlers/goto-into-try.cpp
 pass	exceptions/handlers/goto-out-of-handler.cpp
 pass	exceptions/handlers/handler-copy-throws-terminates.cpp
+pass	exceptions/handlers/handler-local-destructor-rethrows.cpp
 pass	exceptions/handlers/handler-not-active-for-own-throw.cpp
 pass	exceptions/handlers/handler-param-hides-outer.cpp
 pass	exceptions/handlers/handler-param-scope.cpp
@@ -2061,9 +2071,13 @@ run-unsupported	exceptions/handlers/match-base-by-value-slices.cpp
 pass	exceptions/handlers/match-cv-qualified.cpp
 pass	exceptions/handlers/match-function-decays.cpp
 pass	exceptions/handlers/match-function-pointer-not-void.cpp
+pass	exceptions/handlers/match-member-pointer-no-base-to-derived.cpp
+RUN-WRONG-RESULT	exceptions/handlers/match-member-pointer-qualification.cpp
 pass	exceptions/handlers/match-no-arithmetic-conversion.cpp
 pass	exceptions/handlers/match-no-user-conversion.cpp
+RUN-WRONG-RESULT	exceptions/handlers/match-noexcept-function-pointer.cpp
 pass	exceptions/handlers/match-nonconst-reference-to-exception-object.cpp
+RUN-WRONG-RESULT	exceptions/handlers/match-nullptr-to-member-pointer.cpp
 pass	exceptions/handlers/match-nullptr-to-pointer.cpp
 pass	exceptions/handlers/match-pointer-qualification.cpp
 pass	exceptions/handlers/match-pointer-to-base.cpp
@@ -2079,21 +2093,23 @@ pass	exceptions/handlers/param-abstract.cpp
 pass	exceptions/handlers/param-array-decays-to-pointer.cpp
 pass	exceptions/handlers/param-auto.cpp
 pass	exceptions/handlers/param-default-argument.cpp
+MISSED-REJECT	exceptions/handlers/param-deleted-copy.cpp
 pass	exceptions/handlers/param-function-decays-to-pointer.cpp
 pass	exceptions/handlers/param-function-type.cpp
 pass	exceptions/handlers/param-incomplete-pointer.cpp
 pass	exceptions/handlers/param-incomplete-reference.cpp
 pass	exceptions/handlers/param-incomplete.cpp
+MISSED-REJECT	exceptions/handlers/param-private-copy.cpp
 pass	exceptions/handlers/param-qualified-name.cpp
 pass	exceptions/handlers/param-reference-to-unknown-bound-array.cpp
 pass	exceptions/handlers/param-rvalue-reference.cpp
 pass	exceptions/handlers/param-storage-class.cpp
 pass	exceptions/handlers/param-unnamed.cpp
 pass	exceptions/handlers/param-void.cpp
+pass	exceptions/handlers/rethrow-after-inner-handler-ends.cpp
 pass	exceptions/handlers/rethrow-copy-not-modified.cpp
 pass	exceptions/handlers/rethrow-from-called-function.cpp
 pass	exceptions/handlers/rethrow-modified-reference.cpp
-pass	exceptions/handlers/rethrow-outside-handler-terminates.cpp
 pass	exceptions/handlers/rethrow-to-enclosing.cpp
 pass	exceptions/handlers/return-from-handler.cpp
 pass	exceptions/handlers/skips-non-matching.cpp
@@ -2109,6 +2125,7 @@ pass	exceptions/throw/catch-by-value-copies.cpp
 pass	exceptions/throw/constant-evaluation-throw-not-taken.cpp
 pass	exceptions/throw/constant-evaluation-throw-rejected.cpp
 pass	exceptions/throw/constexpr-throw-at-runtime.cpp
+pass	exceptions/throw/copy-into-exception-object-throws.cpp
 pass	exceptions/throw/cv-qualifiers-dropped.cpp
 pass	exceptions/throw/deleted-copy-lvalue-rejected.cpp
 pass	exceptions/throw/deleted-copy-prvalue.cpp
@@ -2116,10 +2133,15 @@ pass	exceptions/throw/exception-object-destructor-throws.cpp
 pass	exceptions/throw/function-operand-decays.cpp
 pass	exceptions/throw/global-lvalue-copied.cpp
 pass	exceptions/throw/incomplete-operand-rejected.cpp
+RUN-WRONG-RESULT	exceptions/throw/local-outside-inner-try-copied.cpp
+RUN-WRONG-RESULT	exceptions/throw/local-outside-try-copied.cpp
 pass	exceptions/throw/local-variable-moved.cpp
 pass	exceptions/throw/new-throw-in-handler-ends-old.cpp
+pass	exceptions/throw/new-throw-in-handler-order.cpp
 pass	exceptions/throw/object-lives-through-handler.cpp
 pass	exceptions/throw/object-lives-through-rethrow.cpp
+RUN-WRONG-RESULT	exceptions/throw/parameter-in-try-copied.cpp
+pass	exceptions/throw/parameter-moved.cpp
 pass	exceptions/throw/private-copy-rejected.cpp
 pass	exceptions/throw/private-destructor-rejected.cpp
 pass	exceptions/throw/prvalue-initializes-directly.cpp
@@ -2158,6 +2180,7 @@ pass	exceptions/unwinding/new-initializer-throws-global-delete.cpp
 pass	exceptions/unwinding/no-handler-terminates.cpp
 pass	exceptions/unwinding/no-handler-unwinding-unobservable.cpp
 pass	exceptions/unwinding/noexcept-boundary-is-the-function.cpp
+pass	exceptions/unwinding/noexcept-boundary-unwinding-unobservable.cpp
 pass	exceptions/unwinding/noexcept-false-destructor-can-throw.cpp
 pass	exceptions/unwinding/noexcept-function-handles-inside.cpp
 pass	exceptions/unwinding/objects-after-throw-not-created.cpp
@@ -2532,6 +2555,7 @@ pass	expressions/constant-expressions/literal-destructor.cpp
 pass	expressions/constant-expressions/literal-member.cpp
 pass	expressions/constant-expressions/literal-not-reached.cpp
 unsupported	expressions/constant-expressions/literal-one-constexpr-constructor.cpp
+MISSED-REJECT	expressions/constant-expressions/literal-temporary-volatile-member.cpp
 pass	expressions/constant-expressions/literal-union-all-volatile.cpp
 pass	expressions/constant-expressions/literal-union-volatile-member.cpp
 pass	expressions/constant-expressions/literal-volatile-member.cpp
@@ -2585,6 +2609,8 @@ pass	expressions/constant-expressions/termination-not-reached.cpp
 pass	expressions/constant-expressions/termination-rethrow-rejected.cpp
 pass	expressions/constant-expressions/throw-evaluated.cpp
 pass	expressions/constant-expressions/throw-not-evaluated.cpp
+pass	expressions/constant-expressions/try-around-consteval-call.cpp
+pass	expressions/constant-expressions/try-around-constexpr-variable.cpp
 pass	expressions/constant-expressions/try-without-throw.cpp
 pass	expressions/constant-expressions/undefined-behavior-dangling.cpp
 pass	expressions/constant-expressions/undefined-behavior.cpp
@@ -3856,6 +3882,7 @@ pass	foundations/objects/storage-reuse-ends-old-object-constant.cpp
 pass	foundations/objects/temporary-ends-with-full-expression.cpp
 pass	foundations/objects/thread-local-init-point.cpp
 pass	foundations/objects/thread-local-main-thread.cpp
+pass	foundations/objects/unbraced-substatement-ends-object.cpp
 pass	foundations/objects/uninitialized-member-read-constant.cpp
 pass	foundations/objects/write-after-end-constant.cpp
 run-unsupported	foundations/odr/class-constant-copy-in-lambda.cpp
@@ -4143,6 +4170,7 @@ pass	foundations/storage/replace-object-with-const-member.cpp
 pass	foundations/storage/replace-other-type-old-name-sanitizer.cpp
 pass	foundations/storage/replace-through-reference-constant.cpp
 pass	foundations/storage/replace-variable-old-name.cpp
+pass	foundations/storage/replace-variable-then-scope-end.cpp
 pass	foundations/storage/reuse-const-automatic-object.cpp
 pass	foundations/storage/reuse-const-static-object-sanitizer.cpp
 pass	foundations/storage/reuse-does-not-call-destructor.cpp
@@ -4340,6 +4368,7 @@ pass	statements/jumps/break-outside.cpp
 pass	statements/jumps/break-range-for.cpp
 pass	statements/jumps/break-with-label.cpp
 pass	statements/jumps/constructor-return-void-expression.cpp
+pass	statements/jumps/continue-ends-blocks-before-step.cpp
 pass	statements/jumps/continue-for.cpp
 pass	statements/jumps/continue-in-switch.cpp
 pass	statements/jumps/continue-outside.cpp
@@ -4350,6 +4379,7 @@ pass	statements/jumps/copy-elision-named.cpp
 pass	statements/jumps/destructor-return-value.cpp
 pass	statements/jumps/destructor-return-void-expression.cpp
 pass	statements/jumps/duplicate-label.cpp
+pass	statements/jumps/elided-local-changed-by-destructor.cpp
 pass	statements/jumps/goto-back-recreates.cpp
 pass	statements/jumps/goto-forward-backward.cpp
 pass	statements/jumps/goto-other-function.cpp
@@ -4398,6 +4428,7 @@ pass	statements/loops/for-parts-optional.cpp
 pass	statements/loops/for-sequence.cpp
 pass	statements/loops/while-basic.cpp
 pass	statements/loops/while-condition-declaration.cpp
+pass	statements/loops/while-condition-destroyed-after-body.cpp
 pass	statements/loops/while-condition-redeclared.cpp
 pass	statements/range-for/array.cpp
 MISSED-REJECT	statements/range-for/begin-end-not-adl.cpp
@@ -4441,6 +4472,8 @@ pass	statements/switch/case-out-of-char-range.cpp
 pass	statements/switch/case-outside-switch.cpp
 pass	statements/switch/case-skips-nontrivial-destructor.cpp
 pass	statements/switch/case-skips-trivial-struct.cpp
+MISSED-REJECT	statements/switch/case-value-not-enumerator-scoped-warns.cpp
+MISSED-REJECT	statements/switch/case-value-not-enumerator-warns.cpp
 pass	statements/switch/condition-declaration.cpp
 pass	statements/switch/condition-explicit-conversion.cpp
 pass	statements/switch/condition-floating.cpp
@@ -4452,7 +4485,11 @@ pass	statements/switch/condition-two-conversions.cpp
 pass	statements/switch/condition-types.cpp
 pass	statements/switch/dispatch.cpp
 pass	statements/switch/enum-all-cases-or-default-silent.cpp
+MISSED-REJECT	statements/switch/enum-class-condition-warns.cpp
 MISSED-REJECT	statements/switch/enum-missing-case-warns.cpp
+pass	statements/switch/enum-shared-value-covered-silent.cpp
+pass	statements/switch/enum-template-not-specialized-silent.cpp
+MISSED-REJECT	statements/switch/enum-template-specialization-warns.cpp
 pass	statements/switch/enum-value-outside-cases.cpp
 pass	statements/switch/fallthrough.cpp
 pass	statements/switch/init-name-redeclared.cpp

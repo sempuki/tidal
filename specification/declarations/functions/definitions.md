@@ -243,7 +243,7 @@ function.
 
 :::{rule} FN-7
 :kind: recommended
-:tests: declarations/functions/definitions/flow-off-end-warns.cpp
+:tests: declarations/functions/definitions/flow-off-end-warns.cpp declarations/functions/definitions/switch-every-enumerator-no-return.cpp
 
 An implementation should warn if control can reach the end of a function
 that returns a value.
@@ -271,7 +271,7 @@ void name() {
 
 ## Evidence
 
-All eight compilers agree on 39 of 45 tests. The results are in
+All eight compilers agree on 39 of 46 tests. The results are in
 `tests/RESULTS.md`.
 
 - FN-3: all compilers reject a call that reaches the end of the function
@@ -279,6 +279,12 @@ All eight compilers agree on 39 of 45 tests. The results are in
   sanitizer of Clang and GCC (`-fsanitize=undefined`) stops the program
   when control reaches the end ("execution reached the end of a
   value-returning function").
+- FN-7: Clang gives no warning for a function whose `switch` over a
+  scoped enumeration returns in a case for every enumerator and has no
+  `return` after the `switch`. GCC warns with no flag
+  (`-Wreturn-type`), because the condition can hold a value that no
+  enumerator has ({rule}`ENUM-22`). The table in
+  {doc}`/foundations/translation` gives the flags for the other cases.
 - FN-4: Clang and GCC reject calls to `main` and its address only as
   pedantic diagnostics. EDG rejects them in all modes.
 - FN-5: Clang accepts `__func__` outside a function with a warning. GCC

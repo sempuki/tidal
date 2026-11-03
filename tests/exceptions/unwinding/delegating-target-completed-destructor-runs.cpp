@@ -1,4 +1,4 @@
-// tidal-rules: UNW-2
+// tidal-rules: UNW-2 OBJ-1
 // tidal-expect: run
 int trace = 0;
 void mark(int d) { trace = trace * 10 + d; }

@@ -9,12 +9,7 @@ exit. This page covers:
 - the storage that a `new` expression obtained,
 - the cases in which the program ends instead of unwinding.
 
-The cases in which the program ends are:
-
-- an exception that leaves a `noexcept` function,
-- an exception that leaves a destructor during unwinding,
-- an exception that leaves `main`,
-- an exception with no handler.
+{rule}`UNW-5` lists the cases in which the program ends.
 
 Depends on: objects and lifetime, constructors and destructors,
 exception specifications, new and delete.
@@ -82,9 +77,9 @@ destructor that runs during unwinding cannot throw either, because two
 exceptions cannot be in flight at once. An exception that leaves `main`
 or finds no handler at all has nowhere to go. A function can still
 catch exceptions inside itself, and a destructor that is not `noexcept`
-can throw when nothing else is in flight. The implementation decides
-whether the objects on the stack are destroyed before the program ends
-with no handler.
+can throw when nothing else is in flight. When an exception finds no
+handler or reaches a `noexcept` boundary, the implementation decides
+which objects on the stack are destroyed before the program ends.
 
 The end is abnormal. The program does not return from `main`, and the
 implementation chooses what the environment sees (UNW-10). A
@@ -101,8 +96,7 @@ must act only on failure keeps a flag that the success path sets.
 :tests: exceptions/unwinding/block-objects-end-before-handler.cpp exceptions/unwinding/every-block-between-throw-and-handler.cpp exceptions/unwinding/nested-blocks-ended-in-order.cpp exceptions/unwinding/objects-after-throw-not-created.cpp exceptions/unwinding/handler-block-objects-unaffected.cpp
 
 When an exception leaves a block, the automatic objects of that block
-are destroyed in the reverse of their construction order. The
-destruction repeats for every block from the throw to the handler,
+are destroyed in the order of {rule}`OBJ-3`. The destruction repeats for every block from the throw to the handler,
 innermost first, and all of the destruction completes before the handler
 runs. Objects declared after the
 throw are not created. Objects of the handler's own block and of blocks
@@ -161,15 +155,19 @@ initialization runs again.
 :kind: required
 :tests: exceptions/unwinding/leaves-noexcept-function-terminates.cpp exceptions/unwinding/leaves-implicit-noexcept-destructor-terminates.cpp exceptions/unwinding/leaves-destructor-during-unwinding-terminates.cpp exceptions/unwinding/leaves-main-terminates.cpp exceptions/unwinding/no-handler-terminates.cpp exceptions/unwinding/noexcept-boundary-is-the-function.cpp exceptions/unwinding/leaves-destructor-member-throwing-caught.cpp exceptions/unwinding/termination-abnormal-end.cpp
 
-The program ends, without returning from `main`, when an exception:
+The program ends, without returning from `main`, in each of these
+cases:
 
-- leaves a non-throwing function ({rule}`EXS-4`), also when the throw is
-  in a function that the non-throwing function calls,
-- leaves a destructor that is `noexcept` by {rule}`DTOR-4`,
-- leaves a destructor that runs during the unwinding of another
-  exception,
-- leaves `main`,
-- has no matching handler in any enclosing try block.
+- An exception leaves a non-throwing function ({rule}`EXS-4`), also
+  when the throw is in a function that the non-throwing function calls.
+- An exception leaves a destructor that is `noexcept` by
+  {rule}`DTOR-4`.
+- An exception leaves a destructor that runs during the unwinding of
+  another exception.
+- An exception leaves `main`.
+- An exception has no matching handler in any enclosing try block.
+- A rethrow finds no handled exception ({rule}`THR-7`).
+- The copy into a by-value handler parameter throws ({rule}`TRY-18`).
 :::
 
 :::{rule} UNW-6
@@ -207,11 +205,14 @@ with the signal `SIGABRT`.
 
 :::{rule} UNW-7
 :kind: impl-defined
-:tests: exceptions/unwinding/no-handler-unwinding-unobservable.cpp
+:tests: exceptions/unwinding/no-handler-unwinding-unobservable.cpp exceptions/unwinding/noexcept-boundary-unwinding-unobservable.cpp
 
 If an exception has no matching handler, it is implementation-defined
 whether the automatic objects between the throw and `main` are
-destroyed before the program ends.
+destroyed before the program ends. If an exception reaches the boundary
+of a non-throwing function (UNW-5), it is implementation-defined which
+automatic objects between the throw and that boundary are destroyed
+before the program ends.
 :::
 
 ## Recommended Practice
@@ -307,8 +308,8 @@ void transfer(Account& from, Account& to, int amount) {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 36
-of 37 tests. EDG runs no programs, so its results say only that the
+The results are in `tests/RESULTS.md`. All eight compilers agree on 37
+of 38 tests. EDG runs no programs, so its results say only that the
 programs are valid.
 
 - UNW-5 and UNW-7: the harness sees only that the program ended with a
@@ -316,6 +317,15 @@ programs are valid.
   ended or what the implementation did before ending. The test for UNW-7
   shows the program ends; the choice that the test documents is not
   observable through the harness.
+- UNW-7: when an exception reaches the boundary of a `noexcept`
+  function, Clang and GCC do not destroy the automatic objects of the
+  `noexcept` function itself. Both destroy the objects of a function
+  that it calls, between the throw and the boundary. If the `noexcept`
+  function has a try block around the call whose handlers do not match,
+  GCC destroys none of the objects and Clang still destroys the objects
+  of the called function. With no handler at all, neither compiler
+  destroys an automatic object. The output in these probes was flushed
+  before each destructor returned.
 - UNW-3: the global deallocation test replaces both the sized and the
   unsized `operator delete`. Clang 18 calls the unsized form after a
   failed `new`, and the other compilers call the sized form.

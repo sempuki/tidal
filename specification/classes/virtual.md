@@ -259,7 +259,7 @@ must not have the name and parameters of a virtual function of a base
 
 :::{rule} VIRT-1
 :kind: required
-:tests: classes/virtual/const-qualifier-must-match.cpp classes/virtual/default-args-static-type.cpp classes/virtual/different-params-no-override.cpp classes/virtual/dispatch.cpp classes/virtual/object-call-no-dispatch.cpp classes/virtual/override-through-intermediate.cpp classes/virtual/override-without-virtual-keyword.cpp classes/virtual/private-override.cpp classes/virtual/qualified-call-no-dispatch.cpp classes/virtual/virtual-in-constexpr.cpp classes/virtual/virtual-call-override-not-constexpr.cpp classes/virtual/pure-virtual-constexpr-order.cpp
+:tests: classes/virtual/const-qualifier-must-match.cpp classes/virtual/default-args-static-type.cpp classes/virtual/different-params-no-override.cpp classes/virtual/dispatch.cpp classes/virtual/object-call-no-dispatch.cpp classes/virtual/override-through-intermediate.cpp classes/virtual/override-without-virtual-keyword.cpp classes/virtual/private-override.cpp classes/virtual/qualified-call-no-dispatch.cpp classes/virtual/virtual-in-constexpr.cpp classes/virtual/virtual-call-override-not-constexpr.cpp classes/virtual/pure-virtual-constexpr-order.cpp classes/virtual/call-on-other-object-during-construction.cpp
 
 A member function overrides a virtual function of a base if the member
 function has the same:
@@ -290,7 +290,7 @@ A class that declares or inherits a virtual function is polymorphic.
 
 :::{rule} VIRT-6
 :kind: required
-:tests: classes/virtual/call-during-construction-constant.cpp classes/virtual/call-during-construction.cpp classes/virtual/call-during-destruction.cpp classes/virtual/call-during-member-init.cpp
+:tests: classes/virtual/call-during-construction-constant.cpp classes/virtual/call-during-construction.cpp classes/virtual/call-during-destruction.cpp classes/virtual/call-during-member-init.cpp classes/virtual/call-on-other-object-during-construction.cpp
 
 During the constructor or destructor of a class `C`, a virtual call on
 the object calls the final overrider for `C`. Overrides in classes
@@ -424,6 +424,21 @@ static_assert(price(Road{}) == 1);   // fine
 static_assert(price(Swamp{}) == 5);  // rejected: Swamp::cost is not constexpr
 ```
 
+VIRT-6 covers the object under construction only. A constructor that
+calls through a reference to another complete object gets the final
+overrider of that object (VIRT-1):
+
+```cpp
+struct Base {
+  virtual int id() const { return 1; }
+  Base() {}
+  Base(const Base& source) { int k = source.id(); }  // Derived::id for a Derived
+};
+struct Derived : Base { int id() const override { return 2; } };
+Derived d;
+Base copy(d);                      // k is 2
+```
+
 A static member function cannot take the place of a virtual function
 (VIRT-21):
 
@@ -461,8 +476,8 @@ struct MoreConst : Maker {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 117
-of 121 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 118
+of 122 tests.
 
 - VIRT-12: GCC accepts `delete` through a base without a virtual
   destructor during constant evaluation. Clang and EDG reject the

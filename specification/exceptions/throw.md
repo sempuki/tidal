@@ -24,8 +24,14 @@ declaration makes a variable from an initializer.
 | Operand | Exception object |
 |---|---|
 | A prvalue | The operand becomes the exception object directly, so no copy or move happens and none needs to exist ({principle}`VC-P2`) |
-| A local variable | Moved from the operand, because the variable is about to end |
+| A local variable or parameter that every try block around the `throw` also contains | Moved from the operand, because the variable ends before any handler of the function can run |
 | Any other lvalue | Copied from the operand |
+
+A local variable that a try block around the `throw` does not contain
+can still be in use in a handler of that try block, so the `throw`
+copies the variable. The copy or move belongs to the `throw`. An
+exception from the copy or move leaves the `throw` like any other
+exception.
 
 Arrays and functions decay to pointers, and cv-qualifiers are dropped,
 because the exception object is a fresh object of its own. So the
@@ -68,8 +74,8 @@ the result type (COND-4).
 :::{principle} THR-P4
 :rules: THR-7 THR-9
 
-A `throw` with no operand passes on the exception that a handler is
-handling. When no such exception exists, or when an exception leaves
+A `throw` with no operand passes on the {term}`handled exception`. When
+no such exception exists, or when an exception leaves
 a function that promised not to throw, no handler can take over, and the
 program terminates instead of continuing in an unknown state. An
 implementation should warn where it can see such a termination happen.
@@ -128,14 +134,21 @@ follows {rule}`CE-8`.
 
 :::{rule} THR-1
 :kind: required
-:tests: exceptions/throw/prvalue-initializes-directly.cpp exceptions/throw/deleted-copy-prvalue.cpp exceptions/throw/global-lvalue-copied.cpp exceptions/throw/local-variable-moved.cpp
+:tests: exceptions/throw/prvalue-initializes-directly.cpp exceptions/throw/deleted-copy-prvalue.cpp exceptions/throw/global-lvalue-copied.cpp exceptions/throw/local-variable-moved.cpp exceptions/throw/local-outside-try-copied.cpp exceptions/throw/local-outside-inner-try-copied.cpp exceptions/throw/parameter-moved.cpp exceptions/throw/parameter-in-try-copied.cpp exceptions/throw/copy-into-exception-object-throws.cpp
 
 A `throw` initializes the exception object from its operand:
 
 - A prvalue operand initializes the exception object directly, with no
   copy or move.
-- A local variable operand is moved.
+- An operand that names a local variable or a parameter is moved if
+  each try block around the `throw` in the same function also contains
+  the declaration of the variable.
 - Any other lvalue operand is copied.
+
+If the copy or move throws, the new exception leaves the `throw`, and a
+handler can catch the new exception. The program does not end.
+{rule}`TRY-18` gives the copy into a handler parameter, which ends the
+program.
 :::
 
 :::{rule} THR-2
@@ -162,29 +175,34 @@ type does not match the exception object.
 :kind: required
 :tests: exceptions/throw/rethrow-same-object.cpp exceptions/throw/rethrow-keeps-changes.cpp exceptions/throw/rethrow-in-handler-accepted.cpp
 
-A rethrow in a handler passes on the exception object that the handler
-is handling. The rethrown object is the same object, with any changes
-that the handler made to it.
+A rethrow passes on the {term}`handled exception`. The rethrown object
+is the same exception object, with any changes that a handler made to
+it. {rule}`TRY-8` gives where the rethrown exception goes.
 :::
 
 :::{rule} THR-7
 :kind: required
 :tests: exceptions/throw/rethrow-outside-handler-terminates.cpp exceptions/throw/rethrow-after-handler-left-terminates.cpp
 
-A rethrow when no exception is being handled terminates the program,
-including a rethrow after the handler that was handling the exception
-has ended.
+A rethrow when no {term}`handled exception` exists terminates the
+program ({rule}`UNW-5`). This rule includes a rethrow after the handler
+of the exception has ended.
 :::
 
 :::{rule} THR-8
 :kind: required
-:tests: exceptions/throw/object-lives-through-handler.cpp exceptions/throw/object-lives-through-rethrow.cpp exceptions/throw/catch-by-value-copies.cpp exceptions/throw/new-throw-in-handler-ends-old.cpp
+:tests: exceptions/throw/object-lives-through-handler.cpp exceptions/throw/object-lives-through-rethrow.cpp exceptions/throw/catch-by-value-copies.cpp exceptions/throw/new-throw-in-handler-ends-old.cpp exceptions/throw/new-throw-in-handler-order.cpp
 
 The exception object lives until the last handler for it ends, through
 rethrows. A handler that takes the exception by value gets a copy, and
 the exception object still lives until the handler ends. A new exception
-thrown from a handler ends the handler, and so ends the old exception
-object.
+thrown from a handler ends the handler. The following happen in this
+order:
+
+1. the local objects and the parameter of the handler end
+   ({rule}`TRY-15`),
+2. the old exception object ends,
+3. a handler for the new exception starts.
 :::
 
 :::{rule} THR-9
@@ -247,11 +265,22 @@ static_assert(checked(5) == 5);          // the throw is on an untaken path
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on all
-29 tests. EDG runs no programs, so its results for the run and run-fail
+35 tests. EDG runs no programs, so its results for the run and run-fail
 tests say only that the programs are valid. A `run-fail` test shows that
 the program ended with a nonzero status or a signal; the harness cannot
 see that termination was the reason.
 
+- THR-1: Clang and GCC agree on each case of the operand that names a
+  variable. The variable is moved when the variable lives inside every
+  try block around the `throw`. The variable is copied when it is
+  declared outside a try block around the `throw`, outside the
+  innermost of two nested try blocks, or as a parameter of a function
+  whose body or function try block encloses the `throw`.
+- THR-1: when the copy constructor that makes the exception object
+  throws an `int`, Clang and GCC propagate the `int` to a handler for
+  `int`. Neither compiler ends the program.
+- THR-8: Clang and GCC end the by-value handler parameter, then the
+  old exception object, and then start the outer handler.
 - THR-12: Clang and GCC propagate the exception from the destructor of
   the exception object to the enclosing try block. No compiler ends the
   program there.

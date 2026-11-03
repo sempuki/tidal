@@ -102,7 +102,7 @@ conversions are narrowing:
 | Pointer or pointer to member | `bool` | Never |
 
 An unscoped enumeration without a fixed type counts as an integer
-source whose values are those that {rule}`ENUM-6` gives
+source whose values are those that {rule}`ENUM-22` gives
 ({question}`Q-0331`). A bit-field counts by its width, so a bit-field whose values all
 fit in the target is not narrowing ({question}`Q-0042`). The same
 conversions are permitted in parentheses (INIT-4).
@@ -306,7 +306,7 @@ All eight compilers agree on 58 of 62 tests. The results are in
 `tests/RESULTS.md`.
 
 - **LIST-2.** For an unscoped enumeration without a fixed type, GCC
-  uses the values that ENUM-6 gives. So GCC accepts an enumeration with
+  uses the values that {rule}`ENUM-22` gives. So GCC accepts an enumeration with
   the enumerators 0 and 100 as the value of an `unsigned char`. Clang
   and EDG use every value of the underlying type and reject the same
   program ({question}`Q-0331`).

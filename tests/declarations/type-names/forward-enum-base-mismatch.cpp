@@ -1,4 +1,4 @@
-// tidal-rules: TYN-7
+// tidal-rules: ENUM-18
 // tidal-expect: reject
 // tidal-error-clang: redeclared with different underlying type
 // tidal-error-gcc: different underlying type in enum

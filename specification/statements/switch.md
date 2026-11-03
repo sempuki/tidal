@@ -6,7 +6,7 @@ body. The value of its condition selects the label.
 ## Principles
 
 :::{principle} SW-P1
-:rules: SW-1 SW-2 SW-3 SW-7
+:rules: SW-1 SW-2 SW-3 SW-7 SW-8
 
 A `switch` is a computed jump. Its condition is an integer or an
 enumeration, or a class that converts to exactly one of these types,
@@ -28,7 +28,8 @@ outside.
 
 A `switch` over an enumeration usually means to handle each enumerator.
 So an implementation should warn when an enumerator has no `case` label
-and the `switch` has no `default`.
+and the `switch` has no `default`. A case value that no enumerator has
+is likely a mistake, so an implementation should warn about it too.
 :::
 
 :::{principle} SW-P2
@@ -132,14 +133,26 @@ belongs to the innermost `switch` that contains it.
 
 :::{rule} SW-7
 :kind: recommended
-:tests: statements/switch/enum-missing-case-warns.cpp statements/switch/enum-all-cases-or-default-silent.cpp
+:tests: statements/switch/enum-missing-case-warns.cpp statements/switch/enum-all-cases-or-default-silent.cpp statements/switch/enum-class-condition-warns.cpp statements/switch/enum-shared-value-covered-silent.cpp statements/switch/enum-template-specialization-warns.cpp statements/switch/enum-template-not-specialized-silent.cpp
 
 An implementation should warn about a `switch` if all of these
 conditions are true:
 
-- The condition has an enumeration type.
+- Before promotion, the condition has an enumeration type, or it has a
+  class type that converts to an enumeration type (SW-2).
 - The `switch` has no `default` label.
 - An enumerator of the type has no `case` label with its value.
+
+In a template, the check applies to each specialization.
+:::
+
+:::{rule} SW-8
+:kind: recommended
+:tests: statements/switch/case-value-not-enumerator-warns.cpp statements/switch/case-value-not-enumerator-scoped-warns.cpp
+
+An implementation should warn about a case value in a `switch` whose
+condition has an enumeration type, as in SW-7, if no enumerator of the
+type has that value.
 :::
 
 ## Examples
@@ -207,11 +220,19 @@ int code(State s) {
 
 ## Evidence
 
-All eight compilers agree on 35 of 36 tests. The results are in
+All eight compilers agree on 41 of 42 tests. The results are in
 `tests/RESULTS.md`.
 
 - SW-7: Clang warns with no flag and GCC warns under `-Wall`
-  (`-Wswitch`). Both name each enumerator without a label. The tests
+  (`-Wswitch`). Both name each enumerator without a label. Both warn
+  for an unscoped enumeration, whose promoted type is an integer type,
+  and for a class condition that converts to an enumeration. A case
+  for one of two enumerators with the same value covers both. In a
+  function template, both warn at the specialization for an
+  enumeration, and neither warns for a template with no specialization.
+- SW-8: Clang warns with no flag and GCC warns under `-Wall`
+  (`-Wswitch`) about a case value that no enumerator has, for a scoped
+  and an unscoped enumeration. The tests
   use `-Wall -Werror`, so EDG skips them
   ({ref}`baseline compilers <baseline-compilers>`). EDG gives no
   warning, even with remarks on. The warning is recommended practice,

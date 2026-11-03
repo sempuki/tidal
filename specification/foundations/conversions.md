@@ -88,7 +88,7 @@ arithmetic:
   converts to that type first and then promotes as that type does.
   Without a fixed underlying type, the candidates are tried by rank from
   `int` upward, the signed type of each rank before the unsigned one,
-  and the first that can hold all the values of the enumeration (ENUM-6)
+  and the first that can hold all the values of the enumeration ({rule}`ENUM-22`)
   is the result.
 
 A `float` operand does not change to `double` in arithmetic.

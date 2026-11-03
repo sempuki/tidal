@@ -262,13 +262,15 @@ same address is unspecified.
 
 :::{rule} VC-10
 :kind: impl-defined
-:tests: expressions/value-categories/parameter-destruction-point.cpp
+:tests: expressions/value-categories/parameter-destruction-point.cpp classes/constructors/parameter-destroyed-by-callee-constant.cpp
 
 Each implementation chooses where to destroy a parameter object, and
 documents the choice. The point is either the return from the function
 or the end of the caller's full expression. On the x86-64 Linux targets
 in the matrix, the caller destroys the parameter object at the end of
-the caller's full expression.
+the caller's full expression. The caller's end of a parameter object is
+a destruction, so a called function that destroys its parameter makes
+that end a second destruction ({rule}`DTOR-7`).
 :::
 
 :::{rule} VC-15
@@ -298,7 +300,7 @@ NoCopy a = NoCopy(NoCopy(5));      // fine: no copy occurs
 
 ## Evidence
 
-All eight compilers agree on 55 of 56 tests. The results are in
+All eight compilers agree on 55 of 57 tests. The results are in
 `tests/RESULTS.md`.
 
 - VC-15: Clang 22 destroys the second parameter of a call first, and GCC

@@ -186,13 +186,15 @@ evaluation does not read through.
 
 :::{rule} CE-30
 :kind: reject
-:tests: expressions/constant-expressions/read-parameter-outside.cpp expressions/constant-expressions/parameter-template-argument-consteval.cpp expressions/constant-expressions/parameter-if-constexpr-consteval.cpp expressions/constant-expressions/parameter-static-assert.cpp expressions/constant-expressions/parameter-nested-call.cpp
+:tests: expressions/constant-expressions/read-parameter-outside.cpp expressions/constant-expressions/parameter-template-argument-consteval.cpp expressions/constant-expressions/parameter-if-constexpr-consteval.cpp expressions/constant-expressions/parameter-static-assert.cpp expressions/constant-expressions/parameter-nested-call.cpp expressions/constant-expressions/try-around-constexpr-variable.cpp expressions/constant-expressions/try-around-consteval-call.cpp
 
 Each place in the table of {principle}`CE-P4` starts its own constant
 evaluation where the place occurs. This holds also in the body of a
 `constexpr` or `consteval` function. The new evaluation must not read a
 parameter of that function (CE-3), because no call of the function is
-part of the new evaluation.
+part of the new evaluation. A try block around the place is not part of
+the new evaluation either, so a throw in the new evaluation is rejected
+by {rule}`CE-8`.
 :::
 
 :::{rule} CE-4
@@ -239,20 +241,27 @@ freed in the same evaluation. These conditions apply:
 
 :::{rule} CE-8
 :kind: reject
-:tests: expressions/constant-expressions/throw-evaluated.cpp expressions/constant-expressions/throw-not-evaluated.cpp exceptions/throw/constant-evaluation-throw-rejected.cpp exceptions/throw/constant-evaluation-throw-not-taken.cpp classes/virtual/dynamic-cast-reference-fails-constant.cpp expressions/constant-expressions/termination-noexcept-rejected.cpp expressions/constant-expressions/termination-rethrow-rejected.cpp declarations/constexpr/consteval-converting-constructor-throws.cpp
+:tests: expressions/constant-expressions/throw-evaluated.cpp expressions/constant-expressions/throw-not-evaluated.cpp exceptions/throw/constant-evaluation-throw-rejected.cpp exceptions/throw/constant-evaluation-throw-not-taken.cpp classes/virtual/dynamic-cast-reference-fails-constant.cpp expressions/constant-expressions/termination-noexcept-rejected.cpp expressions/constant-expressions/termination-rethrow-rejected.cpp declarations/constexpr/consteval-converting-constructor-throws.cpp expressions/new-delete/bad-bound-constant-negative.cpp expressions/new-delete/bad-bound-constant-too-few.cpp expressions/constant-expressions/try-around-constexpr-variable.cpp expressions/constant-expressions/try-around-consteval-call.cpp
 
-Constant evaluation must not evaluate a throw-expression, or a failed
-`dynamic_cast` of a reference, which throws ({rule}`VIRT-10`). A
-throw-expression on a path that the evaluation does not take is valid.
+Constant evaluation must not evaluate any of these operations, each of
+which throws:
+
+- a throw-expression,
+- a failed `dynamic_cast` of a reference ({rule}`VIRT-10`),
+- a `new` expression for an array with an erroneous bound
+  ({rule}`NEW-39`).
+
+A throw-expression on a path that the evaluation does not take is valid.
 :::
 
 :::{rule} CE-31
 :kind: reject
 :tests: expressions/constant-expressions/termination-noexcept-rejected.cpp expressions/constant-expressions/termination-rethrow-rejected.cpp expressions/constant-expressions/termination-not-reached.cpp
 
-Constant evaluation must not reach a point where the program terminates
-({rule}`UNW-5`, {rule}`THR-7`). Each such point follows a thrown
-exception, so CE-8 rejects the evaluation before that point.
+Constant evaluation must not reach a point where the program
+terminates. {rule}`UNW-5` lists these points. Each such point follows a
+thrown exception or a rethrow, so CE-8 rejects the evaluation before
+that point.
 :::
 
 :::{rule} CE-9
@@ -375,14 +384,16 @@ constructs.
 
 :::{rule} CE-20
 :kind: reject
-:tests: expressions/constant-expressions/static-local-reached.cpp expressions/constant-expressions/goto-reached.cpp expressions/constant-expressions/static-local-not-usable-reached.cpp expressions/constant-expressions/static-local-usable-reached.cpp
+:tests: expressions/constant-expressions/static-local-reached.cpp expressions/constant-expressions/goto-reached.cpp expressions/constant-expressions/static-local-not-usable-reached.cpp expressions/constant-expressions/static-local-usable-reached.cpp expressions/constant-expressions/literal-temporary-volatile-member.cpp
 
 Constant evaluation must not reach any of these constructs (CE-17):
 
 - a `goto`,
 - a `static` or `thread_local` variable that is not usable in constant
   expressions (CE-3),
-- a variable of a type that is not a {term}`literal type`.
+- a variable of a type that is not a {term}`literal type`,
+- a temporary object of a type that is not a literal type
+  ({question}`Q-0335`).
 :::
 
 :::{rule} CE-21
@@ -425,7 +436,7 @@ a copy into an `unsigned char` ({rule}`INIT-1`, {question}`Q-0039`).
 
 :::{rule} CE-23
 :kind: required
-:tests: expressions/constant-expressions/literal-destructor.cpp expressions/constant-expressions/literal-member.cpp expressions/constant-expressions/literal-base.cpp expressions/constant-expressions/literal-volatile-member.cpp expressions/constant-expressions/literal-union-volatile-member.cpp expressions/constant-expressions/literal-union-all-volatile.cpp expressions/constant-expressions/literal-constexpr-destructor.cpp expressions/constant-expressions/literal-closure.cpp expressions/constant-expressions/literal-not-reached.cpp expressions/constant-expressions/literal-one-constexpr-constructor.cpp
+:tests: expressions/constant-expressions/literal-destructor.cpp expressions/constant-expressions/literal-member.cpp expressions/constant-expressions/literal-base.cpp expressions/constant-expressions/literal-volatile-member.cpp expressions/constant-expressions/literal-union-volatile-member.cpp expressions/constant-expressions/literal-union-all-volatile.cpp expressions/constant-expressions/literal-constexpr-destructor.cpp expressions/constant-expressions/literal-closure.cpp expressions/constant-expressions/literal-not-reached.cpp expressions/constant-expressions/literal-one-constexpr-constructor.cpp expressions/constant-expressions/literal-temporary-volatile-member.cpp
 
 A *literal type* is one of these types:
 
@@ -532,6 +543,14 @@ constexpr int k(int v) {
   constexpr int w = v;                // rejected: a new evaluation starts
   return w;                           // here, and v is not known in it
 }
+
+constexpr int fail() { throw 1; }
+constexpr int guarded() {
+  try {
+    constexpr int w = fail();         // rejected: the try block is not part
+    return w;                         // of the new evaluation (CE-30)
+  } catch (...) { return 0; }
+}
 constexpr const int& t = 4;           // fine: the temporary is static
 void use() {
   constexpr const int& u = 4;         // rejected: the temporary is local
@@ -552,8 +571,8 @@ struct Filled { int v[4] = {}; };     // every element starts at 0, so a
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 113
-of 129 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 117
+of 134 tests.
 
 - CE-10: all three implementations reject a recursion depth of 100000
   and a loop of 100000000 steps by default. All accept a depth of 400.
@@ -589,6 +608,11 @@ of 129 tests.
   global with a constant initializer and is not `constexpr`. Every
   compiler rejects a reference whose initializer calls a function that
   is not `constexpr`.
+- CE-20: GCC, Clang 18, and EDG reject a temporary of a class with a
+  `volatile` member in a constant evaluation. Clang 22 accepts it ({question}`Q-0335`).
+- CE-30: Clang and GCC reject a throw in a `constexpr` variable's
+  initializer inside a try block of a `constexpr` function, and a throw
+  in a `consteval` call inside a run-time try block.
 - CE-20: every compiler accepts an evaluation that reaches a `static`
   or `thread_local` variable that is usable in constant expressions:
   a `constexpr` variable, or a `const` integer with a constant

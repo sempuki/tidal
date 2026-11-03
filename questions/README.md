@@ -344,10 +344,12 @@ status, and the first sentence of its answer section.
 | [Q-0328](Q-0328-padding-byte-value.md) | What does a read of a padding byte give, and can a program copy it through `char`? | provisional | A padding byte has no value until the program writes it, and a copy through `char` needs a value in each byte |
 | [Q-0329](Q-0329-consteval-local-reference.md) | Does the initializer of a local `const` reference that binds a temporary run during constant evaluation? | provisional | The initializer runs at run time and `r` is 2 |
 | [Q-0330](Q-0330-unknown-escape-warning.md) | Must an implementation reject a character literal with an unknown escape sequence? | provisional | The program is invalid and is rejected |
-| [Q-0331](Q-0331-narrowing-unscoped-enumeration.md) | Which values does an unscoped enumeration without a fixed type have for narrowing? | provisional | The values that ENUM-6 gives |
+| [Q-0331](Q-0331-narrowing-unscoped-enumeration.md) | Which values does an unscoped enumeration without a fixed type have for narrowing? | provisional | The values that ENUM-22 gives |
 | [Q-0332](Q-0332-gcc-shift-sanitizer-double-call.md) | Does GCC 16 calling the left operand of `<<` twice under the shift sanitizer change SHF-8? | compiler defect | No; GCC defect |
 | [Q-0333](Q-0333-gcc-ubsan-member-function-pointer-equality.md) | Does GCC rejecting member function pointer equality in constant evaluation under `-fsanitize=undefined` change MPTR-5? | compiler defect | No; GCC defect |
 | [Q-0334](Q-0334-ordering-not-equal-zero.md) | Does an ordering class with `!=` against a literal 0, and no `==`, serve a defaulted `<=>`? | provisional | The class must declare `==` against `0` |
+| [Q-0335](Q-0335-constant-temporary-literal-type.md) | Must a temporary that a constant evaluation makes have a literal type? | provisional | Yes; constant evaluation rejects a temporary of a type that is not literal |
+| [Q-0336](Q-0336-enumeration-value-from-bytes.md) | Is a read of an enumeration object undefined when its bytes hold a value outside the enumeration's values? | provisional | Yes; the read is undefined, whatever stored the value |
 
 ## Status values
 

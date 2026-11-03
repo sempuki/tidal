@@ -41,6 +41,17 @@ A label belongs to the whole function and to no other name space
 and a label can share a name with a variable. A lambda body is a
 different function, so a jump cannot cross the boundary of a lambda body
 in either direction.
+
+Some regions limit the jumps that enter or leave them:
+
+| Region | Entry | Exit | Jumps | Rule |
+|---|---|---|---|---|
+| A lambda body | not valid | not valid | `break`, `continue`, `goto` | JMP-7, JMP-14 |
+| A try block or a handler | not valid | valid | `goto`, `case`, `default` | {rule}`TRY-7` |
+| A branch of `if constexpr` or `if consteval` | not valid | valid | `goto`, `case`, `default` | {rule}`IF-17` |
+| A handler of a constructor's function try block | | no `return` | `return` | {rule}`TRY-17` |
+| A constructor or destructor | | no `return` with a value | `return` | JMP-12 |
+| A scope with a variable that has an initializer | not valid past the initialization | valid | `goto`, `case`, `default` | JMP-6, {rule}`SW-5` |
 :::
 
 :::{principle} JMP-P2
@@ -52,7 +63,7 @@ enters a scope must not skip the creation of an object at the target
 
 | Jump | Result |
 |---|---|
-| Out of a block | The block's variables are destroyed, in reverse order. `return` also destroys the variables, after `return` has taken its value. |
+| Out of a block | The block's variables are destroyed in the order of {rule}`OBJ-3`. `return` also destroys the variables, after `return` has taken its value. |
 | Backward past a declaration | The variable is destroyed, and the declaration makes the variable again. |
 | Forward past an initialization | Rejected, because the variable would exist without a value |
 
@@ -217,11 +228,12 @@ statement always acts on the innermost loop or `switch` (JMP-1, JMP-2).
 
 :::{rule} JMP-2
 :kind: required
-:tests: statements/jumps/continue-for.cpp statements/jumps/continue-while-condition.cpp statements/jumps/continue-in-switch.cpp statements/jumps/continue-range-for.cpp
+:tests: statements/jumps/continue-for.cpp statements/jumps/continue-while-condition.cpp statements/jumps/continue-in-switch.cpp statements/jumps/continue-range-for.cpp statements/jumps/continue-ends-blocks-before-step.cpp
 
 `continue` goes to the end of the body of the innermost loop that contains
-it. The loop then evaluates its iteration expression, if any, and its
-condition. A range-based `for` then advances to the next element
+it. The objects of each block that `continue` leaves, the body
+included, end first ({rule}`OBJ-3`). The loop then evaluates its
+iteration expression, if any, and its condition. A range-based `for` then advances to the next element
 ({principle}`RFOR-P1`). A `switch` between the `continue` and the loop does not
 change this rule.
 :::
@@ -231,8 +243,7 @@ change this rule.
 :tests: statements/jumps/return-destroys-locals.cpp
 
 `return` first evaluates the returned value. Then `return` destroys the
-local variables in scope. The variable that was created last is
-destroyed first.
+local variables in scope, in the order of {rule}`OBJ-3`.
 :::
 
 :::{rule} JMP-8
@@ -246,7 +257,8 @@ destroyed first.
 :kind: required
 :tests: statements/jumps/goto-out-destroys.cpp statements/jumps/goto-back-recreates.cpp
 
-A jump out of a block destroys the variables of the block. A jump back to
+A jump out of a block destroys the variables of the block
+({rule}`OBJ-3`). A jump back to
 a point before a declaration destroys the variable. The declaration then
 creates the variable again.
 :::
@@ -255,10 +267,12 @@ creates the variable again.
 
 :::{rule} JMP-11
 :kind: unspecified
-:tests: statements/jumps/copy-elision-named.cpp statements/jumps/return-parameter-always-moves.cpp
+:tests: statements/jumps/copy-elision-named.cpp statements/jumps/return-parameter-always-moves.cpp statements/jumps/elided-local-changed-by-destructor.cpp
 
 If a `return` statement names a local variable of the return type, it is
-unspecified if a copy or move constructor runs. A returned prvalue of
+unspecified if a copy or move constructor runs. Without the copy, the
+local variable is the result object. A destructor that runs after the
+`return` and changes the local variable then changes the result. A returned prvalue of
 the return type never runs such a constructor (VC-4). A parameter is not
 such a variable. A `return` of a parameter by name runs the move
 constructor one time (CPY-12).
@@ -303,6 +317,14 @@ for (int i = 0; i < 4; ++i) {
   sum += i;
 }
 
+struct Result { int v = 1; };
+struct Spoiler { Result* r; ~Spoiler() { r->v = 99; } };
+Result make() {
+  Result r;
+  Spoiler s{&r};                 // ends after the return takes its value
+  return r;                      // v is 1 with the copy, 99 without it
+}
+
 int f() { return 3.9; }          // returns 3
 void g() { return; }
 
@@ -328,7 +350,7 @@ int pick(int v) {
 
 ## Evidence
 
-All eight compilers agree on 54 of 57 tests. The results are in
+All eight compilers agree on 56 of 59 tests. The results are in
 `tests/RESULTS.md`.
 
 - JMP-6: GCC accepts a `goto` past a variable without an initializer
@@ -345,7 +367,13 @@ All eight compilers agree on 54 of 57 tests. The results are in
   during constant evaluation.
 
 - JMP-11: Clang and GCC elide the copy of a named local at `-O0`. The test
-  accepts zero or one copy.
+  accepts zero or one copy. When the function has one `return` of the
+  local, a later destructor's change to the local reaches the caller on
+  both compilers. When two `return` statements name different locals,
+  both compilers copy, and the change does not reach the caller. For a
+  scalar, the value is always taken before the destructors run.
+- JMP-2: Clang and GCC end the objects of the inner block, then those of
+  the body, and then evaluate the iteration expression.
 
 Inputs: clang-parse-stmt, clang-sema-stmt, clang-diag-sema, edg-
 statements.

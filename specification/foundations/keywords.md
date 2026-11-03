@@ -15,7 +15,11 @@ Depends on: primary expressions; declarators.
 A keyword cannot name anything, so the parser can read it without
 lookup. Words added to the language late, such as `override` and
 `final`, have a special meaning only where a keyword could not appear,
-so existing programs that use them as names stay valid. The
+so existing programs that use them as names stay valid. The parser
+recognizes such a word by its position alone, with no lookup
+({rule}`KW-3`). Elsewhere the language uses lookup to decide how to
+read a token. An example is `<` after a name, which opens a template
+argument list depending on what lookup finds ({rule}`TARG-23`). The
 implementation reserves some names for its own declarations. A program
 that uses them can clash with the implementation, though no compiler
 reports it.

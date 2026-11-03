@@ -469,7 +469,8 @@ value category of the name is:
 In a member function, the name of a non-static member means `this->m`. A
 data member then has the cv-qualifiers of the object, unless the member
 is `mutable` or a reference. `::x` names `x` in the global namespace.
-`N::x` names `x` in the namespace or class `N`.
+`N::x` names `x` in the namespace or class `N`, or the enumerator `x`
+of the enumeration `N` ({rule}`NAM-19`).
 :::
 
 :::{rule} PRIM-25

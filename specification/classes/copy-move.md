@@ -33,8 +33,9 @@ recognizes these functions by their signatures:
 
 The assignment operators are members of the class.
 
-A constructor that takes the class by value cannot exist, because such
-a constructor would need itself to copy its argument.
+A constructor that takes the class by value is not valid. An lvalue
+argument would need that constructor itself to copy the argument into
+the parameter.
 :::
 
 :::{principle} CPY-P2
@@ -179,10 +180,12 @@ copy a `const` object.
 
 :::{rule} CPY-15
 :kind: reject
-:tests: classes/copy-move/copy-ctor-by-value.cpp classes/copy-move/template-ctor-by-value-own-class.cpp
+:tests: classes/copy-move/copy-ctor-by-value.cpp classes/copy-move/template-ctor-by-value-own-class.cpp classes/copy-move/class-template-ctor-by-value.cpp
 
 A constructor of class `T` must not have a first parameter of type `T`
-if all other parameters have default arguments. A constructor template
+if all other parameters have default arguments. In a class template,
+the implementation rejects such a constructor at the template's
+definition, before any instantiation. A constructor template
 never gives such a constructor, so a copy of a `T` uses the copy
 constructor ({rule}`CPY-1`).
 :::
@@ -446,7 +449,9 @@ this page does not list yet *(class properties referenced)*:
 - Each base and each member is also trivially copyable.
 
 If a program copies the bytes of such an object into another object of
-the same type, the second object gets the same value.
+the same type, the second object gets the same value. {rule}`STG-12`
+gives the byte types that the copy can go through and the limit on
+padding bytes.
 :::
 
 ## Implementation Requirements
@@ -605,9 +610,13 @@ Any c(1);                          // the template, with T = int
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 102
-of 104 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 103
+of 105 tests.
 
+- CPY-15: Clang and GCC reject a constructor `W(W)` of a class
+  template at the template's definition, with no instantiation. GCC
+  reports the error under `-Wtemplate-body`, a warning group that is an
+  error by default.
 - CPY-14: GCC 14 rejects some defaulted constructors whose parameter
   type differs from the implicit one ({question}`Q-0055`):
 

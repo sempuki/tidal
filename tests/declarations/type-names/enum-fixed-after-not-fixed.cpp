@@ -1,4 +1,4 @@
-// tidal-rules: TYN-7
+// tidal-rules: ENUM-18
 // tidal-expect: reject
 // tidal-error-clang: previously declared with nonfixed underlying type
 // tidal-error-gcc: underlying type mismatch

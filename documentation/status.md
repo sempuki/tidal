@@ -8,26 +8,26 @@ current state only. The history of how the project got here is in
 
 | Section | Rules | Classes | Tests | Single-test rules | Overrides | Report mentions | Questions | Similarity |
 |---|---|---|---|---|---|---|---|---|
-| [Translation, execution, and behavior classes](../specification/foundations/translation.md) | 12 | 4 required, 4 reject, 1 undefined, 2 impl-defined, 1 recommended | 37 | 1 | 1 | 71 | Q-0024, Q-0029, Q-0312 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
+| [Translation, execution, and behavior classes](../specification/foundations/translation.md) | 12 | 4 required, 4 reject, 1 undefined, 2 impl-defined, 1 recommended | 38 | 1 | 1 | 71 | Q-0024, Q-0029, Q-0312 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Fundamental types](../specification/foundations/types.md) | 14 | 7 required, 1 reject, 6 impl-defined | 56 | 3 | 2 | 29 | Q-0120 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Language-support types](../specification/foundations/language-support.md) | 13 | 8 required, 5 reject | 57 | 1 | 13 | 109 | Q-0299, Q-0301, Q-0321, Q-0323, Q-0334 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Keywords and reserved names](../specification/foundations/keywords.md) | 4 | 2 required, 1 reject, 1 no-diagnostic | 96 | 2 | 0 | 22 |  | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
-| [Objects, storage, and lifetime](../specification/foundations/objects.md) | 11 | 8 required, 2 undefined, 1 unspecified | 43 | 4 | 2 | 87 | Q-0115 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
-| [Raw storage and object representation](../specification/foundations/storage.md) | 29 | 17 required, 1 reject, 7 undefined, 1 unspecified, 3 impl-defined | 70 | 5 | 3 | 148 | Q-0304, Q-0305, Q-0306, Q-0307, Q-0308, Q-0323, Q-0324, Q-0325, Q-0327, Q-0328 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
-| [Value categories and temporaries](../specification/foundations/values.md) | 16 | 9 required, 4 reject, 2 unspecified, 1 impl-defined | 56 | 8 | 1 | 59 | Q-0034 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
+| [Objects, storage, and lifetime](../specification/foundations/objects.md) | 11 | 8 required, 2 undefined, 1 unspecified | 45 | 4 | 2 | 87 | Q-0115 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
+| [Raw storage and object representation](../specification/foundations/storage.md) | 29 | 17 required, 1 reject, 7 undefined, 1 unspecified, 3 impl-defined | 71 | 5 | 3 | 148 | Q-0304, Q-0305, Q-0306, Q-0307, Q-0308, Q-0323, Q-0324, Q-0325, Q-0327, Q-0328 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
+| [Value categories and temporaries](../specification/foundations/values.md) | 16 | 9 required, 4 reject, 2 unspecified, 1 impl-defined | 57 | 7 | 2 | 59 | Q-0034 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Standard conversions](../specification/foundations/conversions.md) | 20 | 11 required, 6 reject, 1 undefined, 2 impl-defined | 64 | 5 | 2 | 57 | Q-0028, Q-0100 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Implicit conversion sequences](../specification/foundations/conversion-sequences.md) | 47 | 46 required, 1 reject | 114 | 12 | 23 | 86 | Q-0081, Q-0132, Q-0133, Q-0134, Q-0135, Q-0136, Q-0137, Q-0138, Q-0152, Q-0153, Q-0154, Q-0155, Q-0156, Q-0157, Q-0188, Q-0294 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Overload resolution](../specification/foundations/overload-resolution.md) | 44 | 35 required, 9 reject | 165 | 5 | 26 | 159 | Q-0138, Q-0139, Q-0140, Q-0141, Q-0142, Q-0143, Q-0144, Q-0145, Q-0146, Q-0147, Q-0148, Q-0159, Q-0161, Q-0163, Q-0187, Q-0189, Q-0211 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Names, scopes, and lookup](../specification/foundations/names.md) | 38 | 20 required, 18 reject | 191 | 4 | 2 | 93 | Q-0311 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Use, headers, and the one-definition rule](../specification/foundations/odr.md) | 19 | 9 required, 3 reject, 2 impl-defined, 4 no-diagnostic, 1 recommended | 68 | 2 | 10 | 46 | Q-0127, Q-0128, Q-0129, Q-0130, Q-0297, Q-0315 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Sequencing and evaluation order](../specification/foundations/evaluation-order.md) | 11 | 7 required, 1 undefined, 2 unspecified, 1 recommended | 35 | 4 | 0 | 107 | Q-0319 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
-| [Constant expressions](../specification/foundations/constant-evaluation.md) | 32 | 6 required, 23 reject, 1 unspecified, 1 impl-defined, 1 no-diagnostic | 129 | 8 | 16 | 334 | Q-0002, Q-0004, Q-0020, Q-0033, Q-0039, Q-0078, Q-0090, Q-0115, Q-0117, Q-0192, Q-0193 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
+| [Constant expressions](../specification/foundations/constant-evaluation.md) | 32 | 6 required, 23 reject, 1 unspecified, 1 impl-defined, 1 no-diagnostic | 134 | 8 | 17 | 334 | Q-0002, Q-0004, Q-0020, Q-0033, Q-0039, Q-0078, Q-0090, Q-0115, Q-0117, Q-0192, Q-0193, Q-0335 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Expression statements and blocks](../specification/statements/blocks.md) | 10 | 7 required, 2 reject, 1 recommended | 26 | 3 | 2 | 23 | Q-0096 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [The if statement](../specification/statements/if.md) | 25 | 14 required, 11 reject | 69 | 8 | 1 | 63 | Q-0329 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
-| [The switch statement](../specification/statements/switch.md) | 7 | 2 required, 4 reject, 1 recommended | 36 | 0 | 1 | 62 | Q-0041 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
-| [Iteration statements](../specification/statements/loops.md) | 8 | 4 required, 4 reject | 19 | 3 | 1 | 15 | Q-0044 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
+| [The switch statement](../specification/statements/switch.md) | 8 | 2 required, 4 reject, 2 recommended | 42 | 0 | 1 | 62 | Q-0041 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)); 1 IDs not checked |
+| [Iteration statements](../specification/statements/loops.md) | 8 | 4 required, 4 reject | 20 | 3 | 1 | 15 | Q-0044 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [The range-based for statement](../specification/statements/range-for.md) | 7 | 4 required, 3 reject | 29 | 1 | 6 | 55 | Q-0020, Q-0026, Q-0098 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
-| [Jump statements and labels](../specification/statements/jumps.md) | 17 | 9 required, 7 reject, 1 unspecified | 57 | 1 | 3 | 95 | Q-0041, Q-0121 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
+| [Jump statements and labels](../specification/statements/jumps.md) | 17 | 9 required, 7 reject, 1 unspecified | 59 | 1 | 3 | 95 | Q-0041, Q-0121 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Primary expressions](../specification/expressions/primary.md) | 33 | 14 required, 10 reject, 1 undefined, 1 unspecified, 3 impl-defined, 3 conditionally-supported, 1 recommended | 114 | 9 | 8 | 44 | Q-0033, Q-0063, Q-0064, Q-0194, Q-0330 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [decltype, unevaluated operands, and discarded values](../specification/expressions/decltype.md) | 11 | 5 required, 4 reject, 2 recommended | 51 | 3 | 3 | 39 | Q-0065, Q-0089 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Multiplicative operators](../specification/expressions/multiplicative.md) | 20 | 7 required, 3 reject, 4 undefined, 2 unspecified, 3 impl-defined, 1 recommended | 52 | 0 | 5 | 59 | Q-0001, Q-0002, Q-0003, Q-0004, Q-0005 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
@@ -46,7 +46,7 @@ current state only. The history of how the project got here is in
 | [New and delete](../specification/expressions/new-delete.md) | 42 | 22 required, 11 reject, 4 undefined, 3 unspecified, 2 impl-defined | 128 | 11 | 20 | 124 | Q-0005, Q-0035, Q-0036, Q-0091, Q-0125, Q-0220, Q-0221, Q-0222, Q-0300, Q-0301, Q-0302, Q-0303, Q-0313 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Lambda expressions](../specification/expressions/lambdas.md) | 29 | 17 required, 9 reject, 1 undefined, 1 unspecified, 1 recommended | 67 | 13 | 2 | 85 | Q-0037, Q-0092 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Placeholder types in variable declarations](../specification/declarations/auto.md) | 22 | 12 required, 10 reject | 55 | 8 | 0 | 36 | Q-0010 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
-| [Type aliases and class names](../specification/declarations/type-names.md) | 10 | 4 required, 5 reject, 1 no-diagnostic | 64 | 2 | 4 | 15 | Q-0066, Q-0067, Q-0093 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
+| [Type aliases and class names](../specification/declarations/type-names.md) | 10 | 4 required, 5 reject, 1 no-diagnostic | 58 | 2 | 4 | 15 | Q-0066, Q-0067, Q-0093 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Storage duration and linkage](../specification/declarations/storage-linkage.md) | 23 | 14 required, 6 reject, 1 undefined, 2 no-diagnostic | 57 | 11 | 2 | 56 | Q-0011, Q-0045, Q-0105, Q-0297 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [The inline specifier](../specification/declarations/inline.md) | 8 | 4 required, 2 reject, 2 no-diagnostic | 35 | 2 | 3 | 10 | Q-0068 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Declarators and cv-qualifiers](../specification/declarations/declarators.md) | 34 | 17 required, 14 reject, 1 undefined, 1 impl-defined, 1 recommended | 95 | 6 | 3 | 72 | Q-0012, Q-0106, Q-0191 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
@@ -57,11 +57,11 @@ current state only. The history of how the project got here is in
 | [Reference binding](../specification/declarations/initialization/references.md) | 14 | 8 required, 4 reject, 1 undefined, 1 recommended | 64 | 1 | 15 | 81 | Q-0040, Q-0109, Q-0110, Q-0149, Q-0150, Q-0151, Q-0157, Q-0164, Q-0165, Q-0166, Q-0180, Q-0294 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Initialization of static and thread storage](../specification/declarations/initialization/static.md) | 7 | 3 required, 2 unspecified, 2 impl-defined | 20 | 2 | 0 | 39 | Q-0014, Q-0175 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Structured bindings](../specification/declarations/structured-bindings.md) | 17 | 10 required, 7 reject | 58 | 5 | 4 | 63 | Q-0007, Q-0015, Q-0016, Q-0048, Q-0107 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
-| [Enumerations](../specification/declarations/enumerations.md) | 21 | 10 required, 8 reject, 1 undefined, 1 unspecified, 1 impl-defined | 59 | 5 | 3 | 54 | Q-0017, Q-0018, Q-0047, Q-0114 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
+| [Enumerations](../specification/declarations/enumerations.md) | 22 | 11 required, 8 reject, 1 undefined, 1 unspecified, 1 impl-defined | 67 | 5 | 3 | 54 | Q-0017, Q-0018, Q-0047, Q-0114, Q-0336 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)); 1 IDs not checked |
 | [Namespaces and using](../specification/declarations/namespaces.md) | 17 | 8 required, 9 reject | 43 | 4 | 1 | 13 | Q-0019 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Linkage specifications](../specification/declarations/linkage-specifications.md) | 7 | 3 required, 2 reject, 2 impl-defined | 32 | 1 | 6 | 17 | Q-0074, Q-0075, Q-0076 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Standard attributes](../specification/declarations/attributes.md) | 19 | 7 required, 4 reject, 2 undefined, 1 impl-defined, 5 recommended | 72 | 6 | 13 | 51 | Q-0020, Q-0021, Q-0046, Q-0108, Q-0123, Q-0177 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
-| [Function definitions](../specification/declarations/functions/definitions.md) | 16 | 5 required, 6 reject, 1 undefined, 3 impl-defined, 1 recommended | 45 | 4 | 6 | 46 | Q-0022, Q-0024, Q-0076 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
+| [Function definitions](../specification/declarations/functions/definitions.md) | 16 | 5 required, 6 reject, 1 undefined, 3 impl-defined, 1 recommended | 46 | 3 | 7 | 46 | Q-0022, Q-0024, Q-0076 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Default arguments](../specification/declarations/functions/default-arguments.md) | 9 | 3 required, 5 reject, 1 no-diagnostic | 22 | 2 | 2 | 22 | Q-0038, Q-0111 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Deleted and defaulted functions](../specification/declarations/functions/deleted.md) | 5 | 1 required, 4 reject | 18 | 2 | 1 | 20 | Q-0007, Q-0023 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Return type deduction](../specification/declarations/functions/return-deduction.md) | 7 | 2 required, 4 reject, 1 undefined | 23 | 1 | 0 | 48 |  | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
@@ -70,11 +70,11 @@ current state only. The history of how the project got here is in
 | [Static assertions](../specification/declarations/static-assert.md) | 8 | 4 required, 4 reject | 29 | 0 | 0 | 13 |  | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Class definitions and members](../specification/classes/members.md) | 27 | 14 required, 11 reject, 1 impl-defined, 1 no-diagnostic | 92 | 10 | 3 | 63 | Q-0027, Q-0181, Q-0317 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Access control and friends](../specification/classes/access.md) | 19 | 8 required, 11 reject | 64 | 6 | 2 | 36 | Q-0052, Q-0131 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
-| [Constructors and destructors](../specification/classes/constructors.md) | 34 | 13 required, 16 reject, 2 undefined, 2 no-diagnostic, 1 recommended | 170 | 7 | 10 | 177 | Q-0041, Q-0053, Q-0054, Q-0082, Q-0083, Q-0084, Q-0126 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
+| [Constructors and destructors](../specification/classes/constructors.md) | 34 | 13 required, 16 reject, 2 undefined, 2 no-diagnostic, 1 recommended | 172 | 7 | 12 | 177 | Q-0041, Q-0053, Q-0054, Q-0082, Q-0083, Q-0084, Q-0126 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [List initialization of classes](../specification/classes/initializer-lists.md) | 10 | 5 required, 5 reject | 31 | 1 | 2 | 24 | Q-0081, Q-0132 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
-| [Copy and move](../specification/classes/copy-move.md) | 27 | 14 required, 10 reject, 2 unspecified, 1 recommended | 104 | 2 | 2 | 119 | Q-0055 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
+| [Copy and move](../specification/classes/copy-move.md) | 27 | 14 required, 10 reject, 2 unspecified, 1 recommended | 105 | 2 | 2 | 119 | Q-0055 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Derived classes](../specification/classes/derived.md) | 22 | 9 required, 12 reject, 1 undefined | 82 | 4 | 1 | 60 | Q-0085 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
-| [Virtual functions and abstract classes](../specification/classes/virtual.md) | 21 | 7 required, 10 reject, 1 undefined, 2 no-diagnostic, 1 recommended | 121 | 4 | 5 | 93 | Q-0056, Q-0086, Q-0087, Q-0212 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
+| [Virtual functions and abstract classes](../specification/classes/virtual.md) | 21 | 7 required, 10 reject, 1 undefined, 2 no-diagnostic, 1 recommended | 122 | 4 | 5 | 93 | Q-0056, Q-0086, Q-0087, Q-0212 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Unions and bit-fields](../specification/classes/unions.md) | 26 | 14 required, 8 reject, 1 undefined, 2 impl-defined, 1 recommended | 124 | 5 | 8 | 92 | Q-0045, Q-0058, Q-0088, Q-0120, Q-0213, Q-0309, Q-0313, Q-0314 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Conversion functions](../specification/classes/conversion-functions.md) | 12 | 5 required, 6 reject, 1 recommended | 64 | 1 | 1 | 28 | Q-0059 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Operator overloading](../specification/classes/operators.md) | 16 | 8 required, 6 reject, 1 unspecified, 1 recommended | 99 | 3 | 1 | 45 | Q-0060 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
@@ -90,10 +90,10 @@ current state only. The history of how the project got here is in
 | [Constraints](../specification/templates/constraints.md) | 39 | 24 required, 13 reject, 2 no-diagnostic | 122 | 0 | 26 | 43 | Q-0260, Q-0261, Q-0262, Q-0263, Q-0264, Q-0265, Q-0266, Q-0267, Q-0268, Q-0269, Q-0281, Q-0282, Q-0283, Q-0284, Q-0291, Q-0292 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Packs](../specification/templates/packs.md) | 31 | 19 required, 11 reject, 1 no-diagnostic | 69 | 0 | 4 | 49 | Q-0238, Q-0271, Q-0272, Q-0273, Q-0274 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Class template argument deduction](../specification/templates/class-template-deduction.md) | 29 | 21 required, 8 reject | 113 | 0 | 19 | 35 | Q-0239, Q-0240, Q-0241, Q-0242, Q-0243, Q-0244, Q-0275, Q-0276, Q-0277, Q-0278, Q-0279, Q-0280 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
-| [Throw expressions and the exception object](../specification/exceptions/throw.md) | 13 | 11 required, 1 reject | 29 | 6 | 0 | 66 |  | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
-| [Try blocks and handlers](../specification/exceptions/handlers.md) | 18 | 8 required, 6 reject, 1 undefined, 3 recommended | 78 | 6 | 2 | 92 |  | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
-| [Unwinding and termination](../specification/exceptions/unwinding.md) | 10 | 7 required, 2 impl-defined, 1 recommended | 37 | 3 | 1 | 118 | Q-0179 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
-| [Glossary](../specification/glossary.md) | 126 terms | | | | | | | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
+| [Throw expressions and the exception object](../specification/exceptions/throw.md) | 13 | 11 required, 1 reject | 35 | 6 | 0 | 66 |  | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
+| [Try blocks and handlers](../specification/exceptions/handlers.md) | 18 | 8 required, 6 reject, 1 undefined, 3 recommended | 86 | 6 | 2 | 92 |  | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
+| [Unwinding and termination](../specification/exceptions/unwinding.md) | 10 | 7 required, 2 impl-defined, 1 recommended | 38 | 2 | 1 | 118 | Q-0179 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
+| [Glossary](../specification/glossary.md) | 133 terms | | | | | | | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 
 `tools/build_site.py` builds the specification as a searchable HTML site
 (decision 0016). CI builds the site on every change and publishes it to
@@ -110,7 +110,7 @@ page, and `tools/check_specification.py` fails when one is stale.
 
 ## Test matrix
 
-The matrix has 8 baseline compilers, and 5408 of 5408 tests pass on each. Two
+The matrix has 8 baseline compilers, and 5609 of 5609 tests pass on each. Two
 report compilers build at `-O2` (decision 0043). Tests may
 span several translation units (decision 0014). CI runs the
 containerized compilers on every push and pull request (decision 0012).
@@ -122,7 +122,7 @@ containerized compilers on every push and pull request (decision 0012).
 | GCC 16.2.0 | container (official image) | skips `-m32` tests |
 | Clang 18.1.3 | container | |
 | GCC 14.2.0 | container | |
-| EDG 7.0 | container | front end only; skips `-m32`, warning-flag, and sanitizer tests; per-compiler expectations on 176 tests, each with a note that names its question or the implementation choice |
+| EDG 7.0 | container | front end only; skips `-m32`, warning-flag, and sanitizer tests; per-compiler expectations on 178 tests, each with a note that names its question or the implementation choice |
 | EDG 7.0, ILP32 | container, built with EDG's i686 configuration | front end only; runs only the `-m32` tests; differs on the alignment of `long long` (Q-0120) |
 | GCC 16.2.0, `-O2` | container, report | runs the tests at `-O2`; does not fail a run |
 | Clang 22.1.8, `-O2` | container, report | runs the tests at `-O2`; does not fail a run |
@@ -131,7 +131,7 @@ Full results are in `tests/RESULTS.md`.
 
 ## Open questions
 
-The question index has 334 questions: 293 open for opinions (292
+The question index has 336 questions: 295 open for opinions (294
 provisional and 1 open), 12 compiler defects, and 29 settled. Each open
 question has a provisional answer that the specification follows. A
 compiler-defect answer says that one compiler or an older version is
@@ -150,18 +150,18 @@ questions. See `questions/README.md`.
 
 ## Known limits of the tooling
 
-- The clean-room front end passes 4979 of 5572 tests, and 5118 pass their check.
+- The clean-room front end passes 4999 of 5609 tests, and 5144 pass their check.
   The front end reads `#include "file"` and no standard header.
   `tools/frontend_check.py` fails when a test that it passed no longer
   passes (`reports/clean-room/rust-frontend/conformance.tsv`).
 
-- 2598 tests carry `tidal-error` patterns. A pattern checks that a
+- 2613 tests carry `tidal-error` patterns. A pattern checks that a
   compiler rejects the test, fails to link the test, or stops the test
   at run time, for the reason the test's rule gives.
-  In 45 tests, some compiler family has no pattern, because that
+  In 50 tests, some compiler family has no pattern, because that
   family reports only a generic parse or constant-evaluation error.
 - Undefined-behavior evidence comes from constant evaluation, warnings,
-  and the UBSan and ASan sanitizers (84 tests, decision 0028). Errors
+  and the UBSan and ASan sanitizers (85 tests, decision 0028). Errors
   that neither sanitizer reports (a second destruction of a stack
   object, a modified `const` object) have constant-evaluation tests
   only.
@@ -188,7 +188,8 @@ and 0051). Phases 1 to 5 are done, and phase 6 is provisional. Next:
    before them. Then Q, P, C, O, and FE (decision 0051).
 2. A Clang `-fsanitize=type` configuration for STG-18 and STG-23
    (Clang 22 reports these accesses but does not stop the run). The
-   copy-move triviality split goes with item O, and the rule that a
+   copy-move triviality split and the complete lists of CPY-19 and
+   CLS-19 (Propose finding X9-1) go with item O, and the rule that a
    class and a variable can share a name goes with item C.
 
 Waiting on the maintainer:

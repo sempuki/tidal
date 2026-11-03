@@ -15,7 +15,8 @@ This page covers three kinds of statement:
 A block is a sequence and a scope. The statements of a block execute in
 the order written, and a declaration is one of the statements, so a name
 becomes visible at its declaration and stays visible to the closing
-brace ({principle}`NAM-P1`). A name declared twice in one block has no
+brace ({principle}`NAM-P1`). When control leaves the block by any
+route, the objects of the block end ({principle}`OBJ-P2`). A name declared twice in one block has no
 single meaning, so the second declaration is rejected, while a nested
 block can hide the outer name ({principle}`NAM-P2`). Two declarations
 of one entity, such as two declarations of one function, give the name
@@ -72,7 +73,8 @@ A block opens a scope. In a block:
   from that declaration to the end of the nested block.
 
 STO-1 and STO-2 give when the variables of a block are created and
-initialized.
+initialized. The objects of the block end when control leaves the block
+({rule}`OBJ-3`).
 :::
 
 :::{rule} STMT-8
