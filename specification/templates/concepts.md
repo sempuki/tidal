@@ -614,7 +614,9 @@ words, for example "concept cannot have associated constraints" and
   review expected a split there (item 27).
 - CPT-19: EDG orders two variadic templates whose packs have the type
   constraints `A` and `AB` in its C++23 mode. Clang and GCC find the
-  call ambiguous ({question}`Q-0285`).
+  call ambiguous ({question}`Q-0285`). Q-0285 stays open under
+  decision 0051, because on 2026-11-03 EDG 7.0 still differs from
+  Clang 22 and GCC 16.
 - CPT-21: every compiler drops a function template whose constant
   argument fails the placeholder's constraint, and chooses another
   candidate.

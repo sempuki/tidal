@@ -783,6 +783,8 @@ of 128 tests.
   ({question}`Q-0220`). Clang, GCC, and EDG all accept the probe, so
   none of them instantiates the body of the template
   (`throw-placement-function-before-template-instantiation.cpp`).
+  Q-0220 stays open under decision 0051, because on 2026-11-03 Clang 22
+  still differs from GCC 16 and EDG 7.0.
 - NEW-24: Clang and GCC call no deallocation function when two
   templates match and partial ordering prefers neither. Clang warns.
   EDG rejects the `new` expression as ambiguous ({question}`Q-0222`).

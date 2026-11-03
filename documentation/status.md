@@ -82,8 +82,8 @@ current state only. The history of how the project got here is in
 | [Template declarations](../specification/templates/declarations.md) | 49 | 26 required, 21 reject, 2 no-diagnostic | 121 | 1 | 8 | 70 | Q-0195, Q-0196, Q-0197, Q-0198, Q-0199, Q-0200, Q-0296 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Template arguments](../specification/templates/arguments.md) | 27 | 16 required, 10 reject, 1 unspecified | 88 | 0 | 6 | 57 | Q-0117, Q-0168, Q-0169, Q-0170, Q-0201 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Explicit and partial specialization](../specification/templates/specialization.md) | 32 | 16 required, 15 reject, 1 no-diagnostic | 93 | 0 | 13 | 18 | Q-0171, Q-0172, Q-0173, Q-0174, Q-0203, Q-0204, Q-0205, Q-0206, Q-0207, Q-0295 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
-| [Template argument deduction](../specification/templates/deduction.md) | 39 | 36 required, 3 reject | 119 | 0 | 8 | 82 | Q-0208, Q-0209, Q-0215, Q-0219, Q-0220, Q-0295 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
-| [Partial ordering of templates](../specification/templates/ordering.md) | 16 | 15 required, 1 reject | 41 | 0 | 11 | 25 | Q-0146, Q-0211, Q-0214, Q-0216, Q-0217, Q-0218, Q-0293 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
+| [Template argument deduction](../specification/templates/deduction.md) | 39 | 36 required, 3 reject | 120 | 0 | 8 | 82 | Q-0208, Q-0209, Q-0215, Q-0219, Q-0220, Q-0295 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
+| [Partial ordering of templates](../specification/templates/ordering.md) | 16 | 15 required, 1 reject | 42 | 0 | 11 | 25 | Q-0146, Q-0211, Q-0214, Q-0216, Q-0217, Q-0218, Q-0293 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Dependent names](../specification/templates/dependent-names.md) | 39 | 20 required, 13 reject, 6 no-diagnostic | 117 | 0 | 20 | 81 | Q-0223, Q-0224, Q-0225, Q-0226, Q-0227, Q-0228, Q-0229, Q-0230, Q-0245, Q-0246, Q-0247, Q-0248, Q-0249, Q-0250 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Instantiation](../specification/templates/instantiation.md) | 36 | 16 required, 13 reject, 1 undefined, 2 unspecified, 1 impl-defined, 3 no-diagnostic | 130 | 2 | 18 | 55 | Q-0231, Q-0232, Q-0233, Q-0234, Q-0235, Q-0236, Q-0237, Q-0251, Q-0252, Q-0253, Q-0254, Q-0255, Q-0256, Q-0257, Q-0310 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Concepts and requires expressions](../specification/templates/concepts.md) | 37 | 21 required, 16 reject | 120 | 0 | 17 | 66 | Q-0258, Q-0259, Q-0260, Q-0270, Q-0285, Q-0286, Q-0287, Q-0288, Q-0289, Q-0290 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
@@ -150,7 +150,7 @@ questions. See `questions/README.md`.
 
 ## Known limits of the tooling
 
-- The clean-room front end passes 5001 of 5614 tests, and 5146 pass their check.
+- The clean-room front end passes 5002 of 5615 tests, and 5147 pass their check.
   The front end reads `#include "file"` and no standard header.
   `tools/frontend_check.py` fails when a test that it passed no longer
   passes (`reports/clean-room/rust-frontend/conformance.tsv`).

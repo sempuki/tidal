@@ -41,9 +41,11 @@ describes option 1.
 
 ## Provisional answer
 
-Yes; Clang, GCC and EDG differ (option 1). The gap review describes it, and Clang implements it. With
+Yes; Clang differs from GCC and EDG (option 1). The gap review describes it, and Clang implements it. With
 option 1, ORD-10 and ORD-11 each remove one direction of a pair on
 their own, with no condition on each other.
+
+The question stays open under decision 0051 (2026-11-03). Clang 22 finds no order, and GCC 16 and EDG 7.0 choose `operator T&()`, so two families disagree. The provisional answer follows the one family. ORD-P2 supports the provisional answer. Steps 5a and 5b each act inside a pair on their own, and option 2 adds a condition that ties step 5b to the kinds of the two references. Item O5 of the gap review describes option 1.
 
 ## Opinions
 

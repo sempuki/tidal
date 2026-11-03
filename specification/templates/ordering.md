@@ -199,7 +199,7 @@ part.
 
 :::{rule} ORD-9
 :kind: required
-:tests: templates/ordering/address-function-type.cpp templates/deduction/declaration-specialization.cpp templates/deduction/placement-deallocation-ordered.cpp
+:tests: templates/ordering/address-function-type.cpp templates/deduction/declaration-specialization.cpp templates/deduction/placement-deallocation-ordered.cpp templates/deduction/placement-deallocation-ordered-instantiation.cpp
 
 For the address of an overload set, the whole function types take
 part, with the result types. A declaration of a specialization
@@ -342,8 +342,17 @@ Pair<int*, int*> c;                                   // C, more specialized tha
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 30
-of 41 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 31
+of 42 tests.
+
+The questions of the partial-ordering cluster on this page stay open
+under decision 0051: {question}`Q-0211`, {question}`Q-0214`,
+{question}`Q-0216`, {question}`Q-0217`, {question}`Q-0218`, and
+{question}`Q-0293`. On 2026-11-03, Clang 22, GCC 16, and EDG 7.0 still
+split on each of them. The provisional answers of Q-0216, Q-0217, and
+Q-0218 follow Clang against GCC and EDG, and the gap review of
+2026-10-31 describes Clang's behavior in each. The cluster's gap review
+should weigh option 2 of Q-0216, which ORD-5 fits.
 
 The clean-room writer probed each step and tie-breaker with Clang 22,
 GCC 16, and EDG 7.0, and checked the tests and grids on the eight

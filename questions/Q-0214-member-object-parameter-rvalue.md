@@ -47,6 +47,8 @@ Yes; Clang 22 and GCC agree, Clang 18 and EDG differ (option 1). The current Cla
 the same behavior. Clang changed from option 2 to option 1 between
 versions 18 and 22.
 
+The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 find the call ambiguous, and EDG 7.0 chooses the member, so two families disagree. Clang 18 also chooses the member. ICS-40 supports the provisional answer. The implicit object parameter of a member with no ref-qualifier binds an rvalue with no preference between the kinds of reference, and option 1 gives that parameter no preference in partial ordering either. Item E6 of the gap review describes option 1.
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

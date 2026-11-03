@@ -40,6 +40,8 @@ inventory describes the behavior.
 Yes; Clang and EDG agree, GCC differs (option 1). Two of three implementations and the inventory agree. The
 reversal compares the parameters that meet the same operand.
 
+The question stays open under decision 0051 (2026-11-03). Clang 22 and EDG 7.0 choose the swapped candidate, and GCC 16 chooses the written candidate, so two families disagree. ORD-P1 supports the provisional answer. In a call, the types that take part are the parameters that meet the call's arguments, and the reversal pairs each parameter with the operand that it meets. Item L7 of the inventory and item O11 of the gap review describe the same reversal.
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

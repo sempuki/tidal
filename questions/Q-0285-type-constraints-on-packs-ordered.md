@@ -35,6 +35,8 @@ mode, and notes that a later language mode can order the templates.
 No; Clang and GCC agree, EDG differs (option 1). Two of three implementations agree in the C++23 mode, and
 the rule matches CNS-3 for a fold expression that the program writes.
 
+The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 find the call ambiguous, and EDG 7.0 chooses the `AB` template in its C++23 mode, so two families disagree. CNS-3 supports the provisional answer. A fold expression is one atomic constraint, and every compiler treats a fold expression that the program writes that way (`fold-atomic.cpp`). The gap review of concepts and constraints says that a later language mode can order the templates, and Q-0007 keeps language versions after C++23 out of scope. Cluster 5 (EDG alone on templates) also lists the question.
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

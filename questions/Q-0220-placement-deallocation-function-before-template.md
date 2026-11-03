@@ -38,6 +38,8 @@ with an override for Clang, and
 Yes; GCC and EDG agree, Clang calls none (option 1). GCC and EDG agree. The answer also agrees with
 Q-0219, where an order between the matches chooses one.
 
+The question stays open under decision 0051 (2026-11-03). GCC 16 calls the function, EDG 7.0 chooses it, and Clang 22 calls no deallocation function, so two families disagree. OVL-27 supports the provisional answer. In overload resolution, a function that is not a template specialization wins over a specialization, and NEW-23 applies the same preference to the match.
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

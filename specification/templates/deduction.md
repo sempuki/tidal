@@ -617,7 +617,7 @@ before `auto` constrains the invented parameter ({rule}`CPT-20`).
 
 :::{rule} DED-39
 :kind: required
-:tests: templates/deduction/placement-deallocation-match.cpp templates/deduction/placement-deallocation-ordered.cpp expressions/new-delete/throw-placement-function-and-template.cpp expressions/new-delete/throw-placement-function-before-template-instantiation.cpp expressions/new-delete/throw-placement-templates-unordered.cpp
+:tests: templates/deduction/placement-deallocation-match.cpp templates/deduction/placement-deallocation-ordered.cpp templates/deduction/placement-deallocation-ordered-instantiation.cpp expressions/new-delete/throw-placement-function-and-template.cpp expressions/new-delete/throw-placement-function-before-template-instantiation.cpp expressions/new-delete/throw-placement-templates-unordered.cpp
 
 A `new` expression with placement arguments can need a placement
 deallocation function ({doc}`/expressions/new-delete`, {rule}`NEW-23`). A deallocation
@@ -714,8 +714,8 @@ all<long>(1, 'c');              // Ts = long, char
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 111
-of 119 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 112
+of 120 tests.
 
 The clean-room writer probed each step with Clang 22, GCC 16, and EDG
 7.0, and checked the tests and grids on the eight
@@ -747,9 +747,14 @@ grids below.
   the parameter first and removes the template with no error
   ({question}`Q-0215`).
 - DED-39: GCC calls the more specialized of two matching placement
-  deallocation templates. EDG instantiates the same template, which a
-  probe with a failing `static_assert` in each body shows. Clang warns
-  that two functions match and calls neither ({question}`Q-0219`).
+  deallocation templates. EDG instantiates the same template. EDG
+  accepts `placement-deallocation-ordered-instantiation.cpp`, where the
+  less specialized template holds a failing `static_assert`, and a probe
+  with the `static_assert` in the other template fails on EDG. Clang
+  warns that two functions match and calls neither
+  ({question}`Q-0219`). Q-0219 and Q-0220 stay open under decision 0051,
+  because on 2026-11-03 Clang 22 still differs from GCC 16 and
+  EDG 7.0.
 - DED-39: when a function and a template both match, no compiler
   instantiates the template. The body of the template in
   `throw-placement-function-before-template-instantiation.cpp` fails

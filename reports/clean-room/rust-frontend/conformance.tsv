@@ -5149,6 +5149,7 @@ unsupported	templates/deduction/placeholder-parameter-after-pack.cpp
 pass	templates/deduction/placeholder-parameter-pointer-pack.cpp
 pass	templates/deduction/placeholder-parameter.cpp
 run-unsupported	templates/deduction/placement-deallocation-match.cpp
+pass	templates/deduction/placement-deallocation-ordered-instantiation.cpp
 run-unsupported	templates/deduction/placement-deallocation-ordered.cpp
 pass	templates/deduction/specialization-distinct-functions.cpp
 pass	templates/deduction/specialization-distinct-unused-parameter.cpp

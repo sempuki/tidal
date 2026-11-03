@@ -41,9 +41,11 @@ describes option 1.
 
 ## Provisional answer
 
-Yes; Clang, GCC and EDG differ (option 1). The gap review describes it, and Clang implements it. The
+Yes; Clang differs from GCC and EDG (option 1). The gap review describes it, and Clang implements it. The
 same view of the whole parameter list applies to the constraint
 tie-breaker, where Clang and GCC agree (ORD-13, Q-0146).
+
+The question stays open under decision 0051 (2026-11-03). Clang 22 finds the call ambiguous, and GCC 16 and EDG 7.0 choose the template with no pack, so two families disagree. The provisional answer follows the one family. Item O6 of the gap review gives option 1, and ORD-13 counts a parameter with a default argument in the length of a parameter list (Q-0146). ORD-5 fits option 2, because in a call a parameter that uses its default argument takes no part. The gap review of this cluster should weigh a change to option 2.
 
 ## Opinions
 

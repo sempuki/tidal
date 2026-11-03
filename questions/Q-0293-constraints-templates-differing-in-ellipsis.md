@@ -41,6 +41,8 @@ ellipsis condition for plain functions only. Option 2 gives a simpler
 model, and a contributor can argue for it with the plain-function
 results of Q-0146.
 
+The question stays open under decision 0051 (2026-11-03). Clang 22 and EDG 7.0 choose the constrained template, and GCC 16 finds the call ambiguous, so two families disagree. No principle on Tidal's pages separates the options. ORD-5 leaves the ellipsis out of the types that take part in a call, which fits option 1. ORD-13 counts the ellipsis for two functions that are not templates (Q-0146), and option 2 gives one condition for both.
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
