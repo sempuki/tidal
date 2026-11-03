@@ -115,7 +115,7 @@ so the implementation looks them up there:
 | `template <class T> struct Box` | `Box`, `Box<T>`, `::Box<T>`, `Box<self>` after `using self = T;` | `Box<T*>`, `Box<const T>` |
 | `template <int N> struct Box` | `Box`, `Box<N>` | `Box<M>` after `static const int M = N;` |
 | a nested class `Box<T>::Inner` | `Inner`, `Box<T>::Inner` | `Box<T*>::Inner` |
-| `template <class T> struct Box<T*>` | `Box`, `Box<T*>` | `Box<T>` |
+| `template <class T> struct Box<T*>` | `Box`, `Box<T*>`, `Box<pointer>` after `using pointer = T*;` | `Box<T>` |
 
 A member of the current instantiation needs no `typename` (DEP-16). If
 the class has no dependent base, a name that the class does not declare
@@ -397,7 +397,7 @@ member defined outside the class.
 
 :::{rule} DEP-15
 :kind: required
-:tests: templates/dependent-names/current-instantiation-forms.cpp templates/dependent-names/current-instantiation-nested.cpp templates/dependent-names/current-instantiation-partial.cpp templates/dependent-names/current-instantiation-alias.cpp templates/dependent-names/other-specialization-needs-typename.cpp templates/dependent-names/partial-primary-form-needs-typename.cpp templates/dependent-names/current-instantiation-parameter-alias.cpp templates/dependent-names/current-instantiation-constant-member.cpp
+:tests: templates/dependent-names/current-instantiation-forms.cpp templates/dependent-names/current-instantiation-nested.cpp templates/dependent-names/current-instantiation-partial.cpp templates/dependent-names/current-instantiation-partial-alias.cpp templates/dependent-names/current-instantiation-alias.cpp templates/dependent-names/other-specialization-needs-typename.cpp templates/dependent-names/partial-primary-form-needs-typename.cpp templates/dependent-names/current-instantiation-parameter-alias.cpp templates/dependent-names/current-instantiation-constant-member.cpp
 
 In a class template, its members, and its nested classes, these names
 name the {term}`current instantiation`:
@@ -405,8 +405,10 @@ name the {term}`current instantiation`:
 - the {term}`injected class name` ({rule}`TARG-11`),
 - the template name with its own parameters in order, also after `::`,
   where an alias for a {term}`type parameter` counts as that parameter,
-- in a {term}`partial specialization`, the template name with that partial
-  specialization's argument list,
+- in a {term}`partial specialization`, the template name with an
+  argument list that is the same as that partial specialization's list,
+  argument by argument ({rule}`TARG-19`), where an alias counts as the
+  type that it names,
 - in a nested class, the nested class's name, also qualified with the
   enclosing current instantiation,
 - an alias template specialization that gives one of the above
@@ -419,7 +421,7 @@ does not count as that parameter.
 
 :::{rule} DEP-16
 :kind: required
-:tests: templates/dependent-names/current-instantiation-forms.cpp templates/dependent-names/current-instantiation-nested.cpp templates/dependent-names/current-instantiation-partial.cpp templates/dependent-names/current-instantiation-parameter-alias.cpp
+:tests: templates/dependent-names/current-instantiation-forms.cpp templates/dependent-names/current-instantiation-nested.cpp templates/dependent-names/current-instantiation-partial.cpp templates/dependent-names/current-instantiation-partial-alias.cpp templates/dependent-names/current-instantiation-parameter-alias.cpp
 
 A qualified name whose qualifier names the current instantiation is
 looked up at the definition. A member type found so needs no
@@ -737,6 +739,14 @@ template <class T> int read() {
   return n;
 }
 
+template <class T> struct Box { using type = long; };
+template <class T> struct Box<T*> {
+  using pointer = T*;
+  using type = int;
+  Box<pointer>::type get();                       // the current instantiation: no typename
+  typename Box<T>::type other();                  // another specialization
+};
+
 template <class T> int take(T::type);             // a variable template
 template <class T> int give(T::type) { return 0; } // rejected: a body after an initializer
 template <class T> int keep(typename T::type) { return 0; }  // a function template
@@ -776,8 +786,8 @@ template <class... T> int count() {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 99
-of 120 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 100
+of 121 tests.
 
 The questions of the cluster of EDG differences (cluster 5) on this page
 stay open under decision 0051: {question}`Q-0224`, {question}`Q-0229`,
@@ -874,6 +884,10 @@ bullets below say so.
   compiler accepts the program and uses that member. The review
   predicts a rejection. DEP-35 needs no diagnostic, so the result is
   allowed ({question}`Q-0246`).
+- DEP-15: inside the partial specialization `Box<T*>`, every compiler
+  reads `Box<pointer>` after `using pointer = T*;`, `Box<self*>` after
+  `using self = T;`, and `Box<Ptr<T>>` with an alias template `Ptr<U>`
+  for `U*` as the current instantiation.
 - DEP-15: every compiler reads `Box<M>`, where `M` is a `static`
   constant member equal to the parameter `N`, as another
   specialization. The result holds for `const` and `constexpr` members,

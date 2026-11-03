@@ -263,11 +263,12 @@ are not satisfied is not viable ({rule}`CNS-13`).
 
 :::{rule} CTAD-9
 :kind: required
-:tests: templates/class-template-deduction/aggregate-base.cpp templates/class-template-deduction/aggregate-candidate.cpp templates/class-template-deduction/aggregate-candidate-arrays.cpp templates/class-template-deduction/aggregate-candidate-pack.cpp templates/class-template-deduction/aggregate-conflict.cpp templates/class-template-deduction/aggregate-new-parentheses.cpp templates/class-template-deduction/aggregate-string-element-type.cpp templates/class-template-deduction/aggregate-string-fixed-array.cpp templates/class-template-deduction/aggregate-pack-not-last.cpp templates/class-template-deduction/aggregate-pack-not-last-element.cpp templates/class-template-deduction/aggregate-pack-length-fixed.cpp templates/class-template-deduction/aggregate-pack-length-conflict.cpp
+:tests: templates/class-template-deduction/aggregate-base.cpp templates/class-template-deduction/aggregate-candidate.cpp templates/class-template-deduction/aggregate-candidate-arrays.cpp templates/class-template-deduction/aggregate-candidate-pack.cpp templates/class-template-deduction/aggregate-conflict.cpp templates/class-template-deduction/aggregate-new-parentheses.cpp templates/class-template-deduction/aggregate-string-element-type.cpp templates/class-template-deduction/aggregate-string-fixed-array.cpp templates/class-template-deduction/aggregate-pack-not-last.cpp templates/class-template-deduction/aggregate-pack-not-last-element.cpp templates/class-template-deduction/aggregate-pack-length-fixed.cpp templates/class-template-deduction/aggregate-pack-length-conflict.cpp templates/class-template-deduction/aggregate-pack-length-position.cpp templates/class-template-deduction/aggregate-pack-length-parentheses.cpp templates/class-template-deduction/aggregate-pack-parentheses.cpp
 
 An aggregate class template can have an {term}`aggregate candidate`.
 The candidate has one parameter for each element of the initializer
-list, in braces or parentheses, with or without designators. The type
+list, in braces or parentheses, with or without designators. A pack of
+bases can add parameters with no element ({rule}`CTAD-27`). The type
 of each parameter is one of these:
 
 - for a member, its declared type,
@@ -284,7 +285,7 @@ The elements match the members as in aggregate initialization
 
 :::{rule} CTAD-27
 :kind: required
-:tests: templates/class-template-deduction/aggregate-candidate-pack.cpp templates/class-template-deduction/aggregate-pack-not-last.cpp templates/class-template-deduction/aggregate-pack-not-last-element.cpp templates/class-template-deduction/aggregate-pack-length-fixed.cpp templates/class-template-deduction/aggregate-pack-length-conflict.cpp templates/class-template-deduction/aggregate-pack-length-fewer.cpp
+:tests: templates/class-template-deduction/aggregate-candidate-pack.cpp templates/class-template-deduction/aggregate-pack-not-last.cpp templates/class-template-deduction/aggregate-pack-not-last-element.cpp templates/class-template-deduction/aggregate-pack-length-fixed.cpp templates/class-template-deduction/aggregate-pack-length-conflict.cpp templates/class-template-deduction/aggregate-pack-length-fewer.cpp templates/class-template-deduction/aggregate-pack-length-position.cpp templates/class-template-deduction/aggregate-pack-length-parentheses.cpp templates/class-template-deduction/aggregate-pack-parentheses.cpp
 
 A pack of bases gives the aggregate candidate a {term}`function parameter pack`
 of the base types:
@@ -293,9 +294,15 @@ of the base types:
 - A pack before other elements takes no element of the list.
 
 If an earlier element fixes the length of the pack, the remaining
-elements do not set that length ({question}`Q-0276`). A base of the pack
-with no element in the list gets an empty list, as in aggregate
-initialization ({principle}`LIST-P2`).
+elements do not set that length. The pack then has one parameter for
+each base, and the list in braces or parentheses
+({question}`Q-0352`) gives them as follows:
+
+- Each remaining element is deduced against the parameter in its
+  position, and the result must agree with the fixed base
+  ({question}`Q-0276`).
+- A parameter with no element has an empty list `{}` as its default
+  argument, as in aggregate initialization ({principle}`LIST-P2`).
 :::
 
 :::{rule} CTAD-10
@@ -492,7 +499,7 @@ explicit guides take part in the choice ({rule}`ILC-8`).
 
 :::{rule} CTAD-24
 :kind: reject
-:tests: templates/class-template-deduction/no-initializer.cpp templates/class-template-deduction/ambiguous-guides.cpp templates/class-template-deduction/constructor-rvalue-reference-lvalue.cpp templates/class-template-deduction/constructor-nondeduced.cpp templates/class-template-deduction/aggregate-user-guide.cpp templates/class-template-deduction/aggregate-too-many.cpp templates/class-template-deduction/aggregate-conflict.cpp templates/class-template-deduction/aggregate-no-elision.cpp templates/class-template-deduction/alias-template-conflict.cpp templates/class-template-deduction/inherited-without-using.cpp templates/class-template-deduction/inherited-not-deducible.cpp templates/class-template-deduction/selection-explicit-copy.cpp templates/class-template-deduction/specialization-constructors.cpp templates/class-template-deduction/declared-not-defined-no-guide.cpp templates/class-template-deduction/aggregate-dependent-bound.cpp templates/class-template-deduction/aggregate-pack-not-last-element.cpp templates/class-template-deduction/aggregate-pack-length-conflict.cpp templates/class-template-deduction/aggregate-string-element-type.cpp templates/class-template-deduction/alias-template-result-check.cpp templates/class-template-deduction/alias-template-constraints.cpp templates/class-template-deduction/alias-template-rvalue-reference.cpp templates/class-template-deduction/tie-own-constructor-types-differ.cpp templates/class-template-deduction/guide-template-same-parameters.cpp templates/class-template-deduction/guide-constraints-none-satisfied.cpp templates/class-template-deduction/guide-constraints-absent-ambiguous.cpp templates/class-template-deduction/inherited-copy-candidate-user-guide.cpp templates/class-template-deduction/aggregate-base-no-elision.cpp
+:tests: templates/class-template-deduction/no-initializer.cpp templates/class-template-deduction/ambiguous-guides.cpp templates/class-template-deduction/constructor-rvalue-reference-lvalue.cpp templates/class-template-deduction/constructor-nondeduced.cpp templates/class-template-deduction/aggregate-user-guide.cpp templates/class-template-deduction/aggregate-too-many.cpp templates/class-template-deduction/aggregate-conflict.cpp templates/class-template-deduction/aggregate-no-elision.cpp templates/class-template-deduction/alias-template-conflict.cpp templates/class-template-deduction/inherited-without-using.cpp templates/class-template-deduction/inherited-not-deducible.cpp templates/class-template-deduction/selection-explicit-copy.cpp templates/class-template-deduction/specialization-constructors.cpp templates/class-template-deduction/declared-not-defined-no-guide.cpp templates/class-template-deduction/aggregate-dependent-bound.cpp templates/class-template-deduction/aggregate-pack-not-last-element.cpp templates/class-template-deduction/aggregate-pack-length-conflict.cpp templates/class-template-deduction/aggregate-pack-length-position.cpp templates/class-template-deduction/aggregate-string-element-type.cpp templates/class-template-deduction/alias-template-result-check.cpp templates/class-template-deduction/alias-template-constraints.cpp templates/class-template-deduction/alias-template-rvalue-reference.cpp templates/class-template-deduction/tie-own-constructor-types-differ.cpp templates/class-template-deduction/guide-template-same-parameters.cpp templates/class-template-deduction/guide-constraints-none-satisfied.cpp templates/class-template-deduction/guide-constraints-absent-ambiguous.cpp templates/class-template-deduction/inherited-copy-candidate-user-guide.cpp templates/class-template-deduction/aggregate-base-no-elision.cpp
 
 The guides must give one best guide. If no guide is viable, or no guide
 is better than all others, the program is not valid. The rule is the
@@ -613,12 +620,13 @@ template <class... T> struct List {};
 struct X {}; struct Y {}; struct Z {};
 template <class... T> struct Bases : List<T...>, T... {};
 Bases b{List<X, Y, Z>{}, X{}};    // Bases<X, Y, Z>: Y and Z get empty lists
+Bases c{List<X, Y, Z>{}, Y{}};    // rejected: Y stands where X is fixed
 ```
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 94
-of 113 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 95
+of 116 tests.
 
 The questions of the cluster of EDG differences (cluster 5) on this page
 stay open under decision 0051: {question}`Q-0240`, {question}`Q-0277`,
@@ -670,7 +678,13 @@ The clean-room writer probed each step with Clang 22, GCC 16, and EDG
   ({question}`Q-0277`).
 - CTAD-27: if the first base fixes the length of the trailing pack,
   Clang and EDG reject a last element that only converts to its base.
-  GCC accepts it ({question}`Q-0276`).
+  GCC accepts it ({question}`Q-0276`). Every compiler rejects an
+  element whose type is the fixed base of another position
+  (`aggregate-pack-length-position.cpp`).
+- CTAD-27: GCC forms no aggregate candidate from a list in parentheses
+  for a class with a pack of bases. GCC accepts the same list in
+  braces, and Clang and EDG accept both forms
+  ({question}`Q-0352`).
 - CTAD-28: through an alias, EDG lets `T&&` of a class parameter take
   an lvalue. Clang and GCC reject it ({question}`Q-0278`). The gap
   review (item 30) predicted the check of the result after deduction.

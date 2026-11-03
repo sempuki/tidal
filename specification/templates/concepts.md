@@ -424,13 +424,15 @@ checked or substituted.
 
 :::{rule} CPT-26
 :kind: required
-:tests: templates/concepts/requirement-failure-false.cpp templates/concepts/requirement-access-concept.cpp templates/concepts/requirement-access-member.cpp templates/concepts/requirement-access-concept-in-member.cpp templates/concepts/requirement-false-outside-template.cpp templates/concepts/requires-expression-lookup-outside-constraint.cpp templates/concepts/requirement-deleted-function-false.cpp
+:tests: templates/concepts/requirement-failure-false.cpp templates/concepts/requirement-access-concept.cpp templates/concepts/requirement-access-member.cpp templates/concepts/requirement-access-concept-in-member.cpp templates/concepts/requirement-access-concept-kept.cpp templates/concepts/requirement-access-concept-kept-false.cpp templates/concepts/requirement-false-outside-template.cpp templates/concepts/requires-expression-lookup-outside-constraint.cpp templates/concepts/requirement-deleted-function-false.cpp
 
 A requirement that depends on template parameters does not hold if
 substitution forms a type or an expression that is not valid. The
 program stays valid. A name that is not accessible where the check
 happens, and a call that selects a deleted function ({rule}`DEL-1`),
-are not valid in this sense ({question}`Q-0288`). In a
+are not valid in this sense ({question}`Q-0288`). If the same
+concept-id is checked again where the access differs, and the result
+would change, the program is not valid ({rule}`CNS-10`). In a
 constraint, {rule}`CNS-7` gives the lookup. A requires expression
 elsewhere, such as in the condition of `if constexpr` or in a variable
 template, looks up its names as any expression of the template does
@@ -610,8 +612,8 @@ template <class T> concept Old [[deprecated]] = true;   // the attribute apperta
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 103
-of 120 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 105
+of 122 tests.
 
 The questions of the cluster of EDG differences (cluster 5) on this page
 stay open under decision 0051: {question}`Q-0260` and
@@ -654,7 +656,11 @@ words, for example "concept cannot have associated constraints" and
   member. The gap review expected a concept to be checked in its own
   context (item 21). No compiler does this, and the rule follows the
   compilers. A check at another place with another result falls
-  under {rule}`CNS-10`.
+  under {rule}`CNS-10`. When a concept-id is checked first inside the
+  member and again at namespace scope, or in the other order, every
+  compiler keeps the first result and none diagnoses the change
+  (`requirement-access-concept-kept.cpp`,
+  `requirement-access-concept-kept-false.cpp`).
 - CPT-27: every compiler rejects a requirement that uses no template
   parameter inside a template that is never instantiated. The gap
   review expected the compilers to differ (item 20).

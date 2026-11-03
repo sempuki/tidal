@@ -630,7 +630,7 @@ class, even one with the same name and form ({question}`Q-0268`).
 
 :::{rule} CNS-10
 :kind: no-diagnostic
-:tests: templates/constraints/satisfaction-changes.cpp templates/constraints/satisfaction-changes-declaration.cpp
+:tests: templates/constraints/satisfaction-changes.cpp templates/constraints/satisfaction-changes-declaration.cpp templates/concepts/requirement-access-concept-kept.cpp templates/concepts/requirement-access-concept-kept-false.cpp
 
 An atomic constraint with the same arguments must give the same result
 at each point where it is checked. A program in which the result
@@ -714,8 +714,8 @@ decltype(&Box<long>::get)               // int (Box<long>::*)(): the clause is n
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 97
-of 123 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 99
+of 125 tests.
 
 The questions of the cluster of EDG differences (cluster 5) on this page
 stay open under decision 0051: {question}`Q-0260`, {question}`Q-0265`,
@@ -770,6 +770,11 @@ compiler's own words, for example "atomic constraint must be of type
   check, which an implementation need not keep ({question}`Q-0264`).
   For a function declared between two checks, every compiler keeps the
   first result, GCC 16 included (`satisfaction-changes-declaration.cpp`).
+  For a concept-id whose requirement names a private member, checked
+  inside a member of the class and at namespace scope, every compiler
+  keeps the first result in either order, GCC 16 included
+  (`requirement-access-concept-kept.cpp`,
+  `requirement-access-concept-kept-false.cpp`).
 - CNS-11: Clang 18 forms the return type of a function template before
   it checks the constraints. The other compilers check the constraints
   first ({question}`Q-0261`). Every compiler forms the default template

@@ -1,7 +1,7 @@
 # Q-0276: When an earlier element fixes the length of a trailing pack of bases, does each later element still deduce?
 
 **Status:** provisional
-**Affects:** CTAD-27, `tests/templates/class-template-deduction/aggregate-pack-length-conflict.cpp`
+**Affects:** CTAD-27, `tests/templates/class-template-deduction/aggregate-pack-length-conflict.cpp`, `tests/templates/class-template-deduction/aggregate-pack-length-position.cpp`
 
 ## Context
 
@@ -16,10 +16,16 @@ The first element fixes `T` as `X, Y, Z`.
 | GCC 14, 16, host | accepts |
 
 With `{}` as the last element, every compiler deduces `Bases<X, Y, Z>`.
+With `Y{}` as the last element, every compiler deduces `Bases<X, Y, Z>`.
+Every compiler rejects `Bases b{List<X, Y, Z>{}, Y{}};`, where `Y{}`
+stands in the position of the base `X`. So each later element is
+matched with the base in its position on every compiler. The compilers
+differ only on an element that converts to its base.
 
 ## Evidence
 
-The test above and `aggregate-pack-length-fixed.cpp`. Item 28 of the
+The test above, `aggregate-pack-length-fixed.cpp`, and
+`aggregate-pack-length-position.cpp`. Item 28 of the
 gap review `reports/review/2026-10-31-gap-review-packs-and-ctad.md` predicts a deduction failure on conflict.
 
 ## Options

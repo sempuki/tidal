@@ -5007,8 +5007,11 @@ pass	templates/class-template-deduction/aggregate-no-elision.cpp
 pass	templates/class-template-deduction/aggregate-pack-length-conflict.cpp
 pass	templates/class-template-deduction/aggregate-pack-length-fewer.cpp
 pass	templates/class-template-deduction/aggregate-pack-length-fixed.cpp
+pass	templates/class-template-deduction/aggregate-pack-length-parentheses.cpp
+pass	templates/class-template-deduction/aggregate-pack-length-position.cpp
 pass	templates/class-template-deduction/aggregate-pack-not-last-element.cpp
 pass	templates/class-template-deduction/aggregate-pack-not-last.cpp
+pass	templates/class-template-deduction/aggregate-pack-parentheses.cpp
 pass	templates/class-template-deduction/aggregate-string-element-type.cpp
 EDG-ONLY	templates/class-template-deduction/aggregate-string-fixed-array.cpp
 pass	templates/class-template-deduction/aggregate-too-many.cpp
@@ -5159,6 +5162,8 @@ pass	templates/concepts/placeholder-structured-binding.cpp
 pass	templates/concepts/placeholder-without-auto.cpp
 pass	templates/concepts/redefinition.cpp
 pass	templates/concepts/requirement-access-concept-in-member.cpp
+pass	templates/concepts/requirement-access-concept-kept-false.cpp
+pass	templates/concepts/requirement-access-concept-kept.cpp
 pass	templates/concepts/requirement-access-concept.cpp
 pass	templates/concepts/requirement-access-member.cpp
 pass	templates/concepts/requirement-body-empty.cpp
@@ -5590,6 +5595,7 @@ unsupported	templates/dependent-names/current-instantiation-enclosing-base.cpp
 pass	templates/dependent-names/current-instantiation-forms.cpp
 pass	templates/dependent-names/current-instantiation-nested.cpp
 pass	templates/dependent-names/current-instantiation-parameter-alias.cpp
+FALSE-REJECT	templates/dependent-names/current-instantiation-partial-alias.cpp
 pass	templates/dependent-names/current-instantiation-partial.cpp
 pass	templates/dependent-names/current-member-dependent-base-function.cpp
 pass	templates/dependent-names/current-member-dependent-base.cpp

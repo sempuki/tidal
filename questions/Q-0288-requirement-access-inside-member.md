@@ -1,7 +1,7 @@
 # Q-0288: Can a requires expression inside a member function use a private member of the class?
 
 **Status:** settled
-**Affects:** CPT-26, `tests/templates/concepts/requirement-access-member.cpp`
+**Affects:** CPT-26, CNS-10, `tests/templates/concepts/requirement-access-member.cpp`, `tests/templates/concepts/requirement-access-concept-kept.cpp`, `tests/templates/concepts/requirement-access-concept-kept-false.cpp`
 
 ## Context
 
@@ -25,6 +25,14 @@ first checked inside a member of the class
 concepts and constraints (item 21) expects the requires expression in
 the member to be true. The review also expects a concept to be checked
 in its own context, but no compiler does so.
+
+When the same concept-id is checked inside the member and again at
+namespace scope, every compiler keeps the result of the first check, in
+either order, and no compiler diagnoses the change
+(`requirement-access-concept-kept.cpp`,
+`requirement-access-concept-kept-false.cpp`). The result would change
+between the two places, so the program is not valid, and CNS-10
+requires no diagnostic.
 
 ## Options
 

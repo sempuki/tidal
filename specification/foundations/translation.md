@@ -327,6 +327,9 @@ count and limit the depth as follows, on both targets:
 | Clang 22, 18 | the nested instantiations of all templates | 1024 | `-ftemplate-depth=N` |
 | GCC 16, 14 | the nested instantiations of all templates | 900 | `-ftemplate-depth=N` |
 | EDG 7.0 | the nested instantiations of one template | 64 | `--pending_instantiations=N` |
+
+An implementation that does not have an option of the table rejects a
+command line that gives the option.
 :::
 
 :::{rule} TR-14
@@ -415,7 +418,9 @@ the run and link tests say only that the programs are valid.
   templates. Clang accepts a chain of 1000 that alternates, and GCC and EDG
   reject it ({question}`Q-0351`).
   The flag tests lower each limit with the option of the table. The
-  other compilers reject the unknown option.
+  other compilers reject the unknown option. So each flag test expects
+  a reject from every implementation, also from an implementation
+  outside the table.
 - TR-13: on an endless chain of function templates, Clang 22 and 18
   print the depth message and then end with a segmentation fault. Each
   compiler rejects the program with a diagnostic first

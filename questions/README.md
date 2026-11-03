@@ -365,6 +365,7 @@ status, and the first sentence of its answer section.
 | [Q-0349](Q-0349-allocator-result-other-type.md) | In constant evaluation, can a member of `std::allocator<T>` convert the result of `::operator new` to a pointer to a type other than `T`? | provisional | No; only the conversion to `T*` is valid |
 | [Q-0350](Q-0350-clang-class-size-wrap.md) | Does Clang conform when it accepts a class whose size it cannot represent? | provisional | Clang has a defect in both cases |
 | [Q-0351](Q-0351-instantiation-depth-measure.md) | How is the depth of nested instantiations counted, and must it reach a minimum? | provisional | Both are implementation-defined, with no minimum |
+| [Q-0352](Q-0352-aggregate-pack-parentheses.md) | Does a list in parentheses form the aggregate candidate for a class with a pack of bases? | provisional | Yes; the candidate is formed as for braces |
 
 ## Status values
 
