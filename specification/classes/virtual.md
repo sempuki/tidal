@@ -447,8 +447,9 @@ of 119 tests.
 - VIRT-12: GCC accepts `delete` through a base without a virtual
   destructor during constant evaluation. Clang and EDG reject the
   `delete` ({question}`Q-0056`).
-- VIRT-17: Clang and GCC report the missing destructor at link time. EDG
-  does not link.
+- VIRT-17: Clang and GCC report the missing destructor at link time.
+  EDG translates the program and links nothing, so the test expects
+  EDG to accept it ({ref}`baseline compilers <baseline-compilers>`).
 - VIRT-8: Clang accepts a call to a function that returns an abstract
   class. GCC and EDG reject the call ({question}`Q-0086`).
 - VIRT-19: EDG accepts an explicit object member function with the name
@@ -458,8 +459,9 @@ of 119 tests.
   At `-O2` they emit no reference to the virtual table, and the program
   links. VIRT-20 allows both results, because the rule needs no
   diagnostic.
-- VIRT-13: Clang and GCC give both warnings under `-Wall`, also for an
-  abstract class. Neither warns for a `final` class.
+- VIRT-13: Clang 18 and 22 and GCC 14 and 16 give both warnings under
+  `-Wall`, also for an abstract class. Neither warns for a `final`
+  class.
 - VIRT-12: during constant evaluation, GCC reports a call of a pure
   virtual function from a constructor as a call to a function that is
   not `constexpr` (compare {rule}`CE-2`). The function that GCC names is
@@ -469,6 +471,14 @@ of 119 tests.
   array of derived objects through a pointer to a base as a change to
   allocated storage from outside the evaluation (compare
   {rule}`CE-5`). Clang reports a `delete` of a subobject.
+- VIRT-12: at run time, the address sanitizer of Clang and GCC
+  (`-O0 -fsanitize=address -fsized-deallocation`) stops both `delete`
+  cases and reports `new-delete-type-mismatch`. Clang 18 passes the
+  size to `delete` only under `-fsized-deallocation`.
+- VIRT-12: at run time, a virtual call of a pure virtual function
+  reaches the run-time library of Clang and GCC. The library prints
+  "pure virtual method called" and aborts the program, also without a
+  sanitizer.
 - VIRT-9: GCC calls a misplaced pure specifier `= 0` an initializer of
   the function. Clang calls the specifier a pure specifier.
 - VIRT-21: GCC reports a static member function with the name and

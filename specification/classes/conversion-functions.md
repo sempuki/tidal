@@ -139,7 +139,8 @@ conversion sequence.
 
 An `explicit` conversion function can be used by these:
 
-- direct initialization, including `T(e)`, `T{e}`, and `static_cast`,
+- direct initialization, including `T x(e);`, `T x{e};`, `T(e)`, `T{e}`,
+  and `static_cast`,
 - {term}`contextual conversion` to `bool`, if the target type is `bool`.
 
 Contextual conversion occurs in:
@@ -248,6 +249,7 @@ struct Cell {
 };
 const int& r = Cell{5};  // binds to v of a temporary Cell
                          // the Cell ends here, so r dangles (REF-5)
+void touch() { (void)r; }  // valid: names r and reads nothing
 ```
 
 An ambiguous conversion stops a call only when overload resolution

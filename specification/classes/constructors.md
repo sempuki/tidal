@@ -225,7 +225,9 @@ the condition ({question}`Q-0126`).
 A member initializer list initializes direct bases and non-static data
 members. Each initializer uses parentheses or braces. Braces use the
 rules of list initialization. An initializer for a member replaces the
-default member initializer of that member.
+default member initializer of that member. Names inside the parentheses
+or braces are looked up as in the constructor body, so a parameter hides
+a member with the same name.
 :::
 
 :::{rule} CTOR-21
@@ -320,6 +322,10 @@ initialization, {rule}`ILC-2` and {rule}`ILC-3` first try the
 initializer-list constructors. If those rules choose none, the arguments are
 the elements of the list.
 
+A call whose name finds a class, such as `probe(x)`, initializes an
+object of that class. Argument-dependent lookup does not run for such a
+call ({rule}`NAM-32`).
+
 The program is not valid in each of these cases:
 
 - No constructor accepts the arguments ({rule}`OVL-35`).
@@ -367,7 +373,7 @@ A destructor can run on a `const` object.
 
 :::{rule} DTOR-3
 :kind: reject
-:tests: classes/constructors/deleted-dtor-delete.cpp classes/constructors/deleted-dtor-new.cpp classes/constructors/deleted-dtor-temporary.cpp classes/constructors/deleted-dtor-return-prvalue.cpp classes/constructors/deleted-dtor-copy-init-prvalue.cpp classes/constructors/deleted-dtor-new-from-prvalue.cpp classes/constructors/deleted-dtor-decltype-call.cpp classes/constructors/deleted-dtor-variable.cpp classes/constructors/implicitly-deleted-dtor-member.cpp classes/constructors/private-dtor-member.cpp classes/constructors/private-dtor-variable.cpp classes/constructors/delete-array-deleted-dtor.cpp classes/constructors/deleted-dtor-sizeof.cpp classes/constructors/deleted-dtor-sizeof-call.cpp classes/constructors/deleted-dtor-noexcept.cpp classes/constructors/deleted-dtor-decltype-braces.cpp classes/constructors/deleted-dtor-decltype-call-argument.cpp classes/constructors/deleted-dtor-decltype-comma.cpp classes/constructors/deleted-dtor-decltype-comma-left.cpp classes/constructors/private-dtor-sizeof.cpp
+:tests: classes/constructors/deleted-dtor-delete.cpp classes/constructors/deleted-dtor-new.cpp classes/constructors/deleted-dtor-temporary.cpp classes/constructors/deleted-dtor-return-prvalue.cpp classes/constructors/deleted-dtor-copy-init-prvalue.cpp classes/constructors/deleted-dtor-new-from-prvalue.cpp classes/constructors/deleted-dtor-decltype-call.cpp classes/constructors/deleted-dtor-variable.cpp classes/constructors/implicitly-deleted-dtor-member.cpp classes/constructors/private-dtor-member.cpp classes/constructors/private-dtor-variable.cpp classes/constructors/delete-array-deleted-dtor.cpp classes/constructors/deleted-dtor-sizeof.cpp classes/constructors/deleted-dtor-sizeof-call.cpp classes/constructors/deleted-dtor-noexcept.cpp classes/constructors/deleted-dtor-decltype-braces.cpp classes/constructors/deleted-dtor-decltype-call-argument.cpp classes/constructors/deleted-dtor-decltype-comma.cpp classes/constructors/deleted-dtor-decltype-comma-left.cpp classes/constructors/private-dtor-sizeof.cpp classes/constructors/deleted-dtor-new-aggregate-braces.cpp classes/constructors/default-ctor-deleted-by-member-dtor.cpp
 
 If the destructor of a class is deleted or not accessible, a program
 must not:
@@ -384,8 +390,14 @@ The prvalue rule also covers the operands of `sizeof`, `noexcept`, and
 prvalue of the class as the left operand of the comma is not exempt.
 
 A `new` expression for the class is valid, also for an array
-({question}`Q-0082`). The implicit destructor is deleted if a base or
-member has a destructor that is deleted or not accessible.
+({question}`Q-0082`). Its initializer must not be a prvalue of the
+class, as in `new S(make())`. Braces that initialize the members, as in
+`new S{1}`, are valid.
+
+The implicit destructor is deleted if a base or member has a destructor
+that is deleted or not accessible. The `new` exception covers only the
+destructor of the class. {rule}`CTOR-3` still deletes a default
+constructor that `new S` needs.
 :::
 
 :::{rule} DTOR-4
@@ -554,7 +566,7 @@ binding ({question}`Q-0084`).
 
 :::{rule} CTOR-13
 :kind: recommended
-:tests: classes/constructors/init-order-same-order.cpp classes/constructors/init-order-warns.cpp
+:tests: classes/constructors/init-order-same-order.cpp classes/constructors/init-order-warns.cpp classes/constructors/init-order-no-warning-default.cpp
 
 An implementation should warn if the member initializer list has an
 order different from the order of initialization.
@@ -583,12 +595,39 @@ Ref r;                           // rejected: default constructor deleted
 struct Counter { int n; };
 const Counter c;                 // rejected: n has no value
 const Counter d{};               // valid
+
+struct Range {
+  int low, high;
+  Range(int low, int high) : low(low), high(high + 1) {}
+};                               // low(low): the member from the parameter
+```
+
+A deleted destructor permits `new`, but not every initializer of it
+(DTOR-3):
+
+```cpp
+struct Pinned { int v; ~Pinned() = delete; };
+Pinned make();
+Pinned* a = new Pinned{1};       // valid: the braces initialize v
+Pinned* b = new Pinned(make());  // rejected: a prvalue of Pinned
+
+struct Holder { Pinned p; };
+Holder* h = new Holder;          // rejected: CTOR-3 deletes Holder()
+```
+
+A braced element of one value can reach a constructor in two ways. The
+way without a user-defined conversion wins (CTOR-25):
+
+```cpp
+struct Span { Span(int); };
+Span g{{1}};   // Span(int): {1} gives an int directly (ICS-15). The
+               // copy constructor would need Span(int) first (ICS-21)
 ```
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 156
-of 166 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 158
+of 168 tests.
 
 - CTOR-23 and DTOR-9: the tests observe triviality through JMP-6 and
   UNI-3. A jump past a declaration is valid only for a trivial default
@@ -610,14 +649,16 @@ of 166 tests.
 - CTOR-24: the compilers differ for unions and anonymous unions
   ({question}`Q-0126`):
 
-  | Case | Clang 22 | Clang 18 | GCC | EDG |
-  |---|---|---|---|---|
-  | Union, one variant member with a default member initializer | accepts | rejects | rejects | accepts |
-  | Anonymous union with such a member, beside another member | accepts | rejects | accepts | accepts |
-  | Anonymous union without one, beside another member | rejects | rejects | accepts | rejects |
-  | Only anonymous unions, none with a default member initializer | rejects | rejects | accepts | accepts |
+  | Case | CTOR-24 and the test | Clang 22 | Clang 18 | GCC | EDG |
+  |---|---|---|---|---|---|
+  | Union, one variant member with a default member initializer | accepts | accepts | rejects | rejects | accepts |
+  | Anonymous union with such a member, beside another member | accepts | accepts | rejects | accepts | accepts |
+  | Anonymous union without one, beside another member | rejects | rejects | rejects | accepts | rejects |
+  | Only anonymous unions, none with a default member initializer | accepts | rejects | rejects | accepts | accepts |
 
-  Each row follows the majority.
+  The second column gives the provisional answer of {question}`Q-0126`,
+  which each test expects. Each test records the compilers that differ
+  from that answer as overrides.
 - DTOR-3: all compilers reject each prvalue of the class, also where no
   temporary is made, as in `return S{};`. All reject the prvalue in the
   operand of `sizeof`, `noexcept`, and `typeid`, and in `decltype(S{})`.
@@ -632,6 +673,8 @@ of 166 tests.
   through the implicit copy or move constructor. All reject a braced
   list for which two constructors tie, also as the argument of another
   constructor.
+- CTOR-13: Clang and GCC give the order warning under `-Wall` and not
+  by default.
 - CTOR-12: no sanitizer of GCC or Clang stops a read of a member that
   has no value yet, under `-fsanitize=undefined` or `-fsanitize=address`.
 - DTOR-7: the address sanitizer of GCC and Clang stops a second

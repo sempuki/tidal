@@ -179,7 +179,8 @@ than one base subobject, the result is an ambiguity. This rule also
 applies to overloads from different bases. These exceptions apply:
 
 - A static member, a type, or an enumerator found through two paths to
-  the same class is not ambiguous.
+  the same class is not ambiguous. The name of a base that a class
+  inherits ({rule}`NAM-35`) is such a type.
 - A declaration in a class hides a declaration with the same name in the
   virtual bases of that class, on every path.
 
@@ -270,7 +271,7 @@ deleted.
 
 :::{rule} DER-8
 :kind: required
-:tests: classes/derived/inherited-ctor-default-args.cpp classes/derived/inherited-ctor-hidden-by-derived.cpp classes/derived/inherited-ctor.cpp
+:tests: classes/derived/inherited-ctor-default-args.cpp classes/derived/inherited-ctor-hidden-by-derived.cpp classes/derived/inherited-ctor.cpp classes/derived/inherited-ctor-access-in-friend.cpp classes/derived/inherited-ctor-not-copy.cpp
 
 `using B::B;` in a class `D` *inherits* the constructors of the direct
 base `B`. A call with matching arguments initializes the `B` subobject
@@ -279,14 +280,18 @@ default-initialized. These rules apply:
 
 - Default, copy, and move constructors are not inherited.
 - An inherited constructor keeps its access, its `explicit`, and its
-  default arguments.
+  default arguments. The access check happens where `D` is
+  initialized, as for the constructor of `B` named there.
 - A constructor of `D` with the same parameters hides the inherited
   constructor.
+
+A class that inherits constructors is not an aggregate
+({doc}`/declarations/initialization/list`).
 :::
 
 :::{rule} DER-20
 :kind: reject
-:tests: classes/derived/inherited-ctor-access.cpp classes/derived/inherited-ctor-explicit.cpp classes/derived/inherited-ctor-no-default.cpp classes/derived/inherited-ctor-not-copy.cpp
+:tests: classes/derived/inherited-ctor-access.cpp classes/derived/inherited-ctor-access-in-friend.cpp classes/derived/inherited-ctor-explicit.cpp classes/derived/inherited-ctor-no-default.cpp classes/derived/inherited-ctor-not-copy.cpp
 
 DER-8 sets limits on inherited constructors. Through `D`, a program must
 not use:
@@ -377,12 +382,40 @@ struct Tape : virtual Device { Tape() : Device(2) {} };
 struct Drive : Disk, Tape {
   Drive() : Device(3) {}         // the only Device initializer that runs
 };
+
+class Socket {
+  Socket(int fd);                // private
+  friend struct Server;
+};
+struct Server : Socket {
+  using Socket::Socket;
+  static Server open() { return Server(3); }  // valid: Server is a friend
+};
+Server s(3);                     // rejected: Socket(int) is private here
+```
+
+A base name reached through two paths is ambiguous only if the paths
+lead to different classes (DER-4):
+
+```cpp
+struct Node { };
+struct Left : Node { };
+struct Right : Node { };
+struct Pair : Left, Right {
+  Node* first();                 // valid: one class, Node, on both paths
+};
+
+namespace a { struct Item { }; }
+namespace b { struct Item { }; }
+struct Both : a::Item, b::Item {
+  Item* get();                   // rejected: two different classes
+};
 ```
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 76
-of 77 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 77
+of 78 tests.
 
 - DER-12: EDG accepts a `constexpr` destructor in a class with a virtual
   base. Clang and GCC reject the destructor ({question}`Q-0085`).

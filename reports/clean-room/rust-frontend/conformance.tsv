@@ -39,6 +39,7 @@ pass	classes/access/private-type-out-of-line.cpp
 pass	classes/access/private-type-via-auto.cpp
 pass	classes/access/protected-base-in-derived.cpp
 pass	classes/access/protected-member-pointer-derived.cpp
+pass	classes/access/protected-member-pointer-type.cpp
 MISSED-REJECT	classes/access/protected-member-pointer.cpp
 pass	classes/access/protected-outside.cpp
 pass	classes/access/protected-static-through-base.cpp
@@ -98,12 +99,16 @@ FALSE-REJECT	classes/comparisons/ne-not-matching-friend.cpp
 pass	classes/comparisons/ne-not-matching.cpp
 pass	classes/comparisons/ne-rewrite-reference-to-bool-result.cpp
 pass	classes/comparisons/non-member-reversed.cpp
+pass	classes/comparisons/not-equal-defaulted-calls-eq.cpp
+pass	classes/comparisons/not-equal-defaulted-no-eq-unused.cpp
+pass	classes/comparisons/not-equal-defaulted-no-eq.cpp
 pass	classes/comparisons/not-equal-defaulted.cpp
 pass	classes/comparisons/not-rewritten-for-eq-from-spaceship.cpp
 pass	classes/comparisons/out-of-class-would-delete.cpp
 pass	classes/comparisons/reversed-eq-needs-bool.cpp
 pass	classes/comparisons/reversed-eq.cpp
 pass	classes/comparisons/rewritten-ambiguous-const-ok.cpp
+pass	classes/comparisons/rewritten-ambiguous-strict.cpp
 pass	classes/comparisons/rewritten-ambiguous-warns.cpp
 pass	classes/comparisons/rewritten-ne.cpp
 pass	classes/comparisons/rewritten-relational-reversed.cpp
@@ -194,6 +199,7 @@ pass	classes/constructors/deleted-dtor-decltype-call.cpp
 pass	classes/constructors/deleted-dtor-decltype-comma-left.cpp
 pass	classes/constructors/deleted-dtor-decltype-comma.cpp
 pass	classes/constructors/deleted-dtor-delete.cpp
+pass	classes/constructors/deleted-dtor-new-aggregate-braces.cpp
 pass	classes/constructors/deleted-dtor-new-from-prvalue.cpp
 pass	classes/constructors/deleted-dtor-new.cpp
 pass	classes/constructors/deleted-dtor-noexcept.cpp
@@ -247,6 +253,7 @@ pass	classes/constructors/implicit-dtor-runs-members.cpp
 pass	classes/constructors/implicitly-deleted-dtor-member.cpp
 pass	classes/constructors/inherited-ctors-keep-default.cpp
 pass	classes/constructors/init-order-declaration.cpp
+pass	classes/constructors/init-order-no-warning-default.cpp
 pass	classes/constructors/init-order-reads-later.cpp
 pass	classes/constructors/init-order-same-order.cpp
 pass	classes/constructors/init-order-uses-earlier.cpp
@@ -491,6 +498,7 @@ pass	classes/derived/dominance-derived-hides.cpp
 pass	classes/derived/dominance-nonvirtual-ambiguous.cpp
 pass	classes/derived/final-not-keyword.cpp
 pass	classes/derived/hiding-type-by-member.cpp
+run-unsupported	classes/derived/inherited-ctor-access-in-friend.cpp
 MISSED-REJECT	classes/derived/inherited-ctor-access.cpp
 run-unsupported	classes/derived/inherited-ctor-default-args.cpp
 MISSED-REJECT	classes/derived/inherited-ctor-explicit.cpp
@@ -623,6 +631,7 @@ pass	classes/members/ref-qualified-mixed.cpp
 pass	classes/members/ref-qualified.cpp
 pass	classes/members/register-member.cpp
 pass	classes/members/sizeof-in-class-incomplete.cpp
+RUN-WRONG-RESULT	classes/members/standard-layout-bases-same-address.cpp
 pass	classes/members/standard-layout-reinterpret.cpp
 pass	classes/members/static-and-nonstatic-same-params.cpp
 run-unsupported	classes/members/static-call-operator.cpp
@@ -794,6 +803,7 @@ pass	classes/unions/bitfield-unsigned-wraps.cpp
 pass	classes/unions/bitfield-very-wide.cpp
 pass	classes/unions/bitfield-wide-unsigned-promotion.cpp
 pass	classes/unions/bitfield-wider-than-type.cpp
+pass	classes/unions/bitfield-wider-warns-default.cpp
 pass	classes/unions/bitfield-wider-warns.cpp
 pass	classes/unions/bitfield-width-class-converts.cpp
 pass	classes/unions/bitfield-width-floating.cpp
@@ -833,6 +843,7 @@ pass	classes/unions/union-array-member.cpp
 pass	classes/unions/union-copy-preserves-active.cpp
 pass	classes/unions/union-default-member-init-enables-ctor.cpp
 pass	classes/unions/union-deleted-move-uses-copy.cpp
+MISSED-REJECT	classes/unions/union-member-deleted-copy.cpp
 pass	classes/unions/union-member-functions.cpp
 pass	classes/unions/union-nontrivial-copy-deleted.cpp
 pass	classes/unions/union-nontrivial-dtor-only.cpp
@@ -1603,6 +1614,7 @@ pass	declarations/initialization/references/conversion-function-reference-not-ex
 pass	declarations/initialization/references/dangling-local-return.cpp
 MISSED-REJECT	declarations/initialization/references/dangling-new-member-warns-default.cpp
 MISSED-REJECT	declarations/initialization/references/dangling-new-member-warns.cpp
+pass	declarations/initialization/references/dangling-reference-void-cast-constant.cpp
 EDG-ONLY	declarations/initialization/references/extend-through-array-member-subscript.cpp
 pass	declarations/initialization/references/extend-through-static-cast.cpp
 pass	declarations/initialization/references/extended-temporary-unwinding.cpp

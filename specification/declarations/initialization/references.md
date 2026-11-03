@@ -247,7 +247,7 @@ A later change to the source expression does not change the temporary.
 
 :::{rule} REF-5
 :kind: undefined
-:tests: declarations/initialization/references/lifetime-not-through-return.cpp declarations/initialization/references/dangling-local-return.cpp declarations/initialization/references/aggregate-member-paren-not-extended.cpp declarations/initialization/references/null-dereference-bind-constant.cpp declarations/initialization/references/new-aggregate-member-not-extended.cpp declarations/initialization/references/conversion-function-reference-not-extended.cpp declarations/initialization/references/returned-reference-temporary-sanitizer.cpp
+:tests: declarations/initialization/references/lifetime-not-through-return.cpp declarations/initialization/references/dangling-local-return.cpp declarations/initialization/references/aggregate-member-paren-not-extended.cpp declarations/initialization/references/null-dereference-bind-constant.cpp declarations/initialization/references/new-aggregate-member-not-extended.cpp declarations/initialization/references/conversion-function-reference-not-extended.cpp declarations/initialization/references/returned-reference-temporary-sanitizer.cpp declarations/initialization/references/dangling-reference-void-cast-constant.cpp
 
 Only the bindings in REF-4 extend the life of a temporary. These
 bindings do not extend the life of a temporary ({question}`Q-0040`):
@@ -260,7 +260,9 @@ bindings do not extend the life of a temporary ({question}`Q-0040`):
 - a binding to a reference member of an object that a `new` expression
   initializes, with braces or parentheses.
 
-Use of a reference after the life of its object ends is undefined.
+After the life of its object ends, a read, a write, or a member
+function call through a reference is undefined ({rule}`OBJ-2`). A cast
+of the reference to `void` reads nothing.
 Binding a reference to `*p` where `p` is a null pointer is undefined,
 and constant evaluation rejects such a binding ({question}`Q-0110`).
 :::
@@ -326,14 +328,15 @@ int& m{s};                   // rejected: a temporary needs const or &&
 
 ## Evidence
 
-All eight compilers agree on 48 of 63 tests. The results are in
+All eight compilers agree on 49 of 64 tests. The results are in
 `tests/RESULTS.md`.
 
 - **REF-5.** All compilers reject the dangling reads during
   {term}`constant evaluation` ("read of object outside its lifetime",
   "accessing ... outside its lifetime", "attempt to access expired
   storage"). Clang, GCC, and EDG also warn when a function returns a
-  reference to a local variable.
+  reference to a local variable. All compilers accept a constant
+  evaluation that casts a dangling reference to `void`.
 - **REF-5.** Clang and GCC end a temporary bound to a reference member
   of an object from `new` at the end of the full expression, with braces
   and with parentheses. A class temporary whose conversion function

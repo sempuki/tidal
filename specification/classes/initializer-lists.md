@@ -130,9 +130,9 @@ the same fault for a function parameter ({question}`Q-0132`).
 :tests: classes/initializer-lists/list-ctor-narrowing-still-chosen.cpp classes/initializer-lists/narrowing-constant-fits.cpp classes/initializer-lists/narrowing-in-ctor-args.cpp classes/initializer-lists/narrowing-in-list-elements.cpp classes/initializer-lists/narrowing-paren-ok.cpp
 
 A narrowing conversion of an element to its parameter or element type is
-not valid. If the first phase selects an initializer-list constructor,
-the narrowing makes the program not valid. The selection does not move
-to another constructor. A constant that fits the target type does not
+not valid. In the first phase, an initializer-list constructor stays
+viable when an element narrows. If that phase selects the constructor,
+the narrowing makes the program not valid. A constant that fits the target type does not
 narrow. Parentheses do not check narrowing.
 :::
 
@@ -199,6 +199,9 @@ of 31 tests. The tests declare a minimal `std::initializer_list`.
 - ILC-3: Clang 18 copies for `S b{a}` when `S` also has an
   `initializer_list<S>` constructor. Clang 22 and GCC use that
   constructor ({question}`Q-0081`).
+- ILC-8: a braced argument whose best constructor is `explicit` gives a
+  conversion sequence on GCC, which then rejects the call. Clang and EDG
+  form no sequence and choose another function ({question}`Q-0132`).
 
 Inputs: clang-sema-init, clang-sema-declcxx, clang-diag-sema,
 edg-decl-inits, edg-overload.

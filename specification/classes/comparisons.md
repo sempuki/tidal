@@ -116,7 +116,7 @@ A program must not use a defaulted `==` that DCMP-2 deletes.
 
 :::{rule} DCMP-4
 :kind: required
-:tests: classes/comparisons/empty-class-compares-equal.cpp classes/comparisons/secondary-defaulted.cpp classes/comparisons/spaceship-array.cpp classes/comparisons/spaceship-auto-partial.cpp classes/comparisons/spaceship-auto-strong.cpp classes/comparisons/spaceship-auto-weak-member.cpp classes/comparisons/spaceship-bases-first.cpp classes/comparisons/spaceship-bool-member-ok.cpp classes/comparisons/spaceship-constexpr.cpp classes/comparisons/spaceship-declares-eq.cpp classes/comparisons/spaceship-memberwise.cpp classes/comparisons/spaceship-relational-rewrite.cpp classes/comparisons/spaceship-specified-type-synthesized.cpp
+:tests: classes/comparisons/empty-class-compares-equal.cpp classes/comparisons/secondary-defaulted.cpp classes/comparisons/spaceship-array.cpp classes/comparisons/spaceship-auto-partial.cpp classes/comparisons/spaceship-auto-strong.cpp classes/comparisons/spaceship-auto-weak-member.cpp classes/comparisons/spaceship-bases-first.cpp classes/comparisons/spaceship-bool-member-ok.cpp classes/comparisons/spaceship-constexpr.cpp classes/comparisons/spaceship-declares-eq.cpp classes/comparisons/spaceship-memberwise.cpp classes/comparisons/spaceship-relational-rewrite.cpp classes/comparisons/spaceship-specified-type-synthesized.cpp classes/comparisons/not-equal-defaulted.cpp classes/comparisons/not-equal-defaulted-calls-eq.cpp
 
 A defaulted `<=>` compares the bases and members in the same order as
 `==`. The result is the first result that is not equal, or equal if all
@@ -130,7 +130,8 @@ rules apply:
   compared with `==` and `<`.
 - A defaulted `<=>` declares a defaulted `==` too, if the class declares
   no `==`. A `<=>` that is not defaulted does not.
-- A defaulted secondary operator calls `<=>`.
+- A defaulted `!=` calls `==` and negates the result. A defaulted `<`,
+  `>`, `<=`, or `>=` calls `<=>`.
 :::
 
 :::{rule} DCMP-10
@@ -144,7 +145,7 @@ uses a defaulted `<=>` must declare the comparison category types.
 
 :::{rule} DCMP-5
 :kind: required
-:tests: classes/comparisons/spaceship-wrong-return.cpp
+:tests: classes/comparisons/spaceship-wrong-return.cpp classes/comparisons/not-equal-defaulted-no-eq-unused.cpp
 
 A defaulted `<=>` is deleted in these cases:
 
@@ -152,13 +153,15 @@ A defaulted `<=>` is deleted in these cases:
 - The return type is `auto`, and a member has no `<=>`, or the member's
   `<=>` does not return a comparison category type.
 
-A defaulted secondary operator is deleted if the class has no usable
-`<=>`.
+A defaulted `!=` is deleted if the class has no usable `==`. A defaulted
+`<`, `>`, `<=`, or `>=` is deleted if the class has no usable `<=>`. A
+deleted function is valid to declare, and only a use is rejected
+(DCMP-11).
 :::
 
 :::{rule} DCMP-11
 :kind: reject
-:tests: classes/comparisons/secondary-without-spaceship.cpp classes/comparisons/spaceship-auto-no-member-spaceship.cpp classes/comparisons/spaceship-member-returns-non-category.cpp classes/comparisons/spaceship-wrong-return-used.cpp
+:tests: classes/comparisons/secondary-without-spaceship.cpp classes/comparisons/spaceship-auto-no-member-spaceship.cpp classes/comparisons/spaceship-member-returns-non-category.cpp classes/comparisons/spaceship-wrong-return-used.cpp classes/comparisons/not-equal-defaulted-no-eq.cpp
 
 A program must not use a defaulted `<=>` or secondary operator that
 DCMP-5 deletes.
@@ -203,7 +206,8 @@ An `operator!=` matches an `operator==` for DCMP-6 if these conditions
 hold:
 
 - A search finds the `!=`. For a member `==`, the search is member
-  lookup in the class of the object operand. For a non-member `==`, the
+  lookup in the class of the object operand, which also finds a `!=`
+  that a base declares. For a non-member `==`, the
   search looks in the namespace of the `==`, and a `friend` declared only
   in a class is not found.
 - Both are members with an implicit object parameter, or both are
@@ -233,7 +237,7 @@ would be deleted. An implementation need not diagnose such a comparison
 
 An implementation should warn if a reversed candidate makes a comparison
 ambiguous, for example an `==` that is not `const`. In strict mode,
-{rule}`OVL-36` rejects such a comparison.
+{rule}`OPR-15` rejects such a comparison.
 :::
 
 ## Examples
@@ -257,18 +261,40 @@ struct Id {
 };
 bool a = 7 == Id{7};             // reversed: Id{7} == 7
 bool b = Id{7} != 8;             // rewritten: !(Id{7} == 8)
+
+struct Code {
+  int n;
+  bool operator==(const Code&) const = default;
+  bool operator!=(const Code&) const = default;  // calls ==, no <=>
+};
+```
+
+An `==` that is not `const` makes `a == b` ambiguous for two non-`const`
+objects (DCMP-7). The normal candidate binds `a` to `Loose&` and `b` to
+`const Loose&`. The reversed candidate binds them the other way, so
+each candidate is better for one argument. With a `const` member, both
+candidates bind `const` references, and the normal one wins
+({rule}`OVL-32`):
+
+```cpp
+struct Loose { int v; bool operator==(const Loose& o) { return v == o.v; } };
+struct Tight { int v; bool operator==(const Tight& o) const { return v == o.v; } };
+bool f(Loose a, Loose b) { return a == b; }  // warning; rejected in strict mode
+bool g(Tight a, Tight b) { return a == b; }  // valid, no warning
 ```
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 69
-of 74 tests. The tests declare the comparison category types themselves.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 72
+of 77 tests. The tests declare the comparison category types themselves.
 
 - DCMP-3: GCC accepts defaulting a friend that was declared outside the
   class. Clang and EDG reject it ({question}`Q-0061`).
 - DCMP-8: Clang rejects the definition. GCC and EDG accept it
   ({question}`Q-0062`).
-- DCMP-7: Clang and GCC warn under `-Wall`.
+- DCMP-7: Clang and GCC give the warning by default, and
+  `-pedantic-errors` makes the warning an error. EDG reports the
+  comparison as ambiguous.
 - DCMP-12: a reversed or rewritten `==` that returns `bool&` or
   `bool&&` is rejected by Clang and EDG. GCC accepts it
   ({question}`Q-0158`). Every compiler accepts a cv-qualified `bool`.

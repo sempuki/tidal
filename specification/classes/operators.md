@@ -170,14 +170,16 @@ end in a pointer.
 
 :::{rule} OPR-6
 :kind: required
-:tests: classes/operators/argument-dependent-lookup.cpp classes/operators/assign-not-from-other.cpp classes/operators/builtin-candidate-via-conversion.cpp classes/operators/enum-builtin-still-used.cpp classes/operators/left-operand-conversion-nonmember.cpp classes/operators/member-hides-not-nonmember.cpp
+:tests: classes/operators/argument-dependent-lookup.cpp classes/operators/assign-not-from-other.cpp classes/operators/builtin-candidate-via-conversion.cpp classes/operators/enum-builtin-still-used.cpp classes/operators/left-operand-conversion-nonmember.cpp classes/operators/member-hides-not-nonmember.cpp foundations/names/operator-lookup-block-hides.cpp foundations/names/operator-lookup-namespace-hides.cpp
 
 An expression with an operand of class or enumeration type selects the
 operator function from these candidates:
 
 - member operator functions of the class of the left operand,
 - non-member operator functions found by ordinary and argument-dependent
-  lookup ({rule}`NAM-5`, {rule}`NAM-27`),
+  lookup ({rule}`NAM-5`, {rule}`NAM-27`). As for a call by name, a
+  nearer block or namespace that declares the operator function hides
+  the outer declarations ({rule}`NAM-38`).
 - built-in operators, after conversion of the operands.
 
 Implicit conversions apply to every operand of a non-member and to no
@@ -188,7 +190,7 @@ and {rule}`OVL-9` lists the built-in candidates.
 
 :::{rule} OPR-15
 :kind: reject
-:tests: classes/operators/compound-not-synthesized.cpp classes/operators/left-operand-no-conversion-member.cpp classes/operators/member-and-nonmember-ambiguous.cpp classes/operators/no-candidate.cpp foundations/overload-resolution/enum-operand-no-parameter.cpp foundations/overload-resolution/builtin-enumeration-no-arithmetic.cpp foundations/overload-resolution/builtin-integer-only.cpp foundations/overload-resolution/builtin-bool-increment.cpp foundations/overload-resolution/builtin-member-pointer-order.cpp foundations/overload-resolution/builtin-other-shape-kept.cpp foundations/names/operator-lookup-block-hides.cpp foundations/names/operator-lookup-namespace-hides.cpp
+:tests: classes/operators/compound-not-synthesized.cpp classes/operators/left-operand-no-conversion-member.cpp classes/operators/member-and-nonmember-ambiguous.cpp classes/operators/no-candidate.cpp foundations/overload-resolution/enum-operand-no-parameter.cpp foundations/overload-resolution/builtin-enumeration-no-arithmetic.cpp foundations/overload-resolution/builtin-integer-only.cpp foundations/overload-resolution/builtin-bool-increment.cpp foundations/overload-resolution/builtin-member-pointer-order.cpp foundations/overload-resolution/builtin-other-shape-kept.cpp foundations/names/operator-lookup-block-hides.cpp foundations/names/operator-lookup-namespace-hides.cpp classes/comparisons/rewritten-ambiguous-strict.cpp
 
 For an expression that OPR-6 describes, an ambiguity or no viable
 candidate makes the expression not valid. The rule is a specific case of
@@ -225,7 +227,7 @@ A literal for which no matching literal operator exists is not valid.
 
 :::{rule} OPR-10
 :kind: reject
-:tests: classes/operators/literal-bad-params.cpp classes/operators/literal-default-arg.cpp classes/operators/literal-extern-c.cpp classes/operators/literal-friend.cpp classes/operators/literal-member.cpp classes/operators/literal-string-concat-two-suffixes.cpp classes/operators/literal-three-params.cpp
+:tests: classes/operators/literal-block-scope.cpp classes/operators/literal-bad-params.cpp classes/operators/literal-default-arg.cpp classes/operators/literal-extern-c.cpp classes/operators/literal-friend.cpp classes/operators/literal-member.cpp classes/operators/literal-string-concat-two-suffixes.cpp classes/operators/literal-three-params.cpp
 
 A literal operator must:
 
@@ -233,9 +235,10 @@ A literal operator must:
 - have one of the parameter lists that OPR-8 gives,
 - have no default argument ({question}`Q-0060`).
 
-A literal operator can be declared at namespace scope or as a friend in
-a class, also with a definition there. Adjacent string literals must not
-have two different suffixes.
+A literal operator is a function of a namespace. A program can declare
+one in a namespace, in a block, or as a friend in a class. A definition
+can be in a namespace or in a friend declaration. Adjacent string
+literals must not have two different suffixes.
 :::
 
 ## Runtime Behavior
@@ -302,8 +305,8 @@ Meters len = 2.5_m;
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 97
-of 98 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 98
+of 99 tests.
 
 - OPR-10: GCC accepts a default argument on a literal operator. Clang
   and EDG reject the default argument ({question}`Q-0060`).

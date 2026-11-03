@@ -287,7 +287,9 @@ these conditions is true:
 - The function is a copy or move assignment operator, and the class has
   a reference member or a `const` member.
 
-A deleted defaulted move function, or a move function that
+A part with no move function is moved by its copy function
+({rule}`CPY-5`), so that part deletes the move only if its copy is not
+usable. A deleted defaulted move function, or a move function that
 {rule}`UNI-3` deletes, takes no part in overload resolution, so an
 rvalue uses the copy function. A move function that the program deletes
 explicitly takes part.
@@ -307,9 +309,9 @@ move function that the program deletes explicitly.
 
 A copy or move constructor defaulted in its class can have a parameter
 type different from the implicit one. Such a constructor is deleted
-({question}`Q-0055`). A defaulted copy constructor can take `T&`. A
-function defaulted after its class definition is not deleted by this
-rule.
+({question}`Q-0055`), for example a move constructor that takes
+`const T&&`. A defaulted copy constructor can take `T&`. A function
+defaulted after its class definition is not deleted by this rule.
 :::
 
 :::{rule} CPY-26
@@ -585,14 +587,36 @@ struct Unique {
 };
 ```
 
+A constructor template is never a copy constructor (CPY-1), so the class
+keeps its implicit copy constructor. The two can tie, and then the
+function that is not a template wins ({rule}`OVL-27`):
+
+```cpp
+struct Any {
+  Any() {}
+  template <class T> Any(const T& value);
+};
+Any a;
+Any b(a);                          // the implicit copy constructor
+Any c(1);                          // the template, with T = int
+```
+
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 101
 of 103 tests.
 
-- CPY-14: GCC 14 rejects a defaulted constructor whose parameter type
-  differs from the implicit one. GCC 16, Clang, and EDG accept it and
-  delete the function ({question}`Q-0055`).
+- CPY-14: GCC 14 rejects some defaulted constructors whose parameter
+  type differs from the implicit one ({question}`Q-0055`):
+
+  | Defaulted in the class | Implicit parameter | GCC 14 | GCC 16, Clang, EDG |
+  |---|---|---|---|
+  | `S(const S&)` | `S&` | accepts and deletes | accepts and deletes |
+  | `S(S&)` | `const S&` | accepts | accepts |
+  | `S(const volatile S&)` | `const S&` | rejects | accepts and deletes |
+  | `S(const S&&)` | `S&&` | rejects | accepts and deletes |
+
+  Every compiler rejects a use of a deleted constructor (CPY-26).
 - CPY-12: Clang and GCC use the variable as the return value at `-O0`
   and `-O2`. EDG runs no programs. The test accepts a move too.
 - CPY-13: Clang and GCC give the first warning under `-Wextra` and the

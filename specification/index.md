@@ -44,6 +44,9 @@ outcome of the test is the outcome on the compilers that run it.
 | `-m32` | EDG 7.0, GCC 16 |
 | no `-m32` | EDG 7.0 ILP32 |
 
+EDG translates each program and links and runs none. For EDG, a test
+that expects `link-fail`, `run`, or `run-fail` expects `accept`.
+
 Each test of a `recommended` rule that expects a rejection uses
 `-Werror`, so the outcome of such a test comes from Clang and GCC.
 

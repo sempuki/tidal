@@ -137,7 +137,7 @@ give the limits on bases and virtual functions.
 
 :::{rule} UNI-3
 :kind: required
-:tests: classes/unions/union-default-member-init-enables-ctor.cpp classes/unions/union-nontrivial-member-user-ctor-dtor.cpp classes/unions/union-trivial-copy.cpp classes/unions/union-deleted-move-uses-copy.cpp
+:tests: classes/unions/union-default-member-init-enables-ctor.cpp classes/unions/union-nontrivial-member-user-ctor-dtor.cpp classes/unions/union-trivial-copy.cpp classes/unions/union-deleted-move-uses-copy.cpp classes/unions/union-member-deleted-copy.cpp
 
 If a variant member has one of these non-trivial functions (CTOR-23,
 DTOR-9, CPY-27), the matching special member of the union is deleted:
@@ -148,12 +148,14 @@ DTOR-9, CPY-27), the matching special member of the union is deleted:
 
 The same rule applies to a class with an anonymous union member. A
 default member initializer on a variant member gives the union a usable
-default constructor.
+default constructor. {rule}`CPY-7` also applies to variant members, so a
+deleted or inaccessible copy function of a member deletes that of the
+union.
 :::
 
 :::{rule} UNI-11
 :kind: reject
-:tests: classes/unions/anonymous-union-nontrivial-default.cpp classes/unions/union-nontrivial-copy-deleted.cpp classes/unions/union-nontrivial-dtor-only.cpp classes/unions/union-nontrivial-member-deleted-ctor.cpp classes/constructors/trivial-destructor-defaulted.cpp classes/constructors/trivial-destructor-member-nontrivial.cpp classes/constructors/trivial-destructor-user-provided.cpp classes/constructors/trivial-destructor-virtual-destructor.cpp classes/copy-move/trivial-assign-implicit.cpp classes/copy-move/trivial-assign-user-provided.cpp classes/copy-move/trivial-copy-defaulted.cpp classes/copy-move/trivial-copy-implicit.cpp classes/copy-move/trivial-copy-member-initializer.cpp classes/copy-move/trivial-copy-member-nontrivial.cpp classes/copy-move/trivial-copy-user-provided.cpp classes/copy-move/trivial-copy-virtual-base.cpp classes/copy-move/trivial-copy-virtual-function.cpp classes/copy-move/trivial-move-user-provided.cpp
+:tests: classes/unions/anonymous-union-nontrivial-default.cpp classes/unions/union-nontrivial-copy-deleted.cpp classes/unions/union-nontrivial-dtor-only.cpp classes/unions/union-nontrivial-member-deleted-ctor.cpp classes/unions/union-member-deleted-copy.cpp classes/constructors/trivial-destructor-defaulted.cpp classes/constructors/trivial-destructor-member-nontrivial.cpp classes/constructors/trivial-destructor-user-provided.cpp classes/constructors/trivial-destructor-virtual-destructor.cpp classes/copy-move/trivial-assign-implicit.cpp classes/copy-move/trivial-assign-user-provided.cpp classes/copy-move/trivial-copy-defaulted.cpp classes/copy-move/trivial-copy-implicit.cpp classes/copy-move/trivial-copy-member-initializer.cpp classes/copy-move/trivial-copy-member-nontrivial.cpp classes/copy-move/trivial-copy-user-provided.cpp classes/copy-move/trivial-copy-virtual-base.cpp classes/copy-move/trivial-copy-virtual-function.cpp classes/copy-move/trivial-move-user-provided.cpp
 
 A program must not use a special member function that UNI-3 deletes. The
 union must then declare that function itself.
@@ -428,15 +430,16 @@ way:
 
 If a value stored in a bit-field of width `n` does not fit, the value
 that the bit-field holds is implementation-defined. On the x86-64 targets
-in the matrix, the value is reduced modulo 2^n, also during constant
-evaluation.
+in the matrix, the bit-field holds the value in its range that differs
+from the stored value by a multiple of 2^n. The same holds during
+constant evaluation.
 :::
 
 ## Recommended Practice
 
 :::{rule} BF-8
 :kind: recommended
-:tests: classes/unions/bitfield-constant-truncation-warns.cpp classes/unions/bitfield-fits-no-warning.cpp classes/unions/bitfield-wider-warns.cpp classes/unions/bitfield-assign-too-wide-warns.cpp
+:tests: classes/unions/bitfield-constant-truncation-warns.cpp classes/unions/bitfield-fits-no-warning.cpp classes/unions/bitfield-wider-warns.cpp classes/unions/bitfield-assign-too-wide-warns.cpp classes/unions/bitfield-wider-warns-default.cpp
 
 An implementation should warn if a bit-field width is larger than the
 declared type, or if a constant assignment changes value because of the
@@ -465,6 +468,10 @@ struct Pixel {
   unsigned blue : 5;             // one 32-bit unit on x86-64
 };
 Pixel p{31, 70, 0};              // 70 is reduced modulo 64
+
+struct Level { int value : 3; }; // holds -4 to 3
+int store(int v) { Level l{}; l.value = v; return l.value; }
+                                 // store(5) is -3, which is 5 - 8 (BF-10)
 
 struct Header {
   unsigned version : 4;          // bits 0-3: the low half of byte 0
@@ -536,8 +543,8 @@ public:
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 114
-of 122 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 116
+of 124 tests.
 
 - UNI-9: Clang accepts an anonymous union without `static` in an unnamed
   namespace. GCC and EDG reject the declaration ({question}`Q-0045`).
@@ -548,7 +555,9 @@ of 122 tests.
   and EDG converts it ({question}`Q-0313`). Clang and EDG convert a width
   of a class type with a `constexpr` conversion to `int`, and GCC
   rejects it ({question}`Q-0314`).
-- BF-8: Clang and GCC warn under `-Wall` for both cases.
+- BF-8: Clang 18 and 22 and GCC 14 and 16 give both warnings by
+  default, without `-Wall`, so `-Werror` alone turns them into errors.
+  `-pedantic-errors` does not turn them into errors.
 - BF-9: Clang and GCC give the same layouts on x86-64 and with `-m32`.
   On `-m32` an `unsigned long long` bit-field can start at any multiple
   of 4 bytes, so a field of 30 bits after 40 bits starts at bit 40. EDG

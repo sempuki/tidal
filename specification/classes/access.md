@@ -144,7 +144,7 @@ cases:
 
 :::{rule} ACC-4
 :kind: reject
-:tests: classes/access/protected-outside.cpp classes/access/protected-through-base.cpp classes/access/protected-through-derived.cpp classes/access/protected-static-through-base.cpp classes/access/protected-member-pointer.cpp classes/access/protected-member-pointer-derived.cpp classes/derived/base-protected-dtor-direct.cpp
+:tests: classes/access/protected-outside.cpp classes/access/protected-through-base.cpp classes/access/protected-through-derived.cpp classes/access/protected-static-through-base.cpp classes/access/protected-member-pointer.cpp classes/access/protected-member-pointer-derived.cpp classes/access/protected-member-pointer-type.cpp classes/derived/base-protected-dtor-direct.cpp
 
 A protected member has the access of a private member. Members and
 friends of a derived class `D` also have access to the protected member,
@@ -249,7 +249,9 @@ that base. The rule applies to:
 - objects.
 
 In code that cannot access a private or protected base, the conversion
-is not valid.
+is not valid. Argument-dependent lookup can find a function through the
+namespace of a private base, and the call then fails this check
+({rule}`NAM-30`).
 :::
 
 :::{rule} ACC-9
@@ -327,6 +329,9 @@ struct Shape { protected: int sides = 0; };
 struct Square : Shape {
   int mine() const { return sides; }               // valid
   int theirs(const Shape& s) const { return s.sides; } // rejected
+  static int Square::* field() {
+    return &Square::sides;  // int Shape::*, converted to int Square::*
+  }
 };
 
 class Stack : private Vector {   // Vector's members become private
@@ -342,8 +347,8 @@ class Token {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 61
-of 63 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 62
+of 64 tests.
 
 - ACC-2, ACC-9: EDG 7.0 accepts a use of a member that a
   using-declaration makes private, if the member is public in the base

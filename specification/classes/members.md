@@ -300,7 +300,8 @@ A member function can declare its first parameter as an explicit object
 parameter, written `this T self`. The object of the call initializes that
 parameter. If the parameter has class type and the object is a prvalue
 of that type, the prvalue initializes the parameter directly, with no
-temporary ({rule}`VC-4`, {question}`Q-0181`).
+temporary ({rule}`VC-4`, {question}`Q-0181`). The parameter ends
+when any other parameter would ({rule}`FN-10`).
 :::
 
 :::{rule} CLS-14
@@ -355,7 +356,7 @@ enumeration type in its class must be a constant expression.
 
 :::{rule} CLS-19
 :kind: required
-:tests: classes/members/standard-layout-reinterpret.cpp classes/members/first-member-same-address.cpp
+:tests: classes/members/standard-layout-reinterpret.cpp classes/members/first-member-same-address.cpp classes/members/standard-layout-bases-same-address.cpp classes/members/empty-base-shares-address.cpp
 
 A *standard-layout* class meets these conditions, and others that this
 page does not list yet *(class properties referenced)*:
@@ -365,7 +366,7 @@ page does not list yet *(class properties referenced)*:
 - Each base and each member is also standard-layout.
 
 The address of such an object equals the address of its first data
-member. A `reinterpret_cast` between a pointer to the object and a
+member and the address of each base subobject. A `reinterpret_cast` between a pointer to the object and a
 pointer to its first data member gives a usable pointer.
 :::
 
@@ -428,8 +429,8 @@ struct Text {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 87
-of 90 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 88
+of 91 tests.
 
 - CLS-3: a missing definition of a static data member compiles in each
   translation unit. The linker reports the missing definition.
@@ -438,8 +439,13 @@ of 90 tests.
 - CLS-9: Clang and GCC accept an anonymous struct member as an
   extension, and reject the member only under `-pedantic-errors`.
 - CLS-11: the size is 1 on every compiler in the matrix.
-- CLS-19: the tests check the consequence for a simple standard-layout
-  class. They do not check each condition of the definition.
+- CLS-19: the tests check the consequence for simple standard-layout
+  classes, one with a data member and two empty bases. They do not
+  check each condition of the definition. CLS-10 alone promises no
+  shared address for a base of a class that is not standard-layout.
+- CLS-21: when a reference binds to the member, Clang and GCC emit a
+  reference to the member at `-O0` and at `-O2`, and the link fails.
+  EDG translates the program and links nothing.
 - CLS-13: every baseline compiler supports explicit object
   parameters, Clang 18 and GCC 14 included, and runs the tests that use
   them. Clang 18 rejects a class prvalue for a by-value explicit

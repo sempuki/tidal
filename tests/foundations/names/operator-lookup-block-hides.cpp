@@ -1,4 +1,4 @@
-// tidal-rules: NAM-38 OPR-15 OVL-7
+// tidal-rules: NAM-38 OPR-15 OVL-7 OPR-6
 // tidal-expect: reject
 // tidal-error-gcc: no match for .operator\+.
 // tidal-error-clang: invalid operands to binary expression

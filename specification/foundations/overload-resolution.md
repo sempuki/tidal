@@ -332,7 +332,9 @@ its row. A call by the operator function's name, such as
 :tests: foundations/overload-resolution/builtin-same-shape-removed.cpp foundations/overload-resolution/builtin-other-shape-kept.cpp foundations/overload-resolution/builtin-removed-by-rewritten.cpp
 
 A built-in candidate is removed if a non-member candidate that is not a
-template has the same parameter types. A rewritten non-member candidate
+template has the same parameter types. A reference parameter differs
+from its referred type, so `operator==(const E&, const E&)` keeps the
+built-in `==` for an enumeration `E`. A rewritten non-member candidate
 also removes the built-in candidate ({question}`Q-0147`).
 :::
 
