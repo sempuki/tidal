@@ -52,6 +52,12 @@ parameter meets the operand at its own position in `p == x`.
 
 The question stays open under decision 0051 (2026-11-03). Clang 22 chooses the member, and GCC 16 and EDG 7.0 choose the non-member, so two families disagree. The provisional answer follows the one family. GCC 16 does not reverse a swapped candidate at all (Q-0211), so EDG 7.0 is the only family that reverses a non-member and orders a swapped member another way. ORD-P1 supports the provisional answer, because only option 1 pairs each parameter of a swapped member with the operand that it meets. Item O11 of the gap review describes option 1.
 
+Kept on 2026-11-03. The source-reader gap review of question cluster 3 agrees with option 1.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of question cluster 3 (`reports/review/2026-11-03-gap-review-question-cluster-3.md`) reads the reference as supporting option 1, with a small doubt. The object parameter is inserted first, and then the parameter order is reversed, so the reversal covers the object parameter. The reference states the two steps one after the other and gives no example of a swapped member.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

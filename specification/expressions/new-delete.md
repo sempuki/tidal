@@ -437,7 +437,7 @@ call:
 
 :::{rule} NEW-23
 :kind: required
-:tests: expressions/new-delete/throw-placement-in-base-class.cpp expressions/new-delete/throw-placement-global.cpp expressions/new-delete/throw-placement-class-new-global-delete.cpp expressions/new-delete/throw-placement-array.cpp expressions/new-delete/throw-placement-two-parameters.cpp expressions/new-delete/throw-placement-default-argument.cpp expressions/new-delete/throw-placement-function-and-template.cpp expressions/new-delete/throw-placement-function-before-template-instantiation.cpp
+:tests: expressions/new-delete/throw-placement-in-base-class.cpp expressions/new-delete/throw-placement-global.cpp expressions/new-delete/throw-placement-class-new-global-delete.cpp expressions/new-delete/throw-placement-array.cpp expressions/new-delete/throw-placement-two-parameters.cpp expressions/new-delete/throw-placement-default-argument.cpp
 
 With placement arguments, the deallocation function is the one that
 matches the allocation function. The two match if their parameters after the first
@@ -446,13 +446,11 @@ have the same types in the same order. These conditions also apply:
 - A parameter with a default argument counts, also when the `new`
   expression gives no argument for the parameter.
 - A function template matches as {rule}`DED-39` says.
-- If a function and a function template both match, the function is
-  called ({question}`Q-0220`).
 :::
 
 :::{rule} NEW-24
 :kind: required
-:tests: expressions/new-delete/throw-placement-converting-type-no-match.cpp expressions/new-delete/throw-placement-reference-type-no-match.cpp expressions/new-delete/throw-placement-ellipsis-no-match.cpp expressions/new-delete/throw-class-delete-hides-global.cpp expressions/new-delete/throw-placement-templates-unordered.cpp
+:tests: expressions/new-delete/throw-placement-converting-type-no-match.cpp expressions/new-delete/throw-placement-reference-type-no-match.cpp expressions/new-delete/throw-placement-ellipsis-no-match.cpp expressions/new-delete/throw-class-delete-hides-global.cpp expressions/new-delete/throw-placement-templates-unordered.cpp expressions/new-delete/throw-placement-function-and-template.cpp expressions/new-delete/throw-placement-function-before-template-instantiation.cpp expressions/new-delete/throw-placement-deleted-function-and-template.cpp
 
 The implementation calls no deallocation function, and the storage is
 not freed, in these cases:
@@ -460,8 +458,10 @@ not freed, in these cases:
 - No function that the search finds matches. A function with an
   ellipsis does not match, and a usual form or a global function is
   not called in place of the match.
-- Two or more functions match, and neither NEW-23 nor {rule}`ORD-9`
-  chooses one ({question}`Q-0222`).
+- Two or more functions match, and {rule}`ORD-9` does not choose one
+  ({question}`Q-0222`). ORD-9 orders only function templates. So a
+  function that is not a template and a matching template make two
+  matches, and neither is called ({question}`Q-0220`).
 :::
 
 :::{rule} NEW-28
@@ -732,7 +732,7 @@ int* q = new (cell) int(4);     // the int is at cell (NEW-33)
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 108
-of 128 tests.
+of 129 tests.
 
 - NEW-42: on x86-64, the global allocation functions of Clang and GCC
   throw `std::bad_alloc` for requests of 2^47 bytes, 2^47 + 1 bytes,
@@ -776,15 +776,20 @@ of 128 tests.
   class and its bases, on the choice between the usual forms of a class,
   and on the placement forms with no match. EDG runs no programs, so
   its results say only that these programs are valid.
-- NEW-23: GCC calls a function in preference to a function template
-  when both match. EDG chooses the same function. A probe with a failing
-  `static_assert` in the template shows that EDG does not instantiate
-  the template. Clang warns that two functions match and calls neither
-  ({question}`Q-0220`). Clang, GCC, and EDG all accept the probe, so
-  none of them instantiates the body of the template
+- NEW-24: Clang warns that two functions match when a function and a
+  function template both match, and calls neither. GCC calls the
+  function. EDG chooses the function, and rejects the program when the
+  function is deleted (`throw-placement-deleted-function-and-template.cpp`).
+  The gap review of 2026-11-03
+  (`reports/review/2026-11-03-gap-review-question-cluster-3.md`) reads
+  the match as no part of overload resolution, so the preference of
+  {rule}`OVL-27` does not apply, and NEW-24 follows Clang
+  ({question}`Q-0220`). Clang, GCC, and EDG all accept a template body
+  that fails if it is instantiated, so none of them instantiates the
+  body of the template
   (`throw-placement-function-before-template-instantiation.cpp`).
-  Q-0220 stays open under decision 0051, because on 2026-11-03 Clang 22
-  still differs from GCC 16 and EDG 7.0.
+  Q-0220 stays open under decision 0051, because on 2026-11-03 GCC 16
+  and EDG 7.0 still differ from Clang 22.
 - NEW-24: Clang and GCC call no deallocation function when two
   templates match and partial ordering prefers neither. Clang warns.
   EDG rejects the `new` expression as ambiguous ({question}`Q-0222`).

@@ -45,8 +45,14 @@ Yes; Clang differs from GCC and EDG (option 1). The gap review describes it, and
 same view of the whole parameter list applies to the constraint
 tie-breaker, where Clang and GCC agree (ORD-13, Q-0146).
 
-The question stays open under decision 0051 (2026-11-03). Clang 22 finds the call ambiguous, and GCC 16 and EDG 7.0 choose the template with no pack, so two families disagree. The provisional answer follows the one family. Item O6 of the gap review gives option 1, and ORD-13 counts a parameter with a default argument in the length of a parameter list (Q-0146). ORD-5 fits option 2, because in a call a parameter that uses its default argument takes no part. The gap review of this cluster should weigh a change to option 2.
+The question stays open under decision 0051 (2026-11-03). Clang 22 finds the call ambiguous, and GCC 16 and EDG 7.0 choose the template with no pack, so two families disagree. The provisional answer follows the one family. Item O6 of the gap review gives option 1, and ORD-13 counts a parameter with a default argument in the length of a parameter list (Q-0146). ORD-5 fits option 2, because in a call a parameter that uses its default argument takes no part.
+
+Kept on 2026-11-03. The source-reader gap review of question cluster 3 reads the reference as supporting option 1, and the reference has an example of this pair of templates that it marks ambiguous. ORD-5 limits the compared types to the parameters with call arguments, but the pack tie-breaker is a separate step that looks at the whole declaration, so ORD-5 gives no support for option 2.
 
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of question cluster 3 (`reports/review/2026-11-03-gap-review-question-cluster-3.md`) reads the reference as supporting option 1. The pack tie-breaker looks at the declared parameters, including those with no call argument. The template with the defaulted parameter has a parameter at the position of the pack, so the tie-breaker does not apply, and the call is ambiguous. The reference has an example of this pair of templates with one argument and marks the call ambiguous. The limit of ORD-5 to the parameters with call arguments is a separate step, so it gives no support for option 2.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

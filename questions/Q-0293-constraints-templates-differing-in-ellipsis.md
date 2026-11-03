@@ -43,6 +43,12 @@ results of Q-0146.
 
 The question stays open under decision 0051 (2026-11-03). Clang 22 and EDG 7.0 choose the constrained template, and GCC 16 finds the call ambiguous, so two families disagree. No principle on Tidal's pages separates the options. ORD-5 leaves the ellipsis out of the types that take part in a call, which fits option 1. ORD-13 counts the ellipsis for two functions that are not templates (Q-0146), and option 2 gives one condition for both.
 
+Kept on 2026-11-03. The source-reader gap review of question cluster 3 agrees with option 1, with a small doubt.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of question cluster 3 (`reports/review/2026-11-03-gap-review-question-cluster-3.md`) reads the reference as supporting option 1, with a small doubt. For two templates, the constraint step checks the template parameter lists and the function parameter lists, and an ellipsis is not a parameter, so the constraint decides. For two plain functions, the list of parameter types records the ellipsis, which fits Q-0146. The two conditions differ, as in Clang 22. The doubt is that the reference does not define a function parameter list as a term.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

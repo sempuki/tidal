@@ -1,8 +1,8 @@
-// tidal-rules: NEW-23 DED-39
+// tidal-rules: NEW-24 DED-39
 // tidal-expect: run
-// tidal-expect-clang: run-fail
-// tidal-error-clang: exit 10
-// tidal-note: A function and a function template both match the placement form with Arena*. The function is called and sets freed to 1. Clang calls no deallocation function when two match (Q-0220).
+// tidal-expect-gcc: run-fail
+// tidal-error-gcc: exit 11
+// tidal-note: A function and a function template both match the placement form with Arena*. Two matches give no deallocation function, so freed stays 0. GCC calls the function and sets freed to 1 (Q-0220).
 using size = decltype(sizeof 0);
 int freed = 0;
 struct Arena {};
@@ -16,5 +16,5 @@ struct Gadget {
 int main() {
   Arena a;
   try { new (&a) Gadget; } catch (int) {}
-  return freed == 1 ? 0 : 10 + freed;
+  return freed == 0 ? 0 : 10 + freed;
 }

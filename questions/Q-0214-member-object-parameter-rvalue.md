@@ -49,6 +49,12 @@ versions 18 and 22.
 
 The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 find the call ambiguous, and EDG 7.0 chooses the member, so two families disagree. Clang 18 also chooses the member. ICS-40 supports the provisional answer. The implicit object parameter of a member with no ref-qualifier binds an rvalue with no preference between the kinds of reference, and option 1 gives that parameter no preference in partial ordering either. Item E6 of the gap review describes option 1.
 
+Kept on 2026-11-03. The source-reader gap review of question cluster 3 agrees with option 1.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of question cluster 3 (`reports/review/2026-11-03-gap-review-question-cluster-3.md`) reads the reference as supporting option 1. For a member with no ref-qualifier, the object parameter is an rvalue reference when the parameter at the same position in the other template is an rvalue reference, and an lvalue reference otherwise. A guard handles the case where the choice depends on itself.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

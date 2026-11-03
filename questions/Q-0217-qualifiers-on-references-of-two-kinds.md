@@ -47,6 +47,12 @@ their own, with no condition on each other.
 
 The question stays open under decision 0051 (2026-11-03). Clang 22 finds no order, and GCC 16 and EDG 7.0 choose `operator T&()`, so two families disagree. The provisional answer follows the one family. ORD-P2 supports the provisional answer. Steps 5a and 5b each act inside a pair on their own, and option 2 adds a condition that ties step 5b to the kinds of the two references. Item O5 of the gap review describes option 1.
 
+Kept on 2026-11-03. The source-reader gap review of question cluster 3 agrees with option 1.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of question cluster 3 (`reports/review/2026-11-03-gap-review-question-cluster-3.md`) reads the reference as supporting option 1. The more qualified of the two referenced types is recorded whenever both types are references, of either kind. The check on reference kinds and the check on cv-qualifiers each remove the same direction, so the condition that links them never changes a result, and neither template wins.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

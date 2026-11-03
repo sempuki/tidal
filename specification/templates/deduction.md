@@ -617,16 +617,17 @@ before `auto` constrains the invented parameter ({rule}`CPT-20`).
 
 :::{rule} DED-39
 :kind: required
-:tests: templates/deduction/placement-deallocation-match.cpp templates/deduction/placement-deallocation-ordered.cpp templates/deduction/placement-deallocation-ordered-instantiation.cpp expressions/new-delete/throw-placement-function-and-template.cpp expressions/new-delete/throw-placement-function-before-template-instantiation.cpp expressions/new-delete/throw-placement-templates-unordered.cpp
+:tests: templates/deduction/placement-deallocation-match.cpp templates/deduction/placement-deallocation-ordered.cpp templates/deduction/placement-deallocation-ordered-instantiation.cpp expressions/new-delete/throw-placement-function-and-template.cpp expressions/new-delete/throw-placement-function-before-template-instantiation.cpp expressions/new-delete/throw-placement-deleted-function-and-template.cpp expressions/new-delete/throw-placement-templates-unordered.cpp
 
 A `new` expression with placement arguments can need a placement
 deallocation function ({doc}`/expressions/new-delete`, {rule}`NEW-23`). A deallocation
 function template matches if deduction makes its parameter types after
 the first the same as those of the allocation function. If several
 templates match, partial ordering ({rule}`ORD-9`) chooses one
-({question}`Q-0219`). If a function that is not a template also
-matches, the template is not chosen, and its body is not instantiated
-({question}`Q-0220`).
+({question}`Q-0219`). Partial ordering compares only templates. If a
+function that is not a template also matches, the function and the
+template are two matches, and {rule}`NEW-24` calls neither
+({question}`Q-0220`). The body of the template is not instantiated.
 :::
 
 ### No candidate
@@ -715,7 +716,7 @@ all<long>(1, 'c');              // Ts = long, char
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 112
-of 120 tests.
+of 121 tests.
 
 The clean-room writer probed each step with Clang 22, GCC 16, and EDG
 7.0, and checked the tests and grids on the eight
@@ -758,9 +759,9 @@ grids below.
 - DED-39: when a function and a template both match, no compiler
   instantiates the template. The body of the template in
   `throw-placement-function-before-template-instantiation.cpp` fails
-  if it is instantiated, and every compiler accepts the test. GCC and
-  EDG choose the function. Clang chooses neither and calls no
-  deallocation function ({question}`Q-0220`).
+  if it is instantiated, and every compiler accepts the test. Clang
+  calls no deallocation function, as DED-39 gives. GCC and EDG choose
+  the function ({question}`Q-0220`).
 - DED-20: the gap review (item E3) predicted that a later parameter
   `List<A...>` gives elements to a pack before the end. Every compiler
   keeps the pack empty and rejects the call

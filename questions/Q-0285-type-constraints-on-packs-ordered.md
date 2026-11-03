@@ -37,6 +37,12 @@ the rule matches CNS-3 for a fold expression that the program writes.
 
 The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 find the call ambiguous, and EDG 7.0 chooses the `AB` template in its C++23 mode, so two families disagree. CNS-3 supports the provisional answer. A fold expression is one atomic constraint, and every compiler treats a fold expression that the program writes that way (`fold-atomic.cpp`). The gap review of concepts and constraints says that a later language mode can order the templates, and Q-0007 keeps language versions after C++23 out of scope. Cluster 5 (EDG alone on templates) also lists the question.
 
+Kept on 2026-11-03. The source-reader gap review of question cluster 3 agrees with option 1.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of question cluster 3 (`reports/review/2026-11-03-gap-review-question-cluster-3.md`) reads the reference as supporting option 1. A type constraint on a pack gives a fold over the concept checks. In C++23, normalization splits only parentheses, conjunctions, disjunctions, and concept references, so a fold is one atomic constraint. The two folds are different expressions, and neither template subsumes the other. A later language version normalizes such folds through their operands, which gives EDG's result, and Q-0007 keeps that version out of scope.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

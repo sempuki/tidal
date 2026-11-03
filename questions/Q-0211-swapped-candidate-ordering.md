@@ -42,6 +42,12 @@ reversal compares the parameters that meet the same operand.
 
 The question stays open under decision 0051 (2026-11-03). Clang 22 and EDG 7.0 choose the swapped candidate, and GCC 16 chooses the written candidate, so two families disagree. ORD-P1 supports the provisional answer. In a call, the types that take part are the parameters that meet the call's arguments, and the reversal pairs each parameter with the operand that it meets. Item L7 of the inventory and item O11 of the gap review describe the same reversal.
 
+Kept on 2026-11-03. The source-reader gap review of question cluster 3 agrees with option 1.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of question cluster 3 (`reports/review/2026-11-03-gap-review-question-cluster-3.md`) reads the reference as supporting option 1. When exactly one of the two templates comes from a candidate with reversed operands, the order of that template's function parameters is reversed before deduction.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

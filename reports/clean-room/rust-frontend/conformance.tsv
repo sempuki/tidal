@@ -3098,8 +3098,9 @@ pass	expressions/new-delete/throw-placement-array.cpp
 pass	expressions/new-delete/throw-placement-class-new-global-delete.cpp
 pass	expressions/new-delete/throw-placement-converting-type-no-match.cpp
 run-unsupported	expressions/new-delete/throw-placement-default-argument.cpp
+pass	expressions/new-delete/throw-placement-deleted-function-and-template.cpp
 FALSE-REJECT	expressions/new-delete/throw-placement-ellipsis-no-match.cpp
-pass	expressions/new-delete/throw-placement-function-and-template.cpp
+RUN-WRONG-RESULT	expressions/new-delete/throw-placement-function-and-template.cpp
 pass	expressions/new-delete/throw-placement-function-before-template-instantiation.cpp
 pass	expressions/new-delete/throw-placement-global.cpp
 run-unsupported	expressions/new-delete/throw-placement-in-base-class.cpp

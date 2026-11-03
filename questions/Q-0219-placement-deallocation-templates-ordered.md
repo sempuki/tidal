@@ -43,6 +43,12 @@ of partial ordering.
 
 The question stays open under decision 0051 (2026-11-03). GCC 16 calls the template with `T*`, EDG 7.0 instantiates the same template (`placement-deallocation-ordered-instantiation.cpp`), and Clang 22 calls no deallocation function, so two families disagree. ORD-P1 supports the provisional answer. Its table lists the placement deallocation match as a context of partial ordering. Items M7 and M10 of the gap review describe the same use.
 
+Kept on 2026-11-03. The source-reader gap review of question cluster 3 agrees with option 1. The review limits the ordering step to templates, which Q-0220 follows.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of question cluster 3 (`reports/review/2026-11-03-gap-review-question-cluster-3.md`) reads the reference as supporting option 1. The match of a placement deallocation template to a placement allocation function is a context of partial ordering. The match fails only if no template, or more than one, remains after partial ordering.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

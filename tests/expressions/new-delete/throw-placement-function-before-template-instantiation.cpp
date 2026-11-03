@@ -1,6 +1,6 @@
-// tidal-rules: NEW-23 DED-39
+// tidal-rules: NEW-24 DED-39
 // tidal-expect: accept
-// tidal-note: The body of the template fails if the template is instantiated. EDG runs no programs, and its acceptance shows that EDG chooses the function over the template (Q-0220). Clang chooses neither and also accepts.
+// tidal-note: A function and a function template both match the placement form. The body of the template fails if the template is instantiated. No compiler instantiates the template. Clang calls neither function, and GCC calls the function (Q-0220).
 using size = decltype(sizeof 0);
 template <class T> constexpr bool never = false;
 struct Arena {};

@@ -43,7 +43,7 @@ current state only. The history of how the project got here is in
 | [Pointers to members](../specification/expressions/member-pointers.md) | 12 | 5 required, 5 reject, 1 undefined, 1 unspecified | 74 | 1 | 1 | 41 | Q-0333 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Postfix expressions](../specification/expressions/postfix.md) | 21 | 7 required, 8 reject, 5 undefined, 1 conditionally-supported | 69 | 5 | 7 | 84 | Q-0031, Q-0034, Q-0124, Q-0178, Q-0316, Q-0318 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Casts](../specification/expressions/casts.md) | 19 | 8 required, 7 reject, 2 undefined, 2 impl-defined | 56 | 4 | 1 | 47 | Q-0017, Q-0325 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
-| [New and delete](../specification/expressions/new-delete.md) | 42 | 22 required, 11 reject, 4 undefined, 3 unspecified, 2 impl-defined | 128 | 11 | 20 | 124 | Q-0005, Q-0035, Q-0036, Q-0091, Q-0125, Q-0220, Q-0221, Q-0222, Q-0300, Q-0301, Q-0302, Q-0303, Q-0313 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
+| [New and delete](../specification/expressions/new-delete.md) | 42 | 22 required, 11 reject, 4 undefined, 3 unspecified, 2 impl-defined | 129 | 11 | 21 | 124 | Q-0005, Q-0035, Q-0036, Q-0091, Q-0125, Q-0220, Q-0221, Q-0222, Q-0300, Q-0301, Q-0302, Q-0303, Q-0313 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Lambda expressions](../specification/expressions/lambdas.md) | 29 | 17 required, 9 reject, 1 undefined, 1 unspecified, 1 recommended | 68 | 13 | 2 | 85 | Q-0037, Q-0092 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Placeholder types in variable declarations](../specification/declarations/auto.md) | 22 | 12 required, 10 reject | 55 | 8 | 0 | 36 | Q-0010 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Type aliases and class names](../specification/declarations/type-names.md) | 10 | 4 required, 5 reject, 1 no-diagnostic | 58 | 2 | 4 | 15 | Q-0066, Q-0067, Q-0093 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
@@ -82,7 +82,7 @@ current state only. The history of how the project got here is in
 | [Template declarations](../specification/templates/declarations.md) | 49 | 26 required, 21 reject, 2 no-diagnostic | 121 | 1 | 8 | 70 | Q-0195, Q-0196, Q-0197, Q-0198, Q-0199, Q-0200, Q-0296 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Template arguments](../specification/templates/arguments.md) | 27 | 16 required, 10 reject, 1 unspecified | 88 | 0 | 6 | 57 | Q-0117, Q-0168, Q-0169, Q-0170, Q-0201 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Explicit and partial specialization](../specification/templates/specialization.md) | 32 | 16 required, 15 reject, 1 no-diagnostic | 93 | 0 | 13 | 18 | Q-0171, Q-0172, Q-0173, Q-0174, Q-0203, Q-0204, Q-0205, Q-0206, Q-0207, Q-0295 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
-| [Template argument deduction](../specification/templates/deduction.md) | 39 | 36 required, 3 reject | 120 | 0 | 8 | 82 | Q-0208, Q-0209, Q-0215, Q-0219, Q-0220, Q-0295 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
+| [Template argument deduction](../specification/templates/deduction.md) | 39 | 36 required, 3 reject | 121 | 0 | 9 | 82 | Q-0208, Q-0209, Q-0215, Q-0219, Q-0220, Q-0295 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Partial ordering of templates](../specification/templates/ordering.md) | 16 | 15 required, 1 reject | 42 | 0 | 11 | 25 | Q-0146, Q-0211, Q-0214, Q-0216, Q-0217, Q-0218, Q-0293 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Dependent names](../specification/templates/dependent-names.md) | 39 | 20 required, 13 reject, 6 no-diagnostic | 117 | 0 | 20 | 81 | Q-0223, Q-0224, Q-0225, Q-0226, Q-0227, Q-0228, Q-0229, Q-0230, Q-0245, Q-0246, Q-0247, Q-0248, Q-0249, Q-0250 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Instantiation](../specification/templates/instantiation.md) | 36 | 16 required, 13 reject, 1 undefined, 2 unspecified, 1 impl-defined, 3 no-diagnostic | 130 | 2 | 18 | 55 | Q-0231, Q-0232, Q-0233, Q-0234, Q-0235, Q-0236, Q-0237, Q-0251, Q-0252, Q-0253, Q-0254, Q-0255, Q-0256, Q-0257, Q-0310 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
@@ -122,7 +122,7 @@ containerized compilers on every push and pull request (decision 0012).
 | GCC 16.2.0 | container (official image) | skips `-m32` tests |
 | Clang 18.1.3 | container | |
 | GCC 14.2.0 | container | |
-| EDG 7.0 | container | front end only; skips `-m32`, warning-flag, and sanitizer tests; per-compiler expectations on 189 tests, each with a note that names its question or the implementation choice |
+| EDG 7.0 | container | front end only; skips `-m32`, warning-flag, and sanitizer tests; per-compiler expectations on 190 tests, each with a note that names its question or the implementation choice |
 | EDG 7.0, ILP32 | container, built with EDG's i686 configuration | front end only; runs only the `-m32` tests; differs on the alignment of `long long` (Q-0120) |
 | GCC 16.2.0, `-O2` | container, report | runs the tests at `-O2`; does not fail a run |
 | Clang 22.1.8, `-O2` | container, report | runs the tests at `-O2`; does not fail a run |
@@ -149,12 +149,12 @@ questions. See `questions/README.md`.
 
 ## Known limits of the tooling
 
-- The clean-room front end passes 5021 of 5653 tests, and 5171 pass their check.
+- The clean-room front end passes 5021 of 5654 tests, and 5172 pass their check.
   The front end reads `#include "file"` and no standard header.
   `tools/frontend_check.py` fails when a test that it passed no longer
   passes (`reports/clean-room/rust-frontend/conformance.tsv`).
 
-- 2622 tests carry `tidal-error` patterns. A pattern checks that a
+- 2623 tests carry `tidal-error` patterns. A pattern checks that a
   compiler rejects the test, fails to link the test, or stops the test
   at run time, for the reason the test's rule gives.
   In 50 tests, some compiler family has no pattern, because that
