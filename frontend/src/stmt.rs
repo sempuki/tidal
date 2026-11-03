@@ -389,7 +389,7 @@ impl P {
             return None;
         }
         if !(et.is_integral() || matches!(et, Ty::Enum(_))) {
-            self.error(line, "CE-25", "case value must have integer or enumeration type");
+            self.error(line, "CE-11", "case value must have integer or enumeration type");
             return None;
         }
         if self.is_scoped_enum(&et) && et != ct.t {

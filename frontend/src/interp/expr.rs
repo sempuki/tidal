@@ -2,6 +2,7 @@
 // operators, calls, and initialization.
 
 use super::*;
+use super::f80::F80;
 
 /// The largest allocation the interpreter's machine gives. A larger
 /// request fails (NEW-38).
@@ -376,7 +377,7 @@ impl<'a> Machine<'a> {
     /// The place a subscript names, which can be one past the end.
     fn index_place(&mut self, e: &Expr) -> R<Ptr> {
         let EK::Index(a, i) = &e.k else { unreachable!() };
-        // SEQ-3: the array before the index.
+        // SEQ-2: the array before the index.
         let base = self.eval(a)?;
         let idx = self.eval_int(i)?;
         match base {
@@ -725,7 +726,7 @@ impl<'a> Machine<'a> {
     pub fn eval_int(&mut self, e: &Expr) -> R<i128> {
         match self.eval(e)? {
             Val::Int(v) => Ok(v),
-            Val::Float(_) => unsup("float where integer expected"),
+            Val::Float(_) | Val::LD(_) => unsup("float where integer expected"),
             _ => unsup("non-integer value"),
         }
     }
@@ -734,6 +735,7 @@ impl<'a> Machine<'a> {
         match self.eval(e)? {
             Val::Int(v) => Ok(v != 0),
             Val::Float(f) => Ok(f != 0.0),
+            Val::LD(f) => Ok(!f.is_zero()),
             Val::Null => Ok(false),
             Val::Ptr(_) | Val::FnPtr(..) | Val::Addr(_) | Val::Member(..) => Ok(true),
             _ => unsup("non-scalar condition"),
@@ -770,7 +772,12 @@ impl<'a> Machine<'a> {
         self.line = e.line;
         match &e.k {
             EK::Int(v) => Ok(Val::Int(*v)),
+            EK::Float(f) if e.ty.t == Ty::LDouble => Ok(Val::LD(F80::from_f64(*f))),
             EK::Float(f) => Ok(Val::Float(*f)),
+            EK::LFloat(s) => match F80::parse(s) {
+                Some(v) => Ok(Val::LD(v)),
+                None => unsup("long double literal"),
+            },
             EK::NullPtr => Ok(Val::Null),
             EK::ZeroInit => Ok(self.zero(&e.ty)),
             EK::MemberDefault => unsup("member with no designator outside an aggregate"),
@@ -1754,6 +1761,7 @@ impl<'a> Machine<'a> {
                 Ok(Val::Int(match v {
                     Val::Int(x) => (x != 0) as i128,
                     Val::Float(f) => (f != 0.0) as i128,
+                    Val::LD(f) => !f.is_zero() as i128,
                     Val::Null => 0,
                     Val::Ptr(_) | Val::FnPtr(..) | Val::Addr(_) | Val::Member(..) => 1,
                     _ => return unsup("conversion to bool"),
@@ -1855,11 +1863,41 @@ impl<'a> Machine<'a> {
                     }
                     return Ok(Val::Int(r));
                 }
+                if *to == Ty::LDouble {
+                    return Ok(Val::LD(F80::from_i128(x)));
+                }
                 if to.is_floating() {
                     let f = x as f64;
                     return Ok(Val::Float(if *to == Ty::Float { f as f32 as f64 } else { f }));
                 }
                 Ok(Val::Int(x))
+            }
+            Val::Float(f) if *to == Ty::LDouble => Ok(Val::LD(F80::from_f64(f))),
+            Val::LD(x) => {
+                if let Some(ti) = to_int(to) {
+                    if ti == Ty::Bool {
+                        return Ok(Val::Int(!x.is_zero() as i128));
+                    }
+                    match x.to_i128() {
+                        Some(t) if t >= ti.int_min() && t <= ti.int_max() => return Ok(Val::Int(t)),
+                        _ => return ub("CONV-5", "floating value out of the range of the integer type"),
+                    }
+                }
+                if *to == Ty::LDouble {
+                    return Ok(Val::LD(x));
+                }
+                let f = x.to_f64();
+                if to.is_floating() {
+                    let r = if *to == Ty::Float { f as f32 as f64 } else { f };
+                    if r.is_infinite() && x.is_finite() {
+                        if self.constant {
+                            return limit("CONV-11", "floating conversion overflows the target type");
+                        }
+                        return unsup("floating conversion out of range (CONV-11, implementation-defined)");
+                    }
+                    return Ok(Val::Float(r));
+                }
+                Ok(Val::LD(x))
             }
             Val::Float(f) => {
                 if let Some(ti) = to_int(to) {
@@ -2085,6 +2123,7 @@ impl<'a> Machine<'a> {
                 let r = f + delta as f64;
                 Val::Float(if a.ty.t == Ty::Float { r as f32 as f64 } else { r })
             }
+            Val::LD(f) => Val::LD(f.add(F80::from_i128(delta))),
             Val::Ptr(p) => Val::Ptr(self.ptr_add(p, delta, ptr_rule)?),
             Val::Null => return ub(ptr_rule, "increment of a null pointer"),
             _ => return unsup("increment"),
@@ -2096,6 +2135,12 @@ impl<'a> Machine<'a> {
 
     /// BF-10: a bit-field keeps the low bits of the value.
     fn bitfield_value(&self, target: &Expr, v: Val) -> Val {
+        if let EK::Var(id) = &target.k {
+            // SB-10: a binding that names a bit-field.
+            if let Some(e) = self.p.sb_place.get(id) {
+                return self.bitfield_value(&e.clone(), v);
+            }
+        }
         if let EK::Member(_, fid) = &target.k {
             if let DK::Field(fi) = &self.p.decls[*fid].k {
                 if let (Some(w), Val::Int(x)) = (fi.bits, &v) {
@@ -2122,7 +2167,7 @@ impl<'a> Machine<'a> {
             if op.is_some() {
                 return unsup("compound assignment of a class");
             }
-            // SEQ-3: the right operand first.
+            // SEQ-2: the right operand first.
             let (src, mv) = if r.cat == Cat::PR { (self.materialize(r)?, true) } else { (self.lvalue(r)?, r.cat == Cat::X) };
             let src = self.class_cast(src, &nonref(&r.ty).t, &Ty::Class(c))?;
             let place = self.lvalue(l)?;
@@ -2130,7 +2175,7 @@ impl<'a> Machine<'a> {
             self.assign_parts(&place, &src, c, mv)?;
             return Ok(place);
         }
-        // SEQ-3: the right operand first, then the left. INIT-1: a copy of
+        // SEQ-2: the right operand first, then the left. INIT-1: a copy of
         // an `unsigned char` or `std::byte` with no value has no value.
         let rv = match &r.k {
             EK::Conv(Conv::LToR, ra) if op.is_none() && !self.constant && (l.ty.t == Ty::UChar || matches!(&l.ty.t, Ty::Enum(x) if self.p.enums[*x].name == "byte")) && ra.ty.t == l.ty.t => {
@@ -2193,6 +2238,7 @@ impl<'a> Machine<'a> {
                     }
                 }
                 Val::Float(f) => Ok(Val::Float(-f)),
+                Val::LD(f) => Ok(Val::LD(f.neg())),
                 _ => unsup("negation"),
             },
             UOp::Not => Ok(Val::Int(!self.eval_bool(a)? as i128)),
@@ -2372,7 +2418,7 @@ impl<'a> Machine<'a> {
 
     /// The place that `obj.*mp` names for a data member (MPTR-5, MPTR-6).
     fn ptr_mem_place(&mut self, obj: &Expr, mp: &Expr) -> R<Ptr> {
-        // SEQ-3: the object first.
+        // SEQ-2: the object first.
         let place = if obj.cat == Cat::PR { self.materialize(obj)? } else { self.lvalue(obj)? };
         let (d, path) = match self.eval(mp)? {
             Val::Member(d, path) => (d, path),
@@ -2708,6 +2754,42 @@ impl<'a> Machine<'a> {
             }
             (Val::Int(x), Val::Float(y)) => self.arith(op, Val::Float(x as f64), Val::Float(y), ct, rt),
             (Val::Float(x), Val::Int(y)) => self.arith(op, Val::Float(x), Val::Float(y as f64), ct, rt),
+            (Val::LD(x), Val::LD(y)) => {
+                let fin = |v: F80, rule: &'static str| -> R<Val> {
+                    if !v.is_finite() && x.is_finite() && y.is_finite() {
+                        return ub(rule, "floating result out of the range of its type");
+                    }
+                    Ok(Val::LD(v))
+                };
+                let c = x.partial_cmp(y);
+                use std::cmp::Ordering::*;
+                match op {
+                    BOp::Add => fin(x.add(y), "ADD-17"),
+                    BOp::Sub => fin(x.sub(y), "ADD-17"),
+                    BOp::Mul => fin(x.mul(y), "MUL-12"),
+                    BOp::Div => {
+                        if y.is_zero() {
+                            if self.constant {
+                                return limit("CE-28", "floating division by zero in constant evaluation");
+                            }
+                            // MUL-11, MUL-20: IEEE 754 on the matrix targets.
+                            return Ok(Val::LD(x.div(y)));
+                        }
+                        fin(x.div(y), "MUL-12")
+                    }
+                    BOp::Lt => Ok(Val::Int((c == Some(Less)) as i128)),
+                    BOp::Gt => Ok(Val::Int((c == Some(Greater)) as i128)),
+                    BOp::Le => Ok(Val::Int(matches!(c, Some(Less | Equal)) as i128)),
+                    BOp::Ge => Ok(Val::Int(matches!(c, Some(Greater | Equal)) as i128)),
+                    BOp::Eq => Ok(Val::Int((c == Some(Equal)) as i128)),
+                    BOp::Ne => Ok(Val::Int((c != Some(Equal)) as i128)),
+                    _ => unsup("floating operator"),
+                }
+            }
+            (Val::LD(x), Val::Float(y)) => self.arith(op, Val::LD(x), Val::LD(F80::from_f64(y)), ct, rt),
+            (Val::Float(x), Val::LD(y)) => self.arith(op, Val::LD(F80::from_f64(x)), Val::LD(y), ct, rt),
+            (Val::LD(x), Val::Int(y)) => self.arith(op, Val::LD(x), Val::LD(F80::from_i128(y)), ct, rt),
+            (Val::Int(x), Val::LD(y)) => self.arith(op, Val::LD(F80::from_i128(x)), Val::LD(y), ct, rt),
             _ => unsup("operands of an arithmetic operator"),
         }
     }
@@ -3222,8 +3304,18 @@ impl<'a> Machine<'a> {
             if i >= f.params.len() {
                 // An argument for the ellipsis: the program cannot read it
                 // without the library, so only its evaluation counts.
-                if !f.fty.variadic || matches!(nonref(&a.ty).t, Ty::Class(_)) {
+                if !f.fty.variadic {
                     return unsup("call with variadic arguments");
+                }
+                if let Ty::Class(c) = nonref(&a.ty).t {
+                    // A class argument with a trivial copy constructor and
+                    // destructor: a copy that nothing reads.
+                    let p = self.p;
+                    if p.trivial(c, crate::special::Sm::CopyCtor) != Some(true) || p.trivial(c, crate::special::Sm::Dtor) != Some(true) {
+                        return unsup("call with variadic arguments");
+                    }
+                    self.discard(a)?;
+                    continue;
                 }
                 self.eval(a)?;
                 continue;
@@ -3343,7 +3435,7 @@ impl<'a> Machine<'a> {
             }
             if let EK::PtrMem(obj, mp) = &c.k {
                 // MPTR-5: a call through a pointer to member function. The
-                // object comes first (SEQ-3), then the pointer.
+                // object comes first (SEQ-2), then the pointer.
                 let place = if obj.cat == Cat::PR { self.materialize(obj)? } else { self.lvalue(obj)? };
                 let (d, path) = match self.eval(mp)? {
                     Val::Member(d, path) => (d, path),

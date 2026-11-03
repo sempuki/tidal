@@ -1,6 +1,6 @@
 // tidal-fe: a hobby C++ front end built from the Tidal specification.
 //
-//   tidal-fe check FILE [--m32] [--werror] [-Wname]   exit 0 accept, 1 reject, 2 unsupported
+//   tidal-fe check FILE [--m32] [--werror] [-Wname] [-ftemplate-depth=N]   exit 0 accept, 1 reject, 2 unsupported
 //   tidal-fe run FILE [FILE...] [--m32]       run a program on the interpreter
 //   tidal-fe conform DIR [-v] [--out FILE]    run the conformance tests
 
@@ -158,6 +158,9 @@ fn main() {
             let path = &args[2];
             let m32 = args.iter().any(|a| a == "--m32");
             let werror = args.iter().any(|a| a == "--werror");
+            if let Some(n) = types::depth_limit_of(&args.iter().map(|a| a.as_str()).collect::<Vec<_>>()) {
+                types::DEPTH_LIMIT.with(|c| c.set(n));
+            }
             let src = match std::fs::read_to_string(path) {
                 Ok(s) => s,
                 Err(e) => {

@@ -7,6 +7,39 @@ use std::rc::Rc;
 
 thread_local! {
     pub static ILP32: Cell<bool> = Cell::new(false);
+    /// The limit on nested instantiations (TR-13). `-ftemplate-depth=N`
+    /// and `--pending_instantiations=N` set it.
+    pub static DEPTH_LIMIT: Cell<u32> = Cell::new(256);
+}
+
+/// An array type with the same cv-qualifiers on the array and on its
+/// elements at each level: the union of the two.
+pub fn array_cv_norm(q: &QTy) -> QTy {
+    fn inner(q: &QTy) -> (bool, bool) {
+        match &q.t {
+            Ty::Array(e, _) => {
+                let (c, v) = inner(e);
+                (c || q.c, v || q.v)
+            }
+            _ => (q.c, q.v),
+        }
+    }
+    fn set(q: &QTy, c: bool, v: bool) -> QTy {
+        match &q.t {
+            Ty::Array(e, n) => QTy { t: Ty::Array(Box::new(set(e, c, v)), *n), c, v },
+            _ => QTy { t: q.t.clone(), c, v },
+        }
+    }
+    if !matches!(q.t, Ty::Array(..)) {
+        return q.clone();
+    }
+    let (c, v) = inner(q);
+    set(q, c, v)
+}
+
+/// The depth limit that a compiler option in `flags` sets (TR-13).
+pub fn depth_limit_of(flags: &[&str]) -> Option<u32> {
+    flags.iter().find_map(|f| f.strip_prefix("-ftemplate-depth=").or_else(|| f.strip_prefix("--pending_instantiations=")).and_then(|v| v.parse().ok()))
 }
 
 pub fn ilp32() -> bool {

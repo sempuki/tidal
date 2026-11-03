@@ -526,6 +526,17 @@ impl<'a> Machine<'a> {
         Ok(match (v, t) {
             (Val::Float(f), Ty::Float) => (*f as f32).to_bits().to_le_bytes().to_vec(),
             (Val::Float(f), Ty::Double) => f.to_bits().to_le_bytes().to_vec(),
+            (Val::LD(x), Ty::LDouble) => {
+                // TYP-10: ten bytes of the x87 format, then padding.
+                let mut b = x.to_bytes().to_vec();
+                b.resize(s, 0);
+                b
+            }
+            (Val::Float(f), Ty::LDouble) => {
+                let mut b = super::f80::F80::from_f64(*f).to_bytes().to_vec();
+                b.resize(s, 0);
+                b
+            }
             (Val::Float(_), _) => return unsup("bytes of a long double"),
             (Val::Int(x), _) => int(*x),
             (Val::Ptr(_) | Val::Null | Val::FnPtr(..) | Val::Addr(_), Ty::Ptr(_) | Ty::NullPtr) => {
@@ -560,6 +571,7 @@ impl<'a> Machine<'a> {
         match &t.t {
             Ty::Float => Ok(Val::Float(f32::from_bits(u as u32) as f64)),
             Ty::Double => Ok(Val::Float(f64::from_bits(u as u64))),
+            Ty::LDouble if b.len() >= 10 => Ok(Val::LD(super::f80::F80::from_bytes(b))),
             Ty::NullPtr => Ok(Val::Null),
             Ty::Ptr(pt) => self.addr_val(u as u64, pt),
             _ => unsup("a value of this type from its bytes"),

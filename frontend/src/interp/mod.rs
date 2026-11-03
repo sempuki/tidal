@@ -19,6 +19,7 @@
 
 mod bytes;
 mod expr;
+pub mod f80;
 pub mod run;
 mod stmt;
 
@@ -108,6 +109,8 @@ pub fn full_path(p: &Ptr) -> Vec<usize> {
 pub enum Val {
     Int(i128),
     Float(f64),
+    /// A `long double` value (TYP-10).
+    LD(f80::F80),
     Ptr(Ptr),
     /// A function, with the translation unit whose declaration it is.
     FnPtr(usize, DeclId),
@@ -601,6 +604,7 @@ impl<'a> Machine<'a> {
     pub fn zero(&self, t: &QTy) -> Val {
         match &t.t {
             Ty::Ptr(_) | Ty::NullPtr | Ty::MemPtr(..) => Val::Null,
+            Ty::LDouble => Val::LD(f80::F80::Zero(false)),
             x if x.is_floating() => Val::Float(0.0),
             Ty::Array(el, Some(n)) => Val::Agg((0..*n).map(|_| self.zero(el)).collect()),
             Ty::Class(c) => {
@@ -965,13 +969,13 @@ impl<'a> Machine<'a> {
                 self.cleanup(list)?;
                 Ok(v)
             }
-            // UNW-9: an exception ends the temporaries of the full
+            // UNW-1: an exception ends the temporaries of the full
             // expression.
             Err(e) => Err(self.unwind(list, e)),
         }
     }
 
-    /// End objects while an exception passes (UNW-1, UNW-9). Other stops
+    /// End objects while an exception passes (UNW-1). Other stops
     /// end nothing. A destructor that throws during the unwinding ends the
     /// program (UNW-5).
     pub fn unwind(&mut self, list: Vec<Cleanup>, e: Stop) -> Stop {

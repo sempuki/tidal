@@ -38,7 +38,9 @@ impl P {
             qual = self.parse_nested_name()?;
             name = self.ident()?;
             if let Some(crate::templ::InstReq::Class { name: n, .. }) = &self.inst {
-                if *n == name && qual.is_none() {
+                // A partial specialization of a member template defined
+                // outside its class has a qualified name (TSP-9).
+                if *n == name {
                     inst_req = self.inst.take();
                 }
             }
@@ -75,7 +77,12 @@ impl P {
                 match tid {
                     Some(t) if self.templs[t].kind == crate::templ::TKind::Class => {
                         let l = self.line();
+                        let at = self.pos;
                         let raw = self.parse_raw_targs()?;
+                        // DEP-15: the argument tokens of a partial
+                        // specialization, for the names of its current
+                        // instantiation.
+                        self.spec_arg_toks = self.toks[at + 1..self.pos.saturating_sub(1).max(at + 1)].iter().map(|t| t.text.clone()).collect();
                         if self.in_template() {
                             if let Some(pats) = self.pattern_targs(t, raw) {
                                 spec_targs = Some((t, pats));
@@ -146,6 +153,19 @@ impl P {
         let cur = self.decl_scope();
         let mut target_scope = cur;
         let mut cid: Option<usize> = None;
+        if let Some(Ok(s)) = qual {
+            // TSP-21: `template <> template <...> struct C<A>::M` gives the
+            // member template M of the instance C<A> again. The template
+            // that the instance made, with its partial specializations, is
+            // no longer used.
+            let of_instance = matches!(self.scopes[s].kind, SK::Class(o) if self.inst_of.contains_key(&o));
+            if explicit_spec && pending.is_some() && !spec_args && of_instance && self.inst_depth == 0 {
+                if let Some(v) = self.scopes[s].names.get_mut(&name) {
+                    let decls = &self.decls;
+                    v.retain(|&id| !matches!(decls[id].k, DK::Template(TemplKind::Class(_))));
+                }
+            }
+        }
         match qual {
             Some(Ok(s)) => {
                 target_scope = s;
@@ -183,6 +203,26 @@ impl P {
         }
         if spec_args {
             cid = None;
+        }
+        if let (Some(c), Some(Ok(s))) = (cid, qual) {
+            // TSP-22: an explicit specialization of a member class of an
+            // instance replaces the class that the instance made.
+            let of_instance = matches!(self.scopes[s].kind, SK::Class(o) if self.inst_of.contains_key(&o));
+            if explicit_spec && of_instance && self.classes[c].complete && self.inst_depth == 0 && self.explicit_member_classes.insert(c) {
+                let sc = self.classes[c].scope;
+                self.scopes[sc].names.clear();
+                let ci = &mut self.classes[c];
+                ci.complete = false;
+                ci.fields.clear();
+                ci.bases.clear();
+                ci.ctors.clear();
+                ci.dtor = None;
+                ci.has_virtual = false;
+                ci.has_conv = false;
+                ci.conv_targets.clear();
+                ci.anon_unions.clear();
+                ci.align = 0;
+            }
         }
         let c = match cid {
             Some(c) => {
@@ -242,6 +282,8 @@ impl P {
         }
         if matches!(self.last_templ, Some(crate::templ::Last::Partial(..))) && spec_args {
             self.last_partial_class = Some(c);
+            let toks = std::mem::take(&mut self.spec_arg_toks);
+            self.partial_arg_toks.insert(c, toks);
         }
         if pending.is_some() && matches!(qual, Some(Err(()))) {
             if let Some((t, pats)) = self.last_qual_templ.take() {
@@ -996,7 +1038,7 @@ impl P {
                     _ => None,
                 };
                 if !(et.t.is_integral() || matches!(et.t, Ty::Enum(_) | Ty::Unknown | Ty::Dep(_))) {
-                    self.error(el, "CE-25", "enumerator value must have integer or enumeration type");
+                    self.error(el, "CE-11", "enumerator value must have integer or enumeration type");
                 }
                 match self.const_int(&ex) {
                     Ok(x) => v = x,

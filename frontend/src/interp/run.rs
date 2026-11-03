@@ -118,7 +118,10 @@ impl<'a> Machine<'a> {
         }
         // SINIT-7: a static data member defined outside its class takes
         // the place of its definition.
-        out.sort_by_key(|&id| (self.p.static_member_pos.get(&id).copied().unwrap_or(id), id));
+        out.sort_by_key(|&id| match self.p.static_member_pos.get(&id) {
+            Some(&(n, k)) => (n, 0, k, id),
+            None => (id, 1, 0, id),
+        });
         out
     }
 

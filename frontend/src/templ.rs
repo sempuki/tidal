@@ -194,6 +194,9 @@ pub struct Binds {
     pub fixed: Vec<bool>,
     /// The value being matched comes from an array bound (DED-22).
     pub from_bound: bool,
+    /// PACK-12: a list with an expansion before its end was skipped, so
+    /// the match must check the substituted pattern.
+    pub nondeduced: bool,
 }
 
 impl Binds {
@@ -207,6 +210,7 @@ impl Binds {
             unknown: false,
             fixed: vec![false; params.len()],
             from_bound: false,
+            nondeduced: false,
         }
     }
     pub fn bind(&mut self, i: u32, a: TArg) -> bool {
@@ -242,6 +246,8 @@ pub fn dep(d: Dep) -> QTy {
 
 /// The state that a replay changes and puts back.
 pub struct Saved {
+    pack_refs: Vec<usize>,
+    ins_log: Vec<usize>,
     toks: Vec<Token>,
     pos: usize,
     stack: Vec<usize>,
@@ -592,8 +598,12 @@ impl P {
             let e = self.parse_braced_init()?;
             return Ok(RawArg::Expr(e));
         }
-        let e = self.parse_conditional()?;
-        Ok(RawArg::Expr(e))
+        // A template argument is a constant expression, so the functions
+        // it calls are needed also inside an unevaluated operand.
+        let saved_uneval = std::mem::take(&mut self.in_unevaluated);
+        let e = self.parse_conditional();
+        self.in_unevaluated = saved_uneval;
+        Ok(RawArg::Expr(e?))
     }
 
     /// The arguments of a template-id as patterns, inside a template
@@ -1253,6 +1263,10 @@ impl P {
 
     fn save_state(&mut self) -> Saved {
         Saved {
+            // The packs named in an expansion being parsed are not those
+            // of a replay that the expansion starts.
+            pack_refs: std::mem::take(&mut self.pack_refs),
+            ins_log: std::mem::take(&mut self.ins_log),
             toks: std::mem::take(&mut self.toks),
             pos: self.pos,
             stack: std::mem::take(&mut self.stack),
@@ -1298,6 +1312,8 @@ impl P {
     }
 
     fn restore_state(&mut self, s: Saved) {
+        self.pack_refs = s.pack_refs;
+        self.ins_log = s.ins_log;
         self.toks = s.toks;
         self.pos = s.pos;
         self.stack = s.stack;
@@ -1344,7 +1360,7 @@ impl P {
     /// Parse the tokens of `src` again with `params` bound to `args`.
     /// None when the instantiations nest too deep.
     pub fn replay<R>(&mut self, src: &Source, params: &[TParam], args: &[TArg], req: Option<InstReq>, f: impl FnOnce(&mut P) -> R) -> Option<(R, Option<InstOut>)> {
-        if self.inst_depth >= 256 || self.inst_count >= 8000 {
+        if self.inst_depth >= crate::types::DEPTH_LIMIT.with(|c| c.get()) as _ || self.inst_count >= 8000 {
             return None;
         }
         self.inst_depth += 1;
@@ -1521,10 +1537,11 @@ impl P {
             }
             None => {
                 self.templs[tid].insts[k].1 = Inst::Fail;
-                // INST-14: the nesting of instantiations has a limit.
+                // TR-13: the nesting of instantiations has a limit.
                 if !self.depth_reported {
                     self.depth_reported = true;
-                    self.error(line, "INST-14", format!("instantiation of '{}<{}>' nests deeper than the limit of 256", self.templs[tid].name, self.show_targs(&args)));
+                    let limit = crate::types::DEPTH_LIMIT.with(|c| c.get());
+                    self.error(line, "TR-13", format!("instantiation of '{}<{}>' nests deeper than the limit of {}", self.templs[tid].name, self.show_targs(&args), limit));
                 }
                 QTy::unknown()
             }
@@ -1705,6 +1722,19 @@ impl P {
                         None => ok = false,
                     }
                 }
+                if ok && b.nondeduced {
+                    // PACK-12: the arguments must equal the pattern with
+                    // the deduced values put in.
+                    let mut sb = Binds::new(pt.depth, &pt.params);
+                    sb.vals = vals.iter().cloned().map(Some).collect();
+                    let same = pt.pats.iter().zip(args.iter()).all(|(p, a)| {
+                        let s = self.subst_targ(p, &sb);
+                        !s.is_dep() && &s == a
+                    });
+                    if !same {
+                        continue;
+                    }
+                }
                 if ok {
                     // CNS-17: the constraints must be satisfied.
                     if let Some(c) = pt.cons.clone() {
@@ -1772,23 +1802,34 @@ impl P {
     /// ORD-14: the partial specialization `a` is at least as specialized
     /// as `b`: `b`'s arguments deduce from `a`'s with invented values.
     pub fn partial_at_least(&mut self, ap: &[TParam], apats: &[TArg], ad: u32, bp: &[TParam], bpats: &[TArg], bd: u32) -> bool {
-        let _ = ap;
         let inv: Vec<TArg> = apats.iter().map(|x| self.invent_targ(x, ad)).collect();
         if inv.len() != bpats.len() {
             return false;
         }
         let mut b = Binds::new(bd, bp);
-        bpats.iter().zip(inv.iter()).all(|(p, a)| self.deduce_targ(p, a, &mut b))
+        if !bpats.iter().zip(inv.iter()).all(|(p, a)| self.deduce_targ(p, a, &mut b)) {
+            return false;
+        }
+        // DED-12: an invented value of a parameter of `a` declared with
+        // `auto*` has a pointer type, which fits a parameter of `b`
+        // declared with `auto*` but not one with `auto**`.
+        b.vals.iter().zip(bp.iter()).all(|(v, q)| match (v, &q.pattern) {
+            (Some(TArg::Val(TVal::Param(d, i))), Some(pb)) if *d == INV => match ap.get(*i as usize).and_then(|x| x.pattern.as_ref()) {
+                Some(pa) => placeholder_fits(&pb.unqual(), &pa.unqual()),
+                None => matches!(ap.get(*i as usize).map(|x| &x.kind), Some(TPK::Const(_))) && matches!(ap[*i as usize].kind, TPK::Const(ref t) if placeholder_fits(&pb.unqual(), &t.unqual())),
+            },
+            _ => true,
+        })
     }
 
     /// Replace the parameters of depth `d` by invented ones (ORD-1).
     pub fn invent_ty(&mut self, q: &QTy, d: u32) -> QTy {
-        let n = Binds { depth: d, vals: vec![], kinds: vec![], patterns: vec![], packs: vec![], unknown: false, fixed: vec![], from_bound: false };
+        let n = Binds { depth: d, vals: vec![], kinds: vec![], patterns: vec![], packs: vec![], unknown: false, fixed: vec![], from_bound: false, nondeduced: false };
         self.subst_inv(q, &n)
     }
 
     pub fn invent_targ(&mut self, a: &TArg, d: u32) -> TArg {
-        let n = Binds { depth: d, vals: vec![], kinds: vec![], patterns: vec![], packs: vec![], unknown: false, fixed: vec![], from_bound: false };
+        let n = Binds { depth: d, vals: vec![], kinds: vec![], patterns: vec![], packs: vec![], unknown: false, fixed: vec![], from_bound: false, nondeduced: false };
         self.subst_targ_inv(a, &n)
     }
 
@@ -1928,7 +1969,17 @@ impl P {
                     }
                 }
             }
-            TArg::Pack(v) => TArg::Pack(v.iter().map(|x| self.subst_targ_gen(x, b, inv)).collect()),
+            TArg::Pack(v) => {
+                // An expansion inside the list puts its elements in place.
+                let mut out = Vec::new();
+                for x in v {
+                    match (x, self.subst_targ_gen(x, b, inv)) {
+                        (TArg::Expand(_), TArg::Pack(es)) => out.extend(es),
+                        (_, y) => out.push(y),
+                    }
+                }
+                TArg::Pack(out)
+            }
             TArg::Expand(x) => {
                 if !inv {
                     if let TArg::Type(q) = &**x {
@@ -2055,6 +2106,12 @@ impl P {
                     }
                     return ps[..n].iter().zip(xs.iter()).all(|(p, a)| self.deduce_targ(p, a, b)) && self.deduce_expand(pat, &xs[n..], b);
                 }
+                // PACK-12: an expansion before the end makes the list a
+                // non-deduced position.
+                if ps[..ps.len().saturating_sub(1)].iter().any(|x| matches!(x, TArg::Expand(_))) {
+                    b.nondeduced = true;
+                    return true;
+                }
                 ps.len() == xs.len() && ps.iter().zip(xs.iter()).all(|(p, a)| self.deduce_targ(p, a, b))
             }
             (TArg::Expand(pat), TArg::Pack(xs)) => self.deduce_expand(pat, xs, b),
@@ -2168,6 +2225,13 @@ impl P {
     /// (DED-10). Template parameters of other depths match only
     /// themselves.
     pub fn deduce_ty(&mut self, p: &QTy, a: &QTy, b: &mut Binds) -> bool {
+        // CV-1: the cv-qualifiers of an array are those of its elements.
+        if matches!(p.t, Ty::Array(..)) || matches!(a.t, Ty::Array(..)) {
+            let (pn, an) = (crate::types::array_cv_norm(p), crate::types::array_cv_norm(a));
+            if &pn != p || &an != a {
+                return self.deduce_ty(&pn, &an, b);
+            }
+        }
         if let Ty::Dep(d) = &p.t {
             match &**d {
                 Dep::Param(dd, i) if *dd == b.depth => {
@@ -2184,7 +2248,10 @@ impl P {
                 Dep::Opaque => return true,
                 _ => {}
             }
-            if p.c != a.c || p.v != a.v {
+            // An array's cv-qualifiers are those of its elements, which
+            // the match compares.
+            let arrays = matches!(**d, Dep::Array(..)) && matches!(a.t, Ty::Array(..));
+            if !arrays && (p.c != a.c || p.v != a.v) {
                 return false;
             }
             return match &**d {
@@ -2207,6 +2274,10 @@ impl P {
                 Dep::Array(el, bound) => match &a.t {
                     Ty::Array(ael, Some(n)) => {
                         let v = self.bound_value(bound, *n as i128, b);
+                        // `const T[N]`: the const of the array is that of
+                        // its elements.
+                        let el = &QTy { t: el.t.clone(), c: el.c || p.c, v: el.v || p.v };
+                        let ael = &QTy { t: ael.t.clone(), c: ael.c || a.c, v: ael.v || a.v };
                         if !self.deduce_ty(el, ael, b) {
                             return false;
                         }
@@ -2236,7 +2307,8 @@ impl P {
             b.unknown = true;
             return true;
         }
-        if p.c != a.c || p.v != a.v {
+        let arrays = matches!(p.t, Ty::Array(..)) && matches!(a.t, Ty::Array(..));
+        if !arrays && (p.c != a.c || p.v != a.v) {
             return false;
         }
         match (&p.t, &a.t) {
@@ -2388,7 +2460,7 @@ impl P {
     }
 
     /// The template parameters of `b` that a pattern names.
-    fn params_in(&self, q: &QTy, b: &Binds, out: &mut Vec<u32>) {
+    pub fn params_in(&self, q: &QTy, b: &Binds, out: &mut Vec<u32>) {
         match &q.t {
             Ty::Dep(d) => match &**d {
                 Dep::Param(dd, i) if *dd == b.depth => out.push(*i),
@@ -2508,6 +2580,29 @@ impl P {
                     let mut t = b.clone();
                     for &q in &pack_params {
                         t.vals[q as usize] = None;
+                    }
+                    // CTAD-27, Q-0276: in an aggregate candidate, a pack that
+                    // an earlier element fixed keeps its length. Each later
+                    // element deduces the element of the pack in its place.
+                    if self.agg_guide_tids.contains(&tid) && pack_params.iter().all(|&q| matches!(b.vals[q as usize], Some(TArg::Pack(_)))) {
+                        let j = i - k;
+                        match self.deduce_pair(&ptys[k], a, &mut t) {
+                            Pair::Ok => {}
+                            Pair::Fail => return Ded::Fail,
+                            Pair::Unknown => return Ded::Unknown,
+                        }
+                        for &q in &pack_params {
+                            let Some(TArg::Pack(fixed)) = b.vals[q as usize].clone() else { return Ded::Unknown };
+                            if j >= fixed.len() {
+                                return Ded::Fail;
+                            }
+                            if let Some(v) = t.vals[q as usize].take() {
+                                if v != fixed[j] {
+                                    return Ded::Fail;
+                                }
+                            }
+                        }
+                        continue;
                     }
                     match self.deduce_pair(&ptys[k], a, &mut t) {
                         Pair::Ok => {}
@@ -2758,7 +2853,7 @@ impl P {
         true
     }
 
-    fn all_bases(&self, c: usize, out: &mut Vec<usize>, depth: u32) {
+    pub fn all_bases(&self, c: usize, out: &mut Vec<usize>, depth: u32) {
         if depth > 16 {
             return;
         }
@@ -2969,6 +3064,14 @@ impl P {
         let res = match r {
             Some((true, Some(InstOut::Func(id)))) if !errs && !unsup => {
                 self.templs[tid].insts[k].1 = Inst::Func(id);
+                // A definition outside the class does not repeat `static`:
+                // the specialization of a static member template is static.
+                let tdecl = self.templs[tid].decl;
+                if self.func(tdecl).is_some_and(|f| f.is_static) {
+                    if let Some(f) = self.func_mut(id) {
+                        f.is_static = true;
+                    }
+                }
                 self.spec_of.insert(id, (tid, args.to_vec()));
                 let label = format!("{}<{}>", self.templs[tid].name, self.show_targs(args));
                 self.fn_label.insert(id, label);
@@ -3236,7 +3339,8 @@ pub fn heads_equivalent(a: &[TParam], b: &[TParam]) -> bool {
             x.pack == y.pack
                 && match (&x.kind, &y.kind) {
                     (TPK::Type, TPK::Type) => true,
-                    (TPK::Auto, TPK::Auto) => true,
+                    // `auto*` and `auto**` are different placeholders.
+                    (TPK::Auto, TPK::Auto) => x.dauto == y.dauto && x.pattern.as_ref().map(|q| &q.t) == y.pattern.as_ref().map(|q| &q.t),
                     (TPK::Const(s), TPK::Const(t)) => s.t == t.t,
                     (TPK::Templ(s), TPK::Templ(t)) => heads_equivalent(s, t),
                     _ => false,
@@ -3273,15 +3377,16 @@ impl P {
         let first = parse(self)?;
         if self.at("...") && !self.in_template() && self.pack_refs.len() > mark {
             let n = self.pack_refs[mark];
-            if self.pack_refs[mark..].iter().any(|&m| m != n) {
-                // PACK-6: the packs of one expansion have one length.
-                let line = self.line();
-                self.error(line, "PACK-6", "the packs of one expansion have different numbers of elements");
-            }
+            let differ = self.pack_refs[mark..].iter().any(|&m| m != n);
             self.pack_refs.truncate(mark);
             self.d.list.truncate(dmark);
             self.d.muted_errors = me;
             self.d.muted_unsup = mu;
+            if differ {
+                // PACK-6: the packs of one expansion have one length.
+                let line = self.line();
+                self.error(line, "PACK-6", "the packs of one expansion have different numbers of elements");
+            }
             let end = self.pos;
             let saved = self.pack_index;
             let mut out = Vec::new();
@@ -3300,7 +3405,7 @@ impl P {
 
     /// The copies of a pattern for each element of the packs it names, or
     /// None when it names no pack.
-    fn pack_copies(&mut self, parse: impl Fn(&mut P) -> PR<Expr>) -> PR<(Expr, Option<Vec<Expr>>)> {
+    pub fn pack_copies(&mut self, parse: impl Fn(&mut P) -> PR<Expr>) -> PR<(Expr, Option<Vec<Expr>>)> {
         let start = self.pos;
         let mark = self.pack_refs.len();
         let dmark = self.d.list.len();
@@ -3309,13 +3414,14 @@ impl P {
             return Ok((first, None));
         }
         let n = self.pack_refs[mark];
-        if self.pack_refs[mark..].iter().any(|&m| m != n) {
+        let differ = self.pack_refs[mark..].iter().any(|&m| m != n);
+        self.pack_refs.truncate(mark);
+        self.d.list.truncate(dmark);
+        if differ {
             // PACK-6: the packs of one expansion have one length.
             let line = self.line();
             self.error(line, "PACK-6", "the packs of one expansion have different numbers of elements");
         }
-        self.pack_refs.truncate(mark);
-        self.d.list.truncate(dmark);
         let end = self.pos;
         let saved = self.pack_index;
         let mut out = Vec::new();

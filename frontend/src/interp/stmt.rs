@@ -191,8 +191,8 @@ impl<'a> Machine<'a> {
             }
             Stmt::Goto(l) => {
                 if self.constant {
-                    // CE-20: a goto in constant evaluation.
-                    return limit("CE-20", "goto evaluated in constant evaluation");
+                    // CE-17: a goto in constant evaluation.
+                    return limit("CE-17", "goto evaluated in constant evaluation");
                 }
                 Ok(Flow::Goto(l.clone()))
             }
@@ -555,15 +555,15 @@ impl<'a> Machine<'a> {
                     return Ok(());
                 }
                 // CE-3: a const integer or enumeration with a constant
-                // initializer is usable, so CE-20 allows it.
+                // initializer is usable, so CE-17 allows it.
                 if v.ty.c && !v.ty.v && (v.ty.t.is_integral() || matches!(v.ty.t, Ty::Enum(_))) && v.init.is_some() {
                     let pl = self.const_var_place(id, v.clone())?;
                     if !matches!(self.objs[pl.obj].val, Val::NotUsable(_)) {
                         return Ok(());
                     }
                 }
-                // CE-20: a static or thread_local variable.
-                return limit("CE-20", "definition of a static or thread_local variable in constant evaluation");
+                // CE-17: a static or thread_local variable.
+                return limit("CE-17", "definition of a static or thread_local variable in constant evaluation");
             }
             if v.storage == Storage::Extern {
                 return Ok(());
@@ -571,8 +571,8 @@ impl<'a> Machine<'a> {
             return self.local_static(id, &v);
         }
         if self.constant && self.p.literal_type(&v.ty) == Some(false) {
-            // CE-20: no variable of a type that is not literal.
-            return limit("CE-20", "definition of a variable of a type that is not a literal type");
+            // CE-17: no variable of a type that is not literal.
+            return limit("CE-17", "definition of a variable of a type that is not a literal type");
         }
         if v.ty.t.is_ref() {
             let Some(init) = &v.init else { return unsup("reference without initializer") };
@@ -835,13 +835,13 @@ impl<'a> Machine<'a> {
         m.full(|m| m.init_into(&place, &e, &t)).ok()?;
         fn plain(v: &Val) -> bool {
             match v {
-                Val::Int(_) | Val::Float(_) | Val::Null => true,
+                Val::Int(_) | Val::Float(_) | Val::LD(_) | Val::Null => true,
                 Val::Agg(xs) => xs.iter().all(plain),
                 _ => false,
             }
         }
         match m.objs[place.obj].val.clone() {
-            v @ (Val::Int(_) | Val::Float(_)) => Some(v),
+            v @ (Val::Int(_) | Val::Float(_) | Val::LD(_)) => Some(v),
             // A class of scalar members (IF-25, G106).
             v @ Val::Agg(_) if matches!(t.t, Ty::Class(_)) && plain(&v) => Some(v),
             _ => None,

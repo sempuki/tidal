@@ -161,6 +161,8 @@ pub enum Dealloc {
 pub enum EK {
     Int(i128),
     Float(f64),
+    /// A `long double` literal: its digits without the suffix (TYP-10).
+    LFloat(Rc<str>),
     NullPtr,
     Str(Rc<Vec<u32>>),
     Var(DeclId),
@@ -346,6 +348,7 @@ pub fn sexp(e: &Expr) -> String {
         EK::MemberDefault => "member-default".into(),
         EK::Int(v) => format!("{}", v),
         EK::Float(v) => format!("{}", v),
+        EK::LFloat(v) => format!("{}L", v),
         EK::NullPtr => "nullptr".into(),
         EK::Str(_) => "\"...\"".into(),
         EK::Var(d) => format!("var#{}", d),

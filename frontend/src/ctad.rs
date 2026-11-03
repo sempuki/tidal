@@ -379,7 +379,7 @@ impl P {
                     head.extend(cp.iter().cloned());
                     let all = Self::head_args(&head, depth);
                     let mine: Vec<TArg> = all[n..].to_vec();
-                    let b = Binds { depth: cd, vals: mine.iter().map(|a| Some(match a { TArg::Expand(x) => (**x).clone(), x => x.clone() })).collect(), kinds: vec![], patterns: vec![], packs: vec![], unknown: false, fixed: vec![], from_bound: false };
+                    let b = Binds { depth: cd, vals: mine.iter().map(|a| Some(match a { TArg::Expand(x) => (**x).clone(), x => x.clone() })).collect(), kinds: vec![], patterns: vec![], packs: vec![], unknown: false, fixed: vec![], from_bound: false, nondeduced: false };
                     let ps: Vec<QTy> = f.fty.params.iter().map(|q| self.subst_ty(q, &b)).collect();
                     // CTAD-29: the constraints of the constructor template,
                     // with its parameters after those of the class.
@@ -481,7 +481,9 @@ impl P {
             }
             if pack {
                 // CTAD-27: a pack of bases takes the rest of the list only
-                // at the end.
+                // at the end. When an earlier element fixes the length of
+                // the pack, the rest of the list does not set it (Q-0276,
+                // see deduce_call).
                 if k + 1 == nt {
                     fn_pack = Some(ptys.len());
                     ptys.push(t);
@@ -603,9 +605,9 @@ impl P {
                 }
             }
         }
-        let gb = Binds { depth: g.depth, vals, kinds: vec![], patterns: vec![], packs: vec![], unknown: false, fixed: vec![], from_bound: false };
+        let gb = Binds { depth: g.depth, vals, kinds: vec![], patterns: vec![], packs: vec![], unknown: false, fixed: vec![], from_bound: false, nondeduced: false };
         // The invented parameters of the match become the alias's.
-        let back = Binds { depth: INV, vals: Self::head_args(head, da).into_iter().map(|a| Some(match a { TArg::Expand(x) => *x, x => x })).collect(), kinds: vec![], patterns: vec![], packs: vec![], unknown: false, fixed: vec![], from_bound: false };
+        let back = Binds { depth: INV, vals: Self::head_args(head, da).into_iter().map(|a| Some(match a { TArg::Expand(x) => *x, x => x })).collect(), kinds: vec![], patterns: vec![], packs: vec![], unknown: false, fixed: vec![], from_bound: false, nondeduced: false };
         let mut ps = Vec::new();
         for q in &g.params {
             let q1 = self.subst_ty(q, &gb);
@@ -774,6 +776,9 @@ impl P {
         };
         self.templs.push(info);
         let t = self.templs.len() - 1;
+        if g.kind == GKind::Aggregate {
+            self.agg_guide_tids.insert(t);
+        }
         if !g.head.is_empty() {
             self.decl_tid.insert(id, t);
         }
@@ -806,6 +811,52 @@ impl P {
         if !(list || matches!(form, InitForm::Paren(_))) {
             guides.retain(|g| g.kind != GKind::Aggregate);
         }
+        // ILC-3: a braced list tries first the initializer-list guides,
+        // with the whole list as one argument. CTAD-18: one element whose
+        // type is a specialization of the template, or derived from one,
+        // skips this phase.
+        if list && !self.ctad_list_phase {
+            let is_ilist = |p: &P, q: &QTy| -> bool {
+                let q = nonref(q);
+                match &q.t {
+                    Ty::Dep(d) => matches!(&**d, Dep::Id(TName::Templ(t), _) if p.templs[*t].name == "initializer_list"),
+                    Ty::Class(c) => p.inst_of.get(c).is_some_and(|(t, _)| p.templs[*t].name == "initializer_list"),
+                    _ => false,
+                }
+            };
+            let single_spec = args.len() == 1 && match nonref(&args[0].ty).t {
+                Ty::Class(c) => {
+                    let mut bases = vec![c];
+                    self.all_bases(c, &mut bases, 0);
+                    bases.iter().any(|b| self.inst_of.get(b).is_some_and(|(t, _)| *t == tid))
+                }
+                _ => false,
+            };
+            let ilist: Vec<Guide> = guides.iter().filter(|g| g.params.first().is_some_and(|q| is_ilist(self, q)) && g.params.len() <= 1 + g.defaults && g.fn_pack.is_none()).cloned().collect();
+            if !single_spec && !ilist.is_empty() {
+                if let Some(e) = init {
+                    let whole = if matches!(e.k, EK::InitList(_)) { e.clone() } else { Expr::new(EK::InitList(args.clone()), QTy::unknown(), Cat::PR, line) };
+                    let saved = std::mem::replace(&mut self.ctad_list_phase, true);
+                    let saved_none = std::mem::replace(&mut self.ctad_none, false);
+                    let r = self.ctad_choose(tid, ilist, vec![whole], form, line);
+                    let none = std::mem::replace(&mut self.ctad_none, saved_none);
+                    self.ctad_list_phase = saved;
+                    if !none {
+                        return r;
+                    }
+                }
+            }
+        }
+        let saved = std::mem::replace(&mut self.ctad_list_phase, false);
+        let r = self.ctad_choose(tid, guides, args, form, line);
+        self.ctad_list_phase = saved;
+        r
+    }
+
+    /// The guide that overload resolution chooses among `guides` for
+    /// `args` (CTAD-24). In the initializer-list phase, no viable guide
+    /// sets `ctad_none` without an error.
+    fn ctad_choose(&mut self, tid: usize, guides: Vec<Guide>, args: Vec<Expr>, form: &InitForm, line: u32) -> Option<QTy> {
         let copy_init = matches!(form, InitForm::Copy);
         let name = self.templs[tid].name.clone();
         let mut cands: Vec<DeclId> = Vec::new();
@@ -833,7 +884,7 @@ impl P {
                     crate::cons::Sat::Unknown => return None,
                     _ => continue,
                 }
-                let b = Binds { depth: g.depth, vals: targs.iter().cloned().map(Some).collect(), kinds: vec![], patterns: vec![], packs: vec![], unknown: false, fixed: vec![], from_bound: false };
+                let b = Binds { depth: g.depth, vals: targs.iter().cloned().map(Some).collect(), kinds: vec![], patterns: vec![], packs: vec![], unknown: false, fixed: vec![], from_bound: false, nondeduced: false };
                 let me = self.d.muted_errors;
                 self.d.muted += 1;
                 let mut ps: Vec<QTy> = Vec::new();
@@ -921,6 +972,11 @@ impl P {
                 f.fty.ret = ret;
                 f.default_exprs = vec![None; ps.len()];
                 f.defaults = g.defaults.min(ps.len());
+                if g.kind == GKind::Aggregate && g.fn_pack.is_some() && ps.len() > args.len() {
+                    // CTAD-27: a base of the pack with no element gets an
+                    // empty list.
+                    f.defaults = ps.len() - args.len();
+                }
                 let g0 = self.global;
                 let sid = self.add_decl_in(g0, &format!("<guide of {}>", name), DK::Func(f), line);
                 self.hide_decl(sid);
@@ -931,6 +987,10 @@ impl P {
             kinds.push((spec, g.clone(), if g.head.is_empty() { None } else { Some(gt) }));
         }
         if cands.is_empty() {
+            if self.ctad_list_phase {
+                self.ctad_none = true;
+                return None;
+            }
             self.error(line, "CTAD-24", format!("no deduction guide of '{}' is viable for the initializer", name));
             return Some(QTy::unknown());
         }
@@ -991,6 +1051,10 @@ impl P {
             }
             Err(()) => {
                 if std::mem::take(&mut self.ics_no_viable) {
+                    if self.ctad_list_phase {
+                        self.ctad_none = true;
+                        return None;
+                    }
                     self.error(line, "CTAD-24", format!("no deduction guide of '{}' is viable for the initializer", name));
                     return Some(QTy::unknown());
                 }

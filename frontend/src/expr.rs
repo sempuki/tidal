@@ -1428,6 +1428,10 @@ impl P {
         let Some(ids) = self.lookup_member(c, &name) else {
             if !self.class_uncertain(c) {
                 self.error(line, "NAM-8", format!("no member named '{}'", name));
+            } else if arrow && matches!(&obj.k, EK::Unary(UOp::Deref, x) if matches!(x.k, EK::This)) && self.current_inst_closed(c) {
+                // DEP-17: `this->name` in the current instantiation, which
+                // has no dependent base, must find a member.
+                self.error(line, "DEP-17", format!("no member named '{}' in the current instantiation", name));
             }
             return Ok(Expr::unknown(line, "unknown member"));
         };
@@ -1514,7 +1518,17 @@ impl P {
                         FSuffix::L => Ty::LDouble,
                         FSuffix::Ext => Ty::ExtFloat,
                     };
-                    if value.is_infinite() || (ty == Ty::Float && (value as f32).is_infinite()) {
+                    if ty == Ty::LDouble {
+                        // TYP-10: the digits stay for the extended format.
+                        let digits: String = t.text.trim_end_matches(['l', 'L']).to_string();
+                        let v = crate::interp::f80::F80::parse(&digits);
+                        if v.is_some_and(|v| !v.is_finite()) {
+                            self.warn(line, "PRIM-13", "floating literal out of range");
+                        }
+                        if v.is_some() {
+                            return Ok(Expr::new(EK::LFloat(digits.into()), QTy::new(ty), Cat::PR, line));
+                        }
+                    } else if value.is_infinite() || (ty == Ty::Float && (value as f32).is_infinite()) {
                         // PRIM-15: out of range, conditionally supported; the
                         // matrix compilers accept with a warning.
                         self.warn(line, "PRIM-13", "floating literal out of range");
@@ -1729,7 +1743,8 @@ impl P {
                         let next = &self.peek(k + 1).text;
                         return k == 0 || (prec(prev).is_some() || is_assign_op(prev) || prev == ",") || (prec(next).is_some() || is_assign_op(next));
                     }
-                    ";" => return false,
+                    // A `;` inside braces belongs to a lambda body.
+                    ";" if depth == 0 => return false,
                     _ => {}
                 }
             }
@@ -2510,7 +2525,34 @@ impl P {
                     refs.push(name.clone());
                 }
                 let has_init = self.at("=") || self.at("{") || self.at("(");
-                if has_init {
+                if has_init && pack && self.in_template() {
+                    // PACK-18: in the pattern, the init capture is a pack.
+                    self.pos += 1;
+                    let _ = if self.at("{") { self.parse_braced_init()? } else { self.parse_assignment()? };
+                    let vi = VarInfo { ty: QTy::unknown(), storage: Storage::Auto, constexpr: false, constinit: false, init: None, param: false, local: true, dependent: true, defined: true, class: None };
+                    let s = self.cur_scope();
+                    let id = self.add_decl_in(s, &name, DK::Var(vi), cl);
+                    self.pack_decls.insert(id);
+                    items.push((1, Some(id), by_ref, None));
+                } else if has_init && pack && self.at("=") && !self.at_k(1, "{") {
+                    // PACK-18: `...y = e` makes one capture for each element
+                    // of the packs that `e` names; in the body, `y` is a
+                    // pack of them.
+                    self.pos += 1;
+                    let (first, copies) = self.pack_copies(|p| p.parse_assignment())?;
+                    let list = copies.unwrap_or_else(|| vec![first]);
+                    let mut ids = Vec::new();
+                    for it in list {
+                        let (id, conv) = self.init_capture_var(it, &name, by_ref, cl);
+                        self.hide_decl(id);
+                        ids.push(id);
+                        items.push((1, Some(id), by_ref, conv));
+                    }
+                    let vi = VarInfo { ty: QTy::unknown(), storage: Storage::Auto, constexpr: false, constinit: false, init: None, param: false, local: true, dependent: true, defined: true, class: None };
+                    let s = self.cur_scope();
+                    let pid = self.add_decl_in(s, &name, DK::Var(vi), cl);
+                    self.fn_param_packs.insert(pid, ids);
+                } else if has_init {
                     // LAM-7: an init capture declares a new variable.
                     let init = if self.eat("=") {
                         if self.at("{") { self.parse_braced_init()? } else { self.parse_assignment()? }
@@ -2553,7 +2595,15 @@ impl P {
                         self.error(cl, "LAM-6", format!("explicit capture of '{}' uses the default capture mode", name));
                     }
                     match self.lookup(&name) {
-                        Some(ids) => {
+                        Some(mut ids) => {
+                            // PACK-5: in a copy of a pattern, a pack names
+                            // the element of the copy.
+                            if let Some(list) = self.fn_param_packs.get(&ids[0]).cloned() {
+                                self.pack_refs.push(list.len());
+                                if let Some(&d) = list.get(self.pack_index.unwrap_or(0)) {
+                                    ids = vec![d];
+                                }
+                            }
                             items.push((0, Some(ids[0]), by_ref, None));
                             if let Some(v) = self.var(ids[0]).cloned() {
                                 if !by_ref && !self.in_template() && v.local && v.storage == Storage::Auto && self.is_abstract(&nonref(&v.ty).t) {
@@ -2599,6 +2649,32 @@ impl P {
         Ok((default, refs, items))
     }
 
+    /// LAM-7: the variable of an init capture with the initializer `it`,
+    /// and the initializer converted to its type.
+    fn init_capture_var(&mut self, it: Expr, name: &str, by_ref: bool, cl: u32) -> (DeclId, Option<Expr>) {
+        let et = nonref(&it.ty);
+        let ty = if by_ref {
+            QTy::new(Ty::LRef(Box::new(et)))
+        } else {
+            match &et.t {
+                Ty::Array(e, _) => QTy::new(Ty::Ptr(e.clone())),
+                _ => et.unqual(),
+            }
+        };
+        let conv = if by_ref {
+            it.clone()
+        } else {
+            let mark = self.d.list.len();
+            let x = self.convert_init(it.clone(), &ty, crate::decl2::InitForm::Copy, cl);
+            self.d.list.truncate(mark);
+            x
+        };
+        let vi = VarInfo { ty, storage: Storage::Auto, constexpr: false, constinit: false, init: None, param: false, local: true, dependent: true, defined: true, class: None };
+        let s = self.cur_scope();
+        let id = self.add_decl_in(s, name, DK::Var(vi), cl);
+        (id, if matches!(conv.k, EK::Unknown(_)) { None } else { Some(conv) })
+    }
+
     fn parse_id_expression(&mut self) -> PR<Expr> {
         let line = self.line();
         let start = self.pos;
@@ -2633,6 +2709,18 @@ impl P {
             }
             if self.at("<") && self.in_template() {
                 self.skip_template_args()?;
+            }
+            // DEP-17: `C::name`, with `C` the injected name of the current
+            // instantiation, which has no dependent base, must find a
+            // member.
+            if self.in_template() && self.inst_depth == 0 && self.pos == start + 3 && self.toks[start + 1].text == "::" {
+                let cname = self.toks[start].text.clone();
+                let name = self.toks[start + 2].text.clone();
+                if let Some(c) = self.fns.last().and_then(|f| f.class) {
+                    if self.classes[c].name == cname && self.current_inst_closed(c) && self.lookup_member(c, &name).is_none() {
+                        self.error(line, "DEP-17", format!("no member named '{}' in the current instantiation", name));
+                    }
+                }
             }
             return Ok(Expr::unknown(line, "dependent name"));
         }
@@ -2688,6 +2776,16 @@ impl P {
             Some(Err(())) => (None, false),
         };
         let name_pos = self.pos.saturating_sub(1);
+        if let (Some(Ok(sc)), None) = (scope, &found) {
+            // DEP-17: a qualified name into the current instantiation,
+            // which has no dependent base, must find a member.
+            if let SK::Class(c) = self.scopes[sc].kind {
+                let current = self.fns.iter().any(|f| f.class == Some(c)) || self.stack.contains(&sc);
+                if self.in_template() && self.inst_depth == 0 && current && self.current_inst_closed(c) {
+                    self.error(line, "DEP-17", format!("no member named '{}' in the current instantiation", name));
+                }
+            }
+        }
         if let (Some(_), Some(ids)) = (&scope, &found) {
             let is_templ = ids.iter().any(|&i| self.func(i).is_some_and(|f| f.template) || matches!(self.decls[i].k, DK::Template(_)));
             if is_templ && self.at("<") && self.has_fact(name_pos, crate::templ::FACT_LESS) {
@@ -3254,6 +3352,20 @@ impl P {
             }
             _ => Expr::unknown(line, "name"),
         }
+    }
+
+    /// DEP-17: a class template pattern whose members are all known: it
+    /// is complete and has no base that depends on a parameter, at any
+    /// depth.
+    pub fn current_inst_closed(&self, c: usize) -> bool {
+        fn go(p: &P, c: usize, depth: u32) -> bool {
+            let ci = &p.classes[c];
+            if depth > 16 || !ci.complete || ci.opaque {
+                return false;
+            }
+            ci.bases.iter().all(|b| b.class.is_some_and(|bc| !p.dep_bases.contains(&(c, bc)) && go(p, bc, depth + 1)))
+        }
+        self.classes[c].template && go(self, c, 0)
     }
 
     /// `this` for implicit member access, or None if there is no object.
@@ -5262,6 +5374,39 @@ impl P {
         Expr::new(EK::Index(Box::new(base), Box::new(idx)), t, cat, line)
     }
 
+    /// A lower bound on the size of `t` in bytes: the sum of the sizes of
+    /// its members, without padding. None when a part has no known size.
+    pub fn bytes_at_least(&self, t: &Ty, depth: u32) -> Option<u128> {
+        if depth > 32 {
+            return None;
+        }
+        match t {
+            Ty::Array(e, Some(n)) => Some((*n as u128).saturating_mul(self.bytes_at_least(&e.t, depth + 1)?)),
+            Ty::Class(c) => {
+                let ci = &self.classes[*c];
+                if !ci.complete || ci.template {
+                    return None;
+                }
+                let mut sum = 0u128;
+                for b in &ci.bases {
+                    if let Some(bc) = b.class {
+                        sum = sum.saturating_add(self.bytes_at_least(&Ty::Class(bc), depth + 1).unwrap_or(0));
+                    }
+                }
+                for &f in &ci.fields {
+                    if let crate::parser::DK::Field(fi) = &self.decls[f].k {
+                        if fi.bits.is_none() {
+                            let n = self.bytes_at_least(&fi.ty.t, depth + 1).unwrap_or(0);
+                            sum = if ci.key == 2 { sum.max(n) } else { sum.saturating_add(n) };
+                        }
+                    }
+                }
+                Some(sum)
+            }
+            _ => self.sizeof_ty(t).map(|n| n as u128),
+        }
+    }
+
     pub fn build_sizeof(&mut self, ty: QTy, line: u32, is_expr: bool) -> Expr {
         self.require_ty(&nonref(&ty), line);
         let st = QTy::new(Ty::size_t());
@@ -5287,6 +5432,13 @@ impl P {
             return Expr::new(EK::Unknown("sizeof incomplete".into()), st, Cat::PR, line);
         }
         let _ = is_expr;
+        // STG-1, TR-15: the size of the type must fit in std::size_t. The
+        // front end takes EDG's limit, which is the largest value.
+        let max: u128 = if crate::types::ilp32() { u32::MAX as u128 } else { u64::MAX as u128 };
+        if self.bytes_at_least(&t, 0).is_some_and(|n| n > max) {
+            self.error_because(line, "STG-1", "TR-15", "the size of the type does not fit in std::size_t");
+            return Expr::new(EK::Unknown("sizeof too large".into()), st, Cat::PR, line);
+        }
         match self.sizeof_ty(&t) {
             Some(n) => Expr::new(EK::Int(n as i128), st, Cat::PR, line),
             None => Expr::new(EK::Unknown("sizeof of a class with a layout the front end does not compute".into()), st, Cat::PR, line),
@@ -5616,10 +5768,18 @@ impl P {
             }
         }
         walk(self, e, &mut res);
-        // A class temporary also runs its destructor (UN-18).
+        // A class temporary also runs its destructor (UN-18). The
+        // initializer of a new expression makes the new object, which
+        // is no temporary (EXS-4).
+        let mut new_inits: Vec<*const Expr> = Vec::new();
+        walk_expr(e, &mut |x| {
+            if let EK::New { init: Some(i), .. } = &x.k {
+                new_inits.push(&**i as *const Expr);
+            }
+        });
         walk_expr(e, &mut |x| {
             if let Ty::Class(c) = x.ty.t {
-                if x.cat == Cat::PR && !matches!(x.k, EK::Unknown(_)) {
+                if x.cat == Cat::PR && !matches!(x.k, EK::Unknown(_)) && !new_inits.contains(&(x as *const Expr)) {
                     join(&mut res, self.sm_throws(c, crate::special::Sm::Dtor));
                 }
             }

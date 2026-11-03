@@ -360,8 +360,21 @@ impl P {
         match args {
             Some(args) if !args.iter().any(opaque) => Ok(Some(self.concept_expand(tid, &args))),
             // An argument that the front end cannot map: the concept-id is
-            // checked as a whole.
-            _ => Ok(Some(Some(self.make_atom(start, self.pos, line)))),
+            // checked as a whole. Two such concept-ids with the same tokens,
+            // with each name replaced by what it names, expand to the same
+            // atomic constraints with the same mappings (CNS-4), so they
+            // count as one atom.
+            _ => {
+                let n = self.make_atom(start, self.pos, line);
+                let CNorm::Atom(a) = &*n else { return Ok(Some(Some(n))) };
+                let key = self.clause_key(start, self.pos).join(" ");
+                use std::hash::{Hash, Hasher};
+                let mut h = std::collections::hash_map::DefaultHasher::new();
+                key.hash(&mut h);
+                let mut a2 = (**a).clone();
+                a2.id = (usize::MAX - 3, h.finish() as usize);
+                Ok(Some(Some(Rc::new(CNorm::Atom(Rc::new(a2))))))
+            }
         }
     }
 
@@ -401,7 +414,7 @@ impl P {
                 }
             }
         }
-        let b = Binds { depth, vals: args.iter().cloned().map(Some).collect(), kinds: vec![], patterns: vec![], packs: vec![], unknown: false, fixed: vec![], from_bound: false };
+        let b = Binds { depth, vals: args.iter().cloned().map(Some).collect(), kinds: vec![], patterns: vec![], packs: vec![], unknown: false, fixed: vec![], from_bound: false, nondeduced: false };
         self.subst_targ(m, &b)
     }
 
@@ -589,6 +602,15 @@ impl P {
         self.d.muted += 1;
         let saved_mark = self.sfinae_mark.replace(me);
         let params = a.params.clone();
+        // CPT-26: access is checked where the check happens.
+        let mut here: Vec<usize> = self.fns.iter().filter_map(|f| f.class).collect();
+        for &s in &self.stack {
+            if let SK::Class(c) = self.scopes[s].kind {
+                here.push(c);
+            }
+        }
+        here.extend(self.check_classes.iter().copied());
+        let saved_check = std::mem::replace(&mut self.check_classes, here);
         let r = self.replay(&a.src, &params, map, None, |p| {
             let e = p.parse_assignment();
             match e {
@@ -596,6 +618,7 @@ impl P {
                 _ => None,
             }
         });
+        self.check_classes = saved_check;
         self.sfinae_mark = saved_mark;
         self.d.muted -= 1;
         let errs = self.d.muted_errors != me;
@@ -808,7 +831,24 @@ impl P {
                             _ => {}
                         }
                     }
+                    // CNS-37: a type spelled by name is the same as a
+                    // parameter bound to that type.
+                    match &self.decls[id].k {
+                        DK::Class(c) if !self.classes[*c].template => {
+                            out.push(format!("$t:{}", self.show_ty(&QTy::new(Ty::Class(*c)))));
+                            continue;
+                        }
+                        DK::Type(q) => {
+                            out.push(format!("$t:{}", self.show_ty(q)));
+                            continue;
+                        }
+                        _ => {}
+                    }
                 }
+            }
+            if t.kind == TK::Ident && matches!(t.text.as_str(), "int" | "long" | "short" | "char" | "bool" | "float" | "double" | "void") {
+                out.push(format!("$t:{}", t.text));
+                continue;
             }
             out.push(t.text.clone());
         }
@@ -863,7 +903,10 @@ impl P {
     /// its scope stack, and the arguments of the parameters it uses.
     fn atom_key(&mut self, a: &Atom, depth: u32, args: &[TArg]) -> ((usize, usize), Vec<usize>, Vec<TArg>) {
         let map: Vec<TArg> = a.map.iter().zip(a.used.iter()).map(|(m, &u)| if u { self.map_subst(m, depth, args) } else { TArg::Pack(vec![]) }).collect();
-        (a.id, a.src.stack.clone(), map)
+        // A concept-id kept whole (cons_concept_id): its key names what
+        // each name names, so the scopes do not matter.
+        let stack = if a.id.0 == usize::MAX - 3 { vec![] } else { a.src.stack.clone() };
+        (a.id, stack, map)
     }
 
     /// Disjunctive normal form: a list of conjunctions of atom keys.
@@ -966,7 +1009,7 @@ impl P {
         let f2 = self.func(self.templs[t2].decl).cloned();
         if let (Some(f1), Some(f2)) = (f1, f2) {
             // CNS-34: the function parameter types must agree.
-            let b = Binds { depth: d2, vals: to1.iter().map(|a| Some(match a { TArg::Expand(x) => (**x).clone(), x => x.clone() })).collect(), kinds: vec![], patterns: vec![], packs: vec![], unknown: false, fixed: vec![], from_bound: false };
+            let b = Binds { depth: d2, vals: to1.iter().map(|a| Some(match a { TArg::Expand(x) => (**x).clone(), x => x.clone() })).collect(), kinds: vec![], patterns: vec![], packs: vec![], unknown: false, fixed: vec![], from_bound: false, nondeduced: false };
             if f1.fty.params.len() != f2.fty.params.len() {
                 return None;
             }

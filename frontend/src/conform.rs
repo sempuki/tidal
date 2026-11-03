@@ -17,6 +17,8 @@ struct Test {
     base_reject: Option<bool>,
     rules: Vec<String>,
     m32: bool,
+    /// The limit on nested instantiations that the flags set (TR-13).
+    depth: Option<u32>,
     werror: bool,
     /// The -W flags other than -Werror.
     wflags: Vec<String>,
@@ -125,6 +127,7 @@ fn parse_test(root: &Path, path: &Path) -> Option<Test> {
         base_reject,
         rules,
         m32: flags.contains("-m32"),
+        depth: crate::types::depth_limit_of(&flags.split_whitespace().collect::<Vec<_>>()),
         werror: flags.contains("-Werror"),
         wflags: flags.split_whitespace().filter(|f| f.starts_with("-W") && *f != "-Werror").map(String::from).collect(),
         sources,
@@ -146,6 +149,7 @@ fn run_one(t: &Test) -> Outcome2 {
     let mut unsup = Vec::new();
     let want_run = t.run.is_some();
     let (m32, werror, wflags) = (t.m32, t.werror, t.wflags.clone());
+    let depth = t.depth;
     let (tx, rx) = mpsc::channel();
     let paths = files.clone();
     // One thread parses every unit, checks each on its own, and runs the
@@ -153,6 +157,9 @@ fn run_one(t: &Test) -> Outcome2 {
     std::thread::Builder::new()
         .stack_size(256 << 20)
         .spawn(move || {
+            if let Some(n) = depth {
+                crate::types::DEPTH_LIMIT.with(|c| c.set(n));
+            }
             let r = std::panic::catch_unwind(|| {
                 let ps: Vec<_> = paths
                     .iter()

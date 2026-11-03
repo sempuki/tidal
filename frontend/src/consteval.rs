@@ -1,7 +1,7 @@
 // Constant evaluation (specification/foundations/constant-evaluation.md) as a client
 // of the interpreter (decision 0048). It runs the abstract machine of
 // src/interp with `constant` set. The machine then stops at each
-// operation that CE-2 to CE-25 forbid (`Stop::Limit`), and at each
+// operation that the CE rules forbid (`Stop::Limit`), and at each
 // operation that an `undefined` rule names (CE-9, TR-8,
 // `Stop::Undefined`). Both make the evaluation not constant.
 
@@ -125,7 +125,7 @@ impl P {
         no_leak(&m)?;
         match v {
             Val::Int(v) => Ok(v),
-            Val::Float(_) => nc("CE-25", "a floating value where an integer constant is needed"),
+            Val::Float(_) | Val::LD(_) => nc("CE-11", "a floating value where an integer constant is needed"),
             _ => unsup("non-integer constant"),
         }
     }
@@ -139,6 +139,7 @@ impl P {
         let e2 = if e.is_glvalue() { Expr::new(EK::Conv(Conv::LToR, Box::new(e.clone())), e.ty.unqual(), Cat::PR, e.line) } else { e.clone() };
         match m.full(|m| m.eval(&e2)) {
             Ok(Val::Float(f)) => Some(f),
+            Ok(Val::LD(f)) => Some(f.to_f64()),
             _ => None,
         }
     }

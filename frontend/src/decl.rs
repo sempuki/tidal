@@ -185,6 +185,15 @@ impl P {
                 // pattern and in the specializations.
                 if let Some(t) = self.tid_of(id) {
                     let member = self.peek(next + 1).text.clone();
+                    if self.in_template() && self.inst_depth == 0 && self.templs[t].kind == crate::templ::TKind::Class && !self.names_current_inst(t, k + 2, next - 1) {
+                        // DEP-15: a dependent template-id that does not name
+                        // the current instantiation; its member is a value
+                        // without `typename` (DEP-19).
+                        if self.peek(next + 2).kind == TK::Ident {
+                            self.dep15_hit.set(self.peek(next + 2).line);
+                        }
+                        return false;
+                    }
                     match self.templ_member_scope(t, &member) {
                         Some(s) => {
                             scope = Some(s);
@@ -301,6 +310,95 @@ impl P {
     }
 
     /// Given offset k at `<`, return the offset after the matching `>`.
+    /// DEP-15: whether the arguments at offsets `a..b` of the class
+    /// template `t` name the current instantiation, or depend on no
+    /// template parameter. The current instantiation is the template with
+    /// its own parameters in order, or, inside a partial specialization,
+    /// with that partial specialization's arguments.
+    pub fn names_current_inst(&self, t: usize, a: usize, b: usize) -> bool {
+        let toks: Vec<&crate::lexer::Token> = (a..b).map(|k| self.peek(k)).collect();
+        let dependent_tok = |tk: &crate::lexer::Token| -> bool {
+            if tk.kind != TK::Ident {
+                return false;
+            }
+            let Some(ids) = self.lookup(&tk.text) else { return false };
+            let id = ids[0];
+            if self.tparam.contains_key(&id) || matches!(self.decls[id].k, DK::TypeParam) {
+                return true;
+            }
+            match &self.decls[id].k {
+                DK::Type(q) => q.t.contains_unknown() || matches!(q.t, Ty::Dep(_)),
+                // A member of a class template, such as a constant that a
+                // parameter gives.
+                DK::Var(_) | DK::Field(_) => matches!(self.scopes[self.decls[id].scope].kind, SK::Class(c) if self.classes[c].template),
+                _ => false,
+            }
+        };
+        if !toks.iter().any(|tk| dependent_tok(tk)) {
+            return true;
+        }
+        // The template's own parameters in order.
+        let depth = self.templs[t].depth;
+        let mut i = 0u32;
+        let mut own = true;
+        let mut k = 0;
+        while k < toks.len() {
+            let tk = toks[k];
+            let param = self.lookup(&tk.text).and_then(|ids| {
+                let id = ids[0];
+                match self.tparam.get(&id) {
+                    Some(&(d, j)) => Some((d, j)),
+                    None => match &self.decls[id].k {
+                        DK::Type(q) => match &q.t {
+                            Ty::Dep(dd) => match &**dd {
+                                crate::types::Dep::Param(d, j) => Some((*d, *j)),
+                                _ => None,
+                            },
+                            _ => None,
+                        },
+                        _ => None,
+                    },
+                }
+            });
+            if param != Some((depth, i)) {
+                own = false;
+                break;
+            }
+            k += 1;
+            if k < toks.len() && toks[k].text == "..." {
+                k += 1;
+            }
+            if k < toks.len() {
+                if toks[k].text != "," {
+                    own = false;
+                    break;
+                }
+                k += 1;
+            }
+            i += 1;
+        }
+        // Inside a partial specialization: its own argument list, and
+        // not the primary's.
+        let mine: Vec<&str> = toks.iter().map(|x| x.text.as_str()).collect();
+        let mut in_partial = false;
+        for &sc in &self.stack {
+            if let SK::Class(c) = self.scopes[sc].kind {
+                if let Some(theirs) = self.partial_arg_toks.get(&c) {
+                    if self.classes[c].name == self.templs[t].name {
+                        in_partial = true;
+                        if theirs.iter().map(|x| x.as_str()).collect::<Vec<_>>() == mine {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        if own && !in_partial && i as usize == self.templs[t].params.len() {
+            return true;
+        }
+        false
+    }
+
     pub fn skip_angle_at(&self, mut k: usize) -> usize {
         let mut depth = 0i32;
         loop {
@@ -1849,9 +1947,17 @@ impl P {
                 // A parenthesized initializer looks like this too; the
                 // caller decides with `looks_like_params` before calling.
                 let tn = d.qual.is_some() || d.qual_unknown || matches!(self.scopes[self.cur_scope()].kind, SK::Class(_));
-                // DEP-19: `f(T::name) {` reads as a function whose
-                // parameter type is a value; the specialization fails.
+                // DEP-19, DEP-29: `f(T::name) {` at namespace scope is a
+                // variable template with an initializer followed by a body,
+                // a syntax error at the definition. The front end reports
+                // it and goes on as if the declaration were a function.
                 let value_param = d.name.is_some() && !param_ctx && !tn && self.fns.is_empty() && self.class_depth == 0 && self.in_template() && self.dependent_qualifier_at_k(1) && self.at_k(self.matching_close(0) + 1, "{");
+                if value_param && self.inst_depth == 0 && !self.looks_like_params_tn(tn) {
+                    // DEP-29: the parentheses hold the initializer of a
+                    // variable template, and a body cannot follow them.
+                    let l = self.line();
+                    self.error_because(l, "DEP-29", "DEP-19", "a function body after the initializer of a variable template ('T::name' without 'typename' is a value here)");
+                }
                 if d.name.is_some() && !param_ctx && !self.looks_like_params_tn(tn) && !value_param && !self.has_fact(self.pos + 1, crate::templ::FACT_VALUE_PARAM) {
                     break;
                 }
@@ -2693,7 +2799,7 @@ impl P {
         }
         let t = nonref(&e.ty);
         if self.is_scoped_enum(&t.t) || !(t.t.is_integral() || self.is_unscoped_enum(&t.t) || matches!(t.t, Ty::Class(_))) {
-            self.error_because(line, "DCL-19", "CE-25", "array bound must have integer or unscoped enumeration type");
+            self.error_because(line, "DCL-19", "CE-11", "array bound must have integer or unscoped enumeration type");
             return Some(u64::MAX);
         }
         match self.const_int(e) {

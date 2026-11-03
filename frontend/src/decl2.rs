@@ -1713,6 +1713,11 @@ impl P {
         for m in members {
             match &self.decls[m].k {
                 DK::Func(f) if !f.template => {
+                    // CNS-15: only the members whose constraints are
+                    // satisfied.
+                    if self.fn_cons.contains_key(&m) && self.fn_sat(m) != crate::cons::Sat::Yes {
+                        continue;
+                    }
                     if self.replayed_defs.contains(&m) || self.lazy_bodies.contains_key(&m) || self.body_errors.contains_key(&m) {
                         self.force_use(m);
                     }
@@ -1892,25 +1897,21 @@ impl P {
 
     /// TPL-38: a friend function template defined with a default is the
     /// only declaration of its template.
-    fn check_friend_default(&mut self, id: DeclId, tparams: &[crate::templ::TParam], friend_default: bool, line: u32) {
+    fn check_friend_default(&mut self, id: DeclId, _tparams: &[crate::templ::TParam], friend_default: bool, line: u32) {
         let Some(f) = self.func(id) else { return };
         if f.class.is_some() {
             return;
         }
-        let name = self.decls[id].name.clone();
-        let key = (name.clone(), f.fty.params.len(), tparams.len());
+        // A declaration with the same name, function type, head, and
+        // constraints is merged into the same DeclId (TPL-20, TPL-22), so
+        // the DeclId names the function template.
+        let earlier = !self.tfn_declared.insert(id);
         if friend_default {
-            let earlier = self.templs.iter().any(|t| {
-                t.kind == crate::templ::TKind::Func
-                    && t.name == name
-                    && t.params.len() == tparams.len()
-                    && self.func(t.decl).is_some_and(|g| g.class.is_none() && g.fty.params.len() == key.1)
-            });
             if earlier {
                 self.error(line, "TPL-38", "a friend template definition with a default is not the only declaration of the template");
             }
-            self.friend_defaults.push(key);
-        } else if self.friend_defaults.contains(&key) {
+            self.friend_defaults.push(id);
+        } else if self.friend_defaults.contains(&id) {
             self.error(line, "TPL-38", "a function template is declared again after a friend definition with a default");
         }
     }
@@ -2073,7 +2074,7 @@ impl P {
                 let defined = self.at_end_of_definition(start, end);
                 let pclass = self.last_partial_class.take();
                 let ck = self.cons_key(&cons);
-                if let Some(k) = self.templs[t].partials.iter().position(|p| p.pats == pats && p.params.len() == tparams.len() && self.cons_key(&p.cons) == ck) {
+                if let Some(k) = self.templs[t].partials.iter().position(|p| p.pats == pats && crate::templ::heads_equivalent(&p.params, &tparams) && self.cons_key(&p.cons) == ck) {
                     if defined {
                         self.templs[t].partials[k].src = Some(src);
                         self.templs[t].partials[k].class = pclass;
@@ -2750,7 +2751,7 @@ impl P {
             self.error(line, "TYN-2", "typedef with constexpr or inline");
         }
         if ds.consteval && ds.constexpr {
-            self.error(line, "CEV-3", "both 'consteval' and 'constexpr'");
+            self.error(line, "CX-5", "both 'consteval' and 'constexpr'");
         }
         if ds.constinit && ds.constexpr {
             self.error(line, "CINIT-2", "both 'constinit' and 'constexpr'");
@@ -3448,7 +3449,7 @@ impl P {
             self.error(line, "INL-2", "'inline' on a block-scope variable");
         }
         if ds.consteval {
-            self.error(line, "CEV-3", "'consteval' on a variable");
+            self.error(line, "CX-5", "'consteval' on a variable");
         }
         if ds.virtual_ || ds.explicit {
             let rule = if ds.virtual_ { "VIRT-2" } else { "CTOR-9" };
@@ -3522,7 +3523,9 @@ impl P {
             if matches!(self.scopes[q].kind, SK::Class(_)) && !self.in_template() {
                 // SINIT-7: the definition's place in the order of the
                 // unit's definitions.
-                let n = self.decls.len();
+                // A definition adds no declaration, so two definitions in a
+                // row share `n`; the count of definitions orders them.
+                let n = (self.decls.len(), self.static_member_pos.len());
                 self.static_member_pos.entry(p).or_insert(n);
             }
             if matches!(self.scopes[q].kind, SK::Class(_)) && !self.in_template() && !self.static_member_defs.insert(p) && !(explicit && self.replayed_defs.contains(&p)) {
@@ -3693,8 +3696,10 @@ impl P {
             }
         }
         if ds.constexpr {
-            // CX-1: a constexpr variable is const.
+            // CX-1: a constexpr variable is const; for an array, so are its
+            // elements.
             ty.c = true;
+            ty = crate::types::array_cv_norm(&ty);
             if let Ty::Ptr(_) = ty.t {
                 ty.c = true;
             }
@@ -3939,6 +3944,13 @@ impl P {
                         }
                     }
                 }
+                if let Ty::Array(inner, _) = &el.t {
+                    // DCL-6: a string literal initializes one whole array
+                    // of characters.
+                    if inner.t.is_integral() && inner.t != Ty::Bool && items.iter().all(|i| matches!(i.k, EK::Str(_) | EK::InitList(_))) {
+                        return Some(items.len());
+                    }
+                }
                 if let Ty::Array(..) | Ty::Class(_) = el.t {
                     // brace elision: count only if every item is braced
                     if items.iter().all(|i| matches!(i.k, EK::InitList(_))) || matches!(el.t, Ty::Class(_)) && items.iter().all(|i| !matches!(i.k, EK::InitList(_))) == false {
@@ -4151,6 +4163,19 @@ impl P {
                 }
             }
         }
+        if is_friend && !explicit && fn_targs.is_some() && self.pending_template.is_none() && !self.in_template() && self.inst_depth == 0 && d.qual.is_none() && !self.at("{") {
+            // DED-32: a friend declaration with template arguments names a
+            // specialization of a function template. The friend's name is
+            // registered above, so the specialization has access.
+            let cands: Vec<DeclId> = self.lookup(&name).unwrap_or_default().into_iter().filter(|&i| self.is_func_templ(i)).collect();
+            if !cands.is_empty() {
+                let ft = QTy::new(Ty::Func(fty.clone()));
+                if let Some((t, args)) = self.match_declared_spec(&cands, fn_targs.as_ref(), &ft, line) {
+                    let _ = self.func_spec(t, &args, line);
+                    return Ok((None, true));
+                }
+            }
+        }
         if explicit && self.inst_depth == 0 {
             if ds.friend {
                 // TSP-12: no friend explicit specialization.
@@ -4287,7 +4312,7 @@ impl P {
                     // model, such as a requires-clause (OVL-41).
                     // TPL-22: a different function type, also in the
                     // result type, makes another template.
-                    let distinct_templates = template && f.fty.ret != fty.ret && (f.fty.params.iter().chain(fty.params.iter()).any(|q| q.is_unknown()) || f.fty.ret.is_unknown() || fty.ret.is_unknown());
+                    let distinct_templates = template && f.fty.ret != fty.ret;
                     // TPL-20, TPL-22: heads that are not equivalent make
                     // another template.
                     let heads_differ = template
@@ -4431,7 +4456,7 @@ impl P {
                     }
                 }
                 if pce != ds.consteval {
-                    self.error(line, "CEV-3", format!("declarations of '{}' disagree on 'consteval'", name));
+                    self.error(line, "CX-5", format!("declarations of '{}' disagree on 'consteval'", name));
                 }
                 if pne != fty.noexcept && !self.in_template() {
                     // DCL-14: all declarations must agree on noexcept.
@@ -4940,8 +4965,14 @@ impl P {
             }
             rest.push(df);
         }
-        for df in rest {
+        // A body that splits a `>>` inserts a token, which moves the
+        // bodies after it and the place to return to.
+        let l0 = self.ins_log.len();
+        for mut df in rest {
+            df.start = self.adjust_pos(df.start, l0);
+            df.end = self.adjust_pos(df.end, l0);
             let save_pos = self.pos;
+            let save_mark = self.ins_log.len();
             let save_stack = std::mem::replace(&mut self.stack, df.stack.clone());
             let save_templ = self.templ;
             self.templ = df.templ;
@@ -4967,7 +4998,7 @@ impl P {
                     let kept: Vec<crate::diag::Diag> = self.d.list.drain(mark..).collect();
                     self.default_errors.insert(pid, kept);
                 }
-                self.pos = save_pos;
+                self.pos = self.adjust_pos(save_pos, save_mark);
                 self.stack = save_stack;
                 self.templ = save_templ;
                 continue;
@@ -5009,7 +5040,7 @@ impl P {
                     self.body_errors.insert(fid, kept);
                 }
             }
-            self.pos = save_pos;
+            self.pos = self.adjust_pos(save_pos, save_mark);
             self.stack = save_stack;
             self.templ = save_templ;
         }

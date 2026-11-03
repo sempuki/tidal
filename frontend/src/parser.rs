@@ -385,7 +385,7 @@ pub struct P {
     pub static_member_defs: std::collections::HashSet<DeclId>,
     /// For a static data member defined outside its class, the number of
     /// declarations that came before the definition (SINIT-7).
-    pub static_member_pos: HashMap<DeclId, usize>,
+    pub static_member_pos: HashMap<DeclId, (usize, usize)>,
     /// A contextual conversion to bool is being formed (CVF-3).
     pub contextual: bool,
     /// CVF-3: a direct-initialization, such as `static_cast`, which also
@@ -548,7 +548,31 @@ pub struct P {
     /// Function parameters declared as packs.
     pub pack_params: std::collections::HashSet<DeclId>,
     /// TPL-38: friend function templates defined with a default.
-    pub friend_defaults: Vec<(String, usize, usize)>,
+    pub friend_defaults: Vec<DeclId>,
+    /// CPT-26: the classes whose members are accessible where a
+    /// constraint is checked, kept while the check replays its atoms.
+    pub check_classes: Vec<usize>,
+    /// DEP-15: the argument tokens of each partial specialization's class.
+    pub spec_arg_toks: Vec<String>,
+    pub partial_arg_toks: HashMap<usize, Vec<String>>,
+    /// DEP-15: a qualified name read as a value although a declarator
+    /// follows it; the parse failure after it is an error.
+    pub dep15_hit: std::cell::Cell<u32>,
+    /// The places where `expect` split a `>>` and inserted a token, in
+    /// the current tokens. A position recorded before an insertion moves
+    /// with it (`adjust_pos`).
+    pub ins_log: Vec<usize>,
+    /// ILC-3 in CTAD: the initializer-list phase is running, and no
+    /// viable guide in it is not an error.
+    pub ctad_list_phase: bool,
+    pub ctad_none: bool,
+    /// CTAD-27: the templates made for aggregate candidates.
+    pub agg_guide_tids: std::collections::HashSet<usize>,
+    /// TSP-22: member classes of instances given by an explicit
+    /// specialization.
+    pub explicit_member_classes: std::collections::HashSet<usize>,
+    /// The function templates declared so far (TPL-38).
+    pub tfn_declared: std::collections::HashSet<DeclId>,
     pub friend_templ: Option<DeclId>,
     /// DER-8: the bases whose constructors a class inherits, the
     /// constructor of the base for each inherited one, and the implicit
@@ -828,6 +852,16 @@ impl P {
             replayed_defs: Default::default(),
             pack_params: Default::default(),
             friend_defaults: Vec::new(),
+            check_classes: Vec::new(),
+            spec_arg_toks: Vec::new(),
+            partial_arg_toks: HashMap::new(),
+            dep15_hit: std::cell::Cell::new(0),
+            ins_log: Vec::new(),
+            ctad_list_phase: false,
+            ctad_none: false,
+            agg_guide_tids: Default::default(),
+            explicit_member_classes: Default::default(),
+            tfn_declared: Default::default(),
             friend_templ: None,
             inh_bases: HashMap::new(),
             inherited_from: HashMap::new(),
@@ -942,6 +976,16 @@ impl P {
             false
         }
     }
+    /// A token position recorded when `ins_log` had `mark` entries, in
+    /// the current tokens.
+    pub fn adjust_pos(&self, mut x: usize, mark: usize) -> usize {
+        for &q in self.ins_log.iter().skip(mark) {
+            if q <= x {
+                x += 1;
+            }
+        }
+        x
+    }
     pub fn expect(&mut self, s: &str) -> PR<()> {
         if self.eat(s) {
             return Ok(());
@@ -952,6 +996,7 @@ impl P {
             let mut t = self.toks[self.pos].clone();
             t.text = ">".to_string();
             self.toks.insert(self.pos + 1, t);
+            self.ins_log.push(self.pos + 1);
             self.pos += 1;
             return Ok(());
         }
@@ -1246,6 +1291,12 @@ impl P {
     /// left the scope uncertain, so that the failure can come from the
     /// front end and not from the program.
     pub fn parse_failure(&mut self, e: &PErr) {
+        if self.dep15_hit.take() == e.line && e.line != 0 && self.in_template() {
+            // DEP-15, DEP-19: the member of another specialization is a
+            // value, so a declarator after it breaks the grammar (DEP-29).
+            self.error(e.line, "DEP-29", format!("the grammar does not derive this: {} (a member of a specialization other than the current instantiation needs 'typename')", e.msg));
+            return;
+        }
         let uncertain = self.stack.iter().any(|&s| self.scopes[s].uncertain || matches!(self.scopes[s].kind, SK::Class(c) if self.class_uncertain(c)));
         if parse_known_unsupported(&e.msg) || uncertain {
             self.unsupported(e.line, format!("parse: {}", e.msg));
@@ -1274,7 +1325,7 @@ impl P {
         if self.class_uncertain(owner) {
             return true;
         }
-        let mut here: Vec<usize> = self.fns.iter().filter_map(|f| f.class).collect();
+        let mut here: Vec<usize> = self.fns.iter().filter_map(|f| f.class).chain(self.check_classes.iter().copied()).collect();
         for &s in &self.stack {
             if let SK::Class(c) = self.scopes[s].kind {
                 here.push(c);
@@ -1314,7 +1365,7 @@ impl P {
         if self.class_uncertain(owner) || self.class_uncertain(naming) {
             return Ok(());
         }
-        let mut here: Vec<usize> = self.fns.iter().filter_map(|f| f.class).collect();
+        let mut here: Vec<usize> = self.fns.iter().filter_map(|f| f.class).chain(self.check_classes.iter().copied()).collect();
         for &s in &self.stack {
             if let SK::Class(c) = self.scopes[s].kind {
                 here.push(c);
