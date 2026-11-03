@@ -7,7 +7,11 @@ gives the page structure, the `rule` directive, the writing rules, and the
 grammar notation (Sphinx `productionlist`). Rule IDs are an uppercase
 prefix and a number, such as `IF-3`. IDs are never reused. A withdrawn
 rule keeps its directive with the class `withdrawn` and a sentence that
-says why.
+says why. When a rule merges into another, the sentence names the
+target with a `{rule}` reference, so that tools can follow it. The
+commit message of a change that withdraws a rule lists the Propose
+reports that cite the rule. `tools/propose_check.py`, run after the
+change, prints each such row (`documentation/exercises.md`, section 4).
 
 ## Principles
 

@@ -98,6 +98,17 @@ A new rule in a proposal takes an ID in the exercise's own space, such
 as `X9:new-1`. A real prefix such as `OVL-45` can later name an
 unrelated rule.
 
+A Propose report names the commit it read in its header paragraph, as a
+commit ID in backquotes (``Commit read: `3d98c93`.``). A reader runs
+`tools/propose_check.py` before reading an older Propose report. The
+tool checks each row of each change table against the specification. It
+prints the rows that name a withdrawn rule, with the rule it merged
+into, the rows whose old class has changed, and the "new" rows whose ID
+a page now defines. For a report that names its commit, it also prints
+how many later commits change `specification/`. The tool exits 0,
+because a report is a record of its date. `--strict` makes it exit 1
+when it finds a conflict.
+
 | ID | Proposal | Changes existing behavior |
 |---|---|---|
 | X1 | P3, left-to-right evaluation everywhere | yes |
@@ -157,7 +168,7 @@ catalog counts as done.
 | Exercise | State | Report |
 |---|---|---|
 | W0 | done | `reports/clean-room/java-programmer/` |
-| Front end | round 10 done: 4918/5480 pass, 5048 pass their check (`conformance.tsv`) | `reports/clean-room/rust-frontend/` |
+| Front end | round 14 done: 5595/6032 pass, 5708 pass their check (`conformance.tsv`) | `reports/clean-room/rust-frontend/` |
 | Guides | done: one tutorial and four how-to guides, not published (decision 0046) | `guides/` |
 | R-translation, R-objects, R-values, R-names, R-conversions, R-evaluation-order, R-constant-evaluation | done, 231/231 | `reports/clean-room/R-foundations/` |
 | Designer roadmap | done, findings D1 to D33 | `reports/clean-room/roadmap/designer.md` |
