@@ -645,9 +645,10 @@ of 139 tests.
 - UNI-14: Clang and GCC accept the constant evaluations in which
   `std::construct_at` makes a member active, and run the placement
   `new` form with no sanitizer report. After an explicit destructor
-  call on the member, Clang rejects a read of the member during
+  call on the member, Clang and EDG reject a read of the member during
   constant evaluation, and GCC accepts the read and gives 0
-  ({question}`Q-0309`).
+  ({question}`Q-0309`). Q-0309 stays open under decision 0051, because
+  on 2026-11-03 GCC 16 still differs from Clang 22 and EDG 7.0.
 - UNI-13: every compiler accepts the constant evaluations in which an
   assignment through `.` and `[]` makes members of one or two unions
   active. Every compiler rejects a later read of a part that the

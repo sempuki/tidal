@@ -495,7 +495,7 @@ before a constructor creates the object.
 
 :::{rule} STG-19
 :kind: undefined
-:tests: foundations/storage/replace-other-type-old-name-sanitizer.cpp foundations/storage/replace-base-old-pointer.cpp foundations/storage/replace-base-ends-enclosing-sanitizer.cpp foundations/storage/reuse-other-union-member-constant.cpp
+:tests: foundations/storage/replace-other-type-old-name-sanitizer.cpp foundations/storage/replace-base-old-pointer.cpp foundations/storage/replace-base-ends-enclosing-sanitizer.cpp foundations/storage/reuse-other-union-member-constant.cpp foundations/storage/replace-base-old-pointer-constant.cpp
 
 If a new object takes the storage of an old object and STG-9 does not
 apply, the names, pointers, and references to the old object do not
@@ -506,7 +506,7 @@ pointer that reaches the new object.
 
 :::{rule} STG-20
 :kind: undefined
-:tests: foundations/storage/reuse-const-static-object-sanitizer.cpp foundations/storage/reuse-const-automatic-object.cpp
+:tests: foundations/storage/reuse-const-static-object-sanitizer.cpp foundations/storage/reuse-const-automatic-object.cpp foundations/storage/reuse-const-automatic-object-constant.cpp
 
 Some complete objects are declared `const` and have a storage duration
 other than dynamic. If a program creates an object in the storage of
@@ -746,7 +746,7 @@ template <class T> void destroy_all(T* first, int n) {
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 70
-of 73 tests. EDG runs no programs, so its results for the run tests say
+of 75 tests. EDG runs no programs, so its results for the run tests say
 only that the programs are valid.
 
 - Constant evaluation: in C++23 mode no compiler in the matrix accepts
@@ -798,15 +798,19 @@ only that the programs are valid.
   reports a call through a pointer to a replaced base subobject, so
   `replace-base-old-pointer.cpp` checks only that the program compiles.
   During constant evaluation every compiler accepts a read through
-  such a pointer ({question}`Q-0307`).
+  such a pointer and gives the new value
+  (`replace-base-old-pointer-constant.cpp`, {question}`Q-0307`).
 - STG-20: a `const` object with static storage duration is in storage
   that cannot be written, and the write faults. No sanitizer reports a
   new object in a `const` automatic object, so
   `reuse-const-automatic-object.cpp` checks only that the program
-  compiles. During constant
-  evaluation no compiler rejects the new object. GCC 14 and Clang 18
-  then read the new value, and GCC 16, Clang 22, and EDG read the old
-  one ({question}`Q-0307`). A placement `new` with a pointer to `const`
+  compiles. During constant evaluation Clang 22 rejects the new object
+  as a change to a `const` object
+  (`reuse-const-automatic-object-constant.cpp`). GCC 14 and Clang 18
+  accept and then read the new value. GCC 16 and EDG accept and read
+  the old value. Q-0307 stays open under decision 0051, because on
+  2026-11-03 no family rejects the read through a base pointer, and the
+  families split on the `const` case. A placement `new` with a pointer to `const`
   as its argument is rejected by {rule}`NEW-20`.
 - STG-21, STG-22: the `vptr` sanitizer of GCC reports the destructor
   call at the end of the block and the cast to a derived class. The

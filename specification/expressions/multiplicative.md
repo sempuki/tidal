@@ -389,7 +389,8 @@ All eight compilers agree on 47 of 52 tests.
   `long long`. EDG 7.0 accepts both, and its quotient lies outside the
   range of `int`. EDG rejects `-INT_MIN` and `INT_MIN * -1`. The
   provisional answer keeps MUL-10, and EDG's behavior is a possible
-  defect ({question}`Q-0003`).
+  defect ({question}`Q-0003`). Q-0003 stays open under decision 0051,
+  because on 2026-11-03 EDG 7.0 still differs from Clang 22 and GCC 16.
 - **MUL-11, MUL-20.** At run time on x86-64, every Clang and GCC
   configuration, `-O2` included, gives an infinity for `1.0 / 0.0` and a
   NaN for `0.0 / 0.0` in `float`, `double`, and `long double`.
@@ -404,7 +405,8 @@ All eight compilers agree on 47 of 52 tests.
   during constant evaluation. EDG 7.0 accepts both and gives an
   infinity and a NaN. EDG rejects floating overflow. The provisional
   answer keeps the rejection, and EDG's behavior is a possible defect
-  ({question}`Q-0002`).
+  ({question}`Q-0002`). Q-0002 stays open under decision 0051, because
+  on 2026-11-03 EDG 7.0 still differs from Clang 22 and GCC 16.
 - **MUL-12.** These are the results for an overflow of `*` or `/` in a
   `constexpr` initializer, in `float` or `double`:
 
@@ -417,7 +419,8 @@ All eight compilers agree on 47 of 52 tests.
   configuration gives an infinity, and `-fsanitize=undefined` lets the
   overflow run. The provisional answer is that the behavior is
   undefined, and that Clang's acceptance is an extension
-  ({question}`Q-0001`).
+  ({question}`Q-0001`). Q-0001 stays open under decision 0051, because
+  on 2026-11-03 Clang 22 still differs from GCC 16 and EDG 7.0.
 - **MUL-13.** Clang and GCC evaluate the left operand of the built-in
   operators first at `-O0` and at `-O2`, in every form probed. For an
   overloaded `*` or `/`, GCC evaluates the right operand first. This

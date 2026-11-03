@@ -12,13 +12,11 @@ the union then has no active member. A later read of the member reads an
 object outside its lifetime (OBJ-2) and a member that is not active
 (UNI-6). Constant evaluation must reject both (CE-9, CE-6).
 
-| Probe | GCC 16.2 | Clang 22 |
-|---|---|---|
-| construct a `Point` in a union member, call `~Point()`, read `x` | accepts, gives 0 | rejects, read outside the lifetime |
-| the same for a `Point` with a user-provided `constexpr` destructor | accepts | not probed |
-| a `Point` variable that is not in a union, call `~Point()`, read `x` | rejects, outside the lifetime | rejects, outside the lifetime |
-
-EDG has not run the probes yet.
+| Probe | GCC 14, 16 | Clang 18, 22 | EDG 7.0 |
+|---|---|---|---|
+| construct a `Point` in a union member, call `~Point()`, read `x` | accepts, gives 0 | rejects, read outside the lifetime | rejects |
+| the same for a `Point` with a user-provided `constexpr` destructor | accepts | rejects | rejects |
+| a `Point` variable that is not in a union, call `~Point()`, read `x` | rejects, outside the lifetime | rejects, outside the lifetime | rejects |
 
 ## Evidence
 
@@ -38,9 +36,11 @@ union member.
 
 ## Provisional answer
 
-Yes, undefined (UNI-14, OBJ-2); GCC 16 accepts (option 1). UNI-14, DTOR-6, and OBJ-2 together make the read undefined,
+Yes, undefined (UNI-14, OBJ-2); Clang and EDG reject, GCC accepts (option 1). UNI-14, DTOR-6, and OBJ-2 together make the read undefined,
 and GCC rejects the same read outside a union. The test expects a
 rejection and records GCC's acceptance with an override.
+
+The question stays open under decision 0051 (2026-11-03). Clang 22 and EDG 7.0 reject the read, and GCC 16 accepts it, so two families disagree. CE-P3 supports the provisional answer, because constant evaluation rejects any operation that is undefined (CE-9, OBJ-2, UNI-6). The front end's interpreter rejects the read with UNI-6.
 
 ## Opinions
 

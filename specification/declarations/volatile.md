@@ -272,6 +272,8 @@ of 37 tests.
 - VOL-6: no sanitizer of GCC or Clang reports a read of a volatile
   object through an `int*`, so `nonvolatile-access-to-volatile-constant.cpp`
   checks only that the program compiles. During constant evaluation Clang rejects the read,
-  and GCC and EDG accept it ({question}`Q-0320`).
+  and GCC and EDG accept it ({question}`Q-0320`). Q-0320 stays open
+  under decision 0051, because on 2026-11-03 Clang 22 still differs from
+  GCC 16 and EDG 7.0.
 
 Inputs: clang-sema-expr, clang-sema-decl, clang-diag-sema, edg-decls.

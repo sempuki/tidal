@@ -1,6 +1,6 @@
 # Q-0090: Can constant evaluation use a reference whose referent is unknown, if it does not read through it?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** CE-18, `tests/expressions/constant-expressions/unknown-reference-not-read.cpp`
 
 ## Context
@@ -16,8 +16,10 @@ and 16, and EDG accept the program. Clang 18 rejects it.
    reference.
 2. Any use of such a reference makes the expression not constant.
 
-## Provisional answer
+## Answer
 
-Yes, when the evaluation does not read through the reference (option 1). The newer Clang agrees with GCC and EDG.
+Yes; Clang 22, GCC, and EDG agree, Clang 18 rejects (option 1). The evaluation does not read through the reference (CE-18, CE-P1).
+
+Settled on 2026-11-03 under decision 0051, because the newest version of each baseline family (Clang 22, GCC 16, EDG 7.0) agrees with this answer. Clang 18 still rejects the program, and the test keeps its override for Clang 18. The front end's interpreter also accepts the program.
 
 ## Opinions

@@ -53,4 +53,6 @@ Yes, and also a valid template argument (CE-21, TARG-19); GCC rejects it (option
 follows from CE-21 counting only the active member. The status is not
 "compiler defect", because option 2 is a consistent reading too.
 
+The question stays open under decision 0051 (2026-11-03). Clang 22 and EDG 7.0 accept the union with no active member, as a constant and as a template argument, and GCC 16 rejects it, so two families disagree. CE-P2 supports the provisional answer. A result must have a value in every part, and in a union only the active member is a part (CE-21). The front end's interpreter accepts both tests.
+
 ## Opinions

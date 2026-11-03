@@ -232,7 +232,9 @@ All eight compilers agree on 34 of 35 tests. The results are in
 - **INIT-1 divergence.** For an array element, Clang and GCC reject the
   read during constant evaluation. EDG 7.0 accepts the read. The
   provisional answer is that INIT-1 applies to array elements and that
-  EDG has a possible defect. See {question}`Q-0013`.
+  EDG has a possible defect. See {question}`Q-0013`. Q-0013 stays open
+  under decision 0051, because on 2026-11-03 EDG 7.0 still differs from
+  Clang 22 and GCC 16.
 - **INIT-1 at run time.** No sanitizer of GCC or Clang stops a read
   of an automatic variable with no value, under `-fsanitize=undefined`
   or `-fsanitize=address`. The tests observe INIT-1 only in constant

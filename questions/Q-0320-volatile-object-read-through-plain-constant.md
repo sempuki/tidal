@@ -37,6 +37,8 @@ Yes, undefined (VOL-6); GCC and EDG accept (option 1). VOL-6 makes the read unde
 rejects an expression whose evaluation has undefined behavior. Clang
 follows option 1. The test records GCC and EDG as overrides.
 
+The question stays open under decision 0051 (2026-11-03). Clang 22 rejects the read, and GCC 16 and EDG 7.0 accept it, so two families disagree. The provisional answer follows the one family. CE-P3 lists the read of a volatile object among the operations that an evaluation rejects, and the object here is volatile (VOL-6, VOL-8). Every compiler rejects a read through a volatile glvalue in the same place. The front end's interpreter rejects the read with CE-12.
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

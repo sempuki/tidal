@@ -15,9 +15,10 @@ of that pointer to `D*`, or to `B*`, follows the check of VIRT-10.
 | GCC 14, 16, host | null pointer | null pointer |
 | EDG 7.0 | no code generation | the cast succeeds |
 
-EDG gives a null pointer in one probed case. In that case `D` has a
-public base `A` and a private base `B`, and the cast goes from the `B`
-subobject to `D*`.
+A probe with the bases reversed gives the same split. There `D` has a
+public base `A` and a private base `B`, and the casts go from the `B`
+subobject to `D*` and to `A*`. Clang 22 and GCC 16 give a null pointer
+for both casts, and EDG 7.0 lets both succeed.
 
 ## Evidence
 
@@ -38,6 +39,8 @@ Clang and GCC configuration.
 
 No; Clang and GCC give a null pointer, likely EDG defect (option 1). Clang and GCC agree at run time and in constant evaluation,
 and the result of a constant must match the result at run time.
+
+The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 give a null pointer, and EDG 7.0 lets the cast succeed, so two families disagree. CE-P1 supports the provisional answer. Constant evaluation is the same program run at translation time, so the cast gives the null pointer that Clang and GCC give at run time. The front end's interpreter accepts the test, so it gives the null pointer too.
 
 ## Opinions
 

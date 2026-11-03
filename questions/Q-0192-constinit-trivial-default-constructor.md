@@ -47,4 +47,6 @@ Yes, the zero counts, as for a scalar; Clang differs (option 1). Two of three im
 treats the trivial class the same as the scalar case, where every
 compiler accepts.
 
+The question stays open under decision 0051 (2026-11-03). GCC 16 and EDG 7.0 accept the `constinit` class with a trivial default constructor, at namespace scope and as a `static` variable in a block, and Clang 22 rejects both, so two families disagree. CE-24 supports the provisional answer, because it treats a default initialization that calls only a trivial constructor as the scalar case, where every compiler accepts. CE-P2 counts a variable whose value is fixed at translation time, and the zero of STO-3 is fixed then. The front end's interpreter accepts the test and reads the member as 0.
+
 ## Opinions

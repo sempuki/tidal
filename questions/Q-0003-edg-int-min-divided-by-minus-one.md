@@ -44,4 +44,6 @@ during constant evaluation, at run time, and in the sanitizer. EDG's
 quotient lies outside the range of `int`, which no defined result
 allows.
 
+The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 reject `INT_MIN / -1` and `INT_MIN % -1` for `int` and `long long`, and EDG 7.0 accepts them, so two families disagree. Probes confirm that EDG 7.0 still rejects `-INT_MIN` and `INT_MIN * -1` and gives 0 for `INT_MIN % -1`. CE-P3 supports the provisional answer, because constant evaluation rejects any operation that is undefined (CE-9, MUL-10). The report of EDG's behavior to the EDG project waits on the maintainer. The front end's interpreter rejects both operators with MUL-10.
+
 ## Opinions

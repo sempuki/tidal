@@ -30,6 +30,8 @@ Yes (NEW-37); Clang and GCC 16 accept, GCC 14 and EDG reject (option 1). The new
 global allocation functions of the implementation, as the forms
 without placement arguments are.
 
+The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 evaluate `new (std::nothrow) int(4)`, and EDG 7.0 rejects it, so two families disagree. GCC 14 still rejects it. CE-P1 supports the provisional answer, because constant evaluation can allocate, and the nothrow forms are allocation functions of the implementation (NEW-37). The front end's interpreter rejects the test, because the program declares the nothrow allocation function itself.
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

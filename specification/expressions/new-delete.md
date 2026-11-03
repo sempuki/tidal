@@ -849,7 +849,9 @@ of 129 tests.
 - NEW-37: every compiler rejects a class's own `operator new` and a
   placement form during constant evaluation, and accepts an
   over-aligned type. Clang 18 and 22 and GCC 16 accept the nothrow
-  forms. GCC 14 and EDG reject them ({question}`Q-0303`). Every
+  forms. GCC 14 and EDG reject them ({question}`Q-0303`). Q-0303 stays
+  open under decision 0051, because on 2026-11-03 EDG 7.0 still differs
+  from Clang 22 and GCC 16. Every
   compiler accepts the placement `new` inside `std::construct_at`, and
   rejects the same template in another namespace ({rule}`LSUP-10`).
 - NEW-38: Clang and GCC throw `std::bad_alloc` from the global

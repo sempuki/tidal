@@ -533,7 +533,10 @@ of 122 tests.
   cast from a private base, to the derived class or across to another
   base. A cast from the same subobject to a class that has it as a
   public base succeeds. EDG 7.0 lets the cast from a private base
-  succeed during constant evaluation ({question}`Q-0212`).
+  succeed during constant evaluation, also when the private base is the
+  second base ({question}`Q-0212`). Q-0212 stays open under decision
+  0051, because on 2026-11-03 EDG 7.0 still differs from Clang 22 and
+  GCC 16.
 - VIRT-10: a failed cast of a reference throws at run time on every
   Clang and GCC configuration, and a handler `catch (...)` catches the
   exception. Constant evaluation rejects the failed cast on every

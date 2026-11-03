@@ -574,6 +574,12 @@ struct Filled { int v[4] = {}; };     // every element starts at 0, so a
 The results are in `tests/RESULTS.md`. All eight compilers agree on 117
 of 134 tests.
 
+Of the constant-evaluation cluster, {question}`Q-0090` is settled under
+decision 0051. These questions of the cluster on this page stay open:
+{question}`Q-0002`, {question}`Q-0117`, {question}`Q-0192`, and
+{question}`Q-0193`. On 2026-11-03, Clang 22, GCC 16, and EDG 7.0 still
+split on each of them.
+
 - CE-10: all three implementations reject a recursion depth of 100000
   and a loop of 100000000 steps by default. All accept a depth of 400.
   In a template argument of a function template's signature, a failed
@@ -602,7 +608,7 @@ of 134 tests.
 - CE-11: EDG accepts `explicit(2)` and converts the condition to `bool`
   ({question}`Q-0078`).
 - CE-18: Clang 18 rejects the use of the reference. Clang 22, GCC, and
-  EDG accept it ({question}`Q-0090`).
+  EDG accept it. {question}`Q-0090` is settled under decision 0051.
 - CE-29: every compiler accepts `&alias` in a constant expression and
   `alias` as a template argument, where `alias` is a reference to a
   global with a constant initializer and is not `constexpr`. Every

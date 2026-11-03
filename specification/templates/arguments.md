@@ -571,7 +571,8 @@ probes for TARG-23 to TARG-27 and for the additions to the older rules.
 - TARG-19: GCC rejects a union with no active member as a template
   argument, because GCC does not treat the value as a constant. Clang
   and EDG accept it, and give one specialization for two such values
-  ({question}`Q-0117`).
+  ({question}`Q-0117`). Q-0117 stays open under decision 0051, because
+  on 2026-11-03 GCC 16 still differs from Clang 22 and EDG 7.0.
 - TARG-15: the test for `typeid` needs the `<typeinfo>` header, and the
   EDG image has no library. Clang and GCC reject the address of a
   `typeid` result. The test covers `__func__` and the class argument.

@@ -35,6 +35,8 @@ Yes, undefined (PFX-21); EDG accepts (option 1). Clang and GCC reject the call i
 sanitizers report it at run time. The test expects a rejection and
 records EDG's result with an override.
 
+The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 reject the call, and EDG 7.0 accepts it, so two families disagree. A probe where the member function reads a member is rejected by every compiler. CE-P3 supports the provisional answer, because constant evaluation rejects any operation that is undefined (CE-9, PFX-21). The front end's interpreter rejects the call with PFX-21.
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

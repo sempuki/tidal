@@ -55,4 +55,6 @@ run-time result and the treatment of division by zero (Q-0004). Option
 3 needs a new constant-evaluation rule and a change of class for MUL-12
 and ADD-17, so the rules follow option 1 until a decision adopts it.
 
+The question stays open under decision 0051 (2026-11-03). Clang 22 accepts the overflow and gives an infinity, and GCC 16 and EDG 7.0 reject it, so two families disagree. A probe of an infinity minus itself is rejected by every compiler: by Clang for the NaN, and by GCC and EDG at the overflow. CE-P3 supports the provisional answer. An evaluation must not depend on the machine, and the result of the overflow depends on the floating-point format. The front end's interpreter rejects the overflow with MUL-12 and ADD-17.
+
 ## Opinions

@@ -63,4 +63,6 @@ CE-14 follows the lifetime. Clang accepts every case, and on the read of
 a class EDG agrees with Clang. A rule that depends on the form of the
 binding would be harder to state and to check.
 
+The question stays open under decision 0051 (2026-11-03). The newest versions still split by part. EDG 7.0 rejects the two `constexpr` references whose temporary is extended through a member or through a braced aggregate, and Clang 22 and GCC 16 accept them. GCC 16 rejects the read of a `const` temporary of class type, and Clang 22 and EDG 7.0 accept it. CE-P2 supports the provisional answer, because a `const` temporary that a constant variable keeps alive is among the things that an evaluation can use, and REF-4 gives every form of binding the same lifetime. The front end's interpreter accepts the declarations and the read of a class temporary, and rejects the read of the nested temporary with OBJ-2.
+
 ## Opinions

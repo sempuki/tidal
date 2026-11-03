@@ -369,7 +369,9 @@ of 57 tests.
   `-Werror` and the named flag. EDG does not accept `-Werror` and skips
   the tests.
 - ADD-17: Clang gives an infinity during constant evaluation. GCC and
-  EDG reject the expression ({question}`Q-0001`).
+  EDG reject the expression ({question}`Q-0001`). Q-0001 stays open
+  under decision 0051, because on 2026-11-03 Clang 22 still differs from
+  GCC 16 and EDG 7.0.
 - ADD-18: with `-m32`, Clang rejects a difference of `2147483648`
   during constant evaluation and accepts `INT_MIN`. EDG rejects every
   position past `INT_MAX`. GCC rejects an array of more than `INT_MAX`

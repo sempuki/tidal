@@ -305,6 +305,7 @@ of 72 tests.
   reference member binds to a temporary, and accept the same aggregate
   at namespace scope. A `constexpr` reference variable that binds a
   temporary aggregate is a different case, which {rule}`CE-14` covers
-  ({question}`Q-0193`).
+  ({question}`Q-0193`). Q-0193 stays open under decision 0051, because
+  on 2026-11-03 the newest versions still split on it.
 
 Inputs: clang-sema-decl, clang-sema-declcxx, clang-diag-sema, edg-decls.

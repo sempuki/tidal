@@ -379,7 +379,9 @@ of 69 tests.
   rejects it because the class is incomplete ({question}`Q-0316`).
 - PFX-21: UBSan reports a member call through a null pointer on Clang
   and GCC. Clang and GCC reject the call during constant evaluation.
-  EDG accepts it ({question}`Q-0318`).
+  EDG accepts it ({question}`Q-0318`). Q-0318 stays open under decision
+  0051, because on 2026-11-03 EDG 7.0 still differs from Clang 22 and
+  GCC 16.
 - PFX-19: the Clang sanitizer stops a call through a pointer whose
   parameter types differ from the function's. GCC has no such check, and
   the undefined rule allows its result. No implementation checks a

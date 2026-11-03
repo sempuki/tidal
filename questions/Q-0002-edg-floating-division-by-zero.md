@@ -33,4 +33,6 @@ version in the matrix.
 No; likely EDG defect (option 1). Two of three implementations reject, and EDG's own handling
 is inconsistent with its rejection of overflow.
 
+The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 reject both divisions, and EDG 7.0 accepts them, so two families disagree. A probe confirms that EDG 7.0 still gives an infinity and a NaN. CE-P3 supports the provisional answer. An evaluation must not depend on the machine, and the result of a floating division by zero depends on the machine (CE-28). The report of EDG's behavior to the EDG project waits on the maintainer. The front end's interpreter rejects both divisions with CE-28.
+
 ## Opinions
