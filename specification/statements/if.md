@@ -374,21 +374,22 @@ does the opposite. In a `consteval` function, the then branch of
 
 :::{rule} IF-25
 :kind: required
-:tests: statements/if/consteval-local-initializers.cpp declarations/initialization/static/consteval-branch-in-initializer.cpp statements/if/consteval-local-reference.cpp
+:tests: statements/if/consteval-local-initializers.cpp declarations/initialization/static/consteval-branch-in-initializer.cpp statements/if/consteval-local-reference.cpp statements/if/consteval-static-fallback.cpp
 
 An evaluation is a constant evaluation only if it starts in one of
 these places:
 
 - a place in the table of {principle}`CE-P4`,
 - an initializer that is a constant expression, of a namespace-scope,
-  `static`, or `thread_local` variable ({rule}`SINIT-1`),
+  `static`, or `thread_local` variable of any type, a class type
+  included ({rule}`SINIT-1`),
 - an initializer that is a constant expression, of a `const` variable
   of integer or enumeration type that is not `volatile` ({rule}`CE-3`).
 
-Every other evaluation happens at run time, such as the initializer of
-a local variable that is not `const`. The initializer of a local
-reference that binds a temporary is in this group
-({question}`Q-0329`).
+If such an initializer is not a constant expression, the whole
+initializer runs at run time. Every other evaluation happens at run
+time, such as the initializer of a local variable that is not `const`
+or of a local reference that binds a temporary ({question}`Q-0329`).
 :::
 
 ## Examples
@@ -420,9 +421,15 @@ int offset = 0;
 int fixed = where();           // 1: a constant initializer (SINIT-1)
 int moved = where() + offset;  // 2: offset is not a constant
 
+struct Pair { int first; int second; };
+
 void use() {
   int local = where();         // 2: a local initializer runs at run time
   const int kept = where();    // 1: a const integer (IF-25)
+  static int once = where();   // 1: a constant initializer
+  static int late = where() + offset;          // 2: falls back to run time
+  static Pair both{where(), where()};          // {1, 1}: a class type counts
+  static Pair mixed{where(), offset};          // {2, 0}: the whole initializer runs at run time
 }
 
 template <class T> void check(T t) {
@@ -442,7 +449,7 @@ void conditions() {
 ## Evidence
 
 All rules in this page are `required` or `reject`. All eight compilers
-agree on 68 of 69 tests. The results are in `tests/RESULTS.md`.
+agree on 69 of 70 tests. The results are in `tests/RESULTS.md`.
 
 - IF-25: Clang and GCC take the then branch of `if consteval` in the
   initializer of a local `const int` or `const` enumeration variable.

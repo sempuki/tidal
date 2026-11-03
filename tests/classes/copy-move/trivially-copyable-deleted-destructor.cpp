@@ -1,6 +1,6 @@
-// tidal-rules: CPY-19 CPY-7 UNI-3
+// tidal-rules: CPY-19 CPY-7 UNI-3 DTOR-3
 // tidal-expect: accept
-// tidal-note: The destructor of Pinned is deleted, so CPY-19 does not count Pinned trivially copyable, although its copy and move functions are trivial (Q-0343). The union wrapper's destructor is deleted, and so are its copy and move constructors (CPY-7). Its assignments stay usable.
+// tidal-note: The destructor of Pinned is deleted, so CPY-19 does not count Pinned trivially copyable, although its copy and move functions are trivial (Q-0343). The union wrapper's destructor is deleted, because its variant member has a deleted destructor (DTOR-3), and so are its copy and move constructors (CPY-7). Its assignments stay usable.
 template <class T> constexpr bool copies = requires (const T& t) { new T(t); };
 template <class T> constexpr bool moves = requires (T& t) { new T(static_cast<T&&>(t)); };
 template <class T> constexpr bool copy_assigns = requires (T& a, const T& b) { a = b; };

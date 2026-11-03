@@ -546,13 +546,19 @@ of a pointer or glvalue that refers to its storage are undefined:
 
 :::{rule} STG-23
 :kind: undefined
-:tests: foundations/storage/access-unrelated-scalar.cpp foundations/storage/access-unrelated-class.cpp foundations/storage/access-signed-char.cpp foundations/storage/byte-array-cast-reaches-byte.cpp
+:tests: foundations/storage/access-unrelated-scalar.cpp foundations/storage/access-unrelated-class.cpp foundations/storage/access-signed-char.cpp foundations/storage/byte-array-cast-reaches-byte.cpp classes/unions/common-initial-sequence-enum.cpp classes/unions/common-initial-sequence-nested.cpp
 
 If a program reads or writes an object through a glvalue of a type
-that STG-14 does not list, the behavior is undefined. `signed char` is
-such a type ({question}`Q-0306`). So is a class with the same members
-as the class of the object. A glvalue from a cast of a byte array's
-address refers to a byte (STG-29).
+that STG-14 does not list, the behavior is undefined. These cases
+apply:
+
+- `signed char` is not listed ({question}`Q-0306`).
+- A class with the same members as the class of the object is not
+  listed.
+- A glvalue from a cast of a byte array's address refers to a byte
+  (STG-29).
+- A read of a member in the common initial sequence that
+  {rule}`UNI-10` allows is not such a read.
 :::
 
 ## Implementation Requirements
@@ -745,8 +751,8 @@ template <class T> void destroy_all(T* first, int n) {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 70
-of 75 tests. EDG runs no programs, so its results for the run tests say
+The results are in `tests/RESULTS.md`. All eight compilers agree on 72
+of 77 tests. EDG runs no programs, so its results for the run tests say
 only that the programs are valid.
 
 - Constant evaluation: in C++23 mode no compiler in the matrix accepts

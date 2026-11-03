@@ -737,7 +737,7 @@ name specific cases (decision 0042): {rule}`PFX-5`, {rule}`OPR-15`,
 
 :::{rule} OVL-36
 :kind: reject
-:tests: foundations/overload-resolution/best-no-single-winner.cpp foundations/overload-resolution/better-crossing-arguments.cpp foundations/overload-resolution/defaults-take-no-part.cpp foundations/overload-resolution/no-object-static-default-ambiguous.cpp foundations/overload-resolution/surrogate-same-parameters.cpp foundations/overload-resolution/builtin-other-shape-kept.cpp foundations/overload-resolution/init-constructor-conversion-tie.cpp foundations/overload-resolution/overload-set-argument-ambiguous.cpp foundations/overload-resolution/tie-swapped-same-function.cpp foundations/overload-resolution/tie-constraints-different-parameters.cpp foundations/overload-resolution/tie-constraints-default-parameter.cpp foundations/overload-resolution/tie-constraints-ellipsis.cpp foundations/overload-resolution/builtin-logical-explicit-competes.cpp foundations/overload-resolution/builtin-logical-explicit-competes-and.cpp foundations/overload-resolution/static-call-operator-surrogate-ambiguous.cpp foundations/conversion-sequences/overload-set-reference-or-pointer.cpp foundations/conversion-sequences/overload-set-to-ellipsis.cpp
+:tests: foundations/overload-resolution/best-no-single-winner.cpp foundations/overload-resolution/better-crossing-arguments.cpp foundations/overload-resolution/defaults-take-no-part.cpp foundations/overload-resolution/no-object-static-default-ambiguous.cpp foundations/overload-resolution/surrogate-same-parameters.cpp foundations/overload-resolution/builtin-other-shape-kept.cpp foundations/overload-resolution/init-constructor-conversion-tie.cpp foundations/overload-resolution/overload-set-argument-ambiguous.cpp foundations/overload-resolution/tie-swapped-same-function.cpp foundations/overload-resolution/tie-constraints-different-parameters.cpp foundations/overload-resolution/tie-constraints-default-parameter.cpp foundations/overload-resolution/tie-constraints-ellipsis.cpp foundations/overload-resolution/builtin-logical-explicit-competes.cpp foundations/overload-resolution/builtin-logical-explicit-competes-and.cpp foundations/overload-resolution/static-call-operator-surrogate-ambiguous.cpp foundations/overload-resolution/call-through-address-unqualified.cpp foundations/conversion-sequences/overload-set-reference-or-pointer.cpp foundations/conversion-sequences/overload-set-to-ellipsis.cpp
 
 If no viable function is better than each of the others, the program
 is not valid. Such a use is ambiguous. These rules name specific cases
@@ -873,7 +873,10 @@ maintainer.
   with a non-static member. Clang rejects the parenthesized form, and
   Clang 22 accepts `&f`. EDG accepts both forms with no argument. OVL-21
   follows Clang 22 and EDG for `&f`, as for `&C::f`
-  ({question}`Q-0143`, {question}`Q-0161`).
+  ({question}`Q-0143`, {question}`Q-0161`). With `f() &` and
+  `static f(int = 0)`, the call `(&f)()` ties under OVL-23 and OVL-25,
+  as the call `f()` with no object does. OVL-36 rejects it. Clang 18
+  reports the ambiguity, and Clang 22 and EDG call the static member.
 - OVL-26: EDG finds two conversion results ambiguous when they differ
   only by a function pointer conversion. Clang and GCC prefer the
   identity ({question}`Q-0163`).

@@ -211,6 +211,7 @@ pass	classes/constructors/deleted-dtor-sizeof-call.cpp
 pass	classes/constructors/deleted-dtor-sizeof.cpp
 pass	classes/constructors/deleted-dtor-temporary.cpp
 pass	classes/constructors/deleted-dtor-variable.cpp
+pass	classes/constructors/deleted-dtor-variant-member.cpp
 pass	classes/constructors/double-destroy-constant.cpp
 pass	classes/constructors/double-destroy-sanitizer.cpp
 pass	classes/constructors/double-destroy-trivial-constant.cpp
@@ -4066,7 +4067,7 @@ EDG-ONLY	foundations/overload-resolution/call-through-address-parenthesized-qual
 pass	foundations/overload-resolution/call-through-address-parenthesized-static.cpp
 EDG-ONLY	foundations/overload-resolution/call-through-address-static-member.cpp
 EDG-ONLY	foundations/overload-resolution/call-through-address-unqualified-argument.cpp
-FALSE-REJECT	foundations/overload-resolution/call-through-address-unqualified.cpp
+EDG-ONLY	foundations/overload-resolution/call-through-address-unqualified.cpp
 pass	foundations/overload-resolution/call-through-address.cpp
 pass	foundations/overload-resolution/chosen-deleted.cpp
 pass	foundations/overload-resolution/chosen-not-accessible.cpp
@@ -4380,6 +4381,7 @@ pass	statements/if/consteval-local-reference.cpp
 pass	statements/if/consteval-no-condition.cpp
 pass	statements/if/consteval-plain-function.cpp
 pass	statements/if/consteval-requires-braces.cpp
+RUN-WRONG-RESULT	statements/if/consteval-static-fallback.cpp
 pass	statements/if/constexpr-case-into.cpp
 pass	statements/if/constexpr-condition-explicit-bool.cpp
 pass	statements/if/constexpr-condition-narrowing.cpp

@@ -376,7 +376,7 @@ A destructor can run on a `const` object.
 
 :::{rule} DTOR-3
 :kind: reject
-:tests: classes/constructors/deleted-dtor-delete.cpp classes/constructors/deleted-dtor-new.cpp classes/constructors/deleted-dtor-temporary.cpp classes/constructors/deleted-dtor-return-prvalue.cpp classes/constructors/deleted-dtor-copy-init-prvalue.cpp classes/constructors/deleted-dtor-new-from-prvalue.cpp classes/constructors/deleted-dtor-decltype-call.cpp classes/constructors/deleted-dtor-variable.cpp classes/constructors/implicitly-deleted-dtor-member.cpp classes/constructors/private-dtor-member.cpp classes/constructors/private-dtor-variable.cpp classes/constructors/delete-array-deleted-dtor.cpp classes/constructors/deleted-dtor-sizeof.cpp classes/constructors/deleted-dtor-sizeof-call.cpp classes/constructors/deleted-dtor-noexcept.cpp classes/constructors/deleted-dtor-decltype-braces.cpp classes/constructors/deleted-dtor-decltype-call-argument.cpp classes/constructors/deleted-dtor-decltype-comma.cpp classes/constructors/deleted-dtor-decltype-comma-left.cpp classes/constructors/private-dtor-sizeof.cpp classes/constructors/deleted-dtor-new-aggregate-braces.cpp classes/constructors/default-ctor-deleted-by-member-dtor.cpp
+:tests: classes/constructors/deleted-dtor-delete.cpp classes/constructors/deleted-dtor-new.cpp classes/constructors/deleted-dtor-temporary.cpp classes/constructors/deleted-dtor-return-prvalue.cpp classes/constructors/deleted-dtor-copy-init-prvalue.cpp classes/constructors/deleted-dtor-new-from-prvalue.cpp classes/constructors/deleted-dtor-decltype-call.cpp classes/constructors/deleted-dtor-variable.cpp classes/constructors/implicitly-deleted-dtor-member.cpp classes/constructors/private-dtor-member.cpp classes/constructors/private-dtor-variable.cpp classes/constructors/delete-array-deleted-dtor.cpp classes/constructors/deleted-dtor-sizeof.cpp classes/constructors/deleted-dtor-sizeof-call.cpp classes/constructors/deleted-dtor-noexcept.cpp classes/constructors/deleted-dtor-decltype-braces.cpp classes/constructors/deleted-dtor-decltype-call-argument.cpp classes/constructors/deleted-dtor-decltype-comma.cpp classes/constructors/deleted-dtor-decltype-comma-left.cpp classes/constructors/private-dtor-sizeof.cpp classes/constructors/deleted-dtor-new-aggregate-braces.cpp classes/constructors/default-ctor-deleted-by-member-dtor.cpp classes/constructors/deleted-dtor-variant-member.cpp classes/copy-move/trivially-copyable-deleted-destructor.cpp
 
 If the destructor of a class is deleted or not accessible, a program
 must not:
@@ -398,7 +398,8 @@ class, as in `new S(make())`. Braces that initialize the members, as in
 `new S{1}`, are valid.
 
 The implicit destructor is deleted if a base or member has a destructor
-that is deleted or not accessible. The `new` exception covers only the
+that is deleted or not accessible. A variant member of a union
+({doc}`unions`) counts as a member here. The `new` exception covers only the
 destructor of the class. {rule}`CTOR-3` still deletes a default
 constructor that `new S` needs.
 :::
@@ -635,8 +636,8 @@ Span g{{1}};   // Span(int): {1} gives an int directly (ICS-15). The
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 160
-of 172 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 162
+of 174 tests.
 
 - CTOR-23 and DTOR-9: the tests observe triviality through JMP-6 and
   UNI-3. A jump past a declaration is valid only for a trivial default
