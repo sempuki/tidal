@@ -31,6 +31,12 @@ No; Clang and GCC agree, EDG differs (option 1). Two of three implementations an
 
 The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 accept the class with the unused member, and EDG 7.0 rejects the initializer, so two families disagree. INST-P2 supports the provisional answer. Its table makes only the declaration of a `static` data member with the class, and INST-P1 waits for a use that needs the definition (INST-5, INST-8). EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/status.md`).
 
+Kept on 2026-11-03. The source-reader gap review of question cluster 5 agrees with option 1.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of question cluster 5 (`reports/review/2026-11-03-gap-review-question-cluster-5.md`) reads the reference as supporting option 1. The instantiation of a class instantiates the declarations of its static data members but not their definitions, and the initializer of an inline static member is part of the definition.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

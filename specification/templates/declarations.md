@@ -378,9 +378,19 @@ A function template can have parameters after a pack (TPL-35). The head
 of a partial specialization can too ({rule}`TSP-9`).
 :::
 
+:::{rule} TPL-35
+:kind: reject
+:tests: templates/declarations/pack-then-deducible.cpp templates/declarations/pack-then-not-deducible.cpp templates/declarations/pack-then-pack-not-deducible.cpp templates/declarations/pack-then-typed-pack-not-deducible.cpp
+
+In a function template, each parameter after a pack must have a default
+or be found by deduction from the function parameters
+({rule}`DED-20`). The rule applies to the declaration, also if no call
+uses the template ({question}`Q-0195`).
+:::
+
 :::{rule} TPL-36
 :kind: required
-:tests: templates/declarations/pack-typed-by-enclosing-pack.cpp templates/declarations/pack-typed-by-same-head.cpp
+:tests: templates/declarations/pack-typed-by-enclosing-pack.cpp templates/declarations/pack-typed-by-same-head.cpp templates/declarations/pack-then-typed-pack-not-deducible.cpp
 
 A constant parameter pack can have a type that names a type pack of an
 enclosing template, as in a member template of a class template. The
@@ -461,6 +471,15 @@ head or in the member's own head.
 A friend declaration of a template must not give a default template
 argument, unless the declaration is a definition of a function template
 ({question}`Q-0196`).
+:::
+
+:::{rule} TPL-38
+:kind: reject
+:tests: templates/declarations/default-friend-definition.cpp templates/declarations/default-friend-redeclared.cpp templates/declarations/default-friend-declared-before.cpp
+
+A friend function template that is defined in a class can give default
+template arguments. That definition must be the only declaration of the
+function template in the translation unit ({question}`Q-0197`).
 :::
 
 ### Scope and redeclaration
@@ -659,28 +678,6 @@ its declaration ({rule}`NAM-1`). A specialization of an alias template
 must not use itself through a member of a class template.
 :::
 
-## Implementation Requirements
-
-:::{rule} TPL-35
-:kind: no-diagnostic
-:tests: templates/declarations/pack-then-deducible.cpp templates/declarations/pack-then-not-deducible.cpp
-
-In a function template, each parameter after a pack must have a default
-or be found by deduction from the function parameters
-({rule}`DED-20`). An implementation need not diagnose a
-parameter that breaks this rule ({question}`Q-0195`).
-:::
-
-:::{rule} TPL-38
-:kind: no-diagnostic
-:tests: templates/declarations/default-friend-definition.cpp templates/declarations/default-friend-redeclared.cpp
-
-A friend function template that is defined in a class can give default
-template arguments. That definition must be the only declaration of the
-function template in the translation unit. An implementation need not
-diagnose another declaration ({question}`Q-0197`).
-:::
-
 ## Examples
 
 ```cpp
@@ -755,15 +752,17 @@ template <class A, class B> int Map<B, A>::size();                // rejected: o
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 113
-of 121 tests.
+of 124 tests.
 
 The questions of the cluster of EDG differences (cluster 5) on this page
 stay open under decision 0051: {question}`Q-0195`, {question}`Q-0197`,
-and {question}`Q-0198`. On 2026-11-03, Clang 22 and GCC 16 still agree
-with the provisional answer of each, and EDG 7.0 still differs. In
-Q-0195 and Q-0197, EDG 7.0 diagnoses a program that needs no diagnostic,
-so the outcomes of all three families fit the provisional answer, and
-the outcomes still differ. Reporting these EDG differences to the EDG
+and {question}`Q-0198`. On 2026-11-03, EDG 7.0 follows the provisional
+answer of Q-0195 and Q-0197, and Clang 22 and GCC 16 differ. Clang 22
+and GCC 16 follow the provisional answer of Q-0198, and EDG 7.0
+differs. The source-reader gap review of the cluster
+(`reports/review/2026-11-03-gap-review-question-cluster-5.md`) reads
+TPL-35 and TPL-38 as rules that need a diagnostic, and the two rules
+follow that reading. Reporting the EDG difference of Q-0198 to the EDG
 project waits on the maintainer.
 
 The clean-room writer probed each kind of template, each kind of
@@ -788,9 +787,11 @@ probes for TPL-32 to TPL-47 and for the additions to the older rules.
   the defaults from right to left (`defaults-merge-gap-later.cpp`).
 - TPL-35: Clang and GCC accept a function template whose parameter after
   a pack has no default and no deduction. EDG rejects the declaration
-  ({question}`Q-0195`). The rule needs no diagnostic because no use of
-  such a template is valid, and the compilers differ on the declaration
-  alone.
+  ({question}`Q-0195`). The same split holds for a second type pack
+  after the first, and for a constant pack whose type is the type pack
+  before it. The rule is a `reject` rule, as TPL-30 is, because the
+  head and the function parameters alone break it. No argument list
+  takes part, so DEP-32 does not cover it.
 - TPL-37: the result depends on the form of the friend:
 
   | Friend | Clang | GCC | EDG |
@@ -806,8 +807,9 @@ probes for TPL-32 to TPL-47 and for the additions to the older rules.
   gives `C` no inner default, also when the class is never
   instantiated.
 - TPL-38: EDG rejects another declaration of a friend function template
-  that gives a default. Clang and GCC accept it ({question}`Q-0197`).
-  The rule needs no diagnostic for the same reason as TPL-35.
+  that gives a default, before or after the class. Clang and GCC accept
+  it ({question}`Q-0197`). The rule is a `reject` rule, as TPL-16 and
+  TPL-37 are, because both declarations are in one translation unit.
 - TPL-48: EDG rejects a friend function named after a parameter when the
   class template is used. Clang and GCC accept the friend declaration
   ({question}`Q-0198`). Every compiler accepts the class template
@@ -818,8 +820,9 @@ probes for TPL-32 to TPL-47 and for the additions to the older rules.
   template specialization. GCC and EDG give one ({question}`Q-0200`).
 - TPL-36: a constant pack whose type is a type pack of the same head
   follows a pack, so in a class template all compilers report TPL-30.
-  In a function template, EDG rejects the head and Clang and GCC accept
-  it, as for TPL-35.
+  In a function template, the pack after the type pack breaks TPL-35.
+  EDG rejects the head, and Clang and GCC accept it
+  (`pack-then-typed-pack-not-deducible.cpp`).
 - TPL-45: the plain function has no definition, so the link fails on
   every compiler that links. The template's body is never used for it.
 

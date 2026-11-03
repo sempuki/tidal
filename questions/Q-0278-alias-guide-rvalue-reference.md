@@ -37,6 +37,12 @@ the same result as the class template.
 
 The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 reject the lvalue, and EDG 7.0 accepts it, so two families disagree. CTAD-P2 supports the provisional answer. The `T&&` of a constructor of the class is an rvalue reference to a class parameter and no forwarding reference (CTAD-8), and a guide through an alias keeps that kind (CTAD-28). EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/status.md`).
 
+Kept on 2026-11-03. The source-reader gap review of question cluster 5 agrees with option 1, with doubt.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of question cluster 5 (`reports/review/2026-11-03-gap-review-question-cluster-5.md`) reads the reference as supporting option 1, with doubt. An rvalue reference to a template parameter is not a forwarding reference when the parameter stands for a parameter of the class during class template argument deduction. In a guide built through an alias, the alias parameter takes the place of the class parameter in the function type, so the reference is not a forwarding reference, and the lvalue does not bind. The doubt is that the reference does not say what a parameter of the alias stands for. A reader can treat the guide's parameters as fresh ones, which gives EDG's result.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

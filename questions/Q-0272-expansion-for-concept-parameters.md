@@ -33,6 +33,12 @@ predicts the same result.
 
 The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 reject the expansion at the definition, and EDG 7.0 accepts it, so two families disagree. PACK-P1 supports the provisional answer. Its exception PACK-11 treats a concept as it treats an alias template, and Q-0271 is settled for the alias template with every compiler rejecting. EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/status.md`).
 
+Kept on 2026-11-03. The source-reader gap review of question cluster 5 finds no clear reading. PACK-P1 and the settled answer of Q-0271 for alias templates keep option 1.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of question cluster 5 (`reports/review/2026-11-03-gap-review-question-cluster-5.md`) finds no clear reading in the reference. The reference states no rule that limits a pack expansion argument to a parameter pack of a concept. Normalization maps each argument to the matching parameter of the concept, and with an unexpanded pack the reference does not say which argument goes to which parameter. That gap points toward option 1, but the reference does not say so. A long-standing core issue on the same question for alias templates was open at the time of the reference.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

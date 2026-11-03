@@ -31,6 +31,12 @@ it as soon as the template is used. TSP-7 stays a `reject` rule.
 
 The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 reject the declaration with no call, and EDG 7.0 rejects only at a call, so two families disagree on the declaration alone. TSP-P1 supports the provisional answer. Its table gives a function template no partial specialization, so the declaration is not valid whether or not a call uses it (TSP-7). EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/status.md`).
 
+Kept on 2026-11-03. The source-reader gap review of question cluster 5 agrees with option 1.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of question cluster 5 (`reports/review/2026-11-03-gap-review-question-cluster-5.md`) reads the reference as supporting option 1. Only a class template or a variable template can have a partial specialization. The rule has no exemption from diagnosis, and it applies to the declaration itself.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

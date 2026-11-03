@@ -41,6 +41,12 @@ compilers differ only in whether they diagnose the use.
 
 The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 accept the definition, and EDG 7.0 rejects it, so the newest versions give two outcomes. A probe with an argument template that has no constraint gives the same split. Option 1 is the only option that all three outcomes fit, and the standing rule asks for one outcome. CNS-P3 supports the provisional answer. Its table makes a use of a template template parameter with independent arguments that fail the parameter's constraints not valid, with no diagnostic required (CNS-38). EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/status.md`).
 
+Kept on 2026-11-03. The source-reader gap review of question cluster 5 agrees with option 1.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of question cluster 5 (`reports/review/2026-11-03-gap-review-question-cluster-5.md`) reads the reference as supporting option 1. The constraints of a constrained template template parameter must hold when its arguments are not dependent. An example of the reference marks this use, inside a class template with such a parameter, as not valid with no diagnostic required.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

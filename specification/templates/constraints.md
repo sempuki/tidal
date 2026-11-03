@@ -727,7 +727,10 @@ GCC 16 still agree with the provisional answer of each, and EDG 7.0
 still differs. In Q-0283, EDG 7.0 diagnoses a program that needs no
 diagnostic, so the outcomes of all three families fit the provisional
 answer, and the outcomes still differ. Reporting these EDG differences
-to the EDG project waits on the maintainer.
+to the EDG project waits on the maintainer. The source-reader gap review
+of the cluster (`reports/review/2026-11-03-gap-review-question-cluster-5.md`)
+reads Q-0282 as EDG and GCC 14 do, with doubt. CPT-21 and CNS-1 keep
+the order of the head, which Clang 22 and GCC 16 follow.
 
 The clean-room writer probed each rule with Clang 18 and 22, GCC 14 and
 16, the host Clang and GCC, and EDG 7.0, and checked the tests and the

@@ -37,6 +37,12 @@ Clang 18 and EDG 7.0 are older or partial implementations.
 
 The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 accept all three forms, and EDG 7.0 rejects an argument that converts to the fixed type, so two families disagree on that form. Clang 18 rejects every form. CTAD-P2 supports the provisional answer. An alias template gets the guides of its class template, matched to the alias (CTAD-14), and a guide's parameter of a fixed type takes an argument that converts to it, as any function parameter does. EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/status.md`).
 
+Kept on 2026-11-03. The source-reader gap review of question cluster 5 agrees with option 1.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of question cluster 5 (`reports/review/2026-11-03-gap-review-question-cluster-5.md`) reads the reference as supporting option 1. The guides for the alias come from the guides of the class template. A fixed argument becomes a plain parameter type in the new guide, so an argument that converts to that type is accepted.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

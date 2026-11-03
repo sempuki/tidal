@@ -36,6 +36,12 @@ with equal constraints.
 
 The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 reject the partial specialization, and EDG 7.0 accepts it, so two families disagree. TSP-P3 supports the provisional answer. A partial specialization whose argument list is just the primary template's parameters must be more constrained than the primary template, or it covers no argument list that the primary template does not (CNS-36, TSP-11). EDG 7.0 rejects the same form with equal constraints. EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/status.md`).
 
+Kept on 2026-11-03. The source-reader gap review of question cluster 5 agrees with option 1.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of question cluster 5 (`reports/review/2026-11-03-gap-review-question-cluster-5.md`) reads the reference as supporting option 1. A partial specialization must be more specialized than the primary template. With the same arguments, only stronger constraints make it so, and neither constraint subsumes the other.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

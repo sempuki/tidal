@@ -41,6 +41,12 @@ type parameter takes part in the comparison in the same way.
 
 The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 choose the constrained template, and EDG 7.0 finds the call ambiguous, so two families disagree. Clang 18 and GCC 14 agree with EDG. CNS-P1 supports the provisional answer. Step 1a collects the type constraints of constant parameters into the associated constraints, so the comparison of CNS-P4 sees them (CNS-23). EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/status.md`).
 
+Kept on 2026-11-03. The source-reader gap review of question cluster 5 agrees with option 1.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of question cluster 5 (`reports/review/2026-11-03-gap-review-question-cluster-5.md`) reads the reference as supporting option 1. A constant parameter whose type is a constrained placeholder adds the constraint to the template, and the reference counts that constraint among the associated constraints.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

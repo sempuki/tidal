@@ -37,6 +37,12 @@ specialization its `inline` and `constexpr` from its own declaration.
 
 The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 accept and run the program, and EDG 7.0 rejects it, so two families disagree. TSP-P1 supports the provisional answer. An explicit specialization is a separate definition and takes no `inline` or `constexpr` from the template (TSP-25), and `thread_local` follows the same model (TSP-24). EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/status.md`).
 
+Kept on 2026-11-03. The source-reader gap review of question cluster 5 agrees with option 1, with doubt.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of question cluster 5 (`reports/review/2026-11-03-gap-review-question-cluster-5.md`) reads the reference as supporting option 1, with doubt. An explicit specialization can carry thread-local storage and no other storage class. The reference does not say whether the declaration of the variable template counts as a declaration of the explicit specialization for the rule that every declaration repeats thread-local storage. The reference treats a specialization as an entity of its own elsewhere, which supports option 1. The doubt is that no example covers the mixed case.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

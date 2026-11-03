@@ -31,6 +31,12 @@ No; Clang and GCC agree, EDG differs (option 1). Two of three implementations an
 
 The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 reject the keyword before the destructor name, and EDG 7.0 accepts it, so two families disagree. A probe of `p->T::template ~T()` gives the same split. DEP-P5 supports the provisional answer. The keyword `template` tells the parser that a template-id follows, and a destructor name is no template-id, so DEP-34 is an exception of DEP-P5. EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/status.md`).
 
+Kept on 2026-11-03. The source-reader gap review of question cluster 5 agrees with option 1.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of question cluster 5 (`reports/review/2026-11-03-gap-review-question-cluster-5.md`) reads the reference as supporting option 1. The keyword `template` is not valid right before the tilde of a destructor name.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

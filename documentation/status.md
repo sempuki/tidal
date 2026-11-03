@@ -79,7 +79,7 @@ current state only. The history of how the project got here is in
 | [Conversion functions](../specification/classes/conversion-functions.md) | 12 | 5 required, 6 reject, 1 recommended | 64 | 1 | 1 | 29 | Q-0059 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Operator overloading](../specification/classes/operators.md) | 16 | 8 required, 6 reject, 1 unspecified, 1 recommended | 99 | 3 | 1 | 45 | Q-0060 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Defaulted comparisons](../specification/classes/comparisons.md) | 13 | 6 required, 5 reject, 1 no-diagnostic, 1 recommended | 78 | 1 | 5 | 55 | Q-0061, Q-0062, Q-0158, Q-0190 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
-| [Template declarations](../specification/templates/declarations.md) | 49 | 26 required, 21 reject, 2 no-diagnostic | 121 | 1 | 8 | 70 | Q-0195, Q-0196, Q-0197, Q-0198, Q-0199, Q-0200, Q-0296 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
+| [Template declarations](../specification/templates/declarations.md) | 49 | 26 required, 23 reject | 124 | 1 | 11 | 70 | Q-0195, Q-0196, Q-0197, Q-0198, Q-0199, Q-0200, Q-0296 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Template arguments](../specification/templates/arguments.md) | 27 | 16 required, 10 reject, 1 unspecified | 88 | 0 | 6 | 57 | Q-0117, Q-0168, Q-0169, Q-0170, Q-0201 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Explicit and partial specialization](../specification/templates/specialization.md) | 32 | 16 required, 15 reject, 1 no-diagnostic | 93 | 0 | 13 | 18 | Q-0171, Q-0172, Q-0173, Q-0174, Q-0203, Q-0204, Q-0205, Q-0206, Q-0207, Q-0295 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Template argument deduction](../specification/templates/deduction.md) | 39 | 36 required, 3 reject | 121 | 0 | 9 | 84 | Q-0208, Q-0209, Q-0215, Q-0219, Q-0220, Q-0295 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
@@ -122,7 +122,7 @@ containerized compilers on every push and pull request (decision 0012).
 | GCC 16.2.0 | container (official image) | skips `-m32` tests |
 | Clang 18.1.3 | container | |
 | GCC 14.2.0 | container | |
-| EDG 7.0 | container | front end only; skips `-m32`, warning-flag, and sanitizer tests; per-compiler expectations on 201 tests, each with a note that names its question or the implementation choice |
+| EDG 7.0 | container | front end only; skips `-m32`, warning-flag, and sanitizer tests; per-compiler expectations on 199 tests, each with a note that names its question or the implementation choice |
 | EDG 7.0, ILP32 | container, built with EDG's i686 configuration | front end only; runs only the `-m32` tests; differs on the alignment of `long long` (Q-0120) |
 | GCC 16.2.0, `-O2` | container, report | runs the tests at `-O2`; does not fail a run |
 | Clang 22.1.8, `-O2` | container, report | runs the tests at `-O2`; does not fail a run |
@@ -149,12 +149,12 @@ questions. See `questions/README.md`.
 
 ## Known limits of the tooling
 
-- The clean-room front end passes 5103 of 5674 tests, and 5229 pass their check.
+- The clean-room front end passes 5101 of 5677 tests, and 5227 pass their check.
   The front end reads `#include "file"` and no standard header.
   `tools/frontend_check.py` fails when a test that it passed no longer
   passes (`reports/clean-room/rust-frontend/conformance.tsv`).
 
-- 2636 tests carry `tidal-error` patterns. A pattern checks that a
+- 2639 tests carry `tidal-error` patterns. A pattern checks that a
   compiler rejects the test, fails to link the test, or stops the test
   at run time, for the reason the test's rule gives.
   In 50 tests, some compiler family has no pattern, because that
@@ -194,25 +194,39 @@ Waiting on the maintainer:
 - Ask the reviewer who prompted the principles-first change to read the
   Foundations chapter and two topic pages (decision 0024).
 - Approve reporting the EDG behavior in Q-0002 and Q-0003 to the EDG
-  project. The same report can carry the 34 template questions of
-  cluster 5, where Clang 22 and GCC 16 agree and EDG 7.0 differs. In
-  13, EDG rejects a program that Tidal accepts (Q-0198, Q-0201,
-  Q-0203, Q-0208, Q-0229, Q-0231, Q-0240, Q-0256, Q-0260, Q-0266,
-  Q-0268, Q-0277, Q-0281). In 14, EDG accepts a program that Tidal
-  rejects (Q-0146, Q-0170, Q-0172, Q-0224, Q-0235, Q-0237, Q-0245,
-  Q-0265, Q-0267, Q-0272, Q-0278, Q-0280, Q-0286, Q-0292). In 4, EDG
-  follows another order or model of a step, and the result differs
-  (Q-0215, Q-0279, Q-0282, Q-0284). In 3, EDG diagnoses a program
-  that needs no diagnostic (Q-0195, Q-0197, Q-0283). Q-0214 and
-  Q-0285, kept open in cluster 3, are of the same kind. Each question
-  stays open under decision 0051 while EDG 7.0 differs.
+  project. The same report can carry 30 template questions of cluster
+  5, where Clang 22 and GCC 16 agree and EDG 7.0 differs. In 13, EDG
+  rejects a program that Tidal accepts (Q-0198, Q-0201, Q-0203,
+  Q-0208, Q-0229, Q-0231, Q-0240, Q-0256, Q-0260, Q-0266, Q-0268,
+  Q-0277, Q-0281). In 13, EDG accepts a program that Tidal rejects
+  (Q-0146, Q-0170, Q-0172, Q-0224, Q-0237, Q-0245, Q-0265, Q-0267,
+  Q-0272, Q-0278, Q-0280, Q-0286, Q-0292). In 3, EDG follows another
+  order or model of a step, and the result differs (Q-0215, Q-0279,
+  Q-0284). In 1, EDG diagnoses a program that needs no diagnostic
+  (Q-0283). Q-0214 and Q-0285, kept open in cluster 3, are of the
+  same kind. The source-reader gap review of cluster 5 reads the C++23
+  text as EDG does in 4 more questions, which the report leaves out:
+  - Q-0195 and Q-0197: TPL-35 and TPL-38 now require a diagnostic, as
+    EDG gives one. Clang 22 and GCC 16 accept the programs.
+  - Q-0235 and Q-0282, with doubt: Tidal keeps the answer of Clang 22
+    and GCC 16 (and of Clang 22 and EDG for the variable form of
+    Q-0235). The maintainer can decide either question.
+
+  In Q-0277 and Q-0280 the review agrees with Clang and GCC on the
+  part where EDG differs. In Q-0266 the review finds the
+  default-constructor part unclear, and its literal reading gives
+  EDG's result there. In Q-0272 the review finds no clear reading.
+  Each question stays open under decision 0051 while two families
+  differ.
 - Confirm or change the provisional choices of decision 0051: settling
   a question when the newest version of each family agrees, and
   keeping the implementation-only operations referenced (Q-0322).
-- Decide Q-0300, Q-0181, Q-0243, and Q-0275. In each, the compilers of
-  the matrix agree with each other, and a gap review reads the C++23
-  text the other way. Q-0181 and Q-0188 also ask whether Tidal follows
-  a later change that the newest compilers apply (Q-0007).
+- Decide Q-0300, Q-0181, Q-0243, Q-0275, Q-0277, and Q-0280. In each,
+  the compilers of the matrix agree with each other, and a gap review
+  reads the C++23 text the other way. In Q-0277 this holds for the
+  first form, and in Q-0280 for the two guide templates. Q-0181 and
+  Q-0188 also ask whether Tidal follows a later change that the newest
+  compilers apply (Q-0007).
 - Confirm or change Q-0343 and Q-0041. Item O follows the source
   reader's inventory against the compilers. In Q-0343 every family's
   builtin query calls a class with a deleted destructor, or with all

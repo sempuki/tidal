@@ -38,6 +38,12 @@ model that TARG-17 states for the other cases (Q-0169).
 
 The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 accept `Long` for a `template <int>` head, and EDG 7.0 rejects it, so two families disagree. Clang 18 also rejects it. TARG-P2 supports the provisional answer through TARG-17. The argument is valid when each argument list that the head accepts is valid for the argument template, and every `int` argument converts to `long`. EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/status.md`).
 
+Kept on 2026-11-03. The source-reader gap review of question cluster 5 agrees with option 1, with doubt.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of question cluster 5 (`reports/review/2026-11-03-gap-review-question-cluster-5.md`) reads the reference as supporting option 1, with doubt. The match of a template template argument rewrites the parameter and the argument as two function templates and asks whether the one for the parameter is at least as specialized. The invented class template takes the argument's head, so the types that the check compares are equal, and the match succeeds. The doubt is that the reference does not say plainly how deduction treats a dependent argument converted to the type of the parameter.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

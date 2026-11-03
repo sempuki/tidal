@@ -1,6 +1,7 @@
 // tidal-rules: TPL-35
-// tidal-expect: accept
-// tidal-expect-edg: reject
+// tidal-expect: reject
+// tidal-expect-clang: accept
+// tidal-expect-gcc: accept
 // tidal-error-edg: cannot be used because it follows a parameter pack
-// tidal-note: The type parameter after the pack has no default and no function parameter uses it. Clang and GCC accept the declaration, EDG rejects it, and TPL-35 allows both (Q-0195).
+// tidal-note: The type parameter after the pack has no default and no function parameter uses it, so the declaration breaks TPL-35. EDG rejects it, and Clang and GCC accept it (Q-0195).
 template <class... Front, class Back> int count() { return sizeof...(Front); }

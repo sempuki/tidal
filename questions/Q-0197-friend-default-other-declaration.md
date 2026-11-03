@@ -1,7 +1,7 @@
 # Q-0197: Must an implementation diagnose another declaration of a friend function template that gives a default?
 
 **Status:** provisional
-**Affects:** TPL-38
+**Affects:** TPL-38, `tests/templates/declarations/default-friend-redeclared.cpp`, `tests/templates/declarations/default-friend-declared-before.cpp`
 
 ## Context
 
@@ -20,8 +20,11 @@ declaration.
 
 ## Evidence
 
-`tests/templates/declarations/default-friend-redeclared.cpp`, with an
-override for EDG, and `default-friend-definition.cpp`.
+`tests/templates/declarations/default-friend-redeclared.cpp` and
+`default-friend-declared-before.cpp`, each with overrides for Clang and
+GCC, and `default-friend-definition.cpp`. The gap review of question
+cluster 5 (`reports/review/2026-11-03-gap-review-question-cluster-5.md`)
+reads the reference.
 
 ## Options
 
@@ -32,11 +35,16 @@ override for EDG, and `default-friend-definition.cpp`.
 
 ## Provisional answer
 
-Invalid, no diagnostic required; EDG rejects, Clang and GCC accept (option 1). EDG diagnoses the case, and Clang and GCC give the program a
-meaning. A rule without a required diagnostic covers both.
+Yes, an implementation must reject the program; EDG rejects, Clang and GCC accept (option 2).
 
-The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 accept the other declaration, and EDG 7.0 rejects it, so the newest versions give two outcomes. Option 1 is the only option that all three outcomes fit, and the standing rule asks for one outcome. TPL-P3 supports the provisional answer. Each parameter gets its default in one declaration only, and TPL-38 makes the friend definition that declaration. EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/status.md`).
+Changed on 2026-11-03. The source-reader gap review of question cluster 5 (`reports/review/2026-11-03-gap-review-question-cluster-5.md`) reads the reference as supporting option 2. The rule has no exemption from diagnosis, and both declarations are in one translation unit, where an implementation sees both. Tidal's own rules give the same answer. TPL-P3 gives each parameter its default in one declaration only, and the rules that enforce that model on one translation unit are `reject` rules: TPL-16 for a default given twice, TPL-17 for a member defined outside the class, and TPL-37 for a friend declaration that is not a definition. The reading also matches EDG 7.0. TPL-38 is now a `reject` rule in the Constraints segment. `default-friend-redeclared.cpp` expects a rejection, with overrides for Clang and GCC. The new test `default-friend-declared-before.cpp` covers the declaration before the class.
+
+The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 accept the other declaration, before or after the class, and EDG 7.0 rejects it, so two families disagree. The front end accepts the two tests, so `tools/frontend_check.py` reports them as missed rejections. This goes to item FE.
 
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of question cluster 5 (`reports/review/2026-11-03-gap-review-question-cluster-5.md`) reads the reference as supporting option 2. A friend function template declaration that gives a default template argument must be a definition and the only declaration of that template, in either direction of reachability. The rule carries no exemption from diagnosis. In both test forms each declaration is reachable from the other, so an implementation can see the violation, and EDG's rejection conforms.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

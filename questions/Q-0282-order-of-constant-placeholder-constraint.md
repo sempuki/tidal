@@ -39,6 +39,12 @@ written order of the head, as CNS-1 does for the other parts.
 
 The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 check `Trapped<int>` first and reject the program, and EDG 7.0 checks the constant parameter first and chooses the other template, so two families disagree. GCC 14 agrees with EDG. CNS-P1 supports the provisional answer. Step 1a collects the type constraints of type and constant parameters in the order of the template head (CNS-1). EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/status.md`).
 
+Kept on 2026-11-03. The source-reader gap review of question cluster 5 (`reports/review/2026-11-03-gap-review-question-cluster-5.md`) reads the reference as supporting option 2, with doubt, which matches EDG 7.0 and GCC 14. Tidal's rules and the matrix keep option 1. CPT-21 makes the type constraint of a constant placeholder a constraint of the template, and CNS-P1 collects the constraints of the head in parameter order. No Tidal rule checks a placeholder constraint while it matches an explicit argument, before the associated constraints. The review's doubt is on the same point, since the constraint also appears among the associated constraints. GCC moved from option 2 in GCC 14 to option 1 in GCC 16, and Clang 22 and GCC 16 now agree on option 1.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of question cluster 5 (`reports/review/2026-11-03-gap-review-question-cluster-5.md`) reads the reference as supporting option 2, with doubt. With explicit template arguments, the reference first asks whether the resulting template-id is valid, and deduction fails if it is not. The type of a constant parameter with a placeholder comes from an invented variable declaration with the argument as its initializer, and a constrained placeholder there requires the constraint to hold. The constraint fails, so the argument does not match, and the associated constraints are never checked. So the class with the failing assertion is never instantiated, and the second template is chosen, as EDG and GCC 14 do. The doubt is that the reference does not say plainly that a failed placeholder constraint makes the argument not match, instead of making the program not valid. The constraint also appears among the associated constraints, where Clang and GCC 16 check it.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

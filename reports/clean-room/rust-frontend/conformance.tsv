@@ -5029,8 +5029,9 @@ pass	templates/declarations/constant-parameter-void.cpp
 pass	templates/declarations/default-class-member-outside.cpp
 pass	templates/declarations/default-friend-class.cpp
 pass	templates/declarations/default-friend-declaration.cpp
+MISSED-REJECT	templates/declarations/default-friend-declared-before.cpp
 run-unsupported	templates/declarations/default-friend-definition.cpp
-EDG-ONLY	templates/declarations/default-friend-redeclared.cpp
+MISSED-REJECT	templates/declarations/default-friend-redeclared.cpp
 pass	templates/declarations/default-greater-parenthesized.cpp
 pass	templates/declarations/default-greater.cpp
 pass	templates/declarations/default-member-definition.cpp
@@ -5075,7 +5076,9 @@ pass	templates/declarations/pack-last-alias.cpp
 pass	templates/declarations/pack-last-variable.cpp
 pass	templates/declarations/pack-last.cpp
 run-unsupported	templates/declarations/pack-then-deducible.cpp
-EDG-ONLY	templates/declarations/pack-then-not-deducible.cpp
+MISSED-REJECT	templates/declarations/pack-then-not-deducible.cpp
+MISSED-REJECT	templates/declarations/pack-then-pack-not-deducible.cpp
+MISSED-REJECT	templates/declarations/pack-then-typed-pack-not-deducible.cpp
 pass	templates/declarations/pack-typed-by-enclosing-pack.cpp
 pass	templates/declarations/pack-typed-by-same-head.cpp
 pass	templates/declarations/parameter-class-template-name.cpp

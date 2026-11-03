@@ -32,6 +32,12 @@ No; Clang 22 and GCC agree, Clang 18 and EDG differ (option 1). The current Clan
 
 The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 reject the more constrained argument, and EDG 7.0 accepts it, so two families disagree. Clang 18 also accepts it. CNS-P4 supports the provisional answer. A template template parameter must be at least as constrained as its argument (CNS-25), because the template can use the parameter with an argument that a more constrained argument template does not accept. EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/status.md`).
 
+Kept on 2026-11-03. The source-reader gap review of question cluster 5 agrees with option 1.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of question cluster 5 (`reports/review/2026-11-03-gap-review-question-cluster-5.md`) reads the reference as supporting option 1. The matching rule compares the constraints of the parameter and of the argument when the parameter is constrained, and an example of the reference rejects an argument with a stronger constraint.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

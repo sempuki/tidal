@@ -49,6 +49,12 @@ and two of three accept the second.
 
 The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 accept the string literal for the fixed `char` array and deduce `Named<int>`, and EDG 7.0 finds no guide, so two families disagree on the second form. Every compiler agrees on the first form. CTAD-P2 supports the provisional answer. The aggregate candidate gives an array member that a string literal initializes an lvalue reference to the `const` array type (CTAD-9). For `Named b{"ab", 1}`, the candidate then has the parameters `const char(&)[3]` and `T`, and `T` is `int`. EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/status.md`).
 
+Kept on 2026-11-03. The source-reader gap review of question cluster 5 (`reports/review/2026-11-03-gap-review-question-cluster-5.md`) agrees with option 1 for the second form, so EDG's rejection of `Named b{"ab", 1}` is a defect. For the first form, the review reads the reference as giving `Three<char>`, because the aggregate candidate does not elide braces for an array with a dependent element type when the element of the list is a string literal. Every compiler gives `Three<const char*>`. No family follows the reading, so the specification follows the shared behavior until the maintainer decides, as for Q-0243 and Q-0275. The question is on the maintainer's list in `documentation/status.md`.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of question cluster 5 (`reports/review/2026-11-03-gap-review-question-cluster-5.md`) reads the reference as supporting option 2 for the first form and option 1 for the second form. The aggregate candidate does not consider brace elision for an array member whose element type is dependent when the element of the list is a string literal. The string literal then corresponds to the whole array, its parameter is a reference to a `const` array of the member's type, and `T` is deduced as `char`. Every compiler gives an array of pointers, so all three share a defect there. In the second form the array does not depend on the parameter, so brace elision is considered, the string literal initializes the whole `char` array, and the other element gives `int`. Clang and GCC give that result, and EDG's rejection is a defect. An example of the reference deduces `char` for a class with a dependent element type and a dependent bound, which points the same way as the first form.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

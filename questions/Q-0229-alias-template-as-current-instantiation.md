@@ -36,6 +36,12 @@ through the alias is a separate defect under DEP-18.
 
 The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 accept the member type through `Same<T>` without `typename`, and EDG 7.0 asks for `typename`, so two families disagree. Probes of the other two columns give the recorded results: Clang 22 and GCC 16 reject the missing member while EDG 7.0 and GCC 14 accept it, and GCC 16 alone rejects the member of a dependent base. DEP-P4 supports the provisional answer. Its table names the current instantiation by any name for `Box<T>`, and `Same<T>` is the same type as `Box<T>`. EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/status.md`).
 
+Kept on 2026-11-03. The source-reader gap review of question cluster 5 agrees with option 1.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of question cluster 5 (`reports/review/2026-11-03-gap-review-question-cluster-5.md`) reads the reference as supporting option 1. The reference's definition of the current instantiation names an equivalent alias template specialization directly.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

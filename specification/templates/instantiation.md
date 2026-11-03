@@ -636,7 +636,10 @@ stay open under decision 0051: {question}`Q-0231`, {question}`Q-0235`,
 {question}`Q-0237`, and {question}`Q-0256`. On 2026-11-03, Clang 22 and
 GCC 16 still agree with the provisional answer of each, and EDG 7.0
 still differs. Reporting these EDG differences to the EDG project waits
-on the maintainer.
+on the maintainer. The source-reader gap review of the cluster
+(`reports/review/2026-11-03-gap-review-question-cluster-5.md`) reads
+Q-0235 as EDG does, with doubt, and that question waits on the
+maintainer too.
 
 The questions of the cluster of template syntax corners (cluster 6) on
 this page stay open under decision 0051: {question}`Q-0233`,

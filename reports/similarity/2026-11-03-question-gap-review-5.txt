@@ -2072,6 +2072,7 @@ ok   TPL-11                           longest=0   overlap=0.04
 ok   TPL-12                           longest=0   overlap=0.00
 ok   TPL-40                           longest=0   overlap=0.03
 ok   TPL-30                           longest=0   overlap=0.08
+ok   TPL-35                           longest=0   overlap=0.00
 ok   TPL-36                           longest=0   overlap=0.08
 ok   TPL-13                           longest=0   overlap=0.00
 ok   TPL-34                           longest=0   overlap=0.09
@@ -2081,6 +2082,7 @@ ok   TPL-15                           longest=0   overlap=0.00
 ok   TPL-16                           longest=0   overlap=0.00
 ok   TPL-17                           longest=0   overlap=0.13
 ok   TPL-37                           longest=0   overlap=0.14
+ok   TPL-38                           longest=0   overlap=0.10
 ok   TPL-19                           longest=0   overlap=0.05
 ok   TPL-41                           longest=0   overlap=0.03
 ok   TPL-18                           longest=0   overlap=0.06
@@ -2099,8 +2101,6 @@ ok   TPL-27                           longest=0   overlap=0.17
 ok   TPL-28                           longest=0   overlap=0.04
 ok   TPL-46                           longest=0   overlap=0.00
 ok   TPL-31                           longest=0   overlap=0.18
-ok   TPL-35                           longest=0   overlap=0.00
-ok   TPL-38                           longest=0   overlap=0.08
 ok   templates/declarations.md:Examples longest=0   overlap=0.01
 ok   templates/declarations.md:Evidence longest=0   overlap=0.00
 ok   templates/deduction.md:Template argument deduction longest=0   overlap=0.02

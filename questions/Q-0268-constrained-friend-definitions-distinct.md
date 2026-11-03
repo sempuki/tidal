@@ -30,6 +30,12 @@ Yes; Clang and GCC agree, EDG differs (option 1). Two of three implementations a
 
 The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 accept the two definitions, and EDG 7.0 rejects the second, so two families disagree. CNS-P5 supports the provisional answer. Each specialization of the class defines its own constrained friend, which no declaration outside the class redeclares (CNS-32). EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/status.md`).
 
+Kept on 2026-11-03. The source-reader gap review of question cluster 5 agrees with option 1.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of question cluster 5 (`reports/review/2026-11-03-gap-review-question-cluster-5.md`) reads the reference as supporting option 1. Such a constrained friend has no link to a declaration in any other scope, so each specialization of the class has its own friend function.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

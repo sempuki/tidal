@@ -625,7 +625,11 @@ stay open under decision 0051: {question}`Q-0240`, {question}`Q-0277`,
 {question}`Q-0278`, {question}`Q-0279`, and {question}`Q-0280`. On
 2026-11-03, Clang 22 and GCC 16 still agree with the provisional answer
 of each, and EDG 7.0 still differs. Reporting these EDG differences to
-the EDG project waits on the maintainer.
+the EDG project waits on the maintainer. The source-reader gap review
+of the cluster (`reports/review/2026-11-03-gap-review-question-cluster-5.md`)
+reads two answers against every compiler. In Q-0277 it reads the first
+form as giving `Three<char>`, and in Q-0280 it reads the two guide
+templates as not valid. These two parts wait on the maintainer.
 
 The clean-room writer probed each step with Clang 22, GCC 16, and EDG
 7.0, and checked the tests and the grid on the eight
