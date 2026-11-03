@@ -1114,7 +1114,7 @@ impl P {
             self.error(line, "TR-3", "address of 'main' taken");
         }
         let x = if let Some(fc) = memclass {
-            Expr::new(EK::Unknown("pointer to member function".into()), QTy::new(Ty::MemPtr(fc, Box::new(QTy::new(Ty::Func(Box::new(fty)))))), Cat::PR, line)
+            Expr::new(if self.in_template() { EK::Unknown("pointer to member function".into()) } else { EK::MemberPtr(fid) }, QTy::new(Ty::MemPtr(fc, Box::new(QTy::new(Ty::Func(Box::new(fty)))))), Cat::PR, line)
         } else if f.explicit_obj {
             Expr::new(EK::Unknown("address of an explicit object member function".into()), QTy::new(Ty::Ptr(Box::new(QTy::new(Ty::Func(Box::new(fty)))))), Cat::PR, line)
         } else {

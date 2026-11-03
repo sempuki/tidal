@@ -534,8 +534,10 @@ impl P {
                 fid
             };
             let f = self.func(fid).unwrap().clone();
-            // ICS-8: a deleted function still forms a sequence.
-            if f.explicit {
+            // ICS-8: a deleted function still forms a sequence. CVF-3: a
+            // contextual conversion to bool also uses an explicit
+            // conversion function to bool.
+            if f.explicit && !(self.contextual && f.fty.ret.t == Ty::Bool && p.t == Ty::Bool) {
                 continue;
             }
             if f.fty.ret.is_unknown() {

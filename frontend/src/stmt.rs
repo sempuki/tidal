@@ -555,7 +555,7 @@ impl P {
     fn check_unused(&mut self, e: &Expr) {
         fn has_effect(p: &P, e: &Expr) -> bool {
             match &e.k {
-                EK::Call(..) | EK::Construct(..) | EK::Assign(..) | EK::Throw(_) | EK::Unknown(_) | EK::Delete(..) | EK::New { .. } | EK::Destroy(_) => true,
+                EK::Call(..) | EK::Construct(..) | EK::Assign(..) | EK::Throw(_) | EK::Unknown(_) | EK::Reinterpret(..) | EK::Delete(..) | EK::New { .. } | EK::Destroy(_) => true,
                 EK::Unary(op, a) => matches!(op, UOp::PreInc | UOp::PreDec | UOp::PostInc | UOp::PostDec) || has_effect(p, a) || (*op == UOp::Deref && a.ty.v),
                 EK::Conv(Conv::ToVoid, _) => true,
                 EK::Conv(Conv::LToR, a) => a.ty.v || has_effect(p, a),

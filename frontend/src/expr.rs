@@ -317,10 +317,12 @@ impl P {
                     }
                     let user = ["operatordelete", "operatordelete[]"].iter().any(|n| self.scopes[self.global].names.get(*n).is_some_and(|v| !v.is_empty()))
                         || matches!(&pt.t, Ty::Ptr(x) if matches!(x.t, Ty::Class(c) if self.lookup_member(c, "operatordelete").is_some() || self.lookup_member(c, "operatordelete[]").is_some()));
-                    if global || user || !matches!(pt.t, Ty::Ptr(_)) || self.in_template() {
+                    let _ = user;
+                    if !matches!(pt.t, Ty::Ptr(_)) || self.in_template() {
                         return Ok(Expr::new(EK::Unknown("delete expression".into()), QTy::new(Ty::Void), Cat::PR, line));
                     }
-                    return Ok(Expr::new(EK::Delete(arr, Box::new(e)), QTy::new(Ty::Void), Cat::PR, line));
+                    // NEW-13: the interpreter finds the deallocation function.
+                    return Ok(Expr::new(EK::Delete(arr, Box::new(e), global), QTy::new(Ty::Void), Cat::PR, line));
                 }
                 "co_await" => return Err(self.err("coroutines (outside the specification)")),
                 _ => {}
@@ -416,7 +418,10 @@ impl P {
                 }
                 // MPTR-2: the class is the one that declares the member.
                 let t = QTy::new(Ty::MemPtr(f.class, Box::new(f.ty.clone())));
-                Ok(Expr::new(EK::Unknown("pointer to member constant".into()), t, Cat::PR, line))
+                if self.in_template() || f.ty.t.is_ref() {
+                    return Ok(Expr::new(EK::Unknown("pointer to member constant".into()), t, Cat::PR, line));
+                }
+                Ok(Expr::new(EK::MemberPtr(id), t, Cat::PR, line))
             }
             DK::Func(f) if f.explicit_obj => {
                 // CLS-17: an ordinary pointer to function.
@@ -425,7 +430,13 @@ impl P {
             }
             DK::Func(f) if !f.is_static => {
                 let t = QTy::new(Ty::MemPtr(c, Box::new(QTy::new(Ty::Func(Box::new(f.fty.clone()))))));
-                Ok(Expr::new(EK::Unknown("pointer to member function".into()), t, Cat::PR, line))
+                if self.in_template() {
+                    return Ok(Expr::new(EK::Unknown("pointer to member function".into()), t, Cat::PR, line));
+                }
+                if self.in_unevaluated == 0 {
+                    self.use_fn(id);
+                }
+                Ok(Expr::new(EK::MemberPtr(id), t, Cat::PR, line))
             }
             DK::Func(f) => {
                 let t = QTy::new(Ty::Ptr(Box::new(QTy::new(Ty::Func(Box::new(f.fty.clone()))))));
@@ -448,6 +459,93 @@ impl P {
             }
             _ => Ok(Expr::unknown(line, "pointer to member")),
         }
+    }
+
+    /// NEW-10, NEW-13, NEW-19: the allocation function of a `new`
+    /// expression, and NEW-21 to NEW-24: the deallocation function that a
+    /// throw from the initialization calls. None when the front end cannot
+    /// tell.
+    fn resolve_new_alloc(&mut self, class: Option<usize>, array: bool, pa: &[Expr], global: bool, line: u32) -> Option<NewAlloc> {
+        let aname = if array { "operatornew[]" } else { "operatornew" };
+        let dname = if array { "operatordelete[]" } else { "operatordelete" };
+        let size_t = Ty::size_t();
+        let mut args = vec![Expr::new(EK::Int(1), QTy::new(size_t.clone()), Cat::PR, line)];
+        args.extend(pa.iter().cloned());
+        if args.iter().any(|a| a.ty.is_unknown() || matches!(a.k, EK::Unknown(_))) {
+            return None;
+        }
+        let in_class = |p: &P, name: &str| -> Option<Vec<DeclId>> {
+            if global {
+                return None;
+            }
+            let c = class?;
+            if p.class_uncertain(c) {
+                return None;
+            }
+            p.lookup_member(c, name).map(|v| v.into_iter().filter(|&d| p.func(d).is_some()).collect::<Vec<_>>()).filter(|v| !v.is_empty())
+        };
+        let class_fns = in_class(self, aname);
+        let from_class = class_fns.is_some();
+        let cands = class_fns.unwrap_or_else(|| self.scopes[self.global].names.get(aname).cloned().unwrap_or_default().into_iter().filter(|&d| self.func(d).is_some()).collect());
+        let lib_form = |p: &P, d: DeclId| p.func(d).is_some_and(|f| f.fty.params.len() == 1 && f.fty.params[0].t == size_t);
+        let (func, conv, nothrow) = if !from_class && pa.is_empty() && !cands.iter().any(|&d| lib_form(self, d)) {
+            (None, Vec::new(), false)
+        } else {
+            if cands.iter().any(|&d| self.func(d).is_some_and(|f| f.template)) {
+                return None;
+            }
+            let mark = self.d.list.len();
+            let r = self.ics_select(None, &cands, &args);
+            self.d.list.truncate(mark);
+            let Ok(Some((f, _))) = r else { return None };
+            let fi = self.func(f)?.clone();
+            let mark = self.d.list.len();
+            let conv = self.convert_args(&fi.fty, pa.to_vec().into_iter().fold(vec![args[0].clone()], |mut v, a| {
+                v.push(a);
+                v
+            }), line, Some(f));
+            if self.d.list.len() != mark || conv.iter().any(|x| matches!(x.k, EK::Unknown(_))) {
+                self.d.list.truncate(mark);
+                return None;
+            }
+            (Some(f), conv[1..].to_vec(), fi.fty.noexcept)
+        };
+        // NEW-21: the search for the deallocation function.
+        let dfns = in_class(self, dname);
+        let dclass = dfns.is_some();
+        let ds = dfns.unwrap_or_else(|| self.scopes[self.global].names.get(dname).cloned().unwrap_or_default().into_iter().filter(|&d| self.func(d).is_some()).collect());
+        let usual = |p: &P, d: DeclId| -> Option<bool> {
+            let f = p.func(d)?;
+            let first = matches!(&f.fty.params.first().map(|q| q.t.clone()), Some(Ty::Ptr(x)) if x.t == Ty::Void);
+            match f.fty.params.len() {
+                1 if first => Some(false),
+                2 if first && f.fty.params[1].t == size_t => Some(true),
+                _ => None,
+            }
+        };
+        let dealloc = if pa.is_empty() {
+            // NEW-22: a usual form; the form with one parameter first.
+            let one = ds.iter().copied().find(|&d| usual(self, d) == Some(false));
+            let two = ds.iter().copied().find(|&d| usual(self, d) == Some(true));
+            match (one, two) {
+                (Some(d), _) => Dealloc::Func(d, false),
+                (None, Some(d)) => Dealloc::Func(d, true),
+                (None, None) if dclass => Dealloc::None,
+                (None, None) => Dealloc::Library,
+            }
+        } else {
+            // NEW-23, NEW-24: the function whose parameters after the
+            // first match those of the allocation function.
+            let Some(f) = func else { return None };
+            let after: Vec<QTy> = self.func(f)?.fty.params[1..].to_vec();
+            let m: Vec<DeclId> = ds.iter().copied().filter(|&d| self.func(d).is_some_and(|g| !g.template && !g.fty.variadic && g.fty.params.len() == 1 + after.len() && g.fty.params[1..] == after[..])).collect();
+            match m.as_slice() {
+                [d] if usual(self, *d).is_none() => Dealloc::Func(*d, false),
+                _ if ds.iter().any(|&d| self.func(d).is_some_and(|g| g.template)) => return None,
+                _ => Dealloc::None,
+            }
+        };
+        Some(NewAlloc { func, args: conv, nothrow, dealloc })
     }
 
     /// NEW-21 to NEW-25: the deallocation function that a throw from the
@@ -725,7 +823,14 @@ impl P {
                 self.d.list.truncate(mark);
             }
         }
-        if (placement.is_some() && place_arg.is_none()) || global || self.in_template() || rt.is_unknown() || (place_arg.is_none() && user_alloc(self, elem_class)) || bounds.iter().skip(1).any(|b| b.is_none()) {
+        // NEW-10, NEW-13: the allocation function that a class or the
+        // program declares, and the deallocation function of NEW-21.
+        let mut alloc_info: Option<NewAlloc> = None;
+        let over_aligned = self.alignof_ty(&rt.t).is_some_and(|a| a > 16);
+        if !self.in_template() && !over_aligned && place_arg.is_none() && !rt.is_unknown() && !bounds.iter().skip(1).any(|b| b.is_none()) && ((placement.is_some() && place_arg.is_none()) || global || (place_arg.is_none() && user_alloc(self, elem_class))) {
+            alloc_info = self.resolve_new_alloc(elem_class, !bounds.is_empty(), placement.as_deref().unwrap_or(&[]), global, line);
+        }
+        if alloc_info.is_none() && ((placement.is_some() && place_arg.is_none()) || global || self.in_template() || rt.is_unknown() || (place_arg.is_none() && user_alloc(self, elem_class)) || bounds.iter().skip(1).any(|b| b.is_none())) {
             // UN-18: a placement form of a scalar whose allocation
             // functions with that many arguments are all non-throwing.
             if let (Some(pa), None) = (&placement, elem_class) {
@@ -770,7 +875,7 @@ impl P {
             self.d.list.truncate(mark);
             return Ok(unknown);
         }
-        let k = EK::New { ty: rt.clone(), count: count.map(Box::new), init: conv_init.map(Box::new), place: place_arg.map(Box::new) };
+        let k = EK::New { ty: rt.clone(), count: count.map(Box::new), init: conv_init.map(Box::new), place: place_arg.map(Box::new), alloc: alloc_info.map(Rc::new) };
         Ok(Expr::new(k, QTy::new(Ty::Ptr(Box::new(rt))), Cat::PR, line))
     }
 
@@ -3346,7 +3451,10 @@ impl P {
                         }
                     }
                 }
-                if null || matches!(from, Ty::MemPtr(..)) {
+                if matches!(from, Ty::MemPtr(..)) {
+                    // CONV-15: the value keeps its member.
+                    Ok(self.conv(e, Conv::PtrConv, target))
+                } else if null {
                     Ok(self.conv(e, Conv::NullPtr, target))
                 } else {
                     Err("no conversion to a pointer to member".into())
@@ -3587,6 +3695,16 @@ impl P {
                     // CVF-3, CVF-11: a contextual conversion uses an
                     // explicit conversion function only to bool.
                     self.error(line, "CVF-11", format!("the conversion functions of '{}' are explicit and do not convert to bool", self.classes[*c].name));
+                } else if !self.in_template() {
+                    // CVF-3: the conversion function, explicit ones too.
+                    let mark = self.d.list.len();
+                    let saved = std::mem::replace(&mut self.contextual, true);
+                    let x = self.user_conv(&e, &QTy::bool_(), line);
+                    self.contextual = saved;
+                    match x {
+                        Some(x) if self.d.list.len() == mark && !matches!(x.k, EK::Unknown(_)) => return x,
+                        _ => self.d.list.truncate(mark),
+                    }
                 }
                 Expr::new(EK::Unknown("class to bool".into()), QTy::bool_(), Cat::PR, line)
             }
@@ -4652,15 +4770,38 @@ impl P {
         match &rt.ty.t {
             Ty::MemPtr(_, inner) => {
                 let mut t = (**inner).clone();
-                if let Ty::Func(_) = t.t {
-                    return Expr::unknown(line, "pointer to member function call");
-                }
                 let obj_cat = if op == "->*" { Cat::L } else { l.cat };
+                if self.in_template() || l.ty.is_unknown() || matches!(rt.k, EK::Unknown(_)) {
+                    if let Ty::Func(_) = t.t {
+                        return Expr::unknown(line, "pointer to member function call");
+                    }
+                    let cat = if obj_cat == Cat::L { Cat::L } else { Cat::X };
+                    return Expr::new(EK::Unknown("pointer to member access".into()), t, cat, line);
+                }
+                // MPTR-5: `->*` is `.*` on the object the pointer points to.
+                let obj = if op == "->*" {
+                    let pl = self.rvalue(l);
+                    let pt = match &nonref(&pl.ty).t {
+                        Ty::Ptr(x) => (**x).clone(),
+                        _ => {
+                            if let Ty::Func(_) = t.t {
+                                return Expr::unknown(line, "pointer to member function call");
+                            }
+                            return Expr::new(EK::Unknown("pointer to member access".into()), t, Cat::L, line);
+                        }
+                    };
+                    Expr::new(EK::Unary(UOp::Deref, Box::new(pl)), pt, Cat::L, line)
+                } else {
+                    l
+                };
+                if let Ty::Func(_) = t.t {
+                    return Expr::new(EK::PtrMem(Box::new(obj), Box::new(rt)), t, Cat::L, line);
+                }
                 if op == ".*" {
                     t.c |= lt.c;
                 }
                 let cat = if obj_cat == Cat::L { Cat::L } else { Cat::X };
-                Expr::new(EK::Unknown("pointer to member access".into()), t, cat, line)
+                Expr::new(EK::PtrMem(Box::new(obj), Box::new(rt)), t, cat, line)
             }
             Ty::Unknown | Ty::Dep(_) => Expr::unknown(line, "pointer to member access"),
             _ => {
@@ -4919,11 +5060,23 @@ impl P {
                     }
                 }
                 EK::Throw(_) => *res = Some(false),
-                EK::New { ty, init, place, count } => {
+                EK::New { ty, init, place, count, alloc } => {
                     // NEW-19: the replaceable allocation functions are
                     // potentially throwing. A placement form follows the
                     // functions it can call.
+                    if let Some(al) = alloc {
+                        match al.func {
+                            Some(f) if al.nothrow => {
+                                let _ = f;
+                            }
+                            _ => *res = Some(false),
+                        }
+                        for a in &al.args {
+                            walk(p, a, res);
+                        }
+                    }
                     match place {
+                        _ if alloc.is_some() => {}
                         Some(pl) => {
                             let n = match &pl.k {
                                 EK::InitList(v) => v.len(),
@@ -4964,7 +5117,7 @@ impl P {
                     }
                     walk(p, a, res);
                 }
-                EK::Delete(_, a) => {
+                EK::Delete(_, a, _) => {
                     // EXS-4: a delete expression follows the destructor.
                     match &nonref(&a.ty).t {
                         Ty::Ptr(t) => {
@@ -4978,6 +5131,7 @@ impl P {
                     }
                     walk(p, a, res);
                 }
+                EK::Reinterpret(a, _) => walk(p, a, res),
                 EK::Destroy(a) => {
                     match class_of(&nonref(&a.ty).t) {
                         Some(c) => join(res, p.sm_throws(c, crate::special::Sm::Dtor)),

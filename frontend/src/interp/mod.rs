@@ -17,6 +17,7 @@
 // evaluation does not allow stops the run with `Stop::Limit` and the rule
 // that forbids it.
 
+mod bytes;
 mod expr;
 pub mod run;
 mod stmt;
@@ -77,17 +78,21 @@ pub struct Ptr {
     /// For an array pointer, the element index (can be one past the end).
     pub off: i64,
     pub array: bool,
+    /// A pointer to a byte of an object's representation (STG-13): `off`
+    /// is the byte offset in the complete object `obj`, and `path` is
+    /// empty.
+    pub bytes: bool,
 }
 
 impl Ptr {
     pub fn whole(obj: usize) -> Ptr {
-        Ptr { obj, path: vec![], off: 0, array: false }
+        Ptr { obj, path: vec![], off: 0, array: false, bytes: false }
     }
     /// The place of a subobject.
     pub fn sub(&self, i: usize) -> Ptr {
         let mut path = full_path(self);
         path.push(i);
-        Ptr { obj: self.obj, path, off: 0, array: false }
+        Ptr { obj: self.obj, path, off: 0, array: false, bytes: false }
     }
 }
 
@@ -115,6 +120,13 @@ pub enum Val {
     /// The value of a variable that constant evaluation must not read
     /// (CE-3).
     NotUsable(String),
+    /// A pointer that holds an address where no object is (CAST-16).
+    Addr(u64),
+    /// A pointer to a data member or a member function (MPTR rules), and
+    /// the path of base subobjects from the class of the pointer's type to
+    /// the class that declares the member (CMP-22). None when a cast to a
+    /// base class left the path unknown.
+    Member(DeclId, Option<Vec<usize>>),
 }
 
 /// How an object was created by `new` (NEW-5).
@@ -251,6 +263,42 @@ pub struct Machine<'a> {
     pub residents: HashMap<usize, Vec<(i64, i64, usize)>>,
     /// The host and first byte of each such object.
     pub resident_of: HashMap<usize, (usize, i64)>,
+    /// Bytes of object representations that the values do not hold:
+    /// padding, and the bytes of scalars with no value (STG-11).
+    pub shadow: HashMap<(usize, i64), bytes::Byte>,
+    /// The address of each object that has one, and the table of
+    /// addresses, sizes, and objects (CAST-16).
+    pub addr_of: HashMap<usize, u64>,
+    pub addr_table: Vec<(u64, u64, usize)>,
+    pub next_addr: u64,
+    /// The functions whose addresses a program converted.
+    pub fn_addrs: Vec<(usize, DeclId)>,
+    /// Arrays that storage from an allocation function created
+    /// implicitly (STG-8), and the elements of such arrays whose type is
+    /// not an implicit-lifetime type and whose lifetime has not begun
+    /// (STG-28).
+    pub implicit: std::collections::HashSet<usize>,
+    pub unbuilt: std::collections::HashSet<(usize, usize)>,
+    /// Complete objects that an explicit destructor call ended (DTOR-7).
+    pub ended_by_call: std::collections::HashSet<usize>,
+    /// Storage from `operator new[]` called by name (NEW-40).
+    pub raw_array: std::collections::HashSet<usize>,
+    /// Objects of `new` expressions whose allocation function the program
+    /// declares, and the storage that the function returned.
+    pub user_storage: HashMap<usize, Ptr>,
+    /// The choices to take at the choice points, in order, and the choices
+    /// taken with the number of options at each (decision 0048).
+    pub script: Vec<u8>,
+    pub taken: Vec<(u8, u8)>,
+    /// SEQ-4: the reads and writes of objects while unsequenced operands
+    /// run: the object, the path of the memory location, whether the
+    /// access modifies it (or reads a volatile object), and the frame.
+    pub acc: Vec<(usize, Vec<usize>, bool, usize)>,
+    pub seq_watch: Vec<usize>,
+    /// SEQ-6: the next call's arguments keep the left-to-right order.
+    pub fixed_order: bool,
+    /// PRIM-9: the choice made for each string literal object.
+    pub prim9: HashMap<usize, u8>,
 }
 
 impl<'a> Machine<'a> {
@@ -286,6 +334,22 @@ impl<'a> Machine<'a> {
             unwinding: 0,
             residents: HashMap::new(),
             resident_of: HashMap::new(),
+            shadow: HashMap::new(),
+            addr_of: HashMap::new(),
+            addr_table: Vec::new(),
+            next_addr: 0,
+            fn_addrs: Vec::new(),
+            implicit: Default::default(),
+            unbuilt: Default::default(),
+            ended_by_call: Default::default(),
+            raw_array: Default::default(),
+            user_storage: HashMap::new(),
+            script: Vec::new(),
+            taken: Vec::new(),
+            acc: Vec::new(),
+            seq_watch: Vec::new(),
+            fixed_order: false,
+            prim9: HashMap::new(),
         }
     }
 
@@ -306,6 +370,49 @@ impl<'a> Machine<'a> {
         if !self.choices.contains(&c) {
             self.choices.push(c);
         }
+    }
+
+    /// A choice point with `n` options: the option this run takes. The
+    /// script gives the options; past its end the run takes option 0.
+    pub fn decide(&mut self, n: u8) -> u8 {
+        let k = self.taken.len();
+        let c = self.script.get(k).copied().unwrap_or(0).min(n - 1);
+        self.taken.push((c, n));
+        c
+    }
+
+    /// SEQ-4: record an access while unsequenced operands run.
+    pub fn record(&mut self, p: &Ptr, write: bool) {
+        if !self.seq_watch.contains(&self.frames.len()) {
+            return;
+        }
+        let path = if p.bytes { vec![] } else { self.location(p) };
+        let depth = self.frames.len();
+        self.acc.push((p.obj, path, write, depth));
+    }
+
+    /// The memory location of a place: adjacent bit-fields share one
+    /// (SEQ-4).
+    fn location(&self, p: &Ptr) -> Vec<usize> {
+        let mut path = full_path(p);
+        if let Some(&last) = path.last() {
+            let parent = Ptr { obj: p.obj, path: path[..path.len() - 1].to_vec(), off: 0, array: false, bytes: false };
+            if let Some(QTy { t: Ty::Class(c), .. }) = self.type_at(&parent) {
+                let nb = self.nbases(c);
+                let fs = self.fields(c);
+                if let Some(pos) = fs.iter().position(|(_, fi)| nb + fi.index == last) {
+                    if fs[pos].1.bits.is_some() {
+                        let mut first = pos;
+                        while first > 0 && fs[first - 1].1.bits.is_some_and(|w| w > 0) {
+                            first -= 1;
+                        }
+                        let n = path.len();
+                        path[n - 1] = nb + fs[first].1.index;
+                    }
+                }
+            }
+        }
+        path
     }
 
     pub fn new_obj(&mut self, val: Val, own: bool) -> usize {
@@ -536,6 +643,7 @@ impl<'a> Machine<'a> {
     pub fn slot(&mut self, p: &Ptr, init: bool) -> R<&mut Val> {
         let fp = full_path(p);
         let constant = self.constant;
+        let writable = self.objs[p.obj].konst && !init && (self.mutable_on_path(p) || self.cdtor.iter().any(|(q, _)| q.obj == p.obj));
         let o = &mut self.objs[p.obj];
         if !o.alive {
             return ub(if constant { "OBJ-2" } else { "OBJ-2, DTOR-7" }, "write to an object whose lifetime has ended");
@@ -544,9 +652,9 @@ impl<'a> Machine<'a> {
             // CE-5: no change to an object from before the evaluation.
             return limit("CE-5", "modification of an object created outside the constant evaluation");
         }
-        if !init && o.konst {
+        if !init && o.konst && !writable {
             // CAST-5, CV-5: a write to an object declared `const`.
-            return ub("CAST-5", "write to a const object");
+            return ub("CAST-5, CV-5", "write to a const object");
         }
         let mut v = &mut o.val;
         for &i in &fp {
@@ -564,7 +672,47 @@ impl<'a> Machine<'a> {
         Ok(v)
     }
 
+    /// Whether a place is in a mutable member (CV-5).
+    pub fn mutable_on_path(&self, p: &Ptr) -> bool {
+        let Some(mut t) = self.obj_ty(p.obj) else { return false };
+        for &i in &full_path(p) {
+            t = match &t.t {
+                Ty::Array(el, _) => (**el).clone(),
+                Ty::Class(c) => {
+                    let nb = self.nbases(*c);
+                    if i < nb {
+                        match self.p.classes[*c].bases[i].class {
+                            Some(b) => QTy::new(Ty::Class(b)),
+                            None => return false,
+                        }
+                    } else {
+                        match self.fields(*c).into_iter().find(|(_, fi)| fi.index == i - nb) {
+                            Some((_, fi)) if fi.mutable => return true,
+                            Some((_, fi)) => fi.ty,
+                            None => return false,
+                        }
+                    }
+                }
+                _ => return false,
+            };
+        }
+        false
+    }
+
     pub fn write(&mut self, p: &Ptr, v: Val, init: bool) -> R<()> {
+        if !init {
+            self.record(p, true);
+        }
+        if p.bytes || self.hosted_byte(p).is_some() {
+            // STG-13: a write of one byte of an object representation.
+            let (o, k) = if p.bytes { (p.obj, p.off) } else { (p.obj, p.off) };
+            let b = match v {
+                Val::Int(x) => bytes::Byte::Known(x as u8),
+                Val::Uninit => bytes::Byte::Indet,
+                _ => return unsup("byte write of a value that is not an integer"),
+            };
+            return self.write_byte(o, k, b);
+        }
         self.check_in_bounds(p)?;
         *self.slot(p, init)? = v;
         Ok(())
@@ -586,10 +734,20 @@ impl<'a> Machine<'a> {
     }
 
     pub fn read(&mut self, p: &Ptr, volatile: bool) -> R<Val> {
-        if self.residents.get(&p.obj).is_some_and(|v| v.iter().any(|r| self.objs[r.2].alive)) {
-            // The bytes of a host whose storage holds another object: the
-            // interpreter keeps no object representation.
-            return unsup("bytes of storage that holds an object of another type");
+        // SEQ-4 also makes two unsequenced reads of one volatile object
+        // undefined. The run does not stop there: seven run tests read a
+        // volatile object twice in one operator (finding G102).
+        let _ = volatile;
+        self.record(p, false);
+        if p.bytes || self.hosted_byte(p).is_some() {
+            // STG-13: a byte of an object representation, as `unsigned
+            // char` (or as the element type of the host array).
+            let t = if p.bytes { Ty::UChar } else { self.type_at(p).map(|t| t.t).unwrap_or(Ty::UChar) };
+            let b = self.read_byte(p.obj, p.off)?;
+            return match self.byte_val(b, &t) {
+                Val::Uninit => ub("OBJ-2, INIT-1", "read of a byte with no value"),
+                v => Ok(v),
+            };
         }
         if self.constant && (volatile || self.objs[p.obj].volatile) {
             // CE-12: no read through a volatile lvalue.
@@ -652,6 +810,11 @@ impl<'a> Machine<'a> {
                         if !f.defaulted {
                             if self.constant && !f.constexpr {
                                 return unsup("destructor evaluation");
+                            }
+                            if f.body.is_none() && self.library_exception(c) {
+                                // LSUP-8: the library defines the destructor;
+                                // it ends the object and does nothing else.
+                                return self.destroy_parts(place, c);
                             }
                             let Some(body) = f.body.clone() else {
                                 // TR-4: a destructor defined in another unit.
@@ -730,6 +893,11 @@ impl<'a> Machine<'a> {
                         return ub("STG-21", "the storage of a variable holds an object of another type when its destructor runs");
                     }
                 }
+            }
+            if !self.objs[c.place.obj].alive && c.place.path.is_empty() && nontrivial && !self.constant && self.resident_holder(c.place.obj).is_none() && self.ended_by_call.contains(&c.place.obj) {
+                // DTOR-7: a second destruction of an object whose
+                // destructor a program called (Q-0054).
+                return ub("DTOR-7", "the end of the block destroys an object whose destructor already ran");
             }
             if self.objs[c.place.obj].alive {
                 self.destroy(&c.place, &c.ty)?;
@@ -879,6 +1047,18 @@ pub fn strip_bind(e: &Expr) -> Expr {
         EK::Conv(Conv::Bind, a) => (**a).clone(),
         _ => e.clone(),
     }
+}
+
+/// Whether an operand can take part in a SEQ-4 conflict: it modifies an
+/// object outside a call.
+pub fn may_conflict(e: &Expr) -> bool {
+    let mut any = false;
+    walk_expr(e, &mut |x| {
+        if matches!(x.k, EK::Assign(..) | EK::Unary(UOp::PreInc | UOp::PreDec | UOp::PostInc | UOp::PostDec, _)) {
+            any = true;
+        }
+    });
+    any
 }
 
 /// Whether evaluating an expression can have a side effect: a call, an

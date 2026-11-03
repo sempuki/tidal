@@ -3135,6 +3135,12 @@ impl P {
         // ODR-1: a static data member defined twice outside its class.
         let explicit = std::mem::take(&mut self.explicit_spec);
         if let (Some(q), Some(p)) = (d.qual, redecl) {
+            if matches!(self.scopes[q].kind, SK::Class(_)) && !self.in_template() {
+                // SINIT-7: the definition's place in the order of the
+                // unit's definitions.
+                let n = self.decls.len();
+                self.static_member_pos.entry(p).or_insert(n);
+            }
             if matches!(self.scopes[q].kind, SK::Class(_)) && !self.in_template() && !self.static_member_defs.insert(p) && !(explicit && self.replayed_defs.contains(&p)) {
                 self.error(line, "ODR-1", format!("static data member '{}' defined twice", name));
             }

@@ -17,10 +17,29 @@ impl P {
                 // STG-7, NEW-19: a call of a global allocation or
                 // deallocation function by name, when the program replaces
                 // none of the usual forms.
-                let usual_only = ["operatornew", "operatornew[]", "operatordelete", "operatordelete[]"].iter().all(|n| {
-                    self.scopes[self.global].names.get(*n).is_none_or(|v| v.iter().all(|&d| self.func(d).is_some_and(|f| f.fty.params.len() == 2 && matches!(&f.fty.params[1].t, Ty::Ptr(x) if x.t == Ty::Void))))
-                });
-                if usual_only && !self.in_template() && args.len() == 1 {
+                // NEW-19: the functions that the program declares with this
+                // name, next to the library's forms.
+                let declared: Vec<DeclId> = self.scopes[self.global].names.get(name).cloned().unwrap_or_default().into_iter().filter(|&d| self.func(d).is_some_and(|f| !f.template)).collect();
+                if !declared.is_empty() && !self.in_template() && !args.iter().any(|a| a.ty.is_unknown()) {
+                    let mark = self.d.list.len();
+                    let r = self.ics_select(None, &declared, &args);
+                    self.d.list.truncate(mark);
+                    if let Ok(Some((f, _))) = r {
+                        let fi = self.func(f).unwrap().clone();
+                        let mark = self.d.list.len();
+                        let conv = self.convert_args(&fi.fty, args.clone(), line, Some(f));
+                        if self.d.list.len() == mark && !conv.iter().any(|x| matches!(x.k, EK::Unknown(_))) {
+                            if self.in_unevaluated == 0 {
+                                self.use_fn(f);
+                            }
+                            let fe = Expr::new(EK::Func(f), QTy::new(Ty::Func(Box::new(fi.fty.clone()))), Cat::L, line);
+                            return Expr::new(EK::Call(Box::new(fe), conv, Some(f)), fi.fty.ret.clone(), Cat::PR, line);
+                        }
+                        self.d.list.truncate(mark);
+                    }
+                }
+                let lib_taken = |p: &P, n: &str| p.scopes[p.global].names.get(n).is_some_and(|v| v.iter().any(|&d| p.func(d).is_some_and(|f| f.fty.params.len() == 1)));
+                if !lib_taken(self, name) && !self.in_template() && args.len() == 1 {
                     let vp = QTy::new(Ty::Ptr(Box::new(QTy::new(Ty::Void))));
                     let mark = self.d.list.len();
                     let (a, rt) = if name.starts_with("operatornew") {
@@ -782,7 +801,7 @@ impl P {
         }
     }
 
-    fn convert_args(&mut self, ft: &FnTy, args: Vec<Expr>, line: u32, fid: Option<DeclId>) -> Vec<Expr> {
+    pub fn convert_args(&mut self, ft: &FnTy, args: Vec<Expr>, line: u32, fid: Option<DeclId>) -> Vec<Expr> {
         let np = ft.params.len();
         if fid.is_none() {
             if args.len() < np || (args.len() > np && !ft.variadic) {
@@ -863,8 +882,13 @@ impl P {
                     }
                 }
             }
-            // CE-4 / CAST-8: not in a constant expression.
-            return Expr::new(EK::Unknown("CE-4: reinterpret_cast".into()), target, cat, line);
+            // CE-4 / CAST-8: not in a constant expression. The interpreter
+            // runs the cast (CAST-6, STG-16).
+            if self.in_template() {
+                return Expr::new(EK::Unknown("CE-4: reinterpret_cast".into()), target, cat, line);
+            }
+            let x = if cat == Cat::PR { self.rvalue(e) } else { e };
+            return Expr::new(EK::Reinterpret(Box::new(x), "reinterpret_cast".into()), target, cat, line);
         }
         if cat != Cat::PR {
             // cast to a reference: binds to the operand
@@ -959,23 +983,29 @@ impl P {
                 if related && cv_ok && !func_obj {
                     return self.conv(e, Conv::PtrConv, target);
                 }
-                return Expr::new(EK::Unknown("CE-4: reinterpreting pointer cast".into()), target, Cat::PR, line);
+                return if self.in_template() { Expr::new(EK::Unknown("CE-4: reinterpreting pointer cast".into()), target, Cat::PR, line) } else { Expr::new(EK::Reinterpret(Box::new(e), "reinterpreting pointer cast".into()), target, Cat::PR, line) };
             }
             (f, Ty::Ptr(_)) if f.is_integral() || matches!(f, Ty::Enum(_)) => {
                 if kind == CastKind::Static {
                     self.error_because(line, "CAST-2", "CAST-19", "static_cast of an integer to a pointer");
                     return Expr::unknown(line, "bad cast");
                 }
-                return Expr::new(EK::Unknown("CE-4: integer to pointer".into()), target, Cat::PR, line);
+                return if self.in_template() { Expr::new(EK::Unknown("CE-4: integer to pointer".into()), target, Cat::PR, line) } else { Expr::new(EK::Reinterpret(Box::new(e), "integer to pointer".into()), target, Cat::PR, line) };
             }
             (Ty::Ptr(_), t) if t.is_integral() => {
                 if kind == CastKind::Static {
                     self.error(line, "CAST-2", "static_cast of a pointer to an integer");
                     return Expr::unknown(line, "bad cast");
                 }
-                return Expr::new(EK::Unknown("CE-4: pointer to integer".into()), target, Cat::PR, line);
+                return if self.in_template() { Expr::new(EK::Unknown("CE-4: pointer to integer".into()), target, Cat::PR, line) } else { Expr::new(EK::Reinterpret(Box::new(e), "pointer to integer".into()), target, Cat::PR, line) };
             }
-            (Ty::MemPtr(..), Ty::MemPtr(..)) => return Expr::new(EK::Unknown("member pointer cast".into()), target, Cat::PR, line),
+            (Ty::MemPtr(..), Ty::MemPtr(..)) => {
+                // MPTR-4: the value keeps its member.
+                if self.in_template() || matches!(e.k, EK::Unknown(_)) {
+                    return Expr::new(EK::Unknown("member pointer cast".into()), target, Cat::PR, line);
+                }
+                return Expr::new(EK::Conv(Conv::PtrConv, Box::new(e)), target, Cat::PR, line);
+            }
             _ => {}
         }
         match self.implicit(e, &target, true) {
@@ -1688,7 +1718,13 @@ impl P {
                         }
                     }
                 }
-                if clean && !is_list_ctor {
+                if clean && is_list_ctor {
+                    // ILC-3: the initializer-list constructor wins. The
+                    // interpreter does not model the list object, and the
+                    // code below must not pick another constructor.
+                    return Expr::new(EK::Unknown("initializer-list constructor call".into()), ty.clone(), Cat::PR, line);
+                }
+                if clean {
                     chosen_for_build = crate::ovl::CtorRes::Chosen(cid, Vec::new());
                 }
             }

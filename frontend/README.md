@@ -91,9 +91,28 @@ rejected [CTOR-25] at line 5: no constructor of 'S' accepts the arguments
 A program's own status can also be 125 to 127 or 134. The printed line
 tells the cases apart.
 
-An `unspecified` line lists the choice points that the run passed, each
-with the rule that leaves the choice open. The interpreter takes one
-fixed choice at each point and does not try the others.
+An `unspecified` line lists the choice points that the first run
+passed, each with the rule that leaves the choice open. The first run
+takes the first option at each point. `run` then runs the program again
+with the other options at the choice points of SEQ-1 (left to right or
+right to left), SEQ-8 (left or right operand first), PRIM-9 (one object
+or two), CMP-8 (either order), CMP-20 (equal or not), and MPTR-7, up to
+64 runs in all (decision 0048). A second line gives the other outcomes:
+
+```
+explored: 4 runs; other outcomes: result 1; result 0
+explored: 64 runs (the bound of 64 runs stopped the exploration); other outcomes: result 0
+```
+
+If one of the other runs stops at undefined behavior, the program's
+outcome is that stop. The conformance harness uses the same outcome.
+
+Within the operands of a built-in operator whose operands are
+unsequenced (SEQ-8), the run records the reads and writes of objects in
+the caller's frame. Two accesses to one memory location, one of them a
+write, stop the run with SEQ-4. Adjacent bit-fields are one location.
+Two reads of a volatile object do not stop the run (finding G102 of
+report-10b).
 
 ## Run the conformance tests
 
@@ -190,8 +209,9 @@ the run status second (`run-pass`, the run statuses above, and
 | `src/ctad.rs` | deduction of class template arguments: the guides, their choice, and the sites (CTAD rules) |
 | `src/dcmp.rs` | the bodies of defaulted comparison operators, made at their first use (DCMP rules) |
 | `src/stmt.rs` | statements and jump checks |
-| `src/interp/mod.rs` | the interpreter's machine: values, objects, places, the objects that end with a block, a full expression, or the program, and the stops (decision 0048) |
-| `src/interp/expr.rs` | expressions, conversions, initialization, constructors, copies, assignments, calls, `new` (also placement `new` in a byte array or in the place of an object, STG rules), allocation functions called by name, explicit destructor calls, `delete`, `throw`, and `dynamic_cast` |
+| `src/interp/mod.rs` | the interpreter's machine: values, objects, places, the objects that end with a block, a full expression, or the program, the stops (decision 0048), the choice points, and the SEQ-4 record of accesses |
+| `src/interp/bytes.rs` | the byte view of objects (STG-11 to STG-16, STG-23, STG-26): object representations, byte pointers, addresses, `reinterpret_cast` (CAST-6, CAST-16), pointer-interconvertible objects (STG-16, CLS-19), the access check of STG-14, and the exceptions of LSUP-8 |
+| `src/interp/expr.rs` | expressions, conversions, initialization, constructors, copies, assignments, calls, pointers to members, `new` (also placement `new` in a byte array or in the place of an object, STG rules, and the allocation and deallocation functions that a class or the program declares, NEW-13 and NEW-21 to NEW-24), allocation functions called by name, explicit destructor calls, `delete`, `throw`, and `dynamic_cast` |
 | `src/interp/stmt.rs` | statements, blocks, `goto`, `switch`, try blocks and handlers, and static locals |
 | `src/interp/run.rs` | a whole program: linking the units, static initialization, `main`, and the end of the static objects |
 | `src/consteval.rs` | constant evaluation, as a client of the interpreter with the limits of `constant-evaluation.md` |
@@ -227,6 +247,25 @@ body is parsed as a pattern, so a check that needs the parameter types
 waits for a call (SA-5). The call operator is not instantiated, so a call
 of a generic lambda stays unknown.
 
+## Bytes
+
+The value of each object stays the interpreter's record. The bytes of an
+object are computed from its value when a program reads them through
+`unsigned char`, `char`, or `std::byte`, and a write of a byte changes
+the scalar that holds it. Integers are little-endian two's complement
+(STG-26), and `float` and `double` use their IEEE formats (MUL-20).
+Padding bytes, and the bytes of a scalar with no value, are kept apart
+from the values. A pointer's bytes are its address. The interpreter
+gives each object an address when a program first needs one, aligned
+for its type. The interpreter computes bytes only for classes without
+bases and bit-fields, and not for `long double`.
+
+A `reinterpret_cast` to a byte type gives a byte pointer, which steps
+over the bytes of the complete object. A cast to another object type
+gives the pointer-interconvertible object of that type (STG-16, CLS-19),
+or else the same object. A read or write through a glvalue whose type
+STG-14 does not allow for the object stops the run with STG-23.
+
 ## Exception specifications
 
 The `noexcept` operator (UN-18) follows EXS-4: a function is
@@ -238,5 +277,5 @@ the operand counts. A placement `new` counts when every allocation
 function with that number of arguments is non-throwing.
 
 The findings about the specification are in
-`reports/clean-room/rust-frontend/report.md` and `report-2.md` to
-`report-10.md`.
+`reports/clean-room/rust-frontend/report.md`, `report-2.md` to
+`report-10.md`, and `report-10b.md`.

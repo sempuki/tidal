@@ -33,15 +33,63 @@ fn stop_outcome(s: Stop, line: u32) -> RunOutcome {
 /// Run the program whose translation units are `ps`, each checked and
 /// accepted, linked together (TR-4).
 pub fn run_units(ps: &[&P]) -> RunOutcome {
+    run_explored(ps).0
+}
+
+/// The most runs that the exploration of choice points makes.
+pub const RUN_BOUND: usize = 64;
+
+/// One run with the choices that `script` gives, and the choices taken.
+fn run_once(ps: &[&P], script: &[u8]) -> (RunOutcome, Vec<(u8, u8)>) {
     let mut m = Machine::new(ps[0], false);
     m.ps = ps.to_vec();
+    m.script = script.to_vec();
     m.link();
-    match m.run_all() {
+    let o = match m.run_all() {
         Ok(status) => RunOutcome::Result(status, m.choices.clone()),
         Err(s) => {
             let line = m.line;
             stop_outcome(s, line)
         }
+    };
+    (o, m.taken)
+}
+
+/// The runs of a program over its choice points (decision 0048): each
+/// allowed choice at SEQ-1, SEQ-8, PRIM-9, CMP-8, and CMP-20, up to
+/// `RUN_BOUND` runs. Returns the outcome to report, the outcomes of the
+/// other runs, and whether the bound stopped the exploration.
+///
+/// The reported outcome is the first run's, unless another run stops at
+/// undefined behavior: an allowed choice that leads to undefined behavior
+/// makes the program's behavior undefined.
+pub fn run_explored(ps: &[&P]) -> (RunOutcome, Vec<RunOutcome>, bool) {
+    let (first, mut taken) = run_once(ps, &[]);
+    let mut others = Vec::new();
+    let mut runs = 1;
+    let mut bound = false;
+    if matches!(first, RunOutcome::Unsupported(..)) {
+        return (first, others, false);
+    }
+    loop {
+        // The next script: the last choice with an option left goes to
+        // its next option, and the choices after it start again.
+        let Some(i) = taken.iter().rposition(|&(c, n)| c + 1 < n) else { break };
+        if runs >= RUN_BOUND {
+            bound = true;
+            break;
+        }
+        let mut script: Vec<u8> = taken[..i].iter().map(|x| x.0).collect();
+        script.push(taken[i].0 + 1);
+        let (o, t) = run_once(ps, &script);
+        runs += 1;
+        taken = t;
+        others.push(o);
+    }
+    let ub = others.iter().find(|o| matches!(o, RunOutcome::Undefined(..))).cloned();
+    match (ub, &first) {
+        (Some(u), RunOutcome::Result(..)) => (u, others, bound),
+        _ => (first, others, bound),
     }
 }
 
@@ -68,6 +116,9 @@ impl<'a> Machine<'a> {
             }
             out.push(id);
         }
+        // SINIT-7: a static data member defined outside its class takes
+        // the place of its definition.
+        out.sort_by_key(|&id| (self.p.static_member_pos.get(&id).copied().unwrap_or(id), id));
         out
     }
 
@@ -271,15 +322,28 @@ impl<'a> Machine<'a> {
     /// whether the variable had one.
     fn init_constant(&mut self, id: DeclId) -> R<bool> {
         let v = self.p.var(id).unwrap().clone();
-        let constant = !v.ty.t.is_ref() && (v.constexpr || v.constinit || (v.init.is_some() && self.p.const_eval_init(id).is_ok() && !self.needs_dtor(&v.ty.t) && !matches!(v.ty.t, Ty::Class(_) | Ty::Array(..))));
+        let aggregate = matches!(v.ty.t, Ty::Class(_) | Ty::Array(..));
+        let constant = !v.ty.t.is_ref() && (v.constexpr || v.constinit || (v.init.is_some() && self.p.const_eval_init(id).is_ok() && !self.needs_dtor(&v.ty.t)));
         if !constant {
             return Ok(false);
         }
+        // SINIT-1: a class object whose initializer is a constant
+        // expression is constant-initialized too. If the run cannot do it
+        // as a constant evaluation, it stays dynamic.
+        let saved = if aggregate && !v.constexpr && !v.constinit {
+            self.globals.get(&(self.tu, id)).map(|&o| (o, self.objs[o].val.clone()))
+        } else {
+            None
+        };
         // The constant initializer runs as a constant evaluation, so
         // `if consteval` takes its first branch (IF-18).
         self.constant = true;
         let r = self.init_static(id, &v);
         self.constant = false;
+        if let (Err(_), Some((o, val))) = (&r, saved) {
+            self.objs[o].val = val;
+            return Ok(false);
+        }
         r?;
         Ok(true)
     }
@@ -292,11 +356,11 @@ impl<'a> Machine<'a> {
             // TR-9: one argument, the program's name.
             let name: Vec<u32> = "tidal-fe".chars().map(|c| c as u32).collect();
             let s = self.string_obj(&name);
-            let s = Ptr { obj: s.obj, path: vec![], off: 0, array: true };
+            let s = Ptr { obj: s.obj, path: vec![], off: 0, array: true, bytes: false };
             let argv = self.new_obj(Val::Agg(vec![Val::Ptr(s), Val::Null]), true);
             let argc = self.new_obj(Val::Int(1), true);
             frame.vars.insert(f.params[0], argc);
-            let pv = self.new_obj(Val::Ptr(Ptr { obj: argv, path: vec![], off: 0, array: true }), true);
+            let pv = self.new_obj(Val::Ptr(Ptr { obj: argv, path: vec![], off: 0, array: true, bytes: false }), true);
             frame.vars.insert(f.params[1], pv);
         } else if !f.params.is_empty() {
             return unsup("main with parameters other than (int, char**)");

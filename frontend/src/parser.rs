@@ -354,6 +354,11 @@ pub struct P {
     pub internal_uses: Vec<(DeclId, u32)>,
     /// ODR-1: static data members with a definition outside the class.
     pub static_member_defs: std::collections::HashSet<DeclId>,
+    /// For a static data member defined outside its class, the number of
+    /// declarations that came before the definition (SINIT-7).
+    pub static_member_pos: HashMap<DeclId, usize>,
+    /// A contextual conversion to bool is being formed (CVF-3).
+    pub contextual: bool,
     /// The classes that stand for `std::initializer_list<E>` (ICS-16),
     /// with their element types.
     pub init_list_classes: Vec<(QTy, usize)>,
@@ -677,6 +682,8 @@ impl P {
             internal_fns: Default::default(),
             internal_uses: Vec::new(),
             static_member_defs: Default::default(),
+            static_member_pos: HashMap::new(),
+            contextual: false,
             init_list_classes: Vec::new(),
             new_paren_args: Vec::new(),
             new_braced: None,

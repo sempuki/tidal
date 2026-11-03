@@ -131,6 +131,32 @@ pub struct Expr {
     pub qualified: bool,
 }
 
+/// The allocation and deallocation functions of a `new` expression that
+/// does not use only the library's global functions (NEW-10, NEW-13,
+/// NEW-21 to NEW-24, NEW-31).
+#[derive(Clone, Debug)]
+pub struct NewAlloc {
+    /// The allocation function; None for the library's global one.
+    pub func: Option<DeclId>,
+    /// The placement arguments, converted to the parameter types.
+    pub args: Vec<Expr>,
+    /// The allocation function is non-throwing (NEW-31, NEW-32).
+    pub nothrow: bool,
+    /// The deallocation function that frees the storage when the
+    /// initialization throws (NEW-21).
+    pub dealloc: Dealloc,
+}
+
+#[derive(Clone, Debug, PartialEq)]
+pub enum Dealloc {
+    /// The library's global function.
+    Library,
+    /// A declared function, and whether it takes the size.
+    Func(DeclId, bool),
+    /// No function matches, and the storage is not freed (NEW-24).
+    None,
+}
+
 #[derive(Clone, Debug)]
 pub enum EK {
     Int(i128),
@@ -165,9 +191,10 @@ pub enum EK {
     /// the type of the object or of each element, the number of elements
     /// of an array `new`, and the converted initializer (none for
     /// default-initialization).
-    New { ty: QTy, count: Option<Box<Expr>>, init: Option<Box<Expr>>, place: Option<Box<Expr>> },
+    New { ty: QTy, count: Option<Box<Expr>>, init: Option<Box<Expr>>, place: Option<Box<Expr>>, alloc: Option<Rc<NewAlloc>> },
     /// A `delete` or `delete[]` expression.
-    Delete(bool, Box<Expr>),
+    /// The third field says that the expression starts with `::`.
+    Delete(bool, Box<Expr>, bool),
     /// A `dynamic_cast` whose checks passed; the type and category of the
     /// node are the target's.
     DynamicCast(Box<Expr>),
@@ -186,6 +213,16 @@ pub enum EK {
     /// list does not name: the member is initialized as if the list
     /// ended before it (LIST-5).
     MemberDefault,
+    /// A cast that reinterprets its operand (CAST-6, CAST-12, CAST-16,
+    /// STG-16): `reinterpret_cast`, or a C-style cast that acts as one.
+    /// The string says which kind, for the CE-4 stop in constant
+    /// evaluation. The node's type and category are the target's.
+    Reinterpret(Box<Expr>, String),
+    /// A pointer to member constant `&C::m` (MPTR-1, MPTR-2).
+    MemberPtr(DeclId),
+    /// `obj.*mp`; `->*` has the indirection in `obj` (MPTR rules). The
+    /// type is the member's, a function type for a member function.
+    PtrMem(Box<Expr>, Box<Expr>),
     /// Something the front end parsed but cannot evaluate.
     Unknown(String),
 }
@@ -256,7 +293,7 @@ pub fn walk_expr(e: &Expr, f: &mut dyn FnMut(&Expr)) {
     f(e);
     match &e.k {
         EK::BoundMember(a, _) | EK::Unary(_, a) | EK::Conv(_, a) | EK::Member(a, _) => walk_expr(a, f),
-        EK::Binary(_, a, b) | EK::Assign(_, a, b) | EK::Comma(a, b) | EK::Index(a, b) => {
+        EK::Binary(_, a, b) | EK::Assign(_, a, b) | EK::Comma(a, b) | EK::Index(a, b) | EK::PtrMem(a, b) => {
             walk_expr(a, f);
             walk_expr(b, f);
         }
@@ -276,10 +313,15 @@ pub fn walk_expr(e: &Expr, f: &mut dyn FnMut(&Expr)) {
                 walk_expr(x, f);
             }
         }
-        EK::Throw(Some(a)) | EK::Delete(_, a) | EK::DynamicCast(a) | EK::Destroy(a) => walk_expr(a, f),
-        EK::New { count, init, place, .. } => {
+        EK::Throw(Some(a)) | EK::Delete(_, a, _) | EK::DynamicCast(a) | EK::Destroy(a) | EK::Reinterpret(a, _) => walk_expr(a, f),
+        EK::New { count, init, place, alloc, .. } => {
             if let Some(p) = place {
                 walk_expr(p, f);
+            }
+            if let Some(a) = alloc {
+                for x in &a.args {
+                    walk_expr(x, f);
+                }
             }
             if let Some(c) = count {
                 walk_expr(c, f);
@@ -325,11 +367,14 @@ pub fn sexp(e: &Expr) -> String {
         EK::Throw(a) => format!("throw {}", a.as_ref().map(|x| sexp(x)).unwrap_or_default()),
         EK::Construct(c, v) => format!("construct#{} [{}]", c, v.iter().map(sexp).collect::<Vec<_>>().join(" ")),
         EK::New { ty, count, init, .. } => format!("new {} [{}] {}", crate::types::show(ty), count.as_ref().map(|c| sexp(c)).unwrap_or_default(), init.as_ref().map(|c| sexp(c)).unwrap_or_default()),
-        EK::Delete(a, x) => format!("delete{} {}", if *a { "[]" } else { "" }, sexp(x)),
+        EK::Delete(a, x, g) => format!("{}delete{} {}", if *g { "::" } else { "" }, if *a { "[]" } else { "" }, sexp(x)),
         EK::DynamicCast(x) => format!("dynamic_cast {}", sexp(x)),
         EK::Closure(c, v, _) => format!("closure#{} [{}]", c, v.iter().map(sexp).collect::<Vec<_>>().join(" ")),
         EK::TemplId(_, v, _) => format!("templ-id{:?}", v),
         EK::Destroy(x) => format!("destroy {}", sexp(x)),
+        EK::Reinterpret(x, w) => format!("reinterpret({}) {}", w, sexp(x)),
+        EK::MemberPtr(d) => format!("memptr#{}", d),
+        EK::PtrMem(a, b) => format!(".* {} {}", sexp(a), sexp(b)),
         EK::Unknown(w) => format!("UNKNOWN({})", w),
     };
     format!("({}{}{}:{})", if e.qualified { "Q " } else { "" }, inner, if cat.is_empty() { String::new() } else { format!(" {}", cat) }, ty)

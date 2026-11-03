@@ -3,6 +3,10 @@
 
 use super::*;
 
+/// The largest allocation the interpreter's machine gives. A larger
+/// request fails (NEW-38).
+const ALLOC_LIMIT: u64 = 1 << 40;
+
 impl<'a> Machine<'a> {
     // ---- variables ----
 
@@ -294,12 +298,25 @@ impl<'a> Machine<'a> {
                         if self.constant {
                             return limit("CE-8", "a failed dynamic_cast of a reference throws");
                         }
+                        if self.std_class("bad_cast").is_some() {
+                            // LSUP-8: the program declares std::bad_cast.
+                            return Err(self.throw_std("bad_cast")?);
+                        }
                         let place = self.alloc(&QTy::int())?;
                         self.write(&place, Val::Int(0), true)?;
                         Err(Stop::Throw(Exc { obj: place.obj, ty: QTy::new(Ty::Unknown) }))
                     }
                 }
             }
+            EK::Reinterpret(a, w) => {
+                if self.constant {
+                    return limit("CE-4", w.clone());
+                }
+                // CAST-6: a reference cast acts on the place of the operand.
+                let p = self.lvalue(a)?;
+                self.retarget(p, &e.ty)
+            }
+            EK::PtrMem(obj, mp) => self.ptr_mem_place(obj, mp),
             EK::This => unsup("this as lvalue"),
             EK::Unknown(why) if why.starts_with('\u{1}') => {
                 let i: usize = why[1..].parse().unwrap_or(0);
@@ -361,7 +378,10 @@ impl<'a> Machine<'a> {
             Ty::Class(c) => c,
             _ => fi.class,
         };
-        let mut p = Ptr { obj: bp.obj, path: full_path(&bp), off: 0, array: false };
+        if base.cat != Cat::PR {
+            self.check_class_access(&bp, bc)?;
+        }
+        let mut p = Ptr { obj: bp.obj, path: full_path(&bp), off: 0, array: false, bytes: false };
         if bc != fi.class {
             match self.base_path(bc, fi.class) {
                 Some(bp) => p.path.extend(bp),
@@ -389,8 +409,8 @@ impl<'a> Machine<'a> {
             return;
         }
         let n = p.path.len();
-        let holder = Ptr { obj: p.obj, path: p.path[..n - 1].to_vec(), off: 0, array: false };
-        let union = Ptr { obj: p.obj, path: p.path[..n - 2].to_vec(), off: 0, array: false };
+        let holder = Ptr { obj: p.obj, path: p.path[..n - 1].to_vec(), off: 0, array: false, bytes: false };
+        let union = Ptr { obj: p.obj, path: p.path[..n - 2].to_vec(), off: 0, array: false, bytes: false };
         if !matches!(self.get_at(&holder), Ok(Val::Inactive)) {
             return;
         }
@@ -420,7 +440,7 @@ impl<'a> Machine<'a> {
             return Ok(p);
         }
         if let Some(bp) = self.base_path(*f, *t) {
-            let mut q = Ptr { obj: p.obj, path: full_path(&p), off: 0, array: false };
+            let mut q = Ptr { obj: p.obj, path: full_path(&p), off: 0, array: false, bytes: false };
             if !p.array && p.off != 0 {
                 return unsup("base conversion of a pointer past the end");
             }
@@ -432,11 +452,11 @@ impl<'a> Machine<'a> {
             // CAST-14, DER-17: the object must be a base subobject of a `to`.
             let fp = full_path(&p);
             let foreign = self.objs[p.obj].tu != self.tu;
-            let ok = fp.len() >= bp.len() && fp[fp.len() - bp.len()..] == bp[..] && (foreign || self.class_at(&Ptr { obj: p.obj, path: fp[..fp.len() - bp.len()].to_vec(), off: 0, array: false }) == Some(*t));
+            let ok = fp.len() >= bp.len() && fp[fp.len() - bp.len()..] == bp[..] && (foreign || self.class_at(&Ptr { obj: p.obj, path: fp[..fp.len() - bp.len()].to_vec(), off: 0, array: false, bytes: false }) == Some(*t));
             if !ok {
                 return ub("DER-17", "cast to a derived class of an object that is not a base subobject of that class");
             }
-            return Ok(Ptr { obj: p.obj, path: fp[..fp.len() - bp.len()].to_vec(), off: 0, array: false });
+            return Ok(Ptr { obj: p.obj, path: fp[..fp.len() - bp.len()].to_vec(), off: 0, array: false, bytes: false });
         }
         Ok(p)
     }
@@ -450,7 +470,7 @@ impl<'a> Machine<'a> {
         let Some((mdc, mdpath)) = self.dynamic_class(p) else {
             return unsup("dynamic type of an object the interpreter cannot see");
         };
-        let at = |path: Vec<usize>| Ptr { obj: p.obj, path, off: 0, array: false };
+        let at = |path: Vec<usize>| Ptr { obj: p.obj, path, off: 0, array: false, bytes: false };
         // The classes along the path from the most derived object to the
         // operand's subobject, and whether each edge is public.
         let fp = full_path(p);
@@ -626,7 +646,7 @@ impl<'a> Machine<'a> {
             Val::Int(v) => Ok(v != 0),
             Val::Float(f) => Ok(f != 0.0),
             Val::Null => Ok(false),
-            Val::Ptr(_) | Val::FnPtr(..) => Ok(true),
+            Val::Ptr(_) | Val::FnPtr(..) | Val::Addr(_) | Val::Member(..) => Ok(true),
             _ => unsup("non-scalar condition"),
         }
     }
@@ -669,7 +689,17 @@ impl<'a> Machine<'a> {
                 let p = self.lvalue(e)?;
                 Ok(Val::Ptr(p))
             }
-            EK::Var(_) | EK::Member(..) | EK::Index(..) => {
+            EK::MemberPtr(d) => {
+                // MPTR-2: the class of the type is the class named; the path
+                // leads to the class that declares the member.
+                let named = match &e.ty.t {
+                    Ty::MemPtr(c, _) => *c,
+                    _ => return unsup("pointer to member type"),
+                };
+                let decl = self.member_class(*d);
+                Ok(Val::Member(*d, decl.and_then(|m| self.base_path(named, m))))
+            }
+            EK::Var(_) | EK::Member(..) | EK::Index(..) | EK::PtrMem(..) => {
                 if e.cat == Cat::PR {
                     return unsup("prvalue member");
                 }
@@ -679,7 +709,7 @@ impl<'a> Machine<'a> {
                     }
                 }
                 let p = self.lvalue(e)?;
-                self.read(&p, e.ty.v)
+                self.read_gl(&p, &e.ty)
             }
             EK::Func(f) => Ok(Val::FnPtr(self.tu, *f)),
             EK::This => match self.frame().this.clone() {
@@ -708,7 +738,7 @@ impl<'a> Machine<'a> {
                 if matches!(l.ty.t, Ty::Class(_)) {
                     return Ok(self.get_at(&p)?.clone());
                 }
-                self.read(&p, l.ty.v)
+                self.read_gl(&p, &l.ty)
             }
             EK::Cond(c, a, b) => {
                 // COND-7: only the selected operand is evaluated.
@@ -729,7 +759,7 @@ impl<'a> Machine<'a> {
                 }
                 match self.call(e, None)? {
                     Ret::Val(v) => Ok(v),
-                    Ret::Place(p) => self.read(&p, e.ty.v),
+                    Ret::Place(p) => self.read_gl(&p, &e.ty),
                     Ret::InSlot => unsup("class result without a slot"),
                 }
             }
@@ -797,14 +827,27 @@ impl<'a> Machine<'a> {
                 self.destroy(&p, &t)?;
                 if p.path.is_empty() && !p.array {
                     self.end_obj(p.obj);
+                    self.ended_by_call.insert(p.obj);
+                } else if !p.array && self.in_union(&p) {
+                    // OBJ-1: the destroyed member of a union ends, so no
+                    // member is active.
+                    *self.slot(&p, true)? = Val::Inactive;
                 }
                 Ok(Val::Void)
             }
-            EK::New { ty, count, init, place: None } => self.eval_new(ty, count.as_deref(), init.as_deref()),
-            EK::New { ty, count, init, place: Some(pl) } => self.eval_placement_new(ty, count.as_deref(), init.as_deref(), pl),
-            EK::Delete(arr, x) => {
-                self.eval_delete(*arr, x)?;
+            EK::New { ty, count, init, alloc: Some(al), .. } => self.eval_new_user(ty, count.as_deref(), init.as_deref(), al),
+            EK::New { ty, count, init, place: None, .. } => self.eval_new(ty, count.as_deref(), init.as_deref()),
+            EK::New { ty, count, init, place: Some(pl), .. } => self.eval_placement_new(ty, count.as_deref(), init.as_deref(), pl),
+            EK::Delete(arr, x, global) => {
+                self.eval_delete(*arr, x, *global)?;
                 Ok(Val::Void)
+            }
+            EK::Reinterpret(a, w) => {
+                if e.cat != Cat::PR {
+                    let p = self.lvalue(e)?;
+                    return self.read_gl(&p, &e.ty);
+                }
+                self.eval_reinterpret(a, w, &e.ty)
             }
             EK::Unknown(why) => self.unknown(why),
             EK::Overloads(_) | EK::BoundMember(..) | EK::TemplId(..) => unsup("overload set"),
@@ -873,7 +916,19 @@ impl<'a> Machine<'a> {
                     _ => return unsup("array size"),
                 };
                 if n < 0 {
-                    return unsup("negative array size in new (an exception)");
+                    // NEW-35: an erroneous bound throws.
+                    return Err(self.throw_std("bad_array_new_length")?);
+                }
+                if let Some(es) = self.p.sizeof_ty(&elem.t) {
+                    let total = (n as u128).saturating_mul(es as u128);
+                    if total > Ty::size_t().int_max() as u128 {
+                        // NEW-35: the size does not fit the type of sizeof.
+                        return Err(self.throw_std("bad_array_new_length")?);
+                    }
+                    if total > ALLOC_LIMIT as u128 {
+                        // NEW-38: the allocation function fails.
+                        return Err(self.throw_std("bad_alloc")?);
+                    }
                 }
                 let at = QTy::new(Ty::Array(Box::new(elem.clone()), Some(n as u64)));
                 let place = self.alloc(&at)?;
@@ -882,7 +937,7 @@ impl<'a> Machine<'a> {
                     Some(e) => self.init_into(&place, e, &at)?,
                     None => self.default_init(&place, &at)?,
                 }
-                Ok(Val::Ptr(Ptr { obj: place.obj, path: vec![], off: 0, array: true }))
+                Ok(Val::Ptr(Ptr { obj: place.obj, path: vec![], off: 0, array: true, bytes: false }))
             }
         }
     }
@@ -898,14 +953,21 @@ impl<'a> Machine<'a> {
                 Val::Int(v) => v,
                 _ => return unsup("allocation size"),
             };
+            if n > ALLOC_LIMIT as i128 {
+                // NEW-38: the allocation function fails.
+                return Err(self.throw_std("bad_alloc")?);
+            }
             if !(0..=1 << 20).contains(&n) {
                 return unsup("allocation of a size the interpreter does not model");
             }
             let t = QTy::new(Ty::Array(Box::new(QTy::new(Ty::UChar)), Some(n.max(1) as u64)));
             let p = self.alloc(&t)?;
             self.objs[p.obj].heap = Heap::Raw;
+            if name.ends_with("[]") {
+                self.raw_array.insert(p.obj);
+            }
             self.residents.entry(p.obj).or_default();
-            return Ok(Ret::Val(Val::Ptr(Ptr { obj: p.obj, path: vec![], off: 0, array: true })));
+            return Ok(Ret::Val(Val::Ptr(Ptr { obj: p.obj, path: vec![], off: 0, array: true, bytes: false })));
         }
         let p = match self.eval(&args[0])? {
             Val::Null => return Ok(Ret::Val(Val::Void)),
@@ -918,6 +980,11 @@ impl<'a> Machine<'a> {
         };
         if self.objs[host].heap != Heap::Raw && self.objs[host].heap == Heap::No {
             return ub("NEW-5", "deallocation of storage that an allocation function did not give");
+        }
+        if self.objs[host].heap == Heap::Raw && self.raw_array.contains(&host) != name.ends_with("[]") {
+            // NEW-40: the deallocation function must be the partner of the
+            // allocation function.
+            return ub("NEW-40", "deallocation by a function that is not the partner of the allocation function");
         }
         if let Some(v) = self.residents.get(&host).cloned() {
             for (_, _, o) in v {
@@ -957,16 +1024,33 @@ impl<'a> Machine<'a> {
         }
         let off = p.off;
         let t = to.unqual();
+        let mut carried: Vec<(i64, bytes::Byte)> = Vec::new();
         if let Some(v) = self.residents.get(&p.obj) {
-            if let Some(&(_, _, o)) = v.iter().rev().find(|r| r.0 == off && self.objs[r.2].alive) {
+            if let Some(&(_, len, o)) = v.iter().rev().find(|r| r.0 == off && self.objs[r.2].alive) {
                 match self.obj_ty(o) {
                     Some(q) if q.unqual().t == t.t => return Ok(Ptr::whole(o)),
-                    Some(QTy { t: Ty::Array(el, _), .. }) if el.unqual().t == t.t => return Ok(Ptr { obj: o, path: vec![], off: 0, array: true }),
+                    Some(QTy { t: Ty::Array(el, _), .. }) if el.unqual().t == t.t => return Ok(Ptr { obj: o, path: vec![], off: 0, array: true, bytes: false }),
+                    _ if self.implicit.contains(&o) && off == 0 && self.implicit_lifetime(&t.t) => {
+                        // STG-8: a later use needs another set of objects.
+                        // The set that serves every use holds the bytes
+                        // that the program wrote (STG-12).
+                        for k in 0..len {
+                            if let Ok(b @ bytes::Byte::Known(_)) = self.read_byte(p.obj, k) {
+                                carried.push((k, b));
+                            }
+                        }
+                        self.objs[o].alive = false;
+                    }
                     _ => return Ok(p),
                 }
             }
         }
-        if self.objs[p.obj].heap == Heap::Raw && off == 0 && self.implicit_lifetime(&t.t) {
+        let built = self.implicit_lifetime(&t.t);
+        // STG-28: an array of a type that is not an implicit-lifetime type
+        // also exists, and its elements begin their lifetimes when the
+        // program constructs them.
+        let unbuilt = !built && matches!(t.t, Ty::Class(_));
+        if self.objs[p.obj].heap == Heap::Raw && off == 0 && (built || unbuilt) {
             // STG-8: the objects that give the program defined behavior.
             // An array of the type that fills the storage serves both one
             // object and arithmetic over several.
@@ -984,7 +1068,19 @@ impl<'a> Machine<'a> {
                     }
                     self.residents.entry(p.obj).or_default().push((0, (n * size) as i64, r.obj));
                     self.resident_of.insert(r.obj, (p.obj, 0));
-                    return Ok(Ptr { obj: r.obj, path: vec![], off: 0, array: true });
+                    if built {
+                        self.implicit.insert(r.obj);
+                    } else {
+                        for i in 0..n as usize {
+                            self.unbuilt.insert((r.obj, i));
+                        }
+                    }
+                    for (k, b) in carried {
+                        if (k as u64) < n * size {
+                            let _ = self.write_byte(r.obj, k, b);
+                        }
+                    }
+                    return Ok(Ptr { obj: r.obj, path: vec![], off: 0, array: true, bytes: false });
                 }
             }
         }
@@ -1030,22 +1126,32 @@ impl<'a> Machine<'a> {
             Val::Null => return unsup("placement new at a null pointer"),
             _ => return unsup("placement new at a value that is not a pointer"),
         };
+        let n = match count {
+            None => None,
+            Some(n) => match self.eval(n)? {
+                Val::Int(v) => Some(v),
+                _ => return unsup("array size"),
+            },
+        };
+        self.place_new_at(p, ty, n, init)
+    }
+
+    /// Create the object of a `new` expression in the storage at `p`, with
+    /// `count` elements for an array (STG-4, STG-5, STG-9).
+    fn place_new_at(&mut self, p: Ptr, ty: &QTy, count: Option<i128>, init: Option<&Expr>) -> R<Val> {
+        let p = if p.bytes { self.byte_place(&p)? } else { p };
         let elem = ty.unqual();
         let t = match count {
             None => elem.clone(),
             Some(n) => {
-                let n = match self.eval(n)? {
-                    Val::Int(v) => v,
-                    _ => return unsup("array size"),
-                };
                 if n < 0 {
-                    return unsup("negative array size in new (an exception)");
+                    return Err(self.throw_std("bad_array_new_length")?);
                 }
                 QTy::new(Ty::Array(Box::new(elem.clone()), Some(n as u64)))
             }
         };
         let at = self.type_at(&p);
-        let host = self.type_at(&Ptr { obj: p.obj, path: p.path.clone(), off: 0, array: false });
+        let host = self.type_at(&Ptr { obj: p.obj, path: p.path.clone(), off: 0, array: false, bytes: false });
         let byte_host0 = matches!(&host, Some(QTy { t: Ty::Array(el, Some(_)), .. }) if matches!(el.t, Ty::UChar | Ty::Char) || matches!(&el.t, Ty::Enum(e) if self.p.enums[*e].name == "byte")) && p.array;
         let (size, align) = match (self.p.sizeof_ty(&t.t), self.p.alignof_ty(&t.t)) {
             (Some(s), Some(a)) => (s, a),
@@ -1084,14 +1190,14 @@ impl<'a> Machine<'a> {
                 Some(e) => self.init_into(&target, e, &t)?,
                 None => self.default_init(&target, &t)?,
             }
-            return Ok(Val::Ptr(if count.is_some() { Ptr { obj: r.obj, path: vec![], off: 0, array: true } } else { r }));
+            return Ok(Val::Ptr(if count.is_some() { Ptr { obj: r.obj, path: vec![], off: 0, array: true, bytes: false } } else { r }));
         }
         // STG-9: a new object of the same type in the place of an old one
         // replaces it.
         let Some(at) = at else { return unsup("placement new in storage of unknown type") };
         let whole0 = p.path.is_empty() && !p.array;
         if !p.path.is_empty() && !p.array && count.is_none() {
-            let parent = Ptr { obj: p.obj, path: p.path[..p.path.len() - 1].to_vec(), off: 0, array: false };
+            let parent = Ptr { obj: p.obj, path: p.path[..p.path.len() - 1].to_vec(), off: 0, array: false, bytes: false };
             if let Some(QTy { t: Ty::Class(pc), .. }) = self.type_at(&parent) {
                 if *p.path.last().unwrap() < self.nbases(pc) {
                     // STG-19: a new object in the place of a base subobject
@@ -1142,6 +1248,14 @@ impl<'a> Machine<'a> {
         if whole {
             self.objs[p.obj].alive = true;
         }
+        if let Some(&i) = full_path(&p).first() {
+            self.unbuilt.remove(&(p.obj, i));
+        }
+        // UNI-5: an object made in a union member makes it the active
+        // member, and the other members end.
+        if !p.path.is_empty() && !p.array {
+            self.activate_member(&p)?;
+        }
         let blank = self.shape(&t)?;
         let blank = if matches!(t.t, Ty::Class(_) | Ty::Array(..)) { blank } else { Val::Uninit };
         self.write(&p, blank, true)?;
@@ -1152,8 +1266,153 @@ impl<'a> Machine<'a> {
         Ok(Val::Ptr(p))
     }
 
+    /// A `new` expression whose allocation function a class or the
+    /// program declares, or that has placement arguments (NEW-10, NEW-13,
+    /// NEW-21 to NEW-24, NEW-31, NEW-32).
+    fn eval_new_user(&mut self, ty: &QTy, count: Option<&Expr>, init: Option<&Expr>, al: &NewAlloc) -> R<Val> {
+        let elem = ty.unqual();
+        let array = count.is_some();
+        let n = match count {
+            None => None,
+            Some(c) => match self.eval(c)? {
+                Val::Int(v) => Some(v),
+                _ => return unsup("array size"),
+            },
+        };
+        let es = self.size_of(&elem.t)? as i128;
+        let size = es.saturating_mul(n.unwrap_or(1));
+        if n.is_some_and(|v| v < 0) || size > Ty::size_t().int_max() {
+            // NEW-35: an erroneous bound calls no allocation function.
+            // NEW-36: with a non-throwing allocation function the result
+            // is null.
+            if al.nothrow {
+                return Ok(Val::Null);
+            }
+            return Err(self.throw_std("bad_array_new_length")?);
+        }
+        // The placement arguments, each held in a temporary so that the
+        // deallocation function can receive them again.
+        let base = self.synth.len();
+        let mut pargs = Vec::new();
+        for a in &al.args {
+            let v = self.eval(a)?;
+            let o = self.new_obj(v, true);
+            self.objs[o].ty = Some(a.ty.unqual());
+            self.synth.push(Ptr::whole(o));
+            let i = self.synth.len() - 1;
+            let pl = Expr::new(EK::Unknown(format!("\u{1}{}", i)), a.ty.unqual(), Cat::L, a.line);
+            pargs.push(Expr::new(EK::Conv(Conv::LToR, Box::new(pl)), a.ty.unqual(), Cat::PR, a.line));
+        }
+        let size_e = Expr::new(EK::Int(size), QTy::new(Ty::size_t()), Cat::PR, self.line);
+        let aname = if array { "operatornew[]" } else { "operatornew" };
+        let r = (|| -> R<Val> {
+            // STG-5, LSUP-10: the non-allocating placement form returns
+            // its argument; constant evaluation runs it that way.
+            let place_form = al.func.is_some_and(|f| self.p.func(f).is_some_and(|fi| fi.fty.params.len() == 2 && matches!(&fi.fty.params[1].t, Ty::Ptr(x) if x.t == Ty::Void))) && pargs.len() == 1;
+            let storage = match al.func {
+                Some(_) if place_form && self.constant => {
+                    let in_construct_at = self.frame().func.is_some_and(|f| {
+                        let d = &self.p.decls[f];
+                        d.name == "construct_at" && self.p.scopes[d.scope].name == "std"
+                    });
+                    if !in_construct_at {
+                        // NEW-37: only std::construct_at runs a placement
+                        // form in constant evaluation (LSUP-10).
+                        return limit("NEW-37", "placement new expression outside std::construct_at");
+                    }
+                    self.eval(&pargs[0])?
+                }
+                Some(_) if self.constant => {
+                    // NEW-37: a class's or the program's allocation function.
+                    return limit("NEW-37", "new expression that calls an allocation function the program declares");
+                }
+                None => match self.call_allocation(aname, std::slice::from_ref(&size_e))? {
+                    Ret::Val(v) => v,
+                    _ => return unsup("allocation result"),
+                },
+                Some(f) => {
+                    let fty = self.p.func(f).map(|x| x.fty.clone()).unwrap();
+                    let callee = Expr::new(EK::Func(f), QTy::new(Ty::Func(Box::new(fty.clone()))), Cat::L, self.line);
+                    let mut args = vec![size_e.clone()];
+                    args.extend(pargs.iter().cloned());
+                    let call = Expr::new(EK::Call(Box::new(callee), args, Some(f)), fty.ret.clone(), Cat::PR, self.line);
+                    match self.call(&call, None)? {
+                        Ret::Val(v) => v,
+                        _ => return unsup("allocation result"),
+                    }
+                }
+            };
+            let p = match storage {
+                Val::Null if al.nothrow => {
+                    // NEW-31: no initialization, and the result is null.
+                    return Ok(Val::Null);
+                }
+                Val::Null => return ub("NEW-32", "an allocation function that is not non-throwing returns a null pointer"),
+                Val::Ptr(p) => p,
+                _ => return unsup("allocation function result that points to no object"),
+            };
+            let made = match self.place_new_at(p.clone(), ty, n, init) {
+                Ok(v) => v,
+                Err(Stop::Throw(x)) => {
+                    // NEW-21: the deallocation function frees the storage
+                    // before the exception leaves the expression.
+                    self.call_dealloc(&al.dealloc, &p, size, &pargs, aname)?;
+                    return Err(Stop::Throw(x));
+                }
+                Err(e) => return Err(e),
+            };
+            if let Val::Ptr(q) = &made {
+                self.objs[q.obj].heap = if array { Heap::Array } else { Heap::Single };
+                self.user_storage.insert(q.obj, p);
+            }
+            Ok(made)
+        })();
+        self.synth.truncate(base);
+        r
+    }
+
+    /// Call a deallocation function with the storage `p`, the size, and
+    /// the placement arguments (NEW-21 to NEW-24).
+    fn call_dealloc(&mut self, d: &Dealloc, p: &Ptr, size: i128, pargs: &[Expr], aname: &str) -> R<()> {
+        match d {
+            Dealloc::None => Ok(()),
+            Dealloc::Library => {
+                let dname = if aname.ends_with("[]") { "operatordelete[]" } else { "operatordelete" };
+                let o = self.new_obj(Val::Ptr(p.clone()), true);
+                self.objs[o].ty = Some(QTy::new(Ty::Ptr(Box::new(QTy::new(Ty::Void)))));
+                self.synth.push(Ptr::whole(o));
+                let i = self.synth.len() - 1;
+                let vp = QTy::new(Ty::Ptr(Box::new(QTy::new(Ty::Void))));
+                let pl = Expr::new(EK::Unknown(format!("\u{1}{}", i)), vp.clone(), Cat::L, self.line);
+                let a = Expr::new(EK::Conv(Conv::LToR, Box::new(pl)), vp, Cat::PR, self.line);
+                self.call_allocation(dname, &[a])?;
+                Ok(())
+            }
+            Dealloc::Func(f, sized) => {
+                let f = *f;
+                let fty = self.p.func(f).map(|x| x.fty.clone()).unwrap();
+                let vp = QTy::new(Ty::Ptr(Box::new(QTy::new(Ty::Void))));
+                let o = self.new_obj(Val::Ptr(p.clone()), true);
+                self.objs[o].ty = Some(vp.clone());
+                self.synth.push(Ptr::whole(o));
+                let i = self.synth.len() - 1;
+                let pl = Expr::new(EK::Unknown(format!("\u{1}{}", i)), vp.clone(), Cat::L, self.line);
+                let mut args = vec![Expr::new(EK::Conv(Conv::LToR, Box::new(pl)), vp, Cat::PR, self.line)];
+                if *sized {
+                    args.push(Expr::new(EK::Int(size), QTy::new(Ty::size_t()), Cat::PR, self.line));
+                } else {
+                    args.extend(pargs.iter().cloned());
+                }
+                let callee = Expr::new(EK::Func(f), QTy::new(Ty::Func(Box::new(fty.clone()))), Cat::L, self.line);
+                let call = Expr::new(EK::Call(Box::new(callee), args, Some(f)), fty.ret.clone(), Cat::PR, self.line);
+                self.call(&call, None)?;
+                Ok(())
+            }
+        }
+    }
+
     /// A `delete` or `delete[]` expression (NEW-5, VIRT-12).
-    fn eval_delete(&mut self, arr: bool, x: &Expr) -> R<()> {
+    fn eval_delete(&mut self, arr: bool, x: &Expr, global: bool) -> R<()> {
         let p = match self.eval(x)? {
             Val::Null => return Ok(()),
             Val::Ptr(p) => p,
@@ -1166,7 +1425,7 @@ impl<'a> Machine<'a> {
         if !o.alive {
             return ub("NEW-5", "delete of an object that was already deleted");
         }
-        let whole = if arr { p.array && p.off == 0 && p.path.is_empty() } else { !p.array && p.off == 0 };
+        let whole = if arr { p.array && p.off == 0 && p.path.is_empty() } else { !p.array && p.off == 0 && p.path.is_empty() };
         if (o.heap == Heap::Array) != arr {
             return ub("NEW-5", if arr { "delete[] of an object from new" } else { "delete of an array from new[]" });
         }
@@ -1202,7 +1461,62 @@ impl<'a> Machine<'a> {
         let t = self.objs[p.obj].ty.clone().unwrap_or(QTy::unknown());
         self.in_tu(tu, |m| m.destroy(&Ptr::whole(p.obj), &t))?;
         self.end_obj(p.obj);
+        // NEW-13: the deallocation function of the class of the object, or
+        // the global one.
+        let storage = self.user_storage.remove(&p.obj);
+        let class = match &t.t {
+            Ty::Class(c) => Some(*c),
+            Ty::Array(el, _) => match el.t {
+                Ty::Class(c) => Some(c),
+                _ => None,
+            },
+            _ => None,
+        };
+        let d = if tu == self.tu { self.delete_fn(class, arr, global) } else { Dealloc::Library };
+        let size = self.p.sizeof_ty(&t.t).unwrap_or(0) as i128;
+        let aname = if arr { "operatornew[]" } else { "operatornew" };
+        match (&d, storage) {
+            (Dealloc::Func(..), Some(s)) => self.call_dealloc(&d, &s, size, &[], aname)?,
+            (Dealloc::Func(..), None) => {
+                let whole = if arr { Ptr { obj: p.obj, path: vec![], off: 0, array: true, bytes: false } } else { Ptr::whole(p.obj) };
+                self.call_dealloc(&d, &whole, size, &[], aname)?
+            }
+            (_, Some(s)) => {
+                let host = self.resident_of.get(&p.obj).map(|x| x.0).unwrap_or(s.obj);
+                if self.objs[host].heap == Heap::Raw && self.objs[host].alive {
+                    self.call_dealloc(&Dealloc::Library, &s, size, &[], aname)?;
+                }
+            }
+            _ => {}
+        }
         Ok(())
+    }
+
+    /// The deallocation function of a `delete` expression: a usual form
+    /// that the class or the program declares, with one parameter first.
+    fn delete_fn(&self, class: Option<usize>, arr: bool, global: bool) -> Dealloc {
+        let dname = if arr { "operatordelete[]" } else { "operatordelete" };
+        let size_t = Ty::size_t();
+        let fns: Vec<DeclId> = match class.filter(|_| !global).and_then(|c| self.p.lookup_member(c, dname)) {
+            Some(v) if !v.is_empty() => v,
+            _ => self.p.scopes[self.p.global].names.get(dname).cloned().unwrap_or_default(),
+        };
+        let usual = |d: DeclId| -> Option<bool> {
+            let f = self.p.func(d)?;
+            let first = matches!(&f.fty.params.first().map(|q| q.t.clone()), Some(Ty::Ptr(x)) if x.t == Ty::Void);
+            match f.fty.params.len() {
+                1 if first => Some(false),
+                2 if first && f.fty.params[1].t == size_t => Some(true),
+                _ => None,
+            }
+        };
+        if let Some(d) = fns.iter().copied().find(|&d| usual(d) == Some(false)) {
+            return Dealloc::Func(d, false);
+        }
+        if let Some(d) = fns.iter().copied().find(|&d| usual(d) == Some(true)) {
+            return Dealloc::Func(d, true);
+        }
+        Dealloc::Library
     }
 
     fn eval_conv(&mut self, k: Conv, a: &Expr, to: &QTy) -> R<Val> {
@@ -1214,11 +1528,11 @@ impl<'a> Machine<'a> {
                     }
                 }
                 let p = self.lvalue(a)?;
-                self.read(&p, a.ty.v)
+                self.read_gl(&p, &a.ty)
             }
             Conv::ArrayDecay => {
                 let p = if a.cat == Cat::PR { self.materialize(a)? } else { self.lvalue(a)? };
-                Ok(Val::Ptr(Ptr { obj: p.obj, path: full_path(&p), off: 0, array: true }))
+                Ok(Val::Ptr(Ptr { obj: p.obj, path: full_path(&p), off: 0, array: true, bytes: false }))
             }
             Conv::FuncDecay => match &a.k {
                 EK::Func(f) => Ok(Val::FnPtr(self.tu, *f)),
@@ -1237,7 +1551,7 @@ impl<'a> Machine<'a> {
                     Val::Int(x) => (x != 0) as i128,
                     Val::Float(f) => (f != 0.0) as i128,
                     Val::Null => 0,
-                    Val::Ptr(_) | Val::FnPtr(..) => 1,
+                    Val::Ptr(_) | Val::FnPtr(..) | Val::Addr(_) | Val::Member(..) => 1,
                     _ => return unsup("conversion to bool"),
                 }))
             }
@@ -1258,6 +1572,18 @@ impl<'a> Machine<'a> {
                     return self.eval(a);
                 }
                 let v = self.eval(a)?;
+                if let (Ty::MemPtr(fc, _), Ty::MemPtr(tc, _), Val::Member(d, path)) = (&a.ty.t, &to.t, &v) {
+                    // CONV-15, MPTR-4: the path follows the conversion.
+                    let path = match (path, self.base_path(*tc, *fc), self.base_path(*fc, *tc)) {
+                        (Some(pt), Some(mut up), _) => {
+                            up.extend(pt.iter().copied());
+                            Some(up)
+                        }
+                        (Some(pt), None, Some(down)) if pt.starts_with(&down) => Some(pt[down.len()..].to_vec()),
+                        _ => None,
+                    };
+                    return Ok(Val::Member(*d, path));
+                }
                 if let (Ty::Ptr(f), Ty::Ptr(t), Val::Ptr(p)) = (&a.ty.t, &to.t, &v) {
                     if let (Ty::Class(_), Ty::Class(_)) = (&f.t, &t.t) {
                         if !self.objs[p.obj].alive && !self.constant {
@@ -1273,7 +1599,12 @@ impl<'a> Machine<'a> {
                             // object type.
                             return limit("CE-4", "conversion from void*");
                         }
-                        return Ok(Val::Ptr(self.storage_pointer(p.clone(), t)?));
+                        if self.residents.contains_key(&p.obj) && !p.bytes {
+                            return Ok(Val::Ptr(self.storage_pointer(p.clone(), t)?));
+                        }
+                        // STG-16: a static_cast through `void*` acts as a
+                        // reinterpret_cast.
+                        return Ok(Val::Ptr(self.retarget(p.clone(), t)?));
                     }
                 }
                 Ok(v)
@@ -1355,6 +1686,14 @@ impl<'a> Machine<'a> {
 
     /// Pointer arithmetic: `rule` names the operation for an error.
     pub fn ptr_add(&self, p: &Ptr, n: i128, rule: &'static str) -> R<Ptr> {
+        if p.bytes {
+            // STG-13: the bytes of the object act as an array.
+            let no = p.off as i128 + n;
+            if no < 0 || no > self.obj_size(p.obj)? as i128 {
+                return ub(rule, "byte pointer arithmetic outside the object");
+            }
+            return Ok(Ptr { off: no as i64, ..p.clone() });
+        }
         if p.array {
             let base = Ptr { array: false, off: 0, ..p.clone() };
             let len = match self.get_at(&base)? {
@@ -1429,7 +1768,7 @@ impl<'a> Machine<'a> {
                     let nb = self.nbases(c);
                     let ft = if i < nb { self.p.classes[c].bases[i].class.map(|b| QTy::new(Ty::Class(b))) } else { self.fields(c).into_iter().find(|(_, fi)| fi.index == i - nb).map(|x| x.1.ty) };
                     if self.p.classes[c].key == 2 {
-                        let holder = Ptr { obj: place.obj, path: fp[..k].to_vec(), off: 0, array: false };
+                        let holder = Ptr { obj: place.obj, path: fp[..k].to_vec(), off: 0, array: false, bytes: false };
                         if let (Ok(Val::Agg(items)), Some(ft)) = (self.get_at(&holder), &ft) {
                             // UNI-13: only a member whose default constructor
                             // is trivial becomes active.
@@ -1457,6 +1796,41 @@ impl<'a> Machine<'a> {
         Ok(())
     }
 
+    /// Whether the place is a member of a union.
+    fn in_union(&self, p: &Ptr) -> bool {
+        let n = p.path.len();
+        if n == 0 {
+            return false;
+        }
+        let parent = Ptr { obj: p.obj, path: p.path[..n - 1].to_vec(), off: 0, array: false, bytes: false };
+        matches!(self.class_at(&parent), Some(c) if self.p.classes[c].key == 2)
+    }
+
+    /// Make the union member at `p` active, whatever its default
+    /// constructor (placement `new` constructs it).
+    fn activate_member(&mut self, p: &Ptr) -> R<()> {
+        if !self.in_union(p) {
+            return Ok(());
+        }
+        let n = p.path.len();
+        let i = p.path[n - 1];
+        let holder = Ptr { obj: p.obj, path: p.path[..n - 1].to_vec(), off: 0, array: false, bytes: false };
+        let Some(ft) = self.type_at(p) else { return Ok(()) };
+        let sh = if matches!(ft.t, Ty::Class(_) | Ty::Array(..)) { self.shape(&ft)? } else { Val::Uninit };
+        if let Val::Agg(items) = self.slot(&holder, true)? {
+            for (j, it) in items.iter_mut().enumerate() {
+                if j == i {
+                    if matches!(it, Val::Inactive) {
+                        *it = sh.clone();
+                    }
+                } else {
+                    *it = Val::Inactive;
+                }
+            }
+        }
+        Ok(())
+    }
+
     /// Whether the default constructor of a class is trivial: no
     /// constructor of its own, no default member initializer, no virtual
     /// function, and trivial bases and members.
@@ -1480,7 +1854,7 @@ impl<'a> Machine<'a> {
 
     /// `++` and `--` on the object at `place`. Returns the old value.
     fn incdec(&mut self, place: &Ptr, a: &Expr, inc: bool, prefix: bool) -> R<Val> {
-        let old = self.read(place, a.ty.v)?;
+        let old = self.read_gl(place, &a.ty)?;
         let delta = if inc { 1 } else { -1 };
         let (rule, ptr_rule) = if prefix { ("UN-21", "ADD-10") } else { ("PFX-18", "PFX-18") };
         let nv = match &old {
@@ -1510,7 +1884,7 @@ impl<'a> Machine<'a> {
             _ => return unsup("increment"),
         };
         let nv = self.bitfield_value(a, nv);
-        self.write(place, nv, false)?;
+        self.write_gl(place, &a.ty, nv)?;
         Ok(old)
     }
 
@@ -1550,8 +1924,15 @@ impl<'a> Machine<'a> {
             self.assign_parts(&place, &src, c, mv)?;
             return Ok(place);
         }
-        // SEQ-3: the right operand first, then the left.
-        let rv = self.eval(r)?;
+        // SEQ-3: the right operand first, then the left. INIT-1: a copy of
+        // an `unsigned char` or `std::byte` with no value has no value.
+        let rv = match &r.k {
+            EK::Conv(Conv::LToR, ra) if op.is_none() && !self.constant && (l.ty.t == Ty::UChar || matches!(&l.ty.t, Ty::Enum(x) if self.p.enums[*x].name == "byte")) && ra.ty.t == l.ty.t => {
+                let p = self.lvalue(ra)?;
+                self.read_gl_raw(&p, &ra.ty)?
+            }
+            _ => self.eval(r)?,
+        };
         if op.is_none() {
             // UNI-13: the union members on a chain of member accesses
             // and subscripts become active before the place is formed.
@@ -1564,7 +1945,7 @@ impl<'a> Machine<'a> {
         let nv = match op {
             None => rv,
             Some((bop, ct)) => {
-                let old = self.read(&place, l.ty.v)?;
+                let old = self.read_gl(&place, &l.ty)?;
                 if let Val::Ptr(_) | Val::Null = old {
                     // `p += n` and `p -= n`.
                     let Val::Int(n) = rv else { return unsup("pointer compound assignment") };
@@ -1582,7 +1963,7 @@ impl<'a> Machine<'a> {
             }
         };
         let nv = self.bitfield_value(l, nv);
-        self.write(&place, nv, false)?;
+        self.write_gl(&place, &l.ty, nv)?;
         // UNI-5, CE-6: an assignment to a union member makes it active.
         // (A write to an inactive member reaches here only through a plain
         // member access, which `slot` refuses; the write below handles the
@@ -1618,7 +1999,7 @@ impl<'a> Machine<'a> {
                     return self.eval(a);
                 }
                 let p = self.lvalue(e)?;
-                self.read(&p, e.ty.v)
+                self.read_gl(&p, &e.ty)
             }
             UOp::AddrOf => {
                 if let EK::Func(f) = &a.k {
@@ -1633,7 +2014,7 @@ impl<'a> Machine<'a> {
             }
             UOp::PreInc | UOp::PreDec => {
                 let place = self.lvalue(e)?;
-                self.read(&place, a.ty.v)
+                self.read_gl(&place, &a.ty)
             }
             UOp::PostInc | UOp::PostDec => {
                 let place = self.lvalue(a)?;
@@ -1651,15 +2032,61 @@ impl<'a> Machine<'a> {
             }
             return Ok(Val::Int(self.eval_bool(b)? as i128));
         }
+        let mut right_first = false;
         if !self.constant && !matches!(op, BOp::Shl | BOp::Shr) && has_effects(a) && has_effects(b) {
             // SEQ-8: the operands of a built-in operator are unsequenced.
-            self.choice("SEQ-8", format!("the left operand of '{}' first", op.spelling()));
+            right_first = self.decide(2) == 1;
+            self.choice("SEQ-8", format!("the {} operand of '{}' first", if right_first { "right" } else { "left" }, op.spelling()));
         }
-        let l = self.eval(a)?;
-        let r = self.eval(b)?;
+        // SEQ-4: the operands are unsequenced (shifts excepted, SHF-8), so
+        // the run records their accesses to the same frame's objects.
+        let watch = !self.constant && !matches!(op, BOp::Shl | BOp::Shr) && (may_conflict(a) || may_conflict(b));
+        let mark = self.acc.len();
+        if watch {
+            let d = self.frames.len();
+            self.seq_watch.push(d);
+        }
+        let r0 = (|| -> R<(Val, Val, usize)> {
+            if right_first {
+                let r = self.eval(b)?;
+                let mid = self.acc.len();
+                let l = self.eval(a)?;
+                Ok((l, r, mid))
+            } else {
+                let l = self.eval(a)?;
+                let mid = self.acc.len();
+                let r = self.eval(b)?;
+                Ok((l, r, mid))
+            }
+        })();
+        if watch {
+            self.seq_watch.pop();
+        }
+        let (l, r, mid) = match r0 {
+            Ok(x) => x,
+            Err(e) => {
+                if self.seq_watch.is_empty() {
+                    self.acc.truncate(mark);
+                }
+                return Err(e);
+            }
+        };
+        if watch {
+            let depth = self.frames.len();
+            let conflict = {
+                let (x, y) = self.acc[mark..].split_at(mid - mark);
+                x.iter().filter(|e| e.3 == depth).any(|e| y.iter().filter(|f| f.3 == depth).any(|f| e.0 == f.0 && (e.2 || f.2) && (e.1.starts_with(&f.1) || f.1.starts_with(&e.1))))
+            };
+            if self.seq_watch.is_empty() {
+                self.acc.truncate(mark);
+            }
+            if conflict {
+                return ub("SEQ-4", format!("unsequenced accesses to one memory location in the operands of '{}', at least one a modification", op.spelling()));
+            }
+        }
         let ct = a.ty.t.clone();
         match (&l, &r) {
-            (Val::Ptr(_) | Val::Null, _) | (_, Val::Ptr(_) | Val::Null) | (Val::FnPtr(..), _) | (_, Val::FnPtr(..)) => {
+            (Val::Ptr(_) | Val::Null, _) | (_, Val::Ptr(_) | Val::Null) | (Val::FnPtr(..), _) | (_, Val::FnPtr(..)) | (Val::Member(..), _) | (_, Val::Member(..)) => {
                 return self.ptr_binary(op, l, r);
             }
             _ => {}
@@ -1702,7 +2129,25 @@ impl<'a> Machine<'a> {
         out
     }
 
+    /// CMP-26: `p` points past the end of one row of an array of arrays
+    /// and `q` to the first element of the next row, or the reverse.
+    fn rows_meet(&self, p: &Ptr, q: &Ptr) -> bool {
+        let one = |a: &Ptr, b: &Ptr| -> bool {
+            if !a.array || !b.array || a.bytes || b.bytes || a.obj != b.obj || a.path.is_empty() || a.path.len() != b.path.len() || b.off != 0 || !self.is_past_end(a) {
+                return false;
+            }
+            let n = a.path.len();
+            a.path[..n - 1] == b.path[..n - 1]
+                && b.path[n - 1] == a.path[n - 1] + 1
+                && matches!(self.type_at(&Ptr { obj: a.obj, path: a.path[..n - 1].to_vec(), off: 0, array: false, bytes: false }).map(|t| t.t), Some(Ty::Array(..)))
+        };
+        one(p, q) || one(q, p)
+    }
+
     fn is_past_end(&self, p: &Ptr) -> bool {
+        if p.bytes {
+            return self.obj_size(p.obj).is_ok_and(|n| p.off == n);
+        }
         if p.array {
             matches!(self.get_at(&Ptr { array: false, off: 0, ..p.clone() }), Ok(Val::Agg(items)) if p.off as usize == items.len())
         } else {
@@ -1710,7 +2155,107 @@ impl<'a> Machine<'a> {
         }
     }
 
+    /// The class that declares a data member or a member function.
+    fn member_class(&self, d: DeclId) -> Option<usize> {
+        match &self.p.decls[d].k {
+            DK::Field(f) => Some(f.class),
+            DK::Func(f) => f.class,
+            _ => None,
+        }
+    }
+
+    /// The place that `obj.*mp` names for a data member (MPTR-5, MPTR-6).
+    fn ptr_mem_place(&mut self, obj: &Expr, mp: &Expr) -> R<Ptr> {
+        // SEQ-3: the object first.
+        let place = if obj.cat == Cat::PR { self.materialize(obj)? } else { self.lvalue(obj)? };
+        let (d, path) = match self.eval(mp)? {
+            Val::Member(d, path) => (d, path),
+            Val::Null => return ub("MPTR-6", "'.*' or '->*' with a null pointer to member"),
+            _ => return unsup("pointer to member value"),
+        };
+        let fi = match &self.p.decls[d].k {
+            DK::Field(f) => f.clone(),
+            _ => return unsup("pointer to member function used as an object"),
+        };
+        let pc = match &nonref(&mp.ty).t {
+            Ty::MemPtr(c, _) => *c,
+            _ => fi.class,
+        };
+        let p = self.member_object(place, &nonref(&obj.ty).t, pc, fi.class, path)?;
+        let mut q = Ptr { obj: p.obj, path: full_path(&p), off: 0, array: false, bytes: false };
+        q.path.push(self.nbases(fi.class) + fi.index);
+        Ok(q)
+    }
+
+    /// The subobject of class `mc` in the object at `p`, whose static
+    /// type is `st`. MPTR-6: the object must have the member.
+    fn member_object(&mut self, p: Ptr, st: &Ty, pc: usize, mc: usize, path: Option<Vec<usize>>) -> R<Ptr> {
+        let Ty::Class(sc) = st else { return unsup("pointer to member access on a non-class object") };
+        if let Some(path) = path {
+            if self.base_path(*sc, pc).is_some() {
+                // CMP-22: the path that the conversions of the pointer took.
+                let mut q = self.class_cast(p, st, &Ty::Class(pc))?;
+                q.path = full_path(&q);
+                q.off = 0;
+                q.array = false;
+                q.path.extend(path);
+                return Ok(q);
+            }
+        }
+        if self.base_path(*sc, mc).is_some() {
+            return self.class_cast(p, st, &Ty::Class(mc));
+        }
+        // A member of a derived class, through a pointer to member that a
+        // cast made: the object's dynamic class must have it.
+        match self.dynamic_class(&p) {
+            Some((dc, dpath)) if self.base_path(dc, mc).is_some() => {
+                let mut path = dpath;
+                path.extend(self.base_path(dc, mc).unwrap());
+                Ok(Ptr { obj: p.obj, path, off: 0, array: false, bytes: false })
+            }
+            Some(_) => ub("MPTR-6", "'.*' or '->*' with an object that does not have the member"),
+            None => unsup("dynamic type of an object the interpreter cannot see"),
+        }
+    }
+
     fn ptr_binary(&mut self, op: BOp, l: Val, r: Val) -> R<Val> {
+        if matches!(l, Val::Member(..)) || matches!(r, Val::Member(..)) {
+            if !matches!(op, BOp::Eq | BOp::Ne) {
+                return unsup("pointer to member operation");
+            }
+            let eq = match (&l, &r) {
+                (Val::Member(a, _), Val::Member(b, _)) if a != b && matches!((&self.p.decls[*a].k, &self.p.decls[*b].k), (DK::Field(x), DK::Field(y)) if x.class == y.class && self.p.classes[x.class].key == 2) => {
+                    // MPTR-5: the members of a union have one address.
+                    true
+                }
+                (Val::Member(a, Some(pa)), Val::Member(b, Some(pb))) if a == b && pa.len() == pb.len() && pa != pb => {
+                    // CMP-22: the same member of two different base
+                    // subobjects.
+                    false
+                }
+                (Val::Member(a, _), Val::Member(b, _)) => {
+                    let virt = |m: &Self, d: DeclId| m.p.func(d).is_some() && m.is_virtual_fn(d);
+                    if !self.constant && (virt(self, *a) || virt(self, *b)) {
+                        // MPTR-7: the result is unspecified.
+                        let c = self.decide(2);
+                        self.choice("MPTR-7", if c == 0 { "pointers to virtual member functions compare by the function they name" } else { "pointers to virtual member functions compare unequal" });
+                        if c == 1 {
+                            false
+                        } else {
+                            a == b
+                        }
+                    } else {
+                        a == b
+                    }
+                }
+                (Val::Null, Val::Null) => true,
+                _ => false,
+            };
+            return Ok(Val::Int((if op == BOp::Eq { eq } else { !eq }) as i128));
+        }
+        if let Some(v) = self.addr_binary(op, &l, &r)? {
+            return Ok(v);
+        }
         match op {
             BOp::Add | BOp::Sub => match (&l, &r) {
                 (Val::Ptr(p), Val::Int(n)) => {
@@ -1749,8 +2294,21 @@ impl<'a> Machine<'a> {
                             if self.constant && p.obj != q.obj {
                                 return limit("CE-13", "comparison of the addresses of string literals");
                             }
-                            if !self.constant {
-                                self.choice("PRIM-9", "string literals with the same characters are one object");
+                            if !self.constant && p.obj == q.obj {
+                                // PRIM-9: two evaluations can give one
+                                // object or two. One choice per object.
+                                let two = match self.prim9.get(&p.obj) {
+                                    Some(&c) => c == 1,
+                                    None => {
+                                        let c = self.decide(2);
+                                        self.prim9.insert(p.obj, c);
+                                        c == 1
+                                    }
+                                };
+                                self.choice("PRIM-9", if two { "string literals with the same characters are distinct objects" } else { "string literals with the same characters are one object" });
+                                if two {
+                                    return Ok(Val::Int((op != BOp::Eq) as i128));
+                                }
                             }
                         }
                         if let (Some(a), Some(b)) = (self.byte_address(p), self.byte_address(q)) {
@@ -1761,13 +2319,21 @@ impl<'a> Machine<'a> {
                             }
                         }
                         if p.obj != q.obj {
-                            if self.is_past_end(p) || self.is_past_end(q) {
+                            if self.is_past_end(p) != self.is_past_end(q) {
                                 if self.constant {
                                     return limit("CMP-20", "comparison of a past-the-end pointer with a pointer to another object");
                                 }
-                                self.choice("CMP-20", "a past-the-end pointer compares unequal to a pointer to another object");
+                                let equal = self.decide(2) == 1;
+                                self.choice("CMP-20", if equal { "a past-the-end pointer compares equal to a pointer to another object" } else { "a past-the-end pointer compares unequal to a pointer to another object" });
+                                if equal {
+                                    return Ok(Val::Int((op == BOp::Eq) as i128));
+                                }
                             }
                             false
+                        } else if self.addr_key(p) != self.addr_key(q) && self.rows_meet(p, q) {
+                            // CMP-26: the end of one row of an array of
+                            // arrays and the start of the next are equal.
+                            true
                         } else {
                             self.addr_key(p) == self.addr_key(q)
                         }
@@ -1783,8 +2349,16 @@ impl<'a> Machine<'a> {
                             return limit("CE-15", "relational comparison of pointers to unrelated objects");
                         }
                         // CMP-8: the result is unspecified.
-                        self.choice("CMP-8", "pointers to unrelated objects compare in the order the objects were created");
-                        (vec![p.obj as i64], vec![q.obj as i64])
+                        let rev = self.decide(2) == 1;
+                        self.choice("CMP-8", if rev { "pointers to unrelated objects compare in the reverse of the order the objects were created" } else { "pointers to unrelated objects compare in the order the objects were created" });
+                        if rev {
+                            (vec![-(p.obj as i64)], vec![-(q.obj as i64)])
+                        } else {
+                            (vec![p.obj as i64], vec![q.obj as i64])
+                        }
+                    } else if self.rows_meet(p, q) {
+                        // CMP-26: equal pointers.
+                        (vec![0], vec![0])
                     } else {
                         // CMP-7: subobjects of one object compare in order.
                         let mut x: Vec<i64> = p.path.iter().map(|&v| v as i64).collect();
@@ -2047,11 +2621,11 @@ impl<'a> Machine<'a> {
             _ => {
                 // INIT-1: a copy of an unsigned char with no value into an
                 // unsigned char is not undefined, and has no value either.
-                if ty.t == Ty::UChar && !self.constant {
+                if (ty.t == Ty::UChar || matches!(&ty.t, Ty::Enum(x) if self.p.enums[*x].name == "byte")) && !self.constant {
                     if let EK::Conv(Conv::LToR, a) = &e.k {
-                        if a.ty.t == Ty::UChar {
+                        if a.ty.t == ty.t {
                             let p = self.lvalue(a)?;
-                            let v = if matches!(self.get_at(&p), Ok(Val::Uninit)) { Val::Uninit } else { self.read(&p, a.ty.v)? };
+                            let v = self.read_gl_raw(&p, &a.ty)?;
                             return self.write(place, v, true);
                         }
                     }
@@ -2420,9 +2994,13 @@ impl<'a> Machine<'a> {
     pub fn bind_args(&mut self, f: &FuncInfo, args: &[Expr], defs: &FuncInfo) -> R<Frame> {
         let mut frame = Frame::new();
         let effects = args.iter().filter(|a| has_effects(a)).count();
-        if !self.constant && effects >= 2 {
-            // SEQ-1: the order of the arguments is unspecified.
-            self.choice("SEQ-1", "arguments evaluated from left to right");
+        let mut reverse = false;
+        let fixed = std::mem::take(&mut self.fixed_order);
+        if !self.constant && effects >= 2 && !fixed {
+            // SEQ-1: the order of the arguments is unspecified. The run
+            // tries left to right and right to left.
+            reverse = self.decide(2) == 1;
+            self.choice("SEQ-1", if reverse { "arguments evaluated from right to left" } else { "arguments evaluated from left to right" });
         }
         let mut all: Vec<(DeclId, Expr)> = Vec::new();
         for (i, a) in args.iter().enumerate() {
@@ -2445,6 +3023,9 @@ impl<'a> Machine<'a> {
                 Some(d) => all.push((pid, (*d).clone())),
                 None => return unsup("missing argument"),
             }
+        }
+        if reverse {
+            all.reverse();
         }
         for (pid, a) in all {
             let pty = self.p.var(pid).map(|v| v.ty.clone()).unwrap_or(QTy::unknown());
@@ -2490,7 +3071,7 @@ impl<'a> Machine<'a> {
                 for &id in ids {
                     if let Some(g) = self.p.func(id) {
                         if id == fid || (same_params(&g.fty, fty) && g.class == Some(c)) {
-                            return Some((id, Ptr { obj: this.obj, path: path.clone(), off: 0, array: false }));
+                            return Some((id, Ptr { obj: this.obj, path: path.clone(), off: 0, array: false, bytes: false }));
                         }
                     }
                 }
@@ -2540,6 +3121,36 @@ impl<'a> Machine<'a> {
 
     /// Call a function. `slot` is the object a class result initializes.
     pub fn call(&mut self, e: &Expr, slot: Option<Ptr>) -> R<Ret> {
+        if let EK::Call(callee, args, None) = &e.k {
+            let mut c = &**callee;
+            while let EK::Conv(Conv::FuncDecay, x) = &c.k {
+                c = x;
+            }
+            if let EK::PtrMem(obj, mp) = &c.k {
+                // MPTR-5: a call through a pointer to member function. The
+                // object comes first (SEQ-3), then the pointer.
+                let place = if obj.cat == Cat::PR { self.materialize(obj)? } else { self.lvalue(obj)? };
+                let (d, path) = match self.eval(mp)? {
+                    Val::Member(d, path) => (d, path),
+                    Val::Null => return ub("MPTR-6", "call through a null pointer to member function"),
+                    _ => return unsup("pointer to member function value"),
+                };
+                let Some(fc) = self.p.func(d).and_then(|f| f.class) else { return unsup("pointer to member function value") };
+                let st = nonref(&obj.ty).t;
+                let pc = match &nonref(&mp.ty).t {
+                    Ty::MemPtr(c, _) => *c,
+                    _ => fc,
+                };
+                let p = self.member_object(place, &st, pc, fc, path)?;
+                self.synth.push(p);
+                let i = self.synth.len() - 1;
+                let o = Expr::new(EK::Unknown(format!("\u{1}{}", i)), QTy::new(Ty::Class(fc)), Cat::L, obj.line);
+                let call = Expr::new(EK::Call(Box::new(o), args.clone(), Some(d)), e.ty.clone(), e.cat, e.line);
+                let r = self.call(&call, slot);
+                self.synth.truncate(i);
+                return r;
+            }
+        }
         let EK::Call(callee, args, fid) = &e.k else { unreachable!() };
         if let EK::Unknown(w) = &callee.k {
             if let Some(name) = w.strip_prefix("allocation function ") {
@@ -2564,6 +3175,22 @@ impl<'a> Machine<'a> {
             }
         };
         let Some(f) = self.p.func(fid) else { return unsup("call of a non-function") };
+        if from_ptr && !self.constant {
+            // PFX-19: the pointer's function type must be the function's
+            // type, `noexcept` included (Q-0178).
+            let called = match &nonref(&callee.ty).t {
+                Ty::Ptr(q) => q.t.clone(),
+                t => t.clone(),
+            };
+            if let Ty::Func(ft) = called {
+                let same = |a: &QTy, b: &QTy| a.t == b.t;
+                let fty = &f.fty;
+                let differs = !same(&ft.ret, &fty.ret) || ft.params.len() != fty.params.len() || ft.params.iter().zip(fty.params.iter()).any(|(a, b)| !same(&a.unqual(), &b.unqual())) || ft.variadic != fty.variadic || ft.noexcept != fty.noexcept;
+                if differs && f.class.is_none() && !ft.ret.is_unknown() && !fty.ret.is_unknown() {
+                    return ub("PFX-19", "call through a pointer whose function type is not the type of the function");
+                }
+            }
+        }
         // ICS-41: the object of a call of a function with an explicit object
         // parameter is the first argument.
         let with_obj: Vec<Expr>;
@@ -2581,6 +3208,10 @@ impl<'a> Machine<'a> {
         // SEQ-6: an assignment operator function keeps the order of the
         // built-in assignment, the right operand first.
         let right_first = member && f.kind == FnKind::Operator && is_assignment_op(&name0) && args.len() == 1;
+        // SEQ-6: shifts, subscripts, the comma, the pointer-to-member
+        // operators, `&&`, and `||` keep the left-to-right order.
+        let fixed = f.kind == FnKind::Operator && matches!(name0.as_str(), "operator<<" | "operator>>" | "operator[]" | "operator," | "operator->*" | "operator&&" | "operator||");
+        self.fixed_order = fixed;
         let mut early_frame = None;
         if right_first {
             early_frame = Some(self.bind_args(&f, args, &f)?);
@@ -2633,7 +3264,12 @@ impl<'a> Machine<'a> {
             None
         };
         if let Some(t) = &this {
-            if self.objs[t.obj].heap == Heap::Raw {
+            let elem = full_path(t).first().copied();
+            if !self.constant && (t.bytes || self.type_at(t).is_some_and(|q| !matches!(q.t, Ty::Class(_) | Ty::Unknown | Ty::Dep(_)))) {
+                // STG-22: the storage holds no object of the class.
+                return ub("STG-22, STG-23", "member function called on storage that holds no object of its class");
+            }
+            if self.objs[t.obj].heap == Heap::Raw || elem.is_some_and(|i| self.unbuilt.contains(&(t.obj, i))) {
                 // STG-18, STG-22: the storage holds no object of the class.
                 return ub("STG-18, STG-22", "member function called on storage that holds no object of its class");
             }

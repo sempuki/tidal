@@ -119,8 +119,22 @@ fn run_command(paths: &[String], m32: bool) -> ! {
                 }
             }
             let refs: Vec<&parser::P> = ps.iter().collect();
-            let o = interp::run::run_units(&refs);
+            let (o, others, bound) = interp::run::run_explored(&refs);
             println!("{}", describe_run(&o));
+            if !others.is_empty() {
+                // Decision 0048: the outcomes of the other choices.
+                let mut set: Vec<String> = Vec::new();
+                for x in &others {
+                    let d = match x {
+                        interp::run::RunOutcome::Result(v, _) => format!("result {}", v),
+                        other => describe_run(other),
+                    };
+                    if !set.contains(&d) {
+                        set.push(d);
+                    }
+                }
+                println!("explored: {} runs{}; other outcomes: {}", 1 + others.len(), if bound { format!(" (the bound of {} runs stopped the exploration)", interp::run::RUN_BOUND) } else { String::new() }, set.join("; "));
+            }
             match o {
                 interp::run::RunOutcome::Result(v, _) => (v & 0xff) as i32,
                 interp::run::RunOutcome::Undefined(..) => RUN_UNDEFINED,

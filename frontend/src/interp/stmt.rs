@@ -105,21 +105,27 @@ impl<'a> Machine<'a> {
                     m.exec(i, seek)?;
                 }
                 loop {
+                    // LOOP-3: a variable of the condition ends after the
+                    // step.
                     let r = m.in_block(|m| {
                         if let Some(c) = cond {
                             if !m.eval_cond(c)? {
                                 return Ok(None);
                             }
                         }
-                        Ok(Some(m.in_block(|m| m.exec(body, seek))?))
+                        let f = m.in_block(|m| m.exec(body, seek))?;
+                        if matches!(f, Flow::Break | Flow::Return | Flow::Goto(_)) {
+                            return Ok(Some(f));
+                        }
+                        if let Some(i) = inc {
+                            m.full(|m| m.discard(i))?;
+                        }
+                        Ok(Some(Flow::Normal))
                     })?;
                     match r {
                         None | Some(Flow::Break) => return Ok(Flow::Normal),
                         Some(f @ (Flow::Return | Flow::Goto(_))) => return Ok(f),
                         _ => {}
-                    }
-                    if let Some(i) = inc {
-                        m.full(|m| m.discard(i))?;
                     }
                 }
             }),
@@ -597,9 +603,9 @@ impl<'a> Machine<'a> {
             }
             None => self.full(|m| m.default_init(&place, &v.ty))?,
         }
-        // A class can have mutable members, so only scalars and arrays of
-        // scalars are marked.
-        self.objs[place.obj].konst = v.ty.c && crate::decl2::elem_class(&v.ty.t).is_none();
+        // CV-5: a write to the object is undefined, except through a
+        // mutable member or while a destructor runs (`slot` checks).
+        self.objs[place.obj].konst = v.ty.c;
         self.register_block(&place, &v.ty);
         Ok(())
     }
@@ -681,7 +687,7 @@ impl<'a> Machine<'a> {
             }
             None => self.full(|m| m.default_init(&place, &v.ty))?,
         }
-        self.objs[place.obj].konst = v.ty.c && crate::decl2::elem_class(&v.ty.t).is_none();
+        self.objs[place.obj].konst = v.ty.c;
         // TPL-49: a template parameter object is never destroyed.
         if !self.p.class_targ_objs.iter().any(|x| x.1 == id) {
             self.static_dtors.push(Cleanup { place, ty: v.ty.clone(), item: 0 });

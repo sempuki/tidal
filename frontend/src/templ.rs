@@ -2299,7 +2299,7 @@ pub fn auto_param_type(e: &Expr) -> QTy {
 /// Whether an expression has a part the front end does not model.
 pub fn has_unknown(e: &Expr) -> bool {
     match &e.k {
-        EK::Unknown(_) => true,
+        EK::Unknown(_) | EK::Reinterpret(..) => true,
         EK::Unary(_, x) | EK::Conv(_, x) | EK::Member(x, _) | EK::DynamicCast(x) => has_unknown(x),
         EK::Binary(_, x, y) | EK::Assign(_, x, y) | EK::Comma(x, y) | EK::Index(x, y) => has_unknown(x) || has_unknown(y),
         EK::Cond(x, y, z) => has_unknown(x) || has_unknown(y) || has_unknown(z),
