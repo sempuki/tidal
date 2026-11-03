@@ -1,0 +1,75 @@
+Similarity report: run threshold 8 words, overlap threshold 0.25
+
+ok   simx/X10.md:X10: P11, exceptions that stay inside a  longest=0   overlap=0.00
+ok   simx/X10.md:1.1 The feature      longest=0   overlap=0.00
+ok   simx/X10.md:1.2 The boundary (amended CE-8) longest=0   overlap=0.00
+ok   simx/X10.md:1.3 The exception object in an evaluatio longest=0   overlap=0.03
+ok   simx/X10.md:1.4 Unwinding and handlers in an evaluat longest=0   overlap=0.01
+ok   simx/X10.md:1.5 Termination inside an evaluation (am longest=0   overlap=0.00
+ok   simx/X10.md:1.6 Exceptions that the language throws  longest=0   overlap=0.01
+ok   simx/X10.md:1.7 What does not change longest=0   overlap=0.00
+ok   simx/X10.md:1.8 Alternatives considered longest=0   overlap=0.00
+ok   simx/X10.md:2. Rule changes      longest=0   overlap=0.00
+ok   simx/X10.md:3. Interactions      longest=0   overlap=0.00
+ok   simx/X10.md:4. Impact on existing programs longest=0   overlap=0.00
+ok   simx/X10.md:4.1 Rejected becomes valid longest=0   overlap=0.00
+ok   simx/X10.md:4.2 Undefined becomes defined longest=0   overlap=0.00
+ok   simx/X10.md:4.3 Valid programs that change meaning longest=0   overlap=0.01
+ok   simx/X10.md:4.4 Valid programs that become invalid longest=0   overlap=0.00
+ok   simx/X10.md:4.5 Evidence         longest=0   overlap=0.00
+ok   simx/X10.md:5. Findings          longest=0   overlap=0.00
+ok   simx/X11.md:X11: P14, scope-exit blocks longest=0   overlap=0.00
+ok   simx/X11.md:1.1 The feature      longest=0   overlap=0.01
+ok   simx/X11.md:1.2 Syntax and the word `defer` (X11:new longest=0   overlap=0.01
+ok   simx/X11.md:1.3 How the block runs on each exit (X11 longest=0   overlap=0.00
+ok   simx/X11.md:1.4 Names in the block (X11:new-5) longest=0   overlap=0.01
+ok   simx/X11.md:1.5 A scope-exit block that jumps (X11:n longest=0   overlap=0.01
+ok   simx/X11.md:1.6 A scope-exit block that throws (amen longest=0   overlap=0.01
+ok   simx/X11.md:1.7 Alternatives considered longest=0   overlap=0.00
+ok   simx/X11.md:2. Rule changes      longest=0   overlap=0.00
+ok   simx/X11.md:3. Interactions      longest=0   overlap=0.01
+ok   simx/X11.md:4. Impact on existing programs longest=0   overlap=0.00
+ok   simx/X11.md:4.1 Rejected becomes valid longest=0   overlap=0.00
+ok   simx/X11.md:4.2 Undefined becomes defined longest=0   overlap=0.00
+ok   simx/X11.md:4.3 Valid programs that change meaning longest=0   overlap=0.04
+ok   simx/X11.md:4.4 Valid programs that become invalid longest=0   overlap=0.00
+ok   simx/X11.md:4.5 Evidence         longest=0   overlap=0.00
+ok   simx/X11.md:5. Findings          longest=0   overlap=0.00
+ok   simx/X12.md:X12: P19, exhaustive `switch` over a mar longest=0   overlap=0.00
+ok   simx/X12.md:1.1 The feature      longest=0   overlap=0.00
+ok   simx/X12.md:1.2 The marker (new rule X12:new-1; amen longest=0   overlap=0.01
+ok   simx/X12.md:1.3 The exhaustive rule (new rule X12:ne longest=0   overlap=0.00
+ok   simx/X12.md:1.4 Case values (new rule X12:new-3) longest=0   overlap=0.02
+ok   simx/X12.md:1.5 Values outside the enumerators (new  longest=0   overlap=0.01
+ok   simx/X12.md:1.6 Alternatives considered longest=0   overlap=0.00
+ok   simx/X12.md:2. Rule changes      longest=0   overlap=0.00
+ok   simx/X12.md:3. Interactions      longest=0   overlap=0.01
+ok   simx/X12.md:4. Impact on existing programs longest=0   overlap=0.00
+ok   simx/X12.md:4.1 Rejected becomes valid longest=0   overlap=0.00
+ok   simx/X12.md:4.2 Undefined becomes defined longest=0   overlap=0.00
+ok   simx/X12.md:4.3 Valid programs that change meaning longest=0   overlap=0.00
+ok   simx/X12.md:4.4 Valid programs that become invalid longest=0   overlap=0.00
+ok   simx/X12.md:4.5 Evidence         longest=0   overlap=0.01
+ok   simx/X12.md:5. Findings          longest=0   overlap=0.00
+ok   simx/X9.md:X9: P8, relocation    longest=0   overlap=0.00
+ok   simx/X9.md:1.1 The feature       longest=0   overlap=0.01
+ok   simx/X9.md:1.2 The relocation constructor (new rule longest=0   overlap=0.02
+ok   simx/X9.md:1.3 Implicit and defaulted relocation (n longest=0   overlap=0.01
+ok   simx/X9.md:1.4 What a user-provided relocation cons longest=0   overlap=0.00
+ok   simx/X9.md:1.5 The relocation expression (new rules longest=0   overlap=0.03
+ok   simx/X9.md:1.6 The relocation of a type (new rule X longest=0   overlap=0.01
+ok   simx/X9.md:1.7 Variables that a relocation has ende longest=0   overlap=0.01
+ok   simx/X9.md:1.8 Untracked relocation (new rule X9:ne longest=0   overlap=0.02
+ok   simx/X9.md:1.9 Recommended practice (new rule X9:ne longest=0   overlap=0.06
+ok   simx/X9.md:1.10 Alternatives considered longest=0   overlap=0.00
+ok   simx/X9.md:2. Rule changes       longest=0   overlap=0.00
+ok   simx/X9.md:3. Interactions       longest=0   overlap=0.00
+ok   simx/X9.md:4. Impact on existing programs longest=0   overlap=0.00
+ok   simx/X9.md:4.1 Rejected becomes valid longest=0   overlap=0.00
+ok   simx/X9.md:4.2 Undefined becomes defined longest=0   overlap=0.00
+ok   simx/X9.md:4.3 Valid programs that change meaning longest=0   overlap=0.00
+ok   simx/X9.md:4.4 Valid programs that become invalid longest=0   overlap=0.00
+ok   simx/X9.md:4.5 Evidence          longest=0   overlap=0.00
+ok   simx/X9.md:5. Findings           longest=0   overlap=0.01
+
+0 flagged

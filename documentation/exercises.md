@@ -90,7 +90,13 @@ changes, and lists each
 change in a table: rule ID, kind of change, old class, new class, and
 the tests affected. Round 1 (X1 to X4) reaches 47 of the 68 pages that
 existed then. Round 2 (X5 to X8) takes the proposals that phases 3 and
-4 unblocked.
+4 unblocked. Round 3 (X9 to X12) reaches pages that no earlier exercise
+used: storage, virtual functions, types, handlers, blocks,
+enumerations, and primary expressions.
+
+A new rule in a proposal takes an ID in the exercise's own space, such
+as `X9:new-1`. A real prefix such as `OVL-45` can later name an
+unrelated rule.
 
 | ID | Proposal | Changes existing behavior |
 |---|---|---|
@@ -102,6 +108,10 @@ existed then. Round 2 (X5 to X8) takes the proposals that phases 3 and
 | X6 | P10, expansion over the elements of an object | no |
 | X7 | P12, value-specialized parameters | no |
 | X8 | P16, member call syntax for free functions | no |
+| X9 | P8, relocation by a relocation function | no |
+| X10 | P11, exceptions that stay inside a constant evaluation | yes |
+| X11 | P14, scope-exit blocks | no |
+| X12 | P19, exhaustive `switch` over a marked enumeration | no |
 
 ## 5. Predict and Diagnose batches
 
@@ -161,6 +171,10 @@ catalog counts as done.
 | X6 | done: 75 rule changes; findings X6-1 to X6-15 | `reports/clean-room/X6/` |
 | X7 | done: 69 rule changes; findings X7-1 to X7-12 | `reports/clean-room/X7/` |
 | X8 | done: 60 rule changes; findings X8-1 to X8-17 | `reports/clean-room/X8/` |
+| X9 | done: 90 rule changes; findings X9-1 to X9-15 | `reports/clean-room/X9/` |
+| X10 | done: 53 rule changes; findings X10-1 to X10-12 | `reports/clean-room/X10/` |
+| X11 | done: 67 rule changes; findings X11-1 to X11-9 | `reports/clean-room/X11/` |
+| X12 | done: 37 rule changes; findings X12-1 to X12-13 | `reports/clean-room/X12/` |
 | W4 | done: four programs build and run on GCC and Clang; findings W4-1 to W4-10 | `reports/clean-room/W4/` |
 | W8 | done: four programs build and run on GCC and Clang; findings W8-1 to W8-9 | `reports/clean-room/W8/` |
 | W1 | done: five programs build and run on GCC and Clang; findings W1-1 to W1-9 | `reports/clean-room/W1/` |
