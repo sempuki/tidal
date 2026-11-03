@@ -72,6 +72,7 @@ MATCHES = {
 RULE = re.compile(r"^:::\{rule\} (\S+)$")
 TESTS_LINE = re.compile(r"^:tests: (.*)$")
 MAIN = re.compile(r"\bint\s+main\s*\(")
+INCLUDE = re.compile(r'^\s*#\s*include\s*"([^"]+)"', re.M)
 
 
 def rule_classes() -> dict[str, str]:
@@ -133,6 +134,18 @@ def copy_specification(out: Path) -> None:
             target.write_bytes(f.read_bytes())
 
 
+def included_headers(sources: list[Path]) -> list[Path]:
+    """The headers beside the sources that a quoted #include names, and theirs."""
+    found, todo = [], list(sources)
+    while todo:
+        for name in INCLUDE.findall(todo.pop().read_text()):
+            header = sources[0].parent / name
+            if header.is_file() and header not in found:
+                found.append(header)
+                todo.append(header)
+    return found
+
+
 def predict(page: str, out: Path) -> int:
     names = page_tests(page)
     if not names:
@@ -150,6 +163,8 @@ def predict(page: str, out: Path) -> int:
         for j, extra in enumerate(test.sources, 2):
             files.append(f"{pid}-{j}.cpp")
             (out / files[-1]).write_text(strip(extra.read_text()))
+        for header in included_headers([test.path, *test.sources]):
+            (out / header.name).write_text(strip(header.read_text()))
         has_main = any(MAIN.search(f.read_text()) for f in [test.path, *test.sources])
         undefined = any(RULE_CLASS.get(r) == "undefined" for r in test.rules)
         key[pid] = {"test": name, "expect": sorted(expectations(test)), "rules": test.rules,
