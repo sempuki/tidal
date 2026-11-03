@@ -32,6 +32,8 @@ specification must match.
 
 Yes; Clang and EDG agree, GCC differs (option 1). Two of three implementations and the gap review agree.
 
+The question stays open under decision 0051 (2026-11-03). GCC 16 accepts the `noexcept` that differs, and Clang 22 and EDG 7.0 reject it, so two families disagree. Probes of 2026-11-03 give the same split for `noexcept(false)` on a template declared `noexcept`, for a class template's member function, and for an explicit instantiation declaration. INST-P3 supports the provisional answer through INST-22. An explicit instantiation names a specialization whose type the template already gives, and the exception specification is part of that type.
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

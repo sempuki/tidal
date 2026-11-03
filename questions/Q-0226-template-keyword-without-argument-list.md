@@ -1,7 +1,7 @@
 # Q-0226: Can the template keyword come before a member that has no argument list after it?
 
 **Status:** provisional
-**Affects:** DEP-26, `tests/templates/dependent-names/template-keyword-no-list.cpp`, `tests/templates/dependent-names/template-keyword-no-list-class.cpp`
+**Affects:** DEP-26, `tests/templates/dependent-names/template-keyword-no-list.cpp`, `tests/templates/dependent-names/template-keyword-no-list-class.cpp`, `tests/templates/dependent-names/template-keyword-no-list-static.cpp`
 
 ## Context
 
@@ -12,11 +12,14 @@
 the keyword and no argument list, and deduces the arguments from the
 initializer.
 
-| Compiler | data member | class template, arguments deduced |
-|---|---|---|
-| GCC 14, 16, host | accepts | accepts |
-| Clang 18, 22, host | rejects: an argument list is expected after the keyword | rejects |
-| EDG 7.0 | rejects: an argument list for a template is expected | accepts |
+`T::template field` names a static data member with the keyword and
+no argument list.
+
+| Compiler | data member after `.` | static data member after `T::` | class template, arguments deduced |
+|---|---|---|---|
+| GCC 14, 16, host | accepts | rejects: not a template | accepts |
+| Clang 18, 22, host | rejects: an argument list is expected after the keyword | rejects | rejects |
+| EDG 7.0 | rejects: an argument list for a template is expected | rejects | accepts |
 
 ## Evidence
 
@@ -32,8 +35,7 @@ an error by default.
 
 1. The keyword without a list is valid only before a template that is
    a template template argument, or a class or alias template (EDG).
-2. The keyword is ignored before a member that is not a template
-   (GCC).
+2. The keyword is ignored before a data member after `.` (GCC).
 3. The keyword without a list is valid only before a template template
    argument (Clang).
 
@@ -42,6 +44,8 @@ an error by default.
 Only before a template template argument or a class or alias template; Clang and GCC each differ on one case (option 1). For the data member, Clang and EDG agree. For the class
 template, GCC and EDG agree. The inventory and the gap review support
 option 1.
+
+The question stays open under decision 0051 (2026-11-03). GCC 16 accepts the data member after `.`, and Clang 22 rejects the class template with deduced arguments, so two families disagree in each case. A probe of 2026-11-03 gives the class template split for a member alias template with deduced arguments too. GCC 16 rejects `T::template field` for a static data member (`template-keyword-no-list-static.cpp`), so GCC ignores the keyword only after `.`. DEP-P5 supports the provisional answer. The keyword states that a template follows, and a name with no argument list after the keyword must still stand for a template.
 
 ## Opinions
 

@@ -38,6 +38,8 @@ other than `thread_local`.
 No, except thread_local; Clang agrees, GCC and EDG each differ (option 1). Two of three implementations agree on each column, and the
 inventory and the gap review (item 34) allow `thread_local`.
 
+The question stays open under decision 0051 (2026-11-03). GCC 16 accepts `static` and the attribute after `template`, and EDG 7.0 rejects `thread_local`, so two families disagree. Probes of 2026-11-03 give the same split for `extern template static`, for `extern template thread_local`, and for an attribute after `struct` in `template struct [[deprecated]] Box<int>;`, which GCC 16 accepts and Clang 22 and EDG 7.0 reject. INST-P3 supports the provisional answer through INST-25. An explicit instantiation names a specialization that the template already declares, so the specifiers and attributes of that declaration apply, and only `thread_local` can repeat.
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

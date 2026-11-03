@@ -240,15 +240,15 @@ status, and the first sentence of its answer section.
 | [Q-0224](Q-0224-dependent-name-read-as-value-yields-type.md) | Is a dependent qualified name without typename that becomes a type at instantiation an error? | provisional | Yes; Clang and GCC agree, EDG differs |
 | [Q-0225](Q-0225-template-keyword-after-typename-qualifier.md) | Does a name after typename T:: need the template keyword before an argument list? | provisional | Yes; Clang and EDG agree, GCC differs |
 | [Q-0226](Q-0226-template-keyword-without-argument-list.md) | Can the template keyword come before a member that has no argument list after it? | provisional | Only before a template template argument or a class or alias template; Clang and GCC each differ on one case |
-| [Q-0227](Q-0227-template-keyword-in-declarator.md) | Can the template keyword follow the qualifier of a name that a declaration declares? | provisional | No; Clang only, GCC and EDG accept |
+| [Q-0227](Q-0227-template-keyword-in-declarator.md) | Can the template keyword follow the qualifier of a name that a declaration declares? | provisional | No; Clang agrees, GCC agrees for a class, and EDG differs |
 | [Q-0228](Q-0228-missing-member-of-current-instantiation-unused.md) | Is a missing member of the current instantiation diagnosed in a template that is not used? | provisional | No diagnostic required while unused; GCC 14 accepts, others reject |
 | [Q-0229](Q-0229-alias-template-as-current-instantiation.md) | Does an alias template specialization name the current instantiation? | provisional | Yes; Clang and GCC agree, EDG differs |
 | [Q-0230](Q-0230-qualified-member-ambiguous-at-instantiation.md) | Is a qualified member name of the current instantiation looked up again at the instantiation? | provisional | Yes; Clang and EDG agree, GCC differs |
 | [Q-0231](Q-0231-inline-static-member-initializer-with-class.md) | Is the initializer of an inline static data member instantiated with its class? | provisional | No; Clang and GCC agree, EDG differs |
 | [Q-0232](Q-0232-scoped-enumeration-with-class.md) | Are the enumerators of a scoped member enumeration instantiated with the class? | provisional | No; Clang and EDG agree, GCC differs |
 | [Q-0233](Q-0233-explicit-instantiation-storage-class-and-attribute.md) | Can an explicit instantiation have a storage class or an attribute after the keyword template? | provisional | No, except thread_local; Clang agrees, GCC and EDG each differ |
-| [Q-0234](Q-0234-extern-template-internal-linkage.md) | Can an explicit instantiation declaration name a specialization with internal linkage? | provisional | No; Clang and EDG agree, GCC differs |
-| [Q-0235](Q-0235-explicit-instantiation-unqualified-outside-namespace.md) | Can an explicit instantiation outside the template's namespace use an unqualified name? | provisional | No; Clang and GCC agree, EDG differs |
+| [Q-0234](Q-0234-extern-template-internal-linkage.md) | Can an explicit instantiation declaration name a specialization with internal linkage? | provisional | No; Clang agrees, EDG agrees for a function, GCC differs |
+| [Q-0235](Q-0235-explicit-instantiation-unqualified-outside-namespace.md) | Can an explicit instantiation outside the template's namespace use an unqualified name? | provisional | No; Clang and GCC agree for a class, Clang and EDG differ for a variable |
 | [Q-0236](Q-0236-explicit-instantiation-array-bound.md) | Can an explicit instantiation of a variable leave out the array bound? | provisional | Yes; GCC and EDG agree, Clang differs |
 | [Q-0237](Q-0237-explicit-specialization-after-extern-template.md) | Can an explicit specialization follow an explicit instantiation declaration? | provisional | No; Clang and GCC agree, EDG differs |
 | [Q-0238](Q-0238-alignas-pack-on-class.md) | Does `alignas(T...)` on a class take the strictest alignment of the elements? | compiler defect | Yes; a class takes the strictest element, as a member does (option 1), and GCC's result on a class is a defect |
@@ -359,6 +359,7 @@ status, and the first sentence of its answer section.
 | [Q-0343](Q-0343-trivially-copyable-deleted-functions.md) | Is a class trivially copyable when its destructor is deleted, or when all its copy and move functions are deleted? | provisional | No; neither class is trivially copyable |
 | [Q-0344](Q-0344-byte-copy-over-const-member.md) | Can a byte copy write over a live object that has a `const` member? | provisional | The copy is undefined |
 | [Q-0345](Q-0345-common-initial-sequence-base-members.md) | Do the members that a base declares count in the common initial sequence of a struct? | provisional | Yes; the members that a base declares count |
+| [Q-0346](Q-0346-explicit-instantiation-variable-type-differs.md) | Can an explicit instantiation of a variable state a type that differs from the specialization's? | provisional | No; Clang agrees, GCC and EDG each differ on some cases |
 
 ## Status values
 

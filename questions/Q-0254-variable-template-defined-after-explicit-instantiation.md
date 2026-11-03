@@ -33,6 +33,8 @@ that the definition must be in the unit and need not come first.
 
 Yes; Clang and EDG agree, GCC differs (option 1). Two of three implementations and the gap review agree, and every compiler allows the order for a function.
 
+The question stays open under decision 0051 (2026-11-03). GCC 16 rejects the order for a variable template, and Clang 22 and EDG 7.0 accept it, so two families disagree. Probes of 2026-11-03 found that every compiler accepts the same order for a class template's static data member, and every compiler rejects the explicit instantiation when the unit never defines the variable template. INST-P3 supports the provisional answer through INST-20. The definition must be in the translation unit, and the order does not matter for a function or a static data member on any compiler.
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

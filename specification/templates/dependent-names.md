@@ -548,7 +548,7 @@ default argument of a template template parameter is such an argument.
 
 :::{rule} DEP-26
 :kind: reject
-:tests: templates/dependent-names/template-keyword-not-template.cpp templates/dependent-names/template-keyword-not-template-unused.cpp templates/dependent-names/template-keyword-no-list.cpp templates/dependent-names/template-keyword-no-list-class.cpp
+:tests: templates/dependent-names/template-keyword-not-template.cpp templates/dependent-names/template-keyword-not-template-unused.cpp templates/dependent-names/template-keyword-no-list.cpp templates/dependent-names/template-keyword-no-list-class.cpp templates/dependent-names/template-keyword-no-list-static.cpp
 
 At the instantiation, a name after the keyword `template` must name a
 template. An argument list must follow the name, unless the name is a
@@ -558,7 +558,7 @@ whose arguments are deduced ({question}`Q-0226`).
 
 :::{rule} DEP-27
 :kind: reject
-:tests: templates/dependent-names/template-keyword-in-declarator.cpp templates/dependent-names/template-keyword-in-declarator-static.cpp
+:tests: templates/dependent-names/template-keyword-in-declarator.cpp templates/dependent-names/template-keyword-in-declarator-static.cpp templates/dependent-names/template-keyword-in-declarator-class.cpp
 
 The keyword `template` must not come after the qualifier of the name
 that a declaration declares ({question}`Q-0227`).
@@ -769,8 +769,8 @@ template <class... T> int count() {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 97
-of 117 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 98
+of 119 tests.
 
 The questions of the cluster of EDG differences (cluster 5) on this page
 stay open under decision 0051: {question}`Q-0224`, {question}`Q-0229`,
@@ -778,6 +778,14 @@ and {question}`Q-0245`. On 2026-11-03, Clang 22 and GCC 16 still agree
 with the provisional answer of each, and EDG 7.0 still differs.
 Reporting these EDG differences to the EDG project waits on the
 maintainer.
+
+The questions of the cluster of template syntax corners (cluster 6) on
+this page stay open under decision 0051: {question}`Q-0225`,
+{question}`Q-0226`, and {question}`Q-0227`. On 2026-11-03, Clang 22,
+GCC 16, and EDG 7.0 still split on each of them, and the probes of that
+day added no case where the three agree with a provisional answer.
+{question}`Q-0224` and {question}`Q-0245` belong to the same cluster
+and keep their cluster 5 notes.
 
 The clean-room writer probed each rule with the eight baseline
 compilers and the two `-O2` report compilers, and wrote the grids
@@ -809,11 +817,19 @@ bullets below say so.
 - DEP-26: GCC accepts `object.template field` for a data member. Clang
   and EDG reject it. Clang rejects `typename T::template box b(1)`,
   where the arguments of `box` are deduced. GCC and EDG accept it
-  ({question}`Q-0226`).
+  ({question}`Q-0226`). The split is the same for a member alias
+  template. Every compiler, GCC too, rejects `T::template field` for a
+  static data member.
 - DEP-34: Clang and GCC reject `p->template ~T()` and
   `r.template ~T()`. EDG accepts both ({question}`Q-0245`).
 - DEP-27: GCC and EDG accept `template` after the qualifier of a
-  declared name. Clang rejects it ({question}`Q-0227`).
+  declared member function template. Clang rejects it
+  ({question}`Q-0227`). For a member class template, Clang and GCC
+  reject the keyword, and EDG accepts it.
+- DEP-24: GCC also accepts `typename T::box<int>` without `template`
+  as an alias target and as a function parameter type. Clang and EDG
+  reject both. Every compiler rejects a friend declaration that names
+  `T::get<int>` without the keyword ({question}`Q-0225`).
 - DEP-17: GCC 14 accepts an unused template whose qualified name into
   the current instantiation finds nothing. GCC 16 and the other
   compilers reject the template. GCC 16 puts the error in its

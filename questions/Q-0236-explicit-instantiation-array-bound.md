@@ -30,6 +30,8 @@ G17 says that an array bound can be left out.
 
 Yes; GCC and EDG agree, Clang differs (option 1). Two of three implementations and the inventory agree.
 
+The question stays open under decision 0051 (2026-11-03). Clang 22 rejects the explicit instantiation definition without the bound, and GCC 16 and EDG 7.0 accept it, so two families disagree. Probes of 2026-11-03 found that every compiler, Clang 22 too, accepts the explicit instantiation declaration `extern template int table<int>[];`. Clang 22 also rejects the definition without the bound when the template is declared `int table[3]`, and GCC 16 and EDG 7.0 accept it. A bound that differs from the specialization's is Q-0346. INST-P3 supports the provisional answer through INST-22. The template arguments name the specialization, and the type without a bound leaves no doubt about which specialization the program names.
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

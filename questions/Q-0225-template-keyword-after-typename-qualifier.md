@@ -41,6 +41,8 @@ Yes; Clang and EDG agree, GCC differs (option 1). Two of three implementations a
 gap review supports option 2, and a contributor can argue for it with
 that review.
 
+The question stays open under decision 0051 (2026-11-03). Clang 22 and EDG 7.0 ask for the keyword after `typename` and in a base list, and GCC 16 does not, so two families disagree. Probes of 2026-11-03 give the same split for an alias target `typename T::box<int>` and for a function parameter of that type. Every compiler rejects the friend declaration `friend int T::get<int>(int);`, where `get` is a static member function template. DEP-P5 supports the provisional answer. The program states that a dependent name is a template, and `typename` states only that the name is a type.
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

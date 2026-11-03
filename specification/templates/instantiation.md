@@ -376,7 +376,7 @@ without `extern`, needs the definition of the class template before it.
 
 :::{rule} INST-21
 :kind: reject
-:tests: templates/instantiation/explicit-in-class.cpp templates/instantiation/explicit-in-block.cpp templates/instantiation/explicit-other-namespace.cpp templates/instantiation/explicit-enclosing-namespace.cpp templates/instantiation/explicit-unqualified-outside-namespace.cpp
+:tests: templates/instantiation/explicit-in-class.cpp templates/instantiation/explicit-in-block.cpp templates/instantiation/explicit-other-namespace.cpp templates/instantiation/explicit-enclosing-namespace.cpp templates/instantiation/explicit-unqualified-outside-namespace.cpp templates/instantiation/explicit-unqualified-outside-namespace-function.cpp templates/instantiation/explicit-unqualified-outside-namespace-variable.cpp
 
 An explicit instantiation must be at namespace scope, in the namespace
 of the template or in a namespace that encloses it. Outside the
@@ -386,11 +386,13 @@ namespace of the template, the name must be qualified
 
 :::{rule} INST-22
 :kind: reject
-:tests: templates/instantiation/explicit-not-declared.cpp templates/instantiation/explicit-not-template.cpp templates/instantiation/explicit-wrong-type.cpp templates/instantiation/explicit-deduced-return-written.cpp templates/instantiation/explicit-deduced-arguments.cpp templates/instantiation/explicit-array-bound-left-out.cpp templates/instantiation/explicit-exception-specification-matches.cpp templates/instantiation/explicit-exception-specification-differs.cpp templates/instantiation/explicit-placeholder-variable.cpp
+:tests: templates/instantiation/explicit-not-declared.cpp templates/instantiation/explicit-not-template.cpp templates/instantiation/explicit-wrong-type.cpp templates/instantiation/explicit-deduced-return-written.cpp templates/instantiation/explicit-deduced-arguments.cpp templates/instantiation/explicit-array-bound-left-out.cpp templates/instantiation/explicit-array-bound-differs.cpp templates/instantiation/explicit-variable-wrong-type.cpp templates/instantiation/explicit-exception-specification-matches.cpp templates/instantiation/explicit-exception-specification-differs.cpp templates/instantiation/explicit-placeholder-variable.cpp
 
 An explicit instantiation must name a specialization of a template that
 is declared before it. The declared type must be the type of the
-specialization, with these allowances:
+specialization
+({question}`Q-0346`), with
+these allowances:
 
 - trailing template arguments that deduction finds can be left out
   ({rule}`DED-32`),
@@ -462,7 +464,7 @@ instantiated:
 
 :::{rule} INST-29
 :kind: reject
-:tests: templates/instantiation/explicit-declaration-internal.cpp templates/instantiation/explicit-definition-internal.cpp
+:tests: templates/instantiation/explicit-declaration-internal.cpp templates/instantiation/explicit-definition-internal.cpp templates/instantiation/explicit-declaration-internal-class.cpp templates/instantiation/explicit-declaration-internal-variable.cpp
 
 An explicit instantiation declaration must not name a specialization
 with internal linkage. An explicit instantiation definition can
@@ -626,8 +628,8 @@ int p = Price<shop::Item>::value;        // 3: cost is declared before the point
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 113
-of 130 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 114
+of 136 tests.
 
 The questions of the cluster of EDG differences (cluster 5) on this page
 stay open under decision 0051: {question}`Q-0231`, {question}`Q-0235`,
@@ -635,6 +637,17 @@ stay open under decision 0051: {question}`Q-0231`, {question}`Q-0235`,
 GCC 16 still agree with the provisional answer of each, and EDG 7.0
 still differs. Reporting these EDG differences to the EDG project waits
 on the maintainer.
+
+The questions of the cluster of template syntax corners (cluster 6) on
+this page stay open under decision 0051: {question}`Q-0233`,
+{question}`Q-0234`, {question}`Q-0236`, {question}`Q-0254`,
+{question}`Q-0255`, and
+{question}`Q-0346`. On
+2026-11-03, Clang 22, GCC 16, and EDG 7.0 still split on each of them.
+{question}`Q-0235`, {question}`Q-0237`, and {question}`Q-0256` belong
+to the same cluster and keep their cluster 5 notes. For
+{question}`Q-0235`, a probe of that day found that Clang 22 joins EDG
+7.0 for a variable template.
 
 The clean-room writer probed each rule with the eight baseline
 compilers and the two `-O2` report compilers, and wrote the grids
@@ -656,7 +669,9 @@ bullets below say so.
 - INST-25: GCC accepts `static` and an attribute after `template` in an
   explicit instantiation. Clang and EDG reject both. Every compiler
   rejects an attribute before `template`. Clang and GCC accept
-  `thread_local`, and EDG rejects it ({question}`Q-0233`).
+  `thread_local`, and EDG rejects it ({question}`Q-0233`). The split
+  is the same with `extern`, and for an attribute after `struct` in the
+  explicit instantiation of a class.
 - INST-5: every compiler accepts an explicit specialization of a
   deleted member function after the class is instantiated. The review
   predicts that the class makes the deleted definition, so that the
@@ -678,10 +693,12 @@ bullets below say so.
 - INST-20: Clang and EDG accept a variable template definition after
   its explicit instantiation definition. GCC rejects it
   ({question}`Q-0254`). Every compiler accepts the same order for a
-  function and emits the specialization.
+  function and emits the specialization. Every compiler accepts the
+  same order for a class template's static data member.
 - INST-22: Clang and EDG reject an explicit instantiation whose
   `noexcept` differs from the template. GCC accepts it
-  ({question}`Q-0255`). Clang and GCC accept `int` for a variable
+  ({question}`Q-0255`). The split is the same for `noexcept(false)`,
+  for a member function, and with `extern`. Clang and GCC accept `int` for a variable
   template declared with `auto`, and EDG rejects it
   ({question}`Q-0256`).
 - INST-27: after an explicit instantiation declaration of an `auto`
@@ -699,12 +716,23 @@ bullets below say so.
   rules for template definitions across translation units.
 - INST-29: GCC accepts an explicit instantiation declaration of a
   function template with internal linkage. Clang and EDG reject it
-  ({question}`Q-0234`).
+  ({question}`Q-0234`). For a class template in an unnamed namespace
+  and for a `static` variable template, GCC and EDG accept it, and
+  Clang rejects it.
 - INST-21: EDG accepts an unqualified explicit instantiation outside
   the template's namespace, after a using-directive. Clang and GCC
-  reject it ({question}`Q-0235`).
+  reject it ({question}`Q-0235`). For a variable template, Clang and
+  EDG accept the unqualified name, and GCC rejects it. For a function
+  template, every compiler rejects it.
 - INST-22: Clang rejects an explicit instantiation that leaves out an
-  array bound. GCC and EDG accept it ({question}`Q-0236`).
+  array bound. GCC and EDG accept it ({question}`Q-0236`). Every
+  compiler accepts an explicit instantiation declaration that leaves
+  out the bound.
+- INST-22: GCC accepts an explicit instantiation of a variable whose
+  stated type differs from the specialization's, and keeps the
+  specialization's type. Clang rejects every such type. EDG rejects it
+  except for a bound that differs where the template has no bound
+  ({question}`Q-0346`).
 - INST-19: EDG accepts an explicit specialization after an explicit
   instantiation declaration. Clang and GCC reject it
   ({question}`Q-0237`).
