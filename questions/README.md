@@ -340,6 +340,8 @@ status, and the first sentence of its answer section.
 | [Q-0324](Q-0324-byte-array-cast-implicit-object.md) | Does a cast of a byte array's address reach an object that the array created implicitly? | provisional | No; the cast points to a byte |
 | [Q-0325](Q-0325-objects-at-fixed-addresses.md) | Does an object exist at an address that a program gets from an integer, such as a device register? | provisional | The platform decides |
 | [Q-0326](Q-0326-volatile-access-width.md) | What size of memory access does a volatile read or write use, and can an implementation merge or split volatile accesses? | provisional | Implementation-defined |
+| [Q-0327](Q-0327-byte-pointer-from-subobject.md) | Can a byte pointer made from the address of a member move over the bytes of the whole object? | provisional | Yes; the byte pointer can move over the bytes of the complete object |
+| [Q-0328](Q-0328-padding-byte-value.md) | What does a read of a padding byte give, and can a program copy it through `char`? | provisional | A padding byte has no value until the program writes it, and a copy through `char` needs a value in each byte |
 
 ## Status values
 

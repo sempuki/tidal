@@ -17,6 +17,11 @@ GCC has no such check. Without a check, every compiler in the matrix
 runs the function, and the call returns normally when the function does
 not throw.
 
+The question covers only a pointer type with `noexcept` that reaches a
+function without `noexcept`. The implicit conversion of CONV-10 gives
+the other direction, a pointer without `noexcept` to a `noexcept`
+function. PFX-19 makes a call through that pointer valid.
+
 ## Evidence
 
 Probes on the host Clang and GCC and on the Clang 18, Clang 22, GCC 14,
@@ -24,6 +29,9 @@ and GCC 16 images. The test
 `tests/expressions/postfix/call-wrong-function-type-sanitizer.cpp`
 shows the check for a parameter type. No test covers the `noexcept`
 case, because no implementation observes it.
+`tests/expressions/postfix/call-noexcept-function-through-plain-pointer.cpp`
+runs a call of a `noexcept` function through a pointer without
+`noexcept`, with the undefined sanitizer on.
 
 ## Options
 

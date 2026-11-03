@@ -281,7 +281,7 @@ pointer to a function into a pointer to an object type, and back.
 
 :::{rule} CAST-16
 :kind: impl-defined
-:tests: expressions/casts/reinterpret-pointer-integer-mapping.cpp expressions/casts/integer-to-pointer-address.cpp expressions/casts/pointer-sized-integer.cpp expressions/casts/pointer-sized-integer-ilp32.cpp
+:tests: expressions/casts/reinterpret-pointer-integer-mapping.cpp expressions/casts/integer-to-pointer-address.cpp expressions/casts/pointer-sized-integer.cpp expressions/casts/pointer-sized-integer-ilp32.cpp foundations/storage/pointer-bytes-are-address.cpp
 
 The integer that `reinterpret_cast` gives for a pointer, and the pointer
 that it gives for an integer, are implementation-defined. On the x86-64
@@ -320,7 +320,7 @@ auto* port = reinterpret_cast<volatile unsigned*>(size_t{0x4000'1000});
 
 ## Evidence
 
-All eight compilers agree on 54 of 55 tests. The results are in
+All eight compilers agree on 55 of 56 tests. The results are in
 `tests/RESULTS.md`.
 
 - CAST-14: GCC and EDG accept an out-of-range enumeration value during

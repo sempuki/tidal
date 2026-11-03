@@ -149,7 +149,7 @@ non-throwing when the overridden function is not.
 
 :::{rule} EXS-4
 :kind: required
-:tests: declarations/exception-specifications/constexpr-not-implied.cpp declarations/exception-specifications/defaulted-explicit-noexcept.cpp declarations/exception-specifications/defaulted-follows-members.cpp declarations/exception-specifications/delete-operator-noexcept.cpp declarations/exception-specifications/implicit-follows-members.cpp declarations/exception-specifications/implicit-special-members.cpp declarations/exception-specifications/inheriting-ctor-noexcept.cpp declarations/exception-specifications/lambda-not-noexcept.cpp declarations/exception-specifications/user-function-not-noexcept.cpp declarations/exception-specifications/delete-class-follows-destructor.cpp declarations/exception-specifications/class-delete-operator-noexcept.cpp declarations/exception-specifications/default-member-init-throwing.cpp declarations/exception-specifications/defaulted-comparison-noexcept.cpp declarations/exception-specifications/defaulted-comparison-member-throwing.cpp
+:tests: declarations/exception-specifications/constexpr-not-implied.cpp declarations/exception-specifications/defaulted-explicit-noexcept.cpp declarations/exception-specifications/defaulted-follows-members.cpp declarations/exception-specifications/delete-operator-noexcept.cpp declarations/exception-specifications/implicit-follows-members.cpp declarations/exception-specifications/implicit-special-members.cpp declarations/exception-specifications/inheriting-ctor-noexcept.cpp declarations/exception-specifications/lambda-not-noexcept.cpp declarations/exception-specifications/user-function-not-noexcept.cpp declarations/exception-specifications/delete-class-follows-destructor.cpp declarations/exception-specifications/class-delete-operator-noexcept.cpp declarations/exception-specifications/default-member-init-throwing.cpp declarations/exception-specifications/defaulted-comparison-noexcept.cpp declarations/exception-specifications/defaulted-comparison-member-throwing.cpp declarations/exception-specifications/constructor-ignores-member-destructors.cpp
 
 A function without a `noexcept` specifier is not non-throwing, with
 these exceptions:
@@ -157,7 +157,9 @@ these exceptions:
 - An implicit or defaulted special member function, or a defaulted
   comparison, is non-throwing if each function that it calls for bases
   and members is non-throwing ({question}`Q-0095` for comparisons). A
-  default member initializer that the function uses counts too.
+  default member initializer that the function uses counts too. A
+  constructor does not count the destructors that it runs after a
+  throw.
 - A deallocation function `operator delete` is non-throwing
   ({question}`Q-0094`).
 - A destructor follows DTOR-4.
@@ -229,8 +231,8 @@ struct File : Base { void close() override; };  // rejected: throwing override
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 34
-of 40 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 35
+of 41 tests.
 
 - EXS-7: EDG accepts `noexcept(2)` and a pointer operand. Clang and GCC
   reject them ({question}`Q-0078`).
@@ -249,6 +251,9 @@ of 40 tests.
 - EXS-6 needs no diagnostic because GCC and EDG accept an operand that
   depends on the function itself, and Clang rejects it
   ({question}`Q-0079`). The test records both outcomes.
+- EXS-4: Clang, GCC, and EDG give `true` for `noexcept` of a placement
+  `new` of a class whose members have `noexcept` constructors and
+  potentially throwing destructors.
 - Each split above holds on the newest compiler of each family in the
   matrix: GCC 16, Clang 22, and EDG 7.0. The older GCC 14 and Clang 18
   give the same results as the newer versions.

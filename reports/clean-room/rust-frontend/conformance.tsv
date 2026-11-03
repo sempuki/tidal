@@ -879,6 +879,8 @@ pass	classes/virtual/covariant-unrelated.cpp
 pass	classes/virtual/default-args-static-type.cpp
 pass	classes/virtual/delete-array-through-base-constant.cpp
 pass	classes/virtual/delete-array-through-base-sanitizer.cpp
+pass	classes/virtual/delete-nonvirtual-abstract-warns.cpp
+pass	classes/virtual/delete-nonvirtual-final-no-warning.cpp
 pass	classes/virtual/delete-nonvirtual-warns.cpp
 pass	classes/virtual/derived-concrete.cpp
 pass	classes/virtual/derived-still-abstract.cpp
@@ -1330,6 +1332,7 @@ pass	declarations/exception-specifications/alias-noexcept-function.cpp
 pass	declarations/exception-specifications/call-through-noexcept-pointer.cpp
 pass	declarations/exception-specifications/class-delete-operator-noexcept.cpp
 pass	declarations/exception-specifications/constexpr-not-implied.cpp
+FALSE-REJECT	declarations/exception-specifications/constructor-ignores-member-destructors.cpp
 pass	declarations/exception-specifications/decltype-keeps-noexcept.cpp
 pass	declarations/exception-specifications/default-member-init-throwing.cpp
 EDG-ONLY	declarations/exception-specifications/defaulted-comparison-member-throwing.cpp
@@ -1377,6 +1380,7 @@ pass	declarations/functions/default-arguments/local-unevaluated.cpp
 pass	declarations/functions/default-arguments/name-bound-at-declaration.cpp
 pass	declarations/functions/default-arguments/not-trailing.cpp
 pass	declarations/functions/default-arguments/operator-default-argument.cpp
+pass	declarations/functions/default-arguments/pack-or-ellipsis-after-default.cpp
 EDG-ONLY	declarations/functions/default-arguments/parameter-in-sizeof.cpp
 pass	declarations/functions/default-arguments/pointer-declaration-default.cpp
 pass	declarations/functions/default-arguments/redefined-different.cpp
@@ -2872,6 +2876,7 @@ run-unsupported	expressions/new-delete/aligned-global-delete.cpp
 pass	expressions/new-delete/aligned-new-constant.cpp
 run-unsupported	expressions/new-delete/aligned-new-passes-alignment.cpp
 pass	expressions/new-delete/allocation-before-initializer.cpp
+pass	expressions/new-delete/allocation-beyond-address-space.cpp
 pass	expressions/new-delete/allocation-may-be-omitted.cpp
 run-unsupported	expressions/new-delete/array-class-size.cpp
 MISSED-REJECT	expressions/new-delete/array-constant-size-too-large.cpp
@@ -2986,6 +2991,7 @@ pass	expressions/postfix/call-defaults-and-ellipsis.cpp
 pass	expressions/postfix/call-explicit-constructor.cpp
 pass	expressions/postfix/call-incomplete-parameter.cpp
 pass	expressions/postfix/call-incomplete-return.cpp
+run-unsupported	expressions/postfix/call-noexcept-function-through-plain-pointer.cpp
 pass	expressions/postfix/call-non-function.cpp
 pass	expressions/postfix/call-null-pointer-sanitizer.cpp
 pass	expressions/postfix/call-null-pointer.cpp
@@ -3182,6 +3188,7 @@ pass	expressions/sequencing/object-before-member-call-arguments.cpp
 FALSE-REJECT	expressions/sequencing/operand-used-twice-evaluated-once.cpp
 pass	expressions/sequencing/overloaded-assignment-order.cpp
 pass	expressions/sequencing/overloaded-compound-assignment-order.cpp
+pass	expressions/sequencing/overloaded-explicit-call-order.cpp
 FALSE-REJECT	expressions/sequencing/overloaded-member-pointer-order.cpp
 pass	expressions/sequencing/overloaded-shift-order.cpp
 pass	expressions/sequencing/overloaded-subscript-order.cpp
@@ -4015,6 +4022,7 @@ pass	foundations/storage/byte-array-cast-reaches-byte.cpp
 pass	foundations/storage/byte-array-hosts-objects.cpp
 pass	foundations/storage/byte-array-placement-reaches-object.cpp
 pass	foundations/storage/byte-order-little-endian.cpp
+pass	foundations/storage/byte-pointer-from-member-walks-object.cpp
 pass	foundations/storage/byte-pointer-walks-object.cpp
 pass	foundations/storage/byte-round-trip-char-and-byte.cpp
 pass	foundations/storage/byte-round-trip.cpp
@@ -4029,10 +4037,11 @@ pass	foundations/storage/implicit-array-for-arithmetic.cpp
 pass	foundations/storage/implicit-lifetime-aggregate.cpp
 pass	foundations/storage/implicit-lifetime-trivial-class.cpp
 pass	foundations/storage/implicit-object-class-allocation-function.cpp
-pass	foundations/storage/implicit-object-first-use-member.cpp
+RUN-UNEXPECTED-UB	foundations/storage/implicit-object-first-use-member.cpp
 pass	foundations/storage/implicit-object-from-allocation-function.cpp
 pass	foundations/storage/implicit-objects-follow-later-use.cpp
 pass	foundations/storage/implicit-objects-no-set-works.cpp
+run-unsupported	foundations/storage/integer-pointer-no-object-sanitizer.cpp
 pass	foundations/storage/interconvertible-chain.cpp
 pass	foundations/storage/interconvertible-standard-layout-base.cpp
 pass	foundations/storage/interconvertible-union-member.cpp
@@ -4049,6 +4058,7 @@ pass	foundations/storage/placement-misaligned-sanitizer.cpp
 pass	foundations/storage/placement-new-array.cpp
 pass	foundations/storage/placement-new-result-is-address.cpp
 pass	foundations/storage/placement-too-small-sanitizer.cpp
+pass	foundations/storage/pointer-bytes-are-address.cpp
 pass	foundations/storage/replace-array-element-constant.cpp
 pass	foundations/storage/replace-base-ends-enclosing-sanitizer.cpp
 pass	foundations/storage/replace-base-old-pointer.cpp
@@ -4109,6 +4119,8 @@ pass	foundations/types/distinct-character-types.cpp
 pass	foundations/types/distinct-same-size-ilp32.cpp
 pass	foundations/types/distinct-same-size.cpp
 pass	foundations/types/float-precision.cpp
+FALSE-REJECT	foundations/types/floating-range-ilp32.cpp
+FALSE-REJECT	foundations/types/floating-range.cpp
 pass	foundations/types/int-max-overflow.cpp
 pass	foundations/types/integer-ranges-ilp32.cpp
 pass	foundations/types/integer-ranges-lp64.cpp

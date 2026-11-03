@@ -7,7 +7,8 @@ int main() {
   if (six * seven != 42) return 1;
   if (one_and_a_half * two != 3.0) return 2;
   if (seven_d / two != 3.5) return 3;
-  if (quarter * quarter != 0.0625f) return 4;
+  float q = quarter;          // one read of the volatile object (SEQ-4)
+  if (q * q != 0.0625f) return 4;
   if (-six * seven != -42) return 5;
   return 0;
 }

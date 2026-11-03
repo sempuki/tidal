@@ -308,7 +308,7 @@ fit in that type, the behavior is undefined.
 
 :::{rule} UN-7
 :kind: undefined
-:tests: expressions/unary/indirection-null.cpp expressions/unary/indirection-past-end-constant.cpp expressions/unary/indirection-null-sanitizer.cpp expressions/postfix/member-call-null-pointer-sanitizer.cpp expressions/postfix/member-call-null-pointer-constant.cpp
+:tests: expressions/unary/indirection-null.cpp expressions/unary/indirection-past-end-constant.cpp expressions/unary/indirection-null-sanitizer.cpp expressions/postfix/member-call-null-pointer-sanitizer.cpp expressions/postfix/member-call-null-pointer-constant.cpp foundations/storage/integer-pointer-no-object-sanitizer.cpp
 
 If the operand of `*` does not point to an object or a function, and the
 program uses the result, the behavior is undefined. Such operands
@@ -390,7 +390,7 @@ count(data);                     // 6: a reference keeps the length
 
 ## Evidence
 
-All eight compilers agree on 64 of 68 tests. The results are in
+All eight compilers agree on 65 of 69 tests. The results are in
 `tests/RESULTS.md`. EDG skips the tests that use `-m32` or `-Werror`.
 
 - UN-20: Clang and GCC accept `++` and `--` on a `short` or

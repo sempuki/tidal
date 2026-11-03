@@ -275,7 +275,7 @@ implementation-defined.
 Whether a floating-point type follows IEEE 754 is implementation-defined.
 A type that follows IEEE 754 has a positive and a negative infinity and
 NaN values. On the x86-64 targets in the matrix, `float`, `double`, and
-`long double` follow IEEE 754.
+`long double` follow IEEE 754, in the formats of {rule}`TYP-10`.
 :::
 
 :::{rule} MUL-11

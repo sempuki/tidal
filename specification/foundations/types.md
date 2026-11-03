@@ -231,16 +231,18 @@ table gives the choices on both matrix targets:
 
 :::{rule} TYP-10
 :kind: impl-defined
-:tests: foundations/types/float-precision.cpp foundations/types/long-double-precision.cpp foundations/types/long-double-precision-ilp32.cpp
+:tests: foundations/types/float-precision.cpp foundations/types/long-double-precision.cpp foundations/types/long-double-precision-ilp32.cpp foundations/types/floating-range.cpp foundations/types/floating-range-ilp32.cpp
 
 The formats of the floating-point types are implementation-defined. On
-both matrix targets, the table gives the bits of precision:
+both matrix targets, the table gives the formats:
 
-| Type | Bits of precision |
-|---|---|
-| `float` | 24 |
-| `double` | 53 |
-| `long double` | 64 |
+| Type | Format | Bits of precision | Largest finite value |
+|---|---|---|---|
+| `float` | IEEE 754 binary32 | 24 | about 3.40e38 |
+| `double` | IEEE 754 binary64 | 53 | about 1.80e308 |
+| `long double` | x87 extended, 80 bits | 64 | about 1.19e4932 |
+
+A `long double` holds its 80 bits in the size that {rule}`TYP-1` gives.
 :::
 
 :::{rule} TYP-14
@@ -299,8 +301,8 @@ static_assert(sizeof(u16) == 2 && sizeof(u32) == 4 && sizeof(u64) == 8);
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 52
-of 54 tests. The x86-64 build of EDG skips the `-m32` tests, and the
+The results are in `tests/RESULTS.md`. All eight compilers agree on 54
+of 56 tests. The x86-64 build of EDG skips the `-m32` tests, and the
 ILP32 build runs only those.
 
 - TYP-1, TYP-2, TYP-10, TYP-12: the values come from probes on both

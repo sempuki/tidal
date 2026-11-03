@@ -1,7 +1,7 @@
 # Q-0325: Does an object exist at an address that a program gets from an integer, such as a device register?
 
 **Status:** provisional
-**Affects:** CAST-6, CAST-16, VOL-1, `tests/expressions/casts/integer-to-pointer-address.cpp`
+**Affects:** CAST-6, CAST-16, STG-15, VOL-1, `tests/expressions/casts/integer-to-pointer-address.cpp`, `tests/foundations/storage/integer-pointer-no-object-sanitizer.cpp`
 
 ## Context
 
@@ -20,6 +20,9 @@ it.
 
 `integer-to-pointer-address.cpp` forms a pointer from `0x4000'1000`
 and converts it back. Clang and GCC give the same integer.
+`integer-pointer-no-object-sanitizer.cpp` reads through that pointer.
+The address sanitizer of Clang and GCC stops the read with a fault at
+the address.
 
 ## Options
 
@@ -37,6 +40,11 @@ addresses, so no test can back a rule. The specification gives the
 conversion (CAST-6, CAST-16) and the meaning of a volatile access
 (VOL-1), and the volatile page shows a register at a fixed address in
 its example.
+
+Where no object lies at the address, the result of the conversion is an
+invalid pointer value (STG-15). The round trip of CAST-16 still gives
+the integer, and indirection through the pointer is undefined (UN-7).
+On the matrix targets no object lies at such an address.
 
 ## Opinions
 

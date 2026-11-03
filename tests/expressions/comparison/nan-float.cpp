@@ -4,8 +4,10 @@
 volatile float zero_f = 0.0f;
 volatile long double zero_l = 0.0L;
 int main() {
-  float n = zero_f / zero_f;
-  long double m = zero_l / zero_l;
+  float zf = zero_f;          // one read of each volatile object (SEQ-4)
+  long double zl = zero_l;
+  float n = zf / zf;
+  long double m = zl / zl;
   if (n < 1.0f || n > 1.0f || n <= n || n >= n || n == n) return 1;
   if (!(n != n) || !(n != 0.0f)) return 2;
   if (m < m || m > m || m <= 0.0L || m >= 0.0L || m == m) return 3;

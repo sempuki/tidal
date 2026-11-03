@@ -198,7 +198,7 @@ program there.
 
 :::{rule} TR-12
 :kind: reject
-:tests: foundations/translation/grammar-for-constexpr.cpp foundations/translation/grammar-else-without-if.cpp foundations/translation/grammar-mismatched-bracket.cpp foundations/translation/grammar-missing-operand.cpp
+:tests: foundations/translation/grammar-for-constexpr.cpp foundations/translation/grammar-else-without-if.cpp foundations/translation/grammar-mismatched-bracket.cpp foundations/translation/grammar-missing-operand.cpp exceptions/handlers/param-default-argument.cpp exceptions/handlers/param-storage-class.cpp
 
 The tokens of each translation unit must form a sequence of zero or
 more `declaration` that the grammar derives. The grammar is the set of
@@ -318,8 +318,8 @@ int at_run_time = half(9);    // the same function, at run time
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 34
-of 35 tests. EDG takes no optimization flag, so the three `-O2` tests
+The results are in `tests/RESULTS.md`. All eight compilers agree on 36
+of 37 tests. EDG takes no optimization flag, so the three `-O2` tests
 are skipped there. EDG runs and links no programs, so its results for
 the run and link tests say only that the programs are valid.
 
@@ -406,7 +406,7 @@ and Clang warns with no flag.
 | {rule}`UNEV-3` | on: `-Wunused-comparison` | `-Wall`: `-Wunused-value` |
 | {rule}`UNEV-4` | on: `-Wunevaluated-expression` | no warning |
 | {rule}`UNW-8` | on: `-Wexceptions` | on: `-Wterminate` |
-| {rule}`VIRT-13` | `-Wall`: `-Wdelete-non-abstract-non-virtual-dtor`, `-Woverloaded-virtual` | `-Wall`: `-Wdelete-non-virtual-dtor`, `-Woverloaded-virtual` |
+| {rule}`VIRT-13` | `-Wall`: `-Wdelete-non-abstract-non-virtual-dtor`, `-Wdelete-abstract-non-virtual-dtor`, `-Woverloaded-virtual` | `-Wall`: `-Wdelete-non-virtual-dtor`, `-Woverloaded-virtual` |
 | {rule}`VOL-5` | on: `-Wdeprecated-volatile` | on: `-Wvolatile` |
 
 Inputs: clang-sema-decl, clang-diag-sema, edg-decls.

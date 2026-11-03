@@ -1,5 +1,6 @@
 // tidal-rules: STG-29 STG-23
 // tidal-expect: accept
+// tidal-interpreter: run-fail
 // tidal-note: Q-0324. The cast gives an int* that still points to the first byte of buffer (STG-16), so the write through it reaches an unsigned char object through an int glvalue (STG-29, STG-23). The provisional answer makes the program undefined. No configuration in the matrix stops the program, so the test checks only that it compiles.
 int main() {
   alignas(int) unsigned char buffer[sizeof(int)];

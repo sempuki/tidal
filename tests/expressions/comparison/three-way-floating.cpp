@@ -31,7 +31,8 @@ inline constexpr partial_ordering partial_ordering::unordered{2};
 }
 volatile double zero = 0.0;
 int main() {
-  double n = zero / zero;
+  double z = zero;   // one read of the volatile object (SEQ-4)
+  double n = z / z;
   bool ok = (1.0 <=> 2.0) == std::partial_ordering::less && (n <=> 1.0) == std::partial_ordering::unordered;
   return ok ? 0 : 1;
 }

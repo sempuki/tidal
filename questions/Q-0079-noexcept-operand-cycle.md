@@ -24,4 +24,7 @@ split.
 
 No; the program is not valid, and the error is `no-diagnostic` (option 1). Clang diagnoses the program. GCC and EDG still conform.
 
+The test expects acceptance, the outcome of an implementation that does
+not detect the dependency, and records Clang's rejection as an override.
+
 ## Opinions

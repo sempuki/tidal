@@ -158,7 +158,7 @@ the last handler of its try block.
 
 :::{rule} TRY-5
 :kind: reject
-:tests: exceptions/handlers/param-abstract-reference-ok.cpp exceptions/handlers/param-abstract.cpp exceptions/handlers/param-array-decays-to-pointer.cpp exceptions/handlers/param-auto.cpp exceptions/handlers/param-default-argument.cpp exceptions/handlers/param-function-type.cpp exceptions/handlers/param-incomplete-pointer.cpp exceptions/handlers/param-incomplete.cpp exceptions/handlers/param-incomplete-reference.cpp exceptions/handlers/param-function-decays-to-pointer.cpp exceptions/handlers/param-qualified-name.cpp exceptions/handlers/param-reference-to-unknown-bound-array.cpp exceptions/handlers/param-rvalue-reference.cpp exceptions/handlers/param-storage-class.cpp exceptions/handlers/param-unnamed.cpp exceptions/handlers/param-void.cpp
+:tests: exceptions/handlers/param-abstract-reference-ok.cpp exceptions/handlers/param-abstract.cpp exceptions/handlers/param-array-decays-to-pointer.cpp exceptions/handlers/param-auto.cpp exceptions/handlers/param-function-type.cpp exceptions/handlers/param-incomplete-pointer.cpp exceptions/handlers/param-incomplete.cpp exceptions/handlers/param-incomplete-reference.cpp exceptions/handlers/param-function-decays-to-pointer.cpp exceptions/handlers/param-qualified-name.cpp exceptions/handlers/param-reference-to-unknown-bound-array.cpp exceptions/handlers/param-rvalue-reference.cpp exceptions/handlers/param-unnamed.cpp exceptions/handlers/param-void.cpp
 
 The handler parameter must not:
 
@@ -166,11 +166,12 @@ The handler parameter must not:
 - be an incomplete class by value, by pointer, or by reference,
 - have an rvalue reference type, a reference to an array of unknown
   bound, or the type `void`,
-- have a storage class, a default argument, a qualified name, or
-  `auto`.
+- have a qualified name or `auto`.
 
 An array type or a function type decays to a pointer, as in a function
 parameter. A pointer to `void` is valid. The parameter can have no name.
+The `exception_decl` production derives no storage class and no default
+argument ({rule}`TR-12`).
 :::
 
 :::{rule} TRY-14
@@ -383,8 +384,8 @@ struct Widget {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 78
-of 80 tests. EDG runs no programs, so its results for the run tests say
+The results are in `tests/RESULTS.md`. All eight compilers agree on 76
+of 78 tests. EDG runs no programs, so its results for the run tests say
 only that the programs are valid, and the harness sees a terminating
 program only as a nonzero exit.
 

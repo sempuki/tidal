@@ -113,7 +113,7 @@ alignment that the first call did not pass.
 :::
 
 :::{principle} NEW-P6
-:rules: NEW-31 NEW-35 NEW-36 NEW-38
+:rules: NEW-31 NEW-35 NEW-36 NEW-38 NEW-42
 :exceptions: NEW-32
 
 An allocation function reports failure in the way that its exception
@@ -129,7 +129,8 @@ split, and no allocation happens.
 | non-throwing | returns null, and the expression gives null | the expression gives null |
 
 A potentially throwing function that returns null breaks the model,
-and the behavior is undefined.
+and the behavior is undefined. Which requests fail depends on the
+target and on the memory that the system has (NEW-42).
 :::
 
 :::{principle} NEW-P7
@@ -538,7 +539,7 @@ with a null pointer does nothing ({rule}`NEW-4`).
 
 :::{rule} NEW-38
 :kind: required
-:tests: foundations/language-support/exception-classes-allocation.cpp
+:tests: foundations/language-support/exception-classes-allocation.cpp expressions/new-delete/allocation-beyond-address-space.cpp
 
 A global allocation function of NEW-19 or NEW-26 that cannot allocate
 the storage throws `std::bad_alloc` ({rule}`LSUP-8`). The function never
@@ -638,6 +639,17 @@ predefined macro `__STDCPP_DEFAULT_NEW_ALIGNMENT__` gives its value
 | `-m32`, Clang | 8 |
 :::
 
+:::{rule} NEW-42
+:kind: impl-defined
+:tests: expressions/new-delete/allocation-beyond-address-space.cpp foundations/language-support/exception-classes-allocation.cpp
+
+The requests that a global allocation function cannot satisfy
+({rule}`NEW-38`) are implementation-defined. On the x86-64 targets,
+each request for 2^47 bytes or more fails, because a process cannot map
+that much storage. A smaller request can fail when the system lacks
+memory.
+:::
+
 :::{rule} NEW-34
 :kind: unspecified
 :tests: expressions/new-delete/array-overhead-other-forms.cpp
@@ -719,9 +731,13 @@ int* q = new (cell) int(4);     // the int is at cell (NEW-33)
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 107
-of 127 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 108
+of 128 tests.
 
+- NEW-42: on x86-64, the global allocation functions of Clang and GCC
+  throw `std::bad_alloc` for requests of 2^47 bytes, 2^47 + 1 bytes,
+  and 2^48 bytes. The limit is the size of the user address space on
+  the targets, so the rule is implementation-defined.
 - NEW-18: Clang 22 and GCC 16 both evaluate the array bound before the
   placement arguments. No compiler in the matrix varies the order, so
   NEW-18 is unspecified by the provisional answer of {question}`Q-0005`.

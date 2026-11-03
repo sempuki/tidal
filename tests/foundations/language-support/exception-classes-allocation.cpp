@@ -1,4 +1,4 @@
-// tidal-rules: LSUP-8 NEW-38
+// tidal-rules: LSUP-8 NEW-38 NEW-42
 // tidal-expect: run
 namespace std {
 class exception {

@@ -52,11 +52,12 @@ parameters must have one.
 
 :::{rule} DEFARG-8
 :kind: reject
-:tests: declarations/functions/default-arguments/not-trailing.cpp
+:tests: declarations/functions/default-arguments/not-trailing.cpp declarations/functions/default-arguments/pack-or-ellipsis-after-default.cpp templates/packs/function-pack-forms.cpp
 
 After a parameter with a default argument, each later parameter must
 also have one, in this declaration or in an earlier declaration in the
-same scope.
+same scope. A function parameter pack ({rule}`PACK-4`) and an ellipsis
+are exempt.
 :::
 
 :::{rule} DEFARG-2
@@ -148,7 +149,7 @@ int k(int v = next());      // next() is called at each k()
 
 ## Evidence
 
-All eight compilers agree on 19 of 21 tests. The results are in
+All eight compilers agree on 21 of 23 tests. The results are in
 `tests/RESULTS.md`.
 
 - DEFARG-2: Clang rejects a call that needs a default argument added by

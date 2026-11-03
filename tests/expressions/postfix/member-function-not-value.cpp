@@ -1,4 +1,4 @@
-// tidal-rules: PFX-14
+// tidal-rules: PFX-20
 // tidal-expect: reject
 // tidal-error-clang: reference to non-static member function must be called
 // tidal-error-gcc: cannot convert .S::f. from type

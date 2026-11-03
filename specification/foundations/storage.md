@@ -161,8 +161,10 @@ object of a trivially copyable type carries the value:
 ```
 
 An `unsigned char*`, `char*`, or `std::byte*` can step through the bytes
-of any object, from the first byte to one past the last
-({question}`Q-0304`). The
+of any complete object, from the first byte to one past the last
+({question}`Q-0304`). A byte pointer made from the address of a member
+steps through the bytes of the whole object too. A padding byte has no
+value until the program writes the byte. The
 implementation chooses the order of the bytes in a scalar. A base
 subobject can share its last bytes with members of the derived class,
 so a byte copy into a base subobject can change those members.
@@ -196,7 +198,7 @@ A pointer value has one of four kinds:
 | a pointer to an object or a function | the address of its first byte | valid |
 | a pointer just past an object | the address of the byte after the object | undefined ({rule}`ADD-10`) |
 | the null pointer value | no address | undefined ({rule}`UN-7`) |
-| an invalid pointer value | an address whose storage has ended | undefined ({rule}`UN-7`) |
+| an invalid pointer value | an address whose storage has ended, or an address from an integer where no object lies | undefined ({rule}`UN-7`) |
 
 Some objects with one address are
 {term}`pointer-interconvertible`, and a cast turns a pointer to one into
@@ -314,9 +316,9 @@ name:
 
 The implementation creates the set of objects that gives the program
 defined behavior, and the result of an allocation function points to
-one of them. Each created object has an implicit-lifetime type. STG-28
-gives the elements of a created array whose element type is not an
-implicit-lifetime type.
+one of them. If a later use decides the set, a pointer from an earlier
+use points to the matching object of the set. Each created object has an
+implicit-lifetime type, and STG-28 gives the elements of other arrays.
 :::
 
 :::{rule} STG-9
@@ -358,13 +360,15 @@ storage exists, a program can do these things:
 
 :::{rule} STG-11
 :kind: required
-:tests: foundations/storage/equal-values-different-bytes.cpp foundations/storage/padding-bytes-not-in-value.cpp
+:tests: foundations/storage/equal-values-different-bytes.cpp foundations/storage/padding-bytes-not-in-value.cpp foundations/storage/byte-round-trip.cpp
 
 The {term}`object representation` of an object is its `sizeof` bytes,
 viewed as `unsigned char`. The bits that decide the value are the
 {term}`value representation`, and the other bits are padding. Objects
 with equal values can have different object representations, and a
-change to padding does not change the value.
+change to padding does not change the value. A padding byte has no
+value ({rule}`INIT-1`) until the program writes the byte through a byte
+pointer ({question}`Q-0328`).
 :::
 
 :::{rule} STG-12
@@ -372,20 +376,24 @@ change to padding does not change the value.
 :tests: foundations/storage/byte-round-trip.cpp foundations/storage/byte-round-trip-char-and-byte.cpp foundations/storage/padding-bytes-not-in-value.cpp
 
 A program can copy the bytes of an object of a trivially copyable type
-into an array of `std::byte`, `unsigned char`, or `char`. If the
-program copies the bytes back, the object has its original value. A
-base subobject and a `[[no_unique_address]]` member are not covered
-(STG-25). {rule}`CPY-19` gives a copy into a second object.
+into an array of `std::byte` or `unsigned char`, and back. The object
+then has its original value. A copy through `char` needs a value in
+each byte, padding bytes included ({rule}`INIT-1`,
+{question}`Q-0328`). STG-25 excludes a base subobject
+and a `[[no_unique_address]]` member, and {rule}`CPY-19` gives a copy
+into a second object.
 :::
 
 :::{rule} STG-13
 :kind: required
-:tests: foundations/storage/byte-pointer-walks-object.cpp foundations/storage/object-bytes-cover-members.cpp foundations/storage/byte-round-trip.cpp foundations/storage/past-end-address.cpp foundations/storage/padding-bytes-not-in-value.cpp
+:tests: foundations/storage/byte-pointer-walks-object.cpp foundations/storage/object-bytes-cover-members.cpp foundations/storage/byte-round-trip.cpp foundations/storage/past-end-address.cpp foundations/storage/padding-bytes-not-in-value.cpp foundations/storage/byte-pointer-from-member-walks-object.cpp
 
-A pointer to `std::byte`, `unsigned char`, or `char` that points to the
-first byte of an object can move over the bytes of the object. For
+A pointer to `std::byte`, `unsigned char`, or `char` that points to a
+byte of a complete object can move over the bytes of that object, also
+when the pointer comes from the address of a subobject. For
 {rule}`ADD-6`, {rule}`ADD-7`, and comparisons, the bytes act as an
-array of `sizeof` elements ({question}`Q-0304`). A read through the
+array of `sizeof` elements ({question}`Q-0304`,
+{question}`Q-0327`). A read through the
 pointer gives one byte of the object representation.
 :::
 
@@ -404,7 +412,7 @@ is `T` through a glvalue of one of these types:
 
 :::{rule} STG-15
 :kind: required
-:tests: foundations/storage/past-end-address.cpp
+:tests: foundations/storage/past-end-address.cpp foundations/storage/integer-pointer-no-object-sanitizer.cpp
 
 A value of a pointer type is one of these:
 
@@ -413,7 +421,10 @@ A value of a pointer type is one of these:
 - a pointer just past an object, which represents the address of the
   byte after the object,
 - the null pointer value of the type,
-- an invalid pointer value.
+- an invalid pointer value, such as a pointer to storage that has ended
+  (STG-27), or the result of {rule}`CAST-16` for an integer that is the
+  address of no object or function and of no byte just past an object
+  ({question}`Q-0325`).
 
 A pointer just past an object does not point to another object that
 starts at that address ({rule}`ADD-10`).
@@ -566,12 +577,15 @@ class whose constructor is user-provided.
 
 :::{rule} STG-26
 :kind: impl-defined
-:tests: foundations/storage/byte-order-little-endian.cpp
+:tests: foundations/storage/byte-order-little-endian.cpp foundations/storage/pointer-bytes-are-address.cpp
 
-The order of the bytes in the object representation of a scalar is
-implementation-defined. On the matrix targets, the least significant
-byte of an integer comes first. Integers use two's complement
-({rule}`TYP-4`).
+The object representation of a scalar is implementation-defined. On the
+matrix targets, the table gives the bytes from first to last:
+
+| Type | Bytes |
+|---|---|
+| an integer | the two's complement value ({rule}`TYP-4`), least significant byte first |
+| a pointer, on x86-64 | the integer that {rule}`CAST-16` gives for the pointer, in the order of an integer |
 :::
 
 :::{rule} STG-27
@@ -729,8 +743,8 @@ template <class T> void destroy_all(T* first, int n) {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 64
-of 67 tests. EDG runs no programs, so its results for the run tests say
+The results are in `tests/RESULTS.md`. All eight compilers agree on 67
+of 70 tests. EDG runs no programs, so its results for the run tests say
 only that the programs are valid.
 
 - Constant evaluation: in C++23 mode no compiler in the matrix accepts
@@ -806,7 +820,21 @@ only that the programs are valid.
   size of its base. The rule is implementation-defined because the
   layout of a class is the implementation's choice.
 - STG-26: every target in the matrix stores the least significant byte
-  first.
+  first. On x86-64, the bytes of a pointer equal the bytes of the
+  integer that `reinterpret_cast` gives.
+- STG-11, STG-12: no configuration in the matrix shows whether a padding
+  byte has a value. The rules follow INIT-1 and are provisional
+  ({question}`Q-0328`).
+- STG-13: every configuration steps a byte pointer made from a member's
+  address over the bytes of the whole object, and orders it against a
+  byte pointer made from the object's address
+  ({question}`Q-0327`).
+- STG-15: the address sanitizer stops a read through a pointer that a
+  cast gives from an integer with no object at that address
+  ({question}`Q-0325`).
+- STG-8: a pointer from the first use of the storage stays usable after
+  a later use decides the set, on every configuration and with the
+  address and undefined sanitizers.
 - STG-27: every configuration keeps the address in a copy of an invalid
   pointer value, and no sanitizer reports the copy.
 

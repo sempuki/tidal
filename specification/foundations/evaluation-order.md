@@ -108,10 +108,10 @@ that they create, belong to the full expression that contains the call.
 
 :::{rule} SEQ-6
 :kind: required
-:tests: expressions/sequencing/overloaded-assignment-order.cpp expressions/sequencing/overloaded-shift-order.cpp expressions/sequencing/overloaded-subscript-order.cpp expressions/sequencing/overloaded-compound-assignment-order.cpp expressions/sequencing/overloaded-member-pointer-order.cpp
+:tests: expressions/sequencing/overloaded-assignment-order.cpp expressions/sequencing/overloaded-shift-order.cpp expressions/sequencing/overloaded-subscript-order.cpp expressions/sequencing/overloaded-compound-assignment-order.cpp expressions/sequencing/overloaded-member-pointer-order.cpp expressions/sequencing/overloaded-explicit-call-order.cpp
 
-An overloaded operator ({rule}`OPR-7`) keeps the order of the built-in
-operator for these operators:
+An overloaded operator ({rule}`OPR-7`) in operator notation keeps the
+order of the built-in operator for these operators:
 
 - shifts,
 - assignment and compound assignment,
@@ -120,7 +120,8 @@ operator for these operators:
 - the pointer-to-member operators.
 
 An overloaded `&&` or `||` evaluates both operands, the left one first
-(OPR-7).
+(OPR-7). An explicit call such as `operator<<(out, n)` is a function
+call, and {rule}`SEQ-1` gives its order.
 :::
 
 :::{rule} SEQ-10
@@ -166,7 +167,7 @@ same volatile object are undefined too.
 
 :::{rule} SEQ-1
 :kind: unspecified
-:tests: expressions/sequencing/function-arguments-order.cpp expressions/sequencing/function-arguments-not-interleaved.cpp expressions/sequencing/calls-not-interleaved.cpp expressions/sequencing/default-argument-order.cpp expressions/sequencing/argument-read-and-write.cpp expressions/sequencing/explicit-object-order-unspecified.cpp
+:tests: expressions/sequencing/function-arguments-order.cpp expressions/sequencing/function-arguments-not-interleaved.cpp expressions/sequencing/calls-not-interleaved.cpp expressions/sequencing/default-argument-order.cpp expressions/sequencing/argument-read-and-write.cpp expressions/sequencing/explicit-object-order-unspecified.cpp expressions/sequencing/overloaded-explicit-call-order.cpp
 
 The arguments of a function call, including its default arguments, are
 evaluated in an unspecified order. Each argument is evaluated completely
@@ -232,7 +233,7 @@ struct Flags { unsigned on : 1, dirty : 1; } f;
 
 ## Evidence
 
-All eight compilers agree on all 34 tests. The results are in
+All eight compilers agree on all 35 tests. The results are in
 `tests/RESULTS.md`.
 
 - SEQ-1: Clang and GCC 16 initialize an explicit object parameter
@@ -250,6 +251,7 @@ All eight compilers agree on all 34 tests. The results are in
   | Built-in `+`, `*`, `<`, `&` (SEQ-8) | The left operand first | The left operand first | The left operand first | The left operand first |
   | A member `operator-` (SEQ-8) | The left operand first | The right operand first | The left operand first | The left operand first |
   | A reversed `==` candidate, `x == y` called as `y == x` (SEQ-8) | `y` first | `x` first | `y` first | `x` first |
+  | `operator<<(a(), b())`, an explicit call of a non-member operator function (SEQ-6, SEQ-1) | Left to right | Right to left | Not observed | Not observed |
 
   Clang gives the same order at run time and in constant evaluation. The
   built-in operators in constant evaluation were checked with `+` only.

@@ -1,5 +1,6 @@
 // tidal-rules: STG-23
 // tidal-expect: accept
+// tidal-interpreter: run-fail
 // tidal-note: STG-23 makes the write through a Right undefined, so the test checks only that the program compiles. Only the type sanitizer of Clang 22 (-fsanitize=type) reports the access, and the run goes on with exit status 0.
 struct Left { int value; };
 struct Right { int value; };

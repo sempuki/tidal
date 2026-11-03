@@ -5,6 +5,7 @@
 // tidal-note: Run-time check with the sanitizer (decision 0028).
 int main(int argc, char**) {
   volatile int half = 65536;
-  int product = half * (half + argc);
+  int h = half;               // one read of the volatile object (SEQ-4)
+  int product = h * (h + argc);
   return product == 0;
 }

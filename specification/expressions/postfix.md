@@ -168,7 +168,7 @@ the access sees only the members declared before it ({rule}`NAM-6`,
 
 :::{rule} PFX-20
 :kind: reject
-:tests: expressions/postfix/member-function-not-called.cpp expressions/postfix/member-function-statement.cpp expressions/postfix/member-function-called.cpp foundations/overload-resolution/call-parenthesized-member-access.cpp
+:tests: expressions/postfix/member-function-not-called.cpp expressions/postfix/member-function-statement.cpp expressions/postfix/member-function-not-value.cpp expressions/postfix/member-function-called.cpp foundations/overload-resolution/call-parenthesized-member-access.cpp
 
 A member access `x.f` or `p->f` that names a non-static member function
 must be the operand of a call, also inside parentheses ({rule}`VC-2`).
@@ -190,14 +190,11 @@ The result is a prvalue.
 
 :::{rule} PFX-14
 :kind: reject
-:tests: expressions/postfix/member-function-not-value.cpp expressions/postfix/call-incomplete-return.cpp expressions/postfix/call-incomplete-parameter.cpp
+:tests: expressions/postfix/call-incomplete-return.cpp expressions/postfix/call-incomplete-parameter.cpp
 
-A program must not:
-
-- use the name of a non-static member function, reached through member
-  access, other than to call it,
-- call a function whose return type or parameter type is an incomplete
-  class, except in the operand of `decltype` (UNEV-1).
+A program must not call a function whose return type or parameter type
+is an incomplete class, except in the operand of `decltype` (UNEV-1).
+PFX-20 gives the use of a non-static member function other than a call.
 :::
 
 :::{rule} PFX-17
@@ -261,12 +258,14 @@ reads no member.
 
 :::{rule} PFX-19
 :kind: undefined
-:tests: expressions/postfix/call-wrong-function-type-sanitizer.cpp
+:tests: expressions/postfix/call-wrong-function-type-sanitizer.cpp expressions/postfix/call-noexcept-function-through-plain-pointer.cpp
 
 If a call reaches a function through a pointer or reference whose
 function type is not the type of that function, the behavior is
-undefined ({rule}`CAST-6`). Two types that differ only in `noexcept`
-are different here too ({question}`Q-0178`).
+undefined ({rule}`CAST-6`). A pointer type with `noexcept` and a
+function without `noexcept` count as different types ({question}`Q-0178`).
+A call of a `noexcept` function through a pointer without `noexcept`
+({rule}`CONV-10`) is valid.
 :::
 
 :::{rule} PFX-18
@@ -324,8 +323,8 @@ top++;            // undefined
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 61
-of 68 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 62
+of 69 tests.
 
 - PFX-3: EDG gives `int&` for a subscript of an array member of a
   prvalue. Clang and GCC give `int&&` ({question}`Q-0034`).
@@ -351,6 +350,8 @@ of 68 tests.
 - PFX-19: the Clang sanitizer stops a call through a pointer whose
   parameter types differ from the function's. GCC has no such check, and
   the undefined rule allows its result. No implementation checks a
-  difference in `noexcept` alone ({question}`Q-0178`).
+  difference in `noexcept` alone ({question}`Q-0178`). Every
+  configuration, the Clang sanitizer included, runs a call of a
+  `noexcept` function through a pointer without `noexcept`.
 
 Inputs: clang-sema-expr, clang-diag-sema.

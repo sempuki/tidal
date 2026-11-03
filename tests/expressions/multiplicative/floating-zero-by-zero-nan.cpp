@@ -5,9 +5,12 @@ volatile float zero_f = 0.0f;
 volatile double zero_d = 0.0;
 volatile long double zero_l = 0.0L;
 int main() {
-  float nan_f = zero_f / zero_f;
-  double nan_d = zero_d / zero_d;
-  long double nan_l = zero_l / zero_l;
+  float zf = zero_f;          // one read of each volatile object (SEQ-4)
+  double zd = zero_d;
+  long double zl = zero_l;
+  float nan_f = zf / zf;
+  double nan_d = zd / zd;
+  long double nan_l = zl / zl;
   double again = nan_d / zero_d;
   int bad = 0;
   if (nan_f == nan_f) bad |= 1;

@@ -373,12 +373,12 @@ before linking.
 
 :::{rule} VIRT-13
 :kind: recommended
-:tests: classes/virtual/delete-nonvirtual-warns.cpp classes/virtual/hidden-virtual-warns.cpp
+:tests: classes/virtual/delete-nonvirtual-warns.cpp classes/virtual/delete-nonvirtual-abstract-warns.cpp classes/virtual/delete-nonvirtual-final-no-warning.cpp classes/virtual/hidden-virtual-warns.cpp
 
 An implementation should warn about these cases:
 
 - `delete` through a pointer to a polymorphic class whose destructor is
-  not virtual,
+  not virtual, unless the class is `final`,
 - a derived function that hides a virtual function of a base and does not
   override it.
 :::
@@ -441,8 +441,8 @@ struct MoreConst : Maker {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 113
-of 117 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 115
+of 119 tests.
 
 - VIRT-12: GCC accepts `delete` through a base without a virtual
   destructor during constant evaluation. Clang and EDG reject the
@@ -458,7 +458,8 @@ of 117 tests.
   At `-O2` they emit no reference to the virtual table, and the program
   links. VIRT-20 allows both results, because the rule needs no
   diagnostic.
-- VIRT-13: Clang and GCC give both warnings under `-Wall`.
+- VIRT-13: Clang and GCC give both warnings under `-Wall`, also for an
+  abstract class. Neither warns for a `final` class.
 - VIRT-12: during constant evaluation, GCC reports a call of a pure
   virtual function from a constructor as a call to a function that is
   not `constexpr` (compare {rule}`CE-2`). The function that GCC names is
