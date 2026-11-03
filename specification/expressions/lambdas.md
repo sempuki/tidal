@@ -399,12 +399,12 @@ is undefined.
 
 :::{rule} LAM-20
 :kind: unspecified
-:tests: expressions/lambdas/closure-size-unspecified.cpp expressions/lambdas/implicit-capture-order.cpp expressions/lambdas/closure-trivially-copyable-unspecified.cpp
+:tests: expressions/lambdas/closure-size-unspecified.cpp expressions/lambdas/closure-alignment-unspecified.cpp expressions/lambdas/implicit-capture-order.cpp expressions/lambdas/closure-trivially-copyable-unspecified.cpp
 
 These properties of a closure type are unspecified:
 
-- the order of its members,
-- its size,
+- the order of its members, also for the explicit captures by copy,
+- its size and its alignment,
 - whether a capture by reference adds a member,
 - whether the closure type is {term}`trivially copyable`
   ({rule}`CPY-19`) or {term}`standard-layout` ({rule}`CLS-19`),
@@ -471,8 +471,8 @@ int dispatch(int base) {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 66
-of 68 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 67
+of 69 tests.
 
 - LAM-6: EDG accepts a capture default on a lambda outside a function.
   Clang and GCC reject it ({question}`Q-0037`).
@@ -490,6 +490,11 @@ of 68 tests.
   (`capture-outlived-sanitizer.cpp`).
 - LAM-20: on every compiler, a closure that copies an `int` is at least
   as large as an `int`, as the copy member requires.
+- LAM-20: on every compiler, a closure that copies a `double` and a
+  `char` has the size and alignment of a struct with those two members
+  (`closure-alignment-unspecified.cpp`). The alignment bullet and the
+  order of the members for explicit captures follow the gap review of
+  item O (`reports/review/2026-11-03-gap-review-item-o.md`).
 - LAM-20: on every compiler, a closure that captures an `int` by copy
   or by reference has trivial copy and move constructors and a trivial
   destructor, so a union can hold it and copy it. The builtin queries

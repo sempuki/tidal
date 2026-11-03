@@ -54,4 +54,8 @@ provisional.
 
 ## Opinions
 
+### Gap review, 2026-11-03
+
+The source-reader gap review of item O (`reports/review/2026-11-03-gap-review-item-o.md`) reads the reference as supporting option 1 for the first three classes, as Clang finds. For the fourth class, the answer depends on whether the `[[no_unique_address]]` member has zero size, which is the implementation's choice. Every compiler in the matrix gives the member zero size, so option 1 holds for the matrix. CLS-32 now counts a member of zero size and states the choice through CLS-31.
+
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

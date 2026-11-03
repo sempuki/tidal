@@ -44,7 +44,7 @@ current state only. The history of how the project got here is in
 | [Postfix expressions](../specification/expressions/postfix.md) | 21 | 7 required, 8 reject, 5 undefined, 1 conditionally-supported | 69 | 5 | 7 | 84 | Q-0031, Q-0034, Q-0124, Q-0178, Q-0316, Q-0318 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Casts](../specification/expressions/casts.md) | 19 | 8 required, 7 reject, 2 undefined, 2 impl-defined | 56 | 4 | 1 | 47 | Q-0017, Q-0325 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [New and delete](../specification/expressions/new-delete.md) | 42 | 22 required, 11 reject, 4 undefined, 3 unspecified, 2 impl-defined | 129 | 11 | 21 | 124 | Q-0005, Q-0035, Q-0036, Q-0091, Q-0125, Q-0220, Q-0221, Q-0222, Q-0300, Q-0301, Q-0302, Q-0303, Q-0313 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
-| [Lambda expressions](../specification/expressions/lambdas.md) | 29 | 17 required, 9 reject, 1 undefined, 1 unspecified, 1 recommended | 68 | 13 | 2 | 85 | Q-0037, Q-0092 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
+| [Lambda expressions](../specification/expressions/lambdas.md) | 29 | 17 required, 9 reject, 1 undefined, 1 unspecified, 1 recommended | 69 | 13 | 2 | 85 | Q-0037, Q-0092 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Placeholder types in variable declarations](../specification/declarations/auto.md) | 22 | 12 required, 10 reject | 55 | 8 | 0 | 36 | Q-0010 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Type aliases and class names](../specification/declarations/type-names.md) | 10 | 4 required, 5 reject, 1 no-diagnostic | 58 | 2 | 4 | 15 | Q-0066, Q-0067, Q-0093 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Storage duration and linkage](../specification/declarations/storage-linkage.md) | 23 | 14 required, 6 reject, 1 undefined, 2 no-diagnostic | 57 | 11 | 2 | 56 | Q-0011, Q-0045, Q-0105, Q-0297 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
@@ -68,14 +68,14 @@ current state only. The history of how the project got here is in
 | [Exception specifications](../specification/declarations/exception-specifications.md) | 10 | 4 required, 4 reject, 1 impl-defined, 1 no-diagnostic | 41 | 2 | 6 | 77 | Q-0077, Q-0078, Q-0079, Q-0094, Q-0095 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [The constexpr, consteval, and constinit specifiers](../specification/declarations/constexpr.md) | 12 | 3 required, 9 reject | 72 | 2 | 5 | 120 | Q-0020, Q-0025, Q-0193 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Static assertions](../specification/declarations/static-assert.md) | 8 | 4 required, 4 reject | 29 | 0 | 0 | 13 |  | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
-| [Class definitions and members](../specification/classes/members.md) | 31 | 17 required, 11 reject, 2 impl-defined, 1 no-diagnostic | 111 | 11 | 5 | 71 | Q-0027, Q-0181, Q-0317, Q-0338, Q-0341, Q-0342 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)); 4 IDs not checked |
+| [Class definitions and members](../specification/classes/members.md) | 33 | 18 required, 11 reject, 1 unspecified, 2 impl-defined, 1 no-diagnostic | 114 | 11 | 5 | 71 | Q-0027, Q-0181, Q-0317, Q-0338, Q-0341, Q-0342 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)); 6 IDs not checked |
 | [Access control and friends](../specification/classes/access.md) | 19 | 8 required, 11 reject | 64 | 6 | 2 | 36 | Q-0052, Q-0131 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Constructors and destructors](../specification/classes/constructors.md) | 34 | 13 required, 16 reject, 2 undefined, 2 no-diagnostic, 1 recommended | 172 | 7 | 12 | 177 | Q-0041, Q-0053, Q-0054, Q-0082, Q-0083, Q-0084, Q-0126 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [List initialization of classes](../specification/classes/initializer-lists.md) | 10 | 5 required, 5 reject | 31 | 1 | 2 | 24 | Q-0081, Q-0132 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
-| [Copy and move](../specification/classes/copy-move.md) | 28 | 15 required, 10 reject, 2 unspecified, 1 recommended | 117 | 1 | 5 | 119 | Q-0055, Q-0339, Q-0343 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)); 1 IDs not checked |
+| [Copy and move](../specification/classes/copy-move.md) | 28 | 15 required, 10 reject, 2 unspecified, 1 recommended | 118 | 1 | 5 | 119 | Q-0055, Q-0339, Q-0343, Q-0344 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)); 1 IDs not checked |
 | [Derived classes](../specification/classes/derived.md) | 22 | 9 required, 12 reject, 1 undefined | 82 | 4 | 1 | 60 | Q-0085 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Virtual functions and abstract classes](../specification/classes/virtual.md) | 21 | 7 required, 10 reject, 1 undefined, 2 no-diagnostic, 1 recommended | 122 | 4 | 5 | 93 | Q-0056, Q-0086, Q-0087, Q-0212 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
-| [Unions and bit-fields](../specification/classes/unions.md) | 28 | 16 required, 8 reject, 1 undefined, 2 impl-defined, 1 recommended | 139 | 4 | 11 | 92 | Q-0045, Q-0058, Q-0088, Q-0120, Q-0213, Q-0309, Q-0313, Q-0314, Q-0339, Q-0340 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)); 3 IDs not checked |
+| [Unions and bit-fields](../specification/classes/unions.md) | 28 | 16 required, 8 reject, 1 undefined, 2 impl-defined, 1 recommended | 140 | 4 | 11 | 92 | Q-0045, Q-0058, Q-0088, Q-0120, Q-0213, Q-0309, Q-0313, Q-0314, Q-0339, Q-0340, Q-0345 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)); 3 IDs not checked |
 | [Conversion functions](../specification/classes/conversion-functions.md) | 12 | 5 required, 6 reject, 1 recommended | 64 | 1 | 1 | 28 | Q-0059 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Operator overloading](../specification/classes/operators.md) | 16 | 8 required, 6 reject, 1 unspecified, 1 recommended | 99 | 3 | 1 | 45 | Q-0060 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Defaulted comparisons](../specification/classes/comparisons.md) | 13 | 6 required, 5 reject, 1 no-diagnostic, 1 recommended | 78 | 1 | 5 | 52 | Q-0061, Q-0062, Q-0158, Q-0190 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
@@ -131,7 +131,7 @@ Full results are in `tests/RESULTS.md`.
 
 ## Open questions
 
-The question index has 343 questions: 301 open for opinions (300
+The question index has 345 questions: 303 open for opinions (302
 provisional and 1 open), 12 compiler defects, and 30 settled. Each open
 question has a provisional answer that the specification follows. A
 compiler-defect answer says that one compiler or an older version is
@@ -154,7 +154,7 @@ questions. See `questions/README.md`.
   `tools/frontend_check.py` fails when a test that it passed no longer
   passes (`reports/clean-room/rust-frontend/conformance.tsv`).
 
-- 2624 tests carry `tidal-error` patterns. A pattern checks that a
+- 2625 tests carry `tidal-error` patterns. A pattern checks that a
   compiler rejects the test, fails to link the test, or stops the test
   at run time, for the reason the test's rule gives.
   In 50 tests, some compiler family has no pattern, because that
@@ -188,9 +188,6 @@ and 0051). Phases 1 to 5 are done, and phase 6 is provisional. Next:
 2. A Clang `-fsanitize=type` configuration for STG-18 and STG-23
    (Clang 22 reports these accesses but does not stop the run). The
    rule that a class and a variable can share a name goes with item C.
-3. A source-reader gap review of item O (CPY-19, CPY-28, CLS-19,
-   CLS-29 to CLS-32, UNI-10, UNI-15, UNI-16, JMP-6), as decision 0044
-   asks.
 
 Waiting on the maintainer:
 
@@ -210,7 +207,8 @@ Waiting on the maintainer:
   builtin query calls a class with a deleted destructor, or with all
   copy and move functions deleted, trivially copyable, and CPY-19 says
   it is not. In Q-0041, JMP-6 now follows GCC, and Clang and EDG
-  reject.
+  reject. The source-reader gap review of item O reads the C++23 text
+  as Tidal does in both questions.
 - Decide whether to probe which C++23 rejections later language
   versions accept, as an index with no rules (designer view, item 4;
   Q-0007).

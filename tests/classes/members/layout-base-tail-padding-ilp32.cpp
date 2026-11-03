@@ -1,4 +1,4 @@
-// tidal-rules: CLS-31
+// tidal-rules: CLS-34
 // tidal-expect: accept
 // tidal-flags: -m32
 // tidal-note: -m32. The same choices as on x86-64.

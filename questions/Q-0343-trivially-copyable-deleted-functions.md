@@ -52,4 +52,8 @@ and no test can show the effect, so the question stays provisional.
 
 ## Opinions
 
+### Gap review, 2026-11-03
+
+The source-reader gap review of item O (`reports/review/2026-11-03-gap-review-item-o.md`) reads the reference as supporting option 1, the provisional answer. A trivially copyable class needs at least one eligible copy or move function and a destructor that is trivial and not deleted, and a deleted function is never eligible. The review describes the builtin queries of the three compiler families as following an older definition.
+
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

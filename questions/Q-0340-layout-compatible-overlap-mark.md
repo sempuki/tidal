@@ -48,4 +48,8 @@ stays provisional.
 
 ## Opinions
 
+### Gap review, 2026-11-03
+
+The source-reader gap review of item O (`reports/review/2026-11-03-gap-review-item-o.md`) reads the reference as supporting option 1, the provisional answer. Matching members must both carry the attribute or both lack it, and a marked member does not end the sequence. Clang 22's query conflicts with that reading.
+
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

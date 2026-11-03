@@ -1,4 +1,4 @@
-// tidal-rules: CLS-31
+// tidal-rules: CLS-34
 // tidal-expect: accept
 // tidal-expect-gcc-14: reject
 // tidal-error-gcc-14: static assertion failed

@@ -357,6 +357,8 @@ status, and the first sentence of its answer section.
 | [Q-0341](Q-0341-standard-layout-base-type-at-offset-zero.md) | Does a base whose type sits deep inside the first member, or in a `[[no_unique_address]]` member, make a class not standard-layout? | provisional | Not standard-layout in all four cases |
 | [Q-0342](Q-0342-tail-padding-defaulted-functions.md) | Does a base that declares defaulted special members lend its tail padding to a derived class? | provisional | The base keeps its padding |
 | [Q-0343](Q-0343-trivially-copyable-deleted-functions.md) | Is a class trivially copyable when its destructor is deleted, or when all its copy and move functions are deleted? | provisional | No; neither class is trivially copyable |
+| [Q-0344](Q-0344-byte-copy-over-const-member.md) | Can a byte copy write over a live object that has a `const` member? | provisional | The copy is undefined |
+| [Q-0345](Q-0345-common-initial-sequence-base-members.md) | Do the members that a base declares count in the common initial sequence of a struct? | provisional | Yes; the members that a base declares count |
 
 ## Status values
 

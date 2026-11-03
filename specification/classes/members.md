@@ -67,7 +67,7 @@ static.
 :::
 
 :::{principle} CLS-P4
-:rules: CLS-10 CLS-11 CLS-19 CLS-29 CLS-30 CLS-31 CLS-32
+:rules: CLS-10 CLS-11 CLS-19 CLS-29 CLS-30 CLS-31 CLS-32 CLS-33 CLS-34
 
 The members of an object lie in the object in the order of their
 declarations, and each object has a size, even an empty one, so that two
@@ -95,10 +95,14 @@ picture:
   covers a base whose type is the type of an object at the start of the
   first member (CLS-32).
 
-The rest of a class layout is the implementation's choice. Examples
-are the size of an empty class, the place of the pointer for virtual
-calls, and whether a derived class puts its members into the padding
-at the end of a base (CLS-31).
+An empty base whose own class is standard-layout takes no bytes, in any
+derived class (CLS-33). The rest of a class layout is the
+implementation's choice, in two grades:
+
+| Grade | Examples |
+|---|---|
+| Implementation-defined (CLS-11, CLS-31) | the size of an empty class, the size of other empty bases and members, alignment, bit-fields |
+| Unspecified (CLS-34) | the place of the pointer for virtual calls, padding, the use of the end padding of a base |
 :::
 
 ## Syntax
@@ -401,7 +405,7 @@ union*. Static members and member functions play no part.
 
 :::{rule} CLS-32
 :kind: required
-:tests: classes/members/standard-layout-base-type-first-member.cpp classes/members/standard-layout-base-type-inside-member.cpp
+:tests: classes/members/standard-layout-base-type-first-member.cpp classes/members/standard-layout-base-type-inside-member.cpp classes/members/standard-layout-base-type-anonymous-union.cpp
 
 For CLS-19, these objects lie at the start of a class `X`
 ({question}`Q-0341`):
@@ -414,8 +418,10 @@ For CLS-19, these objects lie at the start of a class `X`
 - if that member is a union, each member of the union and the objects at
   the start of each.
 
-Each member of `X` that has `[[no_unique_address]]` and an empty class
-type also counts, in any position.
+An anonymous union counts as a member of union type. Each member of `X`
+that has zero size also counts, in any position, together with the
+objects at its start. Only a `[[no_unique_address]]` member can have
+zero size, and the choice is implementation-defined (CLS-31).
 :::
 
 :::{rule} CLS-29
@@ -436,7 +442,7 @@ A reference type, `void`, and a function type are not standard-layout.
 
 :::{rule} CLS-10
 :kind: required
-:tests: classes/members/member-order.cpp classes/members/empty-class-size.cpp classes/members/distinct-addresses.cpp classes/members/member-order-mixed-access.cpp classes/members/first-member-same-address.cpp classes/members/empty-base-shares-address.cpp classes/members/layout-base-type-first-member.cpp classes/members/layout-empty-base-not-standard-layout.cpp classes/members/layout-overlap-member.cpp classes/members/standard-layout-base-type-first-member.cpp classes/members/standard-layout-base-type-inside-member.cpp classes/members/standard-layout-bit-field-first.cpp classes/members/standard-layout-repeated-base.cpp
+:tests: classes/members/member-order.cpp classes/members/empty-class-size.cpp classes/members/distinct-addresses.cpp classes/members/member-order-mixed-access.cpp classes/members/first-member-same-address.cpp classes/members/empty-base-shares-address.cpp classes/members/layout-base-type-first-member.cpp classes/members/layout-empty-base-not-standard-layout.cpp classes/members/layout-overlap-member.cpp classes/members/standard-layout-base-type-first-member.cpp classes/members/standard-layout-base-type-inside-member.cpp classes/members/standard-layout-bit-field-first.cpp classes/members/standard-layout-repeated-base.cpp classes/members/standard-layout-base-type-anonymous-union.cpp
 
 Non-static data members of nonzero size have increasing addresses in the
 order of their declarations. Members of an anonymous union are not in
@@ -455,12 +461,20 @@ An object of a standard-layout class has these properties:
 - Its address equals the address of each of its base subobjects.
 - If the earliest declared data member that is not static is not a
   bit-field, the object and that member start at one address.
-- A base subobject of an empty class takes no bytes.
 
 A `reinterpret_cast` between a pointer to the object and a pointer to
 that member or base gives a usable pointer ({rule}`STG-16`). The same
 holds during constant evaluation
 ({question}`Q-0338`).
+:::
+
+:::{rule} CLS-33
+:kind: required
+:tests: classes/members/empty-standard-layout-base-zero-size.cpp classes/members/empty-standard-layout-base-zero-size-ilp32.cpp classes/members/standard-layout-empty-bases.cpp classes/members/layout-empty-base-not-standard-layout.cpp classes/members/layout-base-type-first-member.cpp
+
+A base subobject takes no bytes if its class is empty and
+standard-layout. The derived class need not be standard-layout. The
+offset of such a base is unspecified (CLS-34).
 :::
 
 ## Implementation Requirements
@@ -474,20 +488,36 @@ The size of an empty class is implementation-defined.
 
 :::{rule} CLS-31
 :kind: impl-defined
-:tests: classes/members/layout-empty-base-not-standard-layout.cpp classes/members/layout-base-type-first-member.cpp classes/members/layout-base-tail-padding.cpp classes/members/layout-base-tail-padding-ilp32.cpp classes/members/layout-base-tail-padding-defaulted.cpp classes/members/layout-overlap-member.cpp classes/members/layout-overlap-member-ilp32.cpp classes/members/layout-virtual-first-member.cpp classes/members/layout-virtual-first-member-ilp32.cpp
+:tests: classes/members/layout-empty-base-not-standard-layout.cpp classes/members/layout-overlap-member.cpp classes/members/layout-overlap-member-ilp32.cpp
 
-The layout of a class beyond CLS-10 and CLS-30 is
-implementation-defined. Every compiler in the matrix makes these
-choices, on x86-64 and with `-m32`:
+These parts of a class layout are implementation-defined:
+
+- whether an object of an empty class takes no bytes, if the object is
+  a base subobject outside CLS-33, or a `[[no_unique_address]]` member,
+- the allocation and alignment of bit-fields ({rule}`BF-9`),
+- alignment requirements ({rule}`ALN-5`).
+
+Every compiler in the matrix makes these choices, on x86-64 and with
+`-m32`:
 
 | Case | Choice |
 |---|---|
 | An empty base whose class is not standard-layout | The base takes no bytes. |
-| An empty base whose type is the type of the first member | The base is at offset 0, and the member follows it. |
-| A class with a virtual function | A pointer for virtual calls is at offset 0, and the first data member follows it. |
-| A derived class whose base has padding at its end | The derived class puts its members into that padding if the base has a default member initializer, a user-provided special member, or a `private` or `protected` data member. Otherwise the members follow the padding ({question}`Q-0342`). |
 | A `[[no_unique_address]]` member of empty class type | The member takes no bytes. Two such members of one type get different addresses ({rule}`ATTR-9`). |
-| A `[[no_unique_address]]` member of class type with padding at its end | The next members use that padding under the same condition as for a base. |
+:::
+
+:::{rule} CLS-34
+:kind: unspecified
+:tests: classes/members/layout-base-type-first-member.cpp classes/members/layout-virtual-first-member.cpp classes/members/layout-virtual-first-member-ilp32.cpp classes/members/layout-base-tail-padding.cpp classes/members/layout-base-tail-padding-ilp32.cpp classes/members/layout-base-tail-padding-defaulted.cpp classes/members/layout-overlap-member.cpp classes/members/layout-overlap-member-ilp32.cpp
+
+These parts of a class layout are unspecified, within CLS-10, CLS-30,
+CLS-31, and CLS-33:
+
+- the offset of a base subobject of zero size,
+- the place of the pointer for virtual calls,
+- the padding between members and at the end of the class,
+- whether later members use the padding at the end of a base or of a
+  `[[no_unique_address]]` member.
 :::
 
 :::{rule} CLS-21
@@ -526,8 +556,8 @@ struct Text {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 106
-of 111 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 109
+of 114 tests.
 
 - CLS-3: a missing definition of a static data member compiles in each
   translation unit. The linker reports the missing definition.
@@ -561,9 +591,25 @@ of 111 tests.
   of its first member or of its base, each converted to `const void*`.
   EDG gives `false`. All three give `true` for an array and its first
   element ({question}`Q-0338`).
-- CLS-31: the layout tests use `sizeof` and run-time address
+- CLS-33: an empty standard-layout base takes no bytes on every
+  compiler, also in a class with a virtual function or with members in
+  two accesses.
+- CLS-31, CLS-34: the layout tests use `sizeof` and run-time address
   differences. The size and alignment come from the probes in each
-  test. GCC 14 puts a derived member into the end padding of a base that
+  test. CLS-31 holds the choices that each implementation documents:
+  the size of other empty objects, bit-fields, and alignment. The other
+  layout choices are unspecified (CLS-34), because an implementation
+  need not document them. Every compiler in the matrix makes these
+  choices for them, on x86-64 and with `-m32`:
+
+  | Case | Choice |
+  |---|---|
+  | An empty base whose type is the type of the first member | The base is at offset 0, and the member follows it. |
+  | A class with a virtual function | A pointer for virtual calls is at offset 0, and the first data member follows it. |
+  | A derived class whose base has padding at its end | The derived class puts its members into that padding if the base has a default member initializer, a user-provided special member, or a `private` or `protected` data member. Otherwise the members follow the padding ({question}`Q-0342`). |
+  | A `[[no_unique_address]]` member of class type with padding at its end | The next members use that padding under the same condition as for a base. |
+
+  GCC 14 puts a derived member into the end padding of a base that
   declares a defaulted default constructor and copy assignment
   operator. GCC 16, Clang, and EDG do not
   ({question}`Q-0342`).
@@ -573,9 +619,11 @@ of 111 tests.
   SL-one-declaring-class, SL-one-subobject-per-type, SL-struct-vs-union,
   and SL-virtual. CLS-29 comes from items TYPE-array, TYPE-cv, and
   TYPE-scalar. CLS-30 comes from items SLG-base-address,
-  SLG-empty-base-zero, SLG-first-member-address, and
-  SLG-pointer-interconvertible, and from the tests. CLS-31 comes from
-  the layout tests and items LAY-empty-base-non-standard-layout,
+  SLG-first-member-address, and SLG-pointer-interconvertible, and from
+  the tests. CLS-33 comes from item SLG-empty-base-zero, the tests, and
+  the gap review of item O
+  (`reports/review/2026-11-03-gap-review-item-o.md`). CLS-31 and CLS-34
+  come from the layout tests, the same gap review, and items LAY-empty-base-non-standard-layout,
   LAY-empty-base-same-type, LAY-overlap-attribute-empty,
   LAY-overlap-attribute-tail, LAY-tail-padding-base, and
   LAY-virtual-placement.

@@ -183,7 +183,7 @@ union.
 
 :::{rule} UNI-11
 :kind: reject
-:tests: classes/unions/anonymous-union-nontrivial-default.cpp classes/unions/union-nontrivial-copy-deleted.cpp classes/unions/union-nontrivial-dtor-only.cpp classes/unions/union-nontrivial-member-deleted-ctor.cpp classes/unions/union-member-deleted-copy.cpp classes/constructors/trivial-destructor-defaulted.cpp classes/constructors/trivial-destructor-member-nontrivial.cpp classes/constructors/trivial-destructor-user-provided.cpp classes/constructors/trivial-destructor-virtual-destructor.cpp classes/copy-move/trivial-assign-implicit.cpp classes/copy-move/trivial-assign-user-provided.cpp classes/copy-move/trivial-copy-defaulted.cpp classes/copy-move/trivial-copy-implicit.cpp classes/copy-move/trivial-copy-member-initializer.cpp classes/copy-move/trivial-copy-member-nontrivial.cpp classes/copy-move/trivial-copy-user-provided.cpp classes/copy-move/trivial-copy-virtual-base.cpp classes/copy-move/trivial-copy-virtual-function.cpp classes/copy-move/trivial-move-user-provided.cpp classes/copy-move/trivially-copyable-member-template-selected.cpp
+:tests: classes/unions/anonymous-union-nontrivial-default.cpp classes/unions/union-nontrivial-copy-deleted.cpp classes/unions/union-nontrivial-dtor-only.cpp classes/unions/union-nontrivial-member-deleted-ctor.cpp classes/unions/union-member-deleted-copy.cpp classes/constructors/trivial-destructor-defaulted.cpp classes/constructors/trivial-destructor-member-nontrivial.cpp classes/constructors/trivial-destructor-user-provided.cpp classes/constructors/trivial-destructor-virtual-destructor.cpp classes/copy-move/trivial-assign-implicit.cpp classes/copy-move/trivial-assign-user-provided.cpp classes/copy-move/trivial-copy-defaulted.cpp classes/copy-move/trivial-copy-implicit.cpp classes/copy-move/trivial-copy-member-initializer.cpp classes/copy-move/trivial-copy-member-nontrivial.cpp classes/copy-move/trivial-copy-user-provided.cpp classes/copy-move/trivial-copy-virtual-base.cpp classes/copy-move/trivial-copy-virtual-function.cpp classes/copy-move/trivial-move-user-provided.cpp classes/copy-move/trivially-copyable-member-template-selected.cpp classes/copy-move/trivial-copy-array-member-nontrivial.cpp
 
 A program must not use a special member function that UNI-3 deletes. The
 union must then declare that function itself.
@@ -415,7 +415,10 @@ A standard-layout union ({rule}`CLS-19`) can have two members that are
 standard-layout classes and not unions. While one of them is active, a
 program can read a member of the other one if the member lies in the
 {term}`common initial sequence` of the two classes (UNI-15). The read
-gives the value of the matching member of the active class.
+gives the value of the matching member of the active class. If that
+matching member is volatile and the member read is not, the read
+accesses a volatile object through a glvalue that is not volatile, and
+the behavior is undefined ({rule}`VOL-6`).
 :::
 
 :::{rule} UNI-15
@@ -435,7 +438,8 @@ matching pair meets all of these conditions:
   ({question}`Q-0340`).
 
 The members of a class are the members of the one class that declares
-them ({rule}`CLS-19`), so they can come from a base.
+them ({rule}`CLS-19`), so they can come from a base. This reading is
+provisional ({question}`Q-0345`).
 :::
 
 :::{rule} UNI-16
@@ -611,8 +615,8 @@ public:
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 128
-of 139 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 129
+of 140 tests.
 
 - UNI-9: Clang accepts an anonymous union without `static` in an unnamed
   namespace. GCC and EDG reject the declaration ({question}`Q-0045`).
@@ -672,6 +676,18 @@ of 139 tests.
   match. For two structs whose last members both have
   `[[no_unique_address]]`, GCC's query says layout-compatible and
   Clang's says not ({question}`Q-0340`).
+- UNI-15: the builtin queries of Clang 22 and GCC call a struct whose
+  base declares all its members layout-compatible with a struct that
+  declares the same members itself (grid row "members from a base"). The
+  run test `common-initial-sequence-inherited.cpp` reads through the
+  other struct on every compiler. The gap review of item O
+  (`reports/review/2026-11-03-gap-review-item-o.md`) finds no statement
+  on members of a base in the reference, so the reading stays
+  provisional ({question}`Q-0345`).
+- UNI-10: the sentence on volatile members follows {rule}`VOL-6` and the
+  gap review of item O. A `const` member matches a plain one
+  (`common-initial-sequence-cv.cpp`). The grid row "cv on one member"
+  matches a `volatile` member with a plain one.
 - BF-9: Clang, GCC, and EDG give the same sizes and alignments for
   unnamed bit-fields on x86-64 and with `-m32`.
 - Sources: UNI-15 and UNI-16 come from the grid `layout-compatible.json`

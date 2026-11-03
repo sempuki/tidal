@@ -1,4 +1,4 @@
-// tidal-rules: CLS-31
+// tidal-rules: CLS-34
 // tidal-expect: run
 // tidal-note: x86-64. A class with a virtual function starts with a pointer to its table, so its first data member lies after that pointer.
 struct Shape { virtual int sides() const { return 0; } int id = 5; };

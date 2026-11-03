@@ -690,9 +690,11 @@ trivial
 
 trivially copyable
   Said of a type whose objects a byte copy can copy. Scalar types,
-  classes whose eligible copy and move functions and destructor are all
-  trivial ({rule}`CPY-19`), arrays of these types, and their
-  cv-qualified forms are trivially copyable ({rule}`CPY-28`).
+  classes that meet CPY-19, arrays of these types, and their
+  cv-qualified forms are trivially copyable ({rule}`CPY-28`). A class
+  meets {rule}`CPY-19` if the class can be copied or moved by at least
+  one eligible function, every such function is trivial, and the
+  destructor is trivial and not deleted.
 
 type concept
   A concept whose first template parameter is a type parameter. Only a

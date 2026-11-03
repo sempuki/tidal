@@ -49,3 +49,7 @@ agrees, and the jump skips no construction. The destructor runs at
 the end of the block in either case.
 
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of item O (`reports/review/2026-11-03-gap-review-item-o.md`) reads the reference as supporting option 2, the provisional answer. A jump can skip a variable whose default initialization does nothing. For a class, the default constructor must be trivial, and the destructor plays no part. The review describes the destructor condition as removed by a defect resolution in the C++20 cycle, which GCC follows and Clang and EDG do not.

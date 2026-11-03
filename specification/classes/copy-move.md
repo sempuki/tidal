@@ -423,7 +423,7 @@ type. An lvalue name needs a usable copy constructor.
 
 :::{rule} CPY-27
 :kind: required
-:tests: classes/copy-move/trivially-copyable-member-selected.cpp classes/copy-move/trivially-copyable-member-template-selected.cpp classes/copy-move/trivially-copyable-defaulted-later.cpp classes/copy-move/trivial-assign-implicit.cpp classes/copy-move/trivial-assign-user-provided.cpp classes/copy-move/trivial-copy-defaulted.cpp classes/copy-move/trivial-copy-implicit.cpp classes/copy-move/trivial-copy-member-initializer.cpp classes/copy-move/trivial-copy-member-nontrivial.cpp classes/copy-move/trivial-copy-user-provided.cpp classes/copy-move/trivial-copy-virtual-base.cpp classes/copy-move/trivial-copy-virtual-function.cpp classes/copy-move/trivial-move-user-provided.cpp classes/copy-move/trivially-copyable-private-copy.cpp classes/copy-move/trivially-copyable-volatile-member.cpp classes/unions/union-copy-two-copy-constructors.cpp
+:tests: classes/copy-move/trivially-copyable-member-selected.cpp classes/copy-move/trivial-copy-array-member-nontrivial.cpp classes/copy-move/trivially-copyable-member-template-selected.cpp classes/copy-move/trivially-copyable-defaulted-later.cpp classes/copy-move/trivial-assign-implicit.cpp classes/copy-move/trivial-assign-user-provided.cpp classes/copy-move/trivial-copy-defaulted.cpp classes/copy-move/trivial-copy-implicit.cpp classes/copy-move/trivial-copy-member-initializer.cpp classes/copy-move/trivial-copy-member-nontrivial.cpp classes/copy-move/trivial-copy-user-provided.cpp classes/copy-move/trivial-copy-virtual-base.cpp classes/copy-move/trivial-copy-virtual-function.cpp classes/copy-move/trivial-move-user-provided.cpp classes/copy-move/trivially-copyable-private-copy.cpp classes/copy-move/trivially-copyable-volatile-member.cpp classes/unions/union-copy-two-copy-constructors.cpp
 
 This rule covers the copy and move constructors and the copy and move
 assignment operators. Each of these makes such a function non-trivial:
@@ -431,9 +431,9 @@ assignment operators. Each of these makes such a function non-trivial:
 - The program provides its body. A function defaulted after its first
   declaration counts.
 - The class has a virtual function or a virtual base.
-- A base or a member of class type is copied or moved by a non-trivial
-  one. The function that the copy or move selects for the part decides
-  ({question}`Q-0339`).
+- A base, or a member of class type or of array of class type, is
+  copied or moved by a non-trivial one. The function that the copy or
+  move selects for the part decides ({question}`Q-0339`).
 
 With none of these conditions, the function is *trivial*. Default member
 initializers play no part.
@@ -469,7 +469,9 @@ A class is *trivially copyable* if all of these conditions hold:
 If a program copies the bytes of such an object into another object of
 the same type, the second object gets the same value. {rule}`STG-12`
 gives the byte types that the copy can go through and the limit on
-padding bytes.
+padding bytes. If the second object is `const` or has a `const`
+subobject, the copy changes a `const` object, and the behavior is
+undefined ({rule}`CV-5`, {question}`Q-0344`).
 :::
 
 :::{rule} CPY-28
@@ -643,8 +645,8 @@ Any c(1);                          // the template, with T = int
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 112
-of 117 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 113
+of 118 tests.
 
 - CPY-15: Clang and GCC reject a constructor `W(W)` of a class
   template at the template's definition, with no instantiation. GCC
@@ -702,6 +704,18 @@ of 117 tests.
   class-properties inventory (items TCC-all-deleted and
   TCC-deleted-destructor), and no test can show the difference
   ({question}`Q-0343`).
+- CPY-19: a class with a `const` member is trivially copyable
+  (`trivially-copyable-const-member.cpp`). The byte copy into a second
+  object then writes the bytes of a `const` member. The gap review of
+  item O (`reports/review/2026-11-03-gap-review-item-o.md`) finds that
+  the reference does not say whether the byte copy or the `const` rule
+  decides. CPY-19 follows {rule}`CV-5`, and no test can show the
+  difference ({question}`Q-0344`). The tests
+  copy into a buffer or into an object with no `const` member.
+- CPY-27: a member of array of class type counts as a part, as the
+  gap review of item O describes. Every compiler deletes the copy
+  constructor of a union that holds a class whose array member has a
+  user-provided copy constructor (`trivial-copy-array-member-nontrivial.cpp`).
 - CPY-27: for a member whose class has a trivial copy constructor for a
   `const` source and a user-provided one for a non-`const` source, Clang
   treats the enclosing class's copy constructor as trivial. GCC and EDG

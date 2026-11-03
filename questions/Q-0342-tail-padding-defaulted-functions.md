@@ -1,7 +1,7 @@
 # Q-0342: Does a base that declares defaulted special members lend its tail padding to a derived class?
 
 **Status:** provisional
-**Affects:** CLS-31, `tests/classes/members/layout-base-tail-padding-defaulted.cpp`
+**Affects:** CLS-34, `tests/classes/members/layout-base-tail-padding-defaulted.cpp`
 
 ## Context
 
@@ -21,9 +21,9 @@ implicit special members keeps its padding on every compiler (size 12),
 and a base with a user-provided special member lends it on every
 compiler (size 8).
 
-The layout is implementation-defined (CLS-31), so each answer is
-allowed. The question records which choice CLS-31 lists for the
-matrix.
+The use of the end padding of a base is unspecified (CLS-34), so each
+answer is allowed. The question records which choice the Evidence of
+CLS-34 lists for the matrix.
 
 ## Evidence
 
@@ -43,5 +43,9 @@ The base keeps its padding (option 1). The newest version of each
 compiler family gives this layout. GCC 14 made the other choice.
 
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of item O (`reports/review/2026-11-03-gap-review-item-o.md`) finds that the reference leaves the use of the end padding of a base open, so both options are allowed. CLS-34 now classes the choice as unspecified, and the question records the matrix choice.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
