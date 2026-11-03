@@ -1,8 +1,10 @@
-// tidal-rules: ICS-22
+// tidal-rules: ICS-22 ICS-21
 // tidal-expect: accept
-// tidal-expect-clang: reject
-// tidal-error-clang: static assertion failed due to requirement .same<Two, One>.
-// tidal-note: Q-0133. The sequence to the initializer list is user-defined and the one to int is standard. GCC and EDG apply ICS-22 first. Clang compares kind first and chooses take(int).
+// tidal-expect-gcc: reject
+// tidal-expect-edg: reject
+// tidal-error-gcc: static assertion failed
+// tidal-error-edg: static assertion failed
+// tidal-note: Q-0133. The sequence to the initializer list is user-defined and the one to int is standard. ICS-21 compares the kinds first, so take(int) wins. GCC and EDG apply ICS-22 first and choose the initializer list.
 namespace std {
 template <class E> class initializer_list {
   const E* first_;
@@ -19,4 +21,4 @@ struct Two {};
 struct Num { Num(int); };
 One take(std::initializer_list<Num>);
 Two take(int);
-static_assert(same<decltype(take({1})), One>);
+static_assert(same<decltype(take({1})), Two>);

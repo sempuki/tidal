@@ -3429,6 +3429,7 @@ pass	expressions/value-categories/xvalues.cpp
 pass	foundations/conversion-sequences/ambiguous-loses-to-standard.cpp
 pass	foundations/conversion-sequences/ambiguous-ties-user-defined.cpp
 pass	foundations/conversion-sequences/array-fewer-elements.cpp
+pass	foundations/conversion-sequences/array-known-bound-direct-cv.cpp
 pass	foundations/conversion-sequences/array-known-bound-direct.cpp
 pass	foundations/conversion-sequences/array-known-bound.cpp
 pass	foundations/conversion-sequences/array-pointer-tie-breaker.cpp
@@ -3512,6 +3513,7 @@ pass	foundations/conversion-sequences/rank-worst-step.cpp
 pass	foundations/conversion-sequences/reference-conversion-result.cpp
 pass	foundations/conversion-sequences/reference-conversion-value-result.cpp
 pass	foundations/conversion-sequences/reference-direct-derived.cpp
+pass	foundations/conversion-sequences/reference-direct-fewer-qualifiers.cpp
 pass	foundations/conversion-sequences/reference-function-rvalue.cpp
 pass	foundations/conversion-sequences/reference-less-cv.cpp
 pass	foundations/conversion-sequences/reference-no-sequence.cpp
@@ -3533,6 +3535,8 @@ pass	foundations/conversion-sequences/user-defined-candidates.cpp
 pass	foundations/conversion-sequences/user-defined-choice-object-parameter.cpp
 pass	foundations/conversion-sequences/user-defined-different-functions.cpp
 unsupported	foundations/conversion-sequences/user-defined-explicit-reference-value.cpp
+unsupported	foundations/conversion-sequences/user-defined-explicit-reference-xvalue.cpp
+unsupported	foundations/conversion-sequences/user-defined-explicit-rvalue-reference-value.cpp
 unsupported	foundations/conversion-sequences/user-defined-explicit.cpp
 pass	foundations/conversion-sequences/user-defined-first-part.cpp
 pass	foundations/conversion-sequences/user-defined-same-aggregate.cpp
@@ -4014,7 +4018,8 @@ pass	foundations/overload-resolution/call-through-address-nonstatic.cpp
 EDG-ONLY	foundations/overload-resolution/call-through-address-parenthesized-qualified.cpp
 pass	foundations/overload-resolution/call-through-address-parenthesized-static.cpp
 EDG-ONLY	foundations/overload-resolution/call-through-address-static-member.cpp
-EDG-ONLY	foundations/overload-resolution/call-through-address-unqualified.cpp
+pass	foundations/overload-resolution/call-through-address-unqualified-argument.cpp
+FALSE-REJECT	foundations/overload-resolution/call-through-address-unqualified.cpp
 pass	foundations/overload-resolution/call-through-address.cpp
 pass	foundations/overload-resolution/chosen-deleted.cpp
 pass	foundations/overload-resolution/chosen-not-accessible.cpp

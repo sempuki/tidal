@@ -1,7 +1,7 @@
 # Q-0153: Does the qualification step compare array bounds, and does it compare a reference that binds a temporary?
 
 **Status:** provisional
-**Affects:** ICS-31, `tests/foundations/conversion-sequences/qualification-array-bound.cpp`, `tests/foundations/conversion-sequences/qualification-reference-temporary.cpp`
+**Affects:** ICS-31, ICS-P2, `tests/foundations/conversion-sequences/qualification-array-bound.cpp`, `tests/foundations/conversion-sequences/qualification-reference-temporary.cpp`
 
 ## Context
 
@@ -39,11 +39,18 @@ prefers the result that converts to the other.
 
 ## Provisional answer
 
-No for bounds, yes for temporaries; Clang differs on bounds, EDG on temporaries (option 1). Two of three implementations agree on each case. The rule
-then keeps its one measure, the cv-qualifiers it adds.
+Yes for bounds, yes for temporaries; ICS-31 prefers the known bound (option 2), and compares a reference that binds a temporary (option 1).
 
-The question stays open under decision 0051 (2026-11-03). For the array bound, Clang 22 prefers the known bound, and GCC 16 and EDG 7.0 find a tie. For the reference that binds a temporary, EDG 7.0 finds a tie, and Clang 22 and GCC 16 prefer the reference. So two families disagree on each case. For the temporary, the provisional answer follows ICS-P5. The reference's sequence is a standard sequence, and step 4f compares standard sequences however their references bind. For the bound, Tidal's own pages point the other way. ICS-24 and ICS-46 (Q-0188) prefer a known bound, and item E3 of the gap review describes a qualification step that prefers it too. The gap review of this cluster should weigh option 2 for the bound.
+Changed on 2026-11-03 for the array bound. The source-reader gap review of question cluster 2 (`reports/review/2026-11-03-gap-review-question-cluster-2.md`) reads the reference as supporting option 2 for the bound. A qualification adjustment can drop an array bound (CONV-16), and the result that converts to the other is better. The review matches Clang 22, item E3 of the earlier gap review, and ICS-46 (Q-0188), which prefers the known bound for references. ICS-31 now gives option 2 for the bound. The test `qualification-array-bound.cpp` now compares the two pointers alone and expects the known bound, with overrides for GCC and EDG.
+
+Kept on 2026-11-03 for the reference that binds a temporary. The same review agrees with option 1 there, and ICS-P5 compares standard sequences however their references bind.
+
+The question stays open under decision 0051 (2026-11-03). For the array bound, Clang 22 prefers the known bound, and GCC 16 and EDG 7.0 find a tie. For the reference that binds a temporary, EDG 7.0 finds a tie, and Clang 22 and GCC 16 prefer the reference. So two families disagree on each case.
 
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of question cluster 2 (`reports/review/2026-11-03-gap-review-question-cluster-2.md`) reads the reference as supporting option 2 for the array bound and option 1 for the reference that binds a temporary. A pointer to an array of known bound converts to a pointer to an array of unknown bound by a qualification conversion, and not the reverse. For the temporary, the reference's sequence is the conversion to the referenced type, so only the qualification conversions differ.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

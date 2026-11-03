@@ -16,8 +16,8 @@ current state only. The history of how the project got here is in
 | [Raw storage and object representation](../specification/foundations/storage.md) | 29 | 17 required, 1 reject, 7 undefined, 1 unspecified, 3 impl-defined | 71 | 5 | 3 | 148 | Q-0304, Q-0305, Q-0306, Q-0307, Q-0308, Q-0323, Q-0324, Q-0325, Q-0327, Q-0328 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Value categories and temporaries](../specification/foundations/values.md) | 16 | 9 required, 4 reject, 2 unspecified, 1 impl-defined | 57 | 7 | 2 | 59 | Q-0034 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Standard conversions](../specification/foundations/conversions.md) | 20 | 11 required, 6 reject, 1 undefined, 2 impl-defined | 64 | 5 | 2 | 57 | Q-0028, Q-0100 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
-| [Implicit conversion sequences](../specification/foundations/conversion-sequences.md) | 47 | 46 required, 1 reject | 114 | 12 | 23 | 86 | Q-0081, Q-0132, Q-0133, Q-0134, Q-0135, Q-0136, Q-0137, Q-0138, Q-0152, Q-0153, Q-0154, Q-0155, Q-0156, Q-0157, Q-0188, Q-0294 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
-| [Overload resolution](../specification/foundations/overload-resolution.md) | 44 | 35 required, 9 reject | 165 | 5 | 26 | 159 | Q-0138, Q-0139, Q-0140, Q-0141, Q-0142, Q-0143, Q-0144, Q-0145, Q-0146, Q-0147, Q-0148, Q-0159, Q-0161, Q-0163, Q-0187, Q-0189, Q-0211 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
+| [Implicit conversion sequences](../specification/foundations/conversion-sequences.md) | 47 | 46 required, 1 reject | 118 | 11 | 26 | 86 | Q-0081, Q-0132, Q-0133, Q-0134, Q-0135, Q-0136, Q-0137, Q-0138, Q-0152, Q-0153, Q-0154, Q-0155, Q-0156, Q-0157, Q-0188, Q-0294, Q-0337 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
+| [Overload resolution](../specification/foundations/overload-resolution.md) | 44 | 35 required, 9 reject | 166 | 5 | 27 | 159 | Q-0138, Q-0139, Q-0140, Q-0141, Q-0142, Q-0143, Q-0144, Q-0145, Q-0146, Q-0147, Q-0148, Q-0159, Q-0161, Q-0163, Q-0187, Q-0189, Q-0211 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Names, scopes, and lookup](../specification/foundations/names.md) | 38 | 20 required, 18 reject | 191 | 4 | 2 | 93 | Q-0311 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Use, headers, and the one-definition rule](../specification/foundations/odr.md) | 19 | 9 required, 3 reject, 2 impl-defined, 4 no-diagnostic, 1 recommended | 68 | 2 | 10 | 46 | Q-0127, Q-0128, Q-0129, Q-0130, Q-0297, Q-0315 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Sequencing and evaluation order](../specification/foundations/evaluation-order.md) | 11 | 7 required, 1 undefined, 2 unspecified, 1 recommended | 35 | 4 | 0 | 107 | Q-0319 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
@@ -85,7 +85,7 @@ current state only. The history of how the project got here is in
 | [Template argument deduction](../specification/templates/deduction.md) | 39 | 36 required, 3 reject | 119 | 0 | 8 | 82 | Q-0208, Q-0209, Q-0215, Q-0219, Q-0220, Q-0295 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Partial ordering of templates](../specification/templates/ordering.md) | 16 | 15 required, 1 reject | 41 | 0 | 11 | 25 | Q-0146, Q-0211, Q-0214, Q-0216, Q-0217, Q-0218, Q-0293 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Dependent names](../specification/templates/dependent-names.md) | 39 | 20 required, 13 reject, 6 no-diagnostic | 117 | 0 | 20 | 81 | Q-0223, Q-0224, Q-0225, Q-0226, Q-0227, Q-0228, Q-0229, Q-0230, Q-0245, Q-0246, Q-0247, Q-0248, Q-0249, Q-0250 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
-| [Instantiation](../specification/templates/instantiation.md) | 36 | 16 required, 13 reject, 1 undefined, 2 unspecified, 1 impl-defined, 3 no-diagnostic | 130 | 1 | 18 | 55 | Q-0231, Q-0232, Q-0233, Q-0234, Q-0235, Q-0236, Q-0237, Q-0251, Q-0252, Q-0253, Q-0254, Q-0255, Q-0256, Q-0257, Q-0310 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
+| [Instantiation](../specification/templates/instantiation.md) | 36 | 16 required, 13 reject, 1 undefined, 2 unspecified, 1 impl-defined, 3 no-diagnostic | 130 | 2 | 18 | 55 | Q-0231, Q-0232, Q-0233, Q-0234, Q-0235, Q-0236, Q-0237, Q-0251, Q-0252, Q-0253, Q-0254, Q-0255, Q-0256, Q-0257, Q-0310 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Concepts and requires expressions](../specification/templates/concepts.md) | 37 | 21 required, 16 reject | 120 | 0 | 17 | 66 | Q-0258, Q-0259, Q-0260, Q-0270, Q-0285, Q-0286, Q-0287, Q-0288, Q-0289, Q-0290 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Constraints](../specification/templates/constraints.md) | 39 | 24 required, 13 reject, 2 no-diagnostic | 122 | 0 | 26 | 43 | Q-0260, Q-0261, Q-0262, Q-0263, Q-0264, Q-0265, Q-0266, Q-0267, Q-0268, Q-0269, Q-0281, Q-0282, Q-0283, Q-0284, Q-0291, Q-0292 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Packs](../specification/templates/packs.md) | 31 | 19 required, 11 reject, 1 no-diagnostic | 69 | 0 | 4 | 49 | Q-0238, Q-0271, Q-0272, Q-0273, Q-0274 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
@@ -122,7 +122,7 @@ containerized compilers on every push and pull request (decision 0012).
 | GCC 16.2.0 | container (official image) | skips `-m32` tests |
 | Clang 18.1.3 | container | |
 | GCC 14.2.0 | container | |
-| EDG 7.0 | container | front end only; skips `-m32`, warning-flag, and sanitizer tests; per-compiler expectations on 178 tests, each with a note that names its question or the implementation choice |
+| EDG 7.0 | container | front end only; skips `-m32`, warning-flag, and sanitizer tests; per-compiler expectations on 182 tests, each with a note that names its question or the implementation choice |
 | EDG 7.0, ILP32 | container, built with EDG's i686 configuration | front end only; runs only the `-m32` tests; differs on the alignment of `long long` (Q-0120) |
 | GCC 16.2.0, `-O2` | container, report | runs the tests at `-O2`; does not fail a run |
 | Clang 22.1.8, `-O2` | container, report | runs the tests at `-O2`; does not fail a run |
@@ -131,7 +131,7 @@ Full results are in `tests/RESULTS.md`.
 
 ## Open questions
 
-The question index has 336 questions: 295 open for opinions (294
+The question index has 337 questions: 296 open for opinions (295
 provisional and 1 open), 12 compiler defects, and 29 settled. Each open
 question has a provisional answer that the specification follows. A
 compiler-defect answer says that one compiler or an older version is
@@ -150,12 +150,12 @@ questions. See `questions/README.md`.
 
 ## Known limits of the tooling
 
-- The clean-room front end passes 4999 of 5609 tests, and 5144 pass their check.
+- The clean-room front end passes 5001 of 5614 tests, and 5146 pass their check.
   The front end reads `#include "file"` and no standard header.
   `tools/frontend_check.py` fails when a test that it passed no longer
   passes (`reports/clean-room/rust-frontend/conformance.tsv`).
 
-- 2613 tests carry `tidal-error` patterns. A pattern checks that a
+- 2617 tests carry `tidal-error` patterns. A pattern checks that a
   compiler rejects the test, fails to link the test, or stops the test
   at run time, for the reason the test's rule gives.
   In 50 tests, some compiler family has no pattern, because that
@@ -201,10 +201,10 @@ Waiting on the maintainer:
 - Confirm or change the provisional choices of decision 0051: settling
   a question when the newest version of each family agrees, and
   keeping the implementation-only operations referenced (Q-0322).
-- Decide Q-0300 and Q-0181, which the gap review of question cluster 1
-  reopened. In both, the compilers of the matrix agree with each other,
-  and the review reads the C++23 text the other way. Q-0181 also asks
-  whether Tidal follows a later change that the newest compilers apply.
+- Decide Q-0300, Q-0181, Q-0243, and Q-0275. In each, the compilers of
+  the matrix agree with each other, and a gap review reads the C++23
+  text the other way. Q-0181 and Q-0188 also ask whether Tidal follows
+  a later change that the newest compilers apply (Q-0007).
 - Decide whether to probe which C++23 rejections later language
   versions accept, as an index with no rules (designer view, item 4;
   Q-0007).

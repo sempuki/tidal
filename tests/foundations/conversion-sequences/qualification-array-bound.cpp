@@ -1,13 +1,15 @@
 // tidal-rules: ICS-31
 // tidal-expect: accept
-// tidal-expect-clang: reject
-// tidal-error-clang: ambiguous
-// tidal-note: Q-0153. Both sequences add const to the element. ICS-31 counts only cv-qualifiers, so the first arguments tie and the second argument decides. Clang prefers the known bound, and the arguments then cross.
+// tidal-expect-gcc: reject
+// tidal-expect-edg: reject
+// tidal-error-gcc: ambiguous
+// tidal-error-edg: more than one instance of overloaded function
+// tidal-note: Q-0153. Both sequences add const to the element, and the second also drops the bound. The first result converts to the second by a qualification adjustment, so ICS-31 prefers the known bound. GCC and EDG find a tie.
 template <class T, class U> constexpr bool same = false;
 template <class T> constexpr bool same<T, T> = true;
 struct One {};
 struct Two {};
 int (*row)[3] = nullptr;
-One take(const int (*)[3], long);
-Two take(const int (*)[], int);
-static_assert(same<decltype(take(row, 0)), Two>);
+One take(const int (*)[3]);
+Two take(const int (*)[]);
+static_assert(same<decltype(take(row)), One>);

@@ -505,20 +505,19 @@ points of instantiation:
 - an explicit instantiation definition.
 
 A use inside a function counts at the namespace-scope declaration that
-holds the function, also when the function is not a template. A
-constant evaluation uses the declarations before the first point
-({question}`Q-0257`). Another use can see the declarations up to the
-last point, and INST-32 applies where the points differ.
+holds the function, also when the function is not a template. A use can
+see the declarations up to the last point, and INST-32 applies where
+the points differ. A constant evaluation that needs a declaration after
+the first point is such a case ({question}`Q-0257`).
 :::
 
 :::{rule} INST-33
 :kind: reject
-:tests: templates/instantiation/class-point-not-later.cpp templates/instantiation/function-point-constant.cpp
+:tests: templates/instantiation/class-point-not-later.cpp
 
 An instantiation does not see a declaration after its point of
-instantiation. A class specialization, or a constant evaluation of a
-function specialization, that needs such a declaration is not valid
-({question}`Q-0257`).
+instantiation. A class specialization that needs such a declaration is
+not valid. INST-32 covers a function specialization ({question}`Q-0257`).
 :::
 
 ## Undefined Behavior
@@ -568,7 +567,7 @@ An implementation need not diagnose a break of this rule.
 
 :::{rule} INST-32
 :kind: no-diagnostic
-:tests: templates/instantiation/function-point-end-of-unit.cpp templates/instantiation/function-point-better-later.cpp templates/instantiation/points-in-two-units.cpp templates/instantiation/virtual-point-after-class.cpp templates/instantiation/function-point-constexpr-later.cpp
+:tests: templates/instantiation/function-point-end-of-unit.cpp templates/instantiation/function-point-better-later.cpp templates/instantiation/points-in-two-units.cpp templates/instantiation/virtual-point-after-class.cpp templates/instantiation/function-point-constexpr-later.cpp templates/instantiation/function-point-constant.cpp
 
 All the points of instantiation of a specialization, in one translation
 unit or in several, must give the specialization the same meaning. An
@@ -684,9 +683,11 @@ bullets below say so.
 - INST-31: every compiler accepts a virtual function whose call is
   resolved only by a declaration after the class's point. INST-32
   allows the result. The review predicts a rejection.
-- INST-33: every compiler rejects a constant evaluation that needs a
-  declaration after the first point of instantiation. The review reads
-  the case as one that needs no diagnostic ({question}`Q-0257`).
+- INST-31, INST-32: every compiler rejects a constant evaluation that
+  needs a declaration after the first point of instantiation. INST-32
+  allows the rejection. The gap review (item 31) and the gap review of
+  question cluster 1 read the case as one that needs no diagnostic, as
+  INST-P4 gives for points that differ ({question}`Q-0257`).
 - INST-32, INST-35: {rule}`ODR-10` and {rule}`ODR-14` state the
   rules for template definitions across translation units.
 - INST-29: GCC accepts an explicit instantiation declaration of a

@@ -49,6 +49,8 @@ for contributors.
 
 The question stays open under decision 0051 (2026-11-01). Clang 22 rejects the form with the keyword `template`, and GCC 16 and EDG 7.0 accept it, so two families disagree.
 
+Kept on 2026-11-03. The source-reader gap review of question cluster 1 (`reports/review/2026-11-01-gap-review-question-cluster-1.md`) reads the reference as supporting option 2 for both forms. Clang 22, GCC 16, and EDG 7.0 all accept the form without the keyword `template`, so option 2 would make CTAD-1 reject a program that every implementation accepts. The specification follows the shared behavior of the matrix there, as for Q-0300, until the maintainer decides. The keyword `template` only marks the name as a template, so the form with the keyword keeps the same answer, which GCC 16 and EDG 7.0 give. Clang 22 rejects that form for a missing argument list, and the review reads both forms alike, so Clang's rejection does not separate the two forms.
+
 ## Opinions
 
 ### Gap review, 2026-11-01

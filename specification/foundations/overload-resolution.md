@@ -536,7 +536,7 @@ of a function template matches (decision 0042).
 
 :::{rule} OVL-21
 :kind: required
-:tests: foundations/overload-resolution/call-through-address.cpp foundations/overload-resolution/call-through-address-static-member.cpp foundations/overload-resolution/call-through-address-nonstatic.cpp foundations/overload-resolution/call-parenthesized-name.cpp foundations/overload-resolution/call-through-address-parenthesized-static.cpp foundations/overload-resolution/call-through-address-parenthesized-qualified.cpp foundations/overload-resolution/call-through-address-unqualified.cpp foundations/overload-resolution/call-parenthesized-member-access.cpp
+:tests: foundations/overload-resolution/call-through-address.cpp foundations/overload-resolution/call-through-address-static-member.cpp foundations/overload-resolution/call-through-address-nonstatic.cpp foundations/overload-resolution/call-parenthesized-name.cpp foundations/overload-resolution/call-through-address-parenthesized-static.cpp foundations/overload-resolution/call-through-address-parenthesized-qualified.cpp foundations/overload-resolution/call-through-address-unqualified.cpp foundations/overload-resolution/call-through-address-unqualified-argument.cpp foundations/overload-resolution/call-parenthesized-member-access.cpp
 
 A call `(&f)(a)` resolves `f` as a call by name, with no implied object
 argument. A call `(f)(a)` is the same call as `f(a)`, and keeps the
@@ -546,12 +546,13 @@ the call `x.f(a)` or `p->f(a)` of {rule}`OVL-4`.
 
 :::{rule} OVL-44
 :kind: reject
-:tests: foundations/overload-resolution/call-through-address-parenthesized-static.cpp foundations/overload-resolution/call-through-address-parenthesized-qualified.cpp foundations/overload-resolution/call-through-address-unqualified.cpp
+:tests: foundations/overload-resolution/call-through-address-parenthesized-static.cpp foundations/overload-resolution/call-through-address-parenthesized-qualified.cpp
 
 In a call `(&f)(a)`, if the set `f` holds a member with an implicit
-object parameter, the operand of `&` must be a qualified name without
+object parameter, the operand of `&` must not be a qualified name in
 parentheses ({rule}`MPTR-2`). The rule holds even when a static member
-of the set would win ({question}`Q-0161`).
+of the set would win. An unqualified name without parentheses follows
+{rule}`OVL-21` ({question}`Q-0161`).
 :::
 
 :::{rule} OVL-39
@@ -803,7 +804,7 @@ tick(1, 1);                      // rejected: each is better on one argument
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 139
-of 165 tests.
+of 166 tests.
 
 The questions of the tie-breaker cluster on this page stay open under
 decision 0051: {question}`Q-0138`, {question}`Q-0139`,
@@ -811,6 +812,10 @@ decision 0051: {question}`Q-0138`, {question}`Q-0139`,
 {question}`Q-0148`, {question}`Q-0159`, {question}`Q-0161`,
 {question}`Q-0163`, {question}`Q-0187`, and {question}`Q-0189`. On
 2026-11-03, Clang 22, GCC 16, and EDG 7.0 still split on each of them.
+The source-reader gap review of the cluster
+(`reports/review/2026-11-03-gap-review-question-cluster-2.md`) leans
+against Q-0161 for the unqualified form, and OVL-21 follows that
+reading. The review finds the reference unclear on Q-0189.
 
 - OVL-25, OVL-6: every compiler chooses a static call operator over a
   surrogate candidate with the same parameter types. Every compiler
@@ -858,10 +863,11 @@ decision 0051: {question}`Q-0138`, {question}`Q-0139`,
 - OVL-21: Clang 22 calls a static member through the address of a set of
   members. Clang 18 and GCC reject the call, and EDG stops with an
   internal error ({question}`Q-0143`).
-- OVL-44: GCC rejects a call through `&(C::f)` or `&f` on a set with a
-  non-static member. Clang rejects the parenthesized form, and Clang 22
-  accepts `&f`. EDG accepts both forms with no argument
-  ({question}`Q-0161`).
+- OVL-44, OVL-21: GCC rejects a call through `&(C::f)` or `&f` on a set
+  with a non-static member. Clang rejects the parenthesized form, and
+  Clang 22 accepts `&f`. EDG accepts both forms with no argument. OVL-21
+  follows Clang 22 and EDG for `&f`, as for `&C::f`
+  ({question}`Q-0143`, {question}`Q-0161`).
 - OVL-26: EDG finds two conversion results ambiguous when they differ
   only by a function pointer conversion. Clang and GCC prefer the
   identity ({question}`Q-0163`).

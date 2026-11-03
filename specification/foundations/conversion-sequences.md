@@ -63,8 +63,9 @@ argument
    |
    v
 3. qualification adjustment   cv-qualifiers added through           exact match
-                              pointers, noexcept dropped from a
-                              function pointer
+                              pointers, an array bound dropped
+                              through a pointer, noexcept dropped
+                              from a function pointer
    |
    v
 parameter
@@ -127,14 +128,14 @@ step that tells the two sequences apart decides:
 sequences S1 and S2 for one argument
    |
    v
-1. list targets        S1 initializes std::initializer_list    ICS-22
+1. kind                standard > user-defined = ambiguous      ICS-21
+                       > ellipsis
+   |
+   v
+2. list targets        S1 initializes std::initializer_list    ICS-22
                        and S2 does not: S1 is better
                        arrays of one element type: fewer        ICS-23
                        elements, then a known bound, is better  ICS-24
-   |
-   v
-2. kind                standard > user-defined = ambiguous      ICS-21
-                       > ellipsis
    |
    v
 3. both user-defined   same function or aggregate class:        ICS-25
@@ -151,8 +152,10 @@ sequences S1 and S2 for one argument
                        f. fewer cv-qualifiers added             ICS-31
                        g. fewer cv-qualifiers on the            ICS-30
                           referenced type
-                       h. two direct bindings to one array:     ICS-46
-                          the known bound is better
+                       h. two direct bindings to one object:    ICS-46
+                          the referenced type that converts
+                          to the other by a qualification
+                          adjustment is better
    |
    v
 5. nothing decides     the sequences tie
@@ -176,8 +179,10 @@ observable:
   tells apart.
 - Step 4f needs results that differ below the top level, and step 4g
   needs referenced types that differ only at the top level.
-- Step 4h compares two references to arrays of one element type. No
-  test observes its order against steps 4d to 4g.
+- Step 4h compares two direct bindings, which have no qualification
+  adjustment for step 4f. Their referenced types differ below the top
+  level or in a bound, which step 4g does not compare. No test observes
+  the order of step 4h against step 4d.
 
 Tests observe step 4b before 4d, and 4d before 4g. Step 1 before
 step 2 ({question}`Q-0133`), 4c before 4d, and 4d before 4f
@@ -263,7 +268,7 @@ and for the operands of the built-in `!`, `&&`, and `||` ({rule}`OVL-9`).
 
 :::{rule} ICS-45
 :kind: required
-:tests: foundations/conversion-sequences/user-defined-explicit.cpp foundations/conversion-sequences/user-defined-explicit-reference-value.cpp foundations/conversion-sequences/user-defined-candidates.cpp
+:tests: foundations/conversion-sequences/user-defined-explicit.cpp foundations/conversion-sequences/user-defined-explicit-reference-value.cpp foundations/conversion-sequences/user-defined-explicit-rvalue-reference-value.cpp foundations/conversion-sequences/user-defined-explicit-reference-xvalue.cpp foundations/conversion-sequences/user-defined-candidates.cpp
 
 Direct initialization can also use an `explicit` conversion function
 ({rule}`CVF-3`) for these targets:
@@ -273,9 +278,12 @@ Direct initialization can also use an `explicit` conversion function
   constructor that copies or moves `C`.
 - a target of another type, other than a reference, when the result
   reaches it by a qualification adjustment alone,
-- a reference that binds directly to an lvalue result, when the
-  result reaches the referenced type by a qualification adjustment
-  alone ({question}`Q-0156`).
+- a reference that binds directly to the result, when the result
+  reaches the referenced type by a qualification adjustment alone.
+  {rule}`OVL-15` gives the results that each kind of reference takes.
+  So an rvalue reference takes a value ({question}`Q-0156`), and an
+  lvalue reference takes only an lvalue
+  ({question}`Q-0337`).
 
 A function parameter is copy-initialized, so these functions never
 serve it.
@@ -559,11 +567,11 @@ the reference directly.
 
 :::{rule} ICS-21
 :kind: required
-:tests: foundations/conversion-sequences/kind-order.cpp
+:tests: foundations/conversion-sequences/kind-order.cpp foundations/conversion-sequences/initializer-list-over-kind.cpp
 
 A standard sequence is better than a user-defined sequence or an
 ellipsis sequence. A user-defined sequence is better than an ellipsis
-sequence. ICS-22 to ICS-24 come first.
+sequence. The rule comes before ICS-22 to ICS-24 ({question}`Q-0133`).
 :::
 
 :::{rule} ICS-22
@@ -571,8 +579,9 @@ sequence. ICS-22 to ICS-24 come first.
 :tests: foundations/conversion-sequences/initializer-list-target.cpp foundations/conversion-sequences/initializer-list-over-rank.cpp foundations/conversion-sequences/initializer-list-over-kind.cpp foundations/conversion-sequences/initializer-list-reference.cpp
 
 A list sequence to `std::initializer_list<E>`, or to a reference to it,
-is better than a list sequence to any other type. The rule comes before
-kind ({question}`Q-0133`) and before rank.
+is better than a list sequence to any other type. The rule compares only
+two sequences of the same kind (ICS-21, {question}`Q-0133`). The rule
+comes before rank.
 :::
 
 :::{rule} ICS-23
@@ -593,12 +602,19 @@ of known bound is better than the array of unknown bound.
 
 :::{rule} ICS-46
 :kind: required
-:tests: foundations/conversion-sequences/array-known-bound-direct.cpp foundations/conversion-sequences/list-string-literal-bound.cpp
+:tests: foundations/conversion-sequences/array-known-bound-direct.cpp foundations/conversion-sequences/list-string-literal-bound.cpp foundations/conversion-sequences/reference-direct-fewer-qualifiers.cpp foundations/conversion-sequences/array-known-bound-direct-cv.cpp
 
-If two references to arrays bind directly to one array, the reference to
-the array of known bound is better than the reference to an array of
-unknown bound ({question}`Q-0188`). The binding can come from a braced
-list of one element ({rule}`ICS-20`, ICS-38, {principle}`REF-P3`).
+Two references can bind directly to one object. If the referenced type
+of one converts to the other's by a qualification adjustment, that
+reference is better. These cases occur:
+
+- fewer cv-qualifiers below the top level, as `int* const&` over
+  `const int* const&`,
+- an array of known bound over an array of unknown bound
+  ({question}`Q-0188`).
+
+The binding can come from a braced list of one element ({rule}`ICS-20`,
+ICS-38, {principle}`REF-P3`).
 :::
 
 :::{rule} ICS-25
@@ -708,11 +724,11 @@ lvalue reference is better than binding an rvalue reference.
 :kind: required
 :tests: foundations/conversion-sequences/qualification-fewer.cpp foundations/conversion-sequences/subsequence-qualification.cpp foundations/conversion-sequences/rvalue-reference-before-qualification.cpp foundations/conversion-sequences/qualification-array-bound.cpp foundations/conversion-sequences/qualification-reference-temporary.cpp
 
-If two sequences differ only in a qualification adjustment, and the
-result of one converts to the result of the other by adding
-cv-qualifiers, the sequence that adds fewer is better. Only
-cv-qualifiers count, and an array bound does not ({question}`Q-0153`).
-ICS-28 comes first ({question}`Q-0152`).
+Two sequences can differ only in a qualification adjustment. If the
+result of one converts to the other's result by a qualification
+adjustment, that sequence is better. The adjustment can add
+cv-qualifiers or drop an array bound ({rule}`CONV-16`,
+{question}`Q-0153`). ICS-28 comes first ({question}`Q-0152`).
 :::
 
 :::{rule} ICS-30
@@ -808,14 +824,20 @@ pick(low);                  // 10: ICS-34 comes before ICS-28
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 91
-of 114 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 92
+of 118 tests.
 
 The questions of the tie-breaker cluster on this page stay open under
 decision 0051: {question}`Q-0133`, {question}`Q-0137`,
 {question}`Q-0138`, {question}`Q-0152`, {question}`Q-0153`,
 {question}`Q-0156`, and {question}`Q-0188`. On 2026-11-03, Clang 22,
-GCC 16, and EDG 7.0 still split on each of them.
+GCC 16, and EDG 7.0 still split on each of them. The source-reader gap
+review of the cluster
+(`reports/review/2026-11-03-gap-review-question-cluster-2.md`) reads
+the reference against Q-0133, the array bound of Q-0153, the rvalue
+references of Q-0156, and the plain bindings of Q-0188. ICS-21, ICS-22,
+ICS-31, and ICS-45 follow the review's reading. ICS-46 keeps the known
+bound, for the reasons in Q-0188.
 
 - ICS-15 to ICS-20, ICS-38, ICS-46: the splits on braced lists below
   share one model, the table of {principle}`REF-P3`.
@@ -825,9 +847,10 @@ GCC 16, and EDG 7.0 still split on each of them.
   copy-list-initialized parameter, chooses the function, and rejects the
   call. Clang and EDG form no sequence and choose the other function
   ({question}`Q-0132`).
-- ICS-22: GCC and EDG prefer a user-defined list sequence to
+- ICS-21, ICS-22: GCC and EDG prefer a user-defined list sequence to
   `std::initializer_list` over a standard sequence to `int`. Clang
-  compares the kinds first and chooses `int` ({question}`Q-0133`).
+  compares the kinds first and chooses `int`. The rules follow Clang,
+  ICS-P5, and the gap review ({question}`Q-0133`).
 - ICS-19: Clang 18 gives a one-element list of a class with an
   initializer-list constructor an exact match. The other compilers use
   the initializer-list constructor ({question}`Q-0081`).
@@ -851,9 +874,9 @@ GCC 16, and EDG 7.0 still split on each of them.
   before ICS-28. GCC does so except for ICS-34, and EDG applies ICS-28
   first. Clang and EDG apply ICS-28 before ICS-31, and GCC applies
   ICS-31 first ({question}`Q-0152`, the order grid).
-- ICS-31: Clang prefers a known array bound. EDG does not compare a
-  reference that binds a temporary with a value parameter
-  ({question}`Q-0153`).
+- ICS-31: Clang prefers a pointer to an array of known bound, as ICS-31
+  does. GCC and EDG find a tie. EDG does not compare a reference that
+  binds a temporary with a value parameter ({question}`Q-0153`).
 - ICS-19, ICS-36: EDG finds a tie between `Middle` and `Base` for a
   one-element list of `Derived` when the classes are not aggregates
   ({question}`Q-0154`).
@@ -863,7 +886,11 @@ GCC 16, and EDG 7.0 still split on each of them.
   ({question}`Q-0155`).
 - ICS-46: two references bind directly to one array, one with a known
   bound and one without. GCC and EDG prefer the known bound, with or
-  without braces. Clang finds a tie ({question}`Q-0188`).
+  without braces, and also when the known bound has fewer
+  cv-qualifiers. Clang finds a tie ({question}`Q-0188`). Every compiler
+  prefers `int* const&` to `const int* const&` for an `int*` lvalue.
+  Clang and GCC bind both references directly in a constant
+  evaluation.
 - ICS-38: every compiler binds a reference to a braced string literal of
   the referenced type directly. An rvalue reference cannot bind to the
   literal, and an lvalue reference wins over an rvalue reference.
@@ -871,7 +898,12 @@ GCC 16, and EDG 7.0 still split on each of them.
   chooses another viable function when one exists.
 - ICS-45: Clang lets direct initialization of a reference use an
   `explicit` conversion function that returns a value. GCC and EDG do
-  not ({question}`Q-0156`).
+  not. ICS-45 follows Clang for an rvalue reference
+  ({question}`Q-0156`), and GCC and EDG for an lvalue reference to
+  `const` ({question}`Q-0337`).
+  Every compiler binds `Item&&` to the result of `explicit operator
+  Item&&()`. For `const Item&`, Clang and EDG use that function, and GCC
+  does not.
 - ICS-20: for a list with one class element that converts to the
   referenced type, Clang and EDG make a temporary unless the element
   has the referenced type or a derived class. GCC binds through the
@@ -1092,18 +1124,18 @@ The source of each rule:
 | ICS-13, ICS-14, ICS-40, ICS-41 | grid object-parameter; inventory B6, C7 to C10, D2; gap review S4, S5, M9 |
 | ICS-15 to ICS-20 | grids lists, list-references, classes; inventory D8, D9, F1 to F18; gap review E1, M5, M7, M8; front-end finding G41 |
 | ICS-21 | grids classes, user-defined; inventory H1 to H3 |
-| ICS-22 to ICS-24 | grid lists; edg-overload (the list checks before the level comparison); inventory I1 to I3; gap review O3, M5 |
+| ICS-22 to ICS-24 | grid lists; edg-overload (the list checks before the level comparison); inventory I1 to I3; gap review O3, M5; gap review of question cluster 2 |
 | ICS-25 | grid user-defined; inventory L1 to L3 |
-| ICS-26, ICS-31 | grids pointers, functions, order; edg-overload (identity against qualification); inventory J3, J7, J8; gap review E3 |
+| ICS-26, ICS-31 | grids pointers, functions, order; edg-overload (identity against qualification); inventory J3, J7, J8; gap review E3; gap review of question cluster 2 |
 | ICS-27 | grid arithmetic; inventory J4 |
 | ICS-28 to ICS-30 | grids references, functions, object-parameter, order; edg-overload (reference comparison); inventory J1, J2, J5, J6; gap review O1, O2, S4 |
 | ICS-32 to ICS-36 | grids arithmetic, pointers, member-pointers, classes, order; edg-overload (standard conversion comparison); inventory K1, K2, K4 to K9; gap review O1, O2, M4, M8, S1 |
 | ICS-37 | probes of conversion functions; edg-overload (the source-class check after a user-defined conversion); inventory K3, K10, K11, L4; gap review E2, M2, S2 |
 | ICS-38 | probes of braced string literals; gap review S3; front-end finding G49 |
-| ICS-46 | probes of references to arrays of known and unknown bound; front-end finding G49 |
+| ICS-46 | probes of references to arrays of known and unknown bound; probes of direct bindings to pointers; front-end finding G49; gap review of question cluster 2 |
 | ICS-39 | grid arithmetic (enum : short); gap review S1 |
 | ICS-42, ICS-43 | probes of conversion functions; edg-overload (the source-class check after a user-defined conversion); inventory K10, K11; gap review S2 |
 | ICS-44 | probes of conversion functions to extended floating-point types; gap review M3 |
-| ICS-45 | probes of `static_cast` with explicit conversion functions; gap review E4 |
+| ICS-45 | probes of `static_cast` with explicit conversion functions; gap review E4; gap review of question cluster 2 |
 
 Inputs: edg-overload.

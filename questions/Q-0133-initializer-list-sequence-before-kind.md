@@ -44,12 +44,16 @@ that the source compares the kinds first, which is Clang's result.
 
 ## Provisional answer
 
-Yes; GCC and EDG agree, Clang compares kind first (option 1). Two of three implementations agree, and the rule then has one
-place in the order of ICS-P5 for every kind. The gap review supports
-option 2.
+No; the kind comparison comes first, and ICS-22 decides only between sequences of the same kind (option 2). Clang chooses `take(int)`.
 
-The question stays open under decision 0051 (2026-11-03). Clang 22 chooses `take(int)`, and GCC 16 and EDG 7.0 choose the initializer list, so two families disagree. No principle on Tidal's pages supports this order. ICS-P5 says the steps prefer the sequence with no user code, which fits option 2, and item O3 of the gap review also gives option 2. The gap review of this cluster should weigh a change to option 2.
+Changed on 2026-11-03. The source-reader gap review of question cluster 2 (`reports/review/2026-11-03-gap-review-question-cluster-2.md`) reads the reference as supporting option 2. The review matches Clang 22, item O3 of the earlier gap review, and ICS-P5, where the steps prefer the sequence with no user code. ICS-21 and ICS-22 now give option 2, and the test expects `take(int)`, with overrides for GCC and EDG.
+
+The question stays open under decision 0051 (2026-11-03). Clang 22 chooses `take(int)`, and GCC 16 and EDG 7.0 choose the initializer list, so two families disagree.
 
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of question cluster 2 (`reports/review/2026-11-03-gap-review-question-cluster-2.md`) reads the reference as supporting option 2. The kinds of the two sequences compare first, and the initializer-list preference acts only between sequences of the same kind. A list sequence whose worst element conversion is user-defined is a user-defined sequence, so the identity to `int` wins.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
