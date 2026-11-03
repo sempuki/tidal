@@ -27,6 +27,14 @@ target/release/tidal-fe check FILE [--m32] [--werror] [-Wname ...]
 | 1 | reject: at least one error, printed with a Tidal rule ID when one applies |
 | 2 | unsupported: the front end met a construct it does not understand and found no error |
 
+A token sequence that the parser does not derive is an error that names
+TR-12. The parse stays unsupported when the front end knows that it
+does not model the construct (an extension outside the specification,
+an `asm` declaration, a named escape, a case range), or when the stop is
+inside a class template or a scope where an earlier name was unknown,
+since there the stop can come from the front end and not from the
+program.
+
 Diagnostics go to standard error, one per line:
 
 ```
@@ -210,8 +218,25 @@ Subsumption compares atoms by their place in the source and their
 mapped arguments (CNS-4, CNS-22). A function with placeholder parameters
 becomes a template with invented parameters (DED-34). A class template
 named without arguments deduces them through its guides, each a hidden
-function template (CTAD-P1). Generic lambdas are not modeled.
+function template (CTAD-P1). A constant parameter declared with a
+placeholder pattern, such as `auto*`, matches an argument whose type has
+that form (DED-12).
+
+A lambda with a placeholder parameter is a generic lambda (LAM-15). Its
+body is parsed as a pattern, so a check that needs the parameter types
+waits for a call (SA-5). The call operator is not instantiated, so a call
+of a generic lambda stays unknown.
+
+## Exception specifications
+
+The `noexcept` operator (UN-18) follows EXS-4: a function is
+potentially throwing unless its declaration says `noexcept`, except
+for a deallocation function, a destructor (DTOR-4), and a defaulted or
+implicit special member or comparison, which follow the functions that
+they call for bases and members. A destructor of a class temporary in
+the operand counts. A placement `new` counts when every allocation
+function with that number of arguments is non-throwing.
 
 The findings about the specification are in
 `reports/clean-room/rust-frontend/report.md` and `report-2.md` to
-`report-9.md`.
+`report-10.md`.

@@ -182,6 +182,10 @@ pub enum EK {
     /// An explicit destructor call `x.~T()` on the glvalue `x` (DTOR-8,
     /// STG-6).
     Destroy(Box<Expr>),
+    /// An element of an aggregate's list for a member that a designated
+    /// list does not name: the member is initialized as if the list
+    /// ended before it (LIST-5).
+    MemberDefault,
     /// Something the front end parsed but cannot evaluate.
     Unknown(String),
 }
@@ -297,6 +301,7 @@ pub fn sexp(e: &Expr) -> String {
     };
     let ty = crate::types::show(&e.ty);
     let inner = match &e.k {
+        EK::MemberDefault => "member-default".into(),
         EK::Int(v) => format!("{}", v),
         EK::Float(v) => format!("{}", v),
         EK::NullPtr => "nullptr".into(),

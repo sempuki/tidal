@@ -362,7 +362,7 @@ impl P {
                     head.extend(cp.iter().cloned());
                     let all = Self::head_args(&head, depth);
                     let mine: Vec<TArg> = all[n..].to_vec();
-                    let b = Binds { depth: cd, vals: mine.iter().map(|a| Some(match a { TArg::Expand(x) => (**x).clone(), x => x.clone() })).collect(), kinds: vec![], packs: vec![], unknown: false, fixed: vec![], from_bound: false };
+                    let b = Binds { depth: cd, vals: mine.iter().map(|a| Some(match a { TArg::Expand(x) => (**x).clone(), x => x.clone() })).collect(), kinds: vec![], patterns: vec![], packs: vec![], unknown: false, fixed: vec![], from_bound: false };
                     let ps: Vec<QTy> = f.fty.params.iter().map(|q| self.subst_ty(q, &b)).collect();
                     // CTAD-29: the constraints of the constructor template,
                     // with its parameters after those of the class.
@@ -572,9 +572,9 @@ impl P {
                 }
             }
         }
-        let gb = Binds { depth: g.depth, vals, kinds: vec![], packs: vec![], unknown: false, fixed: vec![], from_bound: false };
+        let gb = Binds { depth: g.depth, vals, kinds: vec![], patterns: vec![], packs: vec![], unknown: false, fixed: vec![], from_bound: false };
         // The invented parameters of the match become the alias's.
-        let back = Binds { depth: INV, vals: Self::head_args(head, da).into_iter().map(|a| Some(match a { TArg::Expand(x) => *x, x => x })).collect(), kinds: vec![], packs: vec![], unknown: false, fixed: vec![], from_bound: false };
+        let back = Binds { depth: INV, vals: Self::head_args(head, da).into_iter().map(|a| Some(match a { TArg::Expand(x) => *x, x => x })).collect(), kinds: vec![], patterns: vec![], packs: vec![], unknown: false, fixed: vec![], from_bound: false };
         let mut ps = Vec::new();
         for q in &g.params {
             let q1 = self.subst_ty(q, &gb);
@@ -801,7 +801,7 @@ impl P {
                     crate::cons::Sat::Unknown => return None,
                     _ => continue,
                 }
-                let b = Binds { depth: g.depth, vals: targs.iter().cloned().map(Some).collect(), kinds: vec![], packs: vec![], unknown: false, fixed: vec![], from_bound: false };
+                let b = Binds { depth: g.depth, vals: targs.iter().cloned().map(Some).collect(), kinds: vec![], patterns: vec![], packs: vec![], unknown: false, fixed: vec![], from_bound: false };
                 let me = self.d.muted_errors;
                 self.d.muted += 1;
                 let mut ps: Vec<QTy> = Vec::new();

@@ -78,7 +78,7 @@ impl P {
         match self.parse_statement() {
             Ok(s) => s,
             Err(e) => {
-                self.unsupported(e.line, format!("parse: {}", e.msg));
+                self.parse_failure(&e);
                 let s = self.decl_scope();
                 self.scopes[s].uncertain = true;
                 if self.pos == start {
@@ -172,7 +172,10 @@ impl P {
                 }
                 "try" => {
                     self.pos += 1;
-                    let body = self.parse_compound()?;
+                    self.enter_try_region();
+                    let body = self.parse_compound();
+                    self.try_regions.pop();
+                    let body = body?;
                     let hs = self.parse_handlers()?;
                     return Ok(Stmt::Try(Box::new(body), hs));
                 }
@@ -215,6 +218,11 @@ impl P {
         self.parse_statement()
     }
 
+    pub fn enter_try_region(&mut self) {
+        self.try_region_next += 1;
+        self.try_regions.push(self.try_region_next);
+    }
+
     fn define_label(&mut self, name: &str, line: u32) {
         let set = self.jump_set();
         let Some(f) = self.fns.last_mut() else {
@@ -236,6 +244,10 @@ impl P {
         // IF-17: a marker for each enclosing if constexpr / if consteval branch
         for &b in &self.cx_branches {
             s.insert(usize::MAX - b);
+        }
+        // TRY-7: a marker for each enclosing try block or handler
+        for &r in &self.try_regions {
+            s.insert(usize::MAX / 4 + r);
         }
         let base = self.fns.last().map_or(self.stack.len(), |f| f.scope_base);
         for &sc in &self.stack[base.min(self.stack.len())..] {
@@ -260,6 +272,8 @@ impl P {
                 let missing: Vec<&usize> = lset.iter().filter(|v| !gset.contains(v)).collect();
                 if missing.iter().any(|&&v| v > usize::MAX / 2) {
                     self.error(*gl, "IF-17", format!("goto '{}' jumps into a branch of if constexpr or if consteval", name));
+                } else if missing.iter().any(|&&v| v > usize::MAX / 4) {
+                    self.error(*gl, "TRY-7", format!("goto '{}' jumps into a try block or a handler", name));
                 } else if !missing.is_empty() {
                     self.error(*gl, "JMP-6", format!("goto '{}' jumps past the initialization of a variable", name));
                 }
@@ -302,6 +316,8 @@ impl P {
         let missing: Vec<&usize> = set.iter().filter(|v| !start.contains(v)).collect();
         if missing.iter().any(|&&v| v > usize::MAX / 2) {
             self.error(line, "IF-17", "case or default label inside a branch of if constexpr or if consteval");
+        } else if missing.iter().any(|&&v| v > usize::MAX / 4) {
+            self.error(line, "TRY-7", "case or default label inside a try block or a handler that the switch encloses");
         } else if !missing.is_empty() {
             // SW-5: a jump to a label must not skip an initialization.
             self.error(line, "SW-5", "jump to case label skips the initialization of a variable");
@@ -344,7 +360,9 @@ impl P {
                 } else {
                     let s = self.jump_set();
                     let start = self.fns.last().unwrap().switches.last().unwrap().start_set.clone();
-                    if s.iter().any(|v| !start.contains(v)) {
+                    if s.iter().any(|v| !start.contains(v) && *v > usize::MAX / 4 && *v <= usize::MAX / 2) {
+                        self.error(line, "TRY-7", "case label inside a try block or a handler that the switch encloses");
+                    } else if s.iter().any(|v| !start.contains(v)) {
                         self.error(line, "SW-5", "jump to case label skips the initialization of a variable");
                     }
                 }
@@ -537,7 +555,7 @@ impl P {
     fn check_unused(&mut self, e: &Expr) {
         fn has_effect(p: &P, e: &Expr) -> bool {
             match &e.k {
-                EK::Call(..) | EK::Construct(..) | EK::Assign(..) | EK::Throw(_) | EK::Unknown(_) => true,
+                EK::Call(..) | EK::Construct(..) | EK::Assign(..) | EK::Throw(_) | EK::Unknown(_) | EK::Delete(..) | EK::New { .. } | EK::Destroy(_) => true,
                 EK::Unary(op, a) => matches!(op, UOp::PreInc | UOp::PreDec | UOp::PostInc | UOp::PostDec) || has_effect(p, a) || (*op == UOp::Deref && a.ty.v),
                 EK::Conv(Conv::ToVoid, _) => true,
                 EK::Conv(Conv::LToR, a) => a.ty.v || has_effect(p, a),

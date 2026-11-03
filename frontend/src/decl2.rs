@@ -30,7 +30,7 @@ impl P {
     pub fn parse_translation_unit(&mut self) {
         while self.tok().kind != TK::Eof {
             if self.at("}") {
-                self.error_norule(self.line(), "unexpected '}'");
+                self.error(self.line(), "TR-12", "unexpected '}'");
                 self.pos += 1;
                 continue;
             }
@@ -47,7 +47,7 @@ impl P {
         match self.parse_declaration(ctx) {
             Ok(s) => s,
             Err(e) => {
-                self.unsupported(e.line, format!("parse: {}", e.msg));
+                self.parse_failure(&e);
                 // Names this declaration would have declared are unknown
                 // now, so failed lookups in this scope are not errors.
                 let s = self.decl_scope();
@@ -389,6 +389,7 @@ impl P {
             let name = self.ident()?;
             self.skip_attributes();
             self.expect("=")?;
+            self.implicit_tn = true;
             let q = self.parse_type_id()?;
             self.expect(";")?;
             if let Some(crate::templ::InstReq::Alias) = &self.inst {
@@ -423,7 +424,7 @@ impl P {
             }
         }
         loop {
-            self.eat("typename");
+            let typename = self.eat("typename");
             let scope = self.parse_nested_name()?;
             if scope.is_none() {
                 // NS-7: a using declaration needs a qualified name.
@@ -446,6 +447,18 @@ impl P {
                     let is_class_scope = matches!(self.scopes[s].kind, SK::Class(_));
                     if is_class_scope && ctx == Ctx::Namespace {
                         self.error(line, "NS-9", "using declaration at namespace scope names a class member");
+                    }
+                    if let (SK::Class(c), Ctx::Class(cc)) = (self.scopes[s].kind.clone(), ctx) {
+                        if !self.in_template() && !self.class_uncertain(cc) && !self.class_uncertain(c) && c != cc {
+                            // DER-9: the named class is a base, and a direct
+                            // base for inherited constructors.
+                            let direct = self.classes[cc].bases.iter().any(|b| b.class == Some(c));
+                            if self.classes[c].name == name && !direct {
+                                self.error(line, "DER-9", format!("'{}' is not a direct base of '{}', so its constructors are not inherited", self.classes[c].name, self.classes[cc].name));
+                            } else if !self.is_base_of(c, cc) {
+                                self.error(line, "DER-9", format!("'{}' is not a base of '{}'", self.classes[c].name, self.classes[cc].name));
+                            }
+                        }
                     }
                     if let SK::Class(c) = self.scopes[s].kind {
                         if self.classes[c].name == name {
@@ -488,6 +501,18 @@ impl P {
                                 self.error(line, "NAM-8", format!("no member named '{}' in the namespace", name));
                             }
                         }
+                    }
+                }
+                _ if self.in_template() && matches!(ctx, Ctx::Class(_)) && !name.is_empty() => {
+                    // DEP-23: a member of a dependent base. With `typename`
+                    // the name is a type, without it a value (DEP-19). A
+                    // specialization looks the name up again.
+                    let cur = self.decl_scope();
+                    if typename {
+                        self.add_decl_in(cur, &name, DK::Type(crate::templ::dep(Dep::Opaque)), line);
+                    } else {
+                        let vi = VarInfo { ty: QTy::unknown(), storage: Storage::Static, constexpr: false, constinit: false, init: None, param: false, local: false, dependent: true, defined: true, class: None };
+                        self.add_decl_in(cur, &name, DK::Var(vi), line);
                     }
                 }
                 _ => {
@@ -578,6 +603,7 @@ impl P {
                 if self.eat("=") {
                     let st = self.pos;
                     self.no_gt += 1;
+                    self.implicit_tn = true;
                     let r = self.parse_type_id();
                     self.no_gt -= 1;
                     r?;
@@ -586,7 +612,7 @@ impl P {
                         self.error(pl, "TPL-34", "a template parameter pack has a default argument");
                     }
                 }
-                params.push(TParam { name, kind: TPK::Type, pack, default, line: pl, dauto: false });
+                params.push(TParam { name, kind: TPK::Type, pack, default, line: pl, dauto: false, pattern: None });
             } else if self.at("template") {
                 self.pos += 1;
                 let inner_scope = self.push_scope(SK::Template);
@@ -624,7 +650,7 @@ impl P {
                         self.error(pl, "TPL-34", "a template parameter pack has a default argument");
                     }
                 }
-                params.push(TParam { name, kind: TPK::Templ(std::rc::Rc::new(inner)), pack, default, line: pl, dauto: false });
+                params.push(TParam { name, kind: TPK::Templ(std::rc::Rc::new(inner)), pack, default, line: pl, dauto: false, pattern: None });
             } else if let Some((ctid, nlen)) = self.concept_at() {
                 // A type constraint (CPT-17 to CPT-21).
                 self.tparam_constrained = true;
@@ -662,7 +688,7 @@ impl P {
                     if d.pack {
                         self.pack_decls.insert(id);
                     }
-                    TParam { name, kind: TPK::Auto, pack: d.pack, default, line: pl, dauto }
+                    TParam { name, kind: TPK::Auto, pack: d.pack, default, line: pl, dauto, pattern: None }
                 } else {
                     let pack = self.eat("...");
                     let name = if self.is_ident() { self.ident()? } else { String::new() };
@@ -676,6 +702,7 @@ impl P {
                     if self.eat("=") {
                         let st = self.pos;
                         self.no_gt += 1;
+                        self.implicit_tn = true;
                         let r = self.parse_type_id();
                         self.no_gt -= 1;
                         r?;
@@ -684,7 +711,7 @@ impl P {
                             self.error(pl, "TPL-34", "a template parameter pack has a default argument");
                         }
                     }
-                    TParam { name, kind: TPK::Type, pack, default, line: pl, dauto: false }
+                    TParam { name, kind: TPK::Type, pack, default, line: pl, dauto: false, pattern: None }
                 };
                 params.push(param.clone());
                 if depth != u32::MAX - 2 {
@@ -694,6 +721,7 @@ impl P {
             } else {
                 // TPL-11: a class template name alone is a type here.
                 self.in_tparam_decl = true;
+                self.implicit_tn = true;
                 let ds = self.parse_decl_specs(None);
                 self.in_tparam_decl = false;
                 let ds = ds?;
@@ -742,8 +770,11 @@ impl P {
                 if d.pack {
                     self.pack_decls.insert(id);
                 }
+                // DED-12: a placeholder with declarator operators, as in `auto*`,
+                // is a pattern for the type of the argument.
+                let pattern = if auto && !d.ops.is_empty() && ds.auto == Some(false) { Some(ty.clone()) } else { None };
                 let kind = if auto || ty.is_unknown() && ds.auto.is_some() { TPK::Auto } else { TPK::Const(ty) };
-                params.push(TParam { name, kind, pack: d.pack, default, line: pl, dauto: ds.auto == Some(true) });
+                params.push(TParam { name, kind, pack: d.pack, default, line: pl, dauto: ds.auto == Some(true), pattern });
             }
             if self.eat(",") {
                 continue;
@@ -1183,7 +1214,16 @@ impl P {
                 let k = (depth, i as u32);
                 match a {
                     TArg::Type(q) => !q.c && !q.v && matches!(&q.t, Ty::Dep(d) if **d == Dep::Param(k.0, k.1)),
-                    TArg::Val(TVal::Param(x, y)) => (*x, *y) == k,
+                    // DED-12: a constant parameter of another type than the
+                    // primary template's makes another list.
+                    TArg::Val(TVal::Param(x, y)) => {
+                        (*x, *y) == k
+                            && match (&tparams[i].kind, &self.templs[t].params[i].kind) {
+                                (crate::templ::TPK::Const(a), crate::templ::TPK::Const(b)) => a.t == b.t || matches!(b.t, Ty::Dep(_)),
+                                (crate::templ::TPK::Const(_), crate::templ::TPK::Auto) => false,
+                                _ => true,
+                            }
+                    }
                     TArg::Templ(TName::Param(x, y)) => (*x, *y) == k,
                     TArg::Expand(x) => matches!(&**x, TArg::Type(q) if matches!(&q.t, Ty::Dep(d) if **d == Dep::Param(k.0, k.1))),
                     TArg::Pack(v) => v.len() == 1 && matches!(&v[0], TArg::Expand(x) if matches!(&**x, TArg::Type(q) if matches!(&q.t, Ty::Dep(d) if **d == Dep::Param(k.0, k.1)))),
@@ -1646,7 +1686,7 @@ impl P {
     }
 
     /// Whether a class is local to a function (TPL-2).
-    fn class_is_local(&self, c: usize) -> bool {
+    pub fn class_is_local(&self, c: usize) -> bool {
         let mut s = self.scopes[self.classes[c].scope].parent;
         while let Some(x) = s {
             match self.scopes[x].kind {
@@ -2031,6 +2071,7 @@ impl P {
         let class = if let Ctx::Class(c) = ctx { Some(c) } else { None };
         let after_head = self.pending_template.is_some();
         self.templ_class_defined = false;
+        self.implicit_tn = matches!(ctx, Ctx::Namespace | Ctx::Class(_));
         let ds = self.parse_decl_specs(class)?;
         if after_head && self.inst_depth == 0 && std::mem::take(&mut self.templ_class_defined) && !self.at(";") {
             self.error(line, "TPL-4", "a class template definition followed by a declarator");
@@ -2080,9 +2121,14 @@ impl P {
                 self.error(line, "TYN-2", "typedef without a name");
                 return Ok(vec![]);
             }
+            if ds.friend && ds.ty.is_some() && matches!(ctx, Ctx::Class(_)) {
+                // ACC-5: `friend T;` with a simple type specifier names a
+                // friend class; a type that is not a class is ignored.
+                return Ok(vec![]);
+            }
             return Err(PErr { line, msg: "declaration does not declare anything".into() });
         }
-        if ds.ty.is_none() && ds.auto.is_none() && !self.is_ctor_start(class) && !self.at("~") && !self.at("operator") && !self.at("(") {
+        if ds.ty.is_none() && ds.auto.is_none() && !self.is_ctor_start(class) && !self.at("~") && !self.at("operator") && !self.at("(") && !self.at_qualified_operator() {
             if self.is_ident() && !self.at_k(1, "::") {
                 // An unknown type name.
                 let name = self.tok().text.clone();
@@ -2097,6 +2143,18 @@ impl P {
             }
             if !ds.storage.is_empty() || ds.constexpr || ds.inline || ds.c > 0 {
                 return Err(PErr { line, msg: "declaration with no type".into() });
+            }
+            if self.is_ident() && self.peek(1).kind == TK::Ident && self.in_template() {
+                // DEP-19: a name that a using declaration takes from a
+                // dependent base without `typename` is a value.
+                let name = self.tok().text.clone();
+                if let Some(ids) = self.lookup(&name) {
+                    if ids.iter().all(|&i| matches!(&self.decls[i].k, DK::Var(v) if v.dependent && v.ty.is_unknown() && !v.local)) {
+                        self.error(line, "DEP-19", format!("'{}' names a value of a dependent base; a type needs 'typename'", name));
+                        self.recover();
+                        return Ok(vec![]);
+                    }
+                }
             }
             return Err(PErr { line, msg: format!("expected a declaration, found '{}'", self.tok_desc()) });
         }
@@ -2334,6 +2392,26 @@ impl P {
     }
 
     fn anonymous_union(&mut self, c: usize, ds: &DeclSpec, ctx: Ctx, line: u32) {
+        // UNI-9: an anonymous union has public non-static data members only.
+        if !self.in_template() {
+            let sc = self.classes[c].scope;
+            let mut ids: Vec<DeclId> = self.scopes[sc].names.values().flatten().copied().filter(|&d| self.decls[d].scope == sc).collect();
+            ids.sort();
+            for d in ids {
+                let what = match &self.decls[d].k {
+                    DK::Func(_) | DK::Template(_) => Some("a member function"),
+                    DK::Var(_) => Some("a static data member"),
+                    DK::Class(x) if *x != c => Some("a nested type"),
+                    DK::Type(_) | DK::Enum(_) => Some("a nested type"),
+                    DK::Field(_) if self.member_access.get(&d).is_some_and(|&a| a != 0) => Some("a member that is not public"),
+                    _ => None,
+                };
+                if let Some(w) = what {
+                    self.error(line, "UNI-9", format!("an anonymous union with {}", w));
+                    break;
+                }
+            }
+        }
         // Members of an anonymous union are members of the enclosing scope.
         if ctx == Ctx::Namespace && !ds.storage.contains(&Storage::Static) {
             // STO-11: an anonymous union at namespace scope must be static.
@@ -2510,6 +2588,10 @@ impl P {
                 }
                 return self.declare_field(ds, d, ty, c);
             }
+            if d.qual.is_none() && self.class_is_local(c) && !self.in_template() {
+                // CLS-28: a local class has no static data member.
+                self.error(line, "CLS-28", format!("static data member '{}' in a local class", name));
+            }
         }
         if let Some(pt) = self.pending_template.take() {
             self.last_decl_qual = d.qual;
@@ -2662,6 +2744,10 @@ impl P {
         self.require_ty(&ty, line);
         let name = d.name.clone().unwrap_or_default();
         self.check_object_attrs(true, self.at(":"));
+        if ds.virtual_ {
+            // VIRT-2: only a member function can be virtual.
+            self.error(line, "VIRT-2", format!("'virtual' on the data member '{}'", name));
+        }
         if !self.in_template() && self.is_abstract(&ty.t) {
             // VIRT-8: no member of an abstract class type.
             self.error(line, "VIRT-8", format!("member '{}' of an abstract class type", name));
@@ -2703,9 +2789,35 @@ impl P {
                             // a bool bit-field wider than bool is allowed in C++
                         }
                     }
+                    if let Some(sz) = self.sizeof_ty(&ty.t) {
+                        if v > 0 && (v as u64) > sz * 8 && !self.in_template() {
+                            // BF-8: a width larger than the type.
+                            self.warn(bl, "BF-8", format!("bit-field width {} is larger than the {} bits of its type", v, sz * 8));
+                        }
+                    }
                     bits = Some(v.max(0) as u32);
                 }
-                Err(_) => bits = Some(1),
+                Err(_) => {
+                    // BF-2: the width is an integral constant.
+                    // A floating value, or a variable that is not constant.
+                    let floating = nonref(&e.ty).t.is_floating();
+                    let mut plain_var = false;
+                    walk_expr(&e, &mut |x| {
+                        if let EK::Var(v) = x.k {
+                            if let DK::Var(vi) = &self.decls[v].k {
+                                plain_var |= !vi.constexpr && !vi.ty.c && !vi.param;
+                            }
+                        }
+                    });
+                    if !self.in_template() && (floating || plain_var) {
+                        self.error(bl, "BF-2", "bit-field width is not an integral constant");
+                    }
+                    bits = Some(1);
+                }
+            }
+            if name.is_empty() && (ty.c || ty.v) && !self.in_template() {
+                // BF-2: an unnamed bit-field has no cv-qualifier.
+                self.error(line, "BF-2", "an unnamed bit-field with a cv-qualifier");
             }
             if !(ty.t.is_integral() || matches!(ty.t, Ty::Enum(_) | Ty::Unknown | Ty::Dep(_))) {
                 self.error(line, "BF-2", "bit-field of non-integral type");
@@ -2796,10 +2908,49 @@ impl P {
         }
     }
 
+    /// OPR-9, OPR-10: the limits on a literal operator.
+    fn check_literal_operator(&mut self, suffix: &str, member: bool, fd: &FnDecl, line: u32) {
+        if !suffix.starts_with('_') {
+            self.warn(line, "OPR-9", format!("literal suffix '{}' does not start with '_'", suffix));
+        }
+        if member {
+            self.error(line, "OPR-10", "a literal operator must not be a member function");
+            return;
+        }
+        if self.lang_c > 0 {
+            self.error(line, "OPR-10", "a literal operator must have C++ linkage");
+            return;
+        }
+        let ptys: Vec<QTy> = fd.params.iter().map(|&p| self.var(p).map(|v| v.ty.clone()).unwrap_or(QTy::unknown())).collect();
+        if ptys.iter().any(|t| t.is_unknown()) {
+            return;
+        }
+        if fd.defaults > 0 {
+            self.error(line, "OPR-10", "a literal operator must have no default argument");
+            return;
+        }
+        let chars = [Ty::Char, Ty::Char8, Ty::Char16, Ty::Char32, Ty::WChar];
+        let ok = match ptys.as_slice() {
+            [a] => {
+                let u = a.unqual().t;
+                matches!(u, Ty::ULLong | Ty::LDouble) || chars.contains(&u) || matches!(&a.t, Ty::Ptr(x) if x.t == Ty::Char && x.c)
+            }
+            [a, b] => matches!(&a.t, Ty::Ptr(x) if x.c && chars.contains(&x.t)) && b.unqual().t == Ty::size_t(),
+            _ => false,
+        };
+        if !ok {
+            self.error(line, "OPR-10", "a literal operator has a parameter list that OPR-8 does not give");
+        }
+    }
+
     /// OPR-2: the limits on an operator function.
     fn check_operator(&mut self, name: &str, member: bool, is_static: bool, fd: &FnDecl, line: u32) {
         let op = name.trim_start_matches("operator");
-        if op.starts_with("\"\"") || matches!(op, "new" | "delete" | "new[]" | "delete[]" | "co_await" | "." | ".*" | "::" | "?" | ":") {
+        if let Some(suffix) = op.strip_prefix("\"\"") {
+            self.check_literal_operator(suffix, member, fd, line);
+            return;
+        }
+        if matches!(op, "new" | "delete" | "new[]" | "delete[]" | "co_await" | "." | ".*" | "::" | "?" | ":") {
             return;
         }
         let ptys: Vec<QTy> = fd.params.iter().map(|&p| self.var(p).map(|v| v.ty.clone()).unwrap_or(QTy::unknown())).collect();
@@ -3477,6 +3628,30 @@ impl P {
                 }
             }
         }
+        if kind == FnKind::Conversion && !self.in_template() {
+            // CVF-7: the form of a conversion function.
+            let nparams = fd.params.len().saturating_sub(if fd.has_explicit_this { 1 } else { 0 });
+            let target = d.conv_ty.clone().unwrap_or_else(QTy::unknown);
+            if ds.ty.is_some() || !ds.kw.is_empty() || ds.auto.is_some() {
+                self.error(line, "CVF-7", "a conversion function with a return type before 'operator'");
+            } else if nparams > 0 || fd.variadic {
+                self.error(line, "CVF-7", "a conversion function with parameters");
+            } else if is_static {
+                self.error(line, "CVF-7", "a static conversion function");
+            } else if class.is_none() && d.qual.is_none() && !d.qual_unknown && !is_friend {
+                self.error(line, "CVF-7", "a conversion function that is not a member");
+            } else if matches!(target.t, Ty::Func(_) | Ty::Array(..)) {
+                self.error(line, "CVF-7", "a conversion function to a function or array type");
+            } else if let Some(c) = class {
+                // CVF-6: a conversion to the class, a base, or void is
+                // never used, so an implementation warns.
+                let t = nonref(&target).unqual();
+                let useless = t.t == Ty::Void || matches!(t.t, Ty::Class(b) if b == c || self.is_base_of(b, c));
+                if useless {
+                    self.warn(line, "CVF-6", "a conversion function to its own class, a base class, or void is never used by a conversion");
+                }
+            }
+        }
         // DCL-7, CLS-7: qualifiers on non-member and static functions.
         if member_class.is_none() && d.qual.is_none() && !d.qual_unknown && (fd.cv_c || fd.cv_v || fd.refq != 0) && !self.in_template() {
             self.error(line, "DCL-21", "cv-qualifier or ref-qualifier on a function that is not a member");
@@ -3495,6 +3670,11 @@ impl P {
             } else if kind == FnKind::Dtor {
                 self.error(line, "TPL-25", "a destructor declared as a template");
             }
+        }
+        if fd.has_explicit_this && class.is_none() && d.qual.is_none() && !d.qual_unknown && !self.in_template() {
+            // CLS-14: only a member function has an explicit object
+            // parameter.
+            self.error(line, "CLS-14", "an explicit object parameter on a function that is not a member");
         }
         if fd.has_explicit_this && (is_static || ds.virtual_ || fd.cv_c || fd.cv_v || fd.refq != 0) {
             self.error(line, "CLS-14", "explicit object member function that is static, virtual, or qualified");
@@ -3762,7 +3942,13 @@ impl P {
         }
         let trailing_requires = clause_unmodeled;
         // virt-specifiers come before the body (VIRT grammar)
+        let mut virt_spec = (false, false);
         while self.at("override") || self.at("final") {
+            if self.at("override") {
+                virt_spec.0 = true;
+            } else {
+                virt_spec.1 = true;
+            }
             self.pos += 1;
         }
         let deleted = self.at("=") && self.at_k(1, "delete");
@@ -3779,6 +3965,14 @@ impl P {
             }
         }
         let is_def = self.at("{") || self.at(":") || self.at("try") || deleted || defaulted;
+        if is_def && is_friend && !self.in_template() {
+            if let Ctx::Class(fc) = ctx {
+                if self.class_is_local(fc) {
+                    // CLS-28: no friend function defined in a local class.
+                    self.error(line, "CLS-28", format!("friend function '{}' defined in a local class", name));
+                }
+            }
+        }
         if is_def && ctx == Ctx::Block {
             // FN-9: no function definition inside a function body.
             self.error(line, "FN-9", "function definition inside a function body");
@@ -3914,7 +4108,12 @@ impl P {
                 }
                 if !self.in_template() {
                     let have: Vec<bool> = fd.params.iter().map(|&p| self.var(p).is_some_and(|v| v.init.is_some()) || self.deferred.iter().any(|d| d.param == Some(p))).collect();
-                    self.check_trailing_defaults(&have, line);
+                    // DEFARG-8 does not apply to a function parameter pack,
+                    // nor to the parameters that a pack expands to.
+                    let have_or_pack: Vec<bool> = fd.params.iter().zip(&have).map(|(p, &h)| h || self.pack_params.contains(p)).collect();
+                    if self.inst_depth == 0 {
+                        self.check_trailing_defaults(&have_or_pack, line);
+                    }
                     // DEFARG-6: no default arguments on an operator
                     // function other than operator().
                     // OPR-3 allows them on operator[] too (report-2 finding G9).
@@ -4098,10 +4297,31 @@ impl P {
         // virt-specifiers and pure specifier
         loop {
             if self.at("override") || self.at("final") {
+                if self.at("override") {
+                    virt_spec.0 = true;
+                } else {
+                    virt_spec.1 = true;
+                }
                 self.pos += 1;
                 continue;
             }
             break;
+        }
+        if (virt_spec.0 || virt_spec.1) && !self.in_template() {
+            if !in_class_body || is_friend {
+                // VIRT-3: the specifiers occur only in the class.
+                self.error(line, "VIRT-3", "'override' or 'final' on a declaration outside the class");
+            } else {
+                self.virt_specs.insert(id, virt_spec);
+            }
+        }
+        if ds.virtual_ && self.inst_depth == 0 && !self.in_template() {
+            // VIRT-2: where `virtual` can occur.
+            if !in_class_body || is_friend {
+                self.error(line, "VIRT-2", format!("'virtual' on '{}' outside its class definition", name));
+            } else if member_class.is_some_and(|c| self.classes[c].key == 2) {
+                self.error(line, "VIRT-2", format!("'virtual' on '{}', a member of a union", name));
+            }
         }
         if self.at("requires") {
             self.pos += 1;
@@ -4114,6 +4334,10 @@ impl P {
         }
         if self.at("=") && self.peek(1).kind == TK::Int && self.peek(1).text == "0" {
             self.pos += 2;
+            if is_friend && !self.in_template() {
+                // VIRT-9: a pure specifier only on a virtual member.
+                self.error(line, "VIRT-9", format!("'= 0' on the friend '{}'", name));
+            }
             if let Some(c) = member_class {
                 self.classes[c].has_virtual = true;
             }
@@ -4305,7 +4529,7 @@ impl P {
                 };
                 let scope = scope.unwrap_or_else(|| self.new_scope(SK::Params, Some(self.cur_scope()), ""));
                 if let Err(e) = self.parse_function_body(fid, scope, Some(df.class), auto_ret) {
-                    self.unsupported(e.line, format!("parse: {}", e.msg));
+                    self.parse_failure(&e);
                     if let Some(f) = self.func_mut(fid) {
                         f.opaque = true;
                     }
@@ -4352,7 +4576,7 @@ impl P {
                             f.init = Some(Rc::new(ce));
                         }
                     }
-                    Err(e) => self.unsupported(e.line, format!("parse: {}", e.msg)),
+                    Err(e) => self.parse_failure(&e),
                 }
                 self.dmi_depth -= 1;
                 if keep && self.d.list.len() > mark {
@@ -4389,7 +4613,7 @@ impl P {
                     v.init = Some(Rc::new(ce));
                 }
             }
-            Err(e) => self.unsupported(e.line, format!("parse: {}", e.msg)),
+            Err(e) => self.parse_failure(&e),
         }
     }
 
@@ -4480,6 +4704,24 @@ impl P {
             let body = self.parse_compound_in(param_scope)?;
             if is_try {
                 let hs = self.parse_handlers()?;
+                let nonvoid = self.func(fid).is_some_and(|f| matches!(f.kind, FnKind::Normal | FnKind::Operator | FnKind::Conversion) && f.fty.ret.t != Ty::Void && !f.fty.ret.is_unknown() && !f.is_main);
+                if nonvoid && !self.in_template() && hs.iter().any(|h| can_complete(self, &h.body)) {
+                    // TRY-12: a handler of a function try block that can
+                    // reach its end in a function that returns a value.
+                    self.warn(self.decls[fid].line, "TRY-12", "a handler of the function try block can reach its end without a return statement");
+                }
+                if self.func(fid).is_some_and(|f| f.kind == FnKind::Ctor) {
+                    // TRY-13: a handler of a constructor's function try
+                    // block that names a non-static member.
+                    if !self.in_template() && hs.iter().any(|h| names_member(&h.body, self)) {
+                        self.warn(self.decls[fid].line, "TRY-13", "a handler of a constructor's function try block names a non-static member");
+                    }
+                    // TRY-17: no return in a handler of a constructor's
+                    // function try block.
+                    if hs.iter().any(|h| has_return(&h.body)) {
+                        self.error(self.decls[fid].line, "TRY-17", "a return statement in a handler of a constructor's function try block");
+                    }
+                }
                 if let Some(f) = self.func_mut(fid) {
                     // Overload resolution still treats the function as one
                     // it does not model; the interpreter runs it.
@@ -4535,6 +4777,15 @@ impl P {
             }
             if let Some(f) = self.func_mut(fid) {
                 f.fty.ret = t;
+            }
+        }
+        // UNW-8: a throw in a non-throwing function that no enclosing
+        // handler of the function catches.
+        if !self.in_template() && self.func(fid).is_some_and(|f| f.fty.noexcept && f.fn_try.is_none()) {
+            let mut found = None;
+            unw8_stmt(self, &body, &mut Vec::new(), &mut found);
+            if let Some(line) = found {
+                self.warn(line, "UNW-8", "a throw in a non-throwing function that no handler of the function catches");
             }
         }
         // ATTR-14: control should not return from a noreturn function.
@@ -4708,6 +4959,12 @@ impl P {
             // CTOR-16: a delegating mem-initializer stands alone.
             self.error(self.line(), "CTOR-16", "a delegating constructor has another mem-initializer");
         }
+        if let Some(c) = class {
+            // UNI-8: one variant member of a union is initialized.
+            if self.classes[c].key == 2 && out.iter().filter(|m: &&MemInit| m.field.is_some()).count() > 1 && !self.in_template() {
+                self.error(self.line(), "UNI-8", "mem-initializers for two members of a union");
+            }
+        }
         Ok(out)
     }
 
@@ -4725,7 +4982,9 @@ impl P {
             return Err(self.err("try block without a handler"));
         }
         let mut out = Vec::new();
-        while self.eat("catch") {
+        while self.at("catch") {
+            let hline = self.line();
+            self.pos += 1;
             self.expect("(")?;
             self.push_scope(SK::Block);
             let r = (|| -> PR<Handler> {
@@ -4736,6 +4995,7 @@ impl P {
                     let base = self.ds_base(&ds)?;
                     let d = self.parse_declarator(true, true)?;
                     let ty = self.apply_ops(base, &d.ops, d.line);
+                    self.check_handler_param(&ds, &d, &ty);
                     hty = Some(ty.clone());
                     if let Some(n) = d.name {
                         let vi = VarInfo { ty, storage: Storage::Auto, constexpr: false, constinit: false, init: None, param: false, local: true, dependent: false, defined: true, class: None };
@@ -4744,13 +5004,67 @@ impl P {
                 }
                 self.expect(")")?;
                 let s = self.cur_scope();
-                let body = self.parse_compound_in(s)?;
-                Ok(Handler { var, ty: hty, body: Box::new(body) })
+                self.enter_try_region();
+                let body = self.parse_compound_in(s);
+                self.try_regions.pop();
+                Ok(Handler { var, ty: hty, body: Box::new(body?) })
             })();
             self.pop_scope();
-            out.push(r?);
+            let h = r?;
+            if out.last().is_some_and(|x: &Handler| x.ty.is_none()) {
+                // TRY-3: a handler for `...` comes last.
+                self.error(hline, "TRY-3", "a handler after the handler for '...'");
+            } else if !self.in_template() {
+                if let Some(t) = &h.ty {
+                    let t2 = nonref(t).unqual();
+                    if !t2.is_unknown() && out.iter().any(|x| x.ty.is_some() && !x.ty.as_ref().unwrap().is_unknown() && handler_catches(self, &x.ty, Some(&t2))) {
+                        // TRY-4: an earlier handler always takes this one's
+                        // exceptions.
+                        self.warn(hline, "TRY-4", "an earlier handler of the try block always catches what this handler catches");
+                    }
+                }
+            }
+            out.push(h);
         }
         Ok(out)
+    }
+
+    /// TRY-5: what a handler parameter must not be.
+    fn check_handler_param(&mut self, ds: &crate::decl::DeclSpec, d: &crate::decl::Declarator, ty: &QTy) {
+        let line = d.line;
+        if !ds.storage.is_empty() || ds.register || ds.constexpr || ds.inline {
+            self.error(line, "TRY-5", "a handler parameter with a storage class");
+            return;
+        }
+        if ds.auto.is_some() {
+            self.error(line, "TRY-5", "a handler parameter declared with 'auto'");
+            return;
+        }
+        if d.qual.is_some() || d.qual_unknown {
+            self.error(line, "TRY-5", "a handler parameter with a qualified name");
+            return;
+        }
+        if self.in_template() || ty.is_unknown() {
+            return;
+        }
+        match &ty.t {
+            Ty::Void => self.error(line, "TRY-5", "a handler parameter of type void"),
+            Ty::RRef(_) => self.error(line, "TRY-5", "a handler parameter of rvalue reference type"),
+            Ty::LRef(x) if matches!(x.t, Ty::Array(_, None)) => self.error(line, "TRY-5", "a handler parameter that refers to an array of unknown bound"),
+            _ => {}
+        }
+        let (inner, by_value) = match &ty.t {
+            Ty::Ptr(x) | Ty::LRef(x) | Ty::RRef(x) => ((**x).clone(), false),
+            _ => (ty.clone(), true),
+        };
+        if let Ty::Class(c) = inner.t {
+            self.require_class(c, line);
+            if !self.classes[c].complete && !self.class_uncertain(c) {
+                self.error(line, "TRY-5", format!("a handler parameter of incomplete class '{}'", self.classes[c].name));
+            } else if by_value && self.is_abstract(&inner.t) {
+                self.error(line, "TRY-5", format!("a handler parameter of abstract class '{}' by value", self.classes[c].name));
+            }
+        }
     }
 
     /// A scope inside an unnamed namespace (LNK rules: internal linkage).
@@ -4814,6 +5128,165 @@ fn has_return(s: &Stmt) -> bool {
 /// ATTR-14: whether control can reach the end of a statement. The
 /// analysis is simple: a throw, a call of a noreturn function, and a loop
 /// without a condition or a break end control; anything else can complete.
+/// TRY-13: whether a statement names a non-static data member of the
+/// object.
+fn names_member(s: &Stmt, p: &P) -> bool {
+    let mut found = false;
+    let mut ex = |e: &Expr| {
+        walk_expr(e, &mut |x| {
+            if let EK::Member(o, f) = &x.k {
+                if matches!(o.k, EK::Unary(UOp::Deref, ref t) if matches!(t.k, EK::This)) && matches!(p.decls[*f].k, DK::Field(_)) {
+                    found = true;
+                }
+            }
+        })
+    };
+    fn go(s: &Stmt, p: &P, ex: &mut dyn FnMut(&Expr)) {
+        match s {
+            Stmt::Expr(e) | Stmt::Return(Some(e)) => ex(e),
+            Stmt::Decl(ids) => {
+                for &d in ids {
+                    if let DK::Var(v) = &p.decls[d].k {
+                        if let Some(i) = &v.init {
+                            ex(i);
+                        }
+                    }
+                }
+            }
+            Stmt::Block(v) => v.iter().for_each(|x| go(x, p, ex)),
+            Stmt::If { then, els, .. } => {
+                go(then, p, ex);
+                if let Some(e) = els {
+                    go(e, p, ex);
+                }
+            }
+            _ => {}
+        }
+    }
+    go(s, p, &mut ex);
+    found
+}
+
+/// Whether a handler of type `h` (None for `...`) catches an exception
+/// object of static type `e` (TRY-2). None for a rethrow.
+fn handler_catches(p: &P, h: &Option<QTy>, e: Option<&QTy>) -> bool {
+    let Some(h) = h else { return true };
+    let Some(e) = e else { return false };
+    let h = nonref(h).unqual();
+    let e = e.unqual();
+    if h.is_unknown() || e.is_unknown() || h.t == e.t {
+        return true;
+    }
+    match (&h.t, &e.t) {
+        (Ty::Class(b), Ty::Class(d)) => p.is_base_of(*b, *d),
+        (Ty::Ptr(hb), Ty::Ptr(ed)) => match (&hb.t, &ed.t) {
+            (Ty::Class(b), Ty::Class(d)) => p.is_base_of(*b, *d),
+            (Ty::Void, _) => true,
+            (x, y) => x == y,
+        },
+        (Ty::Ptr(_), Ty::NullPtr) => true,
+        _ => false,
+    }
+}
+
+/// UNW-8: find a throw that the enclosing handlers do not catch.
+fn unw8_stmt(p: &P, s: &Stmt, hs: &mut Vec<Vec<Option<QTy>>>, found: &mut Option<u32>) {
+    if found.is_some() {
+        return;
+    }
+    let ex = |e: &Expr, hs: &mut Vec<Vec<Option<QTy>>>, found: &mut Option<u32>| {
+        walk_expr(e, &mut |x| {
+            if found.is_some() {
+                return;
+            }
+            if let EK::Throw(op) = &x.k {
+                let t = op.as_ref().map(|o| {
+                    let t = nonref(&o.ty);
+                    match &t.t {
+                        Ty::Array(el, _) => QTy::new(Ty::Ptr(el.clone())),
+                        Ty::Func(_) => QTy::new(Ty::Ptr(Box::new(t.clone()))),
+                        _ => t,
+                    }
+                });
+                if t.as_ref().is_some_and(|t| t.is_unknown()) {
+                    return;
+                }
+                if !hs.iter().any(|v| v.iter().any(|h| handler_catches(p, h, t.as_ref()))) {
+                    *found = Some(x.line);
+                }
+            }
+        });
+    };
+    match s {
+        Stmt::Expr(e) | Stmt::Assume(e) => ex(e, hs, found),
+        Stmt::Return(Some(e)) => ex(e, hs, found),
+        Stmt::Decl(ids) => {
+            for &d in ids {
+                if let DK::Var(v) = &p.decls[d].k {
+                    if let Some(i) = &v.init {
+                        ex(i, hs, found);
+                    }
+                }
+            }
+        }
+        Stmt::Block(v) => {
+            for x in v {
+                unw8_stmt(p, x, hs, found);
+            }
+        }
+        Stmt::If { init, cond, then, els, .. } => {
+            if let Some(i) = init {
+                unw8_stmt(p, i, hs, found);
+            }
+            if let Some(CondK::Expr(e) | CondK::Decl(_, e)) = cond {
+                ex(e, hs, found);
+            }
+            unw8_stmt(p, then, hs, found);
+            if let Some(e) = els {
+                unw8_stmt(p, e, hs, found);
+            }
+        }
+        Stmt::While { cond: CondK::Expr(e) | CondK::Decl(_, e), body } => {
+            ex(e, hs, found);
+            unw8_stmt(p, body, hs, found);
+        }
+        Stmt::Do { body, cond } => {
+            unw8_stmt(p, body, hs, found);
+            ex(cond, hs, found);
+        }
+        Stmt::For { init, cond, inc, body } => {
+            if let Some(i) = init {
+                unw8_stmt(p, i, hs, found);
+            }
+            if let Some(CondK::Expr(e) | CondK::Decl(_, e)) = cond {
+                ex(e, hs, found);
+            }
+            if let Some(e) = inc {
+                ex(e, hs, found);
+            }
+            unw8_stmt(p, body, hs, found);
+        }
+        Stmt::Switch { init, cond: CondK::Expr(e) | CondK::Decl(_, e), body } => {
+            if let Some(i) = init {
+                unw8_stmt(p, i, hs, found);
+            }
+            ex(e, hs, found);
+            unw8_stmt(p, body, hs, found);
+        }
+        Stmt::Case(_, b) | Stmt::Default(b) | Stmt::Label(_, b) => unw8_stmt(p, b, hs, found),
+        Stmt::Try(body, handlers) => {
+            hs.push(handlers.iter().map(|h| h.ty.clone()).collect());
+            unw8_stmt(p, body, hs, found);
+            hs.pop();
+            // TRY-8: a handler is not inside its own try block.
+            for h in handlers {
+                unw8_stmt(p, &h.body, hs, found);
+            }
+        }
+        _ => {}
+    }
+}
+
 fn can_complete(p: &P, s: &Stmt) -> bool {
     fn has_break(s: &Stmt) -> bool {
         match s {

@@ -38,6 +38,9 @@ pub struct TParam {
     pub line: u32,
     /// A `decltype(auto)` placeholder (TPL-11).
     pub dauto: bool,
+    /// The declared type of a constant parameter whose placeholder has
+    /// declarator operators, as in `auto*` (DED-12).
+    pub pattern: Option<QTy>,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -183,6 +186,7 @@ pub struct Binds {
     pub depth: u32,
     pub vals: Vec<Option<TArg>>,
     pub kinds: Vec<TPK>,
+    pub patterns: Vec<Option<QTy>>,
     pub packs: Vec<bool>,
     /// The pattern has a part the front end does not model.
     pub unknown: bool,
@@ -198,6 +202,7 @@ impl Binds {
             depth,
             vals: vec![None; params.len()],
             kinds: params.iter().map(|p| p.kind.clone()).collect(),
+            patterns: params.iter().map(|p| p.pattern.clone()).collect(),
             packs: params.iter().map(|p| p.pack).collect(),
             unknown: false,
             fixed: vec![false; params.len()],
@@ -377,6 +382,19 @@ impl P {
     /// A scope of the class template `t` (its pattern, an explicit or
     /// partial specialization, or an instance) that declares `member`.
     pub fn templ_member_scope(&self, t: usize, member: &str) -> Option<usize> {
+        if self.templs[t].kind == TKind::Alias {
+            // DEP-15: an alias template for a specialization of a class
+            // template looks in that class template.
+            let src = self.templs[t].src.as_ref()?;
+            let k = src.toks.iter().position(|x| x.text == "=")?;
+            let n = src.toks.get(k + 1)?;
+            let ids = self.lookup(&n.text)?;
+            let b = self.tid_of(ids[0])?;
+            if b == t || self.templs[b].kind != TKind::Class {
+                return None;
+            }
+            return self.templ_member_scope(b, member);
+        }
         let mut classes: Vec<usize> = Vec::new();
         if let DK::Template(TemplKind::Class(pc)) = self.decls[self.templs[t].decl].k {
             if pc != usize::MAX {
@@ -396,6 +414,14 @@ impl P {
         for (_, i, _) in &self.templs[t].insts {
             if let Inst::Class(c) = i {
                 classes.push(*c);
+            }
+        }
+        // DEP-15: an enclosing partial specialization names itself.
+        for &s in &self.stack {
+            if let SK::Class(c) = self.scopes[s].kind {
+                if self.classes[c].name == self.templs[t].name {
+                    classes.push(c);
+                }
             }
         }
         classes.into_iter().map(|c| self.classes[c].scope).find(|&s| self.scopes[s].names.contains_key(member))
@@ -547,6 +573,12 @@ impl P {
                     self.d.list.truncate(mark);
                 }
             }
+        }
+        if self.at("{") {
+            // TARG-16: a braced list initializes a constant parameter of
+            // class type.
+            let e = self.parse_braced_init()?;
+            return Ok(RawArg::Expr(e));
         }
         let e = self.parse_conditional()?;
         Ok(RawArg::Expr(e))
@@ -775,7 +807,7 @@ impl P {
                 Err(true)
             }
             (TPK::Const(t), RawArg::Expr(e)) => {
-                if e.ty.is_unknown() {
+                if e.ty.is_unknown() && !matches!(e.k, EK::InitList(_)) {
                     return Err(false);
                 }
                 let t = if t.is_unknown() {
@@ -1107,7 +1139,8 @@ impl P {
             let c = *c;
             let mut ct = pt.clone();
             ct.c = true;
-            let ce = self.convert_init(e, &ct, InitForm::Copy, line);
+            let form = if matches!(e.k, EK::InitList(_)) { InitForm::CopyList } else { InitForm::Copy };
+            let ce = self.convert_init(e, &ct, form, line);
             if ce.ty.is_unknown() || has_unknown(&ce) {
                 return Err(false);
             }
@@ -1738,12 +1771,12 @@ impl P {
 
     /// Replace the parameters of depth `d` by invented ones (ORD-1).
     pub fn invent_ty(&mut self, q: &QTy, d: u32) -> QTy {
-        let n = Binds { depth: d, vals: vec![], kinds: vec![], packs: vec![], unknown: false, fixed: vec![], from_bound: false };
+        let n = Binds { depth: d, vals: vec![], kinds: vec![], patterns: vec![], packs: vec![], unknown: false, fixed: vec![], from_bound: false };
         self.subst_inv(q, &n)
     }
 
     pub fn invent_targ(&mut self, a: &TArg, d: u32) -> TArg {
-        let n = Binds { depth: d, vals: vec![], kinds: vec![], packs: vec![], unknown: false, fixed: vec![], from_bound: false };
+        let n = Binds { depth: d, vals: vec![], kinds: vec![], patterns: vec![], packs: vec![], unknown: false, fixed: vec![], from_bound: false };
         self.subst_targ_inv(a, &n)
     }
 
@@ -2079,6 +2112,11 @@ impl P {
                     b.unknown = true;
                     return true;
                 }
+                if let (TVal::Const(at, _), Some(Some(pt))) = (a, b.patterns.get(*i as usize)) {
+                    if !placeholder_fits(&pt.unqual(), &at.unqual()) {
+                        return false;
+                    }
+                }
                 if let (TVal::Const(at, _), Some(TPK::Const(pt))) = (a, b.kinds.get(*i as usize).cloned()) {
                     match &pt.t {
                         // DED-11: a type parameter takes the type of the
@@ -2092,8 +2130,10 @@ impl P {
                                 }
                             }
                         }
-                        // DED-12: the two parameters have the same type.
-                        t if !pt.is_unknown() && *t != at.t => return false,
+                        // DED-12: the two parameters have the same type. A
+                        // placeholder in the type, as in `auto*`, takes any
+                        // type in its place.
+                        t if !pt.is_unknown() && *t != at.t && !placeholder_fits(&pt.unqual(), &at.unqual()) => return false,
                         _ => {}
                     }
                 }
@@ -3729,4 +3769,21 @@ impl P {
         let k = self.origin_of(pos);
         k.0 != usize::MAX && self.pattern_facts.get(&k).is_some_and(|f| f & fact != 0)
     }
+}
+
+/// DED-12: whether the type `a` fits the type `p` of a constant parameter
+/// whose declared type holds a placeholder, which shows as an unknown
+/// type. The rest of the two types are the same.
+pub fn placeholder_fits(p: &QTy, a: &QTy) -> bool {
+    fn go(p: &QTy, a: &QTy, top: bool) -> bool {
+        if !top && (p.c != a.c || p.v != a.v) {
+            return false;
+        }
+        match (&p.t, &a.t) {
+            (Ty::Unknown, _) => true,
+            (Ty::Ptr(x), Ty::Ptr(y)) | (Ty::LRef(x), Ty::LRef(y)) | (Ty::RRef(x), Ty::RRef(y)) => go(x, y, false),
+            (x, y) => x == y,
+        }
+    }
+    go(p, a, true)
 }

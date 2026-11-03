@@ -722,3 +722,228 @@ pub enum CopySt {
     Deleted(&'static str),
     Unknown,
 }
+
+impl P {
+    /// Whether a special member of a class is potentially throwing
+    /// (EXS-4, DTOR-4). None when the front end cannot tell.
+    pub fn sm_throws(&self, c: usize, sm: Sm) -> Option<bool> {
+        self.sm_throws_d(c, sm, 0)
+    }
+
+    fn sm_throws_d(&self, c: usize, sm: Sm, depth: u32) -> Option<bool> {
+        let ci = &self.classes[c];
+        if ci.template || !ci.complete || depth > 16 {
+            return None;
+        }
+        let mut sm = sm;
+        match self.declared(c, sm) {
+            Declared::Unknown => return None,
+            Declared::Deleted => return Some(false),
+            Declared::Provided | Declared::Defaulted => {
+                let f = self.sm_decl(c, sm)?;
+                let fi = self.func(f)?;
+                if fi.fty.noexcept {
+                    return Some(false);
+                }
+                if fi.noexcept_false {
+                    return Some(true);
+                }
+                // DTOR-4: a destructor follows its bases and members, also
+                // when the program writes it. Another function that the
+                // program provides is potentially throwing.
+                if sm != Sm::Dtor && !fi.defaulted {
+                    return Some(true);
+                }
+            }
+            Declared::None => {
+                let copy = match sm {
+                    Sm::MoveCtor => Some(Sm::CopyCtor),
+                    Sm::MoveAssign => Some(Sm::CopyAssign),
+                    _ => None,
+                };
+                if let Some(cp) = copy {
+                    if !matches!(self.declared(c, cp), Declared::None) {
+                        return self.sm_throws_d(c, cp, depth);
+                    }
+                    sm = cp;
+                }
+            }
+        }
+        let mut res = Some(false);
+        let mut join = |r: Option<bool>| match r {
+            Some(true) => res = Some(true),
+            None if res == Some(false) => res = None,
+            _ => {}
+        };
+        for b in &ci.bases {
+            join(b.class.and_then(|bc| self.sm_throws_d(bc, sm, depth + 1)));
+        }
+        for &fd in &ci.fields {
+            let DK::Field(fi) = &self.decls[fd].k else { continue };
+            if sm == Sm::Default {
+                if let Some(init) = &fi.init {
+                    // A default member initializer counts (EXS-4).
+                    join(self.noexcept_of(init).map(|b| !b));
+                    continue;
+                }
+            }
+            if fi.ty.t.is_ref() && sm != Sm::Dtor {
+                continue;
+            }
+            if let Some(m) = Self::class_of_elem(&fi.ty.t) {
+                join(self.sm_throws_d(m, sm, depth + 1));
+            }
+        }
+        res
+    }
+
+    /// The declaration of one special member that a class declares.
+    fn sm_decl(&self, c: usize, sm: Sm) -> Option<DeclId> {
+        let ci = &self.classes[c];
+        match sm {
+            Sm::Default => self.default_ctor(c),
+            Sm::Dtor => ci.dtor,
+            Sm::CopyCtor | Sm::MoveCtor => {
+                let want = sm == Sm::MoveCtor;
+                ci.ctors.iter().copied().find(|&i| self.copy_param(i, c, false) == Some(want))
+            }
+            Sm::CopyAssign | Sm::MoveAssign => {
+                let want = sm == Sm::MoveAssign;
+                self.scopes[ci.scope].names.get("operator=")?.iter().copied().find(|&i| self.copy_param(i, c, true) == Some(want))
+            }
+        }
+    }
+
+    /// Which special member a function is, if any.
+    pub fn sm_of(&self, f: DeclId) -> Option<(usize, Sm)> {
+        let fi = self.func(f)?;
+        let c = fi.class?;
+        let first = if fi.explicit_obj { 1 } else { 0 };
+        match fi.kind {
+            FnKind::Dtor => Some((c, Sm::Dtor)),
+            FnKind::Ctor => {
+                if fi.params.len() <= fi.defaults {
+                    return Some((c, Sm::Default));
+                }
+                match self.copy_param(f, c, false)? {
+                    false => Some((c, Sm::CopyCtor)),
+                    true => Some((c, Sm::MoveCtor)),
+                }
+            }
+            _ if self.decls[f].name == "operator=" && fi.params.len() > first => match self.copy_param(f, c, true)? {
+                false => Some((c, Sm::CopyAssign)),
+                true => Some((c, Sm::MoveAssign)),
+            },
+            _ => None,
+        }
+    }
+
+    /// Whether a call of a function is potentially throwing (EXS-4).
+    pub fn fn_throws(&self, f: DeclId) -> Option<bool> {
+        let fi = self.func(f)?;
+        if fi.fty.noexcept {
+            return Some(false);
+        }
+        if fi.noexcept_false {
+            return Some(true);
+        }
+        if fi.kind == FnKind::Dtor || fi.defaulted {
+            if let Some((c, sm)) = self.sm_of(f) {
+                return self.sm_throws(c, sm);
+            }
+            if fi.defaulted {
+                // A defaulted comparison follows the comparisons of its
+                // bases and members (EXS-4).
+                let name = self.decls[f].name.clone();
+                let op = if name == "operator==" || name == "operator!=" { "operator==" } else { "operator<=>" };
+                return self.cmp_throws(fi.class?, op, 0);
+            }
+        }
+        Some(true)
+    }
+}
+
+impl P {
+    /// Whether the defaulted comparison `op` of class `c` is potentially
+    /// throwing: it calls `op` for each base and member (EXS-4).
+    fn cmp_throws(&self, c: usize, op: &str, depth: u32) -> Option<bool> {
+        let ci = &self.classes[c];
+        if ci.template || !ci.complete || depth > 16 {
+            return None;
+        }
+        let mut parts: Vec<usize> = ci.bases.iter().map(|b| b.class).collect::<Option<Vec<_>>>()?;
+        for &fd in &ci.fields {
+            let DK::Field(fi) = &self.decls[fd].k else { continue };
+            if let Some(m) = Self::class_of_elem(&fi.ty.t) {
+                parts.push(m);
+            }
+        }
+        let mut res = Some(false);
+        for m in parts {
+            let ids = self.scopes[self.classes[m].scope].names.get(op).cloned().unwrap_or_default();
+            if ids.len() != 1 {
+                return None;
+            }
+            let Some(fi) = self.func(ids[0]) else { return None };
+            let r = if fi.fty.noexcept {
+                Some(false)
+            } else if fi.noexcept_false || !fi.defaulted {
+                Some(true)
+            } else {
+                self.cmp_throws(m, op, depth + 1)
+            };
+            match r {
+                Some(true) => res = Some(true),
+                None if res == Some(false) => res = None,
+                _ => {}
+            }
+        }
+        res
+    }
+}
+
+impl P {
+    /// THR-3: the operand of `throw` has a complete type that is not
+    /// abstract, and the exception object can be copied or moved from it
+    /// and destroyed.
+    pub fn check_throw_operand(&mut self, e: &crate::ast::Expr, line: u32) {
+        use crate::ast::Cat;
+        if self.in_template() {
+            return;
+        }
+        let t = nonref(&e.ty);
+        let Ty::Class(c) = t.t else { return };
+        if self.class_uncertain(c) {
+            return;
+        }
+        self.require_class(c, line);
+        let name = self.classes[c].name.clone();
+        if !self.classes[c].complete {
+            self.error(line, "THR-3", format!("throw of an object of incomplete class '{}'", name));
+            return;
+        }
+        if self.is_abstract(&t.t) {
+            self.error(line, "THR-3", format!("throw of an object of abstract class '{}'", name));
+            return;
+        }
+        if self.dtor_unusable(c) {
+            self.error(line, "THR-3", format!("throw of '{}', whose destructor is deleted or not accessible", name));
+            return;
+        }
+        if e.cat == Cat::PR {
+            return;
+        }
+        let rv = e.cat == Cat::X;
+        let st = if rv { self.rv_status(c, false, 0) } else { self.lv_status(c, false, 0) };
+        if let CopySt::Deleted(_) = st {
+            self.error(line, "THR-3", format!("throw of '{}', whose {} constructor is deleted", name, if rv { "move" } else { "copy" }));
+            return;
+        }
+        let sm = if rv && self.sm_decl(c, Sm::MoveCtor).is_some() { Sm::MoveCtor } else { Sm::CopyCtor };
+        if let Some(f) = self.sm_decl(c, sm) {
+            if !self.accessible(f, false) {
+                self.error(line, "THR-3", format!("throw of '{}', whose {} is not accessible", name, sm.what()));
+            }
+        }
+    }
+}

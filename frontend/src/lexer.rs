@@ -49,7 +49,10 @@ pub enum Lit {
     Char { prefix: Prefix, value: i128, multi: bool },
     /// Code units, without the terminating null.
     Str { prefix: Prefix, units: Vec<u32> },
-    UserDefined,
+    /// A literal with a user-defined suffix (OPR-8): the suffix, the
+    /// literal without it, and the source characters of a numeric
+    /// literal without it, for the raw form.
+    UserDefined { suffix: String, base: Box<Lit>, raw: String },
 }
 
 #[derive(Clone, Debug)]
@@ -781,12 +784,29 @@ fn lex_quoted(b: &[char], mut i: usize, prefix: Prefix, line: u32, out: &mut Vec
     }
     let suffix: String = b[suf_start..i].iter().collect();
     if named {
-        udl = true;
+        // The unsupported note is out already; the literal stays empty.
+        elems.clear();
+        if q != '"' {
+            elems.push(Elem::Cp('?' as u32));
+        }
     }
-    if udl {
-        out.push(Token { kind: if q == '"' { TK::Str } else { TK::Char }, text: suffix, line, lit: Some(Lit::UserDefined) });
-        return i;
+    let first = out.len();
+    let end = lex_quoted_value(elems, q, i, prefix, line, bad, out, d);
+    if udl && out.len() == first + 1 {
+        let t = out.pop().unwrap();
+        let base = Box::new(t.lit.unwrap_or(Lit::Str { prefix, units: vec![] }));
+        out.push(Token { kind: t.kind, text: suffix, line, lit: Some(Lit::UserDefined { suffix: String::new(), base, raw: String::new() }) });
+        let n = out.len() - 1;
+        let sfx = out[n].text.clone();
+        if let Some(Lit::UserDefined { suffix: s, .. }) = &mut out[n].lit {
+            *s = sfx;
+        }
     }
+    end
+}
+
+#[allow(clippy::too_many_arguments)]
+fn lex_quoted_value(elems: Vec<Elem>, q: char, i: usize, prefix: Prefix, line: u32, mut bad: bool, out: &mut Vec<Token>, d: &mut Diags) -> usize {
     if q == '"' {
         let mut units = Vec::new();
         for e in &elems {
@@ -866,6 +886,16 @@ fn lex_number(text: &str, line: u32, d: &mut Diags) -> Token {
     } else {
         lower.contains('.') || (lower.contains('e') && !lower.starts_with("0b"))
     };
+    if let Some(k) = text.find('_') {
+        if k > 0 && !lower.starts_with("0x") || k > 2 {
+            // OPR-8: a suffix that starts with `_` is a user-defined suffix.
+            let num = &text[..k];
+            let base = lex_number(num, line, d);
+            let kind = base.kind;
+            let lit = base.lit.unwrap_or(Lit::Int { value: 0, decimal: true, unsigned: false, size: ISize::None });
+            return Token { kind, text: text.to_string(), line, lit: Some(Lit::UserDefined { suffix: text[k..].to_string(), base: Box::new(lit), raw: num.to_string() }) };
+        }
+    }
     let tok = |lit: Lit| Token { kind: if matches!(lit, Lit::Float { .. }) { TK::Float } else { TK::Int }, text: text.to_string(), line, lit: Some(lit) };
     // Digit separators: PRIM-16.
     let chars: Vec<char> = text.chars().collect();
@@ -921,9 +951,6 @@ fn lex_number(text: &str, line: u32, d: &mut Diags) -> Token {
         d.error(line, Some("PRIM-16"), "base prefix without digits");
     }
     let suffix: String = cb[k..].iter().collect();
-    if suffix.starts_with('_') {
-        return Token { kind: TK::Int, text: text.to_string(), line, lit: Some(Lit::UserDefined) };
-    }
     let (unsigned, size) = match parse_int_suffix(&suffix) {
         Some(s) => s,
         None => {
@@ -1004,7 +1031,6 @@ fn lex_float(s: &str, hex: bool, line: u32, d: &mut Diags) -> Lit {
         "f" | "F" => FSuffix::F,
         "l" | "L" => FSuffix::L,
         "f16" | "F16" | "f32" | "F32" | "f64" | "F64" | "f128" | "F128" | "bf16" | "BF16" => FSuffix::Ext,
-        _ if suffix.starts_with('_') => return Lit::UserDefined,
         _ => {
             d.error(line, Some("PRIM-17"), format!("invalid floating literal suffix '{}'", suffix));
             FSuffix::None

@@ -33,7 +33,7 @@ impl P {
                     }
                     self.d.list.truncate(mark);
                 }
-                return Expr::unknown(line, "call of an allocation function");
+                return Expr::new(EK::Unknown(format!("call of allocation function {}", name)), QTy::unknown(), Cat::PR, line);
             }
         }
         match callee.k.clone() {
@@ -65,8 +65,12 @@ impl P {
                 self.call_no_object = true;
                 self.call_overloads(None, fs, args, line)
             }
-            EK::Unknown(_) if !matches!(nonref(&callee.ty).t, Ty::Class(_)) => {
+            EK::Unknown(ref m) if !matches!(nonref(&callee.ty).t, Ty::Class(_)) => {
                 let _ = self.args_rvalues(args);
+                if m.starts_with("allocation function ") {
+                    // UN-18 reads which allocation function is called.
+                    return Expr::new(EK::Unknown(format!("call of {}", m)), QTy::unknown(), Cat::PR, line);
+                }
                 Expr::unknown(line, "call of unknown callee")
             }
             EK::Call(_, _, Some(fid)) if self.ref_lambda_fns.contains(&fid) => {
@@ -375,7 +379,7 @@ impl P {
         self.call_overloads(obj, cands, args, line)
     }
 
-    fn call_overloads(&mut self, obj: Option<Expr>, cands: Vec<DeclId>, args: Vec<Expr>, line: u32) -> Expr {
+    pub fn call_overloads(&mut self, obj: Option<Expr>, cands: Vec<DeclId>, args: Vec<Expr>, line: u32) -> Expr {
         let no_object = std::mem::take(&mut self.call_no_object);
         let mut cands = cands;
         let adl = std::mem::take(&mut self.call_adl);
@@ -1082,6 +1086,16 @@ impl P {
         };
         let is_list = matches!(form, InitForm::CopyList | InitForm::DirectList) || (form == InitForm::None && items.is_some());
         let is_paren = matches!(form, InitForm::Paren(_));
+        if form == InitForm::Copy && items.is_none() && !ty.t.is_ref() && !matches!(ty.t, Ty::Class(_)) && !self.in_template() {
+            if let Ty::Class(sc) = nonref(&e.ty).t {
+                if self.explicit_convs_only(sc, None) {
+                    // CVF-11: copy-initialization does not use an explicit
+                    // conversion function.
+                    self.error(line, "CVF-11", format!("the conversion functions of '{}' are explicit, and copy-initialization does not use them", self.classes[sc].name));
+                    return Expr::unknown(line, "bad conversion");
+                }
+            }
+        }
         // references
         if ty.t.is_ref() {
             if let (Some(v), true, Ty::LRef(inner) | Ty::RRef(inner)) = (&items, is_list, &ty.t) {
@@ -1249,7 +1263,7 @@ impl P {
                             let mut last = None;
                             for x in v {
                                 if let EK::Unknown(s) = &x.k {
-                                    let name = s.trim_start_matches("designator").trim();
+                                    let name = s.split_whitespace().nth(1).unwrap_or("");
                                     if let Some(i) = fields.iter().position(|&f| self.decls[f].name == name) {
                                         if last.is_some_and(|l| i <= l) {
                                             self.error(line, "LIST-14", format!("designator '{}' is out of declaration order", name));
@@ -1258,6 +1272,9 @@ impl P {
                                         last = Some(i);
                                     }
                                 }
+                            }
+                            if let Some(x) = self.designated_list(c, v, ty, line) {
+                                return x;
                             }
                             return Expr::new(EK::Unknown("designated initializers".into()), ty.clone(), Cat::PR, line);
                         }
@@ -1555,7 +1572,7 @@ impl P {
 
     /// The number of non-virtual paths from `derived` to `base`, and
     /// whether one of them goes only through public bases.
-    fn base_paths(&self, base: usize, derived: usize) -> (u32, bool) {
+    pub fn base_paths(&self, base: usize, derived: usize) -> (u32, bool) {
         let mut n = 0;
         let mut open = false;
         let mut virt_seen = false;
@@ -1917,3 +1934,58 @@ pub fn ret_cat(r: &QTy) -> (QTy, Cat) {
         _ => (if matches!(r.t, Ty::Class(_)) { r.clone() } else { r.unqual() }, Cat::PR),
     }
 }
+
+impl P {
+    /// LIST-5: a designated list of a class with no bases, as a list with
+    /// one element per member. A member that the list does not name gets
+    /// `MemberDefault`. For a union, the list ends at the named member.
+    fn designated_list(&mut self, c: usize, v: &[Expr], ty: &QTy, line: u32) -> Option<Expr> {
+        if !self.classes[c].bases.is_empty() || self.in_template() {
+            return None;
+        }
+        let fields: Vec<DeclId> = self.classes[c].fields.iter().copied().filter(|&f| !(matches!(&self.decls[f].k, DK::Field(fi) if fi.bits.is_some()) && self.decls[f].name.is_empty())).collect();
+        let mut vals: Vec<Option<Expr>> = vec![None; fields.len()];
+        for x in v {
+            let EK::Unknown(s) = &x.k else { return None };
+            let mut w = s.split_whitespace().skip(1);
+            let name = w.next()?;
+            let id: usize = w.next()?.parse().ok()?;
+            let i = fields.iter().position(|&f| self.decls[f].name == name)?;
+            if vals[i].is_some() {
+                return None;
+            }
+            if self.classes[c].key == 2 && vals.iter().any(|v| v.is_some()) {
+                // UNI-8: a designated list of a union names one member.
+                self.error(line, "UNI-8", "a designated list of a union names two members");
+                return Some(Expr::unknown(line, "bad union init"));
+            }
+            vals[i] = Some(self.designated.get(id)?.clone());
+        }
+        let union = self.classes[c].key == 2;
+        let last = if union { vals.iter().position(|x| x.is_some())? + 1 } else { fields.len() };
+        let mut out = Vec::new();
+        for (i, val) in vals.into_iter().enumerate().take(last) {
+            let DK::Field(fi) = &self.decls[fields[i]].k else { return None };
+            let fty = fi.ty.clone();
+            let is_ref = fty.t.is_ref();
+            match val {
+                Some(x) => {
+                    let xl = x.line;
+                    let mark = self.d.list.len();
+                    let y = self.convert_init(x, &fty, InitForm::CopyList, xl);
+                    if self.d.list.len() != mark {
+                        return None;
+                    }
+                    out.push(y);
+                }
+                None if is_ref && fi.init.is_none() => {
+                    self.error(line, "LIST-12", "reference member without an initializer in the list");
+                    return None;
+                }
+                None => out.push(Expr::new(EK::MemberDefault, fty, Cat::PR, line)),
+            }
+        }
+        Some(Expr::new(EK::InitList(out), ty.clone(), Cat::PR, line))
+    }
+}
+

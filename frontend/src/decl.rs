@@ -160,6 +160,15 @@ impl P {
                 Some(s) => self.lookup_in_scope(s, &t.text, true),
             };
             let Some(ids) = found else {
+                // A member of a specialization whose members are not made
+                // yet: the tokens after the name decide.
+                if let Some(sc) = scope {
+                    if let SK::Class(c) = self.scopes[sc].kind {
+                        if self.inst_of.contains_key(&c) && !self.classes[c].complete && !self.in_template() {
+                            return self.declarator_after_qualified(k);
+                        }
+                    }
+                }
                 return false;
             };
             let id = ids[0];
@@ -195,6 +204,10 @@ impl P {
                     DK::Type(q) => match &q.t {
                         Ty::Class(c) => scope = Some(self.classes[*c].scope),
                         Ty::Enum(e) => scope = Some(self.enums[*e].scope),
+                        // A member alias of a pattern, looked up through a
+                        // template-id: its type is made with the
+                        // specialization.
+                        Ty::Dep(_) if !self.in_template() => return self.declarator_after_qualified(next + 1),
                         _ => return false,
                     },
                     _ => return false,
@@ -209,6 +222,54 @@ impl P {
                 _ => false,
             };
         }
+    }
+
+    /// DEP-20: a qualified name whose first name is a template parameter
+    /// or a template-id, which is dependent in a template.
+    pub fn dependent_qualifier_at(&self) -> bool {
+        self.dependent_qualifier_at_k(0)
+    }
+    pub fn dependent_qualifier_at_k(&self, k: usize) -> bool {
+        let t = self.peek(k);
+        if t.kind != TK::Ident || is_keyword(&t.text) {
+            return false;
+        }
+        let Some(ids) = self.lookup_scope_name(&t.text) else { return false };
+        let id = ids[0];
+        let mut next = k + 1;
+        if self.at_k(next, "<") && self.names_template(id) {
+            next = self.skip_angle_at(next);
+        }
+        if !self.at_k(next, "::") || self.peek(next + 1).kind != TK::Ident {
+            return false;
+        }
+        matches!(self.decls[id].k, DK::TypeParam) || self.tparam.contains_key(&id) || next > k + 1
+    }
+
+    /// From offset `k` at a name in a qualified name: whether a declarator
+    /// follows the last name, so that the qualified name names a type.
+    pub fn declarator_after_qualified(&self, mut k: usize) -> bool {
+        loop {
+            let t = self.peek(k);
+            if t.kind != TK::Ident || is_keyword(&t.text) {
+                return false;
+            }
+            k += 1;
+            if self.at_k(k, "<") {
+                k = self.skip_angle_at(k);
+            }
+            if self.at_k(k, "::") {
+                k += 1;
+                continue;
+            }
+            break;
+        }
+        let n = self.peek(k);
+        if n.kind == TK::Ident && !is_keyword(&n.text) {
+            return true;
+        }
+        (self.at_k(k, "*") || self.at_k(k, "&") || self.at_k(k, "&&")) && self.peek(k + 1).kind == TK::Ident
+            || self.at_k(k, ">") || self.at_k(k, ",") || self.at_k(k, ">>")
     }
 
     /// Given offset k at `<`, return the offset after the matching `>`.
@@ -447,6 +508,7 @@ impl P {
     }
 
     pub fn parse_decl_specs(&mut self, in_class: Option<usize>) -> PR<DeclSpec> {
+        let itn = std::mem::take(&mut self.implicit_tn) && (self.in_template() || self.stack.iter().any(|&s| self.scopes[s].kind == SK::Template));
         let mut ds = DeclSpec { line: self.line(), ..Default::default() };
         loop {
             self.skip_attributes();
@@ -603,7 +665,9 @@ impl P {
                         break;
                     }
                     self.pos += 1;
+                    self.ctad_tid = None;
                     let q = self.parse_typename_type()?;
+                    ds.ctad = self.ctad_tid.take();
                     ds.ty = Some(q);
                     ds.named_type = true;
                     continue;
@@ -620,6 +684,13 @@ impl P {
                         break;
                     }
                     if !self.qualified_names_type(0) {
+                        if itn && self.dependent_qualifier_at() {
+                            // DEP-20: a type-only position.
+                            let q = self.parse_typename_type()?;
+                            ds.ty = Some(q);
+                            ds.named_type = true;
+                            continue;
+                        }
                         break;
                     }
                     // A concept before auto (AUTO-13).
@@ -780,6 +851,37 @@ impl P {
                 continue;
             }
             return prev.as_deref() == Some(name.as_str()) && self.at_k(next, "(");
+        }
+    }
+
+    /// `C::operator` or `N::C<A>::operator`: the qualified name of an
+    /// operator or conversion function defined outside its class.
+    pub fn at_qualified_operator(&self) -> bool {
+        let mut k = 0;
+        if self.at_k(0, "::") {
+            k = 1;
+        }
+        let mut seen = false;
+        loop {
+            let t = self.peek(k);
+            if t.kind != TK::Ident {
+                return false;
+            }
+            if t.text == "operator" {
+                return seen;
+            }
+            if is_keyword(&t.text) {
+                return false;
+            }
+            let mut next = k + 1;
+            if self.at_k(next, "<") {
+                next = self.skip_angle_at(next);
+            }
+            if !self.at_k(next, "::") {
+                return false;
+            }
+            seen = true;
+            k = next + 1;
         }
     }
 
@@ -1073,7 +1175,7 @@ impl P {
         }
         let dependent = raw.iter().any(|r| match r {
             RawArg::Type(q) => q.is_unknown(),
-            RawArg::Expr(e) => e.ty.is_unknown() || crate::templ::has_unknown(e),
+            RawArg::Expr(e) => (e.ty.is_unknown() && !matches!(e.k, EK::InitList(_))) || crate::templ::has_unknown(e),
             RawArg::Templ(TName::Param(..)) => true,
             RawArg::Templ(_) => false,
             RawArg::Expand(_) => true,
@@ -1138,6 +1240,12 @@ impl P {
                     }
                     if self.at("<") && self.names_template(id) {
                         return self.parse_template_id_type(id, line);
+                    }
+                    if matches!(self.decls[id].k, DK::Template(TemplKind::Class(_) | TemplKind::Alias)) {
+                        // CTAD-1: a member class template named without
+                        // arguments deduces them.
+                        self.ctad_tid = self.tid_of(id);
+                        return Ok(QTy::unknown());
                     }
                     return Ok(match &self.decls[id].k {
                         DK::Type(q) => q.clone(),
@@ -1256,7 +1364,12 @@ impl P {
         // category (DTY rules).
         let parenthesized = self.at("(");
         self.in_unevaluated += 1;
+        // A `>` inside the parentheses does not close a template argument
+        // list.
+        let save = self.no_gt;
+        self.no_gt = 0;
         let e = self.parse_expression();
+        self.no_gt = save;
         self.in_unevaluated -= 1;
         let e = e?;
         self.expect(")")?;
@@ -1527,6 +1640,9 @@ impl P {
             d.qual_unknown = inner.qual_unknown;
             d.conv_ty = inner.conv_ty;
             d.line = inner.line;
+            // PACK-1: `...` can come inside the parentheses, as in
+            // `R (*... fp)()`.
+            d.pack |= inner.pack;
             inner_ops = inner.ops;
         } else if self.is_ident() || self.at("::") || self.at("~") || self.at("operator") {
             self.parse_declarator_name(&mut d)?;
@@ -1585,8 +1701,14 @@ impl P {
             } else if self.at("(") && (d.name.is_some() || inner_ops.iter().any(|o| !matches!(o, DOp::Func(_))) || !inner_ops.is_empty() || abstract_ok) {
                 // A parenthesized initializer looks like this too; the
                 // caller decides with `looks_like_params` before calling.
-                if d.name.is_some() && !param_ctx && !self.looks_like_params() {
+                let tn = d.qual.is_some() || d.qual_unknown || matches!(self.scopes[self.cur_scope()].kind, SK::Class(_));
+                if d.name.is_some() && !param_ctx && !self.looks_like_params_tn(tn) {
                     break;
+                }
+                // DEP-20: the parameters of a member, of a friend in a
+                // class, and of a function declared with a qualified name.
+                if d.qual.is_some() || d.qual_unknown || matches!(self.scopes[self.cur_scope()].kind, SK::Class(_)) {
+                    self.params_tn = true;
                 }
                 let f = self.parse_params()?;
                 suffixes.push(DOp::Func(Box::new(f)));
@@ -1788,7 +1910,7 @@ impl P {
             // literal operator: operator "" _x (the lexer may have joined
             // the suffix to the string token)
             self.pos += 1;
-            let n = if matches!(t.lit, Some(crate::lexer::Lit::UserDefined)) { t.text.clone() } else { self.ident()? };
+            let n = if matches!(t.lit, Some(crate::lexer::Lit::UserDefined { .. })) { t.text.clone() } else { self.ident()? };
             d.kind = NameKind::Literal;
             return Ok(format!("\"\"{}", n));
         }
@@ -1872,6 +1994,10 @@ impl P {
     /// After a declarator name, decide if `(` starts a parameter list
     /// (DCL-13: a declaration that can be a function declaration is one).
     pub fn looks_like_params(&self) -> bool {
+        self.looks_like_params_tn(false)
+    }
+    /// `tn`: the parameters are in type-only positions (DEP-20).
+    pub fn looks_like_params_tn(&self, tn: bool) -> bool {
         // at "("
         let n = self.peek(1);
         if n.kind == TK::Punct {
@@ -1892,7 +2018,7 @@ impl P {
             if is_keyword(s) {
                 return false;
             }
-            if !self.qualified_names_type(1) {
+            if !self.qualified_names_type(1) && !(tn && self.in_template() && self.dependent_qualifier_at_k(1)) {
                 return false;
             }
             // `T{...}` or `T(...)` after the type is an expression
@@ -1936,6 +2062,14 @@ impl P {
     }
 
     fn parse_params_inner(&mut self) -> PR<FnDecl> {
+        let ptn = std::mem::take(&mut self.params_tn);
+        let saved = std::mem::replace(&mut self.in_params_tn, ptn);
+        let r = self.parse_params_inner2();
+        self.in_params_tn = saved;
+        r
+    }
+
+    fn parse_params_inner2(&mut self) -> PR<FnDecl> {
         self.expect("(")?;
         let scope = self.push_scope(SK::Params);
         let mut f = FnDecl {
@@ -1998,6 +2132,7 @@ impl P {
                         let save = self.stack.clone();
                         self.stack.push(scope);
                         let r = (|| -> PR<QTy> {
+                            self.implicit_tn = true;
                             let ds = self.parse_decl_specs(None)?;
                             let d = self.parse_declarator(true, false)?;
                             if ds.auto.is_some() {
@@ -2029,6 +2164,7 @@ impl P {
             let save = self.stack.clone();
             self.stack.push(scope);
             let r = (|| -> PR<QTy> {
+                self.implicit_tn = true;
                 let ds = self.parse_decl_specs(None)?;
                 let d = self.parse_declarator(true, false)?;
                 if ds.auto.is_some() {
@@ -2063,10 +2199,15 @@ impl P {
             let line = self.line();
             let explicit_this = self.eat("this");
             if explicit_this {
+                if !f.params.is_empty() || !f.ptys.is_empty() {
+                    // CLS-14: the explicit object parameter comes first.
+                    self.error(line, "CLS-14", "an explicit object parameter that is not the first parameter");
+                }
                 f.has_explicit_this = true;
             }
             let pstart = self.pos;
             let pmark = self.pack_refs.len();
+            self.implicit_tn = self.in_params_tn;
             let ds = self.parse_decl_specs(None)?;
             // DED-34: a placeholder parameter of a function declaration.
             let auto_k = if ds.auto.is_some() && self.param_nest == 1 && !self.at("[") {

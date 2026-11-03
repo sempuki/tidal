@@ -53,6 +53,7 @@ impl P {
                 return Ok(Expr::new(EK::Throw(None), QTy::new(Ty::Void), Cat::PR, line));
             }
             let e = self.parse_assignment()?;
+            self.check_throw_operand(&e, line);
             let e = self.rvalue(e);
             return Ok(Expr::new(EK::Throw(Some(Box::new(e))), QTy::new(Ty::Void), Cat::PR, line));
         }
@@ -306,6 +307,11 @@ impl P {
                             if !self.in_template() && self.classes[c].complete && self.dtor_unusable(c) {
                                 // DTOR-3: no delete with a deleted destructor.
                                 self.error(line, "DTOR-3", format!("delete of '{}', whose destructor is deleted", self.classes[c].name));
+                            }
+                            if !arr && !self.in_template() && self.classes[c].complete && !self.class_uncertain(c) && self.classes[c].has_virtual && !self.final_classes.contains(&c) && self.wflag(&["-Wall", "-Wdelete-non-virtual-dtor", "-Wdelete-non-abstract-non-virtual-dtor"]) && self.dtor_virtual(c, 0) == Some(false) {
+                                // VIRT-13: delete through a polymorphic class
+                                // whose destructor is not virtual.
+                                self.warn(line, "VIRT-13", format!("delete of '{}', which has virtual functions and a destructor that is not virtual", self.classes[c].name));
                             }
                         }
                     }
@@ -578,6 +584,7 @@ impl P {
             self.pos += 1;
             placement = Some(self.parse_call_args()?);
         }
+        self.implicit_tn = true;
         let ds = self.parse_decl_specs(None)?;
         let is_auto = ds.auto.is_some() && ds.ty.is_none();
         let mut base = self.ds_base(&ds).unwrap_or(QTy::unknown());
@@ -648,6 +655,10 @@ impl P {
             }
             self.expect("]")?;
             bounds.push(b);
+            if self.at("[") && self.at_k(1, "[") {
+                // ATTR-19: attributes after a bound of a new type.
+                self.skip_attributes();
+            }
         }
         let has_init = self.at("(") || self.at("{");
         if !has_init && !self.in_template() {
@@ -715,6 +726,17 @@ impl P {
             }
         }
         if (placement.is_some() && place_arg.is_none()) || global || self.in_template() || rt.is_unknown() || (place_arg.is_none() && user_alloc(self, elem_class)) || bounds.iter().skip(1).any(|b| b.is_none()) {
+            // UN-18: a placement form of a scalar whose allocation
+            // functions with that many arguments are all non-throwing.
+            if let (Some(pa), None) = (&placement, elem_class) {
+                let name = if bounds.is_empty() { "operatornew" } else { "operatornew[]" };
+                let fs: Vec<DeclId> = self.scopes[self.global].names.get(name).cloned().unwrap_or_default().into_iter().filter(|&f| self.func(f).is_some_and(|fi| fi.params.len() == pa.len() + 1)).collect();
+                if !fs.is_empty() && fs.iter().all(|&f| self.func(f).is_some_and(|fi| fi.fty.noexcept)) && !self.in_template() {
+                    let mut u = unknown;
+                    u.k = EK::Unknown("new expression with a non-throwing allocation function".into());
+                    return Ok(u);
+                }
+            }
             return Ok(unknown);
         }
         let mark = self.d.list.len();
@@ -908,10 +930,15 @@ impl P {
                 e = self.parse_member_access(e, arrow, line)?;
                 if let EK::BoundMember(_, fs) = &e.k {
                     let non_static = fs.iter().all(|&f| self.func(f).is_some_and(|fi| !fi.is_static) && !self.decls[f].name.starts_with("operator"));
-                    if !self.at("(") && non_static && !fs.is_empty() && !self.in_template() {
-                        // PFX-14: a non-static member function reached
+                    // VC-2: the call can come after closing parentheses.
+                    let mut k = 0;
+                    while self.at_k(k, ")") {
+                        k += 1;
+                    }
+                    if !self.at_k(k, "(") && non_static && !fs.is_empty() && !self.in_template() {
+                        // PFX-20: a non-static member function reached
                         // through member access is called.
-                        self.error(line, "PFX-14", "a member function named through member access is not called");
+                        self.error_because(line, "PFX-20", "PFX-14", "a member function named through member access is not called");
                     }
                 }
             } else if self.at("++") || self.at("--") {
@@ -1012,7 +1039,9 @@ impl P {
                         Ty::Ptr(p) => Some(Expr::new(EK::Unary(UOp::Deref, Box::new(self.rvalue(obj.clone()))), (**p).clone(), Cat::L, line)),
                         _ => None,
                     }
-                } else if obj.cat != Cat::PR {
+                } else if obj.cat != Cat::PR || self.in_unevaluated > 0 {
+                    // In an unevaluated operand a temporary can name its
+                    // destructor too (UN-18).
                     Some(obj.clone())
                 } else {
                     None
@@ -1116,6 +1145,43 @@ impl P {
                         self.error(line, "PFX-11", format!("'->' applied to an object of class '{}', which has no operator->", self.classes[c].name));
                         return Ok(Expr::unknown(line, "bad ->"));
                     }
+                    if !self.in_template() {
+                        // OPR-14: the chain of operator-> calls ends at a
+                        // pointer.
+                        let mut cur = c;
+                        let mut seen = vec![c];
+                        loop {
+                            let Some(ids) = self.lookup_member(cur, "operator->") else {
+                                if !self.class_uncertain(cur) && self.classes[cur].complete {
+                                    self.error(line, "OPR-14", format!("operator-> returns '{}', which has no operator->", self.classes[cur].name));
+                                }
+                                break;
+                            };
+                            if ids.len() != 1 || self.class_uncertain(cur) {
+                                break;
+                            }
+                            let Some(fi) = self.func(ids[0]) else { break };
+                            if fi.template {
+                                break;
+                            }
+                            let r = nonref(&fi.fty.ret);
+                            match r.t {
+                                Ty::Ptr(_) | Ty::Unknown | Ty::Dep(_) => break,
+                                Ty::Class(n) => {
+                                    if seen.contains(&n) {
+                                        self.error(line, "OPR-14", "the chain of operator-> calls does not end");
+                                        break;
+                                    }
+                                    seen.push(n);
+                                    cur = n;
+                                }
+                                _ => {
+                                    self.error(line, "OPR-14", "operator-> returns a type that is neither a pointer nor a class");
+                                    break;
+                                }
+                            }
+                        }
+                    }
                     return Ok(Expr::unknown(line, "overloaded operator->"));
                 }
                 _ => {
@@ -1165,6 +1231,12 @@ impl P {
             return Ok(Expr::unknown(line, "ambiguous member"));
         }
         let id = ids[0];
+        if scope.is_none() && !self.in_template() && !self.at("::") && ids.iter().all(|&i| matches!(self.decls[i].k, DK::Type(_) | DK::Class(_) | DK::Enum(_))) {
+            // PFX-11, NAM-37: member access finds a type, which is not an
+            // expression.
+            self.error(line, "PFX-11", format!("'{}' names a type member of '{}', not a value", name, self.classes[c].name));
+            return Ok(Expr::unknown(line, "type member"));
+        }
         if matches!(self.decls[id].k, DK::Field(_) | DK::Var(_)) && !self.in_template() && self.scopes[self.decls[id].scope].kind == SK::Class(c) && !self.accessible(id, false) {
             // ACC-2, ACC-4: a private or protected data member of the
             // object's own class, used outside its members and friends.
@@ -1209,6 +1281,11 @@ impl P {
         let t = self.tok().clone();
         let line = t.line;
         match t.kind {
+            TK::Int | TK::Float | TK::Char if matches!(t.lit, Some(Lit::UserDefined { .. })) => {
+                self.pos += 1;
+                let Some(Lit::UserDefined { suffix, base, raw }) = t.lit.clone() else { unreachable!() };
+                return Ok(self.literal_call(*base, raw, &suffix, line));
+            }
             TK::Int => {
                 self.pos += 1;
                 return Ok(self.int_literal(&t.lit, line));
@@ -1310,6 +1387,7 @@ impl P {
                 self.pos += 1;
                 self.expect("<")?;
                 self.no_gt += 1;
+                self.implicit_tn = true;
                 let ty = self.parse_type_id();
                 self.no_gt -= 1;
                 let ty = ty?;
@@ -1543,8 +1621,19 @@ impl P {
         let mut prefix = Prefix::None;
         let mut units: Vec<u32> = Vec::new();
         let mut seen_prefix = false;
+        let mut udl: Option<String> = None;
         while self.tok().kind == TK::Str {
-            match self.tok().lit.clone() {
+            let mut lit = self.tok().lit.clone();
+            if let Some(Lit::UserDefined { suffix, base, .. }) = lit.clone() {
+                // OPR-8: the joined literal takes the suffix. OPR-10: two
+                // different suffixes are not valid.
+                if udl.as_ref().is_some_and(|u| *u != suffix) {
+                    self.error(line, "OPR-10", "adjacent string literals with different suffixes");
+                }
+                udl = Some(suffix);
+                lit = Some(*base);
+            }
+            match lit {
                 Some(Lit::Str { prefix: p, units: u }) => {
                     if p != Prefix::None {
                         if seen_prefix && p != prefix {
@@ -1570,10 +1659,91 @@ impl P {
             Prefix::U32 => Ty::Char32,
             Prefix::Wide => Ty::WChar,
         };
-        // PRIM-7: an lvalue array of N const characters, N counting the null.
+        if let Some(suffix) = udl {
+            return Ok(self.literal_call(Lit::Str { prefix, units }, String::new(), &suffix, line));
+        }
+        Ok(self.string_expr(units, ct, line))
+    }
+
+    /// PRIM-7: an lvalue array of N const characters, N counting the null.
+    fn string_expr(&self, units: Vec<u32>, ct: Ty, line: u32) -> Expr {
         let n = units.len() as u64 + 1;
         let ty = QTy { t: Ty::Array(Box::new(QTy { t: ct, c: true, v: false }), Some(n)), c: true, v: false };
-        Ok(Expr::new(EK::Str(Rc::new(units)), ty, Cat::L, line))
+        Expr::new(EK::Str(Rc::new(units)), ty, Cat::L, line)
+    }
+
+    /// OPR-8: a literal with a user-defined suffix calls the literal
+    /// operator for the suffix. The form of the literal picks the
+    /// arguments. OPR-16: no matching literal operator.
+    fn literal_call(&mut self, base: Lit, raw: String, suffix: &str, line: u32) -> Expr {
+        let name = format!("operator\"\"{}", suffix);
+        let Some(ids) = self.lookup(&name) else {
+            if !self.lookup_uncertain() {
+                self.error(line, "OPR-16", format!("no literal operator for the suffix '{}'", suffix));
+            }
+            return Expr::unknown(line, "user-defined literal");
+        };
+        let fids: Vec<DeclId> = ids.iter().copied().filter(|&i| self.func(i).is_some_and(|f| !f.template)).collect();
+        let templ = ids.iter().any(|&i| self.func(i).is_none_or(|f| f.template));
+        let one = |p: &P, f: DeclId, t: &dyn Fn(&QTy) -> bool| p.func(f).is_some_and(|fi| fi.fty.params.len() == 1 && t(&fi.fty.params[0]));
+        let char_ptr = |q: &QTy| matches!(&q.t, Ty::Ptr(x) if x.t == Ty::Char && x.c);
+        match base {
+            Lit::Int { value, .. } => {
+                if let Some(&f) = fids.iter().find(|&&f| one(self, f, &|q| q.unqual().t == Ty::ULLong)) {
+                    let a = Expr::new(EK::Int(value as i128), QTy::new(Ty::ULLong), Cat::PR, line);
+                    return self.call_overloads(None, vec![f], vec![a], line);
+                }
+                if let Some(&f) = fids.iter().find(|&&f| one(self, f, &char_ptr)) {
+                    let a = self.string_expr(raw.chars().map(|c| c as u32).collect(), Ty::Char, line);
+                    return self.call_overloads(None, vec![f], vec![a], line);
+                }
+            }
+            Lit::Float { value, .. } => {
+                if let Some(&f) = fids.iter().find(|&&f| one(self, f, &|q| q.unqual().t == Ty::LDouble)) {
+                    let a = Expr::new(EK::Float(value), QTy::new(Ty::LDouble), Cat::PR, line);
+                    return self.call_overloads(None, vec![f], vec![a], line);
+                }
+                if let Some(&f) = fids.iter().find(|&&f| one(self, f, &char_ptr)) {
+                    let a = self.string_expr(raw.chars().map(|c| c as u32).collect(), Ty::Char, line);
+                    return self.call_overloads(None, vec![f], vec![a], line);
+                }
+            }
+            Lit::Char { prefix, value, .. } => {
+                let ty = match prefix {
+                    Prefix::None => Ty::Char,
+                    Prefix::U8 => Ty::Char8,
+                    Prefix::U16 => Ty::Char16,
+                    Prefix::U32 => Ty::Char32,
+                    Prefix::Wide => Ty::WChar,
+                };
+                let v = wrap_int(value, &ty);
+                let a = Expr::new(EK::Int(v), QTy::new(ty), Cat::PR, line);
+                if !fids.is_empty() && !templ {
+                    return self.call_overloads(None, fids, vec![a], line);
+                }
+            }
+            Lit::Str { prefix, units } => {
+                let ct = match prefix {
+                    Prefix::None => Ty::Char,
+                    Prefix::U8 => Ty::Char8,
+                    Prefix::U16 => Ty::Char16,
+                    Prefix::U32 => Ty::Char32,
+                    Prefix::Wide => Ty::WChar,
+                };
+                let n = units.len() as i128;
+                let a = self.string_expr(units, ct, line);
+                let len = Expr::new(EK::Int(n), QTy::new(Ty::size_t()), Cat::PR, line);
+                if !fids.is_empty() && !templ {
+                    return self.call_overloads(None, fids, vec![a, len], line);
+                }
+            }
+            Lit::UserDefined { .. } => {}
+        }
+        if templ || self.lookup_uncertain() {
+            return Expr::unknown(line, "literal operator template");
+        }
+        self.error(line, "OPR-16", format!("no literal operator for the suffix '{}' takes this form of literal", suffix));
+        Expr::unknown(line, "user-defined literal")
     }
 
     pub fn parse_braced_init(&mut self) -> PR<Expr> {
@@ -1591,18 +1761,22 @@ impl P {
                     self.pos += 2;
                     self.eat("=");
                     let e = if self.at("{") { self.parse_braced_init()? } else { self.parse_assignment()? };
-                    let mut u = Expr::unknown(line, "designated initializer");
-                    u.ty = e.ty.clone();
-                    items.push(Expr::new(EK::Unknown(format!("designator {}", dname)), QTy::unknown(), Cat::PR, line));
+                    let id = self.designated.len();
+                    self.designated.push(e);
+                    items.push(Expr::new(EK::Unknown(format!("designator {} {}", dname, id)), QTy::unknown(), Cat::PR, line));
                     continue_after(self);
                     if !self.eat(",") {
                         break;
                     }
                     continue;
                 }
-                let e = if self.at("{") { self.parse_braced_init()? } else { self.parse_assignment()? };
-                self.eat("...");
-                items.push(e);
+                // PACK-13: an expansion in a braced list gives one element
+                // per element of the packs.
+                let (es, expanded) = self.parse_expansion(|p| if p.at("{") { p.parse_braced_init() } else { p.parse_assignment() })?;
+                if !expanded {
+                    self.eat("...");
+                }
+                items.extend(es);
                 if !self.eat(",") {
                     break;
                 }
@@ -1617,6 +1791,13 @@ impl P {
     }
 
     fn parse_lambda(&mut self) -> PR<Expr> {
+        let saved = self.templ;
+        let r = self.parse_lambda_inner();
+        self.templ = saved;
+        r
+    }
+
+    fn parse_lambda_inner(&mut self) -> PR<Expr> {
         let line = self.line();
         self.expect("[")?;
         // captures (specification/expressions/lambdas.md grammar)
@@ -1636,7 +1817,16 @@ impl P {
         let mut is_consteval = false;
         let mut generic = false;
         if self.at("<") {
-            self.skip_template_args()?;
+            // LAM-14: the template parameters of a generic lambda, declared
+            // for the parameters and the body, which stay a pattern.
+            self.templ += 1;
+            let r = self.parse_tparams(u32::MAX - 3);
+            self.tparam_constrained = false;
+            self.tparam_cons = None;
+            if let Err(e) = r {
+                self.pop_scope();
+                return Err(e);
+            }
             generic = true;
             if self.at("requires") {
                 // CPT-16: a requires clause after the template parameters.
@@ -1644,9 +1834,12 @@ impl P {
                 self.skip_constraint()?;
             }
         }
+        // Attributes that appertain to the call operator.
+        self.skip_attributes();
         let mark = self.decls.len();
         let ppos = self.pos;
         let (scope, fdecl) = if self.at("(") {
+            self.params_tn = true;
             let f = self.parse_params()?;
             (f.scope, Some(f))
         } else {
@@ -1657,6 +1850,12 @@ impl P {
         // front end does not model, so such a lambda stays unknown.
         let has_decltype = self.toks[ppos..self.pos].iter().any(|t| t.text == "decltype");
         if has_decltype {
+            generic = true;
+        }
+        if self.toks[ppos..self.pos].iter().any(|t| t.text == "auto" && t.kind == TK::Ident) && !generic {
+            // LAM-15: a placeholder parameter makes the call operator a
+            // template, whose body is a pattern (SA-5).
+            self.templ += 1;
             generic = true;
         }
         let mut ret = if has_decltype { None } else { fdecl.as_ref().and_then(|f| f.trailing.clone()) };
@@ -2224,6 +2423,14 @@ impl P {
                 }
             }
         }
+        if let (Some(Ok(sc)), Some(ids)) = (scope, &found) {
+            if matches!(self.scopes[sc].kind, SK::Class(_)) && !self.in_template() && ids.len() == 1 && matches!(self.decls[ids[0]].k, DK::Var(_) | DK::Field(_)) && !self.accessible(ids[0], false) {
+                // ACC-2, ACC-4: a qualified name of a member that is not
+                // accessible here.
+                let (rule, what) = if self.member_access.get(&ids[0]) == Some(&1) { ("ACC-4", "protected") } else { ("ACC-2", "private") };
+                self.error(line, rule, format!("'{}' is a {} member", name, what));
+            }
+        }
         if amb && !self.in_template() {
             self.report_ambiguous(scope.and_then(|r| r.ok()), &name, line);
             if self.at("(") {
@@ -2595,6 +2802,18 @@ impl P {
                     // SB-12: a structured binding name is an lvalue.
                     return Expr::new(EK::Var(id), nonref(&v.ty), Cat::L, line);
                 }
+                // CLS-28: a member function of a local class does not name
+                // an automatic variable of the enclosing function in an
+                // evaluated operand, unless the use reads a constant.
+                if let Some(f) = self.fns.last() {
+                    if !f.is_lambda && v.local && v.storage == Storage::Auto && !v.param && self.in_unevaluated == 0 && !self.in_template() && !v.constexpr && !(v.ty.c && (v.ty.t.is_integral() || matches!(v.ty.t, Ty::Enum(_)))) {
+                        let declared_outside = !self.stack[f.scope_base.saturating_sub(1).min(self.stack.len())..].contains(&self.decls[id].scope);
+                        let in_local_class = f.func.and_then(|fid| self.func(fid)).and_then(|fi| fi.class).is_some_and(|c| self.class_is_local(c));
+                        if declared_outside && in_local_class {
+                            self.error(line, "CLS-28", format!("a member function of a local class names the automatic variable '{}' of the enclosing function", self.decls[id].name));
+                        }
+                    }
+                }
                 // LAM-18: a variable captured by copy in a lambda that is not
                 // mutable is const inside it.
                 let mut t = nonref(&v.ty);
@@ -2864,6 +3083,24 @@ impl P {
 
     /// Does a class have a usable conversion to a non-class type? Returns
     /// None when the front end cannot tell.
+    /// Whether every conversion function of class `c` is explicit, with
+    /// none that converts to `allowed`. False when the front end cannot
+    /// tell.
+    pub fn explicit_convs_only(&self, c: usize, allowed: Option<&Ty>) -> bool {
+        if self.class_uncertain(c) || !self.classes[c].complete {
+            return false;
+        }
+        let mut fns = Vec::new();
+        self.conv_fns(c, 0, &mut fns);
+        !fns.is_empty()
+            && fns.iter().all(|&f| {
+                self.func(f).is_some_and(|fi| {
+                    let r = nonref(&fi.fty.ret);
+                    fi.explicit && !fi.template && !r.is_unknown() && !matches!(r.t, Ty::Dep(_)) && allowed.is_none_or(|a| r.t != *a)
+                })
+            })
+    }
+
     pub fn class_converts(&self, c: usize) -> Option<bool> {
         if self.class_uncertain(c) {
             return None;
@@ -3346,6 +3583,10 @@ impl P {
             Ty::Class(c) => {
                 if self.class_converts(*c) == Some(false) {
                     self.error(line, rule, format!("class '{}' does not convert to bool", self.classes[*c].name));
+                } else if !self.in_template() && self.explicit_convs_only(*c, Some(&Ty::Bool)) {
+                    // CVF-3, CVF-11: a contextual conversion uses an
+                    // explicit conversion function only to bool.
+                    self.error(line, "CVF-11", format!("the conversion functions of '{}' are explicit and do not convert to bool", self.classes[*c].name));
                 }
                 Expr::new(EK::Unknown("class to bool".into()), QTy::bool_(), Cat::PR, line)
             }
@@ -4140,6 +4381,22 @@ impl P {
     }
 
     pub fn build_assign(&mut self, op: &str, l: Expr, r: Expr, line: u32) -> Expr {
+        if op == "=" && !self.in_template() {
+            // BF-8: a constant assignment that the width changes.
+            if let EK::Member(_, f) = &l.k {
+                if let DK::Field(fi) = &self.decls[*f].k {
+                    if let (Some(b), true) = (fi.bits, fi.ty.t.is_integral() && fi.ty.t != Ty::Bool) {
+                        if let Ok(v) = self.const_int(&r) {
+                            let signed = fi.ty.t.is_signed();
+                            let (lo, hi) = if b >= 64 { (i128::MIN, i128::MAX) } else if signed { (-(1i128 << (b - 1)), (1i128 << (b - 1)) - 1) } else { (0, (1i128 << b) - 1) };
+                            if b > 0 && (v < lo || v > hi) && nonref(&r.ty).t.is_integral() {
+                                self.warn(line, "BF-8", format!("the value {} does not fit in the {}-bit bit-field", v, b));
+                            }
+                        }
+                    }
+                }
+            }
+        }
         let is_class = |e: &Expr| matches!(nonref(&e.ty).t, Ty::Class(_));
         let is_enum = |e: &Expr| matches!(nonref(&e.ty).t, Ty::Enum(_));
         let (l, r) = if op != "=" && !self.in_template() && (is_class(&l) || is_class(&r) || ((is_enum(&l) || is_enum(&r)) && self.operator_visible(op, &[]))) {
@@ -4184,7 +4441,7 @@ impl P {
                 // class declares no assignment operator.
                 let rt = nonref(&r.ty);
                 let same = rt.t == Ty::Class(c) || matches!(rt.t, Ty::Class(d) if self.is_base_of(c, d));
-                if same && !self.in_template() && !self.class_uncertain(c) && !self.scopes[self.classes[c].scope].names.contains_key("operator=") && l.cat == Cat::L && !matches!(r.k, EK::Unknown(_)) {
+                if same && !self.in_template() && !self.class_uncertain(c) && !self.scopes[self.classes[c].scope].names.contains_key("operator=") && (l.cat == Cat::L || self.in_unevaluated > 0) && !matches!(r.k, EK::Unknown(_)) {
                     return Expr::new(EK::Assign(None, Box::new(l), Box::new(r)), nonref(&lt), Cat::L, line);
                 }
             }
@@ -4620,20 +4877,30 @@ impl P {
 
     pub fn noexcept_of(&self, e: &Expr) -> Option<bool> {
         // UN-18: false if the operand contains a call to a function that is
-        // not noexcept, or a throw.
+        // not noexcept, or a throw. EXS-4 says which functions are.
         let mut res = Some(true);
+        fn join(res: &mut Option<bool>, throws: Option<bool>) {
+            match throws {
+                Some(true) => *res = Some(false),
+                None if *res == Some(true) => *res = None,
+                _ => {}
+            }
+        }
+        fn class_of(t: &Ty) -> Option<usize> {
+            match t {
+                Ty::Class(c) => Some(*c),
+                Ty::Array(e, _) => class_of(&e.t),
+                _ => None,
+            }
+        }
         fn walk(p: &P, e: &Expr, res: &mut Option<bool>) {
             match &e.k {
                 EK::Call(c, args, f) => {
                     match f {
-                        Some(fid) => {
-                            if let Some(fi) = p.func(*fid) {
-                                if !fi.fty.noexcept {
-                                    *res = Some(false);
-                                }
-                            }
-                        }
+                        Some(fid) => join(res, p.fn_throws(*fid)),
                         None => match &c.ty.t {
+                            _ if matches!(&c.k, EK::Unknown(m) if m.starts_with("allocation function operatornew")) => *res = Some(false),
+                            _ if matches!(&c.k, EK::Unknown(m) if m.starts_with("allocation function operatordelete")) => {}
                             Ty::Ptr(pt) => {
                                 if let Ty::Func(f) = &pt.t {
                                     if !f.noexcept {
@@ -4641,20 +4908,50 @@ impl P {
                                     }
                                 }
                             }
-                            _ => {
-                                if *res == Some(true) {
-                                    *res = None;
-                                }
-                            }
+                            _ => join(res, None),
                         },
+                    }
+                    if !matches!(c.k, EK::Unknown(_)) {
+                        walk(p, c, res);
                     }
                     for a in args {
                         walk(p, a, res);
                     }
                 }
                 EK::Throw(_) => *res = Some(false),
-                // NEW-19: the allocation functions are potentially throwing.
-                EK::New { .. } => *res = Some(false),
+                EK::New { ty, init, place, count } => {
+                    // NEW-19: the replaceable allocation functions are
+                    // potentially throwing. A placement form follows the
+                    // functions it can call.
+                    match place {
+                        Some(pl) => {
+                            let n = match &pl.k {
+                                EK::InitList(v) => v.len(),
+                                _ => 1,
+                            };
+                            let name = if count.is_some() { "operatornew[]" } else { "operatornew" };
+                            let fs: Vec<DeclId> = p.scopes[p.global].names.get(name).cloned().unwrap_or_default().into_iter().filter(|&f| p.func(f).is_some_and(|fi| fi.params.len() == n + 1)).collect();
+                            if fs.is_empty() {
+                                join(res, None);
+                            } else if fs.iter().any(|&f| p.func(f).is_some_and(|fi| !fi.fty.noexcept)) {
+                                *res = Some(false);
+                            }
+                            walk(p, pl, res);
+                        }
+                        None => *res = Some(false),
+                    }
+                    if let Some(c) = class_of(&ty.t) {
+                        if init.is_none() {
+                            join(res, p.sm_throws(c, crate::special::Sm::Default));
+                        }
+                    }
+                    if let Some(i) = init {
+                        walk(p, i, res);
+                    }
+                    if let Some(x) = count {
+                        walk(p, x, res);
+                    }
+                }
                 // VIRT-10: a failed cast of a reference throws.
                 EK::DynamicCast(a) => {
                     // A cast to the class or a base cannot fail.
@@ -4667,33 +4964,79 @@ impl P {
                     }
                     walk(p, a, res);
                 }
-                EK::Delete(..) => {
-                    if *res == Some(true) {
-                        *res = None;
+                EK::Delete(_, a) => {
+                    // EXS-4: a delete expression follows the destructor.
+                    match &nonref(&a.ty).t {
+                        Ty::Ptr(t) => {
+                            if let Some(c) = class_of(&t.t) {
+                                join(res, p.sm_throws(c, crate::special::Sm::Dtor));
+                            } else if t.is_unknown() {
+                                join(res, None);
+                            }
+                        }
+                        _ => join(res, None),
                     }
+                    walk(p, a, res);
                 }
-                EK::Unknown(_) => {
-                    if *res == Some(true) {
-                        *res = None;
+                EK::Destroy(a) => {
+                    match class_of(&nonref(&a.ty).t) {
+                        Some(c) => join(res, p.sm_throws(c, crate::special::Sm::Dtor)),
+                        None if nonref(&a.ty).is_unknown() => join(res, None),
+                        None => {}
+                    }
+                    walk(p, a, res);
+                }
+                EK::Unknown(m) => {
+                    if m.starts_with("call of allocation function operatornew") {
+                        *res = Some(false);
+                    } else if !m.starts_with("call of allocation function operatordelete") && !m.starts_with("new expression with a non-throwing") {
+                        join(res, None);
                     }
                 }
                 EK::Construct(cid, args) => {
-                    // A constructor that is not noexcept. A defaulted one
-                    // follows its members (EXS-4), which the front end does
-                    // not judge here.
-                    match p.func(*cid) {
-                        Some(fi) if !fi.defaulted && !fi.fty.noexcept => *res = Some(false),
-                        _ => {
-                            if *res == Some(true) {
-                                *res = None;
-                            }
-                        }
-                    }
+                    join(res, p.fn_throws(*cid));
                     for a in args {
                         walk(p, a, res);
                     }
                 }
-                EK::Unary(_, a) | EK::Conv(_, a) | EK::Member(a, _) => walk(p, a, res),
+                EK::Assign(None, a, b) if matches!(nonref(&a.ty).t, Ty::Class(_)) => {
+                    // The implicit copy or move assignment.
+                    if let Ty::Class(c) = nonref(&a.ty).t {
+                        let sm = if b.cat == Cat::L { crate::special::Sm::CopyAssign } else { crate::special::Sm::MoveAssign };
+                        join(res, p.sm_throws(c, sm));
+                    }
+                    walk(p, a, res);
+                    walk(p, b, res);
+                }
+                EK::InitList(v) => {
+                    // Value or aggregate initialization of a class with no
+                    // constructor: the members not named run their own
+                    // initialization.
+                    if let Ty::Class(c) = e.ty.t {
+                        let ci = &p.classes[c];
+                        if ci.ctors.is_empty() && ci.complete && !ci.template {
+                            if v.is_empty() {
+                                join(res, p.sm_throws(c, crate::special::Sm::Default));
+                            } else {
+                                for &fd in ci.fields.iter().skip(v.len()) {
+                                    if let DK::Field(fi) = &p.decls[fd].k {
+                                        if let Some(i) = &fi.init {
+                                            join(res, p.noexcept_of(i).map(|b| !b));
+                                        } else if let Some(m) = class_of(&fi.ty.t) {
+                                            join(res, p.sm_throws(m, crate::special::Sm::Default));
+                                        }
+                                    }
+                                }
+                            }
+                        } else if !ci.complete || ci.template {
+                            join(res, None);
+                        }
+                    }
+                    for x in v {
+                        walk(p, x, res);
+                    }
+                }
+                EK::Unary(_, a) | EK::Conv(_, a) | EK::Member(a, _) | EK::BoundMember(a, _) => walk(p, a, res),
                 EK::Binary(_, a, b) | EK::Assign(_, a, b) | EK::Comma(a, b) | EK::Index(a, b) => {
                     walk(p, a, res);
                     walk(p, b, res);
@@ -4703,33 +5046,18 @@ impl P {
                     walk(p, b, res);
                     walk(p, c, res);
                 }
-                EK::InitList(v) => {
-                    for x in v {
-                        walk(p, x, res);
-                    }
-                }
                 _ => {}
             }
         }
         walk(self, e, &mut res);
-        // A class temporary also runs its destructor, which the front end
-        // does not judge here.
-        let mut temp = false;
+        // A class temporary also runs its destructor (UN-18).
         walk_expr(e, &mut |x| {
             if let Ty::Class(c) = x.ty.t {
-                // A default member initializer can also throw (EXS-4).
-                let dmi = self.classes[c].fields.iter().any(|&f| matches!(&self.decls[f].k, DK::Field(fi) if fi.init.is_some() || matches!(fi.ty.t, Ty::Class(_))));
-                if x.cat == Cat::PR && !matches!(x.k, EK::Unknown(_) | EK::Call(..)) && (self.dtor_runs_code(c, 0) || dmi) {
-                    temp = true;
-                }
-                if x.cat == Cat::PR && matches!(x.k, EK::Call(..)) && self.dtor_runs_code(c, 0) {
-                    temp = true;
+                if x.cat == Cat::PR && !matches!(x.k, EK::Unknown(_)) {
+                    join(&mut res, self.sm_throws(c, crate::special::Sm::Dtor));
                 }
             }
         });
-        if temp && res == Some(true) {
-            return None;
-        }
         res
     }
 

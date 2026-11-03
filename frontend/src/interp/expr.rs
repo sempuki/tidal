@@ -664,6 +664,7 @@ impl<'a> Machine<'a> {
             EK::Float(f) => Ok(Val::Float(*f)),
             EK::NullPtr => Ok(Val::Null),
             EK::ZeroInit => Ok(self.zero(&e.ty)),
+            EK::MemberDefault => unsup("member with no designator outside an aggregate"),
             EK::Str(_) => {
                 let p = self.lvalue(e)?;
                 Ok(Val::Ptr(p))
@@ -2154,7 +2155,8 @@ impl<'a> Machine<'a> {
         let fields = self.fields(c);
         // UNI-4: with no value given, the member with a default member
         // initializer is active, else the first.
-        let active = if items.len() <= k { fields.iter().position(|(_, x)| x.init.is_some()).unwrap_or(0) } else { 0 };
+        // LIST-5: a designated list of a union names its active member.
+        let active = if items.len() <= k { fields.iter().position(|(_, x)| x.init.is_some()).unwrap_or(0) } else { items[k..].iter().position(|x| !matches!(x.k, EK::MemberDefault)).unwrap_or(0) };
         for (j, (fd, fi)) in fields.iter().enumerate() {
             let sub = place.sub(nb + fi.index);
             if fi.bits.is_some() && self.p.decls[*fd].name.is_empty() {
@@ -2163,6 +2165,9 @@ impl<'a> Machine<'a> {
             }
             if union && j != active {
                 self.write(&sub, Val::Inactive, true)?;
+                if j < active && k < items.len() {
+                    k += 1;
+                }
                 continue;
             }
             if union && !fi.ty.t.is_ref() {
@@ -2170,9 +2175,13 @@ impl<'a> Machine<'a> {
                 let sh = self.shape(&fi.ty)?;
                 self.write(&sub, sh, true)?;
             }
-            if k < items.len() {
-                let it = items[k].clone();
+            let item = if k < items.len() {
                 k += 1;
+                Some(items[k - 1].clone()).filter(|x| !matches!(x.k, EK::MemberDefault))
+            } else {
+                None
+            };
+            if let Some(it) = item {
                 self.in_aggregate += 1;
                 let r = self.init_field(&sub, &it, fi);
                 self.in_aggregate -= 1;

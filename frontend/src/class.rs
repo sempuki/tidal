@@ -253,6 +253,9 @@ impl P {
         self.classes[c].align = self.classes[c].align.max(class_align);
         let class_scope = self.classes[c].scope;
         // bases
+        if is_final {
+            self.final_classes.insert(c);
+        }
         if self.eat(":") {
             loop {
                 self.skip_attributes();
@@ -313,6 +316,15 @@ impl P {
                     }
                 };
                 if let Some(b) = bc {
+                    if !self.in_template() {
+                        // DER-1: a class is a direct base once, and a final
+                        // class is no base.
+                        if self.classes[c].bases.iter().any(|x| x.class == Some(b)) {
+                            self.error(bl, "DER-1", format!("'{}' is a direct base twice", self.classes[b].name));
+                        } else if self.final_classes.contains(&b) {
+                            self.error(bl, "DER-1", format!("'{}' is final and cannot be a base", self.classes[b].name));
+                        }
+                    }
                     if self.classes[b].has_virtual {
                         self.classes[c].has_virtual = true;
                     }
@@ -337,6 +349,12 @@ impl P {
             let id = self.add_decl_in(class_scope, &name, DK::Class(c), line);
             if let Some(&t) = self.class_tid.get(&c) {
                 self.injected.insert(id, t);
+            } else if self.last_partial_class == Some(c) {
+                // TARG-11: in a partial specialization, the name with an
+                // argument list names the template.
+                if let Some(crate::templ::Last::Partial(t, _)) = &self.last_templ {
+                    self.injected.insert(id, *t);
+                }
             }
         }
         self.class_depth += 1;
@@ -355,6 +373,9 @@ impl P {
         self.stack = saved;
         self.classes[c].complete = true;
         self.pending_template = None;
+        if !is_template {
+            self.check_overrides(c);
+        }
         if self.class_depth == 0 {
             self.run_deferred();
         }
@@ -603,6 +624,9 @@ impl P {
     fn class_body(&mut self, c: usize, key: u8, line: u32) -> PR<()> {
         let name = self.classes[c].name.clone();
         let class_scope = self.classes[c].scope;
+        if self.at("final") || (self.pos > 0 && self.toks[self.pos - 1].text == "final" && self.toks[self.pos - 1].kind == TK::Ident) {
+            self.final_classes.insert(c);
+        }
         if self.at("final") {
             self.pos += 1;
         }
@@ -658,6 +682,15 @@ impl P {
                     }
                 };
                 if let Some(b) = bc {
+                    if !self.in_template() {
+                        // DER-1: a class is a direct base once, and a final
+                        // class is no base.
+                        if self.classes[c].bases.iter().any(|x| x.class == Some(b)) {
+                            self.error(bl, "DER-1", format!("'{}' is a direct base twice", self.classes[b].name));
+                        } else if self.final_classes.contains(&b) {
+                            self.error(bl, "DER-1", format!("'{}' is final and cannot be a base", self.classes[b].name));
+                        }
+                    }
                     if self.classes[b].has_virtual {
                         self.classes[c].has_virtual = true;
                     }
@@ -694,6 +727,7 @@ impl P {
         self.class_depth -= 1;
         self.stack = saved;
         self.classes[c].complete = true;
+        self.check_overrides(c);
         if self.class_depth == 0 {
             self.run_deferred();
         }
@@ -723,9 +757,11 @@ impl P {
         let mut name = String::new();
         let mut qual = None;
         if self.is_ident() || self.at("::") {
+            self.last_qual_templ = None;
             qual = self.parse_nested_name()?;
             name = self.ident()?;
         }
+        let qual_templ = if matches!(qual, Some(Err(()))) { self.last_qual_templ.take() } else { None };
         let mut fixed: Option<Ty> = None;
         if self.at(":") && !self.at_k(1, ":") {
             self.pos += 1;
@@ -751,7 +787,20 @@ impl P {
         // Find an earlier declaration.
         let prev = match qual {
             Some(Ok(s)) => self.lookup_in_scope(s, &name, false),
-            Some(Err(())) => return Ok((QTy::unknown(), false)),
+            Some(Err(())) => {
+                if is_def {
+                    // TPL-42: a member enumeration of a class template,
+                    // defined outside the class. Each specialization takes
+                    // the enumerators from here.
+                    let st = self.pos;
+                    self.skip_balanced();
+                    if let Some((t, _)) = qual_templ {
+                        let toks = self.copy_toks(st, self.pos);
+                        self.member_enum_defs.insert((t, name.clone()), toks);
+                    }
+                }
+                return Ok((QTy::unknown(), false));
+            }
             None => {
                 if is_def || self.at(";") {
                     self.scopes[cur].names.get(&name).cloned().filter(|v| !v.is_empty())
@@ -846,6 +895,21 @@ impl P {
             }
         };
         if !is_def {
+            if let SK::Class(c) = self.scopes[cur].kind {
+                if let Some(&(t, _)) = self.inst_of.get(&c) {
+                    if let Some(toks) = self.member_enum_defs.get(&(t, name.clone())).cloned() {
+                        if !self.enums[e].complete {
+                            let save = self.pos;
+                            let saved_toks = std::mem::replace(&mut self.toks, (*toks).clone());
+                            self.pos = 0;
+                            let r = self.parse_enumerators(e, line);
+                            self.toks = saved_toks;
+                            self.pos = save;
+                            r?;
+                        }
+                    }
+                }
+            }
             return Ok((QTy::new(Ty::Enum(e)), false));
         }
         self.parse_enumerators(e, line)?;
@@ -1019,5 +1083,218 @@ impl P {
 
     pub fn expr_is_type_unknown(&self, e: &Expr) -> bool {
         e.ty.is_unknown()
+    }
+}
+
+impl P {
+    /// The virtual functions of the bases of `c` that the member function
+    /// `f` of `c` overrides (VIRT-1). None when the front end cannot tell.
+    pub fn overridden(&self, c: usize, f: DeclId, depth: u32) -> Option<Vec<DeclId>> {
+        let fi = self.func(f)?;
+        if fi.is_static || fi.template || fi.kind == FnKind::Ctor || depth > 16 {
+            return Some(vec![]);
+        }
+        if fi.fty.params.iter().any(|p| p.is_unknown() || matches!(p.t, Ty::Dep(_))) {
+            return None;
+        }
+        let mut out = Vec::new();
+        let mut stack: Vec<usize> = self.classes[c].bases.iter().map(|b| b.class).collect::<Option<Vec<_>>>()?;
+        let mut seen = std::collections::HashSet::new();
+        while let Some(b) = stack.pop() {
+            if !seen.insert(b) {
+                continue;
+            }
+            if self.class_uncertain(b) {
+                return None;
+            }
+            let cands: Vec<DeclId> = if fi.kind == FnKind::Dtor { self.classes[b].dtor.into_iter().collect() } else { self.own_names(self.classes[b].scope, &self.decls[f].name) };
+            let mut found = false;
+            for g in cands {
+                let Some(gi) = self.func(g) else { continue };
+                if gi.is_static || gi.template || gi.class != Some(b) {
+                    continue;
+                }
+                let same = fi.kind == FnKind::Dtor
+                    || (gi.fty.params == fi.fty.params && gi.fty.variadic == fi.fty.variadic && gi.fty.cv_c == fi.fty.cv_c && gi.fty.cv_v == fi.fty.cv_v && gi.fty.refq == fi.fty.refq);
+                if same && self.fn_virtual(b, g, depth + 1)? {
+                    out.push(g);
+                    found = true;
+                }
+            }
+            if !found {
+                for x in &self.classes[b].bases {
+                    stack.push(x.class?);
+                }
+            }
+        }
+        Some(out)
+    }
+
+    /// Whether a member function is virtual: declared so, or an override.
+    pub fn fn_virtual(&self, c: usize, f: DeclId, depth: u32) -> Option<bool> {
+        let fi = self.func(f)?;
+        if fi.is_virtual || self.pure_fns.contains(&f) {
+            return Some(true);
+        }
+        Some(!self.overridden(c, f, depth)?.is_empty())
+    }
+
+    /// VIRT-3 and VIRT-15 at the end of a class definition.
+    pub fn check_overrides(&mut self, c: usize) {
+        if self.in_template() || self.class_uncertain(c) {
+            return;
+        }
+        if self.classes[c].key == 2 {
+            // UNI-8: one variant member has a default member initializer.
+            let n = self.classes[c].fields.iter().filter(|&&f| matches!(&self.decls[f].k, DK::Field(fi) if fi.init.is_some()) || self.deferred.iter().any(|d| d.field == Some(f))).count();
+            if n > 1 {
+                let line = self.classes[c].line;
+                self.error(line, "UNI-8", "default member initializers for two members of a union");
+            }
+        }
+        let mut fns: Vec<DeclId> = self.scopes[self.classes[c].scope].names.values().flatten().copied().filter(|&f| self.func(f).is_some_and(|fi| fi.class == Some(c))).collect();
+        fns.sort();
+        fns.dedup();
+        for f in fns {
+            let line = self.decls[f].line;
+            let (ov, fin) = self.virt_specs.get(&f).copied().unwrap_or((false, false));
+            let Some(over) = self.overridden(c, f, 0) else { continue };
+            let virt = self.func(f).is_some_and(|fi| fi.is_virtual) || self.pure_fns.contains(&f) || !over.is_empty();
+            let name = self.decls[f].name.clone();
+            if ov && over.is_empty() {
+                self.error(line, "VIRT-3", format!("'{}' is marked override but overrides no virtual function of a base", name));
+            } else if fin && !virt {
+                self.error(line, "VIRT-3", format!("'{}' is marked final but is not virtual", name));
+            }
+            if over.is_empty() {
+                if let Some(rule) = self.hides_virtual(c, f) {
+                    let what = if rule == "VIRT-21" { "a static member function" } else { "an explicit object member function" };
+                    self.error(line, rule, format!("'{}' is {} with the name and parameters of a virtual function of a base", name, what));
+                }
+            }
+            for &g in &over {
+                let (Some(fi), Some(gi)) = (self.func(f), self.func(g)) else { continue };
+                if fi.consteval != gi.consteval {
+                    self.error(line, "VIRT-14", format!("'{}' and the function it overrides differ in consteval", name));
+                    break;
+                }
+                if fi.deleted != gi.deleted {
+                    self.error(line, "VIRT-19", format!("'{}' and the function it overrides differ in being deleted", name));
+                    break;
+                }
+                if self.virt_specs.get(&g).is_some_and(|s| s.1) {
+                    self.error(line, "VIRT-3", format!("'{}' overrides a final function", name));
+                    break;
+                }
+                if self.func(f).is_some_and(|fi| fi.kind == FnKind::Dtor) {
+                    continue;
+                }
+                if let Some(msg) = self.covariance(c, f, g) {
+                    self.error(line, "VIRT-15", format!("the return type of '{}' {}", name, msg));
+                    break;
+                }
+            }
+        }
+    }
+
+    /// VIRT-4, VIRT-15: what is wrong with the return type of the override
+    /// `f` of `g`, if anything.
+    fn covariance(&self, c: usize, f: DeclId, g: DeclId) -> Option<String> {
+        let rf = self.func(f)?.fty.ret.clone();
+        let rg = self.func(g)?.fty.ret.clone();
+        if rf.is_unknown() || rg.is_unknown() || matches!(rf.t, Ty::Dep(_)) || matches!(rg.t, Ty::Dep(_)) {
+            return None;
+        }
+        if rf == rg {
+            return None;
+        }
+        let parts = |q: &QTy| -> Option<(u8, QTy)> {
+            match &q.t {
+                Ty::Ptr(x) => Some((0, (**x).clone())),
+                Ty::LRef(x) => Some((1, (**x).clone())),
+                Ty::RRef(x) => Some((2, (**x).clone())),
+                _ => None,
+            }
+        };
+        let (Some((kf, cf)), Some((kg, cg))) = (parts(&rf), parts(&rg)) else {
+            return Some("differs from the overridden function and is not covariant".into());
+        };
+        if kf != kg || rf.c != rg.c || rf.v != rg.v {
+            return Some("differs from the overridden function and is not covariant".into());
+        }
+        let (Ty::Class(df), Ty::Class(bg)) = (&cf.t, &cg.t) else {
+            return Some("differs from the overridden function and is not covariant".into());
+        };
+        let (df, bg) = (*df, *bg);
+        if (cf.c && !cg.c) || (cf.v && !cg.v) {
+            return Some("has more cv-qualification than the overridden return type".into());
+        }
+        if df == bg {
+            return None;
+        }
+        if self.class_uncertain(df) || self.class_uncertain(bg) {
+            return None;
+        }
+        if !self.classes[df].complete && df != c {
+            return Some("names a class that is incomplete at the override".into());
+        }
+        if !self.is_base_of(bg, df) {
+            return Some("names a class that is not derived from the overridden return class".into());
+        }
+        let (paths, open) = self.base_paths(bg, df);
+        if paths > 1 {
+            return Some("names a class with an ambiguous base of the overridden return class".into());
+        }
+        if !open && df != c {
+            return Some("names a class with an inaccessible base of the overridden return class".into());
+        }
+        None
+    }
+
+    /// VIRT-21, VIRT-19: a static or explicit object member function with
+    /// the name and parameter list of a virtual function of a base.
+    fn hides_virtual(&self, c: usize, f: DeclId) -> Option<&'static str> {
+        let fi = self.func(f)?;
+        if fi.template || !(fi.is_static || fi.explicit_obj) {
+            return None;
+        }
+        let ps: &[QTy] = if fi.explicit_obj { fi.fty.params.get(1..)? } else { &fi.fty.params };
+        let mut stack: Vec<usize> = self.classes[c].bases.iter().filter_map(|b| b.class).collect();
+        let mut seen = std::collections::HashSet::new();
+        while let Some(b) = stack.pop() {
+            if !seen.insert(b) || self.class_uncertain(b) {
+                continue;
+            }
+            for g in self.own_names(self.classes[b].scope, &self.decls[f].name) {
+                let Some(gi) = self.func(g) else { continue };
+                if gi.is_static || gi.template || gi.explicit_obj || gi.fty.params != ps {
+                    continue;
+                }
+                if self.fn_virtual(b, g, 1) == Some(true) {
+                    return Some(if fi.is_static { "VIRT-21" } else { "VIRT-19" });
+                }
+            }
+            stack.extend(self.classes[b].bases.iter().filter_map(|x| x.class));
+        }
+        None
+    }
+
+    /// Whether the destructor of class `c` is virtual: declared so, or
+    /// the destructor of a base is.
+    pub fn dtor_virtual(&self, c: usize, depth: u32) -> Option<bool> {
+        if depth > 16 || self.class_uncertain(c) {
+            return None;
+        }
+        if let Some(d) = self.classes[c].dtor {
+            if self.func(d)?.is_virtual {
+                return Some(true);
+            }
+        }
+        for b in &self.classes[c].bases {
+            if self.dtor_virtual(b.class?, depth + 1)? {
+                return Some(true);
+            }
+        }
+        Some(false)
     }
 }

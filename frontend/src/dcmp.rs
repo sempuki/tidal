@@ -97,14 +97,40 @@ impl P {
         if !self.classes[c].complete || self.class_uncertain(c) {
             return None;
         }
+        let rule = if name == "operator==" { "DCMP-9" } else { "DCMP-11" };
+        if name == "operator==" {
+            // DCMP-2: a union, an anonymous union member, or a reference
+            // member deletes `==`.
+            let ci = &self.classes[c];
+            let refm = ci.fields.iter().any(|&fd| matches!(&self.decls[fd].k, DK::Field(fi) if fi.ty.t.is_ref()));
+            if ci.key == 2 || !ci.anon_unions.is_empty() || refm {
+                self.dcmp_deleted.insert(fid, rule);
+                return None;
+            }
+        }
+        if name == "operator<=>" && f.ret_auto.is_none() && !f.fty.ret.is_unknown() {
+            // DCMP-5: a written return type must be a comparison category.
+            let cats = ["strong_ordering", "weak_ordering", "partial_ordering"].map(|n| self.std_class(n));
+            if !matches!(f.fty.ret.t, Ty::Class(k) if cats.contains(&Some(k))) {
+                self.dcmp_deleted.insert(fid, rule);
+                return None;
+            }
+        }
         let (me, mu, mark) = (self.d.muted_errors, self.d.muted_unsup, self.d.list.len());
         self.d.muted += 1;
         let r = self.cmp_body(&name, c, &f, x, y, line);
         self.d.muted -= 1;
         let bad = self.d.muted_errors != me || self.d.muted_unsup != mu;
+        let only_errors = self.d.muted_unsup == mu && self.d.muted_errors != me;
         self.d.muted_errors = me;
         self.d.muted_unsup = mu;
         self.d.list.truncate(mark);
+        // With a written return type, `<=>` can use `==` and `<` of a part
+        // instead, which the front end does not build.
+        if only_errors && (name != "operator<=>" || f.ret_auto.is_some() || f.fty.ret.is_unknown()) {
+            // DCMP-2, DCMP-5: a part has no usable operator.
+            self.dcmp_deleted.insert(fid, rule);
+        }
         let (e, ret) = r?;
         if bad {
             return None;

@@ -294,6 +294,12 @@ pub struct PErr {
 
 pub type PR<T> = Result<T, PErr>;
 
+/// Parse failures at constructs that the front end knows it does not
+/// model: these stay unsupported and are not TR-12 errors.
+pub fn parse_known_unsupported(msg: &str) -> bool {
+    ["outside the specification", "asm declaration", "uncertain scope", "named escape", "compound literal", "case range"].iter().any(|k| msg.contains(k))
+}
+
 #[derive(Clone)]
 pub struct Deferred {
     pub func: Option<DeclId>,
@@ -376,9 +382,21 @@ pub struct P {
     pub auto_in_own_init: Option<DeclId>,
     /// Inside template argument lists, `>` ends the expression.
     pub no_gt: u32,
+    /// DEP-20: the next decl-specifiers are in a type-only position, so
+    /// a qualified name with a dependent qualifier names a type.
+    pub implicit_tn: bool,
+    /// DEP-20: the parameters of the next parameter list are in
+    /// type-only positions.
+    pub params_tn: bool,
+    /// DEP-20: the parameters of the list being parsed.
+    pub in_params_tn: bool,
     /// Inside the braces of an enumeration being defined.
     pub string_lits: usize,
     pub goto_sets: Vec<(String, u32, std::collections::HashSet<DeclId>, usize)>,
+    /// TRY-7: the try blocks and handlers that enclose the parser, as
+    /// markers in the jump sets.
+    pub try_regions: Vec<usize>,
+    pub try_region_next: usize,
     pub label_sets: Vec<(String, u32, std::collections::HashSet<DeclId>, usize)>,
     pub jump_vars: std::collections::HashSet<DeclId>,
     pub conflicts: HashMap<usize, (usize, &'static str)>,
@@ -398,6 +416,8 @@ pub struct P {
     pub entity_attrs: HashMap<DeclId, Vec<String>>,
     /// Pure virtual functions (VIRT-8).
     pub pure_fns: std::collections::HashSet<DeclId>,
+    /// The virt-specifiers of a member function: override, final (VIRT-3).
+    pub virt_specs: HashMap<DeclId, (bool, bool)>,
     /// The standard attributes of each class.
     pub class_attrs: HashMap<usize, Vec<String>>,
     /// The leading attributes of the declaration being parsed.
@@ -481,6 +501,12 @@ pub struct P {
     pub last_pack_ref: Option<DeclId>,
     /// The class template of the last dependent template-id before `::`.
     pub last_qual_templ: Option<(usize, Vec<TArg>)>,
+    /// TPL-42: the definition of a member enumeration of a class template
+    /// outside the class: the template, the name, and the position of `{`.
+    pub member_enum_defs: HashMap<(usize, String), Rc<Vec<Token>>>,
+    /// The values of designated initializers (LIST-5), by the number in
+    /// the item `designator NAME N`.
+    pub designated: Vec<Expr>,
     pub last_partial_class: Option<usize>,
     /// The head of each bound template template parameter (TPL-40).
     pub ttp_inner: HashMap<DeclId, std::rc::Rc<Vec<crate::templ::TParam>>>,
@@ -605,6 +631,11 @@ pub struct P {
     pub pending_explicit_cond: Option<crate::templ::Source>,
     /// The defaulted comparisons whose bodies were made (dcmp.rs).
     pub dcmp_done: HashMap<DeclId, bool>,
+    /// Classes declared `final` (DER-1).
+    pub final_classes: std::collections::HashSet<usize>,
+    /// Defaulted comparisons that DCMP-2 or DCMP-5 deletes, with the
+    /// rule that a use breaks.
+    pub dcmp_deleted: HashMap<DeclId, &'static str>,
     pub dcmp_eq: std::collections::HashSet<usize>,
     /// The packs of the template being defined, and the places where the
     /// pattern names one (PACK-8).
@@ -660,8 +691,13 @@ impl P {
             skipped_template_check: false,
             auto_in_own_init: None,
             no_gt: 0,
+            implicit_tn: false,
+            params_tn: false,
+            in_params_tn: false,
             string_lits: 0,
             goto_sets: Vec::new(),
+            try_regions: Vec::new(),
+            try_region_next: 0,
             label_sets: Vec::new(),
             jump_vars: Default::default(),
             conflicts: HashMap::new(),
@@ -678,6 +714,7 @@ impl P {
             entity_attrs: HashMap::new(),
             class_attrs: HashMap::new(),
             pure_fns: std::collections::HashSet::new(),
+            virt_specs: HashMap::new(),
             decl_attrs: Vec::new(),
             hidden_friends: HashMap::new(),
             class_friends: HashMap::new(),
@@ -699,6 +736,8 @@ impl P {
             inst: None,
             inst_out: None,
             injected: HashMap::new(),
+            member_enum_defs: HashMap::new(),
+            designated: Vec::new(),
             inst_of: HashMap::new(),
             spec_of: HashMap::new(),
             const_param_val: HashMap::new(),
@@ -783,6 +822,8 @@ impl P {
             explicit_cond: HashMap::new(),
             pending_explicit_cond: None,
             dcmp_done: HashMap::new(),
+            final_classes: std::collections::HashSet::new(),
+            dcmp_deleted: HashMap::new(),
             dcmp_eq: Default::default(),
             pack_decls: Default::default(),
             pack_uses: Vec::new(),
@@ -889,6 +930,13 @@ impl P {
                 if t.text == open {
                     depth += 1;
                 } else if t.text == close || (close == ">" && t.text == ">>") {
+                    if t.text == ">>" && depth == 1 {
+                        // The second `>` of `>>` closes an outer list.
+                        self.toks[self.pos].text = ">".to_string();
+                        let t2 = self.toks[self.pos].clone();
+                        self.toks.insert(self.pos + 1, t2);
+                    }
+                    let t = self.tok();
                     depth -= if t.text == ">>" { 2 } else { 1 };
                     if depth <= 0 {
                         self.pos += 1;
@@ -1112,6 +1160,19 @@ impl P {
     }
     pub fn unsupported(&mut self, line: u32, msg: impl Into<String>) {
         self.d.unsupported(line, msg);
+    }
+    /// A token sequence that the parser does not derive. TR-12 makes it
+    /// an error. The parse stays unsupported when the front end knows that
+    /// it does not model the construct, or when an earlier unknown name
+    /// left the scope uncertain, so that the failure can come from the
+    /// front end and not from the program.
+    pub fn parse_failure(&mut self, e: &PErr) {
+        let uncertain = self.stack.iter().any(|&s| self.scopes[s].uncertain || matches!(self.scopes[s].kind, SK::Class(c) if self.class_uncertain(c)));
+        if parse_known_unsupported(&e.msg) || uncertain {
+            self.unsupported(e.line, format!("parse: {}", e.msg));
+        } else {
+            self.error(e.line, "TR-12", format!("the grammar does not derive this: {}", e.msg));
+        }
     }
     /// Whether a member is accessible where the parser is now. A class
     /// with a friend counts as accessible, since the front end does not

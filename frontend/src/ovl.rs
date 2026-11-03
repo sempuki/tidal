@@ -263,6 +263,14 @@ impl P {
         if f.defaulted && f.body.is_none() {
             // DCMP: a defaulted comparison gets its body at its first use.
             if !self.synth_defaulted_cmp(fid) {
+                if let Some(&rule) = self.dcmp_deleted.get(&fid) {
+                    // DCMP-9, DCMP-11: the use of a deleted defaulted
+                    // comparison.
+                    if !self.in_template() {
+                        let line = ops.first().map_or(0, |o| o.line);
+                        self.error(line, rule, format!("use of the defaulted '{}', which is deleted", self.decls[fid].name));
+                    }
+                }
                 return Err(());
             }
             f = self.func(fid).ok_or(())?.clone();

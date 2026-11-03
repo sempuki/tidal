@@ -401,7 +401,7 @@ impl P {
                 }
             }
         }
-        let b = Binds { depth, vals: args.iter().cloned().map(Some).collect(), kinds: vec![], packs: vec![], unknown: false, fixed: vec![], from_bound: false };
+        let b = Binds { depth, vals: args.iter().cloned().map(Some).collect(), kinds: vec![], patterns: vec![], packs: vec![], unknown: false, fixed: vec![], from_bound: false };
         self.subst_targ(m, &b)
     }
 
@@ -957,7 +957,7 @@ impl P {
         let f2 = self.func(self.templs[t2].decl).cloned();
         if let (Some(f1), Some(f2)) = (f1, f2) {
             // CNS-34: the function parameter types must agree.
-            let b = Binds { depth: d2, vals: to1.iter().map(|a| Some(match a { TArg::Expand(x) => (**x).clone(), x => x.clone() })).collect(), kinds: vec![], packs: vec![], unknown: false, fixed: vec![], from_bound: false };
+            let b = Binds { depth: d2, vals: to1.iter().map(|a| Some(match a { TArg::Expand(x) => (**x).clone(), x => x.clone() })).collect(), kinds: vec![], patterns: vec![], packs: vec![], unknown: false, fixed: vec![], from_bound: false };
             if f1.fty.params.len() != f2.fty.params.len() {
                 return None;
             }
@@ -1365,7 +1365,7 @@ impl P {
         let ab = self.abbrev.as_ref().unwrap();
         let depth = ab.depth;
         let idx = ab.base + ab.params.len();
-        let param = TParam { name: name.clone(), kind: TPK::Type, pack, default: None, line, dauto: false };
+        let param = TParam { name: name.clone(), kind: TPK::Type, pack, default: None, line, dauto: false, pattern: None };
         self.abbrev.as_mut().unwrap().params.push(param.clone());
         if let Some(pt) = self.pending_template.as_mut() {
             pt.tparams.push(param.clone());

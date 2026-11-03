@@ -210,9 +210,36 @@ impl P {
             let m = self.overload_matches(&fs, &target)?;
             return match m.len() {
                 0 => Ok(None),
-                1 => Ok(Some(Ics::std(Std::identity(p.clone())))),
+                1 => {
+                    // ICS-47: dropping noexcept is a function pointer
+                    // conversion, which the identity beats.
+                    let dropped = m[0].1.noexcept && matches!(&target.t, Ty::Ptr(x) | Ty::LRef(x) | Ty::RRef(x) if matches!(&x.t, Ty::Func(ft) if !ft.noexcept));
+                    let mut st = Std::identity(p.clone());
+                    st.qual = dropped;
+                    Ok(Some(Ics::std(st)))
+                }
                 _ => Err(()),
             };
+        }
+        if let EK::TemplId(None, fs, raw) = &a.k {
+            // ICS-47, OVL-19: a template name with explicit arguments
+            // names the specializations that match the parameter type.
+            if matches!(&p.t, Ty::Ptr(x) | Ty::LRef(x) | Ty::RRef(x) if matches!(x.t, Ty::Func(_))) {
+                let (fs, raw) = (fs.clone(), raw.clone());
+                let target = p.unqual();
+                let me = self.d.muted_errors;
+                self.d.muted += 1;
+                let v = self.target_specs(&fs, Some(&raw), &target, a.line);
+                self.d.muted -= 1;
+                if self.d.muted_errors != me {
+                    return Err(());
+                }
+                return match v.map(|v| v.len()) {
+                    Some(0) => Ok(None),
+                    Some(1) => Ok(Some(Ics::std(Std::identity(p.clone())))),
+                    _ => Err(()),
+                };
+            }
         }
         if a.ty.is_unknown() || matches!(a.k, EK::Overloads(_) | EK::BoundMember(..)) {
             return Err(());
@@ -758,7 +785,7 @@ impl P {
                     // LIST-5: the named members, in any order.
                     for x in &items {
                         if let EK::Unknown(s) = &x.k {
-                            let name = s.trim_start_matches("designator").trim();
+                            let name = s.split_whitespace().nth(1).unwrap_or("");
                             if !fields.iter().any(|&f| self.decls[f].name == name) {
                                 return Ok(None);
                             }
