@@ -10,6 +10,24 @@ for Rust is the inspiration for Tidal's presentation: its fixed page
 segments, short identified rules, linked glossary terms, and informative
 examples. See Acknowledgements below.
 
+## Purpose
+
+Tidal explores new ways to present and extend the specification of
+C++. It tests forms that the ISO standard does not use:
+
+- principles first, with each rule tied to the principles it supports;
+- short rules, each with an ID, a class, and the tests that support it;
+- the observed behavior of several compilers, recorded beside each rule;
+- open questions, recorded where the compilers disagree;
+- an interpreter that runs programs against the rules;
+- design exercises that propose extensions to the language and trace
+  each change through the rules and tests.
+
+Tidal does not replace the ISO standard, and it is not a way to avoid
+buying it. The ISO standard remains the normative definition of C++.
+Readers who need that text should obtain ISO/IEC 14882 from ISO or
+from their national standards body.
+
 Repository: https://github.com/sempuki/tidal
 Specification site: https://sempuki.github.io/tidal/
 
