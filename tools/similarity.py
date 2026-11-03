@@ -14,6 +14,10 @@ the report gives:
 A unit is flagged when longest >= --run (default 8) or overlap > --overlap
 (default 0.25).
 
+By default the tool checks specification/, guides/, and questions/, so a
+run with no --spec covers the whole repository's Tidal text. A label from
+a directory other than specification/ starts with the directory's name.
+
 Usage:
     tools/similarity.py --reference DIR [--spec DIR ...] [--out FILE] [--fail-on-flag]
 """
@@ -96,8 +100,10 @@ def longest_shared(ws: list[str], big: set, n: int) -> tuple[int, int]:
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--reference", type=Path, required=True)
-    ap.add_argument("--spec", type=Path, nargs="+", default=[ROOT / "specification", ROOT / "guides"],
-                    help="directories of Markdown text to check (default: specification and guides)")
+    ap.add_argument("--spec", type=Path, nargs="+",
+                    default=[ROOT / "specification", ROOT / "guides", ROOT / "questions"],
+                    help="directories of Markdown text to check "
+                         "(default: specification, guides, and questions)")
     ap.add_argument("--run", type=int, default=8)
     ap.add_argument("--overlap", type=float, default=0.25)
     ap.add_argument("--out", type=Path)

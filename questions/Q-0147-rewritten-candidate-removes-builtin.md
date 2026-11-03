@@ -41,4 +41,8 @@ The question stays open under decision 0051 (2026-11-03). GCC 16 keeps the built
 
 ## Opinions
 
+### Gap review, 2026-11-03
+
+The source-reader gap review of question cluster 2 (`reports/review/2026-11-03-gap-review-question-cluster-2.md`) agrees with option 1. A built-in candidate drops out when a non-member candidate, or a rewritten non-member candidate, has the same parameter types and is not a template specialization. The three-way comparison function on the enumeration is a rewritten candidate of that kind.
+
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

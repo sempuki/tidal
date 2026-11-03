@@ -49,4 +49,8 @@ The question stays open under decision 0051 (2026-11-03). Clang 22 finds the bin
 
 ## Opinions
 
+### Gap review, 2026-11-03
+
+The source-reader gap review of question cluster 2 (`reports/review/2026-11-03-gap-review-question-cluster-2.md`) agrees with option 1. A reference to function of either kind takes conversion functions that return the other kind of reference too. A tie-breaker among the steps that choose the best function then prefers the conversion function whose result is the target's kind of reference.
+
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

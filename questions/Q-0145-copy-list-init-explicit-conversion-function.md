@@ -39,4 +39,8 @@ The question stays open under decision 0051 (2026-11-03). Clang 22 accepts, and 
 
 ## Opinions
 
+### Gap review, 2026-11-03
+
+The source-reader gap review of question cluster 2 (`reports/review/2026-11-03-gap-review-question-cluster-2.md`) agrees with option 1. The braced list chooses a constructor of the target, and the copy and move constructors take a reference parameter that is copy-initialized from the source. `explicit` conversion functions take part only in a direct initialization of a reference, or in making the temporary for a constructor's reference parameter during a direct initialization of the class. Copy-list-initialization is neither case.
+
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

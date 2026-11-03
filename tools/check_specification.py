@@ -18,6 +18,8 @@ Fails when:
 - a page's agreement sentence is out of date (run tools/status_table.py),
 - a generated number in documentation/status.md is out of date (run
   tools/status_table.py),
+- the front-end row of documentation/exercises.md is out of date (run
+  tools/status_table.py),
 - the index in questions/README.md is out of date (run
   tools/question_index.py), or a question's answer starts with an option
   number,
@@ -209,6 +211,11 @@ def check_records(errors: list[str], warnings: list[str]) -> None:
     errors.extend(problems)
     if new != status:
         errors.append("documentation/status.md: a generated number is out of date; run tools/status_table.py")
+    exercises = status_table.EXERCISES.read_text()
+    new, problems = status_table.render_exercises(exercises)
+    errors.extend(problems)
+    if new != exercises:
+        errors.append("documentation/exercises.md: the front-end row is out of date; run tools/status_table.py")
     for f in [*SPEC.rglob("*.md"), *GUIDES.rglob("*.md"), *TESTS.rglob("*.cpp"),
               *(ROOT / "documentation").rglob("*.md"), *(ROOT / "questions").glob("*.md")]:
         if re.search(r"\bQ-NEW-[a-z0-9]", f.read_text()):

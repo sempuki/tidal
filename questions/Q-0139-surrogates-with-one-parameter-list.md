@@ -41,4 +41,8 @@ The question stays open under decision 0051 (2026-11-03). GCC 16 accepts the cal
 
 ## Opinions
 
+### Gap review, 2026-11-03
+
+The source-reader gap review of question cluster 2 (`reports/review/2026-11-03-gap-review-question-cluster-2.md`) agrees with option 1. The reference allows two surrogates whose declarations are the same, so that overload resolution cannot separate them, and makes such a call ambiguous unless a third candidate is better. The reference does not link the object's conversion for a surrogate to the conversion function the surrogate comes from. The two surrogates tie on every argument in either reading.
+
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

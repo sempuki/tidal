@@ -39,4 +39,8 @@ The question stays open under decision 0051 (2026-11-03). GCC 16 keeps the surro
 
 ## Opinions
 
+### Gap review, 2026-11-03
+
+The source-reader gap review of question cluster 2 (`reports/review/2026-11-03-gap-review-question-cluster-2.md`) agrees with option 1. A conversion function gives a surrogate only when its cv-qualifiers are the same as the object's or add to them. A conversion function that is not `const` gives no surrogate for a `const` object.
+
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

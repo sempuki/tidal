@@ -44,4 +44,8 @@ The question stays open under decision 0051 (2026-11-03). GCC 16 rejects the cal
 
 ## Opinions
 
+### Gap review, 2026-11-03
+
+The source-reader gap review of question cluster 2 (`reports/review/2026-11-03-gap-review-question-cluster-2.md`) agrees with option 1. `*this` is the implied object only when its class is the class of the members found or derives from that class. Otherwise the call uses a made-up object that every member accepts, and the call is not valid when a non-static member wins. Here the exact match wins, so the call is rejected. The implicit member access inside a member function would also fail, because the nested class is not related to the enclosing class.
+
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

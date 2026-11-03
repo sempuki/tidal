@@ -13,8 +13,8 @@ three accept two declarations that overload on the two types.
 
 ## Options
 
-1. It is implementation-defined if language linkage is part of a function
-   type.
+1. Each implementation decides whether a function type includes its
+   language linkage (implementation-defined).
 2. Language linkage is part of the function type.
 3. Language linkage is not part of the function type.
 

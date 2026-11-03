@@ -17,7 +17,11 @@ is unknown, or when an answer starts with an option number ("Option 1.").
 Usage:
     tools/question_index.py [--check]
 
---check writes nothing and fails when the table is out of date.
+--check writes nothing and fails when the table is out of date. It also
+warns, without failing, about each question that a file in reports/review/
+names when the question's Opinions section does not name that file. Each
+commit that acts on a review records the review's reading on every
+question the review read (decision 0054).
 """
 
 import argparse
@@ -29,6 +33,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 QUESTIONS = ROOT / "questions"
 README = QUESTIONS / "README.md"
+REVIEWS = ROOT / "reports" / "review"
+QUESTION_ID = re.compile(r"\bQ-\d{4}\b")
 HEADER = "| ID | Question | Status | Provisional answer |"
 STATUSES = ["open", "provisional", "compiler defect", "settled"]
 TITLE = re.compile(r"^# (Q-\d{4}): (.+?)\s*$")
@@ -88,6 +94,22 @@ def load() -> tuple[list[Question], list[str]]:
     return questions, problems
 
 
+def review_warnings(questions: list[Question]) -> list[str]:
+    """Each question that a review names and whose Opinions section does not name the review."""
+    by_id = {q.id: q for q in questions}
+    warnings = []
+    for review in sorted(REVIEWS.glob("*.md")):
+        for qid in sorted(set(QUESTION_ID.findall(review.read_text()))):
+            if qid not in by_id:
+                continue
+            text = by_id[qid].path.read_text()
+            opinions = text.split("\n## Opinions", 1)[1] if "\n## Opinions" in text else ""
+            if review.name not in opinions:
+                warnings.append(f"{by_id[qid].path.relative_to(ROOT)}: {review.relative_to(ROOT)} "
+                                "names the question, and no Opinions entry names the review")
+    return warnings
+
+
 def cell(text: str) -> str:
     return text.replace("|", r"\|")
 
@@ -112,6 +134,8 @@ def main() -> int:
     if args.check:
         if new != old:
             problems.append("questions/README.md: the index is out of date; run tools/question_index.py")
+        for w in review_warnings(questions):
+            print(f"warning: {w}", file=sys.stderr)
     elif new != old:
         README.write_text(new)
         print("questions/README.md: index rebuilt")

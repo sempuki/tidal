@@ -43,4 +43,8 @@ The question stays open under decision 0051 (2026-11-03). EDG 7.0 finds the two 
 
 ## Opinions
 
+### Gap review, 2026-11-03
+
+The source-reader gap review of question cluster 2 (`reports/review/2026-11-03-gap-review-question-cluster-2.md`) agrees with option 1. The result tie-breaker compares two standard sequences by the usual steps. The identity is a subsequence of every sequence that is not the identity, and a function pointer conversion is not the identity. The result tie-breaker also comes before the preference for a plain function over a template, which fits the third column.
+
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

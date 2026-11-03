@@ -38,4 +38,8 @@ The question stays open under decision 0051 (2026-11-03). GCC 16 finds both call
 
 ## Opinions
 
+### Gap review, 2026-11-03
+
+The source-reader gap review of question cluster 2 (`reports/review/2026-11-03-gap-review-question-cluster-2.md`) agrees with option 1. An array-to-pointer step is an lvalue transformation, and the comparison of two sequences leaves lvalue transformations out. The rest of each sequence is a pointer conversion from a pointer to the derived class, so the tie-breakers for a base over `void` and for the nearer base apply. The review's one doubt is that the reference states these tie-breakers for pointer sources and says nothing of array arguments.
+
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

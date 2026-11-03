@@ -21,7 +21,8 @@ The tool writes:
     units and the report. It also counts the page's rules and principles
     that the report does not check. A page that no report checked says
     "no report".
-- the prose numbers: the baseline pass count from tests/RESULTS.md, the
+- the prose numbers: the baseline pass count from tests/RESULTS.md and,
+  when some test files have no row there, the count of those files, the
   EDG override count, the question counts by status and the list of
   compiler-defect questions (tools/question_index.py), the
   *(referenced)* marker counts by topic, the tidal-error and sanitizer
@@ -29,10 +30,15 @@ The tool writes:
   (reports/clean-room/rust-frontend/conformance.tsv), and the name of the
   latest similarity report that checked every page.
 
+It also writes the front-end row of the status table in
+documentation/exercises.md (section 8): the latest round, from the
+numbered reports in reports/clean-room/rust-frontend/, and the pass and
+check-pass counts from conformance.tsv.
+
 Each prose number sits in a fixed sentence. When a sentence is missing,
 the tool reports a problem and leaves the text alone.
 tools/check_specification.py fails when the page differs from what this
-tool would write.
+tool would write, and when the front-end row of exercises.md differs.
 
 Usage:
     tools/status_table.py
@@ -58,6 +64,7 @@ ROOT = Path(__file__).resolve().parent.parent
 SPEC = ROOT / "specification"
 TESTS = ROOT / "tests"
 STATUS = ROOT / "documentation" / "status.md"
+EXERCISES = ROOT / "documentation" / "exercises.md"
 RESULTS = TESTS / "RESULTS.md"
 REPORTS = ROOT / "reports" / "clean-room"
 SIMILARITY = ROOT / "reports" / "similarity"
@@ -227,11 +234,18 @@ def wrap(text: str, indent: str = "") -> str:
 
 
 def matrix_sentence() -> str:
+    """The pass count, and the count of test files with no row in RESULTS.md when it is above zero."""
     text = RESULTS.read_text()
     baseline = len(re.findall(r"^- `[^`]+` \(baseline\):", text, flags=re.M))
     rows = [l for l in text.splitlines() if l.startswith("| `")]
     passing = sum(l.endswith("| pass |") for l in rows)
-    return f"The matrix has {baseline} baseline compilers, and {passing} of {len(rows)} tests pass on each."
+    sentence = f"The matrix has {baseline} baseline compilers, and {passing} of {len(rows)} tests pass on each."
+    listed = {l.split("`")[1] for l in rows}
+    files = [str(f.relative_to(TESTS)) for f in run_tests.test_files([TESTS])]
+    if missing := sum(f not in listed for f in files):
+        sentence += (f" The tree has {len(files)} test files, and {missing} of them have no row in "
+                     "`tests/RESULTS.md`.")
+    return sentence
 
 
 def skipped(test: run_tests.Test, c: matrix.Compiler) -> bool:
@@ -288,11 +302,33 @@ def markers_text() -> str:
                 indent="- ")
 
 
-def frontend_text() -> str:
+def frontend_counts() -> tuple[int, int, int]:
+    """The front end's pass count, check-pass count, and test count from conformance.tsv."""
     status = [l.split("\t")[0] for l in CONFORMANCE.read_text().splitlines() if l and not l.startswith("#")]
     passing = sum(s in frontend_check.PASSING for s in status)
     checks = sum(frontend_check.rank(s) >= 1 for s in status)
-    return f"clean-room front end passes {passing} of {len(status)} tests, and {checks} pass their check."
+    return passing, checks, len(status)
+
+
+def frontend_text() -> str:
+    passing, checks, total = frontend_counts()
+    return f"clean-room front end passes {passing} of {total} tests, and {checks} pass their check."
+
+
+EXERCISE_ROW = re.compile(r"^\| Front end \| [^|\n]* \| `reports/clean-room/rust-frontend/` \|$", re.M)
+ROUND_REPORT = re.compile(r"^report-(\d+)[a-z]?\.md$")
+
+
+def render_exercises(text: str) -> tuple[str, list[str]]:
+    """Return exercises.md with the front-end row rewritten, and the problems found."""
+    rounds = [int(m.group(1)) for f in CONFORMANCE.parent.iterdir() if (m := ROUND_REPORT.match(f.name))]
+    passing, checks, total = frontend_counts()
+    new = (f"| Front end | round {max(rounds)} done: {passing}/{total} pass, {checks} pass their check "
+           "(`conformance.tsv`) | `reports/clean-room/rust-frontend/` |")
+    text, n = EXERCISE_ROW.subn(lambda _: new, text)
+    if n != 1:
+        return text, [f"documentation/exercises.md: the front-end row matched {n} times; it must match once"]
+    return text, []
 
 
 def render(text: str) -> tuple[str, list[str]]:
@@ -315,7 +351,8 @@ def render(text: str) -> tuple[str, list[str]]:
     ids["glossary.md"] = set()
     whole = similarity.covers_all(ids)
     replacements = [
-        ("baseline pass count", r"The matrix has \d+ baseline compilers, and \d+ of \d+ tests\s+pass on each\.",
+        ("baseline pass count", r"The matrix has \d+ baseline compilers, and \d+ of \d+ tests\s+pass on each\."
+         r"(?: The tree has \d+ test files, and \d+ of them have no row in\s+`tests/RESULTS\.md`\.)?",
          matrix_sentence()),
         ("EDG override count", r"per-compiler expectations on \d+ tests",
          f"per-compiler expectations on {counts['edg']} tests"),
@@ -353,6 +390,12 @@ def main() -> int:
     if new != old:
         STATUS.write_text(new)
         print("documentation/status.md: updated")
+    old = EXERCISES.read_text()
+    new, more = render_exercises(old)
+    problems += more
+    if new != old:
+        EXERCISES.write_text(new)
+        print("documentation/exercises.md: updated")
     for p in problems:
         print(p)
     print(f"{len(all_pages()) + 1} rows, {len(problems)} problems")

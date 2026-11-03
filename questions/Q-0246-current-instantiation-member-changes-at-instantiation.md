@@ -1,4 +1,4 @@
-# Q-0246: Is a member of the current instantiation that names another single member at the instantiation an error?
+# Q-0246: Is a program in error when a name found in the current instantiation finds a different single member at the instantiation?
 
 **Status:** provisional
 **Affects:** DEP-35, `tests/templates/dependent-names/qualified-member-other-at-instantiation.cpp`

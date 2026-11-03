@@ -21,7 +21,9 @@ compilers affect the Status column.
 | `classes/access/access-best-path.cpp` | ACC-8 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/access/access-label-on-nothing.cpp` | ACC-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `classes/access/class-default-private.cpp` | ACC-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `classes/access/default-argument-private-constructor.cpp` | ACC-16 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/access/default-argument-private.cpp` | ACC-16 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `classes/access/enclosing-not-access-nested-function.cpp` | ACC-19 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/access/enclosing-not-access-nested.cpp` | ACC-19 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/access/friend-class.cpp` | ACC-5 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/access/friend-function.cpp` | ACC-5 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
@@ -32,6 +34,7 @@ compilers affect the Status column.
 | `classes/access/friend-not-transitive.cpp` | ACC-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/access/friend-plain-type-name.cpp` | ACC-5 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/access/friend-private-member-of-other.cpp` | ACC-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `classes/access/friend-protected-member-of-other.cpp` | ACC-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/access/hidden-friend-block-declaration-scope.cpp` | ACC-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/access/hidden-friend-block-declaration.cpp` | ACC-7 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/access/hidden-friend-declared-after-use.cpp` | ACC-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -46,6 +49,7 @@ compilers affect the Status column.
 | `classes/access/local-class-member-access.cpp` | ACC-10 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/access/nested-accesses-enclosing.cpp` | ACC-10 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/access/private-base-conversion.cpp` | ACC-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `classes/access/private-base-function-in-derived.cpp` | ACC-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/access/private-base-name-in-derived.cpp` | ACC-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/access/private-base.cpp` | ACC-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/access/private-hides-public-base.cpp` | ACC-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -70,6 +74,8 @@ compilers affect the Status column.
 | `classes/access/template-call-selects-private.cpp` | ACC-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/access/union-default-public.cpp` | ACC-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `classes/access/using-changes-access.cpp` | ACC-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `classes/access/using-makes-function-and-type-public.cpp` | ACC-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `classes/access/using-private-base-function.cpp` | ACC-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/access/using-private-base-member.cpp` | ACC-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/access/using-reduces-access.cpp` | ACC-2 | reject | reject | reject | accept | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/access/virtual-access-static-type.cpp` | ACC-11 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
@@ -123,6 +129,7 @@ compilers affect the Status column.
 | `classes/comparisons/not-equal-defaulted-no-eq.cpp` | DCMP-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/comparisons/not-equal-defaulted.cpp` | DCMP-3 DCMP-4 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/comparisons/not-rewritten-for-eq-from-spaceship.cpp` | DCMP-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `classes/comparisons/out-of-class-reference-member-would-delete.cpp` | DCMP-8 | reject | reject | accept | accept | skip | accept | reject | accept | accept | reject | reject | pass |
 | `classes/comparisons/out-of-class-would-delete.cpp` | DCMP-8 | reject | reject | accept | accept | skip | accept | reject | accept | accept | reject | reject | pass |
 | `classes/comparisons/reversed-eq-needs-bool.cpp` | DCMP-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/comparisons/reversed-eq.cpp` | DCMP-6 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
@@ -197,9 +204,12 @@ compilers affect the Status column.
 | `classes/constructors/default-ctor-deleted-by-member-dtor.cpp` | CTOR-20 DTOR-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/constructors/defaulted-default-restores.cpp` | CTOR-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `classes/constructors/defaulted-leaves-members.cpp` | CTOR-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/delegating-cycle-three.cpp` | CTOR-14 | reject | reject | accept | reject | skip | accept | reject | accept | accept | reject | reject | pass |
 | `classes/constructors/delegating-cycle.cpp` | CTOR-14 | reject | reject | accept | reject | skip | accept | reject | accept | accept | reject | reject | pass |
 | `classes/constructors/delegating-ignores-default-member-init.cpp` | CTOR-7 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `classes/constructors/delegating-self-with-argument.cpp` | CTOR-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/constructors/delegating-self.cpp` | CTOR-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/delegating-with-base.cpp` | CTOR-16 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/constructors/delegating-with-member.cpp` | CTOR-16 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/constructors/delegating.cpp` | CTOR-7 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/constructors/delete-array-deleted-dtor.cpp` | DTOR-3 | accept | reject | accept | accept | skip | accept | reject | accept | accept | reject | reject | pass |
@@ -228,6 +238,7 @@ compilers affect the Status column.
 | `classes/constructors/deleted-dtor-sizeof.cpp` | DTOR-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/constructors/deleted-dtor-temporary.cpp` | DTOR-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/constructors/deleted-dtor-variable.cpp` | DTOR-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/deleted-dtor-variant-member.cpp` | DTOR-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/constructors/double-destroy-constant.cpp` | DTOR-7 | reject | reject | reject | accept | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/constructors/double-destroy-sanitizer.cpp` | DTOR-7 | run-fail | run-fail | run-fail | skip | skip | run-fail | run-fail | run-fail | run-fail | run-fail | run-fail | pass |
 | `classes/constructors/double-destroy-trivial-constant.cpp` | DTOR-7 | reject | reject | reject | accept | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -236,6 +247,7 @@ compilers affect the Status column.
 | `classes/constructors/dtor-call-wrong-type.cpp` | DTOR-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/constructors/dtor-const.cpp` | DTOR-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/constructors/dtor-explicit-object.cpp` | DTOR-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/dtor-implicit-const-block.cpp` | DTOR-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/constructors/dtor-member-noexcept-false.cpp` | DTOR-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `classes/constructors/dtor-noexcept-false.cpp` | DTOR-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `classes/constructors/dtor-on-const-object.cpp` | DTOR-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -280,6 +292,7 @@ compilers affect the Status column.
 | `classes/constructors/init-order-uses-earlier.cpp` | CTOR-6 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/constructors/init-order-warns.cpp` | CTOR-13 | reject | reject | reject | skip | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/constructors/mem-init-base-and-member.cpp` | CTOR-5 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `classes/constructors/mem-init-braces-narrowing-array.cpp` | CTOR-21 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/constructors/mem-init-braces-narrowing.cpp` | CTOR-21 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/constructors/mem-init-braces.cpp` | CTOR-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `classes/constructors/mem-init-duplicate.cpp` | CTOR-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -292,8 +305,10 @@ compilers affect the Status column.
 | `classes/constructors/mem-init-type-alias-base.cpp` | CTOR-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `classes/constructors/mem-init-uses-param.cpp` | CTOR-5 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/constructors/nested-default-member-init-before-complete.cpp` | CTOR-18 | reject | reject | reject | accept | skip | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/nested-default-member-init-read-in-default-argument.cpp` | CTOR-18 | reject | reject | reject | accept | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/constructors/no-implicit-default-with-copy-ctor.cpp` | CTOR-19 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/constructors/no-implicit-default-with-ctor.cpp` | CTOR-19 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `classes/constructors/one-user-conversion-copy-init.cpp` | CTOR-22 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/constructors/one-user-conversion-plus-standard.cpp` | CTOR-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `classes/constructors/one-user-conversion.cpp` | CTOR-22 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/constructors/parameter-destroyed-by-callee-constant.cpp` | DTOR-7 VC-10 | reject | reject | reject | accept | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -303,6 +318,7 @@ compilers affect the Status column.
 | `classes/constructors/pseudo-dtor-scalar.cpp` | DTOR-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `classes/constructors/pseudo-dtor-wrong-type.cpp` | DTOR-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/constructors/reference-default-member-binds-temporary.cpp` | CTOR-17 | accept | reject | accept | accept | skip | accept | reject | accept | accept | reject | reject | pass |
+| `classes/constructors/reference-member-binds-converted-parameter.cpp` | CTOR-17 | accept | reject | accept | accept | skip | accept | reject | accept | accept | reject | reject | pass |
 | `classes/constructors/reference-member-binds-temporary.cpp` | CTOR-17 | accept | reject | accept | accept | skip | accept | reject | accept | accept | reject | reject | pass |
 | `classes/constructors/trivial-default-base-nontrivial.cpp` | CTOR-23 JMP-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/constructors/trivial-default-defaulted-later.cpp` | CTOR-23 JMP-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -329,6 +345,7 @@ compilers affect the Status column.
 | `classes/conversion-functions/builtin-operator.cpp` | CVF-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/conversion-functions/call-by-name.cpp` | CVF-1 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/conversion-functions/call-through-function-reference.cpp` | CVF-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `classes/conversion-functions/const-object-explicit-cast.cpp` | CVF-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/conversion-functions/const-overloads.cpp` | CVF-4 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/conversion-functions/const-qualified-needed.cpp` | CVF-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/conversion-functions/constexpr-conversion.cpp` | CVF-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -473,6 +490,7 @@ compilers affect the Status column.
 | `classes/copy-move/template-not-copy-ctor.cpp` | CPY-1 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/copy-move/trivial-assign-implicit.cpp` | CPY-27 UNI-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `classes/copy-move/trivial-assign-user-provided.cpp` | CPY-27 UNI-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `classes/copy-move/trivial-copy-array-member-nontrivial.cpp` | CPY-27 UNI-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/copy-move/trivial-copy-defaulted.cpp` | CPY-27 UNI-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `classes/copy-move/trivial-copy-implicit.cpp` | CPY-27 UNI-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `classes/copy-move/trivial-copy-member-initializer.cpp` | CPY-27 UNI-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -481,9 +499,21 @@ compilers affect the Status column.
 | `classes/copy-move/trivial-copy-virtual-base.cpp` | CPY-27 UNI-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/copy-move/trivial-copy-virtual-function.cpp` | CPY-27 UNI-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/copy-move/trivial-move-user-provided.cpp` | CPY-27 UNI-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `classes/copy-move/trivially-copyable-at-least-one.cpp` | CPY-19 UNI-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `classes/copy-move/trivially-copyable-bytes.cpp` | CPY-19 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `classes/copy-move/trivially-copyable-const-member.cpp` | CPY-19 CPY-7 UNI-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `classes/copy-move/trivially-copyable-constraint-fails.cpp` | CPY-19 CNS-21 UNI-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `classes/copy-move/trivially-copyable-defaulted-later.cpp` | CPY-19 CPY-27 UNI-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `classes/copy-move/trivially-copyable-deleted-destructor.cpp` | CPY-19 CPY-7 UNI-3 DTOR-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `classes/copy-move/trivially-copyable-every-eligible.cpp` | CPY-19 CPY-9 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `classes/copy-move/trivially-copyable-member-selected.cpp` | CPY-27 CPY-19 UNI-3 | accept | accept | reject | reject | skip | reject | accept | reject | reject | accept | accept | pass |
+| `classes/copy-move/trivially-copyable-member-template-selected.cpp` | CPY-27 UNI-11 | reject | reject | reject | accept | skip | reject | reject | reject | reject | reject | reject | pass |
+| `classes/copy-move/trivially-copyable-private-copy.cpp` | CPY-19 CPY-27 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `classes/copy-move/trivially-copyable-types.cpp` | CPY-28 STG-12 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `classes/copy-move/trivially-copyable-volatile-member.cpp` | CPY-19 CPY-27 STG-12 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/copy-move/user-dtor-keeps-copy.cpp` | CPY-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `classes/copy-move/virtual-base-assigned-count.cpp` | CPY-18 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `classes/copy-move/virtual-base-move-assigned-count.cpp` | CPY-18 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/derived/abstract-skips-virtual-base-init.cpp` | DER-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `classes/derived/aggregate-with-base.cpp` | DER-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/derived/ambiguous-base-conversion.cpp` | DER-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -501,6 +531,7 @@ compilers affect the Status column.
 | `classes/derived/base-incomplete.cpp` | DER-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/derived/base-not-class.cpp` | DER-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/derived/base-private-ctor.cpp` | DER-21 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `classes/derived/base-private-dtor-friend.cpp` | DER-21 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `classes/derived/base-private-dtor.cpp` | DER-21 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/derived/base-protected-ctor.cpp` | DER-14 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `classes/derived/base-protected-dtor-direct.cpp` | ACC-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -516,6 +547,8 @@ compilers affect the Status column.
 | `classes/derived/derived-hides-base-overloads.cpp` | DER-19 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/derived/derived-to-base-constant.cpp` | DER-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `classes/derived/derived-to-base-pointer.cpp` | DER-5 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `classes/derived/direct-and-indirect-base-call.cpp` | DER-22 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `classes/derived/direct-and-indirect-base-deep.cpp` | DER-18 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `classes/derived/direct-and-indirect-base-use.cpp` | DER-22 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/derived/direct-and-indirect-base.cpp` | DER-18 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `classes/derived/dominance-derived-hides.cpp` | DER-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -527,12 +560,14 @@ compilers affect the Status column.
 | `classes/derived/inherited-ctor-default-args.cpp` | DER-8 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/derived/inherited-ctor-explicit.cpp` | DER-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/derived/inherited-ctor-hidden-by-derived.cpp` | DER-8 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `classes/derived/inherited-ctor-keeps-implicit.cpp` | DER-8 CTOR-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `classes/derived/inherited-ctor-no-default.cpp` | DER-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/derived/inherited-ctor-not-copy.cpp` | DER-20 DER-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/derived/inherited-ctor-not-direct-base.cpp` | DER-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/derived/inherited-ctor-two-bases-ambiguous.cpp` | DER-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/derived/inherited-ctor-two-bases-unused.cpp` | DER-15 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `classes/derived/inherited-ctor.cpp` | DER-8 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `classes/derived/inherited-nothing-not-aggregate.cpp` | DER-8 CTOR-25 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/derived/inherits-members.cpp` | DER-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/derived/most-derived-inits-virtual-base.cpp` | DER-7 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/derived/most-derived-must-init-virtual-base.cpp` | DER-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -543,6 +578,7 @@ compilers affect the Status column.
 | `classes/derived/second-base-address.cpp` | DER-5 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/derived/sizeof-at-least-base.cpp` | DER-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `classes/derived/slicing.cpp` | DER-5 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `classes/derived/static-cast-downcast-two-levels.cpp` | DER-16 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/derived/static-cast-downcast-wrong-object-constant.cpp` | DER-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/derived/static-cast-downcast-wrong-object-sanitizer.cpp` | DER-17 CAST-14 | run-fail | run-fail | run-fail | skip | skip | run-fail | run-fail | run-fail | run-fail | run-fail | run-fail | pass |
 | `classes/derived/static-cast-downcast.cpp` | DER-16 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
@@ -554,6 +590,7 @@ compilers affect the Status column.
 | `classes/derived/virtual-base-constructed-first.cpp` | DER-7 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/derived/virtual-base-constructed-once.cpp` | DER-7 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/derived/virtual-base-conversion-unambiguous.cpp` | DER-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `classes/derived/virtual-base-downcast-reference.cpp` | DER-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/derived/virtual-base-downcast.cpp` | DER-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/derived/virtual-base-init-indirect.cpp` | DER-7 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `classes/derived/virtual-base-private-dtor.cpp` | DER-21 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -588,6 +625,7 @@ compilers affect the Status column.
 | `classes/initializer-lists/not-aggregate-with-ctor.cpp` | ILC-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/initializer-lists/return-braced-list.cpp` | ILC-6 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/initializer-lists/return-deduced-from-list.cpp` | ILC-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `classes/initializer-lists/selects-constructor-return-and-argument.cpp` | ILC-1 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/initializer-lists/selects-constructor.cpp` | ILC-1 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/members/anonymous-struct.cpp` | CLS-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/members/anonymous-union.cpp` | CLS-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -607,9 +645,13 @@ compilers affect the Status column.
 | `classes/members/define-undeclared-member.cpp` | CLS-24 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/members/distinct-addresses.cpp` | CLS-10 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/members/duplicate-member.cpp` | CLS-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `classes/members/empty-base-shares-address.cpp` | CLS-10 CLS-19 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `classes/members/empty-base-shares-address.cpp` | CLS-10 CLS-19 CLS-30 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `classes/members/empty-class-array-size.cpp` | CLS-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `classes/members/empty-class-size-one.cpp` | CLS-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `classes/members/empty-class-size.cpp` | CLS-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `classes/members/empty-standard-layout-base-zero-size-ilp32.cpp` | CLS-33 | accept | accept | accept | skip | accept | accept | accept | skip | skip | accept | accept | pass |
+| `classes/members/empty-standard-layout-base-zero-size.cpp` | CLS-33 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `classes/members/explicit-object-address-by-value.cpp` | CLS-17 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/members/explicit-object-address-ordinary.cpp` | CLS-17 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/members/explicit-object-default-argument.cpp` | CLS-14 | reject | reject | reject | accept | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/members/explicit-object-from-prvalue.cpp` | CLS-13 | run | run | run | accept | skip | run | reject | run | run | run | run | pass |
@@ -621,9 +663,18 @@ compilers affect the Status column.
 | `classes/members/explicit-object-static.cpp` | CLS-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/members/explicit-object-virtual.cpp` | CLS-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/members/extern-member.cpp` | CLS-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `classes/members/first-member-same-address.cpp` | CLS-10 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `classes/members/first-member-same-address.cpp` | CLS-10 CLS-30 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/members/incomplete-member.cpp` | CLS-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/members/inline-static-member.cpp` | CLS-3 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `classes/members/layout-base-tail-padding-defaulted.cpp` | CLS-34 | accept | accept | accept | accept | skip | reject | accept | accept | accept | accept | accept | pass |
+| `classes/members/layout-base-tail-padding-ilp32.cpp` | CLS-34 | accept | accept | accept | skip | accept | accept | accept | skip | skip | accept | accept | pass |
+| `classes/members/layout-base-tail-padding.cpp` | CLS-34 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `classes/members/layout-base-type-first-member.cpp` | CLS-33 CLS-34 CLS-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `classes/members/layout-empty-base-not-standard-layout.cpp` | CLS-31 CLS-33 CLS-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `classes/members/layout-overlap-member-ilp32.cpp` | CLS-31 CLS-34 ATTR-9 | accept | accept | accept | skip | accept | accept | accept | skip | skip | accept | accept | pass |
+| `classes/members/layout-overlap-member.cpp` | CLS-31 CLS-34 ATTR-9 CLS-10 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `classes/members/layout-virtual-first-member-ilp32.cpp` | CLS-34 | accept | accept | accept | skip | accept | accept | accept | skip | skip | accept | accept | pass |
+| `classes/members/layout-virtual-first-member.cpp` | CLS-34 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/members/local-class-const-local.cpp` | CLS-12 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `classes/members/local-class-constexpr-double.cpp` | CLS-12 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/members/local-class-friend-definition.cpp` | CLS-28 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -646,25 +697,43 @@ compilers affect the Status column.
 | `classes/members/mutable-reference.cpp` | CLS-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/members/mutable-static.cpp` | CLS-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/members/nested-in-unnamed-static-member.cpp` | CLS-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `classes/members/nested-types-out-of-class.cpp` | CLS-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `classes/members/nested-types.cpp` | CLS-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `classes/members/noexcept-complete-class.cpp` | CLS-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `classes/members/non-const-on-const-object.cpp` | CLS-25 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/members/paren-default-member-init.cpp` | CLS-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/members/pointer-to-own-type.cpp` | CLS-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `classes/members/ref-qualified-const-and-xvalue.cpp` | CLS-6 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `classes/members/ref-qualified-mixed-const.cpp` | CLS-26 | reject | reject | accept | reject | skip | reject | reject | accept | accept | reject | reject | pass |
 | `classes/members/ref-qualified-mixed.cpp` | CLS-26 | reject | reject | accept | reject | skip | reject | reject | accept | accept | reject | reject | pass |
 | `classes/members/ref-qualified.cpp` | CLS-6 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/members/register-member.cpp` | CLS-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/members/sizeof-in-class-incomplete.cpp` | CLS-22 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `classes/members/standard-layout-bases-same-address.cpp` | CLS-19 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
-| `classes/members/standard-layout-reinterpret.cpp` | CLS-19 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `classes/members/standard-layout-address-constant.cpp` | CLS-30 | accept | accept | accept | reject | skip | accept | accept | accept | accept | accept | accept | pass |
+| `classes/members/standard-layout-base-type-anonymous-union.cpp` | CLS-32 CLS-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `classes/members/standard-layout-base-type-first-member.cpp` | CLS-19 CLS-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `classes/members/standard-layout-base-type-inside-member.cpp` | CLS-32 CLS-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `classes/members/standard-layout-bases-same-address.cpp` | CLS-19 CLS-30 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `classes/members/standard-layout-bit-field-first.cpp` | CLS-30 CLS-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `classes/members/standard-layout-empty-bases.cpp` | CLS-19 CLS-30 CLS-33 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `classes/members/standard-layout-members-in-base.cpp` | CLS-19 CLS-30 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `classes/members/standard-layout-nested-array.cpp` | CLS-29 CLS-30 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `classes/members/standard-layout-reinterpret.cpp` | CLS-19 CLS-30 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `classes/members/standard-layout-repeated-base.cpp` | CLS-19 CLS-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `classes/members/standard-layout-static-member-access.cpp` | CLS-19 CLS-30 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `classes/members/standard-layout-types.cpp` | CLS-29 CLS-30 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/members/static-and-nonstatic-same-params.cpp` | CLS-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/members/static-call-operator.cpp` | CLS-15 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `classes/members/static-const-address-no-definition.cpp` | CLS-21 | link-fail | link-fail | link-fail | accept | skip | link-fail | link-fail | link-fail | link-fail | link-fail | link-fail | pass |
+| `classes/members/static-const-double-in-class-init.cpp` | CLS-23 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `classes/members/static-const-enum-init-not-constant.cpp` | CLS-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/members/static-const-enum.cpp` | CLS-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `classes/members/static-const-init-not-constant.cpp` | CLS-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/members/static-const-integral.cpp` | CLS-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `classes/members/static-const-odr-use-no-definition.cpp` | CLS-21 | link-fail | link-fail | link-fail | accept | skip | link-fail | link-fail | link-fail | link-fail | link-fail | link-fail | pass |
 | `classes/members/static-data-member.cpp` | CLS-3 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/members/static-member-function-const.cpp` | CLS-27 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `classes/members/static-member-function-pointer.cpp` | CLS-7 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/members/static-member-function.cpp` | CLS-7 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/members/static-member-named-as-class.cpp` | CLS-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/members/static-member-not-defined.cpp` | CLS-3 | link-fail | link-fail | link-fail | accept | skip | link-fail | link-fail | link-fail | link-fail | link-fail | link-fail | pass |
@@ -672,6 +741,7 @@ compilers affect the Status column.
 | `classes/members/static-member-own-type.cpp` | CLS-16 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/members/static-non-const-in-class-init.cpp` | CLS-23 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/members/static-ref-qualified.cpp` | CLS-27 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `classes/members/static-subscript-no-parameters.cpp` | CLS-15 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `classes/members/static-uses-this.cpp` | CLS-27 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/members/static-virtual.cpp` | CLS-27 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/members/this-type.cpp` | CLS-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -679,6 +749,7 @@ compilers affect the Status column.
 | `classes/members/thread-local-static-member.cpp` | CLS-16 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `classes/members/unnamed-class-static-member.cpp` | CLS-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/members/volatile-object-nonvolatile-call.cpp` | CLS-25 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `classes/operators/address-of-incomplete-const.cpp` | OPR-12 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `classes/operators/address-of-incomplete-unspecified.cpp` | OPR-12 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `classes/operators/address-of-overload.cpp` | OPR-1 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/operators/argument-dependent-lookup.cpp` | OPR-6 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
@@ -719,6 +790,7 @@ compilers affect the Status column.
 | `classes/operators/literal-integer-for-float-missing.cpp` | OPR-16 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/operators/literal-integer.cpp` | OPR-8 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/operators/literal-member.cpp` | OPR-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `classes/operators/literal-no-underscore-floating-warns.cpp` | OPR-9 | reject | reject | reject | skip | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/operators/literal-no-underscore-warns.cpp` | OPR-9 | reject | reject | reject | skip | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/operators/literal-not-found.cpp` | OPR-16 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/operators/literal-numeric-over-raw.cpp` | OPR-8 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
@@ -750,6 +822,7 @@ compilers affect the Status column.
 | `classes/operators/postfix-not-declared.cpp` | OPR-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/operators/postfix-wrong-param.cpp` | OPR-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/operators/precedence-kept.cpp` | OPR-11 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `classes/operators/prefix-not-declared.cpp` | OPR-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/operators/prefix-postfix.cpp` | OPR-4 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/operators/reference-param-nonmember.cpp` | OPR-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `classes/operators/shift-order-kept.cpp` | OPR-7 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
@@ -807,6 +880,7 @@ compilers affect the Status column.
 | `classes/unions/bitfield-init-default-member.cpp` | BF-7 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/unions/bitfield-layout-lp64.cpp` | BF-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `classes/unions/bitfield-low-order-first.cpp` | BF-9 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `classes/unions/bitfield-narrowing-double.cpp` | BF-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/unions/bitfield-narrowing-init.cpp` | BF-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/unions/bitfield-negative-width.cpp` | BF-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/unions/bitfield-next-unit-ilp32.cpp` | BF-9 | accept | accept | accept | skip | reject | accept | accept | skip | skip | accept | accept | pass |
@@ -817,10 +891,13 @@ compilers affect the Status column.
 | `classes/unions/bitfield-pointer.cpp` | BF-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/unions/bitfield-promotes-to-int.cpp` | BF-6 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/unions/bitfield-promotes-unsigned-int.cpp` | BF-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `classes/unions/bitfield-signed-long-long-negative.cpp` | BF-5 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/unions/bitfield-signed-wraps.cpp` | BF-10 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/unions/bitfield-sizeof.cpp` | BF-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/unions/bitfield-static.cpp` | BF-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/unions/bitfield-typedef.cpp` | BF-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `classes/unions/bitfield-unnamed-alignment-ilp32.cpp` | BF-9 | accept | accept | accept | skip | accept | accept | accept | skip | skip | accept | accept | pass |
+| `classes/unions/bitfield-unnamed-alignment.cpp` | BF-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `classes/unions/bitfield-unnamed-cv.cpp` | BF-2 | reject | reject | accept | reject | skip | accept | reject | accept | accept | reject | reject | pass |
 | `classes/unions/bitfield-unnamed-not-member.cpp` | BF-12 BF-7 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `classes/unions/bitfield-unnamed-value-init-copy.cpp` | BF-12 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -840,7 +917,13 @@ compilers affect the Status column.
 | `classes/unions/chain-assign-activates.cpp` | UNI-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `classes/unions/chain-assign-nontrivial-constant.cpp` | UNI-6 UNI-13 | reject | reject | reject | accept | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/unions/chain-assign-other-part-no-value-constant.cpp` | UNI-13 OBJ-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `classes/unions/common-initial-sequence-bit-field.cpp` | UNI-15 UNI-10 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/unions/common-initial-sequence-constant.cpp` | UNI-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `classes/unions/common-initial-sequence-cv.cpp` | UNI-15 UNI-10 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `classes/unions/common-initial-sequence-enum.cpp` | UNI-16 UNI-15 UNI-10 STG-23 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `classes/unions/common-initial-sequence-inherited.cpp` | UNI-15 UNI-10 CLS-19 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `classes/unions/common-initial-sequence-nested.cpp` | UNI-16 UNI-15 UNI-10 STG-23 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `classes/unions/common-initial-sequence-second-member-constant.cpp` | UNI-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/unions/common-initial-sequence.cpp` | UNI-10 UNI-13 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/unions/compound-assign-inactive-constant.cpp` | UNI-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/unions/construct-activates-constant.cpp` | UNI-14 CE-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -866,6 +949,7 @@ compilers affect the Status column.
 | `classes/unions/two-initializers.cpp` | UNI-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/unions/union-array-member.cpp` | UNI-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `classes/unions/union-copy-preserves-active.cpp` | UNI-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `classes/unions/union-copy-two-copy-constructors.cpp` | UNI-3 CPY-27 | accept | accept | reject | reject | skip | reject | accept | reject | reject | accept | accept | pass |
 | `classes/unions/union-default-member-init-enables-ctor.cpp` | UNI-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `classes/unions/union-deleted-move-uses-copy.cpp` | UNI-3 CPY-7 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/unions/union-member-deleted-copy.cpp` | UNI-11 UNI-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -876,6 +960,7 @@ compilers affect the Status column.
 | `classes/unions/union-nontrivial-member-user-ctor-dtor.cpp` | UNI-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `classes/unions/union-private-members.cpp` | ACC-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/unions/union-reference-member.cpp` | UNI-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `classes/unions/union-rvalue-reference-member.cpp` | UNI-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/unions/union-static-member.cpp` | UNI-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `classes/unions/union-trivial-copy.cpp` | UNI-3 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/unions/user-assignment-not-activating-constant.cpp` | UNI-6 | reject | reject | reject | accept | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -970,11 +1055,13 @@ compilers affect the Status column.
 | `classes/virtual/override-through-intermediate.cpp` | VIRT-1 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/virtual/override-without-virtual-keyword.cpp` | VIRT-1 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/virtual/polymorphic-class.cpp` | VIRT-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `classes/virtual/polymorphic-inherited-destructor.cpp` | VIRT-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `classes/virtual/private-override.cpp` | VIRT-1 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/virtual/pure-call-in-ctor-constant.cpp` | VIRT-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/virtual/pure-call-in-ctor-sanitizer.cpp` | VIRT-12 | run-fail | run-fail | run-fail | skip | skip | run-fail | run-fail | run-fail | run-fail | run-fail | run-fail | pass |
 | `classes/virtual/pure-defined-out-of-line.cpp` | VIRT-16 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/virtual/pure-dtor-defined.cpp` | VIRT-16 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `classes/virtual/pure-dtor-needs-definition-delete.cpp` | VIRT-17 | link-fail | link-fail | link-fail | accept | skip | link-fail | link-fail | link-fail | link-fail | link-fail | link-fail | pass |
 | `classes/virtual/pure-dtor-needs-definition.cpp` | VIRT-17 | link-fail | link-fail | link-fail | accept | skip | link-fail | link-fail | link-fail | link-fail | link-fail | link-fail | pass |
 | `classes/virtual/pure-friend.cpp` | VIRT-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/virtual/pure-inline-definition.cpp` | VIRT-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -985,6 +1072,7 @@ compilers affect the Status column.
 | `classes/virtual/qualified-call-no-dispatch.cpp` | VIRT-1 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/virtual/ref-qualifier-must-match.cpp` | VIRT-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/virtual/return-type-mismatch.cpp` | VIRT-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `classes/virtual/static-hides-inherited-virtual.cpp` | VIRT-21 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/virtual/static-overrides-virtual.cpp` | VIRT-21 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/virtual/unique-final-overrider-resolved.cpp` | VIRT-5 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/virtual/virtual-auto-return.cpp` | VIRT-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -996,6 +1084,7 @@ compilers affect the Status column.
 | `classes/virtual/virtual-in-constexpr.cpp` | VIRT-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `classes/virtual/virtual-in-union.cpp` | VIRT-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/virtual/virtual-nonmember.cpp` | VIRT-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `classes/virtual/virtual-not-defined-escaping-object.cpp` | VIRT-20 | link-fail | link-fail | link-fail | accept | skip | link-fail | link-fail | link-fail | link-fail | link-fail | link-fail | pass |
 | `classes/virtual/virtual-not-defined.cpp` | VIRT-20 | link-fail | link-fail | link-fail | accept | skip | link-fail | link-fail | link-fail | accept | link-fail | accept | pass |
 | `classes/virtual/virtual-out-of-class.cpp` | VIRT-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/virtual/virtual-static.cpp` | VIRT-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -1008,6 +1097,7 @@ compilers affect the Status column.
 | `declarations/alignment/class-redeclare-different.cpp` | ALN-3 | reject | reject | accept | reject | skip | accept | reject | accept | accept | reject | reject | pass |
 | `declarations/alignment/class.cpp` | ALN-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/alignment/definition-without-earlier-with.cpp` | ALN-3 | reject | reject | accept | reject | skip | accept | reject | accept | accept | reject | reject | pass |
+| `declarations/alignment/different-units-alignas-other.cpp` | ALN-6 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/alignment/different-units-alignas.cpp` | ALN-6 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/alignment/enum.cpp` | ALN-7 | reject | reject | reject | accept | skip | accept | reject | reject | reject | reject | reject | pass |
 | `declarations/alignment/extended-huge.cpp` | ALN-5 | accept | accept | accept | reject | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -1030,12 +1120,14 @@ compilers affect the Status column.
 | `declarations/alignment/operand-unscoped-enumeration.cpp` | ALN-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/alignment/redeclare-different.cpp` | ALN-3 | reject | reject | accept | reject | skip | accept | reject | accept | accept | reject | reject | pass |
 | `declarations/alignment/redeclare-without.cpp` | ALN-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/alignment/scoped-enum.cpp` | ALN-7 | reject | reject | reject | accept | skip | accept | reject | reject | reject | reject | reject | pass |
 | `declarations/alignment/strictest-wins.cpp` | ALN-1 | accept | accept | reject | accept | skip | reject | accept | reject | reject | accept | accept | pass |
 | `declarations/alignment/type-operand.cpp` | ALN-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/alignment/variable.cpp` | ALN-1 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/alignment/weaker-on-class-member.cpp` | ALN-2 | reject | reject | accept | reject | skip | accept | reject | accept | accept | reject | reject | pass |
 | `declarations/alignment/weaker-than-natural.cpp` | ALN-2 | reject | reject | accept | reject | skip | accept | reject | accept | accept | reject | reject | pass |
 | `declarations/alignment/zero-ignored.cpp` | ALN-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/attributes/assume-call-not-evaluated.cpp` | ATTR-15 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/attributes/assume-comma.cpp` | ATTR-13 | reject | reject | reject | reject | skip | reject | accept | reject | reject | reject | reject | pass |
 | `declarations/attributes/assume-false-constant.cpp` | ATTR-10 | reject | reject | reject | reject | skip | reject | accept | reject | reject | reject | reject | pass |
 | `declarations/attributes/assume-false-sanitizer.cpp` | ATTR-10 | run-fail | run-fail | run-fail | skip | skip | run-fail | run | run-fail | run-fail | run-fail | run-fail | pass |
@@ -1048,6 +1140,7 @@ compilers affect the Status column.
 | `declarations/attributes/attribute-positions.cpp` | ATTR-19 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/attributes/attribute-too-many-arguments.cpp` | ATTR-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/attributes/attribute-unexpected-argument.cpp` | ATTR-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/attributes/carries-dependency-definition.cpp` | ATTR-11 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/attributes/carries-dependency-redeclared.cpp` | ATTR-2 | reject | reject | accept | reject | skip | accept | reject | accept | accept | reject | reject | pass |
 | `declarations/attributes/carries-dependency.cpp` | ATTR-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/attributes/deprecated-added-later.cpp` | ATTR-4 | reject | reject | reject | skip | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -1071,12 +1164,14 @@ compilers affect the Status column.
 | `declarations/attributes/fallthrough-with-argument.cpp` | ATTR-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/attributes/implicit-fallthrough-warns.cpp` | ATTR-7 | reject | reject | reject | skip | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/attributes/likely-and-unlikely.cpp` | ATTR-2 | reject | reject | accept | reject | skip | accept | reject | accept | accept | reject | reject | pass |
+| `declarations/attributes/likely-identifier-label.cpp` | ATTR-8 | run | reject | run | accept | skip | run | reject | run | run | reject | reject | pass |
 | `declarations/attributes/likely-unlikely.cpp` | ATTR-8 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/attributes/likely-with-argument.cpp` | ATTR-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/attributes/maybe-unused-silences.cpp` | ATTR-6 | accept | accept | accept | skip | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/attributes/maybe-unused-with-argument.cpp` | ATTR-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/attributes/no-unique-address-bitfield.cpp` | ATTR-2 | reject | reject | accept | reject | skip | accept | reject | accept | accept | reject | reject | pass |
 | `declarations/attributes/no-unique-address-same-type.cpp` | ATTR-16 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `declarations/attributes/no-unique-address-three-members.cpp` | ATTR-16 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/attributes/no-unique-address-with-argument.cpp` | ATTR-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/attributes/no-unique-address.cpp` | ATTR-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/attributes/nodiscard-constructor-warns.cpp` | ATTR-5 | reject | reject | reject | skip | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -1090,12 +1185,14 @@ compilers affect the Status column.
 | `declarations/attributes/noreturn-ok.cpp` | ATTR-3 | accept | accept | accept | skip | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/attributes/noreturn-on-variable.cpp` | ATTR-2 | reject | reject | accept | reject | skip | accept | reject | accept | accept | reject | reject | pass |
 | `declarations/attributes/noreturn-return-statement.cpp` | ATTR-12 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/attributes/noreturn-returns-on-one-path.cpp` | ATTR-14 | reject | reject | reject | skip | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/attributes/noreturn-returns-sanitizer.cpp` | ATTR-3 | run-fail | run-fail | run-fail | skip | skip | run-fail | run-fail | run-fail | run-fail | run-fail | run-fail | pass |
 | `declarations/attributes/noreturn-returns.cpp` | ATTR-14 | reject | reject | reject | skip | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/attributes/pointer-attribute-after-cv.cpp` | ATTR-18 | accept | reject | accept | accept | skip | accept | reject | accept | accept | reject | reject | pass |
 | `declarations/attributes/pointer-attribute-before-cv.cpp` | ATTR-18 | reject | accept | reject | reject | skip | reject | accept | reject | reject | accept | accept | pass |
 | `declarations/attributes/syntax-lists.cpp` | ATTR-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/attributes/unknown-attribute-ignored.cpp` | ATTR-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/attributes/unlikely-loop-body.cpp` | ATTR-8 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/attributes/unlikely-with-argument.cpp` | ATTR-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/attributes/unused-base-dtor-no-warning.cpp` | ATTR-6 | accept | accept | accept | skip | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/attributes/unused-class-object-no-warning.cpp` | ATTR-6 | accept | accept | accept | skip | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -1116,14 +1213,17 @@ compilers affect the Status column.
 | `declarations/auto/combined-type-specifier.cpp` | AUTO-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/auto/const-lvalue-reference-to-rvalue.cpp` | AUTO-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/auto/constexpr-adds-const.cpp` | AUTO-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/auto/constrained-decltype-auto-reference.cpp` | AUTO-16 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/auto/constrained-not-satisfied.cpp` | AUTO-16 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/auto/constrained-satisfied.cpp` | AUTO-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/auto/constrained-with-arguments.cpp` | AUTO-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/auto/copy-list-deduces-initializer-list.cpp` | AUTO-7 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/auto/copy-list-empty.cpp` | AUTO-21 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/auto/copy-list-mixed-types.cpp` | AUTO-21 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/auto/copy-list-without-library.cpp` | AUTO-21 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/auto/decays-arrays-and-functions.cpp` | AUTO-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/auto/decltype-auto-address-of-function.cpp` | AUTO-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/auto/decltype-auto-array-member.cpp` | AUTO-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/auto/decltype-auto-array.cpp` | AUTO-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/auto/decltype-auto-braced-multiple.cpp` | AUTO-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/auto/decltype-auto-braced.cpp` | AUTO-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -1135,12 +1235,14 @@ compilers affect the Status column.
 | `declarations/auto/decltype-auto-with-pointer.cpp` | AUTO-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/auto/decltype-auto-with-qualifier.cpp` | AUTO-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/auto/drops-references-and-cv.cpp` | AUTO-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/auto/forwarding-reference-volatile-class.cpp` | AUTO-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/auto/forwarding-reference.cpp` | AUTO-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/auto/in-conditions.cpp` | AUTO-12 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/auto/inline-static-member.cpp` | AUTO-14 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/auto/keeps-pointee-cv.cpp` | AUTO-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/auto/later-declarator-uses-earlier.cpp` | AUTO-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/auto/lvalue-reference-to-rvalue.cpp` | AUTO-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/auto/lvalue-reference-to-xvalue.cpp` | AUTO-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/auto/lvalue-reference.cpp` | AUTO-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/auto/no-initializer.cpp` | AUTO-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/auto/nullptr.cpp` | AUTO-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -1152,11 +1254,14 @@ compilers affect the Status column.
 | `declarations/auto/paren-multiple.cpp` | AUTO-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/auto/paren-single.cpp` | AUTO-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/auto/pointer-from-non-pointer.cpp` | AUTO-19 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/auto/pointer-from-null-pointer-constant.cpp` | AUTO-19 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/auto/ref-const-xvalue.cpp` | AUTO-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/auto/several-declarators-conflict.cpp` | AUTO-22 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/auto/several-declarators-pointer-conflict.cpp` | AUTO-22 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/auto/several-declarators.cpp` | AUTO-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/auto/static-const-member.cpp` | AUTO-14 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/auto/static-member-no-initializer.cpp` | AUTO-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/auto/static-member-non-const-initializer.cpp` | AUTO-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/auto/string-literal-prefixes.cpp` | AUTO-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/auto/switch-condition-init.cpp` | AUTO-12 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/auto/void-initializer.cpp` | AUTO-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -1165,19 +1270,19 @@ compilers affect the Status column.
 | `declarations/constexpr/aggregate-reference-member-temporary-namespace.cpp` | CX-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/constexpr/consteval-address-in-immediate.cpp` | CEV-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/constexpr/consteval-address-taken.cpp` | CEV-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/constexpr/consteval-and-constexpr.cpp` | CEV-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/constexpr/consteval-and-constexpr.cpp` | CX-5 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/constexpr/consteval-call-constant.cpp` | CEV-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/constexpr/consteval-call-runtime-arg.cpp` | CEV-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/constexpr/consteval-converting-constructor-throws.cpp` | CEV-1 CE-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/constexpr/consteval-converting-constructor.cpp` | CEV-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/constexpr/consteval-in-consteval.cpp` | CEV-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/constexpr/consteval-inline.cpp` | CEV-4 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `declarations/constexpr/consteval-inline.cpp` | CX-4 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/constexpr/consteval-not-selected-by-target.cpp` | CEV-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/constexpr/consteval-redeclare-constexpr.cpp` | CEV-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/constexpr/consteval-redeclare-constexpr.cpp` | CX-5 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/constexpr/consteval-returns-allocation.cpp` | CEV-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/constexpr/consteval-selected-by-target.cpp` | CEV-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/constexpr/consteval-ub-rejected.cpp` | CEV-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/constexpr/consteval-variable.cpp` | CEV-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/constexpr/consteval-variable.cpp` | CX-5 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/constexpr/constexpr-class-only.cpp` | CX-5 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/constexpr/constexpr-parameter.cpp` | CX-5 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/constexpr/constexpr-redeclaration-mismatch.cpp` | CX-5 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -1202,9 +1307,9 @@ compilers affect the Status column.
 | `declarations/constexpr/function-never-constant.cpp` | CX-3 | accept | accept | accept | accept | skip | accept | reject | accept | accept | accept | accept | pass |
 | `declarations/constexpr/function-non-literal-local-unevaluated.cpp` | CX-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/constexpr/function-non-literal-param.cpp` | CX-3 | accept | accept | accept | accept | skip | accept | reject | accept | accept | accept | accept | pass |
-| `declarations/constexpr/function-not-constant-call.cpp` | CX-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/constexpr/function-not-constant-call.cpp` | CE-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/constexpr/function-static-constexpr-local.cpp` | CX-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/constexpr/function-static-local-evaluated.cpp` | CX-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/constexpr/function-static-local-evaluated.cpp` | CE-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/constexpr/function-static-local-unevaluated.cpp` | CX-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/constexpr/immediate-escalation.cpp` | CEV-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/constexpr/lambda-escalates-constant.cpp` | CEV-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -1227,7 +1332,7 @@ compilers affect the Status column.
 | `declarations/constexpr/variable-non-literal.cpp` | CX-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/constexpr/variable-not-constant.cpp` | CX-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/declarators/array-4gib-ilp32.cpp` | DCL-19 | reject | reject | reject | skip | reject | reject | reject | skip | skip | reject | reject | pass |
-| `declarations/declarators/array-4gib-lp64.cpp` | DCL-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/declarators/array-4gib-lp64.cpp` | TR-14 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/declarators/array-bound-class-conversion.cpp` | DCL-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/declarators/array-bound-constant.cpp` | DCL-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/declarators/array-bound-deduced.cpp` | DCL-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -1241,7 +1346,7 @@ compilers affect the Status column.
 | `declarations/declarators/array-of-functions.cpp` | DCL-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/declarators/array-of-references.cpp` | DCL-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/declarators/array-of-void.cpp` | DCL-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `declarations/declarators/array-too-large.cpp` | DCL-10 | clang: reject, gcc: accept, edg: accept | reject | accept | accept | skip | accept | reject | accept | accept | reject | reject | pass |
+| `declarations/declarators/array-too-large.cpp` | TR-14 | clang: reject, gcc: accept, edg: accept | reject | accept | accept | skip | accept | reject | accept | accept | reject | reject | pass |
 | `declarations/declarators/array-too-many-initializers.cpp` | DCL-19 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/declarators/assign-through-pointer-to-const.cpp` | CV-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/declarators/assign-to-const.cpp` | CV-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -1256,6 +1361,7 @@ compilers affect the Status column.
 | `declarations/declarators/cv-on-array-applies-to-elements.cpp` | CV-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/declarators/cv-on-function-alias.cpp` | CV-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/declarators/cv-on-reference-alias-ignored.cpp` | DCL-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/declarators/cv-position-alias-and-levels.cpp` | CV-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/declarators/cv-position.cpp` | CV-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/declarators/cv-qualified-reference.cpp` | DCL-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/declarators/ellipsis-first.cpp` | DCL-22 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -1273,6 +1379,7 @@ compilers affect the Status column.
 | `declarations/declarators/modify-const-static-local-sanitizer.cpp` | CV-5 | run-fail | run-fail | run-fail | skip | skip | run-fail | run-fail | run-fail | run-fail | run-fail | run-fail | pass |
 | `declarations/declarators/modify-nonconst-object-via-cast.cpp` | CV-5 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/declarators/multidim-inner-bound.cpp` | DCL-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/declarators/multidim-outer-omitted-strings.cpp` | DCL-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/declarators/multidim-outer-omitted.cpp` | DCL-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/declarators/nested-declarators.cpp` | DCL-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/declarators/noexcept-in-type.cpp` | DCL-14 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -1280,8 +1387,10 @@ compilers affect the Status column.
 | `declarations/declarators/parameter-adjustment.cpp` | DCL-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/declarators/parameter-array-is-pointer.cpp` | DCL-8 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/declarators/parameter-cv-same-function.cpp` | DCL-8 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `declarations/declarators/pointer-to-member-function.cpp` | DCL-12 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/declarators/pointer-to-member.cpp` | DCL-12 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/declarators/pointer-to-pointer-and-function.cpp` | DCL-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/declarators/pointer-to-reference-alias.cpp` | DCL-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/declarators/pointer-to-reference-member.cpp` | DCL-23 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/declarators/pointer-to-reference.cpp` | DCL-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/declarators/pointer-to-void-member.cpp` | DCL-23 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -1298,10 +1407,12 @@ compilers affect the Status column.
 | `declarations/declarators/qualified-function-type-pointer.cpp` | DCL-16 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/declarators/redundant-parentheses.cpp` | DCL-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/declarators/ref-qualified-free-function.cpp` | DCL-21 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/declarators/ref-qualified-function-type-member.cpp` | DCL-15 | run | run | reject | accept | skip | reject | run | reject | reject | run | run | pass |
 | `declarations/declarators/reference-binds-same-object.cpp` | DCL-11 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/declarators/reference-collapsing.cpp` | DCL-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/declarators/reference-parameter-no-initializer.cpp` | DCL-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/declarators/reference-requires-initializer.cpp` | DCL-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/declarators/reference-to-function-and-element.cpp` | DCL-11 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/declarators/reference-to-reference.cpp` | DCL-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/declarators/reference-to-void.cpp` | DCL-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/declarators/star-binds-to-declarator.cpp` | DCL-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -1316,6 +1427,7 @@ compilers affect the Status column.
 | `declarations/enumerations/bytes-out-of-range-sanitizer.cpp` | ENUM-6 | run-fail | run-fail | run-fail | skip | skip | run-fail | run-fail | run-fail | run-fail | run-fail | run-fail | pass |
 | `declarations/enumerations/cast-fixed-any-value.cpp` | ENUM-22 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/enumerations/cast-fixed-converts-to-underlying.cpp` | ENUM-21 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/enumerations/cast-fixed-wide-integer.cpp` | ENUM-21 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/enumerations/cast-in-range.cpp` | ENUM-22 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/enumerations/cast-out-of-range-sanitizer.cpp` | ENUM-6 CAST-14 | run-fail | run-fail | run-fail | skip | skip | run-fail | run-fail | run-fail | run-fail | run-fail | run-fail | pass |
 | `declarations/enumerations/cast-out-of-range.cpp` | ENUM-6 | reject | reject | accept | accept | skip | accept | reject | accept | accept | reject | reject | pass |
@@ -1327,8 +1439,10 @@ compilers affect the Status column.
 | `declarations/enumerations/enumerator-not-constant.cpp` | ENUM-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/enumerations/enumerator-refers-earlier.cpp` | ENUM-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/enumerations/enumerator-scope-after-value.cpp` | ENUM-12 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `declarations/enumerations/enumerator-scope-scoped.cpp` | ENUM-12 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/enumerations/enumerator-type-char-initializer.cpp` | ENUM-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/enumerations/enumerator-type-enum-initializer.cpp` | ENUM-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/enumerations/enumerator-type-grows-unsigned.cpp` | ENUM-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/enumerations/enumerator-type-grows.cpp` | ENUM-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/enumerations/enumerator-type-inside-list.cpp` | ENUM-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/enumerations/enumerator-type-short-initializer.cpp` | ENUM-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -1343,10 +1457,12 @@ compilers affect the Status column.
 | `declarations/enumerations/implicit-value-overflow-unscoped.cpp` | ENUM-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/enumerations/increment-enum.cpp` | ENUM-16 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/enumerations/int-to-unscoped-rejected.cpp` | ENUM-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/enumerations/list-init-fixed-member-and-new.cpp` | ENUM-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/enumerations/list-init-fixed.cpp` | ENUM-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/enumerations/list-init-narrowing.cpp` | ENUM-19 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/enumerations/list-init-no-fixed.cpp` | ENUM-19 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/enumerations/mixed-enum-arithmetic.cpp` | ENUM-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/enumerations/opaque-declaration-member.cpp` | ENUM-7 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/enumerations/opaque-declaration.cpp` | ENUM-7 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/enumerations/opaque-mismatch.cpp` | ENUM-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/enumerations/opaque-unscoped-without-type.cpp` | ENUM-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -1403,6 +1519,7 @@ compilers affect the Status column.
 | `declarations/exception-specifications/nested-indirection.cpp` | EXS-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/exception-specifications/noexcept-in-function-redeclare-later.cpp` | EXS-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/exception-specifications/non-constant.cpp` | EXS-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/exception-specifications/operand-cycle-static.cpp` | EXS-6 | accept | reject | accept | accept | skip | accept | reject | accept | accept | reject | reject | pass |
 | `declarations/exception-specifications/operand-cycle.cpp` | EXS-6 | accept | reject | accept | accept | skip | accept | reject | accept | accept | reject | reject | pass |
 | `declarations/exception-specifications/operand-later-member.cpp` | EXS-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/exception-specifications/operand-uses-parameters.cpp` | EXS-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -1412,6 +1529,7 @@ compilers affect the Status column.
 | `declarations/exception-specifications/override-must-be-noexcept.cpp` | EXS-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/exception-specifications/parameter-noexcept-overloads.cpp` | EXS-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/exception-specifications/pointer-operand.cpp` | EXS-7 | reject | reject | reject | accept | skip | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/exception-specifications/throw-empty-pointer.cpp` | EXS-5 | accept | accept | accept | reject | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/exception-specifications/throw-empty-removed.cpp` | EXS-5 | accept | accept | accept | reject | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/exception-specifications/throw-type-removed.cpp` | EXS-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/exception-specifications/typedef-noexcept.cpp` | EXS-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -1422,8 +1540,10 @@ compilers affect the Status column.
 | `declarations/functions/default-arguments/default-checked-unused.cpp` | DEFARG-5 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/functions/default-arguments/evaluated-each-call.cpp` | DEFARG-3 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/functions/default-arguments/function-pointer-no-default.cpp` | DEFARG-5 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/functions/default-arguments/inline-default-only-one-unit.cpp` | DEFARG-7 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/functions/default-arguments/inline-defaults-differ.cpp` | DEFARG-7 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/functions/default-arguments/local-unevaluated.cpp` | DEFARG-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/functions/default-arguments/member-operator-default-argument.cpp` | DEFARG-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/functions/default-arguments/name-bound-at-declaration.cpp` | DEFARG-3 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/functions/default-arguments/not-trailing.cpp` | DEFARG-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/functions/default-arguments/operator-default-argument.cpp` | DEFARG-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -1447,6 +1567,7 @@ compilers affect the Status column.
 | `declarations/functions/definitions/flow-off-end-void.cpp` | FN-3 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/functions/definitions/flow-off-end-warns.cpp` | FN-7 | reject | reject | reject | skip | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/functions/definitions/func-name-impl.cpp` | FN-11 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `declarations/functions/definitions/func-name-member.cpp` | FN-11 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/functions/definitions/func-outside-function.cpp` | FN-5 | reject | accept | reject | reject | skip | reject | accept | reject | reject | accept | accept | pass |
 | `declarations/functions/definitions/func-predefined.cpp` | FN-5 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/functions/definitions/incomplete-param-declaration.cpp` | FN-12 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -1468,7 +1589,9 @@ compilers affect the Status column.
 | `declarations/functions/definitions/main-three-params.cpp` | FN-6 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/functions/definitions/main-wrong-first-param.cpp` | FN-6 | reject | reject | reject | accept | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/functions/definitions/main-wrong-return-type.cpp` | FN-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/functions/definitions/nested-function-definition-member.cpp` | FN-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/functions/definitions/nested-function-definition.cpp` | FN-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/functions/definitions/parameter-destruction-order-operator.cpp` | FN-10 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/functions/definitions/parameter-destruction-order.cpp` | FN-10 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/functions/definitions/parameter-duplicate.cpp` | FN-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/functions/definitions/parameter-name-from-definition.cpp` | FN-16 NAM-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -1492,6 +1615,8 @@ compilers affect the Status column.
 | `declarations/functions/deleted/delete-then-define.cpp` | DEL-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/functions/deleted/deleted-in-two-units.cpp` | DEL-5 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/functions/deleted/deleted-main.cpp` | DEL-2 | reject | reject | reject | reject | skip | accept | reject | reject | reject | reject | reject | pass |
+| `declarations/functions/deleted/deleted-member-with-message.cpp` | DEL-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/functions/deleted/deleted-overload-in-two-units.cpp` | DEL-5 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/functions/deleted/deleted-overload-not-selected.cpp` | DEL-1 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/functions/deleted/deleted-overload-selected.cpp` | DEL-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/functions/deleted/deleted-unevaluated.cpp` | DEL-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -1517,17 +1642,20 @@ compilers affect the Status column.
 | `declarations/functions/return-deduction/use-after-definition.cpp` | RET-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/functions/return-deduction/use-before-definition.cpp` | RET-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/functions/return-deduction/virtual-auto.cpp` | RET-5 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/functions/return-deduction/virtual-decltype-auto.cpp` | RET-5 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/functions/return-deduction/void-and-value.cpp` | RET-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/functions/return-deduction/void-call-return.cpp` | RET-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/initialization/forms/array-from-array.cpp` | INIT-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/initialization/forms/array-member-empty-braces.cpp` | INIT-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `declarations/initialization/forms/array-member-from-array.cpp` | INIT-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/initialization/forms/array-paren-init.cpp` | INIT-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/initialization/forms/array-partial.cpp` | INIT-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/initialization/forms/copy-indeterminate-unsigned-char-run.cpp` | INIT-1 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
-| `declarations/initialization/forms/copy-indeterminate-unsigned-char.cpp` | CE-32 INIT-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/initialization/forms/copy-indeterminate-unsigned-char.cpp` | CE-22 INIT-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/initialization/forms/copy-init-converts.cpp` | INIT-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/initialization/forms/copy-init-explicit-rejected.cpp` | INIT-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/initialization/forms/copy-init-no-conversion.cpp` | INIT-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/initialization/forms/declarators-in-order-namespace.cpp` | INIT-6 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/initialization/forms/declarators-in-order.cpp` | INIT-6 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/initialization/forms/default-init-array-of-class.cpp` | INIT-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/initialization/forms/default-init-base.cpp` | INIT-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -1573,6 +1701,7 @@ compilers affect the Status column.
 | `declarations/initialization/list/designator-on-scalar.cpp` | LIST-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/initialization/list/empty-base-braces-ok.cpp` | LIST-4 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/initialization/list/empty-base-no-elision.cpp` | LIST-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/initialization/list/empty-member-no-elision.cpp` | LIST-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/initialization/list/missing-class-member-default.cpp` | LIST-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/initialization/list/missing-reference-member.cpp` | LIST-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/initialization/list/narrowing-bit-field-fits.cpp` | LIST-2 | accept | accept | accept | reject | skip | reject | reject | accept | accept | accept | accept | pass |
@@ -1595,12 +1724,15 @@ compilers affect the Status column.
 | `declarations/initialization/list/narrowing-unscoped-enum-values-fit.cpp` | LIST-2 | accept | reject | accept | reject | skip | accept | reject | accept | accept | reject | reject | pass |
 | `declarations/initialization/list/narrowing-unscoped-enum.cpp` | LIST-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/initialization/list/no-elision-when-direct.cpp` | LIST-4 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `declarations/initialization/list/omitted-member-explicit-default-designated.cpp` | LIST-16 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/initialization/list/omitted-member-explicit-default.cpp` | LIST-16 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/initialization/list/paren-nested-ok.cpp` | LIST-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/initialization/list/paren-no-brace-elision.cpp` | LIST-9 | reject | reject | reject | accept | skip | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/initialization/list/scalar-braces-pointer-and-return.cpp` | LIST-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/initialization/list/scalar-braces-two-values.cpp` | LIST-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/initialization/list/scalar-braces.cpp` | LIST-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/initialization/list/scalar-nested-braces.cpp` | LIST-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/initialization/list/single-same-class-argument.cpp` | LIST-10 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/initialization/list/single-same-class-copies.cpp` | LIST-10 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/initialization/list/string-literal-array.cpp` | LIST-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/initialization/list/string-literal-plain-to-char8.cpp` | LIST-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -1641,7 +1773,7 @@ compilers affect the Status column.
 | `declarations/initialization/references/braced-reference.cpp` | REF-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/initialization/references/braced-string-literal-rvalue-ref.cpp` | REF-10 REF-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/initialization/references/const-element-array-ref.cpp` | REF-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `declarations/initialization/references/const-ref-binds-lvalue-directly.cpp` | REF-13 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `declarations/initialization/references/const-ref-binds-lvalue-directly.cpp` | REF-1 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/initialization/references/const-ref-binds-rvalue.cpp` | REF-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/initialization/references/const-ref-temporary-other-type.cpp` | REF-7 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/initialization/references/const-ref-xvalue-direct.cpp` | REF-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
@@ -1694,7 +1826,9 @@ compilers affect the Status column.
 | `declarations/initialization/static/member-read-before-constructor-constant.cpp` | OBJ-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/initialization/static/reference-constant-initialized.cpp` | SINIT-1 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/initialization/static/static-member-in-order.cpp` | SINIT-7 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `declarations/initialization/static/static-member-order-not-class-order.cpp` | SINIT-7 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/initialization/static/thread-local-init-deferred.cpp` | SINIT-6 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `declarations/initialization/static/thread-local-unused.cpp` | SINIT-6 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/initialization/static/unit-not-named.cpp` | SINIT-5 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/inline/constexpr-function-inline.cpp` | INL-3 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/inline/constexpr-variable-internal.cpp` | INL-1 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
@@ -1717,6 +1851,7 @@ compilers affect the Status column.
 | `declarations/inline/inline-parameter.cpp` | INL-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/inline/inline-redefinition-same-tu.cpp` | INL-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/inline/inline-static-local-in-function.cpp` | INL-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/inline/inline-static-member-declared-later.cpp` | INL-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/inline/inline-static-member-incomplete.cpp` | INL-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/inline/inline-static-member-out-of-class.cpp` | INL-4 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/inline/inline-static-member.cpp` | INL-4 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
@@ -1728,6 +1863,7 @@ compilers affect the Status column.
 | `declarations/inline/inline-virtual.cpp` | INL-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/inline/member-defined-in-class.cpp` | INL-3 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/inline/static-constexpr-member-inline.cpp` | INL-3 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `declarations/inline/static-local-member-shared.cpp` | INL-5 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/inline/static-local-shared.cpp` | INL-5 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/inline/static-member-not-inline-needs-definition.cpp` | INL-4 | link-fail | link-fail | link-fail | accept | skip | link-fail | link-fail | link-fail | link-fail | link-fail | link-fail | pass |
 | `declarations/linkage-specifications/block-form-defines.cpp` | LSP-3 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
@@ -1761,9 +1897,11 @@ compilers affect the Status column.
 | `declarations/linkage-specifications/single-form-with-init-defines.cpp` | LSP-3 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/linkage-specifications/single-form.cpp` | LSP-1 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/linkage-specifications/static-in-c-block.cpp` | LSP-1 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `declarations/linkage-specifications/unknown-language-block.cpp` | LSP-5 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/linkage-specifications/unknown-language.cpp` | LSP-5 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/namespaces/alias-conflict.cpp` | NS-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/namespaces/alias-not-reopen.cpp` | NS-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/namespaces/alias-of-alias-block.cpp` | NS-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/namespaces/alias.cpp` | NS-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/namespaces/block-scope-namespace.cpp` | NS-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/namespaces/define-and-qualify.cpp` | NS-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -1777,12 +1915,15 @@ compilers affect the Status column.
 | `declarations/namespaces/inline-then-reopen-plain.cpp` | NS-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/namespaces/name-conflict.cpp` | NS-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/namespaces/nested-definition.cpp` | NS-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/namespaces/nested-first-inline-both.cpp` | NS-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/namespaces/nested-first-inline.cpp` | NS-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/namespaces/nested-inline-definition.cpp` | NS-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/namespaces/out-of-namespace-definition.cpp` | NS-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/namespaces/qualified-definition-storage-class.cpp` | NS-6 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/namespaces/undeclared-qualified-definition.cpp` | NS-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/namespaces/unnamed-namespace-duplicate-function.cpp` | NS-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/namespaces/unnamed-namespace-duplicate.cpp` | NS-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/namespaces/unnamed-namespace-nested-members.cpp` | NS-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/namespaces/unnamed-namespace.cpp` | NS-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/namespaces/unqualified-outside.cpp` | NS-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/namespaces/using-class-member-at-namespace.cpp` | NS-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -1837,6 +1978,7 @@ compilers affect the Status column.
 | `declarations/storage-linkage/anonymous-union-static.cpp` | STO-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/storage-linkage/anonymous-union-unnamed-namespace.cpp` | STO-11 | reject | accept | reject | reject | skip | reject | accept | reject | reject | accept | accept | pass |
 | `declarations/storage-linkage/automatic-lifetime.cpp` | STO-1 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `declarations/storage-linkage/automatic-loop-iterations.cpp` | STO-1 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/storage-linkage/block-extern-after-local.cpp` | STO-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/storage-linkage/block-extern-initializer.cpp` | STO-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/storage-linkage/block-extern-internal.cpp` | LNK-9 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
@@ -1855,8 +1997,10 @@ compilers affect the Status column.
 | `declarations/storage-linkage/extern-then-static.cpp` | LNK-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/storage-linkage/extern-with-initializer.cpp` | STO-7 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/storage-linkage/external-default.cpp` | LNK-1 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `declarations/storage-linkage/external-namespace-member.cpp` | LNK-1 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/storage-linkage/function-then-static.cpp` | LNK-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/storage-linkage/inline-different-bodies.cpp` | LNK-6 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `declarations/storage-linkage/inline-function-static-local.cpp` | LNK-4 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/storage-linkage/inline-one-entity.cpp` | LNK-4 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/storage-linkage/missing-definition.cpp` | LNK-7 | link-fail | link-fail | link-fail | accept | skip | link-fail | link-fail | link-fail | link-fail | link-fail | link-fail | pass |
 | `declarations/storage-linkage/mutable-block.cpp` | STO-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -1868,25 +2012,33 @@ compilers affect the Status column.
 | `declarations/storage-linkage/mutable-static-member.cpp` | STO-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/storage-linkage/plain-after-thread-local.cpp` | STO-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/storage-linkage/qualified-static-after-extern.cpp` | LNK-10 NS-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/storage-linkage/recursive-static-init-constructor.cpp` | STO-9 | run-fail | run-fail | run-fail | accept | skip | run-fail | run-fail | run-fail | run-fail | run-fail | run-fail | pass |
 | `declarations/storage-linkage/recursive-static-init.cpp` | STO-9 | run-fail | run-fail | run-fail | accept | skip | run-fail | run-fail | run-fail | run-fail | run-fail | run-fail | pass |
+| `declarations/storage-linkage/register-parameter.cpp` | STO-5 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/storage-linkage/register.cpp` | STO-5 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/storage-linkage/static-block-function.cpp` | STO-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/storage-linkage/static-destruction-block-order.cpp` | STO-10 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/storage-linkage/static-destruction-order.cpp` | STO-10 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/storage-linkage/static-internal.cpp` | LNK-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/storage-linkage/static-main.cpp` | STO-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/storage-linkage/static-not-visible.cpp` | LNK-2 | link-fail | link-fail | link-fail | accept | skip | link-fail | link-fail | link-fail | link-fail | link-fail | link-fail | pass |
 | `declarations/storage-linkage/static-parameter.cpp` | STO-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/storage-linkage/static-then-extern-function.cpp` | LNK-8 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/storage-linkage/static-then-extern.cpp` | LNK-8 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/storage-linkage/storage-class-on-class.cpp` | STO-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/storage-linkage/storage-class-on-typedef.cpp` | STO-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/storage-linkage/thread-local-after-plain.cpp` | STO-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/storage-linkage/thread-local-block-first-reach.cpp` | STO-8 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/storage-linkage/thread-local-block.cpp` | STO-8 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/storage-linkage/thread-local-combinations.cpp` | STO-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/storage-linkage/thread-local-function.cpp` | STO-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/storage-linkage/thread-local-member-and-block.cpp` | STO-4 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/storage-linkage/two-storage-classes.cpp` | STO-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/storage-linkage/unnamed-namespace-internal.cpp` | LNK-5 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `declarations/storage-linkage/unnamed-namespace-nested.cpp` | LNK-5 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/storage-linkage/unused-missing-definition.cpp` | LNK-7 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/storage-linkage/volatile-const-external.cpp` | LNK-3 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `declarations/storage-linkage/zero-before-dynamic.cpp` | STO-3 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/storage-linkage/zero-initialized.cpp` | STO-3 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/structured-bindings/aggregate-members.cpp` | SB-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/structured-bindings/anonymous-union-member.cpp` | SB-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -1896,7 +2048,9 @@ compilers affect the Status column.
 | `declarations/structured-bindings/as-class-member.cpp` | SB-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/structured-bindings/as-parameter.cpp` | SB-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/structured-bindings/binding-types.cpp` | SB-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/structured-bindings/bit-field-address-copy.cpp` | SB-16 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/structured-bindings/bit-field-address.cpp` | SB-16 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/structured-bindings/bit-field-assign-wraps.cpp` | SB-10 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/structured-bindings/bit-field-assign.cpp` | SB-10 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/structured-bindings/constexpr-binding.cpp` | SB-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/structured-bindings/constinit-specifier.cpp` | SB-11 | reject | reject | reject | accept | skip | accept | reject | reject | reject | reject | reject | pass |
@@ -1913,10 +2067,13 @@ compilers affect the Status column.
 | `declarations/structured-bindings/initializer-equals.cpp` | SB-7 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/structured-bindings/initializer-parens.cpp` | SB-7 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/structured-bindings/inline-specifier.cpp` | SB-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/structured-bindings/lifetime-extended-rvalue-reference.cpp` | SB-6 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/structured-bindings/lifetime-extended.cpp` | SB-6 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/structured-bindings/members-in-base.cpp` | SB-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/structured-bindings/members-split-across-bases.cpp` | SB-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/structured-bindings/mutable-member-const-reference.cpp` | SB-9 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/structured-bindings/mutable-member.cpp` | SB-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/structured-bindings/names-are-lvalues-const-rvalue-reference.cpp` | SB-12 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/structured-bindings/names-are-lvalues.cpp` | SB-12 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/structured-bindings/names-in-scope.cpp` | SB-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/structured-bindings/no-initializer.cpp` | SB-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -2002,11 +2159,15 @@ compilers affect the Status column.
 | `declarations/type-names/typedef-name-in-class-redeclared.cpp` | TYN-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/type-names/typedef-name-not-class-key.cpp` | TYN-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/type-names/typedef-no-name.cpp` | TYN-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/type-names/typedef-of-class-then-variable.cpp` | TYN-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/type-names/typedef-redeclare-different.cpp` | TYN-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/type-names/typedef-redeclare-same.cpp` | TYN-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/type-names/typedef-same-type.cpp` | TYN-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/type-names/typedef-storage-class.cpp` | TYN-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/type-names/typedef-then-variable.cpp` | TYN-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/type-names/typedef-unnamed-across-units.cpp` | TYN-3 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/type-names/typedef-unnamed-c-like.cpp` | TYN-3 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `declarations/type-names/typedef-unnamed-class-base.cpp` | TYN-9 | reject | reject | reject | reject | skip | accept | reject | reject | reject | reject | reject | pass |
 | `declarations/type-names/typedef-unnamed-class-member-function.cpp` | TYN-9 | reject | reject | reject | reject | skip | accept | reject | reject | reject | reject | reject | pass |
 | `declarations/type-names/typedef-with-unsigned.cpp` | TYN-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/type-names/variable-then-typedef.cpp` | TYN-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -2014,8 +2175,10 @@ compilers affect the Status column.
 | `declarations/volatile/assign-to-volatile-class.cpp` | VOL-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/volatile/assignment-result-warns.cpp` | VOL-5 | reject | reject | reject | skip | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/volatile/bitfield-write-keeps-neighbors.cpp` | VOL-13 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `declarations/volatile/bitfield-write-short-unit.cpp` | VOL-13 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/volatile/compound-no-warning.cpp` | VOL-5 | accept | accept | accept | skip | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/volatile/const-cast-removes.cpp` | VOL-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/volatile/const-member-on-volatile.cpp` | VOL-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/volatile/const-ref-volatile-no-temporary.cpp` | VOL-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/volatile/const-volatile-external.cpp` | VOL-1 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/volatile/constant-read-rejected.cpp` | VOL-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -2024,6 +2187,7 @@ compilers affect the Status column.
 | `declarations/volatile/copy-volatile-scalar-ok.cpp` | VOL-4 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `declarations/volatile/defaulted-comparison-volatile.cpp` | DCMP-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/volatile/increment-warns.cpp` | VOL-5 | reject | reject | reject | skip | skip | reject | reject | reject | reject | reject | reject | pass |
+| `declarations/volatile/initialization-write-member-and-array.cpp` | VOL-12 | run | run | run | skip | skip | run | run | run | run | run | run | pass |
 | `declarations/volatile/initialization-write.cpp` | VOL-12 | run | run | run | skip | skip | run | run | run | run | run | run | pass |
 | `declarations/volatile/nonvolatile-access-to-volatile-constant.cpp` | VOL-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `declarations/volatile/nonvolatile-member-on-volatile.cpp` | VOL-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -2060,9 +2224,12 @@ compilers affect the Status column.
 | `exceptions/handlers/ctor-try-block-members-destroyed-first.cpp` | TRY-10 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `exceptions/handlers/ctor-try-block-new-throw.cpp` | TRY-10 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `exceptions/handlers/ctor-try-block-rethrows-at-end.cpp` | TRY-10 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `exceptions/handlers/ctor-try-block-return-nested.cpp` | TRY-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `exceptions/handlers/ctor-try-block-return-rejected.cpp` | TRY-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `exceptions/handlers/ctor-try-block-sees-member-init-exception.cpp` | TRY-10 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `exceptions/handlers/distinct-handlers-no-warning.cpp` | TRY-4 | accept | accept | accept | skip | skip | accept | accept | accept | accept | accept | accept | pass |
+| `exceptions/handlers/dtor-try-block-member-named-in-handler.cpp` | TRY-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `exceptions/handlers/dtor-try-block-member-use-warns.cpp` | TRY-13 | reject | reject | accept | skip | skip | accept | reject | accept | accept | reject | reject | pass |
 | `exceptions/handlers/dtor-try-block-rethrows.cpp` | TRY-10 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `exceptions/handlers/duplicate-handler-warns.cpp` | TRY-4 | reject | reject | reject | skip | skip | reject | reject | reject | reject | reject | reject | pass |
 | `exceptions/handlers/function-try-block-falls-off-end.cpp` | TRY-9 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
@@ -2070,9 +2237,11 @@ compilers affect the Status column.
 | `exceptions/handlers/function-try-block-non-void-no-return.cpp` | TRY-12 | reject | reject | accept | skip | skip | accept | reject | accept | accept | reject | reject | pass |
 | `exceptions/handlers/function-try-block-sees-parameters.cpp` | TRY-9 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `exceptions/handlers/function-try-block.cpp` | TRY-9 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `exceptions/handlers/function-try-without-handler.cpp` | TRY-16 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `exceptions/handlers/goto-into-handler.cpp` | TRY-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `exceptions/handlers/goto-into-try.cpp` | TRY-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `exceptions/handlers/goto-out-of-handler.cpp` | TRY-15 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `exceptions/handlers/handler-base-copy-throws-terminates.cpp` | TRY-18 | run-fail | run-fail | run-fail | accept | skip | run-fail | run-fail | run-fail | run-fail | run-fail | run-fail | pass |
 | `exceptions/handlers/handler-copy-throws-terminates.cpp` | TRY-18 | run-fail | run-fail | run-fail | accept | skip | run-fail | run-fail | run-fail | run-fail | run-fail | run-fail | pass |
 | `exceptions/handlers/handler-local-destructor-rethrows.cpp` | TRY-15 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `exceptions/handlers/handler-not-active-for-own-throw.cpp` | TRY-8 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
@@ -2102,6 +2271,7 @@ compilers affect the Status column.
 | `exceptions/handlers/match-void-pointer-from-pointer-to-pointer.cpp` | TRY-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `exceptions/handlers/match-void-pointer-keeps-const.cpp` | TRY-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `exceptions/handlers/match-void-pointer.cpp` | TRY-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `exceptions/handlers/member-function-try-block-no-return.cpp` | TRY-12 | reject | reject | accept | skip | skip | accept | reject | accept | accept | reject | reject | pass |
 | `exceptions/handlers/nested-block-redeclares-param-ok.cpp` | TRY-6 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `exceptions/handlers/nested-try-in-handler.cpp` | TRY-8 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `exceptions/handlers/no-match-propagates.cpp` | TRY-1 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
@@ -2141,11 +2311,13 @@ compilers affect the Status column.
 | `exceptions/throw/catch-by-value-copies.cpp` | THR-8 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `exceptions/throw/constant-evaluation-throw-not-taken.cpp` | CE-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `exceptions/throw/constant-evaluation-throw-rejected.cpp` | CE-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `exceptions/throw/constexpr-constructor-throw-at-runtime.cpp` | THR-10 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `exceptions/throw/constexpr-throw-at-runtime.cpp` | THR-10 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `exceptions/throw/copy-into-exception-object-throws.cpp` | THR-1 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `exceptions/throw/cv-qualifiers-dropped.cpp` | THR-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `exceptions/throw/deleted-copy-lvalue-rejected.cpp` | THR-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `exceptions/throw/deleted-copy-prvalue.cpp` | THR-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `exceptions/throw/exception-object-destructor-throws-after-rethrow.cpp` | THR-12 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `exceptions/throw/exception-object-destructor-throws.cpp` | THR-12 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `exceptions/throw/function-operand-decays.cpp` | THR-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `exceptions/throw/global-lvalue-copied.cpp` | THR-1 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
@@ -2168,9 +2340,13 @@ compilers affect the Status column.
 | `exceptions/throw/rethrow-outside-handler-terminates.cpp` | THR-7 | run-fail | run-fail | run-fail | accept | skip | run-fail | run-fail | run-fail | run-fail | run-fail | run-fail | pass |
 | `exceptions/throw/rethrow-same-object.cpp` | THR-6 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `exceptions/throw/static-type-not-dynamic.cpp` | THR-4 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `exceptions/throw/static-type-through-pointer.cpp` | THR-4 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `exceptions/throw/storage-not-from-operator-new-large.cpp` | THR-13 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `exceptions/throw/storage-not-from-operator-new.cpp` | THR-13 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `exceptions/throw/string-literal-decays.cpp` | THR-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `exceptions/throw/throw-expression-constexpr-conditional.cpp` | THR-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `exceptions/throw/throw-expression-type-void.cpp` | THR-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `exceptions/throw/throw-from-destructor-terminates.cpp` | THR-9 | run-fail | run-fail | run-fail | accept | skip | run-fail | run-fail | run-fail | run-fail | run-fail | run-fail | pass |
 | `exceptions/throw/throw-in-noexcept-terminates.cpp` | THR-9 | run-fail | run-fail | run-fail | accept | skip | run-fail | run-fail | run-fail | run-fail | run-fail | run-fail | pass |
 | `exceptions/throw/throw-in-noexcept-warns.cpp` | UNW-8 | reject | reject | reject | skip | skip | reject | reject | reject | reject | reject | reject | pass |
 | `exceptions/throw/throwing-destructor-accepted.cpp` | THR-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -2182,7 +2358,7 @@ compilers affect the Status column.
 | `exceptions/unwinding/delegating-target-completed-destructor-runs.cpp` | UNW-2 OBJ-1 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `exceptions/unwinding/delegating-target-throws-no-destructor.cpp` | UNW-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `exceptions/unwinding/every-block-between-throw-and-handler.cpp` | UNW-1 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
-| `exceptions/unwinding/full-expression-temporaries-unwound.cpp` | UNW-9 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `exceptions/unwinding/full-expression-temporaries-unwound.cpp` | UNW-1 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `exceptions/unwinding/handler-block-objects-unaffected.cpp` | UNW-1 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `exceptions/unwinding/leaves-destructor-during-unwinding-terminates.cpp` | UNW-5 | run-fail | run-fail | run-fail | accept | skip | run-fail | run-fail | run-fail | run-fail | run-fail | run-fail | pass |
 | `exceptions/unwinding/leaves-destructor-member-throwing-caught.cpp` | UNW-5 DTOR-4 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
@@ -2208,6 +2384,7 @@ compilers affect the Status column.
 | `exceptions/unwinding/static-local-init-throws-retry.cpp` | UNW-4 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `exceptions/unwinding/static-objects-survive-unwinding.cpp` | UNW-4 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `exceptions/unwinding/termination-abnormal-end.cpp` | UNW-10 UNW-5 | run-fail | run-fail | run-fail | accept | skip | run-fail | run-fail | run-fail | run-fail | run-fail | run-fail | pass |
+| `exceptions/unwinding/termination-no-handler.cpp` | UNW-10 | run-fail | run-fail | run-fail | accept | skip | run-fail | run-fail | run-fail | run-fail | run-fail | run-fail | pass |
 | `exceptions/unwinding/throw-caught-in-noexcept-no-warning.cpp` | UNW-8 | accept | accept | accept | skip | skip | accept | accept | accept | accept | accept | accept | pass |
 | `exceptions/unwinding/throw-in-noexcept-warns.cpp` | UNW-8 | reject | reject | reject | skip | skip | reject | reject | reject | reject | reject | reject | pass |
 | `exceptions/unwinding/throw-unmatched-in-noexcept-warns.cpp` | UNW-8 | reject | reject | accept | skip | skip | accept | reject | accept | accept | reject | reject | pass |
@@ -2266,6 +2443,7 @@ compilers affect the Status column.
 | `expressions/additive/void-pointer-arithmetic.cpp` | ADD-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/additive/void-pointer-difference.cpp` | ADD-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/assignment/array-left.cpp` | ASN-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/assignment/bitfield-compound-result-address.cpp` | ASN-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/assignment/bitfield-result-address.cpp` | ASN-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/assignment/bool-compound.cpp` | ASN-5 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/assignment/braced-compound-class.cpp` | ASN-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -2277,13 +2455,16 @@ compilers affect the Status column.
 | `expressions/assignment/compound-converts.cpp` | ASN-5 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/assignment/compound-evaluates-once.cpp` | ASN-9 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/assignment/compound-float-modulo.cpp` | ASN-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/assignment/compound-float-shift.cpp` | ASN-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/assignment/compound-indeterminate-run.cpp` | ASN-11 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/assignment/compound-indeterminate-with-call.cpp` | ASN-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/assignment/compound-operators.cpp` | ASN-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/assignment/compound-pointer.cpp` | ASN-5 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `expressions/assignment/compound-subscript-evaluates-once.cpp` | ASN-9 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/assignment/const-left.cpp` | ASN-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/assignment/converts-right.cpp` | ASN-1 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/assignment/function-left.cpp` | ASN-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/assignment/no-conversion-class.cpp` | ASN-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/assignment/no-conversion.cpp` | ASN-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/assignment/result-lvalue.cpp` | ASN-3 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/assignment/right-before-left.cpp` | ASN-4 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
@@ -2304,6 +2485,7 @@ compilers affect the Status column.
 | `expressions/bitwise/different-enum-types.cpp` | BIT-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/bitwise/member-pointer-operand.cpp` | BIT-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/bitwise/mixed-enum-warns.cpp` | BIT-8 | reject | reject | reject | skip | skip | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/bitwise/mixed-enum-xor-warns.cpp` | BIT-8 | reject | reject | reject | skip | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/bitwise/negative-values.cpp` | BIT-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/bitwise/nullptr-operand.cpp` | BIT-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/bitwise/operands-arithmetic.cpp` | BIT-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -2312,12 +2494,14 @@ compilers affect the Status column.
 | `expressions/bitwise/operands-scoped-enum.cpp` | BIT-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/bitwise/parentheses-silences.cpp` | BIT-6 | accept | accept | accept | skip | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/bitwise/parentheses-warns.cpp` | BIT-6 | reject | reject | reject | skip | skip | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/bitwise/precedence-not-equal-and-xor.cpp` | BIT-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/bitwise/precedence.cpp` | BIT-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/bitwise/result-types.cpp` | BIT-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/bitwise/values.cpp` | BIT-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/casts/braced-cast-narrowing.cpp` | CAST-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/casts/braced-cast-ok.cpp` | CAST-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/casts/c-style-no-valid-cast.cpp` | CAST-19 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/casts/c-style-private-base-downcast.cpp` | CAST-17 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/casts/c-style-private-base.cpp` | CAST-17 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/casts/c-style-removes-const-and-type.cpp` | CAST-9 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/casts/c-style-static.cpp` | CAST-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -2339,8 +2523,10 @@ compilers affect the Status column.
 | `expressions/casts/pointer-sized-integer-ilp32.cpp` | CAST-16 | accept | accept | accept | skip | accept | accept | accept | skip | skip | accept | accept | pass |
 | `expressions/casts/pointer-sized-integer.cpp` | CAST-16 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/casts/reinterpret-function-pointer-round-trip.cpp` | CAST-6 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `expressions/casts/reinterpret-function-to-char-pointer.cpp` | CAST-12 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/casts/reinterpret-function-to-object.cpp` | CAST-12 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/casts/reinterpret-integer-too-small.cpp` | CAST-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/casts/reinterpret-not-constant-function.cpp` | CAST-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/casts/reinterpret-not-constant.cpp` | CAST-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/casts/reinterpret-nullptr-to-integer.cpp` | CAST-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/casts/reinterpret-pointer-integer-mapping.cpp` | CAST-16 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
@@ -2350,6 +2536,7 @@ compilers affect the Status column.
 | `expressions/casts/reinterpret-unrelated-pointer.cpp` | CAST-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/casts/static-cast-arithmetic.cpp` | CAST-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/casts/static-cast-downcast-private-base.cpp` | CAST-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/casts/static-cast-downcast-rvalue-reference.cpp` | CAST-15 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/casts/static-cast-downcast-wrong-object-constant.cpp` | CAST-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/casts/static-cast-downcast.cpp` | CAST-15 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/casts/static-cast-enum-fixed-in-range.cpp` | CAST-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -2370,6 +2557,7 @@ compilers affect the Status column.
 | `expressions/comma/argument-separator.cpp` | COMMA-4 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/comma/array-bound-parenthesized.cpp` | COMMA-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/comma/array-bound-unparenthesized.cpp` | COMMA-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/comma/braced-list-left-operand.cpp` | COMMA-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/comma/braced-list-operand.cpp` | COMMA-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/comma/case-label-unparenthesized.cpp` | COMMA-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/comma/constant-expression.cpp` | COMMA-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -2455,6 +2643,7 @@ compilers affect the Status column.
 | `expressions/comparison/three-way-different-enums.cpp` | CMP-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/comparison/three-way-enum-float.cpp` | CMP-18 | reject | reject | reject | accept | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/comparison/three-way-enum-int.cpp` | CMP-18 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/comparison/three-way-floating-and-pointer-copies-member.cpp` | CMP-27 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/comparison/three-way-floating.cpp` | CMP-17 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/comparison/three-way-function-pointer-nullptr.cpp` | CMP-25 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/comparison/three-way-function-pointers.cpp` | CMP-25 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -2482,12 +2671,15 @@ compilers affect the Status column.
 | `expressions/comparison/zero-size-member-pointers-either.cpp` | CMP-8 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/conditional/arithmetic-prvalue.cpp` | COND-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/conditional/array-function-operands.cpp` | COND-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/conditional/bitfield-address-unevaluated.cpp` | COND-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/conditional/bitfield-address.cpp` | COND-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/conditional/bitfield-or-enum.cpp` | COND-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/conditional/class-ambiguous.cpp` | COND-5 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/conditional/class-converts-to-int.cpp` | COND-3 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/conditional/class-lvalue-prvalue-copy.cpp` | COND-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/conditional/class-one-way.cpp` | COND-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/conditional/class-prvalue-lvalue-private-copy.cpp` | COND-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/conditional/comma-in-middle-assignments.cpp` | COND-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/conditional/comma-in-middle.cpp` | COND-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/conditional/condition-converted.cpp` | COND-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/conditional/condition-first.cpp` | COND-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
@@ -2495,10 +2687,13 @@ compilers affect the Status column.
 | `expressions/conditional/condition-side-effects-first.cpp` | COND-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/conditional/const-and-plain-lvalue.cpp` | COND-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/conditional/const-volatile-lvalues-prvalue.cpp` | COND-3 VC-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/conditional/constant-selected-division-by-zero.cpp` | COND-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/conditional/constant-selected-fails.cpp` | COND-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/conditional/constant-unselected-fails.cpp` | COND-7 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/conditional/constant-unselected-null-dereference.cpp` | COND-7 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/conditional/cv-lvalues-and-strings.cpp` | COND-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/conditional/derived-base-lvalue.cpp` | COND-3 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `expressions/conditional/gnu-omitted-operand-constant.cpp` | COND-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/conditional/gnu-omitted-operand.cpp` | COND-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/conditional/grouping.cpp` | COND-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/conditional/lvalue-result.cpp` | COND-3 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
@@ -2510,11 +2705,14 @@ compilers affect the Status column.
 | `expressions/conditional/pointer-and-int.cpp` | COND-5 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/conditional/pointer-operands.cpp` | COND-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/conditional/precedence-assignment.cpp` | COND-6 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `expressions/conditional/prvalue-no-copy-argument.cpp` | COND-12 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/conditional/prvalue-no-copy.cpp` | COND-12 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/conditional/same-type-prvalue.cpp` | COND-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/conditional/throw-operand.cpp` | COND-4 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/conditional/two-classes-convert-to-int.cpp` | COND-11 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `expressions/conditional/two-classes-convert-to-pointer.cpp` | COND-11 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/conditional/two-zeros.cpp` | COND-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/conditional/value-and-void.cpp` | COND-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/conditional/void-and-value.cpp` | COND-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/conditional/void-operands.cpp` | COND-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/conditional/xvalue-operands.cpp` | COND-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -2522,20 +2720,24 @@ compilers affect the Status column.
 | `expressions/constant-expressions/active-union-member.cpp` | CE-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/constant-expressions/allocation-in-result.cpp` | CE-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/constant-expressions/allocation-not-freed.cpp` | CE-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/constant-expressions/allocator-result-other-type.cpp` | CE-4 | reject | reject | accept | accept | skip | accept | reject | accept | accept | reject | reject | pass |
 | `expressions/constant-expressions/arithmetic-and-calls.cpp` | CE-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/constant-expressions/array-bound-floating.cpp` | CE-25 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/constant-expressions/array-bound-not-constant.cpp` | CE-25 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/constant-expressions/array-bound-floating.cpp` | CE-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/constant-expressions/array-bound-not-constant.cpp` | CE-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/constant-expressions/call-before-definition.cpp` | CE-16 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/constant-expressions/call-through-function-pointer-not-constexpr.cpp` | CE-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/constant-expressions/call-through-function-pointer.cpp` | CE-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/constant-expressions/case-label-floating.cpp` | CE-25 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/constant-expressions/case-label-not-constant.cpp` | CE-25 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/constant-expressions/case-label-floating.cpp` | CE-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/constant-expressions/case-label-not-constant.cpp` | CE-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/constant-expressions/const-enum-usable.cpp` | CE-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/constant-expressions/const-volatile-not-usable.cpp` | CE-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/constant-expressions/constant-initializer-not-constant.cpp` | CE-24 CINIT-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/constant-expressions/constant-initializer-trivial-class-array.cpp` | CE-24 CE-21 CINIT-1 | reject | reject | run | accept | skip | run | reject | run | run | reject | reject | pass |
+| `expressions/constant-expressions/constant-initializer-trivial-class-block-static.cpp` | CE-24 CE-21 CINIT-1 | reject | reject | run | accept | skip | run | reject | run | run | reject | reject | pass |
+| `expressions/constant-expressions/constant-initializer-trivial-empty-class.cpp` | CE-24 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/constant-expressions/constant-initializer-usable.cpp` | CE-24 CV-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/constant-expressions/constant-initializer-zero-scalar.cpp` | CE-24 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
-| `expressions/constant-expressions/constant-initializer-zero-trivial-class.cpp` | CE-24 | run | reject | run | accept | skip | run | reject | run | run | reject | reject | pass |
+| `expressions/constant-expressions/constant-initializer-zero-trivial-class.cpp` | CE-24 CE-21 CINIT-1 | reject | reject | run | accept | skip | run | reject | run | run | reject | reject | pass |
 | `expressions/constant-expressions/converted-constant-narrowing.cpp` | CE-19 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/constant-expressions/copy-after-every-part-set.cpp` | CE-22 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/constant-expressions/copy-unset-array-element.cpp` | CE-22 OBJ-2 | reject | reject | accept | reject | skip | accept | reject | accept | accept | reject | reject | pass |
@@ -2545,7 +2747,7 @@ compilers affect the Status column.
 | `expressions/constant-expressions/defaulted-constructor-virtual-base.cpp` | CE-2 DER-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/constant-expressions/delete-mismatch.cpp` | CE-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/constant-expressions/double-delete.cpp` | CE-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/constant-expressions/enumerator-floating.cpp` | CE-25 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/constant-expressions/enumerator-floating.cpp` | CE-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/constant-expressions/excessive-call-count.cpp` | CE-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/constant-expressions/explicit-condition-narrowing.cpp` | CE-19 | reject | reject | reject | accept | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/constant-expressions/extended-temporary-member.cpp` | CE-14 | accept | accept | accept | reject | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -2554,7 +2756,7 @@ compilers affect the Status column.
 | `expressions/constant-expressions/extended-temporary-through-cast.cpp` | CE-14 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/constant-expressions/function-pointer-equality.cpp` | CE-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/constant-expressions/goto-not-reached.cpp` | CE-17 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/constant-expressions/goto-reached.cpp` | CE-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/constant-expressions/goto-reached.cpp` | CE-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/constant-expressions/implicit-assignment-constant.cpp` | CE-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/constant-expressions/implicit-assignment-member-not-constexpr.cpp` | CE-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/constant-expressions/implicit-constructor-calls-constexpr.cpp` | CE-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -2572,11 +2774,12 @@ compilers affect the Status column.
 | `expressions/constant-expressions/literal-member.cpp` | CE-23 CX-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/constant-expressions/literal-not-reached.cpp` | CE-23 CE-17 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/constant-expressions/literal-one-constexpr-constructor.cpp` | CE-23 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/constant-expressions/literal-temporary-volatile-member.cpp` | CE-20 CE-23 | reject | accept | reject | reject | skip | reject | reject | reject | reject | accept | accept | pass |
+| `expressions/constant-expressions/literal-temporary-volatile-member.cpp` | CE-17 CE-23 | reject | accept | reject | reject | skip | reject | reject | reject | reject | accept | accept | pass |
 | `expressions/constant-expressions/literal-union-all-volatile.cpp` | CE-23 CX-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/constant-expressions/literal-union-volatile-member.cpp` | CE-23 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/constant-expressions/literal-volatile-member.cpp` | CE-23 CX-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/constant-expressions/long-loop.cpp` | CE-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/constant-expressions/member-call-before-definition.cpp` | CE-16 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/constant-expressions/moderate-call-count.cpp` | CE-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/constant-expressions/moderate-loop.cpp` | CE-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/constant-expressions/moderate-loops-split.cpp` | CE-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -2587,6 +2790,7 @@ compilers affect the Status column.
 | `expressions/constant-expressions/non-constexpr-call.cpp` | CE-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/constant-expressions/nonliteral-variable-not-reached.cpp` | CE-17 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/constant-expressions/order-may-differ-from-run.cpp` | CE-27 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `expressions/constant-expressions/order-of-operands-may-differ-from-run.cpp` | CE-27 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/constant-expressions/parameter-if-constexpr-consteval.cpp` | CE-30 CE-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/constant-expressions/parameter-nested-call.cpp` | CE-30 CE-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/constant-expressions/parameter-static-assert.cpp` | CE-30 CE-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -2598,12 +2802,13 @@ compilers affect the Status column.
 | `expressions/constant-expressions/read-extended-temporary-not-const.cpp` | CE-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/constant-expressions/read-non-const-variable.cpp` | CE-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/constant-expressions/read-parameter-outside.cpp` | CE-3 CE-30 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/constant-expressions/read-returned-local-unset-element.cpp` | CE-32 CE-21 | reject | reject | accept | reject | skip | accept | reject | accept | accept | reject | reject | pass |
-| `expressions/constant-expressions/reference-constant-initializer.cpp` | CE-29 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/constant-expressions/reference-reads-constant-object.cpp` | CE-29 CE-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/constant-expressions/reference-runtime-initializer.cpp` | CE-29 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/constant-expressions/reference-to-local-not-usable.cpp` | CE-29 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/constant-expressions/read-returned-local-unset-element.cpp` | CE-22 CE-21 | reject | reject | accept | reject | skip | accept | reject | accept | accept | reject | reject | pass |
+| `expressions/constant-expressions/reference-constant-initializer.cpp` | CE-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/constant-expressions/reference-reads-constant-object.cpp` | CE-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/constant-expressions/reference-runtime-initializer.cpp` | CE-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/constant-expressions/reference-to-local-not-usable.cpp` | CE-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/constant-expressions/reinterpret-cast.cpp` | CE-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/constant-expressions/relational-unrelated-array-elements.cpp` | CE-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/constant-expressions/relational-unrelated-pointers.cpp` | CE-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/constant-expressions/result-every-part-set.cpp` | CE-21 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/constant-expressions/result-points-to-local.cpp` | CE-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -2617,13 +2822,14 @@ compilers affect the Status column.
 | `expressions/constant-expressions/result-unset-array-element.cpp` | CE-21 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/constant-expressions/result-unset-member.cpp` | CE-21 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/constant-expressions/static-local-not-reached.cpp` | CE-17 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `expressions/constant-expressions/static-local-not-usable-reached.cpp` | CE-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/constant-expressions/static-local-reached.cpp` | CE-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/constant-expressions/static-local-usable-reached.cpp` | CE-20 CX-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/constant-expressions/static-local-not-usable-reached.cpp` | CE-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/constant-expressions/static-local-reached.cpp` | CE-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/constant-expressions/static-local-usable-reached.cpp` | CE-17 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/constant-expressions/string-literal-identity-variables.cpp` | CE-13 | reject | reject | accept | accept | skip | accept | reject | accept | accept | reject | reject | pass |
 | `expressions/constant-expressions/string-literal-identity.cpp` | CE-13 | reject | reject | accept | accept | skip | accept | reject | accept | accept | reject | reject | pass |
-| `expressions/constant-expressions/termination-noexcept-rejected.cpp` | CE-31 CE-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `expressions/constant-expressions/termination-not-reached.cpp` | CE-31 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
-| `expressions/constant-expressions/termination-rethrow-rejected.cpp` | CE-31 CE-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/constant-expressions/termination-noexcept-rejected.cpp` | CE-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/constant-expressions/termination-not-reached.cpp` | CE-8 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `expressions/constant-expressions/termination-rethrow-rejected.cpp` | CE-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/constant-expressions/throw-evaluated.cpp` | CE-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/constant-expressions/throw-not-evaluated.cpp` | CE-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/constant-expressions/try-around-consteval-call.cpp` | CE-30 CE-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -2632,14 +2838,19 @@ compilers affect the Status column.
 | `expressions/constant-expressions/undefined-behavior-dangling.cpp` | CE-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/constant-expressions/undefined-behavior.cpp` | CE-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/constant-expressions/unknown-reference-not-read.cpp` | CE-18 | accept | accept | accept | accept | skip | accept | reject | accept | accept | accept | accept | pass |
+| `expressions/constant-expressions/unknown-reference-static-member.cpp` | CE-18 | accept | accept | accept | accept | skip | accept | reject | accept | accept | accept | accept | pass |
+| `expressions/constant-expressions/unsequenced-assignments-not-detected.cpp` | CE-26 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/constant-expressions/unsequenced-not-detected.cpp` | CE-26 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/constant-expressions/unset-member-not-copied.cpp` | CE-22 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/constant-expressions/virtual-base-path-not-reached.cpp` | CE-2 DER-12 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/constant-expressions/virtual-call.cpp` | CE-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/constant-expressions/void-pointer-to-object.cpp` | CE-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/constant-expressions/volatile-read.cpp` | CE-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/constant-expressions/volatile-reference-read.cpp` | CE-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/conversions/ambiguous-base.cpp` | CONV-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/conversions/array-function-to-pointer-constant.cpp` | CONV-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/conversions/array-function-to-pointer.cpp` | CONV-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/conversions/array-pointer-unknown-bound-argument.cpp` | CONV-16 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/conversions/array-pointer-unknown-bound.cpp` | CONV-16 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/conversions/bitfield-promotes.cpp` | CONV-1 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/conversions/bitfield-promotion-by-width.cpp` | CONV-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -2652,9 +2863,11 @@ compilers affect the Status column.
 | `expressions/conversions/enum-promotion.cpp` | CONV-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/conversions/false-not-null-pointer.cpp` | CONV-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/conversions/floating-narrowing-in-range.cpp` | CONV-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/conversions/floating-narrowing-out-of-range-run.cpp` | CONV-11 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/conversions/floating-narrowing-out-of-range.cpp` | CONV-11 | clang: accept, gcc: accept, edg: reject | accept | accept | reject | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/conversions/floating-to-integral-out-of-range.cpp` | CONV-5 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/conversions/floating-to-integral-sanitizer.cpp` | CONV-5 | run-fail | run-fail | run-fail | skip | skip | run-fail | run-fail | run-fail | run-fail | run-fail | run-fail | pass |
+| `expressions/conversions/floating-to-integral-truncates-run.cpp` | CONV-4 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/conversions/floating-to-integral-truncates.cpp` | CONV-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/conversions/floating-to-unsigned-negative.cpp` | CONV-5 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/conversions/function-pointer-to-void-pointer.cpp` | CONV-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -2667,6 +2880,7 @@ compilers affect the Status column.
 | `expressions/conversions/integral-to-floating-rounding.cpp` | CONV-7 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/conversions/member-function-noexcept-add.cpp` | CONV-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/conversions/member-function-noexcept-drop.cpp` | CONV-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/conversions/member-function-pointer-base-to-derived.cpp` | CONV-15 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/conversions/member-pointer-ambiguous-base.cpp` | CONV-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/conversions/member-pointer-base-to-derived.cpp` | CONV-15 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/conversions/member-pointer-derived-to-base.cpp` | CONV-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -2706,6 +2920,7 @@ compilers affect the Status column.
 | `expressions/decltype/captured-in-lambda.cpp` | DTY-1 LAM-18 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/decltype/conditional.cpp` | DTY-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/decltype/constexpr-not-needed.cpp` | UNEV-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/decltype/declarative-nested-name-static-member.cpp` | DTY-5 | reject | reject | accept | reject | skip | accept | reject | accept | accept | reject | reject | pass |
 | `expressions/decltype/declarative-nested-name.cpp` | DTY-5 | reject | reject | accept | reject | skip | accept | reject | accept | accept | reject | reject | pass |
 | `expressions/decltype/decltype-auto-function.cpp` | DTY-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/decltype/deleted-destructor-decltype.cpp` | UNEV-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -2716,6 +2931,7 @@ compilers affect the Status column.
 | `expressions/decltype/discarded-constant.cpp` | UNEV-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/decltype/discarded-prvalue-materialized.cpp` | UNEV-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/decltype/discarded-reference-no-copy.cpp` | UNEV-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `expressions/decltype/discarded-sum-warns.cpp` | UNEV-3 | reject | reject | reject | skip | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/decltype/discarded-volatile-operand-read.cpp` | UNEV-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/decltype/discarded-volatile-read.cpp` | UNEV-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/decltype/discarded-warns.cpp` | UNEV-3 | reject | reject | reject | skip | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -2740,6 +2956,7 @@ compilers affect the Status column.
 | `expressions/decltype/private-access-still-checked.cpp` | UNEV-5 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/decltype/prvalue-const-class.cpp` | DTY-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/decltype/prvalue.cpp` | DTY-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/decltype/side-effect-decltype-warns.cpp` | UNEV-4 | reject | reject | accept | skip | skip | accept | reject | accept | accept | reject | reject | pass |
 | `expressions/decltype/side-effect-unevaluated-warns.cpp` | UNEV-4 | reject | reject | accept | skip | skip | accept | reject | accept | accept | reject | reject | pass |
 | `expressions/decltype/string-literal.cpp` | DTY-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/decltype/structured-binding-name.cpp` | DTY-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -2761,11 +2978,16 @@ compilers affect the Status column.
 | `expressions/lambdas/capture-structured-binding.cpp` | LAM-7 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/lambdas/capture-this.cpp` | LAM-8 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/lambdas/capture-visible-in-trailing-return.cpp` | LAM-18 | accept | reject | accept | accept | skip | reject | reject | accept | accept | reject | reject | pass |
+| `expressions/lambdas/capturing-no-function-pointer-argument.cpp` | LAM-25 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/lambdas/capturing-no-function-pointer.cpp` | LAM-25 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/lambdas/capturing-not-default-constructible.cpp` | LAM-26 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/lambdas/closure-alignment-unspecified.cpp` | LAM-20 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/lambdas/closure-copy-array-capture.cpp` | LAM-29 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/lambdas/closure-copy-assign-deleted.cpp` | LAM-26 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/lambdas/closure-copy-keeps-state.cpp` | LAM-29 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/lambdas/closure-size-unspecified.cpp` | LAM-20 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `expressions/lambdas/closure-trivially-copyable-unspecified.cpp` | LAM-20 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/lambdas/const-call-operator-init-capture.cpp` | LAM-23 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/lambdas/const-call-operator.cpp` | LAM-23 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/lambdas/constant-address-needs-capture.cpp` | LAM-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/lambdas/constant-needs-no-capture.cpp` | LAM-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -2777,11 +2999,14 @@ compilers affect the Status column.
 | `expressions/lambdas/default-arguments.cpp` | LAM-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/lambdas/default-capture-mixed.cpp` | LAM-5 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/lambdas/default-captures.cpp` | LAM-5 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `expressions/lambdas/default-constructed-call.cpp` | LAM-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/lambdas/default-constructible.cpp` | LAM-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/lambdas/default-member-initializer-captures-this.cpp` | LAM-8 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `expressions/lambdas/distinct-types-overload.cpp` | LAM-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/lambdas/explicit-capture-order.cpp` | LAM-28 LAM-7 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/lambdas/explicit-capture-unevaluated-member.cpp` | LAM-18 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/lambdas/explicit-object-mutable.cpp` | LAM-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/lambdas/explicit-object-recursion-run.cpp` | LAM-16 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/lambdas/explicit-object-recursion.cpp` | LAM-16 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/lambdas/function-pointer-constant.cpp` | LAM-10 LAM-12 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/lambdas/function-pointer.cpp` | LAM-10 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
@@ -2789,8 +3014,10 @@ compilers affect the Status column.
 | `expressions/lambdas/generic.cpp` | LAM-15 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/lambdas/immediately-invoked.cpp` | LAM-1 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/lambdas/implicit-capture-order.cpp` | LAM-20 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `expressions/lambdas/implicit-this-capture-call-warns.cpp` | LAM-21 | reject | reject | reject | skip | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/lambdas/implicit-this-capture-warns.cpp` | LAM-21 | reject | reject | reject | skip | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/lambdas/init-capture-extends-temporary.cpp` | LAM-7 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `expressions/lambdas/init-capture-order.cpp` | LAM-28 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/lambdas/init-capture-outer-lookup.cpp` | LAM-7 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/lambdas/init-capture.cpp` | LAM-7 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/lambdas/member-use-without-this.cpp` | LAM-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -2802,14 +3029,19 @@ compilers affect the Status column.
 | `expressions/lambdas/noexcept-function-pointer.cpp` | LAM-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/lambdas/parameter-same-as-capture.cpp` | LAM-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/lambdas/reference-default-explicit-this.cpp` | LAM-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/lambdas/return-deduction-void-and-value.cpp` | LAM-22 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/lambdas/return-deduction.cpp` | LAM-22 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/lambdas/static-and-global-no-capture.cpp` | LAM-9 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `expressions/lambdas/static-call-operator-named.cpp` | LAM-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/lambdas/static-call-operator.cpp` | LAM-13 OVL-25 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/lambdas/static-with-capture-default.cpp` | LAM-27 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/lambdas/static-with-capture.cpp` | LAM-27 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/lambdas/syntax-forms.cpp` | LAM-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/lambdas/this-in-static-member.cpp` | LAM-24 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/lambdas/this-outside-member.cpp` | LAM-24 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/lambdas/unary-plus-function-pointer.cpp` | LAM-10 UN-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/lambdas/uncaptured-variable.cpp` | LAM-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/lambdas/unevaluated-noexcept.cpp` | LAM-14 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/lambdas/unevaluated-operand.cpp` | LAM-14 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/lambdas/unique-type.cpp` | LAM-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/logical/alternative-tokens-in-declarators.cpp` | LOG-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -2861,6 +3093,7 @@ compilers affect the Status column.
 | `expressions/member-pointers/compare-equal.cpp` | MPTR-5 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/member-pointers/compare-relational.cpp` | MPTR-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/member-pointers/compare-three-way.cpp` | MPTR-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/member-pointers/compare-virtual-and-plain-unspecified.cpp` | MPTR-7 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/member-pointers/compare-virtual-function-unspecified.cpp` | MPTR-7 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/member-pointers/constexpr-use.cpp` | MPTR-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/member-pointers/declare-alias.cpp` | MPTR-1 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
@@ -2975,8 +3208,10 @@ compilers affect the Status column.
 | `expressions/multiplicative/unsigned-wraps.cpp` | MUL-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/new-delete/abstract-type.cpp` | NEW-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/new-delete/aligned-delete-passes-alignment.cpp` | NEW-28 NEW-21 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `expressions/new-delete/aligned-fallback-array.cpp` | NEW-29 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/new-delete/aligned-fallback-without-alignment.cpp` | NEW-29 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/new-delete/aligned-form-only-for-ordinary-type.cpp` | NEW-30 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/new-delete/aligned-form-only-placement.cpp` | NEW-30 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/new-delete/aligned-forms-by-name.cpp` | NEW-26 LSUP-5 | run | run | run | accept | skip | run | reject | run | run | run | run | pass |
 | `expressions/new-delete/aligned-forms-specifiers.cpp` | NEW-26 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/new-delete/aligned-global-delete.cpp` | NEW-28 NEW-22 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
@@ -2984,6 +3219,7 @@ compilers affect the Status column.
 | `expressions/new-delete/aligned-new-passes-alignment.cpp` | NEW-28 NEW-27 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/new-delete/allocation-before-initializer.cpp` | NEW-12 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/new-delete/allocation-beyond-address-space.cpp` | NEW-42 NEW-38 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `expressions/new-delete/allocation-may-be-omitted-array.cpp` | NEW-14 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/new-delete/allocation-may-be-omitted.cpp` | NEW-14 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/new-delete/array-class-size.cpp` | NEW-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/new-delete/array-constant-size-too-large.cpp` | NEW-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -2995,6 +3231,7 @@ compilers affect the Status column.
 | `expressions/new-delete/array-no-default-ctor.cpp` | NEW-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/new-delete/array-non-integral-size.cpp` | NEW-2 | accept | accept | reject | accept | skip | reject | accept | reject | reject | accept | accept | pass |
 | `expressions/new-delete/array-of-auto.cpp` | NEW-16 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/new-delete/array-overhead-global-form.cpp` | NEW-34 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/new-delete/array-overhead-other-forms.cpp` | NEW-34 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/new-delete/array-paren-init-narrowing.cpp` | NEW-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/new-delete/array-paren-init-runtime-bound.cpp` | NEW-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
@@ -3007,10 +3244,12 @@ compilers affect the Status column.
 | `expressions/new-delete/bad-bound-constant-negative.cpp` | NEW-39 CE-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/new-delete/bad-bound-constant-too-few.cpp` | NEW-39 CE-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/new-delete/bad-bound-negative.cpp` | NEW-35 LSUP-8 | run | run-fail | run | accept | skip | run | run-fail | run | run | run-fail | run-fail | pass |
+| `expressions/new-delete/bad-bound-nothrow-class.cpp` | NEW-36 | run | run | run-fail | accept | skip | run-fail | run | run-fail | run-fail | run | run | pass |
 | `expressions/new-delete/bad-bound-nothrow.cpp` | NEW-36 LSUP-6 | run | run | run-fail | accept | skip | run-fail | run | run-fail | run-fail | run | run | pass |
 | `expressions/new-delete/bad-bound-too-few.cpp` | NEW-35 LSUP-8 | run | run-fail | run-fail | accept | skip | run-fail | run-fail | run-fail | run | run-fail | run-fail | pass |
 | `expressions/new-delete/bad-bound-too-large.cpp` | NEW-35 LSUP-8 | run | run-fail | run | accept | skip | run | run-fail | run | run | run-fail | run-fail | pass |
 | `expressions/new-delete/class-allocation-function.cpp` | NEW-13 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `expressions/new-delete/class-array-allocation-function.cpp` | NEW-13 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/new-delete/const-scalar-needs-init.cpp` | NEW-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/new-delete/const-scalar-with-init.cpp` | NEW-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/new-delete/constant-evaluation-class-allocation.cpp` | NEW-37 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -3018,6 +3257,7 @@ compilers affect the Status column.
 | `expressions/new-delete/constant-evaluation-placement.cpp` | NEW-37 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/new-delete/deallocate-by-name-alignment-mismatch-sanitizer.cpp` | NEW-40 | run-fail | run-fail | run-fail | skip | skip | run-fail | run-fail | run-fail | run-fail | run-fail | run-fail | pass |
 | `expressions/new-delete/deallocate-by-name-array-mismatch-sanitizer.cpp` | NEW-40 | run-fail | run-fail | run-fail | skip | skip | run-fail | run-fail | run-fail | run-fail | run-fail | run-fail | pass |
+| `expressions/new-delete/deallocate-by-name-null-nothrow.cpp` | NEW-41 | run | run | run | skip | skip | run | run | run | run | run | run | pass |
 | `expressions/new-delete/deallocate-by-name-null.cpp` | NEW-41 | run | run | run | skip | skip | run | run | run | run | run | run | pass |
 | `expressions/new-delete/deallocate-by-name-partner.cpp` | NEW-40 NEW-19 NEW-26 | run | run | run | skip | skip | run | run | run | run | run | run | pass |
 | `expressions/new-delete/deallocation-deleted-no-throw.cpp` | NEW-25 | reject | reject | accept | reject | skip | accept | reject | accept | accept | reject | reject | pass |
@@ -3028,6 +3268,7 @@ compilers affect the Status column.
 | `expressions/new-delete/default-new-alignment-ilp32-clang.cpp` | NEW-27 | reject | accept | reject | skip | reject | reject | accept | skip | skip | accept | accept | pass |
 | `expressions/new-delete/default-new-alignment-ilp32.cpp` | NEW-27 | accept | reject | accept | skip | accept | accept | reject | skip | skip | reject | reject | pass |
 | `expressions/new-delete/default-new-alignment.cpp` | NEW-27 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/new-delete/delete-array-class-converting-to-pointer.cpp` | NEW-15 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/new-delete/delete-array-mismatch-sanitizer.cpp` | NEW-5 | run-fail | run-fail | run-fail | skip | skip | run-fail | run-fail | run-fail | run-fail | run-fail | run-fail | pass |
 | `expressions/new-delete/delete-class-converting-to-pointer.cpp` | NEW-15 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/new-delete/delete-derived-array-through-base-constant.cpp` | NEW-5 | reject | reject | accept | reject | skip | accept | reject | accept | accept | reject | reject | pass |
@@ -3050,11 +3291,13 @@ compilers affect the Status column.
 | `expressions/new-delete/global-functions-with-own-forms.cpp` | NEW-19 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/new-delete/incomplete-type.cpp` | NEW-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/new-delete/later-dimension-runtime.cpp` | NEW-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/new-delete/leak-array-in-constant-evaluation.cpp` | NEW-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/new-delete/leak-in-constant-evaluation.cpp` | NEW-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/new-delete/multi-dimension-type.cpp` | NEW-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/new-delete/new-auto-no-initializer.cpp` | NEW-16 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/new-delete/new-auto-two-values.cpp` | NEW-16 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/new-delete/new-void.cpp` | NEW-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/new-delete/null-result-class-function-sanitizer.cpp` | NEW-32 | run-fail | run-fail | run-fail | skip | skip | run-fail | run-fail | run-fail | run-fail | run-fail | run-fail | pass |
 | `expressions/new-delete/null-result-non-throwing-placement.cpp` | NEW-31 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/new-delete/null-result-nothrow-tag.cpp` | NEW-31 LSUP-6 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/new-delete/null-result-throwing-form-sanitizer.cpp` | NEW-32 | run-fail | run-fail | run-fail | skip | skip | run-fail | run-fail | run-fail | run-fail | run-fail | run-fail | pass |
@@ -3077,9 +3320,10 @@ compilers affect the Status column.
 | `expressions/new-delete/throw-placement-class-new-global-delete.cpp` | NEW-21 NEW-23 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/new-delete/throw-placement-converting-type-no-match.cpp` | NEW-24 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/new-delete/throw-placement-default-argument.cpp` | NEW-23 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `expressions/new-delete/throw-placement-deleted-function-and-template.cpp` | NEW-24 DED-39 | accept | accept | accept | reject | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/new-delete/throw-placement-ellipsis-no-match.cpp` | NEW-24 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
-| `expressions/new-delete/throw-placement-function-and-template.cpp` | NEW-23 DED-39 | run | run-fail | run | accept | skip | run | run-fail | run | run | run-fail | run-fail | pass |
-| `expressions/new-delete/throw-placement-function-before-template-instantiation.cpp` | NEW-23 DED-39 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/new-delete/throw-placement-function-and-template.cpp` | NEW-24 DED-39 | run | run | run-fail | accept | skip | run-fail | run | run-fail | run-fail | run | run | pass |
+| `expressions/new-delete/throw-placement-function-before-template-instantiation.cpp` | NEW-24 DED-39 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/new-delete/throw-placement-global.cpp` | NEW-21 NEW-23 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/new-delete/throw-placement-in-base-class.cpp` | NEW-21 NEW-23 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/new-delete/throw-placement-reference-type-no-match.cpp` | NEW-24 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
@@ -3094,7 +3338,9 @@ compilers affect the Status column.
 | `expressions/postfix/call-class-with-call-operator.cpp` | PFX-17 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/postfix/call-class-without-call-operator.cpp` | PFX-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/postfix/call-copy-initializes.cpp` | PFX-6 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `expressions/postfix/call-copy-list-initializes.cpp` | PFX-6 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/postfix/call-defaults-and-ellipsis.cpp` | PFX-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/postfix/call-explicit-constructor-braced.cpp` | PFX-16 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/postfix/call-explicit-constructor.cpp` | PFX-16 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/postfix/call-incomplete-parameter.cpp` | PFX-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/postfix/call-incomplete-return.cpp` | PFX-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -3103,12 +3349,15 @@ compilers affect the Status column.
 | `expressions/postfix/call-null-pointer-sanitizer.cpp` | PFX-8 | run-fail | run-fail | run-fail | skip | skip | run-fail | run-fail | run-fail | run-fail | run-fail | run-fail | pass |
 | `expressions/postfix/call-null-pointer.cpp` | PFX-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/postfix/call-object-pointer.cpp` | PFX-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/postfix/call-result-category-pointer-and-member.cpp` | PFX-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/postfix/call-result-category.cpp` | PFX-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/postfix/call-through-pointer-array.cpp` | PFX-7 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/postfix/call-through-pointer.cpp` | PFX-7 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/postfix/call-too-many-arguments.cpp` | PFX-5 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/postfix/call-wrong-function-type-sanitizer.cpp` | PFX-19 | run-fail | run-fail | run | skip | skip | run | run-fail | run | run | run-fail | run-fail | pass |
 | `expressions/postfix/dot-on-pointer.cpp` | PFX-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/postfix/ellipsis-nontrivial-class.cpp` | PFX-15 | accept | reject | accept | accept | skip | accept | reject | accept | accept | reject | reject | pass |
+| `expressions/postfix/ellipsis-nontrivial-destructor.cpp` | PFX-15 | accept | reject | accept | accept | skip | accept | reject | accept | accept | reject | reject | pass |
 | `expressions/postfix/increment-enum.cpp` | PFX-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/postfix/increment-function-pointer.cpp` | PFX-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/postfix/increment-incomplete-pointer.cpp` | PFX-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -3153,19 +3402,34 @@ compilers affect the Status column.
 | `expressions/postfix/subscript-write-past-end-constant.cpp` | PFX-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/primary/bool-nullptr.cpp` | PRIM-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/primary/char-delimited-empty.cpp` | PRIM-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/primary/char-digit-test-range.cpp` | PRIM-31 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/primary/char-digits-consecutive.cpp` | PRIM-31 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/primary/char-digits-each-run.cpp` | PRIM-31 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `expressions/primary/char-digits-format-run.cpp` | PRIM-31 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `expressions/primary/char-digits-parse-run.cpp` | PRIM-31 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `expressions/primary/char-digits-parse.cpp` | PRIM-31 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/primary/char-empty.cpp` | PRIM-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/primary/char-encoding-ascii.cpp` | PRIM-32 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/primary/char-encoding-ilp32.cpp` | PRIM-32 | accept | accept | accept | skip | reject | accept | accept | skip | skip | accept | accept | pass |
 | `expressions/primary/char-encoding-lp64.cpp` | PRIM-32 | accept | accept | accept | reject | skip | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/primary/char-escape-high-byte-run.cpp` | PRIM-30 PRIM-6 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/primary/char-escape-out-of-range.cpp` | PRIM-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/primary/char-escapes.cpp` | PRIM-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/primary/char-hex-digits-matrix.cpp` | PRIM-32 PRIM-31 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/primary/char-hex-no-digits.cpp` | PRIM-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/primary/char-letters-matrix-run.cpp` | PRIM-32 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `expressions/primary/char-multichar-four.cpp` | PRIM-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/primary/char-multichar-ilp32.cpp` | PRIM-6 | accept | accept | accept | skip | accept | accept | accept | skip | skip | accept | accept | pass |
 | `expressions/primary/char-multichar-warns.cpp` | PRIM-13 | reject | reject | reject | skip | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/primary/char-multichar.cpp` | PRIM-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/primary/char-named-escape-unknown.cpp` | PRIM-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/primary/char-named-escape.cpp` | PRIM-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/primary/char-octal-too-large.cpp` | PRIM-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/primary/char-plain-signedness.cpp` | PRIM-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/primary/char-simple-escape-table-ilp32.cpp` | PRIM-34 | accept | accept | accept | skip | accept | accept | accept | skip | skip | accept | accept | pass |
+| `expressions/primary/char-simple-escape-table-lp64.cpp` | PRIM-34 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/primary/char-simple-escape-table-run.cpp` | PRIM-34 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `expressions/primary/char-simple-escape-table-wide-run.cpp` | PRIM-34 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/primary/char-simple-escape-values.cpp` | PRIM-33 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/primary/char-types.cpp` | PRIM-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/primary/char-u8-not-single-byte.cpp` | PRIM-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -3175,14 +3439,19 @@ compilers affect the Status column.
 | `expressions/primary/char-unicode-multichar.cpp` | PRIM-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/primary/char-unknown-escape.cpp` | PRIM-18 | reject | reject | reject | accept | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/primary/char-unprefixed-not-single-unit.cpp` | PRIM-23 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/primary/char-unprefixed-utf8-source.cpp` | PRIM-23 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/primary/char-value-code-unit.cpp` | PRIM-30 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/primary/char-value-escapes-prefixes.cpp` | PRIM-30 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/primary/char16-not-bmp.cpp` | PRIM-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/primary/double-overflow.cpp` | PRIM-15 | accept | accept | accept | reject | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/primary/float-exponent-no-digits.cpp` | PRIM-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/primary/float-exponent-sign-no-digits.cpp` | PRIM-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/primary/float-extended-suffix-sixteen.cpp` | PRIM-22 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/primary/float-extended-suffix.cpp` | PRIM-22 | accept | reject | accept | accept | skip | accept | reject | accept | accept | reject | reject | pass |
 | `expressions/primary/float-forms.cpp` | PRIM-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/primary/float-hex-needs-exponent.cpp` | PRIM-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/primary/float-integer-suffix.cpp` | PRIM-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/primary/float-nearest-value-float.cpp` | PRIM-21 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/primary/float-nearest-value.cpp` | PRIM-21 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/primary/float-overflow-warns.cpp` | PRIM-13 | reject | reject | reject | skip | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/primary/float-overflow.cpp` | PRIM-15 | accept | accept | accept | reject | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -3193,6 +3462,7 @@ compilers affect the Status column.
 | `expressions/primary/fold-no-pack.cpp` | PRIM-29 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/primary/fold-operand-binary.cpp` | PRIM-29 | reject | reject | reject | accept | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/primary/fold-order.cpp` | PRIM-28 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `expressions/primary/fold-shift-and-comma.cpp` | PRIM-27 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/primary/fold-three-way-operator.cpp` | PRIM-29 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/primary/fold-two-packs.cpp` | PRIM-29 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/primary/fold-without-parentheses.cpp` | PRIM-29 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -3200,6 +3470,7 @@ compilers affect the Status column.
 | `expressions/primary/int-bad-digit-octal.cpp` | PRIM-16 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/primary/int-bad-suffix.cpp` | PRIM-16 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/primary/int-decimal-types.cpp` | PRIM-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/primary/int-forms-suffixes.cpp` | PRIM-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/primary/int-forms.cpp` | PRIM-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/primary/int-hex-fits-unsigned-ll.cpp` | PRIM-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/primary/int-hex-types.cpp` | PRIM-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -3253,6 +3524,7 @@ compilers affect the Status column.
 | `expressions/primary/string-raw.cpp` | PRIM-7 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/primary/string-same-literal-two-evaluations.cpp` | PRIM-9 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/primary/string-same-object-either.cpp` | PRIM-9 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `expressions/primary/string-simple-escape-values.cpp` | PRIM-33 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/primary/string-to-nonconst-pointer.cpp` | PRIM-19 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/primary/string-type.cpp` | PRIM-7 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/primary/this-const-member-modify.cpp` | PRIM-11 ASN-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -3266,16 +3538,16 @@ compilers affect the Status column.
 | `expressions/primary/this-type.cpp` | PRIM-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/sequencing/adjacent-bitfields-unsequenced.cpp` | SEQ-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/sequencing/argument-read-and-write.cpp` | SEQ-1 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
-| `expressions/sequencing/arguments-before-body.cpp` | SEQ-10 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
-| `expressions/sequencing/assignment-increment-defined.cpp` | SEQ-3 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
-| `expressions/sequencing/assignment-right-before-left-index.cpp` | SEQ-3 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `expressions/sequencing/arguments-before-body.cpp` | SEQ-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `expressions/sequencing/assignment-increment-defined.cpp` | SEQ-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `expressions/sequencing/assignment-right-before-left-index.cpp` | SEQ-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/sequencing/bitwise-operand-order.cpp` | SEQ-8 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
-| `expressions/sequencing/braced-list-order.cpp` | SEQ-3 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `expressions/sequencing/braced-list-order.cpp` | SEQ-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/sequencing/callee-before-arguments.cpp` | SEQ-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/sequencing/calls-not-interleaved.cpp` | SEQ-1 SEQ-8 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
-| `expressions/sequencing/chained-assignment-order.cpp` | SEQ-3 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `expressions/sequencing/chained-assignment-order.cpp` | SEQ-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/sequencing/comparison-operand-order.cpp` | SEQ-8 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
-| `expressions/sequencing/compound-assignment-order.cpp` | SEQ-3 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `expressions/sequencing/compound-assignment-order.cpp` | SEQ-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/sequencing/default-argument-order.cpp` | SEQ-1 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/sequencing/default-argument-temporary.cpp` | SEQ-5 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/sequencing/explicit-object-order-unspecified.cpp` | SEQ-1 CLS-13 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
@@ -3285,26 +3557,31 @@ compilers affect the Status column.
 | `expressions/sequencing/full-expression-subexpression-not.cpp` | VC-9 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/sequencing/function-arguments-not-interleaved.cpp` | SEQ-1 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/sequencing/function-arguments-order.cpp` | SEQ-1 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `expressions/sequencing/implicit-calls-unwinding-and-operators.cpp` | SEQ-9 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/sequencing/implicit-calls.cpp` | SEQ-9 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/sequencing/init-capture-order.cpp` | LAM-7 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/sequencing/member-operator-order.cpp` | SEQ-8 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
-| `expressions/sequencing/member-pointer-object-first.cpp` | SEQ-3 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `expressions/sequencing/member-pointer-object-first.cpp` | SEQ-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/sequencing/multiplicative-operand-order.cpp` | SEQ-8 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `expressions/sequencing/new-class-placement-and-bound-order.cpp` | NEW-18 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/sequencing/new-placement-and-bound-order.cpp` | NEW-12 NEW-18 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/sequencing/object-before-member-call-arguments.cpp` | SEQ-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/sequencing/operand-used-twice-evaluated-once.cpp` | SEQ-11 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `expressions/sequencing/operand-used-twice-run-time.cpp` | SEQ-11 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/sequencing/overloaded-assignment-order.cpp` | SEQ-6 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/sequencing/overloaded-compound-assignment-order.cpp` | SEQ-6 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/sequencing/overloaded-explicit-call-order.cpp` | SEQ-6 SEQ-1 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/sequencing/overloaded-member-pointer-order.cpp` | SEQ-6 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/sequencing/overloaded-shift-order.cpp` | SEQ-6 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/sequencing/overloaded-subscript-order.cpp` | SEQ-6 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `expressions/sequencing/parameter-destruction-order-three.cpp` | VC-15 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/sequencing/parameter-destruction-order.cpp` | VC-15 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/sequencing/parenthesized-aggregate-order.cpp` | LIST-7 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/sequencing/reversed-comparison-order.cpp` | SEQ-8 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
-| `expressions/sequencing/subscript-order.cpp` | SEQ-3 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `expressions/sequencing/subscript-order.cpp` | SEQ-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/sequencing/unsequenced-constant-evaluation.cpp` | SEQ-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/sequencing/unsequenced-increments.cpp` | SEQ-4 SEQ-7 | reject | reject | reject | skip | skip | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/sequencing/unsequenced-read-and-increment.cpp` | SEQ-7 | reject | reject | reject | skip | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/sequencing/volatile-reads-unsequenced.cpp` | SEQ-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/shift/class-operand.cpp` | SHF-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/shift/count-constant-warns.cpp` | SHF-9 | reject | reject | reject | skip | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -3316,6 +3593,7 @@ compilers affect the Status column.
 | `expressions/shift/count-too-large-sanitizer.cpp` | SHF-7 | run-fail | run-fail | run-fail | skip | skip | run-fail | run-fail | run-fail | run-fail | run-fail | run-fail | pass |
 | `expressions/shift/count-too-large.cpp` | SHF-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/shift/count-width-of-promoted.cpp` | SHF-7 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/shift/grouping-right-shift.cpp` | SHF-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/shift/grouping.cpp` | SHF-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/shift/left-shift-negative.cpp` | SHF-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/shift/left-shift-overflow-signed.cpp` | SHF-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -3328,11 +3606,13 @@ compilers affect the Status column.
 | `expressions/shift/operand-order.cpp` | SHF-8 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/shift/operand-pointer.cpp` | SHF-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/shift/operand-scoped-enum.cpp` | SHF-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/shift/operands-character-and-enum-right.cpp` | SHF-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/shift/operands-integral.cpp` | SHF-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/shift/result-prvalue.cpp` | SHF-4 VC-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/shift/result-type.cpp` | SHF-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/shift/right-shift-negative.cpp` | SHF-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/shift/right-shift-values.cpp` | SHF-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/unary/address-of-class-prvalue.cpp` | UN-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/unary/address-of-qualified-member.cpp` | UN-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/unary/address-of-rvalue.cpp` | UN-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/unary/address-of.cpp` | UN-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -3368,6 +3648,7 @@ compilers affect the Status column.
 | `expressions/unary/minus-int-min-sanitizer.cpp` | UN-4 | run-fail | run-fail | run-fail | skip | skip | run-fail | run-fail | run-fail | run-fail | run-fail | run-fail | pass |
 | `expressions/unary/minus-int-min.cpp` | UN-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/unary/minus-pointer.cpp` | UN-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/unary/minus-values-wide-unsigned.cpp` | UN-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/unary/minus-values.cpp` | UN-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/unary/noexcept-conversion-false.cpp` | UN-18 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/unary/noexcept-destructor-alone.cpp` | UN-18 UN-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -3383,6 +3664,7 @@ compilers affect the Status column.
 | `expressions/unary/plus-minus-scoped-enum.cpp` | UN-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/unary/plus-minus-types.cpp` | UN-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/unary/plus-pointer.cpp` | UN-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/unary/prefix-decrement-pointer-double.cpp` | UN-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/unary/prefix-increment-lvalue.cpp` | UN-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/unary/prefix-increment.cpp` | UN-20 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/unary/prefix-narrow-signed-wraps.cpp` | UN-20 | accept | accept | accept | reject | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -3398,6 +3680,7 @@ compilers affect the Status column.
 | `expressions/unary/sizeof-unsigned-lp64.cpp` | UN-15 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/unary/sizeof-void.cpp` | UN-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/value-categories/address-of-prvalue.cpp` | VC-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/value-categories/address-of-xvalue-call.cpp` | VC-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/value-categories/address-of-xvalue.cpp` | VC-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/value-categories/aggregate-element-temporaries.cpp` | VC-9 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/value-categories/argument-lives-to-end.cpp` | VC-9 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
@@ -3412,6 +3695,7 @@ compilers affect the Status column.
 | `expressions/value-categories/decltype-call-deleted-destructor.cpp` | VC-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/value-categories/default-argument-temporary.cpp` | VC-9 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/value-categories/discarded-call-deleted-destructor.cpp` | VC-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `expressions/value-categories/discarded-prvalue-braced.cpp` | VC-5 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/value-categories/discarded-prvalue-destroyed.cpp` | VC-5 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/value-categories/guaranteed-elision.cpp` | VC-4 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/value-categories/init-capture-temporary.cpp` | VC-9 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
@@ -3429,6 +3713,7 @@ compilers affect the Status column.
 | `expressions/value-categories/member-reference-of-prvalue.cpp` | VC-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/value-categories/more-categories.cpp` | VC-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/value-categories/parameter-belongs-to-caller.cpp` | VC-16 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `expressions/value-categories/parameter-conversion-throws-in-caller.cpp` | VC-16 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/value-categories/parameter-destruction-point.cpp` | VC-10 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/value-categories/prvalue-no-object-until-needed.cpp` | VC-4 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/value-categories/prvalues.cpp` | VC-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -3436,16 +3721,22 @@ compilers affect the Status column.
 | `expressions/value-categories/rvalue-ref-to-function-cast.cpp` | VC-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/value-categories/rvalue-reference-name-binding.cpp` | VC-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/value-categories/rvalue-reference-name-is-lvalue.cpp` | VC-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/value-categories/rvalue-reference-parameter-name-binding.cpp` | VC-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `expressions/value-categories/static-member-of-prvalue.cpp` | VC-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/value-categories/temporaries-reverse-order-comma.cpp` | VC-6 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/value-categories/temporaries-reverse-order.cpp` | VC-6 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/value-categories/temporary-constant-evaluation.cpp` | VC-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `expressions/value-categories/trivial-parameter-address-constructor.cpp` | VC-7 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/value-categories/trivial-parameter-address.cpp` | VC-7 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `expressions/value-categories/xvalue-array-subscript.cpp` | VC-3 | accept | accept | accept | reject | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/value-categories/xvalue-member-pointer.cpp` | VC-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `expressions/value-categories/xvalues.cpp` | VC-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/conversion-sequences/ambiguous-loses-to-standard.cpp` | ICS-7 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/conversion-sequences/ambiguous-ties-user-defined.cpp` | ICS-7 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/array-fewer-elements-const-lvalue.cpp` | ICS-23 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/conversion-sequences/array-fewer-elements.cpp` | ICS-23 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/array-known-bound-const-lvalue.cpp` | ICS-24 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/array-known-bound-direct-cv.cpp` | ICS-46 | accept | reject | accept | accept | skip | accept | reject | accept | accept | reject | reject | pass |
 | `foundations/conversion-sequences/array-known-bound-direct.cpp` | ICS-46 | accept | reject | accept | accept | skip | accept | reject | accept | accept | reject | reject | pass |
 | `foundations/conversion-sequences/array-known-bound.cpp` | ICS-24 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/conversion-sequences/array-pointer-tie-breaker.cpp` | ICS-33 ICS-36 | accept | accept | reject | accept | skip | reject | accept | reject | reject | accept | accept | pass |
@@ -3465,22 +3756,27 @@ compilers affect the Status column.
 | `foundations/conversion-sequences/chosen-narrowing.cpp` | ICS-8 LIST-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/conversion-sequences/chosen-private-base.cpp` | ICS-8 CONV-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/conversion-sequences/conversion-choice-class-value.cpp` | ICS-42 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/conversion-choice-equal-rank-extended-target.cpp` | ICS-44 | accept | reject | accept | accept | skip | accept | reject | accept | accept | reject | reject | pass |
 | `foundations/conversion-sequences/conversion-choice-equal-rank-source.cpp` | ICS-44 | accept | reject | accept | accept | skip | accept | reject | accept | accept | reject | reject | pass |
 | `foundations/conversion-sequences/conversion-choice-nearest-source.cpp` | ICS-42 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/conversion-choice-promotion-result.cpp` | ICS-37 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/conversion-sequences/conversion-choice-second-part.cpp` | ICS-37 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/conversion-choice-void-const.cpp` | ICS-43 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/conversion-sequences/conversion-choice-void.cpp` | ICS-43 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/conversion-sequences/double-brace-standard-only.cpp` | ICS-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/conversion-sequences/ellipsis-braced-list-other-wins.cpp` | ICS-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/conversion-sequences/ellipsis-braced-list.cpp` | ICS-6 OVL-35 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/conversion-sequences/ellipsis-sequence.cpp` | ICS-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/conversion-sequences/fixed-enumeration-before-rvalue-reference.cpp` | ICS-28 ICS-34 | accept | accept | reject | reject | skip | reject | accept | reject | reject | accept | accept | pass |
+| `foundations/conversion-sequences/fixed-enumeration-promotion-unsigned-char.cpp` | ICS-39 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/conversion-sequences/fixed-enumeration-promotion.cpp` | ICS-39 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/conversion-sequences/fixed-enumeration.cpp` | ICS-34 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/conversion-sequences/floating-before-rvalue-reference.cpp` | ICS-28 ICS-35 | accept | reject | accept | reject | skip | accept | reject | accept | accept | reject | reject | pass |
 | `foundations/conversion-sequences/floating-equal-rank.cpp` | ICS-35 | accept | reject | accept | accept | skip | accept | reject | accept | accept | reject | reject | pass |
+| `foundations/conversion-sequences/function-lvalue-reference-cast.cpp` | ICS-29 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/conversion-sequences/function-lvalue-reference.cpp` | ICS-29 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/conversion-sequences/implicit-object-standard-only.cpp` | ICS-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `foundations/conversion-sequences/initializer-list-over-kind.cpp` | ICS-22 | accept | reject | accept | accept | skip | accept | reject | accept | accept | reject | reject | pass |
+| `foundations/conversion-sequences/initializer-list-over-kind.cpp` | ICS-22 ICS-21 | accept | accept | reject | reject | skip | reject | accept | reject | reject | accept | accept | pass |
 | `foundations/conversion-sequences/initializer-list-over-rank.cpp` | ICS-22 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/conversion-sequences/initializer-list-reference.cpp` | ICS-22 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/conversion-sequences/initializer-list-target.cpp` | ICS-22 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -3502,6 +3798,7 @@ compilers affect the Status column.
 | `foundations/conversion-sequences/list-reference-direct.cpp` | ICS-20 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/conversion-sequences/list-reference-temporary.cpp` | ICS-20 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/conversion-sequences/list-reference.cpp` | ICS-20 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/list-scalar-pointer-and-pair.cpp` | ICS-15 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/conversion-sequences/list-scalar.cpp` | ICS-15 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/conversion-sequences/list-string-literal-binds-literal.cpp` | ICS-38 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/conversion-sequences/list-string-literal-bound.cpp` | ICS-38 ICS-46 | accept | reject | accept | accept | skip | accept | reject | accept | accept | reject | reject | pass |
@@ -3519,7 +3816,7 @@ compilers affect the Status column.
 | `foundations/conversion-sequences/overload-set-reference-or-pointer.cpp` | ICS-47 OVL-36 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/conversion-sequences/overload-set-to-ellipsis.cpp` | ICS-6 ICS-47 OVL-36 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/conversion-sequences/pointer-to-bool.cpp` | ICS-32 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `foundations/conversion-sequences/qualification-array-bound.cpp` | ICS-31 | accept | reject | accept | accept | skip | accept | reject | accept | accept | reject | reject | pass |
+| `foundations/conversion-sequences/qualification-array-bound.cpp` | ICS-31 | accept | accept | reject | reject | skip | reject | accept | reject | reject | accept | accept | pass |
 | `foundations/conversion-sequences/qualification-fewer.cpp` | ICS-31 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/conversion-sequences/qualification-reference-temporary.cpp` | ICS-31 | accept | accept | accept | reject | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/conversion-sequences/rank-before-reference.cpp` | ICS-27 ICS-28 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -3529,6 +3826,7 @@ compilers affect the Status column.
 | `foundations/conversion-sequences/reference-conversion-result.cpp` | ICS-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/conversion-sequences/reference-conversion-value-result.cpp` | ICS-11 ICS-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/conversion-sequences/reference-direct-derived.cpp` | ICS-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/reference-direct-fewer-qualifiers.cpp` | ICS-46 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/conversion-sequences/reference-function-rvalue.cpp` | ICS-12 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/conversion-sequences/reference-less-cv.cpp` | ICS-30 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/conversion-sequences/reference-no-sequence.cpp` | ICS-12 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -3540,22 +3838,28 @@ compilers affect the Status column.
 | `foundations/conversion-sequences/rvalue-reference-object-exception.cpp` | ICS-28 ICS-40 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/conversion-sequences/standard-three-steps.cpp` | ICS-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/conversion-sequences/standard-top-level-cv.cpp` | ICS-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/static-object-slot-derived.cpp` | ICS-14 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/conversion-sequences/static-object-slot.cpp` | ICS-14 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/conversion-sequences/subsequence-function-pointer.cpp` | ICS-26 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/conversion-sequences/subsequence-qualification.cpp` | ICS-26 ICS-31 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/template-conversion-exact-long.cpp` | ICS-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/conversion-sequences/template-conversion-exact.cpp` | ICS-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/conversion-sequences/tie-breaker-before-rvalue-reference.cpp` | ICS-28 ICS-32 ICS-33 ICS-36 | accept | accept | accept | reject | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/conversion-sequences/two-user-defined-function-then-constructor.cpp` | ICS-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/conversion-sequences/two-user-defined-none.cpp` | ICS-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/conversion-sequences/user-defined-candidates.cpp` | ICS-4 ICS-45 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/conversion-sequences/user-defined-choice-object-parameter.cpp` | ICS-7 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/conversion-sequences/user-defined-different-functions.cpp` | ICS-25 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/conversion-sequences/user-defined-explicit-reference-value.cpp` | ICS-45 | accept | reject | accept | accept | skip | accept | reject | accept | accept | reject | reject | pass |
+| `foundations/conversion-sequences/user-defined-explicit-reference-xvalue.cpp` | ICS-45 | accept | reject | accept | reject | skip | accept | reject | accept | accept | reject | reject | pass |
+| `foundations/conversion-sequences/user-defined-explicit-rvalue-reference-value.cpp` | ICS-45 | accept | accept | reject | reject | skip | reject | accept | reject | reject | accept | accept | pass |
 | `foundations/conversion-sequences/user-defined-explicit.cpp` | ICS-45 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/conversion-sequences/user-defined-first-part.cpp` | ICS-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/conversion-sequences/user-defined-same-aggregate.cpp` | ICS-25 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/conversion-sequences/user-defined-same-function.cpp` | ICS-25 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/conversion-sequences/user-defined-second-part.cpp` | ICS-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/conversion-sequences/user-defined-step-standard-only.cpp` | ICS-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/keywords/alternative-tokens-conditions.cpp` | KW-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/keywords/alternative-tokens.cpp` | KW-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/keywords/contextual-final-class.cpp` | KW-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/keywords/contextual-names.cpp` | KW-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -3652,6 +3956,7 @@ compilers affect the Status column.
 | `foundations/keywords/keyword-xor-eq.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/keywords/keyword-xor.cpp` | KW-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/keywords/reserved-double-underscore.cpp` | KW-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/keywords/reserved-names-functions.cpp` | KW-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/language-support/alignment-enumeration-class.cpp` | LSUP-5 | reject | accept | reject | reject | skip | reject | accept | reject | reject | accept | accept | pass |
 | `foundations/language-support/alignment-enumeration-not-declared.cpp` | LSUP-5 NEW-28 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/language-support/alignment-enumeration-self-declared.cpp` | LSUP-5 NEW-28 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
@@ -3659,7 +3964,7 @@ compilers affect the Status column.
 | `foundations/language-support/alignment-enumeration-with-enumerator.cpp` | LSUP-5 NEW-26 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/language-support/alignment-enumeration-wrong-underlying-type.cpp` | LSUP-5 | reject | accept | reject | reject | skip | reject | accept | reject | reject | accept | accept | pass |
 | `foundations/language-support/allocator-other-namespace-constant.cpp` | LSUP-11 NEW-37 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `foundations/language-support/allocator-self-declared-constant.cpp` | LSUP-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/language-support/allocator-self-declared-constant.cpp` | LSUP-11 CE-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/language-support/byte-self-declared.cpp` | LSUP-9 STG-4 STG-14 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/language-support/construct-at-other-namespace-constant.cpp` | NEW-37 LSUP-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/language-support/construct-at-self-declared.cpp` | LSUP-10 STG-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -3685,6 +3990,7 @@ compilers affect the Status column.
 | `foundations/language-support/ordering-rewritten-needs-relational-zero.cpp` | LSUP-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/language-support/placement-array-needs-array-form.cpp` | LSUP-7 NEW-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/language-support/placement-forms-self-declared.cpp` | LSUP-7 NEW-33 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `foundations/language-support/size-and-null-types-typedef.cpp` | LSUP-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/language-support/size-and-null-types.cpp` | LSUP-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/language-support/strong-ordering-minimal.cpp` | LSUP-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/language-support/strong-ordering-missing-member.cpp` | LSUP-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -3793,12 +4099,14 @@ compilers affect the Status column.
 | `foundations/names/directive-type-and-variable.cpp` | NAM-26 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/names/directive-unnamed-namespace-ambiguous.cpp` | NAM-23 NAM-24 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/names/enum-qualified-in-namespace.cpp` | NAM-19 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/names/enum-qualified-missing-unscoped.cpp` | NAM-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/names/enum-qualified-missing.cpp` | NAM-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/names/enum-qualified-scoped.cpp` | NAM-19 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/names/enum-qualified-unscoped.cpp` | NAM-19 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/names/function-not-later-global.cpp` | NAM-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/names/function-sees-earlier-globals.cpp` | NAM-1 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/names/hiding-ignores-kind.cpp` | NAM-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/names/hiding-variable-hides-type.cpp` | NAM-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/names/injected-base-clause.cpp` | NAM-33 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/names/injected-base-hides-namespace.cpp` | NAM-35 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/names/injected-base-name-not-outside.cpp` | NAM-36 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -3820,6 +4128,7 @@ compilers affect the Status column.
 | `foundations/names/injected-two-paths.cpp` | NAM-35 DER-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/names/inner-hides-outer.cpp` | NAM-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/names/label-and-variable-same-name.cpp` | NAM-7 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `foundations/names/label-duplicate-other-block.cpp` | NAM-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/names/label-duplicate.cpp` | NAM-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/names/label-scope-function.cpp` | NAM-7 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/names/member-access-lookup-kinds.cpp` | NAM-37 PFX-10 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
@@ -3827,6 +4136,7 @@ compilers affect the Status column.
 | `foundations/names/member-access-no-free-function.cpp` | NAM-37 PFX-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/names/member-access-type-member.cpp` | NAM-37 PFX-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/names/namespace-member-defined-outside.cpp` | NAM-4 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `foundations/names/namespace-qualified-call.cpp` | NAM-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/names/namespace-qualified-use.cpp` | NAM-9 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/names/namespace-reopened.cpp` | NAM-4 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/names/operator-lookup-block-hides.cpp` | NAM-38 OPR-15 OVL-7 OPR-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -3868,6 +4178,32 @@ compilers affect the Status column.
 | `foundations/names/redeclare-parameter-in-body.cpp` | NAM-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/names/redeclare-same-scope.cpp` | NAM-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/names/scope-ends-with-block.cpp` | NAM-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/names/shared-name-alias-template-variable.cpp` | NAM-42 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/names/shared-name-base-list.cpp` | NAM-40 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `foundations/names/shared-name-before-variable.cpp` | NAM-40 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `foundations/names/shared-name-class-alone-variable-first.cpp` | NAM-41 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/names/shared-name-class-alone.cpp` | NAM-41 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/names/shared-name-class-function.cpp` | NAM-39 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/names/shared-name-class-members.cpp` | NAM-39 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/names/shared-name-class-template-function.cpp` | NAM-42 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/names/shared-name-class-template-variable.cpp` | NAM-42 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/names/shared-name-class-variable-template.cpp` | NAM-42 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/names/shared-name-class-variable.cpp` | NAM-39 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/names/shared-name-enumeration-alone.cpp` | NAM-41 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/names/shared-name-enumeration.cpp` | NAM-39 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/names/shared-name-enumerator-class.cpp` | NAM-39 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/names/shared-name-function-call.cpp` | NAM-40 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `foundations/names/shared-name-in-class-not-class.cpp` | NAM-41 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/names/shared-name-inner-block.cpp` | NAM-41 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/names/shared-name-member-function-body.cpp` | NAM-40 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `foundations/names/shared-name-member-not-class.cpp` | NAM-41 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/names/shared-name-qualified-not-class.cpp` | NAM-41 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/names/shared-name-qualified.cpp` | NAM-40 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `foundations/names/shared-name-two-variables.cpp` | NAM-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/names/shared-name-using-declaration.cpp` | NAM-40 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `foundations/names/shared-name-variable-class-template.cpp` | NAM-42 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/names/shared-name-variable-found.cpp` | NAM-40 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/names/shared-name-variable-then-class.cpp` | NAM-39 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/names/use-before-declaration.cpp` | NAM-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/names/visible-from-declaration.cpp` | NAM-1 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/names/visible-in-own-initializer.cpp` | NAM-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -3875,7 +4211,7 @@ compilers affect the Status column.
 | `foundations/objects/array-elements-order.cpp` | OBJ-6 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/objects/block-reverse-order.cpp` | OBJ-3 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/objects/constant-evaluation-same-order.cpp` | OBJ-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `foundations/objects/construction-order.cpp` | OBJ-1 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `foundations/objects/construction-order.cpp` | OBJ-6 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/objects/deleted-object-read-constant.cpp` | OBJ-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/objects/distinct-objects-distinct-addresses.cpp` | OBJ-7 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/objects/dynamic-not-destroyed-without-delete.cpp` | OBJ-5 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
@@ -3884,7 +4220,7 @@ compilers affect the Status column.
 | `foundations/objects/function-static-first-use.cpp` | OBJ-4 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/objects/lifetime-begins-after-init.cpp` | OBJ-1 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/objects/loop-body-each-iteration.cpp` | OBJ-3 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
-| `foundations/objects/members-subobjects-end-after-body.cpp` | OBJ-1 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `foundations/objects/members-subobjects-end-after-body.cpp` | OBJ-6 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/objects/nested-block-ends-first.cpp` | OBJ-3 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/objects/read-after-block-ends-sanitizer.cpp` | OBJ-2 | run-fail | run-fail | run-fail | skip | skip | run-fail | run-fail | run-fail | run-fail | run-fail | run-fail | pass |
 | `foundations/objects/read-after-end-constant.cpp` | OBJ-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -3896,9 +4232,12 @@ compilers affect the Status column.
 | `foundations/objects/static-never-reached-not-constructed.cpp` | OBJ-4 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/objects/static-order.cpp` | OBJ-4 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/objects/storage-reuse-ends-old-object-constant.cpp` | OBJ-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/objects/storage-reuse-member-of-member-constant.cpp` | OBJ-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/objects/temporary-ends-with-full-expression.cpp` | OBJ-9 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `foundations/objects/temporary-member-access.cpp` | OBJ-9 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/objects/thread-local-init-point.cpp` | OBJ-11 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/objects/thread-local-main-thread.cpp` | OBJ-4 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `foundations/objects/thread-local-member-init-point.cpp` | OBJ-11 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/objects/unbraced-substatement-ends-object.cpp` | OBJ-3 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/objects/uninitialized-member-read-constant.cpp` | OBJ-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/objects/write-after-end-constant.cpp` | OBJ-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -3939,7 +4278,9 @@ compilers affect the Status column.
 | `foundations/odr/header-included-twice.cpp` | ODR-1 INC-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/odr/header-specializations-shared.cpp` | ODR-12 ODR-13 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/odr/header-variable-template-shared.cpp` | ODR-12 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `foundations/odr/include-missing-file-angle.cpp` | INC-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/odr/include-missing-file.cpp` | INC-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/odr/include-relative-to-own-directory.cpp` | INC-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/odr/include-replaces-line.cpp` | INC-1 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/odr/include-searches-own-directory.cpp` | INC-2 INC-1 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/odr/inline-same-tokens-different-meaning.cpp` | ODR-10 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
@@ -4031,7 +4372,8 @@ compilers affect the Status column.
 | `foundations/overload-resolution/call-through-address-parenthesized-qualified.cpp` | OVL-44 OVL-21 | reject | reject | reject | accept | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/overload-resolution/call-through-address-parenthesized-static.cpp` | OVL-44 OVL-21 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/overload-resolution/call-through-address-static-member.cpp` | OVL-21 | accept | accept | reject | reject | skip | reject | reject | reject | reject | accept | accept | pass |
-| `foundations/overload-resolution/call-through-address-unqualified.cpp` | OVL-44 OVL-21 | reject | accept | reject | accept | skip | reject | reject | reject | reject | accept | accept | pass |
+| `foundations/overload-resolution/call-through-address-unqualified-argument.cpp` | OVL-21 | accept | accept | reject | reject | skip | reject | accept | reject | reject | accept | accept | pass |
+| `foundations/overload-resolution/call-through-address-unqualified.cpp` | OVL-21 OVL-36 | reject | accept | reject | accept | skip | reject | reject | reject | reject | accept | accept | pass |
 | `foundations/overload-resolution/call-through-address.cpp` | OVL-21 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/overload-resolution/chosen-deleted.cpp` | DEL-1 OVL-37 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/overload-resolution/chosen-not-accessible.cpp` | ACC-3 OVL-37 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -4049,6 +4391,7 @@ compilers affect the Status column.
 | `foundations/overload-resolution/enum-operand-parameter.cpp` | OVL-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/overload-resolution/enum-operand-swapped.cpp` | OVL-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/overload-resolution/explicit-condition-after-deduction.cpp` | OVL-16 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/overload-resolution/explicit-condition-conversion-function.cpp` | OVL-16 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/overload-resolution/inherited-copy-shape-any-argument.cpp` | OVL-17 OVL-35 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/overload-resolution/inherited-copy-shape-default.cpp` | OVL-17 OVL-35 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/overload-resolution/inherited-copy-shape-excluded.cpp` | OVL-17 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -4067,6 +4410,7 @@ compilers affect the Status column.
 | `foundations/overload-resolution/no-object-static-default-ambiguous.cpp` | OVL-36 OVL-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/overload-resolution/no-viable-function.cpp` | OVL-35 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/overload-resolution/object-call-candidates.cpp` | OVL-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/overload-resolution/object-call-surrogate-reference.cpp` | OVL-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/overload-resolution/operator-call-by-name-hidden.cpp` | OVL-7 OVL-35 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/overload-resolution/operator-lookup-skips-members.cpp` | OVL-7 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/overload-resolution/operator-sets.cpp` | OVL-7 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -4079,6 +4423,7 @@ compilers affect the Status column.
 | `foundations/overload-resolution/reference-explicit-direct.cpp` | OVL-15 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/overload-resolution/reference-function-both-kinds.cpp` | OVL-15 | accept | reject | accept | accept | skip | accept | reject | accept | accept | reject | reject | pass |
 | `foundations/overload-resolution/rewritten-inner-no-rewrite.cpp` | OVL-43 OVL-35 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/overload-resolution/rewritten-inner-reversed-only.cpp` | OVL-43 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/overload-resolution/rewritten-not-equal-result.cpp` | OVL-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/overload-resolution/rewritten-swapped-member-object.cpp` | OVL-13 OVL-35 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/overload-resolution/rewritten-swapped-nonmember-converts.cpp` | OVL-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -4122,19 +4467,22 @@ compilers affect the Status column.
 | `foundations/overload-resolution/tie-written-order.cpp` | OVL-33 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/overload-resolution/tie-written-over-rewritten.cpp` | OVL-32 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/overload-resolution/user-deleted-move-candidate.cpp` | OVL-42 OVL-37 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/overload-resolution/viable-constraints-function-template.cpp` | OVL-24 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/overload-resolution/viable-constraints.cpp` | OVL-24 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/overload-resolution/viable-count-defaults-and-ellipsis.cpp` | OVL-22 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/overload-resolution/viable-count.cpp` | OVL-22 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/overload-resolution/viable-sequence.cpp` | OVL-23 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/storage/access-character-types.cpp` | STG-14 LSUP-9 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/storage/access-signed-char.cpp` | STG-23 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/storage/access-signed-counterpart-and-cv.cpp` | STG-14 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
-| `foundations/storage/access-unrelated-class.cpp` | STG-23 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `foundations/storage/access-unrelated-scalar.cpp` | STG-23 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/storage/access-unrelated-class-sanitizer.cpp` | STG-23 | run-fail | run-fail | skip | skip | skip | skip | skip | skip | skip | run-fail | run-fail | pass |
+| `foundations/storage/access-unrelated-scalar-sanitizer.cpp` | STG-23 | run-fail | run-fail | skip | skip | skip | skip | skip | skip | skip | run-fail | run-fail | pass |
 | `foundations/storage/allocated-storage-not-polymorphic-object-sanitizer.cpp` | STG-18 STG-22 | run-fail | run-fail | run-fail | skip | skip | run-fail | run-fail | run-fail | run-fail | run-fail | run-fail | pass |
 | `foundations/storage/allocation-array-class-elements-constant.cpp` | STG-28 LSUP-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/storage/allocation-array-class-elements.cpp` | STG-28 STG-5 STG-7 STG-8 STG-10 | run | run | run | skip | skip | run | run | run | run | run | run | pass |
 | `foundations/storage/allocation-array-unbuilt-element-constant.cpp` | OBJ-2 STG-28 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/storage/arena-reset-reuses-bytes.cpp` | STG-6 STG-5 STG-8 | run | run | run | skip | skip | run | run | run | run | run | run | pass |
+| `foundations/storage/array-bytes-consecutive.cpp` | STG-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/storage/array-size-exceeds-size-type.cpp` | STG-1 DCL-19 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/storage/assignment-by-destroy-and-construct.cpp` | STG-9 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/storage/base-bytes-shared-with-member.cpp` | STG-25 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
@@ -4148,6 +4496,7 @@ compilers affect the Status column.
 | `foundations/storage/byte-round-trip.cpp` | STG-12 STG-13 | run | run | run | skip | skip | run | run | run | run | run | run | pass |
 | `foundations/storage/cast-to-target-then-construct.cpp` | STG-16 STG-5 STG-29 | run | run | run | skip | skip | run | run | run | run | run | run | pass |
 | `foundations/storage/char-array-holds-object.cpp` | STG-4 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `foundations/storage/class-size-exceeds-size-type-ilp32.cpp` | STG-1 | reject | accept | reject | skip | reject | reject | accept | skip | skip | accept | accept | pass |
 | `foundations/storage/class-size-exceeds-size-type.cpp` | STG-1 | reject | reject | reject | reject | skip | reject | accept | reject | reject | reject | reject | pass |
 | `foundations/storage/downcast-after-end-sanitizer.cpp` | STG-22 | run-fail | run | run-fail | skip | skip | run-fail | run | run-fail | run-fail | run | run | pass |
 | `foundations/storage/empty-base-takes-no-bytes.cpp` | STG-3 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
@@ -4159,17 +4508,20 @@ compilers affect the Status column.
 | `foundations/storage/implicit-object-class-allocation-function.cpp` | STG-8 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/storage/implicit-object-first-use-member.cpp` | STG-8 | run | run | run | skip | skip | run | run | run | run | run | run | pass |
 | `foundations/storage/implicit-object-from-allocation-function.cpp` | STG-7 STG-8 | run | run | run | skip | skip | run | run | run | run | run | run | pass |
+| `foundations/storage/implicit-objects-array-new.cpp` | STG-24 | run | run | run | skip | skip | run | run | run | run | run | run | pass |
 | `foundations/storage/implicit-objects-follow-later-use.cpp` | STG-24 STG-8 | run | run | run | skip | skip | run | run | run | run | run | run | pass |
-| `foundations/storage/implicit-objects-no-set-works.cpp` | STG-18 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/storage/implicit-objects-no-set-sanitizer.cpp` | STG-18 | run-fail | run-fail | skip | skip | skip | skip | skip | skip | skip | run-fail | run-fail | pass |
 | `foundations/storage/integer-pointer-no-object-sanitizer.cpp` | UN-7 STG-15 | run-fail | run-fail | run-fail | skip | skip | run-fail | run-fail | run-fail | run-fail | run-fail | run-fail | pass |
 | `foundations/storage/interconvertible-chain.cpp` | STG-16 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/storage/interconvertible-standard-layout-base.cpp` | STG-16 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/storage/interconvertible-union-member.cpp` | STG-16 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `foundations/storage/invalid-pointer-copy-automatic.cpp` | STG-27 | run | run | run | skip | skip | run | run | run | run | run | run | pass |
 | `foundations/storage/invalid-pointer-copy.cpp` | STG-27 | run | run | run | skip | skip | run | run | run | run | run | run | pass |
 | `foundations/storage/keep-placement-new-pointer.cpp` | STG-5 | run | run | run | skip | skip | run | run | run | run | run | run | pass |
 | `foundations/storage/member-call-after-end-constant.cpp` | STG-22 DTOR-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/storage/member-call-before-construction-sanitizer.cpp` | STG-22 | run-fail | run-fail | run-fail | skip | skip | run-fail | run-fail | run-fail | run-fail | run-fail | run-fail | pass |
 | `foundations/storage/member-call-inactive-member-constant.cpp` | STG-22 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/storage/no-unique-address-member-shares-bytes.cpp` | STG-25 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/storage/object-bytes-cover-members.cpp` | STG-2 STG-13 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/storage/outside-lifetime-allowed-uses.cpp` | STG-10 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/storage/padding-bytes-not-in-value.cpp` | STG-11 STG-12 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
@@ -4181,6 +4533,7 @@ compilers affect the Status column.
 | `foundations/storage/pointer-bytes-are-address.cpp` | STG-26 CAST-16 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/storage/replace-array-element-constant.cpp` | STG-9 LSUP-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/storage/replace-base-ends-enclosing-sanitizer.cpp` | STG-19 STG-6 | run-fail | run-fail | run-fail | skip | skip | run-fail | run-fail | run-fail | run-fail | run-fail | run-fail | pass |
+| `foundations/storage/replace-base-old-pointer-constant.cpp` | STG-19 | reject | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/storage/replace-base-old-pointer.cpp` | STG-19 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/storage/replace-const-member-constant.cpp` | STG-9 LSUP-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/storage/replace-object-with-const-member.cpp` | STG-9 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
@@ -4188,13 +4541,16 @@ compilers affect the Status column.
 | `foundations/storage/replace-through-reference-constant.cpp` | STG-9 LSUP-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/storage/replace-variable-old-name.cpp` | STG-9 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/storage/replace-variable-then-scope-end.cpp` | STG-9 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `foundations/storage/reuse-const-automatic-object-constant.cpp` | STG-20 | reject | reject | accept | accept | skip | accept | accept | accept | accept | reject | reject | pass |
 | `foundations/storage/reuse-const-automatic-object.cpp` | STG-20 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/storage/reuse-const-static-object-sanitizer.cpp` | STG-20 | run-fail | run-fail | run-fail | skip | skip | run-fail | run-fail | run-fail | run-fail | run-fail | run-fail | pass |
 | `foundations/storage/reuse-does-not-call-destructor.cpp` | STG-6 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/storage/reuse-other-union-member-constant.cpp` | STG-19 LSUP-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/storage/scope-end-other-type-exception.cpp` | STG-21 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/storage/scope-end-other-type-sanitizer.cpp` | STG-21 | run-fail | run | run-fail | skip | skip | run-fail | run | run-fail | run-fail | run | run | pass |
 | `foundations/storage/std-byte-array-hosts-objects.cpp` | STG-4 STG-5 LSUP-9 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/translation/constant-evaluation-only-where-needed.cpp` | TR-5 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `foundations/translation/constant-evaluation-rejects-overflow.cpp` | TR-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/translation/constant-evaluation-rejects-ub.cpp` | TR-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/translation/constant-evaluation-same-function.cpp` | TR-5 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/translation/exit-status-kept-optimized.cpp` | TR-7 | run-fail | run-fail | run-fail | skip | skip | run-fail | run-fail | run-fail | run-fail | run-fail | run-fail | pass |
@@ -4205,6 +4561,32 @@ compilers affect the Status column.
 | `foundations/translation/if-consteval-selects.cpp` | TR-5 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/translation/ill-formed-diagnosed.cpp` | TR-1 CONV-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/translation/ill-formed-in-unused-function.cpp` | TR-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/translation/limit-array-exceeded-clang-lp64.cpp` | TR-14 | accept | reject | accept | accept | skip | accept | reject | accept | accept | reject | reject | pass |
+| `foundations/translation/limit-array-exceeded-gcc-ilp32.cpp` | TR-14 | accept | accept | reject | skip | accept | reject | accept | skip | skip | accept | accept | pass |
+| `foundations/translation/limit-array-exceeded-gcc-lp64.cpp` | TR-14 | reject | reject | reject | accept | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/translation/limit-array-largest-clang-lp64.cpp` | TR-14 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/translation/limit-array-largest-edg-lp64.cpp` | TR-14 | reject | reject | reject | accept | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/translation/limit-array-largest-gcc-ilp32.cpp` | TR-14 | accept | accept | accept | skip | accept | accept | accept | skip | skip | accept | accept | pass |
+| `foundations/translation/limit-array-largest-gcc-lp64.cpp` | TR-14 | accept | reject | accept | accept | skip | accept | reject | accept | accept | reject | reject | pass |
+| `foundations/translation/limit-array-largest-ilp32.cpp` | TR-14 | accept | accept | reject | skip | accept | reject | accept | skip | skip | accept | accept | pass |
+| `foundations/translation/limit-class-exceeded-clang-lp64.cpp` | TR-15 | accept | reject | accept | accept | skip | accept | accept | accept | accept | reject | reject | pass |
+| `foundations/translation/limit-class-exceeded-gcc-ilp32.cpp` | TR-15 | accept | accept | reject | skip | accept | reject | accept | skip | skip | accept | accept | pass |
+| `foundations/translation/limit-class-exceeded-gcc-lp64.cpp` | TR-15 | reject | reject | reject | accept | skip | reject | accept | reject | reject | reject | reject | pass |
+| `foundations/translation/limit-class-largest-clang-18-lp64.cpp` | TR-15 | accept | reject | accept | accept | skip | accept | accept | accept | accept | reject | reject | pass |
+| `foundations/translation/limit-class-largest-clang-lp64.cpp` | TR-15 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/translation/limit-class-largest-edg-lp64.cpp` | TR-15 | reject | reject | reject | accept | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/translation/limit-class-largest-gcc-ilp32.cpp` | TR-15 | accept | accept | accept | skip | accept | accept | accept | skip | skip | accept | accept | pass |
+| `foundations/translation/limit-class-largest-gcc-lp64.cpp` | TR-15 | accept | reject | accept | accept | skip | accept | reject | accept | accept | reject | reject | pass |
+| `foundations/translation/limit-class-largest-ilp32.cpp` | TR-15 | accept | accept | reject | skip | accept | reject | accept | skip | skip | accept | accept | pass |
+| `foundations/translation/limit-class-wrong-size-clang-18-lp64.cpp` | TR-15 | accept | reject | accept | accept | skip | accept | reject | accept | accept | reject | reject | pass |
+| `foundations/translation/limit-depth-crossed-ilp32.cpp` | TR-13 | reject | reject | reject | skip | reject | reject | reject | skip | skip | reject | reject | pass |
+| `foundations/translation/limit-depth-crossed.cpp` | TR-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/translation/limit-depth-edg-flag-lowered.cpp` | TR-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/translation/limit-depth-flag-lowered.cpp` | TR-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/translation/limit-depth-ilp32.cpp` | TR-13 | accept | accept | accept | skip | accept | accept | accept | skip | skip | accept | accept | pass |
+| `foundations/translation/limit-depth-one-template-100.cpp` | TR-13 | accept | accept | accept | reject | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/translation/limit-depth-two-templates-100.cpp` | TR-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/translation/limit-depth-two-templates-1000.cpp` | TR-13 | reject | accept | reject | reject | skip | reject | accept | reject | reject | accept | accept | pass |
 | `foundations/translation/main-address.cpp` | TR-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/translation/main-called.cpp` | TR-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/translation/main-exit-status.cpp` | TR-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
@@ -4233,9 +4615,11 @@ compilers affect the Status column.
 | `foundations/types/align-long-double-member-ilp32.cpp` | TYP-2 TYP-12 | accept | accept | accept | skip | accept | accept | accept | skip | skip | accept | accept | pass |
 | `foundations/types/align-lp64.cpp` | TYP-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/types/align-member-ilp32.cpp` | TYP-2 TYP-12 | accept | accept | accept | skip | reject | accept | accept | skip | skip | accept | accept | pass |
+| `foundations/types/bool-values-from-pointer-and-double.cpp` | TYP-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/types/bool-values.cpp` | TYP-11 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/types/char-signed-ilp32.cpp` | TYP-3 | accept | accept | accept | skip | accept | accept | accept | skip | skip | accept | accept | pass |
 | `foundations/types/char-signed.cpp` | TYP-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/types/char8-like-unsigned-char.cpp` | TYP-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/types/distinct-character-types.cpp` | TYP-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/types/distinct-same-size-ilp32.cpp` | TYP-5 | accept | accept | accept | skip | accept | accept | accept | skip | skip | accept | accept | pass |
 | `foundations/types/distinct-same-size.cpp` | TYP-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -4247,6 +4631,7 @@ compilers affect the Status column.
 | `foundations/types/integer-ranges-lp64.cpp` | TYP-4 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/types/long-double-precision-ilp32.cpp` | TYP-10 | accept | accept | accept | skip | accept | accept | accept | skip | skip | accept | accept | pass |
 | `foundations/types/long-double-precision.cpp` | TYP-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/types/rank-floating-more-operators.cpp` | TYP-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/types/rank-floating.cpp` | TYP-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/types/rank-long-unsigned-ilp32.cpp` | TYP-8 | accept | accept | accept | skip | accept | accept | accept | skip | skip | accept | accept | pass |
 | `foundations/types/rank-long-unsigned-lp64.cpp` | TYP-8 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -4297,6 +4682,8 @@ compilers affect the Status column.
 | `statements/blocks/disambiguation-declarator-forms.cpp` | STMT-6 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `statements/blocks/disambiguation-rest-not-declaration.cpp` | STMT-6 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `statements/blocks/empty-and-nested-blocks.cpp` | STMT-1 STMT-3 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `statements/blocks/enumeration-and-variable-same-name.cpp` | STMT-9 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `statements/blocks/enumeration-hidden-by-variable.cpp` | STMT-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `statements/blocks/expression-statement.cpp` | STMT-1 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `statements/blocks/label-at-end-of-block.cpp` | STMT-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `statements/blocks/label-before-declaration.cpp` | STMT-5 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
@@ -4310,6 +4697,7 @@ compilers affect the Status column.
 | `statements/blocks/statements-in-order.cpp` | STMT-3 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `statements/blocks/unused-value-warns.cpp` | STMT-4 | reject | reject | reject | skip | skip | reject | reject | reject | reject | reject | reject | pass |
 | `statements/blocks/void-cast-silences.cpp` | STMT-4 | accept | accept | accept | skip | skip | accept | accept | accept | accept | accept | accept | pass |
+| `statements/blocks/volatile-name-statement-reference.cpp` | STMT-7 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `statements/blocks/volatile-name-statement.cpp` | STMT-7 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `statements/if/basic-branches.cpp` | IF-1 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `statements/if/case-into-branch.cpp` | IF-12 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
@@ -4331,11 +4719,13 @@ compilers affect the Status column.
 | `statements/if/condition-declaration.cpp` | IF-5 IF-9 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `statements/if/condition-evaluated-once.cpp` | IF-1 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `statements/if/condition-not-convertible.cpp` | IF-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `statements/if/condition-scoped-enumeration.cpp` | IF-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `statements/if/condition-structured-binding.cpp` | IF-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `statements/if/consteval-branches.cpp` | IF-18 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `statements/if/consteval-else-requires-braces.cpp` | IF-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `statements/if/consteval-goto-into.cpp` | IF-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `statements/if/consteval-immediate-context.cpp` | IF-19 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `statements/if/consteval-immediate-else.cpp` | IF-24 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `statements/if/consteval-immediate-outside.cpp` | IF-24 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `statements/if/consteval-in-consteval.cpp` | IF-18 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `statements/if/consteval-local-initializers.cpp` | IF-25 IF-18 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
@@ -4343,6 +4733,7 @@ compilers affect the Status column.
 | `statements/if/consteval-no-condition.cpp` | IF-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `statements/if/consteval-plain-function.cpp` | IF-18 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `statements/if/consteval-requires-braces.cpp` | IF-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `statements/if/consteval-static-fallback.cpp` | IF-25 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `statements/if/constexpr-case-into.cpp` | IF-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `statements/if/constexpr-condition-explicit-bool.cpp` | IF-16 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `statements/if/constexpr-condition-narrowing.cpp` | IF-16 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -4355,10 +4746,15 @@ compilers affect the Status column.
 | `statements/if/constexpr-non-template-checked.cpp` | IF-23 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `statements/if/constexpr-non-template-no-definition.cpp` | IF-15 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `statements/if/constexpr-non-template-return-type.cpp` | IF-14 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `statements/if/constexpr-non-template-type-error.cpp` | IF-23 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `statements/if/constexpr-non-template-variable-no-definition.cpp` | IF-15 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `statements/if/constexpr-template-nondependent-call-checked.cpp` | IF-22 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `statements/if/constexpr-template-nondependent-checked.cpp` | IF-22 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `statements/if/constexpr-with-init.cpp` | IF-7 IF-16 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `statements/if/dangling-else-in-loop.cpp` | IF-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `statements/if/dangling-else.cpp` | IF-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `statements/if/else-if-scope.cpp` | IF-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `statements/if/else-substatement-scope.cpp` | IF-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `statements/if/goto-into-branch.cpp` | IF-12 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `statements/if/init-alias.cpp` | IF-7 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `statements/if/init-declaration-kinds.cpp` | IF-7 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -4369,6 +4765,7 @@ compilers affect the Status column.
 | `statements/if/init-static-assert.cpp` | IF-21 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `statements/if/init-using-declaration.cpp` | IF-21 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `statements/if/init-using-directive.cpp` | IF-21 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `statements/if/lifetimes-else-and-two-variables.cpp` | IF-11 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `statements/if/lifetimes.cpp` | IF-11 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `statements/if/not-consteval-else-immediate.cpp` | IF-19 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `statements/if/not-constexpr.cpp` | IF-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -4405,11 +4802,11 @@ compilers affect the Status column.
 | `statements/jumps/goto-past-class-object.cpp` | JMP-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `statements/jumps/goto-past-declaration-then-write.cpp` | JMP-16 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `statements/jumps/goto-past-initialization.cpp` | JMP-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `statements/jumps/goto-past-nontrivial-destructor.cpp` | JMP-6 | reject | reject | accept | reject | skip | accept | reject | accept | accept | reject | reject | pass |
+| `statements/jumps/goto-past-nontrivial-destructor.cpp` | JMP-6 | accept | reject | accept | reject | skip | accept | reject | accept | accept | reject | reject | pass |
 | `statements/jumps/goto-past-static.cpp` | JMP-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `statements/jumps/goto-past-trivial-class.cpp` | JMP-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `statements/jumps/goto-past-uninitialized-scalar.cpp` | JMP-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `statements/jumps/goto-skips-nontrivial-destructor.cpp` | JMP-6 | reject | reject | accept | reject | skip | accept | reject | accept | accept | reject | reject | pass |
+| `statements/jumps/goto-skips-nontrivial-destructor.cpp` | JMP-6 | accept | reject | accept | reject | skip | accept | reject | accept | accept | reject | reject | pass |
 | `statements/jumps/goto-undefined-label.cpp` | JMP-14 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `statements/jumps/label-function-scope.cpp` | JMP-5 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `statements/jumps/label-separate-names.cpp` | JMP-5 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
@@ -4424,6 +4821,7 @@ compilers affect the Status column.
 | `statements/jumps/return-parenthesized-move-only.cpp` | JMP-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `statements/jumps/return-rvalue-ref-param-as-rvalue-ref.cpp` | JMP-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `statements/jumps/return-static-local-move-only.cpp` | JMP-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `statements/jumps/return-value-before-destructors.cpp` | JMP-4 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `statements/jumps/return-value-in-void.cpp` | JMP-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `statements/jumps/return-void-expression.cpp` | JMP-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `statements/jumps/void-function-return-void-expression.cpp` | JMP-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -4431,9 +4829,12 @@ compilers affect the Status column.
 | `statements/loops/condition-not-bool.cpp` | LOOP-5 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `statements/loops/do-basic.cpp` | LOOP-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `statements/loops/do-body-name-not-in-condition.cpp` | LOOP-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `statements/loops/do-condition-declaration-bool.cpp` | LOOP-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `statements/loops/do-condition-declaration.cpp` | LOOP-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `statements/loops/do-continue-checks-condition.cpp` | LOOP-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `statements/loops/for-condition-declaration.cpp` | LOOP-4 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `statements/loops/for-condition-destroyed-after-step.cpp` | LOOP-3 | run | run | run | accept | skip | run-fail | run | run | run | run | run | pass |
+| `statements/loops/for-condition-scoped-enumeration.cpp` | LOOP-5 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `statements/loops/for-init-alias.cpp` | LOOP-4 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `statements/loops/for-init-destroyed-once.cpp` | LOOP-3 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `statements/loops/for-init-redeclare-body.cpp` | LOOP-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -4461,7 +4862,8 @@ compilers affect the Status column.
 | `statements/range-for/free-begin-end.cpp` | RFOR-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `statements/range-for/incomplete-element.cpp` | RFOR-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `statements/range-for/init-statement.cpp` | RFOR-3 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
-| `statements/range-for/loop-name-not-in-range.cpp` | RFOR-3 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `statements/range-for/loop-name-function-in-range.cpp` | RFOR-8 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `statements/range-for/loop-name-not-in-range.cpp` | RFOR-8 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `statements/range-for/member-begin-end.cpp` | RFOR-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `statements/range-for/member-begin-only-uses-free.cpp` | RFOR-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `statements/range-for/member-begin-only.cpp` | RFOR-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -4469,11 +4871,12 @@ compilers affect the Status column.
 | `statements/range-for/postfix-only-iterator.cpp` | RFOR-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `statements/range-for/range-evaluated-once.cpp` | RFOR-3 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `statements/range-for/range-held-by-reference.cpp` | RFOR-3 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `statements/range-for/redeclare-loop-variable-reference.cpp` | RFOR-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `statements/range-for/redeclare-loop-variable.cpp` | RFOR-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `statements/range-for/sentinel-end.cpp` | RFOR-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `statements/range-for/static-thread-local-declaration.cpp` | RFOR-5 | reject | reject | reject | reject | skip | accept | reject | reject | reject | reject | reject | pass |
 | `statements/range-for/storage-class.cpp` | RFOR-5 | reject | reject | reject | reject | skip | accept | reject | reject | reject | reject | reject | pass |
-| `statements/range-for/structured-binding.cpp` | RFOR-3 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `statements/range-for/structured-binding.cpp` | RFOR-1 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `statements/range-for/temporary-in-range-expression.cpp` | RFOR-4 | run | run | run | accept | skip | run-fail | run-fail | run | run | run | run | pass |
 | `statements/range-for/temporary-range-lives.cpp` | RFOR-4 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `statements/switch/block-holds-case-declaration.cpp` | SW-5 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
@@ -4487,7 +4890,7 @@ compilers affect the Status column.
 | `statements/switch/case-not-constant.cpp` | SW-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `statements/switch/case-out-of-char-range.cpp` | SW-3 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `statements/switch/case-outside-switch.cpp` | SW-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `statements/switch/case-skips-nontrivial-destructor.cpp` | SW-5 | reject | reject | accept | reject | skip | accept | reject | accept | accept | reject | reject | pass |
+| `statements/switch/case-skips-nontrivial-destructor.cpp` | SW-5 | accept | reject | accept | reject | skip | accept | reject | accept | accept | reject | reject | pass |
 | `statements/switch/case-skips-trivial-struct.cpp` | SW-5 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `statements/switch/case-value-not-enumerator-scoped-warns.cpp` | SW-8 | reject | reject | reject | skip | skip | reject | reject | reject | reject | reject | reject | pass |
 | `statements/switch/case-value-not-enumerator-warns.cpp` | SW-8 | reject | reject | reject | skip | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -4621,8 +5024,11 @@ compilers affect the Status column.
 | `templates/class-template-deduction/aggregate-pack-length-conflict.cpp` | CTAD-27 CTAD-9 CTAD-24 | reject | reject | accept | reject | skip | accept | reject | accept | accept | reject | reject | pass |
 | `templates/class-template-deduction/aggregate-pack-length-fewer.cpp` | CTAD-27 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/class-template-deduction/aggregate-pack-length-fixed.cpp` | CTAD-27 CTAD-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/class-template-deduction/aggregate-pack-length-parentheses.cpp` | CTAD-27 CTAD-9 | accept | accept | reject | accept | skip | reject | accept | reject | reject | accept | accept | pass |
+| `templates/class-template-deduction/aggregate-pack-length-position.cpp` | CTAD-27 CTAD-9 CTAD-24 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/class-template-deduction/aggregate-pack-not-last-element.cpp` | CTAD-27 CTAD-9 CTAD-24 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/class-template-deduction/aggregate-pack-not-last.cpp` | CTAD-27 CTAD-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/class-template-deduction/aggregate-pack-parentheses.cpp` | CTAD-27 CTAD-9 | accept | accept | reject | accept | skip | reject | accept | reject | reject | accept | accept | pass |
 | `templates/class-template-deduction/aggregate-string-element-type.cpp` | CTAD-9 CTAD-24 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/class-template-deduction/aggregate-string-fixed-array.cpp` | CTAD-9 | accept | accept | accept | reject | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/class-template-deduction/aggregate-too-many.cpp` | CTAD-10 CTAD-24 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -4773,6 +5179,8 @@ compilers affect the Status column.
 | `templates/concepts/placeholder-without-auto.cpp` | CPT-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/concepts/redefinition.cpp` | CPT-7 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/concepts/requirement-access-concept-in-member.cpp` | CPT-26 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/concepts/requirement-access-concept-kept-false.cpp` | CNS-10 CPT-26 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/concepts/requirement-access-concept-kept.cpp` | CNS-10 CPT-26 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/concepts/requirement-access-concept.cpp` | CPT-26 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/concepts/requirement-access-member.cpp` | CPT-26 | accept | accept | accept | accept | skip | reject | accept | accept | accept | accept | accept | pass |
 | `templates/concepts/requirement-body-empty.cpp` | CPT-34 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -4990,8 +5398,10 @@ compilers affect the Status column.
 | `templates/declarations/default-class-member-outside.cpp` | TPL-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/declarations/default-friend-class.cpp` | TPL-37 | reject | reject | accept | reject | skip | accept | reject | accept | accept | reject | reject | pass |
 | `templates/declarations/default-friend-declaration.cpp` | TPL-37 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/declarations/default-friend-declared-before.cpp` | TPL-38 | reject | accept | accept | reject | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/declarations/default-friend-definition.cpp` | TPL-38 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
-| `templates/declarations/default-friend-redeclared.cpp` | TPL-38 | accept | accept | accept | reject | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/declarations/default-friend-overloads.cpp` | TPL-38 TPL-22 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `templates/declarations/default-friend-redeclared.cpp` | TPL-38 | reject | accept | accept | reject | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/declarations/default-greater-parenthesized.cpp` | TPL-39 TPL-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/declarations/default-greater.cpp` | TPL-39 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/declarations/default-member-definition.cpp` | TPL-17 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -5036,7 +5446,9 @@ compilers affect the Status column.
 | `templates/declarations/pack-last-variable.cpp` | TPL-30 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/declarations/pack-last.cpp` | TPL-30 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/declarations/pack-then-deducible.cpp` | TPL-30 TPL-35 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
-| `templates/declarations/pack-then-not-deducible.cpp` | TPL-35 | accept | accept | accept | reject | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/declarations/pack-then-not-deducible.cpp` | TPL-35 | reject | accept | accept | reject | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/declarations/pack-then-pack-not-deducible.cpp` | TPL-35 | reject | accept | accept | reject | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/declarations/pack-then-typed-pack-not-deducible.cpp` | TPL-35 TPL-36 | reject | accept | accept | reject | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/declarations/pack-typed-by-enclosing-pack.cpp` | TPL-36 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/declarations/pack-typed-by-same-head.cpp` | TPL-36 TPL-30 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/declarations/parameter-class-template-name.cpp` | TPL-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -5161,6 +5573,7 @@ compilers affect the Status column.
 | `templates/deduction/placeholder-parameter-pointer-pack.cpp` | DED-34 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/deduction/placeholder-parameter.cpp` | DED-34 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/deduction/placement-deallocation-match.cpp` | DED-39 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `templates/deduction/placement-deallocation-ordered-instantiation.cpp` | DED-39 ORD-9 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/deduction/placement-deallocation-ordered.cpp` | DED-39 ORD-9 | run | run-fail | run | accept | skip | run | run-fail | run | run | run-fail | run-fail | pass |
 | `templates/deduction/specialization-distinct-functions.cpp` | DED-38 DED-24 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/deduction/specialization-distinct-unused-parameter.cpp` | DED-38 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -5199,6 +5612,7 @@ compilers affect the Status column.
 | `templates/dependent-names/current-instantiation-forms.cpp` | DEP-15 DEP-16 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `templates/dependent-names/current-instantiation-nested.cpp` | DEP-15 DEP-16 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `templates/dependent-names/current-instantiation-parameter-alias.cpp` | DEP-15 DEP-16 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `templates/dependent-names/current-instantiation-partial-alias.cpp` | DEP-15 DEP-16 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `templates/dependent-names/current-instantiation-partial.cpp` | DEP-15 DEP-16 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `templates/dependent-names/current-member-dependent-base-function.cpp` | DEP-18 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/dependent-names/current-member-dependent-base.cpp` | DEP-18 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
@@ -5243,6 +5657,7 @@ compilers affect the Status column.
 | `templates/dependent-names/other-specialization-needs-typename.cpp` | DEP-15 DEP-19 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/dependent-names/pack-always-empty-function-type.cpp` | DEP-33 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/dependent-names/pack-always-empty.cpp` | DEP-33 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `templates/dependent-names/parameter-position-variable-template.cpp` | DEP-29 DEP-19 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/dependent-names/partial-primary-form-needs-typename.cpp` | DEP-15 DEP-19 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/dependent-names/per-specialization-type.cpp` | DEP-7 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/dependent-names/per-specialization.cpp` | DEP-7 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
@@ -5254,6 +5669,7 @@ compilers affect the Status column.
 | `templates/dependent-names/template-keyword-destructor-dot.cpp` | DEP-34 | reject | reject | reject | accept | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/dependent-names/template-keyword-destructor.cpp` | DEP-34 | reject | reject | reject | accept | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/dependent-names/template-keyword-forms.cpp` | DEP-24 DEP-25 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `templates/dependent-names/template-keyword-in-declarator-class.cpp` | DEP-27 | reject | reject | reject | accept | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/dependent-names/template-keyword-in-declarator-static.cpp` | DEP-27 | reject | reject | accept | accept | skip | accept | reject | accept | accept | reject | reject | pass |
 | `templates/dependent-names/template-keyword-in-declarator.cpp` | DEP-27 | reject | reject | accept | accept | skip | accept | reject | accept | accept | reject | reject | pass |
 | `templates/dependent-names/template-keyword-needed-after-typename.cpp` | DEP-24 | reject | reject | accept | reject | skip | accept | reject | accept | accept | reject | reject | pass |
@@ -5263,6 +5679,7 @@ compilers affect the Status column.
 | `templates/dependent-names/template-keyword-needed-qualified.cpp` | DEP-24 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/dependent-names/template-keyword-needed-template-argument.cpp` | DEP-24 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/dependent-names/template-keyword-no-list-class.cpp` | DEP-26 | accept | reject | accept | accept | skip | accept | reject | accept | accept | reject | reject | pass |
+| `templates/dependent-names/template-keyword-no-list-static.cpp` | DEP-26 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/dependent-names/template-keyword-no-list.cpp` | DEP-26 | reject | reject | accept | reject | skip | accept | reject | accept | accept | reject | reject | pass |
 | `templates/dependent-names/template-keyword-not-template-unused.cpp` | DEP-26 DEP-28 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/dependent-names/template-keyword-not-template.cpp` | DEP-26 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -5284,7 +5701,7 @@ compilers affect the Status column.
 | `templates/dependent-names/typename-finds-value.cpp` | DEP-22 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/dependent-names/typename-needed-block.cpp` | DEP-19 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/dependent-names/typename-needed-expression.cpp` | DEP-19 | reject | reject | reject | accept | skip | reject | reject | reject | reject | reject | reject | pass |
-| `templates/dependent-names/typename-needed-parameter.cpp` | DEP-19 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/dependent-names/typename-needed-parameter.cpp` | DEP-29 DEP-19 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/dependent-names/typename-needed-template-argument.cpp` | DEP-19 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/dependent-names/typename-needed-using.cpp` | DEP-19 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/dependent-names/typename-needs-qualified-name.cpp` | DEP-21 DEP-29 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -5335,6 +5752,7 @@ compilers affect the Status column.
 | `templates/instantiation/default-member-initializer-used.cpp` | INST-10 INST-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/instantiation/explicit-after-member-specialization.cpp` | INST-18 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `templates/instantiation/explicit-after-specialization.cpp` | INST-18 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `templates/instantiation/explicit-array-bound-differs.cpp` | INST-22 | reject | reject | accept | accept | skip | accept | reject | accept | accept | reject | reject | pass |
 | `templates/instantiation/explicit-array-bound-left-out.cpp` | INST-22 | accept | reject | accept | accept | skip | accept | reject | accept | accept | reject | reject | pass |
 | `templates/instantiation/explicit-attribute-after.cpp` | INST-25 | reject | reject | accept | reject | skip | accept | reject | accept | accept | reject | reject | pass |
 | `templates/instantiation/explicit-attribute-before.cpp` | INST-25 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -5350,6 +5768,8 @@ compilers affect the Status column.
 | `templates/instantiation/explicit-declaration-constant-variable.cpp` | INST-27 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/instantiation/explicit-declaration-constant.cpp` | INST-27 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/instantiation/explicit-declaration-inline-still-made.cpp` | INST-27 INST-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/instantiation/explicit-declaration-internal-class.cpp` | INST-29 | reject | reject | accept | accept | skip | accept | reject | accept | accept | reject | reject | pass |
+| `templates/instantiation/explicit-declaration-internal-variable.cpp` | INST-29 | reject | reject | accept | accept | skip | accept | reject | accept | accept | reject | reject | pass |
 | `templates/instantiation/explicit-declaration-internal.cpp` | INST-29 | reject | reject | accept | reject | skip | accept | reject | accept | accept | reject | reject | pass |
 | `templates/instantiation/explicit-declaration-no-definition-inline.cpp` | INST-28 | link-fail | link-fail | link-fail | accept | skip | link-fail | link-fail | link-fail | run | link-fail | run | pass |
 | `templates/instantiation/explicit-declaration-no-definition-member.cpp` | INST-28 | link-fail | link-fail | link-fail | accept | skip | link-fail | link-fail | link-fail | link-fail | link-fail | link-fail | pass |
@@ -5385,9 +5805,12 @@ compilers affect the Status column.
 | `templates/instantiation/explicit-storage-class.cpp` | INST-25 | reject | reject | accept | reject | skip | accept | reject | accept | accept | reject | reject | pass |
 | `templates/instantiation/explicit-thread-local.cpp` | INST-25 | accept | accept | accept | reject | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/instantiation/explicit-two-declarators.cpp` | INST-23 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/instantiation/explicit-unqualified-outside-namespace-function.cpp` | INST-21 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/instantiation/explicit-unqualified-outside-namespace-variable.cpp` | INST-21 | reject | accept | reject | accept | skip | reject | accept | reject | reject | accept | accept | pass |
 | `templates/instantiation/explicit-unqualified-outside-namespace.cpp` | INST-21 | reject | reject | reject | accept | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/instantiation/explicit-variable-before-definition.cpp` | INST-20 | accept | accept | reject | accept | skip | reject | accept | reject | reject | accept | accept | pass |
 | `templates/instantiation/explicit-variable-not-defined.cpp` | INST-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/instantiation/explicit-variable-wrong-type.cpp` | INST-22 | reject | reject | accept | reject | skip | accept | reject | accept | accept | reject | reject | pass |
 | `templates/instantiation/explicit-wrong-type.cpp` | INST-22 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/instantiation/friend-defined-per-specialization.cpp` | INST-13 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `templates/instantiation/friend-defined-twice.cpp` | INST-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -5395,7 +5818,7 @@ compilers affect the Status column.
 | `templates/instantiation/function-called.cpp` | INST-7 INST-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/instantiation/function-deduced-return.cpp` | INST-7 INST-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/instantiation/function-point-better-later.cpp` | INST-32 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
-| `templates/instantiation/function-point-constant.cpp` | INST-31 INST-33 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/instantiation/function-point-constant.cpp` | INST-32 INST-31 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/instantiation/function-point-constexpr-later.cpp` | INST-32 INST-31 | run | reject | run | reject | skip | run | reject | run | reject | reject | reject | pass |
 | `templates/instantiation/function-point-end-of-unit.cpp` | INST-32 INST-31 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `templates/instantiation/function-point-sees-earlier.cpp` | INST-31 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
@@ -5413,10 +5836,10 @@ compilers affect the Status column.
 | `templates/instantiation/member-function-called.cpp` | INST-7 INST-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/instantiation/member-partial-specializations-collide.cpp` | INST-6 | reject | reject | accept | accept | skip | accept | reject | accept | accept | reject | reject | pass |
 | `templates/instantiation/points-in-two-units.cpp` | INST-32 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
-| `templates/instantiation/recursion-endless-function.cpp` | INST-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `templates/instantiation/recursion-endless.cpp` | INST-15 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
-| `templates/instantiation/recursion-function-within-limit.cpp` | INST-14 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
-| `templates/instantiation/recursion-within-limit.cpp` | INST-14 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/instantiation/recursion-endless-function.cpp` | INST-15 TR-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/instantiation/recursion-endless.cpp` | INST-15 TR-13 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/instantiation/recursion-function-within-limit.cpp` | TR-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `templates/instantiation/recursion-within-limit.cpp` | TR-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/instantiation/specialization-after-explicit-declaration.cpp` | INST-19 | reject | reject | reject | accept | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/instantiation/specialization-after-explicit-definition.cpp` | INST-19 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/instantiation/static-member-not-initialized.cpp` | INST-8 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
@@ -5627,7 +6050,7 @@ compilers affect the Status column.
 | `templates/specialization/variable-partial-two-parameters.cpp` | TSP-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/specialization/variable-partial.cpp` | TSP-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 
-5609/5609 tests pass on baseline compilers.
+6032/6032 tests pass on baseline compilers.
 
 ## Rejections
 
@@ -5652,6 +6075,15 @@ check that the rejection has the intended cause.
 - `classes/access/class-default-private.cpp` (gcc-16-o2): error: 'int C::v' is private within this context / note: declared private here
 - `classes/access/class-default-private.cpp` (clang-22): error: 'v' is a private member of 'C' / note: implicitly declared private here
 - `classes/access/class-default-private.cpp` (clang-22-o2): error: 'v' is a private member of 'C' / note: implicitly declared private here
+- `classes/access/enclosing-not-access-nested-function.cpp` (clang-host): error: 'make' is a private member of 'Outer::Inner' / note: implicitly declared private here
+- `classes/access/enclosing-not-access-nested-function.cpp` (gcc-host): error: ‘static int Outer::Inner::make()’ is private within this context / note: declared private here
+- `classes/access/enclosing-not-access-nested-function.cpp` (edg-7.0): error: function "Outer::Inner::make" (declared at line 9) is inaccessible
+- `classes/access/enclosing-not-access-nested-function.cpp` (gcc-14): error: 'static int Outer::Inner::make()' is private within this context / note: declared private here
+- `classes/access/enclosing-not-access-nested-function.cpp` (clang-18): error: 'make' is a private member of 'Outer::Inner' / note: implicitly declared private here
+- `classes/access/enclosing-not-access-nested-function.cpp` (gcc-16): error: 'static int Outer::Inner::make()' is private within this context / note: declared private here
+- `classes/access/enclosing-not-access-nested-function.cpp` (gcc-16-o2): error: 'static int Outer::Inner::make()' is private within this context / note: declared private here
+- `classes/access/enclosing-not-access-nested-function.cpp` (clang-22): error: 'make' is a private member of 'Outer::Inner' / note: implicitly declared private here
+- `classes/access/enclosing-not-access-nested-function.cpp` (clang-22-o2): error: 'make' is a private member of 'Outer::Inner' / note: implicitly declared private here
 - `classes/access/enclosing-not-access-nested.cpp` (clang-host): error: 'secret' is a private member of 'Outer::Inner' / note: implicitly declared private here
 - `classes/access/enclosing-not-access-nested.cpp` (gcc-host): error: ‘int Outer::Inner::secret’ is private within this context / note: declared private here
 - `classes/access/enclosing-not-access-nested.cpp` (edg-7.0): error: member "Outer::Inner::secret" (declared at line 7) is inaccessible
@@ -5697,6 +6129,15 @@ check that the rejection has the intended cause.
 - `classes/access/friend-private-member-of-other.cpp` (gcc-16-o2): error: 'void Other::hidden()' is private within this context / note: declared private here
 - `classes/access/friend-private-member-of-other.cpp` (clang-22): error: friend function 'hidden' is a private member of 'Other' / note: implicitly declared private here
 - `classes/access/friend-private-member-of-other.cpp` (clang-22-o2): error: friend function 'hidden' is a private member of 'Other' / note: implicitly declared private here
+- `classes/access/friend-protected-member-of-other.cpp` (clang-host): error: friend function 'hidden' is a protected member of 'Other' / note: declared protected here
+- `classes/access/friend-protected-member-of-other.cpp` (gcc-host): error: ‘void Other::hidden()’ is protected within this context / note: declared protected here
+- `classes/access/friend-protected-member-of-other.cpp` (edg-7.0): error: function "Other::hidden" (declared at line 9) is inaccessible
+- `classes/access/friend-protected-member-of-other.cpp` (gcc-14): error: 'void Other::hidden()' is protected within this context / note: declared protected here
+- `classes/access/friend-protected-member-of-other.cpp` (clang-18): error: friend function 'hidden' is a protected member of 'Other' / note: declared protected here
+- `classes/access/friend-protected-member-of-other.cpp` (gcc-16): error: 'void Other::hidden()' is protected within this context / note: declared protected here
+- `classes/access/friend-protected-member-of-other.cpp` (gcc-16-o2): error: 'void Other::hidden()' is protected within this context / note: declared protected here
+- `classes/access/friend-protected-member-of-other.cpp` (clang-22): error: friend function 'hidden' is a protected member of 'Other' / note: declared protected here
+- `classes/access/friend-protected-member-of-other.cpp` (clang-22-o2): error: friend function 'hidden' is a protected member of 'Other' / note: declared protected here
 - `classes/access/hidden-friend-block-declaration-scope.cpp` (clang-host): error: use of undeclared identifier 'make_seven'
 - `classes/access/hidden-friend-block-declaration-scope.cpp` (gcc-host): error: ‘make_seven’ was not declared in this scope
 - `classes/access/hidden-friend-block-declaration-scope.cpp` (edg-7.0): error: identifier "make_seven" is undefined
@@ -5747,6 +6188,15 @@ check that the rejection has the intended cause.
 - `classes/access/private-base-conversion.cpp` (gcc-16-o2): error: 'B' is an inaccessible base of 'D'
 - `classes/access/private-base-conversion.cpp` (clang-22): error: cannot cast 'D' to its private base class 'B' / note: implicitly declared private here
 - `classes/access/private-base-conversion.cpp` (clang-22-o2): error: cannot cast 'D' to its private base class 'B' / note: implicitly declared private here
+- `classes/access/private-base-function-in-derived.cpp` (clang-host): error: 'f' is a private member of 'A' / note: implicitly declared private here
+- `classes/access/private-base-function-in-derived.cpp` (gcc-host): error: ‘int A::f()’ is private within this context / note: declared private here / error: ‘int A::f()’ is private within this context / note: declared private here
+- `classes/access/private-base-function-in-derived.cpp` (edg-7.0): error: function "A::f" (declared at line 8) is inaccessible
+- `classes/access/private-base-function-in-derived.cpp` (gcc-14): error: 'int A::f()' is private within this context / note: declared private here / error: 'int A::f()' is private within this context / note: declared private here
+- `classes/access/private-base-function-in-derived.cpp` (clang-18): error: 'f' is a private member of 'A' / note: implicitly declared private here
+- `classes/access/private-base-function-in-derived.cpp` (gcc-16): error: 'int A::f()' is private within this context / note: declared private here / error: 'int A::f()' is private within this context / note: declared private here
+- `classes/access/private-base-function-in-derived.cpp` (gcc-16-o2): error: 'int A::f()' is private within this context / note: declared private here / error: 'int A::f()' is private within this context / note: declared private here
+- `classes/access/private-base-function-in-derived.cpp` (clang-22): error: 'f' is a private member of 'A' / note: implicitly declared private here
+- `classes/access/private-base-function-in-derived.cpp` (clang-22-o2): error: 'f' is a private member of 'A' / note: implicitly declared private here
 - `classes/access/private-base-name-in-derived.cpp` (clang-host): error: 'v' is a private member of 'A' / note: constrained by private inheritance here
 - `classes/access/private-base-name-in-derived.cpp` (gcc-host): error: ‘int A::v’ is private within this context / note: declared private here
 - `classes/access/private-base-name-in-derived.cpp` (edg-7.0): error: member "A::v" (declared at line 6) is inaccessible
@@ -5846,6 +6296,15 @@ check that the rejection has the intended cause.
 - `classes/access/template-call-selects-private.cpp` (gcc-16-o2): error: 'static int Meter::f(int)' is private within this context / note: declared private here
 - `classes/access/template-call-selects-private.cpp` (clang-22): error: 'f' is a private member of 'Meter' / note: in instantiation of function template specialization 'read<int>' requested here / note: implicitly declared private here
 - `classes/access/template-call-selects-private.cpp` (clang-22-o2): error: 'f' is a private member of 'Meter' / note: in instantiation of function template specialization 'read<int>' requested here / note: implicitly declared private here
+- `classes/access/using-private-base-function.cpp` (clang-host): error: 'f' is a private member of 'B' / note: implicitly declared private here
+- `classes/access/using-private-base-function.cpp` (gcc-host): error: ‘void B::f()’ is private within this context / note: declared private here
+- `classes/access/using-private-base-function.cpp` (edg-7.0): error: function "B::f" (declared at line 8) is inaccessible
+- `classes/access/using-private-base-function.cpp` (gcc-14): error: 'void B::f()' is private within this context / note: declared private here
+- `classes/access/using-private-base-function.cpp` (clang-18): error: 'f' is a private member of 'B' / note: implicitly declared private here
+- `classes/access/using-private-base-function.cpp` (gcc-16): error: 'void B::f()' is private within this context / note: declared private here
+- `classes/access/using-private-base-function.cpp` (gcc-16-o2): error: 'void B::f()' is private within this context / note: declared private here
+- `classes/access/using-private-base-function.cpp` (clang-22): error: 'f' is a private member of 'B' / note: implicitly declared private here
+- `classes/access/using-private-base-function.cpp` (clang-22-o2): error: 'f' is a private member of 'B' / note: implicitly declared private here
 - `classes/access/using-private-base-member.cpp` (clang-host): error: 'x' is a private member of 'B' / note: implicitly declared private here
 - `classes/access/using-private-base-member.cpp` (gcc-host): error: ‘int B::x’ is private within this context / note: declared private here
 - `classes/access/using-private-base-member.cpp` (edg-7.0): error: member "B::x" (declared at line 6) is inaccessible
@@ -6081,6 +6540,10 @@ check that the rejection has the intended cause.
 - `classes/comparisons/not-rewritten-for-eq-from-spaceship.cpp` (gcc-16-o2): error: no match for 'operator==' (operand types are 'S' and 'S')
 - `classes/comparisons/not-rewritten-for-eq-from-spaceship.cpp` (clang-22): error: invalid operands to binary expression ('S' and 'S')
 - `classes/comparisons/not-rewritten-for-eq-from-spaceship.cpp` (clang-22-o2): error: invalid operands to binary expression ('S' and 'S')
+- `classes/comparisons/out-of-class-reference-member-would-delete.cpp` (clang-host): error: defaulting this equality comparison operator would delete it after its first declaration / note: defaulted 'operator==' is implicitly deleted because class 'S' has a reference member
+- `classes/comparisons/out-of-class-reference-member-would-delete.cpp` (clang-18): error: defaulting this equality comparison operator would delete it after its first declaration / note: defaulted 'operator==' is implicitly deleted because class 'S' has a reference member
+- `classes/comparisons/out-of-class-reference-member-would-delete.cpp` (clang-22): error: defaulting this equality comparison operator would delete it after its first declaration / note: defaulted 'operator==' is implicitly deleted because class 'S' has a reference member
+- `classes/comparisons/out-of-class-reference-member-would-delete.cpp` (clang-22-o2): error: defaulting this equality comparison operator would delete it after its first declaration / note: defaulted 'operator==' is implicitly deleted because class 'S' has a reference member
 - `classes/comparisons/out-of-class-would-delete.cpp` (clang-host): error: defaulting this equality comparison operator would delete it after its first declaration / note: defaulted 'operator==' is implicitly deleted because there is no viable 'operator==' for member 'm'
 - `classes/comparisons/out-of-class-would-delete.cpp` (clang-18): error: defaulting this equality comparison operator would delete it after its first declaration / note: defaulted 'operator==' is implicitly deleted because there is no viable 'operator==' for member 'm'
 - `classes/comparisons/out-of-class-would-delete.cpp` (clang-22): error: defaulting this equality comparison operator would delete it after its first declaration / note: defaulted 'operator==' is implicitly deleted because there is no viable 'operator==' for member 'm'
@@ -6432,11 +6895,25 @@ check that the rejection has the intended cause.
 - `classes/constructors/defaulted-leaves-members.cpp` (gcc-16-o2): error: non-constant condition for static assertion / error: accessing uninitialized member 'S::v'
 - `classes/constructors/defaulted-leaves-members.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: read of uninitialized object is not allowed in a constant expression
 - `classes/constructors/defaulted-leaves-members.cpp` (clang-22-o2): error: static assertion expression is not an integral constant expression / note: read of uninitialized object is not allowed in a constant expression
+- `classes/constructors/delegating-cycle-three.cpp` (clang-host): error: constructor for 'S' creates a delegation cycle [-Wdelegating-ctor-cycles] / note: it delegates to / note: which delegates to / note: which delegates to
+- `classes/constructors/delegating-cycle-three.cpp` (edg-7.0): error: constructor delegates directly or indirectly to itself
+- `classes/constructors/delegating-cycle-three.cpp` (clang-18): error: constructor for 'S' creates a delegation cycle [-Wdelegating-ctor-cycles] / note: it delegates to / note: which delegates to / note: which delegates to
+- `classes/constructors/delegating-cycle-three.cpp` (clang-22): error: constructor for 'S' creates a delegation cycle [-Wdelegating-ctor-cycles] / note: it delegates to / note: which delegates to / note: which delegates to
+- `classes/constructors/delegating-cycle-three.cpp` (clang-22-o2): error: constructor for 'S' creates a delegation cycle [-Wdelegating-ctor-cycles] / note: it delegates to / note: which delegates to / note: which delegates to
 - `classes/constructors/delegating-cycle.cpp` (clang-host): error: constructor for 'S' creates a delegation cycle [-Wdelegating-ctor-cycles] / note: it delegates to / note: which delegates to
 - `classes/constructors/delegating-cycle.cpp` (edg-7.0): error: constructor delegates directly or indirectly to itself
 - `classes/constructors/delegating-cycle.cpp` (clang-18): error: constructor for 'S' creates a delegation cycle [-Wdelegating-ctor-cycles] / note: it delegates to / note: which delegates to
 - `classes/constructors/delegating-cycle.cpp` (clang-22): error: constructor for 'S' creates a delegation cycle [-Wdelegating-ctor-cycles] / note: it delegates to / note: which delegates to
 - `classes/constructors/delegating-cycle.cpp` (clang-22-o2): error: constructor for 'S' creates a delegation cycle [-Wdelegating-ctor-cycles] / note: it delegates to / note: which delegates to
+- `classes/constructors/delegating-self-with-argument.cpp` (clang-host): error: constructor for 'S' creates a delegation cycle [-Wdelegating-ctor-cycles]
+- `classes/constructors/delegating-self-with-argument.cpp` (gcc-host): error: constructor delegates to itself
+- `classes/constructors/delegating-self-with-argument.cpp` (edg-7.0): error: constructor delegates directly or indirectly to itself
+- `classes/constructors/delegating-self-with-argument.cpp` (gcc-14): error: constructor delegates to itself
+- `classes/constructors/delegating-self-with-argument.cpp` (clang-18): error: constructor for 'S' creates a delegation cycle [-Wdelegating-ctor-cycles]
+- `classes/constructors/delegating-self-with-argument.cpp` (gcc-16): error: constructor delegates to itself
+- `classes/constructors/delegating-self-with-argument.cpp` (gcc-16-o2): error: constructor delegates to itself
+- `classes/constructors/delegating-self-with-argument.cpp` (clang-22): error: constructor for 'S' creates a delegation cycle [-Wdelegating-ctor-cycles]
+- `classes/constructors/delegating-self-with-argument.cpp` (clang-22-o2): error: constructor for 'S' creates a delegation cycle [-Wdelegating-ctor-cycles]
 - `classes/constructors/delegating-self.cpp` (clang-host): error: constructor for 'S' creates a delegation cycle [-Wdelegating-ctor-cycles]
 - `classes/constructors/delegating-self.cpp` (gcc-host): error: constructor delegates to itself
 - `classes/constructors/delegating-self.cpp` (edg-7.0): error: constructor delegates directly or indirectly to itself
@@ -6446,6 +6923,15 @@ check that the rejection has the intended cause.
 - `classes/constructors/delegating-self.cpp` (gcc-16-o2): error: constructor delegates to itself
 - `classes/constructors/delegating-self.cpp` (clang-22): error: constructor for 'S' creates a delegation cycle [-Wdelegating-ctor-cycles]
 - `classes/constructors/delegating-self.cpp` (clang-22-o2): error: constructor for 'S' creates a delegation cycle [-Wdelegating-ctor-cycles]
+- `classes/constructors/delegating-with-base.cpp` (clang-host): error: an initializer for a delegating constructor must appear alone
+- `classes/constructors/delegating-with-base.cpp` (gcc-host): error: constructor delegation follows mem-initializer for ‘Base’
+- `classes/constructors/delegating-with-base.cpp` (edg-7.0): error: a delegating constructor cannot have other mem-initializers
+- `classes/constructors/delegating-with-base.cpp` (gcc-14): error: constructor delegation follows mem-initializer for 'Base'
+- `classes/constructors/delegating-with-base.cpp` (clang-18): error: an initializer for a delegating constructor must appear alone
+- `classes/constructors/delegating-with-base.cpp` (gcc-16): error: constructor delegation follows mem-initializer for 'Base'
+- `classes/constructors/delegating-with-base.cpp` (gcc-16-o2): error: constructor delegation follows mem-initializer for 'Base'
+- `classes/constructors/delegating-with-base.cpp` (clang-22): error: an initializer for a delegating constructor must appear alone
+- `classes/constructors/delegating-with-base.cpp` (clang-22-o2): error: an initializer for a delegating constructor must appear alone
 - `classes/constructors/delegating-with-member.cpp` (clang-host): error: an initializer for a delegating constructor must appear alone
 - `classes/constructors/delegating-with-member.cpp` (gcc-host): error: mem-initializer for ‘S::w’ follows constructor delegation
 - `classes/constructors/delegating-with-member.cpp` (edg-7.0): error: a delegating constructor cannot have other mem-initializers
@@ -6621,6 +7107,15 @@ check that the rejection has the intended cause.
 - `classes/constructors/deleted-dtor-variable.cpp` (gcc-16-o2): error: use of deleted function 'S::~S()'
 - `classes/constructors/deleted-dtor-variable.cpp` (clang-22): error: attempt to use a deleted function / note: '~S' has been explicitly marked deleted here
 - `classes/constructors/deleted-dtor-variable.cpp` (clang-22-o2): error: attempt to use a deleted function / note: '~S' has been explicitly marked deleted here
+- `classes/constructors/deleted-dtor-variant-member.cpp` (clang-host): error: attempt to use a deleted function / note: destructor of 'Holder' is implicitly deleted because field 'pinned' has a deleted destructor / note: '~Pinned' has been explicitly marked deleted here
+- `classes/constructors/deleted-dtor-variant-member.cpp` (gcc-host): error: use of deleted function ‘Holder::~Holder()’ / note: ‘Holder::~Holder()’ is implicitly deleted because the default definition would be ill-formed: / error: use of deleted function ‘Pinned::~Pinned()’
+- `classes/constructors/deleted-dtor-variant-member.cpp` (edg-7.0): error: function "Holder::~Holder() noexcept" (declared implicitly) cannot be referenced -- it is a deleted function
+- `classes/constructors/deleted-dtor-variant-member.cpp` (gcc-14): error: use of deleted function 'Holder::~Holder()' / note: 'Holder::~Holder()' is implicitly deleted because the default definition would be ill-formed: / error: use of deleted function 'Pinned::~Pinned()'
+- `classes/constructors/deleted-dtor-variant-member.cpp` (clang-18): error: attempt to use a deleted function / note: destructor of 'Holder' is implicitly deleted because field 'pinned' has a deleted destructor / note: '~Pinned' has been explicitly marked deleted here
+- `classes/constructors/deleted-dtor-variant-member.cpp` (gcc-16): error: use of deleted function 'Holder::~Holder()' / note: 'Holder::~Holder()' is implicitly deleted because the default definition would be ill-formed: / error: use of deleted function 'Pinned::~Pinned()'
+- `classes/constructors/deleted-dtor-variant-member.cpp` (gcc-16-o2): error: use of deleted function 'Holder::~Holder()' / note: 'Holder::~Holder()' is implicitly deleted because the default definition would be ill-formed: / error: use of deleted function 'Pinned::~Pinned()'
+- `classes/constructors/deleted-dtor-variant-member.cpp` (clang-22): error: attempt to use a deleted function / note: destructor of 'Holder' is implicitly deleted because field 'pinned' has a deleted destructor / note: '~Pinned' has been explicitly marked deleted here
+- `classes/constructors/deleted-dtor-variant-member.cpp` (clang-22-o2): error: attempt to use a deleted function / note: destructor of 'Holder' is implicitly deleted because field 'pinned' has a deleted destructor / note: '~Pinned' has been explicitly marked deleted here
 - `classes/constructors/double-destroy-constant.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: destroying object 's' whose lifetime has already ended
 - `classes/constructors/double-destroy-constant.cpp` (gcc-host): error: non-constant condition for static assertion / error: destroying ‘s’ outside its lifetime
 - `classes/constructors/double-destroy-constant.cpp` (gcc-14): error: non-constant condition for static assertion / error: destroying 's' outside its lifetime
@@ -6861,6 +7356,15 @@ check that the rejection has the intended cause.
 - `classes/constructors/init-order-warns.cpp` (gcc-16-o2): error: 'S::b' will be initialized after [-Werror=reorder] / error:   'int S::a' [-Werror=reorder] / error:   when initialized here [-Werror=reorder]
 - `classes/constructors/init-order-warns.cpp` (clang-22): error: field 'b' will be initialized after field 'a' [-Werror,-Wreorder-ctor]
 - `classes/constructors/init-order-warns.cpp` (clang-22-o2): error: field 'b' will be initialized after field 'a' [-Werror,-Wreorder-ctor]
+- `classes/constructors/mem-init-braces-narrowing-array.cpp` (clang-host): error: type 'double' cannot be narrowed to 'int' in initializer list [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
+- `classes/constructors/mem-init-braces-narrowing-array.cpp` (gcc-host): error: narrowing conversion of ‘d’ from ‘double’ to ‘int’ [-Wnarrowing]
+- `classes/constructors/mem-init-braces-narrowing-array.cpp` (edg-7.0): error: invalid narrowing conversion from "double" to "int"
+- `classes/constructors/mem-init-braces-narrowing-array.cpp` (gcc-14): error: narrowing conversion of 'd' from 'double' to 'int' [-Wnarrowing]
+- `classes/constructors/mem-init-braces-narrowing-array.cpp` (clang-18): error: type 'double' cannot be narrowed to 'int' in initializer list [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
+- `classes/constructors/mem-init-braces-narrowing-array.cpp` (gcc-16): error: narrowing conversion of 'd' from 'double' to 'int' [-Wnarrowing]
+- `classes/constructors/mem-init-braces-narrowing-array.cpp` (gcc-16-o2): error: narrowing conversion of 'd' from 'double' to 'int' [-Wnarrowing]
+- `classes/constructors/mem-init-braces-narrowing-array.cpp` (clang-22): error: type 'double' cannot be narrowed to 'int' in initializer list [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
+- `classes/constructors/mem-init-braces-narrowing-array.cpp` (clang-22-o2): error: type 'double' cannot be narrowed to 'int' in initializer list [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
 - `classes/constructors/mem-init-braces-narrowing.cpp` (clang-host): error: type 'double' cannot be narrowed to 'int' in initializer list [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
 - `classes/constructors/mem-init-braces-narrowing.cpp` (gcc-host): error: narrowing conversion of ‘d’ from ‘double’ to ‘int’ [-Wnarrowing]
 - `classes/constructors/mem-init-braces-narrowing.cpp` (edg-7.0): error: invalid narrowing conversion from "double" to "int"
@@ -6932,6 +7436,14 @@ check that the rejection has the intended cause.
 - `classes/constructors/nested-default-member-init-before-complete.cpp` (gcc-16-o2): error: could not convert '<brace-enclosed initializer list>()' from '<brace-enclosed initializer list>' to 'Outer::In'
 - `classes/constructors/nested-default-member-init-before-complete.cpp` (clang-22): error: default member initializer for 'v' needed within definition of enclosing class 'Outer' outside of member functions
 - `classes/constructors/nested-default-member-init-before-complete.cpp` (clang-22-o2): error: default member initializer for 'v' needed within definition of enclosing class 'Outer' outside of member functions
+- `classes/constructors/nested-default-member-init-read-in-default-argument.cpp` (clang-host): error: default member initializer for 'v' needed within definition of enclosing class 'Outer' outside of member functions
+- `classes/constructors/nested-default-member-init-read-in-default-argument.cpp` (gcc-host): error: default member initializer for ‘Outer::In::v’ required before the end of its enclosing class / note: defined here
+- `classes/constructors/nested-default-member-init-read-in-default-argument.cpp` (gcc-14): error: default member initializer for 'Outer::In::v' required before the end of its enclosing class / note: defined here
+- `classes/constructors/nested-default-member-init-read-in-default-argument.cpp` (clang-18): error: default member initializer for 'v' needed within definition of enclosing class 'Outer' outside of member functions
+- `classes/constructors/nested-default-member-init-read-in-default-argument.cpp` (gcc-16): error: default member initializer for 'Outer::In::v' required before the end of its enclosing class / note: defined here
+- `classes/constructors/nested-default-member-init-read-in-default-argument.cpp` (gcc-16-o2): error: default member initializer for 'Outer::In::v' required before the end of its enclosing class / note: defined here
+- `classes/constructors/nested-default-member-init-read-in-default-argument.cpp` (clang-22): error: default member initializer for 'v' needed within definition of enclosing class 'Outer' outside of member functions
+- `classes/constructors/nested-default-member-init-read-in-default-argument.cpp` (clang-22-o2): error: default member initializer for 'v' needed within definition of enclosing class 'Outer' outside of member functions
 - `classes/constructors/no-implicit-default-with-copy-ctor.cpp` (clang-host): error: no matching constructor for initialization of 'S' / note: candidate constructor not viable: requires 1 argument, but 0 were provided
 - `classes/constructors/no-implicit-default-with-copy-ctor.cpp` (gcc-host): error: no matching function for call to ‘S::S()’
 - `classes/constructors/no-implicit-default-with-copy-ctor.cpp` (edg-7.0): error: no default constructor exists for class "S"
@@ -6950,6 +7462,15 @@ check that the rejection has the intended cause.
 - `classes/constructors/no-implicit-default-with-ctor.cpp` (gcc-16-o2): error: no matching function for call to 'S::S()'
 - `classes/constructors/no-implicit-default-with-ctor.cpp` (clang-22): error: no matching constructor for initialization of 'S' / note: candidate constructor not viable: requires 1 argument, but 0 were provided / note: candidate constructor (the implicit copy constructor) not viable: requires 1 argument, but 0 were provided / note: candidate constructor (the implicit move constructor) not viable: requires 1 argument, but 0 were provided
 - `classes/constructors/no-implicit-default-with-ctor.cpp` (clang-22-o2): error: no matching constructor for initialization of 'S' / note: candidate constructor not viable: requires 1 argument, but 0 were provided / note: candidate constructor (the implicit copy constructor) not viable: requires 1 argument, but 0 were provided / note: candidate constructor (the implicit move constructor) not viable: requires 1 argument, but 0 were provided
+- `classes/constructors/one-user-conversion-copy-init.cpp` (clang-host): error: no viable conversion from 'const char[4]' to 'Person' / note: candidate constructor (the implicit copy constructor) not viable: no known conversion from 'const char[4]' to 'const Person &' for 1st argument / note: candidate constructor (the implicit move constructor) not viable: no known conversion from 'const char[4]' to 'Person &&' for 1st argument / note: candidate constructor not viable: no known conversion from 'const char[4]' to 'Name' for 1st argument
+- `classes/constructors/one-user-conversion-copy-init.cpp` (gcc-host): error: conversion from ‘const char [4]’ to non-scalar type ‘Person’ requested
+- `classes/constructors/one-user-conversion-copy-init.cpp` (edg-7.0): error: no suitable constructor exists to convert from "const char [4]" to "Person"
+- `classes/constructors/one-user-conversion-copy-init.cpp` (gcc-14): error: conversion from 'const char [4]' to non-scalar type 'Person' requested
+- `classes/constructors/one-user-conversion-copy-init.cpp` (clang-18): error: no viable conversion from 'const char[4]' to 'Person' / note: candidate constructor (the implicit copy constructor) not viable: no known conversion from 'const char[4]' to 'const Person &' for 1st argument / note: candidate constructor (the implicit move constructor) not viable: no known conversion from 'const char[4]' to 'Person &&' for 1st argument / note: candidate constructor not viable: no known conversion from 'const char[4]' to 'Name' for 1st argument
+- `classes/constructors/one-user-conversion-copy-init.cpp` (gcc-16): error: conversion from 'const char [4]' to non-scalar type 'Person' requested
+- `classes/constructors/one-user-conversion-copy-init.cpp` (gcc-16-o2): error: conversion from 'const char [4]' to non-scalar type 'Person' requested
+- `classes/constructors/one-user-conversion-copy-init.cpp` (clang-22): error: no viable conversion from 'const char[4]' to 'Person' / note: candidate constructor (the implicit copy constructor) not viable: no known conversion from 'const char[4]' to 'const Person &' for 1st argument / note: candidate constructor (the implicit move constructor) not viable: no known conversion from 'const char[4]' to 'Person &&' for 1st argument / note: candidate constructor not viable: no known conversion from 'const char[4]' to 'Name' for 1st argument
+- `classes/constructors/one-user-conversion-copy-init.cpp` (clang-22-o2): error: no viable conversion from 'const char[4]' to 'Person' / note: candidate constructor (the implicit copy constructor) not viable: no known conversion from 'const char[4]' to 'const Person &' for 1st argument / note: candidate constructor (the implicit move constructor) not viable: no known conversion from 'const char[4]' to 'Person &&' for 1st argument / note: candidate constructor not viable: no known conversion from 'const char[4]' to 'Name' for 1st argument
 - `classes/constructors/one-user-conversion.cpp` (clang-host): error: no matching function for call to 'take' / note: candidate function not viable: no known conversion from 'int' to 'B' for 1st argument
 - `classes/constructors/one-user-conversion.cpp` (gcc-host): error: could not convert ‘1’ from ‘int’ to ‘B’
 - `classes/constructors/one-user-conversion.cpp` (edg-7.0): error: no suitable constructor exists to convert from "int" to "B"
@@ -6998,6 +7519,10 @@ check that the rejection has the intended cause.
 - `classes/constructors/reference-default-member-binds-temporary.cpp` (clang-18): error: reference member 'r' binds to a temporary object whose lifetime would be shorter than the lifetime of the constructed object / note: in implicit default constructor for 'S' first required here / note: initializing field 'r' with default member initializer
 - `classes/constructors/reference-default-member-binds-temporary.cpp` (clang-22): error: reference member 'r' binds to a temporary object whose lifetime would be shorter than the lifetime of the constructed object / note: in implicit default constructor for 'S' first required here / note: initializing field 'r' with default member initializer
 - `classes/constructors/reference-default-member-binds-temporary.cpp` (clang-22-o2): error: reference member 'r' binds to a temporary object whose lifetime would be shorter than the lifetime of the constructed object / note: in implicit default constructor for 'S' first required here / note: initializing field 'r' with default member initializer
+- `classes/constructors/reference-member-binds-converted-parameter.cpp` (clang-host): error: reference member 'r' binds to a temporary object whose lifetime would be shorter than the lifetime of the constructed object
+- `classes/constructors/reference-member-binds-converted-parameter.cpp` (clang-18): error: reference member 'r' binds to a temporary object whose lifetime would be shorter than the lifetime of the constructed object
+- `classes/constructors/reference-member-binds-converted-parameter.cpp` (clang-22): error: reference member 'r' binds to a temporary object whose lifetime would be shorter than the lifetime of the constructed object
+- `classes/constructors/reference-member-binds-converted-parameter.cpp` (clang-22-o2): error: reference member 'r' binds to a temporary object whose lifetime would be shorter than the lifetime of the constructed object
 - `classes/constructors/reference-member-binds-temporary.cpp` (clang-host): error: reference member 'r' binds to a temporary object whose lifetime would be shorter than the lifetime of the constructed object
 - `classes/constructors/reference-member-binds-temporary.cpp` (clang-18): error: reference member 'r' binds to a temporary object whose lifetime would be shorter than the lifetime of the constructed object
 - `classes/constructors/reference-member-binds-temporary.cpp` (clang-22): error: reference member 'r' binds to a temporary object whose lifetime would be shorter than the lifetime of the constructed object
@@ -7119,6 +7644,15 @@ check that the rejection has the intended cause.
 - `classes/conversion-functions/ambiguous-two-functions.cpp` (gcc-16-o2): error: conversion from 'S' to 'double' is ambiguous
 - `classes/conversion-functions/ambiguous-two-functions.cpp` (clang-22): error: conversion from 'S' to 'double' is ambiguous / note: candidate function / note: candidate function
 - `classes/conversion-functions/ambiguous-two-functions.cpp` (clang-22-o2): error: conversion from 'S' to 'double' is ambiguous / note: candidate function / note: candidate function
+- `classes/conversion-functions/const-object-explicit-cast.cpp` (clang-host): error: cannot cast from type 'const S' to pointer type 'int *'
+- `classes/conversion-functions/const-object-explicit-cast.cpp` (gcc-host): error: invalid ‘static_cast’ from type ‘const S’ to type ‘int*’
+- `classes/conversion-functions/const-object-explicit-cast.cpp` (edg-7.0): error: no suitable conversion function from "const S" to "int *" exists
+- `classes/conversion-functions/const-object-explicit-cast.cpp` (gcc-14): error: invalid 'static_cast' from type 'const S' to type 'int*'
+- `classes/conversion-functions/const-object-explicit-cast.cpp` (clang-18): error: cannot cast from type 'const S' to pointer type 'int *'
+- `classes/conversion-functions/const-object-explicit-cast.cpp` (gcc-16): error: invalid 'static_cast' from type 'const S' to type 'int*'
+- `classes/conversion-functions/const-object-explicit-cast.cpp` (gcc-16-o2): error: invalid 'static_cast' from type 'const S' to type 'int*'
+- `classes/conversion-functions/const-object-explicit-cast.cpp` (clang-22): error: cannot cast from type 'const S' to pointer type 'int *'
+- `classes/conversion-functions/const-object-explicit-cast.cpp` (clang-22-o2): error: cannot cast from type 'const S' to pointer type 'int *'
 - `classes/conversion-functions/const-qualified-needed.cpp` (clang-host): error: no viable conversion from returned value of type 'const S' to function return type 'int' / note: candidate function not viable: 'this' argument has type 'const S', but method is not marked const
 - `classes/conversion-functions/const-qualified-needed.cpp` (gcc-host): error: passing ‘const S’ as ‘this’ argument discards qualifiers [-fpermissive]
 - `classes/conversion-functions/const-qualified-needed.cpp` (edg-7.0): error: no suitable conversion function from "const S" to "int" exists
@@ -7685,6 +8219,15 @@ check that the rejection has the intended cause.
 - `classes/copy-move/trivial-assign-user-provided.cpp` (gcc-16-o2): error: use of deleted function 'Slot& Slot::operator=(const Slot&)' / note: 'Slot& Slot::operator=(const Slot&)' is implicitly deleted because the default definition would be ill-formed: / error: union member 'Slot::item' with non-trivial 'Item& Item::operator=(const Item&)' / note: use '-fdiagnostics-all-candidates' to display considered candidates
 - `classes/copy-move/trivial-assign-user-provided.cpp` (clang-22): error: object of type 'Slot' cannot be assigned because its copy assignment operator is implicitly deleted / note: copy assignment operator of 'Slot' is implicitly deleted because variant field 'item' has a non-trivial copy assignment operator
 - `classes/copy-move/trivial-assign-user-provided.cpp` (clang-22-o2): error: object of type 'Slot' cannot be assigned because its copy assignment operator is implicitly deleted / note: copy assignment operator of 'Slot' is implicitly deleted because variant field 'item' has a non-trivial copy assignment operator
+- `classes/copy-move/trivial-copy-array-member-nontrivial.cpp` (clang-host): error: call to implicitly-deleted copy constructor of 'Slot' / note: copy constructor of 'Slot' is implicitly deleted because variant field 'item' has a non-trivial copy constructor
+- `classes/copy-move/trivial-copy-array-member-nontrivial.cpp` (gcc-host): error: use of deleted function ‘Slot::Slot(const Slot&)’ / note: ‘Slot::Slot(const Slot&)’ is implicitly deleted because the default definition would be ill-formed: / error: union member ‘Slot::item’ with non-trivial ‘Item::Item(const Item&)’ / note: use ‘-fdiagnostics-all-candidates’ to display considered candidates
+- `classes/copy-move/trivial-copy-array-member-nontrivial.cpp` (edg-7.0): error: function "Slot::Slot(const Slot &)" (declared implicitly) cannot be referenced -- it is a deleted function
+- `classes/copy-move/trivial-copy-array-member-nontrivial.cpp` (gcc-14): error: use of deleted function 'Slot::Slot(const Slot&)' / note: 'Slot::Slot(const Slot&)' is implicitly deleted because the default definition would be ill-formed: / error: union member 'Slot::item' with non-trivial 'Item::Item(const Item&)' / note: use '-fdiagnostics-all-candidates' to display considered candidates
+- `classes/copy-move/trivial-copy-array-member-nontrivial.cpp` (clang-18): error: call to implicitly-deleted copy constructor of 'Slot' / note: copy constructor of 'Slot' is implicitly deleted because variant field 'item' has a non-trivial copy constructor
+- `classes/copy-move/trivial-copy-array-member-nontrivial.cpp` (gcc-16): error: use of deleted function 'Slot::Slot(const Slot&)' / note: 'Slot::Slot(const Slot&)' is implicitly deleted because the default definition would be ill-formed: / error: union member 'Slot::item' with non-trivial 'Item::Item(const Item&)' / note: use '-fdiagnostics-all-candidates' to display considered candidates
+- `classes/copy-move/trivial-copy-array-member-nontrivial.cpp` (gcc-16-o2): error: use of deleted function 'Slot::Slot(const Slot&)' / note: 'Slot::Slot(const Slot&)' is implicitly deleted because the default definition would be ill-formed: / error: union member 'Slot::item' with non-trivial 'Item::Item(const Item&)' / note: use '-fdiagnostics-all-candidates' to display considered candidates
+- `classes/copy-move/trivial-copy-array-member-nontrivial.cpp` (clang-22): error: call to implicitly-deleted copy constructor of 'Slot' / note: copy constructor of 'Slot' is implicitly deleted because variant field 'item' has a non-trivial copy constructor
+- `classes/copy-move/trivial-copy-array-member-nontrivial.cpp` (clang-22-o2): error: call to implicitly-deleted copy constructor of 'Slot' / note: copy constructor of 'Slot' is implicitly deleted because variant field 'item' has a non-trivial copy constructor
 - `classes/copy-move/trivial-copy-member-nontrivial.cpp` (clang-host): error: call to implicitly-deleted copy constructor of 'Slot' / note: copy constructor of 'Slot' is implicitly deleted because variant field 'item' has a non-trivial copy constructor
 - `classes/copy-move/trivial-copy-member-nontrivial.cpp` (gcc-host): error: use of deleted function ‘Slot::Slot(const Slot&)’ / note: ‘Slot::Slot(const Slot&)’ is implicitly deleted because the default definition would be ill-formed: / error: union member ‘Slot::item’ with non-trivial ‘Item::Item(const Item&)’ / note: use ‘-fdiagnostics-all-candidates’ to display considered candidates
 - `classes/copy-move/trivial-copy-member-nontrivial.cpp` (edg-7.0): error: function "Slot::Slot(const Slot &)" (declared implicitly) cannot be referenced -- it is a deleted function
@@ -7730,6 +8273,19 @@ check that the rejection has the intended cause.
 - `classes/copy-move/trivial-move-user-provided.cpp` (gcc-16-o2): error: use of deleted function 'Slot::Slot(Slot&&)' / note: 'Slot::Slot(Slot&&)' is implicitly deleted because the default definition would be ill-formed: / error: union member 'Slot::item' with non-trivial 'Item::Item(Item&&)' / note: use '-fdiagnostics-all-candidates' to display considered candidates
 - `classes/copy-move/trivial-move-user-provided.cpp` (clang-22): error: call to implicitly-deleted copy constructor of 'Slot' / note: copy constructor of 'Slot' is implicitly deleted because field 'item' has a deleted copy constructor / note: copy constructor is implicitly deleted because 'Item' has a user-declared move constructor
 - `classes/copy-move/trivial-move-user-provided.cpp` (clang-22-o2): error: call to implicitly-deleted copy constructor of 'Slot' / note: copy constructor of 'Slot' is implicitly deleted because field 'item' has a deleted copy constructor / note: copy constructor is implicitly deleted because 'Item' has a user-declared move constructor
+- `classes/copy-move/trivially-copyable-member-selected.cpp` (gcc-host): error: use of deleted function ‘Wrap<Holder>::Wrap(const Wrap<Holder>&)’ / note: ‘Wrap<Holder>::Wrap(const Wrap<Holder>&)’ is implicitly deleted because the default definition would be ill-formed: / error: union member ‘Wrap<Holder>::x’ with non-trivial ‘constexpr Holder::Holder(const Holder&)’ / note: use ‘-fdiagnostics-all-candidates’ to display considered candidates
+- `classes/copy-move/trivially-copyable-member-selected.cpp` (edg-7.0): error: function "Wrap<T>::Wrap(const Wrap<Holder> &) noexcept [with T=Holder]" (declared implicitly) cannot be referenced -- it is a deleted function
+- `classes/copy-move/trivially-copyable-member-selected.cpp` (gcc-14): error: use of deleted function 'Wrap<Holder>::Wrap(const Wrap<Holder>&)' / note: 'Wrap<Holder>::Wrap(const Wrap<Holder>&)' is implicitly deleted because the default definition would be ill-formed: / error: union member 'Wrap<Holder>::x' with non-trivial 'constexpr Holder::Holder(const Holder&)' / note: use '-fdiagnostics-all-candidates' to display considered candidates
+- `classes/copy-move/trivially-copyable-member-selected.cpp` (gcc-16): error: use of deleted function 'Wrap<Holder>::Wrap(const Wrap<Holder>&)' / note: 'Wrap<Holder>::Wrap(const Wrap<Holder>&)' is implicitly deleted because the default definition would be ill-formed: / error: union member 'Wrap<Holder>::x' with non-trivial 'constexpr Holder::Holder(const Holder&)' / note: use '-fdiagnostics-all-candidates' to display considered candidates
+- `classes/copy-move/trivially-copyable-member-selected.cpp` (gcc-16-o2): error: use of deleted function 'Wrap<Holder>::Wrap(const Wrap<Holder>&)' / note: 'Wrap<Holder>::Wrap(const Wrap<Holder>&)' is implicitly deleted because the default definition would be ill-formed: / error: union member 'Wrap<Holder>::x' with non-trivial 'constexpr Holder::Holder(const Holder&)' / note: use '-fdiagnostics-all-candidates' to display considered candidates
+- `classes/copy-move/trivially-copyable-member-template-selected.cpp` (clang-host): error: call to implicitly-deleted copy constructor of 'Wrap<Pair>' / note: copy constructor of 'Wrap<Pair>' is implicitly deleted because variant field 'x' has a non-trivial copy constructor
+- `classes/copy-move/trivially-copyable-member-template-selected.cpp` (gcc-host): error: use of deleted function ‘Wrap<Pair>::Wrap(Wrap<Pair>&)’ / note: ‘Wrap<Pair>::Wrap(Wrap<Pair>&)’ is implicitly deleted because the default definition would be ill-formed: / error: union member ‘Wrap<Pair>::x’ with non-trivial ‘Pair::Pair(Pair&)’ / note: use ‘-fdiagnostics-all-candidates’ to display considered candidates
+- `classes/copy-move/trivially-copyable-member-template-selected.cpp` (gcc-14): error: use of deleted function 'Wrap<Pair>::Wrap(Wrap<Pair>&)' / note: 'Wrap<Pair>::Wrap(Wrap<Pair>&)' is implicitly deleted because the default definition would be ill-formed: / error: union member 'Wrap<Pair>::x' with non-trivial 'Pair::Pair(Pair&)' / note: use '-fdiagnostics-all-candidates' to display considered candidates
+- `classes/copy-move/trivially-copyable-member-template-selected.cpp` (clang-18): error: call to implicitly-deleted copy constructor of 'Wrap<Pair>' / note: copy constructor of 'Wrap<Pair>' is implicitly deleted because variant field 'x' has a non-trivial copy constructor
+- `classes/copy-move/trivially-copyable-member-template-selected.cpp` (gcc-16): error: use of deleted function 'Wrap<Pair>::Wrap(Wrap<Pair>&)' / note: 'Wrap<Pair>::Wrap(Wrap<Pair>&)' is implicitly deleted because the default definition would be ill-formed: / error: union member 'Wrap<Pair>::x' with non-trivial 'Pair::Pair(Pair&)' / note: use '-fdiagnostics-all-candidates' to display considered candidates
+- `classes/copy-move/trivially-copyable-member-template-selected.cpp` (gcc-16-o2): error: use of deleted function 'Wrap<Pair>::Wrap(Wrap<Pair>&)' / note: 'Wrap<Pair>::Wrap(Wrap<Pair>&)' is implicitly deleted because the default definition would be ill-formed: / error: union member 'Wrap<Pair>::x' with non-trivial 'Pair::Pair(Pair&)' / note: use '-fdiagnostics-all-candidates' to display considered candidates
+- `classes/copy-move/trivially-copyable-member-template-selected.cpp` (clang-22): error: call to implicitly-deleted copy constructor of 'Wrap<Pair>' / note: copy constructor of 'Wrap<Pair>' is implicitly deleted because variant field 'x' has a non-trivial copy constructor
+- `classes/copy-move/trivially-copyable-member-template-selected.cpp` (clang-22-o2): error: call to implicitly-deleted copy constructor of 'Wrap<Pair>' / note: copy constructor of 'Wrap<Pair>' is implicitly deleted because variant field 'x' has a non-trivial copy constructor
 - `classes/derived/ambiguous-base-conversion.cpp` (clang-host): error: ambiguous conversion from derived class 'D' to base class 'A':
 - `classes/derived/ambiguous-base-conversion.cpp` (gcc-host): error: ‘A’ is an ambiguous base of ‘D’
 - `classes/derived/ambiguous-base-conversion.cpp` (edg-7.0): error: base class "A" is ambiguous
@@ -7909,6 +8465,15 @@ check that the rejection has the intended cause.
 - `classes/derived/derived-hides-base-overloads.cpp` (gcc-16-o2): error: invalid conversion from 'int' to 'const char*' [-fpermissive] / note: initializing argument 1 of 'void D::f(const char*)'
 - `classes/derived/derived-hides-base-overloads.cpp` (clang-22): error: cannot initialize a parameter of type 'const char *' with an rvalue of type 'int' / note: passing argument to parameter here
 - `classes/derived/derived-hides-base-overloads.cpp` (clang-22-o2): error: cannot initialize a parameter of type 'const char *' with an rvalue of type 'int' / note: passing argument to parameter here
+- `classes/derived/direct-and-indirect-base-call.cpp` (clang-host): error: non-static member 'get' found in multiple base-class subobjects of type 'A': / note: member found by ambiguous name lookup
+- `classes/derived/direct-and-indirect-base-call.cpp` (gcc-host): error: request for member ‘get’ is ambiguous
+- `classes/derived/direct-and-indirect-base-call.cpp` (edg-7.0): error: "D::get" is ambiguous
+- `classes/derived/direct-and-indirect-base-call.cpp` (gcc-14): error: request for member 'get' is ambiguous / note: candidates are: 'int A::get() const' / note:                 'int A::get() const'
+- `classes/derived/direct-and-indirect-base-call.cpp` (clang-18): error: non-static member 'get' found in multiple base-class subobjects of type 'A': / note: member found by ambiguous name lookup
+- `classes/derived/direct-and-indirect-base-call.cpp` (gcc-16): error: request for member 'get' is ambiguous
+- `classes/derived/direct-and-indirect-base-call.cpp` (gcc-16-o2): error: request for member 'get' is ambiguous
+- `classes/derived/direct-and-indirect-base-call.cpp` (clang-22): error: non-static member 'get' found in multiple base-class subobjects of type 'A': / note: member found by ambiguous name lookup
+- `classes/derived/direct-and-indirect-base-call.cpp` (clang-22-o2): error: non-static member 'get' found in multiple base-class subobjects of type 'A': / note: member found by ambiguous name lookup
 - `classes/derived/direct-and-indirect-base-use.cpp` (clang-host): error: non-static member 'v' found in multiple base-class subobjects of type 'A': / note: member found by ambiguous name lookup
 - `classes/derived/direct-and-indirect-base-use.cpp` (gcc-host): error: request for member ‘v’ is ambiguous
 - `classes/derived/direct-and-indirect-base-use.cpp` (edg-7.0): error: "D::v" is ambiguous
@@ -7981,6 +8546,15 @@ check that the rejection has the intended cause.
 - `classes/derived/inherited-ctor-two-bases-ambiguous.cpp` (gcc-16-o2): error: call of overloaded 'D(int)' is ambiguous
 - `classes/derived/inherited-ctor-two-bases-ambiguous.cpp` (clang-22): error: call to constructor of 'D' is ambiguous / note: candidate inherited constructor / note: constructor from base class 'A' inherited here / note: candidate inherited constructor / note: constructor from base class 'B' inherited here
 - `classes/derived/inherited-ctor-two-bases-ambiguous.cpp` (clang-22-o2): error: call to constructor of 'D' is ambiguous / note: candidate inherited constructor / note: constructor from base class 'A' inherited here / note: candidate inherited constructor / note: constructor from base class 'B' inherited here
+- `classes/derived/inherited-nothing-not-aggregate.cpp` (clang-host): error: no matching constructor for initialization of 'D' / note: candidate constructor (the implicit copy constructor) not viable: requires 1 argument, but 2 were provided / note: constructor from base class 'B' inherited here / note: candidate constructor (the implicit move constructor) not viable: requires 1 argument, but 2 were provided / note: constructor from base class 'B' inherited here / note: candidate constructor (the implicit copy constructor) not viable: requires 1 argument, but 2 were provided / note: candidate constructor (the implicit move constructor) not viable: requires 1 argument, but 2 were provided / note: candidate constructor (the implicit default constructor) not viable: requires 0 arguments, but 2 were provided
+- `classes/derived/inherited-nothing-not-aggregate.cpp` (gcc-host): error: no matching function for call to ‘D::D(<brace-enclosed initializer list>)’
+- `classes/derived/inherited-nothing-not-aggregate.cpp` (edg-7.0): error: no instance of constructor "D::D" matches the argument list / note: number of parameters of function "D::D(const D &) noexcept" does not match the call / note: number of parameters of function "D::D(D &&) noexcept" does not match the call / note: number of parameters of function "D::D() noexcept" does not match the call
+- `classes/derived/inherited-nothing-not-aggregate.cpp` (gcc-14): error: no matching function for call to 'D::D(<brace-enclosed initializer list>)' / note: candidate: 'constexpr B::B(const B&)' / note:   inherited here / note:   candidate expects 1 argument, 2 provided / note: candidate: 'constexpr B::B(B&&)' / note:   inherited here / note:   candidate expects 1 argument, 2 provided / note: candidate: 'constexpr D::D()' / note:   candidate expects 0 arguments, 2 provided / note: candidate: 'constexpr D::D(const D&)' / note:   candidate expects 1 argument, 2 provided / note: candidate: 'constexpr D::D(D&&)' / note:   candidate expects 1 argument, 2 provided
+- `classes/derived/inherited-nothing-not-aggregate.cpp` (clang-18): error: no matching constructor for initialization of 'D' / note: candidate constructor (the implicit copy constructor) not viable: requires 1 argument, but 2 were provided / note: constructor from base class 'B' inherited here / note: candidate constructor (the implicit move constructor) not viable: requires 1 argument, but 2 were provided / note: constructor from base class 'B' inherited here / note: candidate constructor (the implicit copy constructor) not viable: requires 1 argument, but 2 were provided / note: candidate constructor (the implicit move constructor) not viable: requires 1 argument, but 2 were provided / note: candidate constructor (the implicit default constructor) not viable: requires 0 arguments, but 2 were provided
+- `classes/derived/inherited-nothing-not-aggregate.cpp` (gcc-16): error: no matching function for call to 'D::D(<brace-enclosed initializer list>)'
+- `classes/derived/inherited-nothing-not-aggregate.cpp` (gcc-16-o2): error: no matching function for call to 'D::D(<brace-enclosed initializer list>)'
+- `classes/derived/inherited-nothing-not-aggregate.cpp` (clang-22): error: no matching constructor for initialization of 'D' / note: candidate constructor (the implicit copy constructor) not viable: requires 1 argument, but 2 were provided / note: constructor from base class 'B' inherited here / note: candidate constructor (the implicit move constructor) not viable: requires 1 argument, but 2 were provided / note: constructor from base class 'B' inherited here / note: candidate constructor (the implicit copy constructor) not viable: requires 1 argument, but 2 were provided / note: candidate constructor (the implicit move constructor) not viable: requires 1 argument, but 2 were provided / note: candidate constructor (the implicit default constructor) not viable: requires 0 arguments, but 2 were provided
+- `classes/derived/inherited-nothing-not-aggregate.cpp` (clang-22-o2): error: no matching constructor for initialization of 'D' / note: candidate constructor (the implicit copy constructor) not viable: requires 1 argument, but 2 were provided / note: constructor from base class 'B' inherited here / note: candidate constructor (the implicit move constructor) not viable: requires 1 argument, but 2 were provided / note: constructor from base class 'B' inherited here / note: candidate constructor (the implicit copy constructor) not viable: requires 1 argument, but 2 were provided / note: candidate constructor (the implicit move constructor) not viable: requires 1 argument, but 2 were provided / note: candidate constructor (the implicit default constructor) not viable: requires 0 arguments, but 2 were provided
 - `classes/derived/most-derived-must-init-virtual-base.cpp` (clang-host): error: constructor for 'D' must explicitly initialize the base class 'A' which does not have a default constructor
 - `classes/derived/most-derived-must-init-virtual-base.cpp` (gcc-host): error: no matching function for call to ‘A::A()’
 - `classes/derived/most-derived-must-init-virtual-base.cpp` (edg-7.0): error: no default constructor exists for class "A"
@@ -8026,6 +8600,15 @@ check that the rejection has the intended cause.
 - `classes/derived/virtual-and-nonvirtual-base.cpp` (gcc-16-o2): error: 'A' is an ambiguous base of 'D'
 - `classes/derived/virtual-and-nonvirtual-base.cpp` (clang-22): error: ambiguous conversion from derived class 'D' to base class 'A':
 - `classes/derived/virtual-and-nonvirtual-base.cpp` (clang-22-o2): error: ambiguous conversion from derived class 'D' to base class 'A':
+- `classes/derived/virtual-base-downcast-reference.cpp` (clang-host): error: cannot cast 'A' to 'C &' via virtual base 'A'
+- `classes/derived/virtual-base-downcast-reference.cpp` (gcc-host): error: cannot convert from pointer to base class ‘A’ to pointer to derived class ‘C’ because the base is virtual
+- `classes/derived/virtual-base-downcast-reference.cpp` (edg-7.0): error: cannot convert pointer to base class "A" to pointer to derived class "C" -- base class is virtual
+- `classes/derived/virtual-base-downcast-reference.cpp` (gcc-14): error: cannot convert from pointer to base class 'A' to pointer to derived class 'C' because the base is virtual
+- `classes/derived/virtual-base-downcast-reference.cpp` (clang-18): error: cannot cast 'A' to 'C &' via virtual base 'A'
+- `classes/derived/virtual-base-downcast-reference.cpp` (gcc-16): error: cannot convert from pointer to base class 'A' to pointer to derived class 'C' because the base is virtual
+- `classes/derived/virtual-base-downcast-reference.cpp` (gcc-16-o2): error: cannot convert from pointer to base class 'A' to pointer to derived class 'C' because the base is virtual
+- `classes/derived/virtual-base-downcast-reference.cpp` (clang-22): error: cannot cast 'A' to 'C &' via virtual base 'A'
+- `classes/derived/virtual-base-downcast-reference.cpp` (clang-22-o2): error: cannot cast 'A' to 'C &' via virtual base 'A'
 - `classes/derived/virtual-base-downcast.cpp` (clang-host): error: cannot cast 'A *' to 'B *' via virtual base 'A'
 - `classes/derived/virtual-base-downcast.cpp` (gcc-host): error: cannot convert from pointer to base class ‘A’ to pointer to derived class ‘B’ because the base is virtual
 - `classes/derived/virtual-base-downcast.cpp` (edg-7.0): error: cannot convert pointer to base class "A" to pointer to derived class "B" -- base class is virtual
@@ -8332,6 +8915,7 @@ check that the rejection has the intended cause.
 - `classes/members/incomplete-member.cpp` (gcc-16-o2): error: field 'l' has incomplete type 'Later' / note: forward declaration of 'struct Later'
 - `classes/members/incomplete-member.cpp` (clang-22): error: field has incomplete type 'Later' / note: forward declaration of 'Later'
 - `classes/members/incomplete-member.cpp` (clang-22-o2): error: field has incomplete type 'Later' / note: forward declaration of 'Later'
+- `classes/members/layout-base-tail-padding-defaulted.cpp` (gcc-14): error: static assertion failed / note: the comparison reduces to '(8 == 12)'
 - `classes/members/local-class-friend-definition.cpp` (clang-host): error: cannot define friend function in a local class definition
 - `classes/members/local-class-friend-definition.cpp` (gcc-host): error: cannot define friend function ‘h’ in a local class definition
 - `classes/members/local-class-friend-definition.cpp` (edg-7.0): error: nonstandard local-class friend declaration -- no prior declaration in the enclosing scope / error: function "h" cannot be defined in the current scope
@@ -8467,6 +9051,12 @@ check that the rejection has the intended cause.
 - `classes/members/paren-default-member-init.cpp` (gcc-16-o2): error: expected identifier before numeric constant / error: expected ',' or '...' before numeric constant
 - `classes/members/paren-default-member-init.cpp` (clang-22): error: expected parameter declarator / error: expected ')' / note: to match this '('
 - `classes/members/paren-default-member-init.cpp` (clang-22-o2): error: expected parameter declarator / error: expected ')' / note: to match this '('
+- `classes/members/ref-qualified-mixed-const.cpp` (clang-host): error: class member cannot be redeclared / note: previous declaration is here
+- `classes/members/ref-qualified-mixed-const.cpp` (edg-7.0): error: overloading two member functions with the same parameter types requires that they both have ref-qualifiers or both lack ref-qualifiers
+- `classes/members/ref-qualified-mixed-const.cpp` (gcc-14): error: 'int S::f(int) const' cannot be overloaded with 'int S::f(int) const &&' / note: previous declaration 'int S::f(int) const &&'
+- `classes/members/ref-qualified-mixed-const.cpp` (clang-18): error: class member cannot be redeclared / note: previous declaration is here
+- `classes/members/ref-qualified-mixed-const.cpp` (clang-22): error: class member cannot be redeclared / note: previous declaration is here
+- `classes/members/ref-qualified-mixed-const.cpp` (clang-22-o2): error: class member cannot be redeclared / note: previous declaration is here
 - `classes/members/ref-qualified-mixed.cpp` (clang-host): error: class member cannot be redeclared / note: previous declaration is here
 - `classes/members/ref-qualified-mixed.cpp` (edg-7.0): error: overloading two member functions with the same parameter types requires that they both have ref-qualifiers or both lack ref-qualifiers
 - `classes/members/ref-qualified-mixed.cpp` (gcc-14): error: 'void S::f()' cannot be overloaded with 'void S::f() &' / note: previous declaration 'void S::f() &'
@@ -8491,6 +9081,7 @@ check that the rejection has the intended cause.
 - `classes/members/sizeof-in-class-incomplete.cpp` (gcc-16-o2): error: invalid application of 'sizeof' to incomplete type 'S'
 - `classes/members/sizeof-in-class-incomplete.cpp` (clang-22): error: invalid application of 'sizeof' to an incomplete type 'S' / note: definition of 'S' is not complete until the closing '}' / error: constexpr variable 'size' must be initialized by a constant expression
 - `classes/members/sizeof-in-class-incomplete.cpp` (clang-22-o2): error: invalid application of 'sizeof' to an incomplete type 'S' / note: definition of 'S' is not complete until the closing '}' / error: constexpr variable 'size' must be initialized by a constant expression
+- `classes/members/standard-layout-address-constant.cpp` (edg-7.0): error: static assertion failed / error: static assertion failed
 - `classes/members/static-and-nonstatic-same-params.cpp` (clang-host): error: static and non-static member functions with the same parameter types cannot be overloaded / note: previous declaration is here
 - `classes/members/static-and-nonstatic-same-params.cpp` (gcc-host): error: ‘static void S::f()’ cannot be overloaded with ‘void S::f()’ / note: previous declaration ‘void S::f()’
 - `classes/members/static-and-nonstatic-same-params.cpp` (edg-7.0): error: invalid redeclaration of member function "S::f()" (declared at line 7)
@@ -8500,6 +9091,32 @@ check that the rejection has the intended cause.
 - `classes/members/static-and-nonstatic-same-params.cpp` (gcc-16-o2): error: 'static void S::f()' cannot be overloaded with 'void S::f()' / note: previous declaration 'void S::f()'
 - `classes/members/static-and-nonstatic-same-params.cpp` (clang-22): error: static and non-static member functions with the same parameter types cannot be overloaded / note: previous declaration is here
 - `classes/members/static-and-nonstatic-same-params.cpp` (clang-22-o2): error: static and non-static member functions with the same parameter types cannot be overloaded / note: previous declaration is here
+- `classes/members/static-const-address-no-definition.cpp` (clang-host): link: undefined reference to `S::m'
+- `classes/members/static-const-address-no-definition.cpp` (gcc-host): link: undefined reference to `S::m'
+- `classes/members/static-const-address-no-definition.cpp` (gcc-14): link: undefined reference to `S::m'
+- `classes/members/static-const-address-no-definition.cpp` (clang-18): link: undefined reference to `S::m'
+- `classes/members/static-const-address-no-definition.cpp` (gcc-16): link: undefined reference to `S::m'
+- `classes/members/static-const-address-no-definition.cpp` (gcc-16-o2): link: undefined reference to `S::m'
+- `classes/members/static-const-address-no-definition.cpp` (clang-22): link: undefined reference to `S::m'
+- `classes/members/static-const-address-no-definition.cpp` (clang-22-o2): link: undefined reference to `S::m'
+- `classes/members/static-const-double-in-class-init.cpp` (clang-host): error: in-class initializer for static data member of type 'const double' requires 'constexpr' specifier [-Wstatic-float-init] / note: add 'constexpr'
+- `classes/members/static-const-double-in-class-init.cpp` (gcc-host): error: ‘constexpr’ needed for in-class initialization of static data member ‘const double S::d’ of non-integral type [-fpermissive]
+- `classes/members/static-const-double-in-class-init.cpp` (edg-7.0): error: a member of type "const double" cannot have an in-class initializer
+- `classes/members/static-const-double-in-class-init.cpp` (gcc-14): error: 'constexpr' needed for in-class initialization of static data member 'const double S::d' of non-integral type [-fpermissive]
+- `classes/members/static-const-double-in-class-init.cpp` (clang-18): error: in-class initializer for static data member of type 'const double' requires 'constexpr' specifier [-Wstatic-float-init] / note: add 'constexpr'
+- `classes/members/static-const-double-in-class-init.cpp` (gcc-16): error: 'constexpr' needed for in-class initialization of static data member 'const double S::d' of non-integral type [-fpermissive]
+- `classes/members/static-const-double-in-class-init.cpp` (gcc-16-o2): error: 'constexpr' needed for in-class initialization of static data member 'const double S::d' of non-integral type [-fpermissive]
+- `classes/members/static-const-double-in-class-init.cpp` (clang-22): error: in-class initializer for static data member of type 'const double' requires 'constexpr' specifier [-Wstatic-float-init] / note: add 'constexpr'
+- `classes/members/static-const-double-in-class-init.cpp` (clang-22-o2): error: in-class initializer for static data member of type 'const double' requires 'constexpr' specifier [-Wstatic-float-init] / note: add 'constexpr'
+- `classes/members/static-const-enum-init-not-constant.cpp` (clang-host): error: in-class initializer for static data member is not a constant expression / note: read of non-const variable 'current' is not allowed in a constant expression
+- `classes/members/static-const-enum-init-not-constant.cpp` (gcc-host): error: the value of ‘current’ is not usable in a constant expression / note: ‘Mode current’ is not const
+- `classes/members/static-const-enum-init-not-constant.cpp` (edg-7.0): error: expression must have a constant value / note: the value of variable "current" (declared at line 8) cannot be used as a constant
+- `classes/members/static-const-enum-init-not-constant.cpp` (gcc-14): error: the value of 'current' is not usable in a constant expression / note: 'Mode current' is not const
+- `classes/members/static-const-enum-init-not-constant.cpp` (clang-18): error: in-class initializer for static data member is not a constant expression
+- `classes/members/static-const-enum-init-not-constant.cpp` (gcc-16): error: the value of 'current' is not usable in a constant expression / note: 'Mode current' is not const
+- `classes/members/static-const-enum-init-not-constant.cpp` (gcc-16-o2): error: the value of 'current' is not usable in a constant expression / note: 'Mode current' is not const
+- `classes/members/static-const-enum-init-not-constant.cpp` (clang-22): error: in-class initializer for static data member is not a constant expression / note: read of non-const variable 'current' is not allowed in a constant expression
+- `classes/members/static-const-enum-init-not-constant.cpp` (clang-22-o2): error: in-class initializer for static data member is not a constant expression / note: read of non-const variable 'current' is not allowed in a constant expression
 - `classes/members/static-const-init-not-constant.cpp` (clang-host): error: in-class initializer for static data member is not a constant expression / note: read of non-const variable 'n' is not allowed in a constant expression
 - `classes/members/static-const-init-not-constant.cpp` (gcc-host): error: the value of ‘n’ is not usable in a constant expression / note: ‘int n’ is not const
 - `classes/members/static-const-init-not-constant.cpp` (edg-7.0): error: expression must have a constant value / note: the value of variable "n" (declared at line 7) cannot be used as a constant
@@ -8719,6 +9336,14 @@ check that the rejection has the intended cause.
 - `classes/operators/literal-member.cpp` (gcc-16-o2): error: 'int S::operator""_m(long long unsigned int)' must be a non-member function
 - `classes/operators/literal-member.cpp` (clang-22): error: literal operator 'operator""_m' must be in a namespace or global scope
 - `classes/operators/literal-member.cpp` (clang-22-o2): error: literal operator 'operator""_m' must be in a namespace or global scope
+- `classes/operators/literal-no-underscore-floating-warns.cpp` (clang-host): error: invalid suffix on literal; C++11 requires a space between literal and identifier [-Wreserved-user-defined-literal] / error: user-defined literal suffixes not starting with '_' are reserved; no literal will invoke this operator [-Werror,-Wuser-defined-literals]
+- `classes/operators/literal-no-underscore-floating-warns.cpp` (gcc-host): error: literal operator suffixes not preceded by ‘_’ are reserved for future standardization [-Werror=literal-suffix]
+- `classes/operators/literal-no-underscore-floating-warns.cpp` (gcc-14): error: literal operator suffixes not preceded by '_' are reserved for future standardization [-Werror=literal-suffix]
+- `classes/operators/literal-no-underscore-floating-warns.cpp` (clang-18): error: invalid suffix on literal; C++11 requires a space between literal and identifier [-Wreserved-user-defined-literal] / error: user-defined literal suffixes not starting with '_' are reserved; no literal will invoke this operator [-Werror,-Wuser-defined-literals]
+- `classes/operators/literal-no-underscore-floating-warns.cpp` (gcc-16): error: literal operator suffixes not preceded by '_' are reserved for future standardization [-Werror=literal-suffix]
+- `classes/operators/literal-no-underscore-floating-warns.cpp` (gcc-16-o2): error: literal operator suffixes not preceded by '_' are reserved for future standardization [-Werror=literal-suffix]
+- `classes/operators/literal-no-underscore-floating-warns.cpp` (clang-22): error: invalid suffix on literal; C++11 requires a space between literal and identifier [-Wreserved-user-defined-literal] / error: user-defined literal suffixes not starting with '_' are reserved; no literal will invoke this operator [-Werror,-Wuser-defined-literals]
+- `classes/operators/literal-no-underscore-floating-warns.cpp` (clang-22-o2): error: invalid suffix on literal; C++11 requires a space between literal and identifier [-Wreserved-user-defined-literal] / error: user-defined literal suffixes not starting with '_' are reserved; no literal will invoke this operator [-Werror,-Wuser-defined-literals]
 - `classes/operators/literal-no-underscore-warns.cpp` (clang-host): error: invalid suffix on literal; C++11 requires a space between literal and identifier [-Wreserved-user-defined-literal] / error: user-defined literal suffixes not starting with '_' are reserved; no literal will invoke this operator [-Werror,-Wuser-defined-literals]
 - `classes/operators/literal-no-underscore-warns.cpp` (gcc-host): error: literal operator suffixes not preceded by ‘_’ are reserved for future standardization [-Werror=literal-suffix]
 - `classes/operators/literal-no-underscore-warns.cpp` (gcc-14): error: literal operator suffixes not preceded by '_' are reserved for future standardization [-Werror=literal-suffix]
@@ -8853,6 +9478,15 @@ check that the rejection has the intended cause.
 - `classes/operators/postfix-wrong-param.cpp` (gcc-16-o2): error: postfix 'C C::operator++(long int)' must have 'int' as its argument
 - `classes/operators/postfix-wrong-param.cpp` (clang-22): error: parameter of overloaded post-increment operator must have type 'int' (not 'long')
 - `classes/operators/postfix-wrong-param.cpp` (clang-22-o2): error: parameter of overloaded post-increment operator must have type 'int' (not 'long')
+- `classes/operators/prefix-not-declared.cpp` (clang-host): error: cannot decrement value of type 'C'
+- `classes/operators/prefix-not-declared.cpp` (gcc-host): error: no match for ‘operator--’ (operand type is ‘C’)
+- `classes/operators/prefix-not-declared.cpp` (edg-7.0): error: no operator "--" matches these operands / note: number of parameters of function "C::operator--" does not match the call / note: built-in operator--(<non-bool arithmetic>) does not match because argument #1 does not match parameter / note: built-in operator--(<pointer to object>) does not match because argument #1 does not match parameter
+- `classes/operators/prefix-not-declared.cpp` (gcc-14): error: no match for 'operator--' (operand type is 'C') / note: candidate: 'C C::operator--(int)' / note:   candidate expects 1 argument, 0 provided
+- `classes/operators/prefix-not-declared.cpp` (clang-18): error: cannot decrement value of type 'C'
+- `classes/operators/prefix-not-declared.cpp` (gcc-16): error: no match for 'operator--' (operand type is 'C')
+- `classes/operators/prefix-not-declared.cpp` (gcc-16-o2): error: no match for 'operator--' (operand type is 'C')
+- `classes/operators/prefix-not-declared.cpp` (clang-22): error: cannot decrement value of type 'C'
+- `classes/operators/prefix-not-declared.cpp` (clang-22-o2): error: cannot decrement value of type 'C'
 - `classes/operators/static-call-not-other.cpp` (clang-host): error: overloaded 'operator+' cannot be a static member function
 - `classes/operators/static-call-not-other.cpp` (gcc-host): error: ‘static int S::operator+(int)’ must be either a non-static member function or a non-member function
 - `classes/operators/static-call-not-other.cpp` (edg-7.0): error: operator may not be a static member function
@@ -9009,6 +9643,15 @@ check that the rejection has the intended cause.
 - `classes/unions/bitfield-float.cpp` (gcc-16-o2): error: bit-field 'f' with non-integral type 'float'
 - `classes/unions/bitfield-float.cpp` (clang-22): error: bit-field 'f' has non-integral type 'float'
 - `classes/unions/bitfield-float.cpp` (clang-22-o2): error: bit-field 'f' has non-integral type 'float'
+- `classes/unions/bitfield-narrowing-double.cpp` (clang-host): error: type 'double' cannot be narrowed to 'int' in initializer list [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
+- `classes/unions/bitfield-narrowing-double.cpp` (gcc-host): error: narrowing conversion of ‘1.5e+0’ from ‘double’ to ‘int’ [-Wnarrowing]
+- `classes/unions/bitfield-narrowing-double.cpp` (edg-7.0): error: invalid narrowing conversion from "double" to "int"
+- `classes/unions/bitfield-narrowing-double.cpp` (gcc-14): error: narrowing conversion of '1.5e+0' from 'double' to 'int' [-Wnarrowing]
+- `classes/unions/bitfield-narrowing-double.cpp` (clang-18): error: type 'double' cannot be narrowed to 'int' in initializer list [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
+- `classes/unions/bitfield-narrowing-double.cpp` (gcc-16): error: narrowing conversion of '1.5e+0' from 'double' to 'int' [-Wnarrowing]
+- `classes/unions/bitfield-narrowing-double.cpp` (gcc-16-o2): error: narrowing conversion of '1.5e+0' from 'double' to 'int' [-Wnarrowing]
+- `classes/unions/bitfield-narrowing-double.cpp` (clang-22): error: type 'double' cannot be narrowed to 'int' in initializer list [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
+- `classes/unions/bitfield-narrowing-double.cpp` (clang-22-o2): error: type 'double' cannot be narrowed to 'int' in initializer list [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
 - `classes/unions/bitfield-narrowing-init.cpp` (clang-host): error: non-constant-expression cannot be narrowed from type 'int' to 'unsigned int' in initializer list [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
 - `classes/unions/bitfield-narrowing-init.cpp` (gcc-host): error: narrowing conversion of ‘v’ from ‘int’ to ‘unsigned int’ [-Wnarrowing]
 - `classes/unions/bitfield-narrowing-init.cpp` (edg-7.0): error: invalid narrowing conversion from "int" to "unsigned int"
@@ -9159,6 +9802,15 @@ check that the rejection has the intended cause.
 - `classes/unions/common-initial-sequence-constant.cpp` (gcc-16-o2): error: non-constant condition for static assertion / error: accessing 'U::b' member instead of active 'U::a' member in constant expression
 - `classes/unions/common-initial-sequence-constant.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: read of member 'b' of union with active member 'a' is not allowed in a constant expression
 - `classes/unions/common-initial-sequence-constant.cpp` (clang-22-o2): error: static assertion expression is not an integral constant expression / note: read of member 'b' of union with active member 'a' is not allowed in a constant expression
+- `classes/unions/common-initial-sequence-second-member-constant.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: read of member 'b' of union with active member 'a' is not allowed in a constant expression
+- `classes/unions/common-initial-sequence-second-member-constant.cpp` (gcc-host): error: non-constant condition for static assertion / error: accessing ‘U::b’ member instead of active ‘U::a’ member in constant expression
+- `classes/unions/common-initial-sequence-second-member-constant.cpp` (edg-7.0): error: expression must have a constant value / note: invalid access to inactive member "U::b" of union (member "U::a" is active)
+- `classes/unions/common-initial-sequence-second-member-constant.cpp` (gcc-14): error: non-constant condition for static assertion / error: accessing 'U::b' member instead of initialized 'U::a' member in constant expression
+- `classes/unions/common-initial-sequence-second-member-constant.cpp` (clang-18): error: constexpr function never produces a constant expression [-Winvalid-constexpr] / note: read of member 'b' of union with active member 'a' is not allowed in a constant expression / error: static assertion expression is not an integral constant expression / note: read of member 'b' of union with active member 'a' is not allowed in a constant expression
+- `classes/unions/common-initial-sequence-second-member-constant.cpp` (gcc-16): error: non-constant condition for static assertion / error: accessing 'U::b' member instead of active 'U::a' member in constant expression
+- `classes/unions/common-initial-sequence-second-member-constant.cpp` (gcc-16-o2): error: non-constant condition for static assertion / error: accessing 'U::b' member instead of active 'U::a' member in constant expression
+- `classes/unions/common-initial-sequence-second-member-constant.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: read of member 'b' of union with active member 'a' is not allowed in a constant expression
+- `classes/unions/common-initial-sequence-second-member-constant.cpp` (clang-22-o2): error: static assertion expression is not an integral constant expression / note: read of member 'b' of union with active member 'a' is not allowed in a constant expression
 - `classes/unions/compound-assign-inactive-constant.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: assignment to member 'l' of union with active member 'i' is not allowed in a constant expression
 - `classes/unions/compound-assign-inactive-constant.cpp` (gcc-host): error: non-constant condition for static assertion / error: accessing ‘U::l’ member instead of active ‘U::i’ member in constant expression
 - `classes/unions/compound-assign-inactive-constant.cpp` (edg-7.0): error: expression must have a constant value / note: invalid access to inactive member "U::l" of union (member "U::i" is active)
@@ -9254,6 +9906,11 @@ check that the rejection has the intended cause.
 - `classes/unions/two-initializers.cpp` (gcc-16-o2): error: too many initializers for 'U'
 - `classes/unions/two-initializers.cpp` (clang-22): error: excess elements in union initializer
 - `classes/unions/two-initializers.cpp` (clang-22-o2): error: excess elements in union initializer
+- `classes/unions/union-copy-two-copy-constructors.cpp` (gcc-host): error: use of deleted function ‘Wrap<Twin>::Wrap(const Wrap<Twin>&)’ / note: ‘Wrap<Twin>::Wrap(const Wrap<Twin>&)’ is implicitly deleted because the default definition would be ill-formed: / error: union member ‘Wrap<Twin>::x’ with non-trivial ‘constexpr Twin::Twin(const Twin&)’ / note: use ‘-fdiagnostics-all-candidates’ to display considered candidates
+- `classes/unions/union-copy-two-copy-constructors.cpp` (edg-7.0): error: function "Wrap<T>::Wrap(const Wrap<Twin> &) noexcept [with T=Twin]" (declared implicitly) cannot be referenced -- it is a deleted function
+- `classes/unions/union-copy-two-copy-constructors.cpp` (gcc-14): error: use of deleted function 'Wrap<Twin>::Wrap(const Wrap<Twin>&)' / note: 'Wrap<Twin>::Wrap(const Wrap<Twin>&)' is implicitly deleted because the default definition would be ill-formed: / error: union member 'Wrap<Twin>::x' with non-trivial 'constexpr Twin::Twin(const Twin&)' / note: use '-fdiagnostics-all-candidates' to display considered candidates
+- `classes/unions/union-copy-two-copy-constructors.cpp` (gcc-16): error: use of deleted function 'Wrap<Twin>::Wrap(const Wrap<Twin>&)' / note: 'Wrap<Twin>::Wrap(const Wrap<Twin>&)' is implicitly deleted because the default definition would be ill-formed: / error: union member 'Wrap<Twin>::x' with non-trivial 'constexpr Twin::Twin(const Twin&)' / note: use '-fdiagnostics-all-candidates' to display considered candidates
+- `classes/unions/union-copy-two-copy-constructors.cpp` (gcc-16-o2): error: use of deleted function 'Wrap<Twin>::Wrap(const Wrap<Twin>&)' / note: 'Wrap<Twin>::Wrap(const Wrap<Twin>&)' is implicitly deleted because the default definition would be ill-formed: / error: union member 'Wrap<Twin>::x' with non-trivial 'constexpr Twin::Twin(const Twin&)' / note: use '-fdiagnostics-all-candidates' to display considered candidates
 - `classes/unions/union-member-deleted-copy.cpp` (clang-host): error: call to implicitly-deleted copy constructor of 'Slot' / note: copy constructor of 'Slot' is implicitly deleted because field 'pinned' has a deleted copy constructor / note: 'Pinned' has been explicitly marked deleted here
 - `classes/unions/union-member-deleted-copy.cpp` (gcc-host): error: use of deleted function ‘Slot::Slot(const Slot&)’ / note: ‘Slot::Slot(const Slot&)’ is implicitly deleted because the default definition would be ill-formed: / error: use of deleted function ‘Pinned::Pinned(const Pinned&)’ / note: use ‘-fdiagnostics-all-candidates’ to display considered candidates / note: use ‘-fdiagnostics-all-candidates’ to display considered candidates
 - `classes/unions/union-member-deleted-copy.cpp` (edg-7.0): error: function "Slot::Slot(const Slot &)" (declared implicitly) cannot be referenced -- it is a deleted function
@@ -9308,6 +9965,15 @@ check that the rejection has the intended cause.
 - `classes/unions/union-reference-member.cpp` (gcc-16-o2): error: non-static data member 'U::r' in a union may not have reference type 'int&'
 - `classes/unions/union-reference-member.cpp` (clang-22): error: union member 'r' has reference type 'int &'
 - `classes/unions/union-reference-member.cpp` (clang-22-o2): error: union member 'r' has reference type 'int &'
+- `classes/unions/union-rvalue-reference-member.cpp` (clang-host): error: union member 'r' has reference type 'int &&'
+- `classes/unions/union-rvalue-reference-member.cpp` (gcc-host): error: non-static data member ‘U::r’ in a union may not have reference type ‘int&&’
+- `classes/unions/union-rvalue-reference-member.cpp` (edg-7.0): error: a member with reference type is not allowed in a union
+- `classes/unions/union-rvalue-reference-member.cpp` (gcc-14): error: non-static data member 'U::r' in a union may not have reference type 'int&&'
+- `classes/unions/union-rvalue-reference-member.cpp` (clang-18): error: union member 'r' has reference type 'int &&'
+- `classes/unions/union-rvalue-reference-member.cpp` (gcc-16): error: non-static data member 'U::r' in a union may not have reference type 'int&&'
+- `classes/unions/union-rvalue-reference-member.cpp` (gcc-16-o2): error: non-static data member 'U::r' in a union may not have reference type 'int&&'
+- `classes/unions/union-rvalue-reference-member.cpp` (clang-22): error: union member 'r' has reference type 'int &&'
+- `classes/unions/union-rvalue-reference-member.cpp` (clang-22-o2): error: union member 'r' has reference type 'int &&'
 - `classes/unions/user-assignment-not-activating-constant.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: member call on member 't' of union with active member 'i' is not allowed in a constant expression
 - `classes/unions/user-assignment-not-activating-constant.cpp` (gcc-host): error: non-constant condition for static assertion / error: accessing ‘U::t’ member instead of initialized ‘U::i’ member in constant expression / note: initializing ‘U::t’ requires a member access expression as the left operand of the assignment
 - `classes/unions/user-assignment-not-activating-constant.cpp` (gcc-14): error: non-constant condition for static assertion / error: accessing 'U::t' member instead of initialized 'U::i' member in constant expression / note: initializing 'U::t' requires a member access expression as the left operand of the assignment
@@ -9692,6 +10358,14 @@ check that the rejection has the intended cause.
 - `classes/virtual/pure-call-in-ctor-constant.cpp` (gcc-16-o2): error: call to non-'constexpr' function 'void __cxa_pure_virtual()'
 - `classes/virtual/pure-call-in-ctor-constant.cpp` (clang-22): error: constexpr variable 'd' must be initialized by a constant expression / note: pure virtual function 'B::f' called
 - `classes/virtual/pure-call-in-ctor-constant.cpp` (clang-22-o2): error: constexpr variable 'd' must be initialized by a constant expression / note: pure virtual function 'B::f' called
+- `classes/virtual/pure-dtor-needs-definition-delete.cpp` (clang-host): link: undefined reference to `A::~A()'
+- `classes/virtual/pure-dtor-needs-definition-delete.cpp` (gcc-host): link: undefined reference to `A::~A()'
+- `classes/virtual/pure-dtor-needs-definition-delete.cpp` (gcc-14): link: undefined reference to `A::~A()'
+- `classes/virtual/pure-dtor-needs-definition-delete.cpp` (clang-18): link: undefined reference to `A::~A()'
+- `classes/virtual/pure-dtor-needs-definition-delete.cpp` (gcc-16): link: undefined reference to `A::~A()'
+- `classes/virtual/pure-dtor-needs-definition-delete.cpp` (gcc-16-o2): link: undefined reference to `A::~A()' / link: undefined reference to `A::~A()' / link: undefined reference to `A::~A()'
+- `classes/virtual/pure-dtor-needs-definition-delete.cpp` (clang-22): link: undefined reference to `A::~A()'
+- `classes/virtual/pure-dtor-needs-definition-delete.cpp` (clang-22-o2): link: undefined reference to `A::~A()' / link: undefined reference to `A::~A()' / link: undefined reference to `A::~A()'
 - `classes/virtual/pure-dtor-needs-definition.cpp` (clang-host): link: undefined reference to `A::~A()'
 - `classes/virtual/pure-dtor-needs-definition.cpp` (gcc-host): link: undefined reference to `A::~A()'
 - `classes/virtual/pure-dtor-needs-definition.cpp` (gcc-14): link: undefined reference to `A::~A()'
@@ -9763,6 +10437,15 @@ check that the rejection has the intended cause.
 - `classes/virtual/return-type-mismatch.cpp` (gcc-16-o2): error: conflicting return type specified for 'virtual long int D::f()' / note: overridden function is 'virtual int B::f()'
 - `classes/virtual/return-type-mismatch.cpp` (clang-22): error: virtual function 'f' has a different return type ('long') than the function it overrides (which has return type 'int') / note: overridden virtual function is here
 - `classes/virtual/return-type-mismatch.cpp` (clang-22-o2): error: virtual function 'f' has a different return type ('long') than the function it overrides (which has return type 'int') / note: overridden virtual function is here
+- `classes/virtual/static-hides-inherited-virtual.cpp` (clang-host): error: 'static' member function 'f' overrides a virtual function in a base class / note: overridden virtual function is here
+- `classes/virtual/static-hides-inherited-virtual.cpp` (gcc-host): error: ‘static int D::f(int)’ cannot be declared / error:   since ‘virtual int B::f(int)’ declared in base class
+- `classes/virtual/static-hides-inherited-virtual.cpp` (edg-7.0): error: only nonstatic member functions may be virtual
+- `classes/virtual/static-hides-inherited-virtual.cpp` (gcc-14): error: 'static int D::f(int)' cannot be declared / error:   since 'virtual int B::f(int)' declared in base class
+- `classes/virtual/static-hides-inherited-virtual.cpp` (clang-18): error: 'static' member function 'f' overrides a virtual function in a base class / note: overridden virtual function is here
+- `classes/virtual/static-hides-inherited-virtual.cpp` (gcc-16): error: 'static int D::f(int)' cannot be declared / error:   since 'virtual int B::f(int)' declared in base class
+- `classes/virtual/static-hides-inherited-virtual.cpp` (gcc-16-o2): error: 'static int D::f(int)' cannot be declared / error:   since 'virtual int B::f(int)' declared in base class
+- `classes/virtual/static-hides-inherited-virtual.cpp` (clang-22): error: 'static' member function 'f' overrides a virtual function in a base class / note: overridden virtual function is here
+- `classes/virtual/static-hides-inherited-virtual.cpp` (clang-22-o2): error: 'static' member function 'f' overrides a virtual function in a base class / note: overridden virtual function is here
 - `classes/virtual/static-overrides-virtual.cpp` (clang-host): error: 'static' member function 'f' overrides a virtual function in a base class / note: overridden virtual function is here
 - `classes/virtual/static-overrides-virtual.cpp` (gcc-host): error: ‘static void D::f()’ cannot be declared / error:   since ‘virtual void B::f()’ declared in base class
 - `classes/virtual/static-overrides-virtual.cpp` (edg-7.0): error: only nonstatic member functions may be virtual
@@ -9817,6 +10500,14 @@ check that the rejection has the intended cause.
 - `classes/virtual/virtual-nonmember.cpp` (gcc-16-o2): error: 'virtual' outside class declaration
 - `classes/virtual/virtual-nonmember.cpp` (clang-22): error: 'virtual' can only appear on non-static member functions
 - `classes/virtual/virtual-nonmember.cpp` (clang-22-o2): error: 'virtual' can only appear on non-static member functions
+- `classes/virtual/virtual-not-defined-escaping-object.cpp` (clang-host): link: undefined reference to `vtable
+- `classes/virtual/virtual-not-defined-escaping-object.cpp` (gcc-host): link: undefined reference to `vtable
+- `classes/virtual/virtual-not-defined-escaping-object.cpp` (gcc-14): link: undefined reference to `vtable
+- `classes/virtual/virtual-not-defined-escaping-object.cpp` (clang-18): link: undefined reference to `vtable
+- `classes/virtual/virtual-not-defined-escaping-object.cpp` (gcc-16): link: undefined reference to `vtable
+- `classes/virtual/virtual-not-defined-escaping-object.cpp` (gcc-16-o2): link: undefined reference to `vtable
+- `classes/virtual/virtual-not-defined-escaping-object.cpp` (clang-22): link: undefined reference to `vtable
+- `classes/virtual/virtual-not-defined-escaping-object.cpp` (clang-22-o2): link: undefined reference to `vtable
 - `classes/virtual/virtual-not-defined.cpp` (clang-host): link: undefined reference to `vtable
 - `classes/virtual/virtual-not-defined.cpp` (gcc-host): link: undefined reference to `vtable
 - `classes/virtual/virtual-not-defined.cpp` (gcc-14): link: undefined reference to `vtable
@@ -9967,6 +10658,13 @@ check that the rejection has the intended cause.
 - `declarations/alignment/redeclare-different.cpp` (clang-18): error: redeclaration has different alignment requirement (16 vs 8) / note: previous declaration is here
 - `declarations/alignment/redeclare-different.cpp` (clang-22): error: redeclaration has different alignment requirement (16 vs 8) / note: previous declaration is here
 - `declarations/alignment/redeclare-different.cpp` (clang-22-o2): error: redeclaration has different alignment requirement (16 vs 8) / note: previous declaration is here
+- `declarations/alignment/scoped-enum.cpp` (clang-host): error: 'alignas' attribute cannot be applied to an enumeration
+- `declarations/alignment/scoped-enum.cpp` (gcc-host): error: ‘alignas’ on enumerated type [-Wattributes]
+- `declarations/alignment/scoped-enum.cpp` (clang-18): error: 'alignas' attribute cannot be applied to an enumeration
+- `declarations/alignment/scoped-enum.cpp` (gcc-16): error: 'alignas' on enumerated type [-Wattributes]
+- `declarations/alignment/scoped-enum.cpp` (gcc-16-o2): error: 'alignas' on enumerated type [-Wattributes]
+- `declarations/alignment/scoped-enum.cpp` (clang-22): error: 'alignas' attribute cannot be applied to an enumeration
+- `declarations/alignment/scoped-enum.cpp` (clang-22-o2): error: 'alignas' attribute cannot be applied to an enumeration
 - `declarations/alignment/strictest-wins.cpp` (gcc-host): error: static assertion failed
 - `declarations/alignment/strictest-wins.cpp` (gcc-14): error: static assertion failed / note: the comparison reduces to '(8 == 16)'
 - `declarations/alignment/strictest-wins.cpp` (gcc-16): error: static assertion failed
@@ -10145,6 +10843,10 @@ check that the rejection has the intended cause.
 - `declarations/attributes/likely-and-unlikely.cpp` (clang-18): error: 'unlikely' and 'likely' attributes are not compatible / note: conflicting attribute is here
 - `declarations/attributes/likely-and-unlikely.cpp` (clang-22): error: 'unlikely' and 'likely' attributes are not compatible / note: conflicting attribute is here
 - `declarations/attributes/likely-and-unlikely.cpp` (clang-22-o2): error: 'unlikely' and 'likely' attributes are not compatible / note: conflicting attribute is here
+- `declarations/attributes/likely-identifier-label.cpp` (clang-host): error: 'likely' attribute cannot be applied to a declaration
+- `declarations/attributes/likely-identifier-label.cpp` (clang-18): error: 'likely' attribute cannot be applied to a declaration
+- `declarations/attributes/likely-identifier-label.cpp` (clang-22): error: 'likely' attribute cannot be applied to a declaration
+- `declarations/attributes/likely-identifier-label.cpp` (clang-22-o2): error: 'likely' attribute cannot be applied to a declaration
 - `declarations/attributes/likely-with-argument.cpp` (clang-host): error: attribute 'likely' cannot have an argument list
 - `declarations/attributes/likely-with-argument.cpp` (gcc-host): error: ‘likely’ attribute does not take any arguments
 - `declarations/attributes/likely-with-argument.cpp` (edg-7.0): error: attribute "likely" does not take arguments
@@ -10216,6 +10918,14 @@ check that the rejection has the intended cause.
 - `declarations/attributes/noreturn-on-variable.cpp` (clang-18): error: 'noreturn' attribute only applies to functions
 - `declarations/attributes/noreturn-on-variable.cpp` (clang-22): error: 'noreturn' attribute only applies to functions
 - `declarations/attributes/noreturn-on-variable.cpp` (clang-22-o2): error: 'noreturn' attribute only applies to functions
+- `declarations/attributes/noreturn-returns-on-one-path.cpp` (clang-host): error: function declared 'noreturn' should not return [-Werror,-Winvalid-noreturn]
+- `declarations/attributes/noreturn-returns-on-one-path.cpp` (gcc-host): error: ‘noreturn’ function does return [-Werror]
+- `declarations/attributes/noreturn-returns-on-one-path.cpp` (gcc-14): error: 'noreturn' function does return [-Werror]
+- `declarations/attributes/noreturn-returns-on-one-path.cpp` (clang-18): error: function declared 'noreturn' should not return [-Werror,-Winvalid-noreturn]
+- `declarations/attributes/noreturn-returns-on-one-path.cpp` (gcc-16): error: 'noreturn' function does return [-Werror]
+- `declarations/attributes/noreturn-returns-on-one-path.cpp` (gcc-16-o2): error: 'noreturn' function does return [-Werror]
+- `declarations/attributes/noreturn-returns-on-one-path.cpp` (clang-22): error: function declared 'noreturn' should not return [-Werror,-Winvalid-noreturn]
+- `declarations/attributes/noreturn-returns-on-one-path.cpp` (clang-22-o2): error: function declared 'noreturn' should not return [-Werror,-Winvalid-noreturn]
 - `declarations/attributes/noreturn-returns.cpp` (clang-host): error: function declared 'noreturn' should not return [-Werror,-Winvalid-noreturn]
 - `declarations/attributes/noreturn-returns.cpp` (gcc-host): error: ‘noreturn’ function does return [-Werror]
 - `declarations/attributes/noreturn-returns.cpp` (gcc-14): error: 'noreturn' function does return [-Werror]
@@ -10327,6 +11037,15 @@ check that the rejection has the intended cause.
 - `declarations/auto/combined-type-specifier.cpp` (gcc-16-o2): error: two or more data types in declaration of 'a'
 - `declarations/auto/combined-type-specifier.cpp` (clang-22): error: 'auto' storage class specifier is not permitted in C++11, and will not be supported in future releases [-Werror,-Wauto-storage-class] / error: illegal storage class on file-scoped variable
 - `declarations/auto/combined-type-specifier.cpp` (clang-22-o2): error: 'auto' storage class specifier is not permitted in C++11, and will not be supported in future releases [-Werror,-Wauto-storage-class] / error: illegal storage class on file-scoped variable
+- `declarations/auto/constrained-decltype-auto-reference.cpp` (clang-host): error: deduced type 'int &' does not satisfy 'Int' / note: because 'same<int &, int>' evaluated to false
+- `declarations/auto/constrained-decltype-auto-reference.cpp` (gcc-host): error: deduced initializer does not satisfy placeholder constraints / note: constraints not satisfied
+- `declarations/auto/constrained-decltype-auto-reference.cpp` (edg-7.0): error: the deduced placeholder type "int &" failed the type constraint / note: atomic constraint evaluates to false
+- `declarations/auto/constrained-decltype-auto-reference.cpp` (gcc-14): error: deduced initializer does not satisfy placeholder constraints / note: constraints not satisfied / note: the expression 'same<T, int> [with T = int&]' evaluated to 'false'
+- `declarations/auto/constrained-decltype-auto-reference.cpp` (clang-18): error: deduced type 'int &' does not satisfy 'Int' / note: because 'same<int &, int>' evaluated to false
+- `declarations/auto/constrained-decltype-auto-reference.cpp` (gcc-16): error: deduced initializer does not satisfy placeholder constraints / note: constraints not satisfied
+- `declarations/auto/constrained-decltype-auto-reference.cpp` (gcc-16-o2): error: deduced initializer does not satisfy placeholder constraints / note: constraints not satisfied
+- `declarations/auto/constrained-decltype-auto-reference.cpp` (clang-22): error: deduced type 'int &' does not satisfy 'Int' / note: because 'same<int &, int>' evaluated to false
+- `declarations/auto/constrained-decltype-auto-reference.cpp` (clang-22-o2): error: deduced type 'int &' does not satisfy 'Int' / note: because 'same<int &, int>' evaluated to false
 - `declarations/auto/constrained-not-satisfied.cpp` (clang-host): error: deduced type 'double' does not satisfy 'Int' / note: because 'same<double, int>' evaluated to false
 - `declarations/auto/constrained-not-satisfied.cpp` (gcc-host): error: deduced initializer does not satisfy placeholder constraints / note: constraints not satisfied
 - `declarations/auto/constrained-not-satisfied.cpp` (edg-7.0): error: the deduced placeholder type "double" failed the type constraint / note: atomic constraint evaluates to false
@@ -10363,6 +11082,15 @@ check that the rejection has the intended cause.
 - `declarations/auto/copy-list-without-library.cpp` (gcc-16-o2): error: deducing from brace-enclosed initializer list requires '#include <initializer_list>'
 - `declarations/auto/copy-list-without-library.cpp` (clang-22): error: cannot deduce type of initializer list because std::initializer_list was not found; include <initializer_list>
 - `declarations/auto/copy-list-without-library.cpp` (clang-22-o2): error: cannot deduce type of initializer list because std::initializer_list was not found; include <initializer_list>
+- `declarations/auto/decltype-auto-array-member.cpp` (clang-host): error: array initializer must be an initializer list
+- `declarations/auto/decltype-auto-array-member.cpp` (gcc-host): error: array must be initialized with a brace-enclosed initializer
+- `declarations/auto/decltype-auto-array-member.cpp` (edg-7.0): error: initialization with "{...}" expected for aggregate object
+- `declarations/auto/decltype-auto-array-member.cpp` (gcc-14): error: array must be initialized with a brace-enclosed initializer
+- `declarations/auto/decltype-auto-array-member.cpp` (clang-18): error: array initializer must be an initializer list
+- `declarations/auto/decltype-auto-array-member.cpp` (gcc-16): error: array must be initialized with a brace-enclosed initializer
+- `declarations/auto/decltype-auto-array-member.cpp` (gcc-16-o2): error: array must be initialized with a brace-enclosed initializer
+- `declarations/auto/decltype-auto-array-member.cpp` (clang-22): error: array initializer must be an initializer list
+- `declarations/auto/decltype-auto-array-member.cpp` (clang-22-o2): error: array initializer must be an initializer list
 - `declarations/auto/decltype-auto-array.cpp` (clang-host): error: array initializer must be an initializer list
 - `declarations/auto/decltype-auto-array.cpp` (gcc-host): error: array must be initialized with a brace-enclosed initializer
 - `declarations/auto/decltype-auto-array.cpp` (edg-7.0): error: initialization with "{...}" expected for aggregate object
@@ -10435,6 +11163,15 @@ check that the rejection has the intended cause.
 - `declarations/auto/lvalue-reference-to-rvalue.cpp` (gcc-16-o2): error: cannot bind non-const lvalue reference of type 'int&' to an rvalue of type 'int'
 - `declarations/auto/lvalue-reference-to-rvalue.cpp` (clang-22): error: non-const lvalue reference to type 'int' cannot bind to a temporary of type 'int'
 - `declarations/auto/lvalue-reference-to-rvalue.cpp` (clang-22-o2): error: non-const lvalue reference to type 'int' cannot bind to a temporary of type 'int'
+- `declarations/auto/lvalue-reference-to-xvalue.cpp` (clang-host): error: non-const lvalue reference to type 'int' cannot bind to a temporary of type 'int'
+- `declarations/auto/lvalue-reference-to-xvalue.cpp` (gcc-host): error: cannot bind non-const lvalue reference of type ‘int&’ to an rvalue of type ‘int’
+- `declarations/auto/lvalue-reference-to-xvalue.cpp` (edg-7.0): error: initial value of reference to non-const must be an lvalue
+- `declarations/auto/lvalue-reference-to-xvalue.cpp` (gcc-14): error: cannot bind non-const lvalue reference of type 'int&' to an rvalue of type 'int'
+- `declarations/auto/lvalue-reference-to-xvalue.cpp` (clang-18): error: non-const lvalue reference to type 'int' cannot bind to a temporary of type 'int'
+- `declarations/auto/lvalue-reference-to-xvalue.cpp` (gcc-16): error: cannot bind non-const lvalue reference of type 'int&' to an rvalue of type 'int'
+- `declarations/auto/lvalue-reference-to-xvalue.cpp` (gcc-16-o2): error: cannot bind non-const lvalue reference of type 'int&' to an rvalue of type 'int'
+- `declarations/auto/lvalue-reference-to-xvalue.cpp` (clang-22): error: non-const lvalue reference to type 'int' cannot bind to a temporary of type 'int'
+- `declarations/auto/lvalue-reference-to-xvalue.cpp` (clang-22-o2): error: non-const lvalue reference to type 'int' cannot bind to a temporary of type 'int'
 - `declarations/auto/no-initializer.cpp` (clang-host): error: declaration of variable 'a' with deduced type 'auto' requires an initializer
 - `declarations/auto/no-initializer.cpp` (gcc-host): error: declaration of ‘auto a’ has no initializer
 - `declarations/auto/no-initializer.cpp` (edg-7.0): error: cannot deduce "auto" type (initializer required)
@@ -10498,6 +11235,15 @@ check that the rejection has the intended cause.
 - `declarations/auto/pointer-from-non-pointer.cpp` (gcc-16-o2): error: unable to deduce 'auto*' from '1' / note:   mismatched types 'auto*' and 'int'
 - `declarations/auto/pointer-from-non-pointer.cpp` (clang-22): error: variable 'p' with type 'auto *' has incompatible initializer of type 'int'
 - `declarations/auto/pointer-from-non-pointer.cpp` (clang-22-o2): error: variable 'p' with type 'auto *' has incompatible initializer of type 'int'
+- `declarations/auto/pointer-from-null-pointer-constant.cpp` (clang-host): error: variable 'p' with type 'auto *' has incompatible initializer of type 'std::nullptr_t'
+- `declarations/auto/pointer-from-null-pointer-constant.cpp` (gcc-host): error: unable to deduce ‘auto*’ from ‘nullptr’ / note:   mismatched types ‘auto*’ and ‘std::nullptr_t’
+- `declarations/auto/pointer-from-null-pointer-constant.cpp` (edg-7.0): error: cannot deduce "auto" type
+- `declarations/auto/pointer-from-null-pointer-constant.cpp` (gcc-14): error: unable to deduce 'auto*' from 'nullptr' / note:   mismatched types 'auto*' and 'std::nullptr_t'
+- `declarations/auto/pointer-from-null-pointer-constant.cpp` (clang-18): error: variable 'p' with type 'auto *' has incompatible initializer of type 'std::nullptr_t'
+- `declarations/auto/pointer-from-null-pointer-constant.cpp` (gcc-16): error: unable to deduce 'auto*' from 'nullptr' / note:   mismatched types 'auto*' and 'std::nullptr_t'
+- `declarations/auto/pointer-from-null-pointer-constant.cpp` (gcc-16-o2): error: unable to deduce 'auto*' from 'nullptr' / note:   mismatched types 'auto*' and 'std::nullptr_t'
+- `declarations/auto/pointer-from-null-pointer-constant.cpp` (clang-22): error: variable 'p' with type 'auto *' has incompatible initializer of type 'std::nullptr_t'
+- `declarations/auto/pointer-from-null-pointer-constant.cpp` (clang-22-o2): error: variable 'p' with type 'auto *' has incompatible initializer of type 'std::nullptr_t'
 - `declarations/auto/several-declarators-conflict.cpp` (clang-host): error: 'auto' deduced as 'int' in declaration of 'a' and deduced as 'double' in declaration of 'b'
 - `declarations/auto/several-declarators-conflict.cpp` (gcc-host): error: inconsistent deduction for ‘auto’: ‘int’ and then ‘double’
 - `declarations/auto/several-declarators-conflict.cpp` (edg-7.0): error: "auto" type is "double" for this entity, but was previously implied to be "int"
@@ -10507,6 +11253,15 @@ check that the rejection has the intended cause.
 - `declarations/auto/several-declarators-conflict.cpp` (gcc-16-o2): error: inconsistent deduction for 'auto': 'int' and then 'double'
 - `declarations/auto/several-declarators-conflict.cpp` (clang-22): error: 'auto' deduced as 'int' in declaration of 'a' and deduced as 'double' in declaration of 'b'
 - `declarations/auto/several-declarators-conflict.cpp` (clang-22-o2): error: 'auto' deduced as 'int' in declaration of 'a' and deduced as 'double' in declaration of 'b'
+- `declarations/auto/several-declarators-pointer-conflict.cpp` (clang-host): error: 'auto' deduced as 'int' in declaration of 'a' and deduced as 'double' in declaration of 'b'
+- `declarations/auto/several-declarators-pointer-conflict.cpp` (gcc-host): error: inconsistent deduction for ‘auto’: ‘int’ and then ‘double’
+- `declarations/auto/several-declarators-pointer-conflict.cpp` (edg-7.0): error: "auto" type is "double" for this entity, but was previously implied to be "int"
+- `declarations/auto/several-declarators-pointer-conflict.cpp` (gcc-14): error: inconsistent deduction for 'auto': 'int' and then 'double'
+- `declarations/auto/several-declarators-pointer-conflict.cpp` (clang-18): error: 'auto' deduced as 'int' in declaration of 'a' and deduced as 'double' in declaration of 'b'
+- `declarations/auto/several-declarators-pointer-conflict.cpp` (gcc-16): error: inconsistent deduction for 'auto': 'int' and then 'double'
+- `declarations/auto/several-declarators-pointer-conflict.cpp` (gcc-16-o2): error: inconsistent deduction for 'auto': 'int' and then 'double'
+- `declarations/auto/several-declarators-pointer-conflict.cpp` (clang-22): error: 'auto' deduced as 'int' in declaration of 'a' and deduced as 'double' in declaration of 'b'
+- `declarations/auto/several-declarators-pointer-conflict.cpp` (clang-22-o2): error: 'auto' deduced as 'int' in declaration of 'a' and deduced as 'double' in declaration of 'b'
 - `declarations/auto/static-member-no-initializer.cpp` (clang-host): error: declaration of variable 'n' with deduced type 'auto' requires an initializer
 - `declarations/auto/static-member-no-initializer.cpp` (gcc-host): error: declaration of ‘auto n’ has no initializer
 - `declarations/auto/static-member-no-initializer.cpp` (edg-7.0): error: cannot deduce "auto" type (initializer required)
@@ -10516,6 +11271,15 @@ check that the rejection has the intended cause.
 - `declarations/auto/static-member-no-initializer.cpp` (gcc-16-o2): error: declaration of 'auto n' has no initializer
 - `declarations/auto/static-member-no-initializer.cpp` (clang-22): error: declaration of variable 'n' with deduced type 'auto' requires an initializer
 - `declarations/auto/static-member-no-initializer.cpp` (clang-22-o2): error: declaration of variable 'n' with deduced type 'auto' requires an initializer
+- `declarations/auto/static-member-non-const-initializer.cpp` (clang-host): error: non-const static data member must be initialized out of line
+- `declarations/auto/static-member-non-const-initializer.cpp` (gcc-host): error: ISO C++ forbids in-class initialization of non-const static member ‘S::n’
+- `declarations/auto/static-member-non-const-initializer.cpp` (edg-7.0): error: a member with an in-class initializer must be const / error: cannot deduce "auto" type (initializer required)
+- `declarations/auto/static-member-non-const-initializer.cpp` (gcc-14): error: ISO C++ forbids in-class initialization of non-const static member 'S::n'
+- `declarations/auto/static-member-non-const-initializer.cpp` (clang-18): error: non-const static data member must be initialized out of line
+- `declarations/auto/static-member-non-const-initializer.cpp` (gcc-16): error: ISO C++ forbids in-class initialization of non-const static member 'S::n'
+- `declarations/auto/static-member-non-const-initializer.cpp` (gcc-16-o2): error: ISO C++ forbids in-class initialization of non-const static member 'S::n'
+- `declarations/auto/static-member-non-const-initializer.cpp` (clang-22): error: non-const static data member must be initialized out of line
+- `declarations/auto/static-member-non-const-initializer.cpp` (clang-22-o2): error: non-const static data member must be initialized out of line
 - `declarations/auto/void-initializer.cpp` (clang-host): error: variable has incomplete type 'void'
 - `declarations/auto/void-initializer.cpp` (gcc-host): error: deduced type ‘void’ for ‘a’ is incomplete
 - `declarations/auto/void-initializer.cpp` (edg-7.0): error: cannot deduce "auto" type
@@ -11052,6 +11816,15 @@ check that the rejection has the intended cause.
 - `declarations/declarators/noexcept-redeclaration.cpp` (gcc-16-o2): error: declaration of 'void f()' has a different exception specifier / note: from previous declaration 'void f() noexcept'
 - `declarations/declarators/noexcept-redeclaration.cpp` (clang-22): error: 'f' is missing exception specification 'noexcept' / note: previous declaration is here
 - `declarations/declarators/noexcept-redeclaration.cpp` (clang-22-o2): error: 'f' is missing exception specification 'noexcept' / note: previous declaration is here
+- `declarations/declarators/pointer-to-reference-alias.cpp` (clang-host): error: 'p' declared as a pointer to a reference of type 'Ref' (aka 'int &')
+- `declarations/declarators/pointer-to-reference-alias.cpp` (gcc-host): error: cannot declare pointer to ‘using Ref = int&’ {aka ‘int&’}
+- `declarations/declarators/pointer-to-reference-alias.cpp` (edg-7.0): error: pointer to reference is not allowed
+- `declarations/declarators/pointer-to-reference-alias.cpp` (gcc-14): error: cannot declare pointer to 'using Ref = int&' {aka 'int&'}
+- `declarations/declarators/pointer-to-reference-alias.cpp` (clang-18): error: 'p' declared as a pointer to a reference of type 'Ref' (aka 'int &')
+- `declarations/declarators/pointer-to-reference-alias.cpp` (gcc-16): error: cannot declare pointer to 'using Ref = int&' {aka 'int&'}
+- `declarations/declarators/pointer-to-reference-alias.cpp` (gcc-16-o2): error: cannot declare pointer to 'using Ref = int&' {aka 'int&'}
+- `declarations/declarators/pointer-to-reference-alias.cpp` (clang-22): error: 'p' declared as a pointer to a reference of type 'Ref' (aka 'int &')
+- `declarations/declarators/pointer-to-reference-alias.cpp` (clang-22-o2): error: 'p' declared as a pointer to a reference of type 'Ref' (aka 'int &')
 - `declarations/declarators/pointer-to-reference-member.cpp` (clang-host): error: 'pm' declared as a member pointer to a reference of type 'int &'
 - `declarations/declarators/pointer-to-reference-member.cpp` (gcc-host): error: cannot declare pointer to ‘int&’
 - `declarations/declarators/pointer-to-reference-member.cpp` (edg-7.0): error: pointer to member of reference type is not allowed
@@ -11145,6 +11918,10 @@ check that the rejection has the intended cause.
 - `declarations/declarators/ref-qualified-free-function.cpp` (gcc-16-o2): error: non-member function 'void f()' cannot have ref-qualifier
 - `declarations/declarators/ref-qualified-free-function.cpp` (clang-22): error: non-member function cannot have '&' qualifier
 - `declarations/declarators/ref-qualified-free-function.cpp` (clang-22-o2): error: non-member function cannot have '&' qualifier
+- `declarations/declarators/ref-qualified-function-type-member.cpp` (gcc-host): error: cannot convert ‘int (S::*)() &&’ to ‘int (S::*)()’ in initialization
+- `declarations/declarators/ref-qualified-function-type-member.cpp` (gcc-14): error: cannot convert 'int (S::*)() &&' to 'int (S::*)()' in initialization
+- `declarations/declarators/ref-qualified-function-type-member.cpp` (gcc-16): error: cannot convert 'int (S::*)() &&' to 'int (S::*)()' in initialization
+- `declarations/declarators/ref-qualified-function-type-member.cpp` (gcc-16-o2): error: cannot convert 'int (S::*)() &&' to 'int (S::*)()' in initialization
 - `declarations/declarators/reference-requires-initializer.cpp` (clang-host): error: declaration of reference variable 'r' requires an initializer
 - `declarations/declarators/reference-requires-initializer.cpp` (gcc-host): error: ‘r’ declared as reference but not initialized
 - `declarations/declarators/reference-requires-initializer.cpp` (edg-7.0): error: reference variable "r" requires an initializer
@@ -11498,6 +12275,10 @@ check that the rejection has the intended cause.
 - `declarations/exception-specifications/non-constant.cpp` (gcc-16-o2): error: the value of 'flag' is not usable in a constant expression / note: 'bool flag' is not const
 - `declarations/exception-specifications/non-constant.cpp` (clang-22): error: noexcept specifier argument is not a constant expression / note: read of non-const variable 'flag' is not allowed in a constant expression
 - `declarations/exception-specifications/non-constant.cpp` (clang-22-o2): error: noexcept specifier argument is not a constant expression / note: read of non-const variable 'flag' is not allowed in a constant expression
+- `declarations/exception-specifications/operand-cycle-static.cpp` (clang-host): error: exception specification is not available until end of class definition
+- `declarations/exception-specifications/operand-cycle-static.cpp` (clang-18): error: exception specification is not available until end of class definition
+- `declarations/exception-specifications/operand-cycle-static.cpp` (clang-22): error: exception specification is not available until end of class definition
+- `declarations/exception-specifications/operand-cycle-static.cpp` (clang-22-o2): error: exception specification is not available until end of class definition
 - `declarations/exception-specifications/operand-cycle.cpp` (clang-host): error: exception specification is not available until end of class definition
 - `declarations/exception-specifications/operand-cycle.cpp` (clang-18): error: exception specification is not available until end of class definition
 - `declarations/exception-specifications/operand-cycle.cpp` (clang-22): error: exception specification is not available until end of class definition
@@ -11537,6 +12318,7 @@ check that the rejection has the intended cause.
 - `declarations/exception-specifications/pointer-operand.cpp` (gcc-16-o2): error: conversion from 'const int*' to 'bool' in a converted constant expression / error: could not convert '& x' from 'const int*' to 'bool'
 - `declarations/exception-specifications/pointer-operand.cpp` (clang-22): error: conversion from 'const int *' to 'bool' is not allowed in a converted constant expression
 - `declarations/exception-specifications/pointer-operand.cpp` (clang-22-o2): error: conversion from 'const int *' to 'bool' is not allowed in a converted constant expression
+- `declarations/exception-specifications/throw-empty-pointer.cpp` (edg-7.0): error: the "throw()" specification is not part of C++20 and later
 - `declarations/exception-specifications/throw-empty-removed.cpp` (edg-7.0): error: the "throw()" specification is not part of C++20 and later
 - `declarations/exception-specifications/throw-type-removed.cpp` (clang-host): error: ISO C++17 does not allow dynamic exception specifications [-Wdynamic-exception-spec] / note: use 'noexcept(false)' instead
 - `declarations/exception-specifications/throw-type-removed.cpp` (gcc-host): error: ISO C++17 does not allow dynamic exception specifications
@@ -11565,6 +12347,15 @@ check that the rejection has the intended cause.
 - `declarations/functions/default-arguments/function-pointer-no-default.cpp` (gcc-16-o2): error: too few arguments to function
 - `declarations/functions/default-arguments/function-pointer-no-default.cpp` (clang-22): error: too few arguments to function call, expected 1, have 0
 - `declarations/functions/default-arguments/function-pointer-no-default.cpp` (clang-22-o2): error: too few arguments to function call, expected 1, have 0
+- `declarations/functions/default-arguments/member-operator-default-argument.cpp` (clang-host): error: parameter of overloaded 'operator-' cannot have a default argument
+- `declarations/functions/default-arguments/member-operator-default-argument.cpp` (gcc-host): error: ‘S S::operator-(int)’ cannot have default arguments
+- `declarations/functions/default-arguments/member-operator-default-argument.cpp` (edg-7.0): error: default argument is not allowed
+- `declarations/functions/default-arguments/member-operator-default-argument.cpp` (gcc-14): error: 'S S::operator-(int)' cannot have default arguments
+- `declarations/functions/default-arguments/member-operator-default-argument.cpp` (clang-18): error: parameter of overloaded 'operator-' cannot have a default argument
+- `declarations/functions/default-arguments/member-operator-default-argument.cpp` (gcc-16): error: 'S S::operator-(int)' cannot have default arguments
+- `declarations/functions/default-arguments/member-operator-default-argument.cpp` (gcc-16-o2): error: 'S S::operator-(int)' cannot have default arguments
+- `declarations/functions/default-arguments/member-operator-default-argument.cpp` (clang-22): error: parameter of overloaded 'operator-' cannot have a default argument
+- `declarations/functions/default-arguments/member-operator-default-argument.cpp` (clang-22-o2): error: parameter of overloaded 'operator-' cannot have a default argument
 - `declarations/functions/default-arguments/not-trailing.cpp` (clang-host): error: missing default argument on parameter 'b'
 - `declarations/functions/default-arguments/not-trailing.cpp` (gcc-host): error: default argument missing for parameter 2 of ‘int f(int, int)’ / note: ...following parameter 1 which has a default argument
 - `declarations/functions/default-arguments/not-trailing.cpp` (edg-7.0): error: default argument not at end of parameter list
@@ -11781,6 +12572,15 @@ check that the rejection has the intended cause.
 - `declarations/functions/definitions/main-wrong-return-type.cpp` (gcc-16-o2): error: '::main' must return 'int'
 - `declarations/functions/definitions/main-wrong-return-type.cpp` (clang-22): error: 'main' must return 'int'
 - `declarations/functions/definitions/main-wrong-return-type.cpp` (clang-22-o2): error: 'main' must return 'int'
+- `declarations/functions/definitions/nested-function-definition-member.cpp` (clang-host): error: function definition is not allowed here
+- `declarations/functions/definitions/nested-function-definition-member.cpp` (gcc-host): note: remove parentheses to default-initialize a variable / note: or replace parentheses with braces to value-initialize a variable / error: a function-definition is not allowed here before ‘{’ token
+- `declarations/functions/definitions/nested-function-definition-member.cpp` (edg-7.0): error: expected a ";"
+- `declarations/functions/definitions/nested-function-definition-member.cpp` (gcc-14): note: remove parentheses to default-initialize a variable / note: or replace parentheses with braces to value-initialize a variable / error: a function-definition is not allowed here before '{' token
+- `declarations/functions/definitions/nested-function-definition-member.cpp` (clang-18): error: function definition is not allowed here
+- `declarations/functions/definitions/nested-function-definition-member.cpp` (gcc-16): note: remove parentheses to default-initialize a variable / note: or replace parentheses with braces to value-initialize a variable / error: a function-definition is not allowed here before '{' token
+- `declarations/functions/definitions/nested-function-definition-member.cpp` (gcc-16-o2): note: remove parentheses to default-initialize a variable / note: or replace parentheses with braces to value-initialize a variable / error: a function-definition is not allowed here before '{' token
+- `declarations/functions/definitions/nested-function-definition-member.cpp` (clang-22): error: function definition is not allowed here
+- `declarations/functions/definitions/nested-function-definition-member.cpp` (clang-22-o2): error: function definition is not allowed here
 - `declarations/functions/definitions/nested-function-definition.cpp` (clang-host): error: function definition is not allowed here
 - `declarations/functions/definitions/nested-function-definition.cpp` (gcc-host): error: a function-definition is not allowed here before ‘{’ token
 - `declarations/functions/definitions/nested-function-definition.cpp` (edg-7.0): error: expected a ";"
@@ -11910,6 +12710,15 @@ check that the rejection has the intended cause.
 - `declarations/functions/deleted/deleted-main.cpp` (gcc-16-o2): error: '::main' cannot be deleted
 - `declarations/functions/deleted/deleted-main.cpp` (clang-22): error: 'main' is not allowed to be deleted
 - `declarations/functions/deleted/deleted-main.cpp` (clang-22-o2): error: 'main' is not allowed to be deleted
+- `declarations/functions/deleted/deleted-member-with-message.cpp` (clang-host): error: '= delete' with a message is a C++2c extension [-Werror,-Wc++26-extensions]
+- `declarations/functions/deleted/deleted-member-with-message.cpp` (gcc-host): error: ‘delete’ reason only available with ‘-std=c++2c’ or ‘-std=gnu++2c’ [-Wc++26-extensions]
+- `declarations/functions/deleted/deleted-member-with-message.cpp` (edg-7.0): error: expected a ";"
+- `declarations/functions/deleted/deleted-member-with-message.cpp` (gcc-14): error: expected ';' at end of member declaration / error: expected unqualified-id before string constant / error: expected ')' before string constant
+- `declarations/functions/deleted/deleted-member-with-message.cpp` (clang-18): error: expected ';' after delete
+- `declarations/functions/deleted/deleted-member-with-message.cpp` (gcc-16): error: 'delete' reason only available with '-std=c++2c' or '-std=gnu++2c' [-Wc++26-extensions]
+- `declarations/functions/deleted/deleted-member-with-message.cpp` (gcc-16-o2): error: 'delete' reason only available with '-std=c++2c' or '-std=gnu++2c' [-Wc++26-extensions]
+- `declarations/functions/deleted/deleted-member-with-message.cpp` (clang-22): error: '= delete' with a message is a C++2c extension [-Werror,-Wc++26-extensions]
+- `declarations/functions/deleted/deleted-member-with-message.cpp` (clang-22-o2): error: '= delete' with a message is a C++2c extension [-Werror,-Wc++26-extensions]
 - `declarations/functions/deleted/deleted-overload-selected.cpp` (clang-host): error: call to deleted function 'f' / note: candidate function has been explicitly deleted / note: candidate function
 - `declarations/functions/deleted/deleted-overload-selected.cpp` (gcc-host): error: use of deleted function ‘void f(double)’ / note: use ‘-fdiagnostics-all-candidates’ to display considered candidates
 - `declarations/functions/deleted/deleted-overload-selected.cpp` (edg-7.0): error: function "f(double)" (declared at line 7) cannot be referenced -- it is a deleted function
@@ -12036,6 +12845,15 @@ check that the rejection has the intended cause.
 - `declarations/functions/return-deduction/virtual-auto.cpp` (gcc-16-o2): error: virtual function cannot have deduced return type
 - `declarations/functions/return-deduction/virtual-auto.cpp` (clang-22): error: function with deduced return type cannot be virtual
 - `declarations/functions/return-deduction/virtual-auto.cpp` (clang-22-o2): error: function with deduced return type cannot be virtual
+- `declarations/functions/return-deduction/virtual-decltype-auto.cpp` (clang-host): error: function with deduced return type cannot be virtual
+- `declarations/functions/return-deduction/virtual-decltype-auto.cpp` (gcc-host): error: virtual function cannot have deduced return type
+- `declarations/functions/return-deduction/virtual-decltype-auto.cpp` (edg-7.0): error: a virtual function cannot have a deduced return type
+- `declarations/functions/return-deduction/virtual-decltype-auto.cpp` (gcc-14): error: virtual function cannot have deduced return type
+- `declarations/functions/return-deduction/virtual-decltype-auto.cpp` (clang-18): error: function with deduced return type cannot be virtual
+- `declarations/functions/return-deduction/virtual-decltype-auto.cpp` (gcc-16): error: virtual function cannot have deduced return type
+- `declarations/functions/return-deduction/virtual-decltype-auto.cpp` (gcc-16-o2): error: virtual function cannot have deduced return type
+- `declarations/functions/return-deduction/virtual-decltype-auto.cpp` (clang-22): error: function with deduced return type cannot be virtual
+- `declarations/functions/return-deduction/virtual-decltype-auto.cpp` (clang-22-o2): error: function with deduced return type cannot be virtual
 - `declarations/functions/return-deduction/void-and-value.cpp` (clang-host): error: 'auto' in return type deduced as 'int' here but deduced as 'void' in earlier return statement
 - `declarations/functions/return-deduction/void-and-value.cpp` (gcc-host): error: inconsistent deduction for auto return type: ‘void’ and then ‘int’ / error: return-statement with a value, in function returning ‘void’ [-fpermissive]
 - `declarations/functions/return-deduction/void-and-value.cpp` (edg-7.0): error: deduced return type "int" conflicts with previously deduced type "void"
@@ -12054,6 +12872,15 @@ check that the rejection has the intended cause.
 - `declarations/initialization/forms/array-from-array.cpp` (gcc-16-o2): error: array must be initialized with a brace-enclosed initializer
 - `declarations/initialization/forms/array-from-array.cpp` (clang-22): error: array initializer must be an initializer list
 - `declarations/initialization/forms/array-from-array.cpp` (clang-22-o2): error: array initializer must be an initializer list
+- `declarations/initialization/forms/array-member-from-array.cpp` (clang-host): error: cannot initialize an array element of type 'int' with an lvalue of type 'const int[2]'
+- `declarations/initialization/forms/array-member-from-array.cpp` (gcc-host): error: array used as initializer
+- `declarations/initialization/forms/array-member-from-array.cpp` (edg-7.0): error: a value of type "const int *" cannot be used to initialize an entity of type "int"
+- `declarations/initialization/forms/array-member-from-array.cpp` (gcc-14): error: array used as initializer
+- `declarations/initialization/forms/array-member-from-array.cpp` (clang-18): error: cannot initialize an array element of type 'int' with an lvalue of type 'const int[2]'
+- `declarations/initialization/forms/array-member-from-array.cpp` (gcc-16): error: array used as initializer
+- `declarations/initialization/forms/array-member-from-array.cpp` (gcc-16-o2): error: array used as initializer
+- `declarations/initialization/forms/array-member-from-array.cpp` (clang-22): error: cannot initialize an array element of type 'int' with an lvalue of type 'const int[2]'
+- `declarations/initialization/forms/array-member-from-array.cpp` (clang-22-o2): error: cannot initialize an array element of type 'int' with an lvalue of type 'const int[2]'
 - `declarations/initialization/forms/copy-indeterminate-unsigned-char.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: read of uninitialized object is not allowed in a constant expression
 - `declarations/initialization/forms/copy-indeterminate-unsigned-char.cpp` (gcc-host): error: non-constant condition for static assertion / error: the value of ‘a’ is not usable in a constant expression / note: ‘unsigned char a’ is not const
 - `declarations/initialization/forms/copy-indeterminate-unsigned-char.cpp` (edg-7.0): error: expression must have a constant value / note: access to uninitialized object
@@ -12260,6 +13087,15 @@ check that the rejection has the intended cause.
 - `declarations/initialization/list/empty-base-no-elision.cpp` (gcc-16-o2): error: initializer for 'Empty' must be brace-enclosed
 - `declarations/initialization/list/empty-base-no-elision.cpp` (clang-22): error: initializer for aggregate with no elements requires explicit braces
 - `declarations/initialization/list/empty-base-no-elision.cpp` (clang-22-o2): error: initializer for aggregate with no elements requires explicit braces
+- `declarations/initialization/list/empty-member-no-elision.cpp` (clang-host): error: initializer for aggregate with no elements requires explicit braces
+- `declarations/initialization/list/empty-member-no-elision.cpp` (gcc-host): error: initializer for ‘Empty’ must be brace-enclosed
+- `declarations/initialization/list/empty-member-no-elision.cpp` (edg-7.0): error: no suitable constructor exists to convert from "int" to "Empty"
+- `declarations/initialization/list/empty-member-no-elision.cpp` (gcc-14): error: initializer for 'Empty' must be brace-enclosed
+- `declarations/initialization/list/empty-member-no-elision.cpp` (clang-18): error: initializer for aggregate with no elements requires explicit braces
+- `declarations/initialization/list/empty-member-no-elision.cpp` (gcc-16): error: initializer for 'Empty' must be brace-enclosed
+- `declarations/initialization/list/empty-member-no-elision.cpp` (gcc-16-o2): error: initializer for 'Empty' must be brace-enclosed
+- `declarations/initialization/list/empty-member-no-elision.cpp` (clang-22): error: initializer for aggregate with no elements requires explicit braces
+- `declarations/initialization/list/empty-member-no-elision.cpp` (clang-22-o2): error: initializer for aggregate with no elements requires explicit braces
 - `declarations/initialization/list/missing-reference-member.cpp` (clang-host): error: reference member of type 'int &' uninitialized / note: uninitialized reference member is here
 - `declarations/initialization/list/missing-reference-member.cpp` (gcc-host): error: member ‘R::r’ is uninitialized reference
 - `declarations/initialization/list/missing-reference-member.cpp` (edg-7.0): error: variable "x" has an uninitialized const or reference member
@@ -12385,6 +13221,15 @@ check that the rejection has the intended cause.
 - `declarations/initialization/list/narrowing-unscoped-enum.cpp` (gcc-16-o2): error: narrowing conversion of 'e' from 'unsigned int' to 'unsigned char' [-Wnarrowing]
 - `declarations/initialization/list/narrowing-unscoped-enum.cpp` (clang-22): error: non-constant-expression cannot be narrowed from type 'E' to 'unsigned char' in initializer list [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
 - `declarations/initialization/list/narrowing-unscoped-enum.cpp` (clang-22-o2): error: non-constant-expression cannot be narrowed from type 'E' to 'unsigned char' in initializer list [-Wc++11-narrowing] / note: insert an explicit cast to silence this issue
+- `declarations/initialization/list/omitted-member-explicit-default-designated.cpp` (clang-host): error: chosen constructor is explicit in copy-initialization / note: in implicit initialization of field 'e' with omitted initializer
+- `declarations/initialization/list/omitted-member-explicit-default-designated.cpp` (gcc-host): error: converting to ‘E’ from initializer list would use explicit constructor ‘E::E()’
+- `declarations/initialization/list/omitted-member-explicit-default-designated.cpp` (edg-7.0): error: no default constructor exists for class "E"
+- `declarations/initialization/list/omitted-member-explicit-default-designated.cpp` (gcc-14): error: converting to 'E' from initializer list would use explicit constructor 'E::E()'
+- `declarations/initialization/list/omitted-member-explicit-default-designated.cpp` (clang-18): error: chosen constructor is explicit in copy-initialization / note: in implicit initialization of field 'e' with omitted initializer
+- `declarations/initialization/list/omitted-member-explicit-default-designated.cpp` (gcc-16): error: converting to 'E' from initializer list would use explicit constructor 'E::E()'
+- `declarations/initialization/list/omitted-member-explicit-default-designated.cpp` (gcc-16-o2): error: converting to 'E' from initializer list would use explicit constructor 'E::E()'
+- `declarations/initialization/list/omitted-member-explicit-default-designated.cpp` (clang-22): error: chosen constructor is explicit in copy-initialization / note: in implicit initialization of field 'e' with omitted initializer
+- `declarations/initialization/list/omitted-member-explicit-default-designated.cpp` (clang-22-o2): error: chosen constructor is explicit in copy-initialization / note: in implicit initialization of field 'e' with omitted initializer
 - `declarations/initialization/list/omitted-member-explicit-default.cpp` (clang-host): error: chosen constructor is explicit in copy-initialization / note: in implicit initialization of field 'e' with omitted initializer
 - `declarations/initialization/list/omitted-member-explicit-default.cpp` (gcc-host): error: converting to ‘E’ from initializer list would use explicit constructor ‘E::E()’
 - `declarations/initialization/list/omitted-member-explicit-default.cpp` (edg-7.0): error: no default constructor exists for class "E"
@@ -12771,6 +13616,15 @@ check that the rejection has the intended cause.
 - `declarations/inline/inline-static-local-in-function.cpp` (gcc-16-o2): error: 'inline' specifier invalid for variable 'x' declared at block scope
 - `declarations/inline/inline-static-local-in-function.cpp` (clang-22): error: inline declaration of 'x' not allowed in block scope
 - `declarations/inline/inline-static-local-in-function.cpp` (clang-22-o2): error: inline declaration of 'x' not allowed in block scope
+- `declarations/inline/inline-static-member-declared-later.cpp` (clang-host): error: variable has incomplete type 'Later' / note: forward declaration of 'Later'
+- `declarations/inline/inline-static-member-declared-later.cpp` (gcc-host): error: ‘Later S::item’ has incomplete type
+- `declarations/inline/inline-static-member-declared-later.cpp` (edg-7.0): error: incomplete type "Later" is not allowed / error: incomplete type "Later" is not allowed
+- `declarations/inline/inline-static-member-declared-later.cpp` (gcc-14): error: 'Later S::item' has incomplete type
+- `declarations/inline/inline-static-member-declared-later.cpp` (clang-18): error: variable has incomplete type 'Later' / note: forward declaration of 'Later'
+- `declarations/inline/inline-static-member-declared-later.cpp` (gcc-16): error: 'Later S::item' has incomplete type
+- `declarations/inline/inline-static-member-declared-later.cpp` (gcc-16-o2): error: 'Later S::item' has incomplete type
+- `declarations/inline/inline-static-member-declared-later.cpp` (clang-22): error: variable has incomplete type 'Later' / note: forward declaration of 'Later'
+- `declarations/inline/inline-static-member-declared-later.cpp` (clang-22-o2): error: variable has incomplete type 'Later' / note: forward declaration of 'Later'
 - `declarations/inline/inline-static-member-incomplete.cpp` (clang-host): error: variable has incomplete type 'S' / note: definition of 'S' is not complete until the closing '}'
 - `declarations/inline/inline-static-member-incomplete.cpp` (gcc-host): error: ‘S S::self’ has incomplete type
 - `declarations/inline/inline-static-member-incomplete.cpp` (edg-7.0): error: incomplete type "S" is not allowed / error: incomplete type "S" is not allowed
@@ -12917,6 +13771,15 @@ check that the rejection has the intended cause.
 - `declarations/linkage-specifications/single-form-static.cpp` (gcc-16-o2): error: invalid use of 'static' in linkage specification
 - `declarations/linkage-specifications/single-form-static.cpp` (clang-22): error: cannot combine with previous 'extern' declaration specifier
 - `declarations/linkage-specifications/single-form-static.cpp` (clang-22-o2): error: cannot combine with previous 'extern' declaration specifier
+- `declarations/linkage-specifications/unknown-language-block.cpp` (clang-host): error: unknown linkage language
+- `declarations/linkage-specifications/unknown-language-block.cpp` (gcc-host): error: language string ‘"Pascal"’ not recognized
+- `declarations/linkage-specifications/unknown-language-block.cpp` (edg-7.0): error: unknown external linkage specification
+- `declarations/linkage-specifications/unknown-language-block.cpp` (gcc-14): error: language string '"Pascal"' not recognized
+- `declarations/linkage-specifications/unknown-language-block.cpp` (clang-18): error: unknown linkage language
+- `declarations/linkage-specifications/unknown-language-block.cpp` (gcc-16): error: language string '"Pascal"' not recognized
+- `declarations/linkage-specifications/unknown-language-block.cpp` (gcc-16-o2): error: language string '"Pascal"' not recognized
+- `declarations/linkage-specifications/unknown-language-block.cpp` (clang-22): error: unknown linkage language
+- `declarations/linkage-specifications/unknown-language-block.cpp` (clang-22-o2): error: unknown linkage language
 - `declarations/linkage-specifications/unknown-language.cpp` (clang-host): error: unknown linkage language
 - `declarations/linkage-specifications/unknown-language.cpp` (gcc-host): error: language string ‘"Fortran"’ not recognized
 - `declarations/linkage-specifications/unknown-language.cpp` (edg-7.0): error: unknown external linkage specification
@@ -12998,6 +13861,15 @@ check that the rejection has the intended cause.
 - `declarations/namespaces/name-conflict.cpp` (gcc-16-o2): error: 'namespace N { }' redeclared as different kind of entity / note: previous declaration 'int N'
 - `declarations/namespaces/name-conflict.cpp` (clang-22): error: redefinition of 'N' as different kind of symbol / note: previous definition is here
 - `declarations/namespaces/name-conflict.cpp` (clang-22-o2): error: redefinition of 'N' as different kind of symbol / note: previous definition is here
+- `declarations/namespaces/nested-first-inline-both.cpp` (clang-host): error: nested namespace definition cannot be 'inline'
+- `declarations/namespaces/nested-first-inline-both.cpp` (gcc-host): error: a nested namespace definition cannot be inline
+- `declarations/namespaces/nested-first-inline-both.cpp` (edg-7.0): error: the "inline" keyword cannot be used on a nested namespace declaration
+- `declarations/namespaces/nested-first-inline-both.cpp` (gcc-14): error: a nested namespace definition cannot be inline
+- `declarations/namespaces/nested-first-inline-both.cpp` (clang-18): error: nested namespace definition cannot be 'inline'
+- `declarations/namespaces/nested-first-inline-both.cpp` (gcc-16): error: a nested namespace definition cannot be inline
+- `declarations/namespaces/nested-first-inline-both.cpp` (gcc-16-o2): error: a nested namespace definition cannot be inline
+- `declarations/namespaces/nested-first-inline-both.cpp` (clang-22): error: nested namespace definition cannot be 'inline'
+- `declarations/namespaces/nested-first-inline-both.cpp` (clang-22-o2): error: nested namespace definition cannot be 'inline'
 - `declarations/namespaces/nested-first-inline.cpp` (clang-host): error: nested namespace definition cannot be 'inline'
 - `declarations/namespaces/nested-first-inline.cpp` (gcc-host): error: a nested namespace definition cannot be inline
 - `declarations/namespaces/nested-first-inline.cpp` (edg-7.0): error: the "inline" keyword cannot be used on a nested namespace declaration
@@ -13016,6 +13888,15 @@ check that the rejection has the intended cause.
 - `declarations/namespaces/undeclared-qualified-definition.cpp` (gcc-16-o2): error: 'N::x' should have been declared inside 'N'
 - `declarations/namespaces/undeclared-qualified-definition.cpp` (clang-22): error: no member named 'x' in namespace 'N'
 - `declarations/namespaces/undeclared-qualified-definition.cpp` (clang-22-o2): error: no member named 'x' in namespace 'N'
+- `declarations/namespaces/unnamed-namespace-duplicate-function.cpp` (clang-host): error: call to 'g' is ambiguous / note: candidate function / note: candidate function
+- `declarations/namespaces/unnamed-namespace-duplicate-function.cpp` (gcc-host): error: call of overloaded ‘g()’ is ambiguous
+- `declarations/namespaces/unnamed-namespace-duplicate-function.cpp` (edg-7.0): error: more than one instance of overloaded function "g" matches the argument list:
+- `declarations/namespaces/unnamed-namespace-duplicate-function.cpp` (gcc-14): error: call of overloaded 'g()' is ambiguous / note: candidate: 'int g()' / note: candidate: 'int {anonymous}::g()'
+- `declarations/namespaces/unnamed-namespace-duplicate-function.cpp` (clang-18): error: call to 'g' is ambiguous / note: candidate function / note: candidate function
+- `declarations/namespaces/unnamed-namespace-duplicate-function.cpp` (gcc-16): error: call of overloaded 'g()' is ambiguous
+- `declarations/namespaces/unnamed-namespace-duplicate-function.cpp` (gcc-16-o2): error: call of overloaded 'g()' is ambiguous
+- `declarations/namespaces/unnamed-namespace-duplicate-function.cpp` (clang-22): error: call to 'g' is ambiguous / note: candidate function / note: candidate function
+- `declarations/namespaces/unnamed-namespace-duplicate-function.cpp` (clang-22-o2): error: call to 'g' is ambiguous / note: candidate function / note: candidate function
 - `declarations/namespaces/unnamed-namespace-duplicate.cpp` (clang-host): error: reference to 'z' is ambiguous / note: candidate found by name lookup is 'z' / note: candidate found by name lookup is '(anonymous namespace)::z'
 - `declarations/namespaces/unnamed-namespace-duplicate.cpp` (gcc-host): error: reference to ‘z’ is ambiguous
 - `declarations/namespaces/unnamed-namespace-duplicate.cpp` (edg-7.0): error: "z" is ambiguous
@@ -13372,6 +14253,15 @@ check that the rejection has the intended cause.
 - `declarations/storage-linkage/qualified-static-after-extern.cpp` (gcc-16-o2): error: 'limits::count' was declared 'extern' and later 'static' [-fpermissive] / note: previous declaration of 'limits::count'
 - `declarations/storage-linkage/qualified-static-after-extern.cpp` (clang-22): error: static declaration of 'count' follows non-static declaration / note: previous declaration is here
 - `declarations/storage-linkage/qualified-static-after-extern.cpp` (clang-22-o2): error: static declaration of 'count' follows non-static declaration / note: previous declaration is here
+- `declarations/storage-linkage/register-parameter.cpp` (clang-host): error: ISO C++17 does not allow 'register' storage class specifier [-Wregister]
+- `declarations/storage-linkage/register-parameter.cpp` (gcc-host): error: ISO C++17 does not allow ‘register’ storage class specifier [-Wregister]
+- `declarations/storage-linkage/register-parameter.cpp` (edg-7.0): error: use of the "register" storage class specifier is not allowed
+- `declarations/storage-linkage/register-parameter.cpp` (gcc-14): error: ISO C++17 does not allow 'register' storage class specifier [-Wregister]
+- `declarations/storage-linkage/register-parameter.cpp` (clang-18): error: ISO C++17 does not allow 'register' storage class specifier [-Wregister]
+- `declarations/storage-linkage/register-parameter.cpp` (gcc-16): error: ISO C++17 does not allow 'register' storage class specifier [-Wregister]
+- `declarations/storage-linkage/register-parameter.cpp` (gcc-16-o2): error: ISO C++17 does not allow 'register' storage class specifier [-Wregister]
+- `declarations/storage-linkage/register-parameter.cpp` (clang-22): error: ISO C++17 does not allow 'register' storage class specifier [-Wregister]
+- `declarations/storage-linkage/register-parameter.cpp` (clang-22-o2): error: ISO C++17 does not allow 'register' storage class specifier [-Wregister]
 - `declarations/storage-linkage/register.cpp` (clang-host): error: ISO C++17 does not allow 'register' storage class specifier [-Wregister]
 - `declarations/storage-linkage/register.cpp` (gcc-host): error: ISO C++17 does not allow ‘register’ storage class specifier [-Wregister]
 - `declarations/storage-linkage/register.cpp` (edg-7.0): error: use of the "register" storage class specifier is not allowed
@@ -13488,6 +14378,15 @@ check that the rejection has the intended cause.
 - `declarations/structured-bindings/as-parameter.cpp` (gcc-16-o2): error: 'x' was not declared in this scope / error: expected ']' before ',' token / error: expected ')' before ',' token / error: expected initializer before ']' token
 - `declarations/structured-bindings/as-parameter.cpp` (clang-22): error: use of undeclared identifier 'x'
 - `declarations/structured-bindings/as-parameter.cpp` (clang-22-o2): error: use of undeclared identifier 'x'
+- `declarations/structured-bindings/bit-field-address-copy.cpp` (clang-host): error: address of bit-field requested
+- `declarations/structured-bindings/bit-field-address-copy.cpp` (gcc-host): error: attempt to take address of bit-field
+- `declarations/structured-bindings/bit-field-address-copy.cpp` (edg-7.0): error: taking the address of a bit field is not allowed
+- `declarations/structured-bindings/bit-field-address-copy.cpp` (gcc-14): error: attempt to take address of bit-field
+- `declarations/structured-bindings/bit-field-address-copy.cpp` (clang-18): error: address of bit-field requested
+- `declarations/structured-bindings/bit-field-address-copy.cpp` (gcc-16): error: attempt to take address of bit-field
+- `declarations/structured-bindings/bit-field-address-copy.cpp` (gcc-16-o2): error: attempt to take address of bit-field
+- `declarations/structured-bindings/bit-field-address-copy.cpp` (clang-22): error: address of bit-field requested
+- `declarations/structured-bindings/bit-field-address-copy.cpp` (clang-22-o2): error: address of bit-field requested
 - `declarations/structured-bindings/bit-field-address.cpp` (clang-host): error: address of bit-field requested
 - `declarations/structured-bindings/bit-field-address.cpp` (gcc-host): error: attempt to take address of bit-field
 - `declarations/structured-bindings/bit-field-address.cpp` (edg-7.0): error: taking the address of a bit field is not allowed
@@ -14004,6 +14903,15 @@ check that the rejection has the intended cause.
 - `declarations/type-names/typedef-no-name.cpp` (gcc-16-o2): error: declaration does not declare anything [-fpermissive]
 - `declarations/type-names/typedef-no-name.cpp` (clang-22): error: typedef requires a name [-Werror,-Wmissing-declarations]
 - `declarations/type-names/typedef-no-name.cpp` (clang-22-o2): error: typedef requires a name [-Werror,-Wmissing-declarations]
+- `declarations/type-names/typedef-of-class-then-variable.cpp` (clang-host): error: redefinition of 'span' as different kind of symbol / note: previous definition is here
+- `declarations/type-names/typedef-of-class-then-variable.cpp` (gcc-host): error: ‘int span’ redeclared as different kind of entity / note: previous declaration ‘typedef struct span span’
+- `declarations/type-names/typedef-of-class-then-variable.cpp` (edg-7.0): error: "span" has already been declared in the current scope
+- `declarations/type-names/typedef-of-class-then-variable.cpp` (gcc-14): error: 'int span' redeclared as different kind of entity / note: previous declaration 'typedef struct span span'
+- `declarations/type-names/typedef-of-class-then-variable.cpp` (clang-18): error: redefinition of 'span' as different kind of symbol / note: previous definition is here
+- `declarations/type-names/typedef-of-class-then-variable.cpp` (gcc-16): error: 'int span' redeclared as different kind of entity / note: previous declaration 'typedef struct span span'
+- `declarations/type-names/typedef-of-class-then-variable.cpp` (gcc-16-o2): error: 'int span' redeclared as different kind of entity / note: previous declaration 'typedef struct span span'
+- `declarations/type-names/typedef-of-class-then-variable.cpp` (clang-22): error: redefinition of 'span' as different kind of symbol / note: previous definition is here
+- `declarations/type-names/typedef-of-class-then-variable.cpp` (clang-22-o2): error: redefinition of 'span' as different kind of symbol / note: previous definition is here
 - `declarations/type-names/typedef-redeclare-different.cpp` (clang-host): error: typedef redefinition with different types ('long' vs 'int') / note: previous definition is here
 - `declarations/type-names/typedef-redeclare-different.cpp` (gcc-host): error: conflicting declaration ‘typedef long int A’ / note: previous declaration as ‘typedef int A’
 - `declarations/type-names/typedef-redeclare-different.cpp` (edg-7.0): error: invalid redeclaration of type name "A" (declared at line 6)
@@ -14022,6 +14930,23 @@ check that the rejection has the intended cause.
 - `declarations/type-names/typedef-storage-class.cpp` (gcc-16-o2): error: 'typedef' specifier conflicts with 'static'
 - `declarations/type-names/typedef-storage-class.cpp` (clang-22): error: cannot combine with previous 'static' declaration specifier
 - `declarations/type-names/typedef-storage-class.cpp` (clang-22-o2): error: cannot combine with previous 'static' declaration specifier
+- `declarations/type-names/typedef-then-variable.cpp` (clang-host): error: redefinition of 'span' as different kind of symbol / note: previous definition is here
+- `declarations/type-names/typedef-then-variable.cpp` (gcc-host): error: ‘int span’ redeclared as different kind of entity / note: previous declaration ‘typedef int span’
+- `declarations/type-names/typedef-then-variable.cpp` (edg-7.0): error: "span" has already been declared in the current scope
+- `declarations/type-names/typedef-then-variable.cpp` (gcc-14): error: 'int span' redeclared as different kind of entity / note: previous declaration 'typedef int span'
+- `declarations/type-names/typedef-then-variable.cpp` (clang-18): error: redefinition of 'span' as different kind of symbol / note: previous definition is here
+- `declarations/type-names/typedef-then-variable.cpp` (gcc-16): error: 'int span' redeclared as different kind of entity / note: previous declaration 'typedef int span'
+- `declarations/type-names/typedef-then-variable.cpp` (gcc-16-o2): error: 'int span' redeclared as different kind of entity / note: previous declaration 'typedef int span'
+- `declarations/type-names/typedef-then-variable.cpp` (clang-22): error: redefinition of 'span' as different kind of symbol / note: previous definition is here
+- `declarations/type-names/typedef-then-variable.cpp` (clang-22-o2): error: redefinition of 'span' as different kind of symbol / note: previous definition is here
+- `declarations/type-names/typedef-unnamed-class-base.cpp` (clang-host): error: anonymous non-C-compatible type given name for linkage purposes by typedef declaration; add a tag name here [-Werror,-Wnon-c-typedef-for-linkage] / note: type is not C-compatible due to this base class / note: type is given name 'Derived' for linkage purposes by this typedef declaration
+- `declarations/type-names/typedef-unnamed-class-base.cpp` (gcc-host): error: anonymous non-C-compatible type given name for linkage purposes by ‘typedef’ declaration [-Wnon-c-typedef-for-linkage] / note: type is not C-compatible because it has a base class
+- `declarations/type-names/typedef-unnamed-class-base.cpp` (edg-7.0): error: anonymous non-C-like type given name for linkage purposes by typedef or alias declaration / note: type is not C-like because of this base class
+- `declarations/type-names/typedef-unnamed-class-base.cpp` (clang-18): error: anonymous non-C-compatible type given name for linkage purposes by typedef declaration; add a tag name here [-Werror,-Wnon-c-typedef-for-linkage] / note: type is not C-compatible due to this base class / note: type is given name 'Derived' for linkage purposes by this typedef declaration
+- `declarations/type-names/typedef-unnamed-class-base.cpp` (gcc-16): error: anonymous non-C-compatible type given name for linkage purposes by 'typedef' declaration [-Wnon-c-typedef-for-linkage] / note: type is not C-compatible because it has a base class
+- `declarations/type-names/typedef-unnamed-class-base.cpp` (gcc-16-o2): error: anonymous non-C-compatible type given name for linkage purposes by 'typedef' declaration [-Wnon-c-typedef-for-linkage] / note: type is not C-compatible because it has a base class
+- `declarations/type-names/typedef-unnamed-class-base.cpp` (clang-22): error: anonymous non-C-compatible type given name for linkage purposes by typedef declaration; add a tag name here [-Werror,-Wnon-c-typedef-for-linkage] / note: type is not C-compatible due to this base class / note: type is given name 'Derived' for linkage purposes by this typedef declaration
+- `declarations/type-names/typedef-unnamed-class-base.cpp` (clang-22-o2): error: anonymous non-C-compatible type given name for linkage purposes by typedef declaration; add a tag name here [-Werror,-Wnon-c-typedef-for-linkage] / note: type is not C-compatible due to this base class / note: type is given name 'Derived' for linkage purposes by this typedef declaration
 - `declarations/type-names/typedef-unnamed-class-member-function.cpp` (clang-host): error: anonymous non-C-compatible type given name for linkage purposes by typedef declaration; add a tag name here [-Werror,-Wnon-c-typedef-for-linkage] / note: type is not C-compatible due to this member declaration / note: type is given name 'Box' for linkage purposes by this typedef declaration
 - `declarations/type-names/typedef-unnamed-class-member-function.cpp` (gcc-host): error: anonymous non-C-compatible type given name for linkage purposes by ‘typedef’ declaration [-Wnon-c-typedef-for-linkage] / note: type is not C-compatible because it contains ‘int Box::get() const’ declaration
 - `declarations/type-names/typedef-unnamed-class-member-function.cpp` (edg-7.0): error: anonymous non-C-like type given name for linkage purposes by typedef or alias declaration / note: type is not C-like because of this member declaration
@@ -14065,6 +14990,15 @@ check that the rejection has the intended cause.
 - `declarations/volatile/assignment-result-warns.cpp` (gcc-16-o2): error: using value of assignment with 'volatile'-qualified left operand is deprecated [-Werror=volatile]
 - `declarations/volatile/assignment-result-warns.cpp` (clang-22): error: use of result of assignment to object of volatile-qualified type 'volatile int' is deprecated [-Werror,-Wdeprecated-volatile]
 - `declarations/volatile/assignment-result-warns.cpp` (clang-22-o2): error: use of result of assignment to object of volatile-qualified type 'volatile int' is deprecated [-Werror,-Wdeprecated-volatile]
+- `declarations/volatile/const-member-on-volatile.cpp` (clang-host): error: 'this' argument to member function 'read' has type 'volatile Port', but function is not marked volatile
+- `declarations/volatile/const-member-on-volatile.cpp` (gcc-host): error: passing ‘volatile Port’ as ‘this’ argument discards qualifiers [-fpermissive]
+- `declarations/volatile/const-member-on-volatile.cpp` (edg-7.0): error: the object has type qualifiers that are not compatible with the member function "Port::read"
+- `declarations/volatile/const-member-on-volatile.cpp` (gcc-14): error: passing 'volatile Port' as 'this' argument discards qualifiers [-fpermissive]
+- `declarations/volatile/const-member-on-volatile.cpp` (clang-18): error: 'this' argument to member function 'read' has type 'volatile Port', but function is not marked volatile
+- `declarations/volatile/const-member-on-volatile.cpp` (gcc-16): error: passing 'volatile Port' as 'this' argument discards qualifiers [-fpermissive]
+- `declarations/volatile/const-member-on-volatile.cpp` (gcc-16-o2): error: passing 'volatile Port' as 'this' argument discards qualifiers [-fpermissive]
+- `declarations/volatile/const-member-on-volatile.cpp` (clang-22): error: 'this' argument to member function 'read' has type 'volatile Port', but function is not marked volatile
+- `declarations/volatile/const-member-on-volatile.cpp` (clang-22-o2): error: 'this' argument to member function 'read' has type 'volatile Port', but function is not marked volatile
 - `declarations/volatile/const-ref-volatile-no-temporary.cpp` (clang-host): error: volatile lvalue reference to type 'const volatile int' cannot bind to a temporary of type 'int'
 - `declarations/volatile/const-ref-volatile-no-temporary.cpp` (gcc-host): error: cannot bind lvalue reference of type ‘const volatile int&’ to an rvalue of type ‘int’
 - `declarations/volatile/const-ref-volatile-no-temporary.cpp` (edg-7.0): error: initial value of reference to const volatile must be an lvalue
@@ -14208,6 +15142,15 @@ check that the rejection has the intended cause.
 - `exceptions/handlers/ctor-try-block-member-use-warns.cpp` (clang-18): error: cannot refer to a non-static member from the handler of a constructor function try block [-Werror,-Wexceptions]
 - `exceptions/handlers/ctor-try-block-member-use-warns.cpp` (clang-22): error: cannot refer to a non-static member from the handler of a constructor function try block [-Werror,-Wexceptions]
 - `exceptions/handlers/ctor-try-block-member-use-warns.cpp` (clang-22-o2): error: cannot refer to a non-static member from the handler of a constructor function try block [-Werror,-Wexceptions]
+- `exceptions/handlers/ctor-try-block-return-nested.cpp` (clang-host): error: return in the catch of a function try block of a constructor is illegal
+- `exceptions/handlers/ctor-try-block-return-nested.cpp` (gcc-host): error: cannot return from a handler of a function-try-block of a constructor
+- `exceptions/handlers/ctor-try-block-return-nested.cpp` (edg-7.0): error: a return statement is not allowed in a handler of a function try block of a constructor
+- `exceptions/handlers/ctor-try-block-return-nested.cpp` (gcc-14): error: cannot return from a handler of a function-try-block of a constructor
+- `exceptions/handlers/ctor-try-block-return-nested.cpp` (clang-18): error: return in the catch of a function try block of a constructor is illegal
+- `exceptions/handlers/ctor-try-block-return-nested.cpp` (gcc-16): error: cannot return from a handler of a function-try-block of a constructor
+- `exceptions/handlers/ctor-try-block-return-nested.cpp` (gcc-16-o2): error: cannot return from a handler of a function-try-block of a constructor
+- `exceptions/handlers/ctor-try-block-return-nested.cpp` (clang-22): error: return in the catch of a function try block of a constructor is illegal
+- `exceptions/handlers/ctor-try-block-return-nested.cpp` (clang-22-o2): error: return in the catch of a function try block of a constructor is illegal
 - `exceptions/handlers/ctor-try-block-return-rejected.cpp` (clang-host): error: return in the catch of a function try block of a constructor is illegal
 - `exceptions/handlers/ctor-try-block-return-rejected.cpp` (gcc-host): error: cannot return from a handler of a function-try-block of a constructor
 - `exceptions/handlers/ctor-try-block-return-rejected.cpp` (edg-7.0): error: a return statement is not allowed in a handler of a function try block of a constructor
@@ -14217,6 +15160,10 @@ check that the rejection has the intended cause.
 - `exceptions/handlers/ctor-try-block-return-rejected.cpp` (gcc-16-o2): error: cannot return from a handler of a function-try-block of a constructor
 - `exceptions/handlers/ctor-try-block-return-rejected.cpp` (clang-22): error: return in the catch of a function try block of a constructor is illegal
 - `exceptions/handlers/ctor-try-block-return-rejected.cpp` (clang-22-o2): error: return in the catch of a function try block of a constructor is illegal
+- `exceptions/handlers/dtor-try-block-member-use-warns.cpp` (clang-host): error: cannot refer to a non-static member from the handler of a destructor function try block [-Werror,-Wexceptions]
+- `exceptions/handlers/dtor-try-block-member-use-warns.cpp` (clang-18): error: cannot refer to a non-static member from the handler of a destructor function try block [-Werror,-Wexceptions]
+- `exceptions/handlers/dtor-try-block-member-use-warns.cpp` (clang-22): error: cannot refer to a non-static member from the handler of a destructor function try block [-Werror,-Wexceptions]
+- `exceptions/handlers/dtor-try-block-member-use-warns.cpp` (clang-22-o2): error: cannot refer to a non-static member from the handler of a destructor function try block [-Werror,-Wexceptions]
 - `exceptions/handlers/duplicate-handler-warns.cpp` (clang-host): error: exception of type 'int' will be caught by earlier handler [-Werror,-Wexceptions] / note: for type 'int'
 - `exceptions/handlers/duplicate-handler-warns.cpp` (gcc-host): error: exception of type ‘int’ will be caught by earlier handler [-Werror=exceptions] / note: for type ‘int’
 - `exceptions/handlers/duplicate-handler-warns.cpp` (gcc-14): error: exception of type 'int' will be caught by earlier handler [-Werror=exceptions] / note: for type 'int'
@@ -14229,6 +15176,15 @@ check that the rejection has the intended cause.
 - `exceptions/handlers/function-try-block-non-void-no-return.cpp` (clang-18): error: non-void function does not return a value in all control paths [-Werror,-Wreturn-type]
 - `exceptions/handlers/function-try-block-non-void-no-return.cpp` (clang-22): error: non-void function does not return a value in all control paths [-Werror,-Wreturn-type]
 - `exceptions/handlers/function-try-block-non-void-no-return.cpp` (clang-22-o2): error: non-void function does not return a value in all control paths [-Werror,-Wreturn-type]
+- `exceptions/handlers/function-try-without-handler.cpp` (clang-host): error: expected catch
+- `exceptions/handlers/function-try-without-handler.cpp` (gcc-host): error: expected ‘catch’ at end of input / error: expected ‘(’ at end of input / error: expected type-specifier at end of input / error: expected ‘)’ at end of input / error: expected ‘{’ at end of input
+- `exceptions/handlers/function-try-without-handler.cpp` (edg-7.0): At end of source: error: try block requires at least one handler 1 error detected in the compilation of "/tidal/tests/exceptions/handlers/function-try-without-handler.cpp".
+- `exceptions/handlers/function-try-without-handler.cpp` (gcc-14): error: expected 'catch' at end of input / error: expected '(' at end of input / error: expected type-specifier at end of input / error: expected ')' at end of input / error: expected '{' at end of input
+- `exceptions/handlers/function-try-without-handler.cpp` (clang-18): error: expected catch
+- `exceptions/handlers/function-try-without-handler.cpp` (gcc-16): error: expected 'catch' at end of input / error: expected '(' at end of input / error: expected type-specifier at end of input / error: expected ')' at end of input / error: expected '{' at end of input
+- `exceptions/handlers/function-try-without-handler.cpp` (gcc-16-o2): error: expected 'catch' at end of input / error: expected '(' at end of input / error: expected type-specifier at end of input / error: expected ')' at end of input / error: expected '{' at end of input
+- `exceptions/handlers/function-try-without-handler.cpp` (clang-22): error: expected catch
+- `exceptions/handlers/function-try-without-handler.cpp` (clang-22-o2): error: expected catch
 - `exceptions/handlers/goto-into-handler.cpp` (clang-host): error: cannot jump from this goto statement to its label / note: jump bypasses initialization of catch block
 - `exceptions/handlers/goto-into-handler.cpp` (gcc-host): error: jump to label ‘inside’ / note:   from here / note:   enters ‘catch’ block
 - `exceptions/handlers/goto-into-handler.cpp` (edg-7.0): error: transfer of control into an exception handler
@@ -14265,6 +15221,10 @@ check that the rejection has the intended cause.
 - `exceptions/handlers/handler-redeclares-param.cpp` (gcc-16-o2): error: redeclaration of 'int v' [-fpermissive]
 - `exceptions/handlers/handler-redeclares-param.cpp` (clang-22): error: redefinition of 'v' / note: previous definition is here
 - `exceptions/handlers/handler-redeclares-param.cpp` (clang-22-o2): error: redefinition of 'v' / note: previous definition is here
+- `exceptions/handlers/member-function-try-block-no-return.cpp` (clang-host): error: non-void function does not return a value in all control paths [-Werror,-Wreturn-type]
+- `exceptions/handlers/member-function-try-block-no-return.cpp` (clang-18): error: non-void function does not return a value in all control paths [-Werror,-Wreturn-type]
+- `exceptions/handlers/member-function-try-block-no-return.cpp` (clang-22): error: non-void function does not return a value in all control paths [-Werror,-Wreturn-type]
+- `exceptions/handlers/member-function-try-block-no-return.cpp` (clang-22-o2): error: non-void function does not return a value in all control paths [-Werror,-Wreturn-type]
 - `exceptions/handlers/param-abstract.cpp` (clang-host): error: variable type 'A' is an abstract class / note: unimplemented pure virtual method 'f' in 'A'
 - `exceptions/handlers/param-abstract.cpp` (gcc-host): error: cannot declare ‘catch’ parameter to be of abstract class type ‘A’ / note: because the following virtual functions are pure within ‘A’:
 - `exceptions/handlers/param-abstract.cpp` (edg-7.0): error: abstract class type "A" is not allowed as catch type:
@@ -14742,6 +15702,15 @@ check that the rejection has the intended cause.
 - `expressions/assignment/array-left.cpp` (gcc-16-o2): error: invalid array assignment
 - `expressions/assignment/array-left.cpp` (clang-22): error: array type 'int[2]' is not assignable
 - `expressions/assignment/array-left.cpp` (clang-22-o2): error: array type 'int[2]' is not assignable
+- `expressions/assignment/bitfield-compound-result-address.cpp` (clang-host): error: address of bit-field requested
+- `expressions/assignment/bitfield-compound-result-address.cpp` (gcc-host): error: attempt to take address of bit-field
+- `expressions/assignment/bitfield-compound-result-address.cpp` (edg-7.0): error: taking the address of a bit field is not allowed
+- `expressions/assignment/bitfield-compound-result-address.cpp` (gcc-14): error: attempt to take address of bit-field
+- `expressions/assignment/bitfield-compound-result-address.cpp` (clang-18): error: address of bit-field requested
+- `expressions/assignment/bitfield-compound-result-address.cpp` (gcc-16): error: attempt to take address of bit-field
+- `expressions/assignment/bitfield-compound-result-address.cpp` (gcc-16-o2): error: attempt to take address of bit-field
+- `expressions/assignment/bitfield-compound-result-address.cpp` (clang-22): error: address of bit-field requested
+- `expressions/assignment/bitfield-compound-result-address.cpp` (clang-22-o2): error: address of bit-field requested
 - `expressions/assignment/bitfield-result-address.cpp` (clang-host): error: address of bit-field requested
 - `expressions/assignment/bitfield-result-address.cpp` (gcc-host): error: attempt to take address of bit-field
 - `expressions/assignment/bitfield-result-address.cpp` (edg-7.0): error: taking the address of a bit field is not allowed
@@ -14774,6 +15743,15 @@ check that the rejection has the intended cause.
 - `expressions/assignment/compound-float-modulo.cpp` (gcc-16-o2): error: invalid operands of types 'double' and 'int' to binary 'operator%' / note:   in evaluation of 'operator%=(double, int)'
 - `expressions/assignment/compound-float-modulo.cpp` (clang-22): error: invalid operands to binary expression ('double' and 'int')
 - `expressions/assignment/compound-float-modulo.cpp` (clang-22-o2): error: invalid operands to binary expression ('double' and 'int')
+- `expressions/assignment/compound-float-shift.cpp` (clang-host): error: invalid operands to binary expression ('double' and 'int')
+- `expressions/assignment/compound-float-shift.cpp` (gcc-host): error: invalid operands of types ‘double’ and ‘int’ to binary ‘operator<<’ / note:   in evaluation of ‘operator<<=(double, int)’
+- `expressions/assignment/compound-float-shift.cpp` (edg-7.0): error: expression must have integral or unscoped enum type
+- `expressions/assignment/compound-float-shift.cpp` (gcc-14): error: invalid operands of types 'double' and 'int' to binary 'operator<<' / note:   in evaluation of 'operator<<=(double, int)'
+- `expressions/assignment/compound-float-shift.cpp` (clang-18): error: invalid operands to binary expression ('double' and 'int')
+- `expressions/assignment/compound-float-shift.cpp` (gcc-16): error: invalid operands of types 'double' and 'int' to binary 'operator<<' / note:   in evaluation of 'operator<<=(double, int)'
+- `expressions/assignment/compound-float-shift.cpp` (gcc-16-o2): error: invalid operands of types 'double' and 'int' to binary 'operator<<' / note:   in evaluation of 'operator<<=(double, int)'
+- `expressions/assignment/compound-float-shift.cpp` (clang-22): error: invalid operands to binary expression ('double' and 'int')
+- `expressions/assignment/compound-float-shift.cpp` (clang-22-o2): error: invalid operands to binary expression ('double' and 'int')
 - `expressions/assignment/const-left.cpp` (clang-host): error: cannot assign to variable 'c' with const-qualified type 'const int' / note: variable 'c' declared const here
 - `expressions/assignment/const-left.cpp` (gcc-host): error: assignment of read-only variable ‘c’
 - `expressions/assignment/const-left.cpp` (edg-7.0): error: expression must be a modifiable lvalue
@@ -14792,6 +15770,15 @@ check that the rejection has the intended cause.
 - `expressions/assignment/function-left.cpp` (gcc-16-o2): error: assignment of function 'void g()'
 - `expressions/assignment/function-left.cpp` (clang-22): error: non-object type 'void ()' is not assignable
 - `expressions/assignment/function-left.cpp` (clang-22-o2): error: non-object type 'void ()' is not assignable
+- `expressions/assignment/no-conversion-class.cpp` (clang-host): error: assigning to 'int' from incompatible type 'S'
+- `expressions/assignment/no-conversion-class.cpp` (gcc-host): error: cannot convert ‘S’ to ‘int’ in assignment
+- `expressions/assignment/no-conversion-class.cpp` (edg-7.0): error: no suitable conversion function from "S" to "int" exists
+- `expressions/assignment/no-conversion-class.cpp` (gcc-14): error: cannot convert 'S' to 'int' in assignment
+- `expressions/assignment/no-conversion-class.cpp` (clang-18): error: assigning to 'int' from incompatible type 'S'
+- `expressions/assignment/no-conversion-class.cpp` (gcc-16): error: cannot convert 'S' to 'int' in assignment
+- `expressions/assignment/no-conversion-class.cpp` (gcc-16-o2): error: cannot convert 'S' to 'int' in assignment
+- `expressions/assignment/no-conversion-class.cpp` (clang-22): error: assigning to 'int' from incompatible type 'S'
+- `expressions/assignment/no-conversion-class.cpp` (clang-22-o2): error: assigning to 'int' from incompatible type 'S'
 - `expressions/assignment/no-conversion.cpp` (clang-host): error: incompatible integer to pointer conversion assigning to 'int *' from 'int'
 - `expressions/assignment/no-conversion.cpp` (gcc-host): error: invalid conversion from ‘int’ to ‘int*’ [-fpermissive]
 - `expressions/assignment/no-conversion.cpp` (edg-7.0): error: a value of type "int" cannot be assigned to an entity of type "int *"
@@ -14871,6 +15858,14 @@ check that the rejection has the intended cause.
 - `expressions/bitwise/mixed-enum-warns.cpp` (gcc-16-o2): error: bitwise operation between different enumeration types 'E' and 'F' is deprecated [-Werror=deprecated-enum-enum-conversion]
 - `expressions/bitwise/mixed-enum-warns.cpp` (clang-22): error: bitwise operation between different enumeration types ('E' and 'F') is deprecated [-Werror,-Wdeprecated-enum-enum-conversion]
 - `expressions/bitwise/mixed-enum-warns.cpp` (clang-22-o2): error: bitwise operation between different enumeration types ('E' and 'F') is deprecated [-Werror,-Wdeprecated-enum-enum-conversion]
+- `expressions/bitwise/mixed-enum-xor-warns.cpp` (clang-host): error: bitwise operation between different enumeration types ('E' and 'F') is deprecated [-Werror,-Wdeprecated-enum-enum-conversion]
+- `expressions/bitwise/mixed-enum-xor-warns.cpp` (gcc-host): error: bitwise operation between different enumeration types ‘E’ and ‘F’ is deprecated [-Werror=deprecated-enum-enum-conversion]
+- `expressions/bitwise/mixed-enum-xor-warns.cpp` (gcc-14): error: bitwise operation between different enumeration types 'E' and 'F' is deprecated [-Werror=deprecated-enum-enum-conversion]
+- `expressions/bitwise/mixed-enum-xor-warns.cpp` (clang-18): error: bitwise operation between different enumeration types ('E' and 'F') is deprecated [-Werror,-Wdeprecated-enum-enum-conversion]
+- `expressions/bitwise/mixed-enum-xor-warns.cpp` (gcc-16): error: bitwise operation between different enumeration types 'E' and 'F' is deprecated [-Werror=deprecated-enum-enum-conversion]
+- `expressions/bitwise/mixed-enum-xor-warns.cpp` (gcc-16-o2): error: bitwise operation between different enumeration types 'E' and 'F' is deprecated [-Werror=deprecated-enum-enum-conversion]
+- `expressions/bitwise/mixed-enum-xor-warns.cpp` (clang-22): error: bitwise operation between different enumeration types ('E' and 'F') is deprecated [-Werror,-Wdeprecated-enum-enum-conversion]
+- `expressions/bitwise/mixed-enum-xor-warns.cpp` (clang-22-o2): error: bitwise operation between different enumeration types ('E' and 'F') is deprecated [-Werror,-Wdeprecated-enum-enum-conversion]
 - `expressions/bitwise/nullptr-operand.cpp` (clang-host): error: invalid operands to binary expression ('std::nullptr_t' and 'int')
 - `expressions/bitwise/nullptr-operand.cpp` (gcc-host): error: invalid operands of types ‘std::nullptr_t’ and ‘int’ to binary ‘operator\|’
 - `expressions/bitwise/nullptr-operand.cpp` (edg-7.0): error: expression must have integral or unscoped enum type
@@ -14987,6 +15982,15 @@ check that the rejection has the intended cause.
 - `expressions/casts/reinterpret-integer-too-small.cpp` (gcc-16-o2): error: cast from 'int*' to 'unsigned char' loses precision [-fpermissive]
 - `expressions/casts/reinterpret-integer-too-small.cpp` (clang-22): error: cast from pointer to smaller type 'unsigned char' loses information
 - `expressions/casts/reinterpret-integer-too-small.cpp` (clang-22-o2): error: cast from pointer to smaller type 'unsigned char' loses information
+- `expressions/casts/reinterpret-not-constant-function.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: reinterpret_cast is not allowed in a constant expression
+- `expressions/casts/reinterpret-not-constant-function.cpp` (gcc-host): error: non-constant condition for static assertion / error: ‘constexpr char first(const int*)’ called in a constant expression / note: ‘constexpr char first(const int*)’ is not usable as a ‘constexpr’ function because: / error: ‘reinterpret_cast’ is not a constant expression
+- `expressions/casts/reinterpret-not-constant-function.cpp` (edg-7.0): error: expression must have a constant value / note: conversion from "const int *" to "const char *" is invalid in constant-expression evaluation
+- `expressions/casts/reinterpret-not-constant-function.cpp` (gcc-14): error: non-constant condition for static assertion / error: 'reinterpret_cast' is not a constant expression
+- `expressions/casts/reinterpret-not-constant-function.cpp` (clang-18): error: constexpr function never produces a constant expression [-Winvalid-constexpr] / note: reinterpret_cast is not allowed in a constant expression / error: static assertion expression is not an integral constant expression / note: reinterpret_cast is not allowed in a constant expression
+- `expressions/casts/reinterpret-not-constant-function.cpp` (gcc-16): error: non-constant condition for static assertion / error: 'constexpr char first(const int*)' called in a constant expression / note: 'constexpr char first(const int*)' is not usable as a 'constexpr' function because: / error: 'reinterpret_cast' is not a constant expression
+- `expressions/casts/reinterpret-not-constant-function.cpp` (gcc-16-o2): error: non-constant condition for static assertion / error: 'constexpr char first(const int*)' called in a constant expression / note: 'constexpr char first(const int*)' is not usable as a 'constexpr' function because: / error: 'reinterpret_cast' is not a constant expression
+- `expressions/casts/reinterpret-not-constant-function.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: reinterpret_cast is not allowed in a constant expression
+- `expressions/casts/reinterpret-not-constant-function.cpp` (clang-22-o2): error: static assertion expression is not an integral constant expression / note: reinterpret_cast is not allowed in a constant expression
 - `expressions/casts/reinterpret-not-constant.cpp` (clang-host): error: constexpr variable 'p' must be initialized by a constant expression / note: reinterpret_cast is not allowed in a constant expression
 - `expressions/casts/reinterpret-not-constant.cpp` (gcc-host): error: ‘reinterpret_cast’ is not a constant expression
 - `expressions/casts/reinterpret-not-constant.cpp` (edg-7.0): error: expression must have a constant value / note: conversion from "int *" to "long *" is invalid in constant-expression evaluation
@@ -15090,6 +16094,15 @@ check that the rejection has the intended cause.
 - `expressions/comma/array-bound-unparenthesized.cpp` (gcc-16-o2): error: expected ']' before ',' token / error: expected unqualified-id before numeric constant
 - `expressions/comma/array-bound-unparenthesized.cpp` (clang-22): error: expected ']' / note: to match this '['
 - `expressions/comma/array-bound-unparenthesized.cpp` (clang-22-o2): error: expected ']' / note: to match this '['
+- `expressions/comma/braced-list-left-operand.cpp` (clang-host): error: expected expression
+- `expressions/comma/braced-list-left-operand.cpp` (gcc-host): error: expected primary-expression before ‘{’ token / error: expected ‘)’ before ‘{’ token
+- `expressions/comma/braced-list-left-operand.cpp` (edg-7.0): error: expected an expression
+- `expressions/comma/braced-list-left-operand.cpp` (gcc-14): error: expected primary-expression before '{' token / error: expected ')' before '{' token
+- `expressions/comma/braced-list-left-operand.cpp` (clang-18): error: expected expression
+- `expressions/comma/braced-list-left-operand.cpp` (gcc-16): error: expected primary-expression before '{' token / error: expected ')' before '{' token
+- `expressions/comma/braced-list-left-operand.cpp` (gcc-16-o2): error: expected primary-expression before '{' token / error: expected ')' before '{' token
+- `expressions/comma/braced-list-left-operand.cpp` (clang-22): error: expected expression
+- `expressions/comma/braced-list-left-operand.cpp` (clang-22-o2): error: expected expression
 - `expressions/comma/braced-list-operand.cpp` (clang-host): error: expected ')' / note: to match this '('
 - `expressions/comma/braced-list-operand.cpp` (gcc-host): error: expected primary-expression before ‘{’ token / error: expected ‘)’ before ‘{’ token / error: expected ‘;’ before ‘)’ token / error: expected primary-expression before ‘)’ token
 - `expressions/comma/braced-list-operand.cpp` (edg-7.0): error: expected an expression
@@ -15407,6 +16420,15 @@ check that the rejection has the intended cause.
 - `expressions/comparison/three-way-unrelated-pointers-constant.cpp` (gcc-16-o2): error: '((& a) < (& b))' is not a constant expression
 - `expressions/comparison/three-way-unrelated-pointers-constant.cpp` (clang-22): error: constexpr variable 'r' must be initialized by a constant expression / note: comparison between pointers to unrelated objects '&a' and '&b' has unspecified value
 - `expressions/comparison/three-way-unrelated-pointers-constant.cpp` (clang-22-o2): error: constexpr variable 'r' must be initialized by a constant expression / note: comparison between pointers to unrelated objects '&a' and '&b' has unspecified value
+- `expressions/conditional/bitfield-address-unevaluated.cpp` (clang-host): error: address of bit-field requested
+- `expressions/conditional/bitfield-address-unevaluated.cpp` (gcc-host): error: attempt to take address of bit-field / error: attempt to take address of bit-field
+- `expressions/conditional/bitfield-address-unevaluated.cpp` (edg-7.0): error: taking the address of a bit field is not allowed
+- `expressions/conditional/bitfield-address-unevaluated.cpp` (gcc-14): error: attempt to take address of bit-field / error: attempt to take address of bit-field
+- `expressions/conditional/bitfield-address-unevaluated.cpp` (clang-18): error: address of bit-field requested
+- `expressions/conditional/bitfield-address-unevaluated.cpp` (gcc-16): error: attempt to take address of bit-field / error: attempt to take address of bit-field
+- `expressions/conditional/bitfield-address-unevaluated.cpp` (gcc-16-o2): error: attempt to take address of bit-field / error: attempt to take address of bit-field
+- `expressions/conditional/bitfield-address-unevaluated.cpp` (clang-22): error: address of bit-field requested
+- `expressions/conditional/bitfield-address-unevaluated.cpp` (clang-22-o2): error: address of bit-field requested
 - `expressions/conditional/bitfield-address.cpp` (clang-host): error: address of bit-field requested
 - `expressions/conditional/bitfield-address.cpp` (gcc-host): error: attempt to take address of bit-field / error: attempt to take address of bit-field
 - `expressions/conditional/bitfield-address.cpp` (edg-7.0): error: taking the address of a bit field is not allowed
@@ -15434,6 +16456,15 @@ check that the rejection has the intended cause.
 - `expressions/conditional/class-lvalue-prvalue-copy.cpp` (gcc-16-o2): error: use of deleted function 'S::S(const S&)' / note: use '-fdiagnostics-all-candidates' to display considered candidates
 - `expressions/conditional/class-lvalue-prvalue-copy.cpp` (clang-22): error: call to deleted constructor of 'S' / note: 'S' has been explicitly marked deleted here
 - `expressions/conditional/class-lvalue-prvalue-copy.cpp` (clang-22-o2): error: call to deleted constructor of 'S' / note: 'S' has been explicitly marked deleted here
+- `expressions/conditional/class-prvalue-lvalue-private-copy.cpp` (clang-host): error: calling a private constructor of class 'S' / note: implicitly declared private here
+- `expressions/conditional/class-prvalue-lvalue-private-copy.cpp` (gcc-host): error: ‘S::S(const S&)’ is private within this context / note: declared private here
+- `expressions/conditional/class-prvalue-lvalue-private-copy.cpp` (edg-7.0): error: "S::S(const S &)" (declared at line 8) is inaccessible
+- `expressions/conditional/class-prvalue-lvalue-private-copy.cpp` (gcc-14): error: 'S::S(const S&)' is private within this context / note: declared private here
+- `expressions/conditional/class-prvalue-lvalue-private-copy.cpp` (clang-18): error: calling a private constructor of class 'S' / note: implicitly declared private here
+- `expressions/conditional/class-prvalue-lvalue-private-copy.cpp` (gcc-16): error: 'S::S(const S&)' is private within this context / note: declared private here
+- `expressions/conditional/class-prvalue-lvalue-private-copy.cpp` (gcc-16-o2): error: 'S::S(const S&)' is private within this context / note: declared private here
+- `expressions/conditional/class-prvalue-lvalue-private-copy.cpp` (clang-22): error: calling a private constructor of class 'S' / note: implicitly declared private here
+- `expressions/conditional/class-prvalue-lvalue-private-copy.cpp` (clang-22-o2): error: calling a private constructor of class 'S' / note: implicitly declared private here
 - `expressions/conditional/condition-not-convertible.cpp` (clang-host): error: value of type 'S' is not contextually convertible to 'bool'
 - `expressions/conditional/condition-not-convertible.cpp` (gcc-host): error: could not convert ‘S()’ from ‘S’ to ‘bool’
 - `expressions/conditional/condition-not-convertible.cpp` (edg-7.0): error: expression must have bool type (or be convertible to bool)
@@ -15452,6 +16483,15 @@ check that the rejection has the intended cause.
 - `expressions/conditional/const-volatile-lvalues-prvalue.cpp` (gcc-16-o2): error: lvalue required as unary '&' operand
 - `expressions/conditional/const-volatile-lvalues-prvalue.cpp` (clang-22): error: cannot take the address of an rvalue of type 'int'
 - `expressions/conditional/const-volatile-lvalues-prvalue.cpp` (clang-22-o2): error: cannot take the address of an rvalue of type 'int'
+- `expressions/conditional/constant-selected-division-by-zero.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: division by zero
+- `expressions/conditional/constant-selected-division-by-zero.cpp` (gcc-host): error: non-constant condition for static assertion / error: ‘(10 / 0)’ is not a constant expression
+- `expressions/conditional/constant-selected-division-by-zero.cpp` (edg-7.0): error: expression must have a constant value / note: division by zero
+- `expressions/conditional/constant-selected-division-by-zero.cpp` (gcc-14): error: non-constant condition for static assertion / error: '(10 / 0)' is not a constant expression
+- `expressions/conditional/constant-selected-division-by-zero.cpp` (clang-18): error: static assertion expression is not an integral constant expression / note: division by zero
+- `expressions/conditional/constant-selected-division-by-zero.cpp` (gcc-16): error: non-constant condition for static assertion / error: '(10 / 0)' is not a constant expression
+- `expressions/conditional/constant-selected-division-by-zero.cpp` (gcc-16-o2): error: non-constant condition for static assertion / error: '(10 / 0)' is not a constant expression
+- `expressions/conditional/constant-selected-division-by-zero.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: division by zero
+- `expressions/conditional/constant-selected-division-by-zero.cpp` (clang-22-o2): error: static assertion expression is not an integral constant expression / note: division by zero
 - `expressions/conditional/constant-selected-fails.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: non-constexpr function 'runtime' cannot be used in a constant expression
 - `expressions/conditional/constant-selected-fails.cpp` (gcc-host): error: non-constant condition for static assertion / error: call to non-‘constexpr’ function ‘int runtime()’
 - `expressions/conditional/constant-selected-fails.cpp` (edg-7.0): error: expression must have a constant value / note: cannot call non-constexpr function "runtime" (declared at line 6)
@@ -15461,6 +16501,15 @@ check that the rejection has the intended cause.
 - `expressions/conditional/constant-selected-fails.cpp` (gcc-16-o2): error: non-constant condition for static assertion / error: call to non-'constexpr' function 'int runtime()'
 - `expressions/conditional/constant-selected-fails.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: non-constexpr function 'runtime' cannot be used in a constant expression
 - `expressions/conditional/constant-selected-fails.cpp` (clang-22-o2): error: static assertion expression is not an integral constant expression / note: non-constexpr function 'runtime' cannot be used in a constant expression
+- `expressions/conditional/gnu-omitted-operand-constant.cpp` (clang-host): error: use of GNU ?: conditional expression extension, omitting middle operand [-Werror,-Wgnu-conditional-omitted-operand]
+- `expressions/conditional/gnu-omitted-operand-constant.cpp` (gcc-host): error: ISO C++ does not allow ‘?:’ with omitted middle operand [-Wpedantic] / error: ISO C++ forbids omitting the middle term of a ‘?:’ expression [-Wpedantic]
+- `expressions/conditional/gnu-omitted-operand-constant.cpp` (edg-7.0): error: expected an expression / error: expected a ":"
+- `expressions/conditional/gnu-omitted-operand-constant.cpp` (gcc-14): error: ISO C++ does not allow '?:' with omitted middle operand [-Wpedantic] / error: ISO C++ forbids omitting the middle term of a '?:' expression [-Wpedantic]
+- `expressions/conditional/gnu-omitted-operand-constant.cpp` (clang-18): error: use of GNU ?: conditional expression extension, omitting middle operand [-Werror,-Wgnu-conditional-omitted-operand]
+- `expressions/conditional/gnu-omitted-operand-constant.cpp` (gcc-16): error: ISO C++ does not allow '?:' with omitted middle operand [-Wpedantic] / error: ISO C++ forbids omitting the middle term of a '?:' expression [-Wpedantic]
+- `expressions/conditional/gnu-omitted-operand-constant.cpp` (gcc-16-o2): error: ISO C++ does not allow '?:' with omitted middle operand [-Wpedantic] / error: ISO C++ forbids omitting the middle term of a '?:' expression [-Wpedantic]
+- `expressions/conditional/gnu-omitted-operand-constant.cpp` (clang-22): error: use of GNU ?: conditional expression extension, omitting middle operand [-Werror,-Wgnu-conditional-omitted-operand]
+- `expressions/conditional/gnu-omitted-operand-constant.cpp` (clang-22-o2): error: use of GNU ?: conditional expression extension, omitting middle operand [-Werror,-Wgnu-conditional-omitted-operand]
 - `expressions/conditional/gnu-omitted-operand.cpp` (clang-host): error: use of GNU ?: conditional expression extension, omitting middle operand [-Werror,-Wgnu-conditional-omitted-operand]
 - `expressions/conditional/gnu-omitted-operand.cpp` (gcc-host): error: ISO C++ does not allow ‘?:’ with omitted middle operand [-Wpedantic] / error: ISO C++ forbids omitting the middle term of a ‘?:’ expression [-Wpedantic]
 - `expressions/conditional/gnu-omitted-operand.cpp` (edg-7.0): error: expected an expression / error: expected a ":"
@@ -15497,6 +16546,15 @@ check that the rejection has the intended cause.
 - `expressions/conditional/pointer-and-int.cpp` (gcc-16-o2): error: operands to '?:' have different types 'int*' and 'int'
 - `expressions/conditional/pointer-and-int.cpp` (clang-22): error: incompatible operand types ('int *' and 'int')
 - `expressions/conditional/pointer-and-int.cpp` (clang-22-o2): error: incompatible operand types ('int *' and 'int')
+- `expressions/conditional/value-and-void.cpp` (clang-host): error: right operand to ? is void, but left operand is of type 'int'
+- `expressions/conditional/value-and-void.cpp` (gcc-host): error: third operand to the conditional operator is of type ‘void’, but the second operand is neither a throw-expression nor of type ‘void’
+- `expressions/conditional/value-and-void.cpp` (edg-7.0): error: expression must have arithmetic or unscoped enum type
+- `expressions/conditional/value-and-void.cpp` (gcc-14): error: third operand to the conditional operator is of type 'void', but the second operand is neither a throw-expression nor of type 'void'
+- `expressions/conditional/value-and-void.cpp` (clang-18): error: right operand to ? is void, but left operand is of type 'int'
+- `expressions/conditional/value-and-void.cpp` (gcc-16): error: third operand to the conditional operator is of type 'void', but the second operand is neither a throw-expression nor of type 'void'
+- `expressions/conditional/value-and-void.cpp` (gcc-16-o2): error: third operand to the conditional operator is of type 'void', but the second operand is neither a throw-expression nor of type 'void'
+- `expressions/conditional/value-and-void.cpp` (clang-22): error: right operand to ? is void, but left operand is of type 'int'
+- `expressions/conditional/value-and-void.cpp` (clang-22-o2): error: right operand to ? is void, but left operand is of type 'int'
 - `expressions/conditional/void-and-value.cpp` (clang-host): error: left operand to ? is void, but right operand is of type 'int'
 - `expressions/conditional/void-and-value.cpp` (gcc-host): error: second operand to the conditional operator is of type ‘void’, but the third operand is neither a throw-expression nor of type ‘void’
 - `expressions/conditional/void-and-value.cpp` (edg-7.0): error: operand types are incompatible ("void" and "int")
@@ -15528,6 +16586,10 @@ check that the rejection has the intended cause.
 - `expressions/constant-expressions/allocation-not-freed.cpp` (gcc-16-o2): error: non-constant condition for static assertion / error: '(f() == 5)' is not a constant expression because allocated storage has not been deallocated / note: allocated here
 - `expressions/constant-expressions/allocation-not-freed.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: allocation performed here was not deallocated
 - `expressions/constant-expressions/allocation-not-freed.cpp` (clang-22-o2): error: static assertion expression is not an integral constant expression / note: allocation performed here was not deallocated
+- `expressions/constant-expressions/allocator-result-other-type.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: cast from 'void *' is not allowed in a constant expression in C++ standards before C++2c
+- `expressions/constant-expressions/allocator-result-other-type.cpp` (clang-18): error: static assertion expression is not an integral constant expression / note: cast from 'void *' is not allowed in a constant expression in C++ standards before C++2c
+- `expressions/constant-expressions/allocator-result-other-type.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: cast from 'void *' is not allowed in a constant expression in C++ standards before C++2c
+- `expressions/constant-expressions/allocator-result-other-type.cpp` (clang-22-o2): error: static assertion expression is not an integral constant expression / note: cast from 'void *' is not allowed in a constant expression in C++ standards before C++2c
 - `expressions/constant-expressions/array-bound-floating.cpp` (clang-host): error: conversion from 'double' to '__size_t' (aka 'unsigned long') is not allowed in a converted constant expression
 - `expressions/constant-expressions/array-bound-floating.cpp` (gcc-host): error: conversion from ‘double’ to ‘long unsigned int’ in a converted constant expression / error: could not convert ‘2.0e+0’ from ‘double’ to ‘long unsigned int’ / error: size of array ‘table’ has non-integral type ‘double’
 - `expressions/constant-expressions/array-bound-floating.cpp` (edg-7.0): error: this constant expression has type "double" instead of the required "unsigned long" type
@@ -15600,6 +16662,14 @@ check that the rejection has the intended cause.
 - `expressions/constant-expressions/constant-initializer-not-constant.cpp` (gcc-16-o2): error: 'constinit' variable 'setting' does not have a constant initializer / error: call to non-'constexpr' function 'int read_setting()'
 - `expressions/constant-expressions/constant-initializer-not-constant.cpp` (clang-22): error: variable does not have a constant initializer / note: required by 'constinit' specifier here / note: non-constexpr function 'read_setting' cannot be used in a constant expression
 - `expressions/constant-expressions/constant-initializer-not-constant.cpp` (clang-22-o2): error: variable does not have a constant initializer / note: required by 'constinit' specifier here / note: non-constexpr function 'read_setting' cannot be used in a constant expression
+- `expressions/constant-expressions/constant-initializer-trivial-class-array.cpp` (clang-host): error: variable does not have a constant initializer / note: required by 'constinit' specifier here / note: subobject 'first' is not initialized
+- `expressions/constant-expressions/constant-initializer-trivial-class-array.cpp` (clang-18): error: variable does not have a constant initializer / note: required by 'constinit' specifier here / note: subobject 'first' is not initialized
+- `expressions/constant-expressions/constant-initializer-trivial-class-array.cpp` (clang-22): error: variable does not have a constant initializer / note: required by 'constinit' specifier here / note: subobject 'first' is not initialized
+- `expressions/constant-expressions/constant-initializer-trivial-class-array.cpp` (clang-22-o2): error: variable does not have a constant initializer / note: required by 'constinit' specifier here / note: subobject 'first' is not initialized
+- `expressions/constant-expressions/constant-initializer-trivial-class-block-static.cpp` (clang-host): error: variable does not have a constant initializer / note: required by 'constinit' specifier here / note: subobject 'first' is not initialized
+- `expressions/constant-expressions/constant-initializer-trivial-class-block-static.cpp` (clang-18): error: variable does not have a constant initializer / note: required by 'constinit' specifier here / note: subobject 'first' is not initialized
+- `expressions/constant-expressions/constant-initializer-trivial-class-block-static.cpp` (clang-22): error: variable does not have a constant initializer / note: required by 'constinit' specifier here / note: subobject 'first' is not initialized
+- `expressions/constant-expressions/constant-initializer-trivial-class-block-static.cpp` (clang-22-o2): error: variable does not have a constant initializer / note: required by 'constinit' specifier here / note: subobject 'first' is not initialized
 - `expressions/constant-expressions/constant-initializer-zero-trivial-class.cpp` (clang-host): error: variable does not have a constant initializer / note: required by 'constinit' specifier here / note: subobject 'first' is not initialized
 - `expressions/constant-expressions/constant-initializer-zero-trivial-class.cpp` (clang-18): error: variable does not have a constant initializer / note: required by 'constinit' specifier here / note: subobject 'first' is not initialized
 - `expressions/constant-expressions/constant-initializer-zero-trivial-class.cpp` (clang-22): error: variable does not have a constant initializer / note: required by 'constinit' specifier here / note: subobject 'first' is not initialized
@@ -15819,6 +16889,15 @@ check that the rejection has the intended cause.
 - `expressions/constant-expressions/long-loop.cpp` (gcc-16-o2): error: non-constant condition for static assertion / error: 'constexpr' loop iteration count exceeds limit of 262144 (use '-fconstexpr-loop-limit=' to increase the limit)
 - `expressions/constant-expressions/long-loop.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: constexpr evaluation hit maximum step limit; possible infinite loop?
 - `expressions/constant-expressions/long-loop.cpp` (clang-22-o2): error: static assertion expression is not an integral constant expression / note: constexpr evaluation hit maximum step limit; possible infinite loop?
+- `expressions/constant-expressions/member-call-before-definition.cpp` (clang-host): error: constexpr variable 'v' must be initialized by a constant expression / note: undefined function 'f' cannot be used in a constant expression
+- `expressions/constant-expressions/member-call-before-definition.cpp` (gcc-host): error: ‘constexpr int S::f() const’ used before its definition
+- `expressions/constant-expressions/member-call-before-definition.cpp` (edg-7.0): error: expression must have a constant value / note: constexpr function "S::f" (declared at line 7) is not defined
+- `expressions/constant-expressions/member-call-before-definition.cpp` (gcc-14): error: 'constexpr int S::f() const' used before its definition
+- `expressions/constant-expressions/member-call-before-definition.cpp` (clang-18): error: constexpr variable 'v' must be initialized by a constant expression / note: undefined function 'f' cannot be used in a constant expression
+- `expressions/constant-expressions/member-call-before-definition.cpp` (gcc-16): error: 'constexpr int S::f() const' used before its definition
+- `expressions/constant-expressions/member-call-before-definition.cpp` (gcc-16-o2): error: 'constexpr int S::f() const' used before its definition
+- `expressions/constant-expressions/member-call-before-definition.cpp` (clang-22): error: constexpr variable 'v' must be initialized by a constant expression / note: undefined function 'f' cannot be used in a constant expression
+- `expressions/constant-expressions/member-call-before-definition.cpp` (clang-22-o2): error: constexpr variable 'v' must be initialized by a constant expression / note: undefined function 'f' cannot be used in a constant expression
 - `expressions/constant-expressions/modify-outside-object.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: a constant expression cannot modify an object that is visible outside that expression
 - `expressions/constant-expressions/modify-outside-object.cpp` (gcc-host): error: non-constant condition for static assertion / error: ‘constexpr int bump()’ called in a constant expression / note: ‘constexpr int bump()’ is not usable as a ‘constexpr’ function because: / error: the value of ‘counter’ is not usable in a constant expression / note: ‘int counter’ is not const
 - `expressions/constant-expressions/modify-outside-object.cpp` (edg-7.0): error: expression must have a constant value / note: attempt to access run-time storage
@@ -15941,6 +17020,15 @@ check that the rejection has the intended cause.
 - `expressions/constant-expressions/reinterpret-cast.cpp` (gcc-16-o2): error: non-constant condition for static assertion / error: 'constexpr int f()' called in a constant expression / note: 'constexpr int f()' is not usable as a 'constexpr' function because: / error: 'reinterpret_cast' is not a constant expression
 - `expressions/constant-expressions/reinterpret-cast.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: reinterpret_cast is not allowed in a constant expression
 - `expressions/constant-expressions/reinterpret-cast.cpp` (clang-22-o2): error: static assertion expression is not an integral constant expression / note: reinterpret_cast is not allowed in a constant expression
+- `expressions/constant-expressions/relational-unrelated-array-elements.cpp` (clang-host): error: constexpr variable 'ge' must be initialized by a constant expression / note: comparison between pointers to unrelated objects '&x[1]' and '&y[0]' has unspecified value
+- `expressions/constant-expressions/relational-unrelated-array-elements.cpp` (gcc-host): error: ‘((& x[1]) >= (& y[0]))’ is not a constant expression
+- `expressions/constant-expressions/relational-unrelated-array-elements.cpp` (edg-7.0): error: expression must have a constant value / note: pointer values cannot be compared because they do not point into the same complete object or they point to subobjects with different accessibility
+- `expressions/constant-expressions/relational-unrelated-array-elements.cpp` (gcc-14): error: '((& x[1]) >= (& y[0]))' is not a constant expression
+- `expressions/constant-expressions/relational-unrelated-array-elements.cpp` (clang-18): error: constexpr variable 'ge' must be initialized by a constant expression / note: comparison between '&x[1]' and '&y[0]' has unspecified value
+- `expressions/constant-expressions/relational-unrelated-array-elements.cpp` (gcc-16): error: '((& x[1]) >= (& y[0]))' is not a constant expression
+- `expressions/constant-expressions/relational-unrelated-array-elements.cpp` (gcc-16-o2): error: '((& x[1]) >= (& y[0]))' is not a constant expression
+- `expressions/constant-expressions/relational-unrelated-array-elements.cpp` (clang-22): error: constexpr variable 'ge' must be initialized by a constant expression / note: comparison between pointers to unrelated objects '&x[1]' and '&y[0]' has unspecified value
+- `expressions/constant-expressions/relational-unrelated-array-elements.cpp` (clang-22-o2): error: constexpr variable 'ge' must be initialized by a constant expression / note: comparison between pointers to unrelated objects '&x[1]' and '&y[0]' has unspecified value
 - `expressions/constant-expressions/relational-unrelated-pointers.cpp` (clang-host): error: constexpr variable 'lt' must be initialized by a constant expression / note: comparison between pointers to unrelated objects '&a' and '&b' has unspecified value
 - `expressions/constant-expressions/relational-unrelated-pointers.cpp` (gcc-host): error: ‘((& a) < (& b))’ is not a constant expression
 - `expressions/constant-expressions/relational-unrelated-pointers.cpp` (edg-7.0): error: expression must have a constant value / note: pointer values cannot be compared because they do not point into the same complete object or they point to subobjects with different accessibility
@@ -16013,6 +17101,10 @@ check that the rejection has the intended cause.
 - `expressions/constant-expressions/static-local-reached.cpp` (gcc-16-o2): error: non-constant condition for static assertion / error: control passes through definition of 'n' with static storage duration
 - `expressions/constant-expressions/static-local-reached.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: control flows through the definition of a static variable
 - `expressions/constant-expressions/static-local-reached.cpp` (clang-22-o2): error: static assertion expression is not an integral constant expression / note: control flows through the definition of a static variable
+- `expressions/constant-expressions/string-literal-identity-variables.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: comparison of addresses of potentially overlapping literals has unspecified value
+- `expressions/constant-expressions/string-literal-identity-variables.cpp` (clang-18): error: static assertion expression is not an integral constant expression / note: comparison of addresses of literals has unspecified value
+- `expressions/constant-expressions/string-literal-identity-variables.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: comparison of addresses of potentially overlapping literals has unspecified value
+- `expressions/constant-expressions/string-literal-identity-variables.cpp` (clang-22-o2): error: static assertion expression is not an integral constant expression / note: comparison of addresses of potentially overlapping literals has unspecified value
 - `expressions/constant-expressions/string-literal-identity.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: comparison of addresses of potentially overlapping literals has unspecified value
 - `expressions/constant-expressions/string-literal-identity.cpp` (clang-18): error: constexpr function never produces a constant expression [-Winvalid-constexpr] / note: comparison of addresses of literals has unspecified value / error: static assertion expression is not an integral constant expression / note: comparison of addresses of literals has unspecified value
 - `expressions/constant-expressions/string-literal-identity.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: comparison of addresses of potentially overlapping literals has unspecified value
@@ -16081,6 +17173,7 @@ check that the rejection has the intended cause.
 - `expressions/constant-expressions/undefined-behavior.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: division by zero
 - `expressions/constant-expressions/undefined-behavior.cpp` (clang-22-o2): error: static assertion expression is not an integral constant expression / note: division by zero
 - `expressions/constant-expressions/unknown-reference-not-read.cpp` (clang-18): error: constexpr variable 'n' must be initialized by a constant expression / note: function parameter 's' with unknown value cannot be used in a constant expression
+- `expressions/constant-expressions/unknown-reference-static-member.cpp` (clang-18): error: constexpr variable 'n' must be initialized by a constant expression / note: function parameter 's' with unknown value cannot be used in a constant expression
 - `expressions/constant-expressions/void-pointer-to-object.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: cast from 'void *' is not allowed in a constant expression in C++ standards before C++2c
 - `expressions/constant-expressions/void-pointer-to-object.cpp` (gcc-host): error: non-constant condition for static assertion / error: cast from ‘void*’ is not allowed in a constant expression before C++26
 - `expressions/constant-expressions/void-pointer-to-object.cpp` (edg-7.0): error: expression must have a constant value / note: conversion from "void *" to "int *" is invalid in constant-expression evaluation
@@ -16099,6 +17192,15 @@ check that the rejection has the intended cause.
 - `expressions/constant-expressions/volatile-read.cpp` (gcc-16-o2): error: non-constant condition for static assertion / error: 'constexpr int f()' called in a constant expression / note: 'constexpr int f()' is not usable as a 'constexpr' function because: / error: lvalue-to-rvalue conversion of a volatile lvalue 'v' with type 'volatile int'
 - `expressions/constant-expressions/volatile-read.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: read of volatile-qualified type 'volatile int' is not allowed in a constant expression
 - `expressions/constant-expressions/volatile-read.cpp` (clang-22-o2): error: static assertion expression is not an integral constant expression / note: read of volatile-qualified type 'volatile int' is not allowed in a constant expression
+- `expressions/constant-expressions/volatile-reference-read.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: read of volatile-qualified type 'volatile int' is not allowed in a constant expression
+- `expressions/constant-expressions/volatile-reference-read.cpp` (gcc-host): error: non-constant condition for static assertion / error: ‘constexpr int f()’ called in a constant expression / note: ‘constexpr int f()’ is not usable as a ‘constexpr’ function because: / error: lvalue-to-rvalue conversion of a volatile lvalue ‘r’ with type ‘volatile int’
+- `expressions/constant-expressions/volatile-reference-read.cpp` (edg-7.0): error: expression must have a constant value / note: attempt to read from volatile storage
+- `expressions/constant-expressions/volatile-reference-read.cpp` (gcc-14): error: non-constant condition for static assertion / error: 'constexpr int f()' called in a constant expression / note: 'constexpr int f()' is not usable as a 'constexpr' function because: / error: lvalue-to-rvalue conversion of a volatile lvalue 'r' with type 'volatile int'
+- `expressions/constant-expressions/volatile-reference-read.cpp` (clang-18): error: constexpr function never produces a constant expression [-Winvalid-constexpr] / note: read of volatile-qualified type 'volatile int' is not allowed in a constant expression / error: static assertion expression is not an integral constant expression / note: read of volatile-qualified type 'volatile int' is not allowed in a constant expression
+- `expressions/constant-expressions/volatile-reference-read.cpp` (gcc-16): error: non-constant condition for static assertion / error: 'constexpr int f()' called in a constant expression / note: 'constexpr int f()' is not usable as a 'constexpr' function because: / error: lvalue-to-rvalue conversion of a volatile lvalue 'r' with type 'volatile int'
+- `expressions/constant-expressions/volatile-reference-read.cpp` (gcc-16-o2): error: non-constant condition for static assertion / error: 'constexpr int f()' called in a constant expression / note: 'constexpr int f()' is not usable as a 'constexpr' function because: / error: lvalue-to-rvalue conversion of a volatile lvalue 'r' with type 'volatile int'
+- `expressions/constant-expressions/volatile-reference-read.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: read of volatile-qualified type 'volatile int' is not allowed in a constant expression
+- `expressions/constant-expressions/volatile-reference-read.cpp` (clang-22-o2): error: static assertion expression is not an integral constant expression / note: read of volatile-qualified type 'volatile int' is not allowed in a constant expression
 - `expressions/conversions/ambiguous-base.cpp` (clang-host): error: ambiguous conversion from derived class 'D' to base class 'B':
 - `expressions/conversions/ambiguous-base.cpp` (gcc-host): error: ‘B’ is an ambiguous base of ‘D’
 - `expressions/conversions/ambiguous-base.cpp` (edg-7.0): error: base class "B" is ambiguous
@@ -16279,6 +17381,11 @@ check that the rejection has the intended cause.
 - `expressions/conversions/void-pointer-to-pointer.cpp` (gcc-16-o2): error: invalid conversion from 'void*' to 'int*' [-fpermissive]
 - `expressions/conversions/void-pointer-to-pointer.cpp` (clang-22): error: cannot initialize a variable of type 'int *' with an lvalue of type 'void *'
 - `expressions/conversions/void-pointer-to-pointer.cpp` (clang-22-o2): error: cannot initialize a variable of type 'int *' with an lvalue of type 'void *'
+- `expressions/decltype/declarative-nested-name-static-member.cpp` (clang-host): error: a 'decltype' specifier cannot be used in a declarative nested name specifier
+- `expressions/decltype/declarative-nested-name-static-member.cpp` (edg-7.0): error: a decltype-qualified name is nonstandard in this declaration context
+- `expressions/decltype/declarative-nested-name-static-member.cpp` (clang-18): error: 'decltype' cannot be used to name a declaration
+- `expressions/decltype/declarative-nested-name-static-member.cpp` (clang-22): error: a 'decltype' specifier cannot be used in a declarative nested name specifier
+- `expressions/decltype/declarative-nested-name-static-member.cpp` (clang-22-o2): error: a 'decltype' specifier cannot be used in a declarative nested name specifier
 - `expressions/decltype/declarative-nested-name.cpp` (clang-host): error: a 'decltype' specifier cannot be used in a declarative nested name specifier
 - `expressions/decltype/declarative-nested-name.cpp` (edg-7.0): error: a decltype-qualified name is nonstandard in this declaration context
 - `expressions/decltype/declarative-nested-name.cpp` (clang-18): error: 'decltype' cannot be used to name a declaration
@@ -16306,6 +17413,14 @@ check that the rejection has the intended cause.
 - `expressions/decltype/destructor-call.cpp` (gcc-14): error: expected class-name before 'decltype'
 - `expressions/decltype/destructor-call.cpp` (gcc-16): error: expected class-name before 'decltype'
 - `expressions/decltype/destructor-call.cpp` (gcc-16-o2): error: expected class-name before 'decltype'
+- `expressions/decltype/discarded-sum-warns.cpp` (clang-host): error: expression result unused [-Werror,-Wunused-value]
+- `expressions/decltype/discarded-sum-warns.cpp` (gcc-host): error: statement has no effect [-Werror=unused-value]
+- `expressions/decltype/discarded-sum-warns.cpp` (gcc-14): error: statement has no effect [-Werror=unused-value]
+- `expressions/decltype/discarded-sum-warns.cpp` (clang-18): error: expression result unused [-Werror,-Wunused-value]
+- `expressions/decltype/discarded-sum-warns.cpp` (gcc-16): error: statement has no effect [-Werror=unused-value]
+- `expressions/decltype/discarded-sum-warns.cpp` (gcc-16-o2): error: statement has no effect [-Werror=unused-value]
+- `expressions/decltype/discarded-sum-warns.cpp` (clang-22): error: expression result unused [-Werror,-Wunused-value]
+- `expressions/decltype/discarded-sum-warns.cpp` (clang-22-o2): error: expression result unused [-Werror,-Wunused-value]
 - `expressions/decltype/discarded-volatile-operand-read.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: read of volatile-qualified type 'volatile int' is not allowed in a constant expression
 - `expressions/decltype/discarded-volatile-operand-read.cpp` (gcc-host): error: non-constant condition for static assertion / error: ‘constexpr int f()’ called in a constant expression / note: ‘constexpr int f()’ is not usable as a ‘constexpr’ function because: / error: lvalue-to-rvalue conversion of a volatile lvalue ‘v’ with type ‘volatile int’
 - `expressions/decltype/discarded-volatile-operand-read.cpp` (edg-7.0): error: expression must have a constant value / note: attempt to read from volatile storage
@@ -16377,6 +17492,10 @@ check that the rejection has the intended cause.
 - `expressions/decltype/private-access-still-checked.cpp` (gcc-16-o2): error: 'int P::m' is private within this context / note: declared private here / error: 'int P::m' is private within this context / note: declared private here
 - `expressions/decltype/private-access-still-checked.cpp` (clang-22): error: 'm' is a private member of 'P' / note: implicitly declared private here
 - `expressions/decltype/private-access-still-checked.cpp` (clang-22-o2): error: 'm' is a private member of 'P' / note: implicitly declared private here
+- `expressions/decltype/side-effect-decltype-warns.cpp` (clang-host): error: expression with side effects has no effect in an unevaluated context [-Werror,-Wunevaluated-expression]
+- `expressions/decltype/side-effect-decltype-warns.cpp` (clang-18): error: expression with side effects has no effect in an unevaluated context [-Werror,-Wunevaluated-expression]
+- `expressions/decltype/side-effect-decltype-warns.cpp` (clang-22): error: expression with side effects has no effect in an unevaluated context [-Werror,-Wunevaluated-expression]
+- `expressions/decltype/side-effect-decltype-warns.cpp` (clang-22-o2): error: expression with side effects has no effect in an unevaluated context [-Werror,-Wunevaluated-expression]
 - `expressions/decltype/side-effect-unevaluated-warns.cpp` (clang-host): error: expression with side effects has no effect in an unevaluated context [-Werror,-Wunevaluated-expression]
 - `expressions/decltype/side-effect-unevaluated-warns.cpp` (clang-18): error: expression with side effects has no effect in an unevaluated context [-Werror,-Wunevaluated-expression]
 - `expressions/decltype/side-effect-unevaluated-warns.cpp` (clang-22): error: expression with side effects has no effect in an unevaluated context [-Werror,-Wunevaluated-expression]
@@ -16448,6 +17567,15 @@ check that the rejection has the intended cause.
 - `expressions/lambdas/capture-visible-in-trailing-return.cpp` (clang-18): error: binding reference of type 'int' to value of type 'const int' drops 'const' qualifier / error: static assertion failed due to requirement 'same<int &, const int &>'
 - `expressions/lambdas/capture-visible-in-trailing-return.cpp` (clang-22): error: binding reference of type 'int' to value of type 'const int' drops 'const' qualifier / error: static assertion failed due to requirement 'same<int &, const int &>'
 - `expressions/lambdas/capture-visible-in-trailing-return.cpp` (clang-22-o2): error: binding reference of type 'int' to value of type 'const int' drops 'const' qualifier / error: static assertion failed due to requirement 'same<int &, const int &>'
+- `expressions/lambdas/capturing-no-function-pointer-argument.cpp` (clang-host): error: no matching function for call to 'call' / note: candidate function not viable: no known conversion from '(lambda at /home/ryanm/Code/tidal/tests/expressions/lambdas/capturing-no-function-pointer-argument.cpp:9:15)' to 'int (*)(int)' for 1st argument
+- `expressions/lambdas/capturing-no-function-pointer-argument.cpp` (gcc-host): error: cannot convert ‘f()::<lambda(int)>’ to ‘int (*)(int)’ / note: initializing argument 1 of ‘int call(int (*)(int))’
+- `expressions/lambdas/capturing-no-function-pointer-argument.cpp` (edg-7.0): error: no suitable conversion function from "lambda [](int)->int" to "int (*)(int)" exists
+- `expressions/lambdas/capturing-no-function-pointer-argument.cpp` (gcc-14): error: cannot convert 'f()::<lambda(int)>' to 'int (*)(int)' / note:   initializing argument 1 of 'int call(int (*)(int))'
+- `expressions/lambdas/capturing-no-function-pointer-argument.cpp` (clang-18): error: no matching function for call to 'call' / note: candidate function not viable: no known conversion from '(lambda at /tidal/tests/expressions/lambdas/capturing-no-function-pointer-argument.cpp:9:15)' to 'int (*)(int)' for 1st argument
+- `expressions/lambdas/capturing-no-function-pointer-argument.cpp` (gcc-16): error: cannot convert 'f()::<lambda(int)>' to 'int (*)(int)' / note: initializing argument 1 of 'int call(int (*)(int))'
+- `expressions/lambdas/capturing-no-function-pointer-argument.cpp` (gcc-16-o2): error: cannot convert 'f()::<lambda(int)>' to 'int (*)(int)' / note: initializing argument 1 of 'int call(int (*)(int))'
+- `expressions/lambdas/capturing-no-function-pointer-argument.cpp` (clang-22): error: no matching function for call to 'call' / note: candidate function not viable: no known conversion from '(lambda at /tidal/tests/expressions/lambdas/capturing-no-function-pointer-argument.cpp:9:15)' to 'int (*)(int)' for 1st argument
+- `expressions/lambdas/capturing-no-function-pointer-argument.cpp` (clang-22-o2): error: no matching function for call to 'call' / note: candidate function not viable: no known conversion from '(lambda at /tidal/tests/expressions/lambdas/capturing-no-function-pointer-argument.cpp:9:15)' to 'int (*)(int)' for 1st argument
 - `expressions/lambdas/capturing-no-function-pointer.cpp` (clang-host): error: no viable conversion from '(lambda at /home/ryanm/Code/tidal/tests/expressions/lambdas/capturing-no-function-pointer.cpp:8:16)' to 'int (*)()'
 - `expressions/lambdas/capturing-no-function-pointer.cpp` (gcc-host): error: cannot convert ‘f()::<lambda()>’ to ‘int (*)()’ in initialization
 - `expressions/lambdas/capturing-no-function-pointer.cpp` (edg-7.0): error: no suitable conversion function from "lambda []()->int" to "int (*)()" exists
@@ -16475,6 +17603,15 @@ check that the rejection has the intended cause.
 - `expressions/lambdas/closure-copy-assign-deleted.cpp` (gcc-16-o2): error: use of deleted function 'f()::<lambda()>& f()::<lambda()>::operator=(const f()::<lambda()>&)' / note: a lambda closure type has a deleted copy assignment operator
 - `expressions/lambdas/closure-copy-assign-deleted.cpp` (clang-22): error: object of type '(lambda at /tidal/tests/expressions/lambdas/closure-copy-assign-deleted.cpp:7:32)' cannot be assigned because its copy assignment operator is implicitly deleted / note: lambda expression begins here
 - `expressions/lambdas/closure-copy-assign-deleted.cpp` (clang-22-o2): error: object of type '(lambda at /tidal/tests/expressions/lambdas/closure-copy-assign-deleted.cpp:7:32)' cannot be assigned because its copy assignment operator is implicitly deleted / note: lambda expression begins here
+- `expressions/lambdas/const-call-operator-init-capture.cpp` (clang-host): error: cannot assign to a variable captured by copy in a non-mutable lambda
+- `expressions/lambdas/const-call-operator-init-capture.cpp` (gcc-host): error: assignment of read-only variable ‘m’
+- `expressions/lambdas/const-call-operator-init-capture.cpp` (edg-7.0): error: expression must be a modifiable lvalue
+- `expressions/lambdas/const-call-operator-init-capture.cpp` (gcc-14): error: assignment of read-only variable 'm'
+- `expressions/lambdas/const-call-operator-init-capture.cpp` (clang-18): error: cannot assign to a variable captured by copy in a non-mutable lambda
+- `expressions/lambdas/const-call-operator-init-capture.cpp` (gcc-16): error: assignment of read-only variable 'm'
+- `expressions/lambdas/const-call-operator-init-capture.cpp` (gcc-16-o2): error: assignment of read-only variable 'm'
+- `expressions/lambdas/const-call-operator-init-capture.cpp` (clang-22): error: cannot assign to a variable captured by copy in a non-mutable lambda
+- `expressions/lambdas/const-call-operator-init-capture.cpp` (clang-22-o2): error: cannot assign to a variable captured by copy in a non-mutable lambda
 - `expressions/lambdas/const-call-operator.cpp` (clang-host): error: cannot assign to a variable captured by copy in a non-mutable lambda
 - `expressions/lambdas/const-call-operator.cpp` (gcc-host): error: increment of read-only variable ‘n’
 - `expressions/lambdas/const-call-operator.cpp` (edg-7.0): error: expression must be a modifiable lvalue
@@ -16520,6 +17657,14 @@ check that the rejection has the intended cause.
 - `expressions/lambdas/explicit-object-mutable.cpp` (gcc-16-o2): error: 'mutable' lambda specifier with explicit object parameter / note: the passed in closure object will not be mutated because it is taken by value
 - `expressions/lambdas/explicit-object-mutable.cpp` (clang-22): error: a lambda with an explicit object parameter cannot be mutable
 - `expressions/lambdas/explicit-object-mutable.cpp` (clang-22-o2): error: a lambda with an explicit object parameter cannot be mutable
+- `expressions/lambdas/implicit-this-capture-call-warns.cpp` (clang-host): error: implicit capture of 'this' with a capture default of '=' is deprecated [-Werror,-Wdeprecated-this-capture] / note: add an explicit capture of 'this' to capture '*this' by reference
+- `expressions/lambdas/implicit-this-capture-call-warns.cpp` (gcc-host): error: implicit capture of ‘this’ via ‘[=]’ is deprecated in C++20 [-Werror=deprecated] / note: add explicit ‘this’ or ‘*this’ capture
+- `expressions/lambdas/implicit-this-capture-call-warns.cpp` (gcc-14): error: implicit capture of 'this' via '[=]' is deprecated in C++20 [-Werror=deprecated] / note: add explicit 'this' or '*this' capture
+- `expressions/lambdas/implicit-this-capture-call-warns.cpp` (clang-18): error: implicit capture of 'this' with a capture default of '=' is deprecated [-Werror,-Wdeprecated-this-capture] / note: add an explicit capture of 'this' to capture '*this' by reference
+- `expressions/lambdas/implicit-this-capture-call-warns.cpp` (gcc-16): error: implicit capture of 'this' via '[=]' is deprecated in C++20 [-Werror=deprecated] / note: add explicit 'this' or '*this' capture
+- `expressions/lambdas/implicit-this-capture-call-warns.cpp` (gcc-16-o2): error: implicit capture of 'this' via '[=]' is deprecated in C++20 [-Werror=deprecated] / note: add explicit 'this' or '*this' capture
+- `expressions/lambdas/implicit-this-capture-call-warns.cpp` (clang-22): error: implicit capture of 'this' with a capture default of '=' is deprecated [-Werror,-Wdeprecated-this-capture] / note: add an explicit capture of 'this' to capture '*this' by reference
+- `expressions/lambdas/implicit-this-capture-call-warns.cpp` (clang-22-o2): error: implicit capture of 'this' with a capture default of '=' is deprecated [-Werror,-Wdeprecated-this-capture] / note: add an explicit capture of 'this' to capture '*this' by reference
 - `expressions/lambdas/implicit-this-capture-warns.cpp` (clang-host): error: implicit capture of 'this' with a capture default of '=' is deprecated [-Werror,-Wdeprecated-this-capture] / note: add an explicit capture of 'this' to capture '*this' by reference
 - `expressions/lambdas/implicit-this-capture-warns.cpp` (gcc-host): error: implicit capture of ‘this’ via ‘[=]’ is deprecated in C++20 [-Werror=deprecated] / note: add explicit ‘this’ or ‘*this’ capture
 - `expressions/lambdas/implicit-this-capture-warns.cpp` (gcc-14): error: implicit capture of 'this' via '[=]' is deprecated in C++20 [-Werror=deprecated] / note: add explicit 'this' or '*this' capture
@@ -16555,6 +17700,15 @@ check that the rejection has the intended cause.
 - `expressions/lambdas/parameter-same-as-capture.cpp` (gcc-16-o2): error: lambda parameter 'x' previously declared as a capture
 - `expressions/lambdas/parameter-same-as-capture.cpp` (clang-22): error: a lambda parameter cannot shadow an explicitly captured entity / note: variable 'x' is explicitly captured here
 - `expressions/lambdas/parameter-same-as-capture.cpp` (clang-22-o2): error: a lambda parameter cannot shadow an explicitly captured entity / note: variable 'x' is explicitly captured here
+- `expressions/lambdas/return-deduction-void-and-value.cpp` (clang-host): error: return type 'int' must match previous return type 'void' when lambda expression has unspecified explicit return type
+- `expressions/lambdas/return-deduction-void-and-value.cpp` (gcc-host): error: inconsistent types ‘void’ and ‘int’ deduced for lambda return type / error: return-statement with a value, in function returning ‘void’ [-fpermissive]
+- `expressions/lambdas/return-deduction-void-and-value.cpp` (edg-7.0): error: deduced return type "int" conflicts with previously deduced type "void"
+- `expressions/lambdas/return-deduction-void-and-value.cpp` (gcc-14): error: inconsistent types 'void' and 'int' deduced for lambda return type / error: return-statement with a value, in function returning 'void' [-fpermissive]
+- `expressions/lambdas/return-deduction-void-and-value.cpp` (clang-18): error: return type 'int' must match previous return type 'void' when lambda expression has unspecified explicit return type
+- `expressions/lambdas/return-deduction-void-and-value.cpp` (gcc-16): error: inconsistent types 'void' and 'int' deduced for lambda return type / error: return-statement with a value, in function returning 'void' [-fpermissive]
+- `expressions/lambdas/return-deduction-void-and-value.cpp` (gcc-16-o2): error: inconsistent types 'void' and 'int' deduced for lambda return type / error: return-statement with a value, in function returning 'void' [-fpermissive]
+- `expressions/lambdas/return-deduction-void-and-value.cpp` (clang-22): error: return type 'int' must match previous return type 'void' when lambda expression has unspecified explicit return type
+- `expressions/lambdas/return-deduction-void-and-value.cpp` (clang-22-o2): error: return type 'int' must match previous return type 'void' when lambda expression has unspecified explicit return type
 - `expressions/lambdas/return-deduction.cpp` (clang-host): error: return type 'double' must match previous return type 'int' when lambda expression has unspecified explicit return type
 - `expressions/lambdas/return-deduction.cpp` (gcc-host): error: inconsistent types ‘int’ and ‘double’ deduced for lambda return type
 - `expressions/lambdas/return-deduction.cpp` (edg-7.0): error: deduced return type "double" conflicts with previously deduced type "int"
@@ -16564,6 +17718,15 @@ check that the rejection has the intended cause.
 - `expressions/lambdas/return-deduction.cpp` (gcc-16-o2): error: inconsistent types 'int' and 'double' deduced for lambda return type
 - `expressions/lambdas/return-deduction.cpp` (clang-22): error: return type 'double' must match previous return type 'int' when lambda expression has unspecified explicit return type
 - `expressions/lambdas/return-deduction.cpp` (clang-22-o2): error: return type 'double' must match previous return type 'int' when lambda expression has unspecified explicit return type
+- `expressions/lambdas/static-with-capture-default.cpp` (clang-host): error: a static lambda cannot have any captures
+- `expressions/lambdas/static-with-capture-default.cpp` (gcc-host): error: ‘static’ lambda specifier with lambda capture
+- `expressions/lambdas/static-with-capture-default.cpp` (edg-7.0): error: a "static" lambda expression must have an empty capture specification
+- `expressions/lambdas/static-with-capture-default.cpp` (gcc-14): error: 'static' lambda specifier with lambda capture
+- `expressions/lambdas/static-with-capture-default.cpp` (clang-18): error: a static lambda cannot have any captures
+- `expressions/lambdas/static-with-capture-default.cpp` (gcc-16): error: 'static' lambda specifier with lambda capture
+- `expressions/lambdas/static-with-capture-default.cpp` (gcc-16-o2): error: 'static' lambda specifier with lambda capture
+- `expressions/lambdas/static-with-capture-default.cpp` (clang-22): error: a static lambda cannot have any captures
+- `expressions/lambdas/static-with-capture-default.cpp` (clang-22-o2): error: a static lambda cannot have any captures
 - `expressions/lambdas/static-with-capture.cpp` (clang-host): error: a static lambda cannot have any captures
 - `expressions/lambdas/static-with-capture.cpp` (gcc-host): error: ‘static’ lambda specifier with lambda capture
 - `expressions/lambdas/static-with-capture.cpp` (edg-7.0): error: a "static" lambda expression must have an empty capture specification
@@ -16573,6 +17736,15 @@ check that the rejection has the intended cause.
 - `expressions/lambdas/static-with-capture.cpp` (gcc-16-o2): error: 'static' lambda specifier with lambda capture
 - `expressions/lambdas/static-with-capture.cpp` (clang-22): error: a static lambda cannot have any captures
 - `expressions/lambdas/static-with-capture.cpp` (clang-22-o2): error: a static lambda cannot have any captures
+- `expressions/lambdas/this-in-static-member.cpp` (clang-host): error: 'this' cannot be captured in this context
+- `expressions/lambdas/this-in-static-member.cpp` (gcc-host): error: ‘this’ is unavailable for static member functions
+- `expressions/lambdas/this-in-static-member.cpp` (edg-7.0): error: "this" may only be used inside a nonstatic member function
+- `expressions/lambdas/this-in-static-member.cpp` (gcc-14): error: 'this' is unavailable for static member functions
+- `expressions/lambdas/this-in-static-member.cpp` (clang-18): error: 'this' cannot be captured in this context
+- `expressions/lambdas/this-in-static-member.cpp` (gcc-16): error: 'this' is unavailable for static member functions
+- `expressions/lambdas/this-in-static-member.cpp` (gcc-16-o2): error: 'this' is unavailable for static member functions
+- `expressions/lambdas/this-in-static-member.cpp` (clang-22): error: 'this' cannot be captured in this context
+- `expressions/lambdas/this-in-static-member.cpp` (clang-22-o2): error: 'this' cannot be captured in this context
 - `expressions/lambdas/this-outside-member.cpp` (clang-host): error: 'this' cannot be captured in this context
 - `expressions/lambdas/this-outside-member.cpp` (gcc-host): error: invalid use of ‘this’ in non-member function
 - `expressions/lambdas/this-outside-member.cpp` (edg-7.0): error: "this" may only be used inside a nonstatic member function
@@ -17180,6 +18352,15 @@ check that the rejection has the intended cause.
 - `expressions/new-delete/aligned-form-only-for-ordinary-type.cpp` (gcc-16-o2): error: no matching function for call to 'Plain::operator new(sizetype)'
 - `expressions/new-delete/aligned-form-only-for-ordinary-type.cpp` (clang-22): error: no matching function for call to 'operator new' / note: candidate function not viable: requires 2 arguments, but 1 was provided
 - `expressions/new-delete/aligned-form-only-for-ordinary-type.cpp` (clang-22-o2): error: no matching function for call to 'operator new' / note: candidate function not viable: requires 2 arguments, but 1 was provided
+- `expressions/new-delete/aligned-form-only-placement.cpp` (clang-host): error: no matching function for call to 'operator new' / note: candidate function not viable: requires 3 arguments, but 2 were provided
+- `expressions/new-delete/aligned-form-only-placement.cpp` (gcc-host): error: no matching function for call to ‘Plain::operator new(sizetype, int)’
+- `expressions/new-delete/aligned-form-only-placement.cpp` (edg-7.0): error: function "Plain::operator new" cannot be called with the given argument list / note: number of parameters of function "Plain::operator new" does not match the call
+- `expressions/new-delete/aligned-form-only-placement.cpp` (gcc-14): error: no matching function for call to 'Plain::operator new(sizetype, int)' / note: candidate: 'static void* Plain::operator new(std::size_t, std::align_val_t, int)' / note:   candidate expects 3 arguments, 2 provided
+- `expressions/new-delete/aligned-form-only-placement.cpp` (clang-18): error: no matching function for call to 'operator new' / note: candidate function not viable: requires 3 arguments, but 2 were provided
+- `expressions/new-delete/aligned-form-only-placement.cpp` (gcc-16): error: no matching function for call to 'Plain::operator new(sizetype, int)'
+- `expressions/new-delete/aligned-form-only-placement.cpp` (gcc-16-o2): error: no matching function for call to 'Plain::operator new(sizetype, int)'
+- `expressions/new-delete/aligned-form-only-placement.cpp` (clang-22): error: no matching function for call to 'operator new' / note: candidate function not viable: requires 3 arguments, but 2 were provided
+- `expressions/new-delete/aligned-form-only-placement.cpp` (clang-22-o2): error: no matching function for call to 'operator new' / note: candidate function not viable: requires 3 arguments, but 2 were provided
 - `expressions/new-delete/aligned-forms-by-name.cpp` (clang-18): error: no matching function for call to 'operator delete[]' / error: no matching function for call to 'operator delete'
 - `expressions/new-delete/array-constant-size-too-large.cpp` (clang-host): error: array is too large (9'223'372'036'854'775'807 elements)
 - `expressions/new-delete/array-constant-size-too-large.cpp` (gcc-host): error: size ‘18446744073709551612’ of array exceeds maximum object size ‘9223372036854775807’
@@ -17418,6 +18599,15 @@ check that the rejection has the intended cause.
 - `expressions/new-delete/later-dimension-runtime.cpp` (gcc-16-o2): error: ISO C++ forbids variable length array [-Wvla] / error: array size in new-expression must be constant / error: 'm' is not a constant expression
 - `expressions/new-delete/later-dimension-runtime.cpp` (clang-22): error: array size is not a constant expression / note: function parameter 'm' with unknown value cannot be used in a constant expression
 - `expressions/new-delete/later-dimension-runtime.cpp` (clang-22-o2): error: array size is not a constant expression / note: function parameter 'm' with unknown value cannot be used in a constant expression
+- `expressions/new-delete/leak-array-in-constant-evaluation.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: allocation performed here was not deallocated
+- `expressions/new-delete/leak-array-in-constant-evaluation.cpp` (gcc-host): error: non-constant condition for static assertion / error: ‘(first() == 4)’ is not a constant expression because allocated storage has not been deallocated / note: allocated here
+- `expressions/new-delete/leak-array-in-constant-evaluation.cpp` (edg-7.0): error: expression must have a constant value / note: some dynamic allocations (total number = 1) were not deallocated / note: allocation occurred here
+- `expressions/new-delete/leak-array-in-constant-evaluation.cpp` (gcc-14): error: non-constant condition for static assertion / error: '(first() == 4)' is not a constant expression because allocated storage has not been deallocated
+- `expressions/new-delete/leak-array-in-constant-evaluation.cpp` (clang-18): error: static assertion expression is not an integral constant expression / note: allocation performed here was not deallocated
+- `expressions/new-delete/leak-array-in-constant-evaluation.cpp` (gcc-16): error: non-constant condition for static assertion / error: '(first() == 4)' is not a constant expression because allocated storage has not been deallocated / note: allocated here
+- `expressions/new-delete/leak-array-in-constant-evaluation.cpp` (gcc-16-o2): error: non-constant condition for static assertion / error: '(first() == 4)' is not a constant expression because allocated storage has not been deallocated / note: allocated here
+- `expressions/new-delete/leak-array-in-constant-evaluation.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: allocation performed here was not deallocated
+- `expressions/new-delete/leak-array-in-constant-evaluation.cpp` (clang-22-o2): error: static assertion expression is not an integral constant expression / note: allocation performed here was not deallocated
 - `expressions/new-delete/leak-in-constant-evaluation.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: allocation performed here was not deallocated
 - `expressions/new-delete/leak-in-constant-evaluation.cpp` (gcc-host): error: non-constant condition for static assertion / error: ‘f()’ is not a constant expression because allocated storage has not been deallocated / note: allocated here
 - `expressions/new-delete/leak-in-constant-evaluation.cpp` (edg-7.0): error: expression must have a constant value / note: some dynamic allocations (total number = 1) were not deallocated / note: allocation occurred here
@@ -17508,6 +18698,7 @@ check that the rejection has the intended cause.
 - `expressions/new-delete/reference-type.cpp` (gcc-16-o2): error: new cannot be applied to a reference type
 - `expressions/new-delete/reference-type.cpp` (clang-22): error: cannot allocate reference type 'int &' with new
 - `expressions/new-delete/reference-type.cpp` (clang-22-o2): error: cannot allocate reference type 'int &' with new
+- `expressions/new-delete/throw-placement-deleted-function-and-template.cpp` (edg-7.0): error: function "Gadget::operator delete(void *, Arena *) noexcept" (declared at line 10) cannot be referenced -- it is a deleted function
 - `expressions/new-delete/throw-placement-templates-unordered.cpp` (edg-7.0): error: "Gadget::operator delete" is ambiguous
 - `expressions/new-delete/uninitialized-read.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: read of uninitialized object is not allowed in a constant expression
 - `expressions/new-delete/uninitialized-read.cpp` (gcc-host): error: non-constant condition for static assertion / error: the content of uninitialized storage is not usable in a constant expression / note: allocated here
@@ -17545,6 +18736,15 @@ check that the rejection has the intended cause.
 - `expressions/postfix/call-class-without-call-operator.cpp` (gcc-16-o2): error: no match for call to '(Box) ()'
 - `expressions/postfix/call-class-without-call-operator.cpp` (clang-22): error: type 'Box' does not provide a call operator
 - `expressions/postfix/call-class-without-call-operator.cpp` (clang-22-o2): error: type 'Box' does not provide a call operator
+- `expressions/postfix/call-explicit-constructor-braced.cpp` (clang-host): error: no matching function for call to 'f' / note: candidate function not viable: cannot convert initializer list argument to 'S'
+- `expressions/postfix/call-explicit-constructor-braced.cpp` (gcc-host): error: converting to ‘S’ from initializer list would use explicit constructor ‘S::S(int, int)’
+- `expressions/postfix/call-explicit-constructor-braced.cpp` (edg-7.0): error: copy-list-initialization cannot use a constructor marked "explicit"
+- `expressions/postfix/call-explicit-constructor-braced.cpp` (gcc-14): error: converting to 'S' from initializer list would use explicit constructor 'S::S(int, int)'
+- `expressions/postfix/call-explicit-constructor-braced.cpp` (clang-18): error: no matching function for call to 'f' / note: candidate function not viable: cannot convert initializer list argument to 'S'
+- `expressions/postfix/call-explicit-constructor-braced.cpp` (gcc-16): error: converting to 'S' from initializer list would use explicit constructor 'S::S(int, int)'
+- `expressions/postfix/call-explicit-constructor-braced.cpp` (gcc-16-o2): error: converting to 'S' from initializer list would use explicit constructor 'S::S(int, int)'
+- `expressions/postfix/call-explicit-constructor-braced.cpp` (clang-22): error: no matching function for call to 'f' / note: candidate function not viable: cannot convert initializer list argument to 'S'
+- `expressions/postfix/call-explicit-constructor-braced.cpp` (clang-22-o2): error: no matching function for call to 'f' / note: candidate function not viable: cannot convert initializer list argument to 'S'
 - `expressions/postfix/call-explicit-constructor.cpp` (clang-host): error: no matching function for call to 'f' / note: candidate function not viable: no known conversion from 'int' to 'S' for 1st argument
 - `expressions/postfix/call-explicit-constructor.cpp` (gcc-host): error: could not convert ‘1’ from ‘int’ to ‘S’ / note: explicit conversion function was not considered
 - `expressions/postfix/call-explicit-constructor.cpp` (edg-7.0): error: no suitable constructor exists to convert from "int" to "S"
@@ -17621,6 +18821,10 @@ check that the rejection has the intended cause.
 - `expressions/postfix/ellipsis-nontrivial-class.cpp` (clang-18): error: cannot pass object of non-trivial type 'S' through variadic function; call will abort at runtime [-Wnon-pod-varargs]
 - `expressions/postfix/ellipsis-nontrivial-class.cpp` (clang-22): error: cannot pass object of non-trivial type 'S' through variadic function; call will abort at runtime [-Wnon-pod-varargs]
 - `expressions/postfix/ellipsis-nontrivial-class.cpp` (clang-22-o2): error: cannot pass object of non-trivial type 'S' through variadic function; call will abort at runtime [-Wnon-pod-varargs]
+- `expressions/postfix/ellipsis-nontrivial-destructor.cpp` (clang-host): error: cannot pass object of non-trivial type 'D' through variadic function; call will abort at runtime [-Wnon-pod-varargs]
+- `expressions/postfix/ellipsis-nontrivial-destructor.cpp` (clang-18): error: cannot pass object of non-trivial type 'D' through variadic function; call will abort at runtime [-Wnon-pod-varargs]
+- `expressions/postfix/ellipsis-nontrivial-destructor.cpp` (clang-22): error: cannot pass object of non-trivial type 'D' through variadic function; call will abort at runtime [-Wnon-pod-varargs]
+- `expressions/postfix/ellipsis-nontrivial-destructor.cpp` (clang-22-o2): error: cannot pass object of non-trivial type 'D' through variadic function; call will abort at runtime [-Wnon-pod-varargs]
 - `expressions/postfix/increment-enum.cpp` (clang-host): error: cannot increment expression of enum type 'E'
 - `expressions/postfix/increment-enum.cpp` (gcc-host): error: no ‘operator++(int)’ declared for postfix ‘++’ [-fpermissive]
 - `expressions/postfix/increment-enum.cpp` (edg-7.0): error: this operation on an enumerated type requires an applicable user-defined operator function
@@ -17946,6 +19150,15 @@ check that the rejection has the intended cause.
 - `expressions/primary/char-unprefixed-not-single-unit.cpp` (gcc-16-o2): error: character not encodable in a single execution character code unit [-Wpedantic]
 - `expressions/primary/char-unprefixed-not-single-unit.cpp` (clang-22): error: character too large for enclosing character literal type
 - `expressions/primary/char-unprefixed-not-single-unit.cpp` (clang-22-o2): error: character too large for enclosing character literal type
+- `expressions/primary/char-unprefixed-utf8-source.cpp` (clang-host): error: character too large for enclosing character literal type
+- `expressions/primary/char-unprefixed-utf8-source.cpp` (gcc-host): error: character not encodable in a single execution character code unit [-Wpedantic]
+- `expressions/primary/char-unprefixed-utf8-source.cpp` (edg-7.0): error: character cannot be represented in the specified character type
+- `expressions/primary/char-unprefixed-utf8-source.cpp` (gcc-14): error: character not encodable in a single execution character code unit
+- `expressions/primary/char-unprefixed-utf8-source.cpp` (clang-18): error: character too large for enclosing character literal type
+- `expressions/primary/char-unprefixed-utf8-source.cpp` (gcc-16): error: character not encodable in a single execution character code unit [-Wpedantic]
+- `expressions/primary/char-unprefixed-utf8-source.cpp` (gcc-16-o2): error: character not encodable in a single execution character code unit [-Wpedantic]
+- `expressions/primary/char-unprefixed-utf8-source.cpp` (clang-22): error: character too large for enclosing character literal type
+- `expressions/primary/char-unprefixed-utf8-source.cpp` (clang-22-o2): error: character too large for enclosing character literal type
 - `expressions/primary/char16-not-bmp.cpp` (clang-host): error: character too large for enclosing character literal type
 - `expressions/primary/char16-not-bmp.cpp` (gcc-host): error: character not encodable in a single code unit
 - `expressions/primary/char16-not-bmp.cpp` (edg-7.0): error: invalid character for char16_t literal
@@ -17955,6 +19168,7 @@ check that the rejection has the intended cause.
 - `expressions/primary/char16-not-bmp.cpp` (gcc-16-o2): error: character not encodable in a single code unit
 - `expressions/primary/char16-not-bmp.cpp` (clang-22): error: character too large for enclosing character literal type
 - `expressions/primary/char16-not-bmp.cpp` (clang-22-o2): error: character too large for enclosing character literal type
+- `expressions/primary/double-overflow.cpp` (edg-7.0): error: floating constant is out of range
 - `expressions/primary/float-exponent-no-digits.cpp` (clang-host): error: exponent has no digits
 - `expressions/primary/float-exponent-no-digits.cpp` (gcc-host): error: exponent has no digits
 - `expressions/primary/float-exponent-no-digits.cpp` (edg-7.0): error: user-defined literal operator not found
@@ -18374,6 +19588,14 @@ check that the rejection has the intended cause.
 - `expressions/sequencing/unsequenced-increments.cpp` (gcc-16-o2): error: operation on 'i' may be undefined [-Werror=sequence-point] / error: operation on 'i' may be undefined [-Werror=sequence-point]
 - `expressions/sequencing/unsequenced-increments.cpp` (clang-22): error: multiple unsequenced modifications to 'i' [-Werror,-Wunsequenced]
 - `expressions/sequencing/unsequenced-increments.cpp` (clang-22-o2): error: multiple unsequenced modifications to 'i' [-Werror,-Wunsequenced]
+- `expressions/sequencing/unsequenced-read-and-increment.cpp` (clang-host): error: unsequenced modification and access to 'i' [-Werror,-Wunsequenced]
+- `expressions/sequencing/unsequenced-read-and-increment.cpp` (gcc-host): error: operation on ‘i’ may be undefined [-Werror=sequence-point] / error: operation on ‘i’ may be undefined [-Werror=sequence-point]
+- `expressions/sequencing/unsequenced-read-and-increment.cpp` (gcc-14): error: operation on 'i' may be undefined [-Werror=sequence-point] / error: operation on 'i' may be undefined [-Werror=sequence-point]
+- `expressions/sequencing/unsequenced-read-and-increment.cpp` (clang-18): error: unsequenced modification and access to 'i' [-Werror,-Wunsequenced]
+- `expressions/sequencing/unsequenced-read-and-increment.cpp` (gcc-16): error: operation on 'i' may be undefined [-Werror=sequence-point] / error: operation on 'i' may be undefined [-Werror=sequence-point]
+- `expressions/sequencing/unsequenced-read-and-increment.cpp` (gcc-16-o2): error: operation on 'i' may be undefined [-Werror=sequence-point] / error: operation on 'i' may be undefined [-Werror=sequence-point]
+- `expressions/sequencing/unsequenced-read-and-increment.cpp` (clang-22): error: unsequenced modification and access to 'i' [-Werror,-Wunsequenced]
+- `expressions/sequencing/unsequenced-read-and-increment.cpp` (clang-22-o2): error: unsequenced modification and access to 'i' [-Werror,-Wunsequenced]
 - `expressions/shift/class-operand.cpp` (clang-host): error: invalid operands to binary expression ('S' and 'int')
 - `expressions/shift/class-operand.cpp` (gcc-host): error: no match for ‘operator<<’ (operand types are ‘S’ and ‘int’)
 - `expressions/shift/class-operand.cpp` (edg-7.0): error: no operator "<<" matches these operands / note: built-in operator<<(<promoted integral>, <promoted integral>) does not match because argument #1 does not match parameter
@@ -18492,6 +19714,15 @@ check that the rejection has the intended cause.
 - `expressions/shift/result-prvalue.cpp` (gcc-16-o2): error: lvalue required as unary '&' operand
 - `expressions/shift/result-prvalue.cpp` (clang-22): error: cannot take the address of an rvalue of type 'int'
 - `expressions/shift/result-prvalue.cpp` (clang-22-o2): error: cannot take the address of an rvalue of type 'int'
+- `expressions/unary/address-of-class-prvalue.cpp` (clang-host): error: taking the address of a temporary object of type 'S' [-Waddress-of-temporary]
+- `expressions/unary/address-of-class-prvalue.cpp` (gcc-host): error: taking address of rvalue [-fpermissive]
+- `expressions/unary/address-of-class-prvalue.cpp` (edg-7.0): error: expression must be an lvalue or a function designator
+- `expressions/unary/address-of-class-prvalue.cpp` (gcc-14): error: taking address of rvalue [-fpermissive]
+- `expressions/unary/address-of-class-prvalue.cpp` (clang-18): error: taking the address of a temporary object of type 'S' [-Waddress-of-temporary]
+- `expressions/unary/address-of-class-prvalue.cpp` (gcc-16): error: taking address of rvalue [-fpermissive]
+- `expressions/unary/address-of-class-prvalue.cpp` (gcc-16-o2): error: taking address of rvalue [-fpermissive]
+- `expressions/unary/address-of-class-prvalue.cpp` (clang-22): error: taking the address of a temporary object of type 'S' [-Waddress-of-temporary]
+- `expressions/unary/address-of-class-prvalue.cpp` (clang-22-o2): error: taking the address of a temporary object of type 'S' [-Waddress-of-temporary]
 - `expressions/unary/address-of-rvalue.cpp` (clang-host): error: cannot take the address of an rvalue of type 'int'
 - `expressions/unary/address-of-rvalue.cpp` (gcc-host): error: lvalue required as unary ‘&’ operand
 - `expressions/unary/address-of-rvalue.cpp` (edg-7.0): error: expression must be an lvalue or a function designator
@@ -18758,6 +19989,15 @@ check that the rejection has the intended cause.
 - `expressions/value-categories/address-of-prvalue.cpp` (gcc-16-o2): error: lvalue required as unary '&' operand
 - `expressions/value-categories/address-of-prvalue.cpp` (clang-22): error: cannot take the address of an rvalue of type 'int'
 - `expressions/value-categories/address-of-prvalue.cpp` (clang-22-o2): error: cannot take the address of an rvalue of type 'int'
+- `expressions/value-categories/address-of-xvalue-call.cpp` (clang-host): error: cannot take the address of an rvalue of type 'int'
+- `expressions/value-categories/address-of-xvalue-call.cpp` (gcc-host): error: taking address of rvalue [-fpermissive]
+- `expressions/value-categories/address-of-xvalue-call.cpp` (edg-7.0): error: expression must be an lvalue or a function designator
+- `expressions/value-categories/address-of-xvalue-call.cpp` (gcc-14): error: taking address of rvalue [-fpermissive]
+- `expressions/value-categories/address-of-xvalue-call.cpp` (clang-18): error: cannot take the address of an rvalue of type 'int'
+- `expressions/value-categories/address-of-xvalue-call.cpp` (gcc-16): error: taking address of rvalue [-fpermissive]
+- `expressions/value-categories/address-of-xvalue-call.cpp` (gcc-16-o2): error: taking address of rvalue [-fpermissive]
+- `expressions/value-categories/address-of-xvalue-call.cpp` (clang-22): error: cannot take the address of an rvalue of type 'int'
+- `expressions/value-categories/address-of-xvalue-call.cpp` (clang-22-o2): error: cannot take the address of an rvalue of type 'int'
 - `expressions/value-categories/address-of-xvalue.cpp` (clang-host): error: cannot take the address of an rvalue of type 'int'
 - `expressions/value-categories/address-of-xvalue.cpp` (gcc-host): error: taking address of rvalue [-fpermissive]
 - `expressions/value-categories/address-of-xvalue.cpp` (edg-7.0): error: expression must be an lvalue or a function designator
@@ -18812,7 +20052,20 @@ check that the rejection has the intended cause.
 - `expressions/value-categories/rvalue-reference-name-binding.cpp` (gcc-16-o2): error: cannot bind rvalue reference of type 'int&&' to lvalue of type 'int'
 - `expressions/value-categories/rvalue-reference-name-binding.cpp` (clang-22): error: rvalue reference to type 'int' cannot bind to lvalue of type 'int'
 - `expressions/value-categories/rvalue-reference-name-binding.cpp` (clang-22-o2): error: rvalue reference to type 'int' cannot bind to lvalue of type 'int'
+- `expressions/value-categories/rvalue-reference-parameter-name-binding.cpp` (clang-host): error: rvalue reference to type 'int' cannot bind to lvalue of type 'int'
+- `expressions/value-categories/rvalue-reference-parameter-name-binding.cpp` (gcc-host): error: cannot bind rvalue reference of type ‘int&&’ to lvalue of type ‘int’
+- `expressions/value-categories/rvalue-reference-parameter-name-binding.cpp` (edg-7.0): error: an rvalue reference cannot be bound to an lvalue
+- `expressions/value-categories/rvalue-reference-parameter-name-binding.cpp` (gcc-14): error: cannot bind rvalue reference of type 'int&&' to lvalue of type 'int'
+- `expressions/value-categories/rvalue-reference-parameter-name-binding.cpp` (clang-18): error: rvalue reference to type 'int' cannot bind to lvalue of type 'int'
+- `expressions/value-categories/rvalue-reference-parameter-name-binding.cpp` (gcc-16): error: cannot bind rvalue reference of type 'int&&' to lvalue of type 'int'
+- `expressions/value-categories/rvalue-reference-parameter-name-binding.cpp` (gcc-16-o2): error: cannot bind rvalue reference of type 'int&&' to lvalue of type 'int'
+- `expressions/value-categories/rvalue-reference-parameter-name-binding.cpp` (clang-22): error: rvalue reference to type 'int' cannot bind to lvalue of type 'int'
+- `expressions/value-categories/rvalue-reference-parameter-name-binding.cpp` (clang-22-o2): error: rvalue reference to type 'int' cannot bind to lvalue of type 'int'
 - `expressions/value-categories/xvalue-array-subscript.cpp` (edg-7.0): error: static assertion failed / error: static assertion failed
+- `foundations/conversion-sequences/array-known-bound-direct-cv.cpp` (clang-host): error: call to 'take' is ambiguous / note: candidate function / note: candidate function
+- `foundations/conversion-sequences/array-known-bound-direct-cv.cpp` (clang-18): error: call to 'take' is ambiguous / note: candidate function / note: candidate function
+- `foundations/conversion-sequences/array-known-bound-direct-cv.cpp` (clang-22): error: call to 'take' is ambiguous / note: candidate function / note: candidate function
+- `foundations/conversion-sequences/array-known-bound-direct-cv.cpp` (clang-22-o2): error: call to 'take' is ambiguous / note: candidate function / note: candidate function
 - `foundations/conversion-sequences/array-known-bound-direct.cpp` (clang-host): error: call to 'take' is ambiguous / note: candidate function / note: candidate function
 - `foundations/conversion-sequences/array-known-bound-direct.cpp` (clang-18): error: call to 'take' is ambiguous / note: candidate function / note: candidate function
 - `foundations/conversion-sequences/array-known-bound-direct.cpp` (clang-22): error: call to 'take' is ambiguous / note: candidate function / note: candidate function
@@ -18929,6 +20182,10 @@ check that the rejection has the intended cause.
 - `foundations/conversion-sequences/chosen-private-base.cpp` (gcc-16-o2): error: 'Base' is an inaccessible base of 'Derived'
 - `foundations/conversion-sequences/chosen-private-base.cpp` (clang-22): error: cannot cast 'Derived' to its private base class 'Base' / note: declared private here
 - `foundations/conversion-sequences/chosen-private-base.cpp` (clang-22-o2): error: cannot cast 'Derived' to its private base class 'Base' / note: declared private here
+- `foundations/conversion-sequences/conversion-choice-equal-rank-extended-target.cpp` (clang-host): error: invalid suffix 'f32' on floating constant / error: unknown type name 'Float32'
+- `foundations/conversion-sequences/conversion-choice-equal-rank-extended-target.cpp` (clang-18): error: invalid suffix 'f32' on floating constant / error: unknown type name 'Float32'
+- `foundations/conversion-sequences/conversion-choice-equal-rank-extended-target.cpp` (clang-22): error: invalid suffix 'f32' on floating constant / error: unknown type name 'Float32'
+- `foundations/conversion-sequences/conversion-choice-equal-rank-extended-target.cpp` (clang-22-o2): error: invalid suffix 'f32' on floating constant / error: unknown type name 'Float32'
 - `foundations/conversion-sequences/conversion-choice-equal-rank-source.cpp` (clang-host): error: invalid suffix 'f32' on floating constant / error: invalid suffix 'f64' on floating constant / error: unknown type name 'Float32' / error: no viable conversion from 'Single' to 'const float' / error: unknown type name 'Float32' / error: no viable conversion from 'Whole' to 'const float' / error: unknown type name 'Float64' / error: no viable conversion from 'Wide' to 'const double'
 - `foundations/conversion-sequences/conversion-choice-equal-rank-source.cpp` (clang-18): error: invalid suffix 'f32' on floating constant / error: invalid suffix 'f64' on floating constant / error: unknown type name 'Float32' / error: no viable conversion from 'Single' to 'const float' / error: unknown type name 'Float32' / error: no viable conversion from 'Whole' to 'const float' / error: unknown type name 'Float64' / error: no viable conversion from 'Wide' to 'const double'
 - `foundations/conversion-sequences/conversion-choice-equal-rank-source.cpp` (clang-22): error: invalid suffix 'f32' on floating constant / error: invalid suffix 'f64' on floating constant / error: unknown type name 'Float32' / error: no viable conversion from 'Single' to 'const float' / error: unknown type name 'Float32' / error: no viable conversion from 'Whole' to 'const float' / error: unknown type name 'Float64' / error: no viable conversion from 'Wide' to 'const double'
@@ -18956,10 +20213,11 @@ check that the rejection has the intended cause.
 - `foundations/conversion-sequences/floating-equal-rank.cpp` (clang-18): error: invalid suffix 'f64' on floating constant / error: invalid suffix 'f64' on floating constant
 - `foundations/conversion-sequences/floating-equal-rank.cpp` (clang-22): error: invalid suffix 'f64' on floating constant / error: invalid suffix 'f64' on floating constant
 - `foundations/conversion-sequences/floating-equal-rank.cpp` (clang-22-o2): error: invalid suffix 'f64' on floating constant / error: invalid suffix 'f64' on floating constant
-- `foundations/conversion-sequences/initializer-list-over-kind.cpp` (clang-host): error: static assertion failed due to requirement 'same<Two, One>'
-- `foundations/conversion-sequences/initializer-list-over-kind.cpp` (clang-18): error: static assertion failed due to requirement 'same<Two, One>'
-- `foundations/conversion-sequences/initializer-list-over-kind.cpp` (clang-22): error: static assertion failed due to requirement 'same<Two, One>'
-- `foundations/conversion-sequences/initializer-list-over-kind.cpp` (clang-22-o2): error: static assertion failed due to requirement 'same<Two, One>'
+- `foundations/conversion-sequences/initializer-list-over-kind.cpp` (gcc-host): error: static assertion failed
+- `foundations/conversion-sequences/initializer-list-over-kind.cpp` (edg-7.0): error: static assertion failed
+- `foundations/conversion-sequences/initializer-list-over-kind.cpp` (gcc-14): error: static assertion failed
+- `foundations/conversion-sequences/initializer-list-over-kind.cpp` (gcc-16): error: static assertion failed
+- `foundations/conversion-sequences/initializer-list-over-kind.cpp` (gcc-16-o2): error: static assertion failed
 - `foundations/conversion-sequences/list-array-against-scalar.cpp` (gcc-host): error: call of overloaded ‘take(<brace-enclosed initializer list>, int)’ is ambiguous / error: call of overloaded ‘take(<brace-enclosed initializer list>, int)’ is ambiguous / error: template argument 1 is invalid
 - `foundations/conversion-sequences/list-array-against-scalar.cpp` (gcc-14): error: call of overloaded 'take(<brace-enclosed initializer list>, int)' is ambiguous / note: candidate: 'One take(int, long int)' / note: candidate: 'Two take(int (&&)[2], int)' / error: call of overloaded 'take(<brace-enclosed initializer list>, int)' is ambiguous / note: candidate: 'One take(int, long int)' / note: candidate: 'Two take(int (&&)[2], int)' / error: template argument 1 is invalid
 - `foundations/conversion-sequences/list-array-against-scalar.cpp` (gcc-16): error: call of overloaded 'take(<brace-enclosed initializer list>, int)' is ambiguous / error: call of overloaded 'take(<brace-enclosed initializer list>, int)' is ambiguous / error: template argument 1 is invalid
@@ -19004,20 +20262,31 @@ check that the rejection has the intended cause.
 - `foundations/conversion-sequences/overload-set-to-ellipsis.cpp` (gcc-16-o2): error: overloaded function with no contextual type information
 - `foundations/conversion-sequences/overload-set-to-ellipsis.cpp` (clang-22): error: reference to overloaded function could not be resolved; did you mean to call it? / note: possible target for call / note: possible target for call
 - `foundations/conversion-sequences/overload-set-to-ellipsis.cpp` (clang-22-o2): error: reference to overloaded function could not be resolved; did you mean to call it? / note: possible target for call / note: possible target for call
-- `foundations/conversion-sequences/qualification-array-bound.cpp` (clang-host): error: call to 'take' is ambiguous / note: candidate function / note: candidate function
-- `foundations/conversion-sequences/qualification-array-bound.cpp` (clang-18): error: call to 'take' is ambiguous / note: candidate function / note: candidate function
-- `foundations/conversion-sequences/qualification-array-bound.cpp` (clang-22): error: call to 'take' is ambiguous / note: candidate function / note: candidate function
-- `foundations/conversion-sequences/qualification-array-bound.cpp` (clang-22-o2): error: call to 'take' is ambiguous / note: candidate function / note: candidate function
+- `foundations/conversion-sequences/qualification-array-bound.cpp` (gcc-host): error: call of overloaded ‘take(int (*&)[3])’ is ambiguous / error: call of overloaded ‘take(int (*&)[3])’ is ambiguous / error: template argument 1 is invalid
+- `foundations/conversion-sequences/qualification-array-bound.cpp` (edg-7.0): error: more than one instance of overloaded function "take" matches the argument list:
+- `foundations/conversion-sequences/qualification-array-bound.cpp` (gcc-14): error: call of overloaded 'take(int (*&)[3])' is ambiguous / note: candidate: 'One take(const int (*)[3])' / note: candidate: 'Two take(const int (*)[])' / error: call of overloaded 'take(int (*&)[3])' is ambiguous / note: candidate: 'One take(const int (*)[3])' / note: candidate: 'Two take(const int (*)[])' / error: template argument 1 is invalid
+- `foundations/conversion-sequences/qualification-array-bound.cpp` (gcc-16): error: call of overloaded 'take(int (*&)[3])' is ambiguous / error: call of overloaded 'take(int (*&)[3])' is ambiguous / error: template argument 1 is invalid
+- `foundations/conversion-sequences/qualification-array-bound.cpp` (gcc-16-o2): error: call of overloaded 'take(int (*&)[3])' is ambiguous / error: call of overloaded 'take(int (*&)[3])' is ambiguous / error: template argument 1 is invalid
 - `foundations/conversion-sequences/qualification-reference-temporary.cpp` (edg-7.0): error: more than one instance of overloaded function "take" matches the argument list:
 - `foundations/conversion-sequences/rvalue-reference-before-qualification.cpp` (gcc-host): error: static assertion failed
 - `foundations/conversion-sequences/rvalue-reference-before-qualification.cpp` (gcc-14): error: static assertion failed
 - `foundations/conversion-sequences/rvalue-reference-before-qualification.cpp` (gcc-16): error: static assertion failed
 - `foundations/conversion-sequences/rvalue-reference-before-qualification.cpp` (gcc-16-o2): error: static assertion failed
 - `foundations/conversion-sequences/tie-breaker-before-rvalue-reference.cpp` (edg-7.0): error: static assertion failed / error: static assertion failed / error: static assertion failed / error: static assertion failed / error: static assertion failed
-- `foundations/conversion-sequences/user-defined-explicit-reference-value.cpp` (clang-host): error: static assertion failed due to requirement '!makes<const Item &, ToItem>' / error: static assertion failed due to requirement '!makes<Item &&, ToItem>' / error: static assertion failed due to requirement '!makes<int &&, ToInt>'
-- `foundations/conversion-sequences/user-defined-explicit-reference-value.cpp` (clang-18): error: static assertion failed due to requirement '!makes<const Item &, ToItem>' / error: static assertion failed due to requirement '!makes<Item &&, ToItem>' / error: static assertion failed due to requirement '!makes<int &&, ToInt>'
-- `foundations/conversion-sequences/user-defined-explicit-reference-value.cpp` (clang-22): error: static assertion failed due to requirement '!makes<const Item &, ToItem>' / error: static assertion failed due to requirement '!makes<Item &&, ToItem>' / error: static assertion failed due to requirement '!makes<int &&, ToInt>'
-- `foundations/conversion-sequences/user-defined-explicit-reference-value.cpp` (clang-22-o2): error: static assertion failed due to requirement '!makes<const Item &, ToItem>' / error: static assertion failed due to requirement '!makes<Item &&, ToItem>' / error: static assertion failed due to requirement '!makes<int &&, ToInt>'
+- `foundations/conversion-sequences/user-defined-explicit-reference-value.cpp` (clang-host): error: static assertion failed due to requirement '!makes<const Item &, ToItem>'
+- `foundations/conversion-sequences/user-defined-explicit-reference-value.cpp` (clang-18): error: static assertion failed due to requirement '!makes<const Item &, ToItem>'
+- `foundations/conversion-sequences/user-defined-explicit-reference-value.cpp` (clang-22): error: static assertion failed due to requirement '!makes<const Item &, ToItem>'
+- `foundations/conversion-sequences/user-defined-explicit-reference-value.cpp` (clang-22-o2): error: static assertion failed due to requirement '!makes<const Item &, ToItem>'
+- `foundations/conversion-sequences/user-defined-explicit-reference-xvalue.cpp` (clang-host): error: static assertion failed due to requirement '!makes<const Item &, ToItemRvalue>'
+- `foundations/conversion-sequences/user-defined-explicit-reference-xvalue.cpp` (edg-7.0): error: static assertion failed
+- `foundations/conversion-sequences/user-defined-explicit-reference-xvalue.cpp` (clang-18): error: static assertion failed due to requirement '!makes<const Item &, ToItemRvalue>'
+- `foundations/conversion-sequences/user-defined-explicit-reference-xvalue.cpp` (clang-22): error: static assertion failed due to requirement '!makes<const Item &, ToItemRvalue>'
+- `foundations/conversion-sequences/user-defined-explicit-reference-xvalue.cpp` (clang-22-o2): error: static assertion failed due to requirement '!makes<const Item &, ToItemRvalue>'
+- `foundations/conversion-sequences/user-defined-explicit-rvalue-reference-value.cpp` (gcc-host): error: static assertion failed / error: static assertion failed / error: static assertion failed
+- `foundations/conversion-sequences/user-defined-explicit-rvalue-reference-value.cpp` (edg-7.0): error: static assertion failed / error: static assertion failed / error: static assertion failed
+- `foundations/conversion-sequences/user-defined-explicit-rvalue-reference-value.cpp` (gcc-14): error: static assertion failed / note: constraints not satisfied / note: the required expression 'static_cast<T>(s)' is invalid / error: static assertion failed / note: constraints not satisfied / note: the required expression 'static_cast<T>(s)' is invalid / error: static assertion failed / note: constraints not satisfied / note: the required expression 'static_cast<T>(s)' is invalid
+- `foundations/conversion-sequences/user-defined-explicit-rvalue-reference-value.cpp` (gcc-16): error: static assertion failed / error: static assertion failed / error: static assertion failed
+- `foundations/conversion-sequences/user-defined-explicit-rvalue-reference-value.cpp` (gcc-16-o2): error: static assertion failed / error: static assertion failed / error: static assertion failed
 - `foundations/keywords/keyword-alignas.cpp` (clang-host): error: expected '(' / error: expected unqualified-id
 - `foundations/keywords/keyword-alignas.cpp` (gcc-host): error: expected ‘(’ before ‘=’ token / error: expected unqualified-id before ‘=’ token
 - `foundations/keywords/keyword-alignas.cpp` (edg-7.0): error: expected a "(" / error: declaration does not declare anything
@@ -20381,6 +21650,15 @@ check that the rejection has the intended cause.
 - `foundations/names/directive-unnamed-namespace-ambiguous.cpp` (gcc-16-o2): error: reference to 'limit' is ambiguous
 - `foundations/names/directive-unnamed-namespace-ambiguous.cpp` (clang-22): error: reference to 'limit' is ambiguous / note: candidate found by name lookup is 'app::limit' / note: candidate found by name lookup is 'app::(anonymous namespace)::limit'
 - `foundations/names/directive-unnamed-namespace-ambiguous.cpp` (clang-22-o2): error: reference to 'limit' is ambiguous / note: candidate found by name lookup is 'app::limit' / note: candidate found by name lookup is 'app::(anonymous namespace)::limit'
+- `foundations/names/enum-qualified-missing-unscoped.cpp` (clang-host): error: no member named 'blue' in 'Color'
+- `foundations/names/enum-qualified-missing-unscoped.cpp` (gcc-host): error: ‘blue’ is not a member of ‘Color’
+- `foundations/names/enum-qualified-missing-unscoped.cpp` (edg-7.0): error: enum "Color" has no member "blue"
+- `foundations/names/enum-qualified-missing-unscoped.cpp` (gcc-14): error: 'blue' is not a member of 'Color'
+- `foundations/names/enum-qualified-missing-unscoped.cpp` (clang-18): error: no member named 'blue' in 'Color'
+- `foundations/names/enum-qualified-missing-unscoped.cpp` (gcc-16): error: 'blue' is not a member of 'Color'
+- `foundations/names/enum-qualified-missing-unscoped.cpp` (gcc-16-o2): error: 'blue' is not a member of 'Color'
+- `foundations/names/enum-qualified-missing-unscoped.cpp` (clang-22): error: no member named 'blue' in 'Color'
+- `foundations/names/enum-qualified-missing-unscoped.cpp` (clang-22-o2): error: no member named 'blue' in 'Color'
 - `foundations/names/enum-qualified-missing.cpp` (clang-host): error: no member named 'idle' in 'mode'
 - `foundations/names/enum-qualified-missing.cpp` (gcc-host): error: ‘idle’ is not a member of ‘mode’
 - `foundations/names/enum-qualified-missing.cpp` (edg-7.0): error: enum "mode" has no member "idle"
@@ -20408,6 +21686,15 @@ check that the rejection has the intended cause.
 - `foundations/names/hiding-ignores-kind.cpp` (gcc-16-o2): error: 'f' cannot be used as a function
 - `foundations/names/hiding-ignores-kind.cpp` (clang-22): error: called object type 'int' is not a function or function pointer
 - `foundations/names/hiding-ignores-kind.cpp` (clang-22-o2): error: called object type 'int' is not a function or function pointer
+- `foundations/names/hiding-variable-hides-type.cpp` (clang-host): error: must use 'struct' tag to refer to type 'T' in this scope / note: struct 'T' is hidden by a non-type declaration of 'T' here
+- `foundations/names/hiding-variable-hides-type.cpp` (gcc-host): error: expected ‘;’ before ‘t’
+- `foundations/names/hiding-variable-hides-type.cpp` (edg-7.0): error: expected a ";"
+- `foundations/names/hiding-variable-hides-type.cpp` (gcc-14): error: expected ';' before 't'
+- `foundations/names/hiding-variable-hides-type.cpp` (clang-18): error: must use 'struct' tag to refer to type 'T' in this scope / note: struct 'T' is hidden by a non-type declaration of 'T' here
+- `foundations/names/hiding-variable-hides-type.cpp` (gcc-16): error: expected ';' before 't'
+- `foundations/names/hiding-variable-hides-type.cpp` (gcc-16-o2): error: expected ';' before 't'
+- `foundations/names/hiding-variable-hides-type.cpp` (clang-22): error: must use 'struct' tag to refer to type 'T' in this scope / note: struct 'T' is hidden by a non-type declaration of 'T' here
+- `foundations/names/hiding-variable-hides-type.cpp` (clang-22-o2): error: must use 'struct' tag to refer to type 'T' in this scope / note: struct 'T' is hidden by a non-type declaration of 'T' here
 - `foundations/names/injected-base-name-not-outside.cpp` (clang-host): error: unknown type name 'base'
 - `foundations/names/injected-base-name-not-outside.cpp` (gcc-host): error: ‘base’ does not name a type
 - `foundations/names/injected-base-name-not-outside.cpp` (edg-7.0): error: identifier "base" is undefined
@@ -20489,6 +21776,15 @@ check that the rejection has the intended cause.
 - `foundations/names/injected-two-bases-ambiguous.cpp` (gcc-16-o2): error: reference to 'base' is ambiguous / error: 'p' was not declared in this scope
 - `foundations/names/injected-two-bases-ambiguous.cpp` (clang-22): error: member 'base' found in multiple base classes of different types / note: member type 'a::base' found by ambiguous name lookup / note: member type 'b::base' found by ambiguous name lookup / error: use of undeclared identifier 'p'
 - `foundations/names/injected-two-bases-ambiguous.cpp` (clang-22-o2): error: member 'base' found in multiple base classes of different types / note: member type 'a::base' found by ambiguous name lookup / note: member type 'b::base' found by ambiguous name lookup / error: use of undeclared identifier 'p'
+- `foundations/names/label-duplicate-other-block.cpp` (clang-host): error: redefinition of label 'again' / note: previous definition is here
+- `foundations/names/label-duplicate-other-block.cpp` (gcc-host): error: duplicate label ‘again’
+- `foundations/names/label-duplicate-other-block.cpp` (edg-7.0): error: label "again" has already been defined (previous definition at line 8)
+- `foundations/names/label-duplicate-other-block.cpp` (gcc-14): error: duplicate label 'again'
+- `foundations/names/label-duplicate-other-block.cpp` (clang-18): error: redefinition of label 'again' / note: previous definition is here
+- `foundations/names/label-duplicate-other-block.cpp` (gcc-16): error: duplicate label 'again'
+- `foundations/names/label-duplicate-other-block.cpp` (gcc-16-o2): error: duplicate label 'again'
+- `foundations/names/label-duplicate-other-block.cpp` (clang-22): error: redefinition of label 'again' / note: previous definition is here
+- `foundations/names/label-duplicate-other-block.cpp` (clang-22-o2): error: redefinition of label 'again' / note: previous definition is here
 - `foundations/names/label-duplicate.cpp` (clang-host): error: redefinition of label 'a' / note: previous definition is here
 - `foundations/names/label-duplicate.cpp` (gcc-host): error: duplicate label ‘a’
 - `foundations/names/label-duplicate.cpp` (edg-7.0): error: label "a" has already been defined (previous definition at line 6)
@@ -20525,6 +21821,15 @@ check that the rejection has the intended cause.
 - `foundations/names/member-access-type-member.cpp` (gcc-16-o2): error: invalid use of 'using Meter::Count = int'
 - `foundations/names/member-access-type-member.cpp` (clang-22): error: cannot refer to type member 'Count' in 'Meter' with '.'
 - `foundations/names/member-access-type-member.cpp` (clang-22-o2): error: cannot refer to type member 'Count' in 'Meter' with '.'
+- `foundations/names/namespace-qualified-call.cpp` (clang-host): error: use of undeclared identifier 'twice'; did you mean 'n::twice'?
+- `foundations/names/namespace-qualified-call.cpp` (gcc-host): error: ‘twice’ was not declared in this scope; did you mean ‘n::twice’?
+- `foundations/names/namespace-qualified-call.cpp` (edg-7.0): error: identifier "twice" is undefined
+- `foundations/names/namespace-qualified-call.cpp` (gcc-14): error: 'twice' was not declared in this scope; did you mean 'n::twice'?
+- `foundations/names/namespace-qualified-call.cpp` (clang-18): error: use of undeclared identifier 'twice'; did you mean 'n::twice'?
+- `foundations/names/namespace-qualified-call.cpp` (gcc-16): error: 'twice' was not declared in this scope; did you mean 'n::twice'?
+- `foundations/names/namespace-qualified-call.cpp` (gcc-16-o2): error: 'twice' was not declared in this scope; did you mean 'n::twice'?
+- `foundations/names/namespace-qualified-call.cpp` (clang-22): error: use of undeclared identifier 'twice'; did you mean 'n::twice'?
+- `foundations/names/namespace-qualified-call.cpp` (clang-22-o2): error: use of undeclared identifier 'twice'; did you mean 'n::twice'?
 - `foundations/names/namespace-qualified-use.cpp` (clang-host): error: use of undeclared identifier 'a'; did you mean 'n::a'?
 - `foundations/names/namespace-qualified-use.cpp` (gcc-host): error: ‘a’ was not declared in this scope; did you mean ‘n::a’?
 - `foundations/names/namespace-qualified-use.cpp` (edg-7.0): error: identifier "a" is undefined
@@ -20705,6 +22010,123 @@ check that the rejection has the intended cause.
 - `foundations/names/scope-ends-with-block.cpp` (gcc-16-o2): error: 'a' was not declared in this scope
 - `foundations/names/scope-ends-with-block.cpp` (clang-22): error: use of undeclared identifier 'a'
 - `foundations/names/scope-ends-with-block.cpp` (clang-22-o2): error: use of undeclared identifier 'a'
+- `foundations/names/shared-name-alias-template-variable.cpp` (clang-host): error: redefinition of 'ptr' as different kind of symbol / note: previous definition is here
+- `foundations/names/shared-name-alias-template-variable.cpp` (gcc-host): error: ‘int ptr’ redeclared as different kind of entity / note: previous declaration ‘template<class T> using ptr = T*’
+- `foundations/names/shared-name-alias-template-variable.cpp` (edg-7.0): error: "ptr" has already been declared in the current scope
+- `foundations/names/shared-name-alias-template-variable.cpp` (gcc-14): error: 'int ptr' redeclared as different kind of entity / note: previous declaration 'template<class T> using ptr = T*'
+- `foundations/names/shared-name-alias-template-variable.cpp` (clang-18): error: redefinition of 'ptr' as different kind of symbol / note: previous definition is here
+- `foundations/names/shared-name-alias-template-variable.cpp` (gcc-16): error: 'int ptr' redeclared as different kind of entity / note: previous declaration 'template<class T> using ptr = T*'
+- `foundations/names/shared-name-alias-template-variable.cpp` (gcc-16-o2): error: 'int ptr' redeclared as different kind of entity / note: previous declaration 'template<class T> using ptr = T*'
+- `foundations/names/shared-name-alias-template-variable.cpp` (clang-22): error: redefinition of 'ptr' as different kind of symbol / note: previous definition is here
+- `foundations/names/shared-name-alias-template-variable.cpp` (clang-22-o2): error: redefinition of 'ptr' as different kind of symbol / note: previous definition is here
+- `foundations/names/shared-name-class-alone-variable-first.cpp` (clang-host): error: must use 'struct' tag to refer to type 'item' in this scope / note: struct 'item' is hidden by a non-type declaration of 'item' here
+- `foundations/names/shared-name-class-alone-variable-first.cpp` (gcc-host): error: ‘item’ does not name a type
+- `foundations/names/shared-name-class-alone-variable-first.cpp` (edg-7.0): error: variable "item" is not a type name
+- `foundations/names/shared-name-class-alone-variable-first.cpp` (gcc-14): error: 'item' does not name a type
+- `foundations/names/shared-name-class-alone-variable-first.cpp` (clang-18): error: must use 'struct' tag to refer to type 'item' in this scope / note: struct 'item' is hidden by a non-type declaration of 'item' here
+- `foundations/names/shared-name-class-alone-variable-first.cpp` (gcc-16): error: 'item' does not name a type
+- `foundations/names/shared-name-class-alone-variable-first.cpp` (gcc-16-o2): error: 'item' does not name a type
+- `foundations/names/shared-name-class-alone-variable-first.cpp` (clang-22): error: must use 'struct' tag to refer to type 'item' in this scope / note: struct 'item' is hidden by a non-type declaration of 'item' here
+- `foundations/names/shared-name-class-alone-variable-first.cpp` (clang-22-o2): error: must use 'struct' tag to refer to type 'item' in this scope / note: struct 'item' is hidden by a non-type declaration of 'item' here
+- `foundations/names/shared-name-class-alone.cpp` (clang-host): error: must use 'struct' tag to refer to type 'item' in this scope / note: struct 'item' is hidden by a non-type declaration of 'item' here
+- `foundations/names/shared-name-class-alone.cpp` (gcc-host): error: ‘item’ does not name a type
+- `foundations/names/shared-name-class-alone.cpp` (edg-7.0): error: variable "item" is not a type name
+- `foundations/names/shared-name-class-alone.cpp` (gcc-14): error: 'item' does not name a type
+- `foundations/names/shared-name-class-alone.cpp` (clang-18): error: must use 'struct' tag to refer to type 'item' in this scope / note: struct 'item' is hidden by a non-type declaration of 'item' here
+- `foundations/names/shared-name-class-alone.cpp` (gcc-16): error: 'item' does not name a type
+- `foundations/names/shared-name-class-alone.cpp` (gcc-16-o2): error: 'item' does not name a type
+- `foundations/names/shared-name-class-alone.cpp` (clang-22): error: must use 'struct' tag to refer to type 'item' in this scope / note: struct 'item' is hidden by a non-type declaration of 'item' here
+- `foundations/names/shared-name-class-alone.cpp` (clang-22-o2): error: must use 'struct' tag to refer to type 'item' in this scope / note: struct 'item' is hidden by a non-type declaration of 'item' here
+- `foundations/names/shared-name-class-template-function.cpp` (clang-host): error: redefinition of 'holder' as different kind of symbol / note: previous definition is here
+- `foundations/names/shared-name-class-template-function.cpp` (gcc-host): error: conflicting declaration of template ‘template<class T> void holder(T)’ / note: previous declaration ‘template<class T> struct holder’
+- `foundations/names/shared-name-class-template-function.cpp` (edg-7.0): error: "holder" has already been declared in the current scope
+- `foundations/names/shared-name-class-template-function.cpp` (gcc-14): error: conflicting declaration of template 'template<class T> void holder(T)' / note: previous declaration 'template<class T> struct holder'
+- `foundations/names/shared-name-class-template-function.cpp` (clang-18): error: redefinition of 'holder' as different kind of symbol / note: previous definition is here
+- `foundations/names/shared-name-class-template-function.cpp` (gcc-16): error: conflicting declaration of template 'template<class T> void holder(T)' / note: previous declaration 'template<class T> struct holder'
+- `foundations/names/shared-name-class-template-function.cpp` (gcc-16-o2): error: conflicting declaration of template 'template<class T> void holder(T)' / note: previous declaration 'template<class T> struct holder'
+- `foundations/names/shared-name-class-template-function.cpp` (clang-22): error: redefinition of 'holder' as different kind of symbol / note: previous definition is here
+- `foundations/names/shared-name-class-template-function.cpp` (clang-22-o2): error: redefinition of 'holder' as different kind of symbol / note: previous definition is here
+- `foundations/names/shared-name-class-template-variable.cpp` (clang-host): error: redefinition of 'holder' as different kind of symbol / note: previous definition is here
+- `foundations/names/shared-name-class-template-variable.cpp` (gcc-host): error: ‘int holder’ redeclared as different kind of entity / note: previous declaration ‘template<class T> struct holder’
+- `foundations/names/shared-name-class-template-variable.cpp` (edg-7.0): error: "holder" has already been declared in the current scope
+- `foundations/names/shared-name-class-template-variable.cpp` (gcc-14): error: 'int holder' redeclared as different kind of entity / note: previous declaration 'template<class T> struct holder'
+- `foundations/names/shared-name-class-template-variable.cpp` (clang-18): error: redefinition of 'holder' as different kind of symbol / note: previous definition is here
+- `foundations/names/shared-name-class-template-variable.cpp` (gcc-16): error: 'int holder' redeclared as different kind of entity / note: previous declaration 'template<class T> struct holder'
+- `foundations/names/shared-name-class-template-variable.cpp` (gcc-16-o2): error: 'int holder' redeclared as different kind of entity / note: previous declaration 'template<class T> struct holder'
+- `foundations/names/shared-name-class-template-variable.cpp` (clang-22): error: redefinition of 'holder' as different kind of symbol / note: previous definition is here
+- `foundations/names/shared-name-class-template-variable.cpp` (clang-22-o2): error: redefinition of 'holder' as different kind of symbol / note: previous definition is here
+- `foundations/names/shared-name-class-variable-template.cpp` (clang-host): error: redefinition of 'width' as different kind of symbol / note: previous definition is here
+- `foundations/names/shared-name-class-variable-template.cpp` (gcc-host): error: ‘template<class T> int width’ redeclared as different kind of entity / note: previous declaration ‘struct width’
+- `foundations/names/shared-name-class-variable-template.cpp` (edg-7.0): error: "width" has already been declared in the current scope
+- `foundations/names/shared-name-class-variable-template.cpp` (gcc-14): error: 'template<class T> int width' redeclared as different kind of entity / note: previous declaration 'struct width'
+- `foundations/names/shared-name-class-variable-template.cpp` (clang-18): error: redefinition of 'width' as different kind of symbol / note: previous definition is here
+- `foundations/names/shared-name-class-variable-template.cpp` (gcc-16): error: 'template<class T> int width' redeclared as different kind of entity / note: previous declaration 'struct width'
+- `foundations/names/shared-name-class-variable-template.cpp` (gcc-16-o2): error: 'template<class T> int width' redeclared as different kind of entity / note: previous declaration 'struct width'
+- `foundations/names/shared-name-class-variable-template.cpp` (clang-22): error: redefinition of 'width' as different kind of symbol / note: previous definition is here
+- `foundations/names/shared-name-class-variable-template.cpp` (clang-22-o2): error: redefinition of 'width' as different kind of symbol / note: previous definition is here
+- `foundations/names/shared-name-enumeration-alone.cpp` (clang-host): error: must use 'enum' tag to refer to type 'level' in this scope / note: enum 'level' is hidden by a non-type declaration of 'level' here
+- `foundations/names/shared-name-enumeration-alone.cpp` (gcc-host): error: ‘level’ does not name a type
+- `foundations/names/shared-name-enumeration-alone.cpp` (edg-7.0): error: variable "level" is not a type name
+- `foundations/names/shared-name-enumeration-alone.cpp` (gcc-14): error: 'level' does not name a type
+- `foundations/names/shared-name-enumeration-alone.cpp` (clang-18): error: must use 'enum' tag to refer to type 'level' in this scope / note: enum 'level' is hidden by a non-type declaration of 'level' here
+- `foundations/names/shared-name-enumeration-alone.cpp` (gcc-16): error: 'level' does not name a type
+- `foundations/names/shared-name-enumeration-alone.cpp` (gcc-16-o2): error: 'level' does not name a type
+- `foundations/names/shared-name-enumeration-alone.cpp` (clang-22): error: must use 'enum' tag to refer to type 'level' in this scope / note: enum 'level' is hidden by a non-type declaration of 'level' here
+- `foundations/names/shared-name-enumeration-alone.cpp` (clang-22-o2): error: must use 'enum' tag to refer to type 'level' in this scope / note: enum 'level' is hidden by a non-type declaration of 'level' here
+- `foundations/names/shared-name-in-class-not-class.cpp` (clang-host): error: must use 'struct' tag to refer to type 'link' in this scope / note: struct 'link' is hidden by a non-type declaration of 'link' here
+- `foundations/names/shared-name-in-class-not-class.cpp` (gcc-host): error: ‘link’ does not name a type
+- `foundations/names/shared-name-in-class-not-class.cpp` (edg-7.0): error: member "list::link" is not a type name
+- `foundations/names/shared-name-in-class-not-class.cpp` (gcc-14): error: 'link' does not name a type
+- `foundations/names/shared-name-in-class-not-class.cpp` (clang-18): error: must use 'struct' tag to refer to type 'link' in this scope / note: struct 'link' is hidden by a non-type declaration of 'link' here
+- `foundations/names/shared-name-in-class-not-class.cpp` (gcc-16): error: 'link' does not name a type
+- `foundations/names/shared-name-in-class-not-class.cpp` (gcc-16-o2): error: 'link' does not name a type
+- `foundations/names/shared-name-in-class-not-class.cpp` (clang-22): error: must use 'struct' tag to refer to type 'link' in this scope / note: struct 'link' is hidden by a non-type declaration of 'link' here
+- `foundations/names/shared-name-in-class-not-class.cpp` (clang-22-o2): error: must use 'struct' tag to refer to type 'link' in this scope / note: struct 'link' is hidden by a non-type declaration of 'link' here
+- `foundations/names/shared-name-inner-block.cpp` (clang-host): error: must use 'struct' tag to refer to type 'item' in this scope / note: struct 'item' is hidden by a non-type declaration of 'item' here
+- `foundations/names/shared-name-inner-block.cpp` (gcc-host): error: expected ‘;’ before ‘first’ / error: ‘first’ was not declared in this scope
+- `foundations/names/shared-name-inner-block.cpp` (edg-7.0): error: expected a ";" / error: identifier "first" is undefined
+- `foundations/names/shared-name-inner-block.cpp` (gcc-14): error: expected ';' before 'first' / error: 'first' was not declared in this scope
+- `foundations/names/shared-name-inner-block.cpp` (clang-18): error: must use 'struct' tag to refer to type 'item' in this scope / note: struct 'item' is hidden by a non-type declaration of 'item' here
+- `foundations/names/shared-name-inner-block.cpp` (gcc-16): error: expected ';' before 'first' / error: 'first' was not declared in this scope
+- `foundations/names/shared-name-inner-block.cpp` (gcc-16-o2): error: expected ';' before 'first' / error: 'first' was not declared in this scope
+- `foundations/names/shared-name-inner-block.cpp` (clang-22): error: must use 'struct' tag to refer to type 'item' in this scope / note: struct 'item' is hidden by a non-type declaration of 'item' here
+- `foundations/names/shared-name-inner-block.cpp` (clang-22-o2): error: must use 'struct' tag to refer to type 'item' in this scope / note: struct 'item' is hidden by a non-type declaration of 'item' here
+- `foundations/names/shared-name-member-not-class.cpp` (clang-host): error: no type named 'cell' in 'grid'
+- `foundations/names/shared-name-member-not-class.cpp` (gcc-host): error: ‘cell’ in ‘struct grid’ does not name a type
+- `foundations/names/shared-name-member-not-class.cpp` (edg-7.0): error: member "grid::cell" is not a type name
+- `foundations/names/shared-name-member-not-class.cpp` (gcc-14): error: 'cell' in 'struct grid' does not name a type
+- `foundations/names/shared-name-member-not-class.cpp` (clang-18): error: no type named 'cell' in 'grid'
+- `foundations/names/shared-name-member-not-class.cpp` (gcc-16): error: 'cell' in 'struct grid' does not name a type
+- `foundations/names/shared-name-member-not-class.cpp` (gcc-16-o2): error: 'cell' in 'struct grid' does not name a type
+- `foundations/names/shared-name-member-not-class.cpp` (clang-22): error: no type named 'cell' in 'grid'
+- `foundations/names/shared-name-member-not-class.cpp` (clang-22-o2): error: no type named 'cell' in 'grid'
+- `foundations/names/shared-name-qualified-not-class.cpp` (clang-host): error: no type named 'point' in namespace 'geo'
+- `foundations/names/shared-name-qualified-not-class.cpp` (gcc-host): error: ‘point’ in namespace ‘geo’ does not name a type
+- `foundations/names/shared-name-qualified-not-class.cpp` (edg-7.0): error: variable "geo::point" is not a type name
+- `foundations/names/shared-name-qualified-not-class.cpp` (gcc-14): error: 'point' in namespace 'geo' does not name a type
+- `foundations/names/shared-name-qualified-not-class.cpp` (clang-18): error: no type named 'point' in namespace 'geo'
+- `foundations/names/shared-name-qualified-not-class.cpp` (gcc-16): error: 'point' in namespace 'geo' does not name a type
+- `foundations/names/shared-name-qualified-not-class.cpp` (gcc-16-o2): error: 'point' in namespace 'geo' does not name a type
+- `foundations/names/shared-name-qualified-not-class.cpp` (clang-22): error: no type named 'point' in namespace 'geo'
+- `foundations/names/shared-name-qualified-not-class.cpp` (clang-22-o2): error: no type named 'point' in namespace 'geo'
+- `foundations/names/shared-name-two-variables.cpp` (clang-host): error: redefinition of 'total' with a different type: 'double' vs 'int' / note: previous definition is here
+- `foundations/names/shared-name-two-variables.cpp` (gcc-host): error: conflicting declaration ‘double total’ / note: previous declaration as ‘int total’
+- `foundations/names/shared-name-two-variables.cpp` (edg-7.0): error: variable "total" has already been defined (previous definition at line 8)
+- `foundations/names/shared-name-two-variables.cpp` (gcc-14): error: conflicting declaration 'double total' / note: previous declaration as 'int total'
+- `foundations/names/shared-name-two-variables.cpp` (clang-18): error: redefinition of 'total' with a different type: 'double' vs 'int' / note: previous definition is here
+- `foundations/names/shared-name-two-variables.cpp` (gcc-16): error: conflicting declaration 'double total' / note: previous declaration as 'int total'
+- `foundations/names/shared-name-two-variables.cpp` (gcc-16-o2): error: conflicting declaration 'double total' / note: previous declaration as 'int total'
+- `foundations/names/shared-name-two-variables.cpp` (clang-22): error: redefinition of 'total' with a different type: 'double' vs 'int' / note: previous definition is here
+- `foundations/names/shared-name-two-variables.cpp` (clang-22-o2): error: redefinition of 'total' with a different type: 'double' vs 'int' / note: previous definition is here
+- `foundations/names/shared-name-variable-class-template.cpp` (clang-host): error: redefinition of 'holder' as different kind of symbol / note: previous definition is here
+- `foundations/names/shared-name-variable-class-template.cpp` (gcc-host): error: ‘template<class T> struct holder’ redeclared as different kind of entity / note: previous declaration ‘int holder’
+- `foundations/names/shared-name-variable-class-template.cpp` (edg-7.0): error: "holder" has already been declared in the current scope
+- `foundations/names/shared-name-variable-class-template.cpp` (gcc-14): error: 'template<class T> struct holder' redeclared as different kind of entity / note: previous declaration 'int holder'
+- `foundations/names/shared-name-variable-class-template.cpp` (clang-18): error: redefinition of 'holder' as different kind of symbol / note: previous definition is here
+- `foundations/names/shared-name-variable-class-template.cpp` (gcc-16): error: 'template<class T> struct holder' redeclared as different kind of entity / note: previous declaration 'int holder'
+- `foundations/names/shared-name-variable-class-template.cpp` (gcc-16-o2): error: 'template<class T> struct holder' redeclared as different kind of entity / note: previous declaration 'int holder'
+- `foundations/names/shared-name-variable-class-template.cpp` (clang-22): error: redefinition of 'holder' as different kind of symbol / note: previous definition is here
+- `foundations/names/shared-name-variable-class-template.cpp` (clang-22-o2): error: redefinition of 'holder' as different kind of symbol / note: previous definition is here
 - `foundations/names/use-before-declaration.cpp` (clang-host): error: use of undeclared identifier 'a'
 - `foundations/names/use-before-declaration.cpp` (gcc-host): error: ‘a’ was not declared in this scope
 - `foundations/names/use-before-declaration.cpp` (edg-7.0): error: identifier "a" is undefined
@@ -20768,6 +22190,15 @@ check that the rejection has the intended cause.
 - `foundations/objects/storage-reuse-ends-old-object-constant.cpp` (gcc-16-o2): error: non-constant condition for static assertion / error: accessing 'U::i' member instead of active 'U::f' member in constant expression
 - `foundations/objects/storage-reuse-ends-old-object-constant.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: read of member 'i' of union with active member 'f' is not allowed in a constant expression
 - `foundations/objects/storage-reuse-ends-old-object-constant.cpp` (clang-22-o2): error: static assertion expression is not an integral constant expression / note: read of member 'i' of union with active member 'f' is not allowed in a constant expression
+- `foundations/objects/storage-reuse-member-of-member-constant.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: read of member 'a' of union with active member 'b' is not allowed in a constant expression
+- `foundations/objects/storage-reuse-member-of-member-constant.cpp` (gcc-host): error: non-constant condition for static assertion / error: accessing ‘U::a’ member instead of active ‘U::b’ member in constant expression
+- `foundations/objects/storage-reuse-member-of-member-constant.cpp` (edg-7.0): error: expression must have a constant value / note: invalid access to inactive member "U::a" of union (member "U::b" is active)
+- `foundations/objects/storage-reuse-member-of-member-constant.cpp` (gcc-14): error: non-constant condition for static assertion / error: accessing 'U::a' member instead of initialized 'U::b' member in constant expression
+- `foundations/objects/storage-reuse-member-of-member-constant.cpp` (clang-18): error: static assertion expression is not an integral constant expression / note: read of member 'a' of union with active member 'b' is not allowed in a constant expression
+- `foundations/objects/storage-reuse-member-of-member-constant.cpp` (gcc-16): error: non-constant condition for static assertion / error: accessing 'U::a' member instead of active 'U::b' member in constant expression
+- `foundations/objects/storage-reuse-member-of-member-constant.cpp` (gcc-16-o2): error: non-constant condition for static assertion / error: accessing 'U::a' member instead of active 'U::b' member in constant expression
+- `foundations/objects/storage-reuse-member-of-member-constant.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: read of member 'a' of union with active member 'b' is not allowed in a constant expression
+- `foundations/objects/storage-reuse-member-of-member-constant.cpp` (clang-22-o2): error: static assertion expression is not an integral constant expression / note: read of member 'a' of union with active member 'b' is not allowed in a constant expression
 - `foundations/objects/uninitialized-member-read-constant.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: read of uninitialized object is not allowed in a constant expression
 - `foundations/objects/uninitialized-member-read-constant.cpp` (gcc-host): error: non-constant condition for static assertion / error: accessing uninitialized member ‘P::y’
 - `foundations/objects/uninitialized-member-read-constant.cpp` (edg-7.0): error: expression must have a constant value / note: access to uninitialized object
@@ -20893,6 +22324,15 @@ check that the rejection has the intended cause.
 - `foundations/odr/header-included-twice.cpp` (gcc-16-o2): error: redefinition of 'int counter' / note: 'int counter' previously defined here
 - `foundations/odr/header-included-twice.cpp` (clang-22): error: redefinition of 'counter' / note: '/tidal/tests/foundations/odr/counter.h' included multiple times, additional include site here / note: '/tidal/tests/foundations/odr/counter.h' included multiple times, additional include site here / note: unguarded header; consider using #ifdef guards or #pragma once
 - `foundations/odr/header-included-twice.cpp` (clang-22-o2): error: redefinition of 'counter' / note: '/tidal/tests/foundations/odr/counter.h' included multiple times, additional include site here / note: '/tidal/tests/foundations/odr/counter.h' included multiple times, additional include site here / note: unguarded header; consider using #ifdef guards or #pragma once
+- `foundations/odr/include-missing-file-angle.cpp` (clang-host): /home/ryanm/Code/tidal/tests/foundations/odr/include-missing-file-angle.cpp:7:10: fatal error: 'no-such-directory/none.h' file not found 7 \| #include <no-such-directory/none.h> \| ^~~~~~~~~~~~~~~~~~~~~
+- `foundations/odr/include-missing-file-angle.cpp` (gcc-host): /home/ryanm/Code/tidal/tests/foundations/odr/include-missing-file-angle.cpp:7:10: fatal error: no-such-directory/none.h: No such file or directory 7 \| #include <no-such-directory/none.h> \| ^~~~~~~~~~~
+- `foundations/odr/include-missing-file-angle.cpp` (edg-7.0): "/tidal/tests/foundations/odr/include-missing-file-angle.cpp", line 7: catastrophic error: cannot open source file "no-such-directory/none.h" #include <no-such-directory/none.h> ^ 1 catastrophic error
+- `foundations/odr/include-missing-file-angle.cpp` (gcc-14): /tidal/tests/foundations/odr/include-missing-file-angle.cpp:7:10: fatal error: no-such-directory/none.h: No such file or directory 7 \| #include <no-such-directory/none.h> \| ^~~~~~~~~~~~~~~~~~~~~~~~~~ 
+- `foundations/odr/include-missing-file-angle.cpp` (clang-18): /tidal/tests/foundations/odr/include-missing-file-angle.cpp:7:10: fatal error: 'no-such-directory/none.h' file not found 7 \| #include <no-such-directory/none.h> \| ^~~~~~~~~~~~~~~~~~~~~~~~~~ 1 error ge
+- `foundations/odr/include-missing-file-angle.cpp` (gcc-16): /tidal/tests/foundations/odr/include-missing-file-angle.cpp:7:10: fatal error: no-such-directory/none.h: No such file or directory 7 \| #include <no-such-directory/none.h> \| ^~~~~~~~~~~~~~~~~~~~~~~~~~ 
+- `foundations/odr/include-missing-file-angle.cpp` (gcc-16-o2): /tidal/tests/foundations/odr/include-missing-file-angle.cpp:7:10: fatal error: no-such-directory/none.h: No such file or directory 7 \| #include <no-such-directory/none.h> \| ^~~~~~~~~~~~~~~~~~~~~~~~~~ 
+- `foundations/odr/include-missing-file-angle.cpp` (clang-22): /tidal/tests/foundations/odr/include-missing-file-angle.cpp:7:10: fatal error: 'no-such-directory/none.h' file not found 7 \| #include <no-such-directory/none.h> \| ^~~~~~~~~~~~~~~~~~~~~~~~~~ 1 error ge
+- `foundations/odr/include-missing-file-angle.cpp` (clang-22-o2): /tidal/tests/foundations/odr/include-missing-file-angle.cpp:7:10: fatal error: 'no-such-directory/none.h' file not found 7 \| #include <no-such-directory/none.h> \| ^~~~~~~~~~~~~~~~~~~~~~~~~~ 1 error ge
 - `foundations/odr/include-missing-file.cpp` (clang-host): /home/ryanm/Code/tidal/tests/foundations/odr/include-missing-file.cpp:6:10: fatal error: 'no-such-header.h' file not found 6 \| #include "no-such-header.h" \| ^~~~~~~~~~~~~~~~~~ 1 error generated.
 - `foundations/odr/include-missing-file.cpp` (gcc-host): /home/ryanm/Code/tidal/tests/foundations/odr/include-missing-file.cpp:6:10: fatal error: no-such-header.h: No such file or directory 6 \| #include "no-such-header.h" \| ^~~~~~~~~~~~~~~~~~ compilation te
 - `foundations/odr/include-missing-file.cpp` (edg-7.0): "/tidal/tests/foundations/odr/include-missing-file.cpp", line 6: catastrophic error: cannot open source file "no-such-header.h" #include "no-such-header.h" ^ 1 catastrophic error detected in the compi
@@ -21282,6 +22722,11 @@ check that the rejection has the intended cause.
 - `foundations/overload-resolution/call-through-address-static-member.cpp` (clang-18): error: reference to overloaded function could not be resolved; did you mean to call it?
 - `foundations/overload-resolution/call-through-address-static-member.cpp` (gcc-16): error: address of overloaded function with no contextual type information
 - `foundations/overload-resolution/call-through-address-static-member.cpp` (gcc-16-o2): error: address of overloaded function with no contextual type information
+- `foundations/overload-resolution/call-through-address-unqualified-argument.cpp` (gcc-host): error: address of overloaded function with no contextual type information
+- `foundations/overload-resolution/call-through-address-unqualified-argument.cpp` (edg-7.0): "/tidal/tests/foundations/overload-resolution/call-through-address-unqualified- argument.cpp", line 11: internal error: assertion failed at: "overload.c", line 4005 in determine_selector_match_level i
+- `foundations/overload-resolution/call-through-address-unqualified-argument.cpp` (gcc-14): error: address of overloaded function with no contextual type information
+- `foundations/overload-resolution/call-through-address-unqualified-argument.cpp` (gcc-16): error: address of overloaded function with no contextual type information
+- `foundations/overload-resolution/call-through-address-unqualified-argument.cpp` (gcc-16-o2): error: address of overloaded function with no contextual type information
 - `foundations/overload-resolution/call-through-address-unqualified.cpp` (gcc-host): error: address of overloaded function with no contextual type information
 - `foundations/overload-resolution/call-through-address-unqualified.cpp` (gcc-14): error: address of overloaded function with no contextual type information
 - `foundations/overload-resolution/call-through-address-unqualified.cpp` (clang-18): error: call to 'f' is ambiguous / note: candidate function / note: candidate function
@@ -21453,6 +22898,15 @@ check that the rejection has the intended cause.
 - `foundations/overload-resolution/rewritten-inner-no-rewrite.cpp` (gcc-16-o2): error: no match for 'operator<' (operand types are 'Diff' and 'int')
 - `foundations/overload-resolution/rewritten-inner-no-rewrite.cpp` (clang-22): error: invalid operands to binary expression ('Diff' and 'int')
 - `foundations/overload-resolution/rewritten-inner-no-rewrite.cpp` (clang-22-o2): error: invalid operands to binary expression ('Diff' and 'int')
+- `foundations/overload-resolution/rewritten-inner-reversed-only.cpp` (clang-host): error: invalid operands to binary expression ('Diff' and 'int')
+- `foundations/overload-resolution/rewritten-inner-reversed-only.cpp` (gcc-host): error: no match for ‘operator>=’ (operand types are ‘Diff’ and ‘int’)
+- `foundations/overload-resolution/rewritten-inner-reversed-only.cpp` (edg-7.0): error: no operator ">=" matches these operands
+- `foundations/overload-resolution/rewritten-inner-reversed-only.cpp` (gcc-14): error: no match for 'operator>=' (operand types are 'Diff' and 'int')
+- `foundations/overload-resolution/rewritten-inner-reversed-only.cpp` (clang-18): error: invalid operands to binary expression ('Diff' and 'int')
+- `foundations/overload-resolution/rewritten-inner-reversed-only.cpp` (gcc-16): error: no match for 'operator>=' (operand types are 'Diff' and 'int')
+- `foundations/overload-resolution/rewritten-inner-reversed-only.cpp` (gcc-16-o2): error: no match for 'operator>=' (operand types are 'Diff' and 'int')
+- `foundations/overload-resolution/rewritten-inner-reversed-only.cpp` (clang-22): error: invalid operands to binary expression ('Diff' and 'int')
+- `foundations/overload-resolution/rewritten-inner-reversed-only.cpp` (clang-22-o2): error: invalid operands to binary expression ('Diff' and 'int')
 - `foundations/overload-resolution/rewritten-swapped-member-object.cpp` (clang-host): error: invalid operands to binary expression ('Left' and 'Maker')
 - `foundations/overload-resolution/rewritten-swapped-member-object.cpp` (gcc-host): error: no match for ‘operator==’ (operand types are ‘Left’ and ‘Maker’)
 - `foundations/overload-resolution/rewritten-swapped-member-object.cpp` (edg-7.0): error: no operator "==" matches these operands / note: built-in operator==(<promoted arithmetic>, <promoted arithmetic>) does not match because argument #1 does not match parameter / note: built-in operator==(<nullptr>, <nullptr>) does not match because argument #1 does not match parameter
@@ -21578,6 +23032,9 @@ check that the rejection has the intended cause.
 - `foundations/storage/array-size-exceeds-size-type.cpp` (gcc-16-o2): error: size '18446744073709551615' of array 'table' exceeds maximum object size '9223372036854775807'
 - `foundations/storage/array-size-exceeds-size-type.cpp` (clang-22): error: array is too large (18'446'744'073'709'551'615 elements)
 - `foundations/storage/array-size-exceeds-size-type.cpp` (clang-22-o2): error: array is too large (18'446'744'073'709'551'615 elements)
+- `foundations/storage/class-size-exceeds-size-type-ilp32.cpp` (gcc-host): error: overflow in constant expression [-fpermissive] / error: overflow in constant expression [-fpermissive]
+- `foundations/storage/class-size-exceeds-size-type-ilp32.cpp` (edg-7.0-ilp32): error: class is too large
+- `foundations/storage/class-size-exceeds-size-type-ilp32.cpp` (gcc-14): error: overflow in constant expression [-fpermissive] / error: overflow in constant expression [-fpermissive]
 - `foundations/storage/class-size-exceeds-size-type.cpp` (clang-host): error: structure 'Many' is too large, which exceeds maximum allowed size of 1152921504606846976 bytes
 - `foundations/storage/class-size-exceeds-size-type.cpp` (gcc-host): error: overflow in constant expression [-fpermissive] / error: overflow in constant expression [-fpermissive]
 - `foundations/storage/class-size-exceeds-size-type.cpp` (edg-7.0): error: class is too large
@@ -21604,6 +23061,9 @@ check that the rejection has the intended cause.
 - `foundations/storage/member-call-inactive-member-constant.cpp` (gcc-16-o2): error: non-constant condition for static assertion / error: accessing 'Slot::item' member instead of active 'Slot::raw' member in constant expression
 - `foundations/storage/member-call-inactive-member-constant.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: member call on member 'item' of union with active member 'raw' is not allowed in a constant expression
 - `foundations/storage/member-call-inactive-member-constant.cpp` (clang-22-o2): error: static assertion expression is not an integral constant expression / note: member call on member 'item' of union with active member 'raw' is not allowed in a constant expression
+- `foundations/storage/reuse-const-automatic-object-constant.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: modification of object of const-qualified type 'const int' is not allowed in a constant expression
+- `foundations/storage/reuse-const-automatic-object-constant.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: modification of object of const-qualified type 'const int' is not allowed in a constant expression
+- `foundations/storage/reuse-const-automatic-object-constant.cpp` (clang-22-o2): error: static assertion expression is not an integral constant expression / note: modification of object of const-qualified type 'const int' is not allowed in a constant expression
 - `foundations/storage/reuse-other-union-member-constant.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: read of member 'whole' of union with active member 'real' is not allowed in a constant expression
 - `foundations/storage/reuse-other-union-member-constant.cpp` (gcc-host): error: non-constant condition for static assertion / error: accessing ‘U::whole’ member instead of active ‘U::real’ member in constant expression
 - `foundations/storage/reuse-other-union-member-constant.cpp` (edg-7.0): error: expression must have a constant value / note: invalid access to inactive member "U::whole" of union (member "U::real" is active)
@@ -21613,6 +23073,15 @@ check that the rejection has the intended cause.
 - `foundations/storage/reuse-other-union-member-constant.cpp` (gcc-16-o2): error: non-constant condition for static assertion / error: accessing 'U::whole' member instead of active 'U::real' member in constant expression
 - `foundations/storage/reuse-other-union-member-constant.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: read of member 'whole' of union with active member 'real' is not allowed in a constant expression
 - `foundations/storage/reuse-other-union-member-constant.cpp` (clang-22-o2): error: static assertion expression is not an integral constant expression / note: read of member 'whole' of union with active member 'real' is not allowed in a constant expression
+- `foundations/translation/constant-evaluation-rejects-overflow.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: value 2147483648 is outside the range of representable values of type 'int'
+- `foundations/translation/constant-evaluation-rejects-overflow.cpp` (gcc-host): error: non-constant condition for static assertion / error: overflow in constant expression [-fpermissive]
+- `foundations/translation/constant-evaluation-rejects-overflow.cpp` (edg-7.0): error: expression must have a constant value / note: value exceeds range of "int"
+- `foundations/translation/constant-evaluation-rejects-overflow.cpp` (gcc-14): error: non-constant condition for static assertion / error: overflow in constant expression [-fpermissive]
+- `foundations/translation/constant-evaluation-rejects-overflow.cpp` (clang-18): error: static assertion expression is not an integral constant expression / note: value 2147483648 is outside the range of representable values of type 'int'
+- `foundations/translation/constant-evaluation-rejects-overflow.cpp` (gcc-16): error: non-constant condition for static assertion / error: overflow in constant expression [-fpermissive]
+- `foundations/translation/constant-evaluation-rejects-overflow.cpp` (gcc-16-o2): error: non-constant condition for static assertion / error: overflow in constant expression [-fpermissive]
+- `foundations/translation/constant-evaluation-rejects-overflow.cpp` (clang-22): error: static assertion expression is not an integral constant expression / note: value 2147483648 is outside the range of representable values of type 'int'
+- `foundations/translation/constant-evaluation-rejects-overflow.cpp` (clang-22-o2): error: static assertion expression is not an integral constant expression / note: value 2147483648 is outside the range of representable values of type 'int'
 - `foundations/translation/constant-evaluation-rejects-ub.cpp` (clang-host): error: static assertion expression is not an integral constant expression / note: division by zero
 - `foundations/translation/constant-evaluation-rejects-ub.cpp` (gcc-host): error: non-constant condition for static assertion / error: ‘(1 / 0)’ is not a constant expression
 - `foundations/translation/constant-evaluation-rejects-ub.cpp` (edg-7.0): error: expression must have a constant value / note: division by zero
@@ -21676,6 +23145,107 @@ check that the rejection has the intended cause.
 - `foundations/translation/ill-formed-in-unused-function.cpp` (gcc-16-o2): error: invalid conversion from 'const char*' to 'int' [-fpermissive]
 - `foundations/translation/ill-formed-in-unused-function.cpp` (clang-22): error: cannot initialize a variable of type 'int' with an lvalue of type 'const char[5]'
 - `foundations/translation/ill-formed-in-unused-function.cpp` (clang-22-o2): error: cannot initialize a variable of type 'int' with an lvalue of type 'const char[5]'
+- `foundations/translation/limit-array-exceeded-clang-lp64.cpp` (clang-host): error: array is too large (2'305'843'009'213'693'952 elements)
+- `foundations/translation/limit-array-exceeded-clang-lp64.cpp` (clang-18): error: array is too large (2305843009213693952 elements)
+- `foundations/translation/limit-array-exceeded-clang-lp64.cpp` (clang-22): error: array is too large (2'305'843'009'213'693'952 elements)
+- `foundations/translation/limit-array-exceeded-clang-lp64.cpp` (clang-22-o2): error: array is too large (2'305'843'009'213'693'952 elements)
+- `foundations/translation/limit-array-exceeded-gcc-ilp32.cpp` (gcc-host): error: size ‘2147483648’ of array ‘past’ exceeds maximum object size ‘2147483647’
+- `foundations/translation/limit-array-exceeded-gcc-ilp32.cpp` (gcc-14): error: size '2147483648' of array 'past' exceeds maximum object size '2147483647'
+- `foundations/translation/limit-array-exceeded-gcc-lp64.cpp` (clang-host): error: array is too large (9'223'372'036'854'775'808 elements)
+- `foundations/translation/limit-array-exceeded-gcc-lp64.cpp` (gcc-host): error: size ‘9223372036854775808’ of array ‘past’ exceeds maximum object size ‘9223372036854775807’
+- `foundations/translation/limit-array-exceeded-gcc-lp64.cpp` (gcc-14): error: size '9223372036854775808' of array 'past' exceeds maximum object size '9223372036854775807'
+- `foundations/translation/limit-array-exceeded-gcc-lp64.cpp` (clang-18): error: array is too large (9223372036854775808 elements)
+- `foundations/translation/limit-array-exceeded-gcc-lp64.cpp` (gcc-16): error: size '9223372036854775808' of array 'past' exceeds maximum object size '9223372036854775807'
+- `foundations/translation/limit-array-exceeded-gcc-lp64.cpp` (gcc-16-o2): error: size '9223372036854775808' of array 'past' exceeds maximum object size '9223372036854775807'
+- `foundations/translation/limit-array-exceeded-gcc-lp64.cpp` (clang-22): error: array is too large (9'223'372'036'854'775'808 elements)
+- `foundations/translation/limit-array-exceeded-gcc-lp64.cpp` (clang-22-o2): error: array is too large (9'223'372'036'854'775'808 elements)
+- `foundations/translation/limit-array-largest-edg-lp64.cpp` (clang-host): error: array is too large (18'446'744'073'709'551'615 elements)
+- `foundations/translation/limit-array-largest-edg-lp64.cpp` (gcc-host): error: size ‘18446744073709551615’ of array ‘largest’ exceeds maximum object size ‘9223372036854775807’
+- `foundations/translation/limit-array-largest-edg-lp64.cpp` (gcc-14): error: size '18446744073709551615' of array 'largest' exceeds maximum object size '9223372036854775807'
+- `foundations/translation/limit-array-largest-edg-lp64.cpp` (clang-18): error: array is too large (18446744073709551615 elements)
+- `foundations/translation/limit-array-largest-edg-lp64.cpp` (gcc-16): error: size '18446744073709551615' of array 'largest' exceeds maximum object size '9223372036854775807'
+- `foundations/translation/limit-array-largest-edg-lp64.cpp` (gcc-16-o2): error: size '18446744073709551615' of array 'largest' exceeds maximum object size '9223372036854775807'
+- `foundations/translation/limit-array-largest-edg-lp64.cpp` (clang-22): error: array is too large (18'446'744'073'709'551'615 elements)
+- `foundations/translation/limit-array-largest-edg-lp64.cpp` (clang-22-o2): error: array is too large (18'446'744'073'709'551'615 elements)
+- `foundations/translation/limit-array-largest-gcc-lp64.cpp` (clang-host): error: array is too large (9'223'372'036'854'775'807 elements)
+- `foundations/translation/limit-array-largest-gcc-lp64.cpp` (clang-18): error: array is too large (9223372036854775807 elements)
+- `foundations/translation/limit-array-largest-gcc-lp64.cpp` (clang-22): error: array is too large (9'223'372'036'854'775'807 elements)
+- `foundations/translation/limit-array-largest-gcc-lp64.cpp` (clang-22-o2): error: array is too large (9'223'372'036'854'775'807 elements)
+- `foundations/translation/limit-array-largest-ilp32.cpp` (gcc-host): error: size ‘4294967295’ of array ‘largest’ exceeds maximum object size ‘2147483647’
+- `foundations/translation/limit-array-largest-ilp32.cpp` (gcc-14): error: size '4294967295' of array 'largest' exceeds maximum object size '2147483647'
+- `foundations/translation/limit-class-exceeded-clang-lp64.cpp` (clang-host): error: structure 'Pair' is too large, which exceeds maximum allowed size of 1152921504606846976 bytes
+- `foundations/translation/limit-class-exceeded-clang-lp64.cpp` (clang-22): error: structure 'Pair' is too large, which exceeds maximum allowed size of 1152921504606846976 bytes
+- `foundations/translation/limit-class-exceeded-clang-lp64.cpp` (clang-22-o2): error: structure 'Pair' is too large, which exceeds maximum allowed size of 1152921504606846976 bytes
+- `foundations/translation/limit-class-exceeded-gcc-ilp32.cpp` (gcc-host): error: size of type ‘Pair’ is too large (‘2147483648’ bytes)
+- `foundations/translation/limit-class-exceeded-gcc-ilp32.cpp` (gcc-14): error: size of type 'Pair' is too large ('2147483648' bytes)
+- `foundations/translation/limit-class-exceeded-gcc-lp64.cpp` (clang-host): error: structure 'Block' is too large, which exceeds maximum allowed size of 1152921504606846976 bytes
+- `foundations/translation/limit-class-exceeded-gcc-lp64.cpp` (gcc-host): error: size of type ‘Block’ is too large (‘9223372036854775808’ bytes)
+- `foundations/translation/limit-class-exceeded-gcc-lp64.cpp` (gcc-14): error: size of type 'Block' is too large ('9223372036854775808' bytes)
+- `foundations/translation/limit-class-exceeded-gcc-lp64.cpp` (gcc-16): error: size of type 'Block' is too large ('9223372036854775808' bytes)
+- `foundations/translation/limit-class-exceeded-gcc-lp64.cpp` (gcc-16-o2): error: size of type 'Block' is too large ('9223372036854775808' bytes)
+- `foundations/translation/limit-class-exceeded-gcc-lp64.cpp` (clang-22): error: structure 'Block' is too large, which exceeds maximum allowed size of 1152921504606846976 bytes
+- `foundations/translation/limit-class-exceeded-gcc-lp64.cpp` (clang-22-o2): error: structure 'Block' is too large, which exceeds maximum allowed size of 1152921504606846976 bytes
+- `foundations/translation/limit-class-largest-clang-18-lp64.cpp` (clang-host): error: structure 'Pair' is too large, which exceeds maximum allowed size of 1152921504606846976 bytes
+- `foundations/translation/limit-class-largest-clang-18-lp64.cpp` (clang-22): error: structure 'Pair' is too large, which exceeds maximum allowed size of 1152921504606846976 bytes
+- `foundations/translation/limit-class-largest-clang-18-lp64.cpp` (clang-22-o2): error: structure 'Pair' is too large, which exceeds maximum allowed size of 1152921504606846976 bytes
+- `foundations/translation/limit-class-largest-edg-lp64.cpp` (clang-host): error: structure 'Block' is too large, which exceeds maximum allowed size of 1152921504606846976 bytes / error: static assertion failed due to requirement 'sizeof(Block) == ~0ULL' / note: expression evaluates to '2305843009213693951 == 18446744073709551615'
+- `foundations/translation/limit-class-largest-edg-lp64.cpp` (gcc-host): error: size of type ‘Block’ is too large (‘18446744073709551615’ bytes)
+- `foundations/translation/limit-class-largest-edg-lp64.cpp` (gcc-14): error: size of type 'Block' is too large ('18446744073709551615' bytes)
+- `foundations/translation/limit-class-largest-edg-lp64.cpp` (clang-18): error: static assertion failed due to requirement 'sizeof(Block) == ~0ULL' / note: expression evaluates to '2305843009213693951 == 18446744073709551615'
+- `foundations/translation/limit-class-largest-edg-lp64.cpp` (gcc-16): error: size of type 'Block' is too large ('18446744073709551615' bytes)
+- `foundations/translation/limit-class-largest-edg-lp64.cpp` (gcc-16-o2): error: size of type 'Block' is too large ('18446744073709551615' bytes)
+- `foundations/translation/limit-class-largest-edg-lp64.cpp` (clang-22): error: structure 'Block' is too large, which exceeds maximum allowed size of 1152921504606846976 bytes / error: static assertion failed due to requirement 'sizeof(Block) == ~0ULL' / note: expression evaluates to '2305843009213693951 == 18446744073709551615'
+- `foundations/translation/limit-class-largest-edg-lp64.cpp` (clang-22-o2): error: structure 'Block' is too large, which exceeds maximum allowed size of 1152921504606846976 bytes / error: static assertion failed due to requirement 'sizeof(Block) == ~0ULL' / note: expression evaluates to '2305843009213693951 == 18446744073709551615'
+- `foundations/translation/limit-class-largest-gcc-lp64.cpp` (clang-host): error: structure 'Block' is too large, which exceeds maximum allowed size of 1152921504606846976 bytes / error: static assertion failed due to requirement 'sizeof(Block) == (1ULL << 63) - 1' / note: expression evaluates to '2305843009213693951 == 9223372036854775807'
+- `foundations/translation/limit-class-largest-gcc-lp64.cpp` (clang-18): error: static assertion failed due to requirement 'sizeof(Block) == (1ULL << 63) - 1' / note: expression evaluates to '2305843009213693951 == 9223372036854775807'
+- `foundations/translation/limit-class-largest-gcc-lp64.cpp` (clang-22): error: structure 'Block' is too large, which exceeds maximum allowed size of 1152921504606846976 bytes / error: static assertion failed due to requirement 'sizeof(Block) == (1ULL << 63) - 1' / note: expression evaluates to '2305843009213693951 == 9223372036854775807'
+- `foundations/translation/limit-class-largest-gcc-lp64.cpp` (clang-22-o2): error: structure 'Block' is too large, which exceeds maximum allowed size of 1152921504606846976 bytes / error: static assertion failed due to requirement 'sizeof(Block) == (1ULL << 63) - 1' / note: expression evaluates to '2305843009213693951 == 9223372036854775807'
+- `foundations/translation/limit-class-largest-ilp32.cpp` (gcc-host): error: size of type ‘Triple’ is too large (‘4294967295’ bytes)
+- `foundations/translation/limit-class-largest-ilp32.cpp` (gcc-14): error: size of type 'Triple' is too large ('4294967295' bytes)
+- `foundations/translation/limit-class-wrong-size-clang-18-lp64.cpp` (clang-host): error: structure 'Pair' is too large, which exceeds maximum allowed size of 1152921504606846976 bytes / error: static assertion failed due to requirement 'sizeof(Pair) == (1ULL << 61)' / note: expression evaluates to '1152921504606846976 == 2305843009213693952'
+- `foundations/translation/limit-class-wrong-size-clang-18-lp64.cpp` (clang-18): error: static assertion failed due to requirement 'sizeof(Pair) == (1ULL << 61)' / note: expression evaluates to '1152921504606846976 == 2305843009213693952'
+- `foundations/translation/limit-class-wrong-size-clang-18-lp64.cpp` (clang-22): error: structure 'Pair' is too large, which exceeds maximum allowed size of 1152921504606846976 bytes / error: static assertion failed due to requirement 'sizeof(Pair) == (1ULL << 61)' / note: expression evaluates to '1152921504606846976 == 2305843009213693952'
+- `foundations/translation/limit-class-wrong-size-clang-18-lp64.cpp` (clang-22-o2): error: structure 'Pair' is too large, which exceeds maximum allowed size of 1152921504606846976 bytes / error: static assertion failed due to requirement 'sizeof(Pair) == (1ULL << 61)' / note: expression evaluates to '1152921504606846976 == 2305843009213693952'
+- `foundations/translation/limit-depth-crossed-ilp32.cpp` (clang-host): note: in instantiation of static data member 'Count<976>::value' requested here / note: in instantiation of static data member 'Count<977>::value' requested here / note: in instantiation of static data member 'Count<978>::value' requested here / note: in instantiation of static data member 'Count<979>::value' requested here / note: in instantiation of static data member 'Count<980>::value' requested here / note: (skipping 1015 contexts in backtrace; use -ftemplate-backtrace-limit=0 to see all) / note: in instantiation of static data member 'Count<1996>::value' requested here / note: in instantiation of static data member 'Count<1997>::value' requested here / note: in instantiation of static data member 'Count<1998>::value' requested here / note: in instantiation of static data member 'Count<1999>::value' requested here / note: in instantiation of static data member 'Count<2000>::value' requested here / note: use -ftemplate-depth=N to increase recursive template instantiation depth
+- `foundations/translation/limit-depth-crossed-ilp32.cpp` (gcc-host): /home/ryanm/Code/tidal/tests/foundations/translation/limit-depth-crossed-ilp32.cpp: In instantiation of ‘constexpr const int Count<1101>::value’: /home/ryanm/Code/tidal/tests/foundations/translation/l
+- `foundations/translation/limit-depth-crossed-ilp32.cpp` (edg-7.0-ilp32): error: excessive recursion at instantiation of class "Count<1936>" / error: incomplete type "Count<1936>" is not allowed
+- `foundations/translation/limit-depth-crossed-ilp32.cpp` (gcc-14): /tidal/tests/foundations/translation/limit-depth-crossed-ilp32.cpp: In instantiation of 'constexpr const int Count<1101>::value': /tidal/tests/foundations/translation/limit-depth-crossed-ilp32.cpp:8:7
+- `foundations/translation/limit-depth-crossed-ilp32.cpp` (clang-18): note: in instantiation of static data member 'Count<976>::value' requested here / note: in instantiation of static data member 'Count<977>::value' requested here / note: in instantiation of static data member 'Count<978>::value' requested here / note: in instantiation of static data member 'Count<979>::value' requested here / note: in instantiation of static data member 'Count<980>::value' requested here / note: (skipping 1015 contexts in backtrace; use -ftemplate-backtrace-limit=0 to see all) / note: in instantiation of static data member 'Count<1996>::value' requested here / note: in instantiation of static data member 'Count<1997>::value' requested here / note: in instantiation of static data member 'Count<1998>::value' requested here / note: in instantiation of static data member 'Count<1999>::value' requested here / note: in instantiation of static data member 'Count<2000>::value' requested here / note: use -ftemplate-depth=N to increase recursive template instantiation depth
+- `foundations/translation/limit-depth-crossed-ilp32.cpp` (clang-22): note: in instantiation of static data member 'Count<976>::value' requested here / note: in instantiation of static data member 'Count<977>::value' requested here / note: in instantiation of static data member 'Count<978>::value' requested here / note: in instantiation of static data member 'Count<979>::value' requested here / note: in instantiation of static data member 'Count<980>::value' requested here / note: (skipping 1015 contexts in backtrace; use -ftemplate-backtrace-limit=0 to see all) / note: in instantiation of static data member 'Count<1996>::value' requested here / note: in instantiation of static data member 'Count<1997>::value' requested here / note: in instantiation of static data member 'Count<1998>::value' requested here / note: in instantiation of static data member 'Count<1999>::value' requested here / note: in instantiation of static data member 'Count<2000>::value' requested here / note: use -ftemplate-depth=N to increase recursive template instantiation depth
+- `foundations/translation/limit-depth-crossed-ilp32.cpp` (clang-22-o2): note: in instantiation of static data member 'Count<976>::value' requested here / note: in instantiation of static data member 'Count<977>::value' requested here / note: in instantiation of static data member 'Count<978>::value' requested here / note: in instantiation of static data member 'Count<979>::value' requested here / note: in instantiation of static data member 'Count<980>::value' requested here / note: (skipping 1015 contexts in backtrace; use -ftemplate-backtrace-limit=0 to see all) / note: in instantiation of static data member 'Count<1996>::value' requested here / note: in instantiation of static data member 'Count<1997>::value' requested here / note: in instantiation of static data member 'Count<1998>::value' requested here / note: in instantiation of static data member 'Count<1999>::value' requested here / note: in instantiation of static data member 'Count<2000>::value' requested here / note: use -ftemplate-depth=N to increase recursive template instantiation depth
+- `foundations/translation/limit-depth-crossed.cpp` (clang-host): note: in instantiation of static data member 'Count<976>::value' requested here / note: in instantiation of static data member 'Count<977>::value' requested here / note: in instantiation of static data member 'Count<978>::value' requested here / note: in instantiation of static data member 'Count<979>::value' requested here / note: in instantiation of static data member 'Count<980>::value' requested here / note: (skipping 1015 contexts in backtrace; use -ftemplate-backtrace-limit=0 to see all) / note: in instantiation of static data member 'Count<1996>::value' requested here / note: in instantiation of static data member 'Count<1997>::value' requested here / note: in instantiation of static data member 'Count<1998>::value' requested here / note: in instantiation of static data member 'Count<1999>::value' requested here / note: in instantiation of static data member 'Count<2000>::value' requested here / note: use -ftemplate-depth=N to increase recursive template instantiation depth
+- `foundations/translation/limit-depth-crossed.cpp` (gcc-host): /home/ryanm/Code/tidal/tests/foundations/translation/limit-depth-crossed.cpp: In instantiation of ‘constexpr const int Count<1101>::value’: /home/ryanm/Code/tidal/tests/foundations/translation/limit-d
+- `foundations/translation/limit-depth-crossed.cpp` (edg-7.0): error: excessive recursion at instantiation of class "Count<1936>" / error: incomplete type "Count<1936>" is not allowed
+- `foundations/translation/limit-depth-crossed.cpp` (gcc-14): /tidal/tests/foundations/translation/limit-depth-crossed.cpp: In instantiation of 'constexpr const int Count<1101>::value': /tidal/tests/foundations/translation/limit-depth-crossed.cpp:7:76: recursive
+- `foundations/translation/limit-depth-crossed.cpp` (clang-18): note: in instantiation of static data member 'Count<976>::value' requested here / note: in instantiation of static data member 'Count<977>::value' requested here / note: in instantiation of static data member 'Count<978>::value' requested here / note: in instantiation of static data member 'Count<979>::value' requested here / note: in instantiation of static data member 'Count<980>::value' requested here / note: (skipping 1015 contexts in backtrace; use -ftemplate-backtrace-limit=0 to see all) / note: in instantiation of static data member 'Count<1996>::value' requested here / note: in instantiation of static data member 'Count<1997>::value' requested here / note: in instantiation of static data member 'Count<1998>::value' requested here / note: in instantiation of static data member 'Count<1999>::value' requested here / note: in instantiation of static data member 'Count<2000>::value' requested here / note: use -ftemplate-depth=N to increase recursive template instantiation depth
+- `foundations/translation/limit-depth-crossed.cpp` (gcc-16): /tidal/tests/foundations/translation/limit-depth-crossed.cpp: In instantiation of 'constexpr const int Count<1101>::value': /tidal/tests/foundations/translation/limit-depth-crossed.cpp:7:76: recursive
+- `foundations/translation/limit-depth-crossed.cpp` (gcc-16-o2): /tidal/tests/foundations/translation/limit-depth-crossed.cpp: In instantiation of 'constexpr const int Count<1101>::value': /tidal/tests/foundations/translation/limit-depth-crossed.cpp:7:76: recursive
+- `foundations/translation/limit-depth-crossed.cpp` (clang-22): note: in instantiation of static data member 'Count<976>::value' requested here / note: in instantiation of static data member 'Count<977>::value' requested here / note: in instantiation of static data member 'Count<978>::value' requested here / note: in instantiation of static data member 'Count<979>::value' requested here / note: in instantiation of static data member 'Count<980>::value' requested here / note: (skipping 1015 contexts in backtrace; use -ftemplate-backtrace-limit=0 to see all) / note: in instantiation of static data member 'Count<1996>::value' requested here / note: in instantiation of static data member 'Count<1997>::value' requested here / note: in instantiation of static data member 'Count<1998>::value' requested here / note: in instantiation of static data member 'Count<1999>::value' requested here / note: in instantiation of static data member 'Count<2000>::value' requested here / note: use -ftemplate-depth=N to increase recursive template instantiation depth
+- `foundations/translation/limit-depth-crossed.cpp` (clang-22-o2): note: in instantiation of static data member 'Count<976>::value' requested here / note: in instantiation of static data member 'Count<977>::value' requested here / note: in instantiation of static data member 'Count<978>::value' requested here / note: in instantiation of static data member 'Count<979>::value' requested here / note: in instantiation of static data member 'Count<980>::value' requested here / note: (skipping 1015 contexts in backtrace; use -ftemplate-backtrace-limit=0 to see all) / note: in instantiation of static data member 'Count<1996>::value' requested here / note: in instantiation of static data member 'Count<1997>::value' requested here / note: in instantiation of static data member 'Count<1998>::value' requested here / note: in instantiation of static data member 'Count<1999>::value' requested here / note: in instantiation of static data member 'Count<2000>::value' requested here / note: use -ftemplate-depth=N to increase recursive template instantiation depth
+- `foundations/translation/limit-depth-edg-flag-lowered.cpp` (clang-host): clang++: error: unknown argument: '--pending_instantiations=10'
+- `foundations/translation/limit-depth-edg-flag-lowered.cpp` (gcc-host): g++: error: unrecognized command-line option ‘--pending_instantiations=10’
+- `foundations/translation/limit-depth-edg-flag-lowered.cpp` (edg-7.0): error: excessive recursion at instantiation of class "Count<10>" / error: incomplete type "Count<10>" is not allowed
+- `foundations/translation/limit-depth-edg-flag-lowered.cpp` (gcc-14): g++-14: error: unrecognized command-line option '--pending_instantiations=10'
+- `foundations/translation/limit-depth-edg-flag-lowered.cpp` (clang-18): clang++-18: error: unknown argument: '--pending_instantiations=10'
+- `foundations/translation/limit-depth-edg-flag-lowered.cpp` (gcc-16): g++: error: unrecognized command-line option '--pending_instantiations=10'
+- `foundations/translation/limit-depth-edg-flag-lowered.cpp` (gcc-16-o2): g++: error: unrecognized command-line option '--pending_instantiations=10'
+- `foundations/translation/limit-depth-edg-flag-lowered.cpp` (clang-22): clang++-22: error: unknown argument: '--pending_instantiations=10'
+- `foundations/translation/limit-depth-edg-flag-lowered.cpp` (clang-22-o2): clang++-22: error: unknown argument: '--pending_instantiations=10'
+- `foundations/translation/limit-depth-flag-lowered.cpp` (clang-host): note: in instantiation of static data member 'Count<10>::value' requested here / note: in instantiation of static data member 'Count<11>::value' requested here / note: in instantiation of static data member 'Count<12>::value' requested here / note: in instantiation of static data member 'Count<13>::value' requested here / note: in instantiation of static data member 'Count<14>::value' requested here / note: (skipping 31 contexts in backtrace; use -ftemplate-backtrace-limit=0 to see all) / note: in instantiation of static data member 'Count<46>::value' requested here / note: in instantiation of static data member 'Count<47>::value' requested here / note: in instantiation of static data member 'Count<48>::value' requested here / note: in instantiation of static data member 'Count<49>::value' requested here / note: in instantiation of static data member 'Count<50>::value' requested here / note: use -ftemplate-depth=N to increase recursive template instantiation depth
+- `foundations/translation/limit-depth-flag-lowered.cpp` (gcc-host): /home/ryanm/Code/tidal/tests/foundations/translation/limit-depth-flag-lowered.cpp: In instantiation of ‘constexpr const int Count<11>::value’: /home/ryanm/Code/tidal/tests/foundations/translation/limi
+- `foundations/translation/limit-depth-flag-lowered.cpp` (edg-7.0): Command-line error: invalid option: -ftemplate-depth=40 1 catastrophic error detected in this compilation. Compilation terminated.
+- `foundations/translation/limit-depth-flag-lowered.cpp` (gcc-14): /tidal/tests/foundations/translation/limit-depth-flag-lowered.cpp: In instantiation of 'constexpr const int Count<11>::value': /tidal/tests/foundations/translation/limit-depth-flag-lowered.cpp:8:76: r
+- `foundations/translation/limit-depth-flag-lowered.cpp` (clang-18): note: in instantiation of static data member 'Count<10>::value' requested here / note: in instantiation of static data member 'Count<11>::value' requested here / note: in instantiation of static data member 'Count<12>::value' requested here / note: in instantiation of static data member 'Count<13>::value' requested here / note: in instantiation of static data member 'Count<14>::value' requested here / note: (skipping 31 contexts in backtrace; use -ftemplate-backtrace-limit=0 to see all) / note: in instantiation of static data member 'Count<46>::value' requested here / note: in instantiation of static data member 'Count<47>::value' requested here / note: in instantiation of static data member 'Count<48>::value' requested here / note: in instantiation of static data member 'Count<49>::value' requested here / note: in instantiation of static data member 'Count<50>::value' requested here / note: use -ftemplate-depth=N to increase recursive template instantiation depth
+- `foundations/translation/limit-depth-flag-lowered.cpp` (gcc-16): /tidal/tests/foundations/translation/limit-depth-flag-lowered.cpp: In instantiation of 'constexpr const int Count<11>::value': /tidal/tests/foundations/translation/limit-depth-flag-lowered.cpp:8:76: r
+- `foundations/translation/limit-depth-flag-lowered.cpp` (gcc-16-o2): /tidal/tests/foundations/translation/limit-depth-flag-lowered.cpp: In instantiation of 'constexpr const int Count<11>::value': /tidal/tests/foundations/translation/limit-depth-flag-lowered.cpp:8:76: r
+- `foundations/translation/limit-depth-flag-lowered.cpp` (clang-22): note: in instantiation of static data member 'Count<10>::value' requested here / note: in instantiation of static data member 'Count<11>::value' requested here / note: in instantiation of static data member 'Count<12>::value' requested here / note: in instantiation of static data member 'Count<13>::value' requested here / note: in instantiation of static data member 'Count<14>::value' requested here / note: (skipping 31 contexts in backtrace; use -ftemplate-backtrace-limit=0 to see all) / note: in instantiation of static data member 'Count<46>::value' requested here / note: in instantiation of static data member 'Count<47>::value' requested here / note: in instantiation of static data member 'Count<48>::value' requested here / note: in instantiation of static data member 'Count<49>::value' requested here / note: in instantiation of static data member 'Count<50>::value' requested here / note: use -ftemplate-depth=N to increase recursive template instantiation depth
+- `foundations/translation/limit-depth-flag-lowered.cpp` (clang-22-o2): note: in instantiation of static data member 'Count<10>::value' requested here / note: in instantiation of static data member 'Count<11>::value' requested here / note: in instantiation of static data member 'Count<12>::value' requested here / note: in instantiation of static data member 'Count<13>::value' requested here / note: in instantiation of static data member 'Count<14>::value' requested here / note: (skipping 31 contexts in backtrace; use -ftemplate-backtrace-limit=0 to see all) / note: in instantiation of static data member 'Count<46>::value' requested here / note: in instantiation of static data member 'Count<47>::value' requested here / note: in instantiation of static data member 'Count<48>::value' requested here / note: in instantiation of static data member 'Count<49>::value' requested here / note: in instantiation of static data member 'Count<50>::value' requested here / note: use -ftemplate-depth=N to increase recursive template instantiation depth
+- `foundations/translation/limit-depth-one-template-100.cpp` (edg-7.0): error: excessive recursion at instantiation of class "Count<36>" / error: incomplete type "Count<36>" is not allowed
+- `foundations/translation/limit-depth-two-templates-1000.cpp` (gcc-host): /home/ryanm/Code/tidal/tests/foundations/translation/limit-depth-two-templates-1000.cpp: In instantiation of ‘constexpr const int Odd<101>::value’: /home/ryanm/Code/tidal/tests/foundations/translation
+- `foundations/translation/limit-depth-two-templates-1000.cpp` (edg-7.0): error: excessive recursion at instantiation of class "Even<872>" / error: incomplete type "Even<872>" is not allowed
+- `foundations/translation/limit-depth-two-templates-1000.cpp` (gcc-14): /tidal/tests/foundations/translation/limit-depth-two-templates-1000.cpp: In instantiation of 'constexpr const int Odd<101>::value': /tidal/tests/foundations/translation/limit-depth-two-templates-1000.
+- `foundations/translation/limit-depth-two-templates-1000.cpp` (gcc-16): /tidal/tests/foundations/translation/limit-depth-two-templates-1000.cpp: In instantiation of 'constexpr const int Odd<101>::value': /tidal/tests/foundations/translation/limit-depth-two-templates-1000.
+- `foundations/translation/limit-depth-two-templates-1000.cpp` (gcc-16-o2): /tidal/tests/foundations/translation/limit-depth-two-templates-1000.cpp: In instantiation of 'constexpr const int Odd<101>::value': /tidal/tests/foundations/translation/limit-depth-two-templates-1000.
 - `foundations/translation/main-address.cpp` (clang-host): error: referring to 'main' within an expression is a Clang extension [-Werror,-Wmain]
 - `foundations/translation/main-address.cpp` (gcc-host): error: ISO C++ forbids taking address of function ‘::main’ [-Wpedantic]
 - `foundations/translation/main-address.cpp` (edg-7.0): error: function "main" may not be called or have its address taken
@@ -21961,6 +23531,15 @@ check that the rejection has the intended cause.
 - `statements/blocks/default-label-ends-block.cpp` (gcc-14): error: expected primary-expression before '}' token
 - `statements/blocks/default-label-ends-block.cpp` (gcc-16): error: expected primary-expression before '}' token
 - `statements/blocks/default-label-ends-block.cpp` (gcc-16-o2): error: expected primary-expression before '}' token
+- `statements/blocks/enumeration-hidden-by-variable.cpp` (clang-host): error: must use 'enum' tag to refer to type 'Mode' in this scope / note: enum 'Mode' is hidden by a non-type declaration of 'Mode' here
+- `statements/blocks/enumeration-hidden-by-variable.cpp` (gcc-host): error: expected ‘;’ before ‘m’ / error: ‘m’ was not declared in this scope
+- `statements/blocks/enumeration-hidden-by-variable.cpp` (edg-7.0): error: expected a ";" / error: identifier "m" is undefined
+- `statements/blocks/enumeration-hidden-by-variable.cpp` (gcc-14): error: expected ';' before 'm' / error: 'm' was not declared in this scope
+- `statements/blocks/enumeration-hidden-by-variable.cpp` (clang-18): error: must use 'enum' tag to refer to type 'Mode' in this scope / note: enum 'Mode' is hidden by a non-type declaration of 'Mode' here
+- `statements/blocks/enumeration-hidden-by-variable.cpp` (gcc-16): error: expected ';' before 'm' / error: 'm' was not declared in this scope
+- `statements/blocks/enumeration-hidden-by-variable.cpp` (gcc-16-o2): error: expected ';' before 'm' / error: 'm' was not declared in this scope
+- `statements/blocks/enumeration-hidden-by-variable.cpp` (clang-22): error: must use 'enum' tag to refer to type 'Mode' in this scope / note: enum 'Mode' is hidden by a non-type declaration of 'Mode' here
+- `statements/blocks/enumeration-hidden-by-variable.cpp` (clang-22-o2): error: must use 'enum' tag to refer to type 'Mode' in this scope / note: enum 'Mode' is hidden by a non-type declaration of 'Mode' here
 - `statements/blocks/redeclare-different-type.cpp` (clang-host): error: redefinition of 'x' with a different type: 'double' vs 'int' / note: previous definition is here
 - `statements/blocks/redeclare-different-type.cpp` (gcc-host): error: conflicting declaration ‘double x’ / note: previous declaration as ‘int x’
 - `statements/blocks/redeclare-different-type.cpp` (edg-7.0): error: "x" has already been declared in the current scope
@@ -22104,6 +23683,15 @@ check that the rejection has the intended cause.
 - `statements/if/condition-not-convertible.cpp` (gcc-16-o2): error: could not convert 'Empty()' from 'Empty' to 'bool'
 - `statements/if/condition-not-convertible.cpp` (clang-22): error: value of type 'Empty' is not contextually convertible to 'bool'
 - `statements/if/condition-not-convertible.cpp` (clang-22-o2): error: value of type 'Empty' is not contextually convertible to 'bool'
+- `statements/if/condition-scoped-enumeration.cpp` (clang-host): error: value of type 'Mode' is not contextually convertible to 'bool'
+- `statements/if/condition-scoped-enumeration.cpp` (gcc-host): error: could not convert ‘m’ from ‘Mode’ to ‘bool’
+- `statements/if/condition-scoped-enumeration.cpp` (edg-7.0): error: expression must have bool type (or be convertible to bool)
+- `statements/if/condition-scoped-enumeration.cpp` (gcc-14): error: could not convert 'm' from 'Mode' to 'bool'
+- `statements/if/condition-scoped-enumeration.cpp` (clang-18): error: value of type 'Mode' is not contextually convertible to 'bool'
+- `statements/if/condition-scoped-enumeration.cpp` (gcc-16): error: could not convert 'm' from 'Mode' to 'bool'
+- `statements/if/condition-scoped-enumeration.cpp` (gcc-16-o2): error: could not convert 'm' from 'Mode' to 'bool'
+- `statements/if/condition-scoped-enumeration.cpp` (clang-22): error: value of type 'Mode' is not contextually convertible to 'bool'
+- `statements/if/condition-scoped-enumeration.cpp` (clang-22-o2): error: value of type 'Mode' is not contextually convertible to 'bool'
 - `statements/if/condition-structured-binding.cpp` (clang-host): error: structured binding declaration in a condition is a C++2c extension [-Werror,-Wc++26-extensions]
 - `statements/if/condition-structured-binding.cpp` (gcc-host): error: structured bindings in conditions only available with ‘-std=c++2c’ or ‘-std=gnu++2c’ [-Wc++26-extensions]
 - `statements/if/condition-structured-binding.cpp` (edg-7.0): error: structured binding is not allowed in a condition
@@ -22131,6 +23719,15 @@ check that the rejection has the intended cause.
 - `statements/if/consteval-goto-into.cpp` (gcc-16-o2): error: jump to label 'inside' / note:   from here / note:   enters 'consteval if' statement
 - `statements/if/consteval-goto-into.cpp` (clang-22): error: cannot jump from this goto statement to its label / note: jump enters controlled statement of consteval if
 - `statements/if/consteval-goto-into.cpp` (clang-22-o2): error: cannot jump from this goto statement to its label / note: jump enters controlled statement of consteval if
+- `statements/if/consteval-immediate-else.cpp` (clang-host): error: call to consteval function 'twice' is not a constant expression / note: function parameter 'v' with unknown value cannot be used in a constant expression
+- `statements/if/consteval-immediate-else.cpp` (gcc-host): error: call to consteval function ‘twice(v)’ is not a constant expression / error: ‘v’ is not a constant expression
+- `statements/if/consteval-immediate-else.cpp` (edg-7.0): error: call to consteval function "twice" did not produce a valid constant expression / note: the value of parameter "v" (declared at line 8) cannot be used as a constant
+- `statements/if/consteval-immediate-else.cpp` (gcc-14): error: call to consteval function 'twice(v)' is not a constant expression / error: 'v' is not a constant expression
+- `statements/if/consteval-immediate-else.cpp` (clang-18): error: call to consteval function 'twice' is not a constant expression / note: function parameter 'v' with unknown value cannot be used in a constant expression
+- `statements/if/consteval-immediate-else.cpp` (gcc-16): error: call to consteval function 'twice(v)' is not a constant expression / error: 'v' is not a constant expression
+- `statements/if/consteval-immediate-else.cpp` (gcc-16-o2): error: call to consteval function 'twice(v)' is not a constant expression / error: 'v' is not a constant expression
+- `statements/if/consteval-immediate-else.cpp` (clang-22): error: call to consteval function 'twice' is not a constant expression / note: function parameter 'v' with unknown value cannot be used in a constant expression
+- `statements/if/consteval-immediate-else.cpp` (clang-22-o2): error: call to consteval function 'twice' is not a constant expression / note: function parameter 'v' with unknown value cannot be used in a constant expression
 - `statements/if/consteval-immediate-outside.cpp` (clang-host): error: call to consteval function 'twice' is not a constant expression / note: function parameter 'v' with unknown value cannot be used in a constant expression
 - `statements/if/consteval-immediate-outside.cpp` (gcc-host): error: call to consteval function ‘twice(v)’ is not a constant expression / error: ‘v’ is not a constant expression
 - `statements/if/consteval-immediate-outside.cpp` (edg-7.0): error: call to consteval function "twice" did not produce a valid constant expression / note: the value of parameter "v" (declared at line 7) cannot be used as a constant
@@ -22194,6 +23791,24 @@ check that the rejection has the intended cause.
 - `statements/if/constexpr-non-template-checked.cpp` (gcc-16-o2): error: 'undeclared_function' was not declared in this scope
 - `statements/if/constexpr-non-template-checked.cpp` (clang-22): error: use of undeclared identifier 'undeclared_function'
 - `statements/if/constexpr-non-template-checked.cpp` (clang-22-o2): error: use of undeclared identifier 'undeclared_function'
+- `statements/if/constexpr-non-template-type-error.cpp` (clang-host): error: cannot initialize a variable of type 'int *' with an rvalue of type 'double'
+- `statements/if/constexpr-non-template-type-error.cpp` (gcc-host): error: cannot convert ‘double’ to ‘int*’ in initialization
+- `statements/if/constexpr-non-template-type-error.cpp` (edg-7.0): error: a value of type "double" cannot be used to initialize an entity of type "int *"
+- `statements/if/constexpr-non-template-type-error.cpp` (gcc-14): error: cannot convert 'double' to 'int*' in initialization
+- `statements/if/constexpr-non-template-type-error.cpp` (clang-18): error: cannot initialize a variable of type 'int *' with an rvalue of type 'double'
+- `statements/if/constexpr-non-template-type-error.cpp` (gcc-16): error: cannot convert 'double' to 'int*' in initialization
+- `statements/if/constexpr-non-template-type-error.cpp` (gcc-16-o2): error: cannot convert 'double' to 'int*' in initialization
+- `statements/if/constexpr-non-template-type-error.cpp` (clang-22): error: cannot initialize a variable of type 'int *' with an rvalue of type 'double'
+- `statements/if/constexpr-non-template-type-error.cpp` (clang-22-o2): error: cannot initialize a variable of type 'int *' with an rvalue of type 'double'
+- `statements/if/constexpr-template-nondependent-call-checked.cpp` (clang-host): error: no matching function for call to 'g' / note: candidate function not viable: requires 1 argument, but 0 were provided
+- `statements/if/constexpr-template-nondependent-call-checked.cpp` (gcc-host): error: too few arguments to function ‘void g(int)’ [-Wtemplate-body]
+- `statements/if/constexpr-template-nondependent-call-checked.cpp` (edg-7.0): error: too few arguments in function call
+- `statements/if/constexpr-template-nondependent-call-checked.cpp` (gcc-14): error: too few arguments to function 'void g(int)'
+- `statements/if/constexpr-template-nondependent-call-checked.cpp` (clang-18): error: no matching function for call to 'g' / note: candidate function not viable: requires 1 argument, but 0 were provided
+- `statements/if/constexpr-template-nondependent-call-checked.cpp` (gcc-16): error: too few arguments to function 'void g(int)' [-Wtemplate-body]
+- `statements/if/constexpr-template-nondependent-call-checked.cpp` (gcc-16-o2): error: too few arguments to function 'void g(int)' [-Wtemplate-body]
+- `statements/if/constexpr-template-nondependent-call-checked.cpp` (clang-22): error: no matching function for call to 'g' / note: candidate function not viable: requires 1 argument, but 0 were provided
+- `statements/if/constexpr-template-nondependent-call-checked.cpp` (clang-22-o2): error: no matching function for call to 'g' / note: candidate function not viable: requires 1 argument, but 0 were provided
 - `statements/if/constexpr-template-nondependent-checked.cpp` (clang-host): error: use of undeclared identifier 'never_declared'
 - `statements/if/constexpr-template-nondependent-checked.cpp` (gcc-host): error: there are no arguments to ‘never_declared’ that depend on a template parameter, so a declaration of ‘never_declared’ must be available [-Wtemplate-body] / note: (if you use ‘-fpermissive’, G++ will accept your code, but allowing the use of an undeclared name is deprecated)
 - `statements/if/constexpr-template-nondependent-checked.cpp` (edg-7.0): error: identifier "never_declared" is undefined
@@ -22203,6 +23818,15 @@ check that the rejection has the intended cause.
 - `statements/if/constexpr-template-nondependent-checked.cpp` (gcc-16-o2): error: there are no arguments to 'never_declared' that depend on a template parameter, so a declaration of 'never_declared' must be available [-Wtemplate-body] / note: (if you use '-fpermissive', G++ will accept your code, but allowing the use of an undeclared name is deprecated)
 - `statements/if/constexpr-template-nondependent-checked.cpp` (clang-22): error: use of undeclared identifier 'never_declared'
 - `statements/if/constexpr-template-nondependent-checked.cpp` (clang-22-o2): error: use of undeclared identifier 'never_declared'
+- `statements/if/else-substatement-scope.cpp` (clang-host): error: use of undeclared identifier 'z'
+- `statements/if/else-substatement-scope.cpp` (gcc-host): error: ‘z’ was not declared in this scope
+- `statements/if/else-substatement-scope.cpp` (edg-7.0): error: identifier "z" is undefined
+- `statements/if/else-substatement-scope.cpp` (gcc-14): error: 'z' was not declared in this scope
+- `statements/if/else-substatement-scope.cpp` (clang-18): error: use of undeclared identifier 'z'
+- `statements/if/else-substatement-scope.cpp` (gcc-16): error: 'z' was not declared in this scope
+- `statements/if/else-substatement-scope.cpp` (gcc-16-o2): error: 'z' was not declared in this scope
+- `statements/if/else-substatement-scope.cpp` (clang-22): error: use of undeclared identifier 'z'
+- `statements/if/else-substatement-scope.cpp` (clang-22-o2): error: use of undeclared identifier 'z'
 - `statements/if/init-scope-ends.cpp` (clang-host): error: use of undeclared identifier 'a'
 - `statements/if/init-scope-ends.cpp` (gcc-host): error: ‘a’ was not declared in this scope
 - `statements/if/init-scope-ends.cpp` (edg-7.0): error: identifier "a" is undefined
@@ -22501,6 +24125,15 @@ check that the rejection has the intended cause.
 - `statements/loops/do-body-name-not-in-condition.cpp` (gcc-16-o2): error: 'done' was not declared in this scope
 - `statements/loops/do-body-name-not-in-condition.cpp` (clang-22): error: use of undeclared identifier 'done'
 - `statements/loops/do-body-name-not-in-condition.cpp` (clang-22-o2): error: use of undeclared identifier 'done'
+- `statements/loops/do-condition-declaration-bool.cpp` (clang-host): error: expected '(' for function-style cast or type construction
+- `statements/loops/do-condition-declaration-bool.cpp` (gcc-host): error: expected primary-expression before ‘bool’ / error: expected ‘)’ before ‘bool’ / error: expected ‘;’ before ‘bool’ / error: expected ‘,’ or ‘;’ before ‘)’ token
+- `statements/loops/do-condition-declaration-bool.cpp` (edg-7.0): error: type name is not allowed / error: expected a ")"
+- `statements/loops/do-condition-declaration-bool.cpp` (gcc-14): error: expected primary-expression before 'bool' / error: expected ')' before 'bool' / error: expected ';' before 'bool' / error: expected ',' or ';' before ')' token
+- `statements/loops/do-condition-declaration-bool.cpp` (clang-18): error: expected '(' for function-style cast or type construction
+- `statements/loops/do-condition-declaration-bool.cpp` (gcc-16): error: expected primary-expression before 'bool' / error: expected ')' before 'bool' / error: expected ';' before 'bool' / error: expected ',' or ';' before ')' token
+- `statements/loops/do-condition-declaration-bool.cpp` (gcc-16-o2): error: expected primary-expression before 'bool' / error: expected ')' before 'bool' / error: expected ';' before 'bool' / error: expected ',' or ';' before ')' token
+- `statements/loops/do-condition-declaration-bool.cpp` (clang-22): error: expected '(' for function-style cast or type construction
+- `statements/loops/do-condition-declaration-bool.cpp` (clang-22-o2): error: expected '(' for function-style cast or type construction
 - `statements/loops/do-condition-declaration.cpp` (clang-host): error: expected '(' for function-style cast or type construction
 - `statements/loops/do-condition-declaration.cpp` (gcc-host): error: expected primary-expression before ‘int’ / error: expected ‘)’ before ‘int’ / error: expected ‘;’ before ‘int’ / error: expected ‘,’ or ‘;’ before ‘)’ token
 - `statements/loops/do-condition-declaration.cpp` (edg-7.0): error: type name is not allowed / error: expected a ")"
@@ -22510,6 +24143,15 @@ check that the rejection has the intended cause.
 - `statements/loops/do-condition-declaration.cpp` (gcc-16-o2): error: expected primary-expression before 'int' / error: expected ')' before 'int' / error: expected ';' before 'int' / error: expected ',' or ';' before ')' token
 - `statements/loops/do-condition-declaration.cpp` (clang-22): error: expected '(' for function-style cast or type construction
 - `statements/loops/do-condition-declaration.cpp` (clang-22-o2): error: expected '(' for function-style cast or type construction
+- `statements/loops/for-condition-scoped-enumeration.cpp` (clang-host): error: value of type 'State' is not contextually convertible to 'bool'
+- `statements/loops/for-condition-scoped-enumeration.cpp` (gcc-host): error: could not convert ‘State::idle’ from ‘State’ to ‘bool’
+- `statements/loops/for-condition-scoped-enumeration.cpp` (edg-7.0): error: expression must have bool type (or be convertible to bool)
+- `statements/loops/for-condition-scoped-enumeration.cpp` (gcc-14): error: could not convert 'State::idle' from 'State' to 'bool'
+- `statements/loops/for-condition-scoped-enumeration.cpp` (clang-18): error: value of type 'State' is not contextually convertible to 'bool'
+- `statements/loops/for-condition-scoped-enumeration.cpp` (gcc-16): error: could not convert 'State::idle' from 'State' to 'bool'
+- `statements/loops/for-condition-scoped-enumeration.cpp` (gcc-16-o2): error: could not convert 'State::idle' from 'State' to 'bool'
+- `statements/loops/for-condition-scoped-enumeration.cpp` (clang-22): error: value of type 'State' is not contextually convertible to 'bool'
+- `statements/loops/for-condition-scoped-enumeration.cpp` (clang-22-o2): error: value of type 'State' is not contextually convertible to 'bool'
 - `statements/loops/for-init-redeclare-body.cpp` (clang-host): error: redefinition of 'i' / note: previous definition is here
 - `statements/loops/for-init-redeclare-body.cpp` (gcc-host): error: redeclaration of ‘int i’
 - `statements/loops/for-init-redeclare-body.cpp` (edg-7.0): error: "i", declared in for-loop initialization, may not be redeclared in this scope
@@ -22631,6 +24273,15 @@ check that the rejection has the intended cause.
 - `statements/range-for/postfix-only-iterator.cpp` (gcc-16-o2): error: no match for 'operator++' (operand type is 'It')
 - `statements/range-for/postfix-only-iterator.cpp` (clang-22): error: cannot increment value of type 'It' / note: in implicit call to 'operator++' for iterator of type 'R' / note: selected 'begin' function with iterator type 'It'
 - `statements/range-for/postfix-only-iterator.cpp` (clang-22-o2): error: cannot increment value of type 'It' / note: in implicit call to 'operator++' for iterator of type 'R' / note: selected 'begin' function with iterator type 'It'
+- `statements/range-for/redeclare-loop-variable-reference.cpp` (clang-host): error: redefinition of 'v' with a different type: 'double' vs 'int &' / note: previous definition is here
+- `statements/range-for/redeclare-loop-variable-reference.cpp` (gcc-host): error: redeclaration of ‘double v’
+- `statements/range-for/redeclare-loop-variable-reference.cpp` (edg-7.0): error: "v", declared as iterator of range-based "for" statement, may not be redeclared in this scope
+- `statements/range-for/redeclare-loop-variable-reference.cpp` (gcc-14): error: redeclaration of 'double v'
+- `statements/range-for/redeclare-loop-variable-reference.cpp` (clang-18): error: redefinition of 'v' with a different type: 'double' vs 'int &' / note: previous definition is here
+- `statements/range-for/redeclare-loop-variable-reference.cpp` (gcc-16): error: redeclaration of 'double v'
+- `statements/range-for/redeclare-loop-variable-reference.cpp` (gcc-16-o2): error: redeclaration of 'double v'
+- `statements/range-for/redeclare-loop-variable-reference.cpp` (clang-22): error: redefinition of 'v' with a different type: 'double' vs 'int &' / note: previous definition is here
+- `statements/range-for/redeclare-loop-variable-reference.cpp` (clang-22-o2): error: redefinition of 'v' with a different type: 'double' vs 'int &' / note: previous definition is here
 - `statements/range-for/redeclare-loop-variable.cpp` (clang-host): error: redefinition of 'v' / note: previous definition is here
 - `statements/range-for/redeclare-loop-variable.cpp` (gcc-host): error: redeclaration of ‘int v’
 - `statements/range-for/redeclare-loop-variable.cpp` (edg-7.0): error: "v", declared as iterator of range-based "for" statement, may not be redeclared in this scope
@@ -23253,6 +24904,19 @@ check that the rejection has the intended cause.
 - `templates/class-template-deduction/aggregate-pack-length-conflict.cpp` (clang-18): error: no viable constructor or deduction guide for deduction of template arguments of 'Bases' / note: candidate template ignored: deduced packs of different lengths for parameter 'T' (<X, Y, Z> vs. <(no value), ToY>) / note: candidate function template not viable: requires 1 argument, but 3 were provided / note: candidate function template not viable: requires 0 arguments, but 3 were provided
 - `templates/class-template-deduction/aggregate-pack-length-conflict.cpp` (clang-22): error: no viable constructor or deduction guide for deduction of template arguments of 'Bases' / note: candidate template ignored: deduced packs of different lengths for parameter 'T' (<X, Y, Z> vs. <(no value), ToY>) / note: implicit deduction guide declared as 'template <class ...T> Bases(List<T...>, T ...) -> Bases<T...>' / note: candidate function template not viable: requires 1 argument, but 3 were provided / note: implicit deduction guide declared as 'template <class ...T> Bases(Bases<T...>) -> Bases<T...>' / note: candidate function template not viable: requires 0 arguments, but 3 were provided / note: implicit deduction guide declared as 'template <class ...T> Bases() -> Bases<T...>'
 - `templates/class-template-deduction/aggregate-pack-length-conflict.cpp` (clang-22-o2): error: no viable constructor or deduction guide for deduction of template arguments of 'Bases' / note: candidate template ignored: deduced packs of different lengths for parameter 'T' (<X, Y, Z> vs. <(no value), ToY>) / note: implicit deduction guide declared as 'template <class ...T> Bases(List<T...>, T ...) -> Bases<T...>' / note: candidate function template not viable: requires 1 argument, but 3 were provided / note: implicit deduction guide declared as 'template <class ...T> Bases(Bases<T...>) -> Bases<T...>' / note: candidate function template not viable: requires 0 arguments, but 3 were provided / note: implicit deduction guide declared as 'template <class ...T> Bases() -> Bases<T...>'
+- `templates/class-template-deduction/aggregate-pack-length-parentheses.cpp` (gcc-host): error: class template argument deduction failed: / error: no matching function for call to ‘Bases(List<X, Y, Z>, X)’ / error: template argument 1 is invalid
+- `templates/class-template-deduction/aggregate-pack-length-parentheses.cpp` (gcc-14): error: class template argument deduction failed: / error: no matching function for call to 'Bases(List<X, Y, Z>, X)' / note: candidate: 'template<class ... T> Bases()-> Bases<T>' / note:   candidate expects 0 arguments, 2 provided / note: candidate: 'template<class ... T> Bases(Bases<T>)-> Bases<T>' / note:   candidate expects 1 argument, 2 provided / note: candidate: 'Bases(List<T ...>, T ...)-> Bases<T> [with T = {X, Y, Z}]' / note:   candidate expects 4 arguments, 2 provided / error: template argument 1 is invalid
+- `templates/class-template-deduction/aggregate-pack-length-parentheses.cpp` (gcc-16): error: class template argument deduction failed: / error: no matching function for call to 'Bases(List<X, Y, Z>, X)' / error: template argument 1 is invalid
+- `templates/class-template-deduction/aggregate-pack-length-parentheses.cpp` (gcc-16-o2): error: class template argument deduction failed: / error: no matching function for call to 'Bases(List<X, Y, Z>, X)' / error: template argument 1 is invalid
+- `templates/class-template-deduction/aggregate-pack-length-position.cpp` (clang-host): error: no viable constructor or deduction guide for deduction of template arguments of 'Bases' / note: candidate template ignored: deduced packs of different lengths for parameter 'T' (<X, Y, Z> vs. <Y>) / note: implicit deduction guide declared as 'template <class ...T> Bases(List<T...>, T ...) -> Bases<T...>' / note: candidate function template not viable: requires 1 argument, but 2 were provided / note: implicit deduction guide declared as 'template <class ...T> Bases(Bases<T...>) -> Bases<T...>' / note: candidate function template not viable: requires 0 arguments, but 2 were provided / note: implicit deduction guide declared as 'template <class ...T> Bases() -> Bases<T...>'
+- `templates/class-template-deduction/aggregate-pack-length-position.cpp` (gcc-host): error: class template argument deduction failed: / error: no matching function for call to ‘Bases(List<X, Y, Z>, Y)’
+- `templates/class-template-deduction/aggregate-pack-length-position.cpp` (edg-7.0): error: no instance of constructor "Bases" matches the argument list / error: cannot deduce class template arguments
+- `templates/class-template-deduction/aggregate-pack-length-position.cpp` (gcc-14): error: class template argument deduction failed: / error: no matching function for call to 'Bases(List<X, Y, Z>, Y)' / note: candidate: 'template<class ... T> Bases()-> Bases<T>' / note:   candidate expects 0 arguments, 2 provided / note: candidate: 'template<class ... T> Bases(Bases<T>)-> Bases<T>' / note:   candidate expects 1 argument, 2 provided / note: candidate: 'template<class ... T> Bases(List<T ...>, T ...)-> Bases<T>' / note:   template argument deduction/substitution failed: / note:   inconsistent parameter pack deduction with 'X' and 'Y'
+- `templates/class-template-deduction/aggregate-pack-length-position.cpp` (clang-18): error: no viable constructor or deduction guide for deduction of template arguments of 'Bases' / note: candidate template ignored: deduced packs of different lengths for parameter 'T' (<X, Y, Z> vs. <Y>) / note: candidate function template not viable: requires 1 argument, but 2 were provided / note: candidate function template not viable: requires 0 arguments, but 2 were provided
+- `templates/class-template-deduction/aggregate-pack-length-position.cpp` (gcc-16): error: class template argument deduction failed: / error: no matching function for call to 'Bases(List<X, Y, Z>, Y)'
+- `templates/class-template-deduction/aggregate-pack-length-position.cpp` (gcc-16-o2): error: class template argument deduction failed: / error: no matching function for call to 'Bases(List<X, Y, Z>, Y)'
+- `templates/class-template-deduction/aggregate-pack-length-position.cpp` (clang-22): error: no viable constructor or deduction guide for deduction of template arguments of 'Bases' / note: candidate template ignored: deduced packs of different lengths for parameter 'T' (<X, Y, Z> vs. <Y>) / note: implicit deduction guide declared as 'template <class ...T> Bases(List<T...>, T ...) -> Bases<T...>' / note: candidate function template not viable: requires 1 argument, but 2 were provided / note: implicit deduction guide declared as 'template <class ...T> Bases(Bases<T...>) -> Bases<T...>' / note: candidate function template not viable: requires 0 arguments, but 2 were provided / note: implicit deduction guide declared as 'template <class ...T> Bases() -> Bases<T...>'
+- `templates/class-template-deduction/aggregate-pack-length-position.cpp` (clang-22-o2): error: no viable constructor or deduction guide for deduction of template arguments of 'Bases' / note: candidate template ignored: deduced packs of different lengths for parameter 'T' (<X, Y, Z> vs. <Y>) / note: implicit deduction guide declared as 'template <class ...T> Bases(List<T...>, T ...) -> Bases<T...>' / note: candidate function template not viable: requires 1 argument, but 2 were provided / note: implicit deduction guide declared as 'template <class ...T> Bases(Bases<T...>) -> Bases<T...>' / note: candidate function template not viable: requires 0 arguments, but 2 were provided / note: implicit deduction guide declared as 'template <class ...T> Bases() -> Bases<T...>'
 - `templates/class-template-deduction/aggregate-pack-not-last-element.cpp` (clang-host): error: no viable constructor or deduction guide for deduction of template arguments of 'Tail' / note: candidate function template not viable: requires 1 argument, but 2 were provided / note: implicit deduction guide declared as 'template <class ...B> Tail(Tail<B...>) -> Tail<B...>' / note: candidate function template not viable: requires 0 arguments, but 2 were provided / note: implicit deduction guide declared as 'template <class ...B> Tail() -> Tail<B...>'
 - `templates/class-template-deduction/aggregate-pack-not-last-element.cpp` (gcc-host): error: class template argument deduction failed: / error: no matching function for call to ‘Tail(Empty, int)’
 - `templates/class-template-deduction/aggregate-pack-not-last-element.cpp` (edg-7.0): error: no instance of constructor "Tail" matches the argument list / error: cannot deduce class template arguments
@@ -23262,6 +24926,10 @@ check that the rejection has the intended cause.
 - `templates/class-template-deduction/aggregate-pack-not-last-element.cpp` (gcc-16-o2): error: class template argument deduction failed: / error: no matching function for call to 'Tail(Empty, int)'
 - `templates/class-template-deduction/aggregate-pack-not-last-element.cpp` (clang-22): error: no viable constructor or deduction guide for deduction of template arguments of 'Tail' / note: candidate function template not viable: requires 1 argument, but 2 were provided / note: implicit deduction guide declared as 'template <class ...B> Tail(Tail<B...>) -> Tail<B...>' / note: candidate function template not viable: requires 0 arguments, but 2 were provided / note: implicit deduction guide declared as 'template <class ...B> Tail() -> Tail<B...>'
 - `templates/class-template-deduction/aggregate-pack-not-last-element.cpp` (clang-22-o2): error: no viable constructor or deduction guide for deduction of template arguments of 'Tail' / note: candidate function template not viable: requires 1 argument, but 2 were provided / note: implicit deduction guide declared as 'template <class ...B> Tail(Tail<B...>) -> Tail<B...>' / note: candidate function template not viable: requires 0 arguments, but 2 were provided / note: implicit deduction guide declared as 'template <class ...B> Tail() -> Tail<B...>'
+- `templates/class-template-deduction/aggregate-pack-parentheses.cpp` (gcc-host): error: class template argument deduction failed: / error: no matching function for call to ‘Both(Left, Right)’ / error: template argument 1 is invalid
+- `templates/class-template-deduction/aggregate-pack-parentheses.cpp` (gcc-14): error: class template argument deduction failed: / error: no matching function for call to 'Both(Left, Right)' / note: candidate: 'template<class ... F> Both()-> Both<F>' / note:   candidate expects 0 arguments, 2 provided / note: candidate: 'template<class ... F> Both(Both<F>)-> Both<F>' / note:   candidate expects 1 argument, 2 provided / error: template argument 1 is invalid
+- `templates/class-template-deduction/aggregate-pack-parentheses.cpp` (gcc-16): error: class template argument deduction failed: / error: no matching function for call to 'Both(Left, Right)' / error: template argument 1 is invalid
+- `templates/class-template-deduction/aggregate-pack-parentheses.cpp` (gcc-16-o2): error: class template argument deduction failed: / error: no matching function for call to 'Both(Left, Right)' / error: template argument 1 is invalid
 - `templates/class-template-deduction/aggregate-string-element-type.cpp` (clang-host): error: no viable constructor or deduction guide for deduction of template arguments of 'Bytes' / note: candidate template ignored: could not match 'Bytes<N>' against 'const char *' / note: implicit deduction guide declared as 'template <int N> Bytes(Bytes<N>) -> Bytes<N>' / note: candidate template ignored: could not match 'const unsigned char' against 'const char' / note: implicit deduction guide declared as 'template <int N> Bytes(const unsigned char (&)[N]) -> Bytes<N>' / note: candidate function template not viable: requires 0 arguments, but 1 was provided / note: implicit deduction guide declared as 'template <int N> Bytes() -> Bytes<N>'
 - `templates/class-template-deduction/aggregate-string-element-type.cpp` (gcc-host): error: class template argument deduction failed: / error: no matching function for call to ‘Bytes(const char [4])’
 - `templates/class-template-deduction/aggregate-string-element-type.cpp` (edg-7.0): error: no instance of constructor "Bytes" matches the argument list / error: cannot deduce class template arguments
@@ -24998,7 +26666,8 @@ check that the rejection has the intended cause.
 - `templates/declarations/default-friend-declaration.cpp` (gcc-16-o2): error: default template arguments may not be used in template friend declarations
 - `templates/declarations/default-friend-declaration.cpp` (clang-22): error: default template argument not permitted on a friend template
 - `templates/declarations/default-friend-declaration.cpp` (clang-22-o2): error: default template argument not permitted on a friend template
-- `templates/declarations/default-friend-redeclared.cpp` (edg-7.0): error: a friend template declaration with a default template argument must be the only declaration (first declared at line 7)
+- `templates/declarations/default-friend-declared-before.cpp` (edg-7.0): error: a friend template declaration with a default template argument must be the only declaration (first declared at line 8)
+- `templates/declarations/default-friend-redeclared.cpp` (edg-7.0): error: a friend template declaration with a default template argument must be the only declaration (first declared at line 8)
 - `templates/declarations/default-greater.cpp` (clang-host): error: expected unqualified-id
 - `templates/declarations/default-greater.cpp` (gcc-host): error: expected unqualified-id before numeric constant
 - `templates/declarations/default-greater.cpp` (edg-7.0): error: invalid narrowing conversion from "int" to "bool": constant value does not fit in destination type / error: expected a declaration / error: expected a ";"
@@ -25229,6 +26898,8 @@ check that the rejection has the intended cause.
 - `templates/declarations/pack-last.cpp` (clang-22): error: template parameter pack must be the last template parameter
 - `templates/declarations/pack-last.cpp` (clang-22-o2): error: template parameter pack must be the last template parameter
 - `templates/declarations/pack-then-not-deducible.cpp` (edg-7.0): error: template parameter "Back" cannot be used because it follows a parameter pack and cannot be deduced from the parameters of function template "count"
+- `templates/declarations/pack-then-pack-not-deducible.cpp` (edg-7.0): error: template parameter "Back" cannot be used because it follows a parameter pack and cannot be deduced from the parameters of function template "count"
+- `templates/declarations/pack-then-typed-pack-not-deducible.cpp` (edg-7.0): error: constant "Values" cannot be used because it follows a parameter pack and cannot be deduced from the parameters of function template "count"
 - `templates/declarations/pack-typed-by-same-head.cpp` (clang-host): error: template parameter pack must be the last template parameter
 - `templates/declarations/pack-typed-by-same-head.cpp` (gcc-host): error: parameter pack ‘T’ must be at the end of the template parameter list
 - `templates/declarations/pack-typed-by-same-head.cpp` (edg-7.0): error: template parameter pack not at end of parameter list
@@ -25886,6 +27557,14 @@ check that the rejection has the intended cause.
 - `templates/dependent-names/template-keyword-destructor.cpp` (gcc-16-o2): error: 'template' keyword not permitted in destructor name [-Wtemplate-body]
 - `templates/dependent-names/template-keyword-destructor.cpp` (clang-22): error: 'template' keyword not permitted in destructor name
 - `templates/dependent-names/template-keyword-destructor.cpp` (clang-22-o2): error: 'template' keyword not permitted in destructor name
+- `templates/dependent-names/template-keyword-in-declarator-class.cpp` (clang-host): error: expected identifier / error: declaration of anonymous struct must be a definition / error: declaration does not declare anything / error: implicit instantiation of undefined template 'Box<int>::Inner<int>'
+- `templates/dependent-names/template-keyword-in-declarator-class.cpp` (gcc-host): error: keyword ‘template’ not allowed in class-head-name [-Wpedantic]
+- `templates/dependent-names/template-keyword-in-declarator-class.cpp` (gcc-14): error: keyword 'template' not allowed in class-head-name [-Wpedantic]
+- `templates/dependent-names/template-keyword-in-declarator-class.cpp` (clang-18): error: expected identifier / error: declaration of anonymous struct must be a definition / error: declaration does not declare anything / error: implicit instantiation of undefined template 'Box<int>::Inner<int>'
+- `templates/dependent-names/template-keyword-in-declarator-class.cpp` (gcc-16): error: keyword 'template' not allowed in class-head-name [-Wpedantic]
+- `templates/dependent-names/template-keyword-in-declarator-class.cpp` (gcc-16-o2): error: keyword 'template' not allowed in class-head-name [-Wpedantic]
+- `templates/dependent-names/template-keyword-in-declarator-class.cpp` (clang-22): error: expected identifier / error: declaration of anonymous struct must be a definition / error: declaration does not declare anything / error: implicit instantiation of undefined template 'Box<int>::Inner<int>'
+- `templates/dependent-names/template-keyword-in-declarator-class.cpp` (clang-22-o2): error: expected identifier / error: declaration of anonymous struct must be a definition / error: declaration does not declare anything / error: implicit instantiation of undefined template 'Box<int>::Inner<int>'
 - `templates/dependent-names/template-keyword-in-declarator-static.cpp` (clang-host): error: expected unqualified-id
 - `templates/dependent-names/template-keyword-in-declarator-static.cpp` (clang-18): error: expected unqualified-id
 - `templates/dependent-names/template-keyword-in-declarator-static.cpp` (clang-22): error: expected unqualified-id
@@ -25944,6 +27623,15 @@ check that the rejection has the intended cause.
 - `templates/dependent-names/template-keyword-no-list-class.cpp` (clang-18): error: expected an identifier or template-id after '::' / error: unknown type name 'box' / error: variable cannot be defined in an explicit instantiation; if this declaration is meant to be a variable definition, remove the 'template' keyword
 - `templates/dependent-names/template-keyword-no-list-class.cpp` (clang-22): error: a template argument list is expected after a name prefixed by the template keyword [-Wmissing-template-arg-list-after-template-kw] / error: unknown type name 'box'
 - `templates/dependent-names/template-keyword-no-list-class.cpp` (clang-22-o2): error: a template argument list is expected after a name prefixed by the template keyword [-Wmissing-template-arg-list-after-template-kw] / error: unknown type name 'box'
+- `templates/dependent-names/template-keyword-no-list-static.cpp` (clang-host): error: a template argument list is expected after a name prefixed by the template keyword [-Wmissing-template-arg-list-after-template-kw] / error: 'field' following the 'template' keyword does not refer to a template / note: in instantiation of function template specialization 'run<Has>' requested here / note: declared as a non-template here
+- `templates/dependent-names/template-keyword-no-list-static.cpp` (gcc-host): error: ‘Has::field’ is not a template [-fpermissive]
+- `templates/dependent-names/template-keyword-no-list-static.cpp` (edg-7.0): error: argument list for template "T::field" is missing / error: name following "template" must be a template
+- `templates/dependent-names/template-keyword-no-list-static.cpp` (gcc-14): error: 'Has::field' is not a template [-fpermissive]
+- `templates/dependent-names/template-keyword-no-list-static.cpp` (clang-18): error: 'field' following the 'template' keyword does not refer to a template / note: in instantiation of function template specialization 'run<Has>' requested here / note: declared as a non-template here
+- `templates/dependent-names/template-keyword-no-list-static.cpp` (gcc-16): error: 'Has::field' is not a template [-fpermissive]
+- `templates/dependent-names/template-keyword-no-list-static.cpp` (gcc-16-o2): error: 'Has::field' is not a template [-fpermissive]
+- `templates/dependent-names/template-keyword-no-list-static.cpp` (clang-22): error: a template argument list is expected after a name prefixed by the template keyword [-Wmissing-template-arg-list-after-template-kw] / error: 'field' following the 'template' keyword does not refer to a template / note: in instantiation of function template specialization 'run<Has>' requested here / note: declared as a non-template here
+- `templates/dependent-names/template-keyword-no-list-static.cpp` (clang-22-o2): error: a template argument list is expected after a name prefixed by the template keyword [-Wmissing-template-arg-list-after-template-kw] / error: 'field' following the 'template' keyword does not refer to a template / note: in instantiation of function template specialization 'run<Has>' requested here / note: declared as a non-template here
 - `templates/dependent-names/template-keyword-no-list.cpp` (clang-host): error: a template argument list is expected after a name prefixed by the template keyword [-Wmissing-template-arg-list-after-template-kw] / error: 'field' following the 'template' keyword does not refer to a template / note: in instantiation of function template specialization 'run<Has>' requested here / note: declared as a non-template here
 - `templates/dependent-names/template-keyword-no-list.cpp` (edg-7.0): error: argument list for template "T::field" is missing / error: name following "template" must be a template
 - `templates/dependent-names/template-keyword-no-list.cpp` (clang-18): error: 'field' following the 'template' keyword does not refer to a template / note: in instantiation of function template specialization 'run<Has>' requested here / note: declared as a non-template here
@@ -26035,12 +27723,12 @@ check that the rejection has the intended cause.
 - `templates/dependent-names/typename-needed-expression.cpp` (clang-22): error: missing 'typename' prior to dependent type name 'Has::type' (aka 'int') / note: in instantiation of function template specialization 'size<Has>' requested here
 - `templates/dependent-names/typename-needed-expression.cpp` (clang-22-o2): error: missing 'typename' prior to dependent type name 'Has::type' (aka 'int') / note: in instantiation of function template specialization 'size<Has>' requested here
 - `templates/dependent-names/typename-needed-parameter.cpp` (clang-host): error: missing 'typename' prior to dependent type name 'T::type'
-- `templates/dependent-names/typename-needed-parameter.cpp` (gcc-host): error: expected ‘;’ before ‘{’ token / error: dependent-name ‘T::type’ is parsed as a non-type, but instantiation yields a type / note: say ‘typename T::type’ if a type is meant / error: ‘take<Has>’ cannot be used as a function
+- `templates/dependent-names/typename-needed-parameter.cpp` (gcc-host): error: expected ‘;’ before ‘{’ token
 - `templates/dependent-names/typename-needed-parameter.cpp` (edg-7.0): error: nontype "T::type" is not a type name
-- `templates/dependent-names/typename-needed-parameter.cpp` (gcc-14): error: expected ';' before '{' token / error: dependent-name 'T::type' is parsed as a non-type, but instantiation yields a type / note: say 'typename T::type' if a type is meant / error: 'take<Has>' cannot be used as a function
+- `templates/dependent-names/typename-needed-parameter.cpp` (gcc-14): error: expected ';' before '{' token
 - `templates/dependent-names/typename-needed-parameter.cpp` (clang-18): error: missing 'typename' prior to dependent type name 'T::type'
-- `templates/dependent-names/typename-needed-parameter.cpp` (gcc-16): error: expected ';' before '{' token / error: dependent-name 'T::type' is parsed as a non-type, but instantiation yields a type / note: say 'typename T::type' if a type is meant / error: 'take<Has>' cannot be used as a function
-- `templates/dependent-names/typename-needed-parameter.cpp` (gcc-16-o2): error: expected ';' before '{' token / error: dependent-name 'T::type' is parsed as a non-type, but instantiation yields a type / note: say 'typename T::type' if a type is meant / error: 'take<Has>' cannot be used as a function
+- `templates/dependent-names/typename-needed-parameter.cpp` (gcc-16): error: expected ';' before '{' token
+- `templates/dependent-names/typename-needed-parameter.cpp` (gcc-16-o2): error: expected ';' before '{' token
 - `templates/dependent-names/typename-needed-parameter.cpp` (clang-22): error: missing 'typename' prior to dependent type name 'T::type'
 - `templates/dependent-names/typename-needed-parameter.cpp` (clang-22-o2): error: missing 'typename' prior to dependent type name 'T::type'
 - `templates/dependent-names/typename-needed-template-argument.cpp` (clang-host): error: template argument for template type parameter must be a type; did you forget 'typename'?
@@ -26273,6 +27961,10 @@ check that the rejection has the intended cause.
 - `templates/instantiation/default-member-initializer-used.cpp` (gcc-16-o2): error: 'nothing' is not a member of 'int'
 - `templates/instantiation/default-member-initializer-used.cpp` (clang-22): error: type 'int' cannot be used prior to '::' because it has no members / note: in instantiation of default member initializer 'Box<int>::width' requested here / note: in instantiation of member function 'Box<int>::Box' requested here
 - `templates/instantiation/default-member-initializer-used.cpp` (clang-22-o2): error: type 'int' cannot be used prior to '::' because it has no members / note: in instantiation of default member initializer 'Box<int>::width' requested here / note: in instantiation of member function 'Box<int>::Box' requested here
+- `templates/instantiation/explicit-array-bound-differs.cpp` (clang-host): error: type 'int[4]' of explicit instantiation of 'table' does not match expected type 'int[3]'
+- `templates/instantiation/explicit-array-bound-differs.cpp` (clang-18): error: type 'int[4]' of explicit instantiation of 'table' does not match expected type 'int[3]'
+- `templates/instantiation/explicit-array-bound-differs.cpp` (clang-22): error: type 'int[4]' of explicit instantiation of 'table' does not match expected type 'int[3]'
+- `templates/instantiation/explicit-array-bound-differs.cpp` (clang-22-o2): error: type 'int[4]' of explicit instantiation of 'table' does not match expected type 'int[3]'
 - `templates/instantiation/explicit-array-bound-left-out.cpp` (clang-host): error: type 'int[]' of explicit instantiation of 'table' does not match expected type 'int[3]'
 - `templates/instantiation/explicit-array-bound-left-out.cpp` (clang-18): error: type 'int[]' of explicit instantiation of 'table' does not match expected type 'int[3]'
 - `templates/instantiation/explicit-array-bound-left-out.cpp` (clang-22): error: type 'int[]' of explicit instantiation of 'table' does not match expected type 'int[3]'
@@ -26363,6 +28055,14 @@ check that the rejection has the intended cause.
 - `templates/instantiation/explicit-declaration-inline-still-made.cpp` (gcc-16-o2): error: 'nothing' is not a member of 'int'
 - `templates/instantiation/explicit-declaration-inline-still-made.cpp` (clang-22): error: type 'int' cannot be used prior to '::' because it has no members / note: in instantiation of member function 'Box<int>::get' requested here
 - `templates/instantiation/explicit-declaration-inline-still-made.cpp` (clang-22-o2): error: type 'int' cannot be used prior to '::' because it has no members / note: in instantiation of member function 'Box<int>::get' requested here
+- `templates/instantiation/explicit-declaration-internal-class.cpp` (clang-host): error: explicit instantiation declaration of 'Box' with internal linkage
+- `templates/instantiation/explicit-declaration-internal-class.cpp` (clang-18): error: explicit instantiation declaration of 'Box' with internal linkage
+- `templates/instantiation/explicit-declaration-internal-class.cpp` (clang-22): error: explicit instantiation declaration of 'Box' with internal linkage
+- `templates/instantiation/explicit-declaration-internal-class.cpp` (clang-22-o2): error: explicit instantiation declaration of 'Box' with internal linkage
+- `templates/instantiation/explicit-declaration-internal-variable.cpp` (clang-host): error: explicit instantiation declaration of 'value<int>' with internal linkage
+- `templates/instantiation/explicit-declaration-internal-variable.cpp` (clang-18): error: explicit instantiation declaration of 'value<int>' with internal linkage
+- `templates/instantiation/explicit-declaration-internal-variable.cpp` (clang-22): error: explicit instantiation declaration of 'value<int>' with internal linkage
+- `templates/instantiation/explicit-declaration-internal-variable.cpp` (clang-22-o2): error: explicit instantiation declaration of 'value<int>' with internal linkage
 - `templates/instantiation/explicit-declaration-internal.cpp` (clang-host): error: explicit instantiation declaration of 'get' with internal linkage
 - `templates/instantiation/explicit-declaration-internal.cpp` (edg-7.0): error: "extern template" cannot refer to a specialization of static function template "get" (declared at line 7)
 - `templates/instantiation/explicit-declaration-internal.cpp` (clang-18): error: explicit instantiation declaration of 'get' with internal linkage
@@ -26536,6 +28236,19 @@ check that the rejection has the intended cause.
 - `templates/instantiation/explicit-two-declarators.cpp` (gcc-16-o2): error: expected ';' before ',' token
 - `templates/instantiation/explicit-two-declarators.cpp` (clang-22): error: variable cannot be defined in an explicit instantiation; if this declaration is meant to be a variable definition, remove the 'template' keyword / error: an explicit template instantiation can only instantiate a single entity
 - `templates/instantiation/explicit-two-declarators.cpp` (clang-22-o2): error: variable cannot be defined in an explicit instantiation; if this declaration is meant to be a variable definition, remove the 'template' keyword / error: an explicit template instantiation can only instantiate a single entity
+- `templates/instantiation/explicit-unqualified-outside-namespace-function.cpp` (clang-host): error: explicit instantiation of 'lib::get' must occur in namespace 'lib' / note: explicit instantiation refers here
+- `templates/instantiation/explicit-unqualified-outside-namespace-function.cpp` (gcc-host): error: explicit instantiation of ‘template<class T> int lib::get(T)’ outside its namespace must use a nested-name-specifier [-Wpedantic]
+- `templates/instantiation/explicit-unqualified-outside-namespace-function.cpp` (edg-7.0): error: "get" is not a class or function template name in the current scope
+- `templates/instantiation/explicit-unqualified-outside-namespace-function.cpp` (gcc-14): error: explicit instantiation of 'template<class T> int lib::get(T)' outside its namespace must use a nested-name-specifier [-Wpedantic]
+- `templates/instantiation/explicit-unqualified-outside-namespace-function.cpp` (clang-18): error: explicit instantiation of 'lib::get' must occur in namespace 'lib' / note: explicit instantiation refers here
+- `templates/instantiation/explicit-unqualified-outside-namespace-function.cpp` (gcc-16): error: explicit instantiation of 'template<class T> int lib::get(T)' outside its namespace must use a nested-name-specifier [-Wpedantic]
+- `templates/instantiation/explicit-unqualified-outside-namespace-function.cpp` (gcc-16-o2): error: explicit instantiation of 'template<class T> int lib::get(T)' outside its namespace must use a nested-name-specifier [-Wpedantic]
+- `templates/instantiation/explicit-unqualified-outside-namespace-function.cpp` (clang-22): error: explicit instantiation of 'lib::get' must occur in namespace 'lib' / note: explicit instantiation refers here
+- `templates/instantiation/explicit-unqualified-outside-namespace-function.cpp` (clang-22-o2): error: explicit instantiation of 'lib::get' must occur in namespace 'lib' / note: explicit instantiation refers here
+- `templates/instantiation/explicit-unqualified-outside-namespace-variable.cpp` (gcc-host): error: explicit instantiation of ‘template<class T> int lib::value<T>’ outside its namespace must use a nested-name-specifier [-Wpedantic]
+- `templates/instantiation/explicit-unqualified-outside-namespace-variable.cpp` (gcc-14): error: explicit instantiation of 'template<class T> int lib::value<T>' outside its namespace must use a nested-name-specifier [-Wpedantic]
+- `templates/instantiation/explicit-unqualified-outside-namespace-variable.cpp` (gcc-16): error: explicit instantiation of 'template<class T> int lib::value<T>' outside its namespace must use a nested-name-specifier [-Wpedantic]
+- `templates/instantiation/explicit-unqualified-outside-namespace-variable.cpp` (gcc-16-o2): error: explicit instantiation of 'template<class T> int lib::value<T>' outside its namespace must use a nested-name-specifier [-Wpedantic]
 - `templates/instantiation/explicit-unqualified-outside-namespace.cpp` (clang-host): error: explicit instantiation of 'lib::Box' must occur in namespace 'lib' / note: explicit instantiation refers here
 - `templates/instantiation/explicit-unqualified-outside-namespace.cpp` (gcc-host): error: explicit instantiation of ‘template<class T> struct lib::Box’ outside its namespace must use a nested-name-specifier [-Wpedantic]
 - `templates/instantiation/explicit-unqualified-outside-namespace.cpp` (gcc-14): error: explicit instantiation of 'template<class T> struct lib::Box' outside its namespace must use a nested-name-specifier [-Wpedantic]
@@ -26557,6 +28270,11 @@ check that the rejection has the intended cause.
 - `templates/instantiation/explicit-variable-not-defined.cpp` (gcc-16-o2): error: explicit instantiation of 'zero<int>' but no definition available [-fpermissive]
 - `templates/instantiation/explicit-variable-not-defined.cpp` (clang-22): error: explicit instantiation of undefined variable template 'zero<int>' / note: explicit instantiation refers here
 - `templates/instantiation/explicit-variable-not-defined.cpp` (clang-22-o2): error: explicit instantiation of undefined variable template 'zero<int>' / note: explicit instantiation refers here
+- `templates/instantiation/explicit-variable-wrong-type.cpp` (clang-host): error: type 'long' of explicit instantiation of 'value' does not match expected type 'int'
+- `templates/instantiation/explicit-variable-wrong-type.cpp` (edg-7.0): error: declaration is incompatible with "int value<int>" (declared at line 7)
+- `templates/instantiation/explicit-variable-wrong-type.cpp` (clang-18): error: type 'long' of explicit instantiation of 'value' does not match expected type 'int'
+- `templates/instantiation/explicit-variable-wrong-type.cpp` (clang-22): error: type 'long' of explicit instantiation of 'value' does not match expected type 'int'
+- `templates/instantiation/explicit-variable-wrong-type.cpp` (clang-22-o2): error: type 'long' of explicit instantiation of 'value' does not match expected type 'int'
 - `templates/instantiation/explicit-wrong-type.cpp` (clang-host): error: explicit instantiation of 'get' does not refer to a function template, variable template, member function, member class, or static data member / note: candidate template ignored: could not match 'int' against 'long'
 - `templates/instantiation/explicit-wrong-type.cpp` (gcc-host): error: template-id ‘get<>’ for ‘long int get(int)’ does not match any template declaration
 - `templates/instantiation/explicit-wrong-type.cpp` (edg-7.0): error: no instance of function template "get" matches the specified type

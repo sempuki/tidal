@@ -1,6 +1,6 @@
 # Q-0312: Should the specification list token sequences that no production accepts, such as `for constexpr`?
 
-**Status:** open
+**Status:** provisional
 **Affects:** `foundations/translation.md`, `statements/index.md`, `statements/range-for.md`, the grammar of each statements page
 
 ## Context
