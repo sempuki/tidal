@@ -84,7 +84,7 @@ current state only. The history of how the project got here is in
 | [Explicit and partial specialization](../specification/templates/specialization.md) | 32 | 16 required, 15 reject, 1 no-diagnostic | 93 | 0 | 13 | 18 | Q-0171, Q-0172, Q-0173, Q-0174, Q-0203, Q-0204, Q-0205, Q-0206, Q-0207, Q-0295 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Template argument deduction](../specification/templates/deduction.md) | 39 | 36 required, 3 reject | 121 | 0 | 9 | 84 | Q-0208, Q-0209, Q-0215, Q-0219, Q-0220, Q-0295 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Partial ordering of templates](../specification/templates/ordering.md) | 16 | 15 required, 1 reject | 42 | 0 | 11 | 26 | Q-0146, Q-0211, Q-0214, Q-0216, Q-0217, Q-0218, Q-0293 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
-| [Dependent names](../specification/templates/dependent-names.md) | 39 | 20 required, 13 reject, 6 no-diagnostic | 119 | 0 | 21 | 82 | Q-0223, Q-0224, Q-0225, Q-0226, Q-0227, Q-0228, Q-0229, Q-0230, Q-0245, Q-0246, Q-0247, Q-0248, Q-0249, Q-0250 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
+| [Dependent names](../specification/templates/dependent-names.md) | 39 | 20 required, 13 reject, 6 no-diagnostic | 119 | 0 | 21 | 82 | Q-0223, Q-0224, Q-0225, Q-0226, Q-0227, Q-0228, Q-0229, Q-0230, Q-0243, Q-0245, Q-0246, Q-0247, Q-0248, Q-0249, Q-0250 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Instantiation](../specification/templates/instantiation.md) | 36 | 16 required, 13 reject, 1 undefined, 2 unspecified, 1 impl-defined, 3 no-diagnostic | 136 | 2 | 23 | 55 | Q-0231, Q-0232, Q-0233, Q-0234, Q-0235, Q-0236, Q-0237, Q-0251, Q-0252, Q-0253, Q-0254, Q-0255, Q-0256, Q-0257, Q-0310, Q-0346 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Concepts and requires expressions](../specification/templates/concepts.md) | 37 | 21 required, 16 reject | 120 | 0 | 17 | 66 | Q-0258, Q-0259, Q-0260, Q-0270, Q-0285, Q-0286, Q-0287, Q-0288, Q-0289, Q-0290 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
 | [Constraints](../specification/templates/constraints.md) | 39 | 24 required, 13 reject, 2 no-diagnostic | 123 | 0 | 26 | 43 | Q-0260, Q-0261, Q-0262, Q-0263, Q-0264, Q-0265, Q-0266, Q-0267, Q-0268, Q-0269, Q-0281, Q-0282, Q-0283, Q-0284, Q-0291, Q-0292 | none flagged ([2026-11-03-repairs-write-w2-w12](../reports/similarity/2026-11-03-repairs-write-w2-w12.txt)) |
@@ -183,9 +183,14 @@ forward-progress rule belongs with threads, which are out of scope.
 `documentation/roadmap.md` orders the work (decisions 0033, 0039, 0050,
 and 0051). Phases 1 to 5 are done, and phase 6 is provisional. Next:
 
-1. Phase 6, items R0, G, W (first wave), and D, which need nothing
-   before them. Then Q, P, C, O, and FE (decision 0051).
-2. A Clang `-fsanitize=type` configuration for STG-18 and STG-23
+1. Phase 6, item C (decision 0051). Item C covers the overloading
+   chapter, the hotspot pages, a consistency pass, second tests,
+   character values, and implementation limits. Item Q is done. Each
+   question cluster, 1 to 6, has a gap review, and its questions record
+   the review's reading and the decision on it.
+2. The next front-end round (item FE). Item C and this round are the
+   work of phase 6 that remains.
+3. A Clang `-fsanitize=type` configuration for STG-18 and STG-23
    (Clang 22 reports these accesses but does not stop the run). The
    rule that a class and a variable can share a name goes with item C.
 
@@ -209,8 +214,8 @@ Waiting on the maintainer:
   - Q-0195 and Q-0197: TPL-35 and TPL-38 now require a diagnostic, as
     EDG gives one. Clang 22 and GCC 16 accept the programs.
   - Q-0235 and Q-0282, with doubt: Tidal keeps the answer of Clang 22
-    and GCC 16 (and of Clang 22 and EDG for the variable form of
-    Q-0235). The maintainer can decide either question.
+    and GCC 16. The maintainer can decide either question. The variable
+    form of Q-0235 is in the "Decide" item.
 
   In Q-0277 and Q-0280 the review agrees with Clang and GCC on the
   part where EDG differs. In Q-0266 the review finds the
@@ -221,12 +226,18 @@ Waiting on the maintainer:
 - Confirm or change the provisional choices of decision 0051: settling
   a question when the newest version of each family agrees, and
   keeping the implementation-only operations referenced (Q-0322).
-- Decide Q-0300, Q-0181, Q-0243, Q-0275, Q-0277, and Q-0280. In each,
-  the compilers of the matrix agree with each other, and a gap review
-  reads the C++23 text the other way. In Q-0277 this holds for the
-  first form, and in Q-0280 for the two guide templates. Q-0181 and
-  Q-0188 also ask whether Tidal follows a later change that the newest
+- Decide Q-0300, Q-0181, Q-0243, Q-0275, Q-0277, Q-0280, and Q-0225.
+  In each, the compilers of the matrix agree with each other, and a gap
+  review reads the C++23 text the other way. In Q-0277 this holds for
+  the first form, in Q-0280 for the two guide templates, and in Q-0225
+  for `T::box<int>` as an alias target without `typename`. A decision
+  on Q-0243 settles the deduced form of Q-0226 too. Q-0181 and Q-0188
+  also ask whether Tidal follows a later change that the newest
   compilers apply (Q-0007).
+- Decide the variable form of Q-0235. Tidal rejects the unqualified
+  name, as GCC 16 does. Clang 22 and EDG 7.0 accept it, and the gap
+  review of cluster 6 reads it as valid, with doubt. Tidal keeps one
+  answer for the class, function, and variable forms (INST-21).
 - Confirm or change Q-0343 and Q-0041. Item O follows the source
   reader's inventory against the compilers. In Q-0343 every family's
   builtin query calls a class with a deleted destructor, or with all

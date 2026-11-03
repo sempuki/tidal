@@ -34,6 +34,12 @@ Yes; Clang and EDG agree, GCC differs (option 1). Two of three implementations a
 
 The question stays open under decision 0051 (2026-11-03). GCC 16 accepts the `noexcept` that differs, and Clang 22 and EDG 7.0 reject it, so two families disagree. Probes of 2026-11-03 give the same split for `noexcept(false)` on a template declared `noexcept`, for a class template's member function, and for an explicit instantiation declaration. INST-P3 supports the provisional answer through INST-22. An explicit instantiation names a specialization whose type the template already gives, and the exception specification is part of that type.
 
+Kept on 2026-11-03. The source-reader gap review of question cluster 6 (`reports/review/2026-11-03-gap-review-question-cluster-6.md`) agrees with option 1. INST-22 keeps the check of a stated exception specification.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of question cluster 6 (`reports/review/2026-11-03-gap-review-question-cluster-6.md`) reads the reference as supporting option 1. An explicit instantiation can leave out the exception specification. A stated one must be the same as on every other declaration of the function. A diagnostic is required when the mismatch is in one translation unit, so GCC's acceptance is a defect. The rule covers both kinds of explicit instantiation and members of class templates.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

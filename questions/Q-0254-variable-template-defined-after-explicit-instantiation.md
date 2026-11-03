@@ -35,6 +35,12 @@ Yes; Clang and EDG agree, GCC differs (option 1). Two of three implementations a
 
 The question stays open under decision 0051 (2026-11-03). GCC 16 rejects the order for a variable template, and Clang 22 and EDG 7.0 accept it, so two families disagree. Probes of 2026-11-03 found that every compiler accepts the same order for a class template's static data member, and every compiler rejects the explicit instantiation when the unit never defines the variable template. INST-P3 supports the provisional answer through INST-20. The definition must be in the translation unit, and the order does not matter for a function or a static data member on any compiler.
 
+Kept on 2026-11-03. The source-reader gap review of question cluster 6 (`reports/review/2026-11-03-gap-review-question-cluster-6.md`) agrees with option 1. INST-20 keeps the order free for a variable template.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of question cluster 6 (`reports/review/2026-11-03-gap-review-question-cluster-6.md`) reads the reference as supporting option 1. For a variable template, a declaration must be reachable from the explicit instantiation, and the definition must be somewhere in the unit. Only a class template and its member classes need a reachable definition. A unit that never defines the variable template is not valid, and a diagnostic is required.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

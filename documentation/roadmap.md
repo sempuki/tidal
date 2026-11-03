@@ -105,7 +105,7 @@ clean-room roadmaps (`reports/clean-room/roadmap-3/`).
 | Item | Work | Prerequisites |
 |---|---|---|
 | R0 | Records from tools: status counts, question numbering and index, similarity column, Predict format and scoring | none |
-| Q | Settle question clusters, each with a gap review | R0 (index) |
+| Q | Done: question clusters 1 to 6, each with a gap review whose reading its questions record and weigh | R0 (index) |
 | G | Grammar-validity rule; `undefined` overlap convention and an interpreter-only expectation | none |
 | W | Write suites W1 to W14, programs run in the interpreter and become run tests | none |
 | P | Predict batches for expressions, statements, declarations, classes | R0 (format) |

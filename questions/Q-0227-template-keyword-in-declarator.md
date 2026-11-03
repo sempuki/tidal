@@ -35,6 +35,12 @@ function, so a contributor can argue for option 2.
 
 The question stays open under decision 0051 (2026-11-03). Clang 22 rejects the keyword in each form. GCC 16 and EDG 7.0 accept it before a member function template. A probe of 2026-11-03 found that GCC 16 rejects it before a member class template, and EDG 7.0 accepts it (`template-keyword-in-declarator-class.cpp`). So two families disagree in each form. DEP-P5 lists DEP-27 as an exception. The keyword tells the parser that a template name follows a dependent qualifier, and the name that a declaration declares must already be a member template of the class.
 
+Kept on 2026-11-03. The source-reader gap review of question cluster 6 (`reports/review/2026-11-03-gap-review-question-cluster-6.md`) agrees with option 1 for each form. DEP-27 stays a `reject` rule.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of question cluster 6 (`reports/review/2026-11-03-gap-review-question-cluster-6.md`) reads the reference as supporting option 1. The keyword must not come right after a qualifier that names the scope of the declared entity. The rule covers a member function, a static member function, and a member class template alike, and a diagnostic is required.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

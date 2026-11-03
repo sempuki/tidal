@@ -43,6 +43,12 @@ that review.
 
 The question stays open under decision 0051 (2026-11-03). Clang 22 and EDG 7.0 ask for the keyword after `typename` and in a base list, and GCC 16 does not, so two families disagree. Probes of 2026-11-03 give the same split for an alias target `typename T::box<int>` and for a function parameter of that type. Every compiler rejects the friend declaration `friend int T::get<int>(int);`, where `get` is a static member function template. DEP-P5 supports the provisional answer. The program states that a dependent name is a template, and `typename` states only that the name is a type.
 
+Kept on 2026-11-03. The source-reader gap review of question cluster 6 (`reports/review/2026-11-03-gap-review-question-cluster-6.md`) reads the reference as supporting option 2. In that reading, a `<` after the last name in a type-only position starts an argument list without the keyword. These positions include the name after `typename`, a base list, and a parameter type. The same reading makes `T::box<int>` valid as an alias target without `typename`, and every compiler rejects that form. Clang 22 and EDG 7.0 follow option 1. GCC 16 follows option 2, except for the alias target without `typename`. DEP-P5 keeps option 1. The program states that a dependent name is a template, and `typename` or a type-only position states only that the whole name is a type. Option 2 would have to keep the alias target without `typename` not valid to match any compiler, and no principle of Tidal separates that position from the others. The alias target without `typename` is on the maintainer's list in `documentation/status.md`, because every compiler rejects it and the review reads it as valid.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of question cluster 6 (`reports/review/2026-11-03-gap-review-question-cluster-6.md`) reads the reference as supporting option 2, and as going further than GCC. A `<` after the last name in a position where only a type can appear starts an argument list without the keyword, unless the name is part of a qualifier. These positions include the name after `typename`, a base, the target of an alias declaration, and parameter types. So the alias target without `typename` is valid too, which every compiler rejects. The friend declarator falls under the case of a declared name, and the review finds the friend form unclear.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

@@ -785,7 +785,16 @@ this page stay open under decision 0051: {question}`Q-0225`,
 GCC 16, and EDG 7.0 still split on each of them, and the probes of that
 day added no case where the three agree with a provisional answer.
 {question}`Q-0224` and {question}`Q-0245` belong to the same cluster
-and keep their cluster 5 notes.
+and keep their cluster 5 notes. The source-reader gap review of the
+cluster (`reports/review/2026-11-03-gap-review-question-cluster-6.md`)
+agrees with Q-0227. It reads Q-0225 as GCC 16 does, and it also reads
+`T::box<int>` as valid in the target of an alias declaration, which
+every compiler rejects. DEP-24 keeps the keyword in each position, as
+Clang 22 and EDG 7.0 do. The review rejects every form of Q-0226, as
+Clang 22 does. For the deduced form, it relies in part on the reading
+of Q-0243 that Tidal does not follow. DEP-26 keeps the deduced form, as GCC 16 and EDG 7.0 do. The alias
+target of Q-0225 waits on the maintainer, and the deduced form of
+Q-0226 waits with Q-0243.
 
 The clean-room writer probed each rule with the eight baseline
 compilers and the two `-O2` report compilers, and wrote the grids

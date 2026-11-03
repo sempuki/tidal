@@ -650,7 +650,12 @@ this page stay open under decision 0051: {question}`Q-0233`,
 {question}`Q-0235`, {question}`Q-0237`, and {question}`Q-0256` belong
 to the same cluster and keep their cluster 5 notes. For
 {question}`Q-0235`, a probe of that day found that Clang 22 joins EDG
-7.0 for a variable template.
+7.0 for a variable template. The source-reader gap review of the
+cluster (`reports/review/2026-11-03-gap-review-question-cluster-6.md`)
+agrees with Q-0233, Q-0234, Q-0236, Q-0254, and Q-0255, and with
+Q-0346 with doubt. It reads the variable form of Q-0235 as Clang 22 and
+EDG 7.0 do, with doubt. INST-21 keeps one answer for every kind of
+template, and the variable form waits on the maintainer.
 
 The clean-room writer probed each rule with the eight baseline
 compilers and the two `-O2` report compilers, and wrote the grids

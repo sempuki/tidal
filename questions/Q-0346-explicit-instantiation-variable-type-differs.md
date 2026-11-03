@@ -46,6 +46,12 @@ No; Clang agrees, GCC and EDG each differ on some cases (option 1). Two of three
 
 The question stays open under decision 0051 (2026-11-03). GCC 16 accepts every case, and EDG 7.0 accepts the bound where the template has none, so two families disagree with Clang 22.
 
+Kept on 2026-11-03. The source-reader gap review of question cluster 6 (`reports/review/2026-11-03-gap-review-question-cluster-6.md`) agrees with option 1, with doubt for a bound where the template states none. The review's reading of how an initializer fixes the bound points to option 1, and Clang 22 follows it. INST-22 stays.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of question cluster 6 (`reports/review/2026-11-03-gap-review-question-cluster-6.md`) reads the reference as supporting option 1, with doubt. The explicit instantiation and the declaration made from the template declare one entity, and only the presence of the first bound may differ. A different element type, a different whole type, and a bound that differs from a stated bound are not valid, and a diagnostic is required, so GCC's acceptance is a defect. The doubt is the form where the template states no bound. The reference does not say clearly whether the declaration made from the template has its written type, with no bound, or the complete type that the initializer gives. The first reading makes the form valid, as EDG finds. The rule that an initializer defines the bound points to the second reading, which is option 1.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

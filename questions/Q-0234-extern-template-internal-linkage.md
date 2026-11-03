@@ -40,6 +40,12 @@ implementations, so a contributor can argue for option 2.
 
 The question stays open under decision 0051 (2026-11-03). Clang 22 rejects every case, GCC 16 accepts every case, and EDG 7.0 rejects only the function, so two families disagree in each case. The class and variable columns come from probes of 2026-11-03, and `explicit-declaration-internal-class.cpp` and `explicit-declaration-internal-variable.cpp` record them. INST-P3 supports the provisional answer through INST-29. An explicit instantiation declaration says that another translation unit has the definition, and no other unit can name a specialization with internal linkage.
 
+Kept on 2026-11-03. The source-reader gap review of question cluster 6 (`reports/review/2026-11-03-gap-review-question-cluster-6.md`) agrees with option 1 for each form. INST-29 stays a `reject` rule.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of question cluster 6 (`reports/review/2026-11-03-gap-review-question-cluster-6.md`) reads the reference as supporting option 1. When a template has internal linkage, no explicit instantiation declaration can name one of its specializations. A `static` template and a template in an unnamed namespace both have internal linkage, and the rule covers a function, a class, and a variable alike. A diagnostic is required. An explicit instantiation definition has no such limit.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
