@@ -48,7 +48,9 @@ When the type is known from the first declaration, the enumeration can
 be declared before its enumerators, and an integer in braces can
 initialize a variable of the enumeration type. A cast to such an
 enumeration converts the value to the underlying type, so every integer
-gives a value of the enumeration.
+gives a value of the enumeration. An enumeration that the program
+fills from integers by a cast therefore has a fixed type, and no such
+cast is undefined.
 :::
 
 ## Syntax
@@ -336,6 +338,17 @@ H h{5};                        // valid: fixed underlying type
 
 using enum Color;
 Color k = Red;                 // Red without Color::
+```
+
+A last enumerator can count the others, so a table of names can be
+checked against the enumeration. `Count` is a value of the type too, and
+a `switch` over the type has a case for it:
+
+```cpp
+enum class Level : unsigned char { Low, Mid, High, Count };
+constexpr const char* names[] = {"low", "mid", "high"};
+static_assert(sizeof names / sizeof names[0] ==
+              static_cast<int>(Level::Count));  // fails if a name is missing
 ```
 
 ## Evidence

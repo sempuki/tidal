@@ -63,15 +63,20 @@ enclosing lambda in turn. An implementation rejects the following:
 :::
 
 :::{principle} LAM-P4
-:rules: LAM-10 LAM-11 LAM-25 LAM-26
+:rules: LAM-10 LAM-11 LAM-25 LAM-26 LAM-29
 
 A closure with no captures carries no state, so the closure is as good
 as a function. A closure with captures is an object with state.
 
-| Closure | Converts to a pointer to function | Type can be default-constructed and assigned |
-|---|---|---|
-| No captures | Yes | Yes |
-| With captures | No | No. The closure must be made from the lambda expression. |
+| Closure | Converts to a pointer to function | Type can be default-constructed and assigned | Can be copied and moved |
+|---|---|---|---|
+| No captures | Yes | Yes | Yes |
+| With captures | No | No. The closure must be made from the lambda expression. | Yes, if each capture can |
+
+Each closure has its own type ({rule}`LAM-2`). A program without the
+library keeps closures of different types together through a common
+base with a virtual call operator, or through function pointers for
+closures without captures.
 :::
 
 :::{principle} LAM-P5
@@ -231,14 +236,15 @@ Static and global variables need no capture.
 
 :::{rule} LAM-10
 :kind: required
-:tests: expressions/lambdas/function-pointer.cpp expressions/lambdas/noexcept-function-pointer.cpp expressions/lambdas/generic-function-pointer.cpp
+:tests: expressions/lambdas/function-pointer.cpp expressions/lambdas/noexcept-function-pointer.cpp expressions/lambdas/generic-function-pointer.cpp expressions/lambdas/function-pointer-constant.cpp expressions/lambdas/unary-plus-function-pointer.cpp
 
 A lambda without captures converts to a pointer to a function with the
 same parameters and return type. For a `noexcept` lambda, the pointer is
 a pointer to a `noexcept` function. A generic lambda without captures
 converts to a pointer to function of any type that deduction from the
 call operator template can match, as for a target type
-({rule}`OVL-18`).
+({rule}`OVL-18`). Constant evaluation can use the conversion, and a call
+through the pointer if the call operator is `constexpr` ({rule}`LAM-12`).
 :::
 
 :::{rule} LAM-25
@@ -257,6 +263,14 @@ The closure type of a lambda without captures can be default-constructed
 and assigned.
 :::
 
+:::{rule} LAM-29
+:kind: required
+:tests: expressions/lambdas/closure-copy-keeps-state.cpp
+
+A closure type can be copied and moved if each of its captures can. The
+copy starts with the state of the original.
+:::
+
 :::{rule} LAM-26
 :kind: reject
 :tests: expressions/lambdas/capturing-not-default-constructible.cpp expressions/lambdas/closure-copy-assign-deleted.cpp
@@ -267,7 +281,7 @@ or assigned (LAM-11).
 
 :::{rule} LAM-12
 :kind: required
-:tests: expressions/lambdas/constexpr-implicit.cpp
+:tests: expressions/lambdas/constexpr-implicit.cpp expressions/lambdas/function-pointer-constant.cpp
 
 The call operator is `constexpr` when the body permits `constexpr`. A
 program can call such a lambda during {term}`constant evaluation`.
@@ -336,13 +350,14 @@ A lambda must not:
 
 :::{rule} LAM-18
 :kind: required
-:tests: expressions/lambdas/capture-visible-in-trailing-return.cpp expressions/decltype/captured-in-lambda.cpp
+:tests: expressions/lambdas/capture-visible-in-trailing-return.cpp expressions/decltype/captured-in-lambda.cpp expressions/lambdas/explicit-capture-unevaluated-member.cpp
 
 The captures of a lambda are visible in its parameter list and trailing
 return type. In a lambda that is not `mutable`, `decltype((x))` for a
 copy capture `x` is a reference to `const`. The same holds for a name
 that a copy default would capture. The rule applies also if the lambda
-names `x` only in unevaluated operands, which capture nothing.
+names `x` only in unevaluated operands. Such a use makes no implicit
+capture, and an explicit capture still makes a member.
 :::
 
 ## Runtime Behavior
@@ -423,12 +438,39 @@ int (*p)(int) = [](int x) { return x + 1; };
 auto fact = [](this auto self, int v) -> int {
   return v <= 1 ? 1 : v * self(v - 1);
 };
+auto q = +[](int x) { return x * 2; };   // int (*)(int): + applies to
+                                         // the converted pointer
+```
+
+Closures of different types in one table, without the library. A
+holder template derives from a base with a virtual call operator
+({rule}`VIRT-1`):
+
+```cpp
+struct Handler {
+  virtual int operator()(int) = 0;
+  virtual ~Handler() = default;
+};
+template <class F> struct Holder : Handler {
+  F f;
+  Holder(F g) : f(g) {}
+  int operator()(int v) override { return f(v); }
+};
+template <class F> Handler* hold(F f) { return new Holder<F>(f); }
+
+int dispatch(int base) {
+  Handler* table[2] = {hold([](int v) { return v + 1; }),
+                       hold([base](int v) { return v + base; })};
+  int r = (*table[1])(5);                // base + 5
+  for (Handler* h : table) delete h;
+  return r;
+}
 ```
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 61
-of 63 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 65
+of 67 tests.
 
 - LAM-6: EDG accepts a capture default on a lambda outside a function.
   Clang and GCC reject it ({question}`Q-0037`).
@@ -451,6 +493,10 @@ of 63 tests.
   and later, and `-pedantic-errors` does not make them errors. With
   `-Werror`, alone or with `-Wall -Wextra`, both compilers reject the
   program. EDG does not accept these flags and skips the test.
+- LAM-18: Clang warns under `-Wall` (`-Wunused-lambda-capture`) about an
+  explicit capture that the body names only in unevaluated operands.
+  GCC does not warn. On every compiler, the closure is at least as
+  large as the captured object.
 - LAM-18: GCC 16 and EDG find the capture in the trailing return type.
   Clang and GCC 14 find the outer variable ({question}`Q-0092`).
 

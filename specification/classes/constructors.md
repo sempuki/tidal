@@ -125,7 +125,10 @@ the program names the type.
 A `mem_init` with `...` expands a pack of bases ({rule}`PACK-14`).
 
 A *member initializer list* is the list of `mem_init` after the colon. A
-*delegating constructor* has a `mem_init` that names its own class.
+*delegating constructor* has a `mem_init` that names its own class. A
+{term}`default constructor` is a constructor that a call with no
+arguments can call. Its parameters all have default arguments, or it
+has none.
 
 ## Constraints
 
@@ -146,7 +149,7 @@ A program cannot take the address of a constructor.
 
 :::{rule} CTOR-2
 :kind: required
-:tests: classes/constructors/defaulted-default-restores.cpp classes/constructors/implicit-default.cpp classes/constructors/inherited-ctors-keep-default.cpp
+:tests: classes/constructors/defaulted-default-restores.cpp classes/constructors/implicit-default.cpp classes/constructors/inherited-ctors-keep-default.cpp classes/constructors/default-constructor-default-arguments.cpp
 
 If a class declares no constructor, it has an implicit public default
 constructor. A declaration of any other constructor, including a copy
@@ -402,7 +405,7 @@ constructor that `new S` needs.
 
 :::{rule} DTOR-4
 :kind: required
-:tests: classes/constructors/dtor-member-noexcept-false.cpp classes/constructors/dtor-noexcept-false.cpp classes/constructors/implicit-dtor-noexcept.cpp classes/constructors/user-dtor-noexcept.cpp
+:tests: classes/constructors/dtor-member-noexcept-false.cpp classes/constructors/dtor-noexcept-false.cpp classes/constructors/implicit-dtor-noexcept.cpp classes/constructors/user-dtor-noexcept.cpp exceptions/unwinding/leaves-destructor-member-throwing-caught.cpp
 
 A destructor without a `noexcept` specifier is `noexcept` if the
 destructors of all bases and members are `noexcept`. The rule applies to
@@ -626,8 +629,8 @@ Span g{{1}};   // Span(int): {1} gives an int directly (ICS-15). The
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 158
-of 168 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 160
+of 170 tests.
 
 - CTOR-23 and DTOR-9: the tests observe triviality through JMP-6 and
   UNI-3. A jump past a declaration is valid only for a trivial default

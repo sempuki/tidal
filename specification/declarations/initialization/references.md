@@ -351,7 +351,15 @@ All eight compilers agree on 49 of 64 tests. The results are in
   `-Wdangling-field`, which is on by default, so `-Werror` alone makes
   it an error. GCC 14 and 16 do not warn, also under `-Wall`. Each
   compiler warns about some other dangling cases, and the cases differ
-  by version ({question}`Q-0180`).
+  by version ({question}`Q-0180`). Clang 22 and GCC 16 under `-Wall
+  -Wextra` give these results:
+
+  | Case | Clang 22 | GCC 16 |
+  |---|---|---|
+  | an aggregate initialized with parentheses, whose reference member binds a temporary (REF-5) | warns (`-Wdangling`) | no warning |
+  | a reference bound to the returned reference of a call whose argument is a temporary (REF-5) | no warning | warns (`-Wdangling-reference`) |
+  | a reference member of an object from `new`, bound to a temporary (REF-5) | warns (`-Wdangling-field`) | no warning |
+  | a constructor that binds a reference member to a temporary ({rule}`CTOR-17`) | rejects | warns (`-Wextra`) |
 - **REF-4.** EDG 7.0 rejects binding an rvalue reference to an element
   of an array member of a temporary. Clang and GCC accept the binding
   and extend the temporary ({question}`Q-0109`).

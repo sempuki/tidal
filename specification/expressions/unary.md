@@ -116,7 +116,7 @@ implicit calls that `e` makes, and answers with a `bool` constant. Like
 
 :::{rule} UN-1
 :kind: required
-:tests: expressions/unary/plus-minus-types.cpp expressions/unary/plus-pointer.cpp expressions/unary/minus-bool.cpp expressions/unary/plus-function-operand.cpp
+:tests: expressions/unary/plus-minus-types.cpp expressions/unary/plus-pointer.cpp expressions/unary/minus-bool.cpp expressions/unary/plus-function-operand.cpp expressions/lambdas/unary-plus-function-pointer.cpp
 
 The operand of unary `+` or `-` can have an arithmetic or unscoped
 enumeration type. The operand goes through {term}`integer promotion`,
@@ -248,7 +248,7 @@ operand must not be one of these:
 
 :::{rule} UN-18
 :kind: required
-:tests: expressions/unary/noexcept-operator.cpp expressions/unary/noexcept-new-false.cpp expressions/unary/noexcept-temporary-ctor-false.cpp expressions/unary/noexcept-conversion-false.cpp expressions/unary/noexcept-dynamic-cast-reference.cpp expressions/unary/noexcept-dynamic-cast-to-base.cpp expressions/unary/noexcept-temporary-destructor-false.cpp expressions/unary/noexcept-rewritten-comparison-false.cpp expressions/new-delete/global-functions-specifiers.cpp
+:tests: expressions/unary/noexcept-operator.cpp expressions/unary/noexcept-new-false.cpp expressions/unary/noexcept-temporary-ctor-false.cpp expressions/unary/noexcept-conversion-false.cpp expressions/unary/noexcept-dynamic-cast-reference.cpp expressions/unary/noexcept-dynamic-cast-to-base.cpp expressions/unary/noexcept-temporary-destructor-false.cpp expressions/unary/noexcept-rewritten-comparison-false.cpp expressions/new-delete/global-functions-specifiers.cpp expressions/unary/noexcept-destructor-alone.cpp
 
 `noexcept(e)` is a constant of type `bool`. The constant is `false` if
 `e` contains:
@@ -282,7 +282,7 @@ result is 2{sup}`N` minus the value, where N is the width of the type.
 
 :::{rule} UN-13
 :kind: required
-:tests: expressions/unary/sizeof-not-evaluated.cpp expressions/unary/noexcept-not-evaluated.cpp
+:tests: expressions/unary/sizeof-not-evaluated.cpp expressions/unary/noexcept-not-evaluated.cpp expressions/unary/noexcept-destructor-alone.cpp
 
 The operands of `sizeof` and `noexcept` are not evaluated. Their side
 effects do not occur.
@@ -385,6 +385,12 @@ void may_throw();
 noexcept(may_throw());  // false
 struct Calm { ~Calm() {} };
 noexcept(Calm());       // true: ~Calm is noexcept (DTOR-4)
+struct Loud { ~Loud() noexcept(false); };
+noexcept(static_cast<Loud*>(nullptr)->~Loud());  // false: asks about
+                                                 // ~Loud alone
+void take(Loud&) noexcept;
+noexcept(take(*static_cast<Loud*>(nullptr)));    // true: the operand is
+                                                 // not evaluated (UN-13)
 alignof(char);          // 1
 alignof(double[]);      // alignof(double)
 alignof(i);             // rejected: the operand is an expression
@@ -405,7 +411,7 @@ count(data);                     // 6: a reference keeps the length
 
 ## Evidence
 
-All eight compilers agree on 65 of 69 tests. The results are in
+All eight compilers agree on 67 of 71 tests. The results are in
 `tests/RESULTS.md`. EDG skips the tests that use `-m32` or `-Werror`.
 
 - UN-20: Clang and GCC accept `++` and `--` on a `short` or

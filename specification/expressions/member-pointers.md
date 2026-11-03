@@ -212,10 +212,10 @@ These conversions are not valid:
 
 :::{rule} MPTR-5
 :kind: required
-:tests: expressions/member-pointers/compare-equal.cpp expressions/member-pointers/virtual-vs-null.cpp expressions/member-pointers/union-members-equal.cpp
+:tests: expressions/member-pointers/compare-equal.cpp expressions/member-pointers/virtual-vs-null.cpp expressions/member-pointers/union-members-equal.cpp expressions/member-pointers/compare-equal-constant.cpp expressions/member-pointers/compare-equal-constant-ubsan.cpp expressions/member-pointers/compare-data-equal-constant-ubsan.cpp
 
 Two pointers to members can be compared with `==` and `!=`, also with
-`nullptr`. A pointer to a virtual member function compares unequal to a
+`nullptr` and during constant evaluation ({rule}`CE-1`). A pointer to a virtual member function compares unequal to a
 null pointer to member. Pointers to two members of one union with the
 same type compare equal.
 :::
@@ -276,8 +276,8 @@ const int* Node::* unsafe = link;      // rejected: no const on the level above
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on all
-71 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 73
+of 74 tests.
 
 - MPTR-6: Clang and GCC give a null pointer to data member the offset
   -1, so a read through it lands before the object. On Clang 22 and
@@ -287,5 +287,15 @@ The results are in `tests/RESULTS.md`. All eight compilers agree on all
   on an object that lacks the member. The `-fsanitize=undefined` of GCC
   includes `vptr`, and the one of Clang does not. EDG does not run
   programs.
+- MPTR-5: with `-fsanitize=undefined`, GCC 14 and 16 do not evaluate
+  `==` or `!=` on two pointers to member functions as a constant, and
+  reject a `static_assert` that uses it
+  ({question}`Q-0333`).
+  Pointers to data members compare in constant evaluation on every
+  configuration.
+- MPTR-5: under `-Wall`, GCC warns (`-Waddress`) that a comparison of a
+  pointer to a named member function with `nullptr` is always false.
+  The warning also appears when the pointer comes from an element of a
+  `constexpr` array. Clang does not warn.
 
 Inputs: clang-sema-expr, clang-sema-type, clang-diag-sema, edg-decls.

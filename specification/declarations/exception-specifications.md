@@ -50,11 +50,13 @@ a destructor is no exception.
 
 Only the program knows the body of a function that the program writes. A
 function that the implementation writes gets its specifier from the
-functions that it calls.
+functions that it calls. A destructor gets its specifier from the
+destructors of its parts, also when the program writes its body.
 
 | Function | Specifier when the declaration says nothing |
 |---|---|
-| Written by the program | Potentially throwing |
+| Written by the program, other than a destructor | Potentially throwing |
+| A destructor, also one that the program writes | Non-throwing when the destructors of all bases and members are non-throwing ({rule}`DTOR-4`) |
 | A defaulted special member or comparison | Non-throwing when every part that the function touches is non-throwing |
 | A deallocation function | Non-throwing |
 
@@ -181,7 +183,7 @@ In a template, the operand of `noexcept` can depend on the template
 parameters. Each {term}`specialization` gets its specifier from the
 operand with its own arguments ({principle}`TSP-P1`). The operand is
 evaluated only when a use needs the specifier, such as a call, an
-address, or the `noexcept` operator.
+address, or the `noexcept` operator ({rule}`UN-18`).
 :::
 
 :::{rule} EXS-10

@@ -7,7 +7,7 @@ nothing else about the library (decision 0041):
 | Library names | Core rules that use them |
 |---|---|
 | `std::initializer_list` | {rule}`ILC-1`, {rule}`AUTO-7`, {rule}`RFOR-1` |
-| `std::strong_ordering`, `std::weak_ordering`, `std::partial_ordering` | {rule}`CMP-17`, {rule}`DCMP-4` |
+| `std::strong_ordering`, `std::weak_ordering`, `std::partial_ordering` | {rule}`CMP-17`, {rule}`DCMP-4`, {rule}`OVL-13` |
 | `std::tuple_size`, `std::tuple_element` | {rule}`SB-5` |
 | `std::size_t`, `std::ptrdiff_t`, `std::nullptr_t` | {rule}`TYP-1`, {rule}`ADD-12`, {rule}`CONV-8` |
 | `std::align_val_t` | {rule}`NEW-26`, {rule}`NEW-28` |
@@ -32,14 +32,16 @@ functions; raw storage and object representation.
 ## Principles
 
 :::{principle} LSUP-P1
-:rules: LSUP-1 LSUP-2 LSUP-3 LSUP-4
+:rules: LSUP-1 LSUP-2 LSUP-3 LSUP-4 LSUP-12 LSUP-13
 
 A program normally gets these types from the library. The language
 needs only their shape, so a program that includes no header can
 declare each type itself, as Tidal's tests do. The implementation
 checks the shape where it uses the type, because it builds objects of
 the type itself: an `std::initializer_list` for a braced list, and an
-ordering value for `<=>` on built-in operands.
+ordering value for `<=>` on built-in operands. The implementation also
+compares ordering values with `0` and converts them, so an ordering
+class needs those operations too.
 :::
 
 :::{principle} LSUP-P2
@@ -99,17 +101,48 @@ declare `std::initializer_list` with this shape:
 
 :::{rule} LSUP-2
 :kind: reject
-:tests: foundations/language-support/strong-ordering-minimal.cpp foundations/language-support/strong-ordering-missing-member.cpp foundations/language-support/strong-ordering-missing.cpp expressions/comparison/three-way-result-copies-member.cpp
+:tests: foundations/language-support/strong-ordering-minimal.cpp foundations/language-support/strong-ordering-missing-member.cpp foundations/language-support/strong-ordering-missing.cpp expressions/comparison/three-way-result-copies-member.cpp foundations/language-support/ordering-complete-declaration.cpp
 
 A program that uses `<=>` on built-in operands, or a defaulted `<=>`,
 must declare the three ordering classes in namespace `std` first. Each
-class has static data members of its own type, defined as constants:
+class has static data members of its own type, defined as constants
+({rule}`CLS-16`):
 
 | Class | Members |
 |---|---|
 | `strong_ordering` | `less`, `equal`, `equivalent`, `greater` |
 | `weak_ordering` | `less`, `equivalent`, `greater` |
 | `partial_ordering` | `less`, `equivalent`, `greater`, `unordered` |
+
+LSUP-12 and LSUP-13 give the operations that other uses need.
+:::
+
+:::{rule} LSUP-12
+:kind: reject
+:tests: foundations/language-support/ordering-complete-declaration.cpp foundations/language-support/ordering-defaulted-needs-equal-zero.cpp foundations/language-support/ordering-defaulted-not-equal-zero-only.cpp foundations/language-support/ordering-rewritten-needs-relational-zero.cpp foundations/language-support/ordering-reversed-needs-zero-on-left.cpp foundations/language-support/ordering-reversed-three-way-needs-zero-on-left.cpp
+
+The implementation compares an ordering value `v` with a literal `0`
+for the uses in this table. The ordering class must declare each
+operator that the program's uses need, with a parameter such as `int`
+for the `0` ({question}`Q-0334`):
+
+| Use | Operator that the class declares |
+|---|---|
+| a defaulted `<=>` ({rule}`DCMP-4`) | `v == 0` |
+| a relational operator rewritten from `x <=> y` ({rule}`OVL-13`) | that operator as `v < 0`, with `v` on the left |
+| a relational operator rewritten from the swapped `y <=> x` | that operator as `0 < v`, with `0` on the left |
+| `x <=> y` rewritten from the swapped `y <=> x` | `0 <=> v` |
+:::
+
+:::{rule} LSUP-13
+:kind: reject
+:tests: foundations/language-support/ordering-complete-declaration.cpp foundations/language-support/ordering-converting-constructor.cpp foundations/language-support/ordering-defaulted-needs-conversion.cpp foundations/language-support/ordering-defaulted-specified-needs-conversion.cpp
+
+A defaulted `<=>` converts the result of each part to its return type
+({rule}`DCMP-4`). If a part gives a stronger ordering class than the
+return type, the program must declare a conversion to the weaker class.
+A conversion function on the stronger class and a converting
+constructor on the weaker class both serve.
 :::
 
 :::{rule} LSUP-5
@@ -125,16 +158,19 @@ type ({rule}`NEW-28`).
 
 :::{rule} LSUP-3
 :kind: required
-:tests: foundations/language-support/tuple-protocol-minimal.cpp
+:tests: foundations/language-support/tuple-protocol-minimal.cpp declarations/structured-bindings/tuple-const-specialization.cpp declarations/structured-bindings/tuple-const-hidden-variable.cpp
 
 A class uses the tuple protocol of {rule}`SB-5` when the program
 declares these templates in namespace `std` and specializes them for
 the class:
 
-| Template | Specialization gives |
-|---|---|
-| `tuple_size<E>` | a constant member `value`, the number of elements |
-| `tuple_element<I, E>` | a member type `type`, the type of element `I` |
+| Template | Parameters | Specialization gives |
+|---|---|---|
+| `tuple_size` | a type `E` | a constant member `value` of type `std::size_t`, the number of elements |
+| `tuple_element` | a `std::size_t` value `I` and a type `E` | a member type `type`, the type of element `I` |
+
+`E` keeps its cv-qualifiers, so a binding with `const` needs
+specializations for `const C` as well as for `C`.
 :::
 
 :::{rule} LSUP-4
@@ -259,6 +295,115 @@ public:
 auto values = {1, 2, 3};           // std::initializer_list<int>
 ```
 
+The tuple protocol for a class with a member `get` (LSUP-3). The
+specializations for `const Range` serve a binding with `const`:
+
+```cpp
+namespace std {
+using size_t = decltype(sizeof 0);
+template <class E> struct tuple_size;
+template <size_t I, class E> struct tuple_element;
+}
+class Range {
+  int low, high;
+public:
+  constexpr Range(int l, int h) : low(l), high(h) {}
+  template <std::size_t I> constexpr int get() const { return I == 0 ? low : high; }
+};
+template <> struct std::tuple_size<Range> { static constexpr size_t value = 2; };
+template <> struct std::tuple_size<const Range> { static constexpr size_t value = 2; };
+template <std::size_t I> struct std::tuple_element<I, Range> { using type = int; };
+template <std::size_t I> struct std::tuple_element<I, const Range> { using type = int; };
+
+auto [lo, hi] = Range{1, 5};        // decltype(lo) is int
+const auto& [cl, ch] = Range{2, 7}; // decltype(cl) is int: the type as written
+```
+
+The three ordering classes with every part that LSUP-2, LSUP-12, and
+LSUP-13 ask for. Each static member is declared `const` in the class and
+defined `inline constexpr` after it ({rule}`CLS-16`):
+
+```cpp
+namespace std {
+class partial_ordering {
+  signed char v;  // -1, 0, 1, or 2 for unordered
+public:
+  constexpr explicit partial_ordering(signed char x) : v(x) {}
+  static const partial_ordering less, equivalent, greater, unordered;
+  friend constexpr bool operator==(partial_ordering, partial_ordering) = default;
+  friend constexpr bool operator==(partial_ordering a, int) { return a.v == 0; }
+  friend constexpr bool operator<(partial_ordering a, int) { return a.v == -1; }
+  friend constexpr bool operator>(partial_ordering a, int) { return a.v == 1; }
+  friend constexpr bool operator<=(partial_ordering a, int) { return a.v == -1 || a.v == 0; }
+  friend constexpr bool operator>=(partial_ordering a, int) { return a.v == 1 || a.v == 0; }
+  friend constexpr bool operator<(int, partial_ordering a) { return a > 0; }
+  friend constexpr bool operator>(int, partial_ordering a) { return a < 0; }
+  friend constexpr bool operator<=(int, partial_ordering a) { return a >= 0; }
+  friend constexpr bool operator>=(int, partial_ordering a) { return a <= 0; }
+  friend constexpr partial_ordering operator<=>(int, partial_ordering a) {
+    return partial_ordering(a.v == 2 ? 2 : -a.v);
+  }
+};
+inline constexpr partial_ordering partial_ordering::less{-1};
+inline constexpr partial_ordering partial_ordering::equivalent{0};
+inline constexpr partial_ordering partial_ordering::greater{1};
+inline constexpr partial_ordering partial_ordering::unordered{2};
+
+class weak_ordering {
+  signed char v;  // -1, 0, or 1
+public:
+  constexpr explicit weak_ordering(signed char x) : v(x) {}
+  static const weak_ordering less, equivalent, greater;
+  constexpr operator partial_ordering() const { return partial_ordering(v); }
+  friend constexpr bool operator==(weak_ordering, weak_ordering) = default;
+  friend constexpr bool operator==(weak_ordering a, int) { return a.v == 0; }
+  friend constexpr bool operator<(weak_ordering a, int) { return a.v < 0; }
+  friend constexpr bool operator>(weak_ordering a, int) { return a.v > 0; }
+  friend constexpr bool operator<=(weak_ordering a, int) { return a.v <= 0; }
+  friend constexpr bool operator>=(weak_ordering a, int) { return a.v >= 0; }
+  friend constexpr bool operator<(int, weak_ordering a) { return a.v > 0; }
+  friend constexpr bool operator>(int, weak_ordering a) { return a.v < 0; }
+  friend constexpr bool operator<=(int, weak_ordering a) { return a.v >= 0; }
+  friend constexpr bool operator>=(int, weak_ordering a) { return a.v <= 0; }
+  friend constexpr weak_ordering operator<=>(int, weak_ordering a) { return weak_ordering(-a.v); }
+};
+inline constexpr weak_ordering weak_ordering::less{-1};
+inline constexpr weak_ordering weak_ordering::equivalent{0};
+inline constexpr weak_ordering weak_ordering::greater{1};
+
+class strong_ordering {
+  signed char v;  // -1, 0, or 1
+public:
+  constexpr explicit strong_ordering(signed char x) : v(x) {}
+  static const strong_ordering less, equal, equivalent, greater;
+  constexpr operator partial_ordering() const { return partial_ordering(v); }
+  constexpr operator weak_ordering() const { return weak_ordering(v); }
+  friend constexpr bool operator==(strong_ordering, strong_ordering) = default;
+  friend constexpr bool operator==(strong_ordering a, int) { return a.v == 0; }
+  friend constexpr bool operator<(strong_ordering a, int) { return a.v < 0; }
+  friend constexpr bool operator>(strong_ordering a, int) { return a.v > 0; }
+  friend constexpr bool operator<=(strong_ordering a, int) { return a.v <= 0; }
+  friend constexpr bool operator>=(strong_ordering a, int) { return a.v >= 0; }
+  friend constexpr bool operator<(int, strong_ordering a) { return a.v > 0; }
+  friend constexpr bool operator>(int, strong_ordering a) { return a.v < 0; }
+  friend constexpr bool operator<=(int, strong_ordering a) { return a.v >= 0; }
+  friend constexpr bool operator>=(int, strong_ordering a) { return a.v <= 0; }
+  friend constexpr strong_ordering operator<=>(int, strong_ordering a) { return strong_ordering(-a.v); }
+};
+inline constexpr strong_ordering strong_ordering::less{-1};
+inline constexpr strong_ordering strong_ordering::equal{0};
+inline constexpr strong_ordering strong_ordering::equivalent{0};
+inline constexpr strong_ordering strong_ordering::greater{1};
+}
+
+struct Reading {
+  int sensor;
+  double value;
+  auto operator<=>(const Reading&) const = default;  // partial_ordering
+};
+static_assert(Reading{1, 2.0} < Reading{1, 3.0});   // (a <=> b) < 0
+```
+
 ```cpp
 namespace std {
 using size_t = decltype(sizeof 0);
@@ -272,12 +417,36 @@ public:
   bad_alloc() noexcept {}
   ~bad_alloc() override;
 };
+class bad_cast : public exception {
+public:
+  bad_cast() noexcept {}
+  ~bad_cast() override;             // the library defines it
+};
 struct nothrow_t { explicit nothrow_t() = default; };
 inline constexpr nothrow_t nothrow{};
 }
 void* operator new(std::size_t, const std::nothrow_t&) noexcept;
 
 int* p = new (std::nothrow) int(1); // null if the allocation fails
+```
+
+The page leaves the text members of the exception classes to the
+library *(library referenced)*. A program that includes no header and
+needs a message in a handler gives its own base class a virtual
+message member:
+
+```cpp
+struct Failure {
+  virtual const char* message() const noexcept = 0;
+  virtual ~Failure() = default;
+};
+struct ParseError : Failure {
+  const char* message() const noexcept override { return "bad input"; }
+};
+int code() {
+  try { throw ParseError{}; }
+  catch (const Failure& f) { return f.message()[0]; }  // 'b'
+}
 ```
 
 The four non-allocating placement forms, as a program that includes no
@@ -315,8 +484,8 @@ int* r = new (raw) int(3);          // raw hosts the int
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 34
-of 46 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 44
+of 57 tests.
 
 - LSUP-1: each compiler checks the shape in its own way. Clang checks
   the layout of the two members, and also accepts a second pointer in
@@ -332,6 +501,22 @@ of 46 tests.
 - LSUP-2: EDG needs all three classes declared before it accepts `<=>`
   on any built-in operand. Clang and GCC need only the class that the
   operation yields.
+- LSUP-12: GCC tests the result of each part of a defaulted `<=>` with
+  `== 0`. Clang and EDG test it with `!= 0`, which an `==` against `0`
+  serves through {rule}`DCMP-6`. A class with only `!=` against `0`
+  therefore serves Clang and EDG and not GCC
+  ({question}`Q-0334`). Every compiler rejects a
+  class with neither operator.
+- LSUP-12: every compiler rejects a relational operator rewritten from
+  `<=>` when the ordering class lacks that operator against `0`, on the
+  side that {rule}`OVL-13` gives. No compiler rewrites that inner
+  comparison ({rule}`OVL-43`).
+- LSUP-13: every compiler accepts a conversion function on the
+  stronger class and a converting constructor on the weaker class.
+  Clang's message names a `static_cast` from the part's class to the
+  return type. With no conversion, GCC 14 stops with an
+  internal compiler error in a defaulted `<=>` with the return type
+  `auto`, and gives an ordinary error when the return type is written.
 - LSUP-5: GCC and EDG compare a declaration of `std::align_val_t` with
   their own and reject an unscoped enumeration, another underlying
   type, and a class. Clang accepts all three ({question}`Q-0299`).

@@ -89,6 +89,35 @@ void h();
 void h() = delete;         // rejected: not the first declaration
 ```
 
+Keeping one overload and deleting the others refuses some conversions.
+A deleted overload still takes part in overload resolution, so each
+call picks a function by the usual ranks ({principle}`ICS-P2`):
+
+```cpp
+int twice(int v) { return 2 * v; }
+int twice(bool) = delete;
+int twice(double) = delete;
+twice(short(1));   // calls twice(int): a promotion
+twice(1.5f);       // rejected: float promotes to double, which is deleted
+twice(1L);         // rejected: ambiguous, each candidate is a conversion
+
+int scale(int v);
+template <class T> int scale(T) = delete;   // catches every other type
+scale(3);          // calls scale(int): a non-template wins a tie (OVL-27)
+scale(3u);         // rejected: the template is an exact match
+```
+
+A requirement that depends on a template parameter does not hold when
+its call selects a deleted function, so a concept can test the refusal
+({rule}`CPT-26`). The same call outside a template is not valid
+({rule}`CPT-27`):
+
+```cpp
+template <class T> concept Twiceable = requires(T v) { twice(v); };
+static_assert(!Twiceable<double>);         // fine
+static_assert(!requires { twice(1.5); });  // rejected
+```
+
 ## Evidence
 
 The results are in `tests/RESULTS.md`.

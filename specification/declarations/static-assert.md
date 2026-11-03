@@ -137,6 +137,20 @@ template <class T> T half(T v) {
 int h = half(10);                     // checked for T = int: valid
 ```
 
+A `static_assert` can check that an operation is refused without making
+the program invalid. The check goes through a concept whose requirement
+depends on its parameters ({rule}`CPT-26`, {rule}`CPT-27`):
+
+```cpp
+struct Usd { long cents; };
+struct Eur { long cents; };
+Usd operator+(Usd a, Usd b) { return {a.cents + b.cents}; }
+
+template <class A, class B> concept addable = requires(A a, B b) { a + b; };
+static_assert(addable<Usd, Usd>);
+static_assert(!addable<Usd, Eur>);    // fine: the sum is refused
+```
+
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on all

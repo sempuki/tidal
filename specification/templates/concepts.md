@@ -407,12 +407,13 @@ checked or substituted.
 
 :::{rule} CPT-26
 :kind: required
-:tests: templates/concepts/requirement-failure-false.cpp templates/concepts/requirement-access-concept.cpp templates/concepts/requirement-access-member.cpp templates/concepts/requirement-access-concept-in-member.cpp templates/concepts/requirement-false-outside-template.cpp templates/concepts/requires-expression-lookup-outside-constraint.cpp
+:tests: templates/concepts/requirement-failure-false.cpp templates/concepts/requirement-access-concept.cpp templates/concepts/requirement-access-member.cpp templates/concepts/requirement-access-concept-in-member.cpp templates/concepts/requirement-false-outside-template.cpp templates/concepts/requires-expression-lookup-outside-constraint.cpp templates/concepts/requirement-deleted-function-false.cpp
 
 A requirement that depends on template parameters does not hold if
 substitution forms a type or an expression that is not valid. The
 program stays valid. A name that is not accessible where the check
-happens is not valid in this sense ({question}`Q-0288`). In a
+happens, and a call that selects a deleted function ({rule}`DEL-1`),
+are not valid in this sense ({question}`Q-0288`). In a
 constraint, {rule}`CNS-7` gives the lookup. A requires expression
 elsewhere, such as in the condition of `if constexpr` or in a variable
 template, looks up its names as any expression of the template does
@@ -421,7 +422,7 @@ template, looks up its names as any expression of the template does
 
 :::{rule} CPT-27
 :kind: reject
-:tests: templates/concepts/requires-expression-outside-template.cpp templates/concepts/requirement-independent-in-template.cpp templates/concepts/requirement-independent-with-parameters.cpp templates/concepts/type-requirement-independent-constraints.cpp
+:tests: templates/concepts/requires-expression-outside-template.cpp templates/concepts/requirement-deleted-function-independent.cpp templates/concepts/requirement-independent-in-template.cpp templates/concepts/requirement-independent-with-parameters.cpp templates/concepts/type-requirement-independent-constraints.cpp
 
 A requirement that does not depend on template parameters must form
 only valid types and expressions. The rule applies inside a template
@@ -592,8 +593,8 @@ template <class T> concept Old [[deprecated]] = true;   // the attribute apperta
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 101
-of 118 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 103
+of 120 tests.
 
 The clean-room writer probed each rule with Clang 18 and 22, GCC 14 and
 16, the host Clang and GCC, and EDG 7.0, and checked each test on the

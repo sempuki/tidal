@@ -127,26 +127,29 @@ the depth of recursion and on the number of steps.
 
 :::{rule} CE-1
 :kind: required
-:tests: expressions/constant-expressions/arithmetic-and-calls.cpp expressions/constant-expressions/lambda-call.cpp expressions/constant-expressions/virtual-call.cpp expressions/constant-expressions/try-without-throw.cpp expressions/constant-expressions/new-delete-transient.cpp expressions/constant-expressions/function-pointer-equality.cpp
+:tests: expressions/constant-expressions/arithmetic-and-calls.cpp expressions/constant-expressions/lambda-call.cpp expressions/constant-expressions/virtual-call.cpp expressions/constant-expressions/try-without-throw.cpp expressions/constant-expressions/new-delete-transient.cpp expressions/constant-expressions/function-pointer-equality.cpp expressions/constant-expressions/call-through-function-pointer.cpp expressions/member-pointers/compare-equal-constant.cpp
 
 Constant evaluation can contain these operations:
 
-- arithmetic, loops, and calls to `constexpr` functions,
+- arithmetic, loops, and calls to `constexpr` functions, also through a
+  function pointer,
 - changes to objects that the same evaluation created,
 - calls to lambdas and to `constexpr` virtual functions,
 - `try` blocks, if no exception is thrown,
 - `new` and `delete` expressions, as CE-7 describes,
-- equality comparison of function pointers.
+- equality comparison of function pointers and of pointers to members.
 :::
 
 :::{rule} CE-2
 :kind: reject
-:tests: expressions/constant-expressions/non-constexpr-call.cpp expressions/constant-expressions/implicit-constructor-calls-constexpr.cpp expressions/constant-expressions/implicit-constructor-member-not-constexpr.cpp expressions/constant-expressions/defaulted-constructor-member-not-constexpr.cpp expressions/constant-expressions/implicit-destructor-member-not-constexpr.cpp
+:tests: expressions/constant-expressions/non-constexpr-call.cpp expressions/constant-expressions/implicit-constructor-calls-constexpr.cpp expressions/constant-expressions/implicit-constructor-member-not-constexpr.cpp expressions/constant-expressions/defaulted-constructor-member-not-constexpr.cpp expressions/constant-expressions/implicit-destructor-member-not-constexpr.cpp expressions/constant-expressions/implicit-assignment-constant.cpp expressions/constant-expressions/implicit-assignment-member-not-constexpr.cpp expressions/constant-expressions/implicit-constructor-virtual-base.cpp expressions/constant-expressions/defaulted-constructor-virtual-base.cpp expressions/constant-expressions/implicit-copy-virtual-base.cpp expressions/constant-expressions/virtual-base-path-not-reached.cpp expressions/constant-expressions/call-through-function-pointer-not-constexpr.cpp classes/virtual/virtual-call-override-not-constexpr.cpp
 
 During constant evaluation, the program can call only `constexpr` and
-`consteval` functions. A constructor or a destructor that is implicit
-or defaulted counts as `constexpr`. Each function that it calls for a
-base or a member must also obey this rule.
+`consteval` functions. An implicit or defaulted constructor,
+destructor, or assignment operator counts as `constexpr`, except a
+constructor or destructor of a class with a virtual base
+({rule}`DER-12`). Each function that it calls for a base or a member
+must also obey this rule.
 :::
 
 :::{rule} CE-3
@@ -236,7 +239,7 @@ freed in the same evaluation. These conditions apply:
 
 :::{rule} CE-8
 :kind: reject
-:tests: expressions/constant-expressions/throw-evaluated.cpp expressions/constant-expressions/throw-not-evaluated.cpp exceptions/throw/constant-evaluation-throw-rejected.cpp exceptions/throw/constant-evaluation-throw-not-taken.cpp classes/virtual/dynamic-cast-reference-fails-constant.cpp expressions/constant-expressions/termination-noexcept-rejected.cpp expressions/constant-expressions/termination-rethrow-rejected.cpp
+:tests: expressions/constant-expressions/throw-evaluated.cpp expressions/constant-expressions/throw-not-evaluated.cpp exceptions/throw/constant-evaluation-throw-rejected.cpp exceptions/throw/constant-evaluation-throw-not-taken.cpp classes/virtual/dynamic-cast-reference-fails-constant.cpp expressions/constant-expressions/termination-noexcept-rejected.cpp expressions/constant-expressions/termination-rethrow-rejected.cpp declarations/constexpr/consteval-converting-constructor-throws.cpp
 
 Constant evaluation must not evaluate a throw-expression, or a failed
 `dynamic_cast` of a reference, which throws ({rule}`VIRT-10`). A
@@ -384,7 +387,7 @@ Constant evaluation must not reach any of these constructs (CE-17):
 
 :::{rule} CE-21
 :kind: reject
-:tests: expressions/constant-expressions/result-unset-member.cpp expressions/constant-expressions/result-unset-array-element.cpp expressions/constant-expressions/result-every-part-set.cpp expressions/constant-expressions/result-union-no-active-member.cpp expressions/constant-expressions/result-union-one-active-member.cpp
+:tests: expressions/constant-expressions/result-unset-member.cpp expressions/constant-expressions/result-unset-array-element.cpp expressions/constant-expressions/result-every-part-set.cpp expressions/constant-expressions/result-returned-local-unset-element.cpp expressions/constant-expressions/result-returned-local-every-element.cpp expressions/constant-expressions/read-returned-local-unset-element.cpp expressions/constant-expressions/result-union-no-active-member.cpp expressions/constant-expressions/result-union-one-active-member.cpp
 
 The value of a constant expression of class or array type must give a
 value to each of its scalar parts. These conditions apply:
@@ -401,7 +404,7 @@ value to each of its scalar parts. These conditions apply:
 
 :::{rule} CE-22
 :kind: reject
-:tests: expressions/constant-expressions/copy-unset-member.cpp expressions/constant-expressions/copy-unset-array-element.cpp expressions/constant-expressions/unset-member-not-copied.cpp expressions/constant-expressions/copy-after-every-part-set.cpp
+:tests: expressions/constant-expressions/copy-unset-member.cpp expressions/constant-expressions/copy-unset-array-element.cpp expressions/constant-expressions/unset-member-not-copied.cpp expressions/constant-expressions/copy-after-every-part-set.cpp expressions/constant-expressions/result-returned-local-unset-element.cpp
 
 During constant evaluation, an implicit copy or move function
 ({rule}`CPY-8`) reads each scalar part of the source object. A
@@ -413,7 +416,7 @@ move of a returned local variable ({rule}`CPY-12`).
 
 :::{rule} CE-32
 :kind: reject
-:tests: declarations/initialization/forms/copy-indeterminate-unsigned-char.cpp
+:tests: declarations/initialization/forms/copy-indeterminate-unsigned-char.cpp expressions/constant-expressions/read-returned-local-unset-element.cpp
 
 Constant evaluation must not read a scalar object that has no value.
 The rule also applies where a run-time read is not undefined, such as
@@ -466,13 +469,19 @@ function that does not use the object.
 
 :::{rule} CE-10
 :kind: impl-defined
-:tests: expressions/constant-expressions/deep-recursion.cpp expressions/constant-expressions/moderate-recursion.cpp expressions/constant-expressions/long-loop.cpp templates/deduction/substitution-failure-evaluation-limit.cpp
+:tests: expressions/constant-expressions/deep-recursion.cpp expressions/constant-expressions/moderate-recursion.cpp expressions/constant-expressions/long-loop.cpp expressions/constant-expressions/moderate-loop.cpp expressions/constant-expressions/moderate-loops-split.cpp expressions/constant-expressions/moderate-call-count.cpp expressions/constant-expressions/excessive-call-count.cpp templates/deduction/substitution-failure-evaluation-limit.cpp
 
 An implementation sets limits on the depth of recursion and on the
 number of steps in one constant evaluation. The implementation rejects
 an evaluation that exceeds a limit. The limits are
-implementation-defined. Every matrix compiler accepts a recursion depth
-of 400, and rejects a depth of 100000 and a loop of 100000000 steps.
+implementation-defined, and every matrix compiler has limits between
+these figures:
+
+| Measure | Accepted | Rejected |
+|---|---|---|
+| depth of recursion | 400 | 100000 |
+| iterations of one loop | 200000 | 100000000 |
+| function calls in one evaluation, in total | 150000 | 300000000 |
 :::
 
 :::{rule} CE-26
@@ -529,12 +538,22 @@ void use() {
 }
 constexpr int&& m = 4;                // fine: the temporary is static
 static_assert(m == 4);                // rejected: the temporary is not const
+
+struct Table { int v[4]; };
+constexpr Table make() {
+  Table t;
+  for (int i = 0; i < 3; ++i) t.v[i] = i + 1;
+  return t;                           // a move of t (CE-22)
+}
+constexpr Table bad = make();         // rejected: v[3] has no value
+struct Filled { int v[4] = {}; };     // every element starts at 0, so a
+                                      // builder can set only some
 ```
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 97
-of 111 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 113
+of 129 tests.
 
 - CE-10: all three implementations reject a recursion depth of 100000
   and a loop of 100000000 steps by default. All accept a depth of 400.
@@ -544,9 +563,19 @@ of 111 tests.
 
   - Clang stops at a depth of 512 calls and at its step limit
     (`-fconstexpr-depth`, `-fconstexpr-steps`).
-  - GCC stops at a depth of 512 and at 262144 loop iterations
+  - GCC stops at a depth of 512, at 262144 iterations of one loop,
+    and at 33554432 operations in one evaluation
     (`-fconstexpr-depth`, `-fconstexpr-loop-limit`,
-    `-fconstexpr-ops-limit`).
+    `-fconstexpr-ops-limit`). The loop limit counts each loop on its
+    own, so four loops of 100000 iterations pass.
+  - Clang counts every step of the evaluation together. A naive
+    recursive Fibonacci function that makes 1028457 calls fails on
+    every Clang version, and one that makes 635621 calls fails on Clang
+    22 at `-O2`. EDG accepts 635621 calls and rejects 1028457. Every
+    compiler accepts 392835 calls.
+  - The limit on total work is reached long before the depth limit. A
+    recursion of depth 40 that makes 331 million calls fails on every
+    compiler.
 - CE-12: Clang 18 also reports the `constexpr` function as never
   constant (compare {question}`Q-0020`).
 - CE-13: Clang rejects the comparison of two string literal addresses.
@@ -566,7 +595,13 @@ of 111 tests.
   initializer. Every compiler rejects one that reaches a `static const
   double`.
 - CE-21: every compiler rejects a constant whose value has a scalar part
-  with no value, for `constexpr` and `constinit` alike.
+  with no value, for `constexpr` and `constinit` alike, when a
+  constructor leaves the part without a value.
+- CE-21 and CE-22: a builder function that returns a local with a part
+  that has no value splits the compilers. Clang and EDG reject the
+  constant. GCC 14 and 16 accept it, and read the part as 0
+  ({question}`Q-0115`). A default member initializer gives every part
+  a value, and every compiler accepts the constant.
 - CE-21: a union with no active member is a valid constant for Clang
   and EDG. GCC rejects it ({question}`Q-0117`).
 - CE-22: Clang and EDG reject a copy of an object that has a part with

@@ -330,11 +330,12 @@ can have any number of parameters ({rule}`OPR-3`).
 
 :::{rule} CLS-16
 :kind: required
-:tests: classes/members/static-member-own-type.cpp classes/members/thread-local-static-member.cpp
+:tests: classes/members/static-member-own-type.cpp classes/members/static-member-own-type-constant.cpp classes/members/thread-local-static-member.cpp
 
 A static data member can have the type of its own class, which is still
-incomplete at the declaration. The definition of the static data member
-comes after the class. A static data member can be `thread_local`.
+incomplete at the declaration. The definition comes after the class, and
+it can be `inline constexpr` when the declaration in the class is
+`const`. A static data member can be `thread_local`.
 :::
 
 :::{rule} CLS-17
@@ -429,8 +430,8 @@ struct Text {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 88
-of 91 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 89
+of 92 tests.
 
 - CLS-3: a missing definition of a static data member compiles in each
   translation unit. The linker reports the missing definition.

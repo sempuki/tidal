@@ -698,7 +698,7 @@ uses. The rule comes after OVL-27.
 
 :::{rule} OVL-32
 :kind: required
-:tests: foundations/overload-resolution/tie-written-over-rewritten.cpp foundations/overload-resolution/tie-template-before-rewritten.cpp foundations/overload-resolution/tie-template-before-swapped.cpp
+:tests: foundations/overload-resolution/tie-written-over-rewritten.cpp foundations/overload-resolution/tie-template-before-rewritten.cpp foundations/overload-resolution/tie-template-before-swapped.cpp classes/comparisons/eq-across-specializations.cpp
 
 A candidate that is not rewritten wins over a rewritten candidate
 ({rule}`DCMP-6`). A swapped candidate counts as rewritten. The rule
@@ -802,8 +802,8 @@ tick(1, 1);                      // rejected: each is better on one argument
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 138
-of 164 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 139
+of 165 tests.
 
 - OVL-25, OVL-6: every compiler chooses a static call operator over a
   surrogate candidate with the same parameter types. Every compiler

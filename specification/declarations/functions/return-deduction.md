@@ -16,8 +16,10 @@ The rules for variables then carry over:
 - `auto&` keeps them,
 - `decltype(auto)` takes the exact type.
 
-`decltype(auto)` can deduce a reference to a local variable. The
-variable is already gone when the caller uses the reference.
+`decltype(auto)` can deduce a reference to a local variable, or to a
+temporary that a call in the `return` statement creates. Each is
+already gone when the caller uses the reference. A plain `auto` return
+gives a copy and avoids the problem.
 :::
 
 :::{principle} RET-P2
@@ -137,6 +139,24 @@ constexpr auto fact(int n) {
   if (n <= 1) return 1;             // the type is now int
   return n * fact(n - 1);           // fine
 }
+constexpr auto fib(int n) {
+  if (n < 2) return n;
+  return fib(n - 1) + fib(n - 2);
+}
+static_assert(fib(40) == 102334155);  // rejected: 331 million calls
+                                      // exceed the step limit (CE-10)
+
+int make();
+decltype(auto) pass(auto&& v) { return static_cast<decltype(v)&&>(v); }
+decltype(auto) wrap() { return pass(make()); }  // int&&: the temporary from
+                                                // make() ends with the return
+auto copy() { return pass(make()); }            // int: a copy, safe
+
+auto split(int total) {             // two results, with no type outside
+  struct Parts { int whole, rest; };
+  return Parts{total / 10, total % 10};
+}
+auto [w, r] = split(47);            // 4 and 7 (SB-3)
 ```
 
 ## Evidence

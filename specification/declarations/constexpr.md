@@ -94,14 +94,15 @@ because that temporary has static storage.
 
 :::{rule} CX-2
 :kind: reject
-:tests: declarations/constexpr/reference-to-static.cpp declarations/constexpr/reference-to-automatic.cpp declarations/constexpr/pointer-to-automatic.cpp declarations/constexpr/pointer-one-past-end.cpp declarations/constexpr/static-local-to-static-local.cpp declarations/constexpr/aggregate-reference-member-temporary-block.cpp declarations/constexpr/aggregate-reference-member-temporary-namespace.cpp
+:tests: declarations/constexpr/reference-to-static.cpp declarations/constexpr/reference-to-automatic.cpp declarations/constexpr/pointer-to-automatic.cpp declarations/constexpr/pointer-one-past-end.cpp declarations/constexpr/static-local-to-static-local.cpp declarations/constexpr/aggregate-reference-member-temporary-block.cpp declarations/constexpr/aggregate-reference-member-temporary-namespace.cpp declarations/constexpr/pointer-to-string-literal.cpp
 
 A `constexpr` variable holds references and pointers in itself and in its
 members. Each such reference, and each such pointer that is not null,
 must refer to one of these:
 
 - a function,
-- an object with static {term}`storage duration`,
+- an object with static {term}`storage duration`, such as a string
+  literal ({rule}`PRIM-7`),
 - for a pointer only, the place one past the end of such an object.
 
 A temporary that the initializer extends ({rule}`REF-4`) has the storage
@@ -154,10 +155,11 @@ All declarations of a function must agree on `constexpr`.
 
 :::{rule} CEV-1
 :kind: reject
-:tests: declarations/constexpr/consteval-call-constant.cpp declarations/constexpr/consteval-call-runtime-arg.cpp declarations/constexpr/consteval-in-consteval.cpp declarations/constexpr/consteval-ub-rejected.cpp declarations/constexpr/immediate-escalation.cpp declarations/constexpr/lambda-escalates-constant.cpp declarations/constexpr/lambda-escalates-runtime.cpp declarations/constexpr/consteval-returns-allocation.cpp declarations/constexpr/plain-constexpr-no-escalation.cpp
+:tests: declarations/constexpr/consteval-call-constant.cpp declarations/constexpr/consteval-call-runtime-arg.cpp declarations/constexpr/consteval-in-consteval.cpp declarations/constexpr/consteval-ub-rejected.cpp declarations/constexpr/immediate-escalation.cpp declarations/constexpr/lambda-escalates-constant.cpp declarations/constexpr/lambda-escalates-runtime.cpp declarations/constexpr/consteval-returns-allocation.cpp declarations/constexpr/plain-constexpr-no-escalation.cpp declarations/constexpr/consteval-converting-constructor.cpp declarations/constexpr/consteval-converting-constructor-throws.cpp
 
-Each call to a `consteval` function must be a constant expression. This
-rule does not apply to a call in an {term}`immediate function context`,
+Each call to a `consteval` function must be a constant expression. A
+`consteval` constructor counts, also when an implicit conversion calls
+it. This rule does not apply to a call in an {term}`immediate function context`,
 such as the body of another `consteval` function.
 
 These functions take on `consteval` from their bodies:
@@ -247,10 +249,40 @@ extern constinit int first_ticket;  // constinit here is optional
 constinit int first_ticket = 100;   // constinit here is required
 ```
 
+A table built at compile time. A function cannot return an array, so
+the table is a struct with an array member. The default member
+initializer gives every element a value ({rule}`CE-21`):
+
+```cpp
+struct Squares { int v[16] = {}; };
+constexpr Squares build() {
+  Squares s;
+  for (int i = 0; i < 16; ++i) s.v[i] = i * i;
+  return s;
+}
+constexpr Squares squares = build();
+static_assert(squares.v[5] == 25);
+```
+
+A `consteval` constructor checks its argument where the program converts
+it. A `throw` on bad input makes the call not constant, so the
+implementation rejects the declaration ({rule}`CE-8`):
+
+```cpp
+struct Identifier {
+  const char* text;
+  consteval Identifier(const char* s) : text(s) {
+    if (s[0] >= '0' && s[0] <= '9') throw "starts with a digit";
+  }
+};
+Identifier good = "counter";        // fine
+Identifier bad = "2x";              // rejected
+```
+
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 64
-of 69 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 67
+of 72 tests.
 
 - CX-6: every compiler accepts a constant evaluation that reaches the
   definition of a `static const int` with a constant initializer, as

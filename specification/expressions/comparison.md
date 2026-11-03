@@ -75,8 +75,10 @@ are equal when they select the same member of the same subobject.
 
 A NaN is not equal to anything, not even itself, and is neither less nor
 greater than anything. So every comparison with a NaN is `false`, except
-`!=`, which is `true`. A program gets a NaN from `0.0 / 0.0` in a type
-that follows IEEE 754 ({rule}`MUL-11`).
+`!=`, which is `true`. A program gets a NaN from `0.0 / 0.0` at run time
+in a type that follows IEEE 754 ({rule}`MUL-11`). Constant evaluation
+rejects that division ({rule}`CE-28`), so a NaN check goes in code that
+runs.
 :::
 
 :::{principle} CMP-P5
@@ -440,7 +442,9 @@ int list[2];
 list < &list[1]           // true: list becomes &list[0]
 
 (1 <=> 2) == std::strong_ordering::less     // true
-(1.0 <=> nan) == std::partial_ordering::unordered
+double zero = 0.0;
+double nan = zero / zero;  // a NaN, at run time only
+(1.0 <=> nan) == std::partial_ordering::unordered  // true
 
 long balance = -1;
 unsigned count = 1;

@@ -179,10 +179,12 @@ copy a `const` object.
 
 :::{rule} CPY-15
 :kind: reject
-:tests: classes/copy-move/copy-ctor-by-value.cpp
+:tests: classes/copy-move/copy-ctor-by-value.cpp classes/copy-move/template-ctor-by-value-own-class.cpp
 
 A constructor of class `T` must not have a first parameter of type `T`
-if all other parameters have default arguments.
+if all other parameters have default arguments. A constructor template
+never gives such a constructor, so a copy of a `T` uses the copy
+constructor ({rule}`CPY-1`).
 :::
 
 :::{rule} CPY-2
@@ -603,8 +605,8 @@ Any c(1);                          // the template, with T = int
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 101
-of 103 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 102
+of 104 tests.
 
 - CPY-14: GCC 14 rejects some defaulted constructors whose parameter
   type differs from the implicit one ({question}`Q-0055`):

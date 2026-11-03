@@ -62,7 +62,7 @@ through the standard library ({rule}`LSUP-2`).
 
 :::{rule} DCMP-3
 :kind: reject
-:tests: declarations/volatile/defaulted-comparison-volatile.cpp classes/comparisons/declared-outside-then-defaulted.cpp classes/comparisons/decltype-auto-return.cpp classes/comparisons/eq-auto-return.cpp classes/comparisons/eq-by-value-param.cpp classes/comparisons/eq-mixed-params.cpp classes/comparisons/eq-nonconst-member.cpp classes/comparisons/eq-nonmember-nonfriend.cpp classes/comparisons/eq-other-class-param.cpp classes/comparisons/eq-ref-qualified.cpp classes/comparisons/eq-rvalue-ref-qualified.cpp classes/comparisons/eq-wrong-param.cpp classes/comparisons/eq-wrong-return.cpp classes/comparisons/not-equal-defaulted.cpp classes/comparisons/template-defaulted.cpp
+:tests: declarations/volatile/defaulted-comparison-volatile.cpp classes/comparisons/declared-outside-then-defaulted.cpp classes/comparisons/decltype-auto-return.cpp classes/comparisons/eq-auto-return.cpp classes/comparisons/eq-by-value-param.cpp classes/comparisons/eq-mixed-params.cpp classes/comparisons/eq-nonconst-member.cpp classes/comparisons/eq-nonmember-nonfriend.cpp classes/comparisons/eq-other-class-param.cpp classes/comparisons/eq-ref-qualified.cpp classes/comparisons/eq-rvalue-ref-qualified.cpp classes/comparisons/eq-wrong-param.cpp classes/comparisons/eq-wrong-return.cpp classes/comparisons/not-equal-defaulted.cpp classes/comparisons/template-defaulted.cpp classes/comparisons/class-template-defaulted.cpp
 
 A defaulted comparison of class `C` must be one of these:
 
@@ -71,7 +71,8 @@ A defaulted comparison of class `C` must be one of these:
 
 A defaulted comparison must not be:
 
-- a template,
+- a function template (a comparison declared in a class template is
+  valid, and each specialization gets its own),
 - a non-member that is not a friend,
 - a friend first declared outside `C` ({question}`Q-0061`).
 
@@ -283,10 +284,27 @@ bool f(Loose a, Loose b) { return a == b; }  // warning; rejected in strict mode
 bool g(Tight a, Tight b) { return a == b; }  // valid, no warning
 ```
 
+A class template can compare its specializations with each other. For
+`a == b`, the friend from the class of `a` is a normal candidate, and
+the friend from the class of `b` is a reversed one. The normal
+candidate wins ({rule}`OVL-32`), so the call is not ambiguous:
+
+```cpp
+template <int N> struct Name {
+  char text[N];
+  template <int M>
+  friend bool operator==(const Name& a, const Name<M>& b);
+};
+Name<2> s;
+Name<8> l;
+bool x = s == l;   // the friend from Name<2>, with M = 8
+bool y = l == s;   // the friend from Name<8>, with M = 2
+```
+
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 72
-of 77 tests. The tests declare the comparison category types themselves.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 73
+of 78 tests. The tests declare the comparison category types themselves.
 
 - DCMP-3: GCC accepts defaulting a friend that was declared outside the
   class. Clang and EDG reject it ({question}`Q-0061`).

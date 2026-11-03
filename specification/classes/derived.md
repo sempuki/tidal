@@ -232,11 +232,12 @@ to a derived class.
 
 :::{rule} DER-12
 :kind: reject
-:tests: classes/derived/constexpr-ctor-virtual-base.cpp classes/derived/constexpr-dtor-virtual-base.cpp classes/derived/constexpr-object-virtual-base.cpp
+:tests: classes/derived/constexpr-ctor-virtual-base.cpp classes/derived/constexpr-dtor-virtual-base.cpp classes/derived/constexpr-object-virtual-base.cpp expressions/constant-expressions/implicit-constructor-virtual-base.cpp expressions/constant-expressions/defaulted-constructor-virtual-base.cpp expressions/constant-expressions/virtual-base-path-not-reached.cpp expressions/constant-expressions/implicit-copy-virtual-base.cpp
 
 A class with a virtual base must not have a `constexpr` constructor or a
-`constexpr` destructor. An object of such a class cannot be a `constexpr`
-variable.
+`constexpr` destructor. Its implicit and defaulted constructors are not
+`constexpr` either ({rule}`CE-2`). An object of such a class cannot be a
+`constexpr` variable.
 :::
 
 :::{rule} DER-13
@@ -412,10 +413,59 @@ struct Both : a::Item, b::Item {
 };
 ```
 
+A derived visitor that overrides one `visit` hides the others, and
+Clang and GCC do not warn under `-Wall` (DER-3, {rule}`VIRT-13`):
+
+```cpp
+struct Num; struct Add;
+struct Walker {
+  virtual void visit(const Num&) {}
+  virtual void visit(const Add&) {}
+};
+struct Counter : Walker {
+  using Walker::visit;           // keeps visit(const Add&) visible
+  void visit(const Num&) override;
+};
+```
+
+A mixin casts itself to the class that derives from it (DER-16). The
+protected constructor keeps other code from making a mixin that is not
+part of a `Self`, which DER-17 makes undefined:
+
+```cpp
+template <class Self> struct Doubling {
+  int twice() const { return 2 * static_cast<const Self&>(*this).value(); }
+protected:
+  Doubling() = default;
+};
+struct Price : Doubling<Price> {
+  int cents = 5;
+  int value() const { return cents; }
+};
+Price p;
+int t = p.twice();               // 10
+Doubling<Price> d;               // rejected: the constructor is protected
+```
+
+A class with a virtual base has no `constexpr` constructor, so constant
+evaluation cannot create one (DER-12, {rule}`CE-2`). A `constexpr`
+function can still create one on a path that runs only at run time:
+
+```cpp
+struct Base { int n = 3; };
+struct Left : virtual Base { };
+constexpr int make(bool build) {
+  if (build) { Left x; return x.n; }
+  return 0;
+}
+static_assert(make(false) == 0); // fine: the object is not created
+static_assert(make(true) == 3);  // rejected: Left() is not constexpr
+```
+
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 77
-of 78 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 81
+of 82 tests.
 
 - DER-12: EDG accepts a `constexpr` destructor in a class with a virtual
   base. Clang and GCC reject the destructor ({question}`Q-0085`).

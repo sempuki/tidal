@@ -259,7 +259,7 @@ must not have the name and parameters of a virtual function of a base
 
 :::{rule} VIRT-1
 :kind: required
-:tests: classes/virtual/const-qualifier-must-match.cpp classes/virtual/default-args-static-type.cpp classes/virtual/different-params-no-override.cpp classes/virtual/dispatch.cpp classes/virtual/object-call-no-dispatch.cpp classes/virtual/override-through-intermediate.cpp classes/virtual/override-without-virtual-keyword.cpp classes/virtual/private-override.cpp classes/virtual/qualified-call-no-dispatch.cpp classes/virtual/virtual-in-constexpr.cpp
+:tests: classes/virtual/const-qualifier-must-match.cpp classes/virtual/default-args-static-type.cpp classes/virtual/different-params-no-override.cpp classes/virtual/dispatch.cpp classes/virtual/object-call-no-dispatch.cpp classes/virtual/override-through-intermediate.cpp classes/virtual/override-without-virtual-keyword.cpp classes/virtual/private-override.cpp classes/virtual/qualified-call-no-dispatch.cpp classes/virtual/virtual-in-constexpr.cpp classes/virtual/virtual-call-override-not-constexpr.cpp classes/virtual/pure-virtual-constexpr-order.cpp
 
 A member function overrides a virtual function of a base if the member
 function has the same:
@@ -277,7 +277,8 @@ of the object. These calls do not use the final overrider:
 - a call on an object, not a pointer or reference.
 
 Default arguments come from the function that the call names. Constant
-evaluation follows the same rules.
+evaluation follows the same rules, and the final overrider that it calls
+must be `constexpr` ({rule}`CE-2`).
 :::
 
 :::{rule} VIRT-11
@@ -404,6 +405,25 @@ Circle* c = dynamic_cast<Circle*>(p);  // points to the Circle
 delete p;                          // calls ~Circle, then ~Shape
 ```
 
+A virtual call during constant evaluation reaches a `constexpr` final
+overrider (VIRT-1):
+
+```cpp
+struct Tile {
+  constexpr virtual int cost() const = 0;
+  constexpr virtual ~Tile() = default;
+};
+struct Road : Tile {
+  constexpr int cost() const override { return 1; }
+};
+struct Swamp : Tile {
+  int cost() const override { return 5; }   // not constexpr
+};
+constexpr int price(const Tile& t) { return t.cost(); }
+static_assert(price(Road{}) == 1);   // fine
+static_assert(price(Swamp{}) == 5);  // rejected: Swamp::cost is not constexpr
+```
+
 A static member function cannot take the place of a virtual function
 (VIRT-21):
 
@@ -441,8 +461,8 @@ struct MoreConst : Maker {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 115
-of 119 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 117
+of 121 tests.
 
 - VIRT-12: GCC accepts `delete` through a base without a virtual
   destructor during constant evaluation. Clang and EDG reject the
@@ -462,6 +482,16 @@ of 119 tests.
 - VIRT-13: Clang 18 and 22 and GCC 14 and 16 give both warnings under
   `-Wall`, also for an abstract class. Neither warns for a `final`
   class.
+- VIRT-13: under `-Wall`, Clang and GCC warn about a hidden virtual
+  function only when the derived function overrides none of the base
+  functions with that name. A derived function that overrides one
+  overload and hides the others draws no warning. GCC warns about that
+  case under `-Woverloaded-virtual=2`. A `using` declaration of the base
+  name keeps the other overloads visible ({rule}`DER-3`).
+- VIRT-12: the address sanitizer reports `delete` through a base without
+  a virtual destructor only when the base and the derived class differ
+  in size. If the derived class adds no data, the run exits 0 on Clang
+  and GCC with no report.
 - VIRT-12: during constant evaluation, GCC reports a call of a pure
   virtual function from a constructor as a call to a function that is
   not `constexpr` (compare {rule}`CE-2`). The function that GCC names is

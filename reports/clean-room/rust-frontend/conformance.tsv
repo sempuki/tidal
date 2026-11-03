@@ -56,9 +56,11 @@ pass	classes/access/using-changes-access.cpp
 MISSED-REJECT	classes/access/using-private-base-member.cpp
 pass	classes/access/using-reduces-access.cpp
 pass	classes/access/virtual-access-static-type.cpp
+FALSE-REJECT	classes/comparisons/class-template-defaulted.cpp
 pass	classes/comparisons/declared-outside-then-defaulted.cpp
 pass	classes/comparisons/decltype-auto-return.cpp
 pass	classes/comparisons/empty-class-compares-equal.cpp
+unsupported	classes/comparisons/eq-across-specializations.cpp
 MISSED-REJECT	classes/comparisons/eq-anonymous-union-member.cpp
 pass	classes/comparisons/eq-array-member.cpp
 pass	classes/comparisons/eq-auto-return.cpp
@@ -174,6 +176,7 @@ pass	classes/constructors/ctor-specifiers.cpp
 pass	classes/constructors/ctor-static.cpp
 pass	classes/constructors/ctor-virtual.cpp
 pass	classes/constructors/ctor-volatile.cpp
+pass	classes/constructors/default-constructor-default-arguments.cpp
 pass	classes/constructors/default-ctor-deleted-by-member-dtor.cpp
 pass	classes/constructors/defaulted-default-restores.cpp
 pass	classes/constructors/defaulted-leaves-members.cpp
@@ -446,6 +449,7 @@ pass	classes/copy-move/return-rvalue-ref-to-ref.cpp
 pass	classes/copy-move/rvalue-picks-move.cpp
 pass	classes/copy-move/rvalue-ref-member-copy-deleted.cpp
 FALSE-REJECT	classes/copy-move/self-pointer-copy.cpp
+FALSE-REJECT	classes/copy-move/template-ctor-by-value-own-class.cpp
 run-unsupported	classes/copy-move/template-not-copy-ctor.cpp
 pass	classes/copy-move/trivial-assign-implicit.cpp
 pass	classes/copy-move/trivial-assign-user-provided.cpp
@@ -644,6 +648,7 @@ pass	classes/members/static-member-function-const.cpp
 pass	classes/members/static-member-function.cpp
 pass	classes/members/static-member-named-as-class.cpp
 pass	classes/members/static-member-not-defined.cpp
+pass	classes/members/static-member-own-type-constant.cpp
 pass	classes/members/static-member-own-type.cpp
 pass	classes/members/static-non-const-in-class-init.cpp
 pass	classes/members/static-ref-qualified.cpp
@@ -955,12 +960,14 @@ pass	classes/virtual/pure-inline-definition.cpp
 pass	classes/virtual/pure-nonvirtual.cpp
 pass	classes/virtual/pure-not-zero.cpp
 pass	classes/virtual/pure-override-makes-abstract.cpp
+unsupported	classes/virtual/pure-virtual-constexpr-order.cpp
 pass	classes/virtual/qualified-call-no-dispatch.cpp
 pass	classes/virtual/ref-qualifier-must-match.cpp
 pass	classes/virtual/return-type-mismatch.cpp
 pass	classes/virtual/static-overrides-virtual.cpp
 run-unsupported	classes/virtual/unique-final-overrider-resolved.cpp
 pass	classes/virtual/virtual-auto-return.cpp
+pass	classes/virtual/virtual-call-override-not-constexpr.cpp
 pass	classes/virtual/virtual-data-member.cpp
 pass	classes/virtual/virtual-dtor-delete-constant.cpp
 pass	classes/virtual/virtual-dtor-delete.cpp
@@ -1140,6 +1147,8 @@ MISSED-REJECT	declarations/constexpr/consteval-address-taken.cpp
 pass	declarations/constexpr/consteval-and-constexpr.cpp
 pass	declarations/constexpr/consteval-call-constant.cpp
 pass	declarations/constexpr/consteval-call-runtime-arg.cpp
+MISSED-REJECT	declarations/constexpr/consteval-converting-constructor-throws.cpp
+pass	declarations/constexpr/consteval-converting-constructor.cpp
 pass	declarations/constexpr/consteval-in-consteval.cpp
 pass	declarations/constexpr/consteval-inline.cpp
 pass	declarations/constexpr/consteval-not-selected-by-target.cpp
@@ -1183,6 +1192,7 @@ pass	declarations/constexpr/non-literal-return.cpp
 pass	declarations/constexpr/plain-constexpr-no-escalation.cpp
 unsupported	declarations/constexpr/pointer-one-past-end.cpp
 pass	declarations/constexpr/pointer-to-automatic.cpp
+pass	declarations/constexpr/pointer-to-string-literal.cpp
 pass	declarations/constexpr/reference-to-automatic.cpp
 pass	declarations/constexpr/reference-to-static.cpp
 pass	declarations/constexpr/static-local-to-static-local.cpp
@@ -1511,6 +1521,7 @@ pass	declarations/initialization/forms/nullptr-bool-copy.cpp
 pass	declarations/initialization/forms/nullptr-bool-direct.cpp
 pass	declarations/initialization/forms/paren-array-unknown-bound.cpp
 pass	declarations/initialization/forms/paren-init-explicit-conversion.cpp
+pass	declarations/initialization/forms/paren-temporary-declares-function.cpp
 EDG-ONLY	declarations/initialization/forms/read-uninitialized-array.cpp
 pass	declarations/initialization/forms/read-uninitialized.cpp
 pass	declarations/initialization/forms/scalar-list-in-parens.cpp
@@ -1893,6 +1904,8 @@ pass	declarations/structured-bindings/scalar-rejected.cpp
 pass	declarations/structured-bindings/static-and-thread-local.cpp
 pass	declarations/structured-bindings/static-thread-local-ok.cpp
 pass	declarations/structured-bindings/template.cpp
+MISSED-REJECT	declarations/structured-bindings/tuple-const-hidden-variable.cpp
+unsupported	declarations/structured-bindings/tuple-const-specialization.cpp
 MISSED-REJECT	declarations/structured-bindings/tuple-count-mismatch.cpp
 MISSED-REJECT	declarations/structured-bindings/tuple-element-missing.cpp
 unsupported	declarations/structured-bindings/tuple-free-get.cpp
@@ -1900,6 +1913,7 @@ unsupported	declarations/structured-bindings/tuple-get-argument-category.cpp
 run-unsupported	declarations/structured-bindings/tuple-get-order.cpp
 MISSED-REJECT	declarations/structured-bindings/tuple-get-ordinary-lookup.cpp
 unsupported	declarations/structured-bindings/tuple-get-prvalue-lives.cpp
+unsupported	declarations/structured-bindings/tuple-hidden-reference-kind.cpp
 unsupported	declarations/structured-bindings/tuple-member-get-not-template.cpp
 unsupported	declarations/structured-bindings/tuple-member-get-wins.cpp
 unsupported	declarations/structured-bindings/tuple-protocol.cpp
@@ -2132,6 +2146,7 @@ pass	exceptions/unwinding/every-block-between-throw-and-handler.cpp
 pass	exceptions/unwinding/full-expression-temporaries-unwound.cpp
 pass	exceptions/unwinding/handler-block-objects-unaffected.cpp
 pass	exceptions/unwinding/leaves-destructor-during-unwinding-terminates.cpp
+RUN-WRONG-RESULT	exceptions/unwinding/leaves-destructor-member-throwing-caught.cpp
 pass	exceptions/unwinding/leaves-implicit-noexcept-destructor-terminates.cpp
 pass	exceptions/unwinding/leaves-main-terminates.cpp
 pass	exceptions/unwinding/leaves-noexcept-function-terminates.cpp
@@ -2152,6 +2167,7 @@ pass	exceptions/unwinding/placement-new-throws-placement-delete.cpp
 pass	exceptions/unwinding/rethrow-in-noexcept-warns.cpp
 pass	exceptions/unwinding/static-local-init-throws-retry.cpp
 pass	exceptions/unwinding/static-objects-survive-unwinding.cpp
+pass	exceptions/unwinding/termination-abnormal-end.cpp
 pass	exceptions/unwinding/throw-caught-in-noexcept-no-warning.cpp
 pass	exceptions/unwinding/throw-in-noexcept-warns.cpp
 pass	exceptions/unwinding/throw-unmatched-in-noexcept-warns.cpp
@@ -2470,6 +2486,8 @@ pass	expressions/constant-expressions/arithmetic-and-calls.cpp
 pass	expressions/constant-expressions/array-bound-floating.cpp
 pass	expressions/constant-expressions/array-bound-not-constant.cpp
 pass	expressions/constant-expressions/call-before-definition.cpp
+pass	expressions/constant-expressions/call-through-function-pointer-not-constexpr.cpp
+pass	expressions/constant-expressions/call-through-function-pointer.cpp
 pass	expressions/constant-expressions/case-label-floating.cpp
 pass	expressions/constant-expressions/case-label-not-constant.cpp
 pass	expressions/constant-expressions/const-enum-usable.cpp
@@ -2484,9 +2502,11 @@ pass	expressions/constant-expressions/copy-unset-array-element.cpp
 pass	expressions/constant-expressions/copy-unset-member.cpp
 pass	expressions/constant-expressions/deep-recursion.cpp
 pass	expressions/constant-expressions/defaulted-constructor-member-not-constexpr.cpp
+unsupported	expressions/constant-expressions/defaulted-constructor-virtual-base.cpp
 pass	expressions/constant-expressions/delete-mismatch.cpp
 pass	expressions/constant-expressions/double-delete.cpp
 pass	expressions/constant-expressions/enumerator-floating.cpp
+pass	expressions/constant-expressions/excessive-call-count.cpp
 pass	expressions/constant-expressions/explicit-condition-narrowing.cpp
 EDG-ONLY	expressions/constant-expressions/extended-temporary-member.cpp
 EDG-ONLY	expressions/constant-expressions/extended-temporary-nested.cpp
@@ -2495,8 +2515,12 @@ pass	expressions/constant-expressions/extended-temporary-through-cast.cpp
 pass	expressions/constant-expressions/function-pointer-equality.cpp
 pass	expressions/constant-expressions/goto-not-reached.cpp
 pass	expressions/constant-expressions/goto-reached.cpp
+pass	expressions/constant-expressions/implicit-assignment-constant.cpp
+pass	expressions/constant-expressions/implicit-assignment-member-not-constexpr.cpp
 pass	expressions/constant-expressions/implicit-constructor-calls-constexpr.cpp
 pass	expressions/constant-expressions/implicit-constructor-member-not-constexpr.cpp
+unsupported	expressions/constant-expressions/implicit-constructor-virtual-base.cpp
+unsupported	expressions/constant-expressions/implicit-copy-virtual-base.cpp
 pass	expressions/constant-expressions/implicit-destructor-member-not-constexpr.cpp
 pass	expressions/constant-expressions/inactive-union-member.cpp
 pass	expressions/constant-expressions/integral-constant-array-bound.cpp
@@ -2512,6 +2536,9 @@ pass	expressions/constant-expressions/literal-union-all-volatile.cpp
 pass	expressions/constant-expressions/literal-union-volatile-member.cpp
 pass	expressions/constant-expressions/literal-volatile-member.cpp
 pass	expressions/constant-expressions/long-loop.cpp
+FALSE-REJECT	expressions/constant-expressions/moderate-call-count.cpp
+FALSE-REJECT	expressions/constant-expressions/moderate-loop.cpp
+FALSE-REJECT	expressions/constant-expressions/moderate-loops-split.cpp
 pass	expressions/constant-expressions/moderate-recursion.cpp
 pass	expressions/constant-expressions/modify-local-object.cpp
 pass	expressions/constant-expressions/modify-outside-object.cpp
@@ -2530,6 +2557,7 @@ pass	expressions/constant-expressions/read-extended-temporary-nested.cpp
 MISSED-REJECT	expressions/constant-expressions/read-extended-temporary-not-const.cpp
 pass	expressions/constant-expressions/read-non-const-variable.cpp
 pass	expressions/constant-expressions/read-parameter-outside.cpp
+pass	expressions/constant-expressions/read-returned-local-unset-element.cpp
 pass	expressions/constant-expressions/reference-constant-initializer.cpp
 pass	expressions/constant-expressions/reference-reads-constant-object.cpp
 pass	expressions/constant-expressions/reference-runtime-initializer.cpp
@@ -2541,6 +2569,8 @@ pass	expressions/constant-expressions/result-points-to-local.cpp
 pass	expressions/constant-expressions/result-points-to-static.cpp
 pass	expressions/constant-expressions/result-refers-to-static-temporary.cpp
 pass	expressions/constant-expressions/result-refers-to-temporary.cpp
+pass	expressions/constant-expressions/result-returned-local-every-element.cpp
+pass	expressions/constant-expressions/result-returned-local-unset-element.cpp
 pass	expressions/constant-expressions/result-union-no-active-member.cpp
 pass	expressions/constant-expressions/result-union-one-active-member.cpp
 pass	expressions/constant-expressions/result-unset-array-element.cpp
@@ -2561,6 +2591,7 @@ pass	expressions/constant-expressions/undefined-behavior.cpp
 pass	expressions/constant-expressions/unknown-reference-not-read.cpp
 pass	expressions/constant-expressions/unsequenced-not-detected.cpp
 pass	expressions/constant-expressions/unset-member-not-copied.cpp
+run-unsupported	expressions/constant-expressions/virtual-base-path-not-reached.cpp
 unsupported	expressions/constant-expressions/virtual-call.cpp
 pass	expressions/constant-expressions/void-pointer-to-object.cpp
 pass	expressions/constant-expressions/volatile-read.cpp
@@ -2690,6 +2721,7 @@ unsupported	expressions/lambdas/capture-visible-in-trailing-return.cpp
 pass	expressions/lambdas/capturing-no-function-pointer.cpp
 MISSED-REJECT	expressions/lambdas/capturing-not-default-constructible.cpp
 MISSED-REJECT	expressions/lambdas/closure-copy-assign-deleted.cpp
+pass	expressions/lambdas/closure-copy-keeps-state.cpp
 pass	expressions/lambdas/closure-size-unspecified.cpp
 MISSED-REJECT	expressions/lambdas/const-call-operator.cpp
 MISSED-REJECT	expressions/lambdas/constant-address-needs-capture.cpp
@@ -2705,8 +2737,10 @@ pass	expressions/lambdas/default-captures.cpp
 pass	expressions/lambdas/default-constructible.cpp
 run-unsupported	expressions/lambdas/default-member-initializer-captures-this.cpp
 pass	expressions/lambdas/explicit-capture-order.cpp
+pass	expressions/lambdas/explicit-capture-unevaluated-member.cpp
 MISSED-REJECT	expressions/lambdas/explicit-object-mutable.cpp
 unsupported	expressions/lambdas/explicit-object-recursion.cpp
+pass	expressions/lambdas/function-pointer-constant.cpp
 pass	expressions/lambdas/function-pointer.cpp
 unsupported	expressions/lambdas/generic-function-pointer.cpp
 unsupported	expressions/lambdas/generic.cpp
@@ -2731,6 +2765,7 @@ pass	expressions/lambdas/static-call-operator.cpp
 MISSED-REJECT	expressions/lambdas/static-with-capture.cpp
 pass	expressions/lambdas/syntax-forms.cpp
 MISSED-REJECT	expressions/lambdas/this-outside-member.cpp
+pass	expressions/lambdas/unary-plus-function-pointer.cpp
 MISSED-REJECT	expressions/lambdas/uncaptured-variable.cpp
 pass	expressions/lambdas/unevaluated-operand.cpp
 pass	expressions/lambdas/unique-type.cpp
@@ -2777,6 +2812,9 @@ pass	expressions/member-pointers/call-const-on-nonconst.cpp
 MISSED-REJECT	expressions/member-pointers/call-drops-const.cpp
 pass	expressions/member-pointers/call-needs-parens.cpp
 MISSED-REJECT	expressions/member-pointers/call-result-only.cpp
+pass	expressions/member-pointers/compare-data-equal-constant-ubsan.cpp
+pass	expressions/member-pointers/compare-equal-constant-ubsan.cpp
+pass	expressions/member-pointers/compare-equal-constant.cpp
 pass	expressions/member-pointers/compare-equal.cpp
 pass	expressions/member-pointers/compare-relational.cpp
 pass	expressions/member-pointers/compare-three-way.cpp
@@ -3242,6 +3280,8 @@ pass	expressions/shift/left-shift-values.cpp
 pass	expressions/shift/member-pointer-operand.cpp
 pass	expressions/shift/nullptr-operand.cpp
 pass	expressions/shift/operand-floating.cpp
+pass	expressions/shift/operand-order-shift-sanitizer-constant.cpp
+pass	expressions/shift/operand-order-shift-sanitizer.cpp
 pass	expressions/shift/operand-order.cpp
 pass	expressions/shift/operand-pointer.cpp
 pass	expressions/shift/operand-scoped-enum.cpp
@@ -3287,6 +3327,7 @@ pass	expressions/unary/minus-int-min.cpp
 pass	expressions/unary/minus-pointer.cpp
 pass	expressions/unary/minus-values.cpp
 pass	expressions/unary/noexcept-conversion-false.cpp
+pass	expressions/unary/noexcept-destructor-alone.cpp
 pass	expressions/unary/noexcept-dynamic-cast-reference.cpp
 pass	expressions/unary/noexcept-dynamic-cast-to-base.cpp
 pass	expressions/unary/noexcept-new-false.cpp
@@ -3590,6 +3631,15 @@ pass	foundations/language-support/initializer-list-not-template.cpp
 pass	foundations/language-support/initializer-list-parameter-not-needed.cpp
 unsupported	foundations/language-support/initializer-list-pointer-and-size.cpp
 run-unsupported	foundations/language-support/nothrow-tag-self-declared.cpp
+FALSE-REJECT	foundations/language-support/ordering-complete-declaration.cpp
+unsupported	foundations/language-support/ordering-converting-constructor.cpp
+pass	foundations/language-support/ordering-defaulted-needs-conversion.cpp
+pass	foundations/language-support/ordering-defaulted-needs-equal-zero.cpp
+EDG-ONLY	foundations/language-support/ordering-defaulted-not-equal-zero-only.cpp
+unsupported	foundations/language-support/ordering-defaulted-specified-needs-conversion.cpp
+pass	foundations/language-support/ordering-reversed-needs-zero-on-left.cpp
+pass	foundations/language-support/ordering-reversed-three-way-needs-zero-on-left.cpp
+pass	foundations/language-support/ordering-rewritten-needs-relational-zero.cpp
 pass	foundations/language-support/placement-array-needs-array-form.cpp
 pass	foundations/language-support/placement-forms-self-declared.cpp
 pass	foundations/language-support/size-and-null-types.cpp
@@ -4672,6 +4722,8 @@ FALSE-REJECT	templates/concepts/requirement-access-concept-in-member.cpp
 pass	templates/concepts/requirement-access-concept.cpp
 pass	templates/concepts/requirement-access-member.cpp
 pass	templates/concepts/requirement-body-empty.cpp
+pass	templates/concepts/requirement-deleted-function-false.cpp
+pass	templates/concepts/requirement-deleted-function-independent.cpp
 pass	templates/concepts/requirement-failure-false.cpp
 pass	templates/concepts/requirement-false-outside-template.cpp
 pass	templates/concepts/requirement-independent-in-template.cpp

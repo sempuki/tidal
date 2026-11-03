@@ -206,8 +206,8 @@ declaration. A program must not declare:
 :kind: required
 :tests: declarations/declarators/reference-collapsing.cpp declarations/declarators/cv-on-reference-alias-ignored.cpp
 
-A reference added to a reference type from an alias or a template
-argument collapses into one reference. The result is an rvalue reference
+A reference added to a reference type from an alias, a template
+argument, or `decltype` collapses into one reference ({rule}`PACK-24`). The result is an rvalue reference
 only if both references are rvalue references. A cv-qualifier applied to
 such an alias has no effect.
 :::
@@ -430,7 +430,7 @@ reference or would have type `void`.
 
 :::{rule} DCL-13
 :kind: required
-:tests: declarations/declarators/function-declaration-ambiguity.cpp declarations/declarators/function-declaration-ambiguity-type.cpp
+:tests: declarations/declarators/function-declaration-ambiguity.cpp declarations/declarators/function-declaration-ambiguity-type.cpp declarations/initialization/forms/paren-temporary-declares-function.cpp
 
 If the grammar ({rule}`TR-12`) derives a declaration as a function
 declaration and in another way, the declaration is a function
@@ -568,7 +568,7 @@ void send(volatile int* to);   // valid
 
 ## Evidence
 
-All eight compilers agree on 91 of 94 tests. The results are in
+All eight compilers agree on 92 of 95 tests. The results are in
 `tests/RESULTS.md`.
 
 - **DCL-19.** Clang and GCC accept variable-length arrays and arrays of

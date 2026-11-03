@@ -5,6 +5,11 @@ term to its entry here. A marker such as *(library referenced)* names a
 topic that Tidal does not specify yet.
 
 :::{glossary}
+abstract class
+  A class with a pure virtual function that it declares, or that it
+  inherits without a final overrider. A program cannot create an object
+  of an abstract class ({rule}`VIRT-8`).
+
 aggregate candidate
   A deduction guide that an aggregate class template gets for one
   initializer list. Its parameters are the types of the members that the
@@ -169,6 +174,11 @@ deduction guide
   guides from the constructors, and a program can declare more
   ({rule}`CTAD-5`, {rule}`CTAD-11`).
 
+default constructor
+  A constructor that a call with no arguments can call. It has no
+  parameters, or each parameter has a default argument. A class that
+  declares no constructor gets one implicitly ({rule}`CTOR-2`).
+
 default initialization
   The initialization of an object that nothing initializes. A scalar
   keeps no value, and a class object runs its default constructor
@@ -233,6 +243,11 @@ explicit specialization
   A declaration that starts with `template <>` and defines one
   specialization of a template for one argument list ({rule}`TSP-1`,
   {rule}`TSP-2`).
+
+final overrider
+  The override of a virtual function that a virtual call selects for
+  the class of the object. Each virtual function of a class must have
+  exactly one ({rule}`VIRT-5`, {rule}`VIRT-1`).
 
 forwarding reference
   A function parameter of type `T&&`, where `T` is a type parameter of
@@ -368,6 +383,10 @@ more specialized
   other's parameters from its invented types, and not the reverse
   ({rule}`ORD-1`).
 
+most derived class
+  The class that an object was created as. Its constructors initialize
+  the virtual bases ({rule}`DER-13`).
+
 non-allocating placement form
   An `operator new` or `operator new[]` with a `void*` parameter after
   the size, which returns its `void*` argument and allocates nothing.
@@ -454,6 +473,10 @@ pointer-interconvertible
   when a cast turns a pointer to one into a pointer to the other
   ({rule}`STG-16`).
 
+polymorphic class
+  A class that declares or inherits a virtual function
+  ({rule}`VIRT-11`).
+
 primary template
   The declaration of a class template or variable template that is not
   an explicit or partial specialization. A specialization that no other
@@ -516,6 +539,11 @@ structural type
   A type that a constant parameter can have. Scalar types and lvalue
   references are structural. A literal class is structural when its bases
   and members are public, not `mutable`, and structural ({rule}`TPL-6`).
+
+subobject
+  An object inside another object: a base subobject, a non-static data
+  member, or an array element. A virtual base gives one subobject that
+  every path to it shares ({rule}`DER-6`).
 
 subsume
   A constraint subsumes another if each way to satisfy the first shares
@@ -669,4 +697,9 @@ viable function
   A candidate function whose parameters fit the arguments and whose
   constraints hold, with a conversion sequence for each argument
   ({rule}`OVL-22`, {rule}`OVL-23`).
+
+virtual base
+  A base named with `virtual` in a base list. An object holds one
+  subobject of a virtual base, however many paths lead to it
+  ({rule}`DER-6`).
 :::

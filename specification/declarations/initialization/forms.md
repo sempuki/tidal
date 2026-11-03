@@ -34,8 +34,11 @@ until the program assigns one ({principle}`OBJ-P4`).
 :rules: INIT-3 INIT-6
 
 Empty parentheses after a name declare a function, because the grammar
-reads them as a parameter list. Declarators in one declaration are
-initialized from left to right.
+reads them as a parameter list. The same holds for any parentheses whose
+contents have the form of a parameter list, such as `T(&x)` or `T()`
+({rule}`DCL-13`). Braces, or a second pair of parentheses, make the
+declaration a variable. Declarators in one declaration are initialized
+from left to right.
 :::
 
 ## Syntax
@@ -65,10 +68,11 @@ Objects with static or thread storage are *zero-initialized* first
 
 :::{rule} INIT-3
 :kind: required
-:tests: declarations/initialization/forms/empty-parens-declares-function.cpp
+:tests: declarations/initialization/forms/empty-parens-declares-function.cpp declarations/initialization/forms/paren-temporary-declares-function.cpp
 
 A declaration with empty parentheses after the name declares a function,
-and never a variable.
+and never a variable. {rule}`DCL-13` gives the same result for other
+parentheses that have the form of a parameter list.
 :::
 
 :::{rule} INIT-4
@@ -102,9 +106,9 @@ meet these conditions:
 :tests: declarations/initialization/forms/array-partial.cpp declarations/initialization/forms/array-paren-init.cpp declarations/initialization/forms/paren-array-unknown-bound.cpp
 
 An array is initialized from a list of values in braces or in
-parentheses. In parentheses, a conversion that loses information is
-permitted, and an array without a bound gets the number of values as its
-bound. INIT-8 lists what is not valid.
+parentheses. In both forms, an array without a bound gets the number of
+values as its bound ({rule}`DCL-5`). In parentheses, a conversion that
+loses information is permitted, and INIT-8 lists what is not valid.
 :::
 
 :::{rule} INIT-8
@@ -191,6 +195,9 @@ int y = x;           // undefined: x has no value
 x = 3;               // x now has a value
 
 int z();             // a function declaration
+Holder h(Tracker(&live));    // a function: Tracker(&live) is a parameter
+Holder v(Tracker{&live});    // a variable
+Holder w((Tracker(&live)));  // a variable
 
 int a = 3.7;         // 3
 int b(3.7);          // 3
@@ -201,6 +208,7 @@ int d[4] = {1, 2};   // 1, 2, 0, 0
 int e[3](1, 2);      // 1, 2, 0
 int f[2] = d;        // rejected
 int g[4] = {};       // 0, 0, 0, 0
+int k[] = {1, 2, 3}; // int[3]
 
 struct Bits {
   unsigned words[4];
@@ -210,7 +218,7 @@ struct Bits {
 
 ## Evidence
 
-All eight compilers agree on 33 of 34 tests. The results are in
+All eight compilers agree on 34 of 35 tests. The results are in
 `tests/RESULTS.md`.
 
 - **INIT-1.** All compilers reject a read of an uninitialized scalar

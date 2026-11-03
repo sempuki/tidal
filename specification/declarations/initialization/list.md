@@ -326,5 +326,16 @@ All eight compilers agree on 58 of 62 tests. The results are in
   that is a reference to a `char` array over one to an `unsigned char`
   array. Clang and EDG find the call ambiguous ({question}`Q-0167`).
 
+- **LIST-8.** Under `-Wextra`, Clang and GCC warn about a list that
+  leaves out a member with no default member initializer
+  (`-Wmissing-field-initializers`, and in Clang
+  `-Wmissing-designated-field-initializers` for a designated list).
+  They warn for positional and designated lists, and for a member of
+  class type whose own members all have defaults. They do not warn for
+  empty braces `{}`, or for a member left out that has a default member
+  initializer.
+- **LIST-4.** Under `-Wall`, Clang warns when a list omits the braces of
+  a member that is an aggregate (`-Wmissing-braces`). GCC does not warn.
+
 Inputs: clang-sema-init, edg-decl-inits, clang-diag-sema (see
 `inputs/MANIFEST.md`).

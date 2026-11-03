@@ -118,7 +118,7 @@ infinity. For a negative `a`, the sign stays negative.
 
 :::{rule} SHF-8
 :kind: required
-:tests: expressions/shift/operand-order.cpp
+:tests: expressions/shift/operand-order.cpp expressions/shift/operand-order-shift-sanitizer.cpp expressions/shift/operand-order-shift-sanitizer-constant.cpp
 
 The left operand is evaluated before the right operand.
 :::
@@ -159,8 +159,8 @@ c << 20;             // fine: c is promoted to int first
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on all
-25 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 25
+of 27 tests.
 
 - SHF-5, SHF-6: all compilers accept left shifts of negative values and
   overflowing left shifts during {term}`constant evaluation`. The
@@ -170,5 +170,12 @@ The results are in `tests/RESULTS.md`. All eight compilers agree on all
 - SHF-9: Clang and GCC warn by default (`-Wshift-count-overflow`,
   `-Wshift-count-negative`). The tests use `-Werror`. EDG skips these
   tests.
+- SHF-8: GCC 16 with `-fsanitize=shift` and `-Wall` calls a `constexpr`
+  function in the left operand of `<<` twice, at run time and during
+  constant evaluation ({question}`Q-0332`).
+  The result of the shift is correct, and only the side effects repeat.
+  GCC 14, Clang, and GCC 16 without `-Wall` call the function once. A
+  function that is not `constexpr`, and the operator `>>`, are not
+  affected.
 
 Inputs: clang-sema-expr, clang-diag-sema.

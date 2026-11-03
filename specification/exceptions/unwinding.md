@@ -69,21 +69,29 @@ the parts that exist can be ended ({principle}`OBJ-P1`).
 :::
 
 :::{principle} UNW-P3
-:rules: UNW-5 UNW-6 UNW-8
+:rules: UNW-5 UNW-6 UNW-8 UNW-10
 :exceptions: UNW-7
 
 An exception has to end in a handler. Where an exception cannot end in a
 handler, the program ends instead. A `noexcept` function promises that
 no exception leaves the function, so an exception that reaches the
-function's boundary ends the program, and the same holds for a
-destructor, which is `noexcept` unless the destructor says otherwise. A
+function's boundary ends the program. The same holds for a destructor,
+which is `noexcept` unless it says otherwise or the destructor of a
+base or member can throw ({rule}`DTOR-4`). A
 destructor that runs during unwinding cannot throw either, because two
 exceptions cannot be in flight at once. An exception that leaves `main`
 or finds no handler at all has nowhere to go. A function can still
-catch exceptions inside itself, and a destructor marked `noexcept(false)`
+catch exceptions inside itself, and a destructor that is not `noexcept`
 can throw when nothing else is in flight. The implementation decides
 whether the objects on the stack are destroyed before the program ends
 with no handler.
+
+The end is abnormal. The program does not return from `main`, and the
+implementation chooses what the environment sees (UNW-10). A
+termination handler of the library can run code at that point
+*(library referenced)*. A destructor cannot tell from the language
+alone whether it runs because of an exception, so a cleanup object that
+must act only on failure keeps a flag that the success path sets.
 :::
 
 ## Runtime Behavior
@@ -151,13 +159,13 @@ initialization runs again.
 
 :::{rule} UNW-5
 :kind: required
-:tests: exceptions/unwinding/leaves-noexcept-function-terminates.cpp exceptions/unwinding/leaves-implicit-noexcept-destructor-terminates.cpp exceptions/unwinding/leaves-destructor-during-unwinding-terminates.cpp exceptions/unwinding/leaves-main-terminates.cpp exceptions/unwinding/no-handler-terminates.cpp exceptions/unwinding/noexcept-boundary-is-the-function.cpp
+:tests: exceptions/unwinding/leaves-noexcept-function-terminates.cpp exceptions/unwinding/leaves-implicit-noexcept-destructor-terminates.cpp exceptions/unwinding/leaves-destructor-during-unwinding-terminates.cpp exceptions/unwinding/leaves-main-terminates.cpp exceptions/unwinding/no-handler-terminates.cpp exceptions/unwinding/noexcept-boundary-is-the-function.cpp exceptions/unwinding/leaves-destructor-member-throwing-caught.cpp exceptions/unwinding/termination-abnormal-end.cpp
 
 The program ends, without returning from `main`, when an exception:
 
 - leaves a non-throwing function ({rule}`EXS-4`), also when the throw is
   in a function that the non-throwing function calls,
-- leaves a destructor that is not declared `noexcept(false)`,
+- leaves a destructor that is `noexcept` by {rule}`DTOR-4`,
 - leaves a destructor that runs during the unwinding of another
   exception,
 - leaves `main`,
@@ -186,6 +194,16 @@ runs.
 :::
 
 ## Implementation Requirements
+
+:::{rule} UNW-10
+:kind: impl-defined
+:tests: exceptions/unwinding/termination-abnormal-end.cpp
+
+How the program ends under UNW-5 is implementation-defined. On the
+matrix targets, Clang and GCC write a message to the error output,
+destroy no object with static storage duration, and stop the program
+with the signal `SIGABRT`.
+:::
 
 :::{rule} UNW-7
 :kind: impl-defined
@@ -263,10 +281,34 @@ T* copy_into_new_storage(const T* from, int count, int capacity) {
 }
 ```
 
+A guard runs a cleanup when its block ends, by return or by an
+exception, unless the code dismisses it. Its destructor is `noexcept`
+({rule}`DTOR-4`), so a cleanup that throws ends the program (UNW-5). A
+guard in a loop body runs once for each pass:
+
+```cpp
+template <class F> struct Guard {
+  F cleanup;
+  bool active = true;
+  Guard(F f) : cleanup(f) {}
+  Guard(const Guard&) = delete;
+  ~Guard() { if (active) cleanup(); }
+  void dismiss() { active = false; }
+};
+template <class F> Guard<F> on_exit(F f) { return Guard<F>(f); }  // a prvalue:
+                                                                  // no copy
+void transfer(Account& from, Account& to, int amount) {
+  from.take(amount);
+  auto undo = on_exit([&] { from.give(amount); });
+  to.give(amount);             // if this throws, undo gives the money back
+  undo.dismiss();              // success: keep the change
+}
+```
+
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 34
-of 35 tests. EDG runs no programs, so its results say only that the
+The results are in `tests/RESULTS.md`. All eight compilers agree on 36
+of 37 tests. EDG runs no programs, so its results say only that the
 programs are valid.
 
 - UNW-5 and UNW-7: the harness sees only that the program ended with a
@@ -281,6 +323,10 @@ programs are valid.
   matches the static type of the operand, and GCC does not. GCC warns
   about a rethrow in a handler whose try block holds no direct `throw`,
   and Clang does not ({question}`Q-0179`).
+- UNW-10: Clang and GCC print "terminate called after throwing an
+  instance of" and the type of the exception, then abort. The test
+  gives a static object a destructor that would end the program with
+  status 0, and the program still stops with `SIGABRT`.
 - UNW-9: Clang and GCC destroy the temporaries of the full expression,
   then the parameter object, then the block's objects, before the
   handler runs. The test also accepts a parameter that ends at the

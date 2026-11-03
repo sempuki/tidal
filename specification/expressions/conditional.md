@@ -230,6 +230,11 @@ auto p = c ? &x : nullptr;     // int*
 int& r = c ? x : throw 1;      // the type of x
 int v = n == 0 ? 10 : n == 1 ? 11 : 12;   // groups as n == 0 ? 10 : (...)
 auto bad = c ? &x : 1;         // rejected: no common type
+
+const int& larger(const int& a, const int& b) { return a < b ? b : a; }
+const int& top = larger(1, 2); // dangles: the temporaries 1 and 2 end
+                               // with the full expression (REF-5)
+int m = larger(x, y);          // fine: x and y outlive the call
 ```
 
 ## Evidence

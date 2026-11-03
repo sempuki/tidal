@@ -44,10 +44,12 @@ fixed order of tests:
 | 2 | A type with a tuple size | The results of `get` |
 | 3 | Any other class | Its data members, in declaration order |
 
-The number of names must equal the number of elements. Each name has the
-declared type of its element, with the qualifiers of the hidden variable
-added, so a binding to a `mutable` member or a bit-field behaves as that
-member does.
+The number of names must equal the number of elements. A name for an
+array element or a data member has the declared type of its element,
+with the qualifiers of the hidden variable added, so a binding to a
+`mutable` member or a bit-field behaves as that member does. A name for
+an element of the tuple protocol has the type that
+`std::tuple_element` gives, as written.
 :::
 
 :::{principle} SB-P3
@@ -101,7 +103,7 @@ SB-13 lists what is not valid.
 
 :::{rule} SB-13
 :kind: reject
-:tests: declarations/structured-bindings/private-member.cpp declarations/structured-bindings/anonymous-union-member.cpp declarations/structured-bindings/members-split-across-bases.cpp declarations/structured-bindings/union-rejected.cpp declarations/structured-bindings/scalar-rejected.cpp
+:tests: declarations/structured-bindings/private-member.cpp declarations/structured-bindings/anonymous-union-member.cpp declarations/structured-bindings/members-split-across-bases.cpp declarations/structured-bindings/union-rejected.cpp declarations/structured-bindings/scalar-rejected.cpp declarations/structured-bindings/tuple-const-hidden-variable.cpp
 
 The members that SB-3 names must:
 
@@ -115,20 +117,22 @@ The type of the hidden variable must not be a union or a scalar type.
 
 :::{rule} SB-4
 :kind: required
-:tests: declarations/structured-bindings/binding-types.cpp declarations/structured-bindings/reference-member-binding-type.cpp
+:tests: declarations/structured-bindings/binding-types.cpp declarations/structured-bindings/reference-member-binding-type.cpp declarations/structured-bindings/tuple-const-specialization.cpp
 
 For an array element or a data member, `decltype` of a name gives the
-declared type of the element. The cv-qualifiers of the hidden variable
-are added. If the data member has a reference type, the result is that
-reference type.
+declared type of the element, with the cv-qualifiers of the hidden
+variable added. If the data member has a reference type, the result is
+that reference type. For the tuple protocol, the result is
+`std::tuple_element<i, E>::type` with nothing added (SB-5).
 :::
 
 :::{rule} SB-5
 :kind: required
-:tests: declarations/structured-bindings/tuple-protocol.cpp declarations/structured-bindings/tuple-get-order.cpp declarations/structured-bindings/tuple-size-without-value.cpp declarations/structured-bindings/tuple-free-get.cpp declarations/structured-bindings/tuple-member-get-wins.cpp declarations/structured-bindings/tuple-member-get-not-template.cpp declarations/structured-bindings/tuple-get-ordinary-lookup.cpp
+:tests: declarations/structured-bindings/tuple-protocol.cpp declarations/structured-bindings/tuple-const-hidden-variable.cpp declarations/structured-bindings/tuple-const-specialization.cpp declarations/structured-bindings/tuple-get-order.cpp declarations/structured-bindings/tuple-size-without-value.cpp declarations/structured-bindings/tuple-free-get.cpp declarations/structured-bindings/tuple-member-get-wins.cpp declarations/structured-bindings/tuple-member-get-not-template.cpp declarations/structured-bindings/tuple-get-ordinary-lookup.cpp
 
 If `std::tuple_size<E>` is a complete type, `E` uses the tuple protocol.
-`E` is the type of the hidden variable `e`. The `value` member of
+`E` is the type of the hidden variable `e`, with its cv-qualifiers, so
+`const auto&` looks for `std::tuple_size<const C>`. The `value` member of
 `std::tuple_size<E>` gives the number of elements. Element `i` comes
 from one of these calls, and its type is
 `std::tuple_element<i, E>::type` ({rule}`LSUP-3`):
@@ -156,13 +160,14 @@ In the tuple protocol of SB-5, these must hold for each element:
 
 :::{rule} SB-17
 :kind: required
-:tests: declarations/structured-bindings/tuple-get-argument-category.cpp declarations/structured-bindings/tuple-get-prvalue-lives.cpp
+:tests: declarations/structured-bindings/tuple-get-argument-category.cpp declarations/structured-bindings/tuple-get-prvalue-lives.cpp declarations/structured-bindings/tuple-hidden-reference-kind.cpp
 
 In the tuple protocol of SB-5, the call to `get` passes `e` as an
 lvalue when the hidden variable is declared with `&`, and as an xvalue
-in every other case. Each name refers to a hidden reference to its element type, and the
-result of the call initializes that reference, so a prvalue result lives
-as long as the names ({rule}`REF-4`).
+in every other case. Each name refers to a hidden reference to its
+element type. The reference is an lvalue reference if the call gives an
+lvalue, and an rvalue reference otherwise, so a prvalue result lives as
+long as the names ({rule}`REF-4`).
 :::
 
 :::{rule} SB-7
@@ -285,11 +290,23 @@ int b[3];
 auto [i, j] = b;          // rejected: 3 elements, 2 names
 auto [k, k] = a;          // rejected: duplicate name
 auto [c, d]{a};           // valid: braced initializer
+
+class Range {             // private data, and a member get
+  int low, high;
+public:
+  template <std::size_t I> int get() const { return I == 0 ? low : high; }
+};
+// std::tuple_size and std::tuple_element specialized for Range only
+Range g;
+auto [lo, hi] = g;        // tuple protocol: E is Range
+const auto& [cl, ch] = g; // rejected: E is const Range, which has no
+                          // tuple size, so the names go to the private
+                          // data members
 ```
 
 ## Evidence
 
-All eight compilers agree on 51 of 55 tests. The results are in
+All eight compilers agree on 54 of 58 tests. The results are in
 `tests/RESULTS.md`.
 
 - **SB-15.** Clang and GCC accept `constexpr` structured bindings and
