@@ -1,4 +1,4 @@
-// tidal-rules: CE-31
+// tidal-rules: CE-8
 // tidal-expect: run
 constexpr int check(int v) noexcept {
   if (v < 0) throw v;

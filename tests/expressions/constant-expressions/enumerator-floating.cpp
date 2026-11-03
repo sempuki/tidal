@@ -1,4 +1,4 @@
-// tidal-rules: CE-25
+// tidal-rules: CE-11
 // tidal-expect: reject
 // tidal-error-clang: must have integral or unscoped enumeration type
 // tidal-error-gcc: must have integral or unscoped enumeration type

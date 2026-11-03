@@ -20,7 +20,7 @@ temporaries, constructors and destructors, new and delete.
 ## Principles
 
 :::{principle} OBJ-P1
-:rules: OBJ-1 OBJ-7
+:rules: OBJ-1 OBJ-6 OBJ-7
 
 An object comes into existence when its initialization completes and
 goes out of existence when its destructor completes, or when its storage
@@ -104,17 +104,17 @@ these cases.
 
 :::{rule} OBJ-1
 :kind: required
-:tests: foundations/objects/lifetime-begins-after-init.cpp foundations/objects/members-subobjects-end-after-body.cpp foundations/objects/scalar-lifetime-with-storage.cpp foundations/objects/construction-order.cpp exceptions/unwinding/delegating-target-completed-destructor-runs.cpp
+:tests: foundations/objects/lifetime-begins-after-init.cpp foundations/objects/scalar-lifetime-with-storage.cpp exceptions/unwinding/delegating-target-completed-destructor-runs.cpp
 
-The lifetime of a class object begins when its constructor completes
-and ends when its destructor completes. For a delegating constructor,
-the lifetime begins when the target constructor completes
-({rule}`UNW-2`). Its bases and members are
-initialized before the constructor body runs and destroyed after the
-destructor body runs. The bases come first, in the order of the base
-list, then the members, in the order of their declarations. Destruction
-runs in the reverse order. The lifetime of a scalar object begins when
-its storage is obtained, before the object has a value.
+The {term}`lifetime` of an object begins and ends at these points:
+
+| Object | Lifetime begins | Lifetime ends |
+|---|---|---|
+| A class object | Its constructor completes. For a delegating constructor, the target constructor completes ({rule}`UNW-2`). | Its destructor completes. |
+| A scalar object | Its storage is obtained, before the object has a value. | Its storage is released or reused (OBJ-10). |
+
+{rule}`DTOR-6`, OBJ-10, and {rule}`STG-27` give the other events that
+end a lifetime.
 :::
 
 :::{rule} OBJ-3
@@ -156,10 +156,16 @@ without `delete` its destructor never runs.
 
 :::{rule} OBJ-6
 :kind: required
-:tests: foundations/objects/array-elements-order.cpp
+:tests: foundations/objects/array-elements-order.cpp foundations/objects/construction-order.cpp foundations/objects/members-subobjects-end-after-body.cpp
 
-The elements of an array are constructed in order from the first and
-destroyed in the reverse of that order.
+The parts of an object are constructed in this order and destroyed in
+the reverse order:
+
+- In a class object, the bases come first, in the order of the base
+  list, then the members, in the order of their declarations. The parts
+  are constructed before the constructor body runs and destroyed after
+  the destructor body runs.
+- In an array, the elements come in order from the first.
 :::
 
 :::{rule} OBJ-7

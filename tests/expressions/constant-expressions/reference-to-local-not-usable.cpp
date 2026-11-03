@@ -1,4 +1,4 @@
-// tidal-rules: CE-29
+// tidal-rules: CE-3
 // tidal-expect: reject
 // tidal-error-clang: must be initialized by a constant expression
 // tidal-error-gcc: is not a constant expression|not usable in a constant expression

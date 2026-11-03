@@ -1,4 +1,4 @@
-// tidal-rules: CX-6
+// tidal-rules: CE-2
 // tidal-expect: reject
 // tidal-error-clang: not an integral constant expression
 // tidal-error-gcc: call to non-.constexpr. function .int read\(\)

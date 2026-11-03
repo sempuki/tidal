@@ -1,4 +1,4 @@
-// tidal-rules: SEQ-3
+// tidal-rules: SEQ-2
 // tidal-expect: run
 char log_[4]; int n = 0;
 int a, b;

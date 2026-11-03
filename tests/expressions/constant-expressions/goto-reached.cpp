@@ -1,4 +1,4 @@
-// tidal-rules: CE-20
+// tidal-rules: CE-17
 // tidal-expect: reject
 // tidal-error-gcc: .goto. is not a constant expression
 // tidal-error-edg: goto. cannot be executed in constexpr contexts

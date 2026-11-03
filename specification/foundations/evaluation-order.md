@@ -15,24 +15,27 @@ For other operands the order is not fixed.
 ## Principles
 
 :::{principle} SEQ-P1
-:rules: SEQ-2 SEQ-3 SEQ-5 SEQ-6 SEQ-9 SEQ-10 SEQ-11
+:rules: SEQ-2 SEQ-5 SEQ-6 SEQ-9 SEQ-11
 
-The language fixes the order of evaluation only where meaning needs it.
-A full expression finishes, with all its side effects, before the next
-full expression starts, so a program is a sequence of steps at that
-level. Within a full expression, these orders are fixed:
+The language fixes the order of evaluation only in a few places. A
+{term}`full expression` finishes, with all its {term}`side effects
+<side effect>`, before the next full expression starts. So a program is
+a sequence of steps at that level (SEQ-5). Within a full expression,
+SEQ-2 fixes the order in these constructs:
 
-| Construct | Evaluated first | Evaluated after |
-|---|---|---|
-| Call | The function | Its arguments |
-| Call | Its arguments, with their side effects | The body of the function |
-| Assignment | The right side, complete | The left side |
-| Subscript | The array | Its index |
-| Member pointer | The object | The member pointer applied to the object |
-| Braced list | Each element | The elements after that element, in the order written |
+- a call, where the function comes first, then the arguments, then the
+  body,
+- an assignment, where the right side comes first,
+- a subscript, where the array comes first,
+- a member pointer access, where the object comes first,
+- a braced list, where the elements come in the order written.
 
 An overloaded operator keeps the order of the built-in operator it
-replaces, because the program reads the same either way.
+replaces, because the program reads the same either way (SEQ-6). A
+program also calls functions that it does not name, such as
+constructors and destructors, and each such call is a function call
+for these orders (SEQ-9). Each operand is evaluated once, also where
+the construct uses its result twice (SEQ-11).
 :::
 
 :::{principle} SEQ-P2
@@ -43,24 +46,32 @@ choice can differ from one call to the next. The language promises only
 that each argument of a call is evaluated as a whole, and that the
 called function runs as a whole, so two evaluations do not interleave. A
 program whose result depends on an order that the language did not fix
-has no meaning, so two {term}`unsequenced` accesses to one memory
-location, where at least one writes, are undefined. Where the
-implementation can see such a pair, the implementation should report
-the pair.
+has no meaning. So two {term}`unsequenced` accesses to one
+{term}`memory location`, where at least one writes, are undefined.
+Where the implementation can see such a pair, the implementation should
+report the pair.
 :::
 
 ## Runtime Behavior
 
 :::{rule} SEQ-2
 :kind: required
-:tests: expressions/sequencing/callee-before-arguments.cpp expressions/sequencing/object-before-member-call-arguments.cpp
+:tests: expressions/sequencing/callee-before-arguments.cpp expressions/sequencing/object-before-member-call-arguments.cpp expressions/sequencing/arguments-before-body.cpp expressions/sequencing/subscript-order.cpp expressions/sequencing/assignment-increment-defined.cpp expressions/sequencing/braced-list-order.cpp expressions/sequencing/compound-assignment-order.cpp expressions/sequencing/member-pointer-object-first.cpp expressions/sequencing/chained-assignment-order.cpp expressions/sequencing/assignment-right-before-left-index.cpp
 
-In a function call, the expression that gives the function is evaluated
-before the arguments. For a member function call, the expression that
-gives the function includes the object expression. {rule}`SEQ-1` gives
-the place of the initialization of an explicit object parameter. In
-operator syntax the object is an operand, and SEQ-8 gives the order of
-the object.
+These evaluations take place in a fixed order:
+
+| Construct | Evaluated first | Evaluated after |
+|---|---|---|
+| A function call | The expression that gives the function, with the object expression of a member function call | The arguments |
+| A function call | The arguments, with all their side effects | The body of the called function |
+| `a[b]` | `a` | `b` |
+| An assignment or a compound assignment | The right operand, with all its side effects | The left operand |
+| `a.*b` and `a->*b` | `a` | `b` |
+| A braced list ({rule}`LIST-7`) | Each element | The elements to its right |
+
+{rule}`SEQ-1` gives the place of the initialization of an explicit
+object parameter. In operator syntax the object is an operand, and
+SEQ-8 gives the order of the object.
 :::
 
 :::{rule} SEQ-9
@@ -81,20 +92,6 @@ A program calls a function without naming it in these places:
 | A range-based `for` | `begin`, `end`, and the iterator operations | {rule}`RFOR-1`, {rule}`RFOR-2` |
 | A structured binding by the tuple protocol | `get` | {rule}`SB-5` |
 | A `throw` | the constructor that initializes the exception object | {rule}`THR-1` |
-:::
-
-:::{rule} SEQ-3
-:kind: required
-:tests: expressions/sequencing/subscript-order.cpp expressions/sequencing/assignment-increment-defined.cpp expressions/sequencing/braced-list-order.cpp expressions/sequencing/compound-assignment-order.cpp expressions/sequencing/member-pointer-object-first.cpp expressions/sequencing/chained-assignment-order.cpp expressions/sequencing/assignment-right-before-left-index.cpp
-
-These operands are evaluated in a fixed order:
-
-| Expression | Evaluated first | Evaluated after |
-|---|---|---|
-| `a[b]` | `a` | `b` |
-| An assignment or a compound assignment | The right operand, with all its side effects | The left operand |
-| `a.*b` and `a->*b` | `a` | `b` |
-| A braced list (LIST-7) | Each element | The elements to its right |
 :::
 
 :::{rule} SEQ-5
@@ -124,14 +121,6 @@ An overloaded `&&` or `||` evaluates both operands, the left one first
 call, and {rule}`SEQ-1` gives its order.
 :::
 
-:::{rule} SEQ-10
-:kind: required
-:tests: expressions/sequencing/arguments-before-body.cpp
-
-The arguments of a call, with all their side effects, are complete
-before the body of the called function starts.
-:::
-
 :::{rule} SEQ-11
 :kind: required
 :tests: expressions/sequencing/operand-used-twice-evaluated-once.cpp
@@ -150,14 +139,26 @@ than once:
 | A `switch` | the condition | the comparison with each case label | {rule}`SW-1` |
 :::
 
+:::{rule} SEQ-3
+:kind: withdrawn
+
+This rule merged into {rule}`SEQ-2`.
+:::
+
+:::{rule} SEQ-10
+:kind: withdrawn
+
+This rule merged into {rule}`SEQ-2`.
+:::
+
 ## Undefined Behavior
 
 :::{rule} SEQ-4
 :kind: undefined
 :tests: expressions/sequencing/unsequenced-increments.cpp expressions/sequencing/unsequenced-constant-evaluation.cpp expressions/sequencing/adjacent-bitfields-unsequenced.cpp expressions/sequencing/volatile-reads-unsequenced.cpp
 
-If two {term}`unsequenced` evaluations both modify the same memory
-location, or one modifies it and the other reads its value, the behavior
+If two {term}`unsequenced` evaluations both modify the same
+{term}`memory location`, or one modifies it and the other reads its value, the behavior
 is undefined. Adjacent bit-fields can share one memory location. A read
 of a volatile object is a side effect, so two unsequenced reads of the
 same volatile object are undefined too.
@@ -189,7 +190,7 @@ for a built-in operator, whose operands are {term}`unsequenced`, and for
 an overloaded operator, including a member operator and a reversed
 comparison ({rule}`DCMP-6`). These rules fix an order:
 
-- SEQ-3: subscripts, assignments, member pointers, and braced lists,
+- SEQ-2: subscripts, assignments, member pointers, and braced lists,
 - {rule}`SHF-8`: shifts,
 - {rule}`LOG-5`: `&&` and `||`,
 - {rule}`COMMA-1`: the comma operator,

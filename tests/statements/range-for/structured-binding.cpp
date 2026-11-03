@@ -1,4 +1,4 @@
-// tidal-rules: RFOR-3
+// tidal-rules: RFOR-1
 // tidal-expect: run
 struct P { int a; int b; };
 int main() {

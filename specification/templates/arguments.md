@@ -366,7 +366,7 @@ and a test cites this rule as the specific one (decision 0042).
 A pointer argument is a null pointer, such as `nullptr`, or the address
 of a function or of an object with static storage duration. A reference
 argument names such a function or object, also through a reference
-variable that {rule}`CE-29` allows. The object can be a member or an
+variable that {rule}`CE-3` allows. The object can be a member or an
 array element of a larger object, and the entity can have internal
 linkage.
 :::
@@ -501,7 +501,7 @@ void run() {
 ```
 
 A reference variable with a constant initializer names its object
-({rule}`CE-29`):
+({rule}`CE-3`):
 
 ```cpp
 template <int& R> struct Ref { };

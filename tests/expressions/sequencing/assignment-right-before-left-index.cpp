@@ -1,4 +1,4 @@
-// tidal-rules: SEQ-3
+// tidal-rules: SEQ-2
 // tidal-expect: run
 int main() {
   int cells[3] = {9, 9, 9};

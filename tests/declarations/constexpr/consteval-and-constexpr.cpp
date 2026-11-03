@@ -1,4 +1,4 @@
-// tidal-rules: CEV-3
+// tidal-rules: CX-5
 // tidal-expect: reject
 // tidal-error-clang: cannot combine with previous .constexpr. declaration specifier
 // tidal-error-gcc: both .constexpr. and .consteval. specified

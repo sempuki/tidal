@@ -1,4 +1,4 @@
-// tidal-rules: CE-20 CE-23
+// tidal-rules: CE-17 CE-23
 // tidal-expect: reject
 // tidal-expect-clang: accept
 // tidal-expect-clang-18: reject

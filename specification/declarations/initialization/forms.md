@@ -184,7 +184,7 @@ time is undefined. These rules also apply:
 - A copy of such a value into an object of type `unsigned char` or
   `std::byte` is not undefined, and the copy also has no value
   ({question}`Q-0039`). Constant evaluation rejects such a copy
-  ({rule}`CE-32`).
+  ({rule}`CE-22`).
 :::
 
 ## Examples
@@ -225,7 +225,7 @@ All eight compilers agree on 34 of 35 tests. The results are in
   during {term}`constant evaluation` ("read of uninitialized object",
   "access to uninitialized object"). The rejection covers a copy of an
   `unsigned char` that has no value, though the copy is not undefined
-  at run time ({rule}`CE-32`, {question}`Q-0039`).
+  at run time ({rule}`CE-22`, {question}`Q-0039`).
 - **INIT-9.** In constant evaluation, the default constructor that the
   implementation writes for a class can run if each constructor that it
   calls for a base or a member can run ({rule}`CE-2`).

@@ -34,7 +34,7 @@ program leaves two or more loops at once in one of these ways:
 - a flag that every loop condition tests.
 
 A `constexpr` function can contain `goto`, but constant evaluation
-rejects a `goto` that it reaches ({rule}`CX-6`).
+rejects a `goto` that it reaches ({rule}`CE-17`).
 
 A label belongs to the whole function and to no other name space
 ({principle}`NAM-P4`), so a `goto` can name a label that comes later,

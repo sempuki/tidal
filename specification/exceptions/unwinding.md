@@ -17,35 +17,34 @@ exception specifications, new and delete.
 ## Principles
 
 :::{principle} UNW-P1
-:rules: UNW-1 UNW-4 UNW-9
+:rules: UNW-1 UNW-4
 
 A throw is a way of leaving a block, and leaving a block ends the
 block's automatic objects in the reverse of their construction order
-({principle}`OBJ-P2`). The search for a handler runs that exit for
-every block between the throw and the handler, innermost first, so by
-the time the handler runs, nothing that the thrown-from code created on
-the way still exists:
+({principle}`OBJ-P2`). {term}`Unwinding <unwinding>` runs that exit for
+the full expression that threw and for every block between the throw
+and the handler, innermost first. By the time the handler runs, nothing
+that the code inside the try block created still exists. In this
+diagram, `fail()` throws:
 
 ```text
-try {                        block C
-  {                          block B
-    {                        block A
-      throw ...;   ------->  1. A's automatic objects end
-    }                        2. B's automatic objects end
-  }                          3. C's automatic objects end
-}
-catch (...) {                4. the handler runs
+try {                           block C
+  {                             block B
+    {                           block A
+      Temp().take(fail());  --> 1. the Temp temporary ends
+    }                           2. A's automatic objects end
+  }                             3. B's automatic objects end
+}                               4. C's automatic objects end
+catch (...) {                   5. the handler runs
 }
 ```
 
-The temporaries of the full expression that threw end first, in the
-reverse of their creation, and the rest of that full expression never
-runs. Objects that the throw did not reach are never created. Static
-objects are not part of any of those blocks, so unwinding leaves them
-alone, and an exception that leaves the initialization of a static local
-variable leaves the variable not yet initialized, so the next call tries
-again. These rules assume that a function body runs to its end without
-suspension *(coroutines referenced)*.
+No later part of the full expression runs, and objects that the throw
+did not reach are never created. Static objects are not part of any of
+those blocks, so unwinding leaves them alone. An exception that leaves
+the initialization of a static local variable leaves the variable not
+yet initialized, and the next call tries again. These rules assume that
+a function body runs to its end without suspension *(coroutines referenced)*.
 :::
 
 :::{principle} UNW-P2
@@ -93,14 +92,19 @@ must act only on failure keeps a flag that the success path sets.
 
 :::{rule} UNW-1
 :kind: required
-:tests: exceptions/unwinding/block-objects-end-before-handler.cpp exceptions/unwinding/every-block-between-throw-and-handler.cpp exceptions/unwinding/nested-blocks-ended-in-order.cpp exceptions/unwinding/objects-after-throw-not-created.cpp exceptions/unwinding/handler-block-objects-unaffected.cpp
+:tests: exceptions/unwinding/block-objects-end-before-handler.cpp exceptions/unwinding/every-block-between-throw-and-handler.cpp exceptions/unwinding/nested-blocks-ended-in-order.cpp exceptions/unwinding/objects-after-throw-not-created.cpp exceptions/unwinding/handler-block-objects-unaffected.cpp exceptions/unwinding/full-expression-temporaries-unwound.cpp
 
-When an exception leaves a block, the automatic objects of that block
-are destroyed in the order of {rule}`OBJ-3`. The destruction repeats for every block from the throw to the handler,
-innermost first, and all of the destruction completes before the handler
-runs. Objects declared after the
-throw are not created. Objects of the handler's own block and of blocks
-that enclose the try block are not affected.
+When an exception leaves a {term}`full expression`, these objects
+end, in this order, before the handler runs:
+
+1. the temporaries and parameter objects of that full expression that
+   still exist ({rule}`VC-10`), last created first,
+2. the automatic objects of each block from the throw to the handler,
+   innermost block first, each block in the order of {rule}`OBJ-3`.
+
+No later part of the full expression runs, and objects declared after
+the throw are not created. Objects of the handler's own block and of
+blocks that enclose the try block are not affected.
 :::
 
 :::{rule} UNW-2
@@ -181,14 +185,9 @@ exception after the destructor's object has ended.
 :::
 
 :::{rule} UNW-9
-:kind: required
-:tests: exceptions/unwinding/full-expression-temporaries-unwound.cpp
+:kind: withdrawn
 
-When an exception leaves a full expression, the temporaries and
-parameter objects of that full expression that still exist
-({rule}`VC-10`) end, last created first. These objects end before the
-automatic objects of the block. No later part of the full expression
-runs.
+This rule merged into {rule}`UNW-1`.
 :::
 
 ## Implementation Requirements
@@ -337,7 +336,7 @@ programs are valid.
   instance of" and the type of the exception, then abort. The test
   gives a static object a destructor that would end the program with
   status 0, and the program still stops with `SIGABRT`.
-- UNW-9: Clang and GCC destroy the temporaries of the full expression,
+- UNW-1: Clang and GCC destroy the temporaries of the full expression,
   then the parameter object, then the block's objects, before the
   handler runs. The test also accepts a parameter that ends at the
   return of its function ({rule}`VC-10`).

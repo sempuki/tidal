@@ -1,4 +1,4 @@
-// tidal-rules: SEQ-10
+// tidal-rules: SEQ-2
 // tidal-expect: run
 int g = 0;
 int seen(int arg) { return g * 10 + arg; }

@@ -10,7 +10,7 @@ function. This page covers:
 ## Principles
 
 :::{principle} REF-P1
-:rules: REF-1 REF-13 REF-8 REF-2 REF-9 REF-3 REF-10
+:rules: REF-1 REF-8 REF-2 REF-9 REF-3 REF-10
 
 A reference is a name for an existing object or function
 ({principle}`OBJ-P3`), and the binding gives the reference that object.
@@ -50,8 +50,8 @@ where it can see such a reference.
 
 A braced list binds a reference in one of three ways:
 
-- **direct**: the reference binds to the list's one element, as after
-  `=`.
+- **direct**: the reference {term}`binds directly <bind directly>` to
+  the list's one element, as after `=`.
 - **temporary**: the list initializes a temporary of the referenced
   type, and the reference binds to the temporary.
 - **none**: the list cannot initialize the reference. A declaration is
@@ -84,28 +84,19 @@ model, and its child questions hold each split between the compilers.
 
 :::{rule} REF-1
 :kind: required
-:tests: declarations/initialization/references/lvalue-ref-binds-lvalue.cpp declarations/initialization/references/base-ref-to-derived.cpp declarations/initialization/references/unknown-bound-ref.cpp declarations/initialization/references/const-element-array-ref.cpp
+:tests: declarations/initialization/references/lvalue-ref-binds-lvalue.cpp declarations/initialization/references/base-ref-to-derived.cpp declarations/initialization/references/unknown-bound-ref.cpp declarations/initialization/references/const-element-array-ref.cpp declarations/initialization/references/const-ref-binds-lvalue-directly.cpp
 
-A non-`const` lvalue reference binds directly to an lvalue. The
-reference and the lvalue are then the same object. The lvalue can have:
+An lvalue reference {term}`binds directly <bind directly>` to an
+lvalue that is not a bit-field, if the lvalue has one of these types:
 
 - the same type,
 - the same type with fewer {term}`cv-qualifiers <cv-qualifier>`,
 - a class derived from the type through an accessible base.
 
-The cv-qualifiers of an array's elements count as those of the array
-({rule}`CV-6`), and a reference to an array of unknown bound binds to an
-array of known bound. REF-8 lists what is not valid.
-:::
-
-:::{rule} REF-13
-:kind: required
-:tests: declarations/initialization/references/const-ref-binds-lvalue-directly.cpp
-
-A `const` lvalue reference binds directly to an lvalue that is not a
-bit-field, if the lvalue has one of the types that REF-1 lists. The
-reference and the lvalue are then the same object, and no temporary
-object exists.
+The reference and the lvalue are then the same object, and no temporary
+object exists. The cv-qualifiers of an array's elements count as those
+of the array ({rule}`CV-6`), and a reference to an array of unknown
+bound binds to an array of known bound. REF-8 lists what is not valid.
 :::
 
 :::{rule} REF-8
@@ -204,6 +195,12 @@ These conditions apply to the initializer of a reference:
   ({question}`Q-0149`).
 - The temporary must not need an `explicit` constructor
   ({question}`Q-0150`).
+:::
+
+:::{rule} REF-13
+:kind: withdrawn
+
+This rule merged into {rule}`REF-1`.
 :::
 
 ## Runtime Behavior

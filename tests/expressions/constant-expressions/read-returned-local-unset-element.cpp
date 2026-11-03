@@ -1,4 +1,4 @@
-// tidal-rules: CE-32 CE-21
+// tidal-rules: CE-22 CE-21
 // tidal-expect: reject
 // tidal-expect-gcc: accept
 // tidal-error-clang: subobject .v. is not initialized

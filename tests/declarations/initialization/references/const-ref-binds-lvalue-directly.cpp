@@ -1,4 +1,4 @@
-// tidal-rules: REF-13
+// tidal-rules: REF-1
 // tidal-expect: run
 struct Base { int v = 1; };
 struct Derived : Base {};

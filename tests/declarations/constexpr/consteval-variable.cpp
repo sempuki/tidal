@@ -1,4 +1,4 @@
-// tidal-rules: CEV-3
+// tidal-rules: CX-5
 // tidal-expect: reject
 // tidal-error-clang: consteval can only be used in function declarations
 // tidal-error-gcc: variable cannot be declared .consteval

@@ -1,4 +1,4 @@
-// tidal-rules: RFOR-3
+// tidal-rules: RFOR-8
 // tidal-expect: run
 // tidal-note: Gap review 2026-10-31 (third).
 int items[3] = {1, 2, 3};

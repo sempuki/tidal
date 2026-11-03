@@ -1,4 +1,4 @@
-// tidal-rules: CEV-3
+// tidal-rules: CX-5
 // tidal-expect: reject
 // tidal-error-clang: constexpr declaration of .f. follows consteval declaration
 // tidal-error-gcc: differs in .consteval. from previous declaration

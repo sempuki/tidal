@@ -69,6 +69,11 @@ best viable function
   The viable function that is better than each other viable function of
   a use. Overload resolution calls it ({rule}`OVL-34`).
 
+bind directly
+  Said of a reference that refers to the object or function that its
+  initializer names, with no {term}`temporary object` in between
+  ({rule}`REF-1`, {rule}`REF-2`, {rule}`REF-6`).
+
 built-in candidate
   A candidate function that stands for a built-in operator, with fixed
   parameter types. A class operand reaches it through a conversion
@@ -388,6 +393,13 @@ layout-compatible
   cv-qualifiers, two enumerations with one underlying type, or two
   standard-layout classes whose members match in full ({rule}`UNI-16`).
 
+lifetime
+  The time during which an object exists in its storage. The lifetime
+  of a class object starts when its initialization completes and ends
+  when its destructor completes. The lifetime of a scalar object starts
+  with its storage. The release or reuse of the storage also ends the
+  lifetime ({rule}`OBJ-1`, {rule}`OBJ-10`).
+
 linkage
   The property that controls if two declarations of a name refer to the
   same entity.
@@ -418,6 +430,12 @@ member template
   A template declared in a class body. Such a template declares a
   function, a nested class, or a static variable with a head of its own
   ({rule}`TPL-24`).
+
+memory location
+  The storage of one scalar object, or of a group of adjacent
+  bit-fields. A bit-field of width zero ends such a group. Two
+  {term}`unsequenced` accesses conflict only when they reach the same
+  memory location ({rule}`SEQ-4`).
 
 more constrained
   The relation that orders two declarations by their constraints
@@ -567,6 +585,11 @@ sequence rank
   The rank of a {term}`standard conversion sequence`: exact match,
   promotion, or conversion. The worst conversion in the sequence gives
   the rank ({rule}`ICS-2`).
+
+side effect
+  A change to the state of the program that an evaluation makes, apart
+  from computing its value. A write to an object is a side effect, and
+  so is a read of a `volatile` object ({rule}`SEQ-4`).
 
 special member function
   One of the six member functions that the implementation can declare
@@ -727,13 +750,19 @@ unsequenced
   overlap with work in the other operand. The call and the other work
   can still occur in either order.
 
+unwinding
+  The destruction of objects that takes place when an exception leaves
+  a {term}`full expression` or a block on its way to a handler. The
+  temporaries of the full expression end first, then the automatic
+  objects of each block, innermost block first ({rule}`UNW-1`).
+
 usable in constant expressions
   Said of a variable or a temporary object whose value a constant
   evaluation can read, also if the evaluation did not create it. The
   kinds are a `constexpr` variable, a `const` integer or enumeration
   variable with a {term}`constant initializer`, a reference variable
   with a constant initializer, and a `const` temporary that a
-  `constexpr` reference extends ({rule}`CE-3`, {rule}`CE-29`).
+  `constexpr` reference extends ({rule}`CE-3`).
 
 use
   A point where the running program needs a variable or a function

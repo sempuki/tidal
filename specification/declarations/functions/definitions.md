@@ -22,7 +22,7 @@ apart from the parameter names:
 |---|---|
 | return type | FN-14, {rule}`RET-4` for a placeholder |
 | `noexcept` specification | {rule}`DCL-14`, {rule}`EXS-8` |
-| `constexpr` and `consteval` | {rule}`CX-5`, {rule}`CEV-3` |
+| `constexpr` and `consteval` | {rule}`CX-5` |
 | `= delete`, on the first declaration only | {rule}`DEL-2` |
 | language linkage | {rule}`LSP-7` |
 | `static` among member functions | {rule}`CLS-9` |

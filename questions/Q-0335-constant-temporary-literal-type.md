@@ -1,7 +1,7 @@
 # Q-0335: Must a temporary that a constant evaluation makes have a literal type?
 
 **Status:** provisional
-**Affects:** CE-20, CE-23, CE-P1, `tests/expressions/constant-expressions/literal-temporary-volatile-member.cpp`
+**Affects:** CE-17, CE-23, CE-P1, `tests/expressions/constant-expressions/literal-temporary-volatile-member.cpp`
 
 ## Context
 

@@ -10,13 +10,14 @@ a range. A range is one of these:
 ## Principles
 
 :::{principle} RFOR-P1
-:rules: RFOR-1 RFOR-2 RFOR-3 RFOR-4 RFOR-7
+:rules: RFOR-1 RFOR-2 RFOR-3 RFOR-4 RFOR-7 RFOR-8
 
 A range-based `for` is an ordinary loop that the language writes for
 you.
 
-1. The loop evaluates the range one time and binds the result to a
-   hidden reference variable, as `auto&&` would. The range object is
+1. After the initializer statement, if there is one, the loop
+   evaluates the range one time and binds the result to a hidden
+   reference variable, as `auto&&` would. The range object is
    never copied, and a temporary in the range expression lives as long
    as the loop.
 2. The loop finds `begin` and `end` one time, as members if the class
@@ -26,9 +27,8 @@ you.
 3. The loop then advances with `++`, stops when the iterator compares
    equal to `end`, and initializes the loop variable from each element.
 
-The loop variable is not yet declared when
-the range expression is evaluated, so a name there means the outer
-entity.
+The loop variable is not yet declared when the range expression is
+evaluated, so a name there means the outer entity (RFOR-8).
 :::
 
 :::{principle} RFOR-P2
@@ -89,6 +89,15 @@ type. A pointer is not a range. For a range of class type (RFOR-2):
 - The iterator must have prefix `++`.
 :::
 
+:::{rule} RFOR-8
+:kind: required
+:tests: statements/range-for/loop-name-not-in-range.cpp
+
+The loop variable is not in scope in the range expression. A name in
+the range expression refers to an outer entity, also when the loop
+variable has the same name.
+:::
+
 :::{rule} RFOR-5
 :kind: reject
 :tests: statements/range-for/storage-class.cpp statements/range-for/static-thread-local-declaration.cpp statements/range-for/extern-loop-variable.cpp
@@ -112,27 +121,28 @@ outermost block of the body.
 
 :::{rule} RFOR-1
 :kind: required
-:tests: statements/range-for/array.cpp statements/range-for/braced-list.cpp statements/range-for/braced-list-mixed-types.cpp
+:tests: statements/range-for/array.cpp statements/range-for/braced-list.cpp statements/range-for/braced-list-mixed-types.cpp statements/range-for/structured-binding.cpp
 
 The body executes once for each element of the range, in order. Each
-element initializes the loop variable. A braced list gives a
+element initializes the loop variable, which can be a structured
+binding ({rule}`SB-1`). A braced list gives a
 `std::initializer_list<T>` ({rule}`LSUP-1`), and `T` is deduced as for
 `auto x = { ... };` ({rule}`AUTO-7`, {rule}`AUTO-21`).
 :::
 
 :::{rule} RFOR-3
 :kind: required
-:tests: statements/range-for/range-evaluated-once.cpp statements/range-for/init-statement.cpp statements/range-for/structured-binding.cpp statements/range-for/end-computed-once.cpp statements/range-for/loop-name-not-in-range.cpp statements/range-for/empty-init-statement.cpp statements/range-for/range-held-by-reference.cpp
+:tests: statements/range-for/range-evaluated-once.cpp statements/range-for/init-statement.cpp statements/range-for/end-computed-once.cpp statements/range-for/empty-init-statement.cpp statements/range-for/range-held-by-reference.cpp
 
-The range expression is evaluated one time, before the first iteration.
-The loop binds the result to a hidden variable declared with `auto&&`,
-and calls `begin` and `end` on that variable as an lvalue.
-The loop variable is not yet in scope there, so a name in the range
-expression refers to the outer entity, also when the loop variable has
-the same name.
-`begin` and `end` are also called one time, so a change to the range in
-the body does not move the end. An initializer statement can come before
-the loop variable. The loop variable can be a structured binding.
+Before the first iteration, the loop evaluates these parts one time
+each, in this order:
+
+1. the initializer statement, if there is one,
+2. the range expression, whose result a hidden variable declared with
+   `auto&&` binds,
+3. `begin` and `end`, called on the hidden variable as an lvalue.
+
+A change to the range in the body does not move the end.
 :::
 
 :::{rule} RFOR-4

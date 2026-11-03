@@ -1,4 +1,4 @@
-// tidal-rules: CE-29
+// tidal-rules: CE-3
 // tidal-expect: accept
 // tidal-note: alias is not constexpr, but its initializer is a constant expression. Constant evaluation can use alias to name a, also in a template argument.
 int a = 0;

@@ -1,4 +1,4 @@
-// tidal-rules: OBJ-1
+// tidal-rules: OBJ-6
 // tidal-expect: run
 int trace = 0;
 void mark(int d) { trace = trace * 10 + d; }

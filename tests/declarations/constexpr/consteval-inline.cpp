@@ -1,4 +1,4 @@
-// tidal-rules: CEV-4
+// tidal-rules: CX-4
 // tidal-expect: run
 // tidal-note: Gap review 2026-10-30.
 // tidal-sources: consteval-inline.tu.cpp

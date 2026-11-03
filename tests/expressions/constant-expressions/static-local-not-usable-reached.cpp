@@ -1,4 +1,4 @@
-// tidal-rules: CE-20
+// tidal-rules: CE-17
 // tidal-expect: reject
 // tidal-error-gcc: with static storage duration|called in a constant expression
 // tidal-error-clang: control flows through the definition of a static variable|not an integral constant expression

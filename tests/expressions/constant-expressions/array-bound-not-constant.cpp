@@ -1,4 +1,4 @@
-// tidal-rules: CE-25
+// tidal-rules: CE-11
 // tidal-expect: reject
 // tidal-error-clang: variable length arrays in C\+\+
 // tidal-error-gcc: forbids variable length array

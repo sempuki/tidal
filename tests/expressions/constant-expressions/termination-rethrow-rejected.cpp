@@ -1,4 +1,4 @@
-// tidal-rules: CE-31 CE-8
+// tidal-rules: CE-8
 // tidal-expect: reject
 // tidal-error-clang: subexpression not valid in a constant expression
 // tidal-error-gcc: <throw-expression>. is not a constant expression

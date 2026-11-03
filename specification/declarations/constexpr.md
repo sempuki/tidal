@@ -16,16 +16,16 @@ Rules are prefixed `CX` for `constexpr`, `CEV` for `consteval`, and
 ## Principles
 
 :::{principle} CX-P1
-:rules: CX-3 CX-6 CX-4 CX-5
+:rules: CX-3 CX-4 CX-5
 
 `constexpr` on a function is a permission. It lets constant evaluation
 call the function ({principle}`TR-P4`), and the same function still
 runs at run time with the same meaning. The body can contain operations
 that constant evaluation cannot do, as long as no constant evaluation
-reaches them. Because every translation unit that evaluates the
-function needs its body, the function is `inline`. The specifier
-applies to functions and variables only, and all declarations of a
-function must agree on it.
+reaches them ({rule}`CE-17`). Because every translation unit that
+evaluates the function needs its body, the function is `inline`. The
+specifier applies to functions and variables only, and all
+declarations of a function must agree on it.
 :::
 
 :::{principle} CX-P2
@@ -44,7 +44,7 @@ The target must exist at translation time and still exist at run time.
 :::
 
 :::{principle} CX-P3
-:rules: CEV-1 CEV-2 CEV-3 CEV-4
+:rules: CEV-1 CEV-2 CX-4 CX-5
 
 `consteval` on a function is a demand. Every call is evaluated at
 translation time, so a call with arguments that are not constant is an
@@ -52,8 +52,9 @@ error unless the call sits inside another function that constant
 evaluation is already running. A function that makes such a call becomes
 `consteval` itself when the language allows, and otherwise the call is
 rejected. The function has no run-time existence, so its address can be
-taken only where constant evaluation is in progress. A `consteval`
-function is `inline` for the same reason as a `constexpr` function.
+taken only where constant evaluation is in progress. `consteval`
+applies to functions only, and a `consteval` function is `inline` for
+the same reason as a `constexpr` function.
 :::
 
 :::{principle} CX-P4
@@ -116,41 +117,33 @@ duration of the variable. So a `constexpr` variable in a block without
 
 A program can call a `constexpr` function during {term}`constant
 evaluation` and at run time. The body can contain the operations that
-CX-6 lists on paths that the call does not evaluate. A function that
-never gives a constant expression is valid.
+{rule}`CE-2` and {rule}`CE-17` reject, on paths that the call does not
+evaluate. A function that never gives a constant expression is valid.
 
 The return type and the parameter types of a `constexpr` function need
 not be literal types.
 :::
 
-:::{rule} CX-6
-:kind: reject
-:tests: declarations/constexpr/function-not-constant-call.cpp declarations/constexpr/function-static-local-evaluated.cpp expressions/constant-expressions/static-local-usable-reached.cpp
-
-During {term}`constant evaluation`, a call to a `constexpr` function
-(CX-3) must not evaluate an operation that constant evaluation does not
-permit. Such operations include:
-
-- a call to a function that is not `constexpr`,
-- the definition of a `static` or `thread_local` variable that is not
-  usable in constant expressions ({rule}`CE-20`, {rule}`CE-3`),
-- a `goto`.
-:::
-
 :::{rule} CX-4
 :kind: required
-:tests: declarations/constexpr/function-implicitly-inline.cpp
+:tests: declarations/constexpr/function-implicitly-inline.cpp declarations/constexpr/consteval-inline.cpp
 
-A `constexpr` function is `inline` (LNK-4).
+A `constexpr` or `consteval` function is `inline` (LNK-4).
 :::
 
 :::{rule} CX-5
 :kind: reject
-:tests: declarations/constexpr/constexpr-class-only.cpp declarations/constexpr/constexpr-redeclaration-mismatch.cpp declarations/constexpr/constexpr-parameter.cpp
+:tests: declarations/constexpr/constexpr-class-only.cpp declarations/constexpr/constexpr-redeclaration-mismatch.cpp declarations/constexpr/constexpr-parameter.cpp declarations/constexpr/consteval-variable.cpp declarations/constexpr/consteval-and-constexpr.cpp declarations/constexpr/consteval-redeclare-constexpr.cpp
 
-Only variables and functions can be `constexpr`. A parameter must not be
-`constexpr`, and neither can a declaration that only defines a class.
-All declarations of a function must agree on `constexpr`.
+`constexpr` and `consteval` can appear only on these declarations:
+
+| Specifier | Can appear on |
+|---|---|
+| `constexpr` | a function, or a variable that is not a parameter |
+| `consteval` | a function |
+
+A declaration must not have both specifiers. All declarations of a
+function must agree on each of the two specifiers.
 :::
 
 :::{rule} CEV-1
@@ -187,15 +180,6 @@ immediate function context. A target type that selects a `consteval`
 function from an overload set ({rule}`OVL-18`) takes its address.
 :::
 
-:::{rule} CEV-3
-:kind: reject
-:tests: declarations/constexpr/consteval-variable.cpp declarations/constexpr/consteval-and-constexpr.cpp declarations/constexpr/consteval-redeclare-constexpr.cpp
-
-`consteval` applies only to functions. A declaration must not have both
-`consteval` and `constexpr`. All declarations of a function must agree
-on `consteval`.
-:::
-
 :::{rule} CINIT-1
 :kind: reject
 :tests: declarations/constexpr/constinit-static.cpp declarations/constexpr/constinit-not-const.cpp declarations/constexpr/constinit-dynamic.cpp declarations/constexpr/constinit-nonconstexpr-dtor.cpp expressions/constant-expressions/constant-initializer-not-constant.cpp expressions/constant-expressions/constant-initializer-zero-trivial-class.cpp expressions/constant-expressions/constant-initializer-trivial-class-block-static.cpp expressions/constant-expressions/constant-initializer-trivial-class-array.cpp
@@ -219,11 +203,22 @@ If a declaration of a variable has `constinit`, the initializing
 declaration must also have it ({question}`Q-0025`).
 :::
 
-:::{rule} CEV-4
-:kind: required
-:tests: declarations/constexpr/consteval-inline.cpp
+:::{rule} CX-6
+:kind: withdrawn
 
-A `consteval` function is `inline` (LNK-4).
+This rule merged into {rule}`CE-2` and {rule}`CE-17`.
+:::
+
+:::{rule} CEV-3
+:kind: withdrawn
+
+This rule merged into {rule}`CX-5`.
+:::
+
+:::{rule} CEV-4
+:kind: withdrawn
+
+This rule merged into {rule}`CX-4`.
 :::
 
 ## Examples
@@ -281,12 +276,12 @@ Identifier bad = "2x";              // rejected
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 67
-of 75 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 64
+of 72 tests.
 
-- CX-6: every compiler accepts a constant evaluation that reaches the
-  definition of a `static const int` with a constant initializer, as
-  {rule}`CE-20` allows (`static-local-usable-reached.cpp`). Every
+- {rule}`CE-17`: every compiler accepts a constant evaluation that
+  reaches the definition of a `static const int` with a constant
+  initializer (`static-local-usable-reached.cpp`). Every
   compiler rejects one that reaches a `static int`
   (`function-static-local-evaluated.cpp`).
 - CX-3: Clang 18 rejects a `constexpr` function that never gives a
