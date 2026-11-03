@@ -129,7 +129,7 @@ also apply:
 
 :::{rule} INL-8
 :kind: reject
-:tests: declarations/inline/inline-static-member-incomplete.cpp
+:tests: declarations/inline/inline-static-member-incomplete.cpp declarations/inline/inline-static-member-declared-later.cpp
 
 The type of an inline static data member (INL-4) must be complete at its
 definition in the class.
@@ -139,7 +139,7 @@ definition in the class.
 
 :::{rule} INL-5
 :kind: required
-:tests: declarations/inline/static-local-shared.cpp
+:tests: declarations/inline/static-local-shared.cpp declarations/inline/static-local-member-shared.cpp
 
 A static local variable of an inline function with external linkage is
 one object in the program. All translation units that call the function
@@ -184,8 +184,8 @@ struct Config {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 33
-of 35 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 35
+of 37 tests.
 
 - INL-2: GCC accepts `inline` on a declaration after the definition.
   Clang and EDG reject the declaration ({question}`Q-0068`).

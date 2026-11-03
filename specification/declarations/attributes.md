@@ -130,7 +130,7 @@ These uses are also not valid:
 
 :::{rule} ATTR-8
 :kind: required
-:tests: declarations/attributes/likely-unlikely.cpp
+:tests: declarations/attributes/likely-unlikely.cpp declarations/attributes/unlikely-loop-body.cpp declarations/attributes/likely-identifier-label.cpp
 
 `[[likely]]` and `[[unlikely]]` can apply to a statement or a label. The
 two attributes do not change what the program does.
@@ -138,7 +138,7 @@ two attributes do not change what the program does.
 
 :::{rule} ATTR-11
 :kind: required
-:tests: declarations/attributes/carries-dependency.cpp
+:tests: declarations/attributes/carries-dependency.cpp declarations/attributes/carries-dependency-definition.cpp
 
 `[[carries_dependency]]` can apply to a function or a parameter. The
 attribute is about the memory model *(memory model referenced)* and does
@@ -212,7 +212,7 @@ The specifier applies to the entity in the last column.
 
 :::{rule} ATTR-15
 :kind: required
-:tests: declarations/attributes/assume-not-evaluated.cpp
+:tests: declarations/attributes/assume-not-evaluated.cpp declarations/attributes/assume-call-not-evaluated.cpp
 
 An assumption does not evaluate its expression. Side effects in the
 expression do not occur.
@@ -220,7 +220,7 @@ expression do not occur.
 
 :::{rule} ATTR-16
 :kind: required
-:tests: declarations/attributes/no-unique-address-same-type.cpp
+:tests: declarations/attributes/no-unique-address-same-type.cpp declarations/attributes/no-unique-address-three-members.cpp
 
 Two members of the same empty type have distinct addresses, even if both
 are declared `no_unique_address`.
@@ -328,7 +328,7 @@ fall through in these cases:
 
 :::{rule} ATTR-14
 :kind: recommended
-:tests: declarations/attributes/noreturn-returns.cpp
+:tests: declarations/attributes/noreturn-returns.cpp declarations/attributes/noreturn-returns-on-one-path.cpp
 
 An implementation should warn if control can return from a `noreturn`
 function.
@@ -361,8 +361,8 @@ switch (k) {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 61
-of 74 tests. EDG skips the tests that use `-Werror`.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 66
+of 80 tests. EDG skips the tests that use `-Werror`.
 
 - An implementation should warn if a `noreturn` function can return.
   Clang and GCC give this warning ("function declared 'noreturn' should
@@ -384,6 +384,9 @@ of 74 tests. EDG skips the tests that use `-Werror`.
   `-Wunused-but-set-variable`). Both also warn about an unused
   structured binding declaration. Clang reports an unused variable, and
   GCC reports a declaration that is set but not used.
+- ATTR-8: GCC and EDG accept `[[likely]]` before a label that is an
+  identifier. Clang rejects the attribute there, though Clang accepts it
+  before a `case` label ({question}`Q-0347`).
 - ATTR-7: Clang warns for a missing `[[fallthrough]];` only under
   `-Wimplicit-fallthrough`. GCC also warns under `-Wextra`. Both agree
   on the cases where control falls through.

@@ -243,7 +243,7 @@ no `u` suffix that only an unsigned type can hold is not valid
 
 :::{rule} PRIM-3
 :kind: required
-:tests: expressions/primary/int-forms.cpp
+:tests: expressions/primary/int-forms.cpp expressions/primary/int-forms-suffixes.cpp
 
 `0x` starts a hexadecimal literal, `0b` a binary literal, and `0`
 followed by digits an octal literal. Suffix letters can be in either
@@ -346,7 +346,7 @@ must not have:
 
 :::{rule} PRIM-30
 :kind: required
-:tests: expressions/primary/char-value-code-unit.cpp
+:tests: expressions/primary/char-value-code-unit.cpp expressions/primary/char-value-escapes-prefixes.cpp
 
 A character literal with one character has the value of that
 character's code unit in the encoding that the prefix names:
@@ -365,7 +365,7 @@ number converts to the type of the literal ({rule}`CONV-2`).
 
 :::{rule} PRIM-31
 :kind: required
-:tests: expressions/primary/char-digits-consecutive.cpp
+:tests: expressions/primary/char-digits-consecutive.cpp expressions/primary/char-digits-parse.cpp
 
 In each encoding of PRIM-30, the digits `0` to `9` have consecutive code
 units in increasing order.
@@ -373,7 +373,7 @@ units in increasing order.
 
 :::{rule} PRIM-33
 :kind: required
-:tests: expressions/primary/char-simple-escape-values.cpp
+:tests: expressions/primary/char-simple-escape-values.cpp expressions/primary/string-simple-escape-values.cpp
 
 Each simple escape stands for one character, and its value is the code
 unit of that character (PRIM-30):
@@ -497,7 +497,7 @@ category as the expression.
 
 :::{rule} PRIM-27
 :kind: required
-:tests: expressions/primary/fold-expansion.cpp
+:tests: expressions/primary/fold-expansion.cpp expressions/primary/fold-shift-and-comma.cpp
 
 A fold expression stands for an expression with one copy of the pack
 operand for each element, in the order of the pack. A right fold, with
@@ -549,7 +549,7 @@ behavior is undefined.
 
 :::{rule} PRIM-32
 :kind: impl-defined
-:tests: expressions/primary/char-encoding-lp64.cpp expressions/primary/char-encoding-ilp32.cpp
+:tests: expressions/primary/char-encoding-lp64.cpp expressions/primary/char-encoding-ilp32.cpp expressions/primary/char-encoding-ascii.cpp
 
 The ordinary encoding and the wide encoding are implementation-defined.
 The matrix targets choose these encodings:
@@ -599,7 +599,7 @@ addresses of such literals ({question}`Q-0033`).
 
 :::{rule} PRIM-15
 :kind: conditionally-supported
-:tests: expressions/primary/float-overflow.cpp
+:tests: expressions/primary/float-overflow.cpp expressions/primary/double-overflow.cpp
 
 A floating literal outside the range of its type is conditionally
 supported. An implementation that accepts such a literal documents the
@@ -608,7 +608,7 @@ value ({question}`Q-0063`).
 
 :::{rule} PRIM-21
 :kind: impl-defined
-:tests: expressions/primary/float-nearest-value.cpp
+:tests: expressions/primary/float-nearest-value.cpp expressions/primary/float-nearest-value-float.cpp
 
 If the value of a floating literal is in the range of its type but has
 no exact representation, the result is one of the two nearest values
@@ -618,17 +618,17 @@ the x86-64 Linux targets in the matrix, the result is the nearer value.
 
 :::{rule} PRIM-22
 :kind: conditionally-supported
-:tests: expressions/primary/float-extended-suffix.cpp
+:tests: expressions/primary/float-extended-suffix.cpp expressions/primary/float-extended-suffix-sixteen.cpp
 
 The suffixes `f16`, `f32`, `f64`, `f128`, and `bf16`, in either case,
 give the extended floating-point types *(extended floating-point types
 referenced)*. Support for the suffixes is conditional. GCC and EDG
-accept the suffixes, and Clang rejects them.
+accept every suffix. Clang accepts `f16` and rejects the others.
 :::
 
 :::{rule} PRIM-23
 :kind: conditionally-supported
-:tests: expressions/primary/char-unprefixed-not-single-unit.cpp
+:tests: expressions/primary/char-unprefixed-not-single-unit.cpp expressions/primary/char-unprefixed-utf8-source.cpp
 
 A character literal without a prefix that contains one character with
 no single code unit in the ordinary encoding is conditionally supported.
@@ -683,8 +683,8 @@ total(1, 2, 3);           // ((0 + 1) + 2) + 3
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 106
-of 114 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 115
+of 124 tests.
 
 - PRIM-2: Clang and GCC reject a decimal literal that fits only an
   unsigned type under `-pedantic-errors`. EDG accepts it
@@ -692,7 +692,8 @@ of 114 tests.
 - PRIM-15: Clang and GCC accept `1e999f` with a warning and give
   infinity. EDG rejects it ({question}`Q-0063`).
 - PRIM-22: GCC and EDG accept the extended floating suffixes. Clang
-  rejects them. Support is conditional.
+  accepts `f16` and `F16` and rejects the others. Support is
+  conditional.
 - PRIM-29: Clang and GCC reject a fold whose operand holds a binary
   operator without parentheses. EDG accepts it ({question}`Q-0194`).
 - PRIM-32: EDG, as the matrix configures it, rejects `"é"` because one

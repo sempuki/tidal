@@ -218,7 +218,7 @@ NEW-35 gives the result of such an `n` known only at run time.
 
 :::{rule} NEW-6
 :kind: reject
-:tests: expressions/new-delete/leak-in-constant-evaluation.cpp
+:tests: expressions/new-delete/leak-in-constant-evaluation.cpp expressions/new-delete/leak-array-in-constant-evaluation.cpp
 
 During {term}`constant evaluation`, each object that `new` creates must
 be deleted before the evaluation ends.
@@ -296,7 +296,7 @@ A `new` expression must not:
 
 :::{rule} NEW-13
 :kind: required
-:tests: expressions/new-delete/class-allocation-function.cpp
+:tests: expressions/new-delete/class-allocation-function.cpp expressions/new-delete/class-array-allocation-function.cpp
 
 A class can declare its own `operator new` and `operator delete`. A
 `new` or `delete` for that class uses those functions. `::new` and
@@ -349,7 +349,7 @@ parameter of the non-allocating placement form.
 
 :::{rule} NEW-30
 :kind: reject
-:tests: expressions/new-delete/aligned-form-only-for-ordinary-type.cpp
+:tests: expressions/new-delete/aligned-form-only-for-ordinary-type.cpp expressions/new-delete/aligned-form-only-placement.cpp
 
 If the alignment of the type is at most the {term}`default new
 alignment`, a `new` expression must find an allocation function that
@@ -370,7 +370,7 @@ placement arguments, the chosen function must not be a usual form
 
 :::{rule} NEW-15
 :kind: required
-:tests: expressions/new-delete/delete-class-converting-to-pointer.cpp
+:tests: expressions/new-delete/delete-class-converting-to-pointer.cpp expressions/new-delete/delete-array-class-converting-to-pointer.cpp
 
 The operand of `delete` can be a class object that converts to a pointer
 to an object type by exactly one conversion function that is not
@@ -478,7 +478,7 @@ function gets the alignment too, after `delete` and after a throw
 
 :::{rule} NEW-29
 :kind: required
-:tests: expressions/new-delete/aligned-fallback-without-alignment.cpp
+:tests: expressions/new-delete/aligned-fallback-without-alignment.cpp expressions/new-delete/aligned-fallback-array.cpp
 
 If no allocation function accepts the arguments of NEW-28, the `new`
 expression tries again without the alignment argument. A `delete`
@@ -522,7 +522,7 @@ The expression then calls no allocation function and throws
 
 :::{rule} NEW-36
 :kind: required
-:tests: expressions/new-delete/bad-bound-nothrow.cpp
+:tests: expressions/new-delete/bad-bound-nothrow.cpp expressions/new-delete/bad-bound-nothrow-class.cpp
 
 If the bound is erroneous (NEW-35) and the allocation function is
 non-throwing, the `new` expression gives a null pointer and throws
@@ -531,7 +531,7 @@ nothing ({question}`Q-0302`).
 
 :::{rule} NEW-41
 :kind: required
-:tests: expressions/new-delete/deallocate-by-name-null.cpp
+:tests: expressions/new-delete/deallocate-by-name-null.cpp expressions/new-delete/deallocate-by-name-null-nothrow.cpp
 
 A call by name of a global `operator delete` or `operator delete[]`
 with a null pointer does nothing ({rule}`NEW-4`).
@@ -598,7 +598,7 @@ null pointer.
 
 :::{rule} NEW-32
 :kind: undefined
-:tests: expressions/new-delete/null-result-throwing-form-sanitizer.cpp
+:tests: expressions/new-delete/null-result-throwing-form-sanitizer.cpp expressions/new-delete/null-result-class-function-sanitizer.cpp
 
 If an allocation function that is not non-throwing returns a null
 pointer, the behavior is undefined.
@@ -608,7 +608,7 @@ pointer, the behavior is undefined.
 
 :::{rule} NEW-18
 :kind: unspecified
-:tests: expressions/sequencing/new-placement-and-bound-order.cpp
+:tests: expressions/sequencing/new-placement-and-bound-order.cpp expressions/sequencing/new-class-placement-and-bound-order.cpp
 
 The placement arguments and the array bound of a `new` expression are
 evaluated in an unspecified order.
@@ -616,7 +616,7 @@ evaluated in an unspecified order.
 
 :::{rule} NEW-14
 :kind: unspecified
-:tests: expressions/new-delete/allocation-may-be-omitted.cpp
+:tests: expressions/new-delete/allocation-may-be-omitted.cpp expressions/new-delete/allocation-may-be-omitted-array.cpp
 
 The number of calls to the global allocation functions can be smaller
 than the number of `new` expressions. An implementation can skip an
@@ -652,7 +652,7 @@ memory.
 
 :::{rule} NEW-34
 :kind: unspecified
-:tests: expressions/new-delete/array-overhead-other-forms.cpp
+:tests: expressions/new-delete/array-overhead-other-forms.cpp expressions/new-delete/array-overhead-global-form.cpp
 
 An array `new` that does not use a non-allocating placement form can ask
 for more storage than its elements need. The amount is unspecified and
@@ -731,8 +731,8 @@ int* q = new (cell) int(4);     // the int is at cell (NEW-33)
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 108
-of 129 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 118
+of 140 tests.
 
 - NEW-42: on x86-64, the global allocation functions of Clang and GCC
   throw `std::bad_alloc` for requests of 2^47 bytes, 2^47 + 1 bytes,

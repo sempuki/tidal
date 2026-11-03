@@ -177,7 +177,7 @@ A static data member is one object for the program. These rules apply:
 
 :::{rule} CLS-23
 :kind: reject
-:tests: classes/members/static-non-const-in-class-init.cpp
+:tests: classes/members/static-non-const-in-class-init.cpp classes/members/static-const-double-in-class-init.cpp
 
 CLS-3 lists the static data members that can have an initializer in the
 class. Other static data members must not have an initializer in the
@@ -222,7 +222,7 @@ not `const` on a `const` object, or a member function that is not
 
 :::{rule} CLS-6
 :kind: required
-:tests: classes/members/ref-qualified.cpp
+:tests: classes/members/ref-qualified.cpp classes/members/ref-qualified-const-and-xvalue.cpp
 
 A member function can have the ref-qualifier `&` or `&&`. A call on an
 lvalue selects `&`, and a call on an rvalue selects `&&`.
@@ -230,7 +230,7 @@ lvalue selects `&`, and a call on an rvalue selects `&&`.
 
 :::{rule} CLS-26
 :kind: reject
-:tests: classes/members/ref-qualified-mixed.cpp
+:tests: classes/members/ref-qualified-mixed.cpp classes/members/ref-qualified-mixed-const.cpp
 
 The overloads of a member function that CLS-6 describes must all have
 ref-qualifiers, or none, if they have the same parameters
@@ -239,7 +239,7 @@ ref-qualifiers, or none, if they have the same parameters
 
 :::{rule} CLS-7
 :kind: required
-:tests: classes/members/static-member-function.cpp
+:tests: classes/members/static-member-function.cpp classes/members/static-member-function-pointer.cpp
 
 A static member function has no `this`. A program can call it through
 the class name or through an object.
@@ -258,7 +258,7 @@ A static member function must not:
 
 :::{rule} CLS-8
 :kind: required
-:tests: classes/members/nested-types.cpp
+:tests: classes/members/nested-types.cpp classes/members/nested-types-out-of-class.cpp
 
 A class can declare these members:
 
@@ -350,7 +350,7 @@ member function or a lambda, and it must not have a default argument
 
 :::{rule} CLS-15
 :kind: required
-:tests: classes/members/static-call-operator.cpp
+:tests: classes/members/static-call-operator.cpp classes/members/static-subscript-no-parameters.cpp
 
 `operator()` and `operator[]` can be static member functions. `operator[]`
 can have any number of parameters ({rule}`OPR-3`).
@@ -368,7 +368,7 @@ it can be `inline constexpr` when the declaration in the class is
 
 :::{rule} CLS-17
 :kind: required
-:tests: classes/members/explicit-object-address-ordinary.cpp
+:tests: classes/members/explicit-object-address-ordinary.cpp classes/members/explicit-object-address-by-value.cpp
 
 The address of a member function with an explicit object parameter is an
 ordinary pointer to function. The address is not a pointer to member. A
@@ -377,7 +377,7 @@ call through the pointer passes the object as the first argument.
 
 :::{rule} CLS-20
 :kind: reject
-:tests: classes/members/static-const-init-not-constant.cpp
+:tests: classes/members/static-const-init-not-constant.cpp classes/members/static-const-enum-init-not-constant.cpp
 
 The initializer of a `const` static data member of integer or
 enumeration type in its class must be a constant expression.
@@ -426,7 +426,7 @@ zero size, and the choice is implementation-defined (CLS-31).
 
 :::{rule} CLS-29
 :kind: required
-:tests: classes/members/standard-layout-types.cpp
+:tests: classes/members/standard-layout-types.cpp classes/members/standard-layout-nested-array.cpp
 
 These types are {term}`standard-layout` types:
 
@@ -454,7 +454,7 @@ of the object.
 
 :::{rule} CLS-30
 :kind: required
-:tests: classes/members/first-member-same-address.cpp classes/members/standard-layout-bases-same-address.cpp classes/members/empty-base-shares-address.cpp classes/members/standard-layout-reinterpret.cpp classes/members/standard-layout-members-in-base.cpp classes/members/standard-layout-static-member-access.cpp classes/members/standard-layout-empty-bases.cpp classes/members/standard-layout-bit-field-first.cpp classes/members/standard-layout-types.cpp classes/members/standard-layout-address-constant.cpp
+:tests: classes/members/first-member-same-address.cpp classes/members/standard-layout-bases-same-address.cpp classes/members/empty-base-shares-address.cpp classes/members/standard-layout-reinterpret.cpp classes/members/standard-layout-members-in-base.cpp classes/members/standard-layout-static-member-access.cpp classes/members/standard-layout-empty-bases.cpp classes/members/standard-layout-bit-field-first.cpp classes/members/standard-layout-types.cpp classes/members/standard-layout-address-constant.cpp classes/members/standard-layout-nested-array.cpp
 
 An object of a standard-layout class has these properties:
 
@@ -481,7 +481,7 @@ offset of such a base is unspecified (CLS-34).
 
 :::{rule} CLS-11
 :kind: impl-defined
-:tests: classes/members/empty-class-size-one.cpp
+:tests: classes/members/empty-class-size-one.cpp classes/members/empty-class-array-size.cpp
 
 The size of an empty class is implementation-defined.
 :::
@@ -522,7 +522,7 @@ CLS-31, and CLS-33:
 
 :::{rule} CLS-21
 :kind: no-diagnostic
-:tests: classes/members/static-const-odr-use-no-definition.cpp
+:tests: classes/members/static-const-odr-use-no-definition.cpp classes/members/static-const-address-no-definition.cpp
 
 A `const` static data member with an initializer in its class, and not
 `constexpr` or `inline`, needs a definition outside the class if the
@@ -556,8 +556,8 @@ struct Text {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 109
-of 114 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 119
+of 125 tests.
 
 - CLS-3: a missing definition of a static data member compiles in each
   translation unit. The linker reports the missing definition.

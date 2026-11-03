@@ -194,7 +194,7 @@ This rule merged into {rule}`UNW-1`.
 
 :::{rule} UNW-10
 :kind: impl-defined
-:tests: exceptions/unwinding/termination-abnormal-end.cpp
+:tests: exceptions/unwinding/termination-abnormal-end.cpp exceptions/unwinding/termination-no-handler.cpp
 
 How the program ends under UNW-5 is implementation-defined. On the
 matrix targets, Clang and GCC write a message to the error output,
@@ -307,8 +307,8 @@ void transfer(Account& from, Account& to, int amount) {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 37
-of 38 tests. EDG runs no programs, so its results say only that the
+The results are in `tests/RESULTS.md`. All eight compilers agree on 38
+of 39 tests. EDG runs no programs, so its results say only that the
 programs are valid.
 
 - UNW-5 and UNW-7: the harness sees only that the program ended with a

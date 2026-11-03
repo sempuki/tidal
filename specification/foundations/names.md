@@ -248,7 +248,7 @@ a name outside the function. The qualified name `::x` finds the global
 
 :::{rule} NAM-12
 :kind: reject
-:tests: foundations/names/hiding-ignores-kind.cpp
+:tests: foundations/names/hiding-ignores-kind.cpp foundations/names/hiding-variable-hides-type.cpp
 
 An unqualified use of a hidden name finds only the inner declaration
 (NAM-2). If that declaration does not fit the use, the use is not
@@ -278,7 +278,7 @@ the namespace with a qualified name.
 
 :::{rule} NAM-9
 :kind: reject
-:tests: foundations/names/namespace-qualified-use.cpp
+:tests: foundations/names/namespace-qualified-use.cpp foundations/names/namespace-qualified-call.cpp
 
 From outside a namespace, a name declared in the namespace needs
 qualification (NAM-4).
@@ -405,7 +405,7 @@ The form works for scoped and unscoped enumerations ({rule}`ENUM-2`,
 
 :::{rule} NAM-20
 :kind: reject
-:tests: foundations/names/enum-qualified-missing.cpp
+:tests: foundations/names/enum-qualified-missing.cpp foundations/names/enum-qualified-missing-unscoped.cpp
 
 In `E::x`, `x` must be an enumerator of `E` (NAM-19).
 :::
@@ -679,7 +679,7 @@ names, so a label and a variable can have the same name.
 
 :::{rule} NAM-11
 :kind: reject
-:tests: foundations/names/label-duplicate.cpp
+:tests: foundations/names/label-duplicate.cpp foundations/names/label-duplicate-other-block.cpp
 
 One function must not define a label twice (NAM-7).
 :::
@@ -757,8 +757,8 @@ File::File* q = nullptr;        // rejected: names the constructor
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 189
-of 191 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 193
+of 195 tests.
 
 The clean-room writer probed qualified lookup, using directives,
 argument-dependent lookup, and the injected class name with Clang 22,

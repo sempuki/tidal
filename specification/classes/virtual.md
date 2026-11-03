@@ -124,7 +124,7 @@ static member function in a derived class.
 
 :::{rule} VIRT-21
 :kind: reject
-:tests: classes/virtual/static-overrides-virtual.cpp
+:tests: classes/virtual/static-overrides-virtual.cpp classes/virtual/static-hides-inherited-virtual.cpp
 
 A static member function must not have the name and parameters of a
 virtual function of a base. The rule applies also when the static
@@ -283,7 +283,7 @@ must be `constexpr` ({rule}`CE-2`).
 
 :::{rule} VIRT-11
 :kind: required
-:tests: classes/virtual/polymorphic-class.cpp
+:tests: classes/virtual/polymorphic-class.cpp classes/virtual/polymorphic-inherited-destructor.cpp
 
 A class that declares or inherits a virtual function is polymorphic.
 :::
@@ -354,7 +354,7 @@ The behavior is undefined in these cases:
 
 :::{rule} VIRT-17
 :kind: no-diagnostic
-:tests: classes/virtual/pure-dtor-needs-definition.cpp
+:tests: classes/virtual/pure-dtor-needs-definition.cpp classes/virtual/pure-dtor-needs-definition-delete.cpp
 
 A pure virtual destructor that a derived class uses must have a
 definition. An implementation need not diagnose a missing definition
@@ -363,7 +363,7 @@ before linking.
 
 :::{rule} VIRT-20
 :kind: no-diagnostic
-:tests: classes/virtual/virtual-not-defined.cpp
+:tests: classes/virtual/virtual-not-defined.cpp classes/virtual/virtual-not-defined-escaping-object.cpp
 
 A virtual function that is not pure must have a definition, even if no
 code calls it. An implementation need not diagnose a missing definition
@@ -476,8 +476,8 @@ struct MoreConst : Maker {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 118
-of 122 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 122
+of 126 tests.
 
 - VIRT-12: GCC accepts `delete` through a base without a virtual
   destructor during constant evaluation. Clang and EDG reject the

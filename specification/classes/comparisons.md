@@ -223,7 +223,7 @@ access, and deletion take no part ({question}`Q-0190`).
 
 :::{rule} DCMP-8
 :kind: no-diagnostic
-:tests: classes/comparisons/out-of-class-would-delete.cpp
+:tests: classes/comparisons/out-of-class-would-delete.cpp classes/comparisons/out-of-class-reference-member-would-delete.cpp
 
 A comparison defaulted after the class definition must not be one that
 would be deleted. An implementation need not diagnose such a comparison
@@ -304,7 +304,7 @@ bool y = l == s;   // the friend from Name<8>, with M = 2
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 73
-of 78 tests. The tests declare the comparison category types themselves.
+of 79 tests. The tests declare the comparison category types themselves.
 
 - DCMP-3: GCC accepts defaulting a friend that was declared outside the
   class. Clang and EDG reject it ({question}`Q-0061`).

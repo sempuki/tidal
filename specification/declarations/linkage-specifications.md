@@ -141,7 +141,7 @@ These rules also follow from LSP-4:
 
 :::{rule} LSP-5
 :kind: impl-defined
-:tests: declarations/linkage-specifications/unknown-language.cpp
+:tests: declarations/linkage-specifications/unknown-language.cpp declarations/linkage-specifications/unknown-language-block.cpp
 
 The languages other than `"C"` and `"C++"` that an implementation
 supports are implementation-defined. The implementations in the matrix
@@ -191,8 +191,8 @@ apply(twice, 2);                 // rejected where the type records the linkage 
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 26
-of 32 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 27
+of 33 tests.
 
 - LSP-6: EDG treats C language linkage as part of the function type.
   Clang and GCC do not ({question}`Q-0074`). EDG gives the linkage to a

@@ -190,7 +190,7 @@ temporary, extends the temporary to the lifetime of the reference
 
 :::{rule} OBJ-9
 :kind: required
-:tests: foundations/objects/temporary-ends-with-full-expression.cpp
+:tests: foundations/objects/temporary-ends-with-full-expression.cpp foundations/objects/temporary-member-access.cpp
 
 A temporary lives while its full expression is evaluated and no longer.
 A function that takes the temporary by reference returns first, and the
@@ -224,7 +224,7 @@ accesses.
 
 :::{rule} OBJ-10
 :kind: undefined
-:tests: foundations/objects/storage-reuse-ends-old-object-constant.cpp
+:tests: foundations/objects/storage-reuse-ends-old-object-constant.cpp foundations/objects/storage-reuse-member-of-member-constant.cpp
 
 If the storage of an object is reused for another object, the first
 object's lifetime ends. A later read through a reference to the first
@@ -237,7 +237,7 @@ instead.
 
 :::{rule} OBJ-11
 :kind: unspecified
-:tests: foundations/objects/thread-local-init-point.cpp
+:tests: foundations/objects/thread-local-init-point.cpp foundations/objects/thread-local-member-init-point.cpp
 
 The implementation constructs a `thread_local` object with a constructor
 before `main` runs or when the thread first uses the object, and the
@@ -267,8 +267,8 @@ int main() {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 43
-of 45 tests. EDG runs no programs, so its results for the run tests say
+The results are in `tests/RESULTS.md`. All eight compilers agree on 46
+of 48 tests. EDG runs no programs, so its results for the run tests say
 only that the programs are valid.
 
 - OBJ-11: the test accepts either construction point. Three containers

@@ -164,7 +164,7 @@ enumerator value must fit in the underlying type without narrowing.
 
 :::{rule} ENUM-7
 :kind: required
-:tests: declarations/enumerations/opaque-declaration.cpp
+:tests: declarations/enumerations/opaque-declaration.cpp declarations/enumerations/opaque-declaration-member.cpp
 
 An enumeration can be declared without its enumerators before its
 definition. ENUM-18 lists what such a declaration needs.
@@ -185,7 +185,7 @@ valid.
 
 :::{rule} ENUM-8
 :kind: required
-:tests: declarations/enumerations/list-init-fixed.cpp
+:tests: declarations/enumerations/list-init-fixed.cpp declarations/enumerations/list-init-fixed-member-and-new.cpp
 
 A variable of an enumeration type with a fixed underlying type can be
 initialized from an integer in braces. This rule includes all scoped
@@ -261,7 +261,7 @@ an operand of `!`, `&&`, or `||`. An explicit cast to `bool` is valid.
 
 :::{rule} ENUM-12
 :kind: required
-:tests: declarations/enumerations/enumerator-scope-after-value.cpp
+:tests: declarations/enumerations/enumerator-scope-after-value.cpp declarations/enumerations/enumerator-scope-scoped.cpp
 
 The name of an enumerator is declared after its value expression. In
 that expression, the name refers to an outer entity with that name.
@@ -283,7 +283,7 @@ The values of an enumeration are these:
 
 :::{rule} ENUM-21
 :kind: required
-:tests: declarations/enumerations/cast-fixed-converts-to-underlying.cpp
+:tests: declarations/enumerations/cast-fixed-converts-to-underlying.cpp declarations/enumerations/cast-fixed-wide-integer.cpp
 
 If an integer converts to an enumeration with a fixed underlying type,
 the integer first converts to the underlying type ({rule}`CONV-2`,
@@ -308,7 +308,7 @@ the bytes of another object, a read of the object is undefined
 
 :::{rule} ENUM-13
 :kind: unspecified
-:tests: declarations/enumerations/enumerator-type-grows.cpp
+:tests: declarations/enumerations/enumerator-type-grows.cpp declarations/enumerations/enumerator-type-grows-unsigned.cpp
 
 Inside the enumerator list of an enumeration without a fixed type, an
 enumerator without an initializer whose value the type of the
@@ -371,7 +371,7 @@ static_assert(sizeof names / sizeof names[0] ==
 
 ## Evidence
 
-All eight compilers agree on 64 of 67 tests. The results are in
+All eight compilers agree on 69 of 72 tests. The results are in
 `tests/RESULTS.md`.
 
 - **ENUM-5.** With `-fshort-enums`, Clang and GCC give `enum { S = 1 }`

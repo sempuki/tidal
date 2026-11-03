@@ -170,7 +170,7 @@ DCL-17 lists what is not valid.
 
 :::{rule} DCL-17
 :kind: reject
-:tests: declarations/declarators/pointer-to-reference.cpp
+:tests: declarations/declarators/pointer-to-reference.cpp declarations/declarators/pointer-to-reference-alias.cpp
 
 A pointer to a reference must not be declared.
 :::
@@ -255,7 +255,7 @@ An array declaration must obey these rules:
 
 :::{rule} DCL-6
 :kind: required
-:tests: declarations/declarators/multidim-outer-omitted.cpp
+:tests: declarations/declarators/multidim-outer-omitted.cpp declarations/declarators/multidim-outer-omitted-strings.cpp
 
 An array of arrays can omit its first bound. DCL-20 lists what is not
 valid.
@@ -321,7 +321,7 @@ that DCL-9 gives. `...` must be the last item in the list.
 
 :::{rule} CV-1
 :kind: required
-:tests: declarations/declarators/cv-position.cpp
+:tests: declarations/declarators/cv-position.cpp declarations/declarators/cv-position-alias-and-levels.cpp
 
 A cv-qualifier applies to the type on its left. If there is no type on
 its left, the cv-qualifier applies to the type on its right. In a
@@ -412,7 +412,7 @@ These variables cannot occur in a constant expression:
 
 :::{rule} DCL-12
 :kind: required
-:tests: declarations/declarators/pointer-to-member.cpp
+:tests: declarations/declarators/pointer-to-member.cpp declarations/declarators/pointer-to-member-function.cpp
 
 A declarator of the form `C::* name` declares a pointer to a member of
 class `C` ({rule}`MPTR-1`). DCL-23 lists what is not valid.
@@ -447,7 +447,7 @@ declarations of a function must agree on the `noexcept` specification.
 
 :::{rule} DCL-15
 :kind: required
-:tests: declarations/declarators/qualified-function-type-member.cpp
+:tests: declarations/declarators/qualified-function-type-member.cpp declarations/declarators/ref-qualified-function-type-member.cpp
 
 A function type with a cv-qualifier or a ref-qualifier after its
 parameter list can be named through a type alias. Such a type can
@@ -471,7 +471,7 @@ of these ({question}`Q-0106`):
 
 :::{rule} DCL-11
 :kind: required
-:tests: declarations/declarators/reference-binds-same-object.cpp
+:tests: declarations/declarators/reference-binds-same-object.cpp declarations/declarators/reference-to-function-and-element.cpp
 
 A reference refers to an existing object or function. Each use of the
 reference is a use of that object or function.
@@ -567,7 +567,7 @@ void send(volatile int* to);   // valid
 
 ## Evidence
 
-All eight compilers agree on 92 of 95 tests. The results are in
+All eight compilers agree on 97 of 101 tests. The results are in
 `tests/RESULTS.md`.
 
 - **DCL-19.** Clang and GCC accept variable-length arrays and arrays of
@@ -576,6 +576,10 @@ All eight compilers agree on 92 of 95 tests. The results are in
 - **DCL-10.** Clang 22 and 18 reject `char huge[1ull << 62];`. GCC 16
   and 14 and EDG 7.0 accept it. The provisional answer is that the limit
   is implementation-defined. See {question}`Q-0012`.
+- **DCL-15.** Clang and EDG accept a pointer to member whose type is an
+  alias of a function type with a ref-qualifier. GCC drops the
+  ref-qualifier from the pointer's type and rejects the initialization
+  ({question}`Q-0348`).
 - **CV-5.** All compilers reject the change during constant evaluation.
   Their notes give the cause ("modification of object of const-qualified
   type", "modifying a const object", "attempt to modify const storage").

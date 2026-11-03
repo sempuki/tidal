@@ -138,7 +138,7 @@ too small to hold the pointer. The cast must not remove a cv-qualifier.
 
 :::{rule} CAST-8
 :kind: reject
-:tests: expressions/casts/reinterpret-not-constant.cpp
+:tests: expressions/casts/reinterpret-not-constant.cpp expressions/casts/reinterpret-not-constant-function.cpp
 
 A constant expression must not contain `reinterpret_cast`.
 :::
@@ -183,7 +183,7 @@ and functions converted to pointers.
 
 :::{rule} CAST-15
 :kind: required
-:tests: expressions/casts/static-cast-downcast.cpp
+:tests: expressions/casts/static-cast-downcast.cpp expressions/casts/static-cast-downcast-rvalue-reference.cpp
 
 `static_cast` converts a pointer or reference to a base `B` to a pointer
 or reference to a derived class `D`. `B` must be an accessible,
@@ -192,7 +192,7 @@ unambiguous base of `D` that is not virtual.
 
 :::{rule} CAST-17
 :kind: required
-:tests: expressions/casts/c-style-private-base.cpp
+:tests: expressions/casts/c-style-private-base.cpp expressions/casts/c-style-private-base-downcast.cpp
 
 A cast of the form `(T)e` can convert to or from a base class that is
 not accessible. `static_cast` cannot.
@@ -273,7 +273,7 @@ The behavior is undefined in these cases:
 
 :::{rule} CAST-12
 :kind: impl-defined
-:tests: expressions/casts/reinterpret-function-to-object.cpp
+:tests: expressions/casts/reinterpret-function-to-object.cpp expressions/casts/reinterpret-function-to-char-pointer.cpp
 
 Each implementation chooses whether `reinterpret_cast` can turn a
 pointer to a function into a pointer to an object type, and back.
@@ -320,7 +320,7 @@ auto* port = reinterpret_cast<volatile unsigned*>(size_t{0x4000'1000});
 
 ## Evidence
 
-All eight compilers agree on 55 of 56 tests. The results are in
+All eight compilers agree on 59 of 60 tests. The results are in
 `tests/RESULTS.md`.
 
 - CAST-14: GCC and EDG accept an out-of-range enumeration value during

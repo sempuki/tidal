@@ -100,7 +100,7 @@ or a `case` label, a comma operator must be in parentheses.
 
 :::{rule} COMMA-9
 :kind: reject
-:tests: expressions/comma/braced-list-operand.cpp
+:tests: expressions/comma/braced-list-operand.cpp expressions/comma/braced-list-left-operand.cpp
 
 Each operand of the comma operator must be an expression. A braced list
 is not an operand.
@@ -152,7 +152,7 @@ return (1, {2});           // rejected: a braced list is not an operand
 
 ## Evidence
 
-All eight compilers agree on all 24 tests. The results are in
+All eight compilers agree on all 25 tests. The results are in
 `tests/RESULTS.md`.
 
 - COMMA-5: Clang and GCC warn "left operand of comma operator has no

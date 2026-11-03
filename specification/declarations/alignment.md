@@ -81,7 +81,7 @@ does not change the type of the variable.
 
 :::{rule} ALN-7
 :kind: reject
-:tests: declarations/alignment/enum.cpp
+:tests: declarations/alignment/enum.cpp declarations/alignment/scoped-enum.cpp
 
 `alignas` applies only to the declarations that ALN-1 lists. A program
 must not apply `alignas` to an enumeration ({question}`Q-0073`).
@@ -152,7 +152,7 @@ alignment. EDG 7.0 rejects an alignment of 2^28, which Clang and GCC accept.
 
 :::{rule} ALN-6
 :kind: no-diagnostic
-:tests: declarations/alignment/different-units-alignas.cpp
+:tests: declarations/alignment/different-units-alignas.cpp declarations/alignment/different-units-alignas-other.cpp
 
 Declarations of one entity in different {term}`translation units <translation unit>` must have the
 same alignment. An implementation need not diagnose a difference. If the
@@ -190,8 +190,8 @@ static_assert(round_up(13, 8) == 16 && round_up(16, 8) == 16);
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 20
-of 35 tests. Each divergence has a question, except the
+The results are in `tests/RESULTS.md`. All eight compilers agree on 21
+of 37 tests. Each divergence has a question, except the
 implementation-defined limit of ALN-5.
 
 - ALN-1: GCC uses the last of several `alignas` on a class. On a

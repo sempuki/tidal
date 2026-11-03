@@ -130,7 +130,7 @@ types (TYP-3).
 
 :::{rule} TYP-9
 :kind: required
-:tests: foundations/types/rank-floating.cpp
+:tests: foundations/types/rank-floating.cpp foundations/types/rank-floating-more-operators.cpp
 
 The floating-point conversion ranks are in the order `float`, `double`,
 `long double`. An arithmetic operation between an integer and a
@@ -155,7 +155,7 @@ TYP-1 is `B` bytes, let `N` be `8 * B`. The table gives the bounds:
 
 :::{rule} TYP-11
 :kind: required
-:tests: foundations/types/bool-values.cpp
+:tests: foundations/types/bool-values.cpp foundations/types/bool-values-from-pointer-and-double.cpp
 
 `bool` has the two values `false` and `true`. A conversion to `bool`
 gives `false` for zero and `true` for any other value. In arithmetic,
@@ -164,7 +164,7 @@ gives `false` for zero and `true` for any other value. In arithmetic,
 
 :::{rule} TYP-13
 :kind: required
-:tests: foundations/types/unicode-characters-unsigned.cpp
+:tests: foundations/types/unicode-characters-unsigned.cpp foundations/types/char8-like-unsigned-char.cpp
 
 `char8_t` has the size and values of `unsigned char`. `char16_t` and
 `char32_t` are unsigned on every matrix target.
@@ -301,8 +301,8 @@ static_assert(sizeof(u16) == 2 && sizeof(u32) == 4 && sizeof(u64) == 8);
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 54
-of 56 tests. The x86-64 build of EDG skips the `-m32` tests, and the
+The results are in `tests/RESULTS.md`. All eight compilers agree on 57
+of 59 tests. The x86-64 build of EDG skips the `-m32` tests, and the
 ILP32 build runs only those.
 
 - TYP-1, TYP-2, TYP-10, TYP-12: the values come from probes on both

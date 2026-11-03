@@ -190,7 +190,7 @@ parentheses or braces. The conversion gives `false`.
 
 :::{rule} CONV-13
 :kind: required
-:tests: expressions/conversions/array-function-to-pointer.cpp
+:tests: expressions/conversions/array-function-to-pointer.cpp expressions/conversions/array-function-to-pointer-constant.cpp
 
 An array lvalue can be used as a pointer to element zero of the array.
 A function name can be used as a pointer that calls that function.
@@ -208,7 +208,7 @@ CONV-17 lists the bases that do not allow the conversion.
 
 :::{rule} CONV-15
 :kind: required
-:tests: expressions/conversions/member-pointer-base-to-derived.cpp
+:tests: expressions/conversions/member-pointer-base-to-derived.cpp expressions/conversions/member-function-pointer-base-to-derived.cpp
 
 A member pointer that names a member of a base class can be used as a
 member pointer of a derived class without a cast. The member pointer
@@ -247,7 +247,7 @@ explicitly (CAST-6).
 
 :::{rule} CONV-16
 :kind: required
-:tests: expressions/conversions/array-pointer-unknown-bound.cpp
+:tests: expressions/conversions/array-pointer-unknown-bound.cpp expressions/conversions/array-pointer-unknown-bound-argument.cpp
 
 A pointer to an array with a known bound converts implicitly to a
 pointer to an array of the same element type with no bound.
@@ -279,7 +279,7 @@ The conversion gives `true` for other values, including a NaN.
 
 :::{rule} CONV-4
 :kind: required
-:tests: expressions/conversions/floating-to-integral-truncates.cpp
+:tests: expressions/conversions/floating-to-integral-truncates.cpp expressions/conversions/floating-to-integral-truncates-run.cpp
 
 A floating-point value converts to an integer type by discarding the
 fractional part. The result rounds toward zero.
@@ -319,7 +319,7 @@ one.
 
 :::{rule} CONV-11
 :kind: impl-defined
-:tests: expressions/conversions/floating-narrowing-out-of-range.cpp
+:tests: expressions/conversions/floating-narrowing-out-of-range.cpp expressions/conversions/floating-narrowing-out-of-range-run.cpp
 
 If the target floating-point type has infinities, a value above the
 largest finite value of the type converts to the largest finite value or

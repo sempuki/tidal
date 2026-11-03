@@ -115,7 +115,7 @@ throwing is permitted.
 
 :::{rule} THR-5
 :kind: required
-:tests: exceptions/throw/throw-expression-type-void.cpp
+:tests: exceptions/throw/throw-expression-type-void.cpp exceptions/throw/throw-expression-constexpr-conditional.cpp
 
 A `throw` expression is a prvalue of type `void`. A `throw` expression
 can be an operand of the conditional operator (COND-4).
@@ -123,7 +123,7 @@ can be an operand of the conditional operator (COND-4).
 
 :::{rule} THR-10
 :kind: required
-:tests: exceptions/throw/constexpr-throw-at-runtime.cpp
+:tests: exceptions/throw/constexpr-throw-at-runtime.cpp exceptions/throw/constexpr-constructor-throw-at-runtime.cpp
 
 A `constexpr` function that contains a `throw` can be called at run
 time, and the call throws then. Constant evaluation of the `throw`
@@ -163,7 +163,7 @@ object thrown from a `const` operand.
 
 :::{rule} THR-4
 :kind: required
-:tests: exceptions/throw/static-type-not-dynamic.cpp
+:tests: exceptions/throw/static-type-not-dynamic.cpp exceptions/throw/static-type-through-pointer.cpp
 
 The type of the exception object is the static type of the operand. An
 object of a derived class thrown through a reference to its base gives
@@ -207,7 +207,7 @@ order:
 
 :::{rule} THR-9
 :kind: required
-:tests: exceptions/throw/throw-in-noexcept-terminates.cpp
+:tests: exceptions/throw/throw-in-noexcept-terminates.cpp exceptions/throw/throw-from-destructor-terminates.cpp
 
 If an exception leaves a non-throwing function, the program terminates.
 This includes a function that is non-throwing without a written
@@ -216,7 +216,7 @@ specifier ({rule}`EXS-4`). No handler in a caller catches the exception.
 
 :::{rule} THR-12
 :kind: required
-:tests: exceptions/throw/exception-object-destructor-throws.cpp
+:tests: exceptions/throw/exception-object-destructor-throws.cpp exceptions/throw/exception-object-destructor-throws-after-rethrow.cpp
 
 If the destructor of the exception object throws when the last handler
 for the object ends, the new exception leaves from the end of that
@@ -226,7 +226,7 @@ new exception.
 
 :::{rule} THR-13
 :kind: required
-:tests: exceptions/throw/storage-not-from-operator-new.cpp
+:tests: exceptions/throw/storage-not-from-operator-new.cpp exceptions/throw/storage-not-from-operator-new-large.cpp
 
 The implementation chooses where the storage of the exception object
 comes from. A `throw` gets that storage without a call to an allocation
@@ -265,7 +265,7 @@ static_assert(checked(5) == 5);          // the throw is on an untaken path
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on all
-35 tests. EDG runs no programs, so its results for the run and run-fail
+41 tests. EDG runs no programs, so its results for the run and run-fail
 tests say only that the programs are valid. A `run-fail` test shows that
 the program ended with a nonzero status or a signal; the harness cannot
 see that termination was the reason.

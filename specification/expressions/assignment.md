@@ -71,7 +71,7 @@ implicit conversion. An object can be assigned to itself.
 
 :::{rule} ASN-12
 :kind: reject
-:tests: expressions/assignment/no-conversion.cpp
+:tests: expressions/assignment/no-conversion.cpp expressions/assignment/no-conversion-class.cpp
 
 If no implicit conversion from the right operand to the type of the
 left operand exists (ASN-1), the expression is not valid.
@@ -112,7 +112,7 @@ converted to the type of `E1`, so a `bool` operand becomes `true` or
 
 :::{rule} ASN-13
 :kind: reject
-:tests: expressions/assignment/compound-float-modulo.cpp
+:tests: expressions/assignment/compound-float-modulo.cpp expressions/assignment/compound-float-shift.cpp
 
 The operands of `E1 op= E2` must be valid for `op` (ASN-5).
 :::
@@ -147,7 +147,7 @@ value of such an assignment in a larger expression is deprecated
 
 :::{rule} ASN-10
 :kind: reject
-:tests: expressions/assignment/bitfield-result-address.cpp
+:tests: expressions/assignment/bitfield-result-address.cpp expressions/assignment/bitfield-compound-result-address.cpp
 
 If the left operand is a bit-field, the result is that bit-field. A
 program must not take the address of the result.
@@ -165,7 +165,7 @@ of the right operand complete before the store.
 
 :::{rule} ASN-9
 :kind: required
-:tests: expressions/assignment/compound-evaluates-once.cpp
+:tests: expressions/assignment/compound-evaluates-once.cpp expressions/assignment/compound-subscript-evaluates-once.cpp
 
 In `E1 op= E2`, `E1` is evaluated one time.
 :::
@@ -214,8 +214,8 @@ struct Counter {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 31
-of 32 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 35
+of 36 tests.
 
 - ASN-4: `i = i++ + 1;` gives 2 on all compilers. The right operand,
   with its side effect, completes before the store.

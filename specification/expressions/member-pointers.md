@@ -246,7 +246,7 @@ The behavior is undefined in these cases:
 
 :::{rule} MPTR-7
 :kind: unspecified
-:tests: expressions/member-pointers/compare-virtual-function-unspecified.cpp
+:tests: expressions/member-pointers/compare-virtual-function-unspecified.cpp expressions/member-pointers/compare-virtual-and-plain-unspecified.cpp
 
 If both operands point to member functions and either points to a
 virtual function, the result of `==` or `!=` is unspecified. A program
@@ -276,8 +276,8 @@ const int* Node::* unsafe = link;      // rejected: no const on the level above
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 73
-of 74 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 74
+of 75 tests.
 
 - MPTR-6: Clang and GCC give a null pointer to data member the offset
   -1, so a read through it lands before the object. On Clang 22 and

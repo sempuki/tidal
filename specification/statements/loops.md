@@ -95,7 +95,7 @@ These conditions apply:
 
 :::{rule} LOOP-5
 :kind: reject
-:tests: statements/loops/condition-not-bool.cpp
+:tests: statements/loops/condition-not-bool.cpp statements/loops/for-condition-scoped-enumeration.cpp
 
 The condition of `while`, `do`, and `for` must be convertible to
 `bool` by {term}`contextual conversion`.
@@ -103,7 +103,7 @@ The condition of `while`, `do`, and `for` must be convertible to
 
 :::{rule} LOOP-6
 :kind: reject
-:tests: statements/loops/do-condition-declaration.cpp
+:tests: statements/loops/do-condition-declaration.cpp statements/loops/do-condition-declaration-bool.cpp
 
 The condition of `do` must be an expression.
 :::
@@ -122,7 +122,7 @@ body.
 
 :::{rule} LOOP-2
 :kind: required
-:tests: statements/loops/do-basic.cpp
+:tests: statements/loops/do-basic.cpp statements/loops/do-continue-checks-condition.cpp
 
 `do` executes its body and then evaluates its condition. The body
 executes at least one time.

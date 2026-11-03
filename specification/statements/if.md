@@ -118,7 +118,7 @@ the `branch` or `block` after `else`.
 
 :::{rule} IF-2
 :kind: required
-:tests: statements/if/dangling-else.cpp
+:tests: statements/if/dangling-else.cpp statements/if/dangling-else-in-loop.cpp
 
 An `else` belongs to the nearest `if` before it that has no `else`.
 :::
@@ -134,7 +134,7 @@ including an assignment.
 
 :::{rule} IF-4
 :kind: reject
-:tests: statements/if/condition-not-convertible.cpp
+:tests: statements/if/condition-not-convertible.cpp statements/if/condition-scoped-enumeration.cpp
 
 The condition expression must be convertible to `bool` by contextual
 conversion.
@@ -183,7 +183,7 @@ The initializer must not be a declaration of another kind, such as:
 
 :::{rule} IF-8
 :kind: reject
-:tests: statements/if/substatement-scope.cpp
+:tests: statements/if/substatement-scope.cpp statements/if/else-substatement-scope.cpp
 
 Each branch has its own scope, also when the branch has no braces. A
 name that a branch declares is not visible after the `if` statement.
@@ -227,7 +227,7 @@ A {term}`requires expression` in the condition can test that code
 
 :::{rule} IF-22
 :kind: reject
-:tests: statements/if/constexpr-template-nondependent-checked.cpp
+:tests: statements/if/constexpr-template-nondependent-checked.cpp statements/if/constexpr-template-nondependent-call-checked.cpp
 
 In a {term}`templated context`, the parts of a {term}`discarded
 statement` that are the same for every template argument must be valid
@@ -247,7 +247,7 @@ functions.
 
 :::{rule} IF-15
 :kind: required
-:tests: statements/if/constexpr-non-template-no-definition.cpp
+:tests: statements/if/constexpr-non-template-no-definition.cpp statements/if/constexpr-non-template-variable-no-definition.cpp
 
 A function or variable that only discarded statements use needs no
 definition.
@@ -255,7 +255,7 @@ definition.
 
 :::{rule} IF-23
 :kind: reject
-:tests: statements/if/constexpr-non-template-checked.cpp
+:tests: statements/if/constexpr-non-template-checked.cpp statements/if/constexpr-non-template-type-error.cpp
 
 Outside a {term}`templated context`, a {term}`discarded statement` must
 be valid (IF-15).
@@ -293,7 +293,7 @@ an {term}`immediate function context`.
 
 :::{rule} IF-24
 :kind: reject
-:tests: statements/if/consteval-immediate-outside.cpp
+:tests: statements/if/consteval-immediate-outside.cpp statements/if/consteval-immediate-else.cpp
 
 A call to a `consteval` function with arguments that are not constant is
 valid only in the branch that IF-19 gives.
@@ -338,7 +338,7 @@ can have one of these forms:
 
 :::{rule} IF-11
 :kind: required
-:tests: statements/if/lifetimes.cpp
+:tests: statements/if/lifetimes.cpp statements/if/lifetimes-else-and-two-variables.cpp
 
 Temporary objects that the condition creates are destroyed before a
 branch executes. Variables that the initializer or the condition declares
@@ -449,7 +449,7 @@ void conditions() {
 ## Evidence
 
 All rules in this page are `required` or `reject`. All eight compilers
-agree on 69 of 70 tests. The results are in `tests/RESULTS.md`.
+agree on 77 of 78 tests. The results are in `tests/RESULTS.md`.
 
 - IF-25: Clang and GCC take the then branch of `if consteval` in the
   initializer of a local `const int` or `const` enumeration variable.

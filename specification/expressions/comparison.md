@@ -330,7 +330,7 @@ floating-point operands, equal values give `equivalent`, and `-0.0` and
 
 :::{rule} CMP-27
 :kind: required
-:tests: expressions/comparison/three-way-result-copies-member.cpp
+:tests: expressions/comparison/three-way-result-copies-member.cpp expressions/comparison/three-way-floating-and-pointer-copies-member.cpp
 
 The result of a built-in `<=>` is a prvalue. The prvalue is initialized
 from the static data member of the result type that {rule}`CMP-17`
@@ -454,8 +454,8 @@ balance <=> count      // valid if long is wider than unsigned
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 78
-of 89 tests. The `<=>` tests declare a minimal `std::strong_ordering`,
+The results are in `tests/RESULTS.md`. All eight compilers agree on 79
+of 90 tests. The `<=>` tests declare a minimal `std::strong_ordering`,
 `std::weak_ordering`, and `std::partial_ordering`, because tests include
 no headers. EDG needs `std::weak_ordering` declared even for integer
 operands.

@@ -97,7 +97,7 @@ place of the placeholder.
 
 :::{rule} RET-5
 :kind: reject
-:tests: declarations/functions/return-deduction/virtual-auto.cpp
+:tests: declarations/functions/return-deduction/virtual-auto.cpp declarations/functions/return-deduction/virtual-decltype-auto.cpp
 
 A virtual function must not have a deduced return type ({rule}`VIRT-2`).
 :::
@@ -161,7 +161,7 @@ auto [w, r] = split(47);            // 4 and 7 (SB-3)
 
 ## Evidence
 
-All eight compilers agree on all 23 tests. The results are in
+All eight compilers agree on all 24 tests. The results are in
 `tests/RESULTS.md`.
 
 - RET-6: the address sanitizer stops the use of the result on GCC and

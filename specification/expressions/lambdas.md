@@ -130,7 +130,7 @@ A program can call a lambda in the expression that creates it.
 
 :::{rule} LAM-22
 :kind: reject
-:tests: expressions/lambdas/return-deduction.cpp
+:tests: expressions/lambdas/return-deduction.cpp expressions/lambdas/return-deduction-void-and-value.cpp
 
 Without a trailing return type, all `return` statements of a lambda must
 give the same type, as for a function with an `auto` return type
@@ -139,7 +139,7 @@ give the same type, as for a function with an `auto` return type
 
 :::{rule} LAM-2
 :kind: required
-:tests: expressions/lambdas/unique-type.cpp
+:tests: expressions/lambdas/unique-type.cpp expressions/lambdas/distinct-types-overload.cpp
 
 Each lambda expression has its own closure type. Two lambda expressions
 never have the same type.
@@ -155,7 +155,7 @@ captured by reference can be changed also without `mutable`.
 
 :::{rule} LAM-23
 :kind: reject
-:tests: expressions/lambdas/const-call-operator.cpp
+:tests: expressions/lambdas/const-call-operator.cpp expressions/lambdas/const-call-operator-init-capture.cpp
 
 Without `mutable`, the body must not change a variable captured by copy
 (LAM-3).
@@ -218,7 +218,7 @@ initializer can capture `this` too.
 
 :::{rule} LAM-24
 :kind: reject
-:tests: expressions/lambdas/this-outside-member.cpp
+:tests: expressions/lambdas/this-outside-member.cpp expressions/lambdas/this-in-static-member.cpp
 
 The lambdas that LAM-8 gives are the only ones that can capture `this`.
 Any other lambda outside a member function must not capture `this`.
@@ -249,7 +249,7 @@ through the pointer if the call operator is `constexpr` ({rule}`LAM-12`).
 
 :::{rule} LAM-25
 :kind: reject
-:tests: expressions/lambdas/capturing-no-function-pointer.cpp
+:tests: expressions/lambdas/capturing-no-function-pointer.cpp expressions/lambdas/capturing-no-function-pointer-argument.cpp
 
 A lambda with captures does not convert to a pointer to a function
 (LAM-10).
@@ -257,7 +257,7 @@ A lambda with captures does not convert to a pointer to a function
 
 :::{rule} LAM-11
 :kind: required
-:tests: expressions/lambdas/default-constructible.cpp
+:tests: expressions/lambdas/default-constructible.cpp expressions/lambdas/default-constructed-call.cpp
 
 The closure type of a lambda without captures can be default-constructed
 and assigned.
@@ -265,7 +265,7 @@ and assigned.
 
 :::{rule} LAM-29
 :kind: required
-:tests: expressions/lambdas/closure-copy-keeps-state.cpp
+:tests: expressions/lambdas/closure-copy-keeps-state.cpp expressions/lambdas/closure-copy-array-capture.cpp
 
 A closure type can be copied and moved if each of its captures can. The
 copy starts with the state of the original.
@@ -289,7 +289,7 @@ program can call such a lambda during {term}`constant evaluation`.
 
 :::{rule} LAM-13
 :kind: required
-:tests: expressions/lambdas/static-call-operator.cpp
+:tests: expressions/lambdas/static-call-operator.cpp expressions/lambdas/static-call-operator-named.cpp
 
 A lambda declared `static` has a static call operator. The closure
 also converts to a pointer to function ({rule}`LAM-10`). A call of the
@@ -299,14 +299,14 @@ from that conversion ({rule}`OVL-25`).
 
 :::{rule} LAM-27
 :kind: reject
-:tests: expressions/lambdas/static-with-capture.cpp
+:tests: expressions/lambdas/static-with-capture.cpp expressions/lambdas/static-with-capture-default.cpp
 
 A lambda declared `static` must not have captures (LAM-13).
 :::
 
 :::{rule} LAM-14
 :kind: required
-:tests: expressions/lambdas/unevaluated-operand.cpp
+:tests: expressions/lambdas/unevaluated-operand.cpp expressions/lambdas/unevaluated-noexcept.cpp
 
 A lambda can occur in an operand that is not evaluated, such as the
 operand of `decltype` or `sizeof`.
@@ -325,7 +325,7 @@ calls look up names as {rule}`DEP-9` gives, at the points of
 
 :::{rule} LAM-16
 :kind: required
-:tests: expressions/lambdas/explicit-object-recursion.cpp
+:tests: expressions/lambdas/explicit-object-recursion.cpp expressions/lambdas/explicit-object-recursion-run.cpp
 
 A lambda can have an explicit object parameter `this auto self`. The
 body can call `self` to call the lambda again.
@@ -377,7 +377,7 @@ these:
 
 :::{rule} LAM-28
 :kind: required
-:tests: expressions/lambdas/explicit-capture-order.cpp
+:tests: expressions/lambdas/explicit-capture-order.cpp expressions/lambdas/init-capture-order.cpp
 
 The explicit captures by copy and the init captures are initialized in
 the order of the capture list. LAM-20 gives the order of the implicit
@@ -419,7 +419,7 @@ at least as large as each such member.
 
 :::{rule} LAM-21
 :kind: recommended
-:tests: expressions/lambdas/implicit-this-capture-warns.cpp
+:tests: expressions/lambdas/implicit-this-capture-warns.cpp expressions/lambdas/implicit-this-capture-call-warns.cpp
 
 An implementation should warn when `[=]` captures `this` implicitly. Such a
 capture is deprecated.
@@ -471,8 +471,8 @@ int dispatch(int base) {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 67
-of 69 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 80
+of 82 tests.
 
 - LAM-6: EDG accepts a capture default on a lambda outside a function.
   Clang and GCC reject it ({question}`Q-0037`).

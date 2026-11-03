@@ -256,7 +256,7 @@ argument, with its cv-qualifiers and {term}`value category`. `p->f(a)` is
 
 :::{rule} OVL-5
 :kind: required
-:tests: foundations/overload-resolution/object-call-candidates.cpp
+:tests: foundations/overload-resolution/object-call-candidates.cpp foundations/overload-resolution/object-call-surrogate-reference.cpp
 
 The candidates of `c(a)`, for an object `c` of class type, are these:
 
@@ -378,7 +378,7 @@ its object, which no user-defined conversion can reach.
 
 :::{rule} OVL-43
 :kind: reject
-:tests: foundations/overload-resolution/rewritten-inner-no-rewrite.cpp
+:tests: foundations/overload-resolution/rewritten-inner-no-rewrite.cpp foundations/overload-resolution/rewritten-inner-reversed-only.cpp
 
 In a rewritten candidate, the comparison of the `<=>` result with `0`
 has no rewritten candidates. If that comparison has no viable function,
@@ -427,7 +427,7 @@ Without such a candidate, the reference binds to a temporary.
 
 :::{rule} OVL-16
 :kind: required
-:tests: foundations/overload-resolution/explicit-condition-after-deduction.cpp
+:tests: foundations/overload-resolution/explicit-condition-after-deduction.cpp foundations/overload-resolution/explicit-condition-conversion-function.cpp
 
 If the `explicit` condition of a constructor or conversion function
 template depends on a template parameter, deduction comes first
@@ -569,7 +569,7 @@ argument, and one candidate must win (OVL-36).
 
 :::{rule} OVL-22
 :kind: required
-:tests: foundations/overload-resolution/viable-count.cpp
+:tests: foundations/overload-resolution/viable-count.cpp foundations/overload-resolution/viable-count-defaults-and-ellipsis.cpp
 
 A candidate is a {term}`viable function` only if its parameters fit the
 arguments ({rule}`PFX-5`):
@@ -595,7 +595,7 @@ cv-qualifiers and ref-qualifier ({question}`Q-0187`).
 
 :::{rule} OVL-24
 :kind: required
-:tests: foundations/overload-resolution/viable-constraints.cpp
+:tests: foundations/overload-resolution/viable-constraints.cpp foundations/overload-resolution/viable-constraints-function-template.cpp
 
 A candidate whose constraints are not satisfied ({rule}`CNS-7`) is not
 viable. {rule}`CNS-11` says when a function template's constraints are
@@ -803,8 +803,8 @@ tick(1, 1);                      // rejected: each is better on one argument
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 139
-of 166 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 144
+of 171 tests.
 
 ### Sources
 

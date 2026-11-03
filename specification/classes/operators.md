@@ -144,7 +144,7 @@ postfix use passes `0` as the argument.
 
 :::{rule} OPR-13
 :kind: reject
-:tests: classes/operators/postfix-not-declared.cpp
+:tests: classes/operators/postfix-not-declared.cpp classes/operators/prefix-not-declared.cpp
 
 An expression with `++` or `--` uses only the form that the class
 declares.
@@ -266,7 +266,7 @@ right. Each argument is evaluated completely before the next one starts.
 
 :::{rule} OPR-12
 :kind: unspecified
-:tests: classes/operators/address-of-incomplete-unspecified.cpp
+:tests: classes/operators/address-of-incomplete-unspecified.cpp classes/operators/address-of-incomplete-const.cpp
 
 If unary `&` applies to an object of a class that is incomplete at that
 point, and the complete class overloads `operator&`, it is unspecified
@@ -277,7 +277,7 @@ if the built-in operator or the operator function is used.
 
 :::{rule} OPR-9
 :kind: recommended
-:tests: classes/operators/literal-no-underscore-warns.cpp
+:tests: classes/operators/literal-no-underscore-warns.cpp classes/operators/literal-no-underscore-floating-warns.cpp
 
 An implementation should warn about a literal operator whose suffix does
 not start with `_`. Such suffixes are reserved.
@@ -305,8 +305,8 @@ Meters len = 2.5_m;
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 98
-of 99 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 101
+of 102 tests.
 
 - OPR-10: GCC accepts a default argument on a literal operator. Clang
   and EDG reject the default argument ({question}`Q-0060`).

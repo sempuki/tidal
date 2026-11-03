@@ -167,7 +167,7 @@ function body ({question}`Q-0022`).
 
 :::{rule} FN-9
 :kind: reject
-:tests: declarations/functions/definitions/nested-function-definition.cpp
+:tests: declarations/functions/definitions/nested-function-definition.cpp declarations/functions/definitions/nested-function-definition-member.cpp
 
 A function definition must be at namespace scope or in a class, and must
 not be inside a function body.
@@ -221,7 +221,7 @@ start the program or to an empty string.
 
 :::{rule} FN-10
 :kind: impl-defined
-:tests: declarations/functions/definitions/parameter-destruction-order.cpp
+:tests: declarations/functions/definitions/parameter-destruction-order.cpp declarations/functions/definitions/parameter-destruction-order-operator.cpp
 
 Each implementation chooses the time at which a parameter object ends:
 either as the called function returns, or later, when the caller
@@ -232,7 +232,7 @@ side.
 
 :::{rule} FN-11
 :kind: impl-defined
-:tests: declarations/functions/definitions/func-name-impl.cpp
+:tests: declarations/functions/definitions/func-name-impl.cpp declarations/functions/definitions/func-name-member.cpp
 
 The string in `__func__` is implementation-defined. On the
 implementations in the matrix the string is the plain name of the
@@ -271,7 +271,7 @@ void name() {
 
 ## Evidence
 
-All eight compilers agree on 39 of 46 tests. The results are in
+All eight compilers agree on 42 of 49 tests. The results are in
 `tests/RESULTS.md`.
 
 - FN-3: all compilers reject a call that reaches the end of the function

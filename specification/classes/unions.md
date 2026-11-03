@@ -154,7 +154,7 @@ The members of a union are public unless an access label says otherwise.
 
 :::{rule} UNI-2
 :kind: reject
-:tests: classes/unions/union-reference-member.cpp
+:tests: classes/unions/union-reference-member.cpp classes/unions/union-rvalue-reference-member.cpp
 
 A union must not have a member of reference type. Rules DER-1 and VIRT-2
 give the limits on bases and virtual functions.
@@ -329,7 +329,7 @@ narrowing uses the declared type, not the width.
 
 :::{rule} BF-11
 :kind: reject
-:tests: classes/unions/bitfield-narrowing-init.cpp
+:tests: classes/unions/bitfield-narrowing-init.cpp classes/unions/bitfield-narrowing-double.cpp
 
 A braced initializer for a bit-field must not need a narrowing
 conversion to the declared type of the bit-field.
@@ -349,7 +349,7 @@ declares no member. These operations skip it:
 
 :::{rule} UNI-12
 :kind: reject
-:tests: classes/unions/common-initial-sequence-constant.cpp
+:tests: classes/unions/common-initial-sequence-constant.cpp classes/unions/common-initial-sequence-second-member-constant.cpp
 
 Constant evaluation does not permit a read through the other struct that
 UNI-10 describes.
@@ -401,7 +401,7 @@ member ({rule}`DTOR-6`) leaves the union with no active member.
 
 :::{rule} BF-5
 :kind: required
-:tests: classes/unions/bitfield-plain-int-signed.cpp
+:tests: classes/unions/bitfield-plain-int-signed.cpp classes/unions/bitfield-signed-long-long-negative.cpp
 
 A bit-field of a signed type, including plain `int`, holds negative
 values that fit in its width.
@@ -615,8 +615,8 @@ public:
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 129
-of 140 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 133
+of 144 tests.
 
 - UNI-9: Clang accepts an anonymous union without `static` in an unnamed
   namespace. GCC and EDG reject the declaration ({question}`Q-0045`).

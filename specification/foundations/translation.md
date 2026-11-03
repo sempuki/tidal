@@ -189,7 +189,7 @@ These rules apply to `main`:
 
 :::{rule} TR-10
 :kind: reject
-:tests: foundations/translation/constant-evaluation-rejects-ub.cpp
+:tests: foundations/translation/constant-evaluation-rejects-ub.cpp foundations/translation/constant-evaluation-rejects-overflow.cpp
 
 An operation that would be undefined, such as division by zero, makes a
 constant evaluation not constant (TR-5). The implementation rejects the
@@ -318,8 +318,8 @@ int at_run_time = half(9);    // the same function, at run time
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 37
-of 38 tests. EDG takes no optimization flag, so the three `-O2` tests
+The results are in `tests/RESULTS.md`. All eight compilers agree on 38
+of 39 tests. EDG takes no optimization flag, so the three `-O2` tests
 are skipped there. EDG runs and links no programs, so its results for
 the run and link tests say only that the programs are valid.
 

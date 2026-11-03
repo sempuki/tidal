@@ -85,7 +85,7 @@ until the initialization of the object gives the member one
 
 :::{rule} SINIT-7
 :kind: required
-:tests: declarations/initialization/static/static-member-in-order.cpp
+:tests: declarations/initialization/static/static-member-in-order.cpp declarations/initialization/static/static-member-order-not-class-order.cpp
 
 A static data member that is defined outside its class takes its place
 in the order of SINIT-2 at its definition. The place of the class
@@ -129,7 +129,7 @@ other unit names.
 
 :::{rule} SINIT-6
 :kind: impl-defined
-:tests: declarations/initialization/static/thread-local-init-deferred.cpp
+:tests: declarations/initialization/static/thread-local-init-deferred.cpp declarations/initialization/static/thread-local-unused.cpp
 
 A `thread_local` variable at namespace scope with dynamic initialization
 is initialized before the first statement of the thread, or when the
@@ -191,7 +191,7 @@ int cap = table_limit;            // 64, in any unit order
 
 ## Evidence
 
-All eight compilers agree on all 20 tests. The results are in
+All eight compilers agree on all 22 tests. The results are in
 `tests/RESULTS.md`.
 
 - **SINIT-3.** With Clang 22 and GCC 16 at `-O0` and `-O2`, the order

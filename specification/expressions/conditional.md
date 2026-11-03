@@ -113,7 +113,7 @@ have type `void`, the result is `void`.
 
 :::{rule} COND-13
 :kind: reject
-:tests: expressions/conditional/void-and-value.cpp
+:tests: expressions/conditional/void-and-value.cpp expressions/conditional/value-and-void.cpp
 
 Apart from a throw-expression (COND-4), a `void` operand with a value
 operand is not valid.
@@ -138,14 +138,14 @@ assignment.
 
 :::{rule} COND-14
 :kind: reject
-:tests: expressions/conditional/gnu-omitted-operand.cpp
+:tests: expressions/conditional/gnu-omitted-operand.cpp expressions/conditional/gnu-omitted-operand-constant.cpp
 
 The second operand of the conditional operator must be present (COND-6).
 :::
 
 :::{rule} COND-7
 :kind: required
-:tests: expressions/conditional/constant-unselected-fails.cpp
+:tests: expressions/conditional/constant-unselected-fails.cpp expressions/conditional/constant-unselected-null-dereference.cpp
 
 During {term}`constant evaluation`, the operand that is not selected can
 contain any expression.
@@ -153,7 +153,7 @@ contain any expression.
 
 :::{rule} COND-15
 :kind: reject
-:tests: expressions/conditional/constant-selected-fails.cpp
+:tests: expressions/conditional/constant-selected-fails.cpp expressions/conditional/constant-selected-division-by-zero.cpp
 
 During {term}`constant evaluation`, the selected operand must be a
 constant expression. COND-7 gives the operand that is not selected.
@@ -161,7 +161,7 @@ constant expression. COND-7 gives the operand that is not selected.
 
 :::{rule} COND-8
 :kind: reject
-:tests: expressions/conditional/class-lvalue-prvalue-copy.cpp
+:tests: expressions/conditional/class-lvalue-prvalue-copy.cpp expressions/conditional/class-prvalue-lvalue-private-copy.cpp
 
 If one operand is an lvalue and the other a prvalue of the same class
 type, the result is a prvalue copied from the selected operand. The copy
@@ -170,7 +170,7 @@ must be valid, so a class with a deleted copy constructor is rejected.
 
 :::{rule} COND-9
 :kind: reject
-:tests: expressions/conditional/bitfield-address.cpp
+:tests: expressions/conditional/bitfield-address.cpp expressions/conditional/bitfield-address-unevaluated.cpp
 
 An lvalue result that refers to a bit-field operand ({rule}`BF-1`) has
 the limits of a bit-field. A program must not apply `&` to the result.
@@ -178,14 +178,14 @@ the limits of a bit-field. A program must not apply `&` to the result.
 
 :::{rule} COND-10
 :kind: required
-:tests: expressions/conditional/comma-in-middle.cpp
+:tests: expressions/conditional/comma-in-middle.cpp expressions/conditional/comma-in-middle-assignments.cpp
 
 The second operand can be a comma expression without parentheses.
 :::
 
 :::{rule} COND-11
 :kind: required
-:tests: expressions/conditional/two-classes-convert-to-int.cpp
+:tests: expressions/conditional/two-classes-convert-to-int.cpp expressions/conditional/two-classes-convert-to-pointer.cpp
 
 Overload resolution ({rule}`OVL-9`) over the built-in
 operator candidates picks a conversion for each operand if all of these
@@ -211,7 +211,7 @@ selected is not evaluated.
 
 :::{rule} COND-12
 :kind: required
-:tests: expressions/conditional/prvalue-no-copy.cpp
+:tests: expressions/conditional/prvalue-no-copy.cpp expressions/conditional/prvalue-no-copy-argument.cpp
 
 If both operands are prvalues of the same class type, the result is a
 prvalue that initializes its target directly. No copy or move
@@ -239,7 +239,7 @@ int m = larger(x, y);          // fine: x and y outlive the call
 
 ## Evidence
 
-All eight compilers agree on 38 of 39 tests. The results are in
+All eight compilers agree on 47 of 48 tests. The results are in
 `tests/RESULTS.md`.
 
 - COND-6: Clang and GCC accept `a ?: b` as an extension, and reject the

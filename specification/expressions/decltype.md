@@ -155,7 +155,7 @@ reference. A prvalue of a non-class type has no cv-qualifiers.
 
 :::{rule} DTY-5
 :kind: reject
-:tests: expressions/decltype/declarative-nested-name.cpp
+:tests: expressions/decltype/declarative-nested-name.cpp expressions/decltype/declarative-nested-name-static-member.cpp
 
 `decltype` must not occur in the qualified name of a declaration, such
 as the name of a member function defined outside its class
@@ -233,7 +233,7 @@ A volatile operand of an operator is read too.
 
 :::{rule} UNEV-3
 :kind: recommended
-:tests: expressions/decltype/discarded-warns.cpp
+:tests: expressions/decltype/discarded-warns.cpp expressions/decltype/discarded-sum-warns.cpp
 
 An implementation should warn about a discarded-value expression that
 has no effect, such as `x == 1;`.
@@ -241,7 +241,7 @@ has no effect, such as `x == 1;`.
 
 :::{rule} UNEV-4
 :kind: recommended
-:tests: expressions/decltype/side-effect-unevaluated-warns.cpp
+:tests: expressions/decltype/side-effect-unevaluated-warns.cpp expressions/decltype/side-effect-decltype-warns.cpp
 
 An implementation should warn about an unevaluated operand with a side
 effect, such as `sizeof(i++)`, because the effect does not occur.
@@ -300,8 +300,8 @@ decltype(true ? i : h) t;      // int: the operands differ, so a prvalue
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 48
-of 51 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 49
+of 54 tests.
 
 - DTY-5: GCC accepts `decltype` in the qualified name of a member
   definition. Clang and EDG reject such a use ({question}`Q-0065`).

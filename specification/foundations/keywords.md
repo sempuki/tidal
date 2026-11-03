@@ -49,7 +49,7 @@ The grammar derives no name from a keyword ({rule}`TR-12`).
 
 :::{rule} KW-2
 :kind: required
-:tests: foundations/keywords/alternative-tokens.cpp
+:tests: foundations/keywords/alternative-tokens.cpp foundations/keywords/alternative-tokens-conditions.cpp
 
 Each alternative spelling means the operator it names:
 
@@ -74,7 +74,7 @@ after the name of a class ({rule}`VIRT-3`).
 
 :::{rule} KW-4
 :kind: no-diagnostic
-:tests: foundations/keywords/reserved-double-underscore.cpp
+:tests: foundations/keywords/reserved-double-underscore.cpp foundations/keywords/reserved-names-functions.cpp
 
 These names are reserved for the implementation, and a program must not
 declare them:
@@ -98,7 +98,7 @@ bool both = true and false;        // the same as true && false
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on all
-96 tests.
+98 tests.
 
 - KW-1: each probe declares a variable named by one keyword. The
   compilers give different messages, mostly that a name was expected,

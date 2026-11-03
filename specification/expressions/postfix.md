@@ -117,21 +117,21 @@ specific case of {rule}`OVL-35`.
 
 :::{rule} PFX-6
 :kind: required
-:tests: expressions/postfix/call-copy-initializes.cpp
+:tests: expressions/postfix/call-copy-initializes.cpp expressions/postfix/call-copy-list-initializes.cpp
 
 Each parameter is copy-initialized from its argument.
 :::
 
 :::{rule} PFX-16
 :kind: reject
-:tests: expressions/postfix/call-explicit-constructor.cpp
+:tests: expressions/postfix/call-explicit-constructor.cpp expressions/postfix/call-explicit-constructor-braced.cpp
 
 An `explicit` constructor cannot do the conversion of PFX-6.
 :::
 
 :::{rule} PFX-9
 :kind: required
-:tests: expressions/postfix/call-result-category.cpp
+:tests: expressions/postfix/call-result-category.cpp expressions/postfix/call-result-category-pointer-and-member.cpp
 
 A call to a function that returns an lvalue reference is an lvalue. A
 call to a function that returns an rvalue reference is an xvalue. Other
@@ -218,7 +218,7 @@ The operand before the parentheses of a call must be one of these:
 
 :::{rule} PFX-7
 :kind: required
-:tests: expressions/postfix/call-through-pointer.cpp
+:tests: expressions/postfix/call-through-pointer.cpp expressions/postfix/call-through-pointer-array.cpp
 
 A call through a pointer to a function calls that function. `p(a)` and
 `(*p)(a)` have the same effect.
@@ -289,7 +289,7 @@ The behavior of postfix `++` and `--` is undefined in these cases:
 
 :::{rule} PFX-15
 :kind: conditionally-supported
-:tests: expressions/postfix/ellipsis-nontrivial-class.cpp
+:tests: expressions/postfix/ellipsis-nontrivial-class.cpp expressions/postfix/ellipsis-nontrivial-destructor.cpp
 
 Passing an object to an ellipsis parameter is conditionally supported if
 the class of the object has one of these that is non-trivial:
@@ -339,8 +339,8 @@ top++;            // undefined
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 62
-of 69 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 66
+of 74 tests.
 
 - PFX-3: EDG gives `int&` for a subscript of an array member of a
   prvalue. Clang and GCC give `int&&` ({question}`Q-0034`).

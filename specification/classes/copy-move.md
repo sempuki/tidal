@@ -503,7 +503,7 @@ always moves the variable.
 
 :::{rule} CPY-18
 :kind: unspecified
-:tests: classes/copy-move/virtual-base-assigned-count.cpp
+:tests: classes/copy-move/virtual-base-assigned-count.cpp classes/copy-move/virtual-base-move-assigned-count.cpp
 
 If a virtual base can be reached through more than one path, it is
 unspecified how many times the implicit copy or move assignment operator
@@ -645,8 +645,8 @@ Any c(1);                          // the template, with T = int
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 113
-of 118 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 114
+of 119 tests.
 
 - CPY-15: Clang and GCC reject a constructor `W(W)` of a class
   template at the template's definition, with no instantiation. GCC

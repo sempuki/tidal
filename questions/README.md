@@ -360,6 +360,8 @@ status, and the first sentence of its answer section.
 | [Q-0344](Q-0344-byte-copy-over-const-member.md) | Can a byte copy write over a live object that has a `const` member? | provisional | The copy is undefined |
 | [Q-0345](Q-0345-common-initial-sequence-base-members.md) | Do the members that a base declares count in the common initial sequence of a struct? | provisional | Yes; the members that a base declares count |
 | [Q-0346](Q-0346-explicit-instantiation-variable-type-differs.md) | Can an explicit instantiation of a variable state a type that differs from the specialization's? | provisional | No; Clang agrees, GCC and EDG each differ on some cases |
+| [Q-0347](Q-0347-likely-on-identifier-label.md) | Can `[[likely]]` apply to a label that is an identifier? | provisional | Valid |
+| [Q-0348](Q-0348-pointer-to-member-ref-qualified-alias.md) | Does a pointer to member formed from an alias of a ref-qualified function type keep the ref-qualifier? | provisional | The ref-qualifier is kept |
 
 ## Status values
 

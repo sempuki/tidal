@@ -91,7 +91,7 @@ type. A pointer is not a range. For a range of class type (RFOR-2):
 
 :::{rule} RFOR-8
 :kind: required
-:tests: statements/range-for/loop-name-not-in-range.cpp
+:tests: statements/range-for/loop-name-not-in-range.cpp statements/range-for/loop-name-function-in-range.cpp
 
 The loop variable is not in scope in the range expression. A name in
 the range expression refers to an outer entity, also when the loop
@@ -111,7 +111,7 @@ The loop variable must not be any of these ({question}`Q-0026`):
 
 :::{rule} RFOR-6
 :kind: reject
-:tests: statements/range-for/redeclare-loop-variable.cpp
+:tests: statements/range-for/redeclare-loop-variable.cpp statements/range-for/redeclare-loop-variable-reference.cpp
 
 The name of the loop variable must not be declared again in the
 outermost block of the body.

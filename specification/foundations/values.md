@@ -94,7 +94,7 @@ These expressions are lvalues:
 
 :::{rule} VC-14
 :kind: reject
-:tests: expressions/value-categories/rvalue-reference-name-binding.cpp
+:tests: expressions/value-categories/rvalue-reference-name-binding.cpp expressions/value-categories/rvalue-reference-parameter-name-binding.cpp
 
 The name of a variable of rvalue reference type is an lvalue (VC-1). An
 rvalue reference must not bind to that name directly.
@@ -150,7 +150,7 @@ reference member and a static data member give lvalues.
 
 :::{rule} VC-13
 :kind: reject
-:tests: expressions/value-categories/address-of-xvalue.cpp
+:tests: expressions/value-categories/address-of-xvalue.cpp expressions/value-categories/address-of-xvalue-call.cpp
 
 A program must not take the address of an xvalue (VC-3).
 :::
@@ -178,7 +178,7 @@ cases that VC-5 and VC-8 list, and not before.
 
 :::{rule} VC-5
 :kind: required
-:tests: expressions/value-categories/discarded-prvalue-destroyed.cpp
+:tests: expressions/value-categories/discarded-prvalue-destroyed.cpp expressions/value-categories/discarded-prvalue-braced.cpp
 
 If an expression statement is only a class prvalue, the program makes a
 temporary object from the prvalue. The program calls the destructor of
@@ -187,7 +187,7 @@ the temporary when the statement ends.
 
 :::{rule} VC-6
 :kind: required
-:tests: expressions/value-categories/temporaries-reverse-order.cpp
+:tests: expressions/value-categories/temporaries-reverse-order.cpp expressions/value-categories/temporaries-reverse-order-comma.cpp
 
 The life of a temporary object ends when its full expression ends. A
 reference bound to the temporary or to a member of the temporary
@@ -240,7 +240,7 @@ contains the lambda expression.
 
 :::{rule} VC-16
 :kind: required
-:tests: expressions/value-categories/parameter-belongs-to-caller.cpp
+:tests: expressions/value-categories/parameter-belongs-to-caller.cpp expressions/value-categories/parameter-conversion-throws-in-caller.cpp
 
 The caller initializes and destroys the parameter objects of a call. An
 exception from either step leaves the call expression in the caller and
@@ -252,7 +252,7 @@ does not end the program ({rule}`UNW-5`).
 
 :::{rule} VC-7
 :kind: unspecified
-:tests: expressions/value-categories/trivial-parameter-address.cpp
+:tests: expressions/value-categories/trivial-parameter-address.cpp expressions/value-categories/trivial-parameter-address-constructor.cpp
 
 An implementation can make an extra temporary copy of a trivially
 copyable class object for a function argument or a return value
@@ -275,7 +275,7 @@ that end a second destruction ({rule}`DTOR-7`).
 
 :::{rule} VC-15
 :kind: unspecified
-:tests: expressions/sequencing/parameter-destruction-order.cpp
+:tests: expressions/sequencing/parameter-destruction-order.cpp expressions/sequencing/parameter-destruction-order-three.cpp
 
 The parameter objects of one call are destroyed in an unspecified order.
 :::
@@ -300,7 +300,7 @@ NoCopy a = NoCopy(NoCopy(5));      // fine: no copy occurs
 
 ## Evidence
 
-All eight compilers agree on 55 of 57 tests. The results are in
+All eight compilers agree on 62 of 64 tests. The results are in
 `tests/RESULTS.md`.
 
 - VC-15: Clang 22 destroys the second parameter of a call first, and GCC

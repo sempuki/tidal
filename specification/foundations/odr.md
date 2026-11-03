@@ -176,7 +176,7 @@ constructs.
 
 :::{rule} INC-3
 :kind: reject
-:tests: foundations/odr/include-missing-file.cpp
+:tests: foundations/odr/include-missing-file.cpp foundations/odr/include-missing-file-angle.cpp
 
 If no file matches the name in an `include_directive`, the
 implementation rejects the program.
@@ -367,7 +367,7 @@ explicit specialization in different units.
 
 :::{rule} INC-2
 :kind: impl-defined
-:tests: foundations/odr/include-searches-own-directory.cpp
+:tests: foundations/odr/include-searches-own-directory.cpp foundations/odr/include-relative-to-own-directory.cpp
 
 The implementation decides which file an `include_directive` names. The
 matrix compilers search the directory of the file that holds the
@@ -439,7 +439,7 @@ template <> int rank<bool> = 2;                // two units: two definitions
 
 ## Evidence
 
-All eight compilers agree on 62 of 68 tests. EDG checks each unit and
+All eight compilers agree on 64 of 70 tests. EDG checks each unit and
 does not link, so its results for the link and run tests say only that
 the units are valid.
 

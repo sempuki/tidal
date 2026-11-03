@@ -79,7 +79,7 @@ These rules apply to `volatile` and classes:
 
 :::{rule} VOL-9
 :kind: reject
-:tests: declarations/volatile/nonvolatile-member-on-volatile.cpp
+:tests: declarations/volatile/nonvolatile-member-on-volatile.cpp declarations/volatile/const-member-on-volatile.cpp
 
 A member function that is not `volatile` (VOL-2) cannot be called on a
 volatile object.
@@ -155,7 +155,7 @@ volatile` variable at namespace scope has external {term}`linkage`, so all
 
 :::{rule} VOL-12
 :kind: required
-:tests: declarations/volatile/initialization-write.cpp
+:tests: declarations/volatile/initialization-write.cpp declarations/volatile/initialization-write-member-and-array.cpp
 
 An initializer that gives a volatile object its value at run time writes
 the object. The write is an observable effect ({rule}`TR-7`).
@@ -178,7 +178,7 @@ volatile, the behavior is undefined.
 
 :::{rule} VOL-13
 :kind: impl-defined
-:tests: declarations/volatile/bitfield-write-keeps-neighbors.cpp
+:tests: declarations/volatile/bitfield-write-keeps-neighbors.cpp declarations/volatile/bitfield-write-short-unit.cpp
 
 The size of the memory access for a volatile read or write is
 implementation-defined ({question}`Q-0326`). On the
@@ -244,8 +244,8 @@ volatile Control* control = nullptr;           // set to the device address
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 35
-of 37 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 38
+of 40 tests.
 
 - VOL-1: the tests check that programs with volatile accesses compile
   and run. A test cannot observe if an access was removed.

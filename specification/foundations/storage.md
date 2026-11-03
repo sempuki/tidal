@@ -228,7 +228,7 @@ The rule covers arrays ({rule}`DCL-19`) and classes.
 
 :::{rule} STG-2
 :kind: required
-:tests: foundations/storage/object-bytes-cover-members.cpp
+:tests: foundations/storage/object-bytes-cover-members.cpp foundations/storage/array-bytes-consecutive.cpp
 
 An object occupies `sizeof` bytes of storage, and the address of the
 object is the address of its first byte. An object of a
@@ -516,7 +516,7 @@ after the lifetime of the `const` object ({question}`Q-0307`).
 
 :::{rule} STG-21
 :kind: undefined
-:tests: foundations/storage/scope-end-other-type-sanitizer.cpp
+:tests: foundations/storage/scope-end-other-type-sanitizer.cpp foundations/storage/scope-end-other-type-exception.cpp
 
 Some variables have a class type whose destructor is not trivial, and
 static, thread, or {term}`automatic storage` duration. If the storage of such
@@ -565,7 +565,7 @@ apply:
 
 :::{rule} STG-24
 :kind: unspecified
-:tests: foundations/storage/implicit-objects-follow-later-use.cpp
+:tests: foundations/storage/implicit-objects-follow-later-use.cpp foundations/storage/implicit-objects-array-new.cpp
 
 If several sets of implicitly created objects give the program defined
 behavior (STG-8), the implementation creates one of the sets. The
@@ -574,7 +574,7 @@ choice is unspecified.
 
 :::{rule} STG-25
 :kind: impl-defined
-:tests: foundations/storage/base-bytes-shared-with-member.cpp
+:tests: foundations/storage/base-bytes-shared-with-member.cpp foundations/storage/no-unique-address-member-shares-bytes.cpp
 
 A base subobject, or a member declared `[[no_unique_address]]`, can
 share its last bytes with other subobjects of the same object. The
@@ -598,7 +598,7 @@ matrix targets, the table gives the bytes from first to last:
 
 :::{rule} STG-27
 :kind: impl-defined
-:tests: foundations/storage/invalid-pointer-copy.cpp
+:tests: foundations/storage/invalid-pointer-copy.cpp foundations/storage/invalid-pointer-copy-automatic.cpp
 
 When the storage of an object ends, each pointer to the object or past
 it becomes an invalid pointer value. Indirection and deallocation
@@ -751,8 +751,8 @@ template <class T> void destroy_all(T* first, int n) {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 72
-of 77 tests. EDG runs no programs, so its results for the run tests say
+The results are in `tests/RESULTS.md`. All eight compilers agree on 77
+of 82 tests. EDG runs no programs, so its results for the run tests say
 only that the programs are valid.
 
 - Constant evaluation: in C++23 mode no compiler in the matrix accepts

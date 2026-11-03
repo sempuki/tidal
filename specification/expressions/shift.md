@@ -57,7 +57,7 @@ the overloaded operators too (OPR-7).
 
 :::{rule} SHF-1
 :kind: required
-:tests: expressions/shift/grouping.cpp
+:tests: expressions/shift/grouping.cpp expressions/shift/grouping-right-shift.cpp
 
 `<<` and `>>` have the same precedence and group from left to right.
 They bind less tightly than `+` and `-`, and more tightly than `<`.
@@ -65,7 +65,7 @@ They bind less tightly than `+` and `-`, and more tightly than `<`.
 
 :::{rule} SHF-2
 :kind: required
-:tests: expressions/shift/operands-integral.cpp
+:tests: expressions/shift/operands-integral.cpp expressions/shift/operands-character-and-enum-right.cpp
 
 Both operands can have integer type or unscoped enumeration type. These
 types include `bool` and the character types.
@@ -159,8 +159,8 @@ c << 20;             // fine: c is promoted to int first
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 25
-of 27 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 27
+of 29 tests.
 
 - SHF-5, SHF-6: all compilers accept left shifts of negative values and
   overflowing left shifts during {term}`constant evaluation`. The

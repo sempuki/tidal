@@ -64,7 +64,7 @@ or the operand types suggest a mistake:
 
 :::{rule} BIT-1
 :kind: required
-:tests: expressions/bitwise/precedence.cpp
+:tests: expressions/bitwise/precedence.cpp expressions/bitwise/precedence-not-equal-and-xor.cpp
 
 `&` binds more tightly than `^`, and `^` binds more tightly than `|`.
 All three bind less tightly than `==` and `!=`. Each groups from left to
@@ -146,7 +146,7 @@ An implementation should warn if `~` applies to a `bool` operand.
 
 :::{rule} BIT-8
 :kind: recommended
-:tests: expressions/bitwise/mixed-enum-warns.cpp
+:tests: expressions/bitwise/mixed-enum-warns.cpp expressions/bitwise/mixed-enum-xor-warns.cpp
 
 An implementation should warn when the operands of `&`, `^`, or `|` have
 two different enumeration types. Such operands are valid and
@@ -174,7 +174,7 @@ Mode::Read | Mode::Write   // rejected without an operator|
 
 ## Evidence
 
-All eight compilers agree on all 21 tests. The results are in
+All eight compilers agree on all 23 tests. The results are in
 `tests/RESULTS.md`.
 
 - BIT-6: Clang warns "& has lower precedence than ==" and GCC warns

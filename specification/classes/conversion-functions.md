@@ -81,7 +81,7 @@ such as `s.operator int()`, is valid.
 
 :::{rule} CVF-9
 :kind: reject
-:tests: classes/conversion-functions/const-qualified-needed.cpp
+:tests: classes/conversion-functions/const-qualified-needed.cpp classes/conversion-functions/const-object-explicit-cast.cpp
 
 A conversion function that is not `const` cannot convert a `const`
 object.
@@ -286,8 +286,8 @@ Reading r = live;        // valid: the constructor binds Sensor&, which
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 63
-of 64 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 64
+of 65 tests.
 
 - CVF-1: GCC 16 rejects `operator auto()` under `-pedantic-errors`. GCC
   14, Clang, and EDG accept it ({question}`Q-0059`).

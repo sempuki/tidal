@@ -231,7 +231,7 @@ several paths, the path that gives the most access applies.
 
 :::{rule} ACC-18
 :kind: reject
-:tests: classes/access/private-base-name-in-derived.cpp
+:tests: classes/access/private-base-name-in-derived.cpp classes/access/private-base-function-in-derived.cpp
 
 The private members of a base are not accessible in the derived class.
 ACC-8 gives the access of the other members.
@@ -256,7 +256,7 @@ namespace of a private base, and the call then fails this check
 
 :::{rule} ACC-9
 :kind: required
-:tests: classes/access/using-changes-access.cpp
+:tests: classes/access/using-changes-access.cpp classes/access/using-makes-function-and-type-public.cpp
 
 A using-declaration ({rule}`DER-9`) in a derived class gives a base member
 the access of the label where the declaration occurs. The
@@ -265,7 +265,7 @@ using-declaration can increase or decrease the access.
 
 :::{rule} ACC-13
 :kind: reject
-:tests: classes/access/using-private-base-member.cpp
+:tests: classes/access/using-private-base-member.cpp classes/access/using-private-base-function.cpp
 
 A using-declaration must name a base member that is accessible in the
 derived class.
@@ -282,7 +282,7 @@ local class in a member function has the access of that member function.
 
 :::{rule} ACC-19
 :kind: reject
-:tests: classes/access/enclosing-not-access-nested.cpp
+:tests: classes/access/enclosing-not-access-nested.cpp classes/access/enclosing-not-access-nested-function.cpp
 
 The enclosing class of a nested class (ACC-10) has no special access to
 the members of the nested class.
@@ -300,7 +300,7 @@ refers to that private member. A qualified name, such as
 
 :::{rule} ACC-15
 :kind: reject
-:tests: classes/access/friend-private-member-of-other.cpp
+:tests: classes/access/friend-private-member-of-other.cpp classes/access/friend-protected-member-of-other.cpp
 
 A friend declaration that names a member function of another class needs
 access to that member function.
@@ -308,7 +308,7 @@ access to that member function.
 
 :::{rule} ACC-16
 :kind: required
-:tests: classes/access/default-argument-private.cpp
+:tests: classes/access/default-argument-private.cpp classes/access/default-argument-private-constructor.cpp
 
 Access for names in a default argument is checked at the declaration of
 the function, not at the call. A caller outside the class can use a
@@ -347,8 +347,8 @@ class Token {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 62
-of 64 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 68
+of 70 tests.
 
 - ACC-2, ACC-9: EDG 7.0 accepts a use of a member that a
   using-declaration makes private, if the member is public in the base

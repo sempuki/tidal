@@ -1,0 +1,9 @@
+// tidal-rules: VC-14
+// tidal-expect: reject
+// tidal-error-clang: rvalue reference to type .int. cannot bind to lvalue
+// tidal-error-gcc: cannot bind rvalue reference of type .int&&. to lvalue
+// tidal-error-edg: rvalue reference cannot be bound to an lvalue
+// tidal-note: The name is a function parameter of rvalue reference type.
+void f(int&& p) {
+  int&& q = p;
+}

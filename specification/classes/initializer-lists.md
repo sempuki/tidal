@@ -67,7 +67,7 @@ from the standard library ({rule}`LSUP-1`).
 
 :::{rule} ILC-1
 :kind: required
-:tests: classes/initializer-lists/selects-constructor.cpp
+:tests: classes/initializer-lists/selects-constructor.cpp classes/initializer-lists/selects-constructor-return-and-argument.cpp
 
 A braced list for a class that is not an aggregate selects a
 constructor. The elements of the list are the arguments. This rule
@@ -193,8 +193,8 @@ Point q{1.5, 2};       // rejected: narrowing
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 29
-of 31 tests. The tests declare a minimal `std::initializer_list`.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 30
+of 32 tests. The tests declare a minimal `std::initializer_list`.
 
 - ILC-3: Clang 18 copies for `S b{a}` when `S` also has an
   `initializer_list<S>` constructor. Clang 22 and GCC use that

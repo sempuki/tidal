@@ -136,7 +136,7 @@ decay. AUTO-18 states what the initializer must be.
 
 :::{rule} AUTO-18
 :kind: reject
-:tests: declarations/auto/lvalue-reference-to-rvalue.cpp
+:tests: declarations/auto/lvalue-reference-to-rvalue.cpp declarations/auto/lvalue-reference-to-xvalue.cpp
 
 The initializer of `auto&` (AUTO-3) must be an lvalue, unless the
 deduced type is `const`. The `const` can come from the declaration or
@@ -145,7 +145,7 @@ from the initializer, so an xvalue of `const` type is valid.
 
 :::{rule} AUTO-4
 :kind: required
-:tests: declarations/auto/forwarding-reference.cpp
+:tests: declarations/auto/forwarding-reference.cpp declarations/auto/forwarding-reference-volatile-class.cpp
 
 `auto&&` accepts any initializer. An lvalue initializer gives `T&`. Any
 other initializer gives `T&&`. The type keeps the `const` and `volatile`
@@ -163,7 +163,7 @@ type. `constexpr` makes the variable `const`. AUTO-19 states what
 
 :::{rule} AUTO-19
 :kind: reject
-:tests: declarations/auto/pointer-from-non-pointer.cpp
+:tests: declarations/auto/pointer-from-non-pointer.cpp declarations/auto/pointer-from-null-pointer-constant.cpp
 
 With `auto*` (AUTO-5), the initializer must have pointer type.
 :::
@@ -240,7 +240,7 @@ declaration introduced.
 
 :::{rule} AUTO-22
 :kind: reject
-:tests: declarations/auto/several-declarators-conflict.cpp
+:tests: declarations/auto/several-declarators-conflict.cpp declarations/auto/several-declarators-pointer-conflict.cpp
 
 If one declaration declares several variables with `auto` (AUTO-9),
 `auto` must stand for the same type in all declarators.
@@ -292,7 +292,7 @@ follows AUTO-7 and AUTO-21 ({rule}`RFOR-1`).
 
 :::{rule} AUTO-13
 :kind: required
-:tests: declarations/auto/constrained-satisfied.cpp
+:tests: declarations/auto/constrained-satisfied.cpp declarations/auto/constrained-with-arguments.cpp
 
 A concept name can come before `auto` or `decltype(auto)`
 ({rule}`CPT-18`). AUTO-16 states the constraint on the concept.
@@ -300,7 +300,7 @@ A concept name can come before `auto` or `decltype(auto)`
 
 :::{rule} AUTO-16
 :kind: reject
-:tests: declarations/auto/constrained-not-satisfied.cpp
+:tests: declarations/auto/constrained-not-satisfied.cpp declarations/auto/constrained-decltype-auto-reference.cpp
 
 If a concept name comes before `auto` or `decltype(auto)` (AUTO-13), the
 deduced type must satisfy the concept. {rule}`CPT-23` says which type
@@ -319,7 +319,7 @@ type comes from the initializer.
 
 :::{rule} AUTO-17
 :kind: reject
-:tests: declarations/auto/static-member-no-initializer.cpp
+:tests: declarations/auto/static-member-no-initializer.cpp declarations/auto/static-member-non-const-initializer.cpp
 
 The static data members that AUTO-14 describes are the only ones that
 can have a {term}`placeholder type`. Other static data members must not
@@ -328,7 +328,7 @@ have a placeholder type.
 
 :::{rule} AUTO-15
 :kind: reject
-:tests: declarations/auto/decltype-auto-array.cpp
+:tests: declarations/auto/decltype-auto-array.cpp declarations/auto/decltype-auto-array-member.cpp
 
 `decltype(auto)` with the name of an array as its initializer gives the
 array type itself. An array cannot be initialized from another array, so
@@ -392,7 +392,7 @@ Int auto ib = 1.0;              // rejected
 ## Evidence
 
 All rules on this page are `required` or `reject`. All eight compilers
-agree on all 55 tests. The results are in `tests/RESULTS.md`.
+agree on all 63 tests. The results are in `tests/RESULTS.md`.
 
 The tests for `auto x = { ... }` declare a small
 `std::initializer_list` with the shape that {rule}`LSUP-1` gives,

@@ -175,7 +175,7 @@ specializations for `const C` as well as for `C`.
 
 :::{rule} LSUP-4
 :kind: required
-:tests: foundations/language-support/size-and-null-types.cpp
+:tests: foundations/language-support/size-and-null-types.cpp foundations/language-support/size-and-null-types-typedef.cpp
 
 The library names three core types. A program can declare each name as
 an alias of the core type:
@@ -484,8 +484,8 @@ int* r = new (raw) int(3);          // raw hosts the int
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 44
-of 57 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 45
+of 58 tests.
 
 - LSUP-1: each compiler checks the shape in its own way. Clang checks
   the layout of the two members, and also accepts a second pointer in

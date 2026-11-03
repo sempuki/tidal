@@ -295,14 +295,14 @@ exception (IF-16). The same condition applies to:
 
 :::{rule} CE-12
 :kind: reject
-:tests: expressions/constant-expressions/volatile-read.cpp
+:tests: expressions/constant-expressions/volatile-read.cpp expressions/constant-expressions/volatile-reference-read.cpp
 
 Constant evaluation must not read an object through a `volatile` lvalue.
 :::
 
 :::{rule} CE-13
 :kind: reject
-:tests: expressions/constant-expressions/string-literal-identity.cpp
+:tests: expressions/constant-expressions/string-literal-identity.cpp expressions/constant-expressions/string-literal-identity-variables.cpp
 
 Constant evaluation must not compare the addresses of two string
 literals for equality. Two equal literals can share storage or not, and
@@ -323,7 +323,7 @@ static ({question}`Q-0193`).
 
 :::{rule} CE-15
 :kind: reject
-:tests: expressions/constant-expressions/relational-unrelated-pointers.cpp
+:tests: expressions/constant-expressions/relational-unrelated-pointers.cpp expressions/constant-expressions/relational-unrelated-array-elements.cpp
 
 Constant evaluation must not compare pointers to unrelated objects with
 `<`, `>`, `<=`, or `>=`, because the result is unspecified.
@@ -340,7 +340,7 @@ where the division has a result at run time ({rule}`MUL-11`).
 
 :::{rule} CE-16
 :kind: reject
-:tests: expressions/constant-expressions/call-before-definition.cpp
+:tests: expressions/constant-expressions/call-before-definition.cpp expressions/constant-expressions/member-call-before-definition.cpp
 
 If a `constexpr` function has only a declaration at the point where
 constant evaluation calls it, the call is not a constant expression. A
@@ -432,7 +432,7 @@ CE-21 judge the {term}`default initialization` ({rule}`INIT-9`):
 
 :::{rule} CE-18
 :kind: required
-:tests: expressions/constant-expressions/unknown-reference-not-read.cpp
+:tests: expressions/constant-expressions/unknown-reference-not-read.cpp expressions/constant-expressions/unknown-reference-static-member.cpp
 
 A reference whose object is not known during constant evaluation can
 still occur in a constant expression if the evaluation does not read
@@ -491,7 +491,7 @@ these figures:
 
 :::{rule} CE-26
 :kind: no-diagnostic
-:tests: expressions/constant-expressions/unsequenced-not-detected.cpp
+:tests: expressions/constant-expressions/unsequenced-not-detected.cpp expressions/constant-expressions/unsequenced-assignments-not-detected.cpp
 
 Constant evaluation must not evaluate two {term}`unsequenced` accesses
 to one {term}`memory location` where one access writes ({rule}`SEQ-4`,
@@ -500,7 +500,7 @@ to one {term}`memory location` where one access writes ({rule}`SEQ-4`,
 
 :::{rule} CE-27
 :kind: unspecified
-:tests: expressions/constant-expressions/order-may-differ-from-run.cpp
+:tests: expressions/constant-expressions/order-may-differ-from-run.cpp expressions/constant-expressions/order-of-operands-may-differ-from-run.cpp
 
 Where the order of evaluation is unspecified ({rule}`SEQ-1`,
 {rule}`SEQ-8`, {rule}`ASN-11`), constant evaluation also uses an
@@ -572,8 +572,8 @@ constinit Empty empty;                // fine: Empty has no scalar part
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 120
-of 139 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 125
+of 146 tests.
 
 Of the constant-evaluation cluster, {question}`Q-0090` is settled under
 decision 0051. These questions of the cluster on this page stay open:

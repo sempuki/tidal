@@ -235,7 +235,7 @@ a member with the same name.
 
 :::{rule} CTOR-21
 :kind: reject
-:tests: classes/constructors/mem-init-braces-narrowing.cpp
+:tests: classes/constructors/mem-init-braces-narrowing.cpp classes/constructors/mem-init-braces-narrowing-array.cpp
 
 A member initializer with braces must not need a narrowing conversion.
 :::
@@ -259,14 +259,14 @@ A name can be a type alias of a base. A `mem_init` must not:
 
 :::{rule} CTOR-8
 :kind: reject
-:tests: classes/constructors/delegating-self.cpp
+:tests: classes/constructors/delegating-self.cpp classes/constructors/delegating-self-with-argument.cpp
 
 A constructor must not delegate to itself.
 :::
 
 :::{rule} CTOR-16
 :kind: reject
-:tests: classes/constructors/delegating-with-member.cpp
+:tests: classes/constructors/delegating-with-member.cpp classes/constructors/delegating-with-base.cpp
 
 The `mem_init` of a delegating constructor must be the only one in its
 list.
@@ -303,7 +303,7 @@ gives the parts of such a conversion.
 
 :::{rule} CTOR-22
 :kind: reject
-:tests: classes/constructors/one-user-conversion.cpp
+:tests: classes/constructors/one-user-conversion.cpp classes/constructors/one-user-conversion-copy-init.cpp
 
 An implicit conversion uses at most one converting constructor.
 {rule}`ICS-9` gives the same limit for a conversion sequence.
@@ -368,7 +368,7 @@ not:
 
 :::{rule} DTOR-2
 :kind: required
-:tests: classes/constructors/dtor-on-const-object.cpp
+:tests: classes/constructors/dtor-on-const-object.cpp classes/constructors/dtor-implicit-const-block.cpp
 
 If a class declares no destructor, it has an implicit public destructor.
 A destructor can run on a `const` object.
@@ -424,7 +424,7 @@ denote the type of the object, also for a {term}`scalar type`.
 
 :::{rule} CTOR-18
 :kind: reject
-:tests: classes/constructors/nested-default-member-init-before-complete.cpp
+:tests: classes/constructors/nested-default-member-init-before-complete.cpp classes/constructors/nested-default-member-init-read-in-default-argument.cpp
 
 A default member initializer of a nested class can only be used after
 the enclosing class is complete. A default argument of a constructor of
@@ -555,7 +555,7 @@ These rules cover the other uses:
 
 :::{rule} CTOR-14
 :kind: no-diagnostic
-:tests: classes/constructors/delegating-cycle.cpp
+:tests: classes/constructors/delegating-cycle.cpp classes/constructors/delegating-cycle-three.cpp
 
 Constructors must not delegate to each other in a cycle. An
 implementation need not diagnose a cycle that does not delegate directly
@@ -564,7 +564,7 @@ to itself ({question}`Q-0053`).
 
 :::{rule} CTOR-17
 :kind: no-diagnostic
-:tests: classes/constructors/reference-member-binds-temporary.cpp classes/constructors/reference-default-member-binds-temporary.cpp
+:tests: classes/constructors/reference-member-binds-temporary.cpp classes/constructors/reference-default-member-binds-temporary.cpp classes/constructors/reference-member-binds-converted-parameter.cpp
 
 A constructor must not bind a reference member to a {term}`temporary object`,
 through a `mem_init` or a default member initializer. The temporary ends
@@ -636,8 +636,8 @@ Span g{{1}};   // Span(int): {1} gives an int directly (ICS-15). The
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 162
-of 174 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 167
+of 182 tests.
 
 - CTOR-23 and DTOR-9: the tests observe triviality through JMP-6 and
   UNI-3. A jump past a declaration is valid only for a trivial default

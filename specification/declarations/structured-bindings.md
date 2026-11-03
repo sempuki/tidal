@@ -208,7 +208,7 @@ scope. A name must not occur in the initializer of its own declaration.
 
 :::{rule} SB-9
 :kind: required
-:tests: declarations/structured-bindings/mutable-member.cpp
+:tests: declarations/structured-bindings/mutable-member.cpp declarations/structured-bindings/mutable-member-const-reference.cpp
 
 A binding to a `mutable` member can be changed, even if the hidden
 variable is `const`.
@@ -216,7 +216,7 @@ variable is `const`.
 
 :::{rule} SB-10
 :kind: required
-:tests: declarations/structured-bindings/bit-field-assign.cpp
+:tests: declarations/structured-bindings/bit-field-assign.cpp declarations/structured-bindings/bit-field-assign-wraps.cpp
 
 A binding to a bit-field member refers to the bit-field ({rule}`BF-1`).
 A program can assign to the binding. SB-16 lists what is not valid.
@@ -224,7 +224,7 @@ A program can assign to the binding. SB-16 lists what is not valid.
 
 :::{rule} SB-16
 :kind: reject
-:tests: declarations/structured-bindings/bit-field-address.cpp
+:tests: declarations/structured-bindings/bit-field-address.cpp declarations/structured-bindings/bit-field-address-copy.cpp
 
 A program must not take the address of a binding to a bit-field member.
 :::
@@ -241,7 +241,7 @@ for `constinit`).
 
 :::{rule} SB-12
 :kind: required
-:tests: declarations/structured-bindings/names-are-lvalues.cpp
+:tests: declarations/structured-bindings/names-are-lvalues.cpp declarations/structured-bindings/names-are-lvalues-const-rvalue-reference.cpp
 
 Each name of a structured binding is an lvalue. The rule holds also when
 the hidden variable is an rvalue reference or the initializer is a
@@ -267,7 +267,7 @@ these properties:
 
 :::{rule} SB-6
 :kind: required
-:tests: declarations/structured-bindings/lifetime-extended.cpp
+:tests: declarations/structured-bindings/lifetime-extended.cpp declarations/structured-bindings/lifetime-extended-rvalue-reference.cpp
 
 If the hidden variable is a reference bound to a temporary, the
 temporary exists as long as the names do (REF-4).
@@ -306,7 +306,7 @@ const auto& [cl, ch] = g; // rejected: E is const Range, which has no
 
 ## Evidence
 
-All eight compilers agree on 54 of 58 tests. The results are in
+All eight compilers agree on 59 of 63 tests. The results are in
 `tests/RESULTS.md`.
 
 - **SB-15.** Clang and GCC accept `constexpr` structured bindings and

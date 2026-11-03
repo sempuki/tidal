@@ -113,7 +113,7 @@ loses information is permitted, and INIT-8 lists what is not valid.
 
 :::{rule} INIT-8
 :kind: reject
-:tests: declarations/initialization/forms/array-from-array.cpp
+:tests: declarations/initialization/forms/array-from-array.cpp declarations/initialization/forms/array-member-from-array.cpp
 
 An array must not be initialized from another array.
 :::
@@ -141,7 +141,7 @@ An array element without a value in the list also gets zero.
 
 :::{rule} INIT-6
 :kind: required
-:tests: declarations/initialization/forms/declarators-in-order.cpp
+:tests: declarations/initialization/forms/declarators-in-order.cpp declarations/initialization/forms/declarators-in-order-namespace.cpp
 
 A declaration with several declarators initializes them in order, from
 left to right.
@@ -218,7 +218,7 @@ struct Bits {
 
 ## Evidence
 
-All eight compilers agree on 34 of 35 tests. The results are in
+All eight compilers agree on 36 of 37 tests. The results are in
 `tests/RESULTS.md`.
 
 - **INIT-1.** All compilers reject a read of an uninitialized scalar

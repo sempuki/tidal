@@ -223,7 +223,7 @@ specifier can be in either order.
 
 :::{rule} DER-11
 :kind: reject
-:tests: classes/derived/virtual-base-downcast.cpp
+:tests: classes/derived/virtual-base-downcast.cpp classes/derived/virtual-base-downcast-reference.cpp
 
 `static_cast` must not convert a pointer or reference to a virtual base
 to a derived class.
@@ -311,7 +311,7 @@ provide through inherited constructors.
 
 :::{rule} DER-16
 :kind: required
-:tests: classes/derived/static-cast-downcast.cpp
+:tests: classes/derived/static-cast-downcast.cpp classes/derived/static-cast-downcast-two-levels.cpp
 
 `static_cast` can convert a pointer or reference to a base `B` into a
 pointer or reference to a derived class `D`. `B` must be a base of `D`
@@ -324,7 +324,7 @@ that is:
 
 :::{rule} DER-18
 :kind: required
-:tests: classes/derived/direct-and-indirect-base.cpp
+:tests: classes/derived/direct-and-indirect-base.cpp classes/derived/direct-and-indirect-base-deep.cpp
 
 A class can be both a direct base and an indirect base of the same
 derived class. The declaration is valid.
@@ -332,7 +332,7 @@ derived class. The declaration is valid.
 
 :::{rule} DER-22
 :kind: reject
-:tests: classes/derived/direct-and-indirect-base-use.cpp
+:tests: classes/derived/direct-and-indirect-base-use.cpp classes/derived/direct-and-indirect-base-call.cpp
 
 If a class is both a direct and an indirect base (DER-18), a use of a
 member of that base through the derived class is ambiguous.
@@ -463,8 +463,8 @@ static_assert(make(true) == 3);  // rejected: Left() is not constexpr
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 81
-of 82 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 85
+of 86 tests.
 
 - DER-12: EDG accepts a `constexpr` destructor in a class with a virtual
   base. Clang and GCC reject the destructor ({question}`Q-0085`).

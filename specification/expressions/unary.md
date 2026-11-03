@@ -164,14 +164,14 @@ result is a pointer to member ({rule}`MPTR-2`).
 
 :::{rule} UN-9
 :kind: reject
-:tests: expressions/unary/address-of-rvalue.cpp
+:tests: expressions/unary/address-of-rvalue.cpp expressions/unary/address-of-class-prvalue.cpp
 
 The operand of `&` must not be a prvalue or an xvalue.
 :::
 
 :::{rule} UN-10
 :kind: required
-:tests: expressions/unary/prefix-increment-lvalue.cpp
+:tests: expressions/unary/prefix-increment-lvalue.cpp expressions/unary/prefix-decrement-pointer-double.cpp
 
 For prefix `++` and `--`, these conditions apply:
 
@@ -274,7 +274,7 @@ specifier is `noexcept` if the destructors of its bases and members are
 
 :::{rule} UN-3
 :kind: required
-:tests: expressions/unary/minus-values.cpp
+:tests: expressions/unary/minus-values.cpp expressions/unary/minus-values-wide-unsigned.cpp
 
 Unary `-` gives the negative of its operand. For an unsigned type, the
 result is 2{sup}`N` minus the value, where N is the width of the type.
@@ -411,7 +411,7 @@ count(data);                     // 6: a reference keeps the length
 
 ## Evidence
 
-All eight compilers agree on 67 of 71 tests. The results are in
+All eight compilers agree on 70 of 74 tests. The results are in
 `tests/RESULTS.md`. EDG skips the tests that use `-m32` or `-Werror`.
 
 - UN-20: Clang and GCC accept `++` and `--` on a `short` or

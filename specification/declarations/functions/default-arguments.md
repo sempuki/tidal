@@ -102,7 +102,7 @@ declaration, also if no call uses it.
 
 :::{rule} DEFARG-6
 :kind: reject
-:tests: declarations/functions/default-arguments/operator-default-argument.cpp
+:tests: declarations/functions/default-arguments/operator-default-argument.cpp declarations/functions/default-arguments/member-operator-default-argument.cpp
 
 An operator function other than `operator()` and `operator[]` must not
 have default arguments ({rule}`OPR-2`, {rule}`OPR-3`).
@@ -124,7 +124,7 @@ declaration, not at the call.
 
 :::{rule} DEFARG-7
 :kind: no-diagnostic
-:tests: declarations/functions/default-arguments/inline-defaults-differ.cpp
+:tests: declarations/functions/default-arguments/inline-defaults-differ.cpp declarations/functions/default-arguments/inline-default-only-one-unit.cpp
 
 If an `inline` function is declared in several translation units, each
 parameter must have the same default argument in all of them after all
@@ -149,7 +149,7 @@ int k(int v = next());      // next() is called at each k()
 
 ## Evidence
 
-All eight compilers agree on 20 of 22 tests. The results are in
+All eight compilers agree on 22 of 24 tests. The results are in
 `tests/RESULTS.md`.
 
 - DEFARG-2: Clang rejects a call that needs a default argument added by

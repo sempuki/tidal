@@ -241,7 +241,7 @@ change this rule.
 
 :::{rule} JMP-4
 :kind: required
-:tests: statements/jumps/return-destroys-locals.cpp
+:tests: statements/jumps/return-destroys-locals.cpp statements/jumps/return-value-before-destructors.cpp
 
 `return` first evaluates the returned value. Then `return` destroys the
 local variables in scope, in the order of {rule}`OBJ-3`.
@@ -351,7 +351,7 @@ int pick(int v) {
 
 ## Evidence
 
-All eight compilers agree on 56 of 59 tests. The results are in
+All eight compilers agree on 57 of 60 tests. The results are in
 `tests/RESULTS.md`.
 
 - JMP-6: GCC accepts a `goto` past a variable without an initializer

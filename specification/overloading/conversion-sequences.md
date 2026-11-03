@@ -226,7 +226,7 @@ of a base class, the rank is conversion.
 
 :::{rule} ICS-39
 :kind: required
-:tests: foundations/conversion-sequences/fixed-enumeration-promotion.cpp
+:tests: foundations/conversion-sequences/fixed-enumeration-promotion.cpp foundations/conversion-sequences/fixed-enumeration-promotion-unsigned-char.cpp
 
 An unscoped enumeration with a fixed underlying type `U` has a
 promotion to `U` and to the type that `U` promotes to ({rule}`CONV-1`).
@@ -291,7 +291,7 @@ serve it.
 
 :::{rule} ICS-5
 :kind: required
-:tests: foundations/conversion-sequences/template-conversion-exact.cpp
+:tests: foundations/conversion-sequences/template-conversion-exact.cpp foundations/conversion-sequences/template-conversion-exact-long.cpp
 
 A conversion {term}`function template` serves a user-defined conversion only if
 the third part of ICS-3 has exact-match rank.
@@ -366,7 +366,7 @@ the program. The rule named with each fault is the specific rule.
 
 :::{rule} ICS-9
 :kind: required
-:tests: foundations/conversion-sequences/two-user-defined-none.cpp
+:tests: foundations/conversion-sequences/two-user-defined-none.cpp foundations/conversion-sequences/two-user-defined-function-then-constructor.cpp
 
 A sequence holds at most one user-defined conversion. A conversion that
 needs two has no sequence, and {rule}`CTOR-22` and {rule}`CVF-10` reject
@@ -459,7 +459,7 @@ operator.
 
 :::{rule} ICS-14
 :kind: required
-:tests: foundations/conversion-sequences/static-object-slot.cpp
+:tests: foundations/conversion-sequences/static-object-slot.cpp foundations/conversion-sequences/static-object-slot-derived.cpp
 
 A static member function that is a candidate in a member call has an
 object slot. Any object matches the slot. The slot's sequence ties with
@@ -470,7 +470,7 @@ every standard sequence.
 
 :::{rule} ICS-15
 :kind: required
-:tests: foundations/conversion-sequences/list-scalar.cpp
+:tests: foundations/conversion-sequences/list-scalar.cpp foundations/conversion-sequences/list-scalar-pointer-and-pair.cpp
 
 For a parameter that is not a class or a reference, a braced list has
 this sequence:
@@ -586,7 +586,7 @@ comes before rank.
 
 :::{rule} ICS-23
 :kind: required
-:tests: foundations/conversion-sequences/array-fewer-elements.cpp
+:tests: foundations/conversion-sequences/array-fewer-elements.cpp foundations/conversion-sequences/array-fewer-elements-const-lvalue.cpp
 
 If two list sequences go to references to arrays of the same element
 type, the sequence to the array with fewer elements is better.
@@ -594,7 +594,7 @@ type, the sequence to the array with fewer elements is better.
 
 :::{rule} ICS-24
 :kind: required
-:tests: foundations/conversion-sequences/array-known-bound.cpp
+:tests: foundations/conversion-sequences/array-known-bound.cpp foundations/conversion-sequences/array-known-bound-const-lvalue.cpp
 
 If the two arrays of ICS-23 have the same number of elements, the array
 of known bound is better than the array of unknown bound.
@@ -714,7 +714,7 @@ function without a ref-qualifier (ICS-40). ICS-32 to ICS-36 come first
 
 :::{rule} ICS-29
 :kind: required
-:tests: foundations/conversion-sequences/function-lvalue-reference.cpp
+:tests: foundations/conversion-sequences/function-lvalue-reference.cpp foundations/conversion-sequences/function-lvalue-reference-cast.cpp
 
 If both sequences bind references to a function lvalue, binding an
 lvalue reference is better than binding an rvalue reference.
@@ -744,7 +744,7 @@ cv-qualifiers are a subset of the other's. ICS-28 comes first.
 
 :::{rule} ICS-37
 :kind: required
-:tests: foundations/conversion-sequences/conversion-choice-second-part.cpp
+:tests: foundations/conversion-sequences/conversion-choice-second-part.cpp foundations/conversion-sequences/conversion-choice-promotion-result.cpp
 
 When a user-defined conversion chooses between two conversion functions
 whose object parameters tie (ICS-7), the function whose result has the
@@ -770,7 +770,7 @@ alternative in parentheses:
 
 :::{rule} ICS-43
 :kind: required
-:tests: foundations/conversion-sequences/conversion-choice-void.cpp
+:tests: foundations/conversion-sequences/conversion-choice-void.cpp foundations/conversion-sequences/conversion-choice-void-const.cpp
 
 When two results convert to `void*`, a conversion from a pointer to a
 class is better than a conversion from a pointer to a class derived
@@ -779,7 +779,7 @@ from it.
 
 :::{rule} ICS-44
 :kind: required
-:tests: foundations/conversion-sequences/conversion-choice-equal-rank-source.cpp
+:tests: foundations/conversion-sequences/conversion-choice-equal-rank-source.cpp foundations/conversion-sequences/conversion-choice-equal-rank-extended-target.cpp
 
 When two results convert to a floating-point type `A`, a conversion from
 a floating-point type of the same rank as `A` is better. The other
@@ -824,8 +824,8 @@ pick(low);                  // 10: ICS-34 comes before ICS-28
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 92
-of 118 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 102
+of 129 tests.
 
 ### Sources
 
@@ -894,7 +894,7 @@ bound, for the reasons in Q-0188.
 - ICS-19: Clang 18 gives a one-element list of a class with an
   initializer-list constructor an exact match. The other compilers use
   the initializer-list constructor ({question}`Q-0081`).
-- ICS-35, ICS-44: Clang has no extended floating-point suffixes
+- ICS-35, ICS-44: Clang has no `f32`, `f64`, or `f128` suffix
   ({rule}`PRIM-22`). GCC and EDG follow the rules. No matrix target has
   three floating-point types of one rank, so no rule orders two targets
   that both have the rank of the source.

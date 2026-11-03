@@ -137,7 +137,7 @@ A type alias must not:
 
 :::{rule} TYN-3
 :kind: required
-:tests: declarations/type-names/typedef-unnamed-c-like.cpp
+:tests: declarations/type-names/typedef-unnamed-c-like.cpp declarations/type-names/typedef-unnamed-across-units.cpp
 
 If a `typedef` declares a name for an unnamed class, the class uses that
 name for linkage. TYN-9 states what such a class must be.
@@ -145,7 +145,7 @@ name for linkage. TYN-9 states what such a class must be.
 
 :::{rule} TYN-9
 :kind: reject
-:tests: declarations/type-names/typedef-unnamed-class-member-function.cpp
+:tests: declarations/type-names/typedef-unnamed-class-member-function.cpp declarations/type-names/typedef-unnamed-class-base.cpp
 
 A class that uses a `typedef` name for linkage (TYN-3) must be C-like.
 The class has none of these ({question}`Q-0067`):
@@ -270,8 +270,8 @@ void post(Packet* p) {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 54
-of 58 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 55
+of 60 tests.
 
 - TYN-5: GCC rejects the class, for a type name and for a function name
   that a later data member changes. Clang and EDG accept the class

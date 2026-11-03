@@ -76,7 +76,7 @@ SEQ-8 gives the order of the object.
 
 :::{rule} SEQ-9
 :kind: required
-:tests: expressions/sequencing/implicit-calls.cpp
+:tests: expressions/sequencing/implicit-calls.cpp expressions/sequencing/implicit-calls-unwinding-and-operators.cpp
 
 A program calls a function without naming it in these places:
 
@@ -123,7 +123,7 @@ call, and {rule}`SEQ-1` gives its order.
 
 :::{rule} SEQ-11
 :kind: required
-:tests: expressions/sequencing/operand-used-twice-evaluated-once.cpp
+:tests: expressions/sequencing/operand-used-twice-evaluated-once.cpp expressions/sequencing/operand-used-twice-run-time.cpp
 
 One evaluation of a construct evaluates each of its operands at most
 once. If the construct uses the result of an operand more than once,
@@ -205,7 +205,7 @@ operand (SEQ-1).
 
 :::{rule} SEQ-7
 :kind: recommended
-:tests: expressions/sequencing/unsequenced-increments.cpp
+:tests: expressions/sequencing/unsequenced-increments.cpp expressions/sequencing/unsequenced-read-and-increment.cpp
 
 An implementation should warn when it can see two unsequenced
 evaluations in one expression where both modify the same object, or
@@ -234,7 +234,7 @@ struct Flags { unsigned on : 1, dirty : 1; } f;
 
 ## Evidence
 
-All eight compilers agree on all 35 tests. The results are in
+All eight compilers agree on all 38 tests. The results are in
 `tests/RESULTS.md`.
 
 - SEQ-1: Clang and GCC 16 initialize an explicit object parameter

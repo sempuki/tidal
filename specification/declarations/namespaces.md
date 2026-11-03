@@ -111,7 +111,7 @@ what is not valid.
 
 :::{rule} NS-11
 :kind: reject
-:tests: declarations/namespaces/nested-first-inline.cpp
+:tests: declarations/namespaces/nested-first-inline.cpp declarations/namespaces/nested-first-inline-both.cpp
 
 The first name in the path of a nested namespace definition must not be
 `inline`.
@@ -140,7 +140,7 @@ namespace, a qualified use through the enclosing namespace is ambiguous.
 
 :::{rule} NS-4
 :kind: required
-:tests: declarations/namespaces/unnamed-namespace.cpp
+:tests: declarations/namespaces/unnamed-namespace.cpp declarations/namespaces/unnamed-namespace-nested-members.cpp
 
 The enclosing scope can use the members of an unnamed namespace without
 qualification. These members have internal {term}`linkage` (LNK-5).
@@ -151,7 +151,7 @@ using directive in the namespace that contains it ({rule}`NAM-13`,
 
 :::{rule} NS-13
 :kind: reject
-:tests: declarations/namespaces/unnamed-namespace-duplicate.cpp
+:tests: declarations/namespaces/unnamed-namespace-duplicate.cpp declarations/namespaces/unnamed-namespace-duplicate-function.cpp
 
 If a name is declared both in an unnamed namespace and in the enclosing
 namespace, an unqualified use is ambiguous.
@@ -159,7 +159,7 @@ namespace, an unqualified use is ambiguous.
 
 :::{rule} NS-5
 :kind: required
-:tests: declarations/namespaces/alias.cpp
+:tests: declarations/namespaces/alias.cpp declarations/namespaces/alias-of-alias-block.cpp
 
 `namespace L = A::B;` makes `L` a second name for `A::B`. NS-14 lists
 what is not valid.
@@ -295,8 +295,8 @@ int read() {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 42
-of 43 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 46
+of 47 tests.
 
 Divergence NS-D1 is about a repeated using declaration in a block. Clang
 22, Clang 18, and GCC 16 accept the repeated declaration. GCC 14 and

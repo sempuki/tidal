@@ -102,7 +102,7 @@ or duplicated definition is found when the program is linked, if at all.
 
 :::{rule} STO-4
 :kind: required
-:tests: declarations/storage-linkage/thread-local-combinations.cpp
+:tests: declarations/storage-linkage/thread-local-combinations.cpp declarations/storage-linkage/thread-local-member-and-block.cpp
 
 A variable declared `thread_local` has thread {term}`storage duration`.
 `thread_local` can be combined with `static` or `extern`. In a block,
@@ -118,7 +118,7 @@ All declarations of a variable must agree on `thread_local` (STO-4).
 
 :::{rule} STO-5
 :kind: reject
-:tests: declarations/storage-linkage/register.cpp
+:tests: declarations/storage-linkage/register.cpp declarations/storage-linkage/register-parameter.cpp
 
 A program must not use `register` as a storage class.
 :::
@@ -162,7 +162,7 @@ or follow a local variable of the same name in the same block.
 
 :::{rule} LNK-1
 :kind: required
-:tests: declarations/storage-linkage/external-default.cpp
+:tests: declarations/storage-linkage/external-default.cpp declarations/storage-linkage/external-namespace-member.cpp
 
 A variable or function at namespace scope has external linkage, unless a
 rule on this page gives it another linkage. A name with external linkage
@@ -196,7 +196,7 @@ program ({question}`Q-0297`).
 
 :::{rule} LNK-4
 :kind: required
-:tests: declarations/storage-linkage/inline-one-entity.cpp
+:tests: declarations/storage-linkage/inline-one-entity.cpp declarations/storage-linkage/inline-function-static-local.cpp
 
 Each translation unit that uses an `inline` variable or function with
 external linkage can define that variable or function. All these
@@ -205,7 +205,7 @@ definitions are one entity with one address.
 
 :::{rule} LNK-5
 :kind: required
-:tests: declarations/storage-linkage/unnamed-namespace-internal.cpp
+:tests: declarations/storage-linkage/unnamed-namespace-internal.cpp declarations/storage-linkage/unnamed-namespace-nested.cpp
 
 Each name in an unnamed namespace has internal {term}`linkage`. The name
 refers to an entity of its own translation unit only.
@@ -213,7 +213,7 @@ refers to an entity of its own translation unit only.
 
 :::{rule} LNK-8
 :kind: required
-:tests: declarations/storage-linkage/static-then-extern.cpp
+:tests: declarations/storage-linkage/static-then-extern.cpp declarations/storage-linkage/static-then-extern-function.cpp
 
 A later `extern` declaration keeps the internal linkage of an earlier
 `static` declaration. A later function declaration without a storage
@@ -256,7 +256,7 @@ rule also applies in an unnamed namespace ({question}`Q-0045`).
 
 :::{rule} STO-1
 :kind: required
-:tests: declarations/storage-linkage/automatic-lifetime.cpp
+:tests: declarations/storage-linkage/automatic-lifetime.cpp declarations/storage-linkage/automatic-loop-iterations.cpp
 
 A block-scope variable without `static`, `thread_local`, or `extern` has
 {term}`automatic storage`. Each pass through its declaration creates a
@@ -276,7 +276,7 @@ initialization does not occur.
 
 :::{rule} STO-3
 :kind: required
-:tests: declarations/storage-linkage/zero-initialized.cpp
+:tests: declarations/storage-linkage/zero-initialized.cpp declarations/storage-linkage/zero-before-dynamic.cpp
 
 A variable at namespace scope has static storage. The storage of each
 variable with static storage is set to zero before other initialization.
@@ -284,7 +284,7 @@ variable with static storage is set to zero before other initialization.
 
 :::{rule} STO-8
 :kind: required
-:tests: declarations/storage-linkage/thread-local-block.cpp
+:tests: declarations/storage-linkage/thread-local-block.cpp declarations/storage-linkage/thread-local-block-first-reach.cpp
 
 A `thread_local` variable has one object for each thread *(threads
 referenced)*. In a block, the object is initialized once in each thread,
@@ -293,7 +293,7 @@ the first time control reaches its declaration.
 
 :::{rule} STO-10
 :kind: required
-:tests: declarations/storage-linkage/static-destruction-order.cpp
+:tests: declarations/storage-linkage/static-destruction-order.cpp declarations/storage-linkage/static-destruction-block-order.cpp
 
 When the program ends, objects with static storage duration are
 destroyed. The object whose initialization completed last is destroyed
@@ -305,7 +305,7 @@ reached.
 
 :::{rule} STO-9
 :kind: undefined
-:tests: declarations/storage-linkage/recursive-static-init.cpp
+:tests: declarations/storage-linkage/recursive-static-init.cpp declarations/storage-linkage/recursive-static-init-constructor.cpp
 
 If control reaches the declaration of a block-scope `static` variable
 again while the variable's initialization is still running, the behavior
@@ -361,7 +361,7 @@ static int y;                  // rejected
 
 ## Evidence
 
-All eight compilers agree on 55 of 57 tests. The results are in
+All eight compilers agree on 66 of 68 tests. The results are in
 `tests/RESULTS.md`. 21 tests use two translation units (decision 0014).
 EDG checks each unit and does not link.
 

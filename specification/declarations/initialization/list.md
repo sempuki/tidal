@@ -71,7 +71,7 @@ An `init_clause` with `...` is a {term}`pack expansion` ({rule}`PACK-13`).
 
 :::{rule} LIST-1
 :kind: required
-:tests: declarations/initialization/list/scalar-braces.cpp
+:tests: declarations/initialization/list/scalar-braces.cpp declarations/initialization/list/scalar-braces-pointer-and-return.cpp
 
 A scalar can be initialized from braces that hold one expression, or
 from empty braces (INIT-2). LIST-11 lists what is not valid.
@@ -139,7 +139,7 @@ the member's type. LIST-13 lists what is not valid.
 
 :::{rule} LIST-13
 :kind: reject
-:tests: declarations/initialization/list/empty-base-no-elision.cpp
+:tests: declarations/initialization/list/empty-base-no-elision.cpp declarations/initialization/list/empty-member-no-elision.cpp
 
 A member that is an empty aggregate, such as an empty base, must have
 its own braces if later values follow.
@@ -219,7 +219,7 @@ a nested aggregate ({question}`Q-0043`).
 
 :::{rule} LIST-16
 :kind: reject
-:tests: declarations/initialization/list/omitted-member-explicit-default.cpp
+:tests: declarations/initialization/list/omitted-member-explicit-default.cpp declarations/initialization/list/omitted-member-explicit-default-designated.cpp
 
 An `explicit` {term}`default constructor` cannot initialize a member that has no
 value in the list (LIST-8). Such a member must have a value in the list.
@@ -249,7 +249,7 @@ zero. A member of class type gets its default constructor
 
 :::{rule} LIST-10
 :kind: required
-:tests: declarations/initialization/list/single-same-class-copies.cpp
+:tests: declarations/initialization/list/single-same-class-copies.cpp declarations/initialization/list/single-same-class-argument.cpp
 
 If a braced list for an aggregate has one element of the same class
 type, the aggregate is copied from that element. {rule}`ICS-18` gives
@@ -302,7 +302,7 @@ signed char o[] = u8"x";  // rejected: wrong character type
 
 ## Evidence
 
-All eight compilers agree on 58 of 62 tests. The results are in
+All eight compilers agree on 62 of 66 tests. The results are in
 `tests/RESULTS.md`.
 
 - **LIST-2.** For an unscoped enumeration without a fixed type, GCC

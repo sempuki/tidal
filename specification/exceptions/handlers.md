@@ -150,7 +150,7 @@ the *catch-all handler* is the one written with `...`.
 
 :::{rule} TRY-16
 :kind: reject
-:tests: exceptions/handlers/try-without-handler.cpp
+:tests: exceptions/handlers/try-without-handler.cpp exceptions/handlers/function-try-without-handler.cpp
 
 A try block must have at least one handler.
 :::
@@ -207,7 +207,7 @@ handler from outside that try block or handler:
 
 :::{rule} TRY-17
 :kind: reject
-:tests: exceptions/handlers/ctor-try-block-return-rejected.cpp
+:tests: exceptions/handlers/ctor-try-block-return-rejected.cpp exceptions/handlers/ctor-try-block-return-nested.cpp
 
 A constructor's function try block has handlers that cannot finish
 the construction, so a `return` statement inside one of these handlers
@@ -323,7 +323,7 @@ A function try block on a destructor rethrows the same way.
 
 :::{rule} TRY-18
 :kind: required
-:tests: exceptions/handlers/handler-copy-throws-terminates.cpp
+:tests: exceptions/handlers/handler-copy-throws-terminates.cpp exceptions/handlers/handler-base-copy-throws-terminates.cpp
 
 If the copy that initializes a handler parameter by value throws, the
 program ends. No handler catches the new exception.
@@ -333,7 +333,7 @@ program ends. No handler catches the new exception.
 
 :::{rule} TRY-11
 :kind: undefined
-:tests: exceptions/handlers/ctor-try-block-member-named-in-handler.cpp
+:tests: exceptions/handlers/ctor-try-block-member-named-in-handler.cpp exceptions/handlers/dtor-try-block-member-named-in-handler.cpp
 
 The members and bases are gone by the time a constructor's or
 destructor's function try block reaches a handler. A handler that still
@@ -354,7 +354,7 @@ class after one for its base, or a second handler for one type.
 
 :::{rule} TRY-12
 :kind: recommended
-:tests: exceptions/handlers/function-try-block-non-void-no-return.cpp
+:tests: exceptions/handlers/function-try-block-non-void-no-return.cpp exceptions/handlers/member-function-try-block-no-return.cpp
 
 When a function returns a value, its function try block's handlers
 should not let control run off their end. An implementation should warn
@@ -363,7 +363,7 @@ about a handler where control can run off the end.
 
 :::{rule} TRY-13
 :kind: recommended
-:tests: exceptions/handlers/ctor-try-block-member-use-warns.cpp
+:tests: exceptions/handlers/ctor-try-block-member-use-warns.cpp exceptions/handlers/dtor-try-block-member-use-warns.cpp
 
 An implementation should warn if a handler of a function try block on a
 constructor or destructor names a member of the object.
@@ -400,8 +400,8 @@ struct Widget {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 84
-of 86 tests. EDG runs no programs, so its results for the run tests say
+The results are in `tests/RESULTS.md`. All eight compilers agree on 88
+of 92 tests. EDG runs no programs, so its results for the run tests say
 only that the programs are valid, and the harness sees a terminating
 program only as a nonzero exit.
 

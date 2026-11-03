@@ -94,7 +94,7 @@ STMT-9 allows a class and a variable with one name.
 
 :::{rule} STMT-9
 :kind: required
-:tests: statements/blocks/class-and-variable-same-name.cpp
+:tests: statements/blocks/class-and-variable-same-name.cpp statements/blocks/enumeration-and-variable-same-name.cpp
 
 A block can declare a class or an enumeration and a variable or a
 function with the same name. The variable or the function hides the
@@ -103,7 +103,7 @@ class name from its declaration to the end of the block.
 
 :::{rule} STMT-10
 :kind: reject
-:tests: statements/blocks/class-hidden-by-variable.cpp
+:tests: statements/blocks/class-hidden-by-variable.cpp statements/blocks/enumeration-hidden-by-variable.cpp
 
 Where a variable or a function hides a class name (STMT-9), the name
 alone must not name the class. The program must name the class with
@@ -151,7 +151,7 @@ the declaration.
 
 :::{rule} STMT-7
 :kind: required
-:tests: statements/blocks/volatile-name-statement.cpp
+:tests: statements/blocks/volatile-name-statement.cpp statements/blocks/volatile-name-statement-reference.cpp
 
 An expression statement that only names a volatile object reads the
 object (UNEV-2). The read is an observable effect, so the implementation
@@ -207,7 +207,7 @@ void k(int x) {
 
 ## Evidence
 
-All eight compilers agree on 24 of 26 tests. The results are in
+All eight compilers agree on 27 of 29 tests. The results are in
 `tests/RESULTS.md`.
 
 - STMT-4: Clang warns "expression result unused" and GCC warns "statement

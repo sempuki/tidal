@@ -50,7 +50,7 @@ be deleted ({question}`Q-0023`).
 
 :::{rule} DEL-3
 :kind: reject
-:tests: declarations/functions/deleted/deleted-with-message.cpp
+:tests: declarations/functions/deleted/deleted-with-message.cpp declarations/functions/deleted/deleted-member-with-message.cpp
 
 `= delete` must not have a reason in parentheses. A later language
 version permits a reason ({question}`Q-0007`).
@@ -68,7 +68,7 @@ members must not use `= default`.
 
 :::{rule} DEL-5
 :kind: required
-:tests: declarations/functions/deleted/deleted-in-two-units.cpp
+:tests: declarations/functions/deleted/deleted-in-two-units.cpp declarations/functions/deleted/deleted-overload-in-two-units.cpp
 
 A deleted function is `inline`. Several {term}`translation units <translation unit>` can contain
 the same deleted definition.

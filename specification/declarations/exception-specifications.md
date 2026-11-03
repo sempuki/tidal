@@ -199,7 +199,7 @@ must also obey EXS-7.
 
 :::{rule} EXS-5
 :kind: impl-defined
-:tests: declarations/exception-specifications/throw-empty-removed.cpp
+:tests: declarations/exception-specifications/throw-empty-removed.cpp declarations/exception-specifications/throw-empty-pointer.cpp
 
 Acceptance of `throw()` with an empty list is implementation-defined
 ({question}`Q-0077`). If an implementation accepts `throw()`, the form
@@ -208,7 +208,7 @@ means `noexcept`.
 
 :::{rule} EXS-6
 :kind: no-diagnostic
-:tests: declarations/exception-specifications/operand-cycle.cpp
+:tests: declarations/exception-specifications/operand-cycle.cpp declarations/exception-specifications/operand-cycle-static.cpp
 
 The operand of a `noexcept` specifier must not depend on the specifier
 itself. An implementation need not diagnose such a dependency
@@ -235,7 +235,7 @@ struct File : Base { void close() override; };  // rejected: throwing override
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 35
-of 41 tests.
+of 43 tests.
 
 - EXS-7: EDG accepts `noexcept(2)` and a pointer operand. Clang and GCC
   reject them ({question}`Q-0078`).
