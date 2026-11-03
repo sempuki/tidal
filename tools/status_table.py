@@ -16,8 +16,8 @@ The tool writes:
   - Questions lists the questions the page names.
   - Similarity comes from the latest report under reports/similarity/ that
     checked any unit of the page. Reports are ordered by the date in their
-    name, then by name, so 2026-10-31-objects-rewrite comes after
-    2026-10-31-objects. The cell gives the number of the page's flagged
+    name, then by the time git first recorded them, then by name. A report
+    that git has not recorded yet comes last in its date. The cell gives the number of the page's flagged
     units and the report. It also counts the page's rules and principles
     that the report does not check. A page that no report checked says
     "no report".
@@ -41,6 +41,7 @@ Usage:
 import argparse
 import fnmatch
 import re
+import subprocess
 import sys
 import textwrap
 from collections import Counter, defaultdict
@@ -94,12 +95,29 @@ def all_pages() -> list[Path]:
     return [p for section in SECTIONS for p in pages(SPEC / section / "index.md")]
 
 
+def report_commit_times() -> dict[str, int]:
+    """The commit time at which git first recorded each similarity report."""
+    out = subprocess.run(["git", "-C", str(ROOT), "log", "--reverse", "--no-renames", "--diff-filter=A",
+                          "--format=%ct", "--name-only", "--", "reports/similarity"],
+                         capture_output=True, text=True).stdout
+    times, when = {}, 0
+    for line in out.splitlines():
+        if line.isdigit():
+            when = int(line)
+        elif line:
+            times.setdefault(Path(line).name, when)
+    return times
+
+
 class Similarity:
     """The committed similarity reports, oldest first."""
 
     def __init__(self):
         self.reports = []  # (stem, {label: flagged})
-        for f in sorted(SIMILARITY.glob("*.txt"), key=lambda f: (f.stem[:10], f.stem)):
+        added = report_commit_times()
+        newest = float("inf")
+        for f in sorted(SIMILARITY.glob("*.txt"),
+                        key=lambda f: (f.stem[:10], added.get(f.name, newest), f.stem)):
             labels = {}
             for line in f.read_text().splitlines():
                 if m := REPORT_LINE.match(line):
