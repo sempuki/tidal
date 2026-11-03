@@ -1,0 +1,1207 @@
+{
+ "p01": {
+  "outcome": "reject",
+  "rules": [
+   "CTOR-9"
+  ],
+  "why": "Passing an argument is copy-initialization, and the only constructor is explicit."
+ },
+ "p02": {
+  "outcome": "reject",
+  "rules": [
+   "DTOR-1"
+  ],
+  "why": "A destructor must not be static."
+ },
+ "p03": {
+  "outcome": "runs",
+  "rules": [
+   "CTOR-5"
+  ],
+  "why": "The member initializer sets v to 8."
+ },
+ "p04": {
+  "outcome": "reject",
+  "rules": [
+   "CTOR-25",
+   "ICS-19",
+   "ICS-8"
+  ],
+  "why": "The braced list gives an ambiguous conversion to Split, overload resolution still picks take(Split) over the ellipsis, and the chosen call is then rejected."
+ },
+ "p05": {
+  "outcome": "reject",
+  "rules": [
+   "CTOR-9"
+  ],
+  "why": "return {} is copy-initialization and the default constructor is explicit."
+ },
+ "p06": {
+  "outcome": "compiles",
+  "rules": [
+   "DTOR-4",
+   "DTOR-2"
+  ],
+  "why": "A destructor with no noexcept specifier and only trivial parts is noexcept."
+ },
+ "p07": {
+  "outcome": "reject",
+  "rules": [
+   "CTOR-9"
+  ],
+  "why": "S s = {1} is copy-initialization and the constructor is explicit."
+ },
+ "p08": {
+  "outcome": "reject",
+  "rules": [
+   "CTOR-25"
+  ],
+  "why": "Both constructors accept (1, 1) and neither is best."
+ },
+ "p09": {
+  "outcome": "reject",
+  "rules": [
+   "CTOR-1"
+  ],
+  "why": "A constructor must not have a cv-qualifier."
+ },
+ "p10": {
+  "outcome": "reject",
+  "rules": [
+   "DTOR-3"
+  ],
+  "why": "return S{} writes a prvalue of a class whose destructor is deleted."
+ },
+ "p11": {
+  "outcome": "reject",
+  "rules": [
+   "DTOR-3"
+  ],
+  "why": "The operand of sizeof is a prvalue of a class whose destructor is private."
+ },
+ "p12": {
+  "outcome": "compiles",
+  "rules": [
+   "CTOR-3"
+  ],
+  "why": "The reference member has a default member initializer, so the default constructor is not deleted."
+ },
+ "p13": {
+  "outcome": "runs",
+  "rules": [
+   "DTOR-5"
+  ],
+  "why": "Array elements are destroyed last to first, so trace becomes 321."
+ },
+ "p14": {
+  "outcome": "runs",
+  "rules": [
+   "CTOR-5",
+   "CTOR-6"
+  ],
+  "why": "Default member initializers run before the body, so seen is 1."
+ },
+ "p15": {
+  "outcome": "reject",
+  "rules": [
+   "CTOR-9"
+  ],
+  "why": "Only a constructor or conversion function can be explicit."
+ },
+ "p16": {
+  "outcome": "compiles",
+  "rules": [
+   "CTOR-15"
+  ],
+  "why": "A mem_init can name a base through a type alias."
+ },
+ "p17": {
+  "outcome": "reject",
+  "rules": [
+   "CTOR-4"
+  ],
+  "why": "A constructor defaulted on its first declaration is not user-provided, and v has no default member initializer."
+ },
+ "p18": {
+  "outcome": "reject",
+  "rules": [
+   "DTOR-3"
+  ],
+  "why": "The operand of noexcept is a prvalue of a class whose destructor is deleted."
+ },
+ "p19": {
+  "outcome": "reject",
+  "rules": [
+   "CTOR-3",
+   "CTOR-20"
+  ],
+  "why": "A reference member without a default member initializer deletes the default constructor, and S s uses it."
+ },
+ "p20": {
+  "outcome": "reject",
+  "rules": [
+   "CTOR-9"
+  ],
+  "why": "explicit may appear only on the declaration inside the class."
+ },
+ "p21": {
+  "outcome": "compiles",
+  "rules": [
+   "CTOR-9"
+  ],
+  "why": "Direct initialization and a functional cast can use an explicit constructor."
+ },
+ "p22": {
+  "outcome": "reject",
+  "rules": [
+   "CTOR-1"
+  ],
+  "why": "A constructor must not have an explicit object parameter."
+ },
+ "p23": {
+  "outcome": "reject",
+  "rules": [
+   "CTOR-9"
+  ],
+  "why": "explicit(true) makes the constructor explicit, and S s = 1 is copy-initialization."
+ },
+ "p24": {
+  "outcome": "runs",
+  "rules": [
+   "DTOR-5"
+  ],
+  "why": "The body runs, then members last first, then bases last first, giving 12345."
+ },
+ "p25": {
+  "outcome": "runs",
+  "rules": [
+   "CTOR-5"
+  ],
+  "why": "The default member initializer gives a the value 5."
+ },
+ "p26": {
+  "outcome": "reject",
+  "rules": [
+   "DTOR-3"
+  ],
+  "why": "f is not a member, so the private destructor is not accessible for the local variable."
+ },
+ "p27": {
+  "outcome": "compiles",
+  "rules": [
+   "CTOR-9",
+   "CTOR-10"
+  ],
+  "why": "explicit(false) leaves a converting constructor."
+ },
+ "p28": {
+  "outcome": "compiles",
+  "rules": [
+   "DTOR-6",
+   "DTOR-8"
+  ],
+  "why": "A program can call a destructor on a scalar through a type alias that names its type."
+ },
+ "p29": {
+  "outcome": "reject",
+  "rules": [
+   "CTOR-15"
+  ],
+  "why": "A mem_init must name a non-static data member or a base."
+ },
+ "p30": {
+  "outcome": "compiles",
+  "rules": [
+   "JMP-6",
+   "CTOR-23",
+   "DTOR-9"
+  ],
+  "why": "Item has a trivial default constructor and destructor, so the jump may skip its declaration."
+ },
+ "p31": {
+  "outcome": "reject",
+  "rules": [
+   "CTOR-9"
+  ],
+  "why": "S s = 1 is copy-initialization and the constructor is explicit."
+ },
+ "p32": {
+  "outcome": "runs",
+  "rules": [
+   "CTOR-5"
+  ],
+  "why": "Inside the initializer v names the parameter, so the member gets 2."
+ },
+ "p33": {
+  "outcome": "compiles",
+  "rules": [
+   "DTOR-6"
+  ],
+  "why": "The name after ~ can be a type alias of the class."
+ },
+ "p34": {
+  "outcome": "runs",
+  "rules": [
+   "DTOR-5"
+  ],
+  "why": "Variables in a block are destroyed in reverse order, giving 321."
+ },
+ "p35": {
+  "outcome": "reject",
+  "rules": [
+   "DTOR-3"
+  ],
+  "why": "delete is applied to an object whose destructor is deleted."
+ },
+ "p36": {
+  "outcome": "compiles",
+  "rules": [
+   "CTOR-13"
+  ],
+  "why": "The list order matches the declaration order, so no warning is expected."
+ },
+ "p37": {
+  "outcome": "reject",
+  "rules": [
+   "CTOR-15"
+  ],
+  "why": "A is an indirect, non-virtual base of C, so C cannot name it."
+ },
+ "p38": {
+  "outcome": "reject",
+  "rules": [
+   "CTOR-3",
+   "CTOR-20"
+  ],
+  "why": "Member m has a deleted destructor, so the default constructor of S is deleted, and new S uses it."
+ },
+ "p39": {
+  "outcome": "runs",
+  "rules": [
+   "CTOR-7"
+  ],
+  "why": "The target constructor runs first and then the delegating body, giving trace 12 and v 7."
+ },
+ "p40": {
+  "outcome": "reject",
+  "rules": [
+   "DTOR-3"
+  ],
+  "why": "The implicit destructor of S is deleted because of member m, so a local S is not valid."
+ },
+ "p41": {
+  "outcome": "reject",
+  "rules": [
+   "CE-9",
+   "CTOR-12"
+  ],
+  "why": "Constant evaluation reads a member that has no value, which is undefined."
+ },
+ "p42": {
+  "outcome": "reject",
+  "rules": [
+   "CTOR-25"
+  ],
+  "why": "No constructor takes two arguments."
+ },
+ "p43": {
+  "outcome": "reject",
+  "rules": [
+   "CTOR-25"
+  ],
+  "why": "Both constructors accept {1, 1} and neither is best."
+ },
+ "p44": {
+  "outcome": "compiles",
+  "rules": [
+   "DTOR-9",
+   "UNI-3"
+  ],
+  "why": "A destructor defaulted on its first declaration is trivial, so the union keeps its destructor."
+ },
+ "p45": {
+  "outcome": "reject",
+  "rules": [
+   "DTOR-3"
+  ],
+  "why": "make() is a prvalue of a class with a deleted destructor; the new expression itself would be valid but the prvalue is not."
+ },
+ "p46": {
+  "outcome": "compiles",
+  "rules": [
+   "CTOR-9"
+  ],
+  "why": "A cast can use an explicit constructor, and the copy-initialization is from a prvalue of S."
+ },
+ "p47": {
+  "outcome": "run-fail",
+  "rules": [
+   "DTOR-7"
+  ],
+  "why": "The block end destroys owner a second time and deletes held twice, which the address sanitizer stops."
+ },
+ "p48": {
+  "outcome": "runs",
+  "rules": [
+   "CTOR-6"
+  ],
+  "why": "Bases in list order, then members in declaration order, then the body, give 12345."
+ },
+ "p49": {
+  "outcome": "compiles",
+  "rules": [
+   "DTOR-4"
+  ],
+  "why": "noexcept(false) makes the destructor potentially throwing, so the assertion holds."
+ },
+ "p50": {
+  "outcome": "depends",
+  "rules": [
+   "CTOR-24",
+   "CTOR-4"
+  ],
+  "why": "The specification accepts a const union with one default member initializer, and Clang 22 and EDG accept and run it, while Clang 18 and GCC reject it."
+ },
+ "p51": {
+  "outcome": "reject",
+  "rules": [
+   "DTOR-8"
+  ],
+  "why": "The name after ~ denotes long, and the object is an int."
+ },
+ "p52": {
+  "outcome": "runs",
+  "rules": [
+   "CTOR-6"
+  ],
+  "why": "a is initialized before b, so b is 10."
+ },
+ "p53": {
+  "outcome": "reject",
+  "rules": [
+   "CTOR-15"
+  ],
+  "why": "A mem_init must not value-initialize a reference member."
+ },
+ "p54": {
+  "outcome": "reject",
+  "rules": [
+   "JMP-6",
+   "CTOR-23"
+  ],
+  "why": "The default member initializer makes the default constructor non-trivial, so the jump may not skip the declaration."
+ },
+ "p55": {
+  "outcome": "depends",
+  "rules": [
+   "DTOR-3"
+  ],
+  "why": "The specification makes an array new valid for a class with a deleted destructor; GCC and EDG accept it, and Clang rejects it (Q-0082)."
+ },
+ "p56": {
+  "outcome": "compiles",
+  "rules": [
+   "CTOR-4"
+  ],
+  "why": "The class has a user-provided default constructor."
+ },
+ "p57": {
+  "outcome": "reject",
+  "rules": [
+   "CTOR-15"
+  ],
+  "why": "A mem_init must not name the same member two times."
+ },
+ "p58": {
+  "outcome": "depends",
+  "rules": [
+   "CTOR-14"
+  ],
+  "why": "Two constructors delegate to each other in a cycle; Clang and EDG reject it and GCC accepts it (Q-0053)."
+ },
+ "p59": {
+  "outcome": "compiles",
+  "rules": [
+   "DTOR-1"
+  ],
+  "why": "Virtual, constexpr, and noexcept(false) destructors are all valid."
+ },
+ "p60": {
+  "outcome": "depends",
+  "rules": [
+   "CTOR-18"
+  ],
+  "why": "The default argument uses the nested class's default member initializer before Outer is complete; Clang and GCC reject it and EDG accepts it (Q-0083)."
+ },
+ "p61": {
+  "outcome": "reject",
+  "rules": [
+   "CTOR-9"
+  ],
+  "why": "The argument of explicit must be a constant expression, and flag is not one."
+ },
+ "p62": {
+  "outcome": "reject",
+  "rules": [
+   "CTOR-4",
+   "CTOR-24"
+  ],
+  "why": "The const union has no default member initializer for any member."
+ },
+ "p63": {
+  "outcome": "reject",
+  "rules": [
+   "DTOR-3"
+  ],
+  "why": "S{} is a prvalue of a class whose destructor is deleted, and s is a local variable."
+ },
+ "p64": {
+  "outcome": "reject",
+  "rules": [
+   "CTOR-9"
+  ],
+  "why": "return 1 is copy-initialization and the constructor is explicit."
+ },
+ "p65": {
+  "outcome": "reject",
+  "rules": [
+   "DTOR-1"
+  ],
+  "why": "A destructor has no return type."
+ },
+ "p66": {
+  "outcome": "reject",
+  "rules": [
+   "CTOR-15"
+  ],
+  "why": "b is not a member of S."
+ },
+ "p67": {
+  "outcome": "reject",
+  "rules": [
+   "CTOR-25"
+  ],
+  "why": "No constructor accepts a Label."
+ },
+ "p68": {
+  "outcome": "reject",
+  "rules": [
+   "CTOR-1"
+  ],
+  "why": "A constructor must not be static."
+ },
+ "p69": {
+  "outcome": "reject",
+  "rules": [
+   "CTOR-25"
+  ],
+  "why": "nullptr does not convert to int."
+ },
+ "p70": {
+  "outcome": "reject",
+  "rules": [
+   "CTOR-25"
+  ],
+  "why": "The inner braced list initializes a Split parameter and both Split constructors tie."
+ },
+ "p71": {
+  "outcome": "reject",
+  "rules": [
+   "DTOR-3"
+  ],
+  "why": "The operand of sizeof is a prvalue of a class with a deleted destructor."
+ },
+ "p72": {
+  "outcome": "compiles",
+  "rules": [
+   "CTOR-4"
+  ],
+  "why": "Every data member has a default member initializer."
+ },
+ "p73": {
+  "outcome": "reject",
+  "rules": [
+   "CTOR-1"
+  ],
+  "why": "A constructor must not have a cv-qualifier."
+ },
+ "p74": {
+  "outcome": "compiles",
+  "rules": [
+   "CTOR-2"
+  ],
+  "why": "Inheriting constructors leaves the implicit default constructor, and D e(1) uses the inherited one."
+ },
+ "p75": {
+  "outcome": "reject",
+  "rules": [
+   "CTOR-25",
+   "ILC-2"
+  ],
+  "why": "The initializer-list constructor is not viable for Tag elements, and no other constructor accepts two Tag arguments."
+ },
+ "p76": {
+  "outcome": "reject",
+  "rules": [
+   "JMP-6",
+   "CTOR-23"
+  ],
+  "why": "A virtual base makes the default constructor non-trivial."
+ },
+ "p77": {
+  "outcome": "compiles",
+  "rules": [
+   "DTOR-3"
+  ],
+  "why": "decltype of a function call is exempt and a new expression for the class is valid."
+ },
+ "p78": {
+  "outcome": "reject",
+  "rules": [
+   "CTOR-22"
+  ],
+  "why": "Converting 1 to B needs two converting constructors."
+ },
+ "p79": {
+  "outcome": "compiles",
+  "rules": [
+   "CTOR-5"
+  ],
+  "why": "Aggregate initialization binds the reference member to g."
+ },
+ "p80": {
+  "outcome": "reject",
+  "rules": [
+   "DTOR-3"
+  ],
+  "why": "decltype(Pinned{}) has a prvalue of the class that is not a function call."
+ },
+ "p81": {
+  "outcome": "reject",
+  "rules": [
+   "UNI-3",
+   "DTOR-9",
+   "DTOR-3"
+  ],
+  "why": "Item has a virtual destructor, so the union destructor is deleted and a local Slot is not valid."
+ },
+ "p82": {
+  "outcome": "reject",
+  "rules": [
+   "CTOR-1"
+  ],
+  "why": "A constructor must not be virtual."
+ },
+ "p83": {
+  "outcome": "reject",
+  "rules": [
+   "CTOR-25"
+  ],
+  "why": "nullptr converts to neither int nor double."
+ },
+ "p84": {
+  "outcome": "reject",
+  "rules": [
+   "DTOR-3"
+  ],
+  "why": "A local variable of a class whose destructor is deleted."
+ },
+ "p85": {
+  "outcome": "reject",
+  "rules": [
+   "DTOR-1"
+  ],
+  "why": "A destructor must not have a ref-qualifier."
+ },
+ "p86": {
+  "outcome": "reject",
+  "rules": [
+   "DTOR-3"
+  ],
+  "why": "make() is an argument inside the decltype operand, so it is a prvalue that the exemption does not cover."
+ },
+ "p87": {
+  "outcome": "reject",
+  "rules": [
+   "CTOR-21"
+  ],
+  "why": "Initializing int from double with braces narrows."
+ },
+ "p88": {
+  "outcome": "runs",
+  "rules": [
+   "DTOR-6"
+  ],
+  "why": "The explicit destructor call runs once and leaves the storage, which operator delete frees."
+ },
+ "p89": {
+  "outcome": "reject",
+  "rules": [
+   "CTOR-3",
+   "CTOR-20"
+  ],
+  "why": "The reference member has no default member initializer."
+ },
+ "p90": {
+  "outcome": "reject",
+  "rules": [
+   "CTOR-8"
+  ],
+  "why": "The constructor delegates to itself."
+ },
+ "p91": {
+  "outcome": "reject",
+  "rules": [
+   "CTOR-25"
+  ],
+  "why": "An int cannot be made from {1, 2}, and no constructor makes a Span from it."
+ },
+ "p92": {
+  "outcome": "compiles",
+  "rules": [
+   "CTOR-4"
+  ],
+  "why": "The class has no data members."
+ },
+ "p93": {
+  "outcome": "reject",
+  "rules": [
+   "CTOR-1"
+  ],
+  "why": "A constructor must not have a ref-qualifier."
+ },
+ "p94": {
+  "outcome": "compiles",
+  "rules": [
+   "CTOR-3"
+  ],
+  "why": "M gives every member a value, so the const member does not delete the default constructor."
+ },
+ "p95": {
+  "outcome": "compiles",
+  "rules": [
+   "CTOR-2"
+  ],
+  "why": "= default declares the default constructor again."
+ },
+ "p96": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-31",
+   "CTOR-25"
+  ],
+  "why": "Ordinary lookup finds the class probe, so argument-dependent lookup does not run and probe has no constructor from n::S."
+ },
+ "p97": {
+  "outcome": "reject",
+  "rules": [
+   "CE-9",
+   "DTOR-7"
+  ],
+  "why": "Constant evaluation calls a member function after the destructor ran, which is undefined."
+ },
+ "p98": {
+  "outcome": "reject",
+  "rules": [
+   "CTOR-15"
+  ],
+  "why": "A mem_init occurs in a declaration that is not a definition."
+ },
+ "p99": {
+  "outcome": "runs",
+  "rules": [
+   "CTOR-5"
+  ],
+  "why": "The mem_init replaces a's initializer, and b keeps 2."
+ },
+ "p100": {
+  "outcome": "compiles",
+  "rules": [
+   "DTOR-3"
+  ],
+  "why": "A static member function can access the private destructor."
+ },
+ "p101": {
+  "outcome": "runs",
+  "rules": [
+   "CTOR-5",
+   "CTOR-6"
+  ],
+  "why": "x is 3 and y is 4."
+ },
+ "p102": {
+  "outcome": "compiles",
+  "rules": [
+   "CTOR-9"
+  ],
+  "why": "Direct initialization can use the explicit constexpr constructor."
+ },
+ "p103": {
+  "outcome": "runs",
+  "rules": [
+   "CTOR-7"
+  ],
+  "why": "The target constructor's mem_init replaces the default member initializer, so v is 9."
+ },
+ "p104": {
+  "outcome": "reject",
+  "rules": [
+   "CTOR-19"
+  ],
+  "why": "Declaring S(int) removes the implicit default constructor."
+ },
+ "p105": {
+  "outcome": "reject",
+  "rules": [
+   "CTOR-13"
+  ],
+  "why": "The list order differs from the declaration order, the compilers warn, and -Werror turns the warning into an error."
+ },
+ "p106": {
+  "outcome": "reject",
+  "rules": [
+   "JMP-6",
+   "CTOR-23"
+  ],
+  "why": "Member p has a non-trivial default constructor, so Item's is non-trivial."
+ },
+ "p107": {
+  "outcome": "reject",
+  "rules": [
+   "DTOR-1"
+  ],
+  "why": "A destructor must not have an explicit object parameter."
+ },
+ "p108": {
+  "outcome": "runs",
+  "rules": [
+   "DTOR-5"
+  ],
+  "why": "delete[] destroys the elements last to first, giving 321."
+ },
+ "p109": {
+  "outcome": "compiles",
+  "rules": [
+   "DTOR-3"
+  ],
+  "why": "Both operands of decltype are calls exempted, as the right operand of a comma and in parentheses."
+ },
+ "p110": {
+  "outcome": "reject",
+  "rules": [
+   "CTOR-3",
+   "CTOR-20"
+  ],
+  "why": "Base B has no default constructor, so S's is deleted."
+ },
+ "p111": {
+  "outcome": "compiles",
+  "rules": [
+   "JMP-6",
+   "CTOR-23"
+  ],
+  "why": "A default constructor defaulted on its first declaration with no member initializers is trivial."
+ },
+ "p112": {
+  "outcome": "depends",
+  "rules": [
+   "DTOR-7",
+   "CE-9"
+  ],
+  "why": "The block end destroys s a second time during constant evaluation; most compilers reject it and EDG 7.0 accepts it (Q-0054)."
+ },
+ "p113": {
+  "outcome": "reject",
+  "rules": [
+   "DTOR-1"
+  ],
+  "why": "A destructor must not have a cv-qualifier."
+ },
+ "p114": {
+  "outcome": "compiles",
+  "rules": [
+   "CTOR-3"
+  ],
+  "why": "M has a user-provided default constructor, so the const member is fine."
+ },
+ "p115": {
+  "outcome": "runs",
+  "rules": [
+   "CTOR-10"
+  ],
+  "why": "The converting constructor makes a Meters from 4."
+ },
+ "p116": {
+  "outcome": "compiles",
+  "rules": [
+   "CTOR-21"
+  ],
+  "why": "Constant 2 fits in long, so there is no narrowing."
+ },
+ "p117": {
+  "outcome": "depends",
+  "rules": [
+   "CTOR-17"
+  ],
+  "why": "The default member initializer binds a reference member to a temporary; Clang rejects it, GCC warns and accepts, and EDG accepts (Q-0084)."
+ },
+ "p118": {
+  "outcome": "reject",
+  "rules": [
+   "CTOR-4"
+  ],
+  "why": "A constexpr object is const and height has no value."
+ },
+ "p119": {
+  "outcome": "compiles",
+  "rules": [
+   "DTOR-1"
+  ],
+  "why": "A (void) parameter list is valid."
+ },
+ "p120": {
+  "outcome": "reject",
+  "rules": [
+   "DTOR-8"
+  ],
+  "why": "A program cannot take the address of a destructor."
+ },
+ "p121": {
+  "outcome": "reject",
+  "rules": [
+   "DTOR-8"
+  ],
+  "why": "A destructor call needs ()."
+ },
+ "p122": {
+  "outcome": "reject",
+  "rules": [
+   "CE-9",
+   "CTOR-12"
+  ],
+  "why": "The constructor calls a member function from a base mem_init before the bases are initialized, inside constant evaluation."
+ },
+ "p123": {
+  "outcome": "reject",
+  "rules": [
+   "DTOR-1"
+  ],
+  "why": "The destructor is declared two times."
+ },
+ "p124": {
+  "outcome": "compiles",
+  "rules": [
+   "CTOR-4"
+  ],
+  "why": "The base gives v a value and D has no data members."
+ },
+ "p125": {
+  "outcome": "reject",
+  "rules": [
+   "DTOR-3"
+  ],
+  "why": "make() is the left operand of the comma, which is not exempt."
+ },
+ "p126": {
+  "outcome": "compiles",
+  "rules": [
+   "CTOR-25",
+   "CTOR-10"
+  ],
+  "why": "Each initializer finds one best constructor, using Span(int) or the implicit copy or move constructor."
+ },
+ "p127": {
+  "outcome": "reject",
+  "rules": [
+   "DTOR-1"
+  ],
+  "why": "A destructor must not be variadic."
+ },
+ "p128": {
+  "outcome": "reject",
+  "rules": [
+   "DTOR-3"
+  ],
+  "why": "The operand of sizeof is a prvalue of a class with a deleted destructor."
+ },
+ "p129": {
+  "outcome": "compiles",
+  "rules": [
+   "CTOR-11"
+  ],
+  "why": "The constexpr constructor can change v in its body."
+ },
+ "p130": {
+  "outcome": "reject",
+  "rules": [
+   "JMP-6",
+   "CTOR-23"
+  ],
+  "why": "A virtual function makes the default constructor non-trivial."
+ },
+ "p131": {
+  "outcome": "compiles",
+  "rules": [
+   "DTOR-4"
+  ],
+  "why": "A member with a potentially throwing destructor makes S's destructor potentially throwing."
+ },
+ "p132": {
+  "outcome": "reject",
+  "rules": [
+   "CTOR-3",
+   "CTOR-20"
+  ],
+  "why": "A const int member without a default member initializer deletes the default constructor."
+ },
+ "p133": {
+  "outcome": "runs",
+  "rules": [
+   "DTOR-5"
+  ],
+  "why": "Both members are destroyed."
+ },
+ "p134": {
+  "outcome": "reject",
+  "rules": [
+   "CTOR-25"
+  ],
+  "why": "nullptr does not convert to int."
+ },
+ "p135": {
+  "outcome": "reject",
+  "rules": [
+   "UNI-3",
+   "DTOR-9",
+   "DTOR-3"
+  ],
+  "why": "Item's user-provided destructor deletes the union's destructor."
+ },
+ "p136": {
+  "outcome": "reject",
+  "rules": [
+   "CTOR-3",
+   "CTOR-20"
+  ],
+  "why": "Member m has no default constructor."
+ },
+ "p137": {
+  "outcome": "reject",
+  "rules": [
+   "CTOR-1"
+  ],
+  "why": "A program cannot take the address of a constructor."
+ },
+ "p138": {
+  "outcome": "reject",
+  "rules": [
+   "DTOR-1"
+  ],
+  "why": "The destructor must have the name of its class."
+ },
+ "p139": {
+  "outcome": "reject",
+  "rules": [
+   "DTOR-3"
+  ],
+  "why": "S{} is a prvalue of a class whose destructor is deleted."
+ },
+ "p140": {
+  "outcome": "depends",
+  "rules": [
+   "CTOR-24"
+  ],
+  "why": "The specification accepts a class whose members are all in anonymous unions; GCC and EDG accept it and Clang 22 and Clang 18 reject it (Q-0126)."
+ },
+ "p141": {
+  "outcome": "depends",
+  "rules": [
+   "CTOR-24"
+  ],
+  "why": "Clang 22, GCC, and EDG accept and run it, and Clang 18 rejects it (Q-0126)."
+ },
+ "p142": {
+  "outcome": "runs",
+  "rules": [
+   "DTOR-5"
+  ],
+  "why": "The destructor runs once at the block end."
+ },
+ "p143": {
+  "outcome": "reject",
+  "rules": [
+   "CTOR-3",
+   "CTOR-20"
+  ],
+  "why": "M's default constructor is private, so S's is deleted."
+ },
+ "p144": {
+  "outcome": "reject",
+  "rules": [
+   "JMP-6",
+   "CTOR-23"
+  ],
+  "why": "A constructor defaulted after its first declaration is non-trivial."
+ },
+ "p145": {
+  "outcome": "runs",
+  "rules": [
+   "CTOR-10"
+  ],
+  "why": "The braced list converts to P through the converting constructor."
+ },
+ "p146": {
+  "outcome": "reject",
+  "rules": [
+   "CTOR-4"
+  ],
+  "why": "The base leaves v without a value."
+ },
+ "p147": {
+  "outcome": "compiles",
+  "rules": [
+   "CTOR-4"
+  ],
+  "why": "Every member has a default member initializer."
+ },
+ "p148": {
+  "outcome": "reject",
+  "rules": [
+   "CE-9",
+   "CTOR-12"
+  ],
+  "why": "a reads b before b has a value, during constant evaluation."
+ },
+ "p149": {
+  "outcome": "reject",
+  "rules": [
+   "CTOR-3",
+   "CTOR-20"
+  ],
+  "why": "The const member's class leaves v without a value and has no user-provided default constructor."
+ },
+ "p150": {
+  "outcome": "reject",
+  "rules": [
+   "CTOR-19"
+  ],
+  "why": "Declaring a copy constructor removes the implicit default constructor."
+ },
+ "p151": {
+  "outcome": "reject",
+  "rules": [
+   "CTOR-16"
+  ],
+  "why": "A delegating mem_init must be the only one."
+ },
+ "p152": {
+  "outcome": "compiles",
+  "rules": [
+   "DTOR-4"
+  ],
+  "why": "The implicit destructor is noexcept."
+ },
+ "p153": {
+  "outcome": "reject",
+  "rules": [
+   "UNI-3",
+   "DTOR-9",
+   "DTOR-3"
+  ],
+  "why": "Item's destructor is non-trivial through Part, so the union's destructor is deleted."
+ },
+ "p154": {
+  "outcome": "runs",
+  "rules": [
+   "CTOR-11",
+   "CTOR-4"
+  ],
+  "why": "The user-provided constructor sets v to 5 before the object becomes const."
+ },
+ "p155": {
+  "outcome": "reject",
+  "rules": [
+   "JMP-6",
+   "CTOR-23"
+  ],
+  "why": "Base has a user-provided default constructor."
+ },
+ "p156": {
+  "outcome": "reject",
+  "rules": [
+   "DTOR-8"
+  ],
+  "why": "The name after ~ does not denote the object's type."
+ },
+ "p157": {
+  "outcome": "depends",
+  "rules": [
+   "CTOR-24"
+  ],
+  "why": "The specification rejects it; Clang 22, Clang 18, and EDG reject it and GCC accepts it (Q-0126)."
+ },
+ "p158": {
+  "outcome": "compiles",
+  "rules": [
+   "CTOR-10"
+  ],
+  "why": "A standard conversion from char to long comes before the converting constructor."
+ },
+ "p159": {
+  "outcome": "depends",
+  "rules": [
+   "CTOR-17"
+  ],
+  "why": "The mem_init binds a reference member to a temporary; Clang rejects it, GCC warns and accepts, and EDG accepts (Q-0084)."
+ },
+ "p160": {
+  "outcome": "reject",
+  "rules": [
+   "CTOR-1"
+  ],
+  "why": "A constructor has no return type."
+ },
+ "p161": {
+  "outcome": "reject",
+  "rules": [
+   "DTOR-1"
+  ],
+  "why": "A destructor has no parameters."
+ },
+ "p162": {
+  "outcome": "reject",
+  "rules": [
+   "CTOR-1"
+  ],
+  "why": "The constructor is declared two times."
+ },
+ "p163": {
+  "outcome": "reject",
+  "rules": [
+   "JMP-6",
+   "CTOR-23"
+  ],
+  "why": "A user-provided constructor is non-trivial."
+ },
+ "p164": {
+  "outcome": "reject",
+  "rules": [
+   "CTOR-4"
+  ],
+  "why": "v has no value."
+ },
+ "p165": {
+  "outcome": "compiles",
+  "rules": [
+   "DTOR-3"
+  ],
+  "why": "A new expression for a class with a deleted destructor is valid."
+ },
+ "p166": {
+  "outcome": "reject",
+  "rules": [
+   "CTOR-25"
+  ],
+  "why": "No constructor takes two arguments."
+ }
+}

@@ -1,0 +1,797 @@
+{
+ "p01": {
+  "outcome": "runs",
+  "rules": [
+   "CPY-8"
+  ],
+  "why": "The implicit copy constructor and copy assignment copy the array member element by element."
+ },
+ "p02": {
+  "outcome": "reject",
+  "rules": [
+   "CPY-17",
+   "CPY-7"
+  ],
+  "why": "The copy constructor is defaulted after the class, but the member's deleted copy would make it deleted, which is not allowed."
+ },
+ "p03": {
+  "outcome": "runs",
+  "rules": [
+   "CPY-7",
+   "CPY-9"
+  ],
+  "why": "The defaulted move of S is deleted because M's move is deleted, so it steps aside and the rvalue uses the copy constructor, which copies M once."
+ },
+ "p04": {
+  "outcome": "depends",
+  "rules": [
+   "CPY-14",
+   "CPY-6"
+  ],
+  "why": "The in-class defaulted const S& copy constructor differs from the implicit S& one, so it is deleted and unused; GCC 14 rejects the declaration, the other compilers accept."
+ },
+ "p05": {
+  "outcome": "compiles",
+  "rules": [
+   "UNI-3",
+   "CPY-27",
+   "CPY-4"
+  ],
+  "why": "Item's copy is trivial, so the union keeps its implicit copy constructor."
+ },
+ "p06": {
+  "outcome": "reject",
+  "rules": [
+   "CPY-7",
+   "CPY-23"
+  ],
+  "why": "A reference member deletes the implicit copy assignment operator."
+ },
+ "p07": {
+  "outcome": "run-fail",
+  "rules": [
+   "CPY-4",
+   "CPY-8",
+   "NEW-5"
+  ],
+  "why": "The implicit copy shares the pointer, both destructors delete[] the same array, and AddressSanitizer stops the double free."
+ },
+ "p08": {
+  "outcome": "runs",
+  "rules": [
+   "CPY-6"
+  ],
+  "why": "The implicit copy assignment returns a reference to *this, so chained assignment works and r refers to a."
+ },
+ "p09": {
+  "outcome": "compiles",
+  "rules": [
+   "CPY-3"
+  ],
+  "why": "All five operators are valid copy or move assignment operators; the return type can be anything."
+ },
+ "p10": {
+  "outcome": "runs",
+  "rules": [
+   "CPY-1",
+   "OVL-27"
+  ],
+  "why": "S b(a) ties between the implicit copy constructor and the template specialization, and the non-template wins; only S c(1) uses the template."
+ },
+ "p11": {
+  "outcome": "runs",
+  "rules": [
+   "CPY-2",
+   "CPY-9"
+  ],
+  "why": "A constructor taking S&& with a defaulted extra parameter is a move constructor and the xvalue chooses it."
+ },
+ "p12": {
+  "outcome": "compiles",
+  "rules": [
+   "CPY-9"
+  ],
+  "why": "The xvalue argument initializes the parameter with M's move constructor."
+ },
+ "p13": {
+  "outcome": "runs",
+  "rules": [
+   "CPY-18"
+  ],
+  "why": "The shared virtual base is assigned one or two times, and the program accepts either count."
+ },
+ "p14": {
+  "outcome": "reject",
+  "rules": [
+   "UNI-3",
+   "UNI-11",
+   "CPY-27"
+  ],
+  "why": "Part's user-provided copy makes Item's copy non-trivial, so the union's copy constructor is deleted and its use is rejected."
+ },
+ "p15": {
+  "outcome": "reject",
+  "rules": [
+   "CPY-14",
+   "CPY-26"
+  ],
+  "why": "The in-class defaulted const S& copy constructor differs from the implicit S& one, so it is deleted, and S b(a) uses it."
+ },
+ "p16": {
+  "outcome": "runs",
+  "rules": [
+   "CPY-4",
+   "CPY-5"
+  ],
+  "why": "A user-declared copy assignment removes the implicit move constructor but keeps the implicit copy constructor, so the rvalue copies M once."
+ },
+ "p17": {
+  "outcome": "runs",
+  "rules": [
+   "CPY-11",
+   "CPY-12"
+  ],
+  "why": "return s either moves s or makes s the return object, so there are no copies and at most one move."
+ },
+ "p18": {
+  "outcome": "reject",
+  "rules": [
+   "CPY-11",
+   "CPY-25",
+   "CPY-4"
+  ],
+  "why": "A member named in return is an lvalue, so it needs M's copy constructor, which M's user-declared move constructor deletes."
+ },
+ "p19": {
+  "outcome": "compiles",
+  "rules": [
+   "UNI-3",
+   "CPY-27"
+  ],
+  "why": "Item's copy assignment is trivial, so the union's implicit copy assignment is usable."
+ },
+ "p20": {
+  "outcome": "reject",
+  "rules": [
+   "UNI-3",
+   "UNI-11",
+   "CPY-27"
+  ],
+  "why": "Item has a virtual function, so its copy is non-trivial and the union's copy constructor is deleted."
+ },
+ "p21": {
+  "outcome": "reject",
+  "rules": [
+   "CPY-6",
+   "CPY-22"
+  ],
+  "why": "D's implicit copy assignment hides B::operator=(int), and an int does not convert to D."
+ },
+ "p22": {
+  "outcome": "runs",
+  "rules": [
+   "CPY-9",
+   "CPY-11"
+  ],
+  "why": "S b(a) copies once, and S c(static_cast<S&&>(a)) moves."
+ },
+ "p23": {
+  "outcome": "reject",
+  "rules": [
+   "CPY-6",
+   "CPY-22"
+  ],
+  "why": "M's copy assignment takes M&, so S's implicit copy assignment takes S& and cannot assign from a const S."
+ },
+ "p24": {
+  "outcome": "reject",
+  "rules": [
+   "CPY-7",
+   "CPY-23"
+  ],
+  "why": "An rvalue reference member deletes the implicit copy constructor."
+ },
+ "p25": {
+  "outcome": "runs",
+  "rules": [
+   "UNI-3",
+   "CPY-7",
+   "UNI-5"
+  ],
+  "why": "Part's non-trivial move functions delete the union's move functions, which step aside, so the trivial copies copy the active member count."
+ },
+ "p26": {
+  "outcome": "compiles",
+  "rules": [
+   "CPY-8"
+  ],
+  "why": "The implicit copy constructor can be used in constant evaluation, and y.b is 2."
+ },
+ "p27": {
+  "outcome": "compiles",
+  "rules": [
+   "CPY-9",
+   "CPY-1"
+  ],
+  "why": "S b(a) uses the defaulted copy constructor for the lvalue."
+ },
+ "p28": {
+  "outcome": "reject",
+  "rules": [
+   "CPY-13"
+  ],
+  "why": "Under -Wextra the compilers warn that the implicit copy constructor is used in a class with a user-provided copy assignment, and -Werror turns the warning into an error."
+ },
+ "p29": {
+  "outcome": "reject",
+  "rules": [
+   "CPY-17"
+  ],
+  "why": "A defaulted copy assignment operator must return S&, not void."
+ },
+ "p30": {
+  "outcome": "compiles",
+  "rules": [
+   "CPY-12",
+   "CPY-11"
+  ],
+  "why": "Constant evaluation always moves the returned local, so moves is 1 and the static_assert holds."
+ },
+ "p31": {
+  "outcome": "runs",
+  "rules": [
+   "CPY-5",
+   "CPY-8"
+  ],
+  "why": "S has an implicit move constructor, which moves M."
+ },
+ "p32": {
+  "outcome": "reject",
+  "rules": [
+   "CPY-24"
+  ],
+  "why": "An explicit copy constructor is not used in copy-initialization."
+ },
+ "p33": {
+  "outcome": "compiles",
+  "rules": [
+   "CPY-14"
+  ],
+  "why": "A defaulted copy constructor can take S&, and S b(a) copies a non-const lvalue."
+ },
+ "p34": {
+  "outcome": "runs",
+  "rules": [
+   "CPY-5"
+  ],
+  "why": "The user-declared destructor removes the implicit move constructor, so the rvalue copies M."
+ },
+ "p35": {
+  "outcome": "depends",
+  "rules": [
+   "CPY-14",
+   "CPY-2"
+  ],
+  "why": "The in-class defaulted const S&& move constructor differs from the implicit S&& one, so it is deleted and unused; GCC 14 rejects the declaration, the other compilers accept."
+ },
+ "p36": {
+  "outcome": "reject",
+  "rules": [
+   "CPY-11",
+   "CPY-25",
+   "CPY-4"
+  ],
+  "why": "A name of lvalue reference type in return is an lvalue, so it needs M's copy constructor, which is deleted."
+ },
+ "p37": {
+  "outcome": "reject",
+  "rules": [
+   "UNI-3",
+   "CPY-4",
+   "CPY-7",
+   "CPY-23"
+  ],
+  "why": "The union's move is deleted and steps aside, and its copy is deleted because Item's copy is deleted by Item's user-declared move."
+ },
+ "p38": {
+  "outcome": "runs",
+  "rules": [
+   "CPY-10"
+  ],
+  "why": "Prvalues initialize their targets directly, so no copy or move constructor runs."
+ },
+ "p39": {
+  "outcome": "reject",
+  "rules": [
+   "CPY-17"
+  ],
+  "why": "A defaulted copy assignment operator must take a reference."
+ },
+ "p40": {
+  "outcome": "reject",
+  "rules": [
+   "CPY-4",
+   "CPY-5",
+   "CPY-21"
+  ],
+  "why": "The user-declared move constructor deletes the implicit copy assignment and leaves no implicit move assignment."
+ },
+ "p41": {
+  "outcome": "depends",
+  "rules": [
+   "CPY-14"
+  ],
+  "why": "The in-class defaulted const volatile S& copy constructor differs from the implicit const S& one, so it is deleted and unused; GCC 14 rejects the declaration, the other compilers accept."
+ },
+ "p42": {
+  "outcome": "runs",
+  "rules": [
+   "CPY-9"
+  ],
+  "why": "Both direct and copy-initialization from an lvalue call the copy constructor."
+ },
+ "p43": {
+  "outcome": "reject",
+  "rules": [
+   "CPY-11",
+   "CPY-25"
+  ],
+  "why": "In return, a local variable and a function's rvalue reference parameter are xvalues, which cannot bind to an int& return type."
+ },
+ "p44": {
+  "outcome": "compiles",
+  "rules": [
+   "CPY-5",
+   "CPY-9"
+  ],
+  "why": "S has an implicit move constructor that moves M, and the xvalue uses it."
+ },
+ "p45": {
+  "outcome": "runs",
+  "rules": [
+   "CPY-5",
+   "CPY-8",
+   "CPY-9"
+  ],
+  "why": "S's implicit move assignment calls M's move assignment."
+ },
+ "p46": {
+  "outcome": "reject",
+  "rules": [
+   "CPY-13"
+  ],
+  "why": "Under -Wall the compilers warn on std::move of a local in return, and -Werror makes the warning an error."
+ },
+ "p47": {
+  "outcome": "compiles",
+  "rules": [
+   "CPY-13",
+   "CPY-11"
+  ],
+  "why": "The compilers do not warn for static_cast or for a function with another name, so -Werror has nothing to stop."
+ },
+ "p48": {
+  "outcome": "reject",
+  "rules": [
+   "CPY-13"
+  ],
+  "why": "The compilers warn for a call of a function named std::move on a returned local even when it is not a template, and -Werror makes it an error."
+ },
+ "p49": {
+  "outcome": "reject",
+  "rules": [
+   "CPY-4",
+   "CPY-21"
+  ],
+  "why": "Passing an lvalue needs M's copy constructor, which the user-declared move constructor deletes."
+ },
+ "p50": {
+  "outcome": "reject",
+  "rules": [
+   "CPY-11",
+   "CPY-25",
+   "CPY-21"
+  ],
+  "why": "A global in return is an lvalue and needs M's deleted copy constructor."
+ },
+ "p51": {
+  "outcome": "reject",
+  "rules": [
+   "CPY-7",
+   "CPY-23"
+  ],
+  "why": "A const member deletes the implicit copy assignment operator."
+ },
+ "p52": {
+  "outcome": "reject",
+  "rules": [
+   "CPY-17"
+  ],
+  "why": "A defaulted copy assignment operator must return S&."
+ },
+ "p53": {
+  "outcome": "runs",
+  "rules": [
+   "CPY-19"
+  ],
+  "why": "P is trivially copyable, so copying its bytes copies its value."
+ },
+ "p54": {
+  "outcome": "reject",
+  "rules": [
+   "CPY-6",
+   "CPY-22"
+  ],
+  "why": "S's implicit copy constructor takes S& because M's does, so it cannot copy the const object a."
+ },
+ "p55": {
+  "outcome": "reject",
+  "rules": [
+   "CPY-4",
+   "CPY-21"
+  ],
+  "why": "The user-declared move constructor deletes the implicit copy constructor."
+ },
+ "p56": {
+  "outcome": "reject",
+  "rules": [
+   "CPY-16"
+  ],
+  "why": "An assignment operator cannot be declared at namespace scope."
+ },
+ "p57": {
+  "outcome": "compiles",
+  "rules": [
+   "CPY-7"
+  ],
+  "why": "A reference member deletes only the assignment operators, so the copy constructor works."
+ },
+ "p58": {
+  "outcome": "runs",
+  "rules": [
+   "CPY-1",
+   "CPY-9"
+  ],
+  "why": "S(S&) is a copy constructor and copies the non-const lvalue."
+ },
+ "p59": {
+  "outcome": "reject",
+  "rules": [
+   "CPY-7",
+   "CPY-23"
+  ],
+  "why": "A member with a deleted destructor deletes the defaulted copy constructor."
+ },
+ "p60": {
+  "outcome": "reject",
+  "rules": [
+   "UNI-3",
+   "UNI-11",
+   "CPY-27"
+  ],
+  "why": "A virtual base makes Item's copy non-trivial, so the union's copy constructor is deleted."
+ },
+ "p61": {
+  "outcome": "reject",
+  "rules": [
+   "CPY-16"
+  ],
+  "why": "An assignment operator cannot be static."
+ },
+ "p62": {
+  "outcome": "compiles",
+  "rules": [
+   "CPY-11",
+   "CPY-25"
+  ],
+  "why": "The cast is an xvalue that binds to M&&, and a name of lvalue reference type is an lvalue that binds to M&."
+ },
+ "p63": {
+  "outcome": "reject",
+  "rules": [
+   "CPY-7",
+   "CPY-23"
+  ],
+  "why": "A const member deletes the copy and move assignment operators."
+ },
+ "p64": {
+  "outcome": "runs",
+  "rules": [
+   "CPY-9"
+  ],
+  "why": "The xvalue chooses the move constructor."
+ },
+ "p65": {
+  "outcome": "runs",
+  "rules": [
+   "CPY-8"
+  ],
+  "why": "The implicit copy assignment assigns the base, then a, then b."
+ },
+ "p66": {
+  "outcome": "reject",
+  "rules": [
+   "CPY-7",
+   "CPY-23",
+   "CPY-4"
+  ],
+  "why": "M's copy constructor is deleted by its move constructor, so S's implicit copy constructor is deleted."
+ },
+ "p67": {
+  "outcome": "compiles",
+  "rules": [
+   "CPY-1"
+  ],
+  "why": "A const volatile S& copy constructor can copy a volatile object."
+ },
+ "p68": {
+  "outcome": "runs",
+  "rules": [
+   "CPY-8"
+  ],
+  "why": "Plain's implicit copy shares the pointer into p, Line's written copy points into its own text, and nothing undefined happens."
+ },
+ "p69": {
+  "outcome": "runs",
+  "rules": [
+   "CPY-11",
+   "CPY-12"
+  ],
+  "why": "The returned local is moved or elided, never copied."
+ },
+ "p70": {
+  "outcome": "compiles",
+  "rules": [
+   "CPY-11"
+  ],
+  "why": "The local in return is an xvalue and uses M's move constructor."
+ },
+ "p71": {
+  "outcome": "runs",
+  "rules": [
+   "CPY-5"
+  ],
+  "why": "S's user-declared copy constructor removes the implicit move, so the rvalue copies and the copy constructor copies m."
+ },
+ "p72": {
+  "outcome": "compiles",
+  "rules": [
+   "CPY-11"
+  ],
+  "why": "Parentheses do not change the name's classification, so m is moved."
+ },
+ "p73": {
+  "outcome": "runs",
+  "rules": [
+   "CPY-8"
+  ],
+  "why": "The implicit copy constructor copies B1, B2, then a, then b."
+ },
+ "p74": {
+  "outcome": "runs",
+  "rules": [
+   "CPY-1"
+  ],
+  "why": "A constructor with const S& and a defaulted extra parameter is the copy constructor, called with extra 0."
+ },
+ "p75": {
+  "outcome": "runs",
+  "rules": [
+   "CPY-10",
+   "CPY-11"
+  ],
+  "why": "The prvalue argument initializes p directly, and returning the parameter moves it once."
+ },
+ "p76": {
+  "outcome": "compiles",
+  "rules": [
+   "CPY-4"
+  ],
+  "why": "A user-declared destructor keeps the implicit copy constructor."
+ },
+ "p77": {
+  "outcome": "reject",
+  "rules": [
+   "CPY-14",
+   "CPY-26"
+  ],
+  "why": "The in-class defaulted const S&& constructor is deleted because its type differs from the implicit one, and the program uses it."
+ },
+ "p78": {
+  "outcome": "compiles",
+  "rules": [
+   "CPY-13",
+   "CPY-11"
+  ],
+  "why": "A plain return of the local raises no warning, so -Werror passes."
+ },
+ "p79": {
+  "outcome": "compiles",
+  "rules": [
+   "CPY-10"
+  ],
+  "why": "Only prvalues initialize the objects, so the deleted copy and move constructors are never needed."
+ },
+ "p80": {
+  "outcome": "reject",
+  "rules": [
+   "CPY-7",
+   "CPY-23"
+  ],
+  "why": "A move constructor deleted by name takes part in overload resolution and is chosen for the xvalue."
+ },
+ "p81": {
+  "outcome": "reject",
+  "rules": [
+   "CPY-11",
+   "CPY-23"
+  ],
+  "why": "The returned local is an xvalue and picks the deleted move constructor."
+ },
+ "p82": {
+  "outcome": "runs",
+  "rules": [
+   "CPY-5"
+  ],
+  "why": "The user-declared destructor removes the implicit move assignment, so the rvalue uses the copy assignment."
+ },
+ "p83": {
+  "outcome": "runs",
+  "rules": [
+   "CPY-8"
+  ],
+  "why": "The implicit copies copy every member, including those with default member initializers."
+ },
+ "p84": {
+  "outcome": "reject",
+  "rules": [
+   "CPY-14",
+   "CPY-26"
+  ],
+  "why": "The in-class defaulted const volatile S& copy constructor is deleted because its type differs, and S b(a) uses it."
+ },
+ "p85": {
+  "outcome": "runs",
+  "rules": [
+   "CPY-14",
+   "CPY-8"
+  ],
+  "why": "A copy constructor defaulted after the class is not deleted and copies v."
+ },
+ "p86": {
+  "outcome": "compiles",
+  "rules": [
+   "CPY-11"
+  ],
+  "why": "The returned local is an xvalue and initializes H through its constructor taking M&&."
+ },
+ "p87": {
+  "outcome": "reject",
+  "rules": [
+   "CPY-20"
+  ],
+  "why": "A copy constructor taking S& cannot copy a const object."
+ },
+ "p88": {
+  "outcome": "compiles",
+  "rules": [
+   "CPY-10"
+  ],
+  "why": "The prvalue argument initializes the parameter directly, so the deleted move is not needed."
+ },
+ "p89": {
+  "outcome": "compiles",
+  "rules": [
+   "UNI-3",
+   "CPY-27"
+  ],
+  "why": "Item's copy constructor is defaulted in its class and trivial, so the union's copy works."
+ },
+ "p90": {
+  "outcome": "compiles",
+  "rules": [
+   "UNI-3",
+   "CPY-27"
+  ],
+  "why": "Default member initializers do not affect copy triviality, so the union's copy works."
+ },
+ "p91": {
+  "outcome": "reject",
+  "rules": [
+   "CPY-15"
+  ],
+  "why": "A constructor cannot take its own class by value."
+ },
+ "p92": {
+  "outcome": "reject",
+  "rules": [
+   "CPY-7",
+   "CPY-23"
+  ],
+  "why": "M's private copy constructor is not accessible to S, so S's implicit copy constructor is deleted."
+ },
+ "p93": {
+  "outcome": "compiles",
+  "rules": [
+   "CPY-11"
+  ],
+  "why": "A rvalue reference parameter named in return is an xvalue and is moved."
+ },
+ "p94": {
+  "outcome": "compiles",
+  "rules": [
+   "CPY-6"
+  ],
+  "why": "S's implicit copy constructor takes S&, which binds to the non-const a."
+ },
+ "p95": {
+  "outcome": "compiles",
+  "rules": [
+   "CPY-7",
+   "CPY-5"
+  ],
+  "why": "A deleted or private destructor in a member deletes only the constructors, so both assignments work, the move falling back to copies of the parts."
+ },
+ "p96": {
+  "outcome": "runs",
+  "rules": [
+   "CPY-3"
+  ],
+  "why": "An operator= with an explicit object parameter and a const S& parameter is the copy assignment operator."
+ },
+ "p97": {
+  "outcome": "runs",
+  "rules": [
+   "CPY-9"
+  ],
+  "why": "A const rvalue uses the copy constructor."
+ },
+ "p98": {
+  "outcome": "reject",
+  "rules": [
+   "CPY-4",
+   "CPY-21"
+  ],
+  "why": "A user-declared move assignment deletes the implicit copy constructor."
+ },
+ "p99": {
+  "outcome": "reject",
+  "rules": [
+   "UNI-3",
+   "UNI-11",
+   "CPY-27"
+  ],
+  "why": "Item's user-provided copy is non-trivial, so the union's copy constructor is deleted."
+ },
+ "p100": {
+  "outcome": "reject",
+  "rules": [
+   "CPY-20"
+  ],
+  "why": "A copy constructor whose first parameter is S& cannot copy a const object."
+ },
+ "p101": {
+  "outcome": "reject",
+  "rules": [
+   "UNI-3",
+   "UNI-11",
+   "CPY-27"
+  ],
+  "why": "Item's user-provided copy assignment is non-trivial, so the union's copy assignment is deleted."
+ },
+ "p102": {
+  "outcome": "reject",
+  "rules": [
+   "CPY-7",
+   "CPY-23"
+  ],
+  "why": "M's deleted copy makes S's defaulted copy constructor deleted, and S b(a) uses it."
+ },
+ "p103": {
+  "outcome": "compiles",
+  "rules": [
+   "CPY-11"
+  ],
+  "why": "A parameter named in return is moved."
+ }
+}

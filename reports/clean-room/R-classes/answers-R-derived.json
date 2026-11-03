@@ -1,0 +1,554 @@
+{
+ "p01": {
+  "outcome": "compiles",
+  "rules": [
+   "DER-1"
+  ],
+  "why": "A struct can be named final, and final is a marker only right after the class name being defined."
+ },
+ "p02": {
+  "outcome": "runs",
+  "rules": [
+   "DER-5"
+  ],
+  "why": "A null pointer to D converts to a null pointer to B."
+ },
+ "p03": {
+  "outcome": "runs",
+  "rules": [
+   "DER-8"
+  ],
+  "why": "The inherited constructors initialize the B part, and w keeps its default member initializer."
+ },
+ "p04": {
+  "outcome": "reject",
+  "rules": [
+   "DER-8",
+   "DER-20"
+  ],
+  "why": "The copy constructor of B is not inherited, and D is not an aggregate because it inherits constructors, so no constructor of D takes a B."
+ },
+ "p05": {
+  "outcome": "runs",
+  "rules": [
+   "DER-7"
+  ],
+  "why": "V is built first and destroyed last, so the trace is 1234 then 4321."
+ },
+ "p06": {
+  "outcome": "compiles",
+  "rules": [
+   "DER-4"
+  ],
+  "why": "A static member, an enumerator, and a type found through two paths to the same class are not ambiguous."
+ },
+ "p07": {
+  "outcome": "runs",
+  "rules": [
+   "DER-3"
+  ],
+  "why": "D's data member T hides the nested type B::T, which B::T still names; 6 + 5 is 11."
+ },
+ "p08": {
+  "outcome": "runs",
+  "rules": [
+   "DER-5"
+  ],
+  "why": "A pointer and a reference to D convert to B and reach the base part, so the sum is 2."
+ },
+ "p09": {
+  "outcome": "reject",
+  "rules": [
+   "DER-8",
+   "DER-20"
+  ],
+  "why": "The default constructor is not inherited, and D's implicit default constructor cannot call B(), which does not exist."
+ },
+ "p10": {
+  "outcome": "reject",
+  "rules": [
+   "DER-1"
+  ],
+  "why": "A base must be a complete class."
+ },
+ "p11": {
+  "outcome": "reject",
+  "rules": [
+   "DER-11"
+  ],
+  "why": "static_cast cannot convert a pointer to a virtual base to a derived class."
+ },
+ "p12": {
+  "outcome": "reject",
+  "rules": [
+   "DER-4"
+  ],
+  "why": "d.v is found in two A subobjects, so the name is ambiguous."
+ },
+ "p13": {
+  "outcome": "reject",
+  "rules": [
+   "DER-3",
+   "DER-19"
+  ],
+  "why": "D::f hides B::f(int), and 1 does not convert to const char*."
+ },
+ "p14": {
+  "outcome": "runs",
+  "rules": [
+   "DER-3"
+  ],
+  "why": "The using-declaration keeps f(int) visible; f(0) picks the exact match and f(\"x\") picks the const char* overload."
+ },
+ "p15": {
+  "outcome": "compiles",
+  "rules": [
+   "DER-1"
+  ],
+  "why": "A base can be named through a type alias."
+ },
+ "p16": {
+  "outcome": "reject",
+  "rules": [
+   "DER-22",
+   "DER-4"
+  ],
+  "why": "A is a direct and an indirect base, so d.v is ambiguous."
+ },
+ "p17": {
+  "outcome": "runs",
+  "rules": [
+   "DER-2"
+  ],
+  "why": "Members of B are members of D, so d.get() returns 3."
+ },
+ "p18": {
+  "outcome": "compiles",
+  "rules": [
+   "DER-3",
+   "DER-4"
+  ],
+  "why": "Qualified names pick each base's x."
+ },
+ "p19": {
+  "outcome": "reject",
+  "rules": [
+   "DER-4"
+  ],
+  "why": "Overloads named f from two different bases make the lookup ambiguous."
+ },
+ "p20": {
+  "outcome": "runs",
+  "rules": [
+   "DER-5"
+  ],
+  "why": "Initializing a B from a D copies the base part, so b.x is 7."
+ },
+ "p21": {
+  "outcome": "compiles",
+  "rules": [
+   "DER-6"
+  ],
+  "why": "virtual and the access specifier can be in either order."
+ },
+ "p22": {
+  "outcome": "run-fail",
+  "rules": [
+   "DER-17"
+  ],
+  "why": "The static_cast claims a Right object is a Left, which is undefined, and the vptr sanitizer stops the program."
+ },
+ "p23": {
+  "outcome": "reject",
+  "rules": [
+   "DER-1"
+  ],
+  "why": "A class can appear only once in a base list."
+ },
+ "p24": {
+  "outcome": "compiles",
+  "rules": [
+   "DER-5"
+  ],
+  "why": "Constant evaluation can convert a pointer to D into a pointer to B, and p->b is 2."
+ },
+ "p25": {
+  "outcome": "reject",
+  "rules": [
+   "DER-4"
+  ],
+  "why": "d.x is found in both A and B, so the name is ambiguous."
+ },
+ "p26": {
+  "outcome": "runs",
+  "rules": [
+   "DER-8"
+  ],
+  "why": "The inherited constructor keeps its default argument, so a.v is 11 and b.v is 3."
+ },
+ "p27": {
+  "outcome": "runs",
+  "rules": [
+   "DER-2",
+   "DER-10"
+  ],
+  "why": "D holds two separate A subobjects, and a path through B or C picks one."
+ },
+ "p28": {
+  "outcome": "reject",
+  "rules": [
+   "DER-21"
+  ],
+  "why": "B's default constructor is private, so D's default constructor is deleted."
+ },
+ "p29": {
+  "outcome": "runs",
+  "rules": [
+   "DER-8"
+  ],
+  "why": "D(int) hides the inherited B(int), so v ends as 2."
+ },
+ "p30": {
+  "outcome": "compiles",
+  "rules": [
+   "DER-2"
+  ],
+  "why": "D contains a B subobject and an int, so the size test holds on the targets."
+ },
+ "p31": {
+  "outcome": "reject",
+  "rules": [
+   "DER-1"
+  ],
+  "why": "A base must be a class type."
+ },
+ "p32": {
+  "outcome": "compiles",
+  "rules": [
+   "DER-1"
+  ],
+  "why": "A base can be named with a qualified name."
+ },
+ "p33": {
+  "outcome": "reject",
+  "rules": [
+   "DER-1"
+  ],
+  "why": "A final class cannot be a base."
+ },
+ "p34": {
+  "outcome": "runs",
+  "rules": [
+   "DER-7"
+  ],
+  "why": "Only the most derived class's initializer A(3) runs."
+ },
+ "p35": {
+  "outcome": "reject",
+  "rules": [
+   "DER-1"
+  ],
+  "why": "A union cannot have a base list."
+ },
+ "p36": {
+  "outcome": "compiles",
+  "rules": [
+   "DER-14"
+  ],
+  "why": "A protected constructor of B is accessible to D's constructor."
+ },
+ "p37": {
+  "outcome": "reject",
+  "rules": [
+   "DER-1"
+  ],
+  "why": "A union cannot be a base."
+ },
+ "p38": {
+  "outcome": "reject",
+  "rules": [
+   "DER-9"
+  ],
+  "why": "Inheriting constructors must name a direct base, and A is not a direct base of D."
+ },
+ "p39": {
+  "outcome": "reject",
+  "rules": [
+   "DER-8",
+   "DER-20"
+  ],
+  "why": "The inherited constructor stays explicit and cannot be used in copy-initialization."
+ },
+ "p40": {
+  "outcome": "compiles",
+  "rules": [
+   "DER-4"
+  ],
+  "why": "B::x hides A::x in the virtual base on every path, so d.x is not ambiguous."
+ },
+ "p41": {
+  "outcome": "reject",
+  "rules": [
+   "DER-10"
+  ],
+  "why": "D holds a virtual A and a non-virtual A, so the conversion to A is ambiguous."
+ },
+ "p42": {
+  "outcome": "compiles",
+  "rules": [
+   "DER-13"
+  ],
+  "why": "D, the most derived class, initializes the virtual base A."
+ },
+ "p43": {
+  "outcome": "runs",
+  "rules": [
+   "DER-3"
+  ],
+  "why": "d.B::f() reaches the hidden base function and d.f() the derived one."
+ },
+ "p44": {
+  "outcome": "compiles",
+  "rules": [
+   "DER-6"
+  ],
+  "why": "A virtual base shared by both paths is one subobject, so the conversion is not ambiguous."
+ },
+ "p45": {
+  "outcome": "runs",
+  "rules": [
+   "DER-6",
+   "DER-7"
+  ],
+  "why": "The shared virtual base is constructed once."
+ },
+ "p46": {
+  "outcome": "runs",
+  "rules": [
+   "DER-16"
+  ],
+  "why": "static_cast from B to D is valid and the object really is a D."
+ },
+ "p47": {
+  "outcome": "compiles",
+  "rules": [
+   "DER-4",
+   "DER-6"
+  ],
+  "why": "The injected name root reaches one class through both paths, so it is not ambiguous."
+ },
+ "p48": {
+  "outcome": "reject",
+  "rules": [
+   "DER-12"
+  ],
+  "why": "An object of a class with a virtual base cannot be a constexpr variable."
+ },
+ "p49": {
+  "outcome": "reject",
+  "rules": [
+   "DER-21"
+  ],
+  "why": "B's destructor is private, so D's destructor is deleted and D d cannot be destroyed."
+ },
+ "p50": {
+  "outcome": "reject",
+  "rules": [
+   "DER-4",
+   "NAM-36"
+  ],
+  "why": "The name base is the injected class name of two different bases, so it is ambiguous."
+ },
+ "p51": {
+  "outcome": "reject",
+  "rules": [
+   "DER-1"
+  ],
+  "why": "A class cannot be its own base."
+ },
+ "p52": {
+  "outcome": "compiles",
+  "rules": [
+   "DER-3",
+   "DER-4"
+  ],
+  "why": "The two using-declarations bring both overloads into D, so overload resolution decides each call."
+ },
+ "p53": {
+  "outcome": "reject",
+  "rules": [
+   "DER-4"
+  ],
+  "why": "A is not virtual, so B::x hides A::x only on the B path and the C path still finds A::x in another subobject."
+ },
+ "p54": {
+  "outcome": "compiles",
+  "rules": [
+   "DER-13"
+  ],
+  "why": "A is abstract, so its constructor need not initialize V, and C initializes V."
+ },
+ "p55": {
+  "outcome": "reject",
+  "rules": [
+   "DER-10"
+  ],
+  "why": "D holds two A subobjects, so the conversion to A is ambiguous."
+ },
+ "p56": {
+  "outcome": "compiles",
+  "rules": [
+   "DER-4"
+  ],
+  "why": "An ambiguity matters only where the name is used, and x is never used."
+ },
+ "p57": {
+  "outcome": "compiles",
+  "rules": [
+   "DER-4"
+  ],
+  "why": "The type name root is found through two paths to the same class, which is not ambiguous."
+ },
+ "p58": {
+  "outcome": "runs",
+  "rules": [
+   "DER-2"
+  ],
+  "why": "Aggregate initialization gives the base first, with or without its own braces, so the sum is 10."
+ },
+ "p59": {
+  "outcome": "compiles",
+  "rules": [
+   "DER-18"
+  ],
+  "why": "A class can be a direct and an indirect base, and no member is used."
+ },
+ "p60": {
+  "outcome": "reject",
+  "rules": [
+   "DER-8",
+   "DER-20"
+  ],
+  "why": "The inherited B(int) keeps its private access, and the friendship of D does not help the use at namespace scope."
+ },
+ "p61": {
+  "outcome": "compiles",
+  "rules": [
+   "DER-3"
+  ],
+  "why": "The data member base hides the base's injected class name, and get returns the int."
+ },
+ "p62": {
+  "outcome": "reject",
+  "rules": [
+   "DER-13"
+  ],
+  "why": "D is the most derived class and must initialize A, which has no default constructor."
+ },
+ "p63": {
+  "outcome": "reject",
+  "rules": [
+   "DER-12"
+  ],
+  "why": "A class with a virtual base cannot have a constexpr constructor."
+ },
+ "p64": {
+  "outcome": "compiles",
+  "rules": [
+   "DER-10"
+  ],
+  "why": "A path through the direct base B selects one A subobject."
+ },
+ "p65": {
+  "outcome": "reject",
+  "rules": [
+   "DER-3",
+   "DER-19"
+  ],
+  "why": "The data member f hides B::f, and an int cannot be called."
+ },
+ "p66": {
+  "outcome": "reject",
+  "rules": [
+   "DER-9"
+  ],
+  "why": "A using-declaration in a class must name a member of a base, and X is not a base."
+ },
+ "p67": {
+  "outcome": "runs",
+  "rules": [
+   "DER-3"
+  ],
+  "why": "D::f(int) has the same parameters and hides the f that the using-declaration brings, so d.f(0) returns 2."
+ },
+ "p68": {
+  "outcome": "reject",
+  "rules": [
+   "DER-15"
+  ],
+  "why": "A(int) and B(int) are both inherited, so D d(1) is ambiguous."
+ },
+ "p69": {
+  "outcome": "reject",
+  "rules": [
+   "DER-10"
+  ],
+  "why": "A pointer to a base does not convert implicitly to a pointer to a derived class."
+ },
+ "p70": {
+  "outcome": "runs",
+  "rules": [
+   "DER-5"
+  ],
+  "why": "The implicit conversion and the cast both reach the same B subobject."
+ },
+ "p71": {
+  "outcome": "reject",
+  "rules": [
+   "DER-17"
+  ],
+  "why": "Constant evaluation rejects a static_cast to D of an object that is not a D."
+ },
+ "p72": {
+  "outcome": "reject",
+  "rules": [
+   "DER-1"
+  ],
+  "why": "A base must be a class, and an enumeration is not one."
+ },
+ "p73": {
+  "outcome": "reject",
+  "rules": [
+   "DER-21"
+  ],
+  "why": "D is the most derived class and must destroy the virtual base A, whose destructor is private to D."
+ },
+ "p74": {
+  "outcome": "compiles",
+  "rules": [
+   "DER-8"
+  ],
+  "why": "Default constructors are not inherited, and D's implicit default constructor calls A() and B()."
+ },
+ "p75": {
+  "outcome": "runs",
+  "rules": [
+   "DER-6"
+  ],
+  "why": "All paths share one A, so a write through B is seen through C and d."
+ },
+ "p76": {
+  "outcome": "compiles",
+  "rules": [
+   "DER-14"
+  ],
+  "why": "A protected destructor of B is accessible to D."
+ },
+ "p77": {
+  "outcome": "depends",
+  "rules": [
+   "DER-12"
+  ],
+  "why": "EDG accepts a constexpr destructor in a class with a virtual base, and Clang and GCC reject it."
+ }
+}

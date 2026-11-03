@@ -1,0 +1,453 @@
+{
+ "p01": {
+  "outcome": "runs",
+  "rules": [
+   "ACC-7"
+  ],
+  "why": "The block declaration makes the hidden friend visible in read, so the call finds it."
+ },
+ "p02": {
+  "outcome": "depends",
+  "rules": [
+   "ACC-9",
+   "ACC-2"
+  ],
+  "why": "The using-declaration makes x private in D, so d.x outside D is rejected; EDG 7.0 accepts it because x is public in B (Q-0052)."
+ },
+ "p03": {
+  "outcome": "reject",
+  "rules": [
+   "ACC-4"
+  ],
+  "why": "A non-member cannot use a protected member."
+ },
+ "p04": {
+  "outcome": "compiles",
+  "rules": [
+   "ACC-8"
+  ],
+  "why": "A public member of a public base stays public."
+ },
+ "p05": {
+  "outcome": "reject",
+  "rules": [
+   "ACC-3"
+  ],
+  "why": "Overload resolution picks the private put(int) for an int argument, and the public put(long) does not rescue the call."
+ },
+ "p06": {
+  "outcome": "runs",
+  "rules": [
+   "ACC-5"
+  ],
+  "why": "Inspector is a friend class, so its member can read secret."
+ },
+ "p07": {
+  "outcome": "compiles",
+  "rules": [
+   "ACC-4"
+  ],
+  "why": "D forms the pointer to the protected member with D, as &D::x."
+ },
+ "p08": {
+  "outcome": "reject",
+  "rules": [
+   "ACC-14"
+  ],
+  "why": "The unqualified name A in D refers to the injected name of B's private base, which D cannot access."
+ },
+ "p09": {
+  "outcome": "reject",
+  "rules": [
+   "ACC-6"
+  ],
+  "why": "A class derived from a friend gets no access."
+ },
+ "p10": {
+  "outcome": "compiles",
+  "rules": [
+   "ACC-7",
+   "NAM-29"
+  ],
+  "why": "Argument-dependent lookup finds the hidden friend through the target argument."
+ },
+ "p11": {
+  "outcome": "runs",
+  "rules": [
+   "ACC-10"
+  ],
+  "why": "A local class in a member function has that function's access."
+ },
+ "p12": {
+  "outcome": "compiles",
+  "rules": [
+   "ACC-11"
+  ],
+  "why": "The deduced type is never named, and v is a public member of Hidden."
+ },
+ "p13": {
+  "outcome": "reject",
+  "rules": [
+   "ACC-2"
+  ],
+  "why": "A non-member names a private static member."
+ },
+ "p14": {
+  "outcome": "reject",
+  "rules": [
+   "ACC-4",
+   "DTOR-3"
+  ],
+  "why": "The destructor is protected, so f cannot declare a local B."
+ },
+ "p15": {
+  "outcome": "reject",
+  "rules": [
+   "ACC-6"
+  ],
+  "why": "A friend of a friend gets no access."
+ },
+ "p16": {
+  "outcome": "compiles",
+  "rules": [
+   "ACC-7"
+  ],
+  "why": "The friend is declared in the namespace, and argument-dependent lookup finds it as well."
+ },
+ "p17": {
+  "outcome": "reject",
+  "rules": [
+   "ACC-13"
+  ],
+  "why": "The using-declaration names a private base member that D cannot access."
+ },
+ "p18": {
+  "outcome": "runs",
+  "rules": [
+   "ACC-7",
+   "ACC-5"
+  ],
+  "why": "Argument-dependent lookup finds the hidden friend, which can read x."
+ },
+ "p19": {
+  "outcome": "compiles",
+  "rules": [
+   "ACC-1"
+  ],
+  "why": "Union members are public by default."
+ },
+ "p20": {
+  "outcome": "compiles",
+  "rules": [
+   "ACC-3",
+   "ACC-5"
+  ],
+  "why": "The target type selects the private f(int), and both the member and the friend have access."
+ },
+ "p21": {
+  "outcome": "reject",
+  "rules": [
+   "ACC-14"
+  ],
+  "why": "The unqualified name A in C refers to the injected name of B's private base."
+ },
+ "p22": {
+  "outcome": "reject",
+  "rules": [
+   "ACC-2"
+  ],
+  "why": "The union member is private."
+ },
+ "p23": {
+  "outcome": "runs",
+  "rules": [
+   "ACC-7"
+  ],
+  "why": "After the namespace declaration, ordinary lookup finds the friend."
+ },
+ "p24": {
+  "outcome": "compiles",
+  "rules": [
+   "ACC-9"
+  ],
+  "why": "The using-declaration under public raises x to public in D."
+ },
+ "p25": {
+  "outcome": "compiles",
+  "rules": [
+   "ACC-4"
+  ],
+  "why": "D uses the protected member through itself and through a D object."
+ },
+ "p26": {
+  "outcome": "reject",
+  "rules": [
+   "ACC-4"
+  ],
+  "why": "D uses a protected member through a B object, which is not a D."
+ },
+ "p27": {
+  "outcome": "compiles",
+  "rules": [
+   "ACC-4"
+  ],
+  "why": "A static protected member has no limit on the object class."
+ },
+ "p28": {
+  "outcome": "reject",
+  "rules": [
+   "ACC-17"
+  ],
+  "why": "The block declaration ends with its block, and the call has no argument for argument-dependent lookup."
+ },
+ "p29": {
+  "outcome": "reject",
+  "rules": [
+   "ACC-12",
+   "ACC-8"
+  ],
+  "why": "class makes B a private base, so the conversion outside D is not valid."
+ },
+ "p30": {
+  "outcome": "reject",
+  "rules": [
+   "ACC-15"
+  ],
+  "why": "C needs access to the private Other::hidden to befriend it."
+ },
+ "p31": {
+  "outcome": "runs",
+  "rules": [
+   "ACC-2"
+  ],
+  "why": "A member function can use the private members of another object of its class."
+ },
+ "p32": {
+  "outcome": "compiles",
+  "rules": [
+   "ACC-8"
+  ],
+  "why": "A public member of a protected base is protected in D, and D can use it."
+ },
+ "p33": {
+  "outcome": "runs",
+  "rules": [
+   "ACC-5"
+  ],
+  "why": "reveal is a friend and is declared in the namespace."
+ },
+ "p34": {
+  "outcome": "reject",
+  "rules": [
+   "ACC-3"
+  ],
+  "why": "Lookup finds D::f, which hides B::f and is private."
+ },
+ "p35": {
+  "outcome": "reject",
+  "rules": [
+   "ACC-17"
+  ],
+  "why": "Ordinary lookup does not find the hidden friend and the call has no arguments."
+ },
+ "p36": {
+  "outcome": "runs",
+  "rules": [
+   "ACC-11"
+  ],
+  "why": "The call names the public B::f, and the private final overrider runs, returning 2."
+ },
+ "p37": {
+  "outcome": "compiles",
+  "rules": [
+   "ACC-1"
+  ],
+  "why": "struct members are public."
+ },
+ "p38": {
+  "outcome": "runs",
+  "rules": [
+   "ACC-10"
+  ],
+  "why": "A nested class has access to the enclosing class's private members."
+ },
+ "p39": {
+  "outcome": "reject",
+  "rules": [
+   "ACC-3"
+  ],
+  "why": "The instantiation for int picks the private f(int), checked in the template."
+ },
+ "p40": {
+  "outcome": "reject",
+  "rules": [
+   "ACC-12",
+   "NAM-30"
+  ],
+  "why": "Argument-dependent lookup finds lib::probe through the private base, and the conversion from B* to A* needs access to that base."
+ },
+ "p41": {
+  "outcome": "runs",
+  "rules": [
+   "ACC-8"
+  ],
+  "why": "The public path through B gives the most access, so x is public in D."
+ },
+ "p42": {
+  "outcome": "reject",
+  "rules": [
+   "ACC-3"
+  ],
+  "why": "Overload resolution picks the private f(int)."
+ },
+ "p43": {
+  "outcome": "compiles",
+  "rules": [
+   "ACC-1"
+  ],
+  "why": "A class can have any labels in any order."
+ },
+ "p44": {
+  "outcome": "compiles",
+  "rules": [
+   "ACC-14"
+  ],
+  "why": "The qualified name ::A names the class through its namespace."
+ },
+ "p45": {
+  "outcome": "reject",
+  "rules": [
+   "ACC-2"
+  ],
+  "why": "Hidden is a private member type named outside the class."
+ },
+ "p46": {
+  "outcome": "reject",
+  "rules": [
+   "ACC-5",
+   "ACC-2"
+  ],
+  "why": "Only Reader::read is a friend, so Reader::other cannot read secret."
+ },
+ "p47": {
+  "outcome": "runs",
+  "rules": [
+   "ACC-7"
+  ],
+  "why": "The namespace declaration makes qualified lookup find the friend."
+ },
+ "p48": {
+  "outcome": "runs",
+  "rules": [
+   "ACC-16"
+  ],
+  "why": "The default argument is checked at the declaration, inside the class."
+ },
+ "p49": {
+  "outcome": "compiles",
+  "rules": [
+   "ACC-11"
+  ],
+  "why": "The return type of a member definition outside the class has a member's access."
+ },
+ "p50": {
+  "outcome": "compiles",
+  "rules": [
+   "ACC-1"
+  ],
+  "why": "a is public and get is public."
+ },
+ "p51": {
+  "outcome": "reject",
+  "rules": [
+   "ACC-2"
+  ],
+  "why": "secret is private."
+ },
+ "p52": {
+  "outcome": "reject",
+  "rules": [
+   "ACC-3"
+  ],
+  "why": "The target type selects the private f(int) outside the class."
+ },
+ "p53": {
+  "outcome": "runs",
+  "rules": [
+   "ACC-5"
+  ],
+  "why": "An access label has no effect on a friend declaration."
+ },
+ "p54": {
+  "outcome": "reject",
+  "rules": [
+   "ACC-2"
+  ],
+  "why": "class makes v private."
+ },
+ "p55": {
+  "outcome": "runs",
+  "rules": [
+   "ACC-5"
+  ],
+  "why": "Reader::read is a friend."
+ },
+ "p56": {
+  "outcome": "depends",
+  "rules": [
+   "ACC-17"
+  ],
+  "why": "The qualified declaration outside geo is not valid; Clang accepts it, and GCC and EDG reject it (Q-0131)."
+ },
+ "p57": {
+  "outcome": "runs",
+  "rules": [
+   "ACC-5"
+  ],
+  "why": "A friend can name a class by name or alias, and friend int is ignored."
+ },
+ "p58": {
+  "outcome": "reject",
+  "rules": [
+   "ACC-4"
+  ],
+  "why": "A pointer to the protected member must be formed with D, and &B::x uses B."
+ },
+ "p59": {
+  "outcome": "reject",
+  "rules": [
+   "ACC-17"
+  ],
+  "why": "Qualified lookup does not find the hidden friend."
+ },
+ "p60": {
+  "outcome": "reject",
+  "rules": [
+   "ACC-8",
+   "ACC-2"
+  ],
+  "why": "class makes B a private base, so x is private in D."
+ },
+ "p61": {
+  "outcome": "reject",
+  "rules": [
+   "ACC-19"
+  ],
+  "why": "The enclosing class has no access to the nested class's private members."
+ },
+ "p62": {
+  "outcome": "reject",
+  "rules": [
+   "ACC-17"
+  ],
+  "why": "The use comes before the namespace declaration and has no arguments."
+ },
+ "p63": {
+  "outcome": "reject",
+  "rules": [
+   "ACC-18",
+   "ACC-8"
+  ],
+  "why": "v is private in B through the private base, so C cannot use it."
+ }
+}

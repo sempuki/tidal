@@ -1,0 +1,636 @@
+{
+ "p01": {
+  "outcome": "reject",
+  "rules": [
+   "CLS-9"
+  ],
+  "why": "A class that declares a constructor cannot have a non-static data member named after the class."
+ },
+ "p02": {
+  "outcome": "reject",
+  "rules": [
+   "CLS-9"
+  ],
+  "why": "A member function cannot have the name of the class."
+ },
+ "p03": {
+  "outcome": "runs",
+  "rules": [
+   "CLS-19"
+  ],
+  "why": "S is standard-layout, so a pointer to s converts to a usable pointer to its first member and back."
+ },
+ "p04": {
+  "outcome": "reject",
+  "rules": [
+   "CLS-9"
+  ],
+  "why": "A non-static data member cannot have a placeholder type such as auto."
+ },
+ "p05": {
+  "outcome": "reject",
+  "rules": [
+   "CLS-9"
+  ],
+  "why": "A non-static data member cannot be register."
+ },
+ "p06": {
+  "outcome": "runs",
+  "rules": [
+   "CLS-10"
+  ],
+  "why": "Data members have increasing addresses in declaration order, whatever their access."
+ },
+ "p07": {
+  "outcome": "reject",
+  "rules": [
+   "CLS-9"
+  ],
+  "why": "A data member and a member function cannot share a name."
+ },
+ "p08": {
+  "outcome": "compiles",
+  "rules": [
+   "CLS-9"
+  ],
+  "why": "A non-static data member can have the class name when the class declares no constructor."
+ },
+ "p09": {
+  "outcome": "reject",
+  "rules": [
+   "CLS-9"
+  ],
+  "why": "A default member initializer cannot use parentheses."
+ },
+ "p10": {
+  "outcome": "reject",
+  "rules": [
+   "CLS-25"
+  ],
+  "why": "A member function that is not volatile cannot be called on a volatile object."
+ },
+ "p11": {
+  "outcome": "compiles",
+  "rules": [
+   "UNI-7"
+  ],
+  "why": "The members of the anonymous union are members of Value, so v.i names one."
+ },
+ "p12": {
+  "outcome": "depends",
+  "rules": [
+   "CLS-26"
+  ],
+  "why": "Overloads with the same parameters must all have ref-qualifiers or none; GCC 16 accepts the declarations and the other compilers reject them."
+ },
+ "p13": {
+  "outcome": "reject",
+  "rules": [
+   "CLS-22",
+   "CLS-2"
+  ],
+  "why": "A static member initializer is not a place where S is complete, so sizeof(S) is not valid there."
+ },
+ "p14": {
+  "outcome": "reject",
+  "rules": [
+   "CLS-14"
+  ],
+  "why": "A function with an explicit object parameter cannot be static."
+ },
+ "p15": {
+  "outcome": "reject",
+  "rules": [
+   "CLS-9"
+  ],
+  "why": "An unscoped enumerator cannot have the name of the class."
+ },
+ "p16": {
+  "outcome": "runs",
+  "rules": [
+   "CLS-15"
+  ],
+  "why": "operator() and operator[] can be static, and operator[] can take two parameters."
+ },
+ "p17": {
+  "outcome": "runs",
+  "rules": [
+   "CLS-17"
+  ],
+  "why": "The address of a member function with an explicit object parameter is an ordinary function pointer, called with the object first."
+ },
+ "p18": {
+  "outcome": "runs",
+  "rules": [
+   "CLS-12"
+  ],
+  "why": "A member function of a local class can name the static variables of the function."
+ },
+ "p19": {
+  "outcome": "compiles",
+  "rules": [
+   "CLS-3",
+   "CLS-20"
+  ],
+  "why": "A const static member of enumeration type can have a constant initializer in the class."
+ },
+ "p20": {
+  "outcome": "runs",
+  "rules": [
+   "CLS-4"
+  ],
+  "why": "A member function declared in the class can be defined outside with a qualified name."
+ },
+ "p21": {
+  "outcome": "reject",
+  "rules": [
+   "PFX-11"
+  ],
+  "why": "Member access needs a complete class, and Gauge is only declared."
+ },
+ "p22": {
+  "outcome": "reject",
+  "rules": [
+   "CLS-25"
+  ],
+  "why": "A const member function cannot change a data member that is not mutable."
+ },
+ "p23": {
+  "outcome": "reject",
+  "rules": [
+   "CLS-25"
+  ],
+  "why": "A member function that is not const cannot be called on a const object."
+ },
+ "p24": {
+  "outcome": "reject",
+  "rules": [
+   "CLS-9"
+  ],
+  "why": "An unnamed member of class type other than an anonymous union is not valid, and Clang and GCC reject it under -pedantic-errors."
+ },
+ "p25": {
+  "outcome": "runs",
+  "rules": [
+   "CLS-10"
+  ],
+  "why": "The empty base subobject can share the object's address, and the specification does not say it must; the program expects the shared address, which I predict."
+ },
+ "p26": {
+  "outcome": "runs",
+  "rules": [
+   "CLS-19"
+  ],
+  "why": "The address of a standard-layout object equals the address of its first data member."
+ },
+ "p27": {
+  "outcome": "reject",
+  "rules": [
+   "CLS-28"
+  ],
+  "why": "A member function of a local class must be defined inside the class."
+ },
+ "p28": {
+  "outcome": "reject",
+  "rules": [
+   "CLS-9"
+  ],
+  "why": "A class nested in a class with no name cannot have a static data member."
+ },
+ "p29": {
+  "outcome": "reject",
+  "rules": [
+   "CLS-24"
+  ],
+  "why": "A member function must be called or have its address taken with &S::f; s.f alone is not valid."
+ },
+ "p30": {
+  "outcome": "reject",
+  "rules": [
+   "CLS-9"
+  ],
+  "why": "A reference member cannot be mutable."
+ },
+ "p31": {
+  "outcome": "reject",
+  "rules": [
+   "CLS-28",
+   "CLS-12"
+  ],
+  "why": "A member function of a local class cannot name an automatic variable that is not a constant."
+ },
+ "p32": {
+  "outcome": "compiles",
+  "rules": [
+   "CLS-2"
+  ],
+  "why": "A default argument sees the class as complete, so it can use a later member."
+ },
+ "p33": {
+  "outcome": "reject",
+  "rules": [
+   "CLS-27"
+  ],
+  "why": "A static member function cannot have a cv-qualifier."
+ },
+ "p34": {
+  "outcome": "compiles",
+  "rules": [
+   "CLS-11"
+  ],
+  "why": "The size of an empty class is 1 on every compiler in the matrix."
+ },
+ "p35": {
+  "outcome": "reject",
+  "rules": [
+   "CLS-28"
+  ],
+  "why": "A local class cannot have a member template."
+ },
+ "p36": {
+  "outcome": "compiles",
+  "rules": [
+   "CLS-5"
+  ],
+  "why": "this has type S* with the cv-qualifiers of the member function."
+ },
+ "p37": {
+  "outcome": "runs",
+  "rules": [
+   "CLS-4"
+  ],
+  "why": "A member function defined in its class is inline, so both units can define it."
+ },
+ "p38": {
+  "outcome": "reject",
+  "rules": [
+   "CLS-14"
+  ],
+  "why": "A function with an explicit object parameter cannot have a cv-qualifier."
+ },
+ "p39": {
+  "outcome": "reject",
+  "rules": [
+   "CLS-9"
+  ],
+  "why": "A class with no name cannot have a static data member."
+ },
+ "p40": {
+  "outcome": "compiles",
+  "rules": [
+   "CLS-2"
+  ],
+  "why": "The operand of noexcept sees the class as complete, so g can be named before its declaration."
+ },
+ "p41": {
+  "outcome": "reject",
+  "rules": [
+   "CLS-9"
+  ],
+  "why": "= 0 is allowed only on a virtual member function."
+ },
+ "p42": {
+  "outcome": "reject",
+  "rules": [
+   "CLS-23"
+  ],
+  "why": "A static data member that is not const, inline, or constexpr cannot have an initializer in the class."
+ },
+ "p43": {
+  "outcome": "compiles",
+  "rules": [
+   "CLS-3"
+  ],
+  "why": "A const static int member with an initializer is a constant usable as an array bound."
+ },
+ "p44": {
+  "outcome": "compiles",
+  "rules": [
+   "CLS-1"
+  ],
+  "why": "A member can be a pointer to the incomplete class."
+ },
+ "p45": {
+  "outcome": "reject",
+  "rules": [
+   "CLS-9"
+  ],
+  "why": "A member of an anonymous union cannot have the name of the class."
+ },
+ "p46": {
+  "outcome": "runs",
+  "rules": [
+   "CLS-16"
+  ],
+  "why": "A static data member can have its own class type, defined after the class."
+ },
+ "p47": {
+  "outcome": "reject",
+  "rules": [
+   "CLS-9"
+  ],
+  "why": "A static member cannot be mutable."
+ },
+ "p48": {
+  "outcome": "reject",
+  "rules": [
+   "CLS-14"
+  ],
+  "why": "A function with an explicit object parameter cannot be virtual."
+ },
+ "p49": {
+  "outcome": "runs",
+  "rules": [
+   "CLS-3"
+  ],
+  "why": "The static data member has one definition in the program, shared by both units."
+ },
+ "p50": {
+  "outcome": "reject",
+  "rules": [
+   "CLS-24"
+  ],
+  "why": "The class must declare a member function before an outside definition."
+ },
+ "p51": {
+  "outcome": "runs",
+  "rules": [
+   "CLS-7"
+  ],
+  "why": "A static member function can be called through the class name or an object."
+ },
+ "p52": {
+  "outcome": "runs",
+  "rules": [
+   "CLS-2"
+  ],
+  "why": "A member function body sees members declared later."
+ },
+ "p53": {
+  "outcome": "runs",
+  "rules": [
+   "CLS-3"
+  ],
+  "why": "An inline static data member is one object defined in the class, so both units see the same address."
+ },
+ "p54": {
+  "outcome": "runs",
+  "rules": [
+   "CLS-5"
+  ],
+  "why": "A const member function can change a mutable member."
+ },
+ "p55": {
+  "outcome": "reject",
+  "rules": [
+   "CLS-28"
+  ],
+  "why": "A local class cannot have a static data member."
+ },
+ "p56": {
+  "outcome": "runs",
+  "rules": [
+   "CLS-13"
+  ],
+  "why": "The object of the call initializes the explicit object parameter, by value or by reference."
+ },
+ "p57": {
+  "outcome": "reject",
+  "rules": [
+   "CLS-14"
+  ],
+  "why": "An explicit object parameter must belong to a member function or a lambda."
+ },
+ "p58": {
+  "outcome": "reject",
+  "rules": [
+   "CLS-9"
+  ],
+  "why": "A non-static data member cannot be extern."
+ },
+ "p59": {
+  "outcome": "link-fail",
+  "rules": [
+   "CLS-21",
+   "CLS-3"
+  ],
+  "why": "Binding a reference uses the address of k, which has no definition outside the class, so the linker fails."
+ },
+ "p60": {
+  "outcome": "runs",
+  "rules": [
+   "CLS-13"
+  ],
+  "why": "self and the second parameter each copy g, and next() adds one more, so count is 3."
+ },
+ "p61": {
+  "outcome": "reject",
+  "rules": [
+   "CLS-9"
+  ],
+  "why": "A nested class cannot have the name of the class."
+ },
+ "p62": {
+  "outcome": "runs",
+  "rules": [
+   "CLS-12"
+  ],
+  "why": "A local class with member functions defined inside works like any class."
+ },
+ "p63": {
+  "outcome": "compiles",
+  "rules": [
+   "CLS-8"
+  ],
+  "why": "Nested classes, aliases, and enumerators are named outside as Outer::name."
+ },
+ "p64": {
+  "outcome": "reject",
+  "rules": [
+   "CLS-9"
+  ],
+  "why": "The same member function cannot be declared twice, also if one is static."
+ },
+ "p65": {
+  "outcome": "reject",
+  "rules": [
+   "CLS-14"
+  ],
+  "why": "A function with an explicit object parameter has no this."
+ },
+ "p66": {
+  "outcome": "reject",
+  "rules": [
+   "CLS-27"
+  ],
+  "why": "A static member function cannot use this."
+ },
+ "p67": {
+  "outcome": "runs",
+  "rules": [
+   "CLS-12"
+  ],
+  "why": "A local class can read a constexpr variable of a literal type such as double."
+ },
+ "p68": {
+  "outcome": "reject",
+  "rules": [
+   "CLS-1"
+  ],
+  "why": "A class cannot contain a member of its own incomplete type."
+ },
+ "p69": {
+  "outcome": "reject",
+  "rules": [
+   "CLS-20"
+  ],
+  "why": "The in-class initializer of a const static int must be a constant expression, and n is not."
+ },
+ "p70": {
+  "outcome": "reject",
+  "rules": [
+   "CLS-9"
+  ],
+  "why": "A static data member cannot have the name of the class."
+ },
+ "p71": {
+  "outcome": "reject",
+  "rules": [
+   "CLS-9"
+  ],
+  "why": "Two data members cannot have the same name."
+ },
+ "p72": {
+  "outcome": "compiles",
+  "rules": [
+   "CLS-16"
+  ],
+  "why": "A static data member can be thread_local."
+ },
+ "p73": {
+  "outcome": "runs",
+  "rules": [
+   "CLS-2"
+  ],
+  "why": "A default member initializer sees later members."
+ },
+ "p74": {
+  "outcome": "runs",
+  "rules": [
+   "CLS-6"
+  ],
+  "why": "An lvalue call picks the & overload and an rvalue call picks the && overload."
+ },
+ "p75": {
+  "outcome": "compiles",
+  "rules": [
+   "CLS-12"
+  ],
+  "why": "limit is a const int with a constant initializer, so the local class can read its value."
+ },
+ "p76": {
+  "outcome": "runs",
+  "rules": [
+   "CLS-10"
+  ],
+  "why": "Members have increasing addresses in declaration order."
+ },
+ "p77": {
+  "outcome": "reject",
+  "rules": [
+   "CLS-27"
+  ],
+  "why": "A static member function cannot be virtual."
+ },
+ "p78": {
+  "outcome": "reject",
+  "rules": [
+   "CLS-9"
+  ],
+  "why": "A member type alias cannot have the name of the class."
+ },
+ "p79": {
+  "outcome": "runs",
+  "rules": [
+   "CLS-10"
+  ],
+  "why": "Two distinct complete objects have distinct addresses."
+ },
+ "p80": {
+  "outcome": "compiles",
+  "rules": [
+   "CLS-10"
+  ],
+  "why": "An empty class has a size greater than zero."
+ },
+ "p81": {
+  "outcome": "reject",
+  "rules": [
+   "CLS-14"
+  ],
+  "why": "The explicit object parameter must be the first parameter."
+ },
+ "p82": {
+  "outcome": "depends",
+  "rules": [
+   "CLS-13"
+  ],
+  "why": "The prvalue initializes self directly; Clang 18 rejects because Fixed has no usable copy or move, and the other compilers run it and exit 0."
+ },
+ "p83": {
+  "outcome": "reject",
+  "rules": [
+   "CLS-27"
+  ],
+  "why": "A static member function cannot have a ref-qualifier."
+ },
+ "p84": {
+  "outcome": "depends",
+  "rules": [
+   "CLS-14"
+  ],
+  "why": "Clang and GCC reject a default argument on an explicit object parameter, and EDG accepts it."
+ },
+ "p85": {
+  "outcome": "reject",
+  "rules": [
+   "CLS-1"
+  ],
+  "why": "A data member must have a complete type."
+ },
+ "p86": {
+  "outcome": "reject",
+  "rules": [
+   "CLS-9"
+  ],
+  "why": "A non-static data member cannot be thread_local."
+ },
+ "p87": {
+  "outcome": "reject",
+  "rules": [
+   "CLS-9"
+  ],
+  "why": "The same member function cannot be declared twice."
+ },
+ "p88": {
+  "outcome": "link-fail",
+  "rules": [
+   "CLS-3"
+  ],
+  "why": "The static data member has no definition in either unit, so the linker fails."
+ },
+ "p89": {
+  "outcome": "reject",
+  "rules": [
+   "CLS-9"
+  ],
+  "why": "A const member cannot be mutable."
+ },
+ "p90": {
+  "outcome": "reject",
+  "rules": [
+   "CLS-28"
+  ],
+  "why": "A local class cannot define a friend function."
+ }
+}

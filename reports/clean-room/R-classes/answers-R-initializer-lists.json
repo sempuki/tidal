@@ -1,0 +1,232 @@
+{
+ "p01": {
+  "outcome": "runs",
+  "rules": [
+   "ILC-3",
+   "ILC-5"
+  ],
+  "why": "Nested braces build the two P elements, and the constructor adds 2 and 12."
+ },
+ "p02": {
+  "outcome": "runs",
+  "rules": [
+   "ILC-6",
+   "ILC-1"
+  ],
+  "why": "return {1, 2} initializes S through S(int, int)."
+ },
+ "p03": {
+  "outcome": "reject",
+  "rules": [
+   "ILC-3",
+   "ILC-4"
+  ],
+  "why": "The first phase picks the initializer_list<int> constructor, and 1.5 to int narrows, so the program is not valid."
+ },
+ "p04": {
+  "outcome": "reject",
+  "rules": [
+   "ILC-4"
+  ],
+  "why": "d is not a constant, so double to int narrows."
+ },
+ "p05": {
+  "outcome": "runs",
+  "rules": [
+   "ILC-5"
+  ],
+  "why": "Each element is copied into the array, so copies is 2."
+ },
+ "p06": {
+  "outcome": "reject",
+  "rules": [
+   "ILC-1",
+   "ILC-7",
+   "CTOR-25"
+  ],
+  "why": "P has a user-declared constructor, so it is not an aggregate, and no constructor takes two arguments."
+ },
+ "p07": {
+  "outcome": "runs",
+  "rules": [
+   "ILC-3"
+  ],
+  "why": "A constructor whose other parameters have defaults is an initializer-list constructor and wins the first phase, so which is 2."
+ },
+ "p08": {
+  "outcome": "reject",
+  "rules": [
+   "ILC-4",
+   "CTOR-21"
+  ],
+  "why": "1.5 to int narrows inside braces."
+ },
+ "p09": {
+  "outcome": "compiles",
+  "rules": [
+   "ILC-3",
+   "CTOR-9"
+  ],
+  "why": "Copy initialization with = and one value skips the explicit constructor and uses S(long)."
+ },
+ "p10": {
+  "outcome": "runs",
+  "rules": [
+   "ILC-5",
+   "ILC-6"
+  ],
+  "why": "The list sums to 15."
+ },
+ "p11": {
+  "outcome": "reject",
+  "rules": [
+   "ILC-8",
+   "ICS-19",
+   "ICS-8"
+  ],
+  "why": "Overload resolution prefers take(Strict, int) through the second argument, and the chosen conversion uses an explicit constructor in copy list initialization."
+ },
+ "p12": {
+  "outcome": "reject",
+  "rules": [
+   "ILC-10"
+  ],
+  "why": "A braced list cannot deduce an auto return type."
+ },
+ "p13": {
+  "outcome": "runs",
+  "rules": [
+   "ILC-2"
+  ],
+  "why": "Empty braces call the default constructor."
+ },
+ "p14": {
+  "outcome": "runs",
+  "rules": [
+   "ILC-3"
+  ],
+  "why": "Tag does not convert to int, so the first phase has no viable constructor and S(int, Tag) runs."
+ },
+ "p15": {
+  "outcome": "runs",
+  "rules": [
+   "ILC-6"
+  ],
+  "why": "A parameter of initializer_list type accepts both lists, also the empty one."
+ },
+ "p16": {
+  "outcome": "reject",
+  "rules": [
+   "ILC-5",
+   "ILC-9"
+  ],
+  "why": "begin() gives a pointer to const int, so the assignment through it is not valid."
+ },
+ "p17": {
+  "outcome": "reject",
+  "rules": [
+   "ILC-8"
+  ],
+  "why": "The best match is explicit in copy list initialization."
+ },
+ "p18": {
+  "outcome": "compiles",
+  "rules": [
+   "ILC-4"
+  ],
+  "why": "Parentheses do not check narrowing."
+ },
+ "p19": {
+  "outcome": "reject",
+  "rules": [
+   "ILC-10"
+  ],
+  "why": "T cannot be deduced from elements of different types."
+ },
+ "p20": {
+  "outcome": "reject",
+  "rules": [
+   "ILC-7"
+  ],
+  "why": "A non-aggregate class cannot take designators."
+ },
+ "p21": {
+  "outcome": "runs",
+  "rules": [
+   "ILC-1",
+   "ILC-3"
+  ],
+  "why": "Copy list initialization calls the initializer-list constructor, total 6."
+ },
+ "p22": {
+  "outcome": "runs",
+  "rules": [
+   "ILC-6"
+  ],
+  "why": "T is deduced as int and the size is 3."
+ },
+ "p23": {
+  "outcome": "compiles",
+  "rules": [
+   "ILC-4"
+  ],
+  "why": "The constants 1 and 2 fit in char, so they do not narrow."
+ },
+ "p24": {
+  "outcome": "compiles",
+  "rules": [
+   "ILC-5"
+  ],
+  "why": "The constexpr constructor sums the list during constant evaluation."
+ },
+ "p25": {
+  "outcome": "runs",
+  "rules": [
+   "ILC-3"
+  ],
+  "why": "Parentheses pick S(int) and braces pick the initializer-list constructor."
+ },
+ "p26": {
+  "outcome": "runs",
+  "rules": [
+   "ILC-2"
+  ],
+  "why": "With no default constructor, the initializer-list constructor receives an empty list."
+ },
+ "p27": {
+  "outcome": "depends",
+  "rules": [
+   "ILC-3"
+  ],
+  "why": "Clang 22 and GCC call the initializer_list<S> constructor and the run exits 0; Clang 18 copies and the run exits 1 (Q-0081)."
+ },
+ "p28": {
+  "outcome": "reject",
+  "rules": [
+   "ILC-9"
+  ],
+  "why": "M cannot be copied, and M n copies from a const element of the array."
+ },
+ "p29": {
+  "outcome": "reject",
+  "rules": [
+   "ILC-8"
+  ],
+  "why": "Copy list initialization picks the explicit S(int) as the best match, so the program is not valid."
+ },
+ "p30": {
+  "outcome": "runs",
+  "rules": [
+   "ILC-1"
+  ],
+  "why": "Both braced lists call P(int, int)."
+ },
+ "p31": {
+  "outcome": "runs",
+  "rules": [
+   "ILC-3",
+   "ILC-4"
+  ],
+  "why": "The constant 1 fits in double, so the initializer-list constructor wins."
+ }
+}

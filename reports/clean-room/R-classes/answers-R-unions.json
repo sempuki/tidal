@@ -1,0 +1,936 @@
+{
+ "p01": {
+  "outcome": "reject",
+  "rules": [
+   "UNI-8"
+  ],
+  "why": "Two variant members have default member initializers."
+ },
+ "p02": {
+  "outcome": "reject",
+  "rules": [
+   "UNI-13",
+   "OBJ-2",
+   "CE-9"
+  ],
+  "why": "The assignment to u.a.tag makes a active, but u.a.a has no value, so the read is undefined and the static_assert is not a constant."
+ },
+ "p03": {
+  "outcome": "depends",
+  "rules": [
+   "BF-9",
+   "UNI-1"
+  ],
+  "why": "Clang and GCC give these -m32 layouts (long long bit-fields placed on 4-byte runs), so the asserts hold; EDG in its i686 configuration aligns long long to 8 and fails the asserts (Q-0120)."
+ },
+ "p04": {
+  "outcome": "compiles",
+  "rules": [
+   "UNI-1"
+  ],
+  "why": "A union is at least as large and as aligned as its largest member."
+ },
+ "p05": {
+  "outcome": "reject",
+  "rules": [
+   "UNI-3",
+   "DTOR-9",
+   "UNI-11"
+  ],
+  "why": "S has a non-trivial destructor, so the union destructor is deleted, and the local u uses it."
+ },
+ "p06": {
+  "outcome": "compiles",
+  "rules": [
+   "BF-9"
+  ],
+  "why": "The 16 bits fit one unsigned unit and the two char fields fit one byte."
+ },
+ "p07": {
+  "outcome": "compiles",
+  "rules": [
+   "UNI-14",
+   "LSUP-10"
+  ],
+  "why": "construct_at at the address of label makes label active while count was active, so the read gives 'z'."
+ },
+ "p08": {
+  "outcome": "compiles",
+  "rules": [
+   "BF-1"
+  ],
+  "why": "Integral bit-fields with widths within their types."
+ },
+ "p09": {
+  "outcome": "compiles",
+  "rules": [
+   "BF-7",
+   "LIST-2"
+  ],
+  "why": "The constant 5 fits in unsigned, so the braced initializer does not narrow."
+ },
+ "p10": {
+  "outcome": "runs",
+  "rules": [
+   "UNI-7",
+   "UNI-4"
+  ],
+  "why": "The anonymous union member i gets its default member initializer 8."
+ },
+ "p11": {
+  "outcome": "compiles",
+  "rules": [
+   "BF-6"
+  ],
+  "why": "A 32-bit unsigned field promotes to unsigned int and a 31-bit long field promotes to int."
+ },
+ "p12": {
+  "outcome": "reject",
+  "rules": [
+   "UNI-3",
+   "CPY-27",
+   "UNI-11"
+  ],
+  "why": "Item has a virtual function, so its copy constructor is non-trivial and the union copy constructor is deleted."
+ },
+ "p13": {
+  "outcome": "runs",
+  "rules": [
+   "UNI-14",
+   "DTOR-6"
+  ],
+  "why": "construct_at fills each slot and the destructor call empties it; top is (5,6), giving 56."
+ },
+ "p14": {
+  "outcome": "reject",
+  "rules": [
+   "UNI-9"
+  ],
+  "why": "An anonymous union must not have a member function."
+ },
+ "p15": {
+  "outcome": "reject",
+  "rules": [
+   "UNI-9"
+  ],
+  "why": "An anonymous union must not have a nested type."
+ },
+ "p16": {
+  "outcome": "reject",
+  "rules": [
+   "BF-4"
+  ],
+  "why": "sizeof must not apply to a bit-field."
+ },
+ "p17": {
+  "outcome": "runs",
+  "rules": [
+   "UNI-14"
+  ],
+  "why": "Placement new at the member address makes name active; the pointers compare equal and the sanitizer has nothing to report."
+ },
+ "p18": {
+  "outcome": "reject",
+  "rules": [
+   "UNI-3",
+   "DTOR-9",
+   "UNI-11"
+  ],
+  "why": "Item has a user-provided destructor, so the union destructor is deleted and s uses it."
+ },
+ "p19": {
+  "outcome": "runs",
+  "rules": [
+   "UNI-3",
+   "CPY-7",
+   "CPY-27"
+  ],
+  "why": "The union move functions are deleted and step aside, so the trivial copy functions copy the active count."
+ },
+ "p20": {
+  "outcome": "reject",
+  "rules": [
+   "UNI-8"
+  ],
+  "why": "The constructor has mem_init entries for two variant members."
+ },
+ "p21": {
+  "outcome": "depends",
+  "rules": [
+   "UNI-13",
+   "CTOR-23",
+   "UNI-6",
+   "CE-9"
+  ],
+  "why": "N has a default member initializer, so w.n.x = 4 does not make n active; Clang and GCC reject the constant evaluation and EDG accepts it (Q-0213)."
+ },
+ "p22": {
+  "outcome": "reject",
+  "rules": [
+   "UNI-9"
+  ],
+  "why": "The anonymous union member i has the same name as S::i."
+ },
+ "p23": {
+  "outcome": "reject",
+  "rules": [
+   "BF-2"
+  ],
+  "why": "A bit-field must have integral or enumeration type."
+ },
+ "p24": {
+  "outcome": "runs",
+  "rules": [
+   "BF-9"
+  ],
+  "why": "low takes bits 0-3 and high bits 4-7, so byte 0 is 0x5A and byte 1 is 0."
+ },
+ "p25": {
+  "outcome": "runs",
+  "rules": [
+   "UNI-1",
+   "UNI-4"
+  ],
+  "why": "A union can have member functions; i is active and holds 3."
+ },
+ "p26": {
+  "outcome": "reject",
+  "rules": [
+   "UNI-3",
+   "CPY-7",
+   "UNI-11"
+  ],
+  "why": "Item declares a move constructor, so its copy constructor is deleted; the union copy is deleted and the deleted union move steps aside to it."
+ },
+ "p27": {
+  "outcome": "compiles",
+  "rules": [
+   "UNI-5",
+   "UNI-3"
+  ],
+  "why": "The union declares its own constructor and destructor, and the assignment makes i active before the read."
+ },
+ "p28": {
+  "outcome": "runs",
+  "rules": [
+   "UNI-1"
+  ],
+  "why": "Every member begins at the first byte of the union."
+ },
+ "p29": {
+  "outcome": "runs",
+  "rules": [
+   "BF-1",
+   "BF-5"
+  ],
+  "why": "An unscoped enumerator is a valid width, and 3 fits a signed 3-bit field."
+ },
+ "p30": {
+  "outcome": "compiles",
+  "rules": [
+   "BF-7",
+   "LIST-2",
+   "BF-10"
+  ],
+  "why": "The narrowing test uses unsigned, which holds 9, so the initializer is accepted and the stored value is reduced."
+ },
+ "p31": {
+  "outcome": "runs",
+  "rules": [
+   "BF-7"
+  ],
+  "why": "Named bit-fields can have default member initializers with = or braces."
+ },
+ "p32": {
+  "outcome": "reject",
+  "rules": [
+   "UNI-9"
+  ],
+  "why": "An anonymous union must not have a static data member."
+ },
+ "p33": {
+  "outcome": "reject",
+  "rules": [
+   "BF-2"
+  ],
+  "why": "A bit-field width must not be negative."
+ },
+ "p34": {
+  "outcome": "compiles",
+  "rules": [
+   "BF-9"
+  ],
+  "why": "On x86-64 the long long fields start on 8-byte runs, which gives the stated sizes and alignment."
+ },
+ "p35": {
+  "outcome": "reject",
+  "rules": [
+   "UNI-4",
+   "UNI-6",
+   "CE-6"
+  ],
+  "why": "The constructor leaves slot default-initialized with no active member, so reading count is not a constant."
+ },
+ "p36": {
+  "outcome": "runs",
+  "rules": [
+   "UNI-7",
+   "STO-11"
+  ],
+  "why": "A static anonymous union at namespace scope adds i to the namespace."
+ },
+ "p37": {
+  "outcome": "compiles",
+  "rules": [
+   "UNI-14",
+   "DTOR-6"
+  ],
+  "why": "construct_at makes value active, and the read happens before the destructor call."
+ },
+ "p38": {
+  "outcome": "compiles",
+  "rules": [
+   "UNI-3",
+   "CPY-27"
+  ],
+  "why": "Item's defaulted copy constructor is trivial, so the union copy constructor is usable."
+ },
+ "p39": {
+  "outcome": "reject",
+  "rules": [
+   "BF-2"
+  ],
+  "why": "The width w is not a constant expression."
+ },
+ "p40": {
+  "outcome": "runs",
+  "rules": [
+   "BF-1"
+  ],
+  "why": "A one-bit bool field holds true."
+ },
+ "p41": {
+  "outcome": "reject",
+  "rules": [
+   "UNI-5",
+   "UNI-6",
+   "CE-6"
+  ],
+  "why": "After u.f = 2.0f, f is active, so reading u.i in constant evaluation is rejected."
+ },
+ "p42": {
+  "outcome": "runs",
+  "rules": [
+   "BF-6"
+  ],
+  "why": "A 40-bit unsigned long long field promotes as unsigned long long, so s.x - 5 wraps to a large positive value."
+ },
+ "p43": {
+  "outcome": "compiles",
+  "rules": [
+   "DTOR-9",
+   "UNI-3"
+  ],
+  "why": "A destructor defaulted on its first declaration is trivial, so the union destructor exists."
+ },
+ "p44": {
+  "outcome": "runs",
+  "rules": [
+   "BF-1",
+   "UNI-5"
+  ],
+  "why": "A union can hold a bit-field; the assignment makes x active with value 3."
+ },
+ "p45": {
+  "outcome": "runs",
+  "rules": [
+   "UNI-10",
+   "UNI-13"
+  ],
+  "why": "The assignment makes a active, and tag is in the common initial sequence, so u.b.tag reads 7."
+ },
+ "p46": {
+  "outcome": "reject",
+  "rules": [
+   "BF-8",
+   "BF-10"
+  ],
+  "why": "Storing the constant 9 in a 3-bit field changes its value; Clang and GCC warn under -Wall, and -Werror makes the warning an error."
+ },
+ "p47": {
+  "outcome": "compiles",
+  "rules": [
+   "UNI-1"
+  ],
+  "why": "A union can have an array member."
+ },
+ "p48": {
+  "outcome": "reject",
+  "rules": [
+   "BF-2"
+  ],
+  "why": "A bit-field must not be a typedef."
+ },
+ "p49": {
+  "outcome": "runs",
+  "rules": [
+   "BF-6"
+  ],
+  "why": "A 3-bit unsigned field promotes to int, so s.x - 5 is -3."
+ },
+ "p50": {
+  "outcome": "reject",
+  "rules": [
+   "UNI-6",
+   "CE-6"
+  ],
+  "why": "The constant reads f while i is active."
+ },
+ "p51": {
+  "outcome": "reject",
+  "rules": [
+   "UNI-3",
+   "CTOR-23",
+   "UNI-11"
+  ],
+  "why": "M has a user-provided default constructor, so S's default constructor is deleted, and s uses it."
+ },
+ "p52": {
+  "outcome": "run-fail",
+  "rules": [
+   "UNI-6"
+  ],
+  "why": "flag is not active and its byte holds 7, which is no valid bool, so the undefined sanitizer stops the read."
+ },
+ "p53": {
+  "outcome": "reject",
+  "rules": [
+   "BF-8",
+   "BF-10"
+  ],
+  "why": "Storing 10 in a 3-bit field changes its value; the specification records the warning only under -Wall, but Clang and GCC warn by default, so -Werror rejects (best guess)."
+ },
+ "p54": {
+  "outcome": "runs",
+  "rules": [
+   "BF-5",
+   "BF-1"
+  ],
+  "why": "Each value fits its width, and the signed field holds -3."
+ },
+ "p55": {
+  "outcome": "reject",
+  "rules": [
+   "UNI-3",
+   "DTOR-9",
+   "UNI-11"
+  ],
+  "why": "Item has a virtual destructor, which is non-trivial, so the union destructor is deleted and s uses it."
+ },
+ "p56": {
+  "outcome": "reject",
+  "rules": [
+   "BF-4"
+  ],
+  "why": "A program must not take the address of a bit-field."
+ },
+ "p57": {
+  "outcome": "reject",
+  "rules": [
+   "BF-2"
+  ],
+  "why": "A pointer type is not integral or an enumeration."
+ },
+ "p58": {
+  "outcome": "compiles",
+  "rules": [
+   "BF-1",
+   "BF-9"
+  ],
+  "why": "The unnamed zero-width field starts b in a new unsigned unit."
+ },
+ "p59": {
+  "outcome": "runs",
+  "rules": [
+   "BF-1"
+  ],
+  "why": "An enumeration bit-field of 2 bits holds blue (2)."
+ },
+ "p60": {
+  "outcome": "runs",
+  "rules": [
+   "UNI-4"
+  ],
+  "why": "A braced list without designators initializes the first member."
+ },
+ "p61": {
+  "outcome": "compiles",
+  "rules": [
+   "UNI-4"
+  ],
+  "why": "The designator makes f active, so reading f is a constant."
+ },
+ "p62": {
+  "outcome": "reject",
+  "rules": [
+   "UNI-3",
+   "CPY-27",
+   "UNI-11"
+  ],
+  "why": "Part's user-provided copy constructor makes Item's copy non-trivial, so the union copy constructor is deleted."
+ },
+ "p63": {
+  "outcome": "compiles",
+  "rules": [
+   "BF-6"
+  ],
+  "why": "auto deduces the declared type unsigned short."
+ },
+ "p64": {
+  "outcome": "compiles",
+  "rules": [
+   "BF-10"
+  ],
+  "why": "In constant evaluation 9 is reduced modulo 8 to 1."
+ },
+ "p65": {
+  "outcome": "runs",
+  "rules": [
+   "UNI-7"
+  ],
+  "why": "The anonymous union member takes its own braces, and {5} sets i."
+ },
+ "p66": {
+  "outcome": "compiles",
+  "rules": [
+   "BF-12",
+   "BF-7"
+  ],
+  "why": "Unnamed bit-fields are skipped by aggregate initialization, copying, comparison, and structured bindings."
+ },
+ "p67": {
+  "outcome": "reject",
+  "rules": [
+   "UNI-3",
+   "CPY-27",
+   "UNI-11"
+  ],
+  "why": "Item's user-provided copy constructor deletes the union copy constructor."
+ },
+ "p68": {
+  "outcome": "compiles",
+  "rules": [
+   "BF-3"
+  ],
+  "why": "A width larger than the type is allowed; the extra bits are padding."
+ },
+ "p69": {
+  "outcome": "reject",
+  "rules": [
+   "BF-4"
+  ],
+  "why": "A non-const reference must not bind to a bit-field."
+ },
+ "p70": {
+  "outcome": "compiles",
+  "rules": [
+   "UNI-13"
+  ],
+  "why": "Each assignment through . and [] makes the named union members active, and only written parts are read."
+ },
+ "p71": {
+  "outcome": "compiles",
+  "rules": [
+   "UNI-5"
+  ],
+  "why": "The assignment makes f active, and f is read."
+ },
+ "p72": {
+  "outcome": "runs",
+  "rules": [
+   "BF-10"
+  ],
+  "why": "9 is reduced modulo 8 to 1 on the x86-64 targets."
+ },
+ "p73": {
+  "outcome": "compiles",
+  "rules": [
+   "UNI-3"
+  ],
+  "why": "The union declares its own constructor and destructor, so nothing is deleted."
+ },
+ "p74": {
+  "outcome": "depends",
+  "rules": [
+   "BF-2"
+  ],
+  "why": "GCC accepts a cv-qualified unnamed bit-field; Clang and EDG reject it (Q-0058)."
+ },
+ "p75": {
+  "outcome": "runs",
+  "rules": [
+   "UNI-7"
+  ],
+  "why": "A local anonymous union adds i to the block."
+ },
+ "p76": {
+  "outcome": "compiles",
+  "rules": [
+   "UNI-4"
+  ],
+  "why": "f has a default member initializer, so {} initializes f."
+ },
+ "p77": {
+  "outcome": "compiles",
+  "rules": [
+   "UNI-1"
+  ],
+  "why": "The union aligns as double and is 16 bytes."
+ },
+ "p78": {
+  "outcome": "depends",
+  "rules": [
+   "UNI-14",
+   "DTOR-6",
+   "CE-6"
+  ],
+  "why": "After the destructor call the union has no active member; Clang rejects the read and GCC accepts it with 0 (Q-0309)."
+ },
+ "p79": {
+  "outcome": "reject",
+  "rules": [
+   "UNI-12",
+   "UNI-10"
+  ],
+  "why": "Constant evaluation does not permit the common-initial-sequence read through the other struct."
+ },
+ "p80": {
+  "outcome": "reject",
+  "rules": [
+   "UNI-3",
+   "UNI-11"
+  ],
+  "why": "S has non-trivial default constructor and destructor, so the union's are deleted, and u uses both."
+ },
+ "p81": {
+  "outcome": "depends",
+  "rules": [
+   "BF-1"
+  ],
+  "why": "Clang and EDG convert the class-type width through its constexpr conversion; GCC rejects it (Q-0314)."
+ },
+ "p82": {
+  "outcome": "reject",
+  "rules": [
+   "UNI-6",
+   "CE-6"
+  ],
+  "why": "The compound assignment reads l while i is active."
+ },
+ "p83": {
+  "outcome": "compiles",
+  "rules": [
+   "BF-1"
+  ],
+  "why": "width + 1 is a constant expression."
+ },
+ "p84": {
+  "outcome": "compiles",
+  "rules": [
+   "UNI-3"
+  ],
+  "why": "The default member initializer gives the union a usable default constructor, and the union declares its destructor."
+ },
+ "p85": {
+  "outcome": "reject",
+  "rules": [
+   "BF-11",
+   "LIST-2"
+  ],
+  "why": "v is not a constant, so int to unsigned narrows in braces."
+ },
+ "p86": {
+  "outcome": "runs",
+  "rules": [
+   "BF-7",
+   "BF-12"
+  ],
+  "why": "Aggregate initialization skips the unnamed field, so a = 1 and b = 2."
+ },
+ "p87": {
+  "outcome": "reject",
+  "rules": [
+   "BF-8",
+   "BF-3"
+  ],
+  "why": "The width exceeds unsigned char; Clang and GCC warn under -Wall, and -Werror rejects."
+ },
+ "p88": {
+  "outcome": "reject",
+  "rules": [
+   "BF-1",
+   "BF-2"
+  ],
+  "why": "A floating-point width is not allowed."
+ },
+ "p89": {
+  "outcome": "reject",
+  "rules": [
+   "UNI-3",
+   "DTOR-9",
+   "UNI-11"
+  ],
+  "why": "Part's user-provided destructor makes Item's destructor non-trivial, so the union destructor is deleted."
+ },
+ "p90": {
+  "outcome": "compiles",
+  "rules": [
+   "UNI-4"
+  ],
+  "why": "{} zero-initializes the first member i."
+ },
+ "p91": {
+  "outcome": "runs",
+  "rules": [
+   "BF-4"
+  ],
+  "why": "The const reference binds to a temporary copy of 5."
+ },
+ "p92": {
+  "outcome": "compiles",
+  "rules": [
+   "UNI-5"
+  ],
+  "why": "A copy of a union copies its active member f."
+ },
+ "p93": {
+  "outcome": "compiles",
+  "rules": [
+   "CPY-27",
+   "UNI-3"
+  ],
+  "why": "Default member initializers do not affect copy triviality, and the union declares its own default constructor."
+ },
+ "p94": {
+  "outcome": "reject",
+  "rules": [
+   "UNI-4",
+   "UNI-6",
+   "CE-6"
+  ],
+  "why": "Default initialization leaves no active member, so reading count is not a constant."
+ },
+ "p95": {
+  "outcome": "reject",
+  "rules": [
+   "UNI-3",
+   "CPY-27",
+   "UNI-11"
+  ],
+  "why": "Item's user-provided copy assignment deletes the union copy assignment."
+ },
+ "p96": {
+  "outcome": "reject",
+  "rules": [
+   "BF-2"
+  ],
+  "why": "A named bit-field must not have width 0."
+ },
+ "p97": {
+  "outcome": "compiles",
+  "rules": [
+   "UNI-1"
+  ],
+  "why": "A union can have a static data member."
+ },
+ "p98": {
+  "outcome": "runs",
+  "rules": [
+   "UNI-7",
+   "UNI-5"
+  ],
+  "why": "The assignment makes i active."
+ },
+ "p99": {
+  "outcome": "compiles",
+  "rules": [
+   "BF-12",
+   "CE-22"
+  ],
+  "why": "The copies skip the unnamed field, so every part read has a value."
+ },
+ "p100": {
+  "outcome": "reject",
+  "rules": [
+   "UNI-3",
+   "CPY-27",
+   "UNI-11"
+  ],
+  "why": "A virtual base makes Item's copy non-trivial, so the union copy is deleted."
+ },
+ "p101": {
+  "outcome": "runs",
+  "rules": [
+   "BF-5"
+  ],
+  "why": "A signed 3-bit field holds -1."
+ },
+ "p102": {
+  "outcome": "depends",
+  "rules": [
+   "UNI-6",
+   "CE-9"
+  ],
+  "why": "Assignment through a user-provided operator to the inactive t uses an object that does not exist; EDG accepts and Clang and GCC reject (Q-0088)."
+ },
+ "p103": {
+  "outcome": "depends",
+  "rules": [
+   "UNI-9",
+   "STO-11"
+  ],
+  "why": "Clang accepts the non-static anonymous union in an unnamed namespace; GCC and EDG reject it (Q-0045)."
+ },
+ "p104": {
+  "outcome": "reject",
+  "rules": [
+   "UNI-2"
+  ],
+  "why": "A union must not have a reference member."
+ },
+ "p105": {
+  "outcome": "reject",
+  "rules": [
+   "UNI-8"
+  ],
+  "why": "Two initializers in a braced list."
+ },
+ "p106": {
+  "outcome": "reject",
+  "rules": [
+   "UNI-9"
+  ],
+  "why": "Anonymous union members must be public."
+ },
+ "p107": {
+  "outcome": "runs",
+  "rules": [
+   "BF-10",
+   "BF-5"
+  ],
+  "why": "5 reduced modulo 8 in a signed 3-bit field gives -3 on the x86-64 targets."
+ },
+ "p108": {
+  "outcome": "reject",
+  "rules": [
+   "UNI-9",
+   "STO-11"
+  ],
+  "why": "An anonymous union at namespace scope needs static."
+ },
+ "p109": {
+  "outcome": "compiles",
+  "rules": [
+   "CPY-27",
+   "UNI-3"
+  ],
+  "why": "Item's copy assignment is trivial, so the union copy assignment exists."
+ },
+ "p110": {
+  "outcome": "compiles",
+  "rules": [
+   "BF-1"
+  ],
+  "why": "An unnamed zero-width field is allowed."
+ },
+ "p111": {
+  "outcome": "compiles",
+  "rules": [
+   "UNI-5",
+   "UNI-4"
+  ],
+  "why": "Assignments make count active; in Holder, tag uses its default member initializer for weight."
+ },
+ "p112": {
+  "outcome": "reject",
+  "rules": [
+   "BF-2"
+  ],
+  "why": "A bit-field must not be static."
+ },
+ "p113": {
+  "outcome": "compiles",
+  "rules": [
+   "BF-3"
+  ],
+  "why": "A width larger than int is allowed; the extra bits are padding."
+ },
+ "p114": {
+  "outcome": "reject",
+  "rules": [
+   "UNI-8"
+  ],
+  "why": "Two designators in a braced list."
+ },
+ "p115": {
+  "outcome": "compiles",
+  "rules": [
+   "BF-6"
+  ],
+  "why": "auto deduces int."
+ },
+ "p116": {
+  "outcome": "depends",
+  "rules": [
+   "BF-1",
+   "BF-2"
+  ],
+  "why": "Clang and GCC reject a scoped enumerator as width; EDG converts it (Q-0313)."
+ },
+ "p117": {
+  "outcome": "compiles",
+  "rules": [
+   "BF-3"
+  ],
+  "why": "A bool field wider than one bit is allowed."
+ },
+ "p118": {
+  "outcome": "runs",
+  "rules": [
+   "UNI-5"
+  ],
+  "why": "The implicit copy functions copy the active member i."
+ },
+ "p119": {
+  "outcome": "reject",
+  "rules": [
+   "UNI-8",
+   "LIST-2"
+  ],
+  "why": "1000 does not fit in char, so the braced initializer of the first member narrows."
+ },
+ "p120": {
+  "outcome": "compiles",
+  "rules": [
+   "CPY-27",
+   "UNI-3"
+  ],
+  "why": "Item's copy is trivial, so the union copy exists."
+ },
+ "p121": {
+  "outcome": "compiles",
+  "rules": [
+   "BF-8"
+  ],
+  "why": "7 fits in 3 bits, so no warning."
+ },
+ "p122": {
+  "outcome": "reject",
+  "rules": [
+   "UNI-3",
+   "CPY-27",
+   "UNI-11"
+  ],
+  "why": "S's user-provided copy constructor deletes the union copy constructor."
+ }
+}

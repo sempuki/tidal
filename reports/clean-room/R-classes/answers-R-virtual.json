@@ -1,0 +1,850 @@
+{
+ "p01": {
+  "outcome": "runs",
+  "rules": [
+   "VIRT-4",
+   "VIRT-1"
+  ],
+  "why": "D::get is a covariant override, and the call through B& converts its D* result to the B subobject."
+ },
+ "p02": {
+  "outcome": "reject",
+  "rules": [
+   "VIRT-2"
+  ],
+  "why": "A member of a union must not be virtual."
+ },
+ "p03": {
+  "outcome": "reject",
+  "rules": [
+   "VIRT-8"
+  ],
+  "why": "A variable of an abstract class."
+ },
+ "p04": {
+  "outcome": "reject",
+  "rules": [
+   "VIRT-3"
+  ],
+  "why": "f(long) does not override f(int), so override is wrong."
+ },
+ "p05": {
+  "outcome": "runs",
+  "rules": [
+   "VIRT-1"
+  ],
+  "why": "The call through A& reaches B::f, which returns 3."
+ },
+ "p06": {
+  "outcome": "runs",
+  "rules": [
+   "VIRT-1"
+  ],
+  "why": "b is a B object made by copying, and a call on an object uses its own class, so f returns 1."
+ },
+ "p07": {
+  "outcome": "runs",
+  "rules": [
+   "VIRT-10"
+  ],
+  "why": "The cross cast from A to B finds the one B subobject of d."
+ },
+ "p08": {
+  "outcome": "reject",
+  "rules": [
+   "VIRT-19"
+  ],
+  "why": "A deleted function overrides a function that is not deleted."
+ },
+ "p09": {
+  "outcome": "compiles",
+  "rules": [
+   "VIRT-2"
+  ],
+  "why": "A trailing return type is valid on a virtual function."
+ },
+ "p10": {
+  "outcome": "reject",
+  "rules": [
+   "VIRT-9"
+  ],
+  "why": "A friend must not have a pure specifier."
+ },
+ "p11": {
+  "outcome": "reject",
+  "rules": [
+   "VIRT-2"
+  ],
+  "why": "A virtual function must not have a deduced return type."
+ },
+ "p12": {
+  "outcome": "runs",
+  "rules": [
+   "VIRT-5",
+   "VIRT-1"
+  ],
+  "why": "D overrides f, so D::f is the one final overrider and the call returns 4."
+ },
+ "p13": {
+  "outcome": "runs",
+  "rules": [
+   "VIRT-16"
+  ],
+  "why": "The pure virtual destructor has a definition, and destroying b calls it once."
+ },
+ "p14": {
+  "outcome": "runs",
+  "rules": [
+   "VIRT-6",
+   "VIRT-1"
+  ],
+  "why": "During B's constructor f reaches B::f; afterwards the call reaches D::f."
+ },
+ "p15": {
+  "outcome": "runs",
+  "rules": [
+   "VIRT-6"
+  ],
+  "why": "The member m is built while D's constructor runs, so the virtual call reaches D::f and gives 2."
+ },
+ "p16": {
+  "outcome": "reject",
+  "rules": [
+   "VIRT-19"
+  ],
+  "why": "A function that is not deleted overrides a deleted function."
+ },
+ "p17": {
+  "outcome": "reject",
+  "rules": [
+   "VIRT-18"
+  ],
+  "why": "The target class D is incomplete."
+ },
+ "p18": {
+  "outcome": "runs",
+  "rules": [
+   "VIRT-10"
+  ],
+  "why": "During B's constructor the object counts as a B, so the cast to D* gives a null pointer."
+ },
+ "p19": {
+  "outcome": "run-fail",
+  "rules": [
+   "VIRT-12"
+  ],
+  "why": "delete[] of Derived objects through Base* is undefined; best guess that the address sanitizer stops it, which the specification does not record."
+ },
+ "p20": {
+  "outcome": "reject",
+  "rules": [
+   "VIRT-3"
+  ],
+  "why": "final on a function that is not virtual."
+ },
+ "p21": {
+  "outcome": "reject",
+  "rules": [
+   "VIRT-3"
+  ],
+  "why": "override must occur only on the declaration in the class."
+ },
+ "p22": {
+  "outcome": "reject",
+  "rules": [
+   "VIRT-15",
+   "VIRT-4"
+  ],
+  "why": "D::get overrides B::get, but B is a private base of X, so X* is not covariant."
+ },
+ "p23": {
+  "outcome": "reject",
+  "rules": [
+   "VIRT-8"
+  ],
+  "why": "A function definition must not return an abstract class."
+ },
+ "p24": {
+  "outcome": "compiles",
+  "rules": [
+   "VIRT-4"
+  ],
+  "why": "D* is a covariant return type for B*."
+ },
+ "p25": {
+  "outcome": "reject",
+  "rules": [
+   "VIRT-5"
+  ],
+  "why": "B and C both override f of the shared virtual base, and D does not, so f has no unique final overrider."
+ },
+ "p26": {
+  "outcome": "runs",
+  "rules": [
+   "VIRT-1"
+  ],
+  "why": "C::f overrides A::f through B."
+ },
+ "p27": {
+  "outcome": "depends",
+  "rules": [
+   "VIRT-19"
+  ],
+  "why": "An explicit object function with the name and parameters of a base virtual function; Clang and GCC reject, EDG accepts (Q-0087)."
+ },
+ "p28": {
+  "outcome": "runs",
+  "rules": [
+   "VIRT-1"
+  ],
+  "why": "D::f is not const, so it does not override, and the call reaches B::f."
+ },
+ "p29": {
+  "outcome": "runs",
+  "rules": [
+   "VIRT-1"
+  ],
+  "why": "Default arguments come from the named function: r.f() passes 1 to D::f (10), d.f() passes 2 (20)."
+ },
+ "p30": {
+  "outcome": "reject",
+  "rules": [
+   "VIRT-8"
+  ],
+  "why": "An array of an abstract class."
+ },
+ "p31": {
+  "outcome": "reject",
+  "rules": [
+   "VIRT-8"
+  ],
+  "why": "A new expression of an abstract class."
+ },
+ "p32": {
+  "outcome": "reject",
+  "rules": [
+   "VIRT-12",
+   "CE-9"
+  ],
+  "why": "B's constructor reaches the pure f through a virtual call, which is undefined, so the constant initialization is rejected."
+ },
+ "p33": {
+  "outcome": "reject",
+  "rules": [
+   "VIRT-15",
+   "VIRT-4"
+  ],
+  "why": "A is an ambiguous base of R, so R* is not covariant."
+ },
+ "p34": {
+  "outcome": "reject",
+  "rules": [
+   "VIRT-13"
+  ],
+  "why": "delete through a polymorphic B without a virtual destructor draws a -Wall warning, and -Werror makes it an error."
+ },
+ "p35": {
+  "outcome": "runs",
+  "rules": [
+   "VIRT-10"
+  ],
+  "why": "The cast of the D object succeeds and the cast of the E object gives null."
+ },
+ "p36": {
+  "outcome": "reject",
+  "rules": [
+   "VIRT-18"
+  ],
+  "why": "A downcast needs a polymorphic operand, and B is not polymorphic."
+ },
+ "p37": {
+  "outcome": "reject",
+  "rules": [
+   "VIRT-15",
+   "VIRT-4"
+  ],
+  "why": "The covariant return adds const to the target."
+ },
+ "p38": {
+  "outcome": "runs",
+  "rules": [
+   "VIRT-1"
+  ],
+  "why": "D::f(long) does not override f(int), so the call through B& reaches B::f."
+ },
+ "p39": {
+  "outcome": "runs",
+  "rules": [
+   "VIRT-10"
+  ],
+  "why": "The failed reference cast throws and catch (...) catches it."
+ },
+ "p40": {
+  "outcome": "reject",
+  "rules": [
+   "VIRT-2"
+  ],
+  "why": "virtual applies only to member functions."
+ },
+ "p41": {
+  "outcome": "runs",
+  "rules": [
+   "VIRT-10"
+  ],
+  "why": "A cast to void* gives the address of the most derived object."
+ },
+ "p42": {
+  "outcome": "runs",
+  "rules": [
+   "VIRT-16"
+  ],
+  "why": "A qualified call reaches the definition of the pure A::f."
+ },
+ "p43": {
+  "outcome": "compiles",
+  "rules": [
+   "VIRT-8"
+  ],
+  "why": "Declarations that are not definitions can use an abstract class as parameter or return type."
+ },
+ "p44": {
+  "outcome": "runs",
+  "rules": [
+   "VIRT-10"
+  ],
+  "why": "The A subobject belongs to exactly one D object, so the downcast gives &d."
+ },
+ "p45": {
+  "outcome": "reject",
+  "rules": [
+   "VIRT-8"
+  ],
+  "why": "B leaves g pure, so B is abstract."
+ },
+ "p46": {
+  "outcome": "runs",
+  "rules": [
+   "VIRT-7"
+  ],
+  "why": "The virtual destructor lets delete reach ~D."
+ },
+ "p47": {
+  "outcome": "run-fail",
+  "rules": [
+   "VIRT-12"
+  ],
+  "why": "delete through Base without a virtual destructor is undefined; best guess that the address sanitizer with sized deallocation reports the size mismatch, which the specification does not record."
+ },
+ "p48": {
+  "outcome": "reject",
+  "rules": [
+   "VIRT-21"
+  ],
+  "why": "A static function has the name and parameters of a base virtual function."
+ },
+ "p49": {
+  "outcome": "reject",
+  "rules": [
+   "VIRT-9"
+  ],
+  "why": "A pure specifier on a function that is not virtual."
+ },
+ "p50": {
+  "outcome": "reject",
+  "rules": [
+   "VIRT-15"
+  ],
+  "why": "A return by value of a derived class is not covariant."
+ },
+ "p51": {
+  "outcome": "runs",
+  "rules": [
+   "VIRT-10"
+  ],
+  "why": "The A subobject is a public base of exactly one M, so the cast finds the M subobject."
+ },
+ "p52": {
+  "outcome": "reject",
+  "rules": [
+   "VIRT-18"
+  ],
+  "why": "A is an ambiguous base of D."
+ },
+ "p53": {
+  "outcome": "runs",
+  "rules": [
+   "VIRT-7"
+  ],
+  "why": "~D is virtual through A, so delete reaches it."
+ },
+ "p54": {
+  "outcome": "reject",
+  "rules": [
+   "VIRT-8"
+  ],
+  "why": "B makes f pure again, so B is abstract."
+ },
+ "p55": {
+  "outcome": "reject",
+  "rules": [
+   "VIRT-18"
+  ],
+  "why": "A pointer target needs a pointer operand."
+ },
+ "p56": {
+  "outcome": "compiles",
+  "rules": [
+   "VIRT-18",
+   "VIRT-11"
+  ],
+  "why": "A is polymorphic, so the downcast is valid."
+ },
+ "p57": {
+  "outcome": "compiles",
+  "rules": [
+   "VIRT-8"
+  ],
+  "why": "Pointers and references to an abstract class are valid."
+ },
+ "p58": {
+  "outcome": "reject",
+  "rules": [
+   "VIRT-8"
+  ],
+  "why": "A lambda must not capture an abstract object by copy."
+ },
+ "p59": {
+  "outcome": "compiles",
+  "rules": [
+   "VIRT-8"
+  ],
+  "why": "A capture by reference makes no object."
+ },
+ "p60": {
+  "outcome": "reject",
+  "rules": [
+   "VIRT-8"
+  ],
+  "why": "A function definition must not have a parameter of abstract class."
+ },
+ "p61": {
+  "outcome": "reject",
+  "rules": [
+   "VIRT-3"
+  ],
+  "why": "C::f overrides a final function."
+ },
+ "p62": {
+  "outcome": "reject",
+  "rules": [
+   "VIRT-3"
+  ],
+  "why": "B::f is not virtual, so D::f overrides nothing."
+ },
+ "p63": {
+  "outcome": "reject",
+  "rules": [
+   "VIRT-9"
+  ],
+  "why": "A pure specifier is = 0 only."
+ },
+ "p64": {
+  "outcome": "reject",
+  "rules": [
+   "VIRT-15"
+  ],
+  "why": "D is incomplete at the declaration of the override."
+ },
+ "p65": {
+  "outcome": "runs",
+  "rules": [
+   "VIRT-1"
+  ],
+  "why": "B::f and C::f are virtual without the keyword, so the call reaches C::f."
+ },
+ "p66": {
+  "outcome": "compiles",
+  "rules": [
+   "VIRT-1"
+  ],
+  "why": "Constant evaluation calls the final overrider D::f."
+ },
+ "p67": {
+  "outcome": "reject",
+  "rules": [
+   "VIRT-18"
+  ],
+  "why": "The target must be void* or a class pointer or reference."
+ },
+ "p68": {
+  "outcome": "runs",
+  "rules": [
+   "VIRT-1",
+   "ACC-11"
+  ],
+  "why": "Access uses the named B::f, which is public, and the call reaches D::f."
+ },
+ "p69": {
+  "outcome": "reject",
+  "rules": [
+   "VIRT-10",
+   "CE-8"
+  ],
+  "why": "A failed reference cast during constant evaluation is rejected."
+ },
+ "p70": {
+  "outcome": "compiles",
+  "rules": [
+   "VIRT-6"
+  ],
+  "why": "During B's constructor the call reaches B::f, so seen is 1."
+ },
+ "p71": {
+  "outcome": "compiles",
+  "rules": [
+   "VIRT-7"
+  ],
+  "why": "The virtual destructor makes delete through B valid in constant evaluation."
+ },
+ "p72": {
+  "outcome": "depends",
+  "rules": [
+   "VIRT-12",
+   "CE-9"
+  ],
+  "why": "delete through a base without a virtual destructor; GCC accepts during constant evaluation, Clang and EDG reject (Q-0056)."
+ },
+ "p73": {
+  "outcome": "reject",
+  "rules": [
+   "VIRT-3"
+  ],
+  "why": "D::f overrides a final function."
+ },
+ "p74": {
+  "outcome": "runs",
+  "rules": [
+   "VIRT-4"
+  ],
+  "why": "d.self() has type D*, so id is D::id."
+ },
+ "p75": {
+  "outcome": "reject",
+  "rules": [
+   "VIRT-18"
+  ],
+  "why": "The target must be a pointer or reference."
+ },
+ "p76": {
+  "outcome": "depends",
+  "rules": [
+   "VIRT-8"
+  ],
+  "why": "A call to a function returning an abstract class; Clang accepts, GCC and EDG reject (Q-0086)."
+ },
+ "p77": {
+  "outcome": "runs",
+  "rules": [
+   "LSUP-8",
+   "VIRT-10"
+  ],
+  "why": "The program may declare std::bad_cast with its destructor, the library defines it, and both handlers catch the thrown bad_cast."
+ },
+ "p78": {
+  "outcome": "compiles",
+  "rules": [
+   "VIRT-3"
+  ],
+  "why": "final and override can occur in either order."
+ },
+ "p79": {
+  "outcome": "reject",
+  "rules": [
+   "VIRT-2"
+  ],
+  "why": "A static member function must not be virtual."
+ },
+ "p80": {
+  "outcome": "runs",
+  "rules": [
+   "VIRT-1"
+  ],
+  "why": "D::f overrides without the keyword."
+ },
+ "p81": {
+  "outcome": "reject",
+  "rules": [
+   "VIRT-14"
+  ],
+  "why": "A consteval function overrides one that is not consteval."
+ },
+ "p82": {
+  "outcome": "runs",
+  "rules": [
+   "VIRT-10"
+  ],
+  "why": "The reference cast succeeds."
+ },
+ "p83": {
+  "outcome": "depends",
+  "rules": [
+   "VIRT-10"
+  ],
+  "why": "Clang and GCC give null for casts from a private base; EDG 7.0 lets them succeed in constant evaluation, failing the asserts (Q-0212)."
+ },
+ "p84": {
+  "outcome": "compiles",
+  "rules": [
+   "VIRT-14"
+  ],
+  "why": "Both functions are consteval."
+ },
+ "p85": {
+  "outcome": "compiles",
+  "rules": [
+   "VIRT-4"
+  ],
+  "why": "B is a private base of D but accessible inside D, so D* is covariant."
+ },
+ "p86": {
+  "outcome": "compiles",
+  "rules": [
+   "VIRT-4"
+  ],
+  "why": "The override has fewer cv-qualifiers."
+ },
+ "p87": {
+  "outcome": "runs",
+  "rules": [
+   "VIRT-10"
+  ],
+  "why": "Casts from a private base fail and give null."
+ },
+ "p88": {
+  "outcome": "reject",
+  "rules": [
+   "VIRT-13"
+  ],
+  "why": "D::f hides the virtual B::f; the -Wall warning becomes an error with -Werror."
+ },
+ "p89": {
+  "outcome": "reject",
+  "rules": [
+   "VIRT-18"
+  ],
+  "why": "The cast drops const."
+ },
+ "p90": {
+  "outcome": "link-fail",
+  "rules": [
+   "VIRT-17"
+  ],
+  "why": "B's destructor calls the pure ~A, which has no definition; Clang and GCC fail at link, and EDG does not link."
+ },
+ "p91": {
+  "outcome": "run-fail",
+  "rules": [
+   "VIRT-12"
+  ],
+  "why": "Shape() reaches the pure area through a virtual call; best guess that the runtime aborts the program, which the specification does not record."
+ },
+ "p92": {
+  "outcome": "compiles",
+  "rules": [
+   "VIRT-13"
+  ],
+  "why": "Leaf is final, so no warning."
+ },
+ "p93": {
+  "outcome": "reject",
+  "rules": [
+   "VIRT-8"
+  ],
+  "why": "A member of abstract class."
+ },
+ "p94": {
+  "outcome": "compiles",
+  "rules": [
+   "VIRT-19"
+  ],
+  "why": "Both functions are deleted."
+ },
+ "p95": {
+  "outcome": "reject",
+  "rules": [
+   "VIRT-15"
+  ],
+  "why": "Y* is not covariant with X*."
+ },
+ "p96": {
+  "outcome": "compiles",
+  "rules": [
+   "VIRT-18"
+  ],
+  "why": "A cast to an accessible unambiguous base needs no polymorphic class."
+ },
+ "p97": {
+  "outcome": "runs",
+  "rules": [
+   "VIRT-10"
+  ],
+  "why": "The cross cast from a private base gives null."
+ },
+ "p98": {
+  "outcome": "runs",
+  "rules": [
+   "VIRT-10"
+  ],
+  "why": "The downcast from a private base gives null."
+ },
+ "p99": {
+  "outcome": "reject",
+  "rules": [
+   "VIRT-13"
+  ],
+  "why": "delete through an abstract class with no virtual destructor draws the -Wall warning, an error under -Werror."
+ },
+ "p100": {
+  "outcome": "reject",
+  "rules": [
+   "VIRT-9"
+  ],
+  "why": "A pure function must not be defined in the class."
+ },
+ "p101": {
+  "outcome": "reject",
+  "rules": [
+   "VIRT-12",
+   "CE-9"
+  ],
+  "why": "delete[] of derived objects through a base pointer is undefined, so constant evaluation rejects it."
+ },
+ "p102": {
+  "outcome": "runs",
+  "rules": [
+   "VIRT-6"
+  ],
+  "why": "During ~B the call reaches B::f."
+ },
+ "p103": {
+  "outcome": "runs",
+  "rules": [
+   "VIRT-5"
+  ],
+  "why": "With a non-virtual base on two paths, each A subobject has its own final overrider."
+ },
+ "p104": {
+  "outcome": "reject",
+  "rules": [
+   "VIRT-2"
+  ],
+  "why": "A virtual function must not have an explicit object parameter."
+ },
+ "p105": {
+  "outcome": "compiles",
+  "rules": [
+   "VIRT-10"
+  ],
+  "why": "Constant evaluation does the pointer casts, giving &d and null."
+ },
+ "p106": {
+  "outcome": "reject",
+  "rules": [
+   "VIRT-2"
+  ],
+  "why": "virtual on a definition outside the class."
+ },
+ "p107": {
+  "outcome": "reject",
+  "rules": [
+   "VIRT-8"
+  ],
+  "why": "A temporary of abstract class."
+ },
+ "p108": {
+  "outcome": "reject",
+  "rules": [
+   "VIRT-3",
+   "VIRT-1"
+  ],
+  "why": "The ref-qualifier differs, so f does not override, and override is wrong."
+ },
+ "p109": {
+  "outcome": "reject",
+  "rules": [
+   "VIRT-15"
+  ],
+  "why": "long is a different, non-covariant return type."
+ },
+ "p110": {
+  "outcome": "reject",
+  "rules": [
+   "VIRT-2"
+  ],
+  "why": "virtual on a function outside a class."
+ },
+ "p111": {
+  "outcome": "compiles",
+  "rules": [
+   "VIRT-3",
+   "VIRT-1"
+  ],
+  "why": "f(int) does not override the final f()."
+ },
+ "p112": {
+  "outcome": "runs",
+  "rules": [
+   "VIRT-1"
+  ],
+  "why": "A qualified call does not use the final overrider."
+ },
+ "p113": {
+  "outcome": "reject",
+  "rules": [
+   "VIRT-18"
+  ],
+  "why": "A is not an accessible base of D."
+ },
+ "p114": {
+  "outcome": "reject",
+  "rules": [
+   "VIRT-2"
+  ],
+  "why": "A member function template must not be virtual."
+ },
+ "p115": {
+  "outcome": "compiles",
+  "rules": [
+   "VIRT-2"
+  ],
+  "why": "override and final are ordinary identifiers outside the specifier position."
+ },
+ "p116": {
+  "outcome": "compiles",
+  "rules": [
+   "VIRT-8"
+  ],
+  "why": "sizeof applies to an abstract class."
+ },
+ "p117": {
+  "outcome": "compiles",
+  "rules": [
+   "VIRT-4"
+  ],
+  "why": "D& is covariant with B&."
+ },
+ "p118": {
+  "outcome": "runs",
+  "rules": [
+   "VIRT-10"
+  ],
+  "why": "A null pointer converts to a null pointer."
+ },
+ "p119": {
+  "outcome": "link-fail",
+  "rules": [
+   "VIRT-20"
+  ],
+  "why": "S::f is virtual and has no definition; Clang and GCC report it at link time without -O."
+ }
+}
