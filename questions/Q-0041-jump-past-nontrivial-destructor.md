@@ -23,7 +23,16 @@ question.
 
 ## Evidence
 
-The three tests in **Affects**. Each has an override for GCC.
+The three tests in **Affects**. Each expects acceptance and has
+overrides for Clang and EDG.
+
+The class-properties inventory (`reports/review/2026-11-03-inventory-class-properties.md`,
+items OBS-jump-vacuous and GAP-JMP-6) describes the limit in terms of
+the default constructor only. A jump can pass a declaration whose
+default initialization does nothing: a scalar, or a class with a
+trivial default constructor. The destructor is not part of the
+condition. The skipped variable still exists after the jump (JMP-16),
+and the end of the block destroys it, so a jump skips no code.
 
 ## Options
 
@@ -34,8 +43,9 @@ The three tests in **Affects**. Each has an override for GCC.
 
 ## Provisional answer
 
-No; JMP-6 and SW-5 reject the jump; GCC accepts it (option 1). Two of three implementations reject the jump, JMP-6 lists
-only types whose destructor is trivial, and the review summary
-describes the same limit.
+Yes; JMP-6 and SW-5 accept the jump; Clang and EDG reject it (option 2). The
+class-properties inventory names only the default constructor, GCC
+agrees, and the jump skips no construction. The destructor runs at
+the end of the block in either case.
 
 ## Opinions

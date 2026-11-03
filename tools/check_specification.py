@@ -141,7 +141,6 @@ def parse_spec():
 # *(TOPIC referenced)* must name one of them. When a topic gets a page,
 # remove it here, and the check lists every marker to replace with a link.
 REFERENCED_TOPICS = {
-    "class properties",      # the full trivial and standard-layout lists
     "coroutines",
     "extended floating-point types",
     "library",

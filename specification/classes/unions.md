@@ -94,6 +94,31 @@ bit-field is stored. An implementation should warn when a width exceeds
 the declared type or a constant does not fit.
 :::
 
+:::{principle} UNI-P6
+:rules: UNI-10 UNI-12 UNI-15 UNI-16
+
+Two types are *layout-compatible* when they have the same layout. Two
+standard-layout structs that start with members of layout-compatible
+types place those members at the same offsets:
+
+```text
+struct Circle { int tag; int radius; };
+struct Square { int tag; int side; };
+
+offset 0        4
++---------------+----------------+
+| tag           | radius / side  |
++---------------+----------------+
+ common initial
+ sequence
+```
+
+A union of such structs can therefore read the shared start through
+either struct, so a tag at the start can say which struct is active.
+The read is an exception to UNI-P1 at run time only. Constant
+evaluation tracks the active member and rejects the read.
+:::
+
 ## Syntax
 
 ```{eval-rst}
@@ -137,10 +162,13 @@ give the limits on bases and virtual functions.
 
 :::{rule} UNI-3
 :kind: required
-:tests: classes/unions/union-default-member-init-enables-ctor.cpp classes/unions/union-nontrivial-member-user-ctor-dtor.cpp classes/unions/union-trivial-copy.cpp classes/unions/union-deleted-move-uses-copy.cpp classes/unions/union-member-deleted-copy.cpp
+:tests: classes/unions/union-default-member-init-enables-ctor.cpp classes/unions/union-copy-two-copy-constructors.cpp classes/unions/union-nontrivial-member-user-ctor-dtor.cpp classes/unions/union-trivial-copy.cpp classes/unions/union-deleted-move-uses-copy.cpp classes/unions/union-member-deleted-copy.cpp classes/copy-move/trivially-copyable-at-least-one.cpp classes/copy-move/trivially-copyable-const-member.cpp classes/copy-move/trivially-copyable-constraint-fails.cpp classes/copy-move/trivially-copyable-defaulted-later.cpp classes/copy-move/trivially-copyable-deleted-destructor.cpp classes/copy-move/trivially-copyable-member-selected.cpp
 
 If a variant member has one of these non-trivial functions (CTOR-23,
-DTOR-9, CPY-27), the matching special member of the union is deleted:
+DTOR-9, CPY-27), the matching special member of the union is deleted.
+For a copy or move function, the function that the union's own copy or
+move selects for the member decides
+({question}`Q-0339`):
 
 - a default constructor,
 - a copy or move function,
@@ -155,7 +183,7 @@ union.
 
 :::{rule} UNI-11
 :kind: reject
-:tests: classes/unions/anonymous-union-nontrivial-default.cpp classes/unions/union-nontrivial-copy-deleted.cpp classes/unions/union-nontrivial-dtor-only.cpp classes/unions/union-nontrivial-member-deleted-ctor.cpp classes/unions/union-member-deleted-copy.cpp classes/constructors/trivial-destructor-defaulted.cpp classes/constructors/trivial-destructor-member-nontrivial.cpp classes/constructors/trivial-destructor-user-provided.cpp classes/constructors/trivial-destructor-virtual-destructor.cpp classes/copy-move/trivial-assign-implicit.cpp classes/copy-move/trivial-assign-user-provided.cpp classes/copy-move/trivial-copy-defaulted.cpp classes/copy-move/trivial-copy-implicit.cpp classes/copy-move/trivial-copy-member-initializer.cpp classes/copy-move/trivial-copy-member-nontrivial.cpp classes/copy-move/trivial-copy-user-provided.cpp classes/copy-move/trivial-copy-virtual-base.cpp classes/copy-move/trivial-copy-virtual-function.cpp classes/copy-move/trivial-move-user-provided.cpp
+:tests: classes/unions/anonymous-union-nontrivial-default.cpp classes/unions/union-nontrivial-copy-deleted.cpp classes/unions/union-nontrivial-dtor-only.cpp classes/unions/union-nontrivial-member-deleted-ctor.cpp classes/unions/union-member-deleted-copy.cpp classes/constructors/trivial-destructor-defaulted.cpp classes/constructors/trivial-destructor-member-nontrivial.cpp classes/constructors/trivial-destructor-user-provided.cpp classes/constructors/trivial-destructor-virtual-destructor.cpp classes/copy-move/trivial-assign-implicit.cpp classes/copy-move/trivial-assign-user-provided.cpp classes/copy-move/trivial-copy-defaulted.cpp classes/copy-move/trivial-copy-implicit.cpp classes/copy-move/trivial-copy-member-initializer.cpp classes/copy-move/trivial-copy-member-nontrivial.cpp classes/copy-move/trivial-copy-user-provided.cpp classes/copy-move/trivial-copy-virtual-base.cpp classes/copy-move/trivial-copy-virtual-function.cpp classes/copy-move/trivial-move-user-provided.cpp classes/copy-move/trivially-copyable-member-template-selected.cpp
 
 A program must not use a special member function that UNI-3 deletes. The
 union must then declare that function itself.
@@ -381,12 +409,49 @@ values that fit in its width.
 
 :::{rule} UNI-10
 :kind: required
-:tests: classes/unions/common-initial-sequence.cpp
+:tests: classes/unions/common-initial-sequence.cpp classes/unions/common-initial-sequence-cv.cpp classes/unions/common-initial-sequence-enum.cpp classes/unions/common-initial-sequence-bit-field.cpp classes/unions/common-initial-sequence-nested.cpp classes/unions/common-initial-sequence-inherited.cpp
 
-Two standard-layout ({rule}`CLS-19`) structs that are members of a union
-can begin with members of the same types, a *common initial sequence*.
-While one struct is active, a program can read a member of that sequence
-through the other struct. The read gives the stored value.
+A standard-layout union ({rule}`CLS-19`) can have two members that are
+standard-layout classes and not unions. While one of them is active, a
+program can read a member of the other one if the member lies in the
+{term}`common initial sequence` of the two classes (UNI-15). The read
+gives the value of the matching member of the active class.
+:::
+
+:::{rule} UNI-15
+:kind: required
+:tests: classes/unions/common-initial-sequence.cpp classes/unions/common-initial-sequence-cv.cpp classes/unions/common-initial-sequence-bit-field.cpp classes/unions/common-initial-sequence-inherited.cpp classes/unions/common-initial-sequence-nested.cpp classes/unions/common-initial-sequence-enum.cpp
+
+Take two standard-layout classes that are not unions. Their *common
+initial sequence* is the longest run of their non-static data members
+and bit-fields, from the first in declaration order, in which each
+matching pair meets all of these conditions:
+
+- The two types are {term}`layout-compatible` (UNI-16).
+- Either both are bit-fields with equal widths, or both are ordinary
+  members.
+- Both have the same alignment requirement.
+- Both have `[[no_unique_address]]`, or neither has it
+  ({question}`Q-0340`).
+
+The members of a class are the members of the one class that declares
+them ({rule}`CLS-19`), so they can come from a base.
+:::
+
+:::{rule} UNI-16
+:kind: required
+:tests: classes/unions/common-initial-sequence-nested.cpp classes/unions/common-initial-sequence-enum.cpp classes/unions/common-initial-sequence-cv.cpp
+
+Two types are {term}`layout-compatible` in these cases:
+
+- They are the same type, apart from cv-qualifiers.
+- They are enumerations with the same underlying type.
+- They are standard-layout classes that are not unions, and their common
+  initial sequence (UNI-15) holds all their members and bit-fields.
+- They are standard-layout unions with the same number of members, and
+  their member types pair up as layout-compatible in some order.
+
+Two array types are layout-compatible only if they are the same type.
 :::
 
 ## Undefined Behavior
@@ -410,7 +475,7 @@ not trivial also uses an object that does not exist
 
 :::{rule} BF-9
 :kind: impl-defined
-:tests: classes/unions/bitfield-layout-lp64.cpp classes/unions/bitfield-zero-width-splits.cpp classes/unions/bitfield-low-order-first.cpp classes/unions/bitfield-next-unit-lp64.cpp classes/unions/bitfield-next-unit-ilp32.cpp
+:tests: classes/unions/bitfield-layout-lp64.cpp classes/unions/bitfield-unnamed-alignment.cpp classes/unions/bitfield-unnamed-alignment-ilp32.cpp classes/unions/bitfield-zero-width-splits.cpp classes/unions/bitfield-low-order-first.cpp classes/unions/bitfield-next-unit-lp64.cpp classes/unions/bitfield-next-unit-ilp32.cpp
 
 The allocation of bit-fields in an object is implementation-defined. The
 matrix targets, x86-64 and `-m32`, place a bit-field of type `T` in this
@@ -422,6 +487,9 @@ way:
   `sizeof(T)` bytes that starts at a multiple of `alignof(T)`
   ({rule}`TYP-2`, {question}`Q-0120`).
 - If not, the bit-field starts at the next multiple of `alignof(T)`.
+- An unnamed bit-field does not change the alignment of the class. An
+  unnamed bit-field of width 0 and type `T` moves the next member to the
+  next multiple of `alignof(T)`, and the class covers that position.
 :::
 
 :::{rule} BF-10
@@ -543,8 +611,8 @@ public:
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 116
-of 124 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 128
+of 139 tests.
 
 - UNI-9: Clang accepts an anonymous union without `static` in an unnamed
   namespace. GCC and EDG reject the declaration ({question}`Q-0045`).
@@ -586,6 +654,31 @@ of 124 tests.
   assignment did not write. For a member whose default constructor is
   not trivial, Clang and GCC reject the assignment, and EDG accepts it
   ({question}`Q-0213`).
+- UNI-3: for a member whose class has a trivial copy constructor for a
+  `const` source and a user-provided one for a non-`const` source, Clang
+  keeps the union's copy constructor, and GCC and EDG delete it
+  ({question}`Q-0339`).
+- UNI-15, UNI-16: no core-language check shows whether two types are
+  layout-compatible (inventory item OBS-no-core-layout-compatible). The
+  run tests read through the other struct for each kind of match. The
+  probe grid `layout-compatible.json` (in `tests/classes/members/grids/`)
+  compares the conditions with the builtin query of Clang 22 and GCC.
+  Clang 18 and EDG have no such query. The two queries agree with
+  UNI-15 and UNI-16 on 23 of 24 rows. They agree that a signed and an
+  unsigned member, members with different alignment, bit-fields of
+  different widths, a bit-field and a plain member, an enumeration and
+  its underlying type, and two arrays of different struct types do not
+  match. For two structs whose last members both have
+  `[[no_unique_address]]`, GCC's query says layout-compatible and
+  Clang's says not ({question}`Q-0340`).
+- BF-9: Clang, GCC, and EDG give the same sizes and alignments for
+  unnamed bit-fields on x86-64 and with `-m32`.
+- Sources: UNI-15 and UNI-16 come from the grid `layout-compatible.json`
+  and the inventory items LC-alignment, LC-arrays, LC-bit-fields,
+  LC-classes, LC-cv, LC-enumerations, LC-inherited-members,
+  LC-overlap-mark, LC-prefix, and LC-unions. The UNI-10 wording comes
+  from item LC-union-read. The BF-9 bullet comes from items
+  LAY-bit-field-alignment and LAY-bit-field-zero-width and the tests.
 - UNI-6: the undefined sanitizer of GCC and Clang stops a read of an
   inactive `bool` member whose bytes hold no valid `bool` value. No
   sanitizer stops a read whose bytes give a valid value.

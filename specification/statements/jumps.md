@@ -67,9 +67,9 @@ enters a scope must not skip the creation of an object at the target
 | Backward past a declaration | The variable is destroyed, and the declaration makes the variable again. |
 | Forward past an initialization | Rejected, because the variable would exist without a value |
 
-A type that needs no construction and no destruction has nothing to
-skip, so a jump can pass a declaration of such a type when the
-declaration has no initializer.
+A declaration with no initializer whose default initialization does
+nothing has nothing to skip, so a jump can pass it. The variable still
+exists after the jump, and the end of the block destroys it as usual.
 :::
 
 :::{principle} JMP-P3
@@ -159,9 +159,10 @@ not apply to a declaration with no initializer whose type is one of
 these:
 
 - a scalar type,
-- a class type whose default constructor and destructor are both
-  trivial ({rule}`CTOR-23`, {rule}`DTOR-9`),
+- a class type whose default constructor is trivial ({rule}`CTOR-23`),
 - an array of these types.
+
+The destructor of the class plays no part ({question}`Q-0041`).
 
 A jump can skip the declaration of a `static` local variable.
 :::
@@ -354,9 +355,10 @@ All eight compilers agree on 56 of 59 tests. The results are in
 `tests/RESULTS.md`.
 
 - JMP-6: GCC accepts a `goto` past a variable without an initializer
-  whose destructor is not trivial. Clang and EDG reject the `goto`, so a
-  class type whose destructor is not trivial is not an exception
-  ({question}`Q-0041`).
+  whose class has a trivial default constructor and a destructor that
+  is not trivial. Clang and EDG reject the `goto`. JMP-6 follows GCC
+  and the class-properties inventory (item OBS-jump-vacuous), which
+  name only the default constructor ({question}`Q-0041`).
 
 - JMP-17: GCC rejects `break outer;` as a missing `;`. Clang names the
   form "named break" and accepts it only in a later C mode.

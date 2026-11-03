@@ -248,8 +248,10 @@ All eight compilers agree on 41 of 42 tests. The results are in
   `return`, GCC warns under `-Wall` (`-Wreturn-type`) and Clang gives
   no warning. A `return` after the `switch` keeps the SW-7 warning,
   which a `default` label would turn off.
-- SW-5: GCC accepts a `case` label that skips a variable whose destructor
-  is not trivial. Clang and EDG reject the label ({question}`Q-0041`).
+- SW-5: GCC accepts a `case` label that skips a variable whose class
+  has a trivial default constructor and a destructor that is not
+  trivial. Clang and EDG reject the label. SW-5 follows JMP-6 and GCC
+  ({question}`Q-0041`).
 
 Inputs: clang-parse-stmt, clang-sema-stmt, clang-diag-sema, edg-
 statements.

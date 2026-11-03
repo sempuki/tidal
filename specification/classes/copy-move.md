@@ -128,12 +128,30 @@ The implementation should warn when:
 :::
 
 :::{principle} CPY-P6
-:rules: CPY-19 CPY-27
+:rules: CPY-19 CPY-27 CPY-28
 
 A copy or move function that copies part by part, with nothing virtual
 and nothing user-provided, is *trivial*. A class whose copying is
 trivial all the way down is *trivially copyable*. Copying the bytes of
 an object of such a class copies the value of the object.
+
+Only the functions that a copy can use count. These are the
+{term}`eligible` ones, so a deleted function, or one whose constraints
+fail, neither helps nor blocks. A class with a `const` or reference
+member has no usable assignment, and its objects still copy by bytes as
+its constructors do. Access plays no part. A class whose destructor is
+deleted, or that has no eligible copy or move function at all, says
+that its objects are not to be copied, so it is not trivially copyable.
+
+The property extends from classes to types:
+
+| Type | Trivially copyable |
+|---|---|
+| A scalar type | Always |
+| A class type | If CPY-19 holds |
+| An array type | If the element type is |
+| A cv-qualified type | If the type without the qualifiers is |
+| A reference type, `void`, a function type | Never |
 :::
 
 ## Syntax
@@ -277,7 +295,7 @@ assignment operator that CPY-6 hides.
 
 :::{rule} CPY-7
 :kind: required
-:tests: classes/copy-move/deleted-move-falls-back-to-copy.cpp classes/copy-move/move-only-member-moves.cpp classes/copy-move/reference-member-copy-ctor.cpp classes/copy-move/member-dtor-keeps-assignment.cpp classes/unions/union-deleted-move-uses-copy.cpp
+:tests: classes/copy-move/deleted-move-falls-back-to-copy.cpp classes/copy-move/move-only-member-moves.cpp classes/copy-move/reference-member-copy-ctor.cpp classes/copy-move/member-dtor-keeps-assignment.cpp classes/unions/union-deleted-move-uses-copy.cpp classes/copy-move/trivially-copyable-const-member.cpp classes/copy-move/trivially-copyable-deleted-destructor.cpp
 
 An implicit or defaulted copy or move function is deleted if one of
 these conditions is true:
@@ -337,7 +355,7 @@ one that would be deleted.
 
 :::{rule} CPY-9
 :kind: required
-:tests: classes/copy-move/cast-move-only-accepted.cpp classes/copy-move/const-rvalue-picks-copy.cpp classes/copy-move/rvalue-picks-move.cpp
+:tests: classes/copy-move/cast-move-only-accepted.cpp classes/copy-move/const-rvalue-picks-copy.cpp classes/copy-move/rvalue-picks-move.cpp classes/copy-move/trivially-copyable-every-eligible.cpp
 
 Overload resolution chooses between the copy and move functions:
 
@@ -405,7 +423,7 @@ type. An lvalue name needs a usable copy constructor.
 
 :::{rule} CPY-27
 :kind: required
-:tests: classes/copy-move/trivial-assign-implicit.cpp classes/copy-move/trivial-assign-user-provided.cpp classes/copy-move/trivial-copy-defaulted.cpp classes/copy-move/trivial-copy-implicit.cpp classes/copy-move/trivial-copy-member-initializer.cpp classes/copy-move/trivial-copy-member-nontrivial.cpp classes/copy-move/trivial-copy-user-provided.cpp classes/copy-move/trivial-copy-virtual-base.cpp classes/copy-move/trivial-copy-virtual-function.cpp classes/copy-move/trivial-move-user-provided.cpp
+:tests: classes/copy-move/trivially-copyable-member-selected.cpp classes/copy-move/trivially-copyable-member-template-selected.cpp classes/copy-move/trivially-copyable-defaulted-later.cpp classes/copy-move/trivial-assign-implicit.cpp classes/copy-move/trivial-assign-user-provided.cpp classes/copy-move/trivial-copy-defaulted.cpp classes/copy-move/trivial-copy-implicit.cpp classes/copy-move/trivial-copy-member-initializer.cpp classes/copy-move/trivial-copy-member-nontrivial.cpp classes/copy-move/trivial-copy-user-provided.cpp classes/copy-move/trivial-copy-virtual-base.cpp classes/copy-move/trivial-copy-virtual-function.cpp classes/copy-move/trivial-move-user-provided.cpp classes/copy-move/trivially-copyable-private-copy.cpp classes/copy-move/trivially-copyable-volatile-member.cpp classes/unions/union-copy-two-copy-constructors.cpp
 
 This rule covers the copy and move constructors and the copy and move
 assignment operators. Each of these makes such a function non-trivial:
@@ -414,7 +432,8 @@ assignment operators. Each of these makes such a function non-trivial:
   declaration counts.
 - The class has a virtual function or a virtual base.
 - A base or a member of class type is copied or moved by a non-trivial
-  one.
+  one. The function that the copy or move selects for the part decides
+  ({question}`Q-0339`).
 
 With none of these conditions, the function is *trivial*. Default member
 initializers play no part.
@@ -438,20 +457,34 @@ function can be used in constant evaluation.
 
 :::{rule} CPY-19
 :kind: required
-:tests: classes/copy-move/trivially-copyable-bytes.cpp
+:tests: classes/copy-move/trivially-copyable-bytes.cpp classes/copy-move/trivially-copyable-at-least-one.cpp classes/copy-move/trivially-copyable-const-member.cpp classes/copy-move/trivially-copyable-volatile-member.cpp classes/copy-move/trivially-copyable-deleted-destructor.cpp classes/copy-move/trivially-copyable-defaulted-later.cpp classes/copy-move/trivially-copyable-every-eligible.cpp classes/copy-move/trivially-copyable-member-selected.cpp classes/copy-move/trivially-copyable-constraint-fails.cpp classes/copy-move/trivially-copyable-private-copy.cpp
 
-A *trivially copyable* class meets these conditions, and others that
-this page does not list yet *(class properties referenced)*:
+A class is *trivially copyable* if all of these conditions hold:
 
-- Its copy and move functions and its destructor are implicit or
-  defaulted, and at least one copy or move function is not deleted.
-- The class has no virtual function and no virtual base.
-- Each base and each member is also trivially copyable.
+- The class has at least one {term}`eligible` copy or move function.
+- Each eligible copy or move function is trivial ({rule}`CPY-27`).
+- The destructor is trivial ({rule}`DTOR-9`) and not deleted
+  ({question}`Q-0343`).
 
 If a program copies the bytes of such an object into another object of
 the same type, the second object gets the same value. {rule}`STG-12`
 gives the byte types that the copy can go through and the limit on
 padding bytes.
+:::
+
+:::{rule} CPY-28
+:kind: required
+:tests: classes/copy-move/trivially-copyable-types.cpp classes/copy-move/trivially-copyable-volatile-member.cpp
+
+These types are {term}`trivially copyable` types:
+
+- scalar types,
+- trivially copyable classes (CPY-19),
+- arrays of trivially copyable types,
+- the cv-qualified forms of these types.
+
+A reference type, `void`, and a function type are not trivially
+copyable.
 :::
 
 ## Implementation Requirements
@@ -610,8 +643,8 @@ Any c(1);                          // the template, with T = int
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 103
-of 105 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 112
+of 117 tests.
 
 - CPY-15: Clang and GCC reject a constructor `W(W)` of a class
   template at the template's definition, with no instantiation. GCC
@@ -645,8 +678,44 @@ of 105 tests.
   copy constructor.
 - CPY-18: Clang and GCC assign the virtual base two times. The test
   accepts one or two.
-- CPY-19: the test checks the consequence for a simple class and does
-  not check each condition of the definition.
+- CPY-19, CPY-27, CPY-28: no core-language check gives a yes or no for
+  trivially copyable as a whole (inventory item
+  OBS-no-core-trivial-whole). The tests observe each condition through
+  a union that holds the class ({rule}`UNI-3`), a requires expression,
+  or a byte copy. The probe grid `trivially-copyable.json` compares
+  these checks with each compiler's builtin query, which no test uses
+  (decision 0051). The query of every compiler agrees with CPY-19 on
+  the rows that this table leaves out:
+
+  | Class | Clang query | GCC query | EDG query | CPY-19 |
+  |---|---|---|---|---|
+  | a `const` member, or a reference member | yes | yes | yes | yes |
+  | only a trivial move constructor, other copy and move functions deleted | yes | yes | yes | yes |
+  | all four copy and move functions deleted | yes | yes | yes | no |
+  | a deleted destructor | yes | yes | yes | no |
+  | two copy constructors, one user-provided | no | no | no | no |
+  | a member with two copy constructors, one user-provided | yes | no | no | yes |
+  | a member whose constructor template copies it from a non-`const` source | no | yes | yes | no |
+  | a private trivial copy constructor | yes | yes | yes | yes |
+
+  The two rows where every query says yes and CPY-19 says no follow the
+  class-properties inventory (items TCC-all-deleted and
+  TCC-deleted-destructor), and no test can show the difference
+  ({question}`Q-0343`).
+- CPY-27: for a member whose class has a trivial copy constructor for a
+  `const` source and a user-provided one for a non-`const` source, Clang
+  treats the enclosing class's copy constructor as trivial. GCC and EDG
+  treat it as not trivial and delete the copy constructor of a union
+  that holds the class. When a member's constructor template is
+  selected for the copy, Clang and GCC delete the union's copy
+  constructor, and EDG copies the union
+  ({question}`Q-0339`).
+- Sources: CPY-19 and CPY-28 come from the grid `trivially-copyable.json`
+  and the inventory items TCC-at-least-one, TCC-const-member,
+  TCC-every-eligible, TCC-inaccessible-ok, TCC-reference-member,
+  TCC-volatile-member, TYPE-array, TYPE-cv, TYPE-non-object, and
+  TYPE-scalar. The CPY-27 sentence on the selected function comes from
+  item TCC-member-selected and the same grid.
 
 Inputs: clang-sema-declcxx, clang-sema-init, clang-diag-sema,
 edg-class-decl.

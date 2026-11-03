@@ -1,0 +1,42 @@
+# Q-0338: During constant evaluation, does the address of a class object compare equal to the address of its first member or of its base?
+
+**Status:** provisional
+**Affects:** CLS-30, `tests/classes/members/standard-layout-address-constant.cpp`
+
+## Context
+
+A `constexpr` object `entry` of a standard-layout class has a base `Tag`
+and a first member `key`. A constant expression converts `&entry`,
+`&entry.key`, and the address of the base to `const void*` and
+compares them with `==`.
+
+| Comparison | Clang 18, 22 | GCC 14, 16 | EDG 7.0 |
+|---|---|---|---|
+| object and first member | `true` | `true` | `false` |
+| object and base | `true` | `true` | `false` |
+| array and first element | `true` | `true` | `true` |
+| first and second member (`!=`) | `true` | `true` | `true` |
+
+At run time the addresses are equal (CLS-30). EDG gives `false` also
+for a local object inside a lambda that constant evaluation calls.
+
+## Evidence
+
+The test in **Affects**, with an override for EDG. Probes of
+2026-11-03 with the comparisons in the table.
+
+## Options
+
+1. `true`, as at run time. A constant evaluation gives the same result
+   as the run.
+2. `false` or `true`. The comparison of pointers to two different
+   objects at one address is not fixed.
+
+## Provisional answer
+
+True (option 1). CLS-30 gives the addresses, and no rule makes the
+comparison unspecified. EDG's `false` is a possible defect.
+
+## Opinions
+
+<!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

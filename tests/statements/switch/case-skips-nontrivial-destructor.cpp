@@ -1,9 +1,10 @@
 // tidal-rules: SW-5
-// tidal-expect: reject
-// tidal-expect-gcc: accept
+// tidal-expect: accept
+// tidal-expect-clang: reject
+// tidal-expect-edg: reject
 // tidal-error-clang: cannot jump from switch statement to this case label
 // tidal-error-edg: transfer of control bypasses initialization
-// tidal-note: Q-0041. GCC accepts a jump past a variable whose destructor is not trivial. Clang and EDG reject it.
+// tidal-note: Q-0041. The class has a trivial default constructor, so default initialization does nothing and the jump skips nothing (JMP-6). The destructor plays no part. GCC accepts the jump. Clang and EDG reject it.
 // tidal-note: Gap review 2026-10-31 (third).
 struct D { int a; ~D() {} };
 int f(int v) { switch (v) { case 0: D d; d.a = 1; return d.a; case 1: return 7; } return 0; }

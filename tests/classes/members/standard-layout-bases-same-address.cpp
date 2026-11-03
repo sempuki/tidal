@@ -1,4 +1,4 @@
-// tidal-rules: CLS-19
+// tidal-rules: CLS-19 CLS-30
 // tidal-expect: run
 struct Tag {};
 struct Mark {};

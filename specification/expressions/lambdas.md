@@ -399,13 +399,15 @@ is undefined.
 
 :::{rule} LAM-20
 :kind: unspecified
-:tests: expressions/lambdas/closure-size-unspecified.cpp expressions/lambdas/implicit-capture-order.cpp
+:tests: expressions/lambdas/closure-size-unspecified.cpp expressions/lambdas/implicit-capture-order.cpp expressions/lambdas/closure-trivially-copyable-unspecified.cpp
 
 These properties of a closure type are unspecified:
 
 - the order of its members,
 - its size,
 - whether a capture by reference adds a member,
+- whether the closure type is {term}`trivially copyable`
+  ({rule}`CPY-19`) or {term}`standard-layout` ({rule}`CLS-19`),
 - the order in which the implicit captures are initialized, among
   themselves and relative to the explicit captures.
 
@@ -469,8 +471,8 @@ int dispatch(int base) {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 65
-of 67 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 66
+of 68 tests.
 
 - LAM-6: EDG accepts a capture default on a lambda outside a function.
   Clang and GCC reject it ({question}`Q-0037`).
@@ -488,6 +490,14 @@ of 67 tests.
   (`capture-outlived-sanitizer.cpp`).
 - LAM-20: on every compiler, a closure that copies an `int` is at least
   as large as an `int`, as the copy member requires.
+- LAM-20: on every compiler, a closure that captures an `int` by copy
+  or by reference has trivial copy and move constructors and a trivial
+  destructor, so a union can hold it and copy it. The builtin queries
+  of Clang, GCC, and EDG call each closure in the grid
+  `trivially-copyable.json` trivially copyable. In the grid
+  `standard-layout.json`, they call a closure with a copy capture
+  standard-layout and a closure with a reference capture not
+  standard-layout (inventory item TYPE-closure).
 - LAM-21: GCC warns under `-Wdeprecated` and Clang under
   `-Wdeprecated-this-capture`. Both warnings are on by default in C++20
   and later, and `-pedantic-errors` does not make them errors. With

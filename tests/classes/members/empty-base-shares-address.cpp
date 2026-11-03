@@ -1,4 +1,4 @@
-// tidal-rules: CLS-10 CLS-19
+// tidal-rules: CLS-10 CLS-19 CLS-30
 // tidal-expect: run
 // tidal-note: Gap review 2026-10-31.
 struct E {};

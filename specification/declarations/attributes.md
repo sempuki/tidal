@@ -248,7 +248,7 @@ point. If the expression is false there, the behavior is undefined.
 
 :::{rule} ATTR-9
 :kind: impl-defined
-:tests: declarations/attributes/no-unique-address.cpp
+:tests: declarations/attributes/no-unique-address.cpp classes/members/layout-overlap-member-ilp32.cpp classes/members/layout-overlap-member.cpp
 
 `[[no_unique_address]]` can apply to a data member. If the type of the
 member is empty, the implementation can give the member no storage of
@@ -361,8 +361,8 @@ switch (k) {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 59
-of 72 tests. EDG skips the tests that use `-Werror`.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 61
+of 74 tests. EDG skips the tests that use `-Werror`.
 
 - An implementation should warn if a `noreturn` function can return.
   Clang and GCC give this warning ("function declared 'noreturn' should

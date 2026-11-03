@@ -54,7 +54,7 @@ status, and the first sentence of its answer section.
 | [Q-0038](Q-0038-parameter-in-unevaluated-default.md) | May a default argument name a parameter in an operand that is not evaluated? | provisional | Valid; the ban covers only evaluated uses of a parameter |
 | [Q-0039](Q-0039-indeterminate-unsigned-char.md) | Is copying an uninitialized `unsigned char` undefined? | provisional | Not undefined at run time for `unsigned char` and `std::byte`, and rejected during constant evaluation |
 | [Q-0040](Q-0040-aggregate-paren-reference-member.md) | Does parenthesized aggregate initialization extend the life of a temporary bound to a reference member? | provisional | Only braces extend the lifetime; parentheses do not |
-| [Q-0041](Q-0041-jump-past-nontrivial-destructor.md) | May a jump skip a class object that has a non-trivial destructor and no initializer? | provisional | No; JMP-6 and SW-5 reject the jump; GCC accepts it |
+| [Q-0041](Q-0041-jump-past-nontrivial-destructor.md) | May a jump skip a class object that has a non-trivial destructor and no initializer? | provisional | Yes; JMP-6 and SW-5 accept the jump; Clang and EDG reject it |
 | [Q-0042](Q-0042-bit-field-narrowing.md) | Is converting a bit-field whose values all fit the target a narrowing conversion? | provisional | Not narrowing when every value of the bit-field's width fits the target |
 | [Q-0043](Q-0043-paren-brace-elision.md) | Does parenthesized aggregate initialization allow brace elision? | provisional | No; parentheses allow no brace elision |
 | [Q-0044](Q-0044-for-condition-destruction.md) | Is a `for` condition variable destroyed before or after the iteration expression? | compiler defect | After; GCC 14 is fixed in GCC 16 |
@@ -351,6 +351,12 @@ status, and the first sentence of its answer section.
 | [Q-0335](Q-0335-constant-temporary-literal-type.md) | Must a temporary that a constant evaluation makes have a literal type? | provisional | Yes; constant evaluation rejects a temporary of a type that is not literal |
 | [Q-0336](Q-0336-enumeration-value-from-bytes.md) | Is a read of an enumeration object undefined when its bytes hold a value outside the enumeration's values? | provisional | Yes; the read is undefined, whatever stored the value |
 | [Q-0337](Q-0337-explicit-conversion-value-for-const-reference.md) | Can direct initialization of an lvalue reference to `const` use an explicit conversion function that does not return an lvalue? | provisional | No; only a function that returns an lvalue reference serves it |
+| [Q-0338](Q-0338-constant-equality-class-and-subobject.md) | During constant evaluation, does the address of a class object compare equal to the address of its first member or of its base? | provisional | True |
+| [Q-0339](Q-0339-copy-part-with-two-copy-constructors.md) | Does a part with a trivial and a non-trivial copy constructor make the enclosing copy constructor non-trivial when the copy selects the trivial one? | provisional | The selected function decides |
+| [Q-0340](Q-0340-layout-compatible-overlap-mark.md) | Are two structs layout-compatible when matching members both have `[[no_unique_address]]`? | provisional | Layout-compatible |
+| [Q-0341](Q-0341-standard-layout-base-type-at-offset-zero.md) | Does a base whose type sits deep inside the first member, or in a `[[no_unique_address]]` member, make a class not standard-layout? | provisional | Not standard-layout in all four cases |
+| [Q-0342](Q-0342-tail-padding-defaulted-functions.md) | Does a base that declares defaulted special members lend its tail padding to a derived class? | provisional | The base keeps its padding |
+| [Q-0343](Q-0343-trivially-copyable-deleted-functions.md) | Is a class trivially copyable when its destructor is deleted, or when all its copy and move functions are deleted? | provisional | No; neither class is trivially copyable |
 
 ## Status values
 

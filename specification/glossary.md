@@ -87,6 +87,12 @@ class template argument deduction
   initializer, when the program writes the template name with no
   argument list ({rule}`CTAD-1`).
 
+common initial sequence
+  The longest run of members, from the first, in which two
+  standard-layout structs match in type, width, alignment, and
+  `[[no_unique_address]]`. A union of the two structs can read that
+  run through either struct ({rule}`UNI-15`, {rule}`UNI-10`).
+
 complete
   Said of a type whose size and layout the implementation knows. A class
   is complete after its definition ({rule}`TYN-6`). An enumeration with
@@ -377,6 +383,11 @@ integral type
   character types are `char`, `signed char`, `unsigned char`, `wchar_t`,
   `char8_t`, `char16_t`, and `char32_t` ({doc}`/foundations/types`).
 
+layout-compatible
+  Said of two types with the same layout: the same type apart from
+  cv-qualifiers, two enumerations with one underlying type, or two
+  standard-layout classes whose members match in full ({rule}`UNI-16`).
+
 linkage
   The property that controls if two declarations of a name refer to the
   same entity.
@@ -577,6 +588,13 @@ standard conversion sequence
   An {term}`implicit conversion sequence` of at most three standard
   conversions, in a fixed order ({rule}`ICS-1`).
 
+standard-layout
+  Said of a class whose object starts with its first member, with no
+  virtual parts, no members split over classes or accesses, and no two
+  subobjects of one type at its start ({rule}`CLS-19`). Scalar types,
+  arrays of standard-layout types, and their cv-qualified forms are also
+  standard-layout ({rule}`CLS-29`).
+
 storage duration
   The time for which the storage of an object exists.
 
@@ -669,6 +687,12 @@ trivial
   the work of the class's parts, so that nothing virtual and no default
   member initializer is involved ({rule}`CTOR-23`, {rule}`DTOR-9`,
   {rule}`CPY-27`).
+
+trivially copyable
+  Said of a type whose objects a byte copy can copy. Scalar types,
+  classes whose eligible copy and move functions and destructor are all
+  trivial ({rule}`CPY-19`), arrays of these types, and their
+  cv-qualified forms are trivially copyable ({rule}`CPY-28`).
 
 type concept
   A concept whose first template parameter is a type parameter. Only a

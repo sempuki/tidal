@@ -1,0 +1,34 @@
+{
+ "prelude": "",
+ "template": "{prelude}{row}\n{col}\n",
+ "rows": {
+  "same members": "struct A { int a; char b; }; struct B { int x; char y; };",
+  "cv on one member": "struct A { int a; char b; }; struct B { const int x; volatile char y; };",
+  "signed and unsigned": "struct A { int a; }; struct B { unsigned x; };",
+  "extra member": "struct A { int a; char b; }; struct B { int x; char y; char z; };",
+  "different alignment": "struct A { int a; char b; }; struct B { alignas(8) int x; char y; };",
+  "bit-fields same width": "struct A { int a : 3; int b; }; struct B { int x : 3; int y; };",
+  "bit-fields different width": "struct A { int a : 3; int b; }; struct B { int x : 4; int y; };",
+  "bit-field and plain member": "struct A { int a : 32; }; struct B { int x; };",
+  "zero-width bit-field in one": "struct A { int a : 3; int : 0; int b : 3; }; struct B { int x : 3; int y : 3; };",
+  "enumerations, same underlying type": "enum class E1 : int { a }; enum E2 : int { b, c }; struct A { E1 a; }; struct B { E2 x; };",
+  "enumeration and its underlying type": "enum E1 : int { a }; struct A { E1 a; }; struct B { int x; };",
+  "nested layout-compatible structs": "struct P { int a; }; struct Q { int b; }; struct A { P p; char c; }; struct B { Q q; char d; };",
+  "arrays of layout-compatible structs": "struct P { int a; }; struct Q { int b; }; struct A { P p[2]; }; struct B { Q q[2]; };",
+  "members from a base": "struct Base { int a; char b; }; struct A : Base {}; struct B { int x; char y; };",
+  "overlap mark on one": "struct E {}; struct A { int a; [[no_unique_address]] E e; }; struct B { int x; E f; };",
+  "overlap mark on both": "struct E {}; struct A { int a; [[no_unique_address]] E e; }; struct B { int x; [[no_unique_address]] E f; };",
+  "unions, members reordered": "union A { int a; float b; }; union B { float x; int y; };",
+  "unions, different count": "union A { int a; float b; }; union B { float x; int y; char z; };",
+  "struct and union": "struct A { int a; }; union B { int x; };",
+  "enum types direct": "enum class E1 : short { a }; enum E2 : short { b }; using A = E1; using B = E2;",
+  "int and const int": "using A = int; using B = const int;",
+  "int arrays": "using A = int[2]; using B = int[2];",
+  "struct arrays": "struct P { int a; }; struct Q { int b; }; using A = P[2]; using B = Q[2];",
+  "different access": "struct A { int a; }; class B { public: int x; };"
+ },
+ "cols": {
+  "builtin layout-compatible": "static_assert(__is_layout_compatible(A, B));"
+ },
+ "flags": []
+}

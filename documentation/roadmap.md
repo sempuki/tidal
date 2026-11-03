@@ -111,7 +111,7 @@ clean-room roadmaps (`reports/clean-room/roadmap-3/`).
 | P | Predict batches for expressions, statements, declarations, classes | R0 (format) |
 | D | Designer repair batch, then Propose X9 to X12 | none |
 | C | Overloading chapter, hotspot pages, consistency pass, second tests, character values, implementation limits | Q for the overload pages |
-| O | Class properties and per-target class layout, with method controls | an inventory |
+| O | Done: class properties and per-target class layout (CPY-19, CPY-28, CLS-19, CLS-29 to CLS-32, UNI-15, UNI-16), with grids under `tests/classes/copy-move/grids/` and `tests/classes/members/grids/`. A gap review follows. | an inventory |
 | FE | Front-end round 10: byte memory, parse failures as rejects, interpreter coverage, choice exploration | G |
 
 ## Parallel lanes

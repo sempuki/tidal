@@ -640,10 +640,9 @@ of 172 tests.
 
 - CTOR-23 and DTOR-9: the tests observe triviality through JMP-6 and
   UNI-3. A jump past a declaration is valid only for a trivial default
-  constructor and destructor (JMP-6), and a union's special member is
-  deleted when a member's is not trivial (UNI-3). The
-  destructor tests use the union, because GCC accepts the jump for any
-  destructor ({question}`Q-0041`).
+  constructor (JMP-6), and a union's special member is deleted when a
+  member's is not trivial (UNI-3). The destructor tests use the union,
+  because JMP-6 does not look at the destructor ({question}`Q-0041`).
 
 - CTOR-14: Clang and EDG reject an indirect delegation cycle. GCC accepts
   it ({question}`Q-0053`).

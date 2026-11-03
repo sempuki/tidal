@@ -470,7 +470,7 @@ constrained than each of the others.
 
 :::{rule} CNS-21
 :kind: required
-:tests: templates/constraints/eligible-default.cpp templates/constraints/eligible-copy.cpp templates/constraints/eligible-more-constrained.cpp templates/constraints/destructor-trivial.cpp templates/constraints/eligible-unsatisfied-more-constrained.cpp
+:tests: templates/constraints/eligible-default.cpp templates/constraints/eligible-copy.cpp templates/constraints/eligible-more-constrained.cpp templates/constraints/destructor-trivial.cpp templates/constraints/eligible-unsatisfied-more-constrained.cpp classes/copy-move/trivially-copyable-constraint-fails.cpp
 
 A special member function is {term}`eligible` if all of these hold
 ({question}`Q-0266`):
@@ -715,8 +715,8 @@ decltype(&Box<long>::get)               // int (Box<long>::*)(): the clause is n
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 96
-of 122 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 97
+of 123 tests.
 
 The clean-room writer probed each rule with Clang 18 and 22, GCC 14 and
 16, the host Clang and GCC, and EDG 7.0, and checked the tests and the

@@ -231,9 +231,9 @@ The rule covers arrays ({rule}`DCL-19`) and classes.
 :tests: foundations/storage/object-bytes-cover-members.cpp
 
 An object occupies `sizeof` bytes of storage, and the address of the
-object is the address of its first byte. An object of a trivially
-copyable or standard-layout class occupies consecutive bytes
-({rule}`CPY-19`, {rule}`CLS-19`).
+object is the address of its first byte. An object of a
+{term}`trivially copyable` or {term}`standard-layout` type occupies
+consecutive bytes ({rule}`CPY-28`, {rule}`CLS-29`).
 :::
 
 :::{rule} STG-3
@@ -373,10 +373,10 @@ pointer ({question}`Q-0328`).
 
 :::{rule} STG-12
 :kind: required
-:tests: foundations/storage/byte-round-trip.cpp foundations/storage/byte-round-trip-char-and-byte.cpp foundations/storage/padding-bytes-not-in-value.cpp
+:tests: foundations/storage/byte-round-trip.cpp foundations/storage/byte-round-trip-char-and-byte.cpp foundations/storage/padding-bytes-not-in-value.cpp classes/copy-move/trivially-copyable-types.cpp classes/copy-move/trivially-copyable-volatile-member.cpp
 
-A program can copy the bytes of an object of a trivially copyable type
-into an array of `std::byte` or `unsigned char`, and back. The object
+A program can copy the bytes of an object of a {term}`trivially
+copyable` type ({rule}`CPY-28`) into an array of `std::byte` or `unsigned char`, and back. The object
 then has its original value. A copy through `char` needs a value in
 each byte, padding bytes included ({rule}`INIT-1`,
 {question}`Q-0328`). STG-25 excludes a base subobject
@@ -745,8 +745,8 @@ template <class T> void destroy_all(T* first, int n) {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 68
-of 71 tests. EDG runs no programs, so its results for the run tests say
+The results are in `tests/RESULTS.md`. All eight compilers agree on 70
+of 73 tests. EDG runs no programs, so its results for the run tests say
 only that the programs are valid.
 
 - Constant evaluation: in C++23 mode no compiler in the matrix accepts
