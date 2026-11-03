@@ -23,10 +23,8 @@ C++. It tests forms that the ISO standard does not use:
 - design exercises that propose extensions to the language and trace
   each change through the rules and tests.
 
-Tidal does not replace the ISO standard, and it is not a way to avoid
-buying it. The ISO standard remains the normative definition of C++.
-Readers who need that text should obtain ISO/IEC 14882 from ISO or
-from their national standards body.
+Tidal does not replace the ISO standard, which remains the normative
+definition of C++.
 
 Repository: https://github.com/sempuki/tidal
 Specification site: https://sempuki.github.io/tidal/
