@@ -98,7 +98,8 @@ STMT-9 allows a class and a variable with one name.
 
 A block can declare a class or an enumeration and a variable or a
 function with the same name. The variable or the function hides the
-class name from its declaration to the end of the block.
+class name from its declaration to the end of the block. This rule is
+{rule}`NAM-39` and {rule}`NAM-40` for a block.
 :::
 
 :::{rule} STMT-10

@@ -37,7 +37,8 @@ name is visible from that point to the end of the scope. Before that
 point the name does not exist, and after the scope ends it is gone. A
 scope holds one declaration for each name, unless the language says that
 two declarations of the name describe one entity, as the language does
-for a function declared twice.
+for a function declared twice. A class can also share its name with one
+other entity ({principle}`NAM-P10`).
 :::
 
 :::{principle} NAM-P2
@@ -204,6 +205,26 @@ together. In the other rows, one source wins and the other is not
 searched.
 :::
 
+:::{principle} NAM-P10
+:rules: NAM-39 NAM-40 NAM-41 NAM-42
+
+A class or an enumeration can share its name with another entity in the
+same scope. C keeps the names of structures apart from other names, and
+the exception keeps such C code valid, such as a `struct stat` beside a
+function `stat`. The table gives the entities that can share the name of
+a class or enumeration `S`:
+
+| Other entity in the scope | Valid | `S` alone, `N::S`, and `C::S` find |
+|---|---|---|
+| A variable or a data member | Yes | The variable or data member |
+| Functions or function templates, also members | Yes | The functions |
+| An enumerator | Yes | The enumerator |
+| A type alias for another type, a class template, an alias template, or a variable template | No | |
+
+The class or enumeration stays reachable where the grammar needs a type
+name: after `struct` or `enum`, before `::`, and in a list of bases.
+:::
+
 ## Constraints
 
 :::{rule} NAM-1
@@ -257,14 +278,65 @@ valid, even when the hidden declaration fits the use.
 
 :::{rule} NAM-3
 :kind: reject
-:tests: foundations/names/redeclare-same-scope.cpp foundations/names/redeclare-parameter-in-body.cpp foundations/names/redeclare-different-kind.cpp foundations/names/redeclare-function-ok.cpp
+:tests: foundations/names/redeclare-same-scope.cpp foundations/names/redeclare-parameter-in-body.cpp foundations/names/redeclare-different-kind.cpp foundations/names/redeclare-function-ok.cpp foundations/names/shared-name-two-variables.cpp
 
 A name must not be declared twice in one scope, except by declarations
 that refer to one entity, such as two declarations of one function
 ({rule}`FN-15`). The
 outermost block of a function is one scope with its parameter list. A
 variable and a function with one name in one scope are not valid.
-{rule}`STMT-8` names the specific case of a block (decision 0042).
+{rule}`NAM-39` allows a class or an enumeration to share its name.
+{rule}`STMT-8` names the specific case of a block, and {rule}`NAM-42`
+the case of a template (decision 0042).
+:::
+
+:::{rule} NAM-39
+:kind: required
+:tests: foundations/names/shared-name-class-variable.cpp foundations/names/shared-name-variable-then-class.cpp foundations/names/shared-name-class-function.cpp foundations/names/shared-name-enumeration.cpp foundations/names/shared-name-enumerator-class.cpp foundations/names/shared-name-class-members.cpp
+
+One scope can declare a class or an enumeration and one of these with
+the same name:
+
+- a variable,
+- functions and function templates,
+- an enumerator.
+
+The declarations can come in any order. In a class, the variable or the
+functions can be members. {rule}`STMT-9` is this rule for a block.
+:::
+
+:::{rule} NAM-40
+:kind: required
+:tests: foundations/names/shared-name-variable-found.cpp foundations/names/shared-name-function-call.cpp foundations/names/shared-name-qualified.cpp foundations/names/shared-name-base-list.cpp foundations/names/shared-name-before-variable.cpp foundations/names/shared-name-member-function-body.cpp foundations/names/shared-name-using-declaration.cpp
+
+If a scope declares a class or enumeration `S` and another entity named
+`S` (NAM-39), lookup of `S` finds the other entity from its declaration
+on. The rule holds for unqualified names, qualified names, and names
+that a using declaration brings. Lookup finds the class or enumeration
+only in these places:
+
+- after `struct`, `class`, `union`, or `enum` ({rule}`TYN-4`),
+- before `::` ({rule}`NAM-15`),
+- in a list of bases.
+:::
+
+:::{rule} NAM-41
+:kind: reject
+:tests: foundations/names/shared-name-class-alone.cpp foundations/names/shared-name-class-alone-variable-first.cpp foundations/names/shared-name-qualified-not-class.cpp foundations/names/shared-name-member-not-class.cpp foundations/names/shared-name-in-class-not-class.cpp foundations/names/shared-name-enumeration-alone.cpp foundations/names/shared-name-inner-block.cpp
+
+Where lookup finds the other entity (NAM-40), the name must not name the
+class or enumeration. The rule holds for `S`, `N::S`, and `C::S`.
+{rule}`STMT-10` is the specific rule for a block that declares both
+(decision 0042).
+:::
+
+:::{rule} NAM-42
+:kind: reject
+:tests: foundations/names/shared-name-class-template-variable.cpp foundations/names/shared-name-variable-class-template.cpp foundations/names/shared-name-class-template-function.cpp foundations/names/shared-name-alias-template-variable.cpp foundations/names/shared-name-class-variable-template.cpp
+
+NAM-39 does not apply to templates. A class template, an alias
+template, or a variable template must not have the name of another
+entity in its scope. {rule}`TYN-2` gives the case of a type alias.
 :::
 
 :::{rule} NAM-4
@@ -744,6 +816,20 @@ area(c);                        // finds the friend through the base
 (area)(c);                      // rejected: no argument-dependent lookup
 ```
 
+A class and a variable can share a name. The variable takes the name,
+and a class key reaches the class:
+
+```cpp
+struct stat { long size; };
+int stat(const char* path);
+struct stat info;               // the class
+int n = stat("log");            // the function
+stat other;                     // rejected: stat is the function here
+
+template <class T> struct box { };
+int box = 0;                    // rejected: box is a class template
+```
+
 The injected class name works through a base in another namespace:
 
 ```cpp
@@ -757,8 +843,8 @@ File::File* q = nullptr;        // rejected: names the constructor
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 193
-of 195 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 219
+of 221 tests.
 
 The clean-room writer probed qualified lookup, using directives,
 argument-dependent lookup, and the injected class name with Clang 22,
@@ -778,6 +864,10 @@ each row, and a rejected test for each kind of type that adds nothing.
 - NAM-13, NAM-23: all compilers treat an unnamed namespace as a using
   directive in the namespace that contains it. `N::x` prefers a
   declaration of `x` in `N` to one in an unnamed namespace in `N`.
+- NAM-39 to NAM-42: all compilers agree on a class or enumeration that
+  shares its name with a variable, functions, or an enumerator, at
+  namespace scope and in a class. In a list of bases, all compilers
+  find the class, although the variable hides the class elsewhere.
 - NAM-8, NAM-18, NAM-24, NAM-26, NAM-34, NAM-36: each of these rules
   overlaps another `reject` rule. The rule text says which of the two
   is the specific one, and the tests cite that rule (decision 0042).

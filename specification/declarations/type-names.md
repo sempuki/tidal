@@ -122,7 +122,7 @@ These consequences of TYN-1 make a program not valid:
 
 :::{rule} TYN-2
 :kind: reject
-:tests: declarations/type-names/class-definition-conflicts-typedef.cpp declarations/type-names/typedef-initializer.cpp declarations/type-names/typedef-name-in-class-redeclared.cpp declarations/type-names/typedef-no-name.cpp declarations/type-names/typedef-redeclare-different.cpp declarations/type-names/typedef-storage-class.cpp declarations/type-names/typedef-with-unsigned.cpp declarations/type-names/variable-then-typedef.cpp declarations/type-names/alias-member-redeclared-same.cpp declarations/type-names/alias-function-type-definition.cpp
+:tests: declarations/type-names/class-definition-conflicts-typedef.cpp declarations/type-names/typedef-initializer.cpp declarations/type-names/typedef-name-in-class-redeclared.cpp declarations/type-names/typedef-no-name.cpp declarations/type-names/typedef-redeclare-different.cpp declarations/type-names/typedef-storage-class.cpp declarations/type-names/typedef-with-unsigned.cpp declarations/type-names/variable-then-typedef.cpp declarations/type-names/typedef-then-variable.cpp declarations/type-names/typedef-of-class-then-variable.cpp declarations/type-names/alias-member-redeclared-same.cpp declarations/type-names/alias-function-type-definition.cpp
 
 A type alias must not:
 
@@ -270,8 +270,8 @@ void post(Packet* p) {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 55
-of 60 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 57
+of 62 tests.
 
 - TYN-5: GCC rejects the class, for a type name and for a function name
   that a later data member changes. Clang and EDG accept the class

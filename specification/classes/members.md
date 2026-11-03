@@ -266,7 +266,9 @@ A class can declare these members:
 - enumerations,
 - type aliases.
 
-Code outside the class names these members as `S::name`.
+Code outside the class names these members as `S::name`. A nested class
+or enumeration can share its name with a data member, member functions,
+or an enumerator ({rule}`NAM-39`).
 :::
 
 :::{rule} CLS-9
