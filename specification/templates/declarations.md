@@ -757,6 +757,15 @@ template <class A, class B> int Map<B, A>::size();                // rejected: o
 The results are in `tests/RESULTS.md`. All eight compilers agree on 113
 of 121 tests.
 
+The questions of the cluster of EDG differences (cluster 5) on this page
+stay open under decision 0051: {question}`Q-0195`, {question}`Q-0197`,
+and {question}`Q-0198`. On 2026-11-03, Clang 22 and GCC 16 still agree
+with the provisional answer of each, and EDG 7.0 still differs. In
+Q-0195 and Q-0197, EDG 7.0 diagnoses a program that needs no diagnostic,
+so the outcomes of all three families fit the provisional answer, and
+the outcomes still differ. Reporting these EDG differences to the EDG
+project waits on the maintainer.
+
 The clean-room writer probed each kind of template, each kind of
 parameter, the defaults, and the redeclarations with Clang 22, GCC 16,
 and EDG 7.0, and checked the tests on the eight baseline compilers. The

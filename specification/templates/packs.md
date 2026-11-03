@@ -553,6 +553,12 @@ template <class... T> void keep(T... x) {
 The results are in `tests/RESULTS.md`. All eight compilers agree on 65
 of 69 tests.
 
+The question of the cluster of EDG differences (cluster 5) on this page,
+{question}`Q-0272`, stays open under decision 0051. On 2026-11-03, Clang
+22 and GCC 16 still agree with its provisional answer, and EDG 7.0 still
+differs. Reporting this EDG difference to the EDG project waits on the
+maintainer.
+
 The clean-room writer probed each rule with Clang 22, GCC 16, and EDG
 7.0, and checked the tests and the grid on the eight
 {ref}`baseline compilers <baseline-compilers>`.

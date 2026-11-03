@@ -47,6 +47,8 @@ element of the list is a string literal. Under that reading,
 Braces elided for a fixed bound; Clang and GCC agree, EDG differs on a fixed char array (option 1). Every implementation elides the braces in the first form,
 and two of three accept the second.
 
+The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 accept the string literal for the fixed `char` array and deduce `Named<int>`, and EDG 7.0 finds no guide, so two families disagree on the second form. Every compiler agrees on the first form. CTAD-P2 supports the provisional answer. The aggregate candidate gives an array member that a string literal initializes an lvalue reference to the `const` array type (CTAD-9). For `Named b{"ab", 1}`, the candidate then has the parameters `const char(&)[3]` and `T`, and `T` is `int`. EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/status.md`).
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

@@ -29,6 +29,8 @@ EDG) and `tests/templates/specialization/function-partial-used.cpp`.
 Yes; Clang and GCC agree, EDG rejects only at a use (option 1). Clang and GCC reject the declaration itself, and EDG rejects
 it as soon as the template is used. TSP-7 stays a `reject` rule.
 
+The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 reject the declaration with no call, and EDG 7.0 rejects only at a call, so two families disagree on the declaration alone. TSP-P1 supports the provisional answer. Its table gives a function template no partial specialization, so the declaration is not valid whether or not a call uses it (TSP-7). EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/status.md`).
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

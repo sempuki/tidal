@@ -39,6 +39,8 @@ Yes; Clang 22 and GCC 16 agree, Clang 18, GCC 14, and EDG differ (option 1). The
 the candidate when the constraint fails, and a type constraint on a
 type parameter takes part in the comparison in the same way.
 
+The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 choose the constrained template, and EDG 7.0 finds the call ambiguous, so two families disagree. Clang 18 and GCC 14 agree with EDG. CNS-P1 supports the provisional answer. Step 1a collects the type constraints of constant parameters into the associated constraints, so the comparison of CNS-P4 sees them (CNS-23). EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/status.md`).
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

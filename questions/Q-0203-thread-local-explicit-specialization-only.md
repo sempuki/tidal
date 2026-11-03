@@ -35,6 +35,8 @@ an override for EDG, and `explicit-thread-local.cpp`.
 Yes; Clang and GCC accept, EDG rejects (option 1). Clang and GCC agree, and TSP-25 gives an explicit
 specialization its `inline` and `constexpr` from its own declaration.
 
+The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 accept and run the program, and EDG 7.0 rejects it, so two families disagree. TSP-P1 supports the provisional answer. An explicit specialization is a separate definition and takes no `inline` or `constexpr` from the template (TSP-25), and `thread_local` follows the same model (TSP-24). EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/status.md`).
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

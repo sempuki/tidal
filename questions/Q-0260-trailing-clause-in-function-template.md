@@ -17,7 +17,7 @@ template, and the clause names the function template's parameter.
 
 ## Evidence
 
-The four tests above. EDG also rejects the clause on a lambda in a default member initializer of a class template. A member of a class nested in a class template is accepted by every compiler (`trailing-clause-member.cpp`).
+The four tests above. EDG also rejects the clause on a lambda in a default member initializer of a class template. Every compiler accepts the clause on a member of a class nested in a class template (`trailing-clause-member.cpp`).
 
 ## Options
 
@@ -28,6 +28,8 @@ The four tests above. EDG also rejects the clause on a lambda in a default membe
 ## Provisional answer
 
 Yes; Clang and GCC agree, EDG differs (option 1). Two of three implementations agree, and the case is the same as a member of a class nested in a class template.
+
+The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 accept the clause on the lambda and on the member of the local class, and EDG 7.0 rejects it, so two families disagree. CPT-P1 supports the provisional answer. A trailing requires clause constrains a function that is declared inside a templated entity, and the body of a function template is one (CPT-11). EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/status.md`).
 
 ## Opinions
 

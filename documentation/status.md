@@ -194,7 +194,18 @@ Waiting on the maintainer:
 - Ask the reviewer who prompted the principles-first change to read the
   Foundations chapter and two topic pages (decision 0024).
 - Approve reporting the EDG behavior in Q-0002 and Q-0003 to the EDG
-  project.
+  project. The same report can carry the 34 template questions of
+  cluster 5, where Clang 22 and GCC 16 agree and EDG 7.0 differs. In
+  13, EDG rejects a program that Tidal accepts (Q-0198, Q-0201,
+  Q-0203, Q-0208, Q-0229, Q-0231, Q-0240, Q-0256, Q-0260, Q-0266,
+  Q-0268, Q-0277, Q-0281). In 14, EDG accepts a program that Tidal
+  rejects (Q-0146, Q-0170, Q-0172, Q-0224, Q-0235, Q-0237, Q-0245,
+  Q-0265, Q-0267, Q-0272, Q-0278, Q-0280, Q-0286, Q-0292). In 4, EDG
+  follows another order or model of a step, and the result differs
+  (Q-0215, Q-0279, Q-0282, Q-0284). In 3, EDG diagnoses a program
+  that needs no diagnostic (Q-0195, Q-0197, Q-0283). Q-0214 and
+  Q-0285, kept open in cluster 3, are of the same kind. Each question
+  stays open under decision 0051 while EDG 7.0 differs.
 - Confirm or change the provisional choices of decision 0051: settling
   a question when the newest version of each family agrees, and
   keeping the implementation-only operations referenced (Q-0322).

@@ -620,6 +620,13 @@ Bases b{List<X, Y, Z>{}, X{}};    // Bases<X, Y, Z>: Y and Z get empty lists
 The results are in `tests/RESULTS.md`. All eight compilers agree on 94
 of 113 tests.
 
+The questions of the cluster of EDG differences (cluster 5) on this page
+stay open under decision 0051: {question}`Q-0240`, {question}`Q-0277`,
+{question}`Q-0278`, {question}`Q-0279`, and {question}`Q-0280`. On
+2026-11-03, Clang 22 and GCC 16 still agree with the provisional answer
+of each, and EDG 7.0 still differs. Reporting these EDG differences to
+the EDG project waits on the maintainer.
+
 The clean-room writer probed each step with Clang 22, GCC 16, and EDG
 7.0, and checked the tests and the grid on the eight
 {ref}`baseline compilers <baseline-compilers>`.

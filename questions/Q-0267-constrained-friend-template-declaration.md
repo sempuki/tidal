@@ -25,6 +25,8 @@ The test above. Every compiler rejects a friend that is not a template, has a tr
 
 Yes; Clang and GCC agree, EDG differs (option 1). Two of three implementations agree, and the same rule applies to a friend that is not a template.
 
+The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 reject the friend template declaration, and EDG 7.0 accepts it, so two families disagree. CNS-P5 supports the provisional answer. A friend whose constraint names the class's template parameters is defined in the class, so each specialization of the class defines its own function (CNS-31). EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/status.md`).
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

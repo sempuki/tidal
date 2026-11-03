@@ -29,6 +29,8 @@ accepts `p->T::template ~T()`, and Clang and GCC reject it.
 
 No; Clang and GCC agree, EDG differs (option 1). Two of three implementations and the gap review agree.
 
+The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 reject the keyword before the destructor name, and EDG 7.0 accepts it, so two families disagree. A probe of `p->T::template ~T()` gives the same split. DEP-P5 supports the provisional answer. The keyword `template` tells the parser that a template-id follows, and a destructor name is no template-id, so DEP-34 is an exception of DEP-P5. EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/status.md`).
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

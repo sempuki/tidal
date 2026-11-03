@@ -33,6 +33,8 @@ the initializer-list phase applies also through an alias.
 Yes; Clang 22 and GCC agree, EDG differs (option 1). Two of three implementations agree, and the gap review
 predicts the same result.
 
+The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 deduce `List<int>` through the alias, and EDG 7.0 deduces `List<List<int>>`, so two families disagree. Clang 18 rejects the alias. CTAD-P3 supports the provisional answer. An alias template gets the guides of its class template (CTAD-14), so the choice among the guides runs as it does without the alias (CTAD-18). EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/status.md`).
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

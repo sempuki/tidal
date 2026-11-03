@@ -817,6 +817,12 @@ The source-reader gap review of the cluster
 against Q-0161 for the unqualified form, and OVL-21 follows that
 reading. The review finds the reference unclear on Q-0189.
 
+The question of the cluster of EDG differences (cluster 5) on this page,
+{question}`Q-0146`, stays open under decision 0051. On 2026-11-03, Clang
+22 and GCC 16 still agree with its provisional answer, and EDG 7.0 still
+differs. Reporting this EDG difference to the EDG project waits on the
+maintainer.
+
 - OVL-25, OVL-6: every compiler chooses a static call operator over a
   surrogate candidate with the same parameter types. Every compiler
   finds the call ambiguous when the surrogate's parameter fits the

@@ -35,6 +35,8 @@ override for EDG, and `default-friend-definition.cpp`.
 Invalid, no diagnostic required; EDG rejects, Clang and GCC accept (option 1). EDG diagnoses the case, and Clang and GCC give the program a
 meaning. A rule without a required diagnostic covers both.
 
+The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 accept the other declaration, and EDG 7.0 rejects it, so the newest versions give two outcomes. Option 1 is the only option that all three outcomes fit, and the standing rule asks for one outcome. TPL-P3 supports the provisional answer. Each parameter gets its default in one declaration only, and TPL-38 makes the friend definition that declaration. EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/status.md`).
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

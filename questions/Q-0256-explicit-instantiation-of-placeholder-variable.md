@@ -30,6 +30,8 @@ other forms.
 
 With the deduced type; Clang and GCC agree, EDG differs (option 1). Two of three implementations and the gap review agree. GCC also accepts a type other than the deduced one, and INST-22 does not allow it.
 
+The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 accept the deduced type `int`, and EDG 7.0 rejects it, so two families disagree. Probes give the recorded results for the other forms: EDG 7.0 alone accepts `auto`, and GCC 16 alone accepts `long`. INST-P3 supports the provisional answer. An explicit instantiation names the type of the specialization (INST-22), and the specialization of a variable template has the deduced type. EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/status.md`).
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

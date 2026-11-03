@@ -36,6 +36,8 @@ Templates yes, others no; Clang and GCC agree, EDG differs (option 1). The guide
 and function templates, and two of three implementations agree on each
 pair. No compiler rejects the guide templates.
 
+The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 reject the two guides that are not templates, and EDG 7.0 accepts them, so two families disagree. Every compiler accepts the two guide templates and finds a use ambiguous. CTAD-P3 supports the provisional answer. The guides compete as constructors do, so two guides that are not templates with the same parameter types are two declarations of one function that differ only in their results (CTAD-12). EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/status.md`).
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

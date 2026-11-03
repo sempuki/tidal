@@ -31,6 +31,8 @@ compiler rejects a constrained placeholder in a functional cast
 No; Clang and GCC agree, EDG differs (option 1). Two of three implementations agree, and the gap review of
 concepts and constraints (item 17) describes the same rule.
 
+The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 reject the constrained placeholder, and EDG 7.0 accepts it, so two families disagree. CPT-P1 supports the provisional answer. Its table lists the places where a constraint can be written, and CPT-37 is the exception that keeps a constrained placeholder out of a structured binding declaration. EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/status.md`).
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

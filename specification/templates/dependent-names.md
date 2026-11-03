@@ -772,6 +772,13 @@ template <class... T> int count() {
 The results are in `tests/RESULTS.md`. All eight compilers agree on 97
 of 117 tests.
 
+The questions of the cluster of EDG differences (cluster 5) on this page
+stay open under decision 0051: {question}`Q-0224`, {question}`Q-0229`,
+and {question}`Q-0245`. On 2026-11-03, Clang 22 and GCC 16 still agree
+with the provisional answer of each, and EDG 7.0 still differs.
+Reporting these EDG differences to the EDG project waits on the
+maintainer.
+
 The clean-room writer probed each rule with the eight baseline
 compilers and the two `-O2` report compilers, and wrote the grids
 below. The sanitized Clang lookup source returns "not found in the

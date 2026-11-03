@@ -59,6 +59,8 @@ describes the two plain-function calls as ambiguous.
 The conditions of ORD-13: same parameter lists, heads, and conversion results; Clang 22 and GCC agree, EDG differs (option 1). Clang 22 and GCC agree on every row, and the sanitized Clang
 source and the gap review describe the same conditions.
 
+The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 find every row of the table ambiguous, and EDG 7.0 lets the constraint decide in every row, so two families disagree. Probes of `T` against `const T&`, `f(int)` against `f(const int&)`, and `f(int)` against `f(int, int = 0)` give the same split. ORD-P2 and CNS-P4 support the provisional answer. Step 0 of CNS-P4 requires the function parameters of two templates to correspond before their constraints are compared, and ORD-P2 lets constraints decide only when the heads and the parameter lists are the same. EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/status.md`).
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

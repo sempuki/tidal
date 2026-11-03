@@ -37,6 +37,8 @@ constraint of `N` before a requires clause after the head
 Yes; Clang and GCC 16 agree, GCC 14 and EDG differ (option 1). The newest Clang and GCC agree, and the order follows the
 written order of the head, as CNS-1 does for the other parts.
 
+The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 check `Trapped<int>` first and reject the program, and EDG 7.0 checks the constant parameter first and chooses the other template, so two families disagree. GCC 14 agrees with EDG. CNS-P1 supports the provisional answer. Step 1a collects the type constraints of type and constant parameters in the order of the template head (CNS-1). EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/status.md`).
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

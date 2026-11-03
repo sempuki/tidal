@@ -29,6 +29,8 @@ needed.
 
 No; Clang and GCC agree, EDG differs (option 1). Two of three implementations and the inventory agree.
 
+The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 accept the class with the unused member, and EDG 7.0 rejects the initializer, so two families disagree. INST-P2 supports the provisional answer. Its table makes only the declaration of a `static` data member with the class, and INST-P1 waits for a use that needs the definition (INST-5, INST-8). EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/status.md`).
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

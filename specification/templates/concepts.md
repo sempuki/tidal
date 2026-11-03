@@ -596,6 +596,12 @@ template <class T> concept Old [[deprecated]] = true;   // the attribute apperta
 The results are in `tests/RESULTS.md`. All eight compilers agree on 103
 of 120 tests.
 
+The questions of the cluster of EDG differences (cluster 5) on this page
+stay open under decision 0051: {question}`Q-0260` and
+{question}`Q-0286`. On 2026-11-03, Clang 22 and GCC 16 still agree with
+the provisional answer of each, and EDG 7.0 still differs. Reporting
+these EDG differences to the EDG project waits on the maintainer.
+
 The clean-room writer probed each rule with Clang 18 and 22, GCC 14 and
 16, the host Clang and GCC, and EDG 7.0, and checked each test on the
 same compilers, the eight {ref}`baseline compilers <baseline-compilers>`. The rejections name the reason in each compiler's own

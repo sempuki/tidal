@@ -30,6 +30,8 @@ The test above. Every compiler accepts an argument that is less constrained than
 
 No; Clang 22 and GCC agree, Clang 18 and EDG differ (option 1). The current Clang and GCC agree, and the rule keeps a use of the parameter inside the template valid.
 
+The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 reject the more constrained argument, and EDG 7.0 accepts it, so two families disagree. Clang 18 also accepts it. CNS-P4 supports the provisional answer. A template template parameter must be at least as constrained as its argument (CNS-25), because the template can use the parameter with an argument that a more constrained argument template does not accept. EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/status.md`).
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

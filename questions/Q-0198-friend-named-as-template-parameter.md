@@ -34,6 +34,8 @@ Yes for the friend declaration (option 1), where Clang and GCC agree. The
 friend definition stays open: Clang accepts it, and GCC and EDG reject
 it. Tidal states no rule for the definition.
 
+The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 accept the friend declaration when the program uses `Holder<int>`, and EDG 7.0 rejects it, so two families disagree. A probe of the friend definition gives the recorded split: Clang 22 accepts it, and GCC 16 and EDG 7.0 reject it. TPL-P4 supports the provisional answer for the declaration. No declaration in the template can reuse a parameter's name, and a friend function declaration declares no name in the template's scope (TPL-48). EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/status.md`).
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

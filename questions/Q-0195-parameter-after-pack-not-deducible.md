@@ -37,6 +37,8 @@ shows the valid forms, which all compilers accept.
 No diagnostic required; Clang and GCC accept, EDG rejects (option 1). No program can use such a template, and two of three
 compilers accept the declaration.
 
+The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 accept the declaration, and EDG 7.0 rejects it, so the newest versions give two outcomes. Option 1 is the only option that all three outcomes fit, and the standing rule asks for one outcome. DEP-P6 supports the provisional answer. No call can give the parameter an argument, and a construct that no argument list makes valid needs no diagnostic (DEP-32). EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/status.md`).
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

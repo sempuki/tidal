@@ -34,6 +34,8 @@ have the same constraint (`partial-specialization-same-constraints.cpp`).
 No; Clang and GCC agree, EDG differs (option 1). Two of three implementations agree, and EDG rejects the case
 with equal constraints.
 
+The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 reject the partial specialization, and EDG 7.0 accepts it, so two families disagree. TSP-P3 supports the provisional answer. A partial specialization whose argument list is just the primary template's parameters must be more constrained than the primary template, or it covers no argument list that the primary template does not (CNS-36, TSP-11). EDG 7.0 rejects the same form with equal constraints. EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/status.md`).
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

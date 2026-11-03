@@ -354,6 +354,12 @@ Q-0218 follow Clang against GCC and EDG, and the gap review of
 2026-10-31 describes Clang's behavior in each. The cluster's gap review
 should weigh option 2 of Q-0216, which ORD-5 fits.
 
+The question of the cluster of EDG differences (cluster 5) on this page,
+{question}`Q-0146`, stays open under decision 0051. On 2026-11-03, Clang
+22 and GCC 16 still agree with its provisional answer, and EDG 7.0 still
+differs. Reporting this EDG difference to the EDG project waits on the
+maintainer.
+
 The clean-room writer probed each step and tie-breaker with Clang 22,
 GCC 16, and EDG 7.0, and checked the tests and grids on the eight
 {ref}`baseline compilers <baseline-compilers>`. The compilers agree on every

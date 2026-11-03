@@ -718,6 +718,12 @@ all<long>(1, 'c');              // Ts = long, char
 The results are in `tests/RESULTS.md`. All eight compilers agree on 112
 of 121 tests.
 
+The questions of the cluster of EDG differences (cluster 5) on this page
+stay open under decision 0051: {question}`Q-0208` and
+{question}`Q-0215`. On 2026-11-03, Clang 22 and GCC 16 still agree with
+the provisional answer of each, and EDG 7.0 still differs. Reporting
+these EDG differences to the EDG project waits on the maintainer.
+
 The clean-room writer probed each step with Clang 22, GCC 16, and EDG
 7.0, and checked the tests and grids on the eight
 {ref}`baseline compilers <baseline-compilers>`. The compilers agree on every cell of the

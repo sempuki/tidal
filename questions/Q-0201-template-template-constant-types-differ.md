@@ -36,6 +36,8 @@ overrides for EDG and Clang 18, and `template-template-auto.cpp`.
 Yes; Clang 22 and GCC accept, Clang 18 and EDG reject (option 1). The newest Clang and GCC agree, and the answer follows the
 model that TARG-17 states for the other cases (Q-0169).
 
+The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 accept `Long` for a `template <int>` head, and EDG 7.0 rejects it, so two families disagree. Clang 18 also rejects it. TARG-P2 supports the provisional answer through TARG-17. The argument is valid when each argument list that the head accepts is valid for the argument template, and every `int` argument converts to `long`. EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/status.md`).
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

@@ -29,6 +29,8 @@ compiler accepts with a qualified name.
 
 No; Clang and GCC agree, EDG differs (option 1). Two of three implementations agree.
 
+The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 reject the unqualified name, and EDG 7.0 accepts it, so two families disagree. INST-P3 supports the provisional answer through INST-21. An explicit instantiation stands in the namespace of the template or in an enclosing namespace, and in an enclosing namespace it names the template with a qualified name. EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/status.md`).
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

@@ -46,6 +46,8 @@ describes the order of option 1.
 Yes; Clang and GCC agree, EDG checks first (option 1). Clang and GCC agree, and the gap review describes the same
 order.
 
+The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 substitute the default first and reject the program at the error in `Bad<int>`, and EDG 7.0 checks the first argument first and calls the fallback, so two families disagree. DED-P2 supports the provisional answer. Its step 5 substitutes the defaults of the template parameters before it checks the parameters that hold no template parameter (DED-28), and CNS-P3 forms the defaults before the check of constraints in the same way. EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/status.md`).
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

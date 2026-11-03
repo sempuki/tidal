@@ -42,6 +42,8 @@ parameters that occur in the expression.
 Yes; Clang 22 and GCC agree, EDG and Clang 18 differ (option 1). The newest Clang and GCC agree on both cases, and the review
 describes the same model.
 
+The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 choose the second template and find `Outer<int>` satisfied, and EDG 7.0 finds the call ambiguous and `Outer<int>` not satisfied, so two families disagree. Clang 18 agrees with EDG on the second case. CNS-P1 supports the provisional answer. The mapping of an atomic constraint holds only the parameters that its expression uses, so two concept-ids that differ only in an unused argument give one atomic constraint (CNS-4). EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/status.md`).
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

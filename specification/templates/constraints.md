@@ -718,6 +718,17 @@ decltype(&Box<long>::get)               // int (Box<long>::*)(): the clause is n
 The results are in `tests/RESULTS.md`. All eight compilers agree on 97
 of 123 tests.
 
+The questions of the cluster of EDG differences (cluster 5) on this page
+stay open under decision 0051: {question}`Q-0260`, {question}`Q-0265`,
+{question}`Q-0266`, {question}`Q-0267`, {question}`Q-0268`,
+{question}`Q-0281`, {question}`Q-0282`, {question}`Q-0283`,
+{question}`Q-0284`, and {question}`Q-0292`. On 2026-11-03, Clang 22 and
+GCC 16 still agree with the provisional answer of each, and EDG 7.0
+still differs. In Q-0283, EDG 7.0 diagnoses a program that needs no
+diagnostic, so the outcomes of all three families fit the provisional
+answer, and the outcomes still differ. Reporting these EDG differences
+to the EDG project waits on the maintainer.
+
 The clean-room writer probed each rule with Clang 18 and 22, GCC 14 and
 16, the host Clang and GCC, and EDG 7.0, and checked the tests and the
 grids on the same compilers, the eight {ref}`baseline compilers <baseline-compilers>`. The rejections name the reason in each

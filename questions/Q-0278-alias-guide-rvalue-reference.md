@@ -35,6 +35,8 @@ forwarding reference.
 No; Clang and GCC agree, EDG differs (option 1). Two of three implementations agree, and the alias then gives
 the same result as the class template.
 
+The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 reject the lvalue, and EDG 7.0 accepts it, so two families disagree. CTAD-P2 supports the provisional answer. The `T&&` of a constructor of the class is an rvalue reference to a class parameter and no forwarding reference (CTAD-8), and a guide through an alias keeps that kind (CTAD-28). EDG's behavior is on the cluster 5 list of EDG differences that waits on the maintainer (`documentation/status.md`).
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
