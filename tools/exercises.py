@@ -138,8 +138,9 @@ def included_headers(sources: list[Path]) -> list[Path]:
     """The headers beside the sources that a quoted #include names, and theirs."""
     found, todo = [], list(sources)
     while todo:
-        for name in INCLUDE.findall(todo.pop().read_text()):
-            header = sources[0].parent / name
+        source = todo.pop()
+        for name in INCLUDE.findall(source.read_text()):
+            header = (source.parent / name).resolve()
             if header.is_file() and header not in found:
                 found.append(header)
                 todo.append(header)
@@ -164,7 +165,9 @@ def predict(page: str, out: Path) -> int:
             files.append(f"{pid}-{j}.cpp")
             (out / files[-1]).write_text(strip(extra.read_text()))
         for header in included_headers([test.path, *test.sources]):
-            (out / header.name).write_text(strip(header.read_text()))
+            target = out / header.relative_to(test.path.parent.resolve())
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_text(strip(header.read_text()))
         has_main = any(MAIN.search(f.read_text()) for f in [test.path, *test.sources])
         undefined = any(RULE_CLASS.get(r) == "undefined" for r in test.rules)
         key[pid] = {"test": name, "expect": sorted(expectations(test)), "rules": test.rules,
