@@ -35,6 +35,8 @@ G-10 of the overload resolution inventory.
 No; Clang and EDG agree, GCC differs (option 1). Two of three implementations agree, and the inventory states
 the condition.
 
+The question stays open under decision 0051 (2026-11-03). GCC 16 keeps the surrogate, and Clang 22 and EDG 7.0 do not, so two families disagree. The provisional answer follows ICS-13 and OVL-23. The object of a surrogate converts by the conversion function, whose implicit object parameter is an lvalue reference to the class without `const`. A `const` object cannot bind that reference (ICS-12), so the surrogate has no sequence for the object. GCC itself rejects the `const` object for the conversion function when the surrogate is the only candidate.
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

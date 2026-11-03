@@ -42,6 +42,8 @@ prefers the result that converts to the other.
 No for bounds, yes for temporaries; Clang differs on bounds, EDG on temporaries (option 1). Two of three implementations agree on each case. The rule
 then keeps its one measure, the cv-qualifiers it adds.
 
+The question stays open under decision 0051 (2026-11-03). For the array bound, Clang 22 prefers the known bound, and GCC 16 and EDG 7.0 find a tie. For the reference that binds a temporary, EDG 7.0 finds a tie, and Clang 22 and GCC 16 prefer the reference. So two families disagree on each case. For the temporary, the provisional answer follows ICS-P5. The reference's sequence is a standard sequence, and step 4f compares standard sequences however their references bind. For the bound, Tidal's own pages point the other way. ICS-24 and ICS-46 (Q-0188) prefer a known bound, and item E3 of the gap review describes a qualification step that prefers it too. The gap review of this cluster should weigh option 2 for the bound.
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

@@ -36,6 +36,8 @@ and `user-defined-explicit.cpp`.
 
 No; GCC and EDG agree, Clang differs (option 1). Two of three implementations agree.
 
+The question stays open under decision 0051 (2026-11-03). Clang 22 accepts all three forms, and GCC 16 and EDG 7.0 reject them, so two families disagree. No principle on Tidal's pages separates the options. The provisional answer rests on the two families. Item M-10 of the gap review gives an example with an lvalue result only.
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

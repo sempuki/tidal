@@ -37,6 +37,8 @@ and `init-constructor-conversion-tie.cpp`.
 
 Yes; the constructor's result has the identity; GCC and EDG agree, Clang differs (option 1). Two of three implementations agree.
 
+The question stays open under decision 0051 (2026-11-03). Clang 22 finds the two ambiguous, and GCC 16 and EDG 7.0 choose the constructor, so two families disagree. A probe of 2026-11-03 gives the same split for a function argument. The provisional answer follows OVL-26 with ICS-27. The constructor's result is the target itself, which is the identity, and the conversion function's result needs a derived-to-base conversion, which has conversion rank.
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

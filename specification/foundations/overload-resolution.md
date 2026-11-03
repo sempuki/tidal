@@ -805,6 +805,13 @@ tick(1, 1);                      // rejected: each is better on one argument
 The results are in `tests/RESULTS.md`. All eight compilers agree on 139
 of 165 tests.
 
+The questions of the tie-breaker cluster on this page stay open under
+decision 0051: {question}`Q-0138`, {question}`Q-0139`,
+{question}`Q-0144`, {question}`Q-0145`, {question}`Q-0147`,
+{question}`Q-0148`, {question}`Q-0159`, {question}`Q-0161`,
+{question}`Q-0163`, {question}`Q-0187`, and {question}`Q-0189`. On
+2026-11-03, Clang 22, GCC 16, and EDG 7.0 still split on each of them.
+
 - OVL-25, OVL-6: every compiler chooses a static call operator over a
   surrogate candidate with the same parameter types. Every compiler
   finds the call ambiguous when the surrogate's parameter fits the

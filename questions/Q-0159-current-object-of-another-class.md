@@ -40,6 +40,8 @@ describes the call as not valid.
 No, the call has no object; GCC agrees, Clang and EDG differ (option 1). The gap review describes it, and it gives the same result as
 the calls with no `this`, on which every compiler agrees.
 
+The question stays open under decision 0051 (2026-11-03). GCC 16 rejects the call, and Clang 22 and EDG 7.0 call the static `f(int)`, so two families disagree. The provisional answer follows OVL-P2 and OVL-3. `*this` is the implied object argument only for members of its class or of a base. Here the call has no object, and OVL-3 gives the result that every compiler gives in a static member function of `Outer`. Item E-2 of the gap review gives the same answer.
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

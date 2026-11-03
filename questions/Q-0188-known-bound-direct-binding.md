@@ -35,6 +35,8 @@ give the same split.
 Yes; GCC and EDG agree, Clang finds a tie (option 1). Two of three implementations agree, and the answer matches
 ICS-24 for lists.
 
+The question stays open under decision 0051 (2026-11-03). Clang 22 finds a tie, and GCC 16 and EDG 7.0 prefer the known bound, so two families disagree. A probe of 2026-11-03 gives the same split for a braced list and for an xvalue. The provisional answer follows ICS-24, which prefers the known bound for two list sequences. The two ways to reach an array then give one answer. Q-0153 asks the same of the qualification step.
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

@@ -811,6 +811,12 @@ pick(low);                  // 10: ICS-34 comes before ICS-28
 The results are in `tests/RESULTS.md`. All eight compilers agree on 91
 of 114 tests.
 
+The questions of the tie-breaker cluster on this page stay open under
+decision 0051: {question}`Q-0133`, {question}`Q-0137`,
+{question}`Q-0138`, {question}`Q-0152`, {question}`Q-0153`,
+{question}`Q-0156`, and {question}`Q-0188`. On 2026-11-03, Clang 22,
+GCC 16, and EDG 7.0 still split on each of them.
+
 - ICS-15 to ICS-20, ICS-38, ICS-46: the splits on braced lists below
   share one model, the table of {principle}`REF-P3`.
   {question}`Q-0294` names the model and lists each split with its

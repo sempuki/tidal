@@ -39,6 +39,8 @@ describes the identity as the better result.
 Yes; Clang and GCC agree, EDG differs (option 1). Two of three implementations agree, the gap review describes
 it, and the answer matches the ranking of arguments.
 
+The question stays open under decision 0051 (2026-11-03). EDG 7.0 finds the two results ambiguous, and Clang 22 and GCC 16 prefer the identity, so two families disagree. The provisional answer follows ICS-26. The identity is a subsequence of a function pointer conversion, so the identity is better, as every compiler finds for arguments (`subsequence-function-pointer.cpp`). OVL-26 compares the results as standard sequences. Item O-3 of the gap review gives the same answer.
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

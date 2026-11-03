@@ -41,6 +41,8 @@ describes both forms as not valid.
 No; GCC agrees, Clang 22 and EDG differ in part (option 1). GCC rejects every form, Clang rejects the parenthesized form,
 and the gap review describes the forms as not valid.
 
+The question stays open under decision 0051 (2026-11-03). The newest versions split three ways. GCC 16 rejects every form. Clang 22 rejects the parenthesized form and accepts `&f`. EDG 7.0 accepts both forms with no argument and stops with an internal error with an argument. A probe of 2026-11-03 gives the table above. The provisional answer follows MPTR-P1, where only the form `&C::m` makes a pointer to member, and OVL-18, where a member with an implicit object parameter matches only a pointer to member. So `&f` and `&(C::f)` cannot take that member, whichever function of the set would win. Item E-7 of the gap review gives the same answer.
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

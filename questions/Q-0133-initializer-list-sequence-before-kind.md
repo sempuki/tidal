@@ -48,6 +48,8 @@ Yes; GCC and EDG agree, Clang compares kind first (option 1). Two of three imple
 place in the order of ICS-P5 for every kind. The gap review supports
 option 2.
 
+The question stays open under decision 0051 (2026-11-03). Clang 22 chooses `take(int)`, and GCC 16 and EDG 7.0 choose the initializer list, so two families disagree. No principle on Tidal's pages supports this order. ICS-P5 says the steps prefer the sequence with no user code, which fits option 2, and item O3 of the gap review also gives option 2. The gap review of this cluster should weigh a change to option 2.
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

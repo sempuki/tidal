@@ -34,6 +34,8 @@ and the row "Derived[2]" of the pointers grid on the page.
 Yes; Clang and EDG agree, GCC differs (option 1). Two of three implementations agree, and the answer keeps
 lvalue transformations out of every comparison.
 
+The question stays open under decision 0051 (2026-11-03). GCC 16 finds both calls ambiguous, and Clang 22 and EDG 7.0 apply the tie-breakers, so two families disagree. The provisional answer follows ICS-26, which compares two standard sequences without their lvalue transformations. An array argument then ranks as a pointer argument does, and every compiler applies ICS-33 and ICS-36 to a pointer argument.
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

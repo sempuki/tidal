@@ -42,6 +42,8 @@ the kind of reference before the plain function over a template.
 Yes, the kind comes first; GCC agrees, EDG differs, Clang does not apply the kind (option 2). Of the two implementations that apply both tie-breakers, one
 takes each order. The gap review places the kind of reference first.
 
+The question stays open under decision 0051 (2026-11-03). GCC 16 applies the kind of reference first, EDG 7.0 applies the template tie-breakers first, and Clang 22 does not apply the kind of reference (Q-0138). The reference-kind grid, run again on 2026-11-03, gives the table above. The provisional answer follows OVL-P3, which looks at what the call does to the values before it looks at how the functions are declared. The kind of reference describes how the result binds, and the template tie-breakers describe the declarations. Item O-1 of the gap review gives the same order.
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

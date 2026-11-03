@@ -37,6 +37,8 @@ Item AF-7 of the overload resolution inventory.
 Yes; Clang and EDG agree, GCC differs (option 1). Two of three implementations agree, and the answer follows
 the sequence rules of ICS-25 without an exception for surrogates.
 
+The question stays open under decision 0051 (2026-11-03). GCC 16 accepts the call, and Clang 22 and EDG 7.0 find it ambiguous, so two families disagree. The provisional answer follows ICS-25, step 3 of ICS-P5. Two user-defined sequences that use different conversion functions tie. The same tie decides two surrogates to function pointer types with different return types, and there every compiler agrees (object-call grid, run again on 2026-11-03).
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

@@ -45,6 +45,8 @@ describes the tie-breaker.
 Yes; GCC and EDG agree, Clang differs (option 1). Two of three implementations agree, and the inventory and the
 gap review describe the tie-breaker.
 
+The question stays open under decision 0051 (2026-11-03). Clang 22 finds the binding of `F&&` ambiguous and gives `F&` no conversion that returns `F&&`. GCC 16 and EDG 7.0 follow option 1, so two families disagree. The provisional answer follows the model of the values page, where each listed expression that refers to a function is an lvalue, also a cast to an rvalue reference to a function type (VC-14). By that model, the result of `operator F&&()` is a function lvalue, and an lvalue reference to `F` binds it directly.
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

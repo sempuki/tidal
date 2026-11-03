@@ -35,6 +35,8 @@ the overload resolution inventory names direct-initialization only.
 No; GCC and EDG agree, Clang differs (option 1). Two of three implementations agree, and the inventory names
 direct-initialization only.
 
+The question stays open under decision 0051 (2026-11-03). Clang 22 accepts, and GCC 16 and EDG 7.0 reject, so two families disagree. The provisional answer follows ICS-45, which gives `explicit` conversion functions to direct initialization only. Copy-list-initialization is a form of copy initialization, and every compiler keeps `explicit` conversion functions out of copy initialization without braces (`init-copy-explicit-conversion.cpp`).
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
