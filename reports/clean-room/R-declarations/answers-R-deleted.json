@@ -1,0 +1,19 @@
+{
+"p01": {"outcome": "reject", "rules": ["DEL-2"], "why": "A deleted function must not have another definition."},
+"p02": {"outcome": "reject", "rules": ["DEL-1"], "why": "g calls the deleted f."},
+"p03": {"outcome": "reject", "rules": ["DEL-1"], "why": "Overload resolution selects the deleted f(double) for 1.5."},
+"p04": {"outcome": "reject", "rules": ["DEL-1", "OVL-25"], "why": "The deleted constructor still takes part, so take(Gate) beats the ellipsis, and the call then uses the deleted constructor."},
+"p05": {"outcome": "reject", "rules": ["DEL-4"], "why": "A function that is not a special member or comparison operator cannot be defaulted."},
+"p06": {"outcome": "runs", "rules": ["DEL-1"], "why": "f(1) selects f(int), which returns 0."},
+"p07": {"outcome": "reject", "rules": ["DEL-3"], "why": "A reason in parentheses after delete is rejected under -pedantic-errors."},
+"p08": {"outcome": "compiles", "rules": ["DEL-2"], "why": "Declaring a deleted function that nobody uses is valid."},
+"p09": {"outcome": "reject", "rules": ["DEL-1"], "why": "decltype and sizeof refer to the deleted f even though they do not evaluate it."},
+"p10": {"outcome": "reject", "rules": ["DEL-1"], "why": "&v selects the deleted operator&."},
+"p11": {"outcome": "runs", "rules": ["DEL-5"], "why": "A deleted function is inline, so the same deleted definition can be in both units, and other returns 0."},
+"p12": {"outcome": "depends", "rules": ["DEL-2"], "why": "GCC 14 accepts a deleted main, and GCC 16, Clang, and EDG reject it."},
+"p13": {"outcome": "compiles", "rules": ["DEL-4", "DCMP-3"], "why": "A friend comparison operator declared in the class can be defaulted."},
+"p14": {"outcome": "reject", "rules": ["DEL-2"], "why": "delete is not on the first declaration."},
+"p15": {"outcome": "reject", "rules": ["DEL-1"], "why": "put(1) selects the exact match put(int), which is deleted."},
+"p16": {"outcome": "reject", "rules": ["DEL-1", "OVL-25"], "why": "The deleted conversion function makes take(int) better than the ellipsis, and the call then uses the deleted conversion."},
+"p17": {"outcome": "reject", "rules": ["DEL-1"], "why": "Taking the address refers to the deleted f."}
+}

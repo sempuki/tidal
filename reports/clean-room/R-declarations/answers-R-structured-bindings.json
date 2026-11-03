@@ -1,0 +1,397 @@
+{
+ "p01": {
+  "outcome": "runs",
+  "rules": [
+   "SB-12",
+   "SB-6",
+   "SB-4"
+  ],
+  "why": "The hidden rvalue reference extends the temporary array, each name is an lvalue so decltype((a)) is int&, and a can be assigned 5."
+ },
+ "p02": {
+  "outcome": "compiles",
+  "rules": [
+   "SB-5"
+  ],
+  "why": "Neither class has a member function template named get, so argument-dependent lookup finds lib::get, giving 1, 2, 3, 4."
+ },
+ "p03": {
+  "outcome": "runs",
+  "rules": [
+   "SB-5"
+  ],
+  "why": "The calls to get occur in element order, so order holds 0 then 1."
+ },
+ "p04": {
+  "outcome": "reject",
+  "rules": [
+   "SB-15"
+  ],
+  "why": "The list of names must not be in parentheses."
+ },
+ "p05": {
+  "outcome": "reject",
+  "rules": [
+   "SB-16"
+  ],
+  "why": "The address of a binding to a bit-field must not be taken."
+ },
+ "p06": {
+  "outcome": "reject",
+  "rules": [
+   "SB-15"
+  ],
+  "why": "decltype(auto) is not allowed in a structured binding."
+ },
+ "p07": {
+  "outcome": "depends",
+  "rules": [
+   "SB-7"
+  ],
+  "why": "A braced array initializer is valid; Clang 22, GCC, and EDG accept it, while Clang 18.1.3 rejects it (Q-0015)."
+ },
+ "p08": {
+  "outcome": "reject",
+  "rules": [
+   "SB-8"
+  ],
+  "why": "x is already declared in the same scope by the structured binding."
+ },
+ "p09": {
+  "outcome": "compiles",
+  "rules": [
+   "SB-7"
+  ],
+  "why": "A parenthesized initializer is allowed, and the array is copied."
+ },
+ "p10": {
+  "outcome": "compiles",
+  "rules": [
+   "SB-5",
+   "SB-4"
+  ],
+  "why": "The member get template gives the elements, and each name has the tuple_element type, int and double."
+ },
+ "p11": {
+  "outcome": "reject",
+  "rules": [
+   "SB-2"
+  ],
+  "why": "The array has three elements and there are two names."
+ },
+ "p12": {
+  "outcome": "reject",
+  "rules": [
+   "SB-15"
+  ],
+  "why": "An empty list of names is not allowed; Clang reports it as a pedantic diagnostic, which -pedantic-errors makes an error."
+ },
+ "p13": {
+  "outcome": "reject",
+  "rules": [
+   "SB-15"
+  ],
+  "why": "A structured binding must not be constexpr; Clang and GCC accept it only as an extension and reject it under -pedantic-errors."
+ },
+ "p14": {
+  "outcome": "compiles",
+  "rules": [
+   "SB-4"
+  ],
+  "why": "For a member of reference type, decltype of the name is that reference type, int&."
+ },
+ "p15": {
+  "outcome": "compiles",
+  "rules": [
+   "SB-5"
+  ],
+  "why": "Member lookup finds a member function template get, so e.get<i>() is used, giving 100 + 101 = 201."
+ },
+ "p16": {
+  "outcome": "reject",
+  "rules": [
+   "SB-13"
+  ],
+  "why": "The hidden variable must not be a union."
+ },
+ "p17": {
+  "outcome": "reject",
+  "rules": [
+   "SB-15"
+  ],
+  "why": "The declaration must not have other declarators."
+ },
+ "p18": {
+  "outcome": "compiles",
+  "rules": [
+   "SB-5"
+  ],
+  "why": "Argument-dependent lookup finds lib::get, giving 1 and 2."
+ },
+ "p19": {
+  "outcome": "compiles",
+  "rules": [
+   "SB-1"
+  ],
+  "why": "The array is copied into the hidden variable and the names refer to its elements."
+ },
+ "p20": {
+  "outcome": "compiles",
+  "rules": [
+   "SB-5",
+   "SB-3"
+  ],
+  "why": "tuple_size<S> is complete but has no value member, so the names refer to the data members (Q-0048)."
+ },
+ "p21": {
+  "outcome": "reject",
+  "rules": [
+   "SB-15"
+  ],
+  "why": "auto* is not allowed."
+ },
+ "p22": {
+  "outcome": "compiles",
+  "rules": [
+   "SB-4"
+  ],
+  "why": "decltype gives each member's declared type with the hidden variable's qualifiers added, so p is int, q const double, r int, u const int."
+ },
+ "p23": {
+  "outcome": "reject",
+  "rules": [
+   "SB-14",
+   "SB-5"
+  ],
+  "why": "get is in the global namespace, and only argument-dependent lookup in lib is used, so the get call is not valid."
+ },
+ "p24": {
+  "outcome": "reject",
+  "rules": [
+   "SB-15"
+  ],
+  "why": "An explicit type is not allowed."
+ },
+ "p25": {
+  "outcome": "reject",
+  "rules": [
+   "SB-14"
+  ],
+  "why": "std::tuple_element<0, P> is only declared, so its type member does not exist."
+ },
+ "p26": {
+  "outcome": "reject",
+  "rules": [
+   "SB-8"
+  ],
+  "why": "A name must not occur in the initializer of its own declaration."
+ },
+ "p27": {
+  "outcome": "runs",
+  "rules": [
+   "SB-1",
+   "SB-12"
+  ],
+  "why": "With &, the names refer to the elements of a itself."
+ },
+ "p28": {
+  "outcome": "runs",
+  "rules": [
+   "SB-17",
+   "SB-5"
+  ],
+  "why": "Each get result initializes a hidden reference that keeps the Token alive while the names exist, so alive is 2, the sum is 3, and both end at the block."
+ },
+ "p29": {
+  "outcome": "reject",
+  "rules": [
+   "SB-15"
+  ],
+  "why": "A structured binding must not be a class member."
+ },
+ "p30": {
+  "outcome": "compiles",
+  "rules": [
+   "SB-9"
+  ],
+  "why": "x refers to a mutable member, so it can be changed even though the hidden variable is const."
+ },
+ "p31": {
+  "outcome": "compiles",
+  "rules": [
+   "SB-13"
+  ],
+  "why": "The private members are accessible in a friend function."
+ },
+ "p32": {
+  "outcome": "compiles",
+  "rules": [
+   "SB-13",
+   "SB-3"
+  ],
+  "why": "All members are in the base class B, which is allowed."
+ },
+ "p33": {
+  "outcome": "depends",
+  "rules": [
+   "SB-11"
+  ],
+  "why": "constinit is not valid; Clang and GCC 16 reject it, while EDG 7.0 and GCC 14 accept it (Q-0107)."
+ },
+ "p34": {
+  "outcome": "runs",
+  "rules": [
+   "SB-6"
+  ],
+  "why": "The hidden const reference extends the temporary Two until the names end, so '|' is logged first."
+ },
+ "p35": {
+  "outcome": "runs",
+  "rules": [
+   "SB-10"
+  ],
+  "why": "The binding refers to the bit-field, so assigning 2 changes f.bits."
+ },
+ "p36": {
+  "outcome": "runs",
+  "rules": [
+   "SB-1"
+  ],
+  "why": "Without a reference the array is copied, so changing x does not change a."
+ },
+ "p37": {
+  "outcome": "reject",
+  "rules": [
+   "SB-13"
+  ],
+  "why": "The hidden variable must not have scalar type."
+ },
+ "p38": {
+  "outcome": "reject",
+  "rules": [
+   "SB-13"
+  ],
+  "why": "Member a is private and not accessible at the declaration."
+ },
+ "p39": {
+  "outcome": "reject",
+  "rules": [
+   "SB-11"
+  ],
+  "why": "inline is not a valid specifier for a structured binding."
+ },
+ "p40": {
+  "outcome": "reject",
+  "rules": [
+   "SB-15"
+  ],
+  "why": "A structured binding declaration must have an initializer."
+ },
+ "p41": {
+  "outcome": "reject",
+  "rules": [
+   "SB-15"
+  ],
+  "why": "A structured binding must not be a template."
+ },
+ "p42": {
+  "outcome": "depends",
+  "rules": [
+   "SB-15"
+  ],
+  "why": "A constrained auto is not allowed; Clang and GCC reject it, EDG 7.0 accepts it (Q-0016)."
+ },
+ "p43": {
+  "outcome": "reject",
+  "rules": [
+   "SB-15"
+  ],
+  "why": "A structured binding must not be a function parameter."
+ },
+ "p44": {
+  "outcome": "reject",
+  "rules": [
+   "SB-13"
+  ],
+  "why": "The members are split between D and its base B."
+ },
+ "p45": {
+  "outcome": "compiles",
+  "rules": [
+   "SB-3",
+   "SB-4"
+  ],
+  "why": "The names refer to the copied members, 1, 2.5, and 3."
+ },
+ "p46": {
+  "outcome": "reject",
+  "rules": [
+   "SB-2"
+  ],
+  "why": "S has two members and there is one name."
+ },
+ "p47": {
+  "outcome": "compiles",
+  "rules": [
+   "SB-7"
+  ],
+  "why": "static and thread_local are allowed."
+ },
+ "p48": {
+  "outcome": "reject",
+  "rules": [
+   "SB-13"
+  ],
+  "why": "The members include an anonymous union."
+ },
+ "p49": {
+  "outcome": "runs",
+  "rules": [
+   "SB-1"
+  ],
+  "why": "The array is copied, so a later change to arr does not reach a."
+ },
+ "p50": {
+  "outcome": "compiles",
+  "rules": [
+   "SB-7"
+  ],
+  "why": "static and thread_local are allowed, at namespace and block scope."
+ },
+ "p51": {
+  "outcome": "reject",
+  "rules": [
+   "SB-8"
+  ],
+  "why": "The names in one declaration must be different."
+ },
+ "p52": {
+  "outcome": "reject",
+  "rules": [
+   "SB-2"
+  ],
+  "why": "The tuple size is 2 and there are three names."
+ },
+ "p53": {
+  "outcome": "reject",
+  "rules": [
+   "SB-11"
+  ],
+  "why": "extern is not a valid specifier for a structured binding."
+ },
+ "p54": {
+  "outcome": "reject",
+  "rules": [
+   "SB-8",
+   "SB-15"
+  ],
+  "why": "Two _ names are not allowed in C++23; Clang and GCC accept them only as an extension and reject them under -pedantic-errors."
+ },
+ "p55": {
+  "outcome": "compiles",
+  "rules": [
+   "SB-17"
+  ],
+  "why": "With & get receives an lvalue and returns 1; with && and plain auto it receives an xvalue and returns 2, so the sum is 122."
+ }
+}

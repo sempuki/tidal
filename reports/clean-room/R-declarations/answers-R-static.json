@@ -1,0 +1,151 @@
+{
+ "p01": {
+  "outcome": "runs",
+  "rules": [
+   "SINIT-1"
+  ],
+  "why": "k = square(4) is a constant expression, so k is 16 before early's initializer reads it."
+ },
+ "p02": {
+  "outcome": "runs",
+  "rules": [
+   "SINIT-2",
+   "SINIT-5"
+  ],
+  "why": "mark is dynamically initialized before main starts with Clang and GCC, so initialized is 1."
+ },
+ "p03": {
+  "outcome": "runs",
+  "rules": [
+   "SINIT-5"
+  ],
+  "why": "main accepts either value, so it returns 0 whether or not the initialization is deferred."
+ },
+ "p04": {
+  "outcome": "runs",
+  "rules": [
+   "SINIT-1"
+  ],
+  "why": "Point p(3, 4) calls a constexpr constructor with constants, so p is constant-initialized and early reads 34."
+ },
+ "p05": {
+  "outcome": "runs",
+  "rules": [
+   "SINIT-3",
+   "STO-2",
+   "CINIT-1"
+  ],
+  "why": "The function-local static is initialized at the first call to 7, and the constinit variable is 64 before any code runs, in any unit order."
+ },
+ "p06": {
+  "outcome": "runs",
+  "rules": [
+   "SINIT-2",
+   "SINIT-3"
+  ],
+  "why": "derived is base + 1, which is 8 or 1 depending on the order, and main accepts both."
+ },
+ "p07": {
+  "outcome": "runs",
+  "rules": [
+   "SINIT-4",
+   "SINIT-2"
+  ],
+  "why": "v is dynamic because base is not const, so early gets 0 or 8, and v is 8 by main."
+ },
+ "p08": {
+  "outcome": "runs",
+  "rules": [
+   "SINIT-2"
+  ],
+  "why": "The dynamic initializers in one unit run in definition order, giving 1, 2, 3."
+ },
+ "p09": {
+  "outcome": "runs",
+  "rules": [
+   "SINIT-4"
+  ],
+  "why": "b may be initialized early or not, so a is 0 or 3, and main accepts both."
+ },
+ "p10": {
+  "outcome": "runs",
+  "rules": [
+   "SINIT-2",
+   "STO-3"
+  ],
+  "why": "Before their dynamic initializers run, the pointer is null, the bool is false, and the double is 0.0; afterwards they hold their values."
+ },
+ "p11": {
+  "outcome": "runs",
+  "rules": [
+   "SINIT-3"
+  ],
+  "why": "Across units seen gets 0 or 7, and main accepts both."
+ },
+ "p12": {
+  "outcome": "runs",
+  "rules": [
+   "SINIT-1"
+  ],
+  "why": "base is a const int with a constant initializer, so k is constant-initialized to 8 before early reads it."
+ },
+ "p13": {
+  "outcome": "runs",
+  "rules": [
+   "SINIT-2",
+   "STO-3"
+  ],
+  "why": "y reads a volatile, so it is dynamic and still zero when early's initializer runs."
+ },
+ "p14": {
+  "outcome": "runs",
+  "rules": [
+   "SINIT-1"
+  ],
+  "why": "Binding a reference to a variable with static storage is a constant initializer, so ref is set before early reads it."
+ },
+ "p15": {
+  "outcome": "runs",
+  "rules": [
+   "SINIT-5"
+  ],
+  "why": "Clang and GCC run the other unit's initializer before main, even though main never names that unit."
+ },
+ "p16": {
+  "outcome": "runs",
+  "rules": [
+   "SINIT-7",
+   "SINIT-2"
+  ],
+  "why": "Registry::id takes its place at its definition, between a and c."
+ },
+ "p17": {
+  "outcome": "runs",
+  "rules": [
+   "SINIT-1",
+   "SINIT-2"
+  ],
+  "why": "first is constant-initialized to 4, and second, an inline variable after it, reads 4 and gets 5."
+ },
+ "p18": {
+  "outcome": "runs",
+  "rules": [
+   "SINIT-1"
+  ],
+  "why": "later has a constant initializer, so early reads 5."
+ },
+ "p19": {
+  "outcome": "runs",
+  "rules": [
+   "SINIT-6"
+  ],
+  "why": "Clang and GCC initialize tl at first use, giving 12, and main also accepts 21."
+ },
+ "p20": {
+  "outcome": "runs",
+  "rules": [
+   "SINIT-1"
+  ],
+  "why": "mode() alone is constant-evaluated and takes the consteval branch, 1; with offset it runs at run time and takes the other branch, 2."
+ }
+}

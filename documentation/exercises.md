@@ -172,6 +172,11 @@ catalog counts as done.
 | R-blocks, R-if, R-jumps, R-loops, R-range-for, R-switch | done, 232/234 (231 cite a rule of the test), without test names; findings RS-1 to RS-16 | `reports/clean-room/R-statements/` |
 | R-assignment, R-bitwise, R-comma, R-decltype, R-logical, R-member-pointers | done, 232/232 (225 cite a rule of the test), without test names; findings REC-1 to REC-13 | `reports/clean-room/R-expressions/` |
 | R-postfix, R-primary, R-unary | done, 250/250 (246 cite a rule of the test), without test names; findings RED-1 to RED-16 | `reports/clean-room/R-expressions/` |
+| R-declarators, R-type-names, R-auto, R-return-deduction | done, 227/228 (224 cite a rule of the test), without test names; findings RDA-1 to RDA-11 | `reports/clean-room/R-declarations/` |
+| R-forms, R-list, R-references, R-static, R-structured-bindings | done, 227/229 (221 cite a rule of the test), without test names; findings RDB-1 to RDB-10 | `reports/clean-room/R-declarations/` |
+| R-constexpr, R-attributes, R-alignment, R-static-assert, R-volatile | done, 242/242 (233 cite a rule of the test), without test names; findings RDC-1 to RDC-10 | `reports/clean-room/R-declarations/` |
+| R-enumerations, R-exception-specifications, R-default-arguments, R-definitions, R-deleted, R-inline | done, 220/220 (218 cite a rule of the test), without test names; findings RDD-1 to RDD-9 | `reports/clean-room/R-declarations/` |
+| R-linkage-specifications, R-namespaces, R-storage-linkage | done, 132/132 (131 cite a rule of the test), without test names; findings RDE-1 to RDE-8 | `reports/clean-room/R-declarations/` |
 | All others | planned | |
 
 ## 9. Prompts

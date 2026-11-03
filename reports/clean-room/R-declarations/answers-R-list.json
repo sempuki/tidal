@@ -1,0 +1,443 @@
+{
+ "p01": {
+  "outcome": "reject",
+  "rules": [
+   "LIST-14"
+  ],
+  "why": "A designator must not name an array element; Clang accepts it only as an extension and rejects it under -pedantic-errors."
+ },
+ "p02": {
+  "outcome": "reject",
+  "rules": [
+   "LIST-12"
+  ],
+  "why": "The list has two values for an aggregate with one member."
+ },
+ "p03": {
+  "outcome": "reject",
+  "rules": [
+   "LIST-16",
+   "LIST-8"
+  ],
+  "why": "Member e has no value in the list, and its explicit default constructor cannot initialize it."
+ },
+ "p04": {
+  "outcome": "compiles",
+  "rules": [
+   "LIST-3"
+  ],
+  "why": "Parenthesized aggregate initialization gives a = 1 and b = 2."
+ },
+ "p05": {
+  "outcome": "reject",
+  "rules": [
+   "LIST-12"
+  ],
+  "why": "The reference member r has no default member initializer and no value in the list."
+ },
+ "p06": {
+  "outcome": "reject",
+  "rules": [
+   "LIST-14"
+  ],
+  "why": "The designators are out of declaration order."
+ },
+ "p07": {
+  "outcome": "compiles",
+  "rules": [
+   "LIST-1",
+   "INIT-2"
+  ],
+  "why": "A scalar takes one value in braces, and empty braces give zero."
+ },
+ "p08": {
+  "outcome": "compiles",
+  "rules": [
+   "LIST-2"
+  ],
+  "why": "A 4-bit unsigned bit-field holds only 0 to 15, which all fit in char, so the conversion is not narrowing."
+ },
+ "p09": {
+  "outcome": "reject",
+  "rules": [
+   "ICS-18",
+   "ICS-8",
+   "LIST-14"
+  ],
+  "why": "Both overloads get a sequence for the designated list because order does not matter there, the int parameter makes take(Swapped, int) the better match, and its designators are out of order for Swapped, so the chosen call is rejected."
+ },
+ "p10": {
+  "outcome": "reject",
+  "rules": [
+   "LIST-15",
+   "LIST-6"
+  ],
+  "why": "A wide literal initializes only a wchar_t array."
+ },
+ "p11": {
+  "outcome": "compiles",
+  "rules": [
+   "LIST-2"
+  ],
+  "why": "16777216 is a constant that float holds exactly, so the conversion is not narrowing."
+ },
+ "p12": {
+  "outcome": "runs",
+  "rules": [
+   "LIST-6"
+  ],
+  "why": "The elements after the literal and its null character become zero, so main returns 0."
+ },
+ "p13": {
+  "outcome": "runs",
+  "rules": [
+   "LIST-3",
+   "LIST-7"
+  ],
+  "why": "Parenthesized aggregate initialization evaluates its values left to right, so order is 1 then 2."
+ },
+ "p14": {
+  "outcome": "reject",
+  "rules": [
+   "LIST-14"
+  ],
+  "why": "A chained designator .p.x is not allowed."
+ },
+ "p15": {
+  "outcome": "compiles",
+  "rules": [
+   "LIST-6"
+  ],
+  "why": "A UTF-8 literal initializes char and unsigned char arrays; the bound counts the null, so sizeof(a) is 2."
+ },
+ "p16": {
+  "outcome": "reject",
+  "rules": [
+   "LIST-2"
+  ],
+  "why": "16777217 is not held exactly by float, so the conversion narrows."
+ },
+ "p17": {
+  "outcome": "reject",
+  "rules": [
+   "LIST-2"
+  ],
+  "why": "1e300 is a double constant outside the range of float."
+ },
+ "p18": {
+  "outcome": "reject",
+  "rules": [
+   "LIST-2"
+  ],
+  "why": "300 does not fit in char."
+ },
+ "p19": {
+  "outcome": "reject",
+  "rules": [
+   "LIST-14"
+  ],
+  "why": "All values must have a designator, or none."
+ },
+ "p20": {
+  "outcome": "reject",
+  "rules": [
+   "LIST-2"
+  ],
+  "why": "-1 is a constant that does not fit in unsigned."
+ },
+ "p21": {
+  "outcome": "compiles",
+  "rules": [
+   "LIST-3",
+   "LIST-9"
+  ],
+  "why": "Each parenthesized value initializes one whole member: In{1, 2} goes to i and 3 to c."
+ },
+ "p22": {
+  "outcome": "reject",
+  "rules": [
+   "ICS-8",
+   "ICS-18",
+   "LIST-2"
+  ],
+  "why": "The narrowing sequence to int still forms and as a standard conversion beats the user-defined one to Real, so take(int) is chosen and the narrowing double to int rejects the call."
+ },
+ "p23": {
+  "outcome": "reject",
+  "rules": [
+   "LIST-2"
+  ],
+  "why": "d is not a constant, so double to float narrows."
+ },
+ "p24": {
+  "outcome": "depends",
+  "rules": [
+   "LIST-6",
+   "REF-14"
+  ],
+  "why": "Each reference needs a temporary array from a braced literal; Clang and EDG make it and accept, GCC rejects (Q-0166)."
+ },
+ "p25": {
+  "outcome": "reject",
+  "rules": [
+   "LIST-9"
+  ],
+  "why": "In parentheses the values cannot be split across the members of the nested aggregate In."
+ },
+ "p26": {
+  "outcome": "compiles",
+  "rules": [
+   "LIST-8",
+   "INIT-2"
+  ],
+  "why": "Members without values are initialized from empty braces, so b is 0.0 and p is null."
+ },
+ "p27": {
+  "outcome": "compiles",
+  "rules": [
+   "LIST-6"
+  ],
+  "why": "A UTF-8 literal initializes a char8_t array, with bound 2 including the null."
+ },
+ "p28": {
+  "outcome": "runs",
+  "rules": [
+   "LIST-10"
+  ],
+  "why": "A list with one element of the same aggregate type copies that element, so b.h.origin is 1 and Holder(const A&) is not used."
+ },
+ "p29": {
+  "outcome": "compiles",
+  "rules": [
+   "LIST-2",
+   "LIST-3"
+  ],
+  "why": "3 is a constant that fits in char, and 2.5 is a double for a double member."
+ },
+ "p30": {
+  "outcome": "compiles",
+  "rules": [
+   "LIST-4"
+  ],
+  "why": "Inner braces are left out and the values fill each sub-aggregate in order."
+ },
+ "p31": {
+  "outcome": "reject",
+  "rules": [
+   "LIST-2"
+  ],
+  "why": "An unscoped enumeration without a fixed type counts as an integer source, e is not a constant, and unsigned char cannot hold 1000, so the conversion narrows."
+ },
+ "p32": {
+  "outcome": "reject",
+  "rules": [
+   "LIST-2"
+  ],
+  "why": "Floating-point to integer is always narrowing."
+ },
+ "p33": {
+  "outcome": "compiles",
+  "rules": [
+   "LIST-2"
+  ],
+  "why": "65 fits in char and 255 fits in unsigned char."
+ },
+ "p34": {
+  "outcome": "compiles",
+  "rules": [
+   "LIST-5",
+   "LIST-8"
+  ],
+  "why": "Designated members get their values, and the others become zero."
+ },
+ "p35": {
+  "outcome": "reject",
+  "rules": [
+   "LIST-15",
+   "LIST-6"
+  ],
+  "why": "A UTF-8 literal does not initialize a signed char array."
+ },
+ "p36": {
+  "outcome": "compiles",
+  "rules": [
+   "LIST-3",
+   "INIT-4"
+  ],
+  "why": "Parenthesized aggregate initialization permits narrowing, so a is 2."
+ },
+ "p37": {
+  "outcome": "reject",
+  "rules": [
+   "LIST-15",
+   "LIST-6"
+  ],
+  "why": "A UTF-16 literal initializes only a char16_t array."
+ },
+ "p38": {
+  "outcome": "compiles",
+  "rules": [
+   "LIST-6"
+  ],
+  "why": "Each literal matches its element type, the bound counts the null, and extra elements become zero."
+ },
+ "p39": {
+  "outcome": "reject",
+  "rules": [
+   "LIST-13"
+  ],
+  "why": "The empty base Empty needs its own braces when a later value follows, so 1 goes to the base and fails."
+ },
+ "p40": {
+  "outcome": "reject",
+  "rules": [
+   "LIST-11"
+  ],
+  "why": "Braces for a scalar hold at most one expression."
+ },
+ "p41": {
+  "outcome": "compiles",
+  "rules": [
+   "LIST-8"
+  ],
+  "why": "b has no value in the list and gets its default member initializer 7."
+ },
+ "p42": {
+  "outcome": "runs",
+  "rules": [
+   "LIST-3",
+   "LIST-13"
+  ],
+  "why": "The empty base has its own braces, then v gets 1."
+ },
+ "p43": {
+  "outcome": "compiles",
+  "rules": [
+   "LIST-6"
+  ],
+  "why": "A plain literal initializes signed char and unsigned char arrays, with or without braces, and extra elements become zero."
+ },
+ "p44": {
+  "outcome": "compiles",
+  "rules": [
+   "LIST-5",
+   "LIST-8"
+  ],
+  "why": "A nested braced list with its own designator initializes p, and x gets zero."
+ },
+ "p45": {
+  "outcome": "reject",
+  "rules": [
+   "LIST-11"
+  ],
+  "why": "The expression in braces for a scalar must not itself be a braced list."
+ },
+ "p46": {
+  "outcome": "reject",
+  "rules": [
+   "LIST-2"
+  ],
+  "why": "A pointer to member to bool is always narrowing."
+ },
+ "p47": {
+  "outcome": "compiles",
+  "rules": [
+   "LIST-8"
+  ],
+  "why": "m has no value in the list and is initialized from empty braces, which keeps its default member initializer 7."
+ },
+ "p48": {
+  "outcome": "compiles",
+  "rules": [
+   "LIST-5"
+  ],
+  "why": "A designator selects the union member f; without one, the first member i is initialized."
+ },
+ "p49": {
+  "outcome": "compiles",
+  "rules": [
+   "LIST-3",
+   "LIST-4"
+  ],
+  "why": "The base comes first, with or without its own braces."
+ },
+ "p50": {
+  "outcome": "reject",
+  "rules": [
+   "LIST-14"
+  ],
+  "why": "The initializer of a scalar must not use a designator."
+ },
+ "p51": {
+  "outcome": "reject",
+  "rules": [
+   "LIST-14"
+  ],
+  "why": "Each member may occur only once in the designators."
+ },
+ "p52": {
+  "outcome": "runs",
+  "rules": [
+   "LIST-4"
+  ],
+  "why": "i has the member's type, so it initializes in directly with no brace elision, and c gets 3."
+ },
+ "p53": {
+  "outcome": "reject",
+  "rules": [
+   "LIST-2"
+  ],
+  "why": "A pointer to bool is always narrowing."
+ },
+ "p54": {
+  "outcome": "reject",
+  "rules": [
+   "LIST-2"
+  ],
+  "why": "Floating-point to integer is narrowing even for a constant with an exact value."
+ },
+ "p55": {
+  "outcome": "reject",
+  "rules": [
+   "LIST-15"
+  ],
+  "why": "The literal with its null character needs 3 elements."
+ },
+ "p56": {
+  "outcome": "reject",
+  "rules": [
+   "LIST-15",
+   "LIST-6"
+  ],
+  "why": "A plain literal does not initialize a char8_t array."
+ },
+ "p57": {
+  "outcome": "runs",
+  "rules": [
+   "LIST-7"
+  ],
+  "why": "Values in braced lists are evaluated left to right, so order is 1 to 5."
+ },
+ "p58": {
+  "outcome": "depends",
+  "rules": [
+   "LIST-2"
+  ],
+  "why": "l is not a constant; where long is 64 bits (the LP64 compilers) int cannot hold all long values and the program is rejected, but on the ILP32 target (edg-7.0-ilp32) long and int have the same range and it compiles; the forms page does not record this split."
+ },
+ "p59": {
+  "outcome": "reject",
+  "rules": [
+   "LIST-2",
+   "LIST-3"
+  ],
+  "why": "Brace initialization of the aggregate member a from 2.5 is a floating to integer narrowing."
+ },
+ "p60": {
+  "outcome": "compiles",
+  "rules": [
+   "LIST-2"
+  ],
+  "why": "0.1 and the constexpr 1.5 are double constants in the range of float."
+ }
+}
