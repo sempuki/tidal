@@ -81,13 +81,14 @@ else.
 :::
 
 :::{principle} PRIM-P4
-:rules: PRIM-32 PRIM-6 PRIM-15 PRIM-21 PRIM-22 PRIM-23 PRIM-13
+:rules: PRIM-32 PRIM-34 PRIM-6 PRIM-15 PRIM-21 PRIM-22 PRIM-23 PRIM-13
 
 The character sets and the floating-point formats of a target belong to
 the implementation, so the parts of a literal that depend on them are
 implementation-defined. The implementation-defined parts are these:
 
 - the ordinary encoding and the wide encoding,
+- the values of the simple escapes in those two encodings,
 - the value of a multi-character literal,
 - the signedness of `char`,
 - the rounding of a floating value with no exact representation,
@@ -346,7 +347,7 @@ must not have:
 
 :::{rule} PRIM-30
 :kind: required
-:tests: expressions/primary/char-value-code-unit.cpp expressions/primary/char-value-escapes-prefixes.cpp
+:tests: expressions/primary/char-value-code-unit.cpp expressions/primary/char-value-escapes-prefixes.cpp expressions/primary/char-escape-high-byte-run.cpp
 
 A character literal with one character has the value of that
 character's code unit in the encoding that the prefix names:
@@ -365,7 +366,7 @@ number converts to the type of the literal ({rule}`CONV-2`).
 
 :::{rule} PRIM-31
 :kind: required
-:tests: expressions/primary/char-digits-consecutive.cpp expressions/primary/char-digits-parse.cpp
+:tests: expressions/primary/char-digits-consecutive.cpp expressions/primary/char-digits-parse.cpp expressions/primary/char-digit-test-range.cpp expressions/primary/char-digits-parse-run.cpp expressions/primary/char-digits-each-run.cpp expressions/primary/char-digits-format-run.cpp expressions/primary/char-hex-digits-matrix.cpp
 
 In each encoding of PRIM-30, the digits `0` to `9` have consecutive code
 units in increasing order.
@@ -549,7 +550,7 @@ behavior is undefined.
 
 :::{rule} PRIM-32
 :kind: impl-defined
-:tests: expressions/primary/char-encoding-lp64.cpp expressions/primary/char-encoding-ilp32.cpp expressions/primary/char-encoding-ascii.cpp
+:tests: expressions/primary/char-encoding-lp64.cpp expressions/primary/char-encoding-ilp32.cpp expressions/primary/char-encoding-ascii.cpp expressions/primary/char-letters-matrix-run.cpp expressions/primary/char-hex-digits-matrix.cpp
 
 The ordinary encoding and the wide encoding are implementation-defined.
 The matrix targets choose these encodings:
@@ -577,14 +578,44 @@ in the order shown:
 | `{` `\|` `}` `~` | 123 to 126 |
 :::
 
+:::{rule} PRIM-34
+:kind: impl-defined
+:tests: expressions/primary/char-simple-escape-table-lp64.cpp expressions/primary/char-simple-escape-table-ilp32.cpp expressions/primary/char-simple-escape-table-run.cpp expressions/primary/char-simple-escape-table-wide-run.cpp
+
+The values of the simple escapes (PRIM-33) in the ordinary and the wide
+encoding are implementation-defined. On the matrix targets, each escape
+has the same value in both encodings:
+
+| Escape | x86-64 Linux | `-m32` |
+|---|---|---|
+| `\'` | `0x27` | `0x27` |
+| `\"` | `0x22` | `0x22` |
+| `\?` | `0x3F` | `0x3F` |
+| `\\` | `0x5C` | `0x5C` |
+| `\a` | `0x07` | `0x07` |
+| `\b` | `0x08` | `0x08` |
+| `\f` | `0x0C` | `0x0C` |
+| `\n` | `0x0A` | `0x0A` |
+| `\r` | `0x0D` | `0x0D` |
+| `\t` | `0x09` | `0x09` |
+| `\v` | `0x0B` | `0x0B` |
+:::
+
 :::{rule} PRIM-6
 :kind: impl-defined
-:tests: expressions/primary/char-multichar.cpp expressions/primary/char-plain-signedness.cpp
+:tests: expressions/primary/char-multichar.cpp expressions/primary/char-plain-signedness.cpp expressions/primary/char-multichar-four.cpp expressions/primary/char-multichar-ilp32.cpp expressions/primary/char-escape-high-byte-run.cpp
 
 The value of a character literal with more than one character and no
 prefix is implementation-defined. The type of such a literal is `int`.
-The signedness of plain `char` is implementation-defined. On the x86-64
-Linux targets in the matrix, `'ab'` is `0x6162` and `char` is signed.
+The signedness of plain `char` is implementation-defined. The matrix
+targets choose these:
+
+| Choice | x86-64 Linux | `-m32` |
+|---|---|---|
+| a multi-character literal | the code units fill the `int` from the high end, the last character in the lowest byte | the same |
+| `'ab'` | `0x6162` | `0x6162` |
+| `'abcd'` | `0x61626364` | `0x61626364` |
+| plain `char` | signed | signed |
 :::
 
 :::{rule} PRIM-9
@@ -662,7 +693,9 @@ int* p = nullptr;
 constexpr int digit(char c) { return c - '0'; }
 static_assert(digit('7') == 7);   // every implementation (PRIM-31)
 static_assert('a' == 97);         // the matrix targets (PRIM-32)
+static_assert('\n' == 0x0A);      // the matrix targets (PRIM-34)
 char h = '\xff';                  // -1 where char is signed
+int tag = 'abcd';                 // 0x61626364 on the matrix targets
 
 struct Counter {
   int n = 0;
@@ -683,8 +716,8 @@ total(1, 2, 3);           // ((0 + 1) + 2) + 3
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 115
-of 124 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 128
+of 137 tests.
 
 - PRIM-2: Clang and GCC reject a decimal literal that fits only an
   unsigned type under `-pedantic-errors`. EDG accepts it
@@ -709,6 +742,9 @@ of 124 tests.
   ASCII value in `char` and `wchar_t` literals, on both targets. A
   string literal with U+00E9 has two `char` code units and one
   `wchar_t` code unit.
+- PRIM-6, PRIM-34: Clang and GCC give the simple escapes their ASCII
+  values in `char` and `wchar_t` literals on both targets, and fill a
+  multi-character literal from the high byte. EDG agrees.
 - PRIM-31, PRIM-32: GCC can choose another ordinary encoding with
   `-fexec-charset`. With the EBCDIC code page IBM1047, the digits keep
   consecutive values from 0xF0 to 0xF9, and `'j' - 'a'` is 16. So only
