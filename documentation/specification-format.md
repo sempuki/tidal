@@ -80,7 +80,7 @@ header of `//` directives at the top of the file controls the runner:
 | `tidal-error` | regular expression | For a `reject`, `link-fail`, or `run-fail` test: one of the compiler's error or note messages, the linker's message, or a line of the program's output must match it, case-insensitive. A failure for another reason fails the test. |
 | `tidal-error-<x>` | regular expression | The same, for a compiler family (`clang`, `gcc`, `edg`) or a compiler id. Overrides `tidal-error` for that compiler. |
 | `tidal-interpreter` | `run-fail` | For an `accept` test whose run has undefined behavior that no sanitizer stops. The matrix compilers only build the program, and `tools/run_tests.py` ignores the line. The front end's interpreter runs the program and must stop at undefined behavior that names one of the test's rules (decision 0053). |
-| `tidal-flags` | compiler flags | Extra flags, for example `-O0 -fsanitize=undefined -fno-sanitize-recover=undefined`. A sanitizer test starts with `-O0`, because at `-O2` the optimizer can remove the operation before the sanitizer sees it (decision 0043). |
+| `tidal-flags` | compiler flags | Extra flags, for example `-O0 -fsanitize=undefined -fno-sanitize-recover=undefined`. A sanitizer test starts with `-O0`, because at `-O2` the optimizer can remove the operation before the sanitizer sees it (decision 0043). A compiler skips a test whose flags match its `unsupported_flags` in `tools/compilers.json`. |
 | `tidal-sources` | file names | Extra translation units for this test, named `*.tu.cpp` and kept next to it. Each unit is compiled on its own, then all are linked together. |
 | `tidal-note` | text | Free text, such as the question ID (`Q-0001`) behind an override. |
 
@@ -92,6 +92,18 @@ promises none (decision 0047). The test expects one of these:
 |---|---|
 | A sanitizer configuration stops the behavior. | `run-fail`, with the flags of decisions 0028 and 0043. |
 | No sanitizer configuration stops the behavior. | `accept`. The matrix compilers only build the program. If the front end's interpreter stops the run with one of the test's rules, the test adds `tidal-interpreter: run-fail` (decision 0053). |
+
+Clang's type sanitizer checks the type of each read and write against
+the object in the storage (`-O0 -fsanitize=type`). The sanitizer prints
+a report and lets the program go on, and Clang 22 has no option that
+makes it exit nonzero. So `tools/run_tests.py` counts a run that prints
+a `TypeSanitizer` error report as `run-fail`, whatever its exit status.
+Only Clang 22 has the sanitizer. GCC, Clang 18, and EDG list
+`-fsanitize=type` in `unsupported_flags` and skip the test, so a type
+sanitizer test names `-fsanitize=type` as a flag of its own, without
+other sanitizers. Its `tidal-error` pattern matches the report line that
+names the two types, such as `with type float accesses an existing
+object of type int`.
 
 If constant evaluation can reach the behavior, a separate test expects
 `reject`. The notes and the rule's Evidence describe which

@@ -55,6 +55,9 @@
       "version": [
         "g++",
         "--version"
+      ],
+      "unsupported_flags": [
+        "-fsanitize=type"
       ]
     },
     {
@@ -158,6 +161,9 @@
       "version": [
         "g++-14",
         "--version"
+      ],
+      "unsupported_flags": [
+        "-fsanitize=type"
       ]
     },
     {
@@ -192,6 +198,9 @@
       "version": [
         "clang++-18",
         "--version"
+      ],
+      "unsupported_flags": [
+        "-fsanitize=type"
       ]
     },
     {
@@ -228,7 +237,8 @@
         "--version"
       ],
       "unsupported_flags": [
-        "-m32"
+        "-m32",
+        "-fsanitize=type"
       ]
     },
     {
@@ -267,7 +277,8 @@
         "--version"
       ],
       "unsupported_flags": [
-        "-m32"
+        "-m32",
+        "-fsanitize=type"
       ],
       "variant_of": "gcc-16"
     },

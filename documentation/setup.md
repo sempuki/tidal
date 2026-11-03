@@ -13,7 +13,9 @@ the same packages under their own names.
   `gcc-host` in `tools/compilers.json`. The matrix records their exact
   versions in `tests/RESULTS.md`.
 - `compiler-rt`, `libubsan`, and `libasan` are the sanitizer runtimes
-  that the sanitizer tests link against (decision 0028).
+  that the sanitizer tests link against (decision 0028). The type
+  sanitizer tests (`-fsanitize=type`) need the host Clang at version 22
+  or later, with its `compiler-rt`.
 - `podman` runs the container compilers. Docker also works when
   `TIDAL_CONTAINER_ENGINE=docker` is set.
 

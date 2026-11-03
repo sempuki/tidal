@@ -485,7 +485,7 @@ undefined.
 
 :::{rule} STG-18
 :kind: undefined
-:tests: foundations/storage/implicit-objects-no-set-works.cpp foundations/storage/allocated-storage-not-polymorphic-object-sanitizer.cpp
+:tests: foundations/storage/implicit-objects-no-set-sanitizer.cpp foundations/storage/allocated-storage-not-polymorphic-object-sanitizer.cpp
 
 If no set of implicitly created objects gives the program defined
 behavior (STG-8), the behavior is undefined. An example is a use of
@@ -546,7 +546,7 @@ of a pointer or glvalue that refers to its storage are undefined:
 
 :::{rule} STG-23
 :kind: undefined
-:tests: foundations/storage/access-unrelated-scalar.cpp foundations/storage/access-unrelated-class.cpp foundations/storage/access-signed-char.cpp foundations/storage/byte-array-cast-reaches-byte.cpp classes/unions/common-initial-sequence-enum.cpp classes/unions/common-initial-sequence-nested.cpp
+:tests: foundations/storage/access-unrelated-scalar-sanitizer.cpp foundations/storage/access-unrelated-class-sanitizer.cpp foundations/storage/access-signed-char.cpp foundations/storage/byte-array-cast-reaches-byte.cpp classes/unions/common-initial-sequence-enum.cpp classes/unions/common-initial-sequence-nested.cpp
 
 If a program reads or writes an object through a glvalue of a type
 that STG-14 does not list, the behavior is undefined. These cases
@@ -794,13 +794,18 @@ only that the programs are valid.
   is too large. GCC also warns about the second case when it compiles
   the program.
 - STG-18, STG-23: the type sanitizer of Clang 22 (`-fsanitize=type`)
-  reports a read of an `int` object through a `float` glvalue, and a
-  write through a class with the same members. The program goes on
-  after the report. The sanitizer does not report access through
-  `signed char`, `std::byte`, or the unsigned type of the object. GCC
-  and Clang 18 have no such sanitizer. No configuration in the matrix
-  stops these programs, so their tests check only that the programs
-  compile.
+  reports a read of an `int` object through a `float` glvalue, a write
+  of `float` to an `int` object, and a write through a class with the
+  same members. The program goes on after the report and exits 0, and
+  no option of the sanitizer makes it stop. The test runner counts the
+  report as the run failure, so the sanitizer tests expect `run-fail`
+  on Clang 22. GCC and Clang 18 have no type sanitizer and skip these
+  tests. A build of the same programs at `-O2` reports the two writes
+  but not the read.
+  The sanitizer does not report access through `signed char`,
+  `std::byte`, or the unsigned type of the object, so
+  `access-signed-char.cpp` and `byte-array-cast-reaches-byte.cpp` check
+  only that the programs compile.
 - STG-19: the `vptr` sanitizer of GCC and Clang reports a call through
   the old name after a replacement by another type. No sanitizer
   reports a call through a pointer to a replaced base subobject, so

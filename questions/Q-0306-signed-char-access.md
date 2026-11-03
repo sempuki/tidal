@@ -18,9 +18,10 @@ is not on the list, so STG-23 makes such an access undefined.
 ## Evidence
 
 `access-signed-char.cpp` exits 0 on every configuration. The same
-program with `float` in place of `signed char` exits 1 at `-O2`
-(`access-unrelated-scalar.cpp`), so the optimizers do assume the rule
-for other types.
+program with `float` in place of `signed char`
+(`access-unrelated-scalar-sanitizer.cpp`, built without the sanitizer)
+exits 1 at `-O2` with GCC and Clang, so the optimizers do assume the
+rule for other types.
 
 ## Options
 

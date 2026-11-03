@@ -10,6 +10,10 @@ with its expectation.
 Only `baseline` compilers decide whether a test passes. Results from
 `report` compilers are shown but don't fail the run.
 
+A run that exits 0 still fails when Clang's type sanitizer
+(`-fsanitize=type`) printed a report, because that sanitizer cannot stop
+the program.
+
 A `tidal-interpreter: run-fail` line is for the front end's interpreter
 only (decision 0053). The runner checks its form and does not use it, so
 the matrix compilers only build such a test.
@@ -188,12 +192,18 @@ def short(detail: str) -> str:
     return " / ".join(errors[:2])
 
 
+# A report from a sanitizer that cannot stop the program. Clang 22's type
+# sanitizer prints its report and lets the program go on, and no option
+# makes it exit nonzero. Its report counts as a run failure.
+CONTINUING_REPORT = re.compile(r"^==\d+==ERROR: TypeSanitizer:", re.M)
+
+
 def run_binary(c: Compiler, out: str) -> tuple[str, str]:
     try:
         run = c.run([out], timeout=60)
     except subprocess.TimeoutExpired:
         return "run-fail", "timeout"
-    if run.returncode != 0:
+    if run.returncode != 0 or CONTINUING_REPORT.search(run.stdout + run.stderr):
         # Keep every line, so a tidal-error pattern can match a sanitizer's report.
         lines = [" ".join(l.split()) for l in (run.stdout + run.stderr).splitlines() if l.strip()]
         return "run-fail", " / ".join([f"exit {run.returncode}", *lines])[:4000]
