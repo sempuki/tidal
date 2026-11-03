@@ -51,6 +51,11 @@ impl<'a> Machine<'a> {
         if v.dependent {
             return unsup("value of a template parameter, structured binding, or init capture");
         }
+        if v.ty.is_unknown() {
+            // A variable whose type the front end did not work out, such
+            // as a failed class template argument deduction.
+            return unsup(format!("variable '{}' of a type the front end does not know", self.p.decls[id].name));
+        }
         if !self.constant {
             if v.local && v.storage == Storage::Auto {
                 return unsup("variable of an enclosing function (local class or lambda)");
@@ -423,13 +428,61 @@ impl<'a> Machine<'a> {
         let uf = self.fields(uc);
         let Some((_, af)) = uf.iter().find(|(_, x)| x.index == active - self.nbases(uc)) else { return };
         let Ty::Class(ac) = af.ty.t else { return };
-        if ac == fi.class || !self.p.classes[ac].bases.is_empty() || !self.p.classes[fi.class].bases.is_empty() {
+        // UNI-15, CLS-19: the members of a class can come from a base.
+        let Some((prefix, ad)) = self.decl_member_class(ac, 0) else { return };
+        if ad == fi.class {
             return;
         }
-        let (a, b) = (self.fields(ac), self.fields(fi.class));
-        let common = a.iter().zip(b.iter()).take_while(|(x, y)| same_unqual(&x.1.ty, &y.1.ty) && x.1.bits == y.1.bits).count();
+        let (a, b) = (self.fields(ad), self.fields(fi.class));
+        let common = a.iter().zip(b.iter()).take_while(|(x, y)| self.layout_compatible(&x.1.ty, &y.1.ty, 0) && x.1.bits == y.1.bits).count();
         if fi.index < common {
-            p.path[n - 2] = active;
+            let last = self.nbases(ad) + fi.index;
+            p.path.truncate(n - 2);
+            p.path.push(active);
+            p.path.extend(prefix);
+            p.path.push(last);
+            if !same_unqual(&fi.ty, &a[fi.index].1.ty) {
+                self.uni_alias.borrow_mut().insert((p.obj, p.path.clone()));
+            }
+        }
+    }
+
+    /// The class that declares the members of `c`, and the path of base
+    /// indices to it: `c` itself, or the one base that declares them all
+    /// (CLS-19).
+    fn decl_member_class(&self, c: usize, depth: u32) -> Option<(Vec<usize>, usize)> {
+        let ci = &self.p.classes[c];
+        if depth > 16 || ci.key == 2 {
+            return None;
+        }
+        if !self.fields(c).is_empty() {
+            return if ci.bases.is_empty() { Some((vec![], c)) } else { None };
+        }
+        match ci.bases.as_slice() {
+            [] => Some((vec![], c)),
+            [b] => {
+                let bc = b.class?;
+                let (mut path, d) = self.decl_member_class(bc, depth + 1)?;
+                path.insert(0, 0);
+                Some((path, d))
+            }
+            _ => None,
+        }
+    }
+
+    /// UNI-16: two layout-compatible types.
+    fn layout_compatible(&self, a: &QTy, b: &QTy, depth: u32) -> bool {
+        if same_unqual(a, b) {
+            return true;
+        }
+        match (&a.t, &b.t) {
+            (Ty::Enum(x), Ty::Enum(y)) => self.p.enums[*x].underlying == self.p.enums[*y].underlying,
+            (Ty::Class(x), Ty::Class(y)) if depth < 8 => {
+                let (Some((_, x)), Some((_, y))) = (self.decl_member_class(*x, 0), self.decl_member_class(*y, 0)) else { return false };
+                let (fa, fb) = (self.fields(x), self.fields(y));
+                fa.len() == fb.len() && fa.iter().zip(fb.iter()).all(|(p, q)| p.1.bits == q.1.bits && self.layout_compatible(&p.1.ty, &q.1.ty, depth + 1))
+            }
+            _ => false,
         }
     }
 
@@ -874,8 +927,8 @@ impl<'a> Machine<'a> {
         match &t.t {
             Ty::Class(c) if x.cat != Cat::PR => {
                 let src = self.lvalue(x)?;
-                let local = matches!(&x.k, EK::Var(id) if self.p.var(*id).is_some_and(|v| v.local && v.storage == Storage::Auto && !v.ty.t.is_ref()));
-                self.copy_class_cv(&place, &src, *c, local || x.cat == Cat::X, nonref(&x.ty).c)?;
+                // THR-1: the parser marks a local that is moved as an xvalue.
+                self.copy_class_cv(&place, &src, *c, x.cat == Cat::X, nonref(&x.ty).c)?;
             }
             Ty::Ptr(_) if matches!(nonref(&x.ty).t, Ty::Array(..) | Ty::Func(_)) => {
                 let d = Expr::new(EK::Conv(if matches!(nonref(&x.ty).t, Ty::Func(_)) { Conv::FuncDecay } else { Conv::ArrayDecay }, Box::new(x.clone())), t.clone(), Cat::PR, x.line);
@@ -1025,6 +1078,7 @@ impl<'a> Machine<'a> {
         let off = p.off;
         let t = to.unqual();
         let mut carried: Vec<(i64, bytes::Byte)> = Vec::new();
+        let mut replaced: Option<usize> = None;
         if let Some(v) = self.residents.get(&p.obj) {
             if let Some(&(_, len, o)) = v.iter().rev().find(|r| r.0 == off && self.objs[r.2].alive) {
                 match self.obj_ty(o) {
@@ -1040,6 +1094,7 @@ impl<'a> Machine<'a> {
                             }
                         }
                         self.objs[o].alive = false;
+                        replaced = Some(o);
                     }
                     _ => return Ok(p),
                 }
@@ -1080,11 +1135,98 @@ impl<'a> Machine<'a> {
                             let _ = self.write_byte(r.obj, k, b);
                         }
                     }
+                    if let Some(old) = replaced {
+                        self.forward_pointers(old, r.obj);
+                    }
                     return Ok(Ptr { obj: r.obj, path: vec![], off: 0, array: true, bytes: false });
                 }
             }
         }
         Ok(p)
+    }
+
+    /// STG-8: the set of objects that the storage holds is the one that
+    /// serves every use, so a pointer from an earlier use points to the
+    /// object of the new set at the same byte with the same type.
+    fn forward_pointers(&mut self, old: usize, new: usize) {
+        for i in 0..self.objs.len() {
+            let mut v = std::mem::replace(&mut self.objs[i].val, Val::Void);
+            self.forward_val(old, new, &mut v);
+            self.objs[i].val = v;
+        }
+        for fi in 0..self.frames.len() {
+            let keys: Vec<DeclId> = self.frames[fi].refs.keys().copied().collect();
+            for k in keys {
+                if let Some(q) = self.forward_ptr(old, new, &self.frames[fi].refs[&k]) {
+                    self.frames[fi].refs.insert(k, q);
+                }
+            }
+        }
+    }
+
+    fn forward_val(&self, old: usize, new: usize, v: &mut Val) {
+        match v {
+            Val::Ptr(p) => {
+                if let Some(q) = self.forward_ptr(old, new, p) {
+                    *p = q;
+                }
+            }
+            Val::Agg(items) => {
+                for x in items {
+                    self.forward_val(old, new, x);
+                }
+            }
+            _ => {}
+        }
+    }
+
+    fn forward_ptr(&self, old: usize, new: usize, p: &Ptr) -> Option<Ptr> {
+        if p.obj != old || p.bytes {
+            return None;
+        }
+        let (_, off) = self.byte_pos(p).ok()?;
+        let t = self.path_offset(old, &p.path).ok()?.1;
+        let et = match (&t.t, p.array) {
+            (Ty::Array(el, _), true) => el.unqual(),
+            _ => t.unqual(),
+        };
+        self.find_at(new, vec![], off, &et.t, 0)
+    }
+
+    /// The path of a subobject of `o` at byte `off` whose type is `t`.
+    fn find_at(&self, o: usize, path: Vec<usize>, off: i64, t: &Ty, depth: u32) -> Option<Ptr> {
+        let (base, ty) = self.path_offset(o, &path).ok()?;
+        if depth > 16 {
+            return None;
+        }
+        if base == off && ty.unqual().t == *t {
+            return Some(Ptr { obj: o, path, off: 0, array: false, bytes: false });
+        }
+        match &ty.t {
+            Ty::Array(el, Some(n)) => {
+                let es = self.size_of(&el.t).ok()?.max(1);
+                let i = (off - base) / es;
+                if i < 0 || i as u64 >= *n {
+                    return None;
+                }
+                let mut p2 = path.clone();
+                p2.push(i as usize);
+                self.find_at(o, p2, off, t, depth + 1)
+            }
+            Ty::Class(c) => {
+                for (idx, po, _) in self.class_parts(*c).ok()? {
+                    if base + po <= off {
+                        let mut p2 = path.clone();
+                        p2.push(idx);
+                        if let Some(r) = self.find_at(o, p2, off, t, depth + 1) {
+                            return Some(r);
+                        }
+                    }
+                }
+                None
+            }
+            _ => None,
+        }
     }
 
     /// The object that lives in the storage of the object `o`.
@@ -2330,6 +2472,10 @@ impl<'a> Machine<'a> {
                                 }
                             }
                             false
+                        } else if !self.constant && !p.bytes && !q.bytes && !self.is_past_end(p) && !self.is_past_end(q) && self.addr_key(p) != self.addr_key(q) && matches!((self.byte_pos(p), self.byte_pos(q)), (Ok(_), Ok(_))) {
+                            // CLS-19, CLS-30: subobjects at the same byte,
+                            // such as empty bases and the first member.
+                            self.byte_pos(p).ok() == self.byte_pos(q).ok()
                         } else if self.addr_key(p) != self.addr_key(q) && self.rows_meet(p, q) {
                             // CMP-26: the end of one row of an array of
                             // arrays and the start of the next are equal.
@@ -2416,7 +2562,9 @@ impl<'a> Machine<'a> {
                     BOp::Add => check(x + y, "ADD-9"),
                     BOp::Sub => check(x - y, "ADD-9"),
                     BOp::Mul => {
-                        let v = x.checked_mul(y).unwrap_or(i128::MAX);
+                        // MUL-8: an unsigned product wraps; the low bits of
+                        // the 128-bit product are exact.
+                        let v = if signed { x.checked_mul(y).unwrap_or(i128::MAX) } else { (x as u128).wrapping_mul(y as u128) as i128 };
                         check(v, "MUL-10")
                     }
                     BOp::Div | BOp::Rem => {
@@ -2555,7 +2703,7 @@ impl<'a> Machine<'a> {
                     EK::Conv(Conv::NoOp | Conv::PtrConv, a) if e.cat == Cat::PR && a.cat == Cat::PR && matches!(a.ty.t, Ty::Class(x) if x == c) => {
                         return self.init_into(place, a, ty);
                     }
-                    EK::ZeroInit => return self.write(place, self.zero(ty), true),
+                    EK::ZeroInit => return self.value_init(place, ty),
                     EK::Throw(_) => {
                         self.eval(e)?;
                         return Ok(());
@@ -2846,7 +2994,10 @@ impl<'a> Machine<'a> {
             let sub = place.sub(nb + fi.index);
             let mi = mem_inits.iter().find(|m| m.field == Some(fd)).and_then(|m| m.init.clone());
             if let Some(init) = mi.or(fi.init.clone()) {
-                self.full(|m| m.init_field(&sub, &init, &fi))?;
+                // PRIM-11: `this` in a default member initializer is the
+                // object being built.
+                let here = place.clone();
+                self.full(|m| m.with_this(here, |m| m.init_field(&sub, &init, &fi)))?;
             } else if union {
                 self.write(&sub, Val::Inactive, true)?;
             } else if fi.ty.t.is_ref() {
@@ -3177,7 +3328,8 @@ impl<'a> Machine<'a> {
         let Some(f) = self.p.func(fid) else { return unsup("call of a non-function") };
         if from_ptr && !self.constant {
             // PFX-19: the pointer's function type must be the function's
-            // type, `noexcept` included (Q-0178).
+            // type, `noexcept` included (Q-0178). A pointer without
+            // `noexcept` can call a `noexcept` function (CONV-10).
             let called = match &nonref(&callee.ty).t {
                 Ty::Ptr(q) => q.t.clone(),
                 t => t.clone(),
@@ -3185,7 +3337,7 @@ impl<'a> Machine<'a> {
             if let Ty::Func(ft) = called {
                 let same = |a: &QTy, b: &QTy| a.t == b.t;
                 let fty = &f.fty;
-                let differs = !same(&ft.ret, &fty.ret) || ft.params.len() != fty.params.len() || ft.params.iter().zip(fty.params.iter()).any(|(a, b)| !same(&a.unqual(), &b.unqual())) || ft.variadic != fty.variadic || ft.noexcept != fty.noexcept;
+                let differs = !same(&ft.ret, &fty.ret) || ft.params.len() != fty.params.len() || ft.params.iter().zip(fty.params.iter()).any(|(a, b)| !same(&a.unqual(), &b.unqual())) || ft.variadic != fty.variadic || (ft.noexcept && !fty.noexcept);
                 if differs && f.class.is_none() && !ft.ret.is_unknown() && !fty.ret.is_unknown() {
                     return ub("PFX-19", "call through a pointer whose function type is not the type of the function");
                 }
@@ -3307,7 +3459,10 @@ impl<'a> Machine<'a> {
         }
         let cp = self.ps[ctu];
         let name = cp.decls[fid].name.clone();
-        if self.constant && !f.constexpr && !f.consteval {
+        // DCMP-1, DCMP-4: a defaulted comparison can be used in constant
+        // evaluation.
+        let dcmp = f.defaulted && matches!(name.as_str(), "operator==" | "operator!=" | "operator<=>" | "operator<" | "operator>" | "operator<=" | "operator>=");
+        if self.constant && !f.constexpr && !f.consteval && !dcmp {
             // CE-2: only constexpr and consteval functions.
             return limit("CE-2", format!("call of non-constexpr function '{}'", name));
         }
@@ -3517,23 +3672,31 @@ impl<'a> Machine<'a> {
     /// The same, for a source that is `const` if `konst`: an rvalue
     /// reference to a class that is not const does not bind it (CPY-9).
     fn copy_ctor_cv(&self, c: usize, mv: bool, konst: bool) -> Option<DeclId> {
-        let ctors: Vec<(DeclId, bool)> = self.p.classes[c].ctors.iter().filter_map(|&i| {
+        // (id, rvalue reference, const, volatile)
+        let ctors: Vec<(DeclId, bool, bool, bool)> = self.p.classes[c].ctors.iter().filter_map(|&i| {
             let f = self.p.func(i)?;
-            if f.params.is_empty() || f.params.len() - f.defaults.min(f.params.len()) > 1 || f.template {
+            if f.params.is_empty() || f.params.len() - f.defaults.min(f.params.len()) > 1 || f.template || f.deleted {
                 return None;
             }
             match &self.p.var(f.params[0])?.ty.t {
-                Ty::LRef(x) if x.t == Ty::Class(c) && (x.c || !konst) => Some((i, false)),
-                Ty::RRef(x) if x.t == Ty::Class(c) && (x.c || !konst) => Some((i, true)),
+                Ty::LRef(x) if x.t == Ty::Class(c) && (x.c || !konst) => Some((i, false, x.c, x.v)),
+                Ty::RRef(x) if x.t == Ty::Class(c) && (x.c || !konst) => Some((i, true, x.c, x.v)),
                 _ => None,
             }
         }).collect();
+        // ICS-30: of two reference bindings, the one to the less
+        // cv-qualified type wins.
+        let best = |want_rv: bool| -> Option<DeclId> {
+            let mut v: Vec<&(DeclId, bool, bool, bool)> = ctors.iter().filter(|x| x.1 == want_rv).collect();
+            v.sort_by_key(|x| (x.3 as u8) * 2 + (x.2 as u8));
+            v.first().map(|x| x.0)
+        };
         if mv {
-            if let Some((i, _)) = ctors.iter().find(|x| x.1) {
-                return Some(*i);
+            if let Some(i) = best(true) {
+                return Some(i);
             }
         }
-        ctors.iter().find(|x| !x.1).map(|x| x.0)
+        best(false)
     }
 
     /// A copy of a class glvalue in a temporary, for a use that needs its

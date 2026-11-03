@@ -173,7 +173,14 @@ impl P {
                 "try" => {
                     self.pos += 1;
                     self.enter_try_region();
+                    let mark = self.decls.len();
+                    if let Some(f) = self.fns.last_mut() {
+                        f.try_marks.push(mark);
+                    }
                     let body = self.parse_compound();
+                    if let Some(f) = self.fns.last_mut() {
+                        f.try_marks.pop();
+                    }
                     self.try_regions.pop();
                     let body = body?;
                     let hs = self.parse_handlers()?;
@@ -1072,6 +1079,7 @@ impl P {
             } else if let Ty::Class(c) = ct.t {
                 let targets: Vec<QTy> = self.classes[c].conv_targets.iter().filter(|t| t.t.is_integral() || matches!(t.t, Ty::Enum(_))).cloned().collect();
                 let has_explicit = self.class_has_only_explicit_conv(c);
+                let mut target: Option<Ty> = None;
                 match self.class_converts(c) {
                     Some(false) => self.error(line, "SW-2", "switch condition of class type without a conversion to an integer"),
                     Some(true) if !self.class_uncertain(c) && self.classes[c].bases.is_empty() => {
@@ -1087,11 +1095,28 @@ impl P {
                             self.error(line, "SW-2", "switch condition class converts to several integer types");
                         } else if uniq.len() == 1 {
                             cond_ty = Some(QTy::new(if self.is_scoped_enum(&uniq[0]) { uniq[0].clone() } else { self.promoted(&uniq[0]) }));
+                            target = Some(uniq[0].clone());
                         }
                     }
                     _ => {}
                 }
-                Expr::unknown(line, "class switch condition")
+                // SW-2, CVF-4: the conversion function that overload
+                // resolution chooses, then the promotion.
+                let mut out = Expr::unknown(line, "class switch condition");
+                if let Some(t) = target {
+                    if !self.in_template() {
+                        let mark = self.d.list.len();
+                        let x = self.user_conv(&ce, &QTy::new(t.clone()), line);
+                        match x {
+                            Some(x) if self.d.list.len() == mark && !matches!(x.k, EK::Unknown(_)) => {
+                                let x = self.rvalue(x);
+                                out = if self.is_scoped_enum(&t) { x } else { let p = self.promoted(&t); self.conv(x, Conv::Arith, QTy::new(p)) };
+                            }
+                            _ => self.d.list.truncate(mark),
+                        }
+                    }
+                }
+                out
             } else {
                 self.error(line, "SW-2", format!("switch condition must have integer or enumeration type, not {}", show(&ct)));
                 Expr::unknown(line, "bad switch condition")

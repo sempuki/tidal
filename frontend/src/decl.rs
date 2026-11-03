@@ -348,6 +348,20 @@ impl P {
                             }
                         }
                     } else if let Ok(e) = self.parse_assignment() {
+                        // ALN-8: a class operand converts to an integer by
+                        // its conversion function.
+                        let e = if matches!(nonref(&e.ty).t, Ty::Class(_)) && !self.in_template() {
+                            let mark = self.d.list.len();
+                            match self.user_conv(&e, &QTy::new(Ty::size_t()), line) {
+                                Some(x) if self.d.list.len() == mark => x,
+                                _ => {
+                                    self.d.list.truncate(mark);
+                                    e
+                                }
+                            }
+                        } else {
+                            e
+                        };
                         if self.at(")") {
                             match self.const_int(&e) {
                                 Ok(v) => {
@@ -1497,6 +1511,10 @@ impl P {
                     if t.t.is_ref() {
                         self.error(line, "DCL-23", "pointer to member of reference type");
                     }
+                    if t.t == Ty::Void {
+                        // MPTR-8: no pointer to a member of type void.
+                        self.error(line, "MPTR-8", "pointer to member of type void");
+                    }
                     match c {
                         Some(c) => QTy { t: Ty::MemPtr(*c, Box::new(t)), c: *cc, v: *vv },
                         None => QTy::unknown(),
@@ -1509,7 +1527,13 @@ impl P {
                         Ty::LRef(_) | Ty::RRef(_) => self.error(line, "DCL-18", "array of references"),
                         Ty::Array(_, None) => self.error(line, "DCL-20", "only the first array bound can be omitted"),
                         Ty::Class(c) if !self.classes[*c].complete && !self.in_template() => {
-                            self.error(line, "DCL-20", "array of incomplete class type")
+                            // INST-1: an array element needs the class
+                            // complete, which instantiates a specialization.
+                            let c = *c;
+                            self.require_class(c, line);
+                            if !self.classes[c].complete && !self.class_uncertain(c) {
+                                self.error(line, "DCL-20", "array of incomplete class type")
+                            }
                         }
                         _ => {}
                     }

@@ -292,10 +292,16 @@ impl<'a> Machine<'a> {
                     // TRY-2: a pointer to an object converts to a
                     // pointer to `void` with the same or more qualifiers.
                     (Ty::Void, b) => !matches!(b, Ty::Func(_)),
-                    (a, b) => a == b,
+                    // TRY-2: a pointer to a `noexcept` function converts
+                    // to a pointer to a function without `noexcept`.
+                    (Ty::Func(a), Ty::Func(b)) => a == b || (!a.noexcept && b.noexcept && **a == FnTy { noexcept: false, ..(**b).clone() }),
+                    (a, b) => a == b || qual_conv_tail(a, b, tp.c),
                 }
             }
-            (Ty::Ptr(_), Ty::NullPtr) => true,
+            // TRY-2: pointers to members of the same class, by a
+            // qualification conversion.
+            (Ty::MemPtr(tc, tp), Ty::MemPtr(ec, ep)) => tc == ec && (tp.c || !ep.c) && (tp.v || !ep.v) && (tp.t == ep.t || qual_conv_tail(&tp.t, &ep.t, tp.c)),
+            (Ty::Ptr(_) | Ty::MemPtr(..), Ty::NullPtr) => true,
             _ => same_unqual(&t, e),
         }
     }
@@ -587,6 +593,17 @@ impl<'a> Machine<'a> {
         let place = self.alloc(&v.ty.unqual())?;
         self.objs[place.obj].volatile = v.ty.v;
         self.frame_mut().vars.insert(id, place.obj);
+        // IF-25, CE-3: the initializer of a `const` local of integer or
+        // enumeration type that is not `volatile` is a constant evaluation
+        // when it is a constant expression.
+        if v.ty.c && !v.ty.v && (v.ty.t.is_integral() || matches!(v.ty.t, Ty::Enum(_))) {
+            if let Some(val) = v.init.as_ref().and_then(|i| self.try_constant(i, &v.ty)) {
+                self.write(&place, val, true)?;
+                self.objs[place.obj].konst = true;
+                self.register_block(&place, &v.ty);
+                return Ok(());
+            }
+        }
         match &v.init {
             Some(init) => {
                 let init = init.clone();
@@ -672,7 +689,13 @@ impl<'a> Machine<'a> {
                 place
             }
         };
+        // SINIT-1, IF-25: a static initializer that is a constant
+        // expression is a constant evaluation.
+        let constant_val = if !self.constant && (v.ty.t.is_arithmetic() || matches!(v.ty.t, Ty::Enum(_))) { v.init.as_ref().and_then(|i| self.try_constant(i, &v.ty)) } else { None };
         match &v.init {
+            Some(_) if constant_val.is_some() => {
+                self.write(&place, constant_val.unwrap(), true)?;
+            }
             Some(init) => {
                 let init = init.clone();
                 let mark = self.extended.len();
@@ -772,5 +795,45 @@ pub fn decay(t: &QTy) -> QTy {
         Ty::Array(el, _) => QTy::new(Ty::Ptr(el.clone())),
         Ty::Func(_) => QTy::new(Ty::Ptr(Box::new(t.clone()))),
         _ => t.clone(),
+    }
+}
+
+/// A qualification conversion below the first level: each level of `to`
+/// keeps or adds cv-qualifiers, and a level that adds one has `const` on
+/// each level above it. `const_above` says whether each level above is
+/// `const`.
+fn qual_conv_tail(to: &Ty, from: &Ty, const_above: bool) -> bool {
+    match (to, from) {
+        (Ty::Ptr(a), Ty::Ptr(b)) => {
+            if (b.c && !a.c) || (b.v && !a.v) {
+                return false;
+            }
+            let added = (a.c && !b.c) || (a.v && !b.v);
+            if added && !const_above {
+                return false;
+            }
+            qual_conv_tail(&a.t, &b.t, const_above && a.c)
+        }
+        (a, b) => a == b,
+    }
+}
+
+impl<'a> Machine<'a> {
+    /// The value of a scalar initializer when it is a constant expression
+    /// (IF-25), from a constant evaluation in the unit of the code that
+    /// runs.
+    pub fn try_constant(&self, init: &Expr, ty: &QTy) -> Option<Val> {
+        if self.constant || matches!(init.k, EK::Unknown(_)) {
+            return None;
+        }
+        let mut m = Machine::new(self.p, true);
+        let e = if init.is_glvalue() { Expr::new(EK::Conv(Conv::LToR, Box::new(init.clone())), init.ty.unqual(), Cat::PR, init.line) } else { init.clone() };
+        let t = ty.unqual();
+        let place = m.alloc(&t).ok()?;
+        m.full(|m| m.init_into(&place, &e, &t)).ok()?;
+        match m.objs[place.obj].val.clone() {
+            v @ (Val::Int(_) | Val::Float(_)) => Some(v),
+            _ => None,
+        }
     }
 }

@@ -52,7 +52,17 @@ impl P {
             if self.at(")") || self.at(";") || self.at(",") || self.at(":") || self.at("]") || self.at("}") {
                 return Ok(Expr::new(EK::Throw(None), QTy::new(Ty::Void), Cat::PR, line));
             }
-            let e = self.parse_assignment()?;
+            let mut e = self.parse_assignment()?;
+            // THR-1: a local variable or parameter is moved when each try
+            // block around the throw in the function also contains its
+            // declaration.
+            if let EK::Var(id) = e.k {
+                let local = self.var(id).is_some_and(|v| v.local && v.storage == Storage::Auto && !v.ty.t.is_ref() && matches!(v.ty.t, Ty::Class(_)) && !v.ty.v);
+                let inside = self.fns.last().is_none_or(|f| f.try_marks.last().is_none_or(|&m| id >= m));
+                if local && inside && e.cat == Cat::L {
+                    e.cat = Cat::X;
+                }
+            }
             self.check_throw_operand(&e, line);
             let e = self.rvalue(e);
             return Ok(Expr::new(EK::Throw(Some(Box::new(e))), QTy::new(Ty::Void), Cat::PR, line));
@@ -416,6 +426,19 @@ impl P {
                 if f.ty.t.is_ref() {
                     self.error(line, "MPTR-8", "pointer to a reference member");
                 }
+                if f.bits.is_some() && !self.in_template() {
+                    // MPTR-9: no pointer to a bit-field.
+                    self.error(line, "MPTR-9", format!("pointer to the bit-field '{}'", name));
+                    return Ok(Expr::unknown(line, "pointer to member"));
+                }
+                if !self.in_template() {
+                    // MPTR-9, ACC-2, ACC-4: the member must be accessible;
+                    // a protected member is named through the derived class.
+                    if let Err(rule) = self.member_access_ok(id, c) {
+                        self.error_because(line, "MPTR-9", rule, format!("'{}' is not accessible here", name));
+                        return Ok(Expr::unknown(line, "pointer to member"));
+                    }
+                }
                 // MPTR-2: the class is the one that declares the member.
                 let t = QTy::new(Ty::MemPtr(f.class, Box::new(f.ty.clone())));
                 if self.in_template() || f.ty.t.is_ref() {
@@ -539,6 +562,45 @@ impl P {
             let Some(f) = func else { return None };
             let after: Vec<QTy> = self.func(f)?.fty.params[1..].to_vec();
             let m: Vec<DeclId> = ds.iter().copied().filter(|&d| self.func(d).is_some_and(|g| !g.template && !g.fty.variadic && g.fty.params.len() == 1 + after.len() && g.fty.params[1..] == after[..])).collect();
+            // DED-39, NEW-24 (Q-0220): a template whose parameters after
+            // the first deduce to those of the allocation function is a
+            // match too, and two matches call no function.
+            let tmatch = |p: &mut P, d: DeclId| -> Option<bool> {
+                let g = p.func(d)?.clone();
+                if !g.template || g.fty.variadic || g.fty.params.len() != 1 + after.len() {
+                    return Some(false);
+                }
+                let &tid = p.decl_tid.get(&d)?;
+                if p.templs[tid].dependent || p.templs[tid].fn_pack.is_some() {
+                    return None;
+                }
+                let params = p.templs[tid].params.clone();
+                let mut b = crate::templ::Binds::new(p.templs[tid].depth, &params);
+                let mut ok = true;
+                for (pt, at) in g.fty.params[1..].iter().zip(after.iter()) {
+                    ok &= p.deduce_ty(pt, at, &mut b);
+                }
+                if b.unknown {
+                    return None;
+                }
+                Some(ok && b.vals.iter().all(|v| v.is_some()))
+            };
+            let mut tcount = 0;
+            for &d in ds.iter() {
+                match tmatch(self, d) {
+                    Some(true) => tcount += 1,
+                    Some(false) => {}
+                    None => return None,
+                }
+            }
+            if tcount > 0 {
+                // Two or more templates alone are ordered by ORD-9, which
+                // this selection does not model.
+                return match (m.len(), tcount) {
+                    (0, _) => None,
+                    _ => Some(NewAlloc { func, args: conv, nothrow, dealloc: Dealloc::None }),
+                };
+            }
             match m.as_slice() {
                 [d] if usual(self, *d).is_none() => Dealloc::Func(*d, false),
                 _ if ds.iter().any(|&d| self.func(d).is_some_and(|g| g.template)) => return None,
@@ -776,6 +838,25 @@ impl P {
             // CTOR-25: a constructor must accept the arguments.
             if !self.class_uncertain(*c) && !self.in_template() && self.ctor_no_match(*c, &pargs) {
                 self.error(line, "CTOR-25", format!("no constructor of '{}' accepts the arguments", self.classes[*c].name));
+            } else if let [x] = pargs.as_slice() {
+                // CPY-23, CPY-24, UNI-11: a copy or move from a glvalue of
+                // the class.
+                if nonref(&x.ty).t == Ty::Class(*c) && !self.in_template() {
+                    let mut x = x.clone();
+                    x.ty = nonref(&x.ty);
+                    let mark = self.d.list.len();
+                    self.check_copy_from(*c, &x, false, false, line);
+                    // ACC-3: the copy or move constructor must be
+                    // accessible.
+                    let sm = if x.cat == Cat::X && self.sm_decl(*c, crate::special::Sm::MoveCtor).is_some() { crate::special::Sm::MoveCtor } else { crate::special::Sm::CopyCtor };
+                    if self.d.list.len() == mark && !self.class_uncertain(*c) {
+                        if let Some(f) = self.sm_decl(*c, sm) {
+                            if !self.accessible(f, false) {
+                                self.error(line, "ACC-3", format!("the {} of '{}' is not accessible here", sm.what(), self.classes[*c].name));
+                            }
+                        }
+                    }
+                }
             }
         }
         if !self.in_template() {
@@ -1135,6 +1216,12 @@ impl P {
                 }
                 if !self.at("(") {
                     self.error(line, "DTOR-8", "a destructor must be called with '()'");
+                } else if let Some(Ty::Class(c)) = &objt {
+                    // DEL-1: a call of a deleted destructor.
+                    let c = *c;
+                    if self.classes[c].complete && !self.class_uncertain(c) && self.dtor_deleted(c, 0) {
+                        self.error(line, "DEL-1", format!("call of the deleted destructor of '{}'", self.classes[c].name));
+                    }
                 }
             }
             if !self.in_template() && self.at("(") && self.at_k(1, ")") {
@@ -1228,7 +1315,10 @@ impl P {
                 };
                 return Ok(Expr::new(EK::TemplId(Some(Box::new(o)), fids, std::rc::Rc::new(raw)), QTy::unknown(), Cat::L, line));
             }
-            if is_templ || ot.is_unknown() {
+            // DEP-24: with an object of unknown type, `<` starts template
+            // arguments only after `template`.
+            let kw_template = name_pos >= 2 && self.toks[name_pos - 1].text == "template";
+            if is_templ || (ot.is_unknown() && (kw_template || !self.in_template())) {
                 self.skip_template_args()?;
                 return Ok(Expr::unknown(line, "member template"));
             }
@@ -1347,6 +1437,12 @@ impl P {
             // object's own class, used outside its members and friends.
             let (rule, what) = if self.member_access.get(&id) == Some(&1) { ("ACC-4", "protected") } else { ("ACC-2", "private") };
             self.error(line, rule, format!("'{}' is a {} member of '{}'", name, what, self.classes[c].name));
+        } else if matches!(self.decls[id].k, DK::Field(_)) && !self.in_template() && scope.is_none() && !self.named_by_using(c, &name, id, 0) {
+            // ACC-2: a member of a base that is not accessible; ACC-4: a
+            // protected member through an object of another class.
+            if let Err(rule) = self.member_access_ok(id, c) {
+                self.error(line, rule, format!("'{}' is not accessible through an object of class '{}'", name, self.classes[c].name));
+            }
         }
         match self.decls[id].k.clone() {
             DK::Field(f) => {
@@ -2006,6 +2102,7 @@ impl P {
         ctx.lambda_mutable = is_mutable;
         ctx.lambda_copy_default = cap_default == Some(true);
         ctx.lambda_refs = cap_refs;
+        ctx.lambda_copies = cap_items.iter().filter(|x| x.0 == 0 && !x.2).filter_map(|x| x.1).collect();
         ctx.scope_base = self.stack.len();
         self.fns.push(ctx);
         self.stack.push(scope);
@@ -2713,6 +2810,13 @@ impl P {
             };
             return Ok(Expr::new(EK::TemplId(obj, fids, std::rc::Rc::new(raw)), QTy::unknown(), Cat::L, line));
         }
+        // Constructors have no name that lookup finds (CTOR-1): the
+        // injected class name stays a type.
+        let ids: Vec<DeclId> = if ids.iter().any(|&i| matches!(self.decls[i].k, DK::Class(_))) && ids.iter().any(|&i| self.func(i).is_some_and(|f| f.kind == FnKind::Ctor)) {
+            ids.into_iter().filter(|&i| !self.func(i).is_some_and(|f| f.kind == FnKind::Ctor)).collect()
+        } else {
+            ids
+        };
         // TYN-4: a function or variable hides a class of the same name.
         let ids: Vec<DeclId> = if ids.iter().any(|&i| matches!(self.decls[i].k, DK::Var(_) | DK::Func(_) | DK::Enumerator(..))) {
             ids.into_iter().filter(|&i| !matches!(self.decls[i].k, DK::Class(_) | DK::Enum(_))).collect()
@@ -2923,7 +3027,7 @@ impl P {
                 // mutable is const inside it.
                 let mut t = nonref(&v.ty);
                 if let Some(f) = self.fns.last() {
-                    if f.is_lambda && !f.lambda_mutable && f.lambda_copy_default && v.local && v.storage == Storage::Auto && !v.ty.t.is_ref() && !f.lambda_refs.contains(&self.decls[id].name) {
+                    if f.is_lambda && !f.lambda_mutable && (f.lambda_copy_default || f.lambda_copies.contains(&id)) && v.local && v.storage == Storage::Auto && !v.ty.t.is_ref() && !f.lambda_refs.contains(&self.decls[id].name) {
                         let declared_outside = !self.stack[f.scope_base.saturating_sub(1).min(self.stack.len())..].contains(&self.decls[id].scope);
                         if declared_outside {
                             t.c = true;
@@ -3015,7 +3119,14 @@ impl P {
 
     /// `this` for implicit member access, or None if there is no object.
     fn implicit_this(&mut self, line: u32, for_call: bool) -> Option<Expr> {
-        let f = self.fns.iter().rev().find(|f| !f.is_lambda || f.class.is_some())?;
+        let Some(f) = self.fns.iter().rev().find(|f| !f.is_lambda || f.class.is_some()) else {
+            // PRIM-11, CLS-2: a default member initializer has `this`.
+            if self.dmi_depth > 0 && self.fns.iter().all(|f| f.is_lambda) {
+                let c = self.enclosing_class()?;
+                return Some(Expr::new(EK::This, QTy::new(Ty::Ptr(Box::new(QTy::new(Ty::Class(c))))), Cat::PR, line));
+            }
+            return None;
+        };
         let c = f.class?;
         if f.is_static {
             if !for_call && self.in_unevaluated == 0 {
@@ -3050,6 +3161,12 @@ impl P {
                 Expr::unknown(line, "this")
             }
             None => {
+                if self.dmi_depth > 0 && self.fns.is_empty() {
+                    // PRIM-11: `this` in a default member initializer.
+                    if let Some(c) = self.enclosing_class() {
+                        return Expr::new(EK::This, QTy::new(Ty::Ptr(Box::new(QTy::new(Ty::Class(c))))), Cat::PR, line);
+                    }
+                }
                 if self.class_depth > 0 && self.fns.is_empty() {
                     // default member initializer: allowed (PRIM-11)
                     return Expr::unknown(line, "this in a default member initializer");
@@ -3482,13 +3599,10 @@ impl P {
         }
         match (&from.t, &to.t) {
             (Ty::Class(a), Ty::Class(b)) => self.is_base_of(*b, *a),
-            (Ty::Ptr(a), Ty::Ptr(b)) => {
-                // multi-level: adding const below needs const at each level above
-                if !(to.c || (a.c == b.c && a.v == b.v && self.similar_exact(a, b))) {
-                    return a.t == b.t && a.c == b.c && a.v == b.v;
-                }
-                self.qual_convertible(a, b)
-            }
+            // CV-10: a cv-qualifier added at one level needs `const` at
+            // each level above it except the outermost; a dropped array
+            // bound needs none (Q-0191).
+            (Ty::Ptr(_), Ty::Ptr(_)) => self.qual_level(from, to, true),
             (Ty::Func(a), Ty::Func(b)) => {
                 // CONV-10: noexcept to non-noexcept
                 let mut a2 = (**a).clone();
@@ -3498,8 +3612,32 @@ impl P {
             // A pointer to an array of known bound converts to a pointer
             // to an array of unknown bound, also with cv-qualifiers added
             // to the elements (outside knowledge; ICS-31 implies it).
-            (Ty::Array(_, Some(_)), Ty::Array(_, None)) | (Ty::Array(..), Ty::Array(..)) => self.array_qual_ok(&from.t, &to.t),
+            (Ty::Array(_, Some(_)), Ty::Array(_, None)) | (Ty::Array(..), Ty::Array(..)) => self.array_qual_ok(&from.t, &to.t) || self.qual_level(from, to, true),
             _ => false,
+        }
+    }
+
+    /// CV-10: one level of a qualification conversion. `const_above`
+    /// says whether each level above this one (except the outermost) is
+    /// `const`.
+    fn qual_level(&self, from: &QTy, to: &QTy, const_above: bool) -> bool {
+        if (from.c && !to.c) || (from.v && !to.v) {
+            return false;
+        }
+        let added = (to.c && !from.c) || (to.v && !from.v);
+        if added && !const_above {
+            return false;
+        }
+        match (&from.t, &to.t) {
+            (Ty::Ptr(a), Ty::Ptr(b)) => self.qual_level(a, b, const_above && to.c),
+            (Ty::Array(a, n), Ty::Array(b, m)) => {
+                if n != m && m.is_some() {
+                    return false;
+                }
+                // The cv-qualifiers of an array are those of its elements.
+                self.qual_level(a, b, const_above)
+            }
+            (a, b) => a == b,
         }
     }
 
@@ -4085,7 +4223,8 @@ impl P {
                     }
                 }
             }
-        } else if !(lptr || rptr || lnull || rnull) {
+        } else if !(lptr || rptr || lnull || rnull || (ls && rs)) {
+            // CMP-12: a scoped enumeration compares with its own type.
             self.error(line, "CMP-12", format!("invalid operands to '<=>': {} and {}", show(&l.ty), show(&r.ty)));
             return Expr::unknown(line, "bad operand");
         }
@@ -4794,6 +4933,35 @@ impl P {
                 } else {
                     l
                 };
+                // MPTR-10: the object's class is the class of the pointer
+                // or derived from it; a member function's cv-qualifiers and
+                // ref-qualifier fit the object.
+                if let Ty::MemPtr(mc, _) = &rt.ty.t {
+                    let mc = *mc;
+                    let ot = nonref(&obj.ty);
+                    match &ot.t {
+                        Ty::Class(oc) if *oc != mc && !self.is_base_of(mc, *oc) && !self.class_uncertain(*oc) && !self.class_uncertain(mc) && self.classes[*oc].complete => {
+                            self.error(line, "MPTR-10", format!("the object of class '{}' has no member of class '{}'", self.classes[*oc].name, self.classes[mc].name));
+                            return Expr::unknown(line, "bad operand");
+                        }
+                        Ty::Class(_) | Ty::Unknown | Ty::Dep(_) => {}
+                        _ => {
+                            self.error(line, "MPTR-10", "the left operand of a pointer-to-member operator is not an object of class type");
+                            return Expr::unknown(line, "bad operand");
+                        }
+                    }
+                    if let Ty::Func(ft) = &t.t {
+                        if (ot.c && !ft.cv_c) || (ot.v && !ft.cv_v) {
+                            self.error(line, "MPTR-10", "the call through a pointer to member function drops a qualifier of the object");
+                            return Expr::unknown(line, "bad operand");
+                        }
+                        let rv = op == ".*" && obj.cat != Cat::L;
+                        if (ft.refq == 1 && rv && !(ft.cv_c && !ft.cv_v)) || (ft.refq == 2 && !rv) {
+                            self.error(line, "MPTR-10", "the ref-qualifier of the member function does not fit the object's value category");
+                            return Expr::unknown(line, "bad operand");
+                        }
+                    }
+                }
                 if let Ty::Func(_) = t.t {
                     return Expr::new(EK::PtrMem(Box::new(obj), Box::new(rt)), t, Cat::L, line);
                 }
@@ -5036,6 +5204,14 @@ impl P {
         }
         fn walk(p: &P, e: &Expr, res: &mut Option<bool>) {
             match &e.k {
+                // EXS-4: a class prvalue made from a glvalue of the class
+                // copies or moves it.
+                EK::Conv(Conv::NoOp, x) if e.cat == Cat::PR && x.cat != Cat::PR && matches!(e.ty.t, Ty::Class(_)) && nonref(&x.ty).t == e.ty.t => {
+                    let Ty::Class(c) = e.ty.t else { unreachable!() };
+                    let sm = if x.cat == Cat::X { crate::special::Sm::MoveCtor } else { crate::special::Sm::CopyCtor };
+                    join(res, p.sm_throws(c, sm));
+                    walk(p, x, res);
+                }
                 EK::Call(c, args, f) => {
                     match f {
                         Some(fid) => join(res, p.fn_throws(*fid)),

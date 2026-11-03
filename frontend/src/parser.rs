@@ -224,6 +224,17 @@ pub struct ScopeInfo {
     pub uncertain: bool,
 }
 
+/// The friends of one class (ACC-6).
+#[derive(Clone, Debug, Default)]
+pub struct FriendSet {
+    pub classes: std::collections::HashSet<usize>,
+    /// The names of friend classes: an elaborated friend declaration can
+    /// introduce the class that a later definition completes.
+    pub class_names: std::collections::HashSet<String>,
+    pub names: std::collections::HashSet<String>,
+    pub open: bool,
+}
+
 #[derive(Clone, Debug, Default)]
 pub struct SwitchCtx {
     pub start_set: std::collections::HashSet<DeclId>,
@@ -255,7 +266,12 @@ pub struct FnCtx {
     pub lambda_mutable: bool,
     pub lambda_copy_default: bool,
     pub lambda_refs: Vec<String>,
+    /// LAM-18: the variables a lambda captures by copy explicitly.
+    pub lambda_copies: Vec<DeclId>,
     pub ret_auto: Option<(crate::decl::DeclSpec, crate::decl::Declarator)>,
+    /// THR-1: the number of declarations at the start of each try block
+    /// of the function that encloses the parser.
+    pub try_marks: Vec<usize>,
 }
 
 impl FnCtx {
@@ -281,7 +297,9 @@ impl FnCtx {
             lambda_mutable: false,
             lambda_copy_default: false,
             lambda_refs: Vec::new(),
+            lambda_copies: Vec::new(),
             ret_auto: None,
+            try_marks: Vec::new(),
         }
     }
 }
@@ -346,6 +364,9 @@ pub struct P {
     pub member_access: HashMap<DeclId, u8>,
     pub access_stack: Vec<u8>,
     pub friend_classes: std::collections::HashSet<usize>,
+    /// ACC-6: the friends that each class declares. `open` is set when a
+    /// friend declaration names something the front end does not track.
+    pub friend_sets: HashMap<usize, FriendSet>,
     /// Names of constructs that were skipped, for the unsupported list.
     pub in_unevaluated: u32,
     /// ODR-9: functions with internal linkage, and the first evaluated
@@ -359,6 +380,9 @@ pub struct P {
     pub static_member_pos: HashMap<DeclId, usize>,
     /// A contextual conversion to bool is being formed (CVF-3).
     pub contextual: bool,
+    /// CVF-3: a direct-initialization, such as `static_cast`, which also
+    /// uses explicit conversion functions.
+    pub direct_conv: bool,
     /// The classes that stand for `std::initializer_list<E>` (ICS-16),
     /// with their element types.
     pub init_list_classes: Vec<(QTy, usize)>,
@@ -678,12 +702,14 @@ impl P {
             member_access: HashMap::new(),
             access_stack: Vec::new(),
             friend_classes: Default::default(),
+            friend_sets: HashMap::new(),
             in_unevaluated: 0,
             internal_fns: Default::default(),
             internal_uses: Vec::new(),
             static_member_defs: Default::default(),
             static_member_pos: HashMap::new(),
             contextual: false,
+            direct_conv: false,
             init_list_classes: Vec::new(),
             new_paren_args: Vec::new(),
             new_braced: None,
@@ -1199,7 +1225,7 @@ impl P {
             },
         };
         let Some(owner) = owner else { return true };
-        if self.friend_classes.contains(&owner) || self.class_uncertain(owner) {
+        if self.class_uncertain(owner) {
             return true;
         }
         let mut here: Vec<usize> = self.fns.iter().filter_map(|f| f.class).collect();
@@ -1208,7 +1234,77 @@ impl P {
                 here.push(c);
             }
         }
+        if self.friend_classes.contains(&owner) {
+            // ACC-6: a friend class or function of the owner.
+            match self.friend_sets.get(&owner) {
+                Some(fs) if !fs.open => {
+                    if here.iter().any(|c| fs.classes.contains(c) || fs.class_names.contains(&self.classes[*c].name)) {
+                        return true;
+                    }
+                    if self.fns.iter().any(|f| f.func.is_some_and(|d| fs.names.contains(&self.decls[d].name))) {
+                        return true;
+                    }
+                }
+                _ => return true,
+            }
+        }
         here.iter().any(|&c| c == owner || (a == 1 && self.is_base_of_p(owner, c)))
+    }
+    /// Whether a using-declaration in `c` or a class between `c` and the
+    /// member's class brings the member `id` into scope (ACC-9).
+    pub fn named_by_using(&self, c: usize, name: &str, id: DeclId, depth: u32) -> bool {
+        if depth > 16 || self.scopes[self.decls[id].scope].kind == SK::Class(c) {
+            return false;
+        }
+        if self.scopes[self.classes[c].scope].names.get(name).is_some_and(|v| v.contains(&id)) {
+            return true;
+        }
+        self.classes[c].bases.iter().any(|b| b.class.is_some_and(|bc| self.named_by_using(bc, name, id, depth + 1)))
+    }
+    /// ACC-2, ACC-4, ACC-6: whether a member named through an object of
+    /// class `naming` is accessible here. Err gives the rule.
+    pub fn member_access_ok(&self, id: DeclId, naming: usize) -> Result<(), &'static str> {
+        let SK::Class(owner) = self.scopes[self.decls[id].scope].kind else { return Ok(()) };
+        if self.class_uncertain(owner) || self.class_uncertain(naming) {
+            return Ok(());
+        }
+        let mut here: Vec<usize> = self.fns.iter().filter_map(|f| f.class).collect();
+        for &s in &self.stack {
+            if let SK::Class(c) = self.scopes[s].kind {
+                here.push(c);
+            }
+        }
+        let friend_of = |p: &P, c: usize| -> bool {
+            if !p.friend_classes.contains(&c) {
+                return false;
+            }
+            match p.friend_sets.get(&c) {
+                Some(fs) if !fs.open => here.iter().any(|h| fs.classes.contains(h) || fs.class_names.contains(&p.classes[*h].name)) || p.fns.iter().any(|f| f.func.is_some_and(|d| fs.names.contains(&p.decls[d].name))),
+                _ => true,
+            }
+        };
+        if owner != naming && self.is_base_of_p(owner, naming) && !self.base_accessible(naming, owner) && !friend_of(self, naming) {
+            return Err("ACC-2");
+        }
+        match self.member_access.get(&id).copied().unwrap_or(0) {
+            0 => Ok(()),
+            2 => {
+                if here.contains(&owner) || friend_of(self, owner) {
+                    Ok(())
+                } else {
+                    Err("ACC-2")
+                }
+            }
+            _ => {
+                if here.contains(&owner) || friend_of(self, owner) {
+                    return Ok(());
+                }
+                // ACC-4: in a derived class, only through an object of that
+                // class or a class derived from it.
+                let ok = here.iter().any(|&h| self.is_base_of_p(owner, h) && (naming == h || self.is_base_of_p(h, naming)) || (friend_of(self, h) && self.is_base_of_p(owner, h)));
+                if ok { Ok(()) } else { Err("ACC-4") }
+            }
+        }
     }
     /// Whether `base` is a public base of `derived` along each step, or
     /// the parser is inside `derived` or a class that declares a friend.
@@ -1760,6 +1856,29 @@ impl P {
         matches!(t, Ty::Enum(e) if !self.enums[*e].scoped)
     }
     pub fn class_size(&self, c: usize) -> Option<(u64, u64)> {
+        self.class_layout(c).map(|(s, a, _)| (s, a))
+    }
+
+    /// CLS-31: whether the members after a base or a `[[no_unique_address]]`
+    /// member of class `c` can use the padding at the end of `c`.
+    pub fn tail_reusable(&self, c: usize) -> bool {
+        let ci = &self.classes[c];
+        let user = |d: DeclId| self.func(d).is_some_and(|f| !f.deleted && !f.first_defaulted);
+        if ci.ctors.iter().any(|&d| user(d)) || ci.dtor.is_some_and(user) {
+            return true;
+        }
+        if self.scopes[ci.scope].names.get("operator=").is_some_and(|v| v.iter().any(|&d| user(d))) {
+            return true;
+        }
+        ci.fields.iter().any(|&f| match &self.decls[f].k {
+            DK::Field(fi) => fi.init.is_some() || self.member_access.get(&f).copied().unwrap_or(0) != 0,
+            _ => false,
+        })
+    }
+
+    /// The size, alignment, and data size (the size without the padding
+    /// at the end) of a class.
+    pub fn class_layout(&self, c: usize) -> Option<(u64, u64, u64)> {
         let ci = &self.classes[c];
         if !ci.complete || ci.opaque || ci.template {
             return None;
@@ -1778,41 +1897,63 @@ impl P {
             size = ps;
             align = ps;
         }
-        let mut items: Vec<(QTy, u64)> = Vec::new();
+        if !ci.bases.is_empty() {
+            return None;
+        }
+        // (type, alignment from alignas, no_unique_address)
+        let mut items: Vec<(QTy, u64, bool)> = Vec::new();
         for &f in &ci.fields {
             if let DK::Field(fi) = &self.decls[f].k {
                 if fi.bits.is_some() {
                     return None;
                 }
-                if fi.nua {
-                    if let Ty::Class(fc) = fi.ty.t {
-                        if self.classes[fc].fields.is_empty() && self.classes[fc].bases.is_empty() {
-                            continue; // ATTR: an empty member takes no space
-                        }
-                    }
-                }
-                items.push((fi.ty.clone(), fi.align));
+                items.push((fi.ty.clone(), fi.align, fi.nua));
             }
         }
-        if !ci.bases.is_empty() {
-            return None;
-        }
         align = align.max(ci.align);
-        for (t, fa) in &items {
-            let s = self.sizeof_ty(&t.t)?;
+        // CLS-31, ATTR-9: an empty member with no_unique_address takes no
+        // bytes; two of one type get different offsets.
+        let mut empties: Vec<(usize, u64)> = Vec::new();
+        let mut full_end = 0u64;
+        for (t, fa, nua) in &items {
             let a = self.alignof_ty(&t.t)?.max(*fa);
+            if *nua && ci.key != 2 {
+                if let Ty::Class(fc) = t.t {
+                    if self.classes[fc].fields.is_empty() && self.classes[fc].bases.is_empty() && !self.classes[fc].has_virtual {
+                        let mut k = 0u64;
+                        while empties.iter().any(|&(x, o)| x == fc && o == k) {
+                            k += 1;
+                        }
+                        empties.push((fc, k));
+                        full_end = full_end.max(k + 1);
+                        align = align.max(a);
+                        continue;
+                    }
+                }
+            }
+            let s = self.sizeof_ty(&t.t)?;
             if ci.key == 2 {
                 size = size.max(s);
             } else {
-                size = size.div_ceil(a) * a + s;
+                let off = size.div_ceil(a) * a;
+                full_end = full_end.max(off + s);
+                // CLS-31: the padding at the end of a no_unique_address
+                // member can hold the next members.
+                let used = match t.t {
+                    Ty::Class(fc) if *nua && self.tail_reusable(fc) => self.class_layout(fc).map(|x| x.2).unwrap_or(s),
+                    _ => s,
+                };
+                size = off + used;
             }
             align = align.max(a);
         }
+        let dsize = size.max(full_end);
+        let mut size = dsize;
         if size == 0 {
             size = 1;
         }
         size = size.div_ceil(align) * align;
-        Some((size, align))
+        Some((size, align, dsize))
     }
     pub fn sizeof_ty(&self, t: &Ty) -> Option<u64> {
         size_of(t, &|c| self.class_size(c), &|e| self.enum_underlying(e))

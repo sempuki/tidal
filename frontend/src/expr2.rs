@@ -70,12 +70,20 @@ impl P {
                 self.call_adl = adl;
                 self.call_overloads(obj.map(|o| *o), fs, args, line)
             }
-            EK::Unary(UOp::AddrOf, ref x) if !self.in_template() && (matches!(x.k, EK::BoundMember(..)) || (x.paren && matches!(&x.k, EK::Overloads(fs) if fs.iter().any(|&f| self.func(f).is_some_and(|f| f.class.is_some() && !f.is_static && !f.explicit_obj))))) => {
+            EK::Unary(UOp::AddrOf, ref x) if !self.in_template() && ((x.paren && matches!(x.k, EK::BoundMember(..))) || (x.paren && matches!(&x.k, EK::Overloads(fs) if fs.iter().any(|&f| self.func(f).is_some_and(|f| f.class.is_some() && !f.is_static && !f.explicit_obj))))) => {
                 // OVL-44: the set holds a member with an implicit object
                 // parameter, so the operand of `&` must be a qualified name
                 // without parentheses.
                 self.error(line, "OVL-44", "a call through '&' of an unqualified or parenthesized name of a set with a non-static member");
                 Expr::unknown(line, "bad call")
+            }
+            EK::Unary(UOp::AddrOf, ref x) if matches!(x.k, EK::BoundMember(..)) && !self.in_template() => {
+                // OVL-21, Q-0161: `(&f)(a)` with an unqualified name
+                // resolves the set as a call by name, with no implied
+                // object argument.
+                let EK::BoundMember(_, fs) = x.k.clone() else { unreachable!() };
+                self.call_no_object = true;
+                self.call_overloads(None, fs, args, line)
             }
             EK::Unary(UOp::AddrOf, ref x) if matches!(x.k, EK::Overloads(_)) => {
                 // OVL-21: `(&f)(a)` resolves `f` as a call by name, with no
@@ -915,7 +923,12 @@ impl P {
                 self.error(line, "CAST-19", "no conversion from a class without conversion functions");
             }
             if matches!(kind, CastKind::Static | CastKind::Functional) {
-                if let Some(x) = self.user_conv(&e, &target, line) {
+                // CAST-1, CVF-3: the cast is a direct-initialization, so
+                // explicit conversion functions count.
+                let saved = std::mem::replace(&mut self.direct_conv, true);
+                let x = self.user_conv(&e, &target, line);
+                self.direct_conv = saved;
+                if let Some(x) = x {
                     return x;
                 }
             }
@@ -1244,7 +1257,25 @@ impl P {
                     return Expr::unknown(line, "bad array init");
                 };
                 if let Some(n) = n {
-                    let nested_elision = matches!(el.t, Ty::Array(..) | Ty::Class(_)) && v.iter().any(|x| !matches!(x.k, EK::InitList(_)));
+                    // LIST-7: brace elision applies to an element that is
+                    // an array or an aggregate, for a value that is not a
+                    // list and not an object of the element's class.
+                    let elided = |p: &P, x: &Expr| -> bool {
+                        if matches!(x.k, EK::InitList(_)) {
+                            return false;
+                        }
+                        match &el.t {
+                            Ty::Array(..) => true,
+                            Ty::Class(c) => {
+                                let xt = nonref(&x.ty).t;
+                                let same = matches!(xt, Ty::Class(d) if d == *c || p.is_base_of(*c, d));
+                                let aggregate = p.classes[*c].ctors.is_empty() && !p.class_uncertain(*c);
+                                !same && (aggregate || x.ty.is_unknown())
+                            }
+                            _ => false,
+                        }
+                    };
+                    let nested_elision = v.iter().any(|x| elided(self, x));
                     if !nested_elision && v.len() as u64 > *n {
                         // DCL-5: not more elements than the bound.
                         self.error(line, "DCL-19", "too many initializers for the array");
@@ -1370,10 +1401,24 @@ impl P {
                                 _ => {}
                             }
                         }
-                        if matches!(et.t, Ty::Class(_)) && matches!(self.ics_value_pub(&e, &ty.unqual()), Ok(Some(_))) {
-                            // ICS-4: a conversion function to the class or
-                            // a class derived from it.
-                            return Expr::new(EK::Unknown("conversion function".into()), ty.clone(), Cat::PR, line);
+                        if matches!(et.t, Ty::Class(_)) {
+                            if let Ok(Some(ics)) = self.ics_value_pub(&e, &ty.unqual()) {
+                                // ICS-4: a conversion function to the class
+                                // or a class derived from it. A function that
+                                // returns the class by value gives the object.
+                                if let Some(crate::ics::UKey::Fn(fid)) = ics.user {
+                                    let f = self.func(fid).cloned();
+                                    if let Some(f) = f.filter(|f| f.kind == FnKind::Conversion && !f.deleted && f.fty.ret.t == Ty::Class(c) && !f.fty.ret.t.is_ref()) {
+                                        if self.in_unevaluated == 0 {
+                                            self.use_fn(fid);
+                                        }
+                                        let _ = f;
+                                        let call = Expr::new(EK::Call(Box::new(e.clone()), vec![], Some(fid)), ty.unqual(), Cat::PR, line);
+                                        return call;
+                                    }
+                                }
+                                return Expr::new(EK::Unknown("conversion function".into()), ty.clone(), Cat::PR, line);
+                            }
                         }
                         if simple_aggr && !self.class_uncertain(c) && form == InitForm::Copy {
                             self.error(line, "INIT-7", "no conversion to an aggregate class");
@@ -1385,6 +1430,11 @@ impl P {
                             return x;
                         }
                         Expr::new(EK::Unknown("constructor call".into()), ty.clone(), Cat::PR, line)
+                    }
+                    (Some(v), false) if v.is_empty() && (is_list || is_paren) && self.classes[c].ctors.is_empty() && !self.aggregate_with_bases(c) && !self.class_uncertain(c) && !self.in_template() && !self.classes[c].bases.iter().any(|b| b.virt) => {
+                        // INIT-4: empty parentheses or braces value-initialize
+                        // a class without user-declared constructors.
+                        Expr::new(EK::ZeroInit, ty.unqual(), Cat::PR, line)
                     }
                     (Some(v), false) if (is_list || is_paren) && self.classes[c].ctors.is_empty() && self.aggregate_with_bases(c) && !(v.len() == 1 && nonref(&v[0].ty).t == Ty::Class(c)) => {
                         self.quiet_aggregate(c, v, ty, is_paren, line).unwrap_or_else(|| Expr::new(EK::Unknown("constructor call".into()), ty.clone(), Cat::PR, line))

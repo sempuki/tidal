@@ -299,6 +299,9 @@ pub struct Machine<'a> {
     pub fixed_order: bool,
     /// PRIM-9: the choice made for each string literal object.
     pub prim9: HashMap<usize, u8>,
+    /// UNI-10: places of the active member that a read through the
+    /// common initial sequence reaches with the type of the other member.
+    pub uni_alias: std::cell::RefCell<std::collections::HashSet<(usize, Vec<usize>)>>,
 }
 
 impl<'a> Machine<'a> {
@@ -308,6 +311,7 @@ impl<'a> Machine<'a> {
             ps: vec![p],
             tu: 0,
             links: HashMap::new(),
+            uni_alias: Default::default(),
             constant,
             objs: Vec::new(),
             frames: vec![Frame::new()],
@@ -837,7 +841,9 @@ impl<'a> Machine<'a> {
                             self.cdtor.pop();
                             self.leave_call()?;
                             if let Err(Stop::Throw(x)) = r {
-                                if !f.noexcept_false {
+                                // DTOR-4: a destructor without a specifier
+                                // follows its bases and members.
+                                if !f.noexcept_false && self.p.sm_throws(c, crate::special::Sm::Dtor) != Some(true) {
                                     // UNW-5: an exception leaves a destructor
                                     // that is not noexcept(false).
                                     return Err(Stop::Terminate("UNW-5", "an exception leaves a destructor that is not declared noexcept(false)".into()));

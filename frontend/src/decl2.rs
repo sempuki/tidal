@@ -473,6 +473,13 @@ impl P {
                             if ids.iter().any(|&i| matches!(self.decls[i].k, DK::Namespace(_))) {
                                 self.error(line, "NS-16", "using declaration names a namespace");
                             }
+                            if let (SK::Class(c), Ctx::Class(cc)) = (self.scopes[s].kind.clone(), ctx) {
+                                // ACC-13: the named base member must be
+                                // accessible in the derived class.
+                                if c != cc && !self.in_template() && !self.class_uncertain(c) && self.classes[c].name != name && !ids.is_empty() && ids.iter().all(|&i| !self.accessible(i, true)) {
+                                    self.error(line, "ACC-13", format!("the using declaration names '{}', which is not accessible in '{}'", name, self.classes[cc].name));
+                                }
+                            }
                             let cur = self.decl_scope();
                             let prev = self.scopes[cur].names.get(&name).cloned().unwrap_or_default();
                             // NS-7: must not conflict with another declaration.
@@ -2090,6 +2097,26 @@ impl P {
         if ds.friend {
             if let Ctx::Class(c) = ctx {
                 self.friend_classes.insert(c);
+                // ACC-6: a friend class, or a declaration the front end
+                // does not track one by one.
+                let ends = self.at(";");
+                let templ = after_head || self.in_template();
+                let name_of_friend = match ds.ty.as_ref().map(|t| &t.t) {
+                    Some(Ty::Class(x)) => self.classes[*x].name.clone(),
+                    _ => String::new(),
+                };
+                let fs = self.friend_sets.entry(c).or_default();
+                if templ {
+                    fs.open = true;
+                } else if ends {
+                    match ds.ty.as_ref().map(|t| &t.t) {
+                        Some(Ty::Class(x)) => {
+                            fs.classes.insert(*x);
+                            fs.class_names.insert(name_of_friend.clone());
+                        }
+                        _ => fs.open = true,
+                    }
+                }
             }
         }
         self.check_decl_specs(&ds, ctx, line);
@@ -3103,6 +3130,13 @@ impl P {
                             self.error(line, "NAM-3", format!("'{}' redeclared with a different type", name));
                         }
                         redecl = Some(p);
+                    } else if local && v.storage == Storage::Extern && storage == Storage::Extern {
+                        // STMT-8: two block-scope extern declarations
+                        // declare the same entity.
+                        if !same_type {
+                            self.error(line, "NAM-3", format!("'{}' redeclared with a different type", name));
+                        }
+                        redecl = Some(p);
                     } else if local && v.param {
                         // NAM-3, FN-1: the outermost block shares the parameter scope.
                         self.error(line, "NAM-3", format!("'{}' redeclares a parameter", name));
@@ -3342,7 +3376,17 @@ impl P {
                 // no written initializer; the rule text does not say so.
                 self.error(line, "CX-1", "constexpr variable without an initializer");
             }
-            if ds.constinit && is_def && !class_with_ctor {
+            // CINIT-1, CE-24: a constinit variable without an initializer
+            // is zero-initialized, which is a constant initializer for a
+            // scalar or an array of scalars.
+            let zero_ok = |t: &Ty| -> bool {
+                let mut t = t;
+                while let Ty::Array(e, _) = t {
+                    t = &e.t;
+                }
+                !matches!(t, Ty::Class(_) | Ty::Unknown | Ty::Dep(_)) && !t.is_ref()
+            };
+            if ds.constinit && is_def && !class_with_ctor && !zero_ok(&ty.t) {
                 self.error(line, "CINIT-1", "constinit variable without an initializer");
             }
             if ty.c && is_def && !ds.constexpr && self.is_scalar(&ty) {
@@ -3577,6 +3621,7 @@ impl P {
         if is_friend {
             if let Some(c) = self.current_class() {
                 self.friend_classes.insert(c);
+                self.friend_sets.entry(c).or_default().names.insert(name.clone());
             }
         }
         let member_class = if is_friend { None } else { class };
@@ -3912,7 +3957,7 @@ impl P {
                     } else if f.fty.params == fty.params && in_class_body && f.fty.refq != fty.refq && (f.fty.refq == 0 || fty.refq == 0) {
                         // CLS-6: overloads must all have ref-qualifiers or none.
                         self.error(line, "CLS-26", "overloads with and without ref-qualifiers");
-                    } else if f.fty.params == fty.params && in_class_body && (f.is_static || is_static) && f.fty.refq == fty.refq {
+                    } else if f.fty.params == fty.params && f.fty.variadic == fty.variadic && !distinct_templates && in_class_body && (f.is_static || is_static) && f.fty.refq == fty.refq {
                         self.error(line, "CLS-9", "same member function declared static and non-static");
                     }
                 }
@@ -4393,7 +4438,7 @@ impl P {
                 self.require_ty(&p, line);
             }
         }
-        if !self.in_template() && !template {
+        if !self.in_template() && !template && !sig_only {
             let ret = self.func(id).unwrap().fty.ret.clone();
             if let Ty::Class(c) = ret.t {
                 if !self.classes[c].complete && !in_class_body {

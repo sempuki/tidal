@@ -375,6 +375,7 @@ impl P {
         self.pending_template = None;
         if !is_template {
             self.check_overrides(c);
+            self.prime_eligible(c);
         }
         if self.class_depth == 0 {
             self.run_deferred();
@@ -728,6 +729,7 @@ impl P {
         self.stack = saved;
         self.classes[c].complete = true;
         self.check_overrides(c);
+        self.prime_eligible(c);
         if self.class_depth == 0 {
             self.run_deferred();
         }

@@ -43,6 +43,37 @@ enum Declared {
 }
 
 impl P {
+    /// CPY-19: decide the constraints of the special members of a
+    /// complete class, so that `declared` can leave out the ones that are
+    /// not eligible.
+    pub fn prime_eligible(&mut self, c: usize) {
+        if self.classes[c].template || self.in_template() {
+            return;
+        }
+        let mut ids: Vec<DeclId> = self.classes[c].ctors.clone();
+        if let Some(v) = self.scopes[self.classes[c].scope].names.get("operator=") {
+            ids.extend(v.iter().copied());
+        }
+        for id in ids {
+            if self.fn_cons.contains_key(&id) {
+                let _ = self.fn_sat(id);
+            }
+        }
+    }
+
+    /// Whether a function is eligible as far as its constraints go:
+    /// Some(false) when they are not satisfied, None when unknown.
+    fn eligible_cons(&self, f: DeclId) -> Option<bool> {
+        if !self.fn_cons.contains_key(&f) {
+            return Some(true);
+        }
+        match self.fn_sat_cache.get(&f) {
+            Some(crate::cons::Sat::Yes) => Some(true),
+            Some(crate::cons::Sat::Unknown) | None => None,
+            Some(_) => Some(false),
+        }
+    }
+
     fn class_of_elem(t: &Ty) -> Option<usize> {
         match t {
             Ty::Array(e, _) => Self::class_of_elem(&e.t),
@@ -87,7 +118,15 @@ impl P {
                 if ci.ctors.iter().any(|&i| self.func(i).is_none_or(|f| f.template)) {
                     return Declared::Unknown;
                 }
-                ci.ctors.iter().copied().filter(|&i| self.copy_param(i, c, false) == Some(want)).collect()
+                let v: Vec<DeclId> = ci.ctors.iter().copied().filter(|&i| self.copy_param(i, c, false) == Some(want)).collect();
+                if v.iter().any(|&i| self.eligible_cons(i).is_none()) {
+                    return Declared::Unknown;
+                }
+                let e: Vec<DeclId> = v.iter().copied().filter(|&i| self.eligible_cons(i) == Some(true)).collect();
+                if e.is_empty() && !v.is_empty() {
+                    return Declared::Unknown;
+                }
+                e
             }
             Sm::CopyAssign | Sm::MoveAssign => {
                 let want = sm == Sm::MoveAssign;
@@ -95,7 +134,15 @@ impl P {
                 if ids.iter().any(|&i| self.func(i).is_none_or(|f| f.template)) {
                     return Declared::Unknown;
                 }
-                ids.iter().copied().filter(|&i| self.copy_param(i, c, true) == Some(want)).collect()
+                let v: Vec<DeclId> = ids.iter().copied().filter(|&i| self.copy_param(i, c, true) == Some(want)).collect();
+                if v.iter().any(|&i| self.eligible_cons(i).is_none()) {
+                    return Declared::Unknown;
+                }
+                let e: Vec<DeclId> = v.iter().copied().filter(|&i| self.eligible_cons(i) == Some(true)).collect();
+                if e.is_empty() && !v.is_empty() {
+                    return Declared::Unknown;
+                }
+                e
             }
         };
         match cands.as_slice() {
@@ -272,9 +319,7 @@ impl P {
         if ci.bases.iter().any(|b| b.class.is_some_and(|bc| self.dtor_deleted(bc, depth + 1))) {
             return true;
         }
-        if ci.key == 2 {
-            return false;
-        }
+        // DTOR-3: a variant member counts as a member.
         ci.fields.iter().any(|&f| match &self.decls[f].k {
             DK::Field(fi) if !fi.ty.t.is_ref() => Self::class_of_elem(&fi.ty.t).is_some_and(|m| self.dtor_deleted(m, depth + 1)),
             _ => false,
@@ -363,7 +408,7 @@ impl P {
     /// The user-declared copy (`rvalue` false) or move (`rvalue` true)
     /// constructors or assignment operators of a class (CPY-1 to CPY-3).
     /// None when a template could take part.
-    fn copy_cands(&self, c: usize, assign: bool, rvalue: bool) -> Option<Vec<DeclId>> {
+    pub fn copy_cands(&self, c: usize, assign: bool, rvalue: bool) -> Option<Vec<DeclId>> {
         let ci = &self.classes[c];
         let ids: Vec<DeclId> = if assign {
             self.scopes[ci.scope].names.get("operator=").cloned().unwrap_or_default()
@@ -392,9 +437,6 @@ impl P {
     /// class is deleted.
     pub fn cpy7_deleted(&self, c: usize, assign: bool, rvalue: bool, depth: u32) -> Option<bool> {
         let ci = &self.classes[c];
-        if ci.key == 2 {
-            return Some(false);
-        }
         let mut parts: Vec<(QTy, bool)> = ci.bases.iter().map(|b| b.class.map(|bc| (QTy::new(Ty::Class(bc)), true))).collect::<Option<Vec<_>>>()?;
         for &f in &ci.fields {
             if let DK::Field(fi) = &self.decls[f].k {
@@ -798,7 +840,7 @@ impl P {
     }
 
     /// The declaration of one special member that a class declares.
-    fn sm_decl(&self, c: usize, sm: Sm) -> Option<DeclId> {
+    pub fn sm_decl(&self, c: usize, sm: Sm) -> Option<DeclId> {
         let ci = &self.classes[c];
         match sm {
             Sm::Default => self.default_ctor(c),

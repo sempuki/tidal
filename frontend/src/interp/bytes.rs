@@ -52,14 +52,32 @@ impl<'a> Machine<'a> {
     /// assumes.
     pub fn class_parts(&self, c: usize) -> R<Vec<(usize, i64, QTy)>> {
         let ci = &self.p.classes[c];
-        if !ci.bases.is_empty() {
-            // STG-25 and the placement of base subobjects: no table in
-            // the text.
-            return unsup("bytes of a class with base classes");
-        }
         let union = ci.key == 2;
         let mut off: i64 = if ci.has_virtual { if ilp32() { 4 } else { 8 } } else { 0 };
         let mut out = Vec::new();
+        let nb = ci.bases.len();
+        if nb > 0 {
+            // CLS-19, CLS-30: an empty base shares the address of the
+            // object. Other bases come first, in order. The text gives no
+            // other placement of base subobjects (STG-25).
+            if ci.has_virtual || ci.bases.iter().any(|b| b.virt) {
+                return unsup("bytes of a class with virtual functions and base classes");
+            }
+            for (i, b) in ci.bases.iter().enumerate() {
+                let Some(bc) = b.class else { return unsup("bytes of a class with a base of unknown type") };
+                let t = QTy::new(Ty::Class(bc));
+                if self.empty_class(bc, 0) {
+                    out.push((i, 0, t));
+                } else {
+                    let s = self.size_of(&t.t)?;
+                    let a = self.p.alignof_ty(&t.t).unwrap_or(1) as i64;
+                    off = (off + a - 1) / a * a;
+                    out.push((i, off, t));
+                    off += s;
+                }
+            }
+        }
+        let mut empties: Vec<(usize, i64)> = Vec::new();
         for (_, fi) in self.fields(c) {
             if fi.bits.is_some() {
                 return unsup("bytes of a class with bit-fields");
@@ -67,9 +85,17 @@ impl<'a> Machine<'a> {
             if fi.ty.t.is_ref() {
                 return unsup("bytes of a class with a reference member");
             }
-            if fi.nua {
+            if fi.nua && !union {
                 if let Ty::Class(fc) = fi.ty.t {
-                    if self.p.classes[fc].fields.is_empty() && self.p.classes[fc].bases.is_empty() {
+                    if self.p.classes[fc].fields.is_empty() && self.p.classes[fc].bases.is_empty() && !self.p.classes[fc].has_virtual {
+                        // CLS-31, ATTR-9: no bytes of its own; two of one
+                        // type get different offsets.
+                        let mut k = 0i64;
+                        while empties.iter().any(|&(x, o)| x == fc && o == k) {
+                            k += 1;
+                        }
+                        empties.push((fc, k));
+                        out.push((nb + fi.index, k, fi.ty.clone()));
                         continue;
                     }
                 }
@@ -77,14 +103,27 @@ impl<'a> Machine<'a> {
             let s = self.size_of(&fi.ty.t)?;
             let a = self.p.alignof_ty(&fi.ty.t).unwrap_or(1).max(fi.align) as i64;
             if union {
-                out.push((fi.index, 0, fi.ty.clone()));
+                out.push((nb + fi.index, 0, fi.ty.clone()));
             } else {
                 off = (off + a - 1) / a * a;
-                out.push((fi.index, off, fi.ty.clone()));
-                off += s;
+                out.push((nb + fi.index, off, fi.ty.clone()));
+                // CLS-31: the padding at the end of a no_unique_address
+                // member can hold the next members.
+                let used = match fi.ty.t {
+                    Ty::Class(fc) if fi.nua && self.p.tail_reusable(fc) => self.p.class_layout(fc).map(|x| x.2 as i64).unwrap_or(s),
+                    _ => s,
+                };
+                off += used;
             }
         }
         Ok(out)
+    }
+
+    /// A class with no non-static data members, no virtual functions, and
+    /// only such bases.
+    fn empty_class(&self, c: usize, depth: u32) -> bool {
+        let ci = &self.p.classes[c];
+        depth < 16 && ci.fields.iter().all(|&f| !matches!(self.p.decls[f].k, DK::Field(_))) && !ci.has_virtual && ci.bases.iter().all(|b| !b.virt && b.class.is_some_and(|bc| self.empty_class(bc, depth + 1)))
     }
 
     /// The offset of the subobject at `path` in the complete object `o`,
@@ -652,7 +691,7 @@ impl<'a> Machine<'a> {
 
     /// The object type at a place, when the access check applies to it.
     fn checked_type(&self, p: &Ptr) -> Option<Ty> {
-        if self.constant || p.bytes {
+        if self.constant || p.bytes || self.uni_alias.borrow().contains(&(p.obj, p.path.clone())) {
             return None;
         }
         let t = self.type_at(p)?;
@@ -753,6 +792,9 @@ impl<'a> Machine<'a> {
             return Ok(());
         }
         let Some(t) = self.type_at(p) else { return Ok(()) };
+        if self.uni_alias.borrow().contains(&(p.obj, full_path(p))) || self.uni_alias.borrow().contains(&(p.obj, p.path.clone())) {
+            return Ok(());
+        }
         match t.t {
             Ty::Class(x) if x != c && self.base_path(x, c).is_none() && self.base_path(c, x).is_none() => {
                 ub("STG-23", format!("access to an object of class '{}' through a glvalue of class '{}'", self.p.classes[x].name, self.p.classes[c].name))

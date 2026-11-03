@@ -326,9 +326,15 @@ impl P {
     fn eq_excluded(&self, fid: DeclId) -> bool {
         let Some(f) = self.func(fid) else { return false };
         let sc = self.decls[fid].scope;
-        self.scopes[sc].names.get("operator!=").is_some_and(|ids| {
-            ids.iter().any(|&d| self.func(d).is_some_and(|g| g.fty.params == f.fty.params && g.fty.cv_c == f.fty.cv_c && g.fty.cv_v == f.fty.cv_v && g.fty.refq == f.fty.refq && g.class == f.class))
-        })
+        // DCMP-13: for a member, member lookup (which finds a base's !=);
+        // for a non-member, a search of its namespace, which does not find
+        // a friend declared only in a class.
+        let ids: Vec<DeclId> = match f.class {
+            Some(c) => self.lookup_member(c, "operator!=").unwrap_or_default(),
+            None => self.scopes[sc].names.get("operator!=").map(|v| v.iter().copied().filter(|d| !self.hidden_friends.contains_key(d)).collect()).unwrap_or_default(),
+        };
+        let member = f.class.is_some();
+        ids.iter().any(|&d| self.func(d).is_some_and(|g| g.fty.params == f.fty.params && g.fty.cv_c == f.fty.cv_c && g.fty.cv_v == f.fty.cv_v && g.fty.refq == f.fty.refq && g.class.is_some() == member))
     }
 
     /// OVL-25, OVL-32, OVL-33: is `x` better than `y`?
@@ -634,7 +640,15 @@ impl P {
         if args.iter().any(|a| (a.ty.is_unknown() && !matches!(a.k, EK::InitList(_))) || matches!(&a.k, EK::Unknown(s) if s.starts_with("designator"))) {
             return CtorRes::Unknown;
         }
-        let ctors = self.classes[c].ctors.clone();
+        let mut ctors = self.classes[c].ctors.clone();
+        if list && args.is_empty() {
+            // A constructor template whose parameters all need arguments
+            // gives no candidate for empty braces.
+            ctors.retain(|&cid| self.func(cid).is_none_or(|f| !f.template || f.fty.variadic || f.params.len() <= f.defaults || self.decl_tid.get(&cid).is_some_and(|&t| self.templs[t].fn_pack.is_some())));
+            if ctors.is_empty() {
+                return CtorRes::Unknown;
+            }
+        }
         // DED-1: a constructor template adds its specialization.
         let ctors = if ctors.iter().any(|&cid| self.func(cid).is_some_and(|f| f.template)) {
             if list {
@@ -666,8 +680,27 @@ impl P {
         let ctors = kept;
         if list {
             if args.is_empty() {
-                return CtorRes::Unknown;
-            }
+                // ILC-2: empty braces value-initialize a class with a
+                // default constructor, and otherwise take an
+                // initializer-list constructor. With neither, no
+                // constructor is viable.
+                let zero = ctors.iter().any(|&cid| self.func(cid).is_some_and(|f| f.fty.variadic || f.params.len() <= f.defaults));
+                let list_ctor = ctors.iter().any(|&cid| match self.func(cid).and_then(|f| f.params.first().copied()) {
+                    None => false,
+                    Some(p) => self.var(p).is_none_or(|v| matches!(nonref(&v.ty).t, Ty::Class(lc) if self.init_list_elem(lc).is_some()) || v.ty.is_unknown()),
+                });
+                if list_ctor || !self.classes[c].bases.is_empty() {
+                    return CtorRes::Unknown;
+                }
+                if !zero {
+                    if self.classes[c].ctors.len() != ctors.len() {
+                        return CtorRes::Unknown;
+                    }
+                    return CtorRes::NoViable;
+                }
+                // A default constructor: overload resolution with no
+                // arguments chooses it (ILC-2, CTOR-25).
+            } else {
             // ILC-2: an initializer-list constructor that takes the list.
             let mut list_viable: Vec<DeclId> = Vec::new();
             for &cid in &ctors {
@@ -703,6 +736,7 @@ impl P {
                 0 => {}
                 1 => return CtorRes::Chosen(list_viable[0], Vec::new()),
                 _ => return CtorRes::Unknown,
+            }
             }
         }
         if args.len() == 1 && !copy && !copy_list {

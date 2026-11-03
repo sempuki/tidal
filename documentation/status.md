@@ -149,7 +149,7 @@ questions. See `questions/README.md`.
 
 ## Known limits of the tooling
 
-- The clean-room front end passes 5021 of 5654 tests, and 5172 pass their check.
+- The clean-room front end passes 5101 of 5672 tests, and 5226 pass their check.
   The front end reads `#include "file"` and no standard header.
   `tools/frontend_check.py` fails when a test that it passed no longer
   passes (`reports/clean-room/rust-frontend/conformance.tsv`).

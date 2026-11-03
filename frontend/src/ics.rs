@@ -464,13 +464,16 @@ impl P {
         let sc = self.classes[c].scope;
         let mut names: Vec<(&String, &Vec<DeclId>)> = self.scopes[sc].names.iter().collect();
         names.sort_by_key(|x| x.0.clone());
+        // A conversion function of a derived class hides the one of a base
+        // with the same name; the overloads of one class all count (CVF-4).
+        let before = out.len();
         for (_, ids) in names {
             for &d in ids {
                 if self.decls[d].scope != sc {
                     continue;
                 }
                 if let Some(f) = self.func(d) {
-                    if f.kind == FnKind::Conversion && !out.iter().any(|&o| self.decls[o].name == self.decls[d].name) {
+                    if f.kind == FnKind::Conversion && !out[..before].iter().any(|&o| self.decls[o].name == self.decls[d].name) && !out.contains(&d) {
                         out.push(d);
                     }
                 }
@@ -537,7 +540,7 @@ impl P {
             // ICS-8: a deleted function still forms a sequence. CVF-3: a
             // contextual conversion to bool also uses an explicit
             // conversion function to bool.
-            if f.explicit && !(self.contextual && f.fty.ret.t == Ty::Bool && p.t == Ty::Bool) {
+            if f.explicit && !self.direct_conv && !(self.contextual && f.fty.ret.t == Ty::Bool && p.t == Ty::Bool) {
                 continue;
             }
             if f.fty.ret.is_unknown() {
@@ -551,6 +554,11 @@ impl P {
             };
             let Some(third) = third else { continue };
             if third.kind != IK::Std {
+                continue;
+            }
+            if f.explicit && self.direct_conv && third.s.sec != Sec::None {
+                // ICS-45: in a direct-initialization, an explicit conversion
+                // function serves only with a qualification adjustment left.
                 continue;
             }
             if (f.template || self.spec_of.contains_key(&fid)) && third.s.rank != 0 {
@@ -1291,7 +1299,11 @@ impl P {
             // declared in the class scope; give up when they could apply.
             let Some(c) = lc else { return None };
             let rc = r.map(|r| nonref(&r.ty).t);
-            if matches!(rc, Some(Ty::Class(_))) || !self.classes[c].ctors.is_empty() {
+            // A class that declares a copy assignment operator has no
+            // implicit copy or move assignment (CPY-4, CPY-5), so the
+            // declared operators are all the candidates.
+            let declares_copy = self.copy_cands(c, true, false).is_some_and(|v| !v.is_empty());
+            if !declares_copy && (matches!(rc, Some(Ty::Class(_))) || !self.classes[c].ctors.is_empty()) {
                 return None;
             }
         }
