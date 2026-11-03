@@ -177,6 +177,10 @@ catalog counts as done.
 | R-constexpr, R-attributes, R-alignment, R-static-assert, R-volatile | done, 242/242 (233 cite a rule of the test), without test names; findings RDC-1 to RDC-10 | `reports/clean-room/R-declarations/` |
 | R-enumerations, R-exception-specifications, R-default-arguments, R-definitions, R-deleted, R-inline | done, 220/220 (218 cite a rule of the test), without test names; findings RDD-1 to RDD-9 | `reports/clean-room/R-declarations/` |
 | R-linkage-specifications, R-namespaces, R-storage-linkage | done, 132/132 (131 cite a rule of the test), without test names; findings RDE-1 to RDE-8 | `reports/clean-room/R-declarations/` |
+| R-constructors, R-initializer-lists, R-access | done, 260/260 (250 cite a rule of the test), without test names; findings RCA-1 to RCA-12 | `reports/clean-room/R-classes/` |
+| R-copy-move, R-derived, R-members | done, 269/270 (256 cite a rule of the test), without test names; findings RCB-1 to RCB-11 | `reports/clean-room/R-classes/` |
+| R-operators, R-comparisons, R-conversion-functions | done, 234/236 (225 cite a rule of the test), without test names; findings RCC-1 to RCC-9 | `reports/clean-room/R-classes/` |
+| R-unions, R-virtual | done, 241/241 (237 cite a rule of the test), without test names; findings RCD-1 to RCD-6 | `reports/clean-room/R-classes/` |
 | All others | planned | |
 
 ## 9. Prompts

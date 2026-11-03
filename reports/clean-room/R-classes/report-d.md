@@ -34,7 +34,7 @@ The findings below cover these, plus the link-fail answers in R-virtual (p90 and
 - Batch and program: R-unions p107.
 - Rules: BF-10, BF-5.
 - What I needed: The program stores 5 in a signed 3-bit field and expects -3. BF-10 says the value "is reduced modulo 2^n". For an unsigned field the meaning is clear. For a signed field, 5 modulo 8 is 5, and 5 does not fit. The reader has to assume the result is the value in the field's signed range that matches modulo 2^n. I answered runs on that assumption.
-- Suggestion: Say in BF-10 that for a signed bit-field the stored value is the one in the field's range (from -2^(n-1) to 2^(n-1)-1) that is congruent to the source value modulo 2^n. Add one example with a negative result.
+- Suggestion: Say in BF-10 that for a signed bit-field, the stored value is the one that fits the field's range (the range of an n-bit two's complement value) and has the same remainder as the source value when both are divided by 2^n. Add one example with a negative result.
 
 ## RCD-3
 
