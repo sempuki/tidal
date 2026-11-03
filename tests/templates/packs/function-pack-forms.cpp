@@ -1,4 +1,4 @@
-// tidal-rules: PACK-1 DEFARG-8
+// tidal-rules: PACK-1
 // tidal-expect: accept
 // tidal-note: The pattern of a function parameter pack can be any declarator: a reference, a pointer, or a pointer to function. A placeholder pattern makes a pack too, and parameters with defaults can come before a pack.
 template <class... R> constexpr int functions(R (*... fp)()) { return sizeof...(fp); }

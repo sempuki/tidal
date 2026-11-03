@@ -1,4 +1,4 @@
-// tidal-rules: DCL-10
+// tidal-rules: DCL-19
 // tidal-expect: reject
 // tidal-error-clang: array is too large
 // tidal-error-gcc: narrowing conversion of .4294967296

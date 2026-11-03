@@ -29,6 +29,11 @@ flags:
 | EDG 7.0 | EDG | a front end only, so EDG translates each program and runs none |
 | EDG 7.0, ILP32 | EDG | the same front end for a target with 32-bit `long` and pointers; runs only the tests for such a target |
 
+Each compiler builds for x86-64 Linux, where `long` and pointers have
+64 bits. A test with `-m32` builds for a target where `long` and
+pointers have 32 bits. {rule}`TYP-1` gives the size of each type on
+both targets.
+
 A compiler skips each test that uses a flag the compiler does not
 accept. A skipped test has no result on that compiler, so the
 outcome of the test is the outcome on the compilers that run it.

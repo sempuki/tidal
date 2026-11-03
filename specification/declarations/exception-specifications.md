@@ -126,8 +126,9 @@ kept in:
 
 A call through a pointer to a non-throwing function is non-throwing.
 Parameter types that differ in `noexcept` are different types, so
-functions with those parameter types overload. EXS-8 lists what is not
-valid.
+functions with those parameter types overload. For a `noexcept`
+argument, the overload that keeps `noexcept` is better
+({rule}`ICS-26`). EXS-8 lists what is not valid.
 :::
 
 :::{rule} EXS-8

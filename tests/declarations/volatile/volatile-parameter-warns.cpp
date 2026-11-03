@@ -1,4 +1,4 @@
-// tidal-rules: VOL-5
+// tidal-rules: VOL-5 CV-9
 // tidal-expect: reject
 // tidal-error-clang: volatile-qualified parameter type.*deprecated
 // tidal-error-gcc: volatile.-qualified parameter is deprecated

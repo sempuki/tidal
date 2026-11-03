@@ -99,7 +99,9 @@ These conditions apply to the enumerators of ENUM-1:
 The enumerators of an unscoped enumeration are declared in the enclosing
 scope. The enumerators can also be named through the enumeration. A
 value converts implicitly to an integer by {term}`integer promotion`.
-ENUM-15 lists what is not valid.
+Arithmetic between two different enumerations is valid and deprecated
+({rule}`ADD-16`, {rule}`MUL-16`, {rule}`BIT-8`). ENUM-15 lists what is
+not valid.
 :::
 
 :::{rule} ENUM-15
@@ -233,7 +235,7 @@ underlying type.
 | Underlying type | Enumerator | Type inside the list |
 |---|---|---|
 | Fixed | Any | The underlying type |
-| Not fixed | With an initializer | The type of the initializer, without promotion. An initializer of enumeration type gives that enumeration type. |
+| Not fixed | With an initializer | The type of the initializer, without promotion and without cv-qualifiers. An initializer of enumeration type gives that enumeration type. |
 | Not fixed | Without an initializer | The type of the enumerator before it, if that type can hold its value (ENUM-13) |
 
 :::
@@ -352,6 +354,13 @@ All eight compilers agree on 56 of 59 tests. The results are in
   evaluation ("outside the valid range of values [0, 7]"). GCC and EDG
   accept the cast. The provisional answer is that the behavior is
   undefined. See {question}`Q-0017`.
+- **ENUM-6.** At run time, the undefined behavior sanitizer of Clang
+  and GCC (`-fsanitize=undefined`) does not stop the conversion of an
+  out-of-range value. The sanitizer stops at the first read of the
+  stored value ("load of value 5, which is not a valid value for type").
+- **ENUM-2.** Clang and GCC accept arithmetic between two different
+  unscoped enumerations under `-pedantic-errors`, with a deprecation
+  warning that is on by default. EDG accepts it too.
 - **ENUM-21.** Clang, GCC, and EDG agree that `static_cast` of 300 to an
   enumeration with underlying type `unsigned char` gives 44 during
   constant evaluation. Clang and GCC give the same value at run time.

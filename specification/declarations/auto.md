@@ -202,8 +202,9 @@ In `auto x = { ... };` (AUTO-7):
 
 - each element must give the same `T`,
 - the list must not be empty,
-- a declaration of `std::initializer_list` must come first
-  ({rule}`LSUP-1`).
+- a declaration of `std::initializer_list` with the shape that
+  {rule}`LSUP-1` gives must come first. An empty class template does not
+  have that shape.
 :::
 
 :::{rule} AUTO-8
@@ -216,7 +217,9 @@ A variable declared with `auto` must:
 - not occur in its own initializer,
 - not have an initializer of type `void`,
 - not have as its initializer the name of an overload set that
-  {rule}`OVL-20` does not reduce to one function,
+  {rule}`OVL-20` does not reduce to one function. The name of a function
+  template without template arguments is such a set. With arguments that
+  fix every template parameter, the name names one function.
 - not combine `auto` with another type specifier,
 - not be an array of `auto`.
 
@@ -283,7 +286,8 @@ Braces without `=` that contain one expression are permitted
 
 The rules on this page also apply to variables in the conditions of
 `if`, `while`, and `switch`, and in the initializer statements of `if`,
-`switch`, and `for`.
+`switch`, and `for`. A braced list as the range of a range-based `for`
+follows AUTO-7 and AUTO-21 ({rule}`RFOR-1`).
 :::
 
 :::{rule} AUTO-13
@@ -364,6 +368,13 @@ auto x({1});                    // rejected
 
 auto y = {1, 2};                // std::initializer_list<int>
 auto z = {1, 2.0};              // rejected
+for (auto e : {1, 2.0}) {}      // rejected: as for z
+
+void once(int);
+template <class T> void each(T);
+auto fo = once;                 // void (*)(int)
+auto fe = each;                 // rejected: no template arguments
+auto fl = each<long>;           // void (*)(long)
 
 auto aa = 1, *pa = &aa, &ra = aa;   // int, int*, int&
 auto bb = 1, cc = 2.0;              // rejected
@@ -384,9 +395,11 @@ All rules on this page are `required` or `reject`. All eight compilers
 agree on all 55 tests. The results are in `tests/RESULTS.md`.
 
 The tests for `auto x = { ... }` declare a small
-`std::initializer_list`, because tests include no headers. Without that
-declaration, each compiler rejects the `auto` declaration and names the
-missing header.
+`std::initializer_list` with the shape that {rule}`LSUP-1` gives,
+because tests include no headers. Without that declaration, each
+compiler rejects the `auto` declaration and names the missing header.
+Each compiler also rejects a declaration of the wrong shape, such as an
+empty class template.
 
 Inputs: clang-sema-deduction, clang-sema-decl, edg-overload, edg-decls
 (see `inputs/MANIFEST.md`).

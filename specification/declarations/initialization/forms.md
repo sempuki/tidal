@@ -84,14 +84,15 @@ A conversion that loses information is permitted. `nullptr` converts to
 
 :::{rule} INIT-7
 :kind: reject
-:tests: declarations/initialization/forms/copy-init-no-conversion.cpp declarations/initialization/forms/direct-init-multiple.cpp declarations/initialization/forms/copy-init-explicit-rejected.cpp declarations/initialization/forms/scalar-list-in-parens.cpp declarations/initialization/forms/incomplete-type.cpp declarations/initialization/forms/nullptr-bool-copy.cpp
+:tests: declarations/initialization/forms/copy-init-no-conversion.cpp declarations/initialization/forms/direct-init-multiple.cpp declarations/initialization/forms/copy-init-explicit-rejected.cpp declarations/initialization/forms/scalar-list-in-parens.cpp declarations/initialization/forms/incomplete-type.cpp declarations/initialization/forms/incomplete-type-copy.cpp declarations/initialization/forms/incomplete-type-paren.cpp declarations/initialization/forms/nullptr-bool-copy.cpp
 
-An initializer after `=` or in parentheses must meet these conditions:
+A variable with an initializer of any form, braces included, must have
+a complete type. An initializer after `=` or in parentheses must also
+meet these conditions:
 
 - The expression must be convertible to the type of the variable.
 - For a scalar, the parentheses must hold exactly one expression.
 - For a scalar, the expression in parentheses must not be a braced list.
-- The type of the variable must be complete.
 - An `explicit` constructor ({rule}`CTOR-9`) must not be used with `=`.
 - `nullptr` converts to `bool` only in direct initialization.
 :::
@@ -178,7 +179,8 @@ time is undefined. These rules also apply:
   way.
 - A copy of such a value into an object of type `unsigned char` or
   `std::byte` is not undefined, and the copy also has no value
-  ({question}`Q-0039`).
+  ({question}`Q-0039`). Constant evaluation rejects such a copy
+  ({rule}`CE-32`).
 :::
 
 ## Examples
@@ -208,12 +210,17 @@ struct Bits {
 
 ## Evidence
 
-All eight compilers agree on 31 of 32 tests. The results are in
+All eight compilers agree on 33 of 34 tests. The results are in
 `tests/RESULTS.md`.
 
 - **INIT-1.** All compilers reject a read of an uninitialized scalar
   during {term}`constant evaluation` ("read of uninitialized object",
-  "access to uninitialized object").
+  "access to uninitialized object"). The rejection covers a copy of an
+  `unsigned char` that has no value, though the copy is not undefined
+  at run time ({rule}`CE-32`, {question}`Q-0039`).
+- **INIT-9.** In constant evaluation, the default constructor that the
+  implementation writes for a class can run if each constructor that it
+  calls for a base or a member can run ({rule}`CE-2`).
 - **INIT-1 divergence.** For an array element, Clang and GCC reject the
   read during constant evaluation. EDG 7.0 accepts the read. The
   provisional answer is that INIT-1 applies to array elements and that

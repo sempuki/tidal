@@ -380,6 +380,13 @@ EDG checks each unit and does not link.
 - **STO-6.** Clang reports a storage class on a declaration that only
   defines a class as a pedantic warning. `-pedantic-errors` makes the
   warning an error. GCC and EDG reject such a declaration in each mode.
+- **STO-11.** Clang accepts an anonymous union without `static` in an
+  unnamed namespace. GCC and EDG reject the union
+  ({question}`Q-0045`).
+- **STO-9.** The C++ run-time library of Clang and GCC detects a second
+  entry into the initialization of a block-scope `static` variable,
+  also at `-O0` without a sanitizer. The program ends with an uncaught
+  exception (`recursive_init_error`) and a nonzero status.
 - **LNK-9.** EDG 7.0 rejects a block-scope `extern` declaration that
   redeclares an internal-linkage variable hidden by a local variable.
   Clang and GCC accept the declaration and read the namespace-scope

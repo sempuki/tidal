@@ -50,7 +50,7 @@ every part.
 :::
 
 :::{principle} CE-P3
-:rules: CE-4 CE-6 CE-8 CE-9 CE-12 CE-13 CE-15 CE-22 CE-27 CE-28 CE-31
+:rules: CE-4 CE-6 CE-8 CE-9 CE-12 CE-13 CE-15 CE-22 CE-27 CE-28 CE-31 CE-32
 :exceptions: CE-26
 
 An evaluation must not depend on the machine or on where objects are
@@ -141,10 +141,12 @@ Constant evaluation can contain these operations:
 
 :::{rule} CE-2
 :kind: reject
-:tests: expressions/constant-expressions/non-constexpr-call.cpp
+:tests: expressions/constant-expressions/non-constexpr-call.cpp expressions/constant-expressions/implicit-constructor-calls-constexpr.cpp expressions/constant-expressions/implicit-constructor-member-not-constexpr.cpp expressions/constant-expressions/defaulted-constructor-member-not-constexpr.cpp expressions/constant-expressions/implicit-destructor-member-not-constexpr.cpp
 
 During constant evaluation, the program can call only `constexpr` and
-`consteval` functions.
+`consteval` functions. A constructor or a destructor that is implicit
+or defaulted counts as `constexpr`. Each function that it calls for a
+base or a member must also obey this rule.
 :::
 
 :::{rule} CE-3
@@ -409,6 +411,15 @@ an object that has a scalar part with no value (OBJ-2), including the
 move of a returned local variable ({rule}`CPY-12`).
 :::
 
+:::{rule} CE-32
+:kind: reject
+:tests: declarations/initialization/forms/copy-indeterminate-unsigned-char.cpp
+
+Constant evaluation must not read a scalar object that has no value.
+The rule also applies where a run-time read is not undefined, such as
+a copy into an `unsigned char` ({rule}`INIT-1`, {question}`Q-0039`).
+:::
+
 :::{rule} CE-23
 :kind: required
 :tests: expressions/constant-expressions/literal-destructor.cpp expressions/constant-expressions/literal-member.cpp expressions/constant-expressions/literal-base.cpp expressions/constant-expressions/literal-volatile-member.cpp expressions/constant-expressions/literal-union-volatile-member.cpp expressions/constant-expressions/literal-union-all-volatile.cpp expressions/constant-expressions/literal-constexpr-destructor.cpp expressions/constant-expressions/literal-closure.cpp expressions/constant-expressions/literal-not-reached.cpp expressions/constant-expressions/literal-one-constexpr-constructor.cpp
@@ -522,8 +533,8 @@ static_assert(m == 4);                // rejected: the temporary is not const
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 92
-of 106 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 97
+of 111 tests.
 
 - CE-10: all three implementations reject a recursion depth of 100000
   and a loop of 100000000 steps by default. All accept a depth of 400.
@@ -567,9 +578,12 @@ of 106 tests.
   ({question}`Q-0004`). EDG 7.0 accepts both ({question}`Q-0002`).
 - CE-3 and CE-14: the compilers split on temporaries that a namespace
   `constexpr` reference extends ({question}`Q-0193`).
-  - EDG rejects the reference when the temporary is extended through a
-    member access or through a reference member of a braced aggregate.
-    Clang and GCC accept both references.
+  - EDG rejects a `constexpr` reference variable when its temporary is
+    extended through a member access, or when the variable binds a
+    temporary aggregate whose reference member binds another
+    temporary. Clang and GCC accept both references. Every compiler
+    accepts a `constexpr` aggregate variable whose reference member
+    binds a temporary ({rule}`CX-2`).
   - GCC rejects a read of a `const` temporary of class type. Clang and
     EDG accept the read. Every compiler accepts the read of a `const`
     scalar temporary and rejects the read of a temporary that is not

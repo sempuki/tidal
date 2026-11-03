@@ -188,7 +188,7 @@ These uses of an elaborated type specifier (TYN-4) are not valid:
 
 :::{rule} TYN-6
 :kind: required
-:tests: declarations/type-names/complete-after-definition-in-scope.cpp declarations/type-names/forward-after-definition.cpp declarations/type-names/forward-class-reference-param.cpp declarations/type-names/forward-class.cpp declarations/type-names/forward-enum-opaque.cpp declarations/type-names/forward-enum-scoped-default-base.cpp declarations/type-names/forward-nested-class.cpp declarations/type-names/deleted-incomplete-types.cpp
+:tests: declarations/type-names/complete-after-definition-in-scope.cpp declarations/type-names/forward-after-definition.cpp declarations/type-names/forward-class-reference-param.cpp declarations/type-names/forward-class.cpp declarations/type-names/forward-enum-opaque.cpp declarations/type-names/forward-enum-scoped-default-base.cpp declarations/type-names/forward-enum-scoped-int-then-none.cpp declarations/type-names/forward-nested-class.cpp declarations/type-names/deleted-incomplete-types.cpp
 
 These rules apply to forward declarations and complete types:
 
@@ -206,7 +206,7 @@ These rules apply to forward declarations and complete types:
 
 :::{rule} TYN-7
 :kind: reject
-:tests: declarations/type-names/class-redefinition.cpp declarations/type-names/enum-fixed-mismatch.cpp declarations/type-names/enum-scoped-mismatch.cpp declarations/type-names/forward-class-function-definition-param.cpp declarations/type-names/forward-class-incomplete-use.cpp declarations/type-names/forward-class-object.cpp declarations/type-names/forward-enum-base-mismatch.cpp declarations/type-names/forward-enum-no-base.cpp declarations/type-names/forward-nested-wrong-scope.cpp declarations/type-names/elaborated-qualified-declaration-only.cpp declarations/type-names/definition-incomplete-return.cpp
+:tests: declarations/type-names/class-redefinition.cpp declarations/type-names/enum-fixed-mismatch.cpp declarations/type-names/enum-fixed-after-not-fixed.cpp declarations/type-names/enum-scoped-long-then-default.cpp declarations/type-names/enum-scoped-mismatch.cpp declarations/type-names/forward-class-function-definition-param.cpp declarations/type-names/forward-class-incomplete-use.cpp declarations/type-names/forward-class-object.cpp declarations/type-names/forward-enum-base-mismatch.cpp declarations/type-names/forward-enum-no-base.cpp declarations/type-names/forward-nested-wrong-scope.cpp declarations/type-names/elaborated-qualified-declaration-only.cpp declarations/type-names/definition-incomplete-return.cpp
 
 A program must not:
 
@@ -218,8 +218,11 @@ A program must not:
 - define a class two times,
 - declare an unscoped enumeration without a body and without a fixed
   underlying type,
-- declare an enumeration again with a different underlying type, scope,
-  or fixed base,
+- declare an enumeration again as scoped after unscoped, or the reverse,
+- declare an enumeration again with a different underlying type. A
+  declaration without `: type` gives a scoped enumeration the type `int`
+  and gives an unscoped enumeration no fixed type. So after
+  `enum E : int;`, the definition `enum E { a };` is not valid.
 - define a nested class that its enclosing class does not declare.
 :::
 
@@ -253,12 +256,25 @@ struct stat info;                // the class, not the function
 
 enum class Mode : unsigned char; // opaque: size is known
 Mode current();
+
+enum Flags : int;                // opaque, fixed type int
+enum Flags { on };               // rejected: no fixed type here
+enum class Level : int;
+enum class Level { low };        // valid: a scoped enumeration has int
+
+namespace net {
+void send(struct Packet* p);     // declares net::Packet
+}
+struct Packet {};                // ::Packet, a different class
+void post(Packet* p) {
+  net::send(p);                  // rejected: Packet* is not net::Packet*
+}
 ```
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 57
-of 61 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 60
+of 64 tests.
 
 - TYN-5: GCC rejects the class, for a type name and for a function name
   that a later data member changes. Clang and EDG accept the class

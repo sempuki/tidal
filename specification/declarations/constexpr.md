@@ -210,8 +210,9 @@ destructor.
 :kind: reject
 :tests: declarations/constexpr/constinit-automatic.cpp declarations/constexpr/constinit-block-static.cpp declarations/constexpr/constinit-with-constexpr.cpp declarations/constexpr/constinit-extern-declaration.cpp declarations/constexpr/constinit-only-on-definition.cpp declarations/constexpr/constinit-on-function.cpp declarations/constexpr/constinit-added-late.cpp declarations/constexpr/constinit-on-declaration-only.cpp
 
-A `constinit` variable must have static or thread {term}`storage
-duration`. A declaration must not have both `constinit` and `constexpr`.
+`constinit` applies only to variables, and a `constinit` variable must
+have static or thread {term}`storage duration`. A declaration must not
+have both `constinit` and `constexpr`.
 If a declaration of a variable has `constinit`, the initializing
 declaration must also have it ({question}`Q-0025`).
 :::
@@ -257,8 +258,12 @@ of 69 tests.
   compiler rejects one that reaches a `static int`
   (`function-static-local-evaluated.cpp`).
 - CX-3: Clang 18 rejects a `constexpr` function that never gives a
-  constant, and a non-literal parameter type. Newer versions accept both
-  ({question}`Q-0020`).
+  constant, a non-literal parameter type, and a non-literal return
+  type. Clang 22 accepts all three ({question}`Q-0020`).
+- CEV-1: all eight compilers, Clang 18 and GCC 14 included, make a
+  lambda and a `constexpr` function from a template `consteval` when
+  the body calls a `consteval` function with arguments that are not
+  constant.
 - CINIT-2: Clang rejects `constinit` added after the initializing
   declaration. GCC and EDG accept the late `constinit`. Clang
   (pedantic) and EDG reject `constinit` that is only on an earlier
@@ -266,6 +271,8 @@ of 69 tests.
   ({question}`Q-0025`).
 - CX-2: all compilers reject a `constexpr` aggregate in a block whose
   reference member binds to a temporary, and accept the same aggregate
-  at namespace scope.
+  at namespace scope. A `constexpr` reference variable that binds a
+  temporary aggregate is a different case, which {rule}`CE-14` covers
+  ({question}`Q-0193`).
 
 Inputs: clang-sema-decl, clang-sema-declcxx, clang-diag-sema, edg-decls.

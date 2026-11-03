@@ -296,6 +296,9 @@ All eight compilers agree on 51 of 55 tests. The results are in
   two `_` names as extensions from a later language version. The two
   compilers reject these forms only under `-pedantic-errors`. Clang
   reports an empty list of names as a pedantic diagnostic.
+- **SB-8.** EDG 7.0 rejects two `_` names in one declaration in strict
+  mode ("has already been declared"). So all eight compilers reject the
+  declaration in the test's mode.
 - **SB-7, braced array initializer.** Clang 18.1.3 rejects
   `auto [r, s]{a};` when `a` is an array. Clang 22, GCC, and EDG accept
   the declaration. The settled answer is that the declaration is

@@ -118,9 +118,10 @@ volatile operands. VOL-11 lists what is not valid.
 :tests: declarations/volatile/assign-to-volatile-class.cpp declarations/volatile/copy-volatile-class-rejected.cpp
 
 The implicit copy functions of a class take `const T&`, which does not
-bind to a volatile object. A volatile class object can only be copied or
-assigned with functions that the class declares for volatile operands
-(VOL-4).
+bind to a volatile object. The implicit assignment operators are not
+`volatile`, so they cannot assign to a volatile object (VOL-9). A
+volatile class object can only be the source or the target of a copy
+through functions that the class declares for volatile operands (VOL-4).
 :::
 
 :::{rule} VOL-7

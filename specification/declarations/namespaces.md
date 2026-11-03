@@ -274,12 +274,23 @@ namespace L = Long::Nested::Name;
 int N::x = 7;            // N must declare x first
 namespace M { extern const int build; }
 extern const int M::build = 2026;  // extern on a qualified definition
+namespace M { static int count(); extern int total; }
+static int M::count() { return 1; }  // valid: count is static already
+static int M::total = 0;             // rejected: total has external
+                                     // linkage (LNK-10)
 
 namespace A { int x; }
 namespace B { int x; }
 using namespace A;
 using namespace B;       // valid
 int y = x;               // rejected: x is ambiguous
+
+int v = 1;
+namespace C { int v = 2; }
+int read() {
+  using namespace C;     // C::v counts as a member of the global
+  return v;              // namespace here: rejected, v is ambiguous
+}
 ```
 
 ## Evidence

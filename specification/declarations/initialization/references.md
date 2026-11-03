@@ -269,7 +269,7 @@ and constant evaluation rejects such a binding ({question}`Q-0110`).
 
 :::{rule} REF-15
 :kind: recommended
-:tests: declarations/initialization/references/dangling-new-member-warns.cpp
+:tests: declarations/initialization/references/dangling-new-member-warns.cpp declarations/initialization/references/dangling-new-member-warns-default.cpp
 
 An implementation should warn when a reference outlives the temporary
 that it binds to (REF-5). An example is a reference member of an object
@@ -326,7 +326,7 @@ int& m{s};                   // rejected: a temporary needs const or &&
 
 ## Evidence
 
-All eight compilers agree on 48 of 62 tests. The results are in
+All eight compilers agree on 48 of 63 tests. The results are in
 `tests/RESULTS.md`.
 
 - **REF-5.** All compilers reject the dangling reads during
@@ -338,10 +338,17 @@ All eight compilers agree on 48 of 62 tests. The results are in
   of an object from `new` at the end of the full expression, with braces
   and with parentheses. A class temporary whose conversion function
   returns a reference to its member also ends there.
-- **REF-15.** Clang warns about a temporary bound to a reference member
-  of an object from `new`. GCC does not. Each compiler warns about some
-  other dangling cases, and the cases differ by version
-  ({question}`Q-0180`).
+- **REF-5.** At run time, the address sanitizer of Clang and GCC
+  (`-O0 -fsanitize=address`) stops a read through a reference whose
+  temporary ended at the end of a full expression, such as a temporary
+  bound to a parameter and returned. The report is a stack use after
+  scope.
+- **REF-15.** Clang 18 and 22 warn about a temporary bound to a
+  reference member of an object from `new`. The warning is
+  `-Wdangling-field`, which is on by default, so `-Werror` alone makes
+  it an error. GCC 14 and 16 do not warn, also under `-Wall`. Each
+  compiler warns about some other dangling cases, and the cases differ
+  by version ({question}`Q-0180`).
 - **REF-4.** EDG 7.0 rejects binding an rvalue reference to an element
   of an array member of a temporary. Clang and GCC accept the binding
   and extend the temporary ({question}`Q-0109`).
@@ -364,7 +371,10 @@ All eight compilers agree on 48 of 62 tests. The results are in
 - **REF-6.** For one braced element of a class type that converts to
   the referenced type, Clang and EDG make a temporary. GCC binds a
   reference to a non-class type through the conversion function, and
-  makes a temporary for a class type ({question}`Q-0157`).
+  makes a temporary for a class type ({question}`Q-0157`). If that
+  conversion function returns an lvalue reference, GCC binds a `const`
+  lvalue reference to its result and rejects an rvalue reference
+  ("cannot bind rvalue reference ... to lvalue").
 - **REF-6.** For a reference to a function type, GCC rejects an
   overloaded function name in braces, and EDG rejects a `noexcept`
   function in braces. The other compilers bind the reference as after

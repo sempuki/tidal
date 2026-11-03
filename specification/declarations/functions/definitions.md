@@ -213,10 +213,10 @@ function that returns `void` returns normally at the end.
 :tests: declarations/functions/definitions/main-one-param.cpp declarations/functions/definitions/main-three-params.cpp declarations/functions/definitions/main-wrong-first-param.cpp declarations/functions/definitions/main-four-params.cpp declarations/functions/definitions/argv-zero.cpp foundations/translation/main-wrong-parameter-types.cpp
 
 An implementation accepts `main` with the parameter lists `()` and
-`(int, char**)`. Acceptance of other parameter lists is
-implementation-defined ({question}`Q-0024`). If `argc` is greater than
-zero, `argv[0]` points to the name used to start the program or to an
-empty string.
+`(int, char**)`. Acceptance of other parameter lists, and the values
+of their parameters, are implementation-defined ({question}`Q-0024`).
+If `argc` is greater than zero, `argv[0]` points to the name used to
+start the program or to an empty string.
 :::
 
 :::{rule} FN-10
@@ -275,14 +275,28 @@ All eight compilers agree on 39 of 45 tests. The results are in
 `tests/RESULTS.md`.
 
 - FN-3: all compilers reject a call that reaches the end of the function
-  during constant evaluation.
+  during constant evaluation. At run time, the undefined behavior
+  sanitizer of Clang and GCC (`-fsanitize=undefined`) stops the program
+  when control reaches the end ("execution reached the end of a
+  value-returning function").
 - FN-4: Clang and GCC reject calls to `main` and its address only as
   pedantic diagnostics. EDG rejects them in all modes.
 - FN-5: Clang accepts `__func__` outside a function with a warning. GCC
   and EDG reject such a use ({question}`Q-0022`).
-- FN-6: GCC rejects `(int)` under `-pedantic-errors`. EDG accepts
-  `(double)` and four parameters. All compilers accept three parameters
-  ({question}`Q-0024`).
+- FN-6: the compilers accept these parameter lists of `main`
+  ({question}`Q-0024`):
+
+  | Parameters | Clang | GCC | EDG |
+  |---|---|---|---|
+  | `(int)` | accepts | rejects | accepts |
+  | `(double)` | rejects | rejects | accepts |
+  | `(long, char**)` | rejects | rejects | accepts |
+  | `(int, char**, char**)` | accepts | accepts | accepts |
+  | `(int, char**, char**, char**)` | rejects | rejects | accepts |
+
+  GCC rejects `(int)` only under `-pedantic-errors`. With three
+  parameters, Clang and GCC on Linux pass a pointer that is not null as
+  the third argument, the list of environment variables.
 - FN-7: Clang and GCC warn with `-Wreturn-type`.
 - FN-10: Clang 22 and GCC 16 destroy a by-value parameter at the end of
   the caller's full expression, after the next operand of a comma.

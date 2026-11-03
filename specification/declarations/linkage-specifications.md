@@ -72,6 +72,9 @@ type in its declarations, such as a parameter type or a type alias
 (LSP-6). In nested linkage specifications, the innermost applies. These
 rules apply:
 
+- `extern "C++"` gives C++ language linkage, which a declaration
+  without a linkage specification has too. So outside an `extern "C"`
+  block, `extern "C++"` changes nothing.
 - A linkage specification can occur in a namespace. The braces of a
   linkage specification do not make a scope, so names declared in the
   braces are visible after the closing brace.
@@ -151,8 +154,9 @@ support no others, and they reject an unknown language.
 
 Each implementation chooses if a function type records its language
 linkage ({question}`Q-0074`). If the implementation does, a pointer to a
-C function and a pointer to a C++ function have different types. The
-first does not convert to the second.
+C function and a pointer to a C++ function have different types, and
+neither converts to the other. If not, the two types are the same, so
+two declarations that differ only in that linkage declare one function.
 :::
 
 ## Examples
@@ -194,7 +198,13 @@ of 32 tests.
   Clang and GCC do not ({question}`Q-0074`). EDG gives the linkage to a
   function type in a parameter and in a type alias inside an
   `extern "C"` block, and rejects a C++ function as the argument for
-  either. Clang and GCC accept both calls.
+  either. EDG also rejects a C function as the initializer of a pointer
+  to a C++ function type, such as `void (*)()`. Clang and GCC accept
+  each of these programs.
+- LSP-6: two functions whose parameter types differ only in the
+  linkage of a function type are two overloads on EDG. On Clang and
+  GCC the second declaration declares the first function again. Every
+  compiler accepts the two declarations.
 - LSP-4: GCC accepts a C language linkage name that matches a global
   variable ({question}`Q-0075`).
 - LSP-2, LSP-4: GCC 14 and Clang 18 accept C language linkage on `main`

@@ -87,7 +87,7 @@ expression must not itself be a braced list.
 
 :::{rule} LIST-2
 :kind: reject
-:tests: declarations/initialization/list/narrowing-float-to-int.cpp declarations/initialization/list/narrowing-float-to-int-exact.cpp declarations/initialization/list/narrowing-constant-out-of-range.cpp declarations/initialization/list/narrowing-constant-fits.cpp declarations/initialization/list/narrowing-negative-to-unsigned.cpp declarations/initialization/list/narrowing-nonconstant-int.cpp declarations/initialization/list/narrowing-double-to-float-in-range.cpp declarations/initialization/list/narrowing-double-to-float-out-of-range.cpp declarations/initialization/list/narrowing-double-to-float-nonconstant.cpp declarations/initialization/list/narrowing-int-to-float-inexact.cpp declarations/initialization/list/narrowing-int-to-float-exact.cpp declarations/initialization/list/narrowing-pointer-to-bool.cpp declarations/initialization/list/narrowing-in-aggregate.cpp declarations/initialization/list/narrowing-not-in-parens.cpp declarations/initialization/list/narrowing-bit-field-fits.cpp declarations/initialization/list/narrowing-member-pointer-to-bool.cpp declarations/initialization/list/narrowing-unscoped-enum.cpp foundations/conversion-sequences/chosen-narrowing.cpp
+:tests: declarations/initialization/list/narrowing-float-to-int.cpp declarations/initialization/list/narrowing-float-to-int-exact.cpp declarations/initialization/list/narrowing-constant-out-of-range.cpp declarations/initialization/list/narrowing-constant-fits.cpp declarations/initialization/list/narrowing-negative-to-unsigned.cpp declarations/initialization/list/narrowing-nonconstant-int.cpp declarations/initialization/list/narrowing-double-to-float-in-range.cpp declarations/initialization/list/narrowing-double-to-float-out-of-range.cpp declarations/initialization/list/narrowing-double-to-float-nonconstant.cpp declarations/initialization/list/narrowing-int-to-float-inexact.cpp declarations/initialization/list/narrowing-int-to-float-exact.cpp declarations/initialization/list/narrowing-pointer-to-bool.cpp declarations/initialization/list/narrowing-in-aggregate.cpp declarations/initialization/list/narrowing-not-in-parens.cpp declarations/initialization/list/narrowing-bit-field-fits.cpp declarations/initialization/list/narrowing-member-pointer-to-bool.cpp declarations/initialization/list/narrowing-unscoped-enum.cpp declarations/initialization/list/narrowing-unscoped-enum-values-fit.cpp declarations/initialization/list/narrowing-nonconstant-long-ilp32.cpp foundations/conversion-sequences/chosen-narrowing.cpp
 
 In braces, a value must not go through a *narrowing* conversion. These
 conversions are narrowing:
@@ -98,11 +98,12 @@ conversions are narrowing:
 | Integer | Floating-point | The value is a constant that the target type holds exactly. |
 | `long double` | `double` or `float` | The value is a constant in the range of the target type. |
 | `double` | `float` | The value is a constant in the range of the target type. |
-| Integer | An integer type that cannot hold all its values | The value is a constant that fits. |
+| Integer | An integer type that cannot hold all its values on the target ({rule}`TYP-1`) | The value is a constant that fits. |
 | Pointer or pointer to member | `bool` | Never |
 
 An unscoped enumeration without a fixed type counts as an integer
-source. A bit-field counts by its width, so a bit-field whose values all
+source whose values are those that {rule}`ENUM-6` gives
+({question}`Q-0331`). A bit-field counts by its width, so a bit-field whose values all
 fit in the target is not narrowing ({question}`Q-0042`). The same
 conversions are permitted in parentheses (INIT-4).
 :::
@@ -263,6 +264,9 @@ int b{1, 2};              // rejected
 
 char c{65};               // 65 fits in char
 char d{300};              // rejected: narrowing
+long l = 1;
+int il{l};                // rejected on x86-64; valid on -m32,
+                          // where long and int have the same size
 float f{0.1};             // in range of float
 float g{16777217};        // rejected: not exact in float
 struct P { int v; };
@@ -280,6 +284,14 @@ struct D { int a; int b; int c; };
 D x{.a = 1, .c = 3};      // b == 0
 D y{.b = 2, .a = 1};      // rejected: out of order
 
+struct Swapped { int c; int a; };
+int pick(D, long);
+int pick(Swapped, int);
+int z = pick({.a = 1, .c = 3}, 0);
+                          // rejected: the int argument chooses
+                          // pick(Swapped, int), and for Swapped the
+                          // designators are out of order (ICS-8)
+
 char h[] = "ab";          // char[3]
 char i[2] = "ab";         // rejected: too long
 char j[] = u8"x";         // valid
@@ -290,9 +302,17 @@ signed char o[] = u8"x";  // rejected: wrong character type
 
 ## Evidence
 
-All eight compilers agree on 57 of 60 tests. The results are in
+All eight compilers agree on 58 of 62 tests. The results are in
 `tests/RESULTS.md`.
 
+- **LIST-2.** For an unscoped enumeration without a fixed type, GCC
+  uses the values that ENUM-6 gives. So GCC accepts an enumeration with
+  the enumerators 0 and 100 as the value of an `unsigned char`. Clang
+  and EDG use every value of the underlying type and reject the same
+  program ({question}`Q-0331`).
+- **LIST-2.** With `-m32`, `long` and `int` have the same size, so a
+  `long` value that is not constant initializes an `int` in braces.
+  Without `-m32`, every compiler rejects the same initialization.
 - **LIST-14.** Clang accepts array designators, chained designators, and
   a mix of designated and plain values as C99 extensions, and rejects
   them only under `-pedantic-errors`. GCC and EDG reject them.

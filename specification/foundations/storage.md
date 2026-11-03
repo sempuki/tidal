@@ -221,7 +221,7 @@ cast between their pointers keeps the original object:
 :tests: foundations/storage/array-size-exceeds-size-type.cpp foundations/storage/class-size-exceeds-size-type.cpp
 
 The size in bytes of a type must fit in `std::size_t` ({rule}`LSUP-4`).
-The rule covers arrays ({rule}`DCL-10`) and classes.
+The rule covers arrays ({rule}`DCL-19`) and classes.
 :::
 
 ## Runtime Behavior

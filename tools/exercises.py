@@ -11,7 +11,9 @@ their tidal- directives, and writes them to OUT as p01.cpp, p02.cpp, and
 so on, in a shuffled order, with a README.md that tells the reader what
 to answer. It also writes a copy of specification/ to OUT/specification/
 with every `:tests:` line removed, so test names do not show the
-outcomes. The README tells the reader to read that copy. The key goes to
+outcomes. The copy has no directive processing, so the generated table
+of `undefined` rules is written into it as a Markdown table. The README
+tells the reader to read that copy. The key goes to
 build/exercise-keys/<name of OUT>.json, away from OUT, so a reader given
 OUT does not see it.
 
@@ -45,6 +47,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import matrix  # noqa: E402
 import run_tests  # noqa: E402
+import undefined_index  # noqa: E402
 
 ROOT = matrix.ROOT
 SPEC = ROOT / "specification"
@@ -54,7 +57,7 @@ KEYS = ROOT / "build" / "exercise-keys"
 OUTCOMES = {
     "reject": "does not compile",
     "link-fail": "every translation unit compiles, but linking fails",
-    "compiles": "compiles; the program is not run (it may have no main)",
+    "compiles": "compiles; the program is not run (it may have no main, or its run may never end)",
     "runs": "compiles, runs, and exits with status 0",
     "run-fail": "compiles, but the run ends with a nonzero status",
     "undefined": "compiles, but running it has undefined behavior, so no outcome is promised; when the build flags include a sanitizer that stops the operation, answer `run-fail`",
@@ -121,15 +124,22 @@ def expectations(test: run_tests.Test) -> set[str]:
 
 
 def copy_specification(out: Path) -> None:
-    """Copy specification/ to OUT/specification/ without its :tests: lines."""
+    """Copy specification/ to OUT/specification/ without its :tests: lines.
+
+    The table of `undefined` rules is a directive that only the site
+    renders, so the copy gets the table as Markdown in its place.
+    """
     for f in sorted(SPEC.rglob("*")):
         target = out / "specification" / f.relative_to(SPEC)
         if f.is_dir():
             continue
         target.parent.mkdir(parents=True, exist_ok=True)
         if f.suffix == ".md":
-            target.write_text("".join(l for l in f.read_text().splitlines(keepends=True)
-                                      if not TESTS_LINE.match(l.rstrip("\n"))))
+            text = "".join(l for l in f.read_text().splitlines(keepends=True)
+                           if not TESTS_LINE.match(l.rstrip("\n")))
+            if undefined_index.DIRECTIVE in text:
+                text = text.replace(undefined_index.DIRECTIVE, undefined_index.markdown(SPEC, f))
+            target.write_text(text)
         else:
             target.write_bytes(f.read_bytes())
 
@@ -183,7 +193,9 @@ def predict(page: str, out: Path) -> int:
         "in the copy in this directory. The copy leaves out the lists of tests.",
         "For each program below, predict what happens when it is built with",
         "`-std=c++23 -pedantic-errors` and no `-O` flag, and, if it compiles",
-        "and links, run. Do not compile the programs.",
+        "and links, run. Do not compile the programs. The target is x86-64",
+        "Linux, unless the flags include `-m32`. The baseline compilers section",
+        "of specification/index.md says which compilers run which programs.",
         "",
         "| Program | Files and flags |",
         "|---|---|",

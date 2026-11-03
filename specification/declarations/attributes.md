@@ -379,6 +379,11 @@ of 72 tests. EDG skips the tests that use `-Werror`.
   Clang and EDG warn and GCC does not. Clang and GCC warn for an unused
   condition variable and an unused range-based `for` variable. EDG does
   not.
+- ATTR-6: under `-Wunused` or `-Wall`, Clang and GCC warn about a
+  variable that the program only assigns ("set but not used",
+  `-Wunused-but-set-variable`). Both also warn about an unused
+  structured binding declaration. Clang reports an unused variable, and
+  GCC reports a declaration that is set but not used.
 - ATTR-7: Clang warns for a missing `[[fallthrough]];` only under
   `-Wimplicit-fallthrough`. GCC also warns under `-Wextra`. Both agree
   on the cases where control falls through.

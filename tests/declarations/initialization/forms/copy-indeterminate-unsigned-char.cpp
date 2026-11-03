@@ -1,4 +1,4 @@
-// tidal-rules: INIT-1
+// tidal-rules: CE-32 INIT-1
 // tidal-expect: reject
 // tidal-error-gcc: value of .a. is not usable in a constant expression
 // tidal-error-clang: read of uninitialized object

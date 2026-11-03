@@ -79,8 +79,9 @@ These rules also apply:
 - A function with a reference or pointer placeholder return type must
   have a `return` statement with an expression.
 - A deduced lvalue reference cannot be initialized from the name of a
-  local variable, because a `return` treats that name as an xvalue
-  (CPY-11).
+  local variable with {term}`automatic storage`, because a `return`
+  treats that name as an xvalue (CPY-11). A `static` local variable is
+  an lvalue.
 :::
 
 :::{rule} RET-4
@@ -103,14 +104,13 @@ A virtual function must not have a deduced return type ({rule}`VIRT-2`).
 
 :::{rule} RET-6
 :kind: undefined
-:tests: declarations/functions/return-deduction/decltype-auto-dangling.cpp declarations/functions/return-deduction/decltype-auto-paren-local-xvalue.cpp declarations/functions/return-deduction/decltype-auto-paren-local-sanitizer.cpp
+:tests: declarations/functions/return-deduction/decltype-auto-dangling.cpp declarations/functions/return-deduction/decltype-auto-paren-local-xvalue.cpp declarations/functions/return-deduction/decltype-auto-paren-local-sanitizer.cpp declarations/functions/return-deduction/trailing-auto.cpp
 
-If a function with `decltype(auto)` returns a parenthesized local
-variable, the return type of the function is an rvalue reference to that
-variable, because a `return` treats the name of a local variable as an
-xvalue (CPY-11). For a global variable, the result is an lvalue
-reference. A use of the result is undefined, because the variable no
-longer exists.
+If a `decltype(auto)` function returns a parenthesized local variable
+with {term}`automatic storage`, the return type is an rvalue reference
+to it (CPY-11). For a `static` local or a global variable, the return
+type is an lvalue reference. A use of the rvalue reference is
+undefined, and constant evaluation rejects the use ({rule}`CE-9`).
 :::
 
 ## Examples
@@ -124,6 +124,14 @@ auto b(bool c) {
 
 int x;
 decltype(auto) c() { return (x); }  // int&
+decltype(auto) d() {
+  static int s;
+  return (s);                       // int&: s is static
+}
+decltype(auto) e() {
+  int n = 1;
+  return (n);                       // int&&: a use is undefined
+}
 
 constexpr auto fact(int n) {
   if (n <= 1) return 1;             // the type is now int

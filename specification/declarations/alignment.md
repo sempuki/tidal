@@ -117,8 +117,9 @@ type, or a class type that converts to such a type ({question}`Q-0313`,
 :tests: declarations/alignment/definition-without-earlier-with.cpp declarations/alignment/redeclare-different.cpp declarations/alignment/redeclare-without.cpp declarations/alignment/class-redeclare-different.cpp declarations/alignment/class-definition-without-earlier-with.cpp
 
 If a declaration of a variable or a class has `alignas`, its definition
-must have the same alignment ({question}`Q-0070`). A definition can add
-`alignas` if the earlier declarations have none.
+must have an `alignas` with the same alignment ({question}`Q-0070`). A
+definition without `alignas` after such a declaration is not valid. A
+definition can add `alignas` if the earlier declarations have none.
 :::
 
 ## Runtime Behavior
@@ -154,7 +155,9 @@ alignment. EDG 7.0 rejects an alignment of 2^28, which Clang and GCC accept.
 :tests: declarations/alignment/different-units-alignas.cpp
 
 Declarations of one entity in different translation units must have the
-same alignment. An implementation need not diagnose a difference.
+same alignment. An implementation need not diagnose a difference. If the
+implementation accepts such a program, Tidal sets no requirements on its
+behavior.
 :::
 
 ## Examples
@@ -172,6 +175,11 @@ struct Packet {
 
 alignas(16) unsigned char buffer[256];
 alignas(2) int bad;              // rejected: weaker than alignof(int)
+
+alignas(16) extern int shared;
+int shared;                      // rejected: the definition needs alignas(16)
+extern int later;
+alignas(16) int later;           // valid: the definition adds alignas
 
 using size_t = decltype(sizeof 0);
 constexpr size_t round_up(size_t offset, size_t a) {
@@ -213,6 +221,7 @@ implementation-defined limit of ALN-5.
   alignment value"), which Clang and GCC accept.
 - ALN-6 needs no diagnostic because each translation unit is checked
   alone. Every compiler accepts two units whose declarations of one
-  variable have different `alignas`.
+  variable have different `alignas`. Clang and GCC link the units, and
+  the program runs and exits normally.
 
 Inputs: clang-sema-declattr, clang-diag-sema, edg-attribute, edg-decls.

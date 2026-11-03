@@ -1225,8 +1225,10 @@ pass	declarations/declarators/function-returning-array.cpp
 pass	declarations/declarators/function-returning-function.cpp
 pass	declarations/declarators/function-returning-pointers-ok.cpp
 pass	declarations/declarators/increment-const.cpp
+pass	declarations/declarators/modify-const-object-constexpr-constructor-sanitizer.cpp
 pass	declarations/declarators/modify-const-object-sanitizer.cpp
 pass	declarations/declarators/modify-const-object-via-cast.cpp
+pass	declarations/declarators/modify-const-static-local-sanitizer.cpp
 pass	declarations/declarators/modify-nonconst-object-via-cast.cpp
 pass	declarations/declarators/multidim-inner-bound.cpp
 pass	declarations/declarators/multidim-outer-omitted.cpp
@@ -1491,6 +1493,8 @@ pass	declarations/initialization/forms/default-init-new-class.cpp
 pass	declarations/initialization/forms/default-init-scalar-no-value.cpp
 pass	declarations/initialization/forms/direct-init-multiple.cpp
 pass	declarations/initialization/forms/empty-parens-declares-function.cpp
+pass	declarations/initialization/forms/incomplete-type-copy.cpp
+pass	declarations/initialization/forms/incomplete-type-paren.cpp
 pass	declarations/initialization/forms/incomplete-type.cpp
 pass	declarations/initialization/forms/nullptr-bool-copy.cpp
 pass	declarations/initialization/forms/nullptr-bool-direct.cpp
@@ -1538,8 +1542,10 @@ pass	declarations/initialization/list/narrowing-int-to-float-inexact.cpp
 pass	declarations/initialization/list/narrowing-member-pointer-to-bool.cpp
 pass	declarations/initialization/list/narrowing-negative-to-unsigned.cpp
 pass	declarations/initialization/list/narrowing-nonconstant-int.cpp
+pass	declarations/initialization/list/narrowing-nonconstant-long-ilp32.cpp
 pass	declarations/initialization/list/narrowing-not-in-parens.cpp
 pass	declarations/initialization/list/narrowing-pointer-to-bool.cpp
+pass	declarations/initialization/list/narrowing-unscoped-enum-values-fit.cpp
 pass	declarations/initialization/list/narrowing-unscoped-enum.cpp
 pass	declarations/initialization/list/no-elision-when-direct.cpp
 MISSED-REJECT	declarations/initialization/list/omitted-member-explicit-default.cpp
@@ -1595,6 +1601,7 @@ pass	declarations/initialization/references/const-ref-xvalue-direct.cpp
 pass	declarations/initialization/references/const-volatile-ref-rvalue.cpp
 pass	declarations/initialization/references/conversion-function-reference-not-extended.cpp
 pass	declarations/initialization/references/dangling-local-return.cpp
+MISSED-REJECT	declarations/initialization/references/dangling-new-member-warns-default.cpp
 MISSED-REJECT	declarations/initialization/references/dangling-new-member-warns.cpp
 EDG-ONLY	declarations/initialization/references/extend-through-array-member-subscript.cpp
 pass	declarations/initialization/references/extend-through-static-cast.cpp
@@ -1921,7 +1928,9 @@ pass	declarations/type-names/elaborated-key-union-mismatch.cpp
 MISSED-REJECT	declarations/type-names/elaborated-qualified-declaration-only.cpp
 pass	declarations/type-names/elaborated-qualified-undeclared.cpp
 pass	declarations/type-names/elaborated-scoped-enum-key.cpp
+pass	declarations/type-names/enum-fixed-after-not-fixed.cpp
 pass	declarations/type-names/enum-fixed-mismatch.cpp
+pass	declarations/type-names/enum-scoped-long-then-default.cpp
 pass	declarations/type-names/enum-scoped-mismatch.cpp
 pass	declarations/type-names/forward-after-definition.cpp
 pass	declarations/type-names/forward-class-function-definition-param.cpp
@@ -1933,6 +1942,7 @@ pass	declarations/type-names/forward-enum-base-mismatch.cpp
 pass	declarations/type-names/forward-enum-no-base.cpp
 pass	declarations/type-names/forward-enum-opaque.cpp
 pass	declarations/type-names/forward-enum-scoped-default-base.cpp
+pass	declarations/type-names/forward-enum-scoped-int-then-none.cpp
 pass	declarations/type-names/forward-nested-class.cpp
 pass	declarations/type-names/forward-nested-wrong-scope.cpp
 pass	declarations/type-names/function-name-changes-meaning.cpp
@@ -2461,6 +2471,7 @@ pass	expressions/constant-expressions/copy-after-every-part-set.cpp
 pass	expressions/constant-expressions/copy-unset-array-element.cpp
 pass	expressions/constant-expressions/copy-unset-member.cpp
 pass	expressions/constant-expressions/deep-recursion.cpp
+pass	expressions/constant-expressions/defaulted-constructor-member-not-constexpr.cpp
 pass	expressions/constant-expressions/delete-mismatch.cpp
 pass	expressions/constant-expressions/double-delete.cpp
 pass	expressions/constant-expressions/enumerator-floating.cpp
@@ -2472,6 +2483,9 @@ pass	expressions/constant-expressions/extended-temporary-through-cast.cpp
 pass	expressions/constant-expressions/function-pointer-equality.cpp
 pass	expressions/constant-expressions/goto-not-reached.cpp
 pass	expressions/constant-expressions/goto-reached.cpp
+pass	expressions/constant-expressions/implicit-constructor-calls-constexpr.cpp
+pass	expressions/constant-expressions/implicit-constructor-member-not-constexpr.cpp
+pass	expressions/constant-expressions/implicit-destructor-member-not-constexpr.cpp
 pass	expressions/constant-expressions/inactive-union-member.cpp
 pass	expressions/constant-expressions/integral-constant-array-bound.cpp
 pass	expressions/constant-expressions/lambda-call.cpp

@@ -1,4 +1,4 @@
-// tidal-rules: VOL-5
+// tidal-rules: VOL-5 CV-9
 // tidal-expect: accept
 // tidal-flags: -Wall -Werror
 void f(volatile int* p);

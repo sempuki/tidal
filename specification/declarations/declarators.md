@@ -236,18 +236,22 @@ what is not valid.
 
 :::{rule} DCL-19
 :kind: reject
-:tests: declarations/declarators/array-bound-runtime.cpp declarations/declarators/array-bound-zero.cpp declarations/declarators/array-bound-negative.cpp declarations/declarators/array-bound-floating.cpp declarations/declarators/array-incomplete-no-init.cpp declarations/declarators/array-too-many-initializers.cpp declarations/declarators/array-bound-scoped-enum.cpp declarations/declarators/unknown-bound-empty-braces.cpp
+:tests: declarations/declarators/array-bound-runtime.cpp declarations/declarators/array-bound-zero.cpp declarations/declarators/array-bound-negative.cpp declarations/declarators/array-bound-floating.cpp declarations/declarators/array-incomplete-no-init.cpp declarations/declarators/array-too-many-initializers.cpp declarations/declarators/array-bound-scoped-enum.cpp declarations/declarators/unknown-bound-empty-braces.cpp declarations/declarators/array-4gib-ilp32.cpp foundations/storage/array-size-exceeds-size-type.cpp
 
 An array declaration must obey these rules:
 
-- The bound must be a constant expression that converts to the type of
-  `sizeof` without loss of value.
+- The bound must be a constant expression of a type that DCL-5 lists.
+  A floating-point bound is not valid, even with an integer value.
+- The value of the bound must convert to the type of `sizeof` without
+  loss of value.
 - The bound must not have a scoped enumeration type.
 - The bound must be greater than zero.
 - The bound can be omitted only in the cases that DCL-5 lists.
 - The initializer must not have more elements than the bound.
 - An array without a bound must not have an empty braced initializer,
   because the array would have zero elements.
+- The size of the array in bytes must fit in the type of `sizeof`
+  ({rule}`STG-1`).
 :::
 
 :::{rule} DCL-6
@@ -478,35 +482,35 @@ reference is a use of that object or function.
 
 :::{rule} CV-5
 :kind: undefined
-:tests: declarations/declarators/modify-const-object-via-cast.cpp declarations/declarators/modify-nonconst-object-via-cast.cpp declarations/declarators/modify-const-object-sanitizer.cpp expressions/casts/const-cast-write-const-object-sanitizer.cpp
+:tests: declarations/declarators/modify-const-object-via-cast.cpp declarations/declarators/modify-nonconst-object-via-cast.cpp declarations/declarators/modify-const-object-sanitizer.cpp expressions/casts/const-cast-write-const-object-sanitizer.cpp declarations/declarators/modify-const-object-constexpr-constructor-sanitizer.cpp declarations/declarators/modify-const-static-local-sanitizer.cpp
 
 If a program changes an object that is defined `const`, the behavior is
-undefined. The behavior is also undefined when a cast removes `const`.
-A program can change an object that is not defined `const` through such
-a cast. The specific cases of CV-5 are {rule}`CAST-5` and {rule}`PRIM-8`
-(decision 0052).
+undefined, also when a cast removes `const`. A program can change an
+object that is not defined `const` through such a cast. The specific
+cases are {rule}`CAST-5` and {rule}`PRIM-8` (decision 0052), and
+constant evaluation rejects both ({rule}`CE-9`).
 :::
 
 ## Implementation Requirements
 
 :::{rule} DCL-10
 :kind: impl-defined
-:tests: declarations/declarators/array-too-large.cpp declarations/declarators/array-4gib-lp64.cpp declarations/declarators/array-4gib-ilp32.cpp foundations/storage/array-size-exceeds-size-type.cpp
+:tests: declarations/declarators/array-too-large.cpp declarations/declarators/array-4gib-lp64.cpp
 
 The largest array that an implementation accepts is
-implementation-defined. The limit can depend on the target. An array
-whose size in bytes does not fit in the type of `sizeof` must not be
-declared.
+implementation-defined. The limit can depend on the target. The limit
+is never larger than the bound that DCL-19 sets.
 :::
 
 ## Recommended Practice
 
 :::{rule} CV-9
 :kind: recommended
-:tests: declarations/declarators/volatile-return-deprecated.cpp
+:tests: declarations/declarators/volatile-return-deprecated.cpp declarations/volatile/volatile-return-warns.cpp declarations/volatile/volatile-parameter-warns.cpp declarations/volatile/pointer-to-volatile-parameter-ok.cpp
 
-An implementation should warn about a `volatile` return type and a
-`volatile` parameter type. These uses are deprecated.
+An implementation should warn about a return type or a parameter type
+with a top-level `volatile`. These uses are deprecated. A pointer or a
+reference to a `volatile` type has no top-level `volatile` and is valid.
 :::
 
 ## Examples
@@ -555,11 +559,16 @@ const_cast<int&>(ci) = 2;      // undefined
 int v = 1;
 const int& cr = v;
 const_cast<int&>(cr) = 2;      // v is 2
+
+volatile int read();           // deprecated (CV-9)
+void put(volatile int n);      // deprecated
+volatile int* reg();           // valid: volatile is not top-level
+void send(volatile int* to);   // valid
 ```
 
 ## Evidence
 
-All eight compilers agree on 86 of 89 tests. The results are in
+All eight compilers agree on 91 of 94 tests. The results are in
 `tests/RESULTS.md`.
 
 - **DCL-19.** Clang and GCC accept variable-length arrays and arrays of
@@ -582,9 +591,20 @@ All eight compilers agree on 86 of 89 tests. The results are in
   with a ref-qualifier. Clang and GCC reject the parameter
   ({question}`Q-0106`).
 - **CV-5.** The address sanitizer of GCC and Clang stops a write to a
-  `const` object with static storage duration, because the object is
-  in storage that cannot be written. No sanitizer stops a write to a
-  `const` automatic object.
+  `const` object with static storage duration and a constant
+  initializer, because the object is in storage that cannot be written.
+  The rule holds for a scalar, for a class object with a braced
+  initializer or a `constexpr` constructor, and for a block-scope
+  `static` variable. A `const` object whose initializer runs at run
+  time, such as a call or a constructor that is not `constexpr`, is in
+  storage that can be written. A class object with a `mutable` member
+  is in such storage too. No sanitizer stops a write to these objects,
+  or to a `const` automatic object.
+- **CV-9.** Clang and GCC warn by default about a `volatile` parameter
+  type and a `volatile` return type, also under `-Wall` and
+  `-Wdeprecated`. The flag is `-Wdeprecated-volatile` for Clang and
+  `-Wvolatile` for GCC. Neither warns about a pointer to a `volatile`
+  type.
 
 Inputs: clang-sema-type, clang-sema-decl, edg-decls, clang-diag-sema
 (see `inputs/MANIFEST.md`).

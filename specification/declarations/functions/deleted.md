@@ -40,11 +40,12 @@ valid. This rule is a specific case of {rule}`OVL-37`.
 
 :::{rule} DEL-2
 :kind: reject
-:tests: declarations/functions/deleted/delete-not-first.cpp declarations/functions/deleted/delete-then-define.cpp declarations/functions/deleted/deleted-main.cpp
+:tests: declarations/functions/deleted/delete-not-first.cpp declarations/functions/deleted/delete-then-define.cpp declarations/functions/deleted/deleted-main.cpp declarations/inline/deleted-function-inline.cpp
 
-`= delete` must be on the first declaration of a function. A deleted
-function must not have another definition. `main` must not be deleted
-({question}`Q-0023`).
+`= delete` must be on the first declaration of a function. A later
+declaration without a body is valid, and the function stays deleted. A
+deleted function must not have another definition, and `main` must not
+be deleted ({question}`Q-0023`).
 :::
 
 :::{rule} DEL-3

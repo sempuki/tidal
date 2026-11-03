@@ -12,7 +12,6 @@ Provides:
 See documentation/style-guide.md for how rules are written.
 """
 
-import fnmatch
 import os
 import re
 import sys
@@ -270,42 +269,11 @@ class RuleIndexDirective(SphinxDirective):
                 yield target
 
 
-FAMILIES = (("clang", "Clang"), ("gcc", "GCC"), ("edg", "EDG"))
-
-
-def undefined_rules(root: Path):
-    """Yield (rule id, page path, first sentence) for each `undefined` rule, in page order."""
-    for page in sorted(root.rglob("*.md")):
-        lines = page.read_text().splitlines()
-        for i, line in enumerate(lines):
-            m = RULE_LINE.match(line)
-            if not m:
-                continue
-            j = i + 1
-            kind = None
-            while j < len(lines) and lines[j].startswith(":"):
-                if lines[j].startswith(":kind:"):
-                    kind = lines[j].split(":", 2)[2].strip()
-                j += 1
-            if kind != "undefined":
-                continue
-            text = []
-            for l in lines[j:]:
-                if l == ":::" or (text and not l.strip()):
-                    break
-                if l.strip():
-                    text.append(l.strip())
-            first = re.split(r"(?<=[.:])\s", " ".join(text))[0]
-            yield m.group(1), page, first
-
-
 class UndefinedIndexDirective(SphinxDirective):
     """List every `undefined` rule and the compilers whose constant evaluation rejects it.
 
-    The marks come from the test expectations, which the matrix checks: a
-    compiler rejects a rule if a test of the rule expects `reject` from it.
-    Tests with -Werror check a warning, not constant evaluation, so they
-    don't count.
+    tools/undefined_index.py computes the rows, which tools/exercises.py
+    also renders as Markdown for the clean-room copy of the specification.
     """
     has_content = False
 
@@ -315,34 +283,28 @@ class UndefinedIndexDirective(SphinxDirective):
         if str(tools) not in sys.path:
             sys.path.insert(0, str(tools))
         import matrix
-        import run_tests
+        import undefined_index
 
-        compilers = [c for c in matrix.load() if c.role == "baseline"]
-        tests = {}
-        for path in run_tests.test_files([matrix.TESTS]):
+        for path in undefined_index.test_paths():
             self.env.note_dependency(str(path))
-            t = run_tests.parse_test(path)
-            if "-Werror" in t.flags:
-                continue
-            for rid in t.rules:
-                tests.setdefault(rid, []).append(t)
         self.env.note_dependency(str(matrix.CONFIG))
 
+        families = undefined_index.FAMILIES
         here = Path(self.env.docname).parent.as_posix()
         table = nodes.table(classes=["tidal-undefined-index"])
-        group = nodes.tgroup(cols=2 + len(FAMILIES))
+        group = nodes.tgroup(cols=2 + len(families))
         table += group
-        for width in [12, 58] + [10] * len(FAMILIES):
+        for width in [12, 58] + [10] * len(families):
             group += nodes.colspec(colwidth=width)
         head = nodes.thead()
         group += head
         row = nodes.row()
-        for label in ["Rule", "Operation"] + [name for _, name in FAMILIES]:
+        for label in ["Rule", "Operation"] + [name for _, name in families]:
             row += nodes.entry("", nodes.paragraph(text=label))
         head += row
         body = nodes.tbody()
         group += body
-        for rid, page, first in undefined_rules(root):
+        for rid, page, first, marks in undefined_index.rows(root):
             self.env.note_dependency(str(page))
             target = page.relative_to(root).with_suffix(".html").as_posix()
             uri = f"{os.path.relpath(target, here)}#rule-{rid.lower()}"
@@ -351,35 +313,10 @@ class UndefinedIndexDirective(SphinxDirective):
             link += nodes.reference("", rid, refuri=uri, classes=["tidal-rule-ref"])
             row += nodes.entry("", link)
             row += nodes.entry("", *self.parse_text_to_nodes(first))
-            for family, _ in FAMILIES:
-                row += nodes.entry("", nodes.paragraph(text=self._mark(
-                    tests.get(rid, []), [c for c in compilers if c.family == family])))
+            for family, _ in families:
+                row += nodes.entry("", nodes.paragraph(text=marks[family]))
             body += row
         return [table]
-
-    @staticmethod
-    def _mark(tests, compilers):
-        """How the compilers of one family treat a rule's rejection tests.
-
-        Each compiler rejects every case, some cases, or none. A family whose
-        compilers differ lists them by id.
-        """
-        cases = [t for t in tests if t.default == "reject" or "reject" in t.overrides.values()]
-        if not cases:
-            return "no test"
-
-        def status(c):
-            ran = [t for t in cases
-                   if not any(fnmatch.fnmatch(f, p) for f in t.flags for p in c.unsupported_flags)]
-            n = sum(t.expect(c) == "reject" for t in ran)
-            return "rejects" if n == len(ran) else "accepts" if n == 0 else "some cases"
-
-        by_status = {}
-        for c in compilers:
-            by_status.setdefault(status(c), []).append(c.id)
-        if len(by_status) == 1:
-            return next(iter(by_status))
-        return "; ".join(f"{', '.join(ids)}: {st}" for st, ids in by_status.items())
 
 
 def in_progress_notice(app, docname, source):
