@@ -46,6 +46,12 @@ invalid pointer value (STG-15). The round trip of CAST-16 still gives
 the integer, and indirection through the pointer is undefined (UN-7).
 On the matrix targets no object lies at such an address.
 
+Kept open on 2026-11-03 under decision 0054, because the review is silent.
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the object model (`reports/review/2026-11-03-gap-review-object-model.md`) reads the reference as silent between options 1 and 2. The mapping from an integer to a pointer is implementation-defined apart from the round trip. Nothing in the reference makes an object exist at such an address, and nothing calls the result an invalid pointer value. So the last paragraph of the provisional answer goes beyond the reference.

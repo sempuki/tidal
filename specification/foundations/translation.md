@@ -77,6 +77,11 @@ which kind it is and how strong it is:
 A diagnostic for a `recommended` rule is a warning. The warning
 leaves the program valid, and a program can ask the implementation
 to treat the warning as an error.
+
+A `reject` rule asks for at least one diagnostic. After the diagnostic,
+an implementation can go on and translate the program, for example as
+an extension. The tests run each compiler in its strict mode, where the
+diagnostic stops the translation.
 :::
 
 :::{principle} TR-P2
@@ -112,12 +117,11 @@ header from entering one unit twice ({principle}`ODR-P3`).
 
 Execution begins at `main`. The program's exit status is the value that
 `main` returns, and reaching the end of `main` returns zero. `main` is
-the entry point and nothing else. A program cannot do the following:
-
-- call `main`,
-- take the address of `main`,
-- give `main` a form other than the two that the runtime knows how to
-  call.
+the entry point and nothing else, so a program cannot call `main` or
+take its address. Every implementation accepts the two forms of `main`
+that the runtime knows how to call. Each implementation chooses whether
+to accept other forms ({rule}`FN-6`). The name `main` at global scope is
+kept for the entry point.
 
 The environment that receives the status can keep only part of the
 value. On the matrix targets the environment keeps the low eight bits.
@@ -151,16 +155,20 @@ used.
 :::
 
 :::{principle} TR-P4
-:rules: TR-5 TR-10
+:rules: TR-5 TR-10 TR-16
 
 Constant evaluation runs the same functions as execution, with the
 same meaning, at translation time. Constant evaluation differs from
 execution in the following ways:
 
-- It happens only where a constant is needed, and nowhere else.
+- It happens where a constant is needed. It is also tried on the
+  initializer of each static or `thread_local` variable, and if that
+  try fails, the variable is initialized at run time ({rule}`SINIT-1`).
 - It tracks every object and every operation, so an evaluation that
   would be undefined at run time is not a constant, and the program is
   rejected there.
+- A floating-point operation can give a result that differs from the
+  result at run time (TR-16).
 
 A program can ask which mode it is in and act differently in each.
 :::
@@ -172,7 +180,10 @@ An implementation translates a program on a machine with finite
 memory, so translation has limits. Each implementation sets its own
 limits and documents them. This specification sets no minimum for any
 limit. If a program goes past a limit, the implementation rejects the
-program. The limits are of these kinds:
+program. Tidal asks for this rejection so that a program never runs
+with a wrong size. The matrix compilers reject, apart from the class
+sizes of {question}`Q-0350`. The limits are
+of these kinds:
 
 | Limit | Rule |
 |---|---|
@@ -193,21 +204,31 @@ implementations whose limits are high enough.
 :kind: reject
 :tests: foundations/translation/ill-formed-diagnosed.cpp foundations/translation/ill-formed-in-unused-function.cpp
 
-An implementation rejects a program that breaks a `reject` rule, also
-when the broken code is in a function that the program never calls.
+An implementation issues at least one diagnostic for a program that
+breaks a `reject` rule. This rule applies also when the broken code is
+in a function that the program never calls. In the strict mode of each
+matrix compiler, the diagnostic stops the translation.
 :::
 
 :::{rule} TR-3
 :kind: reject
-:tests: foundations/translation/main-return-type-not-int.cpp foundations/translation/main-called.cpp foundations/translation/main-address.cpp foundations/translation/main-no-definition.cpp foundations/translation/main-template.cpp foundations/translation/main-wrong-parameter-types.cpp
+:tests: foundations/translation/main-return-type-not-int.cpp foundations/translation/main-called.cpp foundations/translation/main-address.cpp foundations/translation/main-no-definition.cpp foundations/translation/main-template.cpp foundations/translation/main-wrong-parameter-types.cpp foundations/translation/main-inline.cpp foundations/translation/main-static.cpp foundations/translation/main-constexpr.cpp foundations/translation/main-consteval.cpp foundations/translation/main-deleted.cpp foundations/translation/main-c-linkage.cpp foundations/translation/main-c-linkage-in-namespace.cpp foundations/translation/main-c-linkage-variable-in-namespace.cpp foundations/translation/main-variable.cpp foundations/translation/main-deduced-return-type.cpp foundations/translation/main-trailing-return-int.cpp foundations/translation/main-in-namespace.cpp foundations/translation/main-cpp-linkage-specification.cpp
 
-These rules apply to `main`:
+These rules apply to `main` at global scope:
 
-- `main` must return `int`.
-- `main` must not be a template.
+- The declared return type of `main` must be `int`. A placeholder type
+  that `return` deduces is not valid.
+- `main` must not be a template, or be `inline`, `static`, `constexpr`,
+  `consteval`, or deleted.
+- `main` must not have C language linkage
+  ({question}`Q-0366`).
 - The parameter list of `main` must be one that the implementation
   accepts (FN-6).
 - A program must not call `main` or take its address.
+
+A variable at global scope must not be named `main`. No variable or
+function in any namespace that has C language linkage can be named
+`main`.
 :::
 
 :::{rule} TR-10
@@ -256,12 +277,14 @@ another unit declares cannot be used (NAM-8).
 
 :::{rule} TR-5
 :kind: required
-:tests: foundations/translation/constant-evaluation-same-function.cpp foundations/translation/constant-evaluation-only-where-needed.cpp foundations/translation/if-consteval-selects.cpp
+:tests: foundations/translation/constant-evaluation-same-function.cpp foundations/translation/constant-evaluation-only-where-needed.cpp foundations/translation/if-consteval-selects.cpp foundations/translation/constant-initializer-tried.cpp
 
 A `constexpr` function gives the same result in constant evaluation and
-at run time. Constant evaluation occurs only where a constant is needed,
-such as a `static_assert`. A call that TR-10 rejects in constant
-evaluation is valid at run time if it reaches no undefined operation.
+at run time, apart from floating-point results (TR-16). Constant
+evaluation occurs where a constant is needed, such as a `static_assert`,
+and in a try of a static initializer ({rule}`SINIT-1`). A call that TR-10
+rejects in constant evaluation is valid at run time if it reaches no
+undefined operation.
 `if consteval` selects its first branch in constant evaluation and its
 second at run time. A `constexpr` function that never gives a constant
 is still valid (CX-3), as long as no constant evaluation reaches the
@@ -366,6 +389,16 @@ class of the matrix compilers has this size in bytes:
 | EDG 7.0 | 2<sup>64</sup> - 1 | 2<sup>32</sup> - 1 |
 :::
 
+:::{rule} TR-16
+:kind: unspecified
+:tests: foundations/translation/floating-constant-and-run-either.cpp
+
+Whether a floating-point operation gives the same result in constant
+evaluation and at run time is unspecified. Constant evaluation on the
+matrix rounds each operation to its type. At run time {rule}`MUL-17`
+applies, so GCC with `-m32` can give another result.
+:::
+
 ## Recommended Practice
 
 :::{rule} TR-6
@@ -394,8 +427,8 @@ int at_run_time = half(9);    // the same function, at run time
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 53
-of 71 tests. EDG takes no optimization flag, so the three `-O2` tests
+The results are in `tests/RESULTS.md`. All eight compilers agree on 63
+of 86 tests. EDG takes no optimization flag, so the three `-O2` tests
 are skipped there. EDG runs and links no programs, so its results for
 the run and link tests say only that the programs are valid.
 
@@ -404,6 +437,27 @@ the run and link tests say only that the programs are valid.
   255.
 - TR-3: EDG accepts `main` with a first parameter of type `long`. Clang
   and GCC reject it ({question}`Q-0024`).
+- TR-3: Clang 22, GCC 16, and EDG reject each form of `main` in the
+  list. GCC 14 accepts a deleted `main`. GCC 14 and Clang 18 accept the
+  forms with C language linkage. Clang 22 and GCC 16 accept `main` in an
+  `extern "C++"` block, and EDG rejects it
+  ({question}`Q-0366`).
+- TR-1: Clang 22 reports C language linkage on `main` through a warning
+  flag (`-Wmain`), and GCC 16 through `-Wpedantic`. In the strict mode
+  of the tests, both diagnostics are errors. Without
+  `-pedantic-errors`, both compilers warn and translate the program,
+  which TR-P1 allows.
+- TR-5: every compiler tries the initializer of a static variable as a
+  constant, also when no constant is needed there
+  (`constant-initializer-tried.cpp`).
+- TR-16: on x86-64 every configuration gives the same floating-point
+  result at translation and at run time. The test accepts both results
+  of {rule}`MUL-17`.
+- TR-P6, TR-13, TR-14, TR-15: the gap review of program structure reads
+  the C++23 text as asking only that an implementation document its
+  limits, with no requirement on a program past a limit. Tidal keeps the
+  rejection that the compilers give (`documentation/decisions/pending.md`,
+  row 4).
 - TR-12: every compiler rejects each token sequence of the tests. Each
   message names the token that the parser expected, or says that an
   expression or a statement was expected. The grammar states which
@@ -440,6 +494,15 @@ the run and link tests say only that the programs are valid.
   `sizeof` the size reduced modulo 2<sup>32</sup>, against
   {rule}`STG-1` ({question}`Q-0350`,
   {question}`Q-0012`).
+- Settled on 2026-11-03 under decision 0054. A source-reader gap
+  review supports each answer with no doubt, and a principle gives the
+  same answer:
+
+  | Question | Principle | Family that still differs |
+  |---|---|---|
+  | {question}`Q-0012` | TR-P6 | none |
+  | {question}`Q-0024` | TR-P3 | none |
+  | {question}`Q-0351` | TR-P6 | none |
 
 The table below gives, for each `recommended` rule that asks for a
 warning, the flag that turns the warning on in Clang 22 and GCC 16. The

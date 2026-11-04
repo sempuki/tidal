@@ -397,5 +397,12 @@ of 57 tests.
 - ADD-18: no configuration in the matrix runs a 32-bit program, and a
   64-bit object is too small for the difference to overflow. No run
   test covers the rule.
+- Settled on 2026-11-03 under decision 0054. A source-reader gap
+  review supports each answer with no doubt, and a principle gives the
+  same answer:
+
+  | Question | Principle | Family that still differs |
+  |---|---|---|
+  | {question}`Q-0298` | ADD-P3 | EDG 7.0 |
 
 Inputs: clang-sema-expr, clang-diag-sema.

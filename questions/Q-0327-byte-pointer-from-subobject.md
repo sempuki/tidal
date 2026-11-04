@@ -42,6 +42,12 @@ Yes; the byte pointer can move over the bytes of the complete object (option 1).
 Every implementation behaves this way, and code that finds the
 enclosing object from the address of a member needs the step.
 
+Kept open on 2026-11-03 under decision 0054, because the review reads the reference with doubt.
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the object model (`reports/review/2026-11-03-gap-review-object-model.md`) reads the reference as unclear, with option 1 supported by its intent, for the reasons it gives under Q-0304. The letter of the reference does not support the step from a member's bytes into the rest of the object. The reference still promises byte copies, which need such steps. Option 1 matches the intent and every implementation.

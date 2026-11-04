@@ -1,6 +1,6 @@
 # Q-0298: How do implementations treat a pointer difference that does not fit its type?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** ADD-18, TR-14, `tests/expressions/additive/pointer-difference-overflow-ilp32.cpp`, `tests/expressions/additive/pointer-difference-largest-ilp32.cpp`
 
 ## Context
@@ -41,11 +41,17 @@ result.
 2. The same as option 1, and an implementation must also keep each
    object small enough that every difference fits, as GCC does.
 
-## Provisional answer
+## Answer
 
 Undefined (ADD-18); EDG rejects positions past the largest difference (option 1). Clang and EDG reject the overflow during constant evaluation,
 and GCC rejects the array that would allow it. No implementation gives a
 difference that does not fit. Option 2 would make Clang and EDG
 nonconforming for accepting the array.
 
+Settled on 2026-11-03 under decision 0054. The review supports this answer with no doubt, and ADD-P3 gives the same answer: a count that does not fit the type has no value. EDG 7.0 differs on positions past the largest difference, and the tests keep their override for EDG.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of program structure (`reports/review/2026-11-03-gap-review-program-structure.md`) reads the reference as supporting option 1, the provisional answer, with no doubt. A difference outside the range of the result type is undefined. A position inside the array, or one past its end, is a valid operand of addition, so EDG's rejection of a position past the largest difference follows from no rule.

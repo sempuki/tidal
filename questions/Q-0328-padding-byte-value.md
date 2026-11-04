@@ -44,6 +44,12 @@ A padding byte has no value until the program writes it, and a copy through `cha
 Option 1 keeps the exception of INIT-1 as Q-0039 gives it. A program
 that copies an object with padding uses `unsigned char` or `std::byte`.
 
+Kept open on 2026-11-03 under decision 0054, because the review reads against the answer with doubt. STG-12 now allows an array of `char`, and sets the condition only on a copy that reads each byte through a `char` glvalue.
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the object model (`reports/review/2026-11-03-gap-review-object-model.md`) reads the reference as unclear, leaning to option 2 or 3. The reference never says that a padding byte of a class has an indeterminate value. An automatic object with no initialization has one as a whole, and for an initialized object the reference does not address its padding. A note on integer types gives padding bits an unspecified value that cannot trap. Separately, the reference allows a byte copy into an array of plain `char`, also for an object whose value is not valid. Only `unsigned char` and `std::byte` can carry an indeterminate value, so a copy written by hand that reads such a byte through `char` is undefined. A copy by the library's copy functions has no such limit.

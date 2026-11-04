@@ -46,4 +46,10 @@ CE-4 exists so that `allocate` can return a pointer to the array of `T`
 that STG-28 describes, and a pointer of another type does not point to
 an element of that array.
 
+Kept open on 2026-11-03 under decision 0054, because the review is silent.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the object model (`reports/review/2026-11-03-gap-review-object-model.md`) reads the reference as silent between the options. During constant evaluation the reference does not look at the bodies of the members of the library's allocator, so a body that the program writes has no standing. The library's `allocate` returns a pointer to the first element of an array of the element type, which fits option 1.

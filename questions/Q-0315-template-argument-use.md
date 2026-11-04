@@ -1,6 +1,6 @@
 # Q-0315: Does a constant template argument use the variable or function that it names?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** ODR-3, ODR-P1, `tests/foundations/odr/template-argument-address-is-use.cpp`, `tests/foundations/odr/template-argument-address-links.cpp`
 
 ## Context
@@ -31,12 +31,18 @@ to link.
    what it names, by the existing rule. Clang's diagnostic matches.
 2. A template argument uses nothing, because only its value matters.
 
-## Provisional answer
+## Answer
 
 Yes (ODR-3); Clang reports an undefined internal function, GCC does not (option 1). ODR-3 has no exception for a template argument, and the
 argument's value is the address of the entity. ODR-8 and ODR-9 need no
 diagnostic, so both compilers conform.
 
+Settled on 2026-11-03 under decision 0054. The review supports this answer with no doubt, and ODR-P1 gives the same answer in its row for a constant template argument. GCC 16 gives no diagnostic for the function with internal linkage, which ODR-9 allows, so no family differs on the use.
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of program structure (`reports/review/2026-11-03-gap-review-program-structure.md`) reads the reference as supporting option 1, the provisional answer, with no doubt. A template argument is not an unevaluated operand, so it is potentially evaluated, and an address taken there names the function and uses it.

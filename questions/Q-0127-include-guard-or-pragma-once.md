@@ -1,6 +1,6 @@
 # Q-0127: Which mechanism does Tidal specify for including a header only once?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** INC-4, INC-5, `tests/foundations/odr/guarded-header-twice.cpp`, `tests/foundations/odr/pragma-once-header-twice.cpp`, `tests/foundations/odr/header-class-shared.cpp`
 
 ## Context
@@ -34,12 +34,18 @@ header with neither mechanism is rejected when it is included twice.
 3. Specify the include guard as a `required` rule and `#pragma once` as
    an `impl-defined` rule with the matrix compilers' behavior.
 
-## Provisional answer
+## Answer
 
 Both; the include guard is required and `#pragma once` is implementation-defined (option 3). Programs in the wild use both forms, and the tests show the
 same behavior for both on the matrix. The guard stays the portable form,
 so the guard is the form in `required` text.
 
+Settled on 2026-11-03 under decision 0054. The review supports this answer with no doubt, and ODR-P3 gives the same answer: an include guard, or `#pragma once` on the matrix compilers, makes the second inclusion empty. No family differs.
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of program structure (`reports/review/2026-11-03-gap-review-program-structure.md`) reads the reference as supporting option 3, the provisional answer, with no doubt. The effect of an include guard follows from required rules of preprocessing, and the effect of a pragma is implementation-defined.

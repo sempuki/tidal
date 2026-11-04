@@ -1,6 +1,6 @@
 # Q-0012: Should Tidal set a minimum for the largest array or class an implementation accepts?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** TR-14, TR-15, `tests/declarations/declarators/array-too-large.cpp`, `tests/declarations/declarators/array-4gib-ilp32.cpp`, `tests/foundations/translation/limit-array-*.cpp`, `tests/foundations/translation/limit-class-*.cpp`
 
 ## Context
@@ -37,9 +37,15 @@ or one class at a figure of the table, or one byte past it.
 2. Require a minimum that every implementation must accept, so programs
    below it are portable.
 
-## Provisional answer
+## Answer
 
 No; each limit is implementation-defined (option 1). Implementations
 disagree on the limits, and the limits change with the target.
 
+Settled on 2026-11-03 under decision 0054. The review supports this answer with no doubt, and TR-P6 gives the same answer: each implementation sets its own limits, and Tidal sets no minimum. Each family's limit is an implementation-defined choice, so no family differs.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of program structure (`reports/review/2026-11-03-gap-review-program-structure.md`) reads the reference as supporting option 1, the provisional answer, with no doubt. The reference recommends a minimum object size and says that its recommended minimums do not decide conformance.

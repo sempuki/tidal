@@ -96,13 +96,17 @@ definition does not matter.
 
 :::{rule} SINIT-3
 :kind: unspecified
-:tests: declarations/initialization/static/across-units-order.cpp declarations/initialization/static/inline-order-unspecified.cpp declarations/initialization/static/accessor-across-units.cpp
+:tests: declarations/initialization/static/across-units-order.cpp declarations/initialization/static/inline-order-unspecified.cpp declarations/initialization/static/accessor-across-units.cpp declarations/initialization/static/template-member-unordered.cpp
 
 The order of dynamic initialization between translation units is
 unspecified. An initializer that reads a variable from another unit gets
-its final value or zero. The same holds between an `inline` variable and
-a variable that is not `inline` in one translation unit, because another
-unit can initialize the `inline` variable first.
+its final value or zero. The same holds in one translation unit in
+these cases:
+
+- between an `inline` variable and a variable that is not `inline`,
+  because another unit can initialize the `inline` variable first,
+- between a variable that is a {term}`specialization` of a template, such
+  as a class template's static data member, and any other variable.
 :::
 
 :::{rule} SINIT-4
@@ -134,7 +138,8 @@ other unit names.
 A `thread_local` variable at namespace scope with dynamic initialization
 is initialized before the first statement of the thread, or when the
 thread first uses the variable. The choice is implementation-defined.
-Clang and GCC initialize the variable at the first use.
+Clang and GCC initialize the variable at the first use, also when the
+variable has a class type with a constructor ({rule}`OBJ-11`).
 :::
 
 ## Examples
@@ -191,7 +196,7 @@ int cap = table_limit;            // 64, in any unit order
 
 ## Evidence
 
-All eight compilers agree on all 22 tests. The results are in
+All eight compilers agree on all 23 tests. The results are in
 `tests/RESULTS.md`.
 
 - **SINIT-3.** With Clang 22 and GCC 16 at `-O0` and `-O2`, the order
@@ -213,6 +218,11 @@ All eight compilers agree on all 22 tests. The results are in
 - **SINIT-5.** Clang 22 and GCC 16 run the dynamic initializer of a
   unit that `main` never names before `main` starts, in both link
   orders (`unit-not-named.cpp`).
+- **SINIT-3, templates.** A class template's static data member
+  with a dynamic initializer is initialized before the variables of its
+  unit on Clang 22, 18, and the host Clang at `-O0`. GCC, and Clang 22
+  at `-O2`, initialize it after them
+  (`template-member-unordered.cpp`).
 - **SINIT-3, `inline` order.** The test accepts 8 and 1. The reviewer
   summary reports that Clang gives 1 in both link orders and GCC gives 8
   or 1 with the link order.

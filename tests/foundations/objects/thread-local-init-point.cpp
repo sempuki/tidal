@@ -1,6 +1,6 @@
 // tidal-rules: OBJ-11
 // tidal-expect: run
-// tidal-note: Clang 18 and 22 and GCC 16 in the containers construct the object at its first use. The host compilers and GCC 14 construct it before main.
+// tidal-note: Every Clang and GCC configuration constructs the object at its first use. Construction before the first statement of the thread is also allowed (OBJ-11).
 int trace = 0;
 void mark(int d) { trace = trace * 10 + d; }
 struct T { int id; T(int i) : id(i) { mark(i); } ~T() { mark(id); } };

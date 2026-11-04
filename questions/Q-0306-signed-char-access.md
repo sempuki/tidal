@@ -1,6 +1,6 @@
 # Q-0306: Can a program read or write another object through a `signed char` glvalue?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** STG-14, STG-23, `tests/foundations/storage/access-signed-char.cpp`
 
 ## Context
@@ -31,12 +31,18 @@ rule for other types.
 2. `signed char` is an allowed type, as all character types are in
    the implementations.
 
-## Provisional answer
+## Answer
 
 No; `signed char` is not an allowed type, and the access is undefined (STG-23, option 1). The answer follows the description of the language in the phase 5 inventory. The implementations' results lie within what option 1
 allows (decision 0047). A program that needs byte access can use
 `unsigned char` under both options.
 
+Settled on 2026-11-03 under decision 0054. The review supports this answer with no doubt, and STG-P7 gives the same answer, because its table lists `signed char` as not allowed. Every family runs the program as option 2 would, which the undefined behavior allows (decision 0047). The test checks only that the program compiles, so no family differs.
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the object model (`reports/review/2026-11-03-gap-review-object-model.md`) reads the reference as supporting option 1, the provisional answer, with no doubt. The list of types through which a program can reach another object has `char`, `unsigned char`, and `std::byte` only.

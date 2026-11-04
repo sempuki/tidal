@@ -1,7 +1,7 @@
 # Q-0129: Is a copy of a whole class-type constant a use of the constant?
 
 **Status:** provisional
-**Affects:** ODR-2, ODR-3, `tests/foundations/odr/class-constant-copy-in-lambda.cpp`
+**Affects:** ODR-P1, ODR-2, ODR-3, `tests/foundations/odr/class-constant-copy-in-lambda.cpp`
 
 ## Context
 
@@ -34,8 +34,14 @@ EDG read the object's value as a constant.
 
 ## Provisional answer
 
-No; the copy is no use, and Clang differs (option 1). Tidal follows the majority where the compilers disagree. The test expects Clang to reject the program.
+Yes; the copy is a use, and the lambda must capture the constant (option 2). Clang rejects the program, and GCC and EDG accept it. The test expects a rejection, with overrides for GCC and EDG.
+
+Changed on 2026-11-03. The source-reader gap review of program structure (`reports/review/2026-11-03-gap-review-program-structure.md`) reads the reference as supporting option 2. The reading matches Clang 22, and Tidal's own rules give the same answer. ODR-P1 counts an expression that binds a reference as a use, and the copy constructor binds its parameter to the constant. ODR-3 now exempts only a read of a scalar part of a constant with no `mutable` member, and the ODR-P1 table has a row for the copy.
 
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of program structure (`reports/review/2026-11-03-gap-review-program-structure.md`) reads the reference as supporting option 2. The exception for a read of a constant covers only a read that converts a value of a type that is neither a class type nor volatile. A copy of a whole class object makes no such conversion, because the copy constructor takes the object by reference, and the binding needs the object itself. So the copy uses the variable, and in a lambda with no captures the program is not valid, as Clang says. The exception also needs a variable with no `mutable` subobject at all, so a read of a member that is not `mutable` is a use when another member is `mutable`. These limits entered the reference through a core defect resolution in the C++20 cycle, and GCC and EDG appear to keep the older rule.

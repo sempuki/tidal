@@ -40,6 +40,16 @@ Clang has a defect in both cases (option 1). Every other compiler of
 the matrix rejects the class or gives the right size, and Q-0308 already
 reads STG-1 this way for x86-64.
 
+Kept open on 2026-11-03 under decision 0054, because the two reviews read the reference with doubt, and they differ on whether the reference rejects a class that `std::size_t` cannot count.
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the object model (`reports/review/2026-11-03-gap-review-object-model.md`) reads the reference as supporting option 1 for the 32-bit case. The reference makes a type ill-formed when its object representation needs more bytes than `std::size_t` can count. Clang accepts such a class and gives a reduced size, which conflicts with the reference. The 64-bit case of Clang 18 is a class that fits `std::size_t` and passes Clang's own limit. The reference asks for correct execution only within the implementation's resource limits, and says nothing about a program past them. A diagnostic is the better behavior there, but the reference does not plainly require it.
+
+### Gap review, 2026-11-03 (program structure)
+
+The source-reader gap review of program structure (`reports/review/2026-11-03-gap-review-program-structure.md`) reads the reference as silent. The review finds no rule that rejects a class whose size `std::size_t` cannot hold. The reference asks an implementation to run every valid program correctly within its resource limits, and to document those limits where they are known. A wrong result from `sizeof` is not a correct execution, so Clang conforms only if the class is past one of its limits, and Clang documents no such limit. Option 1 relies on STG-1, which goes beyond the reference by this reading.

@@ -41,6 +41,12 @@ Yes; the plain byte copy is undefined, and a copy uses volatile byte glvalues (o
 option 1 keeps both STG-12 and VOL-6 as written. No implementation
 shows a difference.
 
+Kept open on 2026-11-03 under decision 0054, because the review reads the reference with doubt.
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the object model (`reports/review/2026-11-03-gap-review-object-model.md`) reads the reference as unclear, leaning to option 1. The reference makes undefined an access to an object defined with a volatile type through a glvalue that is not volatile, and it has no exception for byte types. The reference does not say whether a member counts as defined with a volatile type, or whether the bytes of the object representation count as volatile.

@@ -33,16 +33,19 @@ except where the program needs only the type or the value:
 |---|---|
 | An evaluated expression that calls the function, takes an address, or binds a reference | yes |
 | A constant {term}`template argument` that takes an address or binds a reference | yes |
-| An evaluated expression that reads the value of a constant variable | no |
+| An evaluated expression that reads the value of a constant variable of scalar type, or of a member or element of a constant that has no `mutable` member | no |
+| An evaluated expression that copies a whole constant of class type, because the copy binds a reference | yes |
+| An expression whose value is discarded and names a constant variable | no |
 | An operand of `sizeof`, `decltype`, or `noexcept` | no |
-| A branch of `if constexpr` that the condition does not select | no |
+| A branch of `if constexpr` that the condition does not select | a use for the capture rules only; no definition is needed |
 | A default argument that a call does not use | no |
 
 Some uses have no name in the source. Creating, copying, and destroying
 an object use the constructors and destructors that the work runs. A
 `new` or `delete` expression uses its allocation and deallocation
-functions. A class with virtual functions uses each virtual function
-that is not pure, because a call through a base can reach any of them.
+functions, and so do the constructors and the destructor of a class
+that declares its own. A virtual function that is not pure is always
+used, because a call through a base can reach it.
 
 A lambda and a local class see the automatic variables of the enclosing
 function only by their values. So a use of such a variable there needs
@@ -58,7 +61,7 @@ entity and on the scope that is counted:
 
 | Entity | Definitions in one {term}`translation unit` | Definitions in the program | Who finds a fault |
 |---|---|---|---|
-| Variable or function with external {term}`linkage`, not `inline` | at most one | exactly one, if the program uses the entity | the linker, if anything |
+| Variable or function with external {term}`linkage`, not `inline` | at most one | at most one; exactly one, if the program uses the entity | the linker, if anything |
 | Variable or function with internal linkage | at most one; exactly one, if the unit uses the entity | one in each unit that uses it | the compiler, usually as a warning |
 | `inline` variable or function | at most one; exactly one, if the unit uses the entity | one in each unit that uses it, all the same | usually nothing |
 | Class or enumeration | at most one | one in each unit that needs it, all the same | usually nothing |
@@ -98,7 +101,8 @@ The class has one definition in each unit, with the same tokens, which
 ODR-10 requires. The function has one definition in the program, which
 ODR-8 requires. A header that holds a definition of a function that is
 not `inline` breaks ODR-8 as soon as two units include it. The same
-holds for a variable that is neither `inline` nor `const`.
+holds for a variable that is not `inline`, unless the variable is
+`const` and not `volatile`.
 
 A constant that several units share has three common forms:
 
@@ -181,7 +185,7 @@ functions, and {rule}`TYN-7` for classes.
 
 :::{rule} ODR-2
 :kind: reject
-:tests: foundations/odr/mutable-member-read-in-lambda.cpp foundations/odr/local-class-binds-constant.cpp foundations/odr/class-constant-copy-in-lambda.cpp foundations/odr/constant-reads-in-lambda.cpp foundations/odr/local-class-reads-constant.cpp
+:tests: foundations/odr/mutable-member-read-in-lambda.cpp foundations/odr/local-class-binds-constant.cpp foundations/odr/class-constant-copy-in-lambda.cpp foundations/odr/constant-reads-in-lambda.cpp foundations/odr/local-class-reads-constant.cpp foundations/odr/member-read-beside-mutable-in-lambda.cpp foundations/odr/discarded-branch-address-in-lambda.cpp foundations/odr/discarded-value-constant-in-lambda.cpp foundations/odr/discarded-value-class-constant-in-lambda.cpp foundations/odr/constant-array-element-in-lambda.cpp
 
 A lambda that does not capture an automatic variable of the enclosing
 function must not use the variable (ODR-3). A member function of a local
@@ -202,21 +206,26 @@ implementation rejects the program.
 
 :::{rule} ODR-3
 :kind: required
-:tests: foundations/odr/overload-set-uses-selected-only.cpp foundations/odr/constant-value-read-not-use.cpp foundations/odr/constant-reads-in-lambda.cpp foundations/odr/local-class-reads-constant.cpp foundations/odr/unevaluated-name-not-use.cpp foundations/odr/constant-address-is-use.cpp foundations/odr/function-address-is-use.cpp foundations/odr/template-argument-address-is-use.cpp foundations/odr/template-argument-address-links.cpp foundations/odr/constant-read-through-operators.cpp foundations/odr/constant-reference-through-conditional-is-use.cpp
+:tests: foundations/odr/overload-set-uses-selected-only.cpp foundations/odr/constant-value-read-not-use.cpp foundations/odr/constant-reads-in-lambda.cpp foundations/odr/local-class-reads-constant.cpp foundations/odr/unevaluated-name-not-use.cpp foundations/odr/constant-address-is-use.cpp foundations/odr/function-address-is-use.cpp foundations/odr/template-argument-address-is-use.cpp foundations/odr/template-argument-address-links.cpp foundations/odr/constant-read-through-operators.cpp foundations/odr/constant-reference-through-conditional-is-use.cpp foundations/odr/class-constant-copy-in-lambda.cpp foundations/odr/member-read-beside-mutable-in-lambda.cpp foundations/odr/discarded-branch-address-in-lambda.cpp foundations/odr/discarded-value-constant-in-lambda.cpp foundations/odr/discarded-value-class-constant-in-lambda.cpp foundations/odr/constant-array-element-in-lambda.cpp
 
 An evaluated expression that names a variable or a function uses it,
 with these exceptions:
 
-- The expression only reads the value of a constant variable. For a
-  variable of class type, the read can be of a member that is not
-  `mutable`, or a copy of the whole object ({question}`Q-0129`). The
-  name can be in parentheses, the second or third operand of `?:`, or
-  the right operand of a comma, when the program reads the value of
-  the result.
+- The expression only reads the value of a scalar part of a constant
+  variable, and the variable has no `mutable` member at any depth. The
+  scalar part can be the variable, a member, or an element that a
+  subscript selects. A copy of a whole object of class type is a use
+  ({question}`Q-0129`).
+- The name of a constant variable is in an expression whose value is
+  discarded ({rule}`UNEV-2`, {question}`Q-0367`).
+- In the two cases above, the name can be in parentheses, the second or
+  third operand of `?:`, or the right operand of a comma.
 - The name is a reference variable that a constant expression
   initializes.
-- The name is in an unevaluated operand ({rule}`UNEV-1`) or in a
-  {term}`discarded statement`.
+- The name is in an unevaluated operand ({rule}`UNEV-1`).
+
+A name in a {term}`discarded statement` needs no definition, and the
+use still counts for ODR-2 ({question}`Q-0367`).
 
 A name of an {term}`overload set` uses only the function that overload
 resolution or a target type selects ({rule}`OVL-18`). A constant
@@ -229,40 +238,46 @@ A constant variable is a variable of object type that is
 
 :::{rule} ODR-4
 :kind: required
-:tests: foundations/odr/local-object-uses-destructor.cpp foundations/odr/constructor-uses-member-constructor.cpp foundations/odr/destructor-uses-pure-base-destructor.cpp foundations/odr/copy-uses-copy-constructor.cpp foundations/odr/prvalue-initializer-no-copy.cpp
+:tests: foundations/odr/local-object-uses-destructor.cpp foundations/odr/constructor-uses-member-constructor.cpp foundations/odr/destructor-uses-pure-base-destructor.cpp foundations/odr/copy-uses-copy-constructor.cpp foundations/odr/prvalue-initializer-no-copy.cpp foundations/odr/constructor-uses-member-destructor.cpp
 
 These constructs use {term}`special member functions <special member function>`:
 
 - Initializing an object uses the constructor that the initialization
   selects.
 - An object that the program destroys uses its destructor.
-- A constructor uses the constructors of its bases and members. A
-  destructor uses their destructors, also when a base's destructor is
-  pure.
+- A constructor uses the constructors of its bases and members, and
+  their destructors, which run if the constructor throws
+  ({rule}`UNW-2`). A destructor uses their destructors, also when a
+  base's destructor is pure.
 - A copy uses the copy or move constructor. A prvalue that initializes
   an object of its own type makes no copy, and uses neither.
 :::
 
 :::{rule} ODR-5
 :kind: required
-:tests: foundations/odr/delete-uses-destructor.cpp foundations/odr/new-uses-deallocation-function.cpp foundations/odr/virtual-destructor-uses-deallocation-function.cpp foundations/odr/new-noexcept-constructor-no-deallocation.cpp
+:tests: foundations/odr/delete-uses-destructor.cpp foundations/odr/new-uses-deallocation-function.cpp foundations/odr/virtual-destructor-uses-deallocation-function.cpp foundations/odr/new-noexcept-constructor-uses-deallocation.cpp foundations/odr/destructor-uses-deallocation-function.cpp foundations/odr/constructor-uses-allocation-functions.cpp
 
-A `new` expression uses its allocation function and its constructor. If
-the constructor is not non-throwing ({rule}`EXS-4`), the `new`
-expression also uses the matching deallocation function
-({question}`Q-0358`). A `delete` expression uses the destructor and the
-deallocation function. A virtual destructor uses the deallocation
-function of its class.
+These constructs use allocation and deallocation functions:
+
+- A `new` expression uses its allocation function, its constructor, and
+  the matching deallocation function, if lookup finds one
+  ({rule}`UNW-3`). The exception specification of the constructor does
+  not matter ({question}`Q-0358`).
+- A `delete` expression uses the destructor and the deallocation
+  function.
+- The definition of a constructor uses the allocation and deallocation
+  functions of its class that are not placement forms. The definition
+  of a destructor uses the deallocation function, virtual or not.
 :::
 
 :::{rule} ODR-6
 :kind: required
-:tests: foundations/odr/default-argument-not-used.cpp foundations/odr/default-argument-used.cpp foundations/odr/virtual-function-not-called-is-used.cpp
+:tests: foundations/odr/default-argument-not-used.cpp foundations/odr/default-argument-used.cpp foundations/odr/virtual-function-not-called-is-used.cpp foundations/odr/virtual-function-no-object-is-used.cpp
 
 A default argument is evaluated only by a call that uses the default.
 The entities that the default argument names are used only then. A
-virtual function that is not pure is used when the program creates an
-object of its class. No call needs to name the function
+virtual function that is not pure is used, whether or not the program
+creates an object of its class or names the function
 ({rule}`VIRT-20`).
 :::
 
@@ -334,12 +349,12 @@ at every inclusion.
 
 :::{rule} ODR-8
 :kind: no-diagnostic
-:tests: foundations/odr/header-function-in-two-units.cpp foundations/odr/unused-member-function-no-definition.cpp foundations/odr/local-object-uses-destructor.cpp foundations/odr/constructor-uses-member-constructor.cpp foundations/odr/destructor-uses-pure-base-destructor.cpp foundations/odr/copy-uses-copy-constructor.cpp foundations/odr/delete-uses-destructor.cpp foundations/odr/new-uses-deallocation-function.cpp foundations/odr/virtual-destructor-uses-deallocation-function.cpp foundations/odr/default-argument-used.cpp foundations/odr/virtual-function-not-called-is-used.cpp foundations/odr/constant-address-is-use.cpp foundations/odr/function-address-is-use.cpp foundations/odr/template-argument-address-links.cpp foundations/odr/explicit-variable-specialization-in-two-units.cpp foundations/odr/explicit-class-member-in-two-units.cpp foundations/odr/constant-reference-through-conditional-is-use.cpp foundations/odr/new-noexcept-constructor-no-deallocation.cpp
+:tests: foundations/odr/header-function-in-two-units.cpp foundations/odr/unused-function-defined-in-two-units.cpp foundations/odr/unused-variable-defined-in-two-units.cpp foundations/odr/constructor-uses-member-destructor.cpp foundations/odr/destructor-uses-deallocation-function.cpp foundations/odr/constructor-uses-allocation-functions.cpp foundations/odr/virtual-function-no-object-is-used.cpp foundations/odr/unused-member-function-no-definition.cpp foundations/odr/local-object-uses-destructor.cpp foundations/odr/constructor-uses-member-constructor.cpp foundations/odr/destructor-uses-pure-base-destructor.cpp foundations/odr/copy-uses-copy-constructor.cpp foundations/odr/delete-uses-destructor.cpp foundations/odr/new-uses-deallocation-function.cpp foundations/odr/virtual-destructor-uses-deallocation-function.cpp foundations/odr/default-argument-used.cpp foundations/odr/virtual-function-not-called-is-used.cpp foundations/odr/constant-address-is-use.cpp foundations/odr/function-address-is-use.cpp foundations/odr/template-argument-address-links.cpp foundations/odr/explicit-variable-specialization-in-two-units.cpp foundations/odr/explicit-class-member-in-two-units.cpp foundations/odr/constant-reference-through-conditional-is-use.cpp foundations/odr/new-noexcept-constructor-uses-deallocation.cpp
 
 This rule applies to a variable or function with external linkage that
-is not `inline`. If the program uses such an entity, the program must
-define it exactly once. An
-entity that the program does not use needs no definition. An
+is not `inline`. The program must not define such an entity in two
+translation units, also when the program does not use it. If the
+program uses the entity, the program must define it once. An
 implementation need not diagnose a break of this rule.
 {rule}`LNK-6`, {rule}`LNK-7`, {rule}`INL-4`, and {rule}`VIRT-20` state
 parts of the rule.
@@ -357,13 +372,22 @@ rule for `inline` entities.
 
 :::{rule} ODR-10
 :kind: no-diagnostic
-:tests: foundations/odr/class-differs-across-units.cpp foundations/odr/enumeration-differs-across-units.cpp foundations/odr/inline-variable-differs-across-units.cpp foundations/odr/inline-same-tokens-different-meaning.cpp foundations/odr/class-template-differs-across-units.cpp foundations/odr/function-template-same-tokens-different-meaning.cpp foundations/odr/variable-template-differs-across-units.cpp
+:tests: foundations/odr/class-differs-across-units.cpp foundations/odr/enumeration-differs-across-units.cpp foundations/odr/inline-variable-differs-across-units.cpp foundations/odr/inline-same-tokens-different-meaning.cpp foundations/odr/class-template-differs-across-units.cpp foundations/odr/function-template-same-tokens-different-meaning.cpp foundations/odr/variable-template-differs-across-units.cpp foundations/odr/const-value-in-inline-two-units.cpp
 
 If several translation units define the same entity of a kind in
 ODR-7 or ODR-12, the definitions must match. Matching definitions have
 the same tokens, and each name in them refers to the same entity, also
 where a specialization is instantiated ({rule}`INST-32`). An
-implementation need not diagnose a mismatch.
+implementation need not diagnose a mismatch. A name can refer to a
+different object in each unit if the object meets these conditions:
+
+- It is `const` and not `volatile`, with internal linkage or none.
+- It has the same literal type and the same constant initializer in
+  each unit.
+- The definitions only read its value, so they do not use it (ODR-3).
+
+A reference with internal linkage can also differ, if it refers to the
+same entity in each unit.
 :::
 
 :::{rule} ODR-14
@@ -463,15 +487,28 @@ template <> int rank<bool> = 2;                // two units: two definitions
 
 ## Evidence
 
-All eight compilers agree on 68 of 75 tests. EDG checks each unit and
+All eight compilers agree on 75 of 87 tests. EDG checks each unit and
 does not link, so its results for the link and run tests say only that
 the units are valid.
 
 - ODR-2: Clang rejects a lambda that copies a whole local constant of
-  class type. GCC and EDG accept the lambda ({question}`Q-0129`).
+  class type. GCC and EDG accept the lambda ({question}`Q-0129`). The
+  copy binds the parameter of the copy constructor, so ODR-3 counts it
+  as a use, as Clang does.
 - ODR-2: EDG accepts a lambda that reads a `mutable` member of a local
   constant, and a local class that binds a reference to a local
-  constant. Clang and GCC reject both ({question}`Q-0130`).
+  constant. Clang and GCC reject both ({question}`Q-0130`). Clang and
+  GCC also reject a read of a member that is not `mutable` when another
+  member is `mutable`, and EDG accepts it.
+- ODR-3: the table gives the forms where one family differs
+  ({question}`Q-0367`).
+
+  | Test | Form | Clang | GCC | EDG |
+  |---|---|---|---|---|
+  | `discarded-value-constant-in-lambda.cpp` | a local `const int` as a discarded expression | reject | accept | accept |
+  | `discarded-value-class-constant-in-lambda.cpp` | a local constant of class type as a discarded expression | reject | accept | accept |
+  | `constant-array-element-in-lambda.cpp` | an element of a local constant array | accept | reject | accept |
+  | `discarded-branch-address-in-lambda.cpp` | the address of a local variable in a discarded branch | accept | reject | reject |
 - ODR-3: every compiler links a program whose template argument takes
   the address of a function with external linkage that has no
   definition, when nothing calls the function. ODR-8 allows the result.
@@ -518,7 +555,18 @@ the units are valid.
   the program fails to link. On Clang 22 and GCC 16, a constructor
   without `noexcept` makes the program refer to the function, also when
   the constructor only calls `noexcept` functions
-  ({question}`Q-0358`).
+  ({question}`Q-0358`). The `new` expression uses the function in both
+  cases, and ODR-8 needs no diagnostic, so both results are allowed.
+- ODR-4, ODR-5, ODR-6: Clang and GCC fail to link a constructor that
+  can throw when the destructor of a member has no definition. They
+  link a program whose constructor or non-virtual destructor uses
+  allocation and deallocation functions with no definition, and a class
+  with an undefined virtual function and no object. ODR-8 allows each
+  result.
+- ODR-8: Clang and GCC fail to link two units that define one function,
+  or one variable, that the program does not use.
+- ODR-10: a `const int` in a header gives each unit its own object. An
+  `inline` function that reads its value in each unit links and runs.
 - ODR-3: Clang and GCC link a program that reads the value of a static
   member with no definition through `?:`, a comma, or parentheses, and
   fail to link a program that binds a reference to such a `?:` result
@@ -543,5 +591,16 @@ the units are valid.
   `#define`. All three compilers skip the whole file at a later
   inclusion when `#pragma once` follows a definition.
 - The tests keep their headers as `*.h` files next to them.
+- Settled on 2026-11-03 under decision 0054. A source-reader gap
+  review supports each answer with no doubt, and a principle gives the
+  same answer:
+
+  | Question | Principle | Family that still differs |
+  |---|---|---|
+  | {question}`Q-0127` | ODR-P3 | none |
+  | {question}`Q-0128` | ODR-P2 | none; GCC 16 gives no diagnostic in one form, which ODR-9 allows |
+  | {question}`Q-0130` | ODR-P1 | EDG 7.0 |
+  | {question}`Q-0297` | ODR-P2 | none; EDG 7.0 does not link |
+  | {question}`Q-0315` | ODR-P1 | none |
 
 Inputs: clang-sema-expr, clang-sema-decl, clang-diag-sema, edg-decls.

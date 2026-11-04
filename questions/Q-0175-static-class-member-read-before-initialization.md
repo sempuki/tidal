@@ -54,6 +54,12 @@ No; the read is undefined (OBJ-2) (option 1). The option follows the lifetime mo
 evaluation in every compiler treats the member as having no value. The
 run-time results of option 2 lie within what OBJ-2 allows.
 
+Kept open on 2026-11-03 under decision 0054, because the review reads the reference as unclear. OBJ-1 now starts the lifetime of a class object when its initialization completes, which is the model of option 1.
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the object model (`reports/review/2026-11-03-gap-review-object-model.md`) reads the reference as unclear. The rule on lifetimes supports option 1. A class object with a dynamic initializer has not begun its lifetime before the initializer completes, and a note to that rule names this case. A read of a member then is outside the lifetime. A note on static initialization says that an earlier initializer can see the zero of a later object, and that note fits option 2. Read strictly, the rule on lifetimes also makes the scalar read of SINIT-2 undefined, so the review finds the reference inconsistent. The review knows of an open core issue on the point after C++23.

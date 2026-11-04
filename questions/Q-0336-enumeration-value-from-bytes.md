@@ -44,6 +44,12 @@ ENUM-6 covers a conversion and every other means that leaves such a
 value in the object. The sanitizers of both compilers check the read
 and report the two cases in the same way.
 
+Kept open on 2026-11-03. The review reads against the undefined behavior sanitizers of Clang and GCC, which stop the read in both tests, and EDG runs no program. Tidal keeps option 1, and the question waits on the maintainer (`documentation/decisions/pending.md`, row 4).
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the object model (`reports/review/2026-11-03-gap-review-object-model.md`) reads the reference as supporting option 2. An enumeration has the object and value representation of its underlying type, and a value is stored with the same bits in either type. A note on the values of an enumeration says that the range serves promotions and conversions, and it does not stop an object of the enumeration type from holding another value. The undefined case is the conversion of a value outside the range to an enumeration with no fixed underlying type. No rule makes the later read undefined, so a value that a byte copy puts in the object reads back as that value. The sanitizers check the read because they can see the value there.

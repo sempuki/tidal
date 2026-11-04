@@ -1,9 +1,8 @@
 // tidal-rules: LSUP-12
-// tidal-expect: reject
-// tidal-expect-clang: accept
-// tidal-expect-edg: accept
+// tidal-expect: accept
+// tidal-expect-gcc: reject
 // tidal-error-gcc: no match for .operator==. .operand types are .std::strong_ordering. and .int
-// tidal-note: Q-0334. strong_ordering has != with a literal 0 and no ==.
+// tidal-note: Q-0334. strong_ordering has != with a literal 0 and no ==, which serves a defaulted <=>. Clang and EDG accept. GCC tests each part with == 0 and rejects.
 namespace std {
 class partial_ordering {
   signed char v;

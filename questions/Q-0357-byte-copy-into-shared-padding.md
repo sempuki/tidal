@@ -38,6 +38,12 @@ The member takes the value of its new bytes, and a padding byte with no value gi
 byte in the member, and option 1 follows STG-11 and STG-13 without a
 new kind of undefined behavior.
 
+Kept open on 2026-11-03 under decision 0054, because the review reads the reference with doubt.
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the object model (`reports/review/2026-11-03-gap-review-object-model.md`) reads the reference as unclear, leaning to option 1. The guarantees of the reference for byte copies leave out subobjects that can overlap, so the reference promises nothing for the base. A write through `unsigned char` to the bytes of the member is an allowed access, and the reference does not say what the member then holds. Nothing makes the copy undefined as a whole.

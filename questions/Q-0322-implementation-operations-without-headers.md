@@ -44,6 +44,12 @@ library that the charter draws, so the maintainer decides. Writers may
 use builtin queries in probes as Evidence for class properties
 (decision 0051), and no test uses them.
 
+Kept open on 2026-11-03 under decision 0054, because the review is silent, and the question waits on the maintainer (`documentation/decisions/pending.md`, row 2).
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the object model (`reports/review/2026-11-03-gap-review-object-model.md`) reads the reference as silent. The question is about Tidal's test method, and the reference puts each of these operations in the library.

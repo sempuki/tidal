@@ -39,6 +39,12 @@ The three tests above and `initializer-list-no-members.cpp`.
 Where a braced list initializes an object of that type or `auto` deduces it (LSUP-1); GCC checks every definition (option 1). Two of three implementations agree, and option 1 names the
 operations that use the members. The tests record GCC as an override.
 
+Kept open on 2026-11-03 under decision 0054, because the review is silent.
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the object model (`reports/review/2026-11-03-gap-review-object-model.md`) reads the reference as silent on the options. In the reference, every use of the class, named or implicit, needs a declaration from the library. That trigger is wider than option 1 and closest to GCC. A declaration that the program writes is outside the reference.

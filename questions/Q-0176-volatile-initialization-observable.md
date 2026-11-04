@@ -42,6 +42,12 @@ Yes, for an initializer that runs at run time (option 1). Both compilers keep th
 program never reads. Option 1 does not say how many stores write a
 class object. The compilers write two `int` members with one wide store.
 
+Kept open on 2026-11-03 under decision 0054, because the review is silent and leans against the answer.
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of program structure (`reports/review/2026-11-03-gap-review-program-structure.md`) reads the reference as silent, leaning to option 2. An access through a volatile glvalue is observable, and an access is a read or a change of a value. The changes of a scalar that the reference lists are assignment, increment, and decrement, and an initializer does not act through a glvalue. For a class object, volatile semantics start when the constructor of the most derived object ends, which supports option 2 for class types. For a scalar the reference does not say, and the meaning of a volatile access is implementation-defined.

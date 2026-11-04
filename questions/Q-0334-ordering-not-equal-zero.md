@@ -44,10 +44,14 @@ with only `!=` serves Clang and EDG.
 
 ## Provisional answer
 
-The class must declare `==` against `0` (option 1). The rule then
-describes the one form that every compiler accepts, and the `==`
-serves both ways of testing the result.
+The class must declare `==` or `!=` against `0` (option 2). Clang and EDG accept either operator. GCC rejects a class with only `!=`, and the test records GCC with an override.
+
+Changed on 2026-11-03. The source-reader gap review of the object model (`reports/review/2026-11-03-gap-review-object-model.md`) reads the reference as supporting option 2. The reading matches Clang 22 and EDG 7.0. LSUP-P1 says that the implementation compares ordering values with `0`, and either operator serves that comparison, the `==` through a rewritten form (DCMP-6). LSUP-12 now accepts `==` or `!=` against `0` for a defaulted `<=>`. `ordering-defaulted-not-equal-zero-only.cpp` expects acceptance, with an override for GCC.
 
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the object model (`reports/review/2026-11-03-gap-review-object-model.md`) reads the reference as supporting option 2. The reference finds the first differing part of a defaulted `<=>` by testing each part's result with `!=` against `0`. Clang and EDG follow that. A class with only `==` against `0` still serves through the rewritten form, and a class with only `!=` serves directly, so either operator works. GCC's use of `==` is hidden by the library's classes, which have both operators. The reference does not cover a class that the program declares, so the review reads the question within the reference's own logic.

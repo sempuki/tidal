@@ -1,6 +1,6 @@
 # Q-0351: How is the depth of nested instantiations counted, and must it reach a minimum?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** TR-13, INST-15, `tests/foundations/translation/limit-depth-one-template-100.cpp`, `tests/foundations/translation/limit-depth-two-templates-100.cpp`, `tests/foundations/translation/limit-depth-two-templates-1000.cpp`
 
 ## Context
@@ -40,12 +40,18 @@ of 900" (GCC), "excessive recursion at instantiation" (EDG).
    default of 64 instantiations of one template would then decide the
    figure, or EDG would not conform.
 
-## Provisional answer
+## Answer
 
 Both are implementation-defined, with no minimum (option 1). The
 compilers differ in what they count and in the figure, and each
 compiler has an option that changes the figure.
 
+Settled on 2026-11-03 under decision 0054. The review supports this answer with no doubt, and TR-P6 gives the same answer: each implementation sets its limits, and Tidal sets no minimum. Each family's count and figure is an implementation-defined choice, so no family differs.
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of program structure (`reports/review/2026-11-03-gap-review-program-structure.md`) reads the reference as supporting option 1, the provisional answer, with no doubt. The reference names one limit on the total depth of nested instantiations, which can span several templates, and recommends a minimum of 1024 as a guideline only. EDG counts the depth of one template, and GCC's default is below the guideline. Neither choice breaks a requirement.

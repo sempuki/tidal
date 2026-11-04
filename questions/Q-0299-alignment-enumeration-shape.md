@@ -28,9 +28,14 @@ enumeration "was previously declared" another way.
 
 ## Provisional answer
 
-Yes, reject (LSUP-5); GCC and EDG reject, Clang accepts (option 1). Two of the three implementations check the shape, and they
-check it at the declaration, before any use.
+No; LSUP-5 needs no diagnostic, GCC and EDG reject another shape, and Clang accepts it (option 2). A program with another shape is not valid. The tests expect the rejection that GCC and EDG give, and record Clang's acceptance with an override.
+
+Changed on 2026-11-03. The source-reader gap review of the object model (`reports/review/2026-11-03-gap-review-object-model.md`) reads the reference as supporting option 2. The reading matches Clang 22, which accepts each shape, and every result of the matrix fits a rule that needs no diagnostic. LSUP-P2 asks the program and the library to agree on each name, which is a requirement on the program. LSUP-5 is now a `no-diagnostic` rule in the Implementation Requirements segment.
 
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the object model (`reports/review/2026-11-03-gap-review-object-model.md`) reads the reference as supporting option 2. In the reference, a program that adds a declaration to namespace `std` has undefined behavior, so no shape needs a diagnostic. The rules of the language-support page have no counterpart in the reference, and decision 0041 makes them Tidal choices.

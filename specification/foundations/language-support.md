@@ -25,6 +25,12 @@ referenced)*. A program that includes no header has no usable
 declaration of the launder operation. Such a program keeps the pointer
 that placement `new` returns ({rule}`STG-5`, {principle}`STG-P4`).
 
+In ISO C++ the library declares these names, and a program that adds
+its own declaration to namespace `std` is outside the language. The
+rules on this page are Tidal choices (decision 0041). They give the
+shapes that the matrix compilers accept from a program that includes no
+header, so that tests can use these names without the library.
+
 Depends on: fundamental types; list initialization of classes;
 comparison operators; structured bindings; new and delete; virtual
 functions; raw storage and object representation.
@@ -132,7 +138,7 @@ for the `0` ({question}`Q-0334`):
 
 | Use | Operator that the class declares |
 |---|---|
-| a defaulted `<=>` ({rule}`DCMP-4`) | `v == 0` |
+| a defaulted `<=>` ({rule}`DCMP-4`) | `v == 0` or `v != 0` |
 | a relational operator rewritten from `x <=> y` ({rule}`OVL-13`) | that operator as `v < 0`, with `v` on the left |
 | a relational operator rewritten from the swapped `y <=> x` | that operator as `0 < v`, with `0` on the left |
 | `x <=> y` rewritten from the swapped `y <=> x` | `0 <=> v` |
@@ -147,17 +153,6 @@ A defaulted `<=>` converts the result of each part to its return type
 return type, the program must declare a conversion to the weaker class.
 A conversion function on the stronger class and a {term}`converting constructor`
 on the weaker class both serve.
-:::
-
-:::{rule} LSUP-5
-:kind: reject
-:tests: foundations/language-support/alignment-enumeration-self-declared.cpp foundations/language-support/alignment-enumeration-not-declared.cpp foundations/language-support/alignment-enumeration-with-enumerator.cpp foundations/language-support/alignment-enumeration-unscoped.cpp foundations/language-support/alignment-enumeration-wrong-underlying-type.cpp foundations/language-support/alignment-enumeration-class.cpp expressions/new-delete/aligned-forms-by-name.cpp
-
-A program that names `std::align_val_t` must declare it first. The
-declaration gives a scoped enumeration with the underlying type
-`std::size_t`, and it can have enumerators ({question}`Q-0299`). A
-`new` expression that passes an alignment needs no declaration of the
-type ({rule}`NEW-28`).
 :::
 
 :::{rule} LSUP-3
@@ -257,7 +252,7 @@ declaration gives a scoped enumeration with the underlying type
 
 :::{rule} LSUP-10
 :kind: required
-:tests: foundations/language-support/construct-at-self-declared.cpp foundations/language-support/construct-at-other-namespace-constant.cpp foundations/storage/replace-const-member-constant.cpp foundations/storage/replace-through-reference-constant.cpp foundations/storage/replace-array-element-constant.cpp foundations/storage/reuse-other-union-member-constant.cpp
+:tests: foundations/language-support/construct-at-self-declared.cpp foundations/language-support/construct-at-other-namespace-constant.cpp foundations/language-support/construct-at-object-outside-evaluation.cpp foundations/storage/replace-const-member-constant.cpp foundations/storage/replace-through-reference-constant.cpp foundations/storage/replace-array-element-constant.cpp foundations/storage/reuse-other-union-member-constant.cpp
 
 A program that includes no header can declare `std::construct_at`
 itself, in this shape:
@@ -269,20 +264,39 @@ itself, in this shape:
   which calls a non-allocating placement form (LSUP-7).
 
 During {term}`constant evaluation`, the placement `new` in
-`std::construct_at` creates the object ({rule}`STG-5`). The same
-placement `new` in any other function is not valid there
+`std::construct_at` creates the object ({rule}`STG-5`), if the pointer
+points to one of these:
+
+- storage that `std::allocator` gave in the same evaluation (LSUP-11),
+- an object whose lifetime began in the same evaluation.
+
+The same placement `new` in any other function is not valid there
 ({rule}`NEW-37`).
 :::
 
 :::{rule} LSUP-11
 :kind: required
-:tests: foundations/language-support/allocator-self-declared-constant.cpp foundations/language-support/allocator-other-namespace-constant.cpp foundations/storage/allocation-array-class-elements-constant.cpp
+:tests: foundations/language-support/allocator-self-declared-constant.cpp foundations/language-support/allocator-other-namespace-constant.cpp foundations/storage/allocation-array-class-elements-constant.cpp foundations/language-support/allocator-element-not-literal-constant.cpp
 
 A program that includes no header can declare `std::allocator` as a
 class template with the member functions `allocate` and `deallocate`.
 These members call `::operator new` and `::operator delete` by name. During
 {term}`constant evaluation`, such a call is valid only inside these
-members ({rule}`NEW-37`, {rule}`STG-28`).
+members ({rule}`NEW-37`, {rule}`STG-28`). The element type need not be
+a literal type.
+:::
+
+## Implementation Requirements
+
+:::{rule} LSUP-5
+:kind: no-diagnostic
+:tests: foundations/language-support/alignment-enumeration-self-declared.cpp foundations/language-support/alignment-enumeration-not-declared.cpp foundations/language-support/alignment-enumeration-with-enumerator.cpp foundations/language-support/alignment-enumeration-unscoped.cpp foundations/language-support/alignment-enumeration-wrong-underlying-type.cpp foundations/language-support/alignment-enumeration-class.cpp expressions/new-delete/aligned-forms-by-name.cpp
+
+A declaration of `std::align_val_t` in a program must give a scoped
+enumeration with the underlying type `std::size_t`. The enumeration can
+have enumerators. An implementation need not diagnose another shape
+({question}`Q-0299`). A `new` expression that passes an alignment needs
+no declaration of the type ({rule}`NEW-28`).
 :::
 
 ## Examples
@@ -491,8 +505,8 @@ int* r = new (raw) int(3);          // raw hosts the int
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 45
-of 58 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 47
+of 60 tests.
 
 - LSUP-1: each compiler checks the shape in its own way. Clang checks
   the layout of the two members, and also accepts a second pointer in
@@ -516,8 +530,8 @@ of 58 tests.
   `== 0`. Clang and EDG test it with `!= 0`, which an `==` against `0`
   serves through {rule}`DCMP-6`. A class with only `!=` against `0`
   therefore serves Clang and EDG and not GCC
-  ({question}`Q-0334`). Every compiler rejects a
-  class with neither operator.
+  ({question}`Q-0334`). LSUP-12 accepts either operator, as Clang and
+  EDG do. Every compiler rejects a class with neither operator.
 - LSUP-12: every compiler rejects a relational operator rewritten from
   `<=>` when the ordering class lacks that operator against `0`, on the
   side that {rule}`OVL-13` gives. No compiler rewrites that inner
@@ -530,9 +544,12 @@ of 58 tests.
   `auto`, and gives an ordinary error when the return type is written.
 - LSUP-5: GCC and EDG compare a declaration of `std::align_val_t` with
   their own and reject an unscoped enumeration, another underlying
-  type, and a class. Clang accepts all three ({question}`Q-0299`).
-  Every compiler accepts a `new` expression for an over-aligned type
-  with no declaration of the enumeration.
+  type, and a class. Clang accepts all three ({question}`Q-0299`). So
+  the rule needs no diagnostic. Every compiler accepts a `new`
+  expression for an over-aligned type with no declaration of the
+  enumeration.
+- LSUP-2: the rule asks for all three ordering classes, as EDG does.
+  Clang and GCC need only the class that a use yields.
 - LSUP-6: no compiler checks the shape of `std::nothrow_t`. The tag is
   an ordinary placement argument, and only the exception specification
   of the allocation function matters ({rule}`NEW-31`). The shape in the
@@ -556,7 +573,8 @@ of 58 tests.
 - LSUP-10: every compiler runs the placement `new` inside
   `std::construct_at` during constant evaluation. The placement form
   need not be `constexpr`. Every compiler rejects the same template in
-  another namespace. With no placement form declared, every compiler
+  another namespace, and a call whose pointer points to a variable that
+  the evaluation did not create. With no placement form declared, every compiler
   rejects the template's placement `new` ({rule}`NEW-20`).
 - LSUP-7: with only the single-object placement form declared, Clang,
   GCC, and EDG reject an array placement `new` and name
@@ -569,6 +587,11 @@ of 58 tests.
   element, and GCC and EDG accept the assignment
   ({question}`Q-0323`). The test builds
   each element with `std::construct_at`.
+- LSUP-11: every compiler accepts an `std::allocator` of a class that
+  is not a literal type during constant evaluation. The gap review of
+  the object model reads the C++23 text as asking for a literal type.
+  LSUP-11 follows the compilers (`documentation/decisions/pending.md`,
+  row 4).
 - Scope: the page covers the names that a `new` expression and
   `dynamic_cast` use. `typeid` and its exception wait for roadmap item
   T. The new handler and the launder operation are library facilities

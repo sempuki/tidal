@@ -39,6 +39,12 @@ bytes. No implementation in the matrix reports an error.
 Yes; the bytes act as an array of `sizeof` elements (STG-13, option 1). Every implementation behaves this way, and the
 byte-copy rules (STG-12, CPY-19) need the steps.
 
+Kept open on 2026-11-03 under decision 0054, because the review reads the reference with doubt.
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the object model (`reports/review/2026-11-03-gap-review-object-model.md`) reads the reference as unclear, with option 1 supported by its intent. By the letter, a cast of a pointer to an object to a pointer to `unsigned char` still points to the object, because no byte object is pointer-interconvertible with it. Arithmetic on that pointer is then undefined, because the type of the pointer and the type of the element are not similar. The reference still calls the object representation a sequence of `unsigned char` objects, and it promises byte copies, which need the step. The review knows of a proposal to fix access to object representations that C++23 did not adopt. Option 1 matches the intent and every implementation.

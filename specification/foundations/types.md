@@ -40,18 +40,18 @@ that the base type does not have, names no type.
 
 Arithmetic needs to know which of two types is wider, so the integer
 types and the floating-point types each form a ladder of ranks. A
-signed and an unsigned type of the same size share a rank. Two types
-can have the same size and still have different ranks, as `long` and
-`long long` do on LP64. The values of an integer type follow from its
-width, because every integer type uses two's complement. `bool` has two
-values only.
+signed type and its own unsigned type share a rank. Two types can have
+the same size and still have different ranks, as `long` and `long long`
+do on LP64. The values of an integer type follow from its width,
+because every integer type uses two's complement. The implementation
+chooses each width. `bool` has two values only.
 :::
 
 :::{principle} TYP-P3
 :rules: TYP-1 TYP-2 TYP-3 TYP-10 TYP-12 TYP-13 TYP-14
 
-The language fixes the order of the sizes, and the target fixes the
-sizes themselves. The target also picks the signedness of `char` and
+The language fixes the order of the sizes of the signed integer types,
+and the target fixes the sizes themselves. The target also picks the signedness of `char` and
 the underlying types of the wide character types. The two matrix
 targets differ in these choices:
 
@@ -98,7 +98,7 @@ the widest floating-point type, with the specifiers in either order.
 
 :::{rule} TYP-7
 :kind: reject
-:tests: foundations/types/specifier-long-short.cpp foundations/types/specifier-long-long-long.cpp foundations/types/specifier-signed-unsigned.cpp foundations/types/specifier-unsigned-float.cpp foundations/types/specifier-long-float.cpp foundations/types/specifier-short-char.cpp foundations/types/specifier-unsigned-bool.cpp foundations/types/specifier-signed-wchar.cpp foundations/types/specifier-unsigned-char8.cpp foundations/types/specifier-short-double.cpp foundations/types/specifier-long-char.cpp foundations/types/specifier-int-char.cpp foundations/types/specifier-unsigned-char16.cpp foundations/types/specifier-signed-char32.cpp foundations/types/specifier-short-float.cpp foundations/types/specifier-long-bool.cpp foundations/types/specifier-long-long-double.cpp
+:tests: foundations/types/specifier-long-short.cpp foundations/types/specifier-long-long-long.cpp foundations/types/specifier-signed-unsigned.cpp foundations/types/specifier-unsigned-float.cpp foundations/types/specifier-long-float.cpp foundations/types/specifier-short-char.cpp foundations/types/specifier-unsigned-bool.cpp foundations/types/specifier-signed-wchar.cpp foundations/types/specifier-unsigned-char8.cpp foundations/types/specifier-short-double.cpp foundations/types/specifier-long-char.cpp foundations/types/specifier-int-char.cpp foundations/types/specifier-unsigned-char16.cpp foundations/types/specifier-signed-char32.cpp foundations/types/specifier-short-float.cpp foundations/types/specifier-long-bool.cpp foundations/types/specifier-long-long-double.cpp foundations/types/specifier-signed-double.cpp foundations/types/specifier-unsigned-long-double.cpp
 
 A program must not combine type specifiers in these ways:
 
@@ -106,6 +106,7 @@ A program must not combine type specifiers in these ways:
 - both `signed` and `unsigned`,
 - a size or a sign with `bool`, `wchar_t`, `char8_t`, `char16_t`,
   `char32_t`, or `float`,
+- a sign with `double` or `long double`,
 - a size with `char`, or `short` or `long long` with `double`,
 - two base types, such as `int char`.
 :::
@@ -144,8 +145,8 @@ rank.
 :kind: required
 :tests: foundations/types/integer-ranges-lp64.cpp foundations/types/integer-ranges-ilp32.cpp foundations/types/int-max-overflow.cpp
 
-Every integer type uses two's complement. For a type whose size in
-TYP-1 is `B` bytes, let `N` be `8 * B`. The table gives the bounds:
+Every integer type other than `bool` uses two's complement. For a type
+whose width in TYP-1 is `N` bits, the table gives the bounds:
 
 | Kind | Lowest | Highest |
 |---|---|---|
@@ -176,10 +177,18 @@ gives `false` for zero and `true` for any other value. In arithmetic,
 :kind: impl-defined
 :tests: foundations/types/size-integers-lp64.cpp foundations/types/size-integers-ilp32.cpp foundations/types/size-characters-lp64.cpp foundations/types/size-characters-ilp32.cpp foundations/types/size-floating-lp64.cpp foundations/types/size-floating-ilp32.cpp foundations/types/size-pointers-lp64.cpp foundations/types/size-pointers-ilp32.cpp foundations/types/size-result-type-lp64.cpp foundations/types/size-result-type-ilp32.cpp
 
-The size of each fundamental type is implementation-defined, except
-that `char`, `signed char`, `unsigned char`, and `char8_t` have size 1.
-The sizes do not decrease along the order of TYP-8. The table gives the
-sizes in bytes on the matrix targets:
+The size of each fundamental type is implementation-defined, with these
+limits:
+
+- `char`, `signed char`, `unsigned char`, and `char8_t` have size 1.
+- The sizes of `signed char`, `short`, `int`, `long`, and `long long`
+  do not decrease in that order.
+- The type of `nullptr` has the size of a pointer to `void`.
+
+The width of each integer type, which is the number of bits of its
+value, is implementation-defined. On the matrix targets, the width is 8
+times the size. The table gives the sizes in bytes on the matrix
+targets:
 
 | Type | x86-64 Linux | `-m32` |
 |---|---|---|
@@ -223,7 +232,7 @@ table gives the choices on both matrix targets:
 
 | Type | Signed | Underlying type |
 |---|---|---|
-| `char` | yes | none (TYP-5) |
+| `char` | yes | `signed char` (still a distinct type, TYP-5) |
 | `wchar_t` | yes | `int` |
 | `char16_t` | no | `unsigned short` |
 | `char32_t` | no | `unsigned int` |
@@ -303,8 +312,8 @@ static_assert(sizeof(u16) == 2 && sizeof(u32) == 4 && sizeof(u64) == 8);
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 57
-of 59 tests. The x86-64 build of EDG skips the `-m32` tests, and the
+The results are in `tests/RESULTS.md`. All eight compilers agree on 59
+of 61 tests. The x86-64 build of EDG skips the `-m32` tests, and the
 ILP32 build runs only those.
 
 - TYP-1, TYP-2, TYP-10, TYP-12: the values come from probes on both
@@ -327,6 +336,19 @@ ILP32 build runs only those.
   to a floating-point type.
 - TYP-8: Clang gives each character type the rank of its underlying
   type. A program sees these ranks only through promotion (CONV-1).
+- TYP-1, TYP-4: the order of sizes covers the five signed integer types
+  only. The size of `bool` and the widths are each implementation's
+  choice. On the matrix, `bool` has size 1 and each width is 8 times
+  the size.
+- TYP-7: every compiler rejects `signed` or `unsigned` with `double`
+  and with `long double`.
+- Settled on 2026-11-03 under decision 0054. A source-reader gap
+  review supports each answer with no doubt, and a principle gives the
+  same answer:
+
+  | Question | Principle | Family that still differs |
+  |---|---|---|
+  | {question}`Q-0120` | TYP-P3 | EDG 7.0 with `-m32` |
 
 ### Split tests
 

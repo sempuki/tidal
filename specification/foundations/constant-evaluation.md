@@ -209,7 +209,7 @@ pointer to `void` to a pointer to an object type. Inside a member of
 
 :::{rule} CE-5
 :kind: reject
-:tests: expressions/constant-expressions/modify-outside-object.cpp expressions/constant-expressions/modify-local-object.cpp
+:tests: expressions/constant-expressions/modify-outside-object.cpp expressions/constant-expressions/modify-local-object.cpp foundations/language-support/construct-at-object-outside-evaluation.cpp
 
 Constant evaluation must not change an object that existed before the
 evaluation started. The evaluation can change the objects that it
@@ -576,8 +576,8 @@ constinit Empty empty;                // fine: Empty has no scalar part
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 126
-of 148 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 127
+of 149 tests.
 
 Of the constant-evaluation cluster, {question}`Q-0090` is settled under
 decision 0051. These questions of the cluster on this page stay open:

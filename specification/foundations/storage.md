@@ -49,8 +49,10 @@ does not fit in `std::size_t` cannot exist.
 :::{principle} STG-P2
 :rules: STG-4 STG-5 STG-6 STG-17 STG-29
 
-Storage can outlive the objects in it. A byte array, or the storage
-that an allocation function returns, holds one object after another:
+Storage can outlive the objects in it. A byte array or the storage that
+an allocation function returns holds one object after another. The
+elements of a byte array have the type `unsigned char` or `std::byte`. An array of `char`
+holds no object in this way ({rule}`STG-4`).
 
 ```text
   unsigned char buffer[16];                 the byte array lives throughout
@@ -336,7 +338,7 @@ implicit-lifetime type, and STG-28 gives the elements of other arrays.
 
 :::{rule} STG-9
 :kind: required
-:tests: foundations/storage/replace-variable-old-name.cpp foundations/storage/replace-object-with-const-member.cpp foundations/storage/replace-const-member-constant.cpp foundations/storage/replace-through-reference-constant.cpp foundations/storage/replace-array-element-constant.cpp foundations/storage/assignment-by-destroy-and-construct.cpp foundations/storage/replace-variable-then-scope-end.cpp
+:tests: foundations/storage/replace-variable-old-name.cpp foundations/storage/replace-object-with-const-member.cpp foundations/storage/replace-const-member-constant.cpp foundations/storage/replace-through-reference-constant.cpp foundations/storage/replace-array-element-constant.cpp foundations/storage/assignment-by-destroy-and-construct.cpp foundations/storage/replace-variable-then-scope-end.cpp foundations/storage/replace-member-of-base-constant.cpp
 
 A new object in the storage of an old object replaces the old object
 if these conditions hold:
@@ -351,8 +353,8 @@ if these conditions hold:
 
 The names, pointers, and references to the old object then refer to
 the new object. A new object in the place of a member or an array
-element becomes that member or element. {rule}`UNI-14` gives a union
-member that holds no object.
+element becomes that member or element, if the enclosing object is in
+its lifetime. {rule}`UNI-14` gives a union member that holds no object.
 :::
 
 :::{rule} STG-10
@@ -389,10 +391,12 @@ pointer ({question}`Q-0328`).
 :tests: foundations/storage/byte-round-trip.cpp foundations/storage/byte-round-trip-char-and-byte.cpp foundations/storage/padding-bytes-not-in-value.cpp classes/copy-move/trivially-copyable-types.cpp classes/copy-move/trivially-copyable-volatile-member.cpp
 
 A program can copy the bytes of an object of a {term}`trivially
-copyable` type ({rule}`CPY-28`) into an array of `std::byte` or `unsigned char`, and back. The object
-then has its original value. A copy through `char` needs a value in
-each byte, padding bytes included ({rule}`INIT-1`,
-{question}`Q-0328`). STG-25 excludes a base subobject
+copyable` type ({rule}`CPY-28`) into an array of `std::byte`,
+`unsigned char`, or `char`, and back. The object then has its original
+value. A copy that reads each byte through a `char` glvalue needs a
+value in each byte, padding bytes included ({rule}`INIT-1`,
+{question}`Q-0328`). A copy by the library's copy functions
+*(library referenced)* does not. STG-25 excludes a base subobject
 and a `[[no_unique_address]]` member, and {rule}`CPY-19` gives a copy
 into a second object. For an object with a volatile part, the copy
 reads and writes the bytes through `volatile unsigned char` or
@@ -588,12 +592,12 @@ choice is unspecified.
 :::
 
 :::{rule} STG-25
-:kind: impl-defined
+:kind: unspecified
 :tests: foundations/storage/base-bytes-shared-with-member.cpp foundations/storage/no-unique-address-member-shares-bytes.cpp
 
 A base subobject, or a member declared `[[no_unique_address]]`, can
-share its last bytes with other subobjects of the same object. The
-implementation chooses when the bytes are shared, and {rule}`CLS-35`
+share its last bytes with other subobjects of the same object. When
+the bytes are shared is unspecified ({rule}`CLS-34`), and {rule}`CLS-35`
 gives the conditions of the matrix targets. If a byte copy into the
 base or member writes the bytes of another subobject, that subobject
 takes the value that its new bytes give. A padding byte of the source
@@ -768,8 +772,8 @@ template <class T> void destroy_all(T* first, int n) {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 77
-of 83 tests. EDG runs no programs, so its results for the run tests say
+The results are in `tests/RESULTS.md`. All eight compilers agree on 78
+of 84 tests. EDG runs no programs, so its results for the run tests say
 only that the programs are valid.
 
 - Constant evaluation: in C++23 mode no compiler in the matrix accepts
@@ -808,7 +812,15 @@ only that the programs are valid.
   ({question}`Q-0324`).
 - STG-9: every compiler gives the new values through the old names at
   `-O0` and at `-O2`, also for a class with a `const` member, and
-  accepts the constant tests.
+  accepts the constant tests. During constant evaluation, every
+  compiler also accepts a new object in the place of a member of a base
+  subobject and reads the new value through the old name
+  (`replace-member-of-base-constant.cpp`). The gap review of the object
+  model reads the C++23 text as asking that the enclosing object be
+  replaceable too, which a base subobject is not. STG-9 follows the
+  compilers (`documentation/decisions/pending.md`, row 4). A new
+  object in a `mutable` member of a `const` complete object falls under
+  STG-20.
 - STG-13: no sanitizer in the matrix reports a step through the bytes
   of an object, and every configuration gives the expected bytes.
   Constant evaluation cannot form such a pointer ({rule}`CAST-8`). The
@@ -869,10 +881,10 @@ only that the programs are valid.
 - STG-24: no program can observe the chosen set, so the test shows only
   that each use of the storage is valid.
 - STG-25: GCC, Clang, and EDG give the derived class of the test the
-  size of its base. The rule is implementation-defined because the
-  layout of a class is the implementation's choice. The tests of
-  {rule}`CLS-35` check each condition under which a base or a marked
-  member shares its end padding.
+  size of its base. The rule is unspecified, as CLS-34 classifies the
+  use of the end padding of a base, because an implementation need not
+  document the choice. The tests of {rule}`CLS-35` check each condition
+  under which a base or a marked member shares its end padding.
 - STG-26: every target in the matrix stores the least significant byte
   first. The bytes of a pointer equal the bytes of the integer that
   `reinterpret_cast` gives.
@@ -882,7 +894,8 @@ only that the programs are valid.
   results with `-m32` in the GCC 14, Clang 18, and Clang 22 containers.
 - STG-11, STG-12: no configuration in the matrix shows whether a padding
   byte has a value. The rules follow INIT-1 and are provisional
-  ({question}`Q-0328`).
+  ({question}`Q-0328`). A copy by a library function reads no byte
+  through a `char` glvalue, so STG-12 sets no such condition on it.
 - STG-13: every configuration steps a byte pointer made from a member's
   address over the bytes of the whole object, and orders it against a
   byte pointer made from the object's address
@@ -895,6 +908,15 @@ only that the programs are valid.
   address and undefined sanitizers.
 - STG-27: every configuration keeps the address in a copy of an invalid
   pointer value, and no sanitizer reports the copy.
+- Settled on 2026-11-03 under decision 0054. A source-reader gap
+  review supports each answer with no doubt, and a principle gives the
+  same answer:
+
+  | Question | Principle | Family that still differs |
+  |---|---|---|
+  | {question}`Q-0305` | STG-P2 | none |
+  | {question}`Q-0306` | STG-P7 | none |
+  | {question}`Q-0324` | STG-P2 | none |
 
 ### Split tests
 
