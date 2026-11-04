@@ -575,6 +575,10 @@ impl P {
                                     if v < 0 || (v != 0 && (v & (v - 1)) != 0) {
                                         // ALN-2: zero or a power of two.
                                         self.error(line, "ALN-2", "alignment is not a power of two");
+                                    } else if v > 1 << 28 {
+                                        // ALN-5: above the largest extended
+                                        // alignment of the matrix targets.
+                                        self.error(line, "ALN-5", "alignment larger than the largest extended alignment, 2^28");
                                     }
                                     val = Some(v.max(0) as u64);
                                 }

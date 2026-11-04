@@ -432,7 +432,10 @@ impl<'a> Machine<'a> {
         let mut p = Ptr { obj: bp.obj, path: full_path(&bp), off: 0, array: false, bytes: false };
         if bc != fi.class {
             match self.base_path(bc, fi.class) {
-                Some(bp) => p.path.extend(bp),
+                Some(bp) => {
+                    p.path.extend(bp);
+                    p = self.canon(p);
+                }
                 None => return unsup("member of a class that is not a base"),
             }
         }
@@ -542,7 +545,7 @@ impl<'a> Machine<'a> {
             }
             self.class_ok(*f)?;
             q.path.extend(bp);
-            return Ok(q);
+            return Ok(self.canon(q));
         }
         if let Some(bp) = self.base_path(*t, *f) {
             // CAST-14, DER-17: the object must be a base subobject of a `to`.
@@ -694,6 +697,8 @@ impl<'a> Machine<'a> {
                     let nb = self.nbases(c);
                     if i < nb {
                         Ty::Class(self.p.classes[c].bases[i].class?)
+                    } else if i >= self.nslots(c) {
+                        Ty::Class(*self.vbases_of(c).get(i - self.nslots(c))?)
                     } else {
                         let f = self.fields(c).into_iter().find(|(_, fi)| fi.index == i - nb)?;
                         if let Ty::Class(mc) = f.1.ty.t {
@@ -1015,6 +1020,8 @@ impl<'a> Machine<'a> {
             Some(n) => {
                 let n = match self.eval(n)? {
                     Val::Int(v) => v,
+                    // NEW-2: a floating size converts to an integer.
+                    Val::Float(f) => f as i128,
                     _ => return unsup("array size"),
                 };
                 if n < 0 {
@@ -1386,6 +1393,8 @@ impl<'a> Machine<'a> {
             None => None,
             Some(n) => match self.eval(n)? {
                 Val::Int(v) => Some(v),
+                // NEW-2: a floating size converts to an integer.
+                Val::Float(f) => Some(f as i128),
                 _ => return unsup("array size"),
             },
         };
@@ -1532,6 +1541,8 @@ impl<'a> Machine<'a> {
             None => None,
             Some(c) => match self.eval(c)? {
                 Val::Int(v) => Some(v),
+                // NEW-2: a floating size converts to an integer.
+                Val::Float(f) => Some(f as i128),
                 _ => return unsup("array size"),
             },
         };
@@ -2557,7 +2568,7 @@ impl<'a> Machine<'a> {
                 q.off = 0;
                 q.array = false;
                 q.path.extend(path);
-                return Ok(q);
+                return Ok(self.canon(q));
             }
         }
         if self.base_path(*sc, mc).is_some() {
@@ -2569,7 +2580,7 @@ impl<'a> Machine<'a> {
             Some((dc, dpath)) if self.base_path(dc, mc).is_some() => {
                 let mut path = dpath;
                 path.extend(self.base_path(dc, mc).unwrap());
-                Ok(Ptr { obj: p.obj, path, off: 0, array: false, bytes: false })
+                Ok(self.canon(Ptr { obj: p.obj, path, off: 0, array: false, bytes: false }))
             }
             Some(_) => ub("MPTR-6", "'.*' or '->*' with an object that does not have the member"),
             None => unsup("dynamic type of an object the interpreter cannot see"),
@@ -3227,8 +3238,29 @@ impl<'a> Machine<'a> {
     /// Initialize the bases and members of a class object (CTOR-6, OBJ-1).
     fn construct_parts(&mut self, place: &Ptr, c: usize, mem_inits: &[MemInit], done: &mut Vec<Cleanup>) -> R<()> {
         self.class_ok(c)?;
+        if !self.is_base_place(place) {
+            // DER-7, DER-13: the most derived class initializes the
+            // virtual bases first, and the other classes skip them.
+            let vb = self.vbases_of(c);
+            for (j, &v) in vb.iter().enumerate() {
+                let bt = QTy::new(Ty::Class(v));
+                let sub = place.sub(self.nslots(c) + j);
+                match mem_inits.iter().find(|m| m.base == Some(v)) {
+                    Some(MemInit { init: Some(init), .. }) => {
+                        let init = init.clone();
+                        self.full(|m| m.init_into(&sub, &init, &bt))?;
+                    }
+                    Some(_) => return unsup("base initializer the front end does not model"),
+                    None => self.default_init(&sub, &bt)?,
+                }
+                done.push(Cleanup { place: sub, ty: bt, item: 0 });
+            }
+        }
         let bases: Vec<usize> = self.p.classes[c].bases.iter().filter_map(|b| b.class).collect();
         for (i, bc) in bases.iter().enumerate() {
+            if self.p.classes[c].bases[i].virt {
+                continue;
+            }
             let bt = QTy::new(Ty::Class(*bc));
             match mem_inits.iter().find(|m| m.base == Some(*bc)) {
                 Some(MemInit { init: Some(init), .. }) => {
@@ -3494,6 +3526,9 @@ impl<'a> Machine<'a> {
         let fty = &self.p.func(fid)?.fty;
         let fp = full_path(this);
         let (mut c, mut path) = (dc, dpath);
+        if !self.vbases_of(dc).is_empty() {
+            return self.final_overrider_virtual(fid, this, dc, path);
+        }
         loop {
             let sc = self.p.classes[c].scope;
             if let Some(ids) = self.p.scopes[sc].names.get(name) {
@@ -3512,6 +3547,44 @@ impl<'a> Machine<'a> {
             c = self.p.classes[c].bases.get(i)?.class?;
             path.push(i);
         }
+    }
+
+    /// VIRT-5 for a class with virtual bases: the function of the most
+    /// derived class among those that declare one that overrides `fid`.
+    fn final_overrider_virtual(&self, fid: DeclId, this: &Ptr, dc: usize, dpath: Vec<usize>) -> Option<(DeclId, Ptr)> {
+        let name = &self.p.decls[fid].name;
+        let f0 = self.p.func(fid)?;
+        let (fty, fc) = (&f0.fty, f0.class?);
+        // Every class of the object, each once.
+        let mut all = vec![dc];
+        let mut k = 0;
+        while k < all.len() && all.len() < 256 {
+            for b in &self.p.classes[all[k]].bases {
+                if let Some(bc) = b.class {
+                    if !all.contains(&bc) {
+                        all.push(bc);
+                    }
+                }
+            }
+            k += 1;
+        }
+        let mut cands: Vec<(usize, DeclId)> = Vec::new();
+        for &c in &all {
+            if c != fc && self.base_path(c, fc).is_none() {
+                continue;
+            }
+            let sc = self.p.classes[c].scope;
+            if let Some(ids) = self.p.scopes[sc].names.get(name) {
+                if let Some(&id) = ids.iter().find(|&&id| self.p.func(id).is_some_and(|g| id == fid || (same_params(&g.fty, fty) && g.class == Some(c)))) {
+                    cands.push((c, id));
+                }
+            }
+        }
+        let (c, id) = *cands.iter().find(|(c, _)| !cands.iter().any(|(d, _)| d != c && self.base_path(*d, *c).is_some()))?;
+        let _ = this;
+        let mut path = dpath;
+        path.extend(self.base_path(dc, c)?);
+        Some((id, self.canon(Ptr { obj: this.obj, path, off: 0, array: false, bytes: false })))
     }
 
     /// Whether a member function is virtual: declared `virtual`, or with
@@ -3966,7 +4039,7 @@ impl<'a> Machine<'a> {
     /// A class whose copy runs code: it or a part has a copy or move
     /// constructor that is not defaulted.
     pub fn copy_runs_code(&self, c: usize) -> bool {
-        if self.p.has_user_copy(c) {
+        if self.p.has_user_copy(c) || !self.vbases_of(c).is_empty() {
             return true;
         }
         let ci = &self.p.classes[c];
@@ -4070,9 +4143,22 @@ impl<'a> Machine<'a> {
             return self.write(place, v, true);
         }
         self.class_ok(c)?;
-        let bases: Vec<usize> = self.p.classes[c].bases.iter().filter_map(|b| b.class).collect();
-        for (i, bc) in bases.iter().enumerate() {
-            self.copy_class(&place.sub(i), &src.sub(i), *bc, mv)?;
+        if !self.is_base_place(place) {
+            // DER-7: the complete object copies its virtual bases first.
+            let vb = self.vbases_of(c);
+            for (j, &v) in vb.iter().enumerate() {
+                let Some(bp) = self.base_path(c, v) else { return unsup("virtual base") };
+                let mut sp = Ptr { obj: src.obj, path: full_path(src), off: 0, array: false, bytes: false };
+                sp.path.extend(bp);
+                let sp = self.canon(sp);
+                self.copy_class(&place.sub(self.nslots(c) + j), &sp, v, mv)?;
+            }
+        }
+        let bases: Vec<(usize, bool)> = self.p.classes[c].bases.iter().filter_map(|b| b.class.map(|x| (x, b.virt))).collect();
+        for (i, (bc, virt)) in bases.iter().enumerate() {
+            if !virt {
+                self.copy_class(&place.sub(i), &src.sub(i), *bc, mv)?;
+            }
         }
         let nb = bases.len();
         for (_, fi) in self.fields(c) {
@@ -4163,7 +4249,9 @@ impl<'a> Machine<'a> {
         let mv = mv && self.has_implicit_move(c);
         let bases: Vec<usize> = self.p.classes[c].bases.iter().filter_map(|b| b.class).collect();
         for (i, bc) in bases.iter().enumerate() {
-            self.assign_parts(&dst.sub(i), &src.sub(i), *bc, mv)?;
+            // CPY-18: a virtual base can be assigned more than once.
+            let (d, s) = (self.base_sub(dst, c, i), self.base_sub(src, c, i));
+            self.assign_parts(&d, &s, *bc, mv)?;
         }
         let nb = bases.len();
         for (_, fi) in self.fields(c) {

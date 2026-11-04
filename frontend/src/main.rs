@@ -18,6 +18,7 @@ mod expr;
 mod expr2;
 mod interp;
 mod ics;
+mod layout;
 mod lexer;
 mod ovl;
 mod parser;

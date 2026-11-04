@@ -15,6 +15,15 @@
 // order of STG-26.
 
 use super::*;
+use crate::layout::FieldPos;
+
+/// What holds a byte of an object: a scalar (its path, type, and the
+/// byte's offset in it), or bit-fields (each with its path, type, first
+/// bit relative to the byte, and width).
+pub enum Spot {
+    Scalar(Vec<usize>, QTy, i64),
+    Bits(Vec<(Vec<usize>, QTy, i64, u32)>),
+}
 
 /// One byte of an object representation.
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -46,84 +55,74 @@ impl<'a> Machine<'a> {
         }
     }
 
+    /// The layout of a class (src/layout.rs), kept for the run.
+    pub fn layout_of(&self, c: usize) -> R<std::rc::Rc<crate::layout::Layout>> {
+        let key = (self.tu, c, ilp32());
+        if let Some(l) = self.layouts.borrow().get(&key) {
+            return match l {
+                Some(l) => Ok(l.clone()),
+                None => unsup("bytes of a class whose layout the front end does not compute"),
+            };
+        }
+        let l = self.p.layout(c).map(std::rc::Rc::new);
+        self.layouts.borrow_mut().insert(key, l.clone());
+        match l {
+            Some(l) => Ok(l),
+            None => unsup("bytes of a class whose layout the front end does not compute"),
+        }
+    }
+
     /// The parts of a class object with their offsets: the value index,
-    /// the offset, and the type. Members follow TYP-12; the pointer to the
-    /// table of virtual functions comes first, as the front end's `sizeof`
-    /// assumes.
+    /// the offset, and the type (CLS-35). Bit-fields are not parts: see
+    /// `bit_fields`.
     pub fn class_parts(&self, c: usize) -> R<Vec<(usize, i64, QTy)>> {
         let ci = &self.p.classes[c];
-        let union = ci.key == 2;
-        let mut off: i64 = if ci.has_virtual { if ilp32() { 4 } else { 8 } } else { 0 };
+        let l = self.layout_of(c)?;
         let mut out = Vec::new();
         let nb = ci.bases.len();
-        if nb > 0 {
-            // CLS-19, CLS-30: an empty base shares the address of the
-            // object. Other bases come first, in order. The text gives no
-            // other placement of base subobjects (STG-25).
-            if ci.has_virtual || ci.bases.iter().any(|b| b.virt) {
-                return unsup("bytes of a class with virtual functions and base classes");
-            }
-            for (i, b) in ci.bases.iter().enumerate() {
-                let Some(bc) = b.class else { return unsup("bytes of a class with a base of unknown type") };
-                let t = QTy::new(Ty::Class(bc));
-                if self.empty_class(bc, 0) {
-                    out.push((i, 0, t));
-                } else {
-                    let s = self.size_of(&t.t)?;
-                    let a = self.p.alignof_ty(&t.t).unwrap_or(1) as i64;
-                    off = (off + a - 1) / a * a;
-                    out.push((i, off, t));
-                    off += s;
-                }
+        for (i, b) in ci.bases.iter().enumerate() {
+            let Some(bc) = b.class else { return unsup("bytes of a class with a base of unknown type") };
+            if !b.virt {
+                out.push((i, l.bases[i] as i64, QTy::new(Ty::Class(bc))));
             }
         }
-        let mut empties: Vec<(usize, i64)> = Vec::new();
         for (_, fi) in self.fields(c) {
-            if fi.bits.is_some() {
-                return unsup("bytes of a class with bit-fields");
+            let Some(pos) = l.fields.get(fi.index).copied().flatten() else { continue };
+            if pos.bits.is_some() {
+                continue;
             }
             if fi.ty.t.is_ref() {
                 return unsup("bytes of a class with a reference member");
             }
-            if fi.nua && !union {
-                if let Ty::Class(fc) = fi.ty.t {
-                    if self.p.classes[fc].fields.is_empty() && self.p.classes[fc].bases.is_empty() && !self.p.classes[fc].has_virtual {
-                        // CLS-31, ATTR-9: no bytes of its own; two of one
-                        // type get different offsets.
-                        let mut k = 0i64;
-                        while empties.iter().any(|&(x, o)| x == fc && o == k) {
-                            k += 1;
-                        }
-                        empties.push((fc, k));
-                        out.push((nb + fi.index, k, fi.ty.clone()));
-                        continue;
-                    }
-                }
-            }
-            let s = self.size_of(&fi.ty.t)?;
-            let a = self.p.alignof_ty(&fi.ty.t).unwrap_or(1).max(fi.align) as i64;
-            if union {
-                out.push((nb + fi.index, 0, fi.ty.clone()));
-            } else {
-                off = (off + a - 1) / a * a;
-                out.push((nb + fi.index, off, fi.ty.clone()));
-                // CLS-31: the padding at the end of a no_unique_address
-                // member can hold the next members.
-                let used = match fi.ty.t {
-                    Ty::Class(fc) if fi.nua && self.p.tail_reusable(fc) => self.p.class_layout(fc).map(|x| x.2 as i64).unwrap_or(s),
-                    _ => s,
-                };
-                off += used;
-            }
+            out.push((nb + fi.index, pos.off as i64, fi.ty.clone()));
         }
         Ok(out)
     }
 
-    /// A class with no non-static data members, no virtual functions, and
-    /// only such bases.
-    fn empty_class(&self, c: usize, depth: u32) -> bool {
-        let ci = &self.p.classes[c];
-        depth < 16 && ci.fields.iter().all(|&f| !matches!(self.p.decls[f].k, DK::Field(_))) && !ci.has_virtual && ci.bases.iter().all(|b| !b.virt && b.class.is_some_and(|bc| self.empty_class(bc, depth + 1)))
+    /// The slots of the virtual bases of a complete object of class `c`,
+    /// with their offsets.
+    pub fn vbase_parts(&self, c: usize) -> R<Vec<(usize, i64, QTy)>> {
+        let vb = self.vbases_of(c);
+        if vb.is_empty() {
+            return Ok(Vec::new());
+        }
+        let l = self.layout_of(c)?;
+        let n = self.nslots(c);
+        Ok(l.vbases.iter().enumerate().map(|(j, &(v, off))| (n + j, off as i64, QTy::new(Ty::Class(v)))).collect())
+    }
+
+    /// The bit-fields of a class: the value index, the first bit, the
+    /// width, and the type (BF-9).
+    pub fn bit_fields(&self, c: usize) -> R<Vec<(usize, u64, u32, QTy)>> {
+        let l = self.layout_of(c)?;
+        let nb = self.p.classes[c].bases.len();
+        let mut out = Vec::new();
+        for (_, fi) in self.fields(c) {
+            if let Some(FieldPos { bits: Some((b, w)), .. }) = l.fields.get(fi.index).copied().flatten() {
+                out.push((nb + fi.index, b, w, fi.ty.clone()));
+            }
+        }
+        Ok(out)
     }
 
     /// The offset of the subobject at `path` in the complete object `o`,
@@ -138,7 +137,10 @@ impl<'a> Machine<'a> {
                     (**el).clone()
                 }
                 Ty::Class(c) => {
-                    let parts = self.class_parts(*c)?;
+                    let mut parts = self.class_parts(*c)?;
+                    if i >= self.nslots(*c) {
+                        parts = self.vbase_parts(*c)?;
+                    }
                     let Some((_, o2, ft)) = parts.into_iter().find(|x| x.0 == i) else { return unsup("bytes of a member with no storage") };
                     off += o2;
                     ft
@@ -366,6 +368,7 @@ impl<'a> Machine<'a> {
         let mut path: Vec<usize> = Vec::new();
         let mut k = k;
         let mut elem: Option<usize> = None;
+        let mut complete = true;
         loop {
             if k == 0 && t.t == *to {
                 return Ok(Some(match elem {
@@ -384,11 +387,16 @@ impl<'a> Machine<'a> {
                     path.push(i);
                     k -= i as i64 * es;
                     elem = Some(i);
+                    complete = true;
                     (**el).clone()
                 }
                 Ty::Class(c) => {
                     let c = *c;
-                    let parts = self.class_parts(c)?;
+                    let mut parts = self.class_parts(c)?;
+                    if complete {
+                        parts.extend(self.vbase_parts(c)?);
+                    }
+                    let (nb, ns) = (self.nbases(c), self.nslots(c));
                     let union = self.p.classes[c].key == 2;
                     let mut next = None;
                     for (i, off, ft) in parts {
@@ -412,6 +420,7 @@ impl<'a> Machine<'a> {
                     let Some((i, off, ft)) = next else { return Ok(None) };
                     path.push(i);
                     k -= off;
+                    complete = i >= nb && i < ns;
                     ft
                 }
                 _ => return Ok(None),
@@ -463,60 +472,142 @@ impl<'a> Machine<'a> {
 
     // ---- bytes ----
 
-    /// The scalar that holds byte `k` of the object `o`: its path, its
-    /// type, and the byte's offset in it. None for a padding byte.
-    fn locate(&self, o: usize, k: i64) -> R<Option<(Vec<usize>, QTy, i64)>> {
-        let Some(mut t) = self.obj_ty(o) else { return unsup("bytes of an object of unknown type") };
-        let mut path: Vec<usize> = Vec::new();
-        let mut k = k;
-        loop {
-            t = match &t.t {
-                Ty::Array(el, Some(n)) => {
-                    let es = self.size_of(&el.t)?;
-                    if es == 0 || k / es >= *n as i64 {
-                        return Ok(None);
-                    }
-                    let i = (k / es) as usize;
-                    path.push(i);
-                    k -= i as i64 * es;
-                    (**el).clone()
-                }
-                Ty::Array(_, None) => return unsup("bytes of an array of unknown bound"),
-                Ty::Class(c) => {
-                    let c = *c;
-                    let parts = self.class_parts(c)?;
-                    let mut next = None;
-                    if self.p.classes[c].key == 2 {
-                        // The bytes of the active member.
-                        let holder = Ptr { obj: o, path: path.clone(), off: 0, array: false, bytes: false };
-                        if let Ok(Val::Agg(items)) = self.get_at(&holder) {
-                            if let Some(a) = items.iter().position(|v| !matches!(v, Val::Inactive)) {
-                                next = parts.into_iter().find(|x| x.0 == a);
-                            }
-                        }
-                        if let Some((_, _, ft)) = &next {
-                            if k >= self.size_of(&ft.t)? {
-                                next = None;
-                            }
-                        }
-                    } else {
-                        for (i, off, ft) in parts {
-                            let s = self.size_of(&ft.t)?;
-                            if off <= k && k < off + s {
-                                next = Some((i, off, ft));
-                                break;
-                            }
-                        }
-                    }
-                    let Some((i, off, ft)) = next else { return Ok(None) };
-                    path.push(i);
-                    k -= off;
-                    ft
-                }
-                Ty::Unknown | Ty::Dep(_) => return unsup("bytes of an object of unknown type"),
-                _ => return Ok(Some((path, t, k))),
-            };
+    /// What holds byte `k` of the object `o`.
+    fn spot(&self, o: usize, k: i64) -> R<Option<Spot>> {
+        let Some(t) = self.obj_ty(o) else { return unsup("bytes of an object of unknown type") };
+        let mut path = Vec::new();
+        self.spot_in(o, &mut path, t, k, 0, true)
+    }
+
+    fn spot_in(&self, o: usize, path: &mut Vec<usize>, t: QTy, k: i64, depth: u32, complete: bool) -> R<Option<Spot>> {
+        if depth > 64 {
+            return unsup("bytes of a deeply nested object");
         }
+        match &t.t {
+            Ty::Array(el, Some(n)) => {
+                let es = self.size_of(&el.t)?;
+                if es == 0 || k < 0 || k / es >= *n as i64 {
+                    return Ok(None);
+                }
+                let i = (k / es) as usize;
+                path.push(i);
+                let r = self.spot_in(o, path, (**el).clone(), k - i as i64 * es, depth + 1, true);
+                path.pop();
+                r
+            }
+            Ty::Array(_, None) => unsup("bytes of an array of unknown bound"),
+            Ty::Class(c) => {
+                let c = *c;
+                let union = self.p.classes[c].key == 2;
+                let mut parts = self.class_parts(c)?;
+                if complete {
+                    parts.extend(self.vbase_parts(c)?);
+                }
+                let nb = self.nbases(c);
+                let ns = self.nslots(c);
+                let bits = self.bit_fields(c)?;
+                let active = if union {
+                    // The bytes of the active member.
+                    let holder = Ptr { obj: o, path: path.clone(), off: 0, array: false, bytes: false };
+                    match self.get_at(&holder) {
+                        Ok(Val::Agg(items)) => items.iter().position(|v| !matches!(v, Val::Inactive)),
+                        _ => None,
+                    }
+                } else {
+                    None
+                };
+                // BF-9: the bit-fields that have bits in this byte.
+                let lo = 8 * k as i128;
+                let mut hits = Vec::new();
+                for (i, b, w, ft) in bits {
+                    if union && active != Some(i) {
+                        continue;
+                    }
+                    if (b as i128) < lo + 8 && lo < b as i128 + w as i128 {
+                        let mut fp = path.clone();
+                        fp.push(i);
+                        hits.push((fp, ft, b as i64 - 8 * k, w));
+                    }
+                }
+                if !hits.is_empty() {
+                    return Ok(Some(Spot::Bits(hits)));
+                }
+                for (i, off, ft) in parts {
+                    if union && active != Some(i) {
+                        continue;
+                    }
+                    let s = self.size_of(&ft.t)?;
+                    if off <= k && k < off + s {
+                        path.push(i);
+                        let r = self.spot_in(o, path, ft, k - off, depth + 1, i >= nb && i < ns)?;
+                        path.pop();
+                        if r.is_some() {
+                            return Ok(r);
+                        }
+                    }
+                }
+                Ok(None)
+            }
+            Ty::Unknown | Ty::Dep(_) => unsup("bytes of an object of unknown type"),
+            _ => Ok(Some(Spot::Scalar(path.clone(), t, k))),
+        }
+    }
+
+    /// Byte `k` of the bit-fields that `hits` lists.
+    fn bits_byte(&self, o: usize, k: i64, hits: &[(Vec<usize>, QTy, i64, u32)]) -> R<Byte> {
+        let mut byte = 0u8;
+        for (fp, _, rel, w) in hits {
+            let v = self.get_at(&Ptr { obj: o, path: fp.clone(), off: 0, array: false, bytes: false })?;
+            let x = match v {
+                Val::Int(x) => *x,
+                Val::Uninit => return Ok(self.shadow.get(&(o, k)).copied().unwrap_or(Byte::Indet)),
+                Val::NotUsable(m) => return limit("CE-3", m.clone()),
+                _ => return unsup("bytes of a bit-field value"),
+            };
+            for j in 0..8i64 {
+                let i = j - rel;
+                if i >= 0 && i < *w as i64 && (x >> i) & 1 == 1 {
+                    byte |= 1 << j;
+                }
+            }
+        }
+        Ok(Byte::Known(byte))
+    }
+
+    /// Write byte `k` into the bit-fields that `hits` lists.
+    fn write_bits_byte(&mut self, o: usize, b: Byte, hits: &[(Vec<usize>, QTy, i64, u32)]) -> R<()> {
+        for (fp, ft, rel, w) in hits {
+            let place = Ptr { obj: o, path: fp.clone(), off: 0, array: false, bytes: false };
+            let Byte::Known(byte) = b else {
+                *self.slot(&place, true)? = Val::Uninit;
+                continue;
+            };
+            let mut x = match self.get_at(&place)? {
+                Val::Int(x) => *x,
+                _ => 0,
+            };
+            for j in 0..8i64 {
+                let i = j - rel;
+                if i >= 0 && i < *w as i64 {
+                    if (byte >> j) & 1 == 1 {
+                        x |= 1 << i;
+                    } else {
+                        x &= !(1i128 << i);
+                    }
+                }
+            }
+            let w = *w as u32;
+            let it = match &ft.t {
+                Ty::Enum(e) => self.p.enum_underlying(*e),
+                t => t.clone(),
+            };
+            x &= (1i128 << w) - 1;
+            if it.is_signed() && w < 128 && x >= 1i128 << (w - 1) {
+                x -= 1i128 << w;
+            }
+            *self.slot(&place, true)? = Val::Int(x);
+        }
+        Ok(())
     }
 
     /// The object made in the storage of `o` that covers byte `k`, and the
@@ -597,8 +688,10 @@ impl<'a> Machine<'a> {
         if k < 0 || k >= size {
             return ub("ADD-10", "access through a byte pointer outside the object");
         }
-        let Some((path, t, i)) = self.locate(o, k)? else {
-            return Ok(self.shadow.get(&(o, k)).copied().unwrap_or(Byte::Indet));
+        let (path, t, i) = match self.spot(o, k)? {
+            Some(Spot::Scalar(p, t, i)) => (p, t, i),
+            Some(Spot::Bits(h)) => return self.bits_byte(o, k, &h),
+            None => return Ok(self.shadow.get(&(o, k)).copied().unwrap_or(Byte::Indet)),
         };
         let v = self.get_at(&Ptr { obj: o, path, off: 0, array: false, bytes: false })?.clone();
         match v {
@@ -627,7 +720,12 @@ impl<'a> Machine<'a> {
         if k < 0 || k >= size {
             return ub("ADD-10", "access through a byte pointer outside the object");
         }
-        let Some((path, t, i)) = self.locate(o, k)? else {
+        let spot = match self.spot(o, k)? {
+            Some(Spot::Bits(h)) => return self.write_bits_byte(o, b, &h),
+            Some(Spot::Scalar(p, t, i)) => Some((p, t, i)),
+            None => None,
+        };
+        let Some((path, t, i)) = spot else {
             // A padding byte (STG-11): the value does not change.
             match b {
                 Byte::Indet => self.shadow.remove(&(o, k)),

@@ -304,6 +304,8 @@ pub struct Machine<'a> {
     /// taken with the number of options at each (decision 0048).
     pub script: Vec<u8>,
     pub taken: Vec<(u8, u8)>,
+    /// The line of each choice point in `taken`.
+    pub taken_line: Vec<u32>,
     /// SEQ-4: the reads and writes of objects while unsequenced operands
     /// run: the object, the path of the memory location, whether the
     /// access modifies it (or reads a volatile object), and the frame.
@@ -316,6 +318,10 @@ pub struct Machine<'a> {
     /// UNI-10: places of the active member that a read through the
     /// common initial sequence reaches with the type of the other member.
     pub uni_alias: std::cell::RefCell<std::collections::HashSet<(usize, Vec<usize>)>>,
+    /// The layouts of classes, by translation unit, class, and target.
+    pub layouts: std::cell::RefCell<HashMap<(usize, usize, bool), Option<std::rc::Rc<crate::layout::Layout>>>>,
+    /// The virtual bases of each class, by translation unit and class.
+    pub vbases: std::cell::RefCell<HashMap<(usize, usize), std::rc::Rc<Vec<usize>>>>,
 }
 
 impl<'a> Machine<'a> {
@@ -326,6 +332,8 @@ impl<'a> Machine<'a> {
             tu: 0,
             links: HashMap::new(),
             uni_alias: Default::default(),
+            layouts: Default::default(),
+            vbases: Default::default(),
             constant,
             objs: Vec::new(),
             frames: vec![Frame::new()],
@@ -333,7 +341,7 @@ impl<'a> Machine<'a> {
             global_refs: HashMap::new(),
             statics_running: Default::default(),
             steps: 0,
-            step_limit: if constant { 30_000_000 } else { 20_000_000 },
+            step_limit: if constant { 30_000_000 } else { 150_000_000 },
             depth: 0,
             depth_limit: if constant { 512 } else { 2000 },
             in_consteval_fn: false,
@@ -368,6 +376,7 @@ impl<'a> Machine<'a> {
             user_storage: HashMap::new(),
             script: Vec::new(),
             taken: Vec::new(),
+            taken_line: Vec::new(),
             acc: Vec::new(),
             seq_watch: Vec::new(),
             fixed_order: false,
@@ -400,6 +409,7 @@ impl<'a> Machine<'a> {
         let k = self.taken.len();
         let c = self.script.get(k).copied().unwrap_or(0).min(n - 1);
         self.taken.push((c, n));
+        self.taken_line.push(self.line);
         c
     }
 
@@ -462,6 +472,8 @@ impl<'a> Machine<'a> {
                     let nb = self.nbases(*c);
                     if i < nb {
                         QTy::new(Ty::Class(self.p.classes[*c].bases[i].class?))
+                    } else if i >= self.nslots(*c) {
+                        QTy::new(Ty::Class(*self.vbases_of(*c).get(i - self.nslots(*c))?))
                     } else {
                         let f = self.fields(*c).into_iter().find(|(_, fi)| fi.index == i - nb)?;
                         f.1.ty
@@ -471,6 +483,121 @@ impl<'a> Machine<'a> {
             };
         }
         Some(t)
+    }
+
+    // ---- virtual bases (DER-6, DER-7, CLS-35) ----
+    //
+    // The value of a complete object of a class with virtual bases holds
+    // one slot for each virtual base after its members, in the order of
+    // `P::virtual_bases`. The entry of a direct virtual base in the base
+    // list holds nothing. A base subobject has no such slots: the path
+    // to a virtual base goes to the slot of the complete object that
+    // contains the subobject (`canon`).
+
+    /// The virtual bases of a class.
+    pub fn vbases_of(&self, c: usize) -> std::rc::Rc<Vec<usize>> {
+        let key = (self.tu, c);
+        if let Some(v) = self.vbases.borrow().get(&key) {
+            return v.clone();
+        }
+        let v = std::rc::Rc::new(self.p.virtual_bases(c));
+        self.vbases.borrow_mut().insert(key, v.clone());
+        v
+    }
+
+    /// The number of entries of the bases and members in the value of a
+    /// class object.
+    pub fn nslots(&self, c: usize) -> usize {
+        self.nbases(c) + self.p.classes[c].fields.iter().filter(|&&f| matches!(self.p.decls[f].k, DK::Field(_))).count()
+    }
+
+    /// The entry of the virtual base `v` in a complete object of class `m`.
+    pub fn vslot(&self, m: usize, v: usize) -> Option<usize> {
+        self.vbases_of(m).iter().position(|&x| x == v).map(|j| self.nslots(m) + j)
+    }
+
+    /// Whether the place is a base subobject.
+    pub fn is_base_place(&self, p: &Ptr) -> bool {
+        if p.array || p.bytes || p.path.is_empty() {
+            return false;
+        }
+        let n = p.path.len();
+        let parent = Ptr { obj: p.obj, path: p.path[..n - 1].to_vec(), off: 0, array: false, bytes: false };
+        match self.type_at(&parent).map(|t| t.t) {
+            Some(Ty::Class(c)) => p.path[n - 1] < self.nbases(c) || p.path[n - 1] >= self.nslots(c),
+            _ => false,
+        }
+    }
+
+    /// The place with each step into a virtual base moved to the slot of
+    /// the complete object that holds it.
+    pub fn canon(&self, p: Ptr) -> Ptr {
+        let Some(t0) = self.obj_ty(p.obj) else { return p };
+        let mut t = t0.t;
+        let mut out: Vec<usize> = Vec::new();
+        let mut top = 0usize;
+        let mut top_class = match t {
+            Ty::Class(c) => Some(c),
+            _ => None,
+        };
+        let mut changed = false;
+        for &i in &p.path {
+            t = match t {
+                Ty::Array(el, _) => {
+                    out.push(i);
+                    top = out.len();
+                    top_class = match el.t {
+                        Ty::Class(c) => Some(c),
+                        _ => None,
+                    };
+                    el.t
+                }
+                Ty::Class(c) => {
+                    let nb = self.nbases(c);
+                    if i < nb {
+                        let b = &self.p.classes[c].bases[i];
+                        let Some(bc) = b.class else { return p };
+                        if b.virt {
+                            let Some(m) = top_class else { return p };
+                            let Some(slot) = self.vslot(m, bc) else { return p };
+                            out.truncate(top);
+                            out.push(slot);
+                            changed = true;
+                        } else {
+                            out.push(i);
+                        }
+                        Ty::Class(bc)
+                    } else if i >= self.nslots(c) {
+                        let Some(&v) = self.vbases_of(c).get(i - self.nslots(c)) else { return p };
+                        out.push(i);
+                        Ty::Class(v)
+                    } else {
+                        let Some(f) = self.fields(c).into_iter().find(|(_, fi)| fi.index == i - nb) else { return p };
+                        out.push(i);
+                        top = out.len();
+                        top_class = match f.1.ty.t {
+                            Ty::Class(fc) => Some(fc),
+                            _ => None,
+                        };
+                        f.1.ty.t
+                    }
+                }
+                _ => return p,
+            };
+        }
+        if !changed {
+            return p;
+        }
+        Ptr { path: out, ..p }
+    }
+
+    /// The place of direct base `i` of the class object at `place`.
+    pub fn base_sub(&self, place: &Ptr, c: usize, i: usize) -> Ptr {
+        if self.p.classes[c].bases[i].virt {
+            self.canon(place.sub(i))
+        } else {
+            place.sub(i)
+        }
     }
 
     /// The type of an object, if the unit that runs uses the same class
@@ -517,8 +644,13 @@ impl<'a> Machine<'a> {
         if ci.opaque || ci.template || self.p.class_uncertain(c) {
             return unsup("class layout the front end does not model");
         }
-        if ci.bases.iter().any(|b| b.virt || b.class.is_none()) {
-            return unsup("virtual base class");
+        if ci.bases.iter().any(|b| b.class.is_none()) {
+            return unsup("base class of unknown type");
+        }
+        if self.constant && !self.vbases_of(c).is_empty() {
+            // DER-12, CE-2: no constexpr constructor builds a class with a
+            // virtual base.
+            return limit("DER-12", format!("an object of '{}', a class with a virtual base, in constant evaluation", ci.name));
         }
         Ok(())
     }
@@ -557,12 +689,26 @@ impl<'a> Machine<'a> {
                 Val::Agg(vec![e; *n as usize])
             }
             Ty::Array(_, None) => return unsup("array of unknown bound"),
-            Ty::Class(c) => {
-                let c = *c;
+            Ty::Class(c) => self.shape_class(*c, true)?,
+            Ty::Unknown | Ty::Dep(_) => return unsup("object of unknown type"),
+            Ty::Void | Ty::Func(_) => return unsup("object of void or function type"),
+            _ => Val::Uninit,
+        })
+    }
+
+    /// The value of a new object of class `c`, a complete object or a
+    /// base subobject.
+    pub fn shape_class(&self, c: usize, complete: bool) -> R<Val> {
+        Ok({
+            {
                 self.class_ok(c)?;
                 let mut v = Vec::new();
                 for b in &self.p.classes[c].bases {
-                    v.push(self.shape(&QTy::new(Ty::Class(b.class.unwrap())))?);
+                    if b.virt {
+                        v.push(Val::Void);
+                    } else {
+                        v.push(self.shape_class(b.class.unwrap(), false)?);
+                    }
                 }
                 let union = self.p.classes[c].key == 2;
                 for (f, fi) in self.fields(c) {
@@ -578,11 +724,13 @@ impl<'a> Machine<'a> {
                         v.push(self.shape(&fi.ty)?);
                     }
                 }
+                if complete {
+                    for &vb in self.vbases_of(c).iter() {
+                        v.push(self.shape_class(vb, false)?);
+                    }
+                }
                 Val::Agg(v)
             }
-            Ty::Unknown | Ty::Dep(_) => return unsup("object of unknown type"),
-            Ty::Void | Ty::Func(_) => return unsup("object of void or function type"),
-            _ => Val::Uninit,
         })
     }
 
@@ -622,11 +770,21 @@ impl<'a> Machine<'a> {
             Ty::LDouble => Val::LD(f80::F80::Zero(false)),
             x if x.is_floating() => Val::Float(0.0),
             Ty::Array(el, Some(n)) => Val::Agg((0..*n).map(|_| self.zero(el)).collect()),
-            Ty::Class(c) => {
+            Ty::Class(c) => self.zero_class(*c, true),
+            _ => Val::Int(0),
+        }
+    }
+
+    /// The zero value of a complete object or a base subobject of class
+    /// `c`.
+    pub fn zero_class(&self, c: usize, complete: bool) -> Val {
+        let c = &c;
+        {
+            {
                 let mut v = Vec::new();
                 for b in &self.p.classes[*c].bases {
                     if let Some(bc) = b.class {
-                        v.push(self.zero(&QTy::new(Ty::Class(bc))));
+                        v.push(if b.virt { Val::Void } else { self.zero_class(bc, false) });
                     }
                 }
                 let union = self.p.classes[*c].key == 2;
@@ -641,9 +799,13 @@ impl<'a> Machine<'a> {
                     }
                     first = false;
                 }
+                if complete {
+                    for &vb in self.vbases_of(*c).iter() {
+                        v.push(self.zero_class(vb, false));
+                    }
+                }
                 Val::Agg(v)
             }
-            _ => Val::Int(0),
         }
     }
 
@@ -784,6 +946,24 @@ impl<'a> Machine<'a> {
             return self.write_byte(o, k, b);
         }
         self.check_in_bounds(p)?;
+        let mut v = v;
+        if let Val::Agg(items) = &mut v {
+            // A value with the slots of virtual bases written to a base
+            // subobject, or the reverse: the slots follow the place.
+            if let Ok(Val::Agg(old)) = self.get_at(p) {
+                if old.len() != items.len() {
+                    if let Some(Ty::Class(c)) = self.type_at(p).map(|t| t.t) {
+                        if !self.vbases_of(c).is_empty() {
+                            if old.len() < items.len() {
+                                items.truncate(old.len());
+                            } else {
+                                items.extend(old[items.len()..].iter().cloned());
+                            }
+                        }
+                    }
+                }
+            }
+        }
         *self.slot(p, init)? = v;
         Ok(())
     }
@@ -947,9 +1127,18 @@ impl<'a> Machine<'a> {
                 self.destroy(&place.sub(nb + fi.index), &fi.ty)?;
             }
         }
-        let bases: Vec<usize> = self.p.classes[c].bases.iter().filter_map(|b| b.class).collect();
-        for (i, bc) in bases.iter().enumerate().rev() {
-            self.destroy(&place.sub(i), &QTy::new(Ty::Class(*bc)))?;
+        let bases: Vec<(usize, bool)> = self.p.classes[c].bases.iter().filter_map(|b| b.class.map(|x| (x, b.virt))).collect();
+        for (i, (bc, virt)) in bases.iter().enumerate().rev() {
+            if !virt {
+                self.destroy(&place.sub(i), &QTy::new(Ty::Class(*bc)))?;
+            }
+        }
+        // DER-7: the virtual bases end last, with the complete object.
+        if !self.is_base_place(place) {
+            let vb = self.vbases_of(c);
+            for (j, &v) in vb.iter().enumerate().rev() {
+                self.destroy(&place.sub(self.nslots(c) + j), &QTy::new(Ty::Class(v)))?;
+            }
         }
         Ok(())
     }

@@ -828,7 +828,17 @@ impl P {
             if !self.at("]") {
                 let e = self.parse_expression()?;
                 if bounds.is_empty() {
-                    first_bound = Some(self.rvalue(e.clone()));
+                    let mut fb = self.rvalue(e.clone());
+                    if matches!(nonref(&e.ty).t, Ty::Class(_)) && !self.in_template() {
+                        // NEW-2: a class size converts by its conversion
+                        // function to an integer.
+                        let mark = self.d.list.len();
+                        match self.user_conv(&e, &QTy::new(Ty::size_t()), bl) {
+                            Some(x) if self.d.list.len() == mark => fb = x,
+                            _ => self.d.list.truncate(mark),
+                        }
+                    }
+                    first_bound = Some(fb);
                 }
                 let et = nonref(&e.ty);
                 if matches!(et.t, Ty::Ptr(_)) {

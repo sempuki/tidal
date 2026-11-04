@@ -39,8 +39,9 @@ pub fn run_units(ps: &[&P]) -> RunOutcome {
 /// The most runs that the exploration of choice points makes.
 pub const RUN_BOUND: usize = 64;
 
-/// One run with the choices that `script` gives, and the choices taken.
-fn run_once(ps: &[&P], script: &[u8]) -> (RunOutcome, Vec<(u8, u8)>) {
+/// One run with the choices that `script` gives, the choices taken, and
+/// the line of each.
+fn run_once(ps: &[&P], script: &[u8]) -> (RunOutcome, Vec<(u8, u8)>, Vec<u32>) {
     let mut m = Machine::new(ps[0], false);
     m.ps = ps.to_vec();
     m.script = script.to_vec();
@@ -52,8 +53,12 @@ fn run_once(ps: &[&P], script: &[u8]) -> (RunOutcome, Vec<(u8, u8)>) {
             stop_outcome(s, line)
         }
     };
-    (o, m.taken)
+    (o, m.taken, m.taken_line)
 }
+
+/// A run with more choice points than this settles a line once another
+/// choice at that line gave the outcome of the first run.
+const SETTLE_AFTER: usize = 4096;
 
 /// The runs of a program over its choice points (decision 0048): each
 /// allowed choice at SEQ-1, SEQ-8, PRIM-9, CMP-8, and CMP-20, up to
@@ -63,27 +68,43 @@ fn run_once(ps: &[&P], script: &[u8]) -> (RunOutcome, Vec<(u8, u8)>) {
 /// The reported outcome is the first run's, unless another run stops at
 /// undefined behavior: an allowed choice that leads to undefined behavior
 /// makes the program's behavior undefined.
+///
+/// A run with very many choice points (a recursion through an operator
+/// with unsequenced operands) explores each line once: when the other
+/// option at the last choice point of a line gives the outcome of the
+/// first run, the other choice points of that line are not explored.
 pub fn run_explored(ps: &[&P]) -> (RunOutcome, Vec<RunOutcome>, bool) {
-    let (first, mut taken) = run_once(ps, &[]);
+    let (first, mut taken, mut lines) = run_once(ps, &[]);
     let mut others = Vec::new();
     let mut runs = 1;
     let mut bound = false;
     if matches!(first, RunOutcome::Unsupported(..)) {
         return (first, others, false);
     }
+    let first_status = match &first {
+        RunOutcome::Result(s, _) => Some(*s),
+        _ => None,
+    };
+    let mut settled: std::collections::HashSet<u32> = Default::default();
     loop {
         // The next script: the last choice with an option left goes to
         // its next option, and the choices after it start again.
-        let Some(i) = taken.iter().rposition(|&(c, n)| c + 1 < n) else { break };
+        let Some(i) = taken.iter().enumerate().rposition(|(k, &(c, n))| c + 1 < n && !settled.contains(&lines[k])) else { break };
         if runs >= RUN_BOUND {
             bound = true;
             break;
         }
         let mut script: Vec<u8> = taken[..i].iter().map(|x| x.0).collect();
         script.push(taken[i].0 + 1);
-        let (o, t) = run_once(ps, &script);
+        let line = lines[i];
+        let many = taken.len() > SETTLE_AFTER;
+        let (o, t, l) = run_once(ps, &script);
         runs += 1;
+        if many && matches!(&o, RunOutcome::Result(s, _) if Some(*s) == first_status) {
+            settled.insert(line);
+        }
         taken = t;
+        lines = l;
         others.push(o);
     }
     let ub = others.iter().find(|o| matches!(o, RunOutcome::Undefined(..))).cloned();

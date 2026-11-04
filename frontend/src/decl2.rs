@@ -2907,6 +2907,9 @@ impl P {
         if ds.typedef && (ds.constexpr || ds.inline) {
             self.error(line, "TYN-2", "typedef with constexpr or inline");
         }
+        if ds.typedef && ds.has_alignas {
+            self.error(line, "ALN-2", "alignas on a typedef");
+        }
         if ds.consteval && ds.constexpr {
             self.error(line, "CX-5", "both 'consteval' and 'constexpr'");
         }
@@ -3761,7 +3764,23 @@ impl P {
                 class: class_member.or_else(|| if let SK::Class(c) = self.scopes[target_scope].kind { Some(c) } else { None }),
             };
             match redecl {
-                Some(p) => p,
+                Some(p) => {
+                    // ALN-3: a definition after a declaration with alignas
+                    // has the same alignas.
+                    if !self.align_unknown && !self.in_template() {
+                        let before = self.var_align.get(&p).copied();
+                        let now = if ds.has_alignas && ds.align > 0 { Some(ds.align as u64) } else { None };
+                        match (before, now) {
+                            (Some(a), Some(b)) if a != b => self.error(line, "ALN-3", "a redeclaration with a different alignas"),
+                            (Some(_), None) if storage != Storage::Extern => self.error(line, "ALN-3", "a definition without the alignas of an earlier declaration"),
+                            (None, Some(b)) => {
+                                self.var_align.insert(p, b);
+                            }
+                            _ => {}
+                        }
+                    }
+                    p
+                }
                 None => {
                     let id = self.add_decl_in(target_scope, &name, DK::Var(vi), line);
                     if ds.has_alignas && ds.align > 0 && !self.align_unknown {
@@ -4305,6 +4324,9 @@ impl P {
         }
         if ds.constinit {
             self.error(line, "CINIT-2", "'constinit' on a function");
+        }
+        if ds.has_alignas && !self.in_template() {
+            self.error(line, "ALN-2", "alignas on a function");
         }
         if ds.mutable {
             self.error(line, "STO-6", "function declared mutable");
@@ -5629,7 +5651,7 @@ impl P {
                 None
             };
             let init = match (base, class) {
-                (Some(b), Some(c)) if init.is_none() && (b == c || self.classes[c].bases.iter().any(|x| x.class == Some(b))) && !self.class_uncertain(b) => {
+                (Some(b), Some(c)) if init.is_none() && (b == c || self.classes[c].bases.iter().any(|x| x.class == Some(b)) || self.has_virtual_base(c, b, 0)) && !self.class_uncertain(b) => {
                     let mark = self.d.list.len();
                     let ty = QTy::new(Ty::Class(b));
                     let e = if braced {

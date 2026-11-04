@@ -2024,101 +2024,10 @@ impl P {
         self.class_layout(c).map(|(s, a, _)| (s, a))
     }
 
-    /// CLS-31: whether the members after a base or a `[[no_unique_address]]`
-    /// member of class `c` can use the padding at the end of `c`.
-    pub fn tail_reusable(&self, c: usize) -> bool {
-        let ci = &self.classes[c];
-        let user = |d: DeclId| self.func(d).is_some_and(|f| !f.deleted && !f.first_defaulted);
-        if ci.ctors.iter().any(|&d| user(d)) || ci.dtor.is_some_and(user) {
-            return true;
-        }
-        if self.scopes[ci.scope].names.get("operator=").is_some_and(|v| v.iter().any(|&d| user(d))) {
-            return true;
-        }
-        ci.fields.iter().any(|&f| match &self.decls[f].k {
-            DK::Field(fi) => fi.init.is_some() || self.member_access.get(&f).copied().unwrap_or(0) != 0,
-            _ => false,
-        })
-    }
-
     /// The size, alignment, and data size (the size without the padding
-    /// at the end) of a class.
+    /// at the end) of a class (src/layout.rs).
     pub fn class_layout(&self, c: usize) -> Option<(u64, u64, u64)> {
-        let ci = &self.classes[c];
-        if !ci.complete || ci.opaque || ci.template {
-            return None;
-        }
-        // Layout: bases and fields in order, with natural alignment.
-        // Bit-fields and virtual functions make the class opaque here.
-        let mut size = 0u64;
-        let mut align = 1u64;
-        if ci.bases.iter().any(|b| b.virt) || (ci.has_virtual && !ci.bases.is_empty()) {
-            return None;
-        }
-        if ci.has_virtual {
-            // A polymorphic class with no base: the pointer to its table
-            // of virtual functions comes first on the matrix targets.
-            let ps = if crate::types::ILP32.with(|c| c.get()) { 4 } else { 8 };
-            size = ps;
-            align = ps;
-        }
-        if !ci.bases.is_empty() {
-            return None;
-        }
-        // (type, alignment from alignas, no_unique_address)
-        let mut items: Vec<(QTy, u64, bool)> = Vec::new();
-        for &f in &ci.fields {
-            if let DK::Field(fi) = &self.decls[f].k {
-                if fi.bits.is_some() {
-                    return None;
-                }
-                items.push((fi.ty.clone(), fi.align, fi.nua));
-            }
-        }
-        align = align.max(ci.align);
-        // CLS-31, ATTR-9: an empty member with no_unique_address takes no
-        // bytes; two of one type get different offsets.
-        let mut empties: Vec<(usize, u64)> = Vec::new();
-        let mut full_end = 0u64;
-        for (t, fa, nua) in &items {
-            let a = self.alignof_ty(&t.t)?.max(*fa);
-            if *nua && ci.key != 2 {
-                if let Ty::Class(fc) = t.t {
-                    if self.classes[fc].fields.is_empty() && self.classes[fc].bases.is_empty() && !self.classes[fc].has_virtual {
-                        let mut k = 0u64;
-                        while empties.iter().any(|&(x, o)| x == fc && o == k) {
-                            k += 1;
-                        }
-                        empties.push((fc, k));
-                        full_end = full_end.max(k + 1);
-                        align = align.max(a);
-                        continue;
-                    }
-                }
-            }
-            let s = self.sizeof_ty(&t.t)?;
-            if ci.key == 2 {
-                size = size.max(s);
-            } else {
-                let off = size.div_ceil(a) * a;
-                full_end = full_end.max(off + s);
-                // CLS-31: the padding at the end of a no_unique_address
-                // member can hold the next members.
-                let used = match t.t {
-                    Ty::Class(fc) if *nua && self.tail_reusable(fc) => self.class_layout(fc).map(|x| x.2).unwrap_or(s),
-                    _ => s,
-                };
-                size = off + used;
-            }
-            align = align.max(a);
-        }
-        let dsize = size.max(full_end);
-        let mut size = dsize;
-        if size == 0 {
-            size = 1;
-        }
-        size = size.div_ceil(align) * align;
-        Some((size, align, dsize))
+        self.layout(c).map(|l| (l.size, l.align, l.dsize))
     }
     pub fn sizeof_ty(&self, t: &Ty) -> Option<u64> {
         size_of(t, &|c| self.class_size(c), &|e| self.enum_underlying(e))

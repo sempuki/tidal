@@ -524,9 +524,9 @@ impl P {
             let mut seqs = Vec::new();
             let mut ok = true;
             for (k, (o, p)) in ops.iter().zip(params.iter()).enumerate() {
-                // ICS-10: the left operand of a built-in assignment takes
-                // only a standard sequence.
-                let std_only = k == 0 && op.ends_with('=') && !matches!(op, "==" | "!=" | "<=" | ">=");
+                // ICS-10, OVL-P4: the left operand of a built-in `=` takes
+                // only a standard sequence; a compound assignment does not.
+                let std_only = k == 0 && op == "=";
                 match self.ics_form(o, p, std_only) {
                     Ok(Some(s)) => seqs.push(s),
                     Ok(None) => {
