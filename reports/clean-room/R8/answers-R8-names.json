@@ -1,0 +1,1709 @@
+{
+ "p01": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-29"
+  ],
+  "why": "ADL finds functions in an inline namespace of the associated namespace n."
+ },
+ "p02": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-8"
+  ],
+  "why": "a is used before its declaration."
+ },
+ "p03": {
+  "outcome": "reject",
+  "rules": [
+   "CTOR-1",
+   "NAM-34"
+  ],
+  "why": "&S::S names the constructors, and their address cannot be taken."
+ },
+ "p04": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-15",
+   "NAM-19"
+  ],
+  "why": "An alias can be the qualifier, and off is an enumerator of mode."
+ },
+ "p05": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-39"
+  ],
+  "why": "A class and a variable can share a name in one namespace."
+ },
+ "p06": {
+  "outcome": "runs",
+  "rules": [
+   "NAM-2"
+  ],
+  "why": "The parameter hides the global, so f returns 7."
+ },
+ "p07": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-28"
+  ],
+  "why": "The lambda's parameter types add nothing, and its closure adds only the global namespace, so n::probe is not found."
+ },
+ "p08": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-27"
+  ],
+  "why": "A pointer to the incomplete n::S adds namespace n."
+ },
+ "p09": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-32"
+  ],
+  "why": "Ordinary lookup finds the member probe, so ADL does not happen and probe(int) cannot take n::S."
+ },
+ "p10": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-17",
+   "NAM-35"
+  ],
+  "why": "derived::value finds the derived member, and derived::base names the base through its injected name."
+ },
+ "p11": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-32"
+  ],
+  "why": "Ordinary lookup finds the local variable probe, so ADL does not happen and the pointer cannot take n::S."
+ },
+ "p12": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-8"
+  ],
+  "why": "x is declared in the loop body and is out of scope at the return."
+ },
+ "p13": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-28"
+  ],
+  "why": "An alias adds nothing of the namespace that declares it; S adds only n, which has no probe."
+ },
+ "p14": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-27"
+  ],
+  "why": "The closure type adds namespace n, where the lambda appears."
+ },
+ "p15": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-13"
+  ],
+  "why": "outer::value finds the int in outer and does not follow the directive."
+ },
+ "p16": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-13"
+  ],
+  "why": "The using declaration in outer is found by outer::value."
+ },
+ "p17": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-28"
+  ],
+  "why": "Classes derived from the argument's class add nothing, and base is in the global namespace."
+ },
+ "p18": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-17"
+  ],
+  "why": "Nested class lookup through qualifiers."
+ },
+ "p19": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-13"
+  ],
+  "why": "outer has no value, so the search follows the using directive to inner."
+ },
+ "p20": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-27"
+  ],
+  "why": "A pointer to a function with a parameter n::S adds n."
+ },
+ "p21": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-16",
+   "NAM-15"
+  ],
+  "why": "The name before :: finds only namespaces and types, and there is no class or namespace box."
+ },
+ "p22": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-21"
+  ],
+  "why": "The array bounds, default argument, and exception specification after the qualified name see the members."
+ },
+ "p23": {
+  "outcome": "runs",
+  "rules": [
+   "NAM-1"
+  ],
+  "why": "A function body sees the earlier global g."
+ },
+ "p24": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-27"
+  ],
+  "why": "An enumeration declared in a function adds the namespace of the function, n."
+ },
+ "p25": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-13"
+  ],
+  "why": "::value follows the global using directive to m."
+ },
+ "p26": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-37",
+   "PFX-11"
+  ],
+  "why": "Member access looks only in Meter, which has no member outside."
+ },
+ "p27": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-8"
+  ],
+  "why": "p27.cpp calls a name that only the other translation unit declares."
+ },
+ "p28": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-33"
+  ],
+  "why": "In a list of bases, C::C names the class."
+ },
+ "p29": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-8"
+  ],
+  "why": "i is out of scope after the for statement."
+ },
+ "p30": {
+  "outcome": "depends",
+  "rules": [
+   "NAM-38"
+  ],
+  "why": "The block's operator+(Y, Y) does not fit; Clang and GCC keep ADL and find n::operator+ (compiles), EDG does not (reject), Q-0364."
+ },
+ "p31": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-27"
+  ],
+  "why": "Indirect bases add their namespaces, so c is associated."
+ },
+ "p32": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-32"
+  ],
+  "why": "A qualified call uses no ADL, and m::probe(int) cannot take n::S."
+ },
+ "p33": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-15"
+  ],
+  "why": "The local variable n does not hide the namespace before ::."
+ },
+ "p34": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-17"
+  ],
+  "why": "Qualified lookup through a namespace and a class."
+ },
+ "p35": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-22"
+  ],
+  "why": "The return type before n::make does not see the members of n, so item is unknown."
+ },
+ "p36": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-16"
+  ],
+  "why": "Inside the definition, C::n finds the earlier member."
+ },
+ "p37": {
+  "outcome": "runs",
+  "rules": [
+   "NAM-21"
+  ],
+  "why": "The body of a class defined with a qualified name sees the members of shapes."
+ },
+ "p38": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-39"
+  ],
+  "why": "An enumeration can share its name with a variable and with a function."
+ },
+ "p39": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-25"
+  ],
+  "why": "The two directives make two functions visible, which form one overload set."
+ },
+ "p40": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-27"
+  ],
+  "why": "A pointer to a member of n::S adds n."
+ },
+ "p41": {
+  "outcome": "runs",
+  "rules": [
+   "NAM-5"
+  ],
+  "why": "ADL finds geo::twice."
+ },
+ "p42": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-23"
+  ],
+  "why": "The directive applies to a later definition of the same namespace."
+ },
+ "p43": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-18"
+  ],
+  "why": "box has no member value."
+ },
+ "p44": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-28"
+  ],
+  "why": "A local class in a member function does not add the member function's class, so the friend in maker is not found."
+ },
+ "p45": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-27"
+  ],
+  "why": "A nested class adds its enclosing namespace n."
+ },
+ "p46": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-33",
+   "NAM-40"
+  ],
+  "why": "Inside the class the injected name finds the class; outside, point is the variable and struct point names the class."
+ },
+ "p47": {
+  "outcome": "depends",
+  "rules": [
+   "PFX-11",
+   "NAM-6"
+  ],
+  "why": "GCC and EDG accept a member access to an earlier member in a member declaration (compiles); Clang rejects it as incomplete (reject), Q-0316."
+ },
+ "p48": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-13"
+  ],
+  "why": "A using directive in an inline namespace of n is followed by n::v."
+ },
+ "p49": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-30"
+  ],
+  "why": "ADL does not find member functions of an associated class."
+ },
+ "p50": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-25"
+  ],
+  "why": "A using directive also makes the inline namespace's members visible."
+ },
+ "p51": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-8"
+  ],
+  "why": "a from the if initializer is out of scope after the if statement."
+ },
+ "p52": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-28"
+  ],
+  "why": "A function type built only from fundamental types adds nothing."
+ },
+ "p53": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-23"
+  ],
+  "why": "The chain of directives makes core::limit visible, and nothing between hides it."
+ },
+ "p54": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-13"
+  ],
+  "why": "Both paths reach the one entity a::value."
+ },
+ "p55": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-27"
+  ],
+  "why": "A template template argument adds its namespace n."
+ },
+ "p56": {
+  "outcome": "undefined",
+  "rules": [
+   "NAM-1"
+  ],
+  "why": "a is in scope in its own initializer, and reading it there is undefined."
+ },
+ "p57": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-29"
+  ],
+  "why": "ADL finds the friend declared in the associated class target."
+ },
+ "p58": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-14"
+  ],
+  "why": "n::value is declared after the use."
+ },
+ "p59": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-27"
+  ],
+  "why": "A class declared in a function of n adds n."
+ },
+ "p60": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-34"
+  ],
+  "why": "In an alias declaration, C::C names the constructors."
+ },
+ "p61": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-34"
+  ],
+  "why": "box::box in a declaration names the constructors, not the type."
+ },
+ "p62": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-18"
+  ],
+  "why": "value is found in two different bases, so join::value is ambiguous."
+ },
+ "p63": {
+  "outcome": "runs",
+  "rules": [
+   "NAM-40"
+  ],
+  "why": "early is declared before the variable count; afterwards count names the variable; 4 + 3 is 7."
+ },
+ "p64": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-21"
+  ],
+  "why": "The parameter after C::set sees the member type."
+ },
+ "p65": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-1"
+  ],
+  "why": "The enumerator's initializer sees the outer x, so x is 6."
+ },
+ "p66": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-6",
+   "PFX-11"
+  ],
+  "why": "A member declaration sees only earlier members, and later is declared after."
+ },
+ "p67": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-12"
+  ],
+  "why": "In a list of bases the lookup passes over the local variable and finds the class."
+ },
+ "p68": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-13"
+  ],
+  "why": "Nested inline namespaces are searched at any depth."
+ },
+ "p69": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-25"
+  ],
+  "why": "The paths reach the one entity outer::value."
+ },
+ "p70": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-31",
+   "NAM-5"
+  ],
+  "why": "Ordinary lookup finds a namespace function, so ADL adds n::probe(S), which wins."
+ },
+ "p71": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-27"
+  ],
+  "why": "A union adds its namespace n."
+ },
+ "p72": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-19"
+  ],
+  "why": "Scoped enumerator through the enumeration."
+ },
+ "p73": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-21"
+  ],
+  "why": "The trailing return type after C::get sees the member type."
+ },
+ "p74": {
+  "outcome": "reject",
+  "rules": [
+   "STMT-8"
+  ],
+  "why": "a is declared twice in one block."
+ },
+ "p75": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-13"
+  ],
+  "why": "app::limit prefers the declaration in app to the one in the unnamed namespace."
+ },
+ "p76": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-13"
+  ],
+  "why": "Both paths reach a::value."
+ },
+ "p77": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-30"
+  ],
+  "why": "ADL does not find a function declared only in a block."
+ },
+ "p78": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-32"
+  ],
+  "why": "A name in parentheses gets no ADL."
+ },
+ "p79": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-18"
+  ],
+  "why": "outer::inner::value does not search the enclosing class outer."
+ },
+ "p80": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-24",
+   "NAM-9"
+  ],
+  "why": "Outside n, the directive does not apply, so value is not found in other()."
+ },
+ "p81": {
+  "outcome": "runs",
+  "rules": [
+   "NAM-31",
+   "NAM-5"
+  ],
+  "why": "ADL adds geo::size(P) to the global size(int)."
+ },
+ "p82": {
+  "outcome": "runs",
+  "rules": [
+   "NAM-2"
+  ],
+  "why": "Each inner x hides the outer one."
+ },
+ "p83": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-39"
+  ],
+  "why": "A class can share its name with an enumerator."
+ },
+ "p84": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-27"
+  ],
+  "why": "A pointer to a function returning n::S adds n."
+ },
+ "p85": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-8"
+  ],
+  "why": "a is out of scope after its block."
+ },
+ "p86": {
+  "outcome": "runs",
+  "rules": [
+   "NAM-40"
+  ],
+  "why": "parse alone is the function; struct parse names the class."
+ },
+ "p87": {
+  "outcome": "runs",
+  "rules": [
+   "NAM-38"
+  ],
+  "why": "Operator lookup passes over Outer's scope and finds the global operator+, which gives 3."
+ },
+ "p88": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-15"
+  ],
+  "why": "The local int box does not hide the class before ::."
+ },
+ "p89": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-40"
+  ],
+  "why": "In either order, the plain name finds the variable and struct names the class."
+ },
+ "p90": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-14"
+  ],
+  "why": "n::value does not look in the enclosing global namespace."
+ },
+ "p91": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-34"
+  ],
+  "why": "As a template argument, C::C names the constructors."
+ },
+ "p92": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-13"
+  ],
+  "why": "app::limit finds the member of the unnamed namespace in app."
+ },
+ "p93": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-41"
+  ],
+  "why": "In the conversion function type, S finds the variable."
+ },
+ "p94": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-32"
+  ],
+  "why": "Ordinary lookup finds a variable, so ADL does not happen and operator() takes int."
+ },
+ "p95": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-23"
+  ],
+  "why": "core's members act at the global level; app::limit lies between and hides them, so read returns 2."
+ },
+ "p96": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-27"
+  ],
+  "why": "An array of n::S adds n."
+ },
+ "p97": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-13"
+  ],
+  "why": "b has no value, so the search follows b's directive to a."
+ },
+ "p98": {
+  "outcome": "reject",
+  "rules": [
+   "PFX-11",
+   "NAM-37"
+  ],
+  "why": "Member access finds the type Count, which is not valid as a member expression."
+ },
+ "p99": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-28"
+  ],
+  "why": "std::nullptr_t adds nothing."
+ },
+ "p100": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-26"
+  ],
+  "why": "The directives make a function and a variable visible for pick, so the use is ambiguous."
+ },
+ "p101": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-35",
+   "NAM-33"
+  ],
+  "why": "Inside derived, base finds the inherited injected name of ::base before lib::base."
+ },
+ "p102": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-29",
+   "NAM-31"
+  ],
+  "why": "Ordinary lookup finds the global function, and ADL skips the variable n::probe."
+ },
+ "p103": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-8"
+  ],
+  "why": "inner is out of scope."
+ },
+ "p104": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-27"
+  ],
+  "why": "A pointer to a member of n::S of type m::T adds m."
+ },
+ "p105": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-8"
+  ],
+  "why": "later is used before its declaration."
+ },
+ "p106": {
+  "outcome": "runs",
+  "rules": [
+   "NAM-2"
+  ],
+  "why": "::x reaches the global."
+ },
+ "p107": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-36"
+  ],
+  "why": "Two different bases have the injected name base."
+ },
+ "p108": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-28"
+  ],
+  "why": "A lambda in a member function does not add the class, so the friend take is not found."
+ },
+ "p109": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-27"
+  ],
+  "why": "An enumeration in holder adds holder and n."
+ },
+ "p110": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-35"
+  ],
+  "why": "Two paths to the one base class root are not ambiguous."
+ },
+ "p111": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-35"
+  ],
+  "why": "The virtual base root is one class."
+ },
+ "p112": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-11"
+  ],
+  "why": "The label a is defined twice."
+ },
+ "p113": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-15"
+  ],
+  "why": "A decltype specifier can be the qualifier."
+ },
+ "p114": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-30"
+  ],
+  "why": "ADL does not follow a using directive in the associated namespace other."
+ },
+ "p115": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-3"
+  ],
+  "why": "The outermost block shares its scope with the parameter list."
+ },
+ "p116": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-16"
+  ],
+  "why": "later is only declared, so it has no members to find."
+ },
+ "p117": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-25"
+  ],
+  "why": "Both directives make the one entity a::value visible."
+ },
+ "p118": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-27"
+  ],
+  "why": "A pointer to a function with a parameter m::B adds m."
+ },
+ "p119": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-39"
+  ],
+  "why": "A class can share its name with functions and a function template."
+ },
+ "p120": {
+  "outcome": "runs",
+  "rules": [
+   "NAM-40"
+  ],
+  "why": "The using declaration brings both; handle is the variable and struct handle the class."
+ },
+ "p121": {
+  "outcome": "runs",
+  "rules": [
+   "NAM-6"
+  ],
+  "why": "The member function body sees the later member v."
+ },
+ "p122": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-9"
+  ],
+  "why": "twice needs qualification."
+ },
+ "p123": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-27"
+  ],
+  "why": "The closure of a lambda in n adds n."
+ },
+ "p124": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-21"
+  ],
+  "why": "The body of n::C::f sees the members of n."
+ },
+ "p125": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-24"
+  ],
+  "why": "The members of one and two act at outer, which also declares value, so value is ambiguous."
+ },
+ "p126": {
+  "outcome": "runs",
+  "rules": [
+   "NAM-4"
+  ],
+  "why": "A qualified definition outside the namespace."
+ },
+ "p127": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-41"
+  ],
+  "why": "After int link, link finds the data member and cannot name the class."
+ },
+ "p128": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-29"
+  ],
+  "why": "A class in an inline namespace also has the enclosing namespace n."
+ },
+ "p129": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-16",
+   "DTOR-6"
+  ],
+  "why": "A destructor name can use an alias for a scalar type as the qualifier."
+ },
+ "p130": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-24"
+  ],
+  "why": "lib's members act at outer, which declares value too, so value is ambiguous."
+ },
+ "p131": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-9"
+  ],
+  "why": "a needs qualification."
+ },
+ "p132": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-38"
+  ],
+  "why": "inner's operator+ ends the search and hides the global one; ADL in m finds nothing, and operator+(Value, int) does not fit."
+ },
+ "p133": {
+  "outcome": "runs",
+  "rules": [
+   "NAM-37"
+  ],
+  "why": "Member access finds enumerators, static members, base members, and qualified members."
+ },
+ "p134": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-27",
+   "NAM-29"
+  ],
+  "why": "An enumeration in holder makes holder associated, so its friend is found."
+ },
+ "p135": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-23"
+  ],
+  "why": "user's own value lies between the use and the level where lib's members act, so it hides them."
+ },
+ "p136": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-8"
+  ],
+  "why": "The definition's parameter is amount, so count is not declared there."
+ },
+ "p137": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-24",
+   "NAM-23"
+  ],
+  "why": "The directive ends with its block."
+ },
+ "p138": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-30",
+   "ACC-14"
+  ],
+  "why": "The private base adds lib, but the conversion to const A* is inaccessible."
+ },
+ "p139": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-13"
+  ],
+  "why": "top::value stops at mid, which declares the int."
+ },
+ "p140": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-23"
+  ],
+  "why": "The directive in n applies in a later member definition after n::f."
+ },
+ "p141": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-28"
+  ],
+  "why": "A value template argument adds nothing, so n is not associated."
+ },
+ "p142": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-29"
+  ],
+  "why": "ADL finds a function that a using declaration in the associated namespace names."
+ },
+ "p143": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-24"
+  ],
+  "why": "The unnamed namespace's limit acts in app, which also declares limit, so the use is ambiguous."
+ },
+ "p144": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-27"
+  ],
+  "why": "A specialization adds the template's namespace t."
+ },
+ "p145": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-24"
+  ],
+  "why": "core's members act at app, the innermost namespace around the first directive and core, and app declares limit too."
+ },
+ "p146": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-42"
+  ],
+  "why": "A class template cannot share its name with a variable."
+ },
+ "p147": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-3"
+  ],
+  "why": "Two variables named total of different types in one scope."
+ },
+ "p148": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-41"
+  ],
+  "why": "item finds the variable, so item first is not valid."
+ },
+ "p149": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-14"
+  ],
+  "why": "Functions from two paths form one overload set."
+ },
+ "p150": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-12"
+  ],
+  "why": "The local int f hides the function."
+ },
+ "p151": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-27",
+   "NAM-29"
+  ],
+  "why": "The base class is associated, so its friend is found."
+ },
+ "p152": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-12",
+   "STMT-9"
+  ],
+  "why": "struct S reaches the class past the local variable."
+ },
+ "p153": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-42"
+  ],
+  "why": "An alias template cannot share its name with a variable."
+ },
+ "p154": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-42"
+  ],
+  "why": "A variable template cannot share its name with a class."
+ },
+ "p155": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-13"
+  ],
+  "why": "top::value follows the directive chain to deep."
+ },
+ "p156": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-25"
+  ],
+  "why": "lib's members act at outer beside pick(double), and the functions form one overload set."
+ },
+ "p157": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-34"
+  ],
+  "why": "point::point in sizeof names the constructors."
+ },
+ "p158": {
+  "outcome": "compiles",
+  "rules": [
+   "DER-3"
+  ],
+  "why": "The data member base hides the inherited injected name."
+ },
+ "p159": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-35"
+  ],
+  "why": "derived::base names the base class from outside."
+ },
+ "p160": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-16"
+  ],
+  "why": "An alias for a fundamental type is not a valid qualifier."
+ },
+ "p161": {
+  "outcome": "runs",
+  "rules": [
+   "NAM-40"
+  ],
+  "why": "The base list finds the class; node alone is the variable; 4 + 3 is 7."
+ },
+ "p162": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-42"
+  ],
+  "why": "A class template cannot share its name with a function template."
+ },
+ "p163": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-11"
+  ],
+  "why": "Labels have function scope, so again is defined twice."
+ },
+ "p164": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-17"
+  ],
+  "why": "Qualified lookup continues into the base."
+ },
+ "p165": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-17",
+   "NAM-19"
+  ],
+  "why": "Unscoped enumerators are members of light and also reachable through color."
+ },
+ "p166": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-27"
+  ],
+  "why": "The class argument adds n."
+ },
+ "p167": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-27"
+  ],
+  "why": "A member template as a template argument adds its class Outer, whose friend is found."
+ },
+ "p168": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-27"
+  ],
+  "why": "A pointer to a pointer to n::S adds n."
+ },
+ "p169": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-14"
+  ],
+  "why": "Qualified lookup does not find a friend declared only in a class."
+ },
+ "p170": {
+  "outcome": "depends",
+  "rules": [
+   "NAM-27"
+  ],
+  "why": "For the template-id h<M::B>, GCC and EDG add M and compile; Clang adds nothing and rejects, Q-0311."
+ },
+ "p171": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-27"
+  ],
+  "why": "The base adds its namespace b."
+ },
+ "p172": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-9"
+  ],
+  "why": "twice needs qualification."
+ },
+ "p173": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-28"
+  ],
+  "why": "A braced list adds nothing."
+ },
+ "p174": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-37",
+   "PFX-11"
+  ],
+  "why": "Member access never finds free functions."
+ },
+ "p175": {
+  "outcome": "runs",
+  "rules": [
+   "NAM-40"
+  ],
+  "why": "Plain and qualified names find the variables; struct and the place before :: reach the classes."
+ },
+ "p176": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-41"
+  ],
+  "why": "item finds the variable."
+ },
+ "p177": {
+  "outcome": "runs",
+  "rules": [
+   "NAM-4"
+  ],
+  "why": "A reopened namespace sees earlier names."
+ },
+ "p178": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-27"
+  ],
+  "why": "A function argument adds what its parameter types add."
+ },
+ "p179": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-18"
+  ],
+  "why": "light::green does not search the scoped enumeration in light."
+ },
+ "p180": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-14"
+  ],
+  "why": "No namespace along the directive cycle declares value."
+ },
+ "p181": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-31"
+  ],
+  "why": "A block using declaration still allows ADL, which finds n::probe(S)."
+ },
+ "p182": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-32"
+  ],
+  "why": "Ordinary lookup finds a type, so ADL does not happen and probe cannot be built from n::S."
+ },
+ "p183": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-41"
+  ],
+  "why": "level finds the variable."
+ },
+ "p184": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-14"
+  ],
+  "why": "n::value does not search the non-inline nested m."
+ },
+ "p185": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-41"
+  ],
+  "why": "grid::cell finds the data member."
+ },
+ "p186": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-27"
+  ],
+  "why": "A lambda in a class body outside a function adds the class, whose friend is found."
+ },
+ "p187": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-14"
+  ],
+  "why": "The global namespace has no value."
+ },
+ "p188": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-35"
+  ],
+  "why": "base finds the inherited name of lib::base."
+ },
+ "p189": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-27",
+   "NAM-8"
+  ],
+  "why": "The template's parameter type depends on T, so h adds nothing and take is not found."
+ },
+ "p190": {
+  "outcome": "runs",
+  "rules": [
+   "NAM-7"
+  ],
+  "why": "goto jumps forward to a label declared later."
+ },
+ "p191": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-30"
+  ],
+  "why": "ADL does not find a function declared after the call."
+ },
+ "p192": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-21"
+  ],
+  "why": "The initializer after n::total sees n::base."
+ },
+ "p193": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-27"
+  ],
+  "why": "A scoped enumeration adds n."
+ },
+ "p194": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-34"
+  ],
+  "why": "C::C as a declaration's type names the constructors."
+ },
+ "p195": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-22"
+  ],
+  "why": "The return type before C::get does not see the member type."
+ },
+ "p196": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-39",
+   "FN-15"
+  ],
+  "why": "Repeated declarations of one class and one variable can share a name."
+ },
+ "p197": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-41"
+  ],
+  "why": "geo::point finds the variable."
+ },
+ "p198": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-26"
+  ],
+  "why": "The directives make a class and a variable named item visible."
+ },
+ "p199": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-8"
+  ],
+  "why": "The name is never declared."
+ },
+ "p200": {
+  "outcome": "runs",
+  "rules": [
+   "NAM-1"
+  ],
+  "why": "Plain use after declaration."
+ },
+ "p201": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-36"
+  ],
+  "why": "An inherited base name used unqualified outside the derived class."
+ },
+ "p202": {
+  "outcome": "runs",
+  "rules": [
+   "NAM-7"
+  ],
+  "why": "A label and a variable can share a name; done is 0."
+ },
+ "p203": {
+  "outcome": "runs",
+  "rules": [
+   "NAM-21"
+  ],
+  "why": "The parameter and body after Counter<T>::add see value_type; the result is 7."
+ },
+ "p204": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-14"
+  ],
+  "why": "A block-scope declaration is not found by n::value."
+ },
+ "p205": {
+  "outcome": "runs",
+  "rules": [
+   "NAM-39",
+   "NAM-40"
+  ],
+  "why": "size alone is the data member, struct size names the class; 3 + 4 is 7."
+ },
+ "p206": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-27"
+  ],
+  "why": "Non-dependent parameter and return types of the templates, and the plain overload, add N."
+ },
+ "p207": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-39"
+  ],
+  "why": "A class can share its name with a data member, a member function, or an enumerator, in either order."
+ },
+ "p208": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-19"
+  ],
+  "why": "An unscoped enumerator in n is also n::off."
+ },
+ "p209": {
+  "outcome": "runs",
+  "rules": [
+   "SB-5"
+  ],
+  "why": "Member lookup finds the get member template, so the bindings use it."
+ },
+ "p210": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-10"
+  ],
+  "why": "Outside the class, the static member needs qualification."
+ },
+ "p211": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-3"
+  ],
+  "why": "A variable and a function with one name in one scope."
+ },
+ "p212": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-23"
+  ],
+  "why": "The local int value lies between the use and the global level, so it hides m::value."
+ },
+ "p213": {
+  "outcome": "depends",
+  "rules": [
+   "NAM-39"
+  ],
+  "why": "GCC and EDG accept an anonymous-union member sharing a name with a class (compiles); Clang rejects the class (reject), Q-0362."
+ },
+ "p214": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-27"
+  ],
+  "why": "A pointer to a member function of n::S taking m::T adds m."
+ },
+ "p215": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-30"
+  ],
+  "why": "helper is not associated with n::S, so its friend is not found."
+ },
+ "p216": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-30"
+  ],
+  "why": "target is only a class the argument converts to."
+ },
+ "p217": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-10"
+  ],
+  "why": "T is used before the member type is declared."
+ },
+ "p218": {
+  "outcome": "reject",
+  "rules": [
+   "ACC-14"
+  ],
+  "why": "In D, A finds the private injected name through B."
+ },
+ "p219": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-20"
+  ],
+  "why": "blue is not an enumerator of Color."
+ },
+ "p220": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-3",
+   "FN-15"
+  ],
+  "why": "Several declarations of one function."
+ },
+ "p221": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-20"
+  ],
+  "why": "idle is not an enumerator of mode."
+ },
+ "p222": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-38"
+  ],
+  "why": "The block's operator+ hides the global one, ADL in m finds nothing, and operator+(Value, int) does not fit."
+ },
+ "p223": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-33"
+  ],
+  "why": "After struct, point::point names the class."
+ },
+ "p224": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-42"
+  ],
+  "why": "A class template cannot share its name with a variable."
+ },
+ "p225": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-29"
+  ],
+  "why": "The friend is redeclared at namespace scope, so ordinary lookup finds it."
+ },
+ "p226": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-19"
+  ],
+  "why": "An unscoped enumerator through the enumeration or alone."
+ },
+ "p227": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-33"
+  ],
+  "why": "Before ::, C::C names the class, at any depth."
+ },
+ "p228": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-41"
+  ],
+  "why": "item finds the variable, also though the class came later."
+ },
+ "p229": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-27"
+  ],
+  "why": "A nested class adds its enclosing class outer, whose friend is found."
+ },
+ "p230": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-14"
+  ],
+  "why": "The two paths end at different variables."
+ },
+ "p231": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-14"
+  ],
+  "why": "The two paths end at a class and a variable."
+ },
+ "p232": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-32"
+  ],
+  "why": "A block declaration of a function stops ADL."
+ },
+ "p233": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-37"
+  ],
+  "why": "D has no member Alias, so Alias is looked up from the point of use and names B."
+ },
+ "p234": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-34"
+  ],
+  "why": "point::point() calls the constructor by name."
+ },
+ "p235": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-27"
+  ],
+  "why": "A reference to n::S adds n."
+ },
+ "p236": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-12"
+  ],
+  "why": "The local int T hides the class, so T t is not valid."
+ },
+ "p237": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-27"
+  ],
+  "why": "A type template argument adds n."
+ },
+ "p238": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-18"
+  ],
+  "why": "box has no member value, and the global is not searched."
+ },
+ "p239": {
+  "outcome": "reject",
+  "rules": [
+   "NAM-16",
+   "NAM-20"
+  ],
+  "why": "The opaque declaration declares no enumerators."
+ },
+ "p240": {
+  "outcome": "compiles",
+  "rules": [
+   "NAM-5"
+  ],
+  "why": "ADL finds n::probe."
+ }
+}

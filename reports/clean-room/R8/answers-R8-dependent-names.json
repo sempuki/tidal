@@ -1,0 +1,948 @@
+{
+ "p01": {
+  "outcome": "reject",
+  "rules": [
+   "DEP-13",
+   "DER-4"
+  ],
+  "why": "this->m finds Fixed::m and Extra::m in two non-virtual bases, so the second lookup is ambiguous."
+ },
+ "p02": {
+  "outcome": "reject",
+  "rules": [
+   "DEP-15",
+   "DEP-19"
+  ],
+  "why": "Box<T*> names another specialization, so Box<T*>::type without typename is read as a value and the declaration does not parse."
+ },
+ "p03": {
+  "outcome": "reject",
+  "rules": [
+   "DEP-29"
+  ],
+  "why": "T::type is a value, so the parentheses are an initializer and the body breaks the grammar."
+ },
+ "p04": {
+  "outcome": "compiles",
+  "rules": [
+   "DEP-24",
+   "DEP-25"
+  ],
+  "why": "T::template box is a valid default template template argument, and Outer<Has>::In<> holds a box<int>."
+ },
+ "p05": {
+  "outcome": "runs",
+  "rules": [
+   "DEP-15",
+   "DEP-16"
+  ],
+  "why": "Box<self> with self = T names the current instantiation, so type needs no typename; get returns 2."
+ },
+ "p06": {
+  "outcome": "compiles",
+  "rules": [
+   "DEP-20"
+  ],
+  "why": "Alias target, static_cast type, default type argument, constant parameter type, and lambda parameter are all type-only positions."
+ },
+ "p07": {
+  "outcome": "runs",
+  "rules": [
+   "DEP-38",
+   "DEP-9"
+  ],
+  "why": "Argument-dependent lookup in the first unit sees only probe(Item, double); the better function in the other unit is not used and nothing is diagnosed."
+ },
+ "p08": {
+  "outcome": "runs",
+  "rules": [
+   "DEP-24",
+   "DEP-25",
+   "DEP-26"
+  ],
+  "why": "Every member template use has the keyword template; the sum is 9 and plain() is 3."
+ },
+ "p09": {
+  "outcome": "runs",
+  "rules": [
+   "DEP-11",
+   "DEP-36"
+  ],
+  "why": "Base is not dependent, so count finds Base::count, which is 1."
+ },
+ "p10": {
+  "outcome": "reject",
+  "rules": [
+   "DEP-29"
+  ],
+  "why": "A syntax error in a template is rejected even with no instantiation."
+ },
+ "p11": {
+  "outcome": "reject",
+  "rules": [
+   "DEP-10",
+   "DEP-9"
+  ],
+  "why": "probe is declared after the template in the global namespace, which is not an associated namespace of lib::Item."
+ },
+ "p12": {
+  "outcome": "runs",
+  "rules": [
+   "DEP-8",
+   "DEP-9"
+  ],
+  "why": "A pack expansion argument makes the call dependent, and argument-dependent lookup at the point of instantiation finds lib::probe."
+ },
+ "p13": {
+  "outcome": "reject",
+  "rules": [
+   "DEP-19"
+  ],
+  "why": "T::count is read as a value, and in Has it is a type."
+ },
+ "p14": {
+  "outcome": "reject",
+  "rules": [
+   "DEP-19"
+  ],
+  "why": "A block variable is not a type-only position, so T::type value is read as an expression and fails."
+ },
+ "p15": {
+  "outcome": "runs",
+  "rules": [
+   "DEP-1",
+   "DEP-5"
+  ],
+  "why": "item is a member alias with an independent target, so pick(i) is not dependent and binds to pick(Item, long) at the definition; returns 1."
+ },
+ "p16": {
+  "outcome": "reject",
+  "rules": [
+   "DEP-23"
+  ],
+  "why": "Without typename the using-declaration names a value, so type cannot be used as a type."
+ },
+ "p17": {
+  "outcome": "runs",
+  "rules": [
+   "DEP-2",
+   "DEP-9"
+  ],
+  "why": "make has a deduced return type, so make() is type-dependent and argument-dependent lookup finds shop::price later."
+ },
+ "p18": {
+  "outcome": "compiles",
+  "rules": [
+   "DEP-2"
+  ],
+  "why": "make<T>, T::make, and a structured binding of dependent type are all type-dependent, so .size() is checked at the instantiation and is valid."
+ },
+ "p19": {
+  "outcome": "depends",
+  "rules": [
+   "DEP-11"
+  ],
+  "why": "Clang finds operator T of the dependent base without this->; GCC and EDG do not (Q-0248)."
+ },
+ "p20": {
+  "outcome": "reject",
+  "rules": [
+   "DEP-12"
+  ],
+  "why": "operator int is not dependent and only the dependent base declares it."
+ },
+ "p21": {
+  "outcome": "runs",
+  "rules": [
+   "DEP-11"
+  ],
+  "why": "The dependent base is not searched, so count is the global, 5."
+ },
+ "p22": {
+  "outcome": "runs",
+  "rules": [
+   "DEP-5"
+  ],
+  "why": "pick(1) is not dependent and binds to pick(double) at the definition; returns 1."
+ },
+ "p23": {
+  "outcome": "runs",
+  "rules": [
+   "DEP-2",
+   "DEP-8",
+   "DEP-9"
+  ],
+  "why": "A fold expression is type-dependent, so argument-dependent lookup finds shop::price at the instantiation."
+ },
+ "p24": {
+  "outcome": "compiles",
+  "rules": [
+   "DEP-13",
+   "DEP-35"
+  ],
+  "why": "Both::f is looked up again at the instantiation and finds Extra::f, which hides Fixed::f through the virtual base; every compiler uses it."
+ },
+ "p25": {
+  "outcome": "reject",
+  "rules": [
+   "DEP-6",
+   "DEP-30"
+  ],
+  "why": "helper(1) is not dependent and helper is undeclared; every compiler rejects an undeclared name."
+ },
+ "p26": {
+  "outcome": "reject",
+  "rules": [
+   "DEP-31"
+  ],
+  "why": "Every compiler rejects sizeof of a class that is incomplete at the definition, even if the class is complete before the use."
+ },
+ "p27": {
+  "outcome": "compiles",
+  "rules": [
+   "DEP-23"
+  ],
+  "why": "using typename makes size_type a type name; twice returns unsigned 4."
+ },
+ "p28": {
+  "outcome": "runs",
+  "rules": [
+   "DEP-8",
+   "DEP-9"
+  ],
+  "why": "T(0) is type-dependent, so argument-dependent lookup at the instantiation sees probe(Tag, int), the better match; returns 2."
+ },
+ "p29": {
+  "outcome": "depends",
+  "rules": [
+   "VIRT-3",
+   "DEP-30"
+  ],
+  "why": "Base is not dependent; Clang rejects the unused override that overrides nothing, GCC and EDG accept until a specialization is made."
+ },
+ "p30": {
+  "outcome": "runs",
+  "rules": [
+   "DEP-3",
+   "DEP-5"
+  ],
+  "why": "sizeof...(T) is never type-dependent, so the call binds to probe(Tag, double) at the definition; returns 1."
+ },
+ "p31": {
+  "outcome": "runs",
+  "rules": [
+   "DEP-4"
+  ],
+  "why": "count is a const int with a value-dependent initializer, so the bound is computed for each specialization."
+ },
+ "p32": {
+  "outcome": "depends",
+  "rules": [
+   "DEP-27"
+  ],
+  "why": "template after the qualifier of a declared member function template: GCC and EDG accept, Clang rejects (Q-0227)."
+ },
+ "p33": {
+  "outcome": "reject",
+  "rules": [
+   "DEP-9",
+   "DEP-10"
+  ],
+  "why": "operator+ is in the global namespace after the definition; shop is the only associated namespace."
+ },
+ "p34": {
+  "outcome": "depends",
+  "rules": [
+   "DEP-26"
+  ],
+  "why": "object.template field for a data member: GCC accepts, Clang and EDG reject (Q-0226)."
+ },
+ "p35": {
+  "outcome": "runs",
+  "rules": [
+   "DEP-19",
+   "DEP-29"
+  ],
+  "why": "int n(T::count) declares a variable initialized with the value 2; 2 * 2 * 3 is 12."
+ },
+ "p36": {
+  "outcome": "runs",
+  "rules": [
+   "DEP-33",
+   "DEP-32"
+  ],
+  "why": "Only the empty pack is valid; no compiler diagnoses it, and count() returns 0."
+ },
+ "p37": {
+  "outcome": "reject",
+  "rules": [
+   "DEP-22"
+  ],
+  "why": "typename T::type finds a value in Has."
+ },
+ "p38": {
+  "outcome": "compiles",
+  "rules": [
+   "IF-13",
+   "DEP-32"
+  ],
+  "why": "The discarded branch is not instantiated, and no compiler diagnoses its invalid bound."
+ },
+ "p39": {
+  "outcome": "reject",
+  "rules": [
+   "DEP-10"
+  ],
+  "why": "The argument is int, which adds no namespace, and probe is declared after the definition."
+ },
+ "p40": {
+  "outcome": "runs",
+  "rules": [
+   "DEP-39"
+  ],
+  "why": "t.later() is looked up at the instantiation in Probe."
+ },
+ "p41": {
+  "outcome": "depends",
+  "rules": [
+   "DEP-17",
+   "DEP-30"
+  ],
+  "why": "Unused Box::missing with no dependent base: GCC 14 accepts, the other compilers reject (Q-0228)."
+ },
+ "p42": {
+  "outcome": "runs",
+  "rules": [
+   "DEP-38",
+   "DEP-9"
+  ],
+  "why": "The first unit sees only probe(Item, long); the other unit's overload is not seen and nothing is diagnosed; returns 1."
+ },
+ "p43": {
+  "outcome": "runs",
+  "rules": [
+   "DEP-28",
+   "VIRT-3"
+  ],
+  "why": "With a dependent base, override is checked for the specialization, and HasRun::run is overridden; returns 2."
+ },
+ "p44": {
+  "outcome": "runs",
+  "rules": [
+   "DEP-15",
+   "DEP-16"
+  ],
+  "why": "Box<pointer> with pointer = T* names the current partial specialization; type is int 2."
+ },
+ "p45": {
+  "outcome": "reject",
+  "rules": [
+   "DEP-15",
+   "DEP-19"
+  ],
+  "why": "Box<M> with a static constant member is another specialization, so Box<M>::type without typename is read as a value."
+ },
+ "p46": {
+  "outcome": "depends",
+  "rules": [
+   "DEP-24"
+  ],
+  "why": "T::box<int> as a base without template: GCC accepts, Clang and EDG reject (Q-0225)."
+ },
+ "p47": {
+  "outcome": "reject",
+  "rules": [
+   "DEP-24"
+  ],
+  "why": "Without template, T::make<int>() reads < as less-than, which fails."
+ },
+ "p48": {
+  "outcome": "depends",
+  "rules": [
+   "DEP-33",
+   "PACK-14"
+  ],
+  "why": "A base list that expands a pack twice: Clang and EDG reject at the definition, GCC accepts while the class is not instantiated (Q-0247)."
+ },
+ "p49": {
+  "outcome": "compiles",
+  "rules": [
+   "DEP-24",
+   "DEP-28"
+  ],
+  "why": "The template is never instantiated and the syntax is valid."
+ },
+ "p50": {
+  "outcome": "compiles",
+  "rules": [
+   "DEP-13",
+   "DEP-35"
+  ],
+  "why": "At the instantiation this->m and Both::m both find Extra::m, which hides Fixed::m; every compiler uses it."
+ },
+ "p51": {
+  "outcome": "compiles",
+  "rules": [
+   "DEP-39",
+   "DEP-28"
+  ],
+  "why": "t.nothing() is dependent and the template is never instantiated."
+ },
+ "p52": {
+  "outcome": "reject",
+  "rules": [
+   "DEP-6"
+  ],
+  "why": "helper(1) is not dependent and helper is declared only after the definition."
+ },
+ "p53": {
+  "outcome": "reject",
+  "rules": [
+   "DEP-26"
+  ],
+  "why": "Has::plain is not a template, so T::template plain<int> is invalid at the instantiation."
+ },
+ "p54": {
+  "outcome": "depends",
+  "rules": [
+   "DEP-13"
+  ],
+  "why": "Both::m is ambiguous between Fixed::m and Extra::m at the instantiation: Clang and EDG reject, GCC keeps Fixed::m (Q-0230)."
+ },
+ "p55": {
+  "outcome": "compiles",
+  "rules": [
+   "DEP-36"
+  ],
+  "why": "Base::N hides the parameter N in and outside the class, so both get() return 5."
+ },
+ "p56": {
+  "outcome": "runs",
+  "rules": [
+   "DEP-14"
+  ],
+  "why": "m finds Fixed::m at the definition and keeps it; Extra::m in the dependent base does not make it ambiguous."
+ },
+ "p57": {
+  "outcome": "reject",
+  "rules": [
+   "DEP-12",
+   "DEP-30"
+  ],
+  "why": "count is declared only by a dependent base and nowhere else; every compiler rejects it even unused."
+ },
+ "p58": {
+  "outcome": "reject",
+  "rules": [
+   "DEP-37"
+  ],
+  "why": "operator~ is unary, so the pack must be empty."
+ },
+ "p59": {
+  "outcome": "reject",
+  "rules": [
+   "DEP-37"
+  ],
+  "why": "operator< already has two parameters, so the pack must be empty."
+ },
+ "p60": {
+  "outcome": "depends",
+  "rules": [
+   "DEP-30"
+  ],
+  "why": "An independent invalid call in an unused template: Clang and EDG reject, GCC accepts (Q-0223)."
+ },
+ "p61": {
+  "outcome": "runs",
+  "rules": [
+   "DEP-9",
+   "DEP-10"
+  ],
+  "why": "Argument-dependent lookup finds lib::use for A; the global use(other::B) is declared later outside the associated namespace, so B has no use."
+ },
+ "p62": {
+  "outcome": "runs",
+  "rules": [
+   "DEP-20",
+   "DEP-39"
+  ],
+  "why": "typename T::size_type is valid, and items[0].self() is checked at the instantiation."
+ },
+ "p63": {
+  "outcome": "runs",
+  "rules": [
+   "DEP-4"
+  ],
+  "why": "sizeof...(T) + 1 and (N + ...) are value-dependent bounds of 3."
+ },
+ "p64": {
+  "outcome": "runs",
+  "rules": [
+   "DEP-9",
+   "DEP-31"
+  ],
+  "why": "Ordinary lookup at the definition finds no probe; argument-dependent lookup at the instantiation finds the declaration with the default 4."
+ },
+ "p65": {
+  "outcome": "depends",
+  "rules": [
+   "DEP-17",
+   "DEP-30"
+  ],
+  "why": "Unused this->missing() with no dependent base: GCC 14 and Clang 18 accept, GCC 16, Clang 22, and EDG reject."
+ },
+ "p66": {
+  "outcome": "runs",
+  "rules": [
+   "DEP-3",
+   "DEP-5"
+  ],
+  "why": "sizeof(T) and static_cast<int>(v) are not type-dependent, so both calls bind to probe(Tag, double) at the definition."
+ },
+ "p67": {
+  "outcome": "runs",
+  "rules": [
+   "DEP-1",
+   "DEP-9"
+  ],
+  "why": "shop::Tag<N> and shop::List<T...> are dependent types, so argument-dependent lookup finds the shop::price templates."
+ },
+ "p68": {
+  "outcome": "runs",
+  "rules": [
+   "DEP-1",
+   "DEP-9"
+  ],
+  "why": "A value-dependent noexcept makes the pointer type dependent, so lookup finds shop::price, and the noexcept pointer converts; returns 7."
+ },
+ "p69": {
+  "outcome": "compiles",
+  "rules": [
+   "DEP-33"
+  ],
+  "why": "Only the empty pack is valid; no compiler diagnoses it and count<>() is 0."
+ },
+ "p70": {
+  "outcome": "reject",
+  "rules": [
+   "DEP-15",
+   "DEP-19"
+  ],
+  "why": "Inside Box<T*>, Box<T> is another specialization, so Box<T>::type needs typename."
+ },
+ "p71": {
+  "outcome": "compiles",
+  "rules": [
+   "DEP-8"
+  ],
+  "why": "A braced list with a type-dependent element makes the call dependent, and the template is never used."
+ },
+ "p72": {
+  "outcome": "runs",
+  "rules": [
+   "DEP-20"
+  ],
+  "why": "Every T::type is in a type-only position; the sum is 35."
+ },
+ "p73": {
+  "outcome": "runs",
+  "rules": [
+   "DEP-9"
+  ],
+  "why": "Argument-dependent lookup at the instantiation finds lib::probe."
+ },
+ "p74": {
+  "outcome": "runs",
+  "rules": [
+   "DEP-4"
+  ],
+  "why": "The bound N - 1 is 4."
+ },
+ "p75": {
+  "outcome": "runs",
+  "rules": [
+   "DEP-11"
+  ],
+  "why": "The base Outer<T> is the current instantiation of the enclosing class, so value() finds Outer::value; returns 1."
+ },
+ "p76": {
+  "outcome": "runs",
+  "rules": [
+   "DEP-11",
+   "DEP-18"
+  ],
+  "why": "this->missing() is looked up at the instantiation in the explicit specialization Base<int>."
+ },
+ "p77": {
+  "outcome": "runs",
+  "rules": [
+   "DEP-2",
+   "DEP-9"
+  ],
+  "why": "copy has the dependent type T, so argument-dependent lookup finds shop::price."
+ },
+ "p78": {
+  "outcome": "reject",
+  "rules": [
+   "DEP-12"
+  ],
+  "why": "size is declared only by a dependent base, and it is used as a type."
+ },
+ "p79": {
+  "outcome": "runs",
+  "rules": [
+   "DEP-9"
+  ],
+  "why": "The operands are type-dependent, so argument-dependent lookup finds shop::operator+."
+ },
+ "p80": {
+  "outcome": "depends",
+  "rules": [
+   "DEP-17",
+   "DEP-30"
+  ],
+  "why": "Unused this->missing in a primary template with no dependent base: older compilers accept, GCC 16, Clang 22, and EDG reject; the explicit specialization does not help."
+ },
+ "p81": {
+  "outcome": "runs",
+  "rules": [
+   "DEP-8",
+   "TARG-23"
+  ],
+  "why": "probe<T> has dependent template arguments, so < opens a list and argument-dependent lookup finds lib::probe."
+ },
+ "p82": {
+  "outcome": "compiles",
+  "rules": [
+   "DEP-29",
+   "DEP-19"
+  ],
+  "why": "take is a variable template initialized with T::type, and take<Limit> is 3."
+ },
+ "p83": {
+  "outcome": "runs",
+  "rules": [
+   "DEP-21",
+   "DEP-16"
+  ],
+  "why": "typename is allowed before independent and current-instantiation names; 1 + 5 + 4 is 10."
+ },
+ "p84": {
+  "outcome": "runs",
+  "rules": [
+   "DEP-11"
+  ],
+  "why": "this->count, Derived::count, and Base<T>::count all find Base::count; 3."
+ },
+ "p85": {
+  "outcome": "depends",
+  "rules": [
+   "DEP-31"
+  ],
+  "why": "A qualified call bound at the definition and a later default: GCC uses the default, Clang and EDG reject (Q-0249)."
+ },
+ "p86": {
+  "outcome": "compiles",
+  "rules": [
+   "DEP-14"
+  ],
+  "why": "f() finds Fixed::f at the definition and keeps it."
+ },
+ "p87": {
+  "outcome": "runs",
+  "rules": [
+   "DEP-15",
+   "DEP-16"
+  ],
+  "why": "Inner and Outer<T>::Inner name the current instantiation."
+ },
+ "p88": {
+  "outcome": "depends",
+  "rules": [
+   "DEP-34"
+  ],
+  "why": "p->template ~T(): Clang and GCC reject, EDG accepts (Q-0245)."
+ },
+ "p89": {
+  "outcome": "reject",
+  "rules": [
+   "VIRT-3",
+   "DEP-28"
+  ],
+  "why": "Wrapper<NoRun>::run is marked override and overrides nothing."
+ },
+ "p90": {
+  "outcome": "runs",
+  "rules": [
+   "DEP-2",
+   "DEP-9"
+  ],
+  "why": "V has a placeholder type, so price(V) is dependent and argument-dependent lookup finds shop::price."
+ },
+ "p91": {
+  "outcome": "depends",
+  "rules": [
+   "DEP-27"
+  ],
+  "why": "template after the qualifier of a declared member function template: GCC and EDG accept, Clang rejects (Q-0227)."
+ },
+ "p92": {
+  "outcome": "runs",
+  "rules": [
+   "DEP-7"
+  ],
+  "why": "T::value is looked up per specialization."
+ },
+ "p93": {
+  "outcome": "reject",
+  "rules": [
+   "DEP-17"
+  ],
+  "why": "Box::missing finds nothing and Box has no dependent base; every compiler rejects once the class is instantiated."
+ },
+ "p94": {
+  "outcome": "runs",
+  "rules": [
+   "DEP-1",
+   "DEP-9"
+  ],
+  "why": "The function pointer type has a pack, so it is dependent; argument-dependent lookup finds shop::price."
+ },
+ "p95": {
+  "outcome": "reject",
+  "rules": [
+   "DEP-6"
+  ],
+  "why": "Later is not dependent and is declared after the definition."
+ },
+ "p96": {
+  "outcome": "compiles",
+  "rules": [
+   "DEP-22"
+  ],
+  "why": "typename T::type names char and long long."
+ },
+ "p97": {
+  "outcome": "reject",
+  "rules": [
+   "DEP-24"
+  ],
+  "why": "Every compiler rejects T::box<int> without typename and template as an alias target."
+ },
+ "p98": {
+  "outcome": "depends",
+  "rules": [
+   "DEP-15"
+  ],
+  "why": "Same<T>::type without typename: Clang and GCC read the alias as the current instantiation, EDG rejects (Q-0229)."
+ },
+ "p99": {
+  "outcome": "reject",
+  "rules": [
+   "DEP-17"
+  ],
+  "why": "this->missing() finds nothing in an instantiated class with no dependent base."
+ },
+ "p100": {
+  "outcome": "reject",
+  "rules": [
+   "DEP-4",
+   "DCL-19"
+  ],
+  "why": "last<1> makes the bound 0, which is not valid."
+ },
+ "p101": {
+  "outcome": "depends",
+  "rules": [
+   "DEP-24"
+  ],
+  "why": "typename T::box<int> without template: GCC accepts, Clang and EDG reject (Q-0225)."
+ },
+ "p102": {
+  "outcome": "reject",
+  "rules": [
+   "DEP-28"
+  ],
+  "why": "int::count is not valid in the specialization measure<int>."
+ },
+ "p103": {
+  "outcome": "depends",
+  "rules": [
+   "DEP-30"
+  ],
+  "why": "An independent invalid conversion in an unused template: Clang and EDG reject, GCC accepts."
+ },
+ "p104": {
+  "outcome": "reject",
+  "rules": [
+   "DEP-19"
+  ],
+  "why": "A template argument is not a type-only position, so T::type is a value and Box needs a type."
+ },
+ "p105": {
+  "outcome": "runs",
+  "rules": [
+   "DEP-9"
+  ],
+  "why": "The generic lambda's call is dependent, so argument-dependent lookup finds lib::probe; the constexpr call gives 4."
+ },
+ "p106": {
+  "outcome": "depends",
+  "rules": [
+   "DEP-27"
+  ],
+  "why": "template after the qualifier of a member class template: Clang and GCC reject, EDG accepts (Q-0227)."
+ },
+ "p107": {
+  "outcome": "compiles",
+  "rules": [
+   "DEP-18"
+  ],
+  "why": "With a dependent base, Box::make is looked up at the instantiation and finds Base::make."
+ },
+ "p108": {
+  "outcome": "depends",
+  "rules": [
+   "DEP-34"
+  ],
+  "why": "r.template ~T(): Clang and GCC reject, EDG accepts (Q-0245)."
+ },
+ "p109": {
+  "outcome": "runs",
+  "rules": [
+   "DEP-15",
+   "DEP-16"
+  ],
+  "why": "Box, Box<T>, and ::Box<T> name the current instantiation; 6."
+ },
+ "p110": {
+  "outcome": "reject",
+  "rules": [
+   "DEP-24"
+  ],
+  "why": "object->get<int>() without template reads < as less-than."
+ },
+ "p111": {
+  "outcome": "runs",
+  "rules": [
+   "DEP-15",
+   "DEP-16"
+  ],
+  "why": "Box<T*> and Box name the current partial specialization; 3."
+ },
+ "p112": {
+  "outcome": "runs",
+  "rules": [
+   "DEP-9"
+  ],
+  "why": "Argument-dependent lookup at the instantiation sees probe(Item, int), the better match; 2."
+ },
+ "p113": {
+  "outcome": "reject",
+  "rules": [
+   "DEP-12"
+  ],
+  "why": "count is declared only by the dependent base."
+ },
+ "p114": {
+  "outcome": "reject",
+  "rules": [
+   "DEP-21",
+   "DEP-29"
+  ],
+  "why": "The name after typename must be qualified."
+ },
+ "p115": {
+  "outcome": "depends",
+  "rules": [
+   "DEP-31"
+  ],
+  "why": "A constexpr variable initialized by a function defined after the template: Clang rejects, GCC and EDG accept (Q-0250)."
+ },
+ "p116": {
+  "outcome": "compiles",
+  "rules": [
+   "DEP-32"
+  ],
+  "why": "No T gives a valid specialization, and no compiler diagnoses the unused template."
+ },
+ "p117": {
+  "outcome": "reject",
+  "rules": [
+   "DEP-22"
+  ],
+  "why": "Mixed::name finds the data member, which hides the nested class."
+ },
+ "p118": {
+  "outcome": "depends",
+  "rules": [
+   "DEP-26"
+  ],
+  "why": "typename T::template box with deduced arguments: GCC and EDG accept, Clang rejects (Q-0226)."
+ },
+ "p119": {
+  "outcome": "runs",
+  "rules": [
+   "DEP-23"
+  ],
+  "why": "using typename makes type a type name; value is 4."
+ },
+ "p120": {
+  "outcome": "depends",
+  "rules": [
+   "DEP-19"
+  ],
+  "why": "sizeof(T::type): EDG accepts, Clang and GCC reject (Q-0224)."
+ },
+ "p121": {
+  "outcome": "depends",
+  "rules": [
+   "DEFARG-10",
+   "DEP-30"
+  ],
+  "why": "An invalid independent default argument in an unused template: GCC accepts, Clang and EDG reject."
+ },
+ "p122": {
+  "outcome": "runs",
+  "rules": [
+   "DEP-18"
+  ],
+  "why": "Box::missing waits for the instantiation and finds Base::missing, 3."
+ },
+ "p123": {
+  "outcome": "runs",
+  "rules": [
+   "DEP-36"
+  ],
+  "why": "Base::U hides the parameter U inside and outside the class, so both compare int with int."
+ },
+ "p124": {
+  "outcome": "reject",
+  "rules": [
+   "DEP-24"
+  ],
+  "why": "A template template argument T::box without template is not valid."
+ },
+ "p125": {
+  "outcome": "reject",
+  "rules": [
+   "DEP-26"
+  ],
+  "why": "Every compiler rejects T::template field for a static data member."
+ },
+ "p126": {
+  "outcome": "reject",
+  "rules": [
+   "DEP-22"
+  ],
+  "why": "Has has no member type."
+ },
+ "p127": {
+  "outcome": "compiles",
+  "rules": [
+   "DEP-28",
+   "DEP-39"
+  ],
+  "why": "Every name is dependent and the template is never instantiated."
+ }
+}

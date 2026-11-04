@@ -1,0 +1,994 @@
+{
+ "p01": {
+  "outcome": "compiles",
+  "rules": [
+   "INST-34",
+   "INST-16"
+  ],
+  "why": "Access is not checked in an explicit instantiation, so the private names are allowed."
+ },
+ "p02": {
+  "outcome": "depends",
+  "rules": [
+   "INST-31",
+   "INST-32"
+  ],
+  "why": "A constexpr template used outside constant evaluation calls probe declared after use; GCC takes the end-of-unit declarations and runs, Clang and EDG reject (Q-0310)."
+ },
+ "p03": {
+  "outcome": "runs",
+  "rules": [
+   "INST-18"
+  ],
+  "why": "Each explicit instantiation follows an explicit specialization and has no effect, so get gives 2 and code<int> is 3."
+ },
+ "p04": {
+  "outcome": "reject",
+  "rules": [
+   "INST-3",
+   "INST-1"
+  ],
+  "why": "Every compiler instantiates the class when its pointer converts to void* in a call, and the static_assert fails."
+ },
+ "p05": {
+  "outcome": "runs",
+  "rules": [
+   "INST-31",
+   "INST-32"
+  ],
+  "why": "The function's point at the end of the unit sees lib::probe through argument-dependent lookup, and every compiler takes those declarations."
+ },
+ "p06": {
+  "outcome": "depends",
+  "rules": [
+   "INST-25"
+  ],
+  "why": "thread_local is allowed in an explicit instantiation; Clang and GCC accept, EDG rejects (Q-0233)."
+ },
+ "p07": {
+  "outcome": "compiles",
+  "rules": [
+   "INST-29",
+   "INST-16"
+  ],
+  "why": "An explicit instantiation definition can name a specialization with internal linkage."
+ },
+ "p08": {
+  "outcome": "depends",
+  "rules": [
+   "INST-25"
+  ],
+  "why": "An attribute after template is not allowed; Clang and EDG reject, GCC accepts (Q-0233)."
+ },
+ "p09": {
+  "outcome": "reject",
+  "rules": [
+   "INST-22"
+  ],
+  "why": "get is not a template, so the explicit instantiation names no template specialization."
+ },
+ "p10": {
+  "outcome": "reject",
+  "rules": [
+   "INST-17",
+   "INST-6"
+  ],
+  "why": "The explicit instantiation of the class instantiates size, whose body uses int::nothing."
+ },
+ "p11": {
+  "outcome": "reject",
+  "rules": [
+   "INST-1",
+   "INST-6"
+  ],
+  "why": "A member access through a pointer instantiates Box<int>, and its static_assert fails."
+ },
+ "p12": {
+  "outcome": "depends",
+  "rules": [
+   "INST-22"
+  ],
+  "why": "Leaving out the array bound is allowed; GCC and EDG accept, Clang rejects (Q-0236)."
+ },
+ "p13": {
+  "outcome": "reject",
+  "rules": [
+   "INST-21"
+  ],
+  "why": "Outside lib the name must be qualified; Clang and GCC reject, EDG accepts after the using-directive (Q-0235)."
+ },
+ "p14": {
+  "outcome": "reject",
+  "rules": [
+   "INST-8",
+   "INST-6"
+  ],
+  "why": "Reading zero<int> instantiates its initializer, which uses int::nothing."
+ },
+ "p15": {
+  "outcome": "reject",
+  "rules": [
+   "INST-25"
+  ],
+  "why": "constexpr is not allowed in an explicit instantiation."
+ },
+ "p16": {
+  "outcome": "reject",
+  "rules": [
+   "INST-20"
+  ],
+  "why": "An explicit instantiation of a class needs the class template's definition before it, also with extern."
+ },
+ "p17": {
+  "outcome": "runs",
+  "rules": [
+   "INST-26",
+   "INST-27"
+  ],
+  "why": "Explicit instantiation declarations can be repeated and come before the definition in the same unit."
+ },
+ "p18": {
+  "outcome": "reject",
+  "rules": [
+   "INST-20"
+  ],
+  "why": "The explicit instantiation definition of get needs the template's definition in the unit."
+ },
+ "p19": {
+  "outcome": "compiles",
+  "rules": [
+   "INST-7"
+  ],
+  "why": "decltype, sizeof, and noexcept of a call with a non-deduced return type do not instantiate make<int>."
+ },
+ "p20": {
+  "outcome": "reject",
+  "rules": [
+   "INST-22"
+  ],
+  "why": "The declared return type long is not the type of the specialization."
+ },
+ "p21": {
+  "outcome": "depends",
+  "rules": [
+   "INST-29"
+  ],
+  "why": "An explicit instantiation declaration of a class with internal linkage is not valid; Clang rejects, GCC and EDG accept (Q-0234)."
+ },
+ "p22": {
+  "outcome": "link-fail",
+  "rules": [
+   "INST-27",
+   "INST-28"
+  ],
+  "why": "get is inline and is made here, but put is not, and no unit has the explicit instantiation definition."
+ },
+ "p23": {
+  "outcome": "reject",
+  "rules": [
+   "INST-13"
+  ],
+  "why": "Box<int> and Box<char> both define the same friend hook()."
+ },
+ "p24": {
+  "outcome": "reject",
+  "rules": [
+   "INST-20"
+  ],
+  "why": "Box is declared and not defined, so the explicit instantiation of the class is not valid."
+ },
+ "p25": {
+  "outcome": "reject",
+  "rules": [
+   "INST-25"
+  ],
+  "why": "inline is not allowed in an explicit instantiation."
+ },
+ "p26": {
+  "outcome": "reject",
+  "rules": [
+   "INST-6",
+   "INST-5"
+  ],
+  "why": "The unscoped member enumeration is made with the class, and int::nothing is not valid."
+ },
+ "p27": {
+  "outcome": "reject",
+  "rules": [
+   "INST-20"
+  ],
+  "why": "The variable template is declared and never defined, so the explicit instantiation definition is not valid."
+ },
+ "p28": {
+  "outcome": "compiles",
+  "rules": [
+   "INST-22"
+  ],
+  "why": "The noexcept matches for run, and walk leaves the exception specification out, which is allowed."
+ },
+ "p29": {
+  "outcome": "reject",
+  "rules": [
+   "INST-1"
+  ],
+  "why": "sizeof instantiates Box<int>, and its static_assert fails."
+ },
+ "p30": {
+  "outcome": "reject",
+  "rules": [
+   "INST-1",
+   "DED-15"
+  ],
+  "why": "Deduction against Base<T>* searches the bases of Derived<int>, which instantiates it."
+ },
+ "p31": {
+  "outcome": "compiles",
+  "rules": [
+   "INST-9"
+  ],
+  "why": "The call gives the argument, so the default is not instantiated."
+ },
+ "p32": {
+  "outcome": "reject",
+  "rules": [
+   "INST-15",
+   "TR-13"
+  ],
+  "why": "depth<N> needs depth<N+1> without end."
+ },
+ "p33": {
+  "outcome": "depends",
+  "rules": [
+   "INST-22"
+  ],
+  "why": "The deduced type int names the variable; Clang and GCC accept, EDG rejects (Q-0256)."
+ },
+ "p34": {
+  "outcome": "depends",
+  "rules": [
+   "INST-21"
+  ],
+  "why": "An unqualified variable template name outside its namespace; Clang and EDG accept, GCC rejects (Q-0235)."
+ },
+ "p35": {
+  "outcome": "reject",
+  "rules": [
+   "INST-7"
+  ],
+  "why": "Taking the address instantiates make<int>, whose body uses int::nothing."
+ },
+ "p36": {
+  "outcome": "runs",
+  "rules": [
+   "INST-31",
+   "INST-36"
+  ],
+  "why": "The first use of the call operator is in use(), after probe is declared, so it finds probe and returns 4."
+ },
+ "p37": {
+  "outcome": "depends",
+  "rules": [
+   "INST-22"
+  ],
+  "why": "The explicit instantiation adds noexcept that the template lacks; Clang and EDG reject, GCC accepts (Q-0255)."
+ },
+ "p38": {
+  "outcome": "reject",
+  "rules": [
+   "INST-1"
+  ],
+  "why": "An object instantiates the class, and its static_assert fails."
+ },
+ "p39": {
+  "outcome": "depends",
+  "rules": [
+   "INST-5"
+  ],
+  "why": "The scoped enumeration is declared only, so Clang and EDG accept; GCC instantiates the enumerators and rejects (Q-0232)."
+ },
+ "p40": {
+  "outcome": "compiles",
+  "rules": [
+   "INST-21"
+  ],
+  "why": "Each explicit instantiation is in lib or uses a qualified name from the enclosing global namespace."
+ },
+ "p41": {
+  "outcome": "depends",
+  "rules": [
+   "INST-5"
+  ],
+  "why": "The inline static member's initializer waits for a use, so Clang and GCC accept; EDG instantiates it and rejects (Q-0231)."
+ },
+ "p42": {
+  "outcome": "reject",
+  "rules": [
+   "INST-21"
+  ],
+  "why": "An explicit instantiation must be at namespace scope, not in a class."
+ },
+ "p43": {
+  "outcome": "reject",
+  "rules": [
+   "INST-6"
+  ],
+  "why": "The static member declared without a function declarator gets a function type."
+ },
+ "p44": {
+  "outcome": "reject",
+  "rules": [
+   "INST-12"
+  ],
+  "why": "The local class's default member initializer is instantiated with run<int>."
+ },
+ "p45": {
+  "outcome": "link-fail",
+  "rules": [
+   "INST-27",
+   "INST-28"
+  ],
+  "why": "size is not inline, so the unit calls a definition that no unit makes."
+ },
+ "p46": {
+  "outcome": "reject",
+  "rules": [
+   "INST-7"
+  ],
+  "why": "The call instantiates measure<int>, and int::count is not valid."
+ },
+ "p47": {
+  "outcome": "runs",
+  "rules": [
+   "INST-8"
+  ],
+  "why": "count is never used, so its initializer never runs and calls stays 0."
+ },
+ "p48": {
+  "outcome": "reject",
+  "rules": [
+   "INST-19"
+  ],
+  "why": "An explicit specialization after an explicit instantiation declaration; Clang and GCC reject, EDG accepts (Q-0237)."
+ },
+ "p49": {
+  "outcome": "reject",
+  "rules": [
+   "INST-24"
+  ],
+  "why": "The destructor is implicitly declared."
+ },
+ "p50": {
+  "outcome": "depends",
+  "rules": [
+   "INST-6"
+  ],
+  "why": "The two member partial specializations become the same for int; Clang rejects, GCC and EDG accept (Q-0251)."
+ },
+ "p51": {
+  "outcome": "link-fail",
+  "rules": [
+   "INST-27",
+   "INST-28"
+  ],
+  "why": "Without -O the inline size is still called out of line, and no unit has the definition."
+ },
+ "p52": {
+  "outcome": "reject",
+  "rules": [
+   "INST-8"
+  ],
+  "why": "Reading count instantiates its initializer, which uses int::nothing."
+ },
+ "p53": {
+  "outcome": "runs",
+  "rules": [
+   "INST-20",
+   "INST-27"
+  ],
+  "why": "The second unit's explicit instantiation may come before the template's definition, so the definition exists."
+ },
+ "p54": {
+  "outcome": "reject",
+  "rules": [
+   "INST-10"
+  ],
+  "why": "The aggregate initialization does not initialize second, so its default initializer is instantiated."
+ },
+ "p55": {
+  "outcome": "reject",
+  "rules": [
+   "INST-26"
+  ],
+  "why": "Two explicit instantiation definitions of one specialization in one unit."
+ },
+ "p56": {
+  "outcome": "compiles",
+  "rules": [
+   "INST-10"
+  ],
+  "why": "The aggregate initialization gives second, so the default initializer is not used."
+ },
+ "p57": {
+  "outcome": "reject",
+  "rules": [
+   "INST-7"
+  ],
+  "why": "The call instantiates get, whose body uses int::nothing."
+ },
+ "p58": {
+  "outcome": "reject",
+  "rules": [
+   "INST-31",
+   "INST-33"
+  ],
+  "why": "The constant initialization of value needs probe, which is declared after the point of instantiation (Q-0257)."
+ },
+ "p59": {
+  "outcome": "runs",
+  "rules": [
+   "INST-35"
+  ],
+  "why": "An explicit instantiation in one unit and an explicit specialization in the other link with no message, and main accepts either result."
+ },
+ "p60": {
+  "outcome": "runs",
+  "rules": [
+   "INST-32"
+  ],
+  "why": "Either point of instantiation gives 1 or 2, and main accepts both."
+ },
+ "p61": {
+  "outcome": "reject",
+  "rules": [
+   "INST-23"
+  ],
+  "why": "The explicit instantiation of a class has no class key."
+ },
+ "p62": {
+  "outcome": "runs",
+  "rules": [
+   "INST-36"
+  ],
+  "why": "Each specialization has its own static counter and closure type, so a=3, b=1, c=2, d=1."
+ },
+ "p63": {
+  "outcome": "compiles",
+  "rules": [
+   "INST-10"
+  ],
+  "why": "The constructor initializes width, so its default initializer is not used."
+ },
+ "p64": {
+  "outcome": "runs",
+  "rules": [
+   "INST-27",
+   "INST-28"
+  ],
+  "why": "The second unit has every explicit instantiation definition that the first unit declares."
+ },
+ "p65": {
+  "outcome": "reject",
+  "rules": [
+   "INST-25"
+  ],
+  "why": "An attribute before template is rejected by every compiler."
+ },
+ "p66": {
+  "outcome": "reject",
+  "rules": [
+   "INST-12"
+  ],
+  "why": "The local class's exception specification is instantiated with run<int>."
+ },
+ "p67": {
+  "outcome": "runs",
+  "rules": [
+   "INST-9"
+  ],
+  "why": "Only the default of z is used, so y's default is not instantiated, and the sum is 5."
+ },
+ "p68": {
+  "outcome": "reject",
+  "rules": [
+   "INST-15"
+  ],
+  "why": "Count<N> needs Count<N+1> without end."
+ },
+ "p69": {
+  "outcome": "reject",
+  "rules": [
+   "INST-30",
+   "INST-33"
+  ],
+  "why": "Kind<lib::Item> is instantiated before probe is declared, so the decltype finds no probe."
+ },
+ "p70": {
+  "outcome": "compiles",
+  "rules": [
+   "INST-16",
+   "INST-17"
+  ],
+  "why": "Only get and count are explicitly instantiated, so bad's body is never made."
+ },
+ "p71": {
+  "outcome": "depends",
+  "rules": [
+   "INST-12"
+  ],
+  "why": "Clang and EDG instantiate the local member's default argument with run<int> and reject; GCC does not (Q-0253)."
+ },
+ "p72": {
+  "outcome": "compiles",
+  "rules": [
+   "INST-1",
+   "DED-15"
+  ],
+  "why": "Deduction searches the bases of Derived<int> and finds T = int."
+ },
+ "p73": {
+  "outcome": "runs",
+  "rules": [
+   "INST-30",
+   "INST-31"
+  ],
+  "why": "probe is declared before the point of instantiation, so value is 4."
+ },
+ "p74": {
+  "outcome": "reject",
+  "rules": [
+   "INST-22"
+  ],
+  "why": "A function with a deduced return type must be named with auto."
+ },
+ "p75": {
+  "outcome": "reject",
+  "rules": [
+   "INST-22"
+  ],
+  "why": "No template get is declared before the explicit instantiation."
+ },
+ "p76": {
+  "outcome": "reject",
+  "rules": [
+   "INST-16",
+   "INST-17"
+  ],
+  "why": "The explicit instantiation of the member class Inner instantiates get, whose body uses int::nothing."
+ },
+ "p77": {
+  "outcome": "compiles",
+  "rules": [
+   "INST-2"
+  ],
+  "why": "Pointers, references, a function declaration, an alias, a template argument, a comparison, and a cast do not instantiate Box<int>."
+ },
+ "p78": {
+  "outcome": "reject",
+  "rules": [
+   "INST-23"
+  ],
+  "why": "The key union is only for a union template."
+ },
+ "p79": {
+  "outcome": "depends",
+  "rules": [
+   "INST-20"
+  ],
+  "why": "The variable's definition can follow the explicit instantiation; Clang and EDG accept, GCC rejects (Q-0254)."
+ },
+ "p80": {
+  "outcome": "compiles",
+  "rules": [
+   "INST-17"
+  ],
+  "why": "The explicit instantiation skips the member template, the undefined later, the specialized size, and get's default argument."
+ },
+ "p81": {
+  "outcome": "depends",
+  "rules": [
+   "INST-29"
+  ],
+  "why": "An explicit instantiation declaration of a static variable template is not valid; Clang rejects, GCC and EDG accept (Q-0234)."
+ },
+ "p82": {
+  "outcome": "reject",
+  "rules": [
+   "INST-1"
+  ],
+  "why": "The conversion to a base pointer instantiates Child<int>."
+ },
+ "p83": {
+  "outcome": "reject",
+  "rules": [
+   "INST-1"
+  ],
+  "why": "delete through a pointer instantiates Box<int>."
+ },
+ "p84": {
+  "outcome": "compiles",
+  "rules": [
+   "INST-2"
+  ],
+  "why": "A pointer to Wrapper<NoRun> does not instantiate it."
+ },
+ "p85": {
+  "outcome": "depends",
+  "rules": [
+   "INST-29"
+  ],
+  "why": "An explicit instantiation declaration of a static function template; GCC accepts, Clang and EDG reject (Q-0234)."
+ },
+ "p86": {
+  "outcome": "compiles",
+  "rules": [
+   "INST-34"
+  ],
+  "why": "Access is not checked for the names in an explicit instantiation."
+ },
+ "p87": {
+  "outcome": "reject",
+  "rules": [
+   "INST-21"
+  ],
+  "why": "The namespace other does not enclose lib."
+ },
+ "p88": {
+  "outcome": "reject",
+  "rules": [
+   "INST-31",
+   "INST-32"
+  ],
+  "why": "The constant evaluation needs probe, declared after the first point of instantiation, and every compiler rejects (Q-0257)."
+ },
+ "p89": {
+  "outcome": "reject",
+  "rules": [
+   "INST-21"
+  ],
+  "why": "Every compiler rejects an unqualified function template name outside its namespace."
+ },
+ "p90": {
+  "outcome": "compiles",
+  "rules": [
+   "INST-5",
+   "INST-10",
+   "INST-9"
+  ],
+  "why": "The bad parts wait for a use, the constructor sets width, and get(2) gives its argument."
+ },
+ "p91": {
+  "outcome": "runs",
+  "rules": [
+   "INST-32"
+  ],
+  "why": "The two units see different probe sets, which needs no diagnostic, and main accepts 1 or 2."
+ },
+ "p92": {
+  "outcome": "compiles",
+  "rules": [
+   "INST-8"
+  ],
+  "why": "decltype does not instantiate the variable template's initializer."
+ },
+ "p93": {
+  "outcome": "depends",
+  "rules": [
+   "INST-22"
+  ],
+  "why": "The stated bound 4 differs from the specialization's; Clang rejects, GCC accepts, and EDG accepts since the template has no bound (Q-0346)."
+ },
+ "p94": {
+  "outcome": "reject",
+  "rules": [
+   "INST-1"
+  ],
+  "why": "A function definition that returns Box<int> by value instantiates it."
+ },
+ "p95": {
+  "outcome": "reject",
+  "rules": [
+   "INST-23"
+  ],
+  "why": "An explicit instantiation has no initializer."
+ },
+ "p96": {
+  "outcome": "reject",
+  "rules": [
+   "INST-7"
+  ],
+  "why": "decltype of a call that needs the deduced return type instantiates make<int>."
+ },
+ "p97": {
+  "outcome": "reject",
+  "rules": [
+   "INST-7"
+  ],
+  "why": "A braced initializer in decltype names the constexpr function, which instantiates it."
+ },
+ "p98": {
+  "outcome": "depends",
+  "rules": [
+   "INST-7"
+  ],
+  "why": "Clang and GCC instantiate the function named in the braced conditional and reject; EDG does not (Q-0252)."
+ },
+ "p99": {
+  "outcome": "compiles",
+  "rules": [
+   "INST-7"
+  ],
+  "why": "No braces, so decltype does not instantiate fail<int>."
+ },
+ "p100": {
+  "outcome": "reject",
+  "rules": [
+   "INST-23"
+  ],
+  "why": "An explicit instantiation of a function has one declarator."
+ },
+ "p101": {
+  "outcome": "runs",
+  "rules": [
+   "INST-30",
+   "INST-31"
+  ],
+  "why": "Info<lib::Item>'s point is just before read's point after main, so probe is visible."
+ },
+ "p102": {
+  "outcome": "depends",
+  "rules": [
+   "INST-22"
+  ],
+  "why": "The stated type long differs; GCC accepts and keeps int, Clang and EDG reject (Q-0346)."
+ },
+ "p103": {
+  "outcome": "reject",
+  "rules": [
+   "INST-9"
+  ],
+  "why": "A call to the explicit specialization that leaves out y instantiates the template's default, which uses int::nothing."
+ },
+ "p104": {
+  "outcome": "reject",
+  "rules": [
+   "INST-9"
+  ],
+  "why": "The call uses the default argument, which uses int::nothing."
+ },
+ "p105": {
+  "outcome": "compiles",
+  "rules": [
+   "INST-9",
+   "INST-17"
+  ],
+  "why": "Explicit instantiations do not instantiate default arguments."
+ },
+ "p106": {
+  "outcome": "compiles",
+  "rules": [
+   "INST-27"
+  ],
+  "why": "Constant-usable variables and the class are still instantiated after the explicit instantiation declarations."
+ },
+ "p107": {
+  "outcome": "reject",
+  "rules": [
+   "INST-1"
+  ],
+  "why": "A function definition with a Box<int> parameter instantiates the class."
+ },
+ "p108": {
+  "outcome": "reject",
+  "rules": [
+   "INST-3"
+  ],
+  "why": "Every compiler instantiates the class when its pointer converts to void* in a call."
+ },
+ "p109": {
+  "outcome": "runs",
+  "rules": [
+   "INST-31"
+  ],
+  "why": "probe is declared before use, so the call finds it."
+ },
+ "p110": {
+  "outcome": "reject",
+  "rules": [
+   "INST-11"
+  ],
+  "why": "Every compiler instantiates the unused virtual function when an object is defined."
+ },
+ "p111": {
+  "outcome": "reject",
+  "rules": [
+   "INST-21"
+  ],
+  "why": "An explicit instantiation must be at namespace scope."
+ },
+ "p112": {
+  "outcome": "compiles",
+  "rules": [
+   "INST-22"
+  ],
+  "why": "Each form matches its specialization, with deduced arguments, auto, and the matching bound."
+ },
+ "p113": {
+  "outcome": "compiles",
+  "rules": [
+   "INST-27"
+  ],
+  "why": "A constexpr function and the class are still instantiated after the explicit instantiation declarations."
+ },
+ "p114": {
+  "outcome": "reject",
+  "rules": [
+   "INST-19"
+  ],
+  "why": "An explicit specialization must not follow an explicit instantiation of it."
+ },
+ "p115": {
+  "outcome": "reject",
+  "rules": [
+   "INST-1"
+  ],
+  "why": "A call to a function that returns Box<int> instantiates the class."
+ },
+ "p116": {
+  "outcome": "compiles",
+  "rules": [
+   "INST-2",
+   "INST-1"
+  ],
+  "why": "The pointer needs no definition, and the object comes after the definition."
+ },
+ "p117": {
+  "outcome": "reject",
+  "rules": [
+   "INST-12"
+  ],
+  "why": "The local class's member function body is instantiated with run<int>."
+ },
+ "p118": {
+  "outcome": "runs",
+  "rules": [
+   "INST-35"
+  ],
+  "why": "Two units with an explicit instantiation definition link with no message."
+ },
+ "p119": {
+  "outcome": "compiles",
+  "rules": [
+   "INST-31",
+   "INST-32"
+  ],
+  "why": "Every compiler accepts a virtual function whose call finds a declaration after the class's point."
+ },
+ "p120": {
+  "outcome": "compiles",
+  "rules": [
+   "INST-23"
+  ],
+  "why": "struct and class are both allowed for a class template."
+ },
+ "p121": {
+  "outcome": "depends",
+  "rules": [
+   "INST-25"
+  ],
+  "why": "static is not allowed; Clang and EDG reject, GCC accepts (Q-0233)."
+ },
+ "p122": {
+  "outcome": "runs",
+  "rules": [
+   "INST-18"
+  ],
+  "why": "The explicit instantiations follow explicit specializations and have no effect."
+ },
+ "p123": {
+  "outcome": "compiles",
+  "rules": [
+   "INST-5"
+  ],
+  "why": "Every compiler accepts an explicit specialization of a deleted member after the class is instantiated."
+ },
+ "p124": {
+  "outcome": "reject",
+  "rules": [
+   "INST-26"
+  ],
+  "why": "An explicit instantiation declaration must not follow the definition."
+ },
+ "p125": {
+  "outcome": "runs",
+  "rules": [
+   "INST-36"
+  ],
+  "why": "Each specialization has its own thread_local and closure type, so a=2 and b=1."
+ },
+ "p126": {
+  "outcome": "compiles",
+  "rules": [
+   "INST-11"
+  ],
+  "why": "No compiler instantiates the unused virtual function for sizeof."
+ },
+ "p127": {
+  "outcome": "reject",
+  "rules": [
+   "INST-10"
+  ],
+  "why": "The constructor does not initialize width, so its default initializer is instantiated."
+ },
+ "p128": {
+  "outcome": "depends",
+  "rules": [
+   "INST-7"
+  ],
+  "why": "GCC instantiates a constexpr function in sizeof without braces and rejects; Clang and EDG accept (Q-0252)."
+ },
+ "p129": {
+  "outcome": "link-fail",
+  "rules": [
+   "INST-27",
+   "INST-28"
+  ],
+  "why": "zero<int> and count are not constant-usable, so their definitions are expected from another unit that has none."
+ },
+ "p130": {
+  "outcome": "reject",
+  "rules": [
+   "INST-27"
+  ],
+  "why": "get is defined in the class, so it is inline and still instantiated, and its body uses int::nothing."
+ },
+ "p131": {
+  "outcome": "reject",
+  "rules": [
+   "INST-4"
+  ],
+  "why": "Later is declared and not defined where the object needs it."
+ },
+ "p132": {
+  "outcome": "reject",
+  "rules": [
+   "INST-7"
+  ],
+  "why": "The call instantiates make<int>, whose body uses int::nothing."
+ },
+ "p133": {
+  "outcome": "runs",
+  "rules": [
+   "INST-13"
+  ],
+  "why": "The two friends take different parameter types, so they are two functions."
+ },
+ "p134": {
+  "outcome": "reject",
+  "rules": [
+   "INST-12"
+  ],
+  "why": "The local enumeration is instantiated with run<int>, and int::nothing is not valid."
+ },
+ "p135": {
+  "outcome": "reject",
+  "rules": [
+   "INST-6"
+  ],
+  "why": "The member declaration made with the class uses int::type."
+ },
+ "p136": {
+  "outcome": "reject",
+  "rules": [
+   "INST-6",
+   "DCL-19"
+  ],
+  "why": "The body of last<1> declares an array with bound 0."
+ },
+ "p137": {
+  "outcome": "reject",
+  "rules": [
+   "INST-24"
+  ],
+  "why": "The default constructor is implicitly declared."
+ }
+}

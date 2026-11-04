@@ -1,0 +1,307 @@
+{
+ "p01": {
+  "outcome": "runs",
+  "rules": [
+   "SEQ-5",
+   "REF-5"
+  ],
+  "why": "The default argument's temporary belongs to the full expression of the call, so it ends before the next statement writes 9."
+ },
+ "p02": {
+  "outcome": "compiles",
+  "rules": [
+   "SEQ-4"
+  ],
+  "why": "Two unsequenced reads of a volatile object are undefined, but the Evidence says no compiler diagnoses them and the program has no main."
+ },
+ "p03": {
+  "outcome": "runs",
+  "rules": [
+   "SEQ-8",
+   "SEQ-1"
+  ],
+  "why": "The operands of built-in * have an unspecified order and the calls do not interleave, so either order passes the check."
+ },
+ "p04": {
+  "outcome": "runs",
+  "rules": [
+   "SEQ-8",
+   "SEQ-1"
+  ],
+  "why": "A member operator- has an unspecified operand order and the program accepts both orders."
+ },
+ "p05": {
+  "outcome": "runs",
+  "rules": [
+   "SEQ-2"
+  ],
+  "why": "For a.*b the object is evaluated before the member pointer."
+ },
+ "p06": {
+  "outcome": "runs",
+  "rules": [
+   "SEQ-8",
+   "SEQ-1"
+  ],
+  "why": "The two calls do not overlap, so they return 0 and 1 in some order and the sum is 1."
+ },
+ "p07": {
+  "outcome": "runs",
+  "rules": [
+   "SEQ-6",
+   "SEQ-2"
+  ],
+  "why": "An overloaded ->* keeps the built-in order, object first."
+ },
+ "p08": {
+  "outcome": "compiles",
+  "rules": [
+   "SEQ-5",
+   "CE-1"
+  ],
+  "why": "Plain sequential statements in a constexpr function; the static_assert holds and there is no main."
+ },
+ "p09": {
+  "outcome": "runs",
+  "rules": [
+   "SEQ-6",
+   "SHF-8",
+   "SEQ-1"
+  ],
+  "why": "Operator notation keeps the shift order, and the explicit call accepts either order."
+ },
+ "p10": {
+  "outcome": "runs",
+  "rules": [
+   "SEQ-2"
+  ],
+  "why": "The argument's side effect is complete before the body runs, so the body sees g == 1 and returns 10."
+ },
+ "p11": {
+  "outcome": "runs",
+  "rules": [
+   "SEQ-1"
+  ],
+  "why": "Arguments are evaluated whole in an unspecified order, so r is 1 or 10 and i is 2."
+ },
+ "p12": {
+  "outcome": "runs",
+  "rules": [
+   "SEQ-2"
+  ],
+  "why": "In a[b] the array operand comes first."
+ },
+ "p13": {
+  "outcome": "runs",
+  "rules": [
+   "SEQ-8",
+   "DCMP-6"
+  ],
+  "why": "A reversed comparison candidate has an unspecified operand order and both orders pass."
+ },
+ "p14": {
+  "outcome": "runs",
+  "rules": [
+   "SEQ-1"
+  ],
+  "why": "Indeterminately sequenced arguments give pair(0,1) or pair(0,0); both pass."
+ },
+ "p15": {
+  "outcome": "runs",
+  "rules": [
+   "SEQ-6",
+   "SEQ-2"
+  ],
+  "why": "An overloaded += keeps the assignment order, so the right operand is evaluated first."
+ },
+ "p16": {
+  "outcome": "undefined",
+  "rules": [
+   "SEQ-4"
+  ],
+  "why": "Two unsequenced writes to count; no sanitizer or flag stops it."
+ },
+ "p17": {
+  "outcome": "runs",
+  "rules": [
+   "SEQ-6",
+   "SHF-8"
+  ],
+  "why": "An overloaded << keeps the shift order, left to right."
+ },
+ "p18": {
+  "outcome": "runs",
+  "rules": [
+   "SEQ-2"
+  ],
+  "why": "The function expression is evaluated before the arguments."
+ },
+ "p19": {
+  "outcome": "runs",
+  "rules": [
+   "SEQ-1"
+  ],
+  "why": "Argument order is unspecified and the program accepts both orders."
+ },
+ "p20": {
+  "outcome": "runs",
+  "rules": [
+   "SEQ-2"
+  ],
+  "why": "Assignment evaluates the right operand first, so z, then y, then x."
+ },
+ "p21": {
+  "outcome": "runs",
+  "rules": [
+   "SEQ-2"
+  ],
+  "why": "The object expression of a member call is part of the function and comes before the arguments."
+ },
+ "p22": {
+  "outcome": "runs",
+  "rules": [
+   "SEQ-8"
+  ],
+  "why": "Built-in & has an unspecified operand order and both orders pass."
+ },
+ "p23": {
+  "outcome": "runs",
+  "rules": [
+   "SEQ-2",
+   "LIST-7"
+  ],
+  "why": "Elements of a braced list are evaluated in order, so a is 0 and b is 1."
+ },
+ "p24": {
+  "outcome": "reject",
+  "rules": [
+   "SEQ-7",
+   "SEQ-4"
+  ],
+  "why": "i + i++ is an unsequenced read and write; Clang and GCC warn and -Werror makes the warning an error (EDG skips the test)."
+ },
+ "p25": {
+  "outcome": "runs",
+  "rules": [
+   "SEQ-1",
+   "SEQ-9",
+   "CLS-13"
+  ],
+  "why": "The copy into self, the copy into the second parameter, and next() each add 1, in any order, so count is 3."
+ },
+ "p26": {
+  "outcome": "runs",
+  "rules": [
+   "SEQ-6",
+   "SEQ-2"
+  ],
+  "why": "An overloaded [] keeps the subscript order, table first."
+ },
+ "p27": {
+  "outcome": "runs",
+  "rules": [
+   "SEQ-6",
+   "SEQ-2"
+  ],
+  "why": "An overloaded = keeps the assignment order, right operand first."
+ },
+ "p28": {
+  "outcome": "runs",
+  "rules": [
+   "SEQ-2"
+  ],
+  "why": "Built-in compound assignment evaluates the right operand first."
+ },
+ "p29": {
+  "outcome": "runs",
+  "rules": [
+   "SEQ-11",
+   "CE-1"
+  ],
+  "why": "Each operand of op=, ++ and -- is evaluated once, the structured binding, range and switch condition are evaluated once, so 610 and 3312 hold at translation and at run time."
+ },
+ "p30": {
+  "outcome": "reject",
+  "rules": [
+   "SEQ-7",
+   "SEQ-4"
+  ],
+  "why": "i++ + i++ makes Clang and GCC warn about unsequenced modifications, and -Werror rejects it."
+ },
+ "p31": {
+  "outcome": "runs",
+  "rules": [
+   "SEQ-2"
+  ],
+  "why": "The right side of the assignment is complete before the write, so i is 2 and j is 3."
+ },
+ "p32": {
+  "outcome": "runs",
+  "rules": [
+   "SEQ-2"
+  ],
+  "why": "The right side reads i (0) before the left side increments it, so cells[0] becomes 0."
+ },
+ "p33": {
+  "outcome": "runs",
+  "rules": [
+   "SEQ-8"
+  ],
+  "why": "Built-in < has an unspecified order and both orders pass."
+ },
+ "p34": {
+  "outcome": "undefined",
+  "rules": [
+   "SEQ-4",
+   "MUL-14"
+  ],
+  "why": "An unsequenced write and read of i in the operands of *."
+ },
+ "p35": {
+  "outcome": "compiles",
+  "rules": [
+   "SEQ-4"
+  ],
+  "why": "Adjacent bit-fields share a memory location, so the call would be undefined, but the compilers do not warn and there is no main."
+ },
+ "p36": {
+  "outcome": "runs",
+  "rules": [
+   "SEQ-11",
+   "RFOR-3"
+  ],
+  "why": "Each compound assignment and increment calls at() once, and the range expression is evaluated once."
+ },
+ "p37": {
+  "outcome": "runs",
+  "rules": [
+   "SEQ-9",
+   "THR-1",
+   "NEW-14"
+  ],
+  "why": "Each listed construct calls the counted function the stated number of times."
+ },
+ "p38": {
+  "outcome": "runs",
+  "rules": [
+   "SEQ-5"
+  ],
+  "why": "Each full expression completes before the next."
+ },
+ "p39": {
+  "outcome": "runs",
+  "rules": [
+   "SEQ-9",
+   "THR-1"
+  ],
+  "why": "The prvalue initializes the exception object directly, so two constructors and two destructors give 4, and the overloaded ~ adds 1."
+ },
+ "p40": {
+  "outcome": "runs",
+  "rules": [
+   "SEQ-1",
+   "SEQ-5"
+  ],
+  "why": "The explicit and default arguments are evaluated in an unspecified order and the program accepts both."
+ }
+}

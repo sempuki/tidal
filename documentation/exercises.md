@@ -171,7 +171,7 @@ done (section 8). Decision 0055, item E, orders the next exercises:
    and is scored on the layout tests (I1, done).
 3. Predict batches on the pages changed after their batch, on constant
    evaluation and evaluation order, and on the four weakest pages whose
-   only batch showed test names.
+   only batch showed test names (R8, done).
 4. Propose X17 to X20 on P1, P2, P17, and P18 (done).
 
 Each phase runs at least one exercise by use (Write, Port, or
@@ -253,6 +253,10 @@ Foundations batch and the 11 templates pages.
 | R-overload-resolution | done, 171/171 (166 cite a rule of the test), without test names; findings RPA-1 to RPA-10 | `reports/clean-room/R-overloading/` |
 | R-conversion-sequences | done, 129/129 (122 cite a rule of the test), without test names; findings RPB-1 to RPB-8 | `reports/clean-room/R-overloading/` |
 | R-storage, R-language-support | done, 141/141 (138 cite a rule of the test), without test names; findings RPC-1 to RPC-11 | `reports/clean-room/R-foundations/` |
+| R8-constant-evaluation, R8-evaluation-order | done, 192/194 (186 cite a rule of the test), without test names; findings R8A-1 to R8A-10 | `reports/clean-room/R8/` |
+| R8-constraints, R8-instantiation | done, 268/268 (266 cite a rule of the test), without test names; findings R8B-1 to R8B-10 | `reports/clean-room/R8/` |
+| R8-dependent-names, R8-storage | done, 220/220 (214 cite a rule of the test), without test names; findings R8C-1 to R8C-11 | `reports/clean-room/R8/` |
+| R8-unwinding, R8-names | done, 299/300 (294 cite a rule of the test), without test names; findings R8D-1 to R8D-8 | `reports/clean-room/R8/` |
 | R-types, R-odr, R-keywords | done, 227/227 (224 cite a rule of the test), without test names; findings RPD-1 to RPD-11 | `reports/clean-room/R-foundations/` |
 | R-handlers, R-throw, R-unwinding | done, 171/172 (165 cite a rule of the test), without test names; findings RPE-1 to RPE-6 | `reports/clean-room/R-exceptions/` |
 | All others | planned | |

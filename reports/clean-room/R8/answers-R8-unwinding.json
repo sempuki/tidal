@@ -1,0 +1,439 @@
+{
+ "p01": {
+  "outcome": "run-fail",
+  "rules": [
+   "UNW-5",
+   "UNW-7",
+   "UNW-10"
+  ],
+  "why": "The exception reaches the noexcept boundary of closed, whose own object is not destroyed, so _Exit never runs and the program aborts."
+ },
+ "p02": {
+  "outcome": "run-fail",
+  "rules": [
+   "UNW-5",
+   "UNW-10"
+  ],
+  "why": "A throw from a noexcept function ends the program with SIGABRT and no static object is destroyed."
+ },
+ "p03": {
+  "outcome": "runs",
+  "rules": [
+   "UNW-3"
+  ],
+  "why": "The failed new releases the storage once through the global sized or unsized form, and both are counted."
+ },
+ "p04": {
+  "outcome": "runs",
+  "rules": [
+   "UNW-3"
+  ],
+  "why": "The class declares no deallocation function, so the global one runs once."
+ },
+ "p05": {
+  "outcome": "runs",
+  "rules": [
+   "UNW-4"
+  ],
+  "why": "The first initialization throws, the second call retries and succeeds, and the third call does not initialize again; trace is 15."
+ },
+ "p06": {
+  "outcome": "depends",
+  "rules": [
+   "UNW-3"
+  ],
+  "why": "UNW-3 asks for the sized form for a single object of complete type; Clang 18 calls the unsized form (run-fail), the others the sized form (runs)."
+ },
+ "p07": {
+  "outcome": "runs",
+  "rules": [
+   "UNW-2"
+  ],
+  "why": "The completed base B is destroyed when the member Bad throws, so trace is 1, 1, 4."
+ },
+ "p08": {
+  "outcome": "runs",
+  "rules": [
+   "UNW-1"
+  ],
+  "why": "b and a end in reverse order before the handler marks 7."
+ },
+ "p09": {
+  "outcome": "runs",
+  "rules": [
+   "UNW-2"
+  ],
+  "why": "The two initialized captures end in reverse (the copy 15, then 6), then the block's p (5)."
+ },
+ "p10": {
+  "outcome": "run-fail",
+  "rules": [
+   "DTOR-4",
+   "UNW-5"
+  ],
+  "why": "The destructor is noexcept by default, so its throw ends the program."
+ },
+ "p11": {
+  "outcome": "depends",
+  "rules": [
+   "UNW-3"
+  ],
+  "why": "An array whose element type has a destructor uses the sized form; Clang 18 calls the unsized form (run-fail), the others the sized form (runs)."
+ },
+ "p12": {
+  "outcome": "runs",
+  "rules": [
+   "DTOR-4",
+   "UNW-6"
+  ],
+  "why": "The member's noexcept(false) destructor makes ~Outer potentially throwing, so the throw reaches the handler."
+ },
+ "p13": {
+  "outcome": "depends",
+  "rules": [
+   "UNW-1"
+  ],
+  "why": "GCC destroys the built result after the locals (trace 219, runs); Clang never destroys the result (trace 21, run-fail), Q-0365."
+ },
+ "p14": {
+  "outcome": "runs",
+  "rules": [
+   "UNW-3"
+  ],
+  "why": "The class's own operator delete releases the storage once."
+ },
+ "p15": {
+  "outcome": "runs",
+  "rules": [
+   "UNW-2",
+   "UNW-6"
+  ],
+  "why": "After the destructor throws, the members b and a are still destroyed in reverse before the handler."
+ },
+ "p16": {
+  "outcome": "reject",
+  "rules": [
+   "UNW-11"
+  ],
+  "why": "The cleanup for the placement form with an extra size parameter selects the class's sized usual deallocation function."
+ },
+ "p17": {
+  "outcome": "runs",
+  "rules": [
+   "UNW-3"
+  ],
+  "why": "No deallocation function matches the Tag placement form, so the storage is not released and freed stays 0."
+ },
+ "p18": {
+  "outcome": "depends",
+  "rules": [
+   "UNW-1"
+  ],
+  "why": "GCC destroys the result before the handler so all counts match (runs); Clang never destroys the first result and returns 10 (run-fail), Q-0365."
+ },
+ "p19": {
+  "outcome": "depends",
+  "rules": [
+   "UNW-8"
+  ],
+  "why": "With -Wall -Werror, Clang warns about the throw that catch(long) cannot match and rejects; GCC gives no warning and compiles; EDG skips."
+ },
+ "p20": {
+  "outcome": "run-fail",
+  "rules": [
+   "UNW-5",
+   "UNW-10"
+  ],
+  "why": "An exception leaves main, so the program aborts."
+ },
+ "p21": {
+  "outcome": "runs",
+  "rules": [
+   "UNW-2"
+  ],
+  "why": "The aggregate's initialized members b and a are destroyed in reverse when boom throws."
+ },
+ "p22": {
+  "outcome": "compiles",
+  "rules": [
+   "UNW-8"
+  ],
+  "why": "Every throw has a matching handler in the function, so no warning fires and -Werror has nothing to reject."
+ },
+ "p23": {
+  "outcome": "depends",
+  "rules": [
+   "UNW-2"
+  ],
+  "why": "The temporary bound to the reference member ends before a (8, then 7) on Clang and GCC 16 (runs); GCC 14 differs (run-fail)."
+ },
+ "p24": {
+  "outcome": "runs",
+  "rules": [
+   "UNW-7"
+  ],
+  "why": "At the noexcept boundary Clang and GCC destroy the objects of the called function, so ~Leaves calls _Exit(0)."
+ },
+ "p25": {
+  "outcome": "run-fail",
+  "rules": [
+   "UNW-5"
+  ],
+  "why": "The exception from inner reaches the boundary of the noexcept outer, so the program ends."
+ },
+ "p26": {
+  "outcome": "depends",
+  "rules": [
+   "UNW-1"
+  ],
+  "why": "GCC destroys the built result when ~T throws, so made equals ended (runs); Clang never destroys the result (run-fail), Q-0365."
+ },
+ "p27": {
+  "outcome": "runs",
+  "rules": [
+   "UNW-1"
+  ],
+  "why": "The handler's own object and the outer object are not affected by unwinding; trace is 12324."
+ },
+ "p28": {
+  "outcome": "runs",
+  "rules": [
+   "UNW-1"
+  ],
+  "why": "c, b, a end innermost first, then the handler marks 4."
+ },
+ "p29": {
+  "outcome": "runs",
+  "rules": [
+   "UNW-2"
+  ],
+  "why": "The target constructor did not complete, so only member a is destroyed and ~W does not run; trace is 114."
+ },
+ "p30": {
+  "outcome": "runs",
+  "rules": [
+   "UNW-2",
+   "UNW-3"
+  ],
+  "why": "The two built elements are destroyed and the class's operator delete[] releases the storage once."
+ },
+ "p31": {
+  "outcome": "run-fail",
+  "rules": [
+   "UNW-5",
+   "UNW-10"
+  ],
+  "why": "The destructor of the static object g throws at program end."
+ },
+ "p32": {
+  "outcome": "runs",
+  "rules": [
+   "UNW-3"
+  ],
+  "why": "The placement deallocation function with the Tag parameter releases the storage."
+ },
+ "p33": {
+  "outcome": "run-fail",
+  "rules": [
+   "UNW-5",
+   "UNW-10"
+  ],
+  "why": "An exception leaves main; no static object is destroyed, so _Exit(0) never runs and the program aborts."
+ },
+ "p34": {
+  "outcome": "runs",
+  "rules": [
+   "UNW-6"
+  ],
+  "why": "A noexcept function can throw and catch inside itself."
+ },
+ "p35": {
+  "outcome": "run-fail",
+  "rules": [
+   "UNW-5"
+  ],
+  "why": "The static object's destructor throws after main returns, outside the function try block."
+ },
+ "p36": {
+  "outcome": "compiles",
+  "rules": [
+   "UNW-8"
+  ],
+  "why": "A call to a function that can throw needs no warning."
+ },
+ "p37": {
+  "outcome": "runs",
+  "rules": [
+   "UNW-6"
+  ],
+  "why": "A noexcept(false) destructor throws with no other exception in flight, and the handler catches 3."
+ },
+ "p38": {
+  "outcome": "runs",
+  "rules": [
+   "UNW-2",
+   "LSUP-7"
+  ],
+  "why": "Objects built one at a time by placement new get no cleanup, so alive is 3 in the handler and the loop then destroys them."
+ },
+ "p39": {
+  "outcome": "runs",
+  "rules": [
+   "UNW-3"
+  ],
+  "why": "For extended alignment the compilers call a form that takes the alignment, so which is 3 or 4."
+ },
+ "p40": {
+  "outcome": "reject",
+  "rules": [
+   "UNW-8"
+  ],
+  "why": "Clang and GCC warn about the rethrow outside any enclosing try block, and -Werror rejects; EDG skips."
+ },
+ "p41": {
+  "outcome": "run-fail",
+  "rules": [
+   "UNW-5",
+   "UNW-10"
+  ],
+  "why": "The exception reaches the noexcept boundary and the program aborts."
+ },
+ "p42": {
+  "outcome": "runs",
+  "rules": [
+   "UNW-1"
+  ],
+  "why": "Unwinding ends c, b, a across the three functions; mark(9) never runs; trace is 1233218."
+ },
+ "p43": {
+  "outcome": "run-fail",
+  "rules": [
+   "UNW-5"
+  ],
+  "why": "The destructor of d throws during unwinding of the first exception."
+ },
+ "p44": {
+  "outcome": "runs",
+  "rules": [
+   "UNW-2"
+  ],
+  "why": "The target constructor completed, so ~W runs and then member a ends; trace is 12914."
+ },
+ "p45": {
+  "outcome": "runs",
+  "rules": [
+   "UNW-1",
+   "VC-10"
+  ],
+  "why": "The Note temporary and the Arg parameter end before outer, then the handler; both accepted orders are allowed."
+ },
+ "p46": {
+  "outcome": "runs",
+  "rules": [
+   "UNW-4"
+  ],
+  "why": "Unwinding does not destroy the static local or the global, so trace is 123."
+ },
+ "p47": {
+  "outcome": "run-fail",
+  "rules": [
+   "UNW-5"
+  ],
+  "why": "The initializer of a namespace-scope object throws before main."
+ },
+ "p48": {
+  "outcome": "reject",
+  "rules": [
+   "UNW-11",
+   "NEW-23"
+  ],
+  "why": "The global sized operator delete(void*, size_t) matches the extra size parameter of the placement form and is a usual deallocation function; the page does not settle the global case."
+ },
+ "p49": {
+  "outcome": "reject",
+  "rules": [
+   "UNW-8"
+  ],
+  "why": "Clang and GCC warn about a throw in a noexcept function, and -Werror rejects."
+ },
+ "p50": {
+  "outcome": "runs",
+  "rules": [
+   "UNW-2"
+  ],
+  "why": "Member a completed, b throws, c is never built; only a is destroyed; trace is 114."
+ },
+ "p51": {
+  "outcome": "runs",
+  "rules": [
+   "UNW-2"
+  ],
+  "why": "The constructor body throws after both members are built; they end in reverse and ~W does not run."
+ },
+ "p52": {
+  "outcome": "runs",
+  "rules": [
+   "UNW-1"
+  ],
+  "why": "b is never created; a ends before the handler; trace is 113."
+ },
+ "p53": {
+  "outcome": "run-fail",
+  "rules": [
+   "UNW-5",
+   "UNW-10"
+  ],
+  "why": "No handler matches, so the program aborts."
+ },
+ "p54": {
+  "outcome": "run-fail",
+  "rules": [
+   "UNW-5"
+  ],
+  "why": "The throw leaves the noexcept function risky."
+ },
+ "p55": {
+  "outcome": "run-fail",
+  "rules": [
+   "UNW-5",
+   "UNW-7"
+  ],
+  "why": "With no matching handler Clang and GCC destroy no object, so _Exit(0) never runs and the program aborts."
+ },
+ "p56": {
+  "outcome": "runs",
+  "rules": [
+   "UNW-2"
+  ],
+  "why": "The array elements 1 and 2 are destroyed in reverse when element 3 throws; trace is 12219."
+ },
+ "p57": {
+  "outcome": "run-fail",
+  "rules": [
+   "UNW-5",
+   "UNW-7"
+  ],
+  "why": "~Bad throws during unwinding, the program ends there, and Outer is never destroyed."
+ },
+ "p58": {
+  "outcome": "run-fail",
+  "rules": [
+   "UNW-5"
+  ],
+  "why": "catch (long) does not match an int, so no handler matches."
+ },
+ "p59": {
+  "outcome": "reject",
+  "rules": [
+   "UNW-8"
+  ],
+  "why": "Clang and GCC warn about a throw in a noexcept function, and -Werror rejects."
+ },
+ "p60": {
+  "outcome": "depends",
+  "rules": [
+   "UNW-7"
+  ],
+  "why": "With a non-matching try block in the noexcept function, Clang destroys the called function's object and exits 0 (runs); GCC destroys none (run-fail)."
+ }
+}

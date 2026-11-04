@@ -1,0 +1,994 @@
+{
+ "p01": {
+  "outcome": "compiles",
+  "rules": [
+   "CNS-18",
+   "LAM-10"
+  ],
+  "why": "The conversion to a pointer exists for make<int> and not for make<char>, so both asserts hold; EDG rejects the trailing clause on a lambda (Q-0260)."
+ },
+ "p02": {
+  "outcome": "compiles",
+  "rules": [
+   "CNS-13",
+   "CNS-15"
+  ],
+  "why": "The explicit instantiation names a member whose constraint holds for int."
+ },
+ "p03": {
+  "outcome": "reject",
+  "rules": [
+   "CNS-22",
+   "CNS-23",
+   "CNS-24"
+  ],
+  "why": "B&&A and A&&B have the same atoms from the concepts, so each subsumes the other and the call is ambiguous."
+ },
+ "p04": {
+  "outcome": "compiles",
+  "rules": [
+   "CNS-27",
+   "CNS-26"
+  ],
+  "why": "Answer<42> and Answer<40+2> name the same concept specialization, so the second declaration redeclares and defines the first."
+ },
+ "p05": {
+  "outcome": "reject",
+  "rules": [
+   "CNS-3",
+   "CNS-4",
+   "CNS-24"
+  ],
+  "why": "The two copies of !A<T> are two different atomic constraints, so neither declaration subsumes the other and the call is ambiguous."
+ },
+ "p06": {
+  "outcome": "compiles",
+  "rules": [
+   "CNS-25"
+  ],
+  "why": "An unconstrained parameter accepts any argument, and AB subsumes A, so Strict<Box> is valid."
+ },
+ "p07": {
+  "outcome": "reject",
+  "rules": [
+   "CNS-1",
+   "CNS-11",
+   "CNS-12"
+  ],
+  "why": "char fails Wide, so the only candidate is not viable."
+ },
+ "p08": {
+  "outcome": "depends",
+  "rules": [
+   "CNS-38"
+  ],
+  "why": "Tmpl<char> fails the parameter's own constraint with no dependence, which needs no diagnostic; EDG rejects the definition, Clang and GCC accept."
+ },
+ "p09": {
+  "outcome": "compiles",
+  "rules": [
+   "CNS-5"
+  ],
+  "why": "Tagged<int> fails, so the right operand is not substituted and kind(...) is chosen for 0; kind(Item) is the template."
+ },
+ "p10": {
+  "outcome": "reject",
+  "rules": [
+   "CNS-36"
+  ],
+  "why": "The partial specialization repeats the primary's parameters with the same constraint, so it is not more constrained."
+ },
+ "p11": {
+  "outcome": "reject",
+  "rules": [
+   "CNS-26"
+  ],
+  "why": "A constant parameter of type Wide auto and one of type auto differ, so the redeclaration does not match."
+ },
+ "p12": {
+  "outcome": "compiles",
+  "rules": [
+   "CNS-8"
+  ],
+  "why": "int::value is a substitution failure inside the negation, so the constraint is not satisfied and f(...) is chosen."
+ },
+ "p13": {
+  "outcome": "compiles",
+  "rules": [
+   "CNS-7",
+   "DEP-9"
+  ],
+  "why": "At the check, argument-dependent lookup finds lib::use for lib::Item; for int, ::use is declared after the concept and has no associated namespace, so it is not found."
+ },
+ "p14": {
+  "outcome": "compiles",
+  "rules": [
+   "CNS-31",
+   "CNS-32"
+  ],
+  "why": "The friend template is defined in the class, and each specialization defines its own function."
+ },
+ "p15": {
+  "outcome": "compiles",
+  "rules": [
+   "CNS-11"
+  ],
+  "why": "The constraint fails before the function type is formed, so Trap<int> is not instantiated and take(...) is chosen."
+ },
+ "p16": {
+  "outcome": "reject",
+  "rules": [
+   "CNS-9"
+  ],
+  "why": "T::value is an int, and an atomic constraint must be bool exactly."
+ },
+ "p17": {
+  "outcome": "reject",
+  "rules": [
+   "CNS-31"
+  ],
+  "why": "A non-template friend with a trailing requires clause must be a definition."
+ },
+ "p18": {
+  "outcome": "reject",
+  "rules": [
+   "CNS-13"
+  ],
+  "why": "An explicit instantiation of a member whose constraint fails for char is not valid; Clang 18 accepts it (Q-0291)."
+ },
+ "p19": {
+  "outcome": "compiles",
+  "rules": [
+   "CPT-26",
+   "CNS-10"
+  ],
+  "why": "The first check at namespace scope gives false because secret is private, and every compiler keeps that first result inside the member."
+ },
+ "p20": {
+  "outcome": "compiles",
+  "rules": [
+   "CNS-30"
+  ],
+  "why": "The trailing clause is not part of the function type."
+ },
+ "p21": {
+  "outcome": "compiles",
+  "rules": [
+   "CNS-15",
+   "INST-5"
+  ],
+  "why": "The class instantiation declares get without checking or instantiating its body, and only size is used."
+ },
+ "p22": {
+  "outcome": "reject",
+  "rules": [
+   "CNS-27",
+   "CNS-24"
+  ],
+  "why": "A constraint with a lambda is never equivalent, so there are two templates, and their different atoms make the call ambiguous."
+ },
+ "p23": {
+  "outcome": "reject",
+  "rules": [
+   "CNS-13"
+  ],
+  "why": "one<char> fails the variable template's constraint."
+ },
+ "p24": {
+  "outcome": "compiles",
+  "rules": [
+   "CPT-26",
+   "CNS-10"
+  ],
+  "why": "The first check is inside a member, where secret is accessible, so Peek<Box> is true and every compiler keeps that result at namespace scope."
+ },
+ "p25": {
+  "outcome": "compiles",
+  "rules": [
+   "CNS-22",
+   "CNS-23"
+  ],
+  "why": "For f, (A&&C)||(B&&C) subsumes A||B and not the reverse; for g, A&&B subsumes A||C and not the reverse; both pick 2."
+ },
+ "p26": {
+  "outcome": "compiles",
+  "rules": [
+   "CNS-16"
+  ],
+  "why": "The unsatisfied constructor still blocks the implicit default constructor, so Box<int> cannot be made with T(), and Box<Huge> can."
+ },
+ "p27": {
+  "outcome": "reject",
+  "rules": [
+   "CNS-4",
+   "CNS-27",
+   "CNS-24"
+  ],
+  "why": "The mappings sizeof(T)+1 and 1+sizeof(T) are different tokens, so the atoms differ and the call is ambiguous."
+ },
+ "p28": {
+  "outcome": "reject",
+  "rules": [
+   "CNS-4",
+   "CNS-24"
+  ],
+  "why": "The two sizeof(T) > 1 are two different atomic constraints, so the call is ambiguous."
+ },
+ "p29": {
+  "outcome": "compiles",
+  "rules": [
+   "CNS-7"
+  ],
+  "why": "Yes and No give true and false, and int::value is a substitution failure, so Valued<int> is false."
+ },
+ "p30": {
+  "outcome": "reject",
+  "rules": [
+   "CNS-13"
+  ],
+  "why": "The explicit instantiation of Box<char> fails the class template's constraint."
+ },
+ "p31": {
+  "outcome": "runs",
+  "rules": [
+   "CNS-19",
+   "CNS-23"
+  ],
+  "why": "Both destructors are satisfied for int and Bigger subsumes Big, so the second destructor runs and calls is 2."
+ },
+ "p32": {
+  "outcome": "reject",
+  "rules": [
+   "CNS-11",
+   "CNS-33"
+  ],
+  "why": "Default template arguments are formed before the check, so Trap<char> is instantiated and its static_assert fails."
+ },
+ "p33": {
+  "outcome": "depends",
+  "rules": [
+   "CNS-21"
+  ],
+  "why": "Only the defaulted constructor is eligible for int, so it is trivial and the union is valid on Clang and GCC; EDG treats it as not trivial and rejects (Q-0266)."
+ },
+ "p34": {
+  "outcome": "reject",
+  "rules": [
+   "CPT-35",
+   "CNS-9"
+  ],
+  "why": "The nested requirement reads the parameter t's value, which is not a constant; Clang 18 gives false instead (Q-0289)."
+ },
+ "p35": {
+  "outcome": "compiles",
+  "rules": [
+   "CNS-18"
+  ],
+  "why": "make<int> and make<long> convert to a pointer and make<char> does not; EDG rejects the trailing clause on a lambda (Q-0260)."
+ },
+ "p36": {
+  "outcome": "reject",
+  "rules": [
+   "CNS-26",
+   "CNS-27"
+  ],
+  "why": "A and B are different concepts, so the requires clauses are not equivalent and the class redeclaration has other constraints."
+ },
+ "p37": {
+  "outcome": "reject",
+  "rules": [
+   "CNS-26",
+   "CNS-27"
+  ],
+  "why": "A constraint that contains a lambda is not equivalent to any other, so the redeclaration of the class does not match."
+ },
+ "p38": {
+  "outcome": "compiles",
+  "rules": [
+   "CNS-16"
+  ],
+  "why": "The unsatisfied default constructor cannot be used, and Box(int) suppresses the implicit one, so Makes is false."
+ },
+ "p39": {
+  "outcome": "compiles",
+  "rules": [
+   "CNS-11",
+   "OVL-24"
+  ],
+  "why": "char fails Wide, so only the unconstrained pick is viable and returns 2."
+ },
+ "p40": {
+  "outcome": "depends",
+  "rules": [
+   "CNS-21"
+  ],
+  "why": "The defaulted constructor is the eligible one for int, so Clang and GCC accept the union; EDG does not treat it as trivial and rejects (Q-0266)."
+ },
+ "p41": {
+  "outcome": "reject",
+  "rules": [
+   "CNS-12",
+   "OVL-24"
+  ],
+  "why": "get's constraint fails for int, so the call has no viable function."
+ },
+ "p42": {
+  "outcome": "reject",
+  "rules": [
+   "CNS-39",
+   "CNS-9"
+  ],
+  "why": "The atom sizeof(T) is never bool; every compiler rejects it in a function template's requires clause at the definition."
+ },
+ "p43": {
+  "outcome": "reject",
+  "rules": [
+   "CNS-12"
+  ],
+  "why": "Taking the address of a function whose constraint fails is not valid."
+ },
+ "p44": {
+  "outcome": "compiles",
+  "rules": [
+   "INST-2",
+   "CNS-14"
+  ],
+  "why": "A pointer to User<char> does not instantiate User<char>, and size is never instantiated."
+ },
+ "p45": {
+  "outcome": "reject",
+  "rules": [
+   "CNS-31"
+  ],
+  "why": "A friend template whose constraint uses the class's parameter must be a definition; EDG accepts it (Q-0267)."
+ },
+ "p46": {
+  "outcome": "reject",
+  "rules": [
+   "CNS-25"
+  ],
+  "why": "The parameter's constraint A does not subsume the argument's AB; Clang 18 and EDG accept it (Q-0265)."
+ },
+ "p47": {
+  "outcome": "reject",
+  "rules": [
+   "CNS-35"
+  ],
+  "why": "Argument-dependent lookup finds the template use, whose constraint needs Usable<Item> again during its own check."
+ },
+ "p48": {
+  "outcome": "reject",
+  "rules": [
+   "CNS-12"
+  ],
+  "why": "decltype of the address uses the name of a function whose constraint fails."
+ },
+ "p49": {
+  "outcome": "reject",
+  "rules": [
+   "CNS-26",
+   "TPL-22",
+   "CNS-24"
+  ],
+  "why": "A type constraint and a requires clause are not equivalent, so there are two templates with identical atoms, and the call is ambiguous."
+ },
+ "p50": {
+  "outcome": "depends",
+  "rules": [
+   "CNS-21"
+  ],
+  "why": "The constrained defaulted copy constructor is more constrained, so it alone is eligible and trivial on Clang and GCC; EDG treats the copy as not trivial, so the union copy is deleted (Q-0266)."
+ },
+ "p51": {
+  "outcome": "compiles",
+  "rules": [
+   "CNS-1",
+   "CNS-5"
+  ],
+  "why": "Wide<char> comes first and fails, so Trapped is not checked and the second f is chosen."
+ },
+ "p52": {
+  "outcome": "reject",
+  "rules": [
+   "CNS-33"
+  ],
+  "why": "Checking Trap<int>::value instantiates Trap<int>, whose static_assert fails, which is a hard error."
+ },
+ "p53": {
+  "outcome": "reject",
+  "rules": [
+   "CNS-26"
+  ],
+  "why": "The redeclaration has class T where the first declaration has A T."
+ },
+ "p54": {
+  "outcome": "reject",
+  "rules": [
+   "CNS-13"
+  ],
+  "why": "The template-id Box<char> fails the constraint, even as a pointer type."
+ },
+ "p55": {
+  "outcome": "compiles",
+  "rules": [
+   "CNS-2",
+   "CNS-22",
+   "CNS-23"
+  ],
+  "why": "The parentheses do not make one atom, so A<T> && atom subsumes A<T> and get returns 1."
+ },
+ "p56": {
+  "outcome": "compiles",
+  "rules": [
+   "CNS-1",
+   "CNS-23"
+  ],
+  "why": "In each pair, AB subsumes A wherever it is written, so each call picks 2."
+ },
+ "p57": {
+  "outcome": "reject",
+  "rules": [
+   "CNS-26"
+  ],
+  "why": "The member definition leaves out the requires clause of the class template's head."
+ },
+ "p58": {
+  "outcome": "reject",
+  "rules": [
+   "CNS-22",
+   "CNS-24"
+  ],
+  "why": "Over2 and Over4 have different atoms, so neither is more constrained."
+ },
+ "p59": {
+  "outcome": "compiles",
+  "rules": [
+   "CNS-5"
+  ],
+  "why": "sizeof(int) > 100 fails first, so Trap<int> is not instantiated; SmallTag works as the page's example."
+ },
+ "p60": {
+  "outcome": "reject",
+  "rules": [
+   "CNS-13"
+  ],
+  "why": "An explicit specialization one<char> fails the constraint."
+ },
+ "p61": {
+  "outcome": "reject",
+  "rules": [
+   "CNS-33"
+  ],
+  "why": "Deducing make's return type instantiates its body, whose static_assert fails."
+ },
+ "p62": {
+  "outcome": "reject",
+  "rules": [
+   "CNS-3",
+   "CNS-4",
+   "CNS-24"
+  ],
+  "why": "The two !A<T> are separate atoms, so the call is ambiguous."
+ },
+ "p63": {
+  "outcome": "compiles",
+  "rules": [
+   "CNS-31",
+   "CNS-32",
+   "INST-13"
+  ],
+  "why": "Each specialization defines its own touch, so the definitions do not conflict; EDG reports two definitions (Q-0268)."
+ },
+ "p64": {
+  "outcome": "reject",
+  "rules": [
+   "CNS-13"
+  ],
+  "why": "Alias<char> has non-dependent arguments that fail the constraint inside a template."
+ },
+ "p65": {
+  "outcome": "reject",
+  "rules": [
+   "CNS-3",
+   "CNS-24"
+  ],
+  "why": "Each fold expression is one atomic constraint, so neither f subsumes the other."
+ },
+ "p66": {
+  "outcome": "compiles",
+  "rules": [
+   "CNS-15"
+  ],
+  "why": "The explicit instantiation of the class instantiates only members whose constraints are satisfied, so get's body is not made."
+ },
+ "p67": {
+  "outcome": "reject",
+  "rules": [
+   "CNS-14",
+   "CNS-25"
+  ],
+  "why": "Use<Box> is accepted, but its member Box<char> fails Wide when Use<Box> is instantiated."
+ },
+ "p68": {
+  "outcome": "compiles",
+  "rules": [
+   "CNS-19",
+   "CNS-21"
+  ],
+  "why": "The defaulted destructor is chosen for int, so it is trivial and the union is valid."
+ },
+ "p69": {
+  "outcome": "reject",
+  "rules": [
+   "CNS-13"
+  ],
+  "why": "Same<char> fails the alias template's constraint."
+ },
+ "p70": {
+  "outcome": "compiles",
+  "rules": [
+   "CNS-6",
+   "CNS-39"
+  ],
+  "why": "The left operands hold, so Trap<int> and Count::value are never substituted."
+ },
+ "p71": {
+  "outcome": "compiles",
+  "rules": [
+   "CNS-7"
+  ],
+  "why": "if consteval takes its first branch during the check, so Now<int> is true."
+ },
+ "p72": {
+  "outcome": "depends",
+  "rules": [
+   "CNS-39"
+  ],
+  "why": "sizeof(T) is never bool; Clang and EDG reject the concept at its definition, GCC accepts since the short circuit skips it."
+ },
+ "p73": {
+  "outcome": "reject",
+  "rules": [
+   "CNS-9"
+  ],
+  "why": "Count::value is an int, so the atomic constraint is not bool, and the other candidate does not save the program."
+ },
+ "p74": {
+  "outcome": "reject",
+  "rules": [
+   "CNS-32",
+   "OVL-36"
+  ],
+  "why": "The friend template is a different template from the namespace declaration, and their atoms differ, so the call is ambiguous; EDG treats them as one (Q-0268)."
+ },
+ "p75": {
+  "outcome": "compiles",
+  "rules": [
+   "CNS-30"
+  ],
+  "why": "pick<int> has type int(int), and the constraint holds."
+ },
+ "p76": {
+  "outcome": "reject",
+  "rules": [
+   "CNS-9"
+  ],
+  "why": "check is not constexpr, so the atomic constraint is not a constant expression."
+ },
+ "p77": {
+  "outcome": "depends",
+  "rules": [
+   "CNS-11"
+  ],
+  "why": "The constraint fails before the return type is formed, so most compilers accept; Clang 18 forms the return type first and hits the static_assert (Q-0261)."
+ },
+ "p78": {
+  "outcome": "runs",
+  "rules": [
+   "CNS-26",
+   "CNS-29"
+  ],
+  "why": "The out-of-class definitions repeat the constraints, and get plus made gives 7."
+ },
+ "p79": {
+  "outcome": "reject",
+  "rules": [
+   "CNS-9"
+  ],
+  "why": "Wrap<int>::value has type Truthy, which converts to bool but is not bool."
+ },
+ "p80": {
+  "outcome": "depends",
+  "rules": [
+   "CNS-1",
+   "CNS-33"
+  ],
+  "why": "Clang and GCC 16 check Trapped<int> first and instantiate Trap<int>; GCC 14 and EDG check Wide<char> first, which fails and skips the trap (Q-0282)."
+ },
+ "p81": {
+  "outcome": "depends",
+  "rules": [
+   "CNS-10"
+  ],
+  "why": "Complete<Late> changes after Late is completed; GCC 16 diagnoses that, and the others keep the first result."
+ },
+ "p82": {
+  "outcome": "compiles",
+  "rules": [
+   "CNS-8"
+  ],
+  "why": "HasValue<int> is false by substitution failure, so its negation holds and f returns 1."
+ },
+ "p83": {
+  "outcome": "compiles",
+  "rules": [
+   "CNS-1",
+   "CNS-5"
+  ],
+  "why": "Big<int> fails before Caught in both functions, so Trap<int> is never instantiated."
+ },
+ "p84": {
+  "outcome": "reject",
+  "rules": [
+   "CNS-20"
+  ],
+  "why": "Both destructors are satisfied for int and neither is more constrained."
+ },
+ "p85": {
+  "outcome": "compiles",
+  "rules": [
+   "CNS-4",
+   "CNS-27",
+   "CNS-23"
+  ],
+  "why": "Both concepts map N to the same tokens sizeof(T) + 1, so the atoms are identical and the second f is more constrained."
+ },
+ "p86": {
+  "outcome": "compiles",
+  "rules": [
+   "CNS-10"
+  ],
+  "why": "Usable<Item> changes after use is declared, but every compiler keeps the first result for a function declared between two checks."
+ },
+ "p87": {
+  "outcome": "reject",
+  "rules": [
+   "CNS-13"
+  ],
+  "why": "The default argument char fails Wide."
+ },
+ "p88": {
+  "outcome": "compiles",
+  "rules": [
+   "CNS-17",
+   "ORD-14"
+  ],
+  "why": "The partial specialization with AB is more constrained than the primary with A, so Kind<int> uses it."
+ },
+ "p89": {
+  "outcome": "reject",
+  "rules": [
+   "CNS-34",
+   "ORD-13"
+  ],
+  "why": "Under positional correspondence the function parameter types differ, so the constraints are not compared and the call is ambiguous."
+ },
+ "p90": {
+  "outcome": "compiles",
+  "rules": [
+   "CNS-2",
+   "CNS-4",
+   "CNS-22"
+  ],
+  "why": "A2 and PtrA expand to the same atom of A with the same mapping, so each second function subsumes the first."
+ },
+ "p91": {
+  "outcome": "compiles",
+  "rules": [
+   "CNS-37"
+  ],
+  "why": "The explicit specialization matches the f whose constraint is sizeof(int) > 1 after substitution, so Box<int>::f gives 3 and Box<long>::f gives 2."
+ },
+ "p92": {
+  "outcome": "compiles",
+  "rules": [
+   "CNS-22",
+   "CNS-23"
+  ],
+  "why": "A&&B subsumes A, and A subsumes A||B, so both calls pick 2."
+ },
+ "p93": {
+  "outcome": "reject",
+  "rules": [
+   "CNS-13"
+  ],
+  "why": "The explicit specialization Box<char> fails the constraint."
+ },
+ "p94": {
+  "outcome": "depends",
+  "rules": [
+   "CNS-39"
+  ],
+  "why": "The concept's atom sizeof(T) is never bool; Clang and EDG reject at the definition, GCC accepts."
+ },
+ "p95": {
+  "outcome": "reject",
+  "rules": [
+   "CNS-13"
+  ],
+  "why": "Box<char> inside the template does not depend on parameters and fails Wide."
+ },
+ "p96": {
+  "outcome": "compiles",
+  "rules": [
+   "CNS-28"
+  ],
+  "why": "The members differ only in trailing clauses, f is chosen by the clause that holds, and g is never called."
+ },
+ "p97": {
+  "outcome": "compiles",
+  "rules": [
+   "CNS-37"
+  ],
+  "why": "The explicit specialization matches the f whose clause is sizeof(Item) == 1, which holds for the empty Item."
+ },
+ "p98": {
+  "outcome": "reject",
+  "rules": [
+   "CNS-22",
+   "CNS-24"
+  ],
+  "why": "Each clause subsumes the other, as in the page's example, so the call is ambiguous."
+ },
+ "p99": {
+  "outcome": "compiles",
+  "rules": [
+   "CNS-27",
+   "CNS-40"
+  ],
+  "why": "The two templates differ under CNS-27, and with no call every compiler accepts the declarations."
+ },
+ "p100": {
+  "outcome": "reject",
+  "rules": [
+   "CNS-13",
+   "DED-32"
+  ],
+  "why": "The explicit specialization for char finds no template whose constraints hold."
+ },
+ "p101": {
+  "outcome": "reject",
+  "rules": [
+   "CNS-20"
+  ],
+  "why": "No prospective destructor of Box<int> is satisfied."
+ },
+ "p102": {
+  "outcome": "compiles",
+  "rules": [
+   "CNS-17",
+   "CNS-36"
+  ],
+  "why": "The partial specialization repeats the parameters and is more constrained, so it matches int and not char."
+ },
+ "p103": {
+  "outcome": "compiles",
+  "rules": [
+   "CNS-21"
+  ],
+  "why": "For Cell<0> the user-provided copy constructor is eligible, so it copies, and the union's copy constructor is deleted."
+ },
+ "p104": {
+  "outcome": "depends",
+  "rules": [
+   "CNS-4",
+   "CNS-7"
+  ],
+  "why": "Clang 22 and GCC do not substitute the unused argument, so Outer<int> is true; EDG and Clang 18 substitute it and fail the assert (Q-0284)."
+ },
+ "p105": {
+  "outcome": "reject",
+  "rules": [
+   "CNS-3",
+   "CPT-19",
+   "CNS-24"
+  ],
+  "why": "The pack constraints become fold atoms that do not subsume, so the call is ambiguous; EDG orders them (Q-0285)."
+ },
+ "p106": {
+  "outcome": "reject",
+  "rules": [
+   "CNS-29"
+  ],
+  "why": "The definition's clause is not equivalent to the declared one, so it matches no member."
+ },
+ "p107": {
+  "outcome": "compiles",
+  "rules": [
+   "CNS-4",
+   "CNS-22"
+  ],
+  "why": "NotA has one source expression, so both functions share its atom and the second is more constrained."
+ },
+ "p108": {
+  "outcome": "reject",
+  "rules": [
+   "CNS-26"
+  ],
+  "why": "A type constraint and the same concept-id in a requires clause are not equivalent."
+ },
+ "p109": {
+  "outcome": "runs",
+  "rules": [
+   "CNS-19",
+   "CNS-21"
+  ],
+  "why": "The defaulted destructor is chosen for int and the user-provided one for Logged, the four asserts hold, and full is false."
+ },
+ "p110": {
+  "outcome": "compiles",
+  "rules": [
+   "CNS-27"
+  ],
+  "why": "Each pair is equivalent with the parameter matched by position, so each declaration is redeclared and defined; x is 3."
+ },
+ "p111": {
+  "outcome": "reject",
+  "rules": [
+   "CNS-14"
+  ],
+  "why": "Defining User<char> instantiates its member type Box<char>*, whose arguments fail the constraint."
+ },
+ "p112": {
+  "outcome": "compiles",
+  "rules": [
+   "CNS-27",
+   "CNS-40"
+  ],
+  "why": "By CNS-27 these are two templates that accept the same arguments, which needs no diagnostic; I expect every compiler to treat f(auto) as the definition of the first and call it."
+ },
+ "p113": {
+  "outcome": "compiles",
+  "rules": [
+   "CNS-28",
+   "CNS-29"
+  ],
+  "why": "Each out-of-class definition repeats one clause, so x is 1 + 2."
+ },
+ "p114": {
+  "outcome": "reject",
+  "rules": [
+   "CNS-13",
+   "CPT-21"
+  ],
+  "why": "'a' has type char, which fails Big."
+ },
+ "p115": {
+  "outcome": "reject",
+  "rules": [
+   "CNS-36"
+  ],
+  "why": "B does not subsume A, so the partial specialization is not more constrained; EDG accepts it (Q-0292)."
+ },
+ "p116": {
+  "outcome": "depends",
+  "rules": [
+   "CNS-38"
+  ],
+  "why": "Tmpl<char> fails the parameter's own constraint with no dependence; EDG rejects the definition, Clang and GCC accept."
+ },
+ "p117": {
+  "outcome": "compiles",
+  "rules": [
+   "CNS-7",
+   "CNS-9"
+  ],
+  "why": "Each atom has type bool after the lvalue-to-rvalue conversion, and each is a constant."
+ },
+ "p118": {
+  "outcome": "compiles",
+  "rules": [
+   "CNS-23",
+   "ORD-13"
+  ],
+  "why": "int satisfies Wide, so the constrained pick is more constrained and returns 1."
+ },
+ "p119": {
+  "outcome": "reject",
+  "rules": [
+   "CNS-29"
+  ],
+  "why": "The definition leaves out the trailing clause, so it matches no member."
+ },
+ "p120": {
+  "outcome": "depends",
+  "rules": [
+   "CNS-21"
+  ],
+  "why": "The defaulted AB constructor is more constrained and eligible, so Clang and GCC accept the union; EDG does not treat it as trivial (Q-0266)."
+ },
+ "p121": {
+  "outcome": "depends",
+  "rules": [
+   "CNS-1",
+   "CNS-33"
+  ],
+  "why": "GCC and EDG check Big<T> before the placeholder's Caught and skip the trap; Clang checks the placeholder first and hits the static_assert (Q-0262)."
+ },
+ "p122": {
+  "outcome": "reject",
+  "rules": [
+   "CNS-12",
+   "OVL-24"
+  ],
+  "why": "get's constraint fails for char."
+ },
+ "p123": {
+  "outcome": "compiles",
+  "rules": [
+   "CNS-23",
+   "CNS-28"
+  ],
+  "why": "The constrained get is more constrained for int, and the only viable one for char is the unconstrained one."
+ },
+ "p124": {
+  "outcome": "compiles",
+  "rules": [
+   "CNS-34",
+   "CNS-22"
+  ],
+  "why": "With positional correspondence A<U> is the same atom as A<T>, so the second f is more constrained."
+ },
+ "p125": {
+  "outcome": "reject",
+  "rules": [
+   "CNS-4",
+   "CNS-24"
+  ],
+  "why": "A and A2 have separate expressions, so their atoms differ and the call is ambiguous."
+ },
+ "p126": {
+  "outcome": "depends",
+  "rules": [
+   "CNS-4"
+  ],
+  "why": "Clang 22 and GCC keep only T in the mapping, so the atoms are identical and f returns 2; EDG keeps the unused argument and finds the call ambiguous (Q-0284)."
+ },
+ "p127": {
+  "outcome": "compiles",
+  "rules": [
+   "CNS-1",
+   "CNS-5"
+  ],
+  "why": "The head's Wide<char> fails before the requires clause, so Trapped is not checked."
+ },
+ "p128": {
+  "outcome": "compiles",
+  "rules": [
+   "CNS-6"
+  ],
+  "why": "The left operand holds, so Trap is never instantiated, and Either is as written."
+ },
+ "p129": {
+  "outcome": "depends",
+  "rules": [
+   "CNS-27",
+   "CNS-40"
+  ],
+  "why": "Clang treats f(A auto) as the definition of the template and accepts; GCC and EDG see two templates and find the call ambiguous (Q-0269)."
+ },
+ "p130": {
+  "outcome": "reject",
+  "rules": [
+   "CNS-13"
+  ],
+  "why": "The explicit instantiation of use<char> fails the constraint."
+ },
+ "p131": {
+  "outcome": "reject",
+  "rules": [
+   "CNS-35"
+  ],
+  "why": "The operator+ template found by argument-dependent lookup needs Addable<Item> during its own check."
+ }
+}

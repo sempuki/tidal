@@ -1,0 +1,1167 @@
+{
+ "p01": {
+  "outcome": "reject",
+  "rules": [
+   "CE-30",
+   "CE-3",
+   "IF-16"
+  ],
+  "why": "The condition of if constexpr starts a new evaluation in which the parameter n is not known."
+ },
+ "p02": {
+  "outcome": "compiles",
+  "rules": [
+   "CE-22",
+   "CE-1"
+  ],
+  "why": "Every element gets a value before the copy reads it, so the copy is a constant; there is no main."
+ },
+ "p03": {
+  "outcome": "compiles",
+  "rules": [
+   "CE-3",
+   "CE-11"
+  ],
+  "why": "n is a constexpr variable, so it is usable in an array bound and an enumerator."
+ },
+ "p04": {
+  "outcome": "runs",
+  "rules": [
+   "CE-27",
+   "SEQ-1"
+  ],
+  "why": "Either argument order gives 112 or 2102, and the program accepts both at translation and at run time."
+ },
+ "p05": {
+  "outcome": "reject",
+  "rules": [
+   "CE-23",
+   "CX-1"
+  ],
+  "why": "A class with a volatile member is not a literal type, so a constexpr variable of it is rejected."
+ },
+ "p06": {
+  "outcome": "reject",
+  "rules": [
+   "CE-17",
+   "CE-2"
+  ],
+  "why": "The end of the temporary calls a destructor that is not constexpr; every compiler rejects."
+ },
+ "p07": {
+  "outcome": "compiles",
+  "rules": [
+   "CE-7",
+   "CE-1"
+  ],
+  "why": "Both allocations are freed in the same evaluation with the matching delete form."
+ },
+ "p08": {
+  "outcome": "depends",
+  "rules": [
+   "CE-14",
+   "CE-3",
+   "REF-4"
+  ],
+  "why": "EDG rejects a constexpr reference to a temporary aggregate whose reference member binds another temporary; Clang accepts; GCC may also reject the read of a const class temporary (Q-0193)."
+ },
+ "p09": {
+  "outcome": "compiles",
+  "rules": [
+   "CE-1"
+  ],
+  "why": "Calls to lambdas are allowed in constant evaluation."
+ },
+ "p10": {
+  "outcome": "reject",
+  "rules": [
+   "CE-3",
+   "CE-14"
+  ],
+  "why": "The extended temporary is not const, so it is not usable and the read is rejected."
+ },
+ "p11": {
+  "outcome": "reject",
+  "rules": [
+   "CE-2"
+  ],
+  "why": "The evaluation calls read, which is not constexpr."
+ },
+ "p12": {
+  "outcome": "reject",
+  "rules": [
+   "CE-12"
+  ],
+  "why": "The evaluation reads x through a volatile lvalue."
+ },
+ "p13": {
+  "outcome": "reject",
+  "rules": [
+   "CE-30",
+   "CE-3"
+  ],
+  "why": "The static_assert inside the function starts a new evaluation where n is not known."
+ },
+ "p14": {
+  "outcome": "compiles",
+  "rules": [
+   "CE-4",
+   "STG-28",
+   "LSUP-11"
+  ],
+  "why": "The conversion of ::operator new's result to T* inside std::allocator<T> is allowed and every compiler accepts it."
+ },
+ "p15": {
+  "outcome": "compiles",
+  "rules": [
+   "CE-10"
+  ],
+  "why": "Each loop has 100000 iterations, under the per-loop limit, and the Evidence says four such loops pass."
+ },
+ "p16": {
+  "outcome": "reject",
+  "rules": [
+   "CE-7"
+  ],
+  "why": "delete frees storage that new[] allocated."
+ },
+ "p17": {
+  "outcome": "compiles",
+  "rules": [
+   "CE-1"
+  ],
+  "why": "Equality comparison of pointers to members is allowed."
+ },
+ "p18": {
+  "outcome": "reject",
+  "rules": [
+   "CE-30",
+   "CE-8"
+  ],
+  "why": "The consteval call starts its own evaluation, the run-time try block is not part of it, and the throw is rejected."
+ },
+ "p19": {
+  "outcome": "reject",
+  "rules": [
+   "CE-23",
+   "CX-1"
+  ],
+  "why": "Every member of the union is volatile, so the union is not a literal type."
+ },
+ "p20": {
+  "outcome": "reject",
+  "rules": [
+   "CE-7"
+  ],
+  "why": "The allocation is not freed before the evaluation ends."
+ },
+ "p21": {
+  "outcome": "compiles",
+  "rules": [
+   "CE-3"
+  ],
+  "why": "A const int with a constant initializer is usable in constant expressions."
+ },
+ "p22": {
+  "outcome": "runs",
+  "rules": [
+   "CE-10",
+   "DED-24"
+  ],
+  "why": "depth(100000) exceeds the recursion limit, which is a substitution failure, so pick<100000> selects the second overload."
+ },
+ "p23": {
+  "outcome": "reject",
+  "rules": [
+   "CE-3",
+   "CE-11",
+   "DCL-19"
+  ],
+  "why": "A const volatile variable is not usable, so the bound is not a constant."
+ },
+ "p24": {
+  "outcome": "compiles",
+  "rules": [
+   "CE-17",
+   "CE-3"
+  ],
+  "why": "Each static or thread_local variable reached is usable in constant expressions; every compiler accepts."
+ },
+ "p25": {
+  "outcome": "reject",
+  "rules": [
+   "CE-21",
+   "CX-1"
+  ],
+  "why": "slots[1] has no value in the constant."
+ },
+ "p26": {
+  "outcome": "compiles",
+  "rules": [
+   "CE-3"
+  ],
+  "why": "A const enumeration variable with a constant initializer is usable in a bound and a static_assert."
+ },
+ "p27": {
+  "outcome": "compiles",
+  "rules": [
+   "CE-1"
+  ],
+  "why": "Equality comparison of function pointers is allowed."
+ },
+ "p28": {
+  "outcome": "compiles",
+  "rules": [
+   "CE-1"
+  ],
+  "why": "Loops and calls to constexpr functions are allowed."
+ },
+ "p29": {
+  "outcome": "reject",
+  "rules": [
+   "CE-17",
+   "CE-2"
+  ],
+  "why": "The local variable's end calls a destructor that is not constexpr."
+ },
+ "p30": {
+  "outcome": "runs",
+  "rules": [
+   "CE-14",
+   "REF-4"
+  ],
+  "why": "A temporary extended by a static reference counts as static, so its address is a constant."
+ },
+ "p31": {
+  "outcome": "reject",
+  "rules": [
+   "CE-11",
+   "CE-19"
+  ],
+  "why": "A case label must be an integer constant, and 1.5 is a floating-point value."
+ },
+ "p32": {
+  "outcome": "reject",
+  "rules": [
+   "CE-2",
+   "DER-12"
+  ],
+  "why": "The copy constructor of a class with a virtual base is not constexpr."
+ },
+ "p33": {
+  "outcome": "compiles",
+  "rules": [
+   "CE-17"
+  ],
+  "why": "The static variable is on a path the evaluation does not take."
+ },
+ "p34": {
+  "outcome": "reject",
+  "rules": [
+   "CE-4"
+  ],
+  "why": "The evaluation contains a reinterpret_cast."
+ },
+ "p35": {
+  "outcome": "reject",
+  "rules": [
+   "CE-14"
+  ],
+  "why": "A constexpr reference in a block refers to a local temporary."
+ },
+ "p36": {
+  "outcome": "reject",
+  "rules": [
+   "CE-11",
+   "DCL-19"
+  ],
+  "why": "The bound is a parameter, not a constant expression."
+ },
+ "p37": {
+  "outcome": "reject",
+  "rules": [
+   "CE-7"
+  ],
+  "why": "The result points to storage that the evaluation allocated."
+ },
+ "p38": {
+  "outcome": "compiles",
+  "rules": [
+   "CE-23",
+   "TPL-7"
+  ],
+  "why": "Gauge has a constexpr constructor that is not a copy or move, so it is a literal type usable as a constant template parameter."
+ },
+ "p39": {
+  "outcome": "depends",
+  "rules": [
+   "CE-21",
+   "CE-22"
+  ],
+  "why": "v[3] has no value; Clang and EDG reject, GCC accepts and reads 0 (Q-0115)."
+ },
+ "p40": {
+  "outcome": "compiles",
+  "rules": [
+   "CE-1",
+   "CE-5"
+  ],
+  "why": "The evaluation changes only its own local."
+ },
+ "p41": {
+  "outcome": "runs",
+  "rules": [
+   "CE-9",
+   "MUL-9",
+   "DED-24"
+  ],
+  "why": "Division by zero in the signature fails the evaluation, which is a substitution failure, so pick<0> selects the second overload."
+ },
+ "p42": {
+  "outcome": "depends",
+  "rules": [
+   "CE-4"
+  ],
+  "why": "A conversion to long* in std::allocator<int>: Clang rejects, GCC and EDG accept (Q-0349)."
+ },
+ "p43": {
+  "outcome": "compiles",
+  "rules": [
+   "CE-1"
+  ],
+  "why": "Lambda calls, also with captures, are allowed."
+ },
+ "p44": {
+  "outcome": "depends",
+  "rules": [
+   "CE-3",
+   "CE-14"
+  ],
+  "why": "Reading a member of a const class temporary extended by a constexpr reference: GCC rejects, Clang and EDG accept (Q-0193)."
+ },
+ "p45": {
+  "outcome": "depends",
+  "rules": [
+   "CE-24",
+   "CE-21",
+   "CINIT-1"
+  ],
+  "why": "A trivial default constructor leaves the members without a value; Clang rejects, GCC and EDG accept and the run returns 0 (Q-0192)."
+ },
+ "p46": {
+  "outcome": "compiles",
+  "rules": [
+   "CE-10"
+  ],
+  "why": "fib(24) makes about 150000 calls and a depth of 24, within the limits."
+ },
+ "p47": {
+  "outcome": "reject",
+  "rules": [
+   "CE-16"
+  ],
+  "why": "later is only declared at the point of the evaluation."
+ },
+ "p48": {
+  "outcome": "reject",
+  "rules": [
+   "CE-6",
+   "UNI-6"
+  ],
+  "why": "The evaluation reads i, which is not the active member."
+ },
+ "p49": {
+  "outcome": "depends",
+  "rules": [
+   "CE-26",
+   "SEQ-4"
+  ],
+  "why": "Unsequenced writes need no diagnostic and most compilers accept, but the undefined-rule table records GCC 14 rejecting a case of SEQ-4."
+ },
+ "p50": {
+  "outcome": "compiles",
+  "rules": [
+   "CE-8"
+  ],
+  "why": "The rethrow is on a path the evaluation does not take."
+ },
+ "p51": {
+  "outcome": "reject",
+  "rules": [
+   "CE-5"
+  ],
+  "why": "The evaluation changes global, which existed before it started."
+ },
+ "p52": {
+  "outcome": "reject",
+  "rules": [
+   "CE-11",
+   "CE-19"
+  ],
+  "why": "An enumerator value must be an integer constant, not 0.5."
+ },
+ "p53": {
+  "outcome": "reject",
+  "rules": [
+   "CE-3"
+  ],
+  "why": "n is not const, so it is not usable in constant expressions."
+ },
+ "p54": {
+  "outcome": "runs",
+  "rules": [
+   "CE-8"
+  ],
+  "why": "The throw is not reached at translation or at run time with argc 1."
+ },
+ "p55": {
+  "outcome": "runs",
+  "rules": [
+   "CE-2",
+   "CE-P1"
+  ],
+  "why": "The non-constexpr constructor is not reached in the constant evaluation, and the run returns 3 == 3."
+ },
+ "p56": {
+  "outcome": "compiles",
+  "rules": [
+   "CE-8"
+  ],
+  "why": "The throw is not evaluated."
+ },
+ "p57": {
+  "outcome": "reject",
+  "rules": [
+   "CE-2"
+  ],
+  "why": "Holder's implicit destructor calls Part's destructor, which is not constexpr."
+ },
+ "p58": {
+  "outcome": "depends",
+  "rules": [
+   "CE-14",
+   "CE-3",
+   "REF-4"
+  ],
+  "why": "A temporary extended through a member access: EDG rejects, Clang and GCC accept (Q-0193)."
+ },
+ "p59": {
+  "outcome": "reject",
+  "rules": [
+   "CE-2",
+   "DER-12"
+  ],
+  "why": "A defaulted constructor of a class with a virtual base is not constexpr."
+ },
+ "p60": {
+  "outcome": "compiles",
+  "rules": [
+   "CE-3",
+   "CE-14"
+  ],
+  "why": "A const scalar temporary extended by a constexpr reference is usable; every compiler accepts the read."
+ },
+ "p61": {
+  "outcome": "reject",
+  "rules": [
+   "CE-19",
+   "TARG-13"
+  ],
+  "why": "300 does not fit in unsigned char, a narrowing conversion in a template argument."
+ },
+ "p62": {
+  "outcome": "reject",
+  "rules": [
+   "CINIT-1",
+   "CE-2"
+  ],
+  "why": "The constinit initializer calls a function that is not constexpr."
+ },
+ "p63": {
+  "outcome": "depends",
+  "rules": [
+   "CE-21"
+  ],
+  "why": "A union with no active member: Clang and EDG accept, GCC rejects (Q-0117)."
+ },
+ "p64": {
+  "outcome": "compiles",
+  "rules": [
+   "CE-21"
+  ],
+  "why": "The default member initializer gives every element a value."
+ },
+ "p65": {
+  "outcome": "reject",
+  "rules": [
+   "CE-7"
+  ],
+  "why": "The storage is freed twice."
+ },
+ "p66": {
+  "outcome": "reject",
+  "rules": [
+   "CE-8",
+   "NEW-39"
+  ],
+  "why": "new int[-1] has an erroneous bound, which throws."
+ },
+ "p67": {
+  "outcome": "reject",
+  "rules": [
+   "CE-9",
+   "MUL-9"
+  ],
+  "why": "Integer division by zero is undefined."
+ },
+ "p68": {
+  "outcome": "compiles",
+  "rules": [
+   "CE-23"
+  ],
+  "why": "The union has a non-volatile member, so it is literal, and the read is of the active non-volatile member."
+ },
+ "p69": {
+  "outcome": "depends",
+  "rules": [
+   "CE-9",
+   "PFX-21"
+  ],
+  "why": "A member call through a null pointer: Clang and GCC reject, EDG accepts."
+ },
+ "p70": {
+  "outcome": "reject",
+  "rules": [
+   "CE-23",
+   "CX-1"
+  ],
+  "why": "The base's destructor is not constexpr, so Derived is not a literal type."
+ },
+ "p71": {
+  "outcome": "depends",
+  "rules": [
+   "CE-28"
+  ],
+  "why": "1.0 / 0.0: Clang and GCC reject, EDG accepts (Q-0002)."
+ },
+ "p72": {
+  "outcome": "compiles",
+  "rules": [
+   "CE-6",
+   "UNI-14"
+  ],
+  "why": "construct_at at the member makes it active, and the destructor call is constexpr."
+ },
+ "p73": {
+  "outcome": "reject",
+  "rules": [
+   "CE-30",
+   "CE-8"
+  ],
+  "why": "The constexpr variable's initializer is a new evaluation, the try block is not part of it, and the throw is rejected."
+ },
+ "p74": {
+  "outcome": "depends",
+  "rules": [
+   "CE-13"
+  ],
+  "why": "Comparing two string literal addresses: Clang rejects, GCC and EDG fold it (Q-0033)."
+ },
+ "p75": {
+  "outcome": "reject",
+  "rules": [
+   "CE-11"
+  ],
+  "why": "A case label must be a constant; key is a parameter."
+ },
+ "p76": {
+  "outcome": "reject",
+  "rules": [
+   "CE-17"
+  ],
+  "why": "The evaluation reaches a static variable that is not usable."
+ },
+ "p77": {
+  "outcome": "depends",
+  "rules": [
+   "CE-19"
+  ],
+  "why": "explicit(2) narrows to bool: Clang and GCC reject, EDG accepts (Q-0078)."
+ },
+ "p78": {
+  "outcome": "compiles",
+  "rules": [
+   "CE-1"
+  ],
+  "why": "Calls through function pointers to constexpr functions are allowed."
+ },
+ "p79": {
+  "outcome": "reject",
+  "rules": [
+   "CE-16"
+  ],
+  "why": "S::f is only declared at the point of the evaluation."
+ },
+ "p80": {
+  "outcome": "reject",
+  "rules": [
+   "CE-17"
+  ],
+  "why": "The evaluation reaches a goto."
+ },
+ "p81": {
+  "outcome": "reject",
+  "rules": [
+   "CE-8",
+   "VIRT-10"
+  ],
+  "why": "A failed dynamic_cast of a reference throws."
+ },
+ "p82": {
+  "outcome": "depends",
+  "rules": [
+   "CE-17",
+   "CE-P1"
+  ],
+  "why": "A temporary of a non-literal type in a static_assert condition: Clang 22 accepts, GCC, EDG and Clang 18 reject (Q-0335)."
+ },
+ "p83": {
+  "outcome": "compiles",
+  "rules": [
+   "CEV-1"
+  ],
+  "why": "A consteval call inside a consteval function is in an immediate function context."
+ },
+ "p84": {
+  "outcome": "depends",
+  "rules": [
+   "CE-24",
+   "CINIT-1"
+  ],
+  "why": "A block static constinit of a trivially constructed class: Clang rejects, GCC and EDG accept (Q-0192)."
+ },
+ "p85": {
+  "outcome": "reject",
+  "rules": [
+   "CE-9",
+   "OBJ-2",
+   "STG-22"
+  ],
+  "why": "The read goes through a pointer to a local whose life has ended."
+ },
+ "p86": {
+  "outcome": "compiles",
+  "rules": [
+   "CE-23"
+  ],
+  "why": "A constexpr destructor keeps the class literal."
+ },
+ "p87": {
+  "outcome": "reject",
+  "rules": [
+   "CE-8"
+  ],
+  "why": "The throw is evaluated."
+ },
+ "p88": {
+  "outcome": "reject",
+  "rules": [
+   "CE-2"
+  ],
+  "why": "Holder's implicit constructor calls Part(), which is not constexpr."
+ },
+ "p89": {
+  "outcome": "reject",
+  "rules": [
+   "CE-10"
+  ],
+  "why": "100000000 iterations exceed every compiler's loop or step limit."
+ },
+ "p90": {
+  "outcome": "reject",
+  "rules": [
+   "CE-15"
+  ],
+  "why": "Ordering pointers to unrelated objects."
+ },
+ "p91": {
+  "outcome": "reject",
+  "rules": [
+   "CE-3",
+   "CE-14"
+  ],
+  "why": "view refers to an automatic array, so view has no constant initializer and the new evaluation cannot read through it."
+ },
+ "p92": {
+  "outcome": "reject",
+  "rules": [
+   "CE-17"
+  ],
+  "why": "The evaluation reaches a static variable that is not usable."
+ },
+ "p93": {
+  "outcome": "compiles",
+  "rules": [
+   "CE-3"
+  ],
+  "why": "view is a reference with a constant initializer to a static constexpr array, so it is usable."
+ },
+ "p94": {
+  "outcome": "reject",
+  "rules": [
+   "CE-2"
+  ],
+  "why": "The defaulted constructor calls Part(), which is not constexpr."
+ },
+ "p95": {
+  "outcome": "compiles",
+  "rules": [
+   "CE-22"
+  ],
+  "why": "Only first is read, and first has a value."
+ },
+ "p96": {
+  "outcome": "compiles",
+  "rules": [
+   "CE-1"
+  ],
+  "why": "A try block is allowed when nothing throws."
+ },
+ "p97": {
+  "outcome": "reject",
+  "rules": [
+   "CE-2"
+  ],
+  "why": "The implicit copy assignment calls Part's assignment operator, which is not constexpr."
+ },
+ "p98": {
+  "outcome": "reject",
+  "rules": [
+   "CE-3"
+  ],
+  "why": "later's initializer calls a function that is not constexpr, so later is not usable."
+ },
+ "p99": {
+  "outcome": "compiles",
+  "rules": [
+   "CE-21",
+   "CE-6"
+  ],
+  "why": "The first member is active and has a value."
+ },
+ "p100": {
+  "outcome": "reject",
+  "rules": [
+   "CE-8",
+   "NEW-39"
+  ],
+  "why": "Three initializers for a bound of 2 is an erroneous bound, which throws."
+ },
+ "p101": {
+  "outcome": "depends",
+  "rules": [
+   "CE-17",
+   "CE-P1"
+  ],
+  "why": "A temporary of a non-literal type in a constexpr function: Clang 22 and EDG accept, GCC and Clang 18 reject (Q-0335)."
+ },
+ "p102": {
+  "outcome": "compiles",
+  "rules": [
+   "CE-3"
+  ],
+  "why": "A reference with a constant initializer to a global is usable; every compiler accepts."
+ },
+ "p103": {
+  "outcome": "depends",
+  "rules": [
+   "CE-14",
+   "REF-4"
+  ],
+  "why": "EDG rejects a constexpr reference to a temporary aggregate whose reference member binds another temporary; Clang and GCC accept (Q-0193)."
+ },
+ "p104": {
+  "outcome": "reject",
+  "rules": [
+   "CE-22",
+   "INIT-1"
+  ],
+  "why": "Copying an uninitialized unsigned char reads a scalar with no value."
+ },
+ "p105": {
+  "outcome": "reject",
+  "rules": [
+   "CE-4"
+  ],
+  "why": "Conversion from void* to an object pointer."
+ },
+ "p106": {
+  "outcome": "compiles",
+  "rules": [
+   "CE-17"
+  ],
+  "why": "The goto is on a path the evaluation does not take."
+ },
+ "p107": {
+  "outcome": "reject",
+  "rules": [
+   "CE-8"
+  ],
+  "why": "The throw is evaluated."
+ },
+ "p108": {
+  "outcome": "reject",
+  "rules": [
+   "CE-8"
+  ],
+  "why": "The throw is evaluated; the termination it would cause is never reached."
+ },
+ "p109": {
+  "outcome": "compiles",
+  "rules": [
+   "CE-8"
+  ],
+  "why": "The throw is not evaluated."
+ },
+ "p110": {
+  "outcome": "reject",
+  "rules": [
+   "CE-5",
+   "CE-3"
+  ],
+  "why": "The evaluation changes and reads a global it did not create."
+ },
+ "p111": {
+  "outcome": "compiles",
+  "rules": [
+   "CE-14"
+  ],
+  "why": "Both pointers refer to objects with static storage."
+ },
+ "p112": {
+  "outcome": "reject",
+  "rules": [
+   "CE-2"
+  ],
+  "why": "The virtual call reaches Square::area, which is not constexpr."
+ },
+ "p113": {
+  "outcome": "reject",
+  "rules": [
+   "CE-23",
+   "CX-1"
+  ],
+  "why": "The member's destructor is not constexpr, so Holder is not a literal type."
+ },
+ "p114": {
+  "outcome": "runs",
+  "rules": [
+   "CE-27",
+   "SEQ-8"
+  ],
+  "why": "Either operand order gives 1012 or 21002, and the program accepts both."
+ },
+ "p115": {
+  "outcome": "compiles",
+  "rules": [
+   "CE-21"
+  ],
+  "why": "Every element gets a value."
+ },
+ "p116": {
+  "outcome": "reject",
+  "rules": [
+   "CE-2"
+  ],
+  "why": "The call through the pointer reaches plain, which is not constexpr."
+ },
+ "p117": {
+  "outcome": "depends",
+  "rules": [
+   "CE-18",
+   "CE-3"
+  ],
+  "why": "The reference s is not read; Clang 18 rejects the use of the reference, Clang 22, GCC and EDG accept."
+ },
+ "p118": {
+  "outcome": "depends",
+  "rules": [
+   "CE-28"
+  ],
+  "why": "0.0 / 0.0: Clang and GCC reject, EDG accepts (Q-0002)."
+ },
+ "p119": {
+  "outcome": "depends",
+  "rules": [
+   "CE-22"
+  ],
+  "why": "The copy reads second, which has no value: Clang and EDG reject, GCC accepts (Q-0115)."
+ },
+ "p120": {
+  "outcome": "depends",
+  "rules": [
+   "CE-24",
+   "CE-21",
+   "CINIT-1"
+  ],
+  "why": "An array of a class with a trivial constructor: Clang rejects, GCC and EDG accept and the run returns 0 (Q-0192)."
+ },
+ "p121": {
+  "outcome": "compiles",
+  "rules": [
+   "CE-17",
+   "CE-2"
+  ],
+  "why": "The variable with a non-constexpr destructor is not reached."
+ },
+ "p122": {
+  "outcome": "compiles",
+  "rules": [
+   "CE-17",
+   "CE-2"
+  ],
+  "why": "The non-literal variable is not reached."
+ },
+ "p123": {
+  "outcome": "depends",
+  "rules": [
+   "CE-22",
+   "CE-21"
+  ],
+  "why": "Returning ring moves it and reads data, which has no value: Clang and EDG reject, GCC accepts (Q-0115)."
+ },
+ "p124": {
+  "outcome": "reject",
+  "rules": [
+   "CE-30",
+   "CE-3"
+  ],
+  "why": "The template argument starts a new evaluation where n is not known."
+ },
+ "p125": {
+  "outcome": "compiles",
+  "rules": [
+   "CE-22"
+  ],
+  "why": "Every part of h has a value, so the copy is fine."
+ },
+ "p126": {
+  "outcome": "reject",
+  "rules": [
+   "CTOR-17",
+   "CE-9"
+  ],
+  "why": "The default member initializer binds the reference member to a temporary that ends with the constructor; every compiler rejects."
+ },
+ "p127": {
+  "outcome": "compiles",
+  "rules": [
+   "CE-10"
+  ],
+  "why": "A recursion depth of 400 is accepted by all."
+ },
+ "p128": {
+  "outcome": "reject",
+  "rules": [
+   "CE-15"
+  ],
+  "why": "Ordering pointers to unrelated objects."
+ },
+ "p129": {
+  "outcome": "compiles",
+  "rules": [
+   "CE-1",
+   "CE-5"
+  ],
+  "why": "Implicit copy and move assignments are constexpr, and the result is 3 + 4."
+ },
+ "p130": {
+  "outcome": "compiles",
+  "rules": [
+   "CE-26",
+   "SEQ-4"
+  ],
+  "why": "All eight compilers accept these unsequenced accesses in constant evaluation."
+ },
+ "p131": {
+  "outcome": "compiles",
+  "rules": [
+   "CE-10"
+  ],
+  "why": "200000 iterations of one loop are accepted."
+ },
+ "p132": {
+  "outcome": "reject",
+  "rules": [
+   "CE-14"
+  ],
+  "why": "The pointer refers to an automatic variable."
+ },
+ "p133": {
+  "outcome": "reject",
+  "rules": [
+   "CE-12"
+  ],
+  "why": "The evaluation reads a volatile object."
+ },
+ "p134": {
+  "outcome": "reject",
+  "rules": [
+   "CE-30",
+   "CE-3"
+  ],
+  "why": "The constexpr variable starts a new evaluation where v is not known."
+ },
+ "p135": {
+  "outcome": "depends",
+  "rules": [
+   "CE-13"
+  ],
+  "why": "Comparing two string literal addresses: Clang rejects, GCC and EDG fold it."
+ },
+ "p136": {
+  "outcome": "compiles",
+  "rules": [
+   "CE-14",
+   "REF-4"
+  ],
+  "why": "A static_cast, a selected ?: operand and a comma right operand all extend the temporary, which counts as static."
+ },
+ "p137": {
+  "outcome": "runs",
+  "rules": [
+   "CE-24"
+  ],
+  "why": "An empty class has no scalar part, so constinit accepts it."
+ },
+ "p138": {
+  "outcome": "reject",
+  "rules": [
+   "CE-10"
+  ],
+  "why": "A recursion depth of 100000 exceeds every limit."
+ },
+ "p139": {
+  "outcome": "reject",
+  "rules": [
+   "CE-17",
+   "CE-3"
+  ],
+  "why": "A static const double is not usable, and the evaluation reaches it."
+ },
+ "p140": {
+  "outcome": "reject",
+  "rules": [
+   "CE-21",
+   "CINIT-1"
+  ],
+  "why": "The constructor leaves second with no value; every compiler rejects."
+ },
+ "p141": {
+  "outcome": "runs",
+  "rules": [
+   "CE-24",
+   "STO-3"
+  ],
+  "why": "Scalars and arrays of scalars get the zero, which is a constant initializer."
+ },
+ "p142": {
+  "outcome": "compiles",
+  "rules": [
+   "CE-1"
+  ],
+  "why": "constexpr virtual calls are allowed."
+ },
+ "p143": {
+  "outcome": "depends",
+  "rules": [
+   "CE-17",
+   "CE-P1"
+  ],
+  "why": "A local variable of a non-literal class: Clang 22, GCC and EDG accept, Clang 18 rejects (Q-0335)."
+ },
+ "p144": {
+  "outcome": "reject",
+  "rules": [
+   "CE-8",
+   "CEV-1"
+  ],
+  "why": "The consteval constructor call throws."
+ },
+ "p145": {
+  "outcome": "reject",
+  "rules": [
+   "CE-3"
+  ],
+  "why": "n has no constant initializer."
+ },
+ "p146": {
+  "outcome": "compiles",
+  "rules": [
+   "CE-6",
+   "UNI-5"
+  ],
+  "why": "Each assignment changes the active member, and the read is of the active one."
+ },
+ "p147": {
+  "outcome": "reject",
+  "rules": [
+   "CE-11",
+   "DCL-19"
+  ],
+  "why": "A floating-point bound is not valid."
+ },
+ "p148": {
+  "outcome": "depends",
+  "rules": [
+   "CE-21",
+   "CE-22"
+  ],
+  "why": "v[3] has no value: Clang and EDG reject, GCC accepts (Q-0115)."
+ },
+ "p149": {
+  "outcome": "reject",
+  "rules": [
+   "CE-2",
+   "DER-12"
+  ],
+  "why": "The implicit constructor of a class with a virtual base is not constexpr."
+ },
+ "p150": {
+  "outcome": "reject",
+  "rules": [
+   "CE-23",
+   "CX-1"
+  ],
+  "why": "The destructor is not constexpr, so Logged is not literal."
+ },
+ "p151": {
+  "outcome": "reject",
+  "rules": [
+   "CE-10"
+  ],
+  "why": "fib(40) makes over 300 million calls."
+ },
+ "p152": {
+  "outcome": "depends",
+  "rules": [
+   "CE-18",
+   "CE-3"
+  ],
+  "why": "The member call does not read through s; Clang 18 rejects, Clang 22, GCC and EDG accept."
+ },
+ "p153": {
+  "outcome": "reject",
+  "rules": [
+   "CE-2"
+  ],
+  "why": "plain is not constexpr."
+ },
+ "p154": {
+  "outcome": "compiles",
+  "rules": [
+   "CE-3"
+  ],
+  "why": "limit is a const int with a constant initializer, so it is usable."
+ }
+}
