@@ -593,11 +593,12 @@ entity in its scope has ({rule}`NAM-3`).
 
 :::{rule} TPL-23
 :kind: required
-:tests: templates/declarations/member-outside.cpp templates/declarations/member-class-outside.cpp templates/declarations/member-outside-names.cpp
+:tests: templates/declarations/member-outside.cpp templates/declarations/member-class-outside.cpp templates/declarations/member-outside-names.cpp templates/declarations/member-outside-constrained.cpp templates/declarations/member-outside-clause-missing.cpp
 
 The functions, `static` data members, and member classes of a class
 template can be defined after the class body. Such a definition starts
-with the class's template head and names the member with the class's
+with the class's template head, with its type constraints and its
+requires clause ({rule}`CNS-26`, {question}`Q-0385`). The definition names the member with the class's
 template-id, such as `Box<T>::get`. The parameter names can differ from
 those of the class (TPL-43).
 :::
@@ -784,6 +785,21 @@ template <class A, class B> int Map<A, B>::size() { return 0; }   // names diffe
 template <class A, class B> int Map<B, A>::size();                // rejected: order
 ```
 
+A member of a constrained class template repeats the whole head. A
+concept can hold a long condition, so that the head stays short:
+
+% tidal-example: diverges
+```cpp
+template <class T> concept Small = sizeof(T) <= 8;
+template <Small T> requires (sizeof(T) > 1)
+struct Cell { T value; T get() const; int put(T); };
+
+template <Small T> requires (sizeof(T) > 1)
+T Cell<T>::get() const { return value; }       // the whole head
+template <Small T>
+int Cell<T>::put(T v) { value = v; return 0; } // rejected: no clause; EDG accepts
+```
+
 A friend definition with a default and the overloads of its name. Only
 another declaration of the same template breaks TPL-38:
 
@@ -800,8 +816,8 @@ template <class U> int pick(Host);                // rejected: the same template
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 117
-of 128 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 118
+of 130 tests.
 
 Two questions on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
 
@@ -841,6 +857,11 @@ probes for TPL-32 to TPL-47 and for the additions to the older rules.
   only the defaults on one declaration and accepts it
   ({question}`Q-0296`). Every compiler accepts declarations that give
   the defaults from right to left (`defaults-merge-gap-later.cpp`).
+- TPL-23, CNS-26: Clang and GCC reject a member defined after the
+  body of a constrained class template when the definition leaves out
+  the requires clause of the head. EDG 7.0 accepts it, and rejects a
+  definition that leaves out the type constraint
+  ({question}`Q-0385`).
 - TPL-35: Clang and GCC accept a function template whose parameter after
   a pack has no default and no deduction. EDG rejects the declaration
   ({question}`Q-0195`). The same split holds for a second type pack

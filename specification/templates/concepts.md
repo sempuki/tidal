@@ -611,6 +611,25 @@ template <class T> concept Tagged = requires {
 static_assert(!Tagged<int>);               // false, and no error
 ```
 
+A compound requirement checks the type of an expression through a
+concept (CPT-33). A program that includes no header writes its own
+same-type concept. A variable template with a partial specialization
+gives the test ({rule}`TSP-10`):
+
+```cpp
+template <class A, class B> constexpr bool same = false;
+template <class A> constexpr bool same<A, A> = true;
+template <class A, class B> concept SameAs = same<A, B>;
+
+unsigned long hash(int);
+template <class K> concept Key = requires (const K& k) {
+  { hash(k) } -> SameAs<unsigned long>;  // SameAs<decltype((hash(k))), unsigned long>
+  { k == k } -> SameAs<bool>;
+};
+static_assert(Key<int>);
+static_assert(!Key<double*>);              // hash(k) is not valid
+```
+
 % tidal-example: diverges
 ```cpp
 template <class T> int size_of(const T& t) {

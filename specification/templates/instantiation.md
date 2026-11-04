@@ -104,7 +104,10 @@ An explicit instantiation declaration stops only the definitions that
 the unit can do without. The unit still instantiates an inline
 function, a `constexpr` function, a function with a deduced return
 type, a variable that a constant expression can use, and a class
-(INST-27).
+(INST-27). The unit uses these definitions in constant evaluation and
+can expand a call in place. A call can still go to the definition in
+the unit with the explicit instantiation definition, so that definition
+must exist (INST-28).
 
 An explicit instantiation stands at namespace scope, in the namespace
 of its template or in a namespace that encloses it. In an enclosing
@@ -475,6 +478,12 @@ instantiated:
 - variables that a constant expression can use, such as a `constexpr`
   variable or a `const` integer `static` data member,
 - the class itself.
+
+The unit can use these definitions in a constant expression and can
+expand a call to such a function in place. The unit can also call the
+definition in the unit that has the explicit instantiation definition.
+So that definition must exist, also for an inline function
+({rule}`INST-28`).
 :::
 
 :::{rule} INST-29
@@ -629,6 +638,48 @@ int a = twice(4);
 // unit B
 template <class T> T twice(T x) { return x + x; }
 template int twice(int);                 // the definition
+```
+
+In the next example, a header holds a class template, and one unit
+makes a specialization for the program. The header defines the members after
+the class body. A member defined in the body is inline, and each unit
+makes that member anyway (INST-27). A header can define the `static`
+data member of a class template ({principle}`ODR-P2`):
+
+```cpp
+// fixed.h
+#ifndef FIXED_H
+#define FIXED_H
+template <int Frac> struct Fixed {
+  long long raw;
+  static int made;                       // one object for each specialization
+  static Fixed ratio(int n, int d);      // not inline: defined below
+  long long floor() const;
+};
+template <int Frac> int Fixed<Frac>::made = 0;
+template <int Frac> Fixed<Frac> Fixed<Frac>::ratio(int n, int d) {
+  ++made;
+  return Fixed{(static_cast<long long>(n) << Frac) / d};
+}
+template <int Frac> long long Fixed<Frac>::floor() const {
+  return raw >> Frac;
+}
+extern template struct Fixed<16>;        // instances.cpp makes Fixed<16>
+#endif
+```
+
+% tidal-example: fragment
+```cpp
+// instances.cpp
+#include "fixed.h"
+template struct Fixed<16>;               // makes ratio, floor, and made
+
+// user.cpp
+#include "fixed.h"
+long long half() {                       // calls ratio in instances.cpp
+  return Fixed<16>::ratio(1, 2).raw;
+}
+int count() { return Fixed<16>::made; }  // the one made of instances.cpp
 ```
 
 Points of instantiation:

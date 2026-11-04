@@ -102,7 +102,10 @@ source:
 | A prvalue | Neither. The prvalue initializes its target directly, so a class with no usable copy or move function can still be returned and passed as a prvalue. |
 
 A `return` of a local variable or a parameter treats the name as an
-rvalue, because the object is about to end.
+rvalue, because the object is about to end. The rvalue initializes the
+return value also when the return type is another class. A
+{term}`converting constructor` of the return type that takes an rvalue
+then runs ({rule}`CPY-11`).
 
 A program moves from a named object by casting it to an rvalue
 reference. `static_cast<T&&>(x)` is an xvalue ({rule}`VC-3`), so the
@@ -569,6 +572,52 @@ struct Owner {                     // owns an array, so it writes its copies
   }
   ~Owner() { delete[] items; }
 };
+```
+
+An owner of an object of a class with virtual functions has one owner
+for each object. So the owner deletes its copy functions and writes its
+move functions. A member template converts an owner of a derived class
+to an owner of a base class. A member template is never a move
+constructor (CPY-2), so the class still needs its own move constructor:
+
+```cpp
+template <class T> class Owner {
+  T* p;
+  template <class U> friend class Owner;  // reads Owner<U>::p (ACC-20)
+public:
+  explicit Owner(T* q) : p(q) {}
+  Owner(const Owner&) = delete;          // one owner for each object
+  Owner& operator=(const Owner&) = delete;
+  Owner(Owner&& o) : p(o.p) { o.p = nullptr; }
+  Owner& operator=(Owner&& o) {
+    if (this != &o) { delete p; p = o.p; o.p = nullptr; }
+    return *this;
+  }
+  template <class U>                     // U* converts to T* (CONV-14)
+  Owner(Owner<U>&& o) : p(o.p) { o.p = nullptr; }
+  ~Owner() { delete p; }                 // deletes through the base
+  T* operator->() const { return p; }
+};
+
+template <class T, class... Args>        // forwarding references (DED-8)
+Owner<T> make(Args&&... args) {
+  return Owner<T>(new T(static_cast<Args&&>(args)...));
+}
+
+struct Shape {
+  virtual ~Shape() = default;            // needed for delete (VIRT-12)
+  virtual int area() const = 0;
+};
+struct Square : Shape {
+  int side;
+  explicit Square(int s) : side(s) {}
+  int area() const override { return side * side; }
+};
+
+Owner<Shape> unit_square() {
+  Owner<Square> s = make<Square>(1);
+  return s;                // an rvalue, so the converting constructor runs (CPY-11)
+}
 ```
 
 A member that points into the object's own storage needs copy functions

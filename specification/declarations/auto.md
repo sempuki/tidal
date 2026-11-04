@@ -385,6 +385,8 @@ decltype(auto) db = (i);        // int&
 decltype(auto) dc = static_cast<int&&>(i);   // int&&
 decltype(auto) dd{(i)};         // int&
 
+template <class A, class B> constexpr bool same = false;
+template <class A> constexpr bool same<A, A> = true;
 template <class T> concept Int = same<T, int>;
 Int auto ia = 1;                // int
 Int auto ib = 1.0;              // rejected

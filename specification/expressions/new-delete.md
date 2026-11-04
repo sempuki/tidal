@@ -467,7 +467,7 @@ have the same types in the same order. These conditions also apply:
 
 :::{rule} NEW-24
 :kind: required
-:tests: expressions/new-delete/throw-placement-converting-type-no-match.cpp expressions/new-delete/throw-placement-reference-type-no-match.cpp expressions/new-delete/throw-placement-ellipsis-no-match.cpp expressions/new-delete/throw-class-delete-hides-global.cpp expressions/new-delete/throw-placement-templates-unordered.cpp expressions/new-delete/throw-placement-function-and-template.cpp expressions/new-delete/throw-placement-function-before-template-instantiation.cpp expressions/new-delete/throw-placement-deleted-function-and-template.cpp
+:tests: expressions/new-delete/throw-placement-converting-type-no-match.cpp expressions/new-delete/throw-placement-reference-type-no-match.cpp expressions/new-delete/throw-placement-ellipsis-no-match.cpp expressions/new-delete/throw-class-delete-hides-global.cpp expressions/new-delete/throw-placement-templates-unordered.cpp expressions/new-delete/throw-placement-function-and-template.cpp expressions/new-delete/throw-placement-function-before-template-instantiation.cpp expressions/new-delete/throw-placement-deleted-function-and-template.cpp foundations/language-support/placement-new-form-only.cpp
 
 The implementation calls no deallocation function, and the storage is
 not freed, in these cases:
@@ -755,8 +755,8 @@ int* q = new (cell) int(4);     // the int is at cell (NEW-33)
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 120
-of 143 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 121
+of 144 tests.
 
 Two questions on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
 

@@ -143,7 +143,7 @@ rank.
 
 :::{rule} TYP-4
 :kind: required
-:tests: foundations/types/integer-ranges-lp64.cpp foundations/types/integer-ranges-ilp32.cpp foundations/types/int-max-overflow.cpp foundations/types/integer-ranges-character-types.cpp
+:tests: foundations/types/integer-ranges-lp64.cpp foundations/types/integer-ranges-ilp32.cpp foundations/types/int-max-overflow.cpp foundations/types/integer-ranges-character-types.cpp foundations/types/integer-ranges-64-bit.cpp
 
 Every {term}`integral type` other than `bool` uses two's complement.
 For a type whose width in TYP-1 is `N` bits, the table gives the
@@ -153,6 +153,19 @@ bounds:
 |---|---|---|
 | signed | -2<sup>N-1</sup> | 2<sup>N-1</sup> - 1 |
 | unsigned | 0 | 2<sup>N</sup> - 1 |
+
+The widths on the matrix targets give these bounds:
+
+| Width | Signed lowest | Signed highest | Unsigned highest |
+|---|---|---|---|
+| 8 | -128 | 127 | 255 |
+| 16 | -32768 | 32767 | 65535 |
+| 32 | -2147483648 | 2147483647 | 4294967295 |
+| 64 | -9223372036854775808 | 9223372036854775807 | 18446744073709551615 |
+
+A minus sign is not part of a literal ({rule}`PRIM-1`). So no literal
+has the lowest signed value of a width, and a program writes that value
+as `-9223372036854775807LL - 1`, for example.
 :::
 
 :::{rule} TYP-11
@@ -238,6 +251,10 @@ table gives the choices on both matrix targets:
 | `wchar_t` | yes | `int` |
 | `char16_t` | no | `unsigned short` |
 | `char32_t` | no | `unsigned int` |
+
+The {term}`ordinary encoding` gives the value of each character in `char`
+({rule}`PRIM-32`). On the matrix targets, the digits, the uppercase
+letters, and the lowercase letters each have consecutive values.
 :::
 
 :::{rule} TYP-10
@@ -315,8 +332,8 @@ static_assert(sizeof(u16) == 2 && sizeof(u32) == 4 && sizeof(u64) == 8);
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 60
-of 62 tests. The x86-64 build of EDG skips the `-m32` tests, and the
+The results are in `tests/RESULTS.md`. All eight compilers agree on 61
+of 63 tests. The x86-64 build of EDG skips the `-m32` tests, and the
 ILP32 build runs only those.
 
 - TYP-1, TYP-2, TYP-10, TYP-12: the values come from probes on both

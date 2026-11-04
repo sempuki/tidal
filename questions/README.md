@@ -398,6 +398,7 @@ status, and the first sentence of its answer section.
 | [Q-0382](Q-0382-override-after-class-name.md) | Is `override` after the name of a class an identifier? | provisional | An identifier |
 | [Q-0383](Q-0383-reserved-literal-suffix-use.md) | Does a literal call a literal operator whose suffix does not start with `_`? | provisional | Yes; the literal calls the literal operator |
 | [Q-0384](Q-0384-union-end-padding.md) | Does a union follow the end-padding conditions of a class? | provisional | The conditions of a class apply to a union |
+| [Q-0385](Q-0385-edg-member-outside-clause-missing.md) | Must a member defined after the body of a class template repeat the requires clause of the class's template head? | provisional | The definition repeats the whole head, requires clause included |
 
 ## Status values
 

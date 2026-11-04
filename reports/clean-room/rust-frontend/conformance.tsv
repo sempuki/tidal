@@ -8,16 +8,20 @@ pass	classes/access/default-argument-private-constructor.cpp
 pass	classes/access/default-argument-private.cpp
 MISSED-REJECT	classes/access/enclosing-not-access-nested-function.cpp
 pass	classes/access/enclosing-not-access-nested.cpp
+pass	classes/access/friend-class-template.cpp
 pass	classes/access/friend-class.cpp
+pass	classes/access/friend-function-template.cpp
 pass	classes/access/friend-function.cpp
 pass	classes/access/friend-ignores-label.cpp
 pass	classes/access/friend-member-function-only.cpp
 pass	classes/access/friend-member-function.cpp
 pass	classes/access/friend-not-inherited.cpp
 pass	classes/access/friend-not-transitive.cpp
+pass	classes/access/friend-one-specialization.cpp
 pass	classes/access/friend-plain-type-name.cpp
 MISSED-REJECT	classes/access/friend-private-member-of-other.cpp
 MISSED-REJECT	classes/access/friend-protected-member-of-other.cpp
+FALSE-REJECT	classes/access/friend-specialization-only.cpp
 pass	classes/access/hidden-friend-block-declaration-scope.cpp
 pass	classes/access/hidden-friend-block-declaration.cpp
 pass	classes/access/hidden-friend-declared-after-use.cpp
@@ -1271,6 +1275,8 @@ pass	declarations/attributes/unused-class-object-no-warning.cpp
 pass	declarations/attributes/unused-member-ctor-no-warning.cpp
 pass	declarations/attributes/unused-member-plain-class-warns.cpp
 pass	declarations/attributes/unused-nested-member-no-warning.cpp
+pass	declarations/attributes/unused-one-binding-in-if-no-warning.cpp
+pass	declarations/attributes/unused-one-binding-no-warning.cpp
 pass	declarations/attributes/unused-plain-class-warns.cpp
 pass	declarations/attributes/unused-set-not-read-warns.cpp
 pass	declarations/attributes/unused-structured-binding-warns.cpp
@@ -4245,6 +4251,7 @@ pass	foundations/language-support/ordering-reversed-three-way-needs-zero-on-left
 pass	foundations/language-support/ordering-rewritten-needs-relational-zero.cpp
 pass	foundations/language-support/placement-array-needs-array-form.cpp
 pass	foundations/language-support/placement-forms-self-declared.cpp
+pass	foundations/language-support/placement-new-form-only.cpp
 pass	foundations/language-support/size-and-null-types-typedef.cpp
 pass	foundations/language-support/size-and-null-types.cpp
 pass	foundations/language-support/strong-ordering-minimal.cpp
@@ -4969,6 +4976,7 @@ pass	foundations/types/float-precision.cpp
 pass	foundations/types/floating-range-ilp32.cpp
 pass	foundations/types/floating-range.cpp
 pass	foundations/types/int-max-overflow.cpp
+pass	foundations/types/integer-ranges-64-bit.cpp
 pass	foundations/types/integer-ranges-character-types.cpp
 pass	foundations/types/integer-ranges-ilp32.cpp
 pass	foundations/types/integer-ranges-lp64.cpp
@@ -5050,6 +5058,10 @@ pass	programs/W15/optional.cpp
 pass	programs/W15/shapes.cpp
 pass	programs/W15/stack.cpp
 pass	programs/W15/typelist.cpp
+run-unsupported	programs/W16/evaluator.cpp
+pass-partial	programs/W16/textstats.cpp
+pass-partial	programs/W17/hashmap.cpp
+run-unsupported	programs/W17/units/main.cpp
 pass	programs/W2/clamp_sort.cpp
 pass	programs/W2/order.cpp
 pass	programs/W2/three_way.cpp
@@ -5854,6 +5866,8 @@ pass	templates/declarations/main-template.cpp
 pass	templates/declarations/member-class-outside.cpp
 pass	templates/declarations/member-enum-outside-unscoped.cpp
 pass	templates/declarations/member-enum-outside.cpp
+EDG-AGREES	templates/declarations/member-outside-clause-missing.cpp
+pass	templates/declarations/member-outside-constrained.cpp
 pass	templates/declarations/member-outside-names.cpp
 pass	templates/declarations/member-outside-order.cpp
 pass	templates/declarations/member-outside-pack.cpp

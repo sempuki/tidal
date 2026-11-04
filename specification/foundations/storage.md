@@ -68,6 +68,13 @@ whose storage it takes, and no destructor runs. The byte array that
 hosts the new object goes on, because the new object is nested in it.
 A program reaches the new object through the pointer that placement
 `new` returns. A cast of the array's address still points to a byte.
+
+A program that includes no header has no launder operation. So a class
+that keeps several objects in one byte array that is a member keeps the
+pointer that placement `new` returns for each object. An index into
+the byte array reaches only bytes. A class that wants index arithmetic
+over its objects takes its storage from an allocation function instead
+({rule}`STG-28`).
 :::
 
 :::{principle} STG-P3
@@ -722,6 +729,37 @@ public:
 The implicit copy of `Maybe` copies `held`, which then points into the
 bytes of the other object. So `Maybe` must write its own copy and move
 functions ({rule}`CPY-8`).
+
+A container of fixed capacity keeps one row of bytes for each slot,
+and an array of the pointers that placement `new` returns. Each row is
+aligned for `T`, because `alignas` aligns the whole array and the size
+of `T` is a multiple of its alignment ({principle}`ALN-P1`). Each row is
+the smallest byte array that holds its `T`, so the row hosts the `T`
+(STG-4):
+
+```cpp
+template <class T, int N>
+class FixedVec {
+  alignas(T) unsigned char rows[N][sizeof(T)];  // one row for each slot
+  T* items[N];                         // the result of each placement new
+  int count = 0;
+public:
+  FixedVec() = default;
+  FixedVec(const FixedVec&) = delete; // items point into this object (CPY-8)
+  FixedVec& operator=(const FixedVec&) = delete;
+  template <class... Args>
+  T* emplace(Args&&... args) {         // the caller checks the capacity
+    T* p = new (rows[count]) T(static_cast<Args&&>(args)...);
+    items[count++] = p;
+    return p;
+  }
+  T& operator[](int i) const { return *items[i]; }  // reaches the T
+  ~FixedVec() { while (count > 0) items[--count]->~T(); }
+};
+```
+
+`reinterpret_cast<T*>(rows[i])` points to a byte of row `i` and reaches
+no `T` (STG-29). So the class keeps `items`.
 
 A growable array of a class type gets raw storage from the allocation
 function and builds each element in place. `items + count` is valid

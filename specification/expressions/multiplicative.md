@@ -57,6 +57,8 @@ hold has no value. The behavior is undefined in these cases:
 - a floating-point result beyond the range of its type.
 
 {term}`Constant evaluation <constant evaluation>` rejects each of these cases ({principle}`TR-P4`).
+A program that must avoid these cases tests the operands before the
+operation, as the examples show.
 :::
 
 :::{principle} MUL-P6
@@ -363,6 +365,25 @@ lowest % -1          // undefined, although the remainder would be 0
 
 short low = -32768;
 low / short(-1)      // 32768: both operands become int
+```
+
+A program tests the operands before `*` or `/`, so that no step
+overflows (MUL-9, MUL-10). Each test divides and never multiplies. The
+additive page shows the test for `+` ({doc}`/expressions/additive`).
+
+```cpp
+constexpr long long lmax = static_cast<long long>(~0ull >> 1);
+constexpr long long lmin = -lmax - 1;
+
+bool multiply_fits(long long a, long long b) {
+  if (a == 0 || b == 0) return true;
+  if (a > 0) return b > 0 ? a <= lmax / b : b >= lmin / a;
+  return b > 0 ? a >= lmin / b : a >= lmax / b;
+}
+
+bool divide_fits(long long a, long long b) {
+  return b != 0 && !(a == lmin && b == -1);
+}
 ```
 
 ## Evidence

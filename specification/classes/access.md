@@ -34,7 +34,7 @@ derived class cannot reach into the protected parts of another.
 :::
 
 :::{principle} ACC-P3
-:rules: ACC-5 ACC-6 ACC-7 ACC-15 ACC-17
+:rules: ACC-5 ACC-6 ACC-7 ACC-15 ACC-17 ACC-20
 
 Friendship is granted by the class and belongs to the friend that the
 class names. Friendship does not pass on to the friends of a friend or
@@ -42,7 +42,10 @@ to the classes derived from a friend. A class can befriend:
 
 - a function,
 - one member function of another class,
-- a whole class.
+- a whole class,
+- a template, which makes every specialization of the template a
+  friend,
+- one specialization of a template, and no other.
 
 The class needs access to a member function before the class can name
 that function. A friend function first declared in the class lives in
@@ -97,7 +100,7 @@ label. A class can have any number of labels, in any order.
 
 :::{rule} ACC-2
 :kind: reject
-:tests: classes/access/private-outside.cpp classes/access/static-member-access.cpp classes/access/private-in-member.cpp classes/access/private-type-named.cpp classes/access/class-default-private.cpp classes/access/friend-member-function-only.cpp classes/access/using-reduces-access.cpp classes/access/private-base.cpp classes/unions/union-private-members.cpp
+:tests: classes/access/private-outside.cpp classes/access/static-member-access.cpp classes/access/private-in-member.cpp classes/access/private-type-named.cpp classes/access/class-default-private.cpp classes/access/friend-member-function-only.cpp classes/access/friend-one-specialization.cpp classes/access/using-reduces-access.cpp classes/access/private-base.cpp classes/unions/union-private-members.cpp
 
 Only the members and friends of a class can use the name of a private
 member. The rule applies to:
@@ -172,6 +175,21 @@ A friend can be:
 
 A friend declaration that names a type that is not a class is ignored.
 An access label has no effect on a friend declaration.
+:::
+
+:::{rule} ACC-20
+:kind: required
+:tests: classes/access/friend-class-template.cpp classes/access/friend-function-template.cpp classes/access/friend-specialization-only.cpp classes/access/friend-one-specialization.cpp
+
+A friend declaration with a template head names a class template or a
+function template. Every specialization of that template is a friend. A
+class template can name itself in this way. Each specialization of the
+class template then has access to the private members of every other
+specialization.
+
+A friend declaration without a template head can name one
+specialization, such as `Key<int>`. Only that specialization is a
+friend.
 :::
 
 :::{rule} ACC-6
@@ -340,6 +358,14 @@ public:
   using Vector::size;            // size is public again
 };
 
+template <class T> class Owner {
+  T* p = nullptr;
+  template <class U> friend class Owner;  // every Owner<U> is a friend
+public:
+  template <class U>
+  Owner(Owner<U>&& o) : p(o.p) { o.p = nullptr; }  // reads Owner<U>::p
+};
+
 class Token {
   int id = 0;
   friend bool same(Token a, Token b) { return a.id == b.id; }
@@ -348,8 +374,8 @@ class Token {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 68
-of 70 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 72
+of 74 tests.
 
 One question on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on classes and statements (`reports/review/2026-11-03-gap-review-questions-classes-statements.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
 

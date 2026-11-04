@@ -558,6 +558,11 @@ reports two further cases as errors with no flag at all:
 - the literal operator of the OPR-9 test, which has no space between
   `""` and the suffix (`-Wreserved-user-defined-literal`).
 
+The table lists the warnings for the cases that each rule names. A
+compiler can give other warnings on the same code. For example, Clang
+22 warns under `-Wall` about a self-move (`-Wself-move`), and the
+Evidence of {rule}`CPY-13` records that warning outside the rule.
+
 A test of a warning passes `-Werror` and a flag that turns the warning
 on in both compilers, so the two columns give one result. The flag is
 the warning's own flag, or a group that holds the warning in both

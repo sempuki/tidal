@@ -207,7 +207,7 @@ evaluation ({rule}`NEW-37`, {question}`Q-0303`).
 
 :::{rule} LSUP-7
 :kind: required
-:tests: foundations/language-support/placement-forms-self-declared.cpp expressions/new-delete/placement-array-no-overhead.cpp foundations/language-support/placement-array-needs-array-form.cpp
+:tests: foundations/language-support/placement-forms-self-declared.cpp expressions/new-delete/placement-array-no-overhead.cpp foundations/language-support/placement-array-needs-array-form.cpp foundations/language-support/placement-new-form-only.cpp
 
 A program that includes no header defines the non-allocating placement
 forms itself. Each form is an `inline` function with `noexcept`:
@@ -217,8 +217,12 @@ forms itself. Each form is an `inline` function with `noexcept`:
 | `operator new`, `operator new[]` | `std::size_t`, `void*` | returns the `void*` argument |
 | `operator delete`, `operator delete[]` | `void*`, `void*` | none |
 
-An array placement `new`, such as `new (p) T[n]`, calls the
-`operator new[]` form ({rule}`NEW-20`). The program's own definitions
+A program defines only the forms that it uses. A placement `new` for
+one object calls the `operator new` form. An array placement `new`,
+such as `new (p) T[n]`, calls the `operator new[]` form ({rule}`NEW-20`).
+A placement `operator delete` form runs only when the initialization
+throws ({rule}`NEW-21`), and the form does nothing. Without the form, no
+deallocation function runs ({rule}`NEW-24`), with the same effect. The program's own definitions
 are the {term}`non-allocating placement forms <non-allocating placement form>`
 of {rule}`NEW-33`.
 :::
@@ -506,8 +510,8 @@ int* r = new (raw) int(3);          // raw hosts the int
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 48
-of 61 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 49
+of 62 tests.
 
 - LSUP-1: each compiler checks the shape in its own way. Clang checks
   the layout of the two members, and also accepts a second pointer in

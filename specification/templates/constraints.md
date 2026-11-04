@@ -541,7 +541,7 @@ constraints accepts an argument with any constraints.
 
 :::{rule} CNS-26
 :kind: reject
-:tests: templates/constraints/redeclare-clause-differs.cpp templates/constraints/redeclare-constraint-missing.cpp templates/constraints/redeclare-type-constraint-as-clause.cpp templates/constraints/different-spellings.cpp templates/constraints/redeclare-constant-placeholder.cpp templates/constraints/lambda-redeclaration.cpp
+:tests: templates/constraints/redeclare-clause-differs.cpp templates/constraints/redeclare-constraint-missing.cpp templates/constraints/redeclare-type-constraint-as-clause.cpp templates/constraints/different-spellings.cpp templates/constraints/redeclare-constant-placeholder.cpp templates/constraints/lambda-redeclaration.cpp templates/declarations/member-outside-constrained.cpp templates/declarations/member-outside-clause-missing.cpp
 
 All declarations of one template must have equivalent constraints in
 the same places. A type constraint and the same concept-id in a
@@ -746,8 +746,8 @@ decltype(&Box<long>::get)               // int (Box<long>::*)(): the clause is n
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 102
-of 129 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 103
+of 131 tests.
 
 One question on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
 

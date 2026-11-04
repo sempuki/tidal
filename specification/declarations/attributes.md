@@ -325,13 +325,14 @@ creates and the program discards.
 
 :::{rule} ATTR-6
 :kind: recommended
-:tests: declarations/attributes/maybe-unused-silences.cpp declarations/attributes/unused-warns.cpp declarations/attributes/unused-plain-class-warns.cpp declarations/attributes/unused-set-not-read-warns.cpp declarations/attributes/unused-structured-binding-warns.cpp declarations/attributes/unused-class-object-no-warning.cpp declarations/attributes/unused-member-ctor-no-warning.cpp declarations/attributes/unused-base-dtor-no-warning.cpp declarations/attributes/unused-nested-member-no-warning.cpp declarations/attributes/unused-member-plain-class-warns.cpp
+:tests: declarations/attributes/maybe-unused-silences.cpp declarations/attributes/unused-warns.cpp declarations/attributes/unused-plain-class-warns.cpp declarations/attributes/unused-set-not-read-warns.cpp declarations/attributes/unused-structured-binding-warns.cpp declarations/attributes/unused-class-object-no-warning.cpp declarations/attributes/unused-member-ctor-no-warning.cpp declarations/attributes/unused-base-dtor-no-warning.cpp declarations/attributes/unused-nested-member-no-warning.cpp declarations/attributes/unused-member-plain-class-warns.cpp declarations/attributes/unused-one-binding-no-warning.cpp declarations/attributes/unused-one-binding-in-if-no-warning.cpp
 
 An implementation should warn about a variable in a block that the
 program never reads, including:
 
 - a variable that the program only assigns,
-- a structured binding declaration,
+- a structured binding declaration, if the program reads none of its
+  names,
 - a variable of a class type, if creating and destroying the variable
   runs no user-provided constructor or destructor.
 
@@ -397,8 +398,8 @@ switch (k) {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 68
-of 84 tests. EDG skips the tests that use `-Werror`.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 70
+of 86 tests. EDG skips the tests that use `-Werror`.
 
 - An implementation should warn if a `noreturn` function can return.
   Clang and GCC give this warning ("function declared 'noreturn' should
