@@ -16,4 +16,10 @@ A gap review summary says that copying an uninitialized `unsigned char` (or `std
 
 Not undefined at run time for `unsigned char` and `std::byte`, and rejected during constant evaluation (option 1). The constant-evaluation behavior is observed, and the run-time exception comes from the review summary. A test that can observe the run-time difference would settle the question.
 
+Kept open on 2026-11-03 under decision 0054, because no principle on the page gives the answer. INIT-P2 says that an automatic object with no initializer has no value, and it does not state the exception for `unsigned char` and `std::byte`.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) agrees with option 1. Producing an indeterminate value is undefined, except for the unsigned ordinary character type and `std::byte` when the value is copied into an object of such a type. The copy then holds an indeterminate value. Constant evaluation forbids a read of an object whose value is indeterminate, so the constant form needs a diagnostic. The review notes that a later change makes many such reads of uninitialized automatic variables erroneous behavior. That change matters for INIT-1 as a whole and not for this exception.

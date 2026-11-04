@@ -63,7 +63,7 @@ parameter list, as `const` can.
 
 :::{rule} VOL-2
 :kind: required
-:tests: declarations/volatile/overload-on-volatile.cpp declarations/volatile/static-const-volatile-in-class.cpp declarations/volatile/volatile-member-function.cpp declarations/volatile/volatile-member-of-volatile-object.cpp declarations/volatile/volatile-member-on-plain.cpp declarations/volatile/volatile-object-ordinary-ctor.cpp
+:tests: declarations/volatile/overload-on-volatile.cpp declarations/volatile/volatile-member-function.cpp declarations/volatile/volatile-member-of-volatile-object.cpp declarations/volatile/volatile-member-on-plain.cpp declarations/volatile/volatile-object-ordinary-ctor.cpp
 
 These rules apply to `volatile` and classes:
 
@@ -71,8 +71,6 @@ These rules apply to `volatile` and classes:
   object and on other objects.
 - Two member functions can overload on `volatile`.
 - A member of a volatile object is volatile.
-- A `static const volatile` integer member can have an initializer in
-  its class ({question}`Q-0080`).
 - A volatile object of class type is initialized by an ordinary
   constructor, and it is volatile after the constructor ends.
 :::
@@ -247,7 +245,7 @@ volatile Control* control = nullptr;           // set to the device address
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 40
-of 42 tests.
+of 41 tests.
 
 - VOL-1: the tests check that programs with volatile accesses compile
   and run. A test cannot observe if an access was removed.
@@ -266,9 +264,10 @@ of 42 tests.
   test checks only that the other bit-fields keep their values. Whether
   an implementation can merge or split volatile accesses is open
   ({question}`Q-0326`).
-- VOL-2: Clang rejects an in-class initializer for a `static const
+- {rule}`CLS-23`: Clang rejects an in-class initializer for a `static const
   volatile` member. GCC and EDG accept the initializer
-  ({question}`Q-0080`).
+  ({question}`Q-0080`). CLS-23 follows Clang, and the test records GCC
+  and EDG as overrides.
 - VOL-5: Clang and GCC warn by default for each listed use in C++23
   mode, and not for compound assignment. The flag is
   `-Wdeprecated-volatile` for Clang and `-Wvolatile` for GCC. `-Wall`,

@@ -26,4 +26,10 @@ GCC 14.
 
 No; `alignas` must not apply to an enumeration (option 1). Clang and the newer GCC agree. The provisional answer has the weakest support of the group, and an opinion is welcome.
 
+Kept open on 2026-11-03 under decision 0054, because no principle on the page gives the answer. ALN-P1 says what `alignas` does to a type's alignment, and no principle says which declarations can carry it. EDG 7.0 is the only newest family that differs.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) agrees with option 1. The entities that accept an alignment specifier are variables, data members other than bit-fields, and classes. An enumeration is not a class and is not in that list.

@@ -27,4 +27,10 @@ No; the program is not valid, and the error is `no-diagnostic` (option 1). Clang
 The test expects acceptance, the outcome of an implementation that does
 not detect the dependency, and records Clang's rejection as an override.
 
+Kept open on 2026-11-03 under decision 0054, because the review finds the reference silent.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) finds the reference silent. An exception specification is needed for a function that overload resolution picks in an expression, and the operand of the member's own specifier calls the member, so the specification needs itself. No rule covers a specification that depends on itself. No rule makes such a program invalid, with or without a diagnostic, and no rule fixes the specification's value. The deferred handling of these specifiers covers template specializations, and the limit on recursive instantiation does not reach a member of an ordinary class. Option 1 is a reasonable reading of the gap, and Clang's error is consistent with it.

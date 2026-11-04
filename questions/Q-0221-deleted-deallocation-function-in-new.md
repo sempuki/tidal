@@ -35,6 +35,12 @@ The three tests above, each with an override for GCC.
 No; Clang and EDG reject, GCC accepts (option 1). Clang and EDG agree, and the access check, on which all
 three agree, treats the deallocation function as used.
 
+Kept open on 2026-11-03 under decision 0054, because no principle on the page gives the answer. NEW-P3 says which deallocation function pairs with an allocation after a throw, and no principle says that the `new` expression uses that function when nothing throws. GCC 16 is the only newest family that differs.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) agrees with option 1. The single matching deallocation function for a class counts as named by the `new` expression, so the expression uses that function. A use of a deleted function makes the program not valid, whether or not the initialization can throw. GCC's acceptance is a defect.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

@@ -1,6 +1,6 @@
 # Q-0302: Does an erroneous array bound give a null pointer when the allocation function is non-throwing?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** NEW-36, `tests/expressions/new-delete/bad-bound-nothrow.cpp`
 
 ## Context
@@ -29,11 +29,17 @@ any exception distinguishes the two results.
 1. A null pointer (NEW-36). GCC differs.
 2. An exception, as for a potentially throwing function. Clang differs.
 
-## Provisional answer
+## Answer
 
 Yes (NEW-36); Clang agrees, GCC throws (option 1). A program that uses a non-throwing allocation function
 expects to test for a null result and expects no exception.
 
+Settled on 2026-11-03 under decision 0054. The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) supports this answer with no doubt, and NEW-P6 gives the same answer: with a non-throwing allocation function, an erroneous array bound makes the expression give null, and no allocation happens. GCC 16 still differs. Tidal records GCC 16's result as a deviation, as for the compiler-defect entries Q-0002 and Q-0003, and the tests keep their overrides for GCC 16.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) agrees with option 1. When the allocation function chosen for the expression cannot throw, an erroneous bound makes the result a null pointer of the result type, and no allocation function is called. GCC's exception is a defect.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

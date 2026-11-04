@@ -465,6 +465,15 @@ of 97 tests. The `<=>` tests declare a minimal `std::strong_ordering`,
 no headers. EDG needs `std::weak_ordering` declared even for integer
 operands.
 
+Four questions on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+
+| Question | Principle | Family that still differs |
+|---|---|---|
+| {question}`Q-0029` | CMP-P6 | Clang 22 |
+| {question}`Q-0030` | CMP-P2 | EDG 7.0 |
+| {question}`Q-0103` | CMP-P2 | EDG 7.0 |
+| {question}`Q-0104` | CMP-P3 | EDG 7.0 |
+
 - CMP-1: Clang 22 rejects a chained comparison by default, through a
   `-Wparentheses` warning whose default severity is an error. Clang 22
   accepts the comparison with `-Wno-error=parentheses` or with the

@@ -44,6 +44,12 @@ The base keeps its padding (option 1). The newest versions of GCC and
 Clang agree on this layout. CLS-35 lists the EDG and GCC 14 choices as
 extra conditions of those compilers.
 
+Kept open on 2026-11-03 under decision 0054, because the review finds the question outside the C++23 text.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on classes and statements (`reports/review/2026-11-03-gap-review-questions-classes-statements.md`) finds the question outside the C++23 text. The language does not fix whether a derived class reuses the end padding of a base. The choice belongs to the implementation and its ABI, so every compiler in the table conforms.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

@@ -479,6 +479,13 @@ struct MoreConst : Maker {
 The results are in `tests/RESULTS.md`. All eight compilers agree on 122
 of 126 tests.
 
+Two questions on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on classes and statements (`reports/review/2026-11-03-gap-review-questions-classes-statements.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+
+| Question | Principle | Family that still differs |
+|---|---|---|
+| {question}`Q-0056` | VIRT-P3 | GCC 16 |
+| {question}`Q-0355` | VIRT-P1 | EDG 7.0 |
+
 - VIRT-12: GCC accepts `delete` through a base without a virtual
   destructor during constant evaluation. Clang and EDG reject the
   `delete` ({question}`Q-0056`).

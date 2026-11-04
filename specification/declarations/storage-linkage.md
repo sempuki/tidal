@@ -56,7 +56,8 @@ storage class:
 `extern` says that the object lives outside the current declaration, so
 in a block an `extern` declaration cannot carry an initializer, and an
 anonymous union at namespace scope, which has no name to share, must be
-`static`.
+`static`. A name in an unnamed namespace is shared with nothing already
+(STO-P3), so an anonymous union there needs no `static`.
 :::
 
 :::{principle} STO-P3
@@ -249,8 +250,9 @@ result ({question}`Q-0105`).
 :kind: reject
 :tests: declarations/storage-linkage/anonymous-union-namespace.cpp declarations/storage-linkage/anonymous-union-static.cpp declarations/storage-linkage/anonymous-union-unnamed-namespace.cpp
 
-An anonymous union at namespace scope must be declared `static`. The
-rule also applies in an unnamed namespace ({question}`Q-0045`).
+An anonymous union at namespace scope must be declared `static`, unless
+the union is in an unnamed namespace or in a namespace inside one
+({question}`Q-0045`).
 :::
 
 ## Runtime Behavior
@@ -366,6 +368,13 @@ All eight compilers agree on 67 of 69 tests. The results are in
 `tests/RESULTS.md`. 21 tests use two translation units (decision 0014).
 EDG checks each unit and does not link.
 
+Two questions on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+
+| Question | Principle | Family that still differs |
+|---|---|---|
+| {question}`Q-0011` | STO-P4 | none; LNK-7 needs no diagnostic |
+| {question}`Q-0105` | STO-P3 | EDG 7.0 |
+
 - **LNK-6.** Each translation unit compiles without a diagnostic. The
   linker reports a second definition of a variable or function that is
   not `inline` ("multiple definition of"). Two different definitions of
@@ -383,7 +392,8 @@ EDG checks each unit and does not link.
   warning an error. GCC and EDG reject such a declaration in each mode.
 - **STO-11.** Clang accepts an anonymous union without `static` in an
   unnamed namespace. GCC and EDG reject the union
-  ({question}`Q-0045`).
+  ({question}`Q-0045`). STO-11 follows Clang, and the tests record GCC
+  and EDG as overrides.
 - **STO-9.** The C++ run-time library of Clang and GCC detects a second
   entry into the initialization of a block-scope `static` variable,
   also at `-O0` without a sanitizer. The program ends with an uncaught

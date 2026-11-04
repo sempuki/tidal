@@ -20,4 +20,10 @@ accepts it.
 Yes; the behavior is undefined, so constant evaluation rejects the deletion (option 1). Clang and EDG agree, and VIRT-12 treats a
 single object the same way (Q-0056).
 
+Kept open on 2026-11-03 under decision 0054, because no principle on the page gives the answer. NEW-P2 says that the array form of `delete` matches an array, and it does not say that the static type must match the dynamic type of the elements. GCC 16 is the only newest family that differs.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) agrees with option 1. For the array form of `delete`, the behavior is undefined when the dynamic type of the deleted object is not similar to the static type, and a virtual destructor does not change that. Undefined behavior stops constant evaluation, so a diagnostic is required. GCC's acceptance is a defect.

@@ -1,6 +1,6 @@
 # Q-0348: Does a pointer to member formed from an alias of a ref-qualified function type keep the ref-qualifier?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** DCL-15, `tests/declarations/declarators/ref-qualified-function-type-member.cpp`
 
 ## Context
@@ -27,9 +27,15 @@ with an override for GCC.
 1. The pointer to member keeps the ref-qualifier, and GCC has a defect.
 2. The ref-qualifier is dropped, and the initialization is not valid.
 
-## Provisional answer
+## Answer
 
 The ref-qualifier is kept (option 1). Two of three implementations
 keep it, and GCC keeps a cv-qualifier in the same position.
 
+Settled on 2026-11-03 under decision 0054. The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) supports this answer with no doubt, and DCL-P3 gives the same answer: the qualifiers of a function type are part of the type, and a type with a ref-qualifier can be named and used for pointers to members. GCC 16 still differs. Tidal records GCC 16's result as a deviation, as for the compiler-defect entries Q-0002 and Q-0003, and the tests keep their overrides for GCC 16.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) agrees with option 1. A function type with a ref-qualifier, also when an alias names it, can be the target type of a pointer to member. The qualifier is part of the function type, and nothing removes it. GCC's rejection is a defect.

@@ -25,4 +25,10 @@ with no qualifier.
 
 After; Clang differs (option 1). Two of three implementations take this order.
 
+Kept on 2026-11-03. The review reads option 2, which only Clang follows. GCC 16 and EDG 7.0 take the order of option 1, and no principle on the page states an order. Tidal keeps option 1 until the maintainer decides. The question is in row 4 of `documentation/decisions/pending.md`, and it stays open under decision 0054, because the review reads against the answer.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) reads option 2. In a pointer declarator, the optional attributes come right after the `*` and before the optional cv-qualifiers, and the same order holds for a pointer to member. An attribute after the cv-qualifiers fits no position in the grammar there, so GCC's and EDG's acceptance looks like an extension. Clang follows this reading.

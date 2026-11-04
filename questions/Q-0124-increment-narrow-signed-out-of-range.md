@@ -39,4 +39,10 @@ overflow during constant evaluation (UN-21, PFX-18).
 The step is defined and the value converts back; EDG differs (option 1). Two of three implementations take this behavior, and the
 sanitizer of both agrees that the step is defined.
 
+Kept open on 2026-11-03 under decision 0054, because the review reads with doubt.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) agrees with option 1, with doubt. The prefix form is defined as a compound assignment that adds one, so the addition runs in the promoted type and the assignment converts the sum back, which wraps for every value. EDG's rejection in a constant expression is a defect. For the postfix form the text says only that the operand changes by adding one, and does not state that the postfix form uses the same promotion and conversion. The doubt is only in the wording of the postfix form.

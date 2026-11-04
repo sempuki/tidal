@@ -203,6 +203,12 @@ apply(twice, 2);                 // rejected where the type records the linkage 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 29
 of 39 tests.
 
+One question on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+
+| Question | Principle | Family that still differs |
+|---|---|---|
+| {question}`Q-0075` | LSP-P2 | GCC 16 |
+
 - LSP-6: EDG treats C language linkage as part of the function type.
   Clang and GCC do not ({question}`Q-0074`). EDG gives the linkage to a
   function type in a parameter and in a type alias inside an

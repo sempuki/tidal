@@ -1,6 +1,6 @@
 # Q-0029: Is a chained comparison such as `3 > 2 > 1` valid?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** CMP-1, CMP-14, `tests/expressions/comparison/chained-comparison.cpp`, `tests/expressions/comparison/chained-comparison-warns.cpp`, `tests/expressions/comparison/chained-less-equal-warns.cpp`, `tests/expressions/comparison/chained-class-bool-warns.cpp`, `tests/expressions/comparison/chained-fold-not-chain.cpp`, `tests/expressions/comparison/chained-requires-not-dependent.cpp`, `tests/expressions/comparison/chained-in-concept-no-warning.cpp`, `tests/expressions/comparison/chained-equality-gcc-warns.cpp`, `tests/expressions/comparison/chained-relational-equality-gcc-warns.cpp`
 
 ## Context
@@ -47,11 +47,17 @@ newer version settles the split.
    diagnostic choice, and a warning is recommended practice.
 2. An implementation may reject it.
 
-## Provisional answer
+## Answer
 
 Valid; a warning is recommended (option 1). The grouping and result are well defined, and four of five
 compiler versions accept the expression. Clang 22 treats the rejection
 as a warning that a flag turns back into a warning, which matches
 option 1 with a strict default.
 
+Settled on 2026-11-03 under decision 0054. The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) supports this answer with no doubt, and CMP-P6 gives the same answer: a chained comparison is valid, and an implementation should warn about it. Tidal records Clang 22's result as a deviation, as for the compiler-defect entries Q-0002 and Q-0003, and the tests keep their overrides for Clang 22.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) agrees with option 1. The relational operators group from left to right, and the `bool` result converts to the other operand's type by the usual arithmetic conversions. Nothing makes the form invalid or deprecated. Clang 22's default rejection does not conform, and a flag restores the conforming behavior.

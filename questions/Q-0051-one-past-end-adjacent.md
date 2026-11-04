@@ -31,4 +31,10 @@ version in the matrix.
 
 Rejected during constant evaluation, and unspecified at run time (option 1). Clang and GCC agree, and option 1 matches Q-0033.
 
+Kept open on 2026-11-03 under decision 0054, because no principle on the page gives the answer. CMP-P3 makes the result unspecified and lists CMP-20 as an exception, and no principle on the page states the rejection during constant evaluation. EDG 7.0 is the only newest family that differs.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) agrees with option 1. The result is unspecified when one pointer is one past the end of one complete object and the other points to a different complete object. An equality comparison with an unspecified result is not allowed during constant evaluation, so EDG's acceptance is a defect.

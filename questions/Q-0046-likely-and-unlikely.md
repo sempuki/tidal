@@ -21,4 +21,10 @@ override for GCC.
 
 Rejected (option 1). Two of three implementations reject the pair.
 
+Kept open on 2026-11-03 under decision 0054, because no principle on the page gives the answer. ATTR-P1 says that each standard attribute has a fixed set of places where it can go, and it does not say whether two attributes can share a statement. GCC 16 accepts the pair with a warning.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) agrees with option 1. `likely` and `unlikely` must not appear in one sequence of attribute specifiers, and two adjacent bracketed specifiers form one such sequence. The rule is not exempt from diagnosis. GCC's warning alone does not meet it, because GCC then accepts the program.

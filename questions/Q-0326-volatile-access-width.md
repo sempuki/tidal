@@ -41,6 +41,12 @@ the GCC option for strict volatile bit-fields on other targets. Whether
 an implementation can merge accesses, as in the VOL-12 initializer,
 stays open.
 
+Kept open on 2026-11-03 under decision 0054, because the review does not decide the open part. Whether an implementation can merge volatile accesses, as in the VOL-12 initializer, stays open, and VOL-P1 says only that each access is performed as written.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) agrees with option 1. The meaning of a volatile access is implementation-defined, and a conforming implementation must still perform volatile accesses as the abstract machine does. Nothing says directly whether two accesses may merge into one. For the open part about an initializer, the review notes that volatile semantics do not apply to an object while its constructor runs.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

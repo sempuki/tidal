@@ -37,6 +37,12 @@ No (ALN-8, BF-2, NEW-2); EDG accepts it in `alignas` and a width, GCC in `new` (
 and option 1 gives the three places one rule. The tests expect a
 rejection and record GCC's and EDG's results with overrides.
 
+Kept open on 2026-11-03 under decision 0054, because no principle on the pages of ALN-8, BF-2, and NEW-2 gives the answer. ENUM-P2, on the enumerations page, says that a scoped enumeration converts to an integer only with a cast. In each form only one newest family differs.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) agrees with option 1. The `alignas` operand and the bit-field width must be integral constant expressions, which allow only integral and unscoped enumeration types. The size in an array `new` converts implicitly to the size type, and a scoped enumeration has no implicit conversion to an integer. EDG's and GCC's acceptances are defects.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

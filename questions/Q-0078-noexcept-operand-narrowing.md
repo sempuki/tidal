@@ -20,4 +20,10 @@ split.
 
 No; the operand must convert to `bool` without narrowing (option 1). Clang and GCC agree. `static_assert` and `if constexpr` permit narrowing, so the rule for `noexcept` differs from the rules for those two.
 
+Kept open on 2026-11-03 under decision 0054, because no principle on the page gives the answer. EXS-P1 says that the operand is a constant decided at translation time, and no principle says which conversions to `bool` it allows. EDG 7.0 is the only newest family that differs.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) agrees with option 1. The operand must be a constant expression converted to `bool` with only a short list of conversions, and the conversions from an integer or a pointer to `bool` are not in the list. The C++23 change that relaxed this for `static_assert` and `if constexpr` did not cover the exception specifier.

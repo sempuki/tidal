@@ -25,4 +25,10 @@ valid inside function"), even under `-pedantic-errors`.
 Yes (option 1). Two of three implementations reject the use, and Clang's own
 warning says `__func__` is only valid inside a function.
 
+Kept open on 2026-11-03 under decision 0054, because no principle on the page gives the answer. FN-P5 says what `__func__` names inside a function body, and it does not say that a use outside a body is rejected. Clang 22 accepts the use with a warning.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) agrees with option 1. `__func__` exists only in a function body, as if a local variable were declared there. Outside a function the name is not declared, so the use is not valid and needs a diagnostic. Clang's warning is a diagnostic, and its acceptance after the warning is an extension.

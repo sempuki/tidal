@@ -23,4 +23,10 @@ bytes.
 Unspecified: any integer type that holds the value (option 1). The three compilers give three types, and each type holds the
 value.
 
+Kept open on 2026-11-03 under decision 0054, because no principle on the page gives the answer. ENUM-P3 lets the implementation choose the underlying type, and no principle speaks of the type of an enumerator inside the list. Each newest family gives a type that holds the value, which the answer allows.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) agrees with option 1. An enumerator with no initializer keeps the type of the one before it unless the value no longer fits. Then the enumerator gets an unspecified integral type large enough for the value, and the program is not valid if no such type exists.

@@ -209,6 +209,13 @@ The results are in `tests/RESULTS.md`. All eight compilers agree on 26
 of 48 tests. Each divergence has a question, except the
 implementation-defined limits of ALN-5.
 
+Two questions on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+
+| Question | Principle | Family that still differs |
+|---|---|---|
+| {question}`Q-0070` | ALN-P2 | GCC 16 |
+| {question}`Q-0071` | ALN-P1 | GCC 16 |
+
 - ALN-1: GCC uses the last of several `alignas` on a class. On a
   variable and on a data member, GCC uses the strictest, as Clang and
   EDG do on all three ({question}`Q-0071`).

@@ -238,6 +238,13 @@ struct File : Base { void close() override; };  // rejected: throwing override
 The results are in `tests/RESULTS.md`. All eight compilers agree on 35
 of 44 tests.
 
+Two questions on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+
+| Question | Principle | Family that still differs |
+|---|---|---|
+| {question}`Q-0094` | EXS-P3 | GCC 16 |
+| {question}`Q-0095` | EXS-P3 | EDG 7.0 |
+
 - EXS-7: EDG accepts `noexcept(2)` and a pointer operand. Clang and GCC
   reject them ({question}`Q-0078`).
 - EXS-4: GCC treats a class-specific `operator delete` without a

@@ -44,6 +44,12 @@ class-properties inventory (item LC-inherited-members) describes the
 same reading. A struct whose members all come from one base has the
 layout of that base, so the reading changes no address.
 
+Kept open on 2026-11-03 under decision 0054, because the review reads with doubt.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on classes and statements (`reports/review/2026-11-03-gap-review-questions-classes-statements.md`) agrees with option 1, with doubt. A derived class has the members of its bases among its own, so the common initial sequence takes the base's members. The doubt is that the sequence is defined in declaration order, and the C++23 text does not say how that order runs across a base and a derived class. When all the members are in one base, the order does not matter.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

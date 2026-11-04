@@ -27,6 +27,12 @@ Yes, when a test runs the compiler with the option (option 2). Each configuratio
 configuration that a test runs is evidence. An option no test runs is
 not.
 
+Kept open on 2026-11-03 under decision 0054, because the review finds the reference silent.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) finds the reference silent. The question concerns Tidal's Evidence.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

@@ -30,4 +30,10 @@ No, it needs parentheses; EDG differs (option 1). Two of three implementations r
 keeps the grouping of a fold visible in the source. A reader need not
 compare precedences to see which operator the fold applies.
 
+Kept open on 2026-11-03 under decision 0054, because no principle on the page gives the answer. PRIM-P6 says what a fold stands for, and no principle says what an operand of a fold can be. EDG 7.0 is the only newest family that differs.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) agrees with option 1. The grammar makes each operand of a fold a cast expression. An operand with a binary operator outside parentheses does not fit, so the fold is not valid. EDG's acceptance is a defect.

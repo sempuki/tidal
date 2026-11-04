@@ -22,7 +22,10 @@ declaration order, and stops at the first difference. The implementation
 writes the function only when asked and only in a shape that the
 implementation can fill in. When a part cannot be compared that way, the
 implementation deletes the function, so the implementation rejects only
-a use ({principle}`CPY-P3`). The return type of a defaulted `<=>` is the
+a use ({principle}`CPY-P3`). A comparison defaulted after the class is a
+definition that the program asks for, so the implementation rejects one
+that would be deleted, as for the copy and move functions
+({rule}`CPY-17`). The return type of a defaulted `<=>` is the
 weakest ordering among the parts, and a defaulted `<=>` brings a
 defaulted `==` with it.
 :::
@@ -219,15 +222,13 @@ The return types, the {term}`cv-qualifiers <cv-qualifier>` and ref-qualifiers of
 access, and deletion take no part ({question}`Q-0190`).
 :::
 
-## Implementation Requirements
-
 :::{rule} DCMP-8
-:kind: no-diagnostic
+:kind: reject
 :tests: classes/comparisons/out-of-class-would-delete.cpp classes/comparisons/out-of-class-reference-member-would-delete.cpp
 
 A comparison defaulted after the class definition must not be one that
-would be deleted. An implementation need not diagnose such a comparison
-({question}`Q-0062`).
+would be deleted. The program is not valid also when nothing uses the
+comparison ({question}`Q-0062`).
 :::
 
 ## Recommended Practice
@@ -309,7 +310,9 @@ of 79 tests. The tests declare the comparison category types themselves.
 - DCMP-3: GCC accepts defaulting a friend that was declared outside the
   class. Clang and EDG reject it ({question}`Q-0061`).
 - DCMP-8: Clang rejects the definition. GCC and EDG accept it
-  ({question}`Q-0062`).
+  ({question}`Q-0062`). DCMP-8 is a `reject` rule, as {rule}`CPY-17` is
+  for the copy and move functions, and the tests record GCC and EDG as
+  overrides.
 - DCMP-7: Clang and GCC give the warning by default, and
   `-pedantic-errors` makes the warning an error. EDG reports the
   comparison as ambiguous.

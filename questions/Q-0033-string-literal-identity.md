@@ -23,4 +23,10 @@ GCC 16 and 14 and EDG 7.0 accept it and give a value.
 No; rejected (option 1). A constant expression should not depend on a choice that the
 implementation need not make the same way each time.
 
+Kept open on 2026-11-03 under decision 0054, because the review reads with doubt.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) agrees with option 1, with doubt. Whether two string literals with one text share storage is unspecified, and an equality comparison with an unspecified result cannot be a constant expression. The doubt is that the equality rules define the result by whether the pointers point to one object, so the text does not plainly put this comparison under that bar. A later defect resolution says that such a comparison is not a constant expression. Clang follows that change, and GCC and EDG do not. The comparison in the test applies `==` to two array operands, which is deprecated.

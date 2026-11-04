@@ -35,6 +35,12 @@ No; there is no reverse step, and the program is rejected (NEW-30, option 1). Ev
 
 Reopened on 2026-11-01. The source-reader gap review of question cluster 1 (`reports/review/2026-11-01-gap-review-question-cluster-1.md`) reads the reference as having the reverse step, so the program would be valid. A probe of 2026-11-01 with the implementation's own `<new>` header gives the same rejection on GCC 16 and Clang 22, so the self-declared `std::align_val_t` of the test is not the cause. The specification follows the matrix until the maintainer decides between the matrix and the review's reading.
 
+Kept on 2026-11-03. Every compiler rejects the program, and Tidal keeps the matrix's answer until the maintainer decides. The question is in row 4 of `documentation/decisions/pending.md`, and it stays open under decision 0054, because the review reads against the answer.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) reads option 2, as the cluster 1 review did. When no allocation function matches, the argument list changes and overload resolution runs again. For a type with an extended alignment, the alignment is removed. For any other type, the alignment is added after the size. So the reverse step exists, and the program is valid. No compiler in the table takes the reverse step in C++23 mode.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

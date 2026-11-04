@@ -273,6 +273,13 @@ void post(Packet* p) {
 The results are in `tests/RESULTS.md`. All eight compilers agree on 57
 of 62 tests.
 
+Two questions on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+
+| Question | Principle | Family that still differs |
+|---|---|---|
+| {question}`Q-0066` | TYN-P4 | none; the rule needs no diagnostic |
+| {question}`Q-0067` | TYN-P1 | none among the newest; GCC 14 |
+
 - TYN-5: GCC rejects the class, for a type name and for a function name
   that a later data member changes. Clang and EDG accept the class
   ({question}`Q-0066`).

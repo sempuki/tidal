@@ -350,6 +350,12 @@ class Token {
 The results are in `tests/RESULTS.md`. All eight compilers agree on 68
 of 70 tests.
 
+One question on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on classes and statements (`reports/review/2026-11-03-gap-review-questions-classes-statements.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+
+| Question | Principle | Family that still differs |
+|---|---|---|
+| {question}`Q-0052` | ACC-P4 | EDG 7.0 |
+
 - ACC-2, ACC-9: EDG 7.0 accepts a use of a member that a
   using-declaration makes private, if the member is public in the base
   ({question}`Q-0052`).

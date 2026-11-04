@@ -33,4 +33,10 @@ Yes; GCC and EDG reject it (option 1). The run-time behavior is the same on ever
 CE-P1 says constant evaluation is the same program run at translation
 time.
 
+Kept open on 2026-11-03 under decision 0054, because two of the newest families differ from the answer. GCC 16 and EDG 7.0 reject the write.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on classes and statements (`reports/review/2026-11-03-gap-review-questions-classes-statements.md`) agrees with option 1. A jump into the scope of a variable with vacuous initialization initializes that variable as part of the jump. The variable's lifetime then begins during the evaluation, so constant evaluation can write it.

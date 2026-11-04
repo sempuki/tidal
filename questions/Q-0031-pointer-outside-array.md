@@ -1,6 +1,6 @@
 # Q-0031: Is forming a pointer outside an array undefined, even without a read through it?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** ADD-10, PFX-18, `tests/expressions/additive/pointer-beyond-array.cpp`, `tests/expressions/additive/pointer-before-array.cpp`, `tests/expressions/postfix/postfix-pointer-past-end-constant.cpp`
 
 ## Context
@@ -31,8 +31,14 @@ the split.
    diagnostic during constant evaluation.
 2. Only a read through the pointer is undefined.
 
-## Provisional answer
+## Answer
 
 Undefined (option 1). Two of three implementations diagnose the arithmetic itself.
 
+Settled on 2026-11-03 under decision 0054. The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) supports this answer with no doubt, and ADD-P6 gives the same answer: the valid positions run from the first element to one past the last, and outside those positions the behavior is undefined. Tidal records GCC 16's result as a deviation, as for the compiler-defect entries Q-0002 and Q-0003, and the tests keep their overrides for GCC 16.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) agrees with option 1. Adding an integer to a pointer into an array is defined only when the result is an element or the position one past the last element. Any other result is undefined at the addition, with no read needed. Constant evaluation rejects undefined operations, so a diagnostic is required there, and GCC's acceptance is a defect.

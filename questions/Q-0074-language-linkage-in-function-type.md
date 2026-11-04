@@ -23,4 +23,10 @@ three accept two declarations that overload on the two types.
 Implementation-defined (option 1). Two implementations ignore language linkage in the type and
 one keeps it, and programs need to work with both.
 
+Kept on 2026-11-03. The review reads option 2, which only EDG 7.0 follows. Clang 22 and GCC 16 treat the two types as one, and LSP-P3 gives the answer: the implementation chooses whether a function's type records its language linkage, and a portable program treats a pointer to a C function as a type of its own. Tidal keeps option 1 until the maintainer decides. The question is in row 4 of `documentation/decisions/pending.md`, and it stays open under decision 0054, because the review reads against the answer.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) reads option 2. A function type with C language linkage and one with C++ language linkage are different types, even with the same parameters and return type, and nothing lets an implementation merge them. EDG follows this reading. Clang and GCC do not, and the review knows of no later change that removes the linkage from the type.

@@ -39,6 +39,12 @@ No; the converted pointer names the member, and EDG differs (option 1).
 MPTR-4 states no condition on where the pointer's value comes from, and
 Clang and GCC agree at run time and in constant evaluation.
 
+Kept open on 2026-11-03 under decision 0054, because no principle on the page gives the answer. MPTR-P3 allows the conversion and does not say that the value survives a pass through an object or a function result. CE-P1, on the constant evaluation page, gives the answer. EDG 7.0 is the only newest family that differs.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) agrees with option 1. Converting a pointer to a member of a base to a pointer to a member of a derived class keeps the member that the pointer refers to. A `constexpr` function gives the same result as an equivalent ordinary function, apart from copy elision, and nothing lets the value change when it passes through an object or a return. EDG's results are a defect.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

@@ -1,6 +1,6 @@
 # Q-0319: When is an explicit object parameter initialized, relative to the other arguments?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** SEQ-1, SEQ-2, `tests/expressions/sequencing/explicit-object-order-unspecified.cpp`
 
 ## Context
@@ -31,13 +31,19 @@ The test above. A first version of the test expected the copy into
 2. The copy into `self` comes first, as part of the object expression
    (SEQ-2).
 
-## Provisional answer
+## Answer
 
 In an unspecified place (SEQ-1); GCC 14 differs from GCC 16 and Clang (option 1). GCC 14 and GCC 16 differ, and option 1 allows both. The test
 accepts every order.
 
-The question stays open under decision 0051 (2026-11-01). Clang 22 and GCC 16 both make the copy into `self` first, which both options allow. Only GCC 14 separates the options, so the newest versions give no ground to settle the answer.
+Decision 0051 does not settle the question. Clang 22 and GCC 16 both make the copy into `self` first, which both options allow. Only GCC 14 separates the options, so the newest versions give no ground to settle the answer.
+
+Settled on 2026-11-03 under decision 0054. The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) supports this answer with no doubt, and SEQ-P2 gives the same answer: outside the constructs that SEQ-P1 lists, the order is the implementation's choice, and each argument is evaluated as a whole. The copy into `self` initializes a parameter. No newest family differs. Clang 22 and GCC 16 both make the copy into `self` first, which the answer allows, and the test accepts every order.
 
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) agrees with option 1. The implied object argument comes first in the list that matches arguments to parameters, so an explicit object parameter is initialized as any other parameter is. The postfix expression is sequenced before the arguments. The initializations of the parameters are indeterminately sequenced with each other, so they do not interleave, and either order is allowed.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

@@ -41,6 +41,12 @@ GCC) and `--c++23 --strict` (EDG).
 No; GCC and EDG reject, Clang accepts (option 1). GCC and EDG reject the declaration, and the answer follows
 from the lookup rule of ACC-7 with no exception.
 
+Kept on 2026-11-03. The review reads option 2, which only Clang follows. GCC 16 and EDG 7.0 reject the declaration, and ACC-P3 gives the answer: the friend function is found only through its arguments until the namespace declares it. Tidal keeps option 1 until the maintainer decides. The question is in row 4 of `documentation/decisions/pending.md`, and it stays open under decision 0054, because the review reads against the answer.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on classes and statements (`reports/review/2026-11-03-gap-review-questions-classes-statements.md`) reads option 2. A declaration with a qualified name does not look up its last name. It must match an earlier declaration that is nominable in the named namespace, and a friend function first declared in a class targets the enclosing namespace and counts as nominable there. So the declaration at global scope matches the friend and is valid. The lookup rule of ACC-7 does not decide the case, because the declarator is matched without lookup. Clang follows this reading.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

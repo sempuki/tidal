@@ -33,4 +33,10 @@ constant evaluation if the operation is invalid, and an implementation
 that treats the operation as valid (option 2) would forbid Clang's
 diagnostic.
 
+Kept open on 2026-11-03 under decision 0054, because two of the newest families differ from the answer. GCC 16 and EDG 7.0 accept the cast during constant evaluation.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) agrees with option 1. For an enumeration without a fixed underlying type, the conversion is defined only for a value inside the range of the enumeration's values, which the smallest bit width that holds every enumerator gives. Outside that range the behavior is undefined. Constant evaluation rejects undefined operations, so the cast in the test needs a diagnostic, and the acceptance of GCC and EDG is a defect.

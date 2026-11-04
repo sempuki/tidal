@@ -1,10 +1,12 @@
 // tidal-rules: CE-17 CE-23
-// tidal-expect: reject
-// tidal-expect-clang: accept
+// tidal-expect: accept
+// tidal-expect-gcc: reject
+// tidal-expect-edg: reject
 // tidal-expect-clang-18: reject
 // tidal-error-clang-18: not an integral constant expression
-// tidal-error-gcc: temporary of non-literal type
-// tidal-note: Q-0335. GCC, Clang 18, and EDG reject a temporary of a type that is not literal during constant evaluation; Clang 22 accepts it.
+// tidal-error-gcc: non-constant condition for static assertion
+// tidal-error-edg: expression must have a constant value
+// tidal-note: Q-0335. Port is not a literal type, and the evaluation makes a temporary of it and reads only the member that is not volatile. Only a constexpr variable needs a literal type. Clang 22 accepts. GCC, EDG, and Clang 18 reject.
 struct Port {
   volatile int level;
   int code;

@@ -1,7 +1,7 @@
 # Q-0335: Must a temporary that a constant evaluation makes have a literal type?
 
 **Status:** provisional
-**Affects:** CE-17, CE-23, CE-P1, `tests/expressions/constant-expressions/literal-temporary-volatile-member.cpp`
+**Affects:** CE-17, CE-23, CE-P1, `tests/expressions/constant-expressions/literal-temporary-volatile-member.cpp`, `tests/expressions/constant-expressions/nonliteral-variable-reached.cpp`, `tests/expressions/constant-expressions/nonliteral-temporary-in-function.cpp`
 
 ## Context
 
@@ -37,12 +37,14 @@ literal type (CE-23). The evaluation of `Port(1).get()` in a
 
 ## Provisional answer
 
-Yes; constant evaluation rejects a temporary of a type that is not
-literal (option 1). CE-P1 gives the requirement for every object that
-an evaluation makes, and option 1 states CE-17 the same way for
-variables and temporaries. A program that follows the rule builds on
-every compiler.
+No; only a `constexpr` variable needs a literal type, and a constant evaluation can make a temporary or a local variable of any type (option 2). Clang 22 accepts every form. GCC rejects a temporary, and EDG rejects a temporary in the condition of a `static_assert`.
+
+Changed on 2026-11-03 to option 2. A probe on the matrix shows that the variable item of CE-17 disagrees with every newest compiler: for a local variable of a class with a `volatile` member in a `constexpr` function, Clang 22, GCC 16, and EDG 7.0 accept the evaluation, and only Clang 18 rejects it. For a temporary in a `constexpr` function, Clang 22 and EDG accept, and GCC rejects. For a temporary in the condition of a `static_assert`, Clang 22 accepts, and GCC and EDG reject. CE-P1 now says that only a `constexpr` variable needs a literal type, because its value outlives the evaluation, and that an evaluation fails only at an operation that it cannot do, which is its model for every other construct. CE-17 drops the variable and temporary items. `literal-temporary-volatile-member.cpp` expects acceptance, with overrides for GCC, EDG, and Clang 18, and the new tests `nonliteral-variable-reached.cpp` and `nonliteral-temporary-in-function.cpp` cover the other two forms. The question stays open under decision 0054, because two newest families differ for the temporary in a `static_assert`.
 
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) reads option 2. Nothing stops a constant evaluation from making a temporary or a local variable of a type that is not literal. Only a variable declared `constexpr` needs a literal type. A `constexpr` constructor and member function of a class that is not literal are allowed, and the call in the test reads only the member that is not volatile. Clang 22's acceptance conforms. The same reasoning removes the item of CE-17 about a variable of a type that is not literal.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

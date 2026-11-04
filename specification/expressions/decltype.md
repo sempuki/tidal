@@ -303,6 +303,13 @@ decltype(true ? i : h) t;      // int: the operands differ, so a prvalue
 The results are in `tests/RESULTS.md`. All eight compilers agree on 49
 of 54 tests.
 
+Two questions on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+
+| Question | Principle | Family that still differs |
+|---|---|---|
+| {question}`Q-0065` | DTY-P2 | GCC 16 |
+| {question}`Q-0089` | DTY-P2 | GCC 16 |
+
 - DTY-5: GCC accepts `decltype` in the qualified name of a member
   definition. Clang and EDG reject such a use ({question}`Q-0065`).
 - UNEV-4: Clang warns by default. GCC gives no warning.

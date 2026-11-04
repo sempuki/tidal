@@ -22,4 +22,10 @@ an override for GCC.
 
 Yes, as for noreturn (option 1). Clang and EDG agree, and the rule matches noreturn.
 
+Kept open on 2026-11-03 under decision 0054, because no principle on the page gives the answer. ATTR-P1 says that each standard attribute has a fixed set of places, and no principle says which declaration of a function must carry an attribute. GCC 16 is the only newest family that differs.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) agrees with option 1. When any declaration of a function has `carries_dependency`, the first declaration must have it, and within one translation unit a diagnostic is required. A later change removes the attribute's requirements for the next standard, which matches GCC.

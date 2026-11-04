@@ -17,4 +17,10 @@ A structured binding declaration at namespace scope has `constinit`. Clang and G
 
 No; only static, thread_local, const, and volatile can occur (option 1). The newer GCC agrees with Clang.
 
+Kept open on 2026-11-03 under decision 0054, because no principle on the page gives the answer. SB-P3 allows a few specifiers and does not say which. EDG 7.0 is the only newest family that differs.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) agrees with option 1. A structured binding declaration allows only `static`, `thread_local`, the placeholder, and the cv-qualifiers as declaration specifiers, so `constinit` is not allowed. A later change for the next standard allows `constexpr` on a structured binding. The review has not checked whether that change also allows `constinit`.

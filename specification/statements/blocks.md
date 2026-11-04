@@ -211,6 +211,12 @@ void k(int x) {
 All eight compilers agree on 27 of 29 tests. The results are in
 `tests/RESULTS.md`.
 
+One question on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on classes and statements (`reports/review/2026-11-03-gap-review-questions-classes-statements.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+
+| Question | Principle | Family that still differs |
+|---|---|---|
+| {question}`Q-0096` | STMT-P1 | GCC 16 |
+
 - STMT-4: Clang warns "expression result unused" and GCC warns "statement
   has no effect" under `-Wunused-value`. EDG does not accept `-Werror`
   and skips these tests ({ref}`baseline compilers <baseline-compilers>`).

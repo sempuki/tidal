@@ -46,6 +46,12 @@ object is `const` or has a `const` subobject. The `const` rule then has
 no exception, and an implementation can keep relying on a `const`
 member that does not change.
 
+Kept on 2026-11-03. The review reads against the answer in part, with doubt, and no test can show either result. The question stays open under decision 0054, because the review reads with doubt.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on classes and statements (`reports/review/2026-11-03-gap-review-questions-classes-statements.md`) reads the copy through the library's byte copy functions as option 2, with doubt, and the copy byte by byte as option 1. The library's byte copy functions create objects in the destination when that gives the program defined behavior. A new object over the second object ends the old one, and the old object is not a `const` complete object, so the new object replaces it and the old name refers to the new object. No `const` object changes. A copy through a character pointer creates no objects, so the change to the `const` member stays undefined. The doubt is whether objects are created in a destination that already holds a live object of the same type.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

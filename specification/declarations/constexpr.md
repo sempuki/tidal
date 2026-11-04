@@ -58,7 +58,7 @@ the same reason as a `constexpr` function.
 :::
 
 :::{principle} CX-P4
-:rules: CINIT-1 CINIT-2
+:rules: CINIT-1 CINIT-2 CINIT-3
 
 `constinit` is about initialization only. The variable must live for the
 whole program or the whole thread, and its initializer must be a
@@ -70,7 +70,9 @@ have `constinit` or `constexpr`, and at most one of them.
 The declaration that initializes a `constinit` variable carries
 `constinit`, so the check happens where the initializer is. An earlier
 declaration, such as an `extern` declaration in a header, can carry
-`constinit` or leave it out.
+`constinit` or leave it out. A `constinit` that first appears after the
+initializer comes too late for that check, and the implementation need
+not notice it.
 :::
 
 ## Constraints
@@ -194,13 +196,14 @@ destructor.
 
 :::{rule} CINIT-2
 :kind: reject
-:tests: declarations/constexpr/constinit-automatic.cpp declarations/constexpr/constinit-block-static.cpp declarations/constexpr/constinit-with-constexpr.cpp declarations/constexpr/constinit-extern-declaration.cpp declarations/constexpr/constinit-only-on-definition.cpp declarations/constexpr/constinit-on-function.cpp declarations/constexpr/constinit-added-late.cpp declarations/constexpr/constinit-on-declaration-only.cpp
+:tests: declarations/constexpr/constinit-automatic.cpp declarations/constexpr/constinit-block-static.cpp declarations/constexpr/constinit-with-constexpr.cpp declarations/constexpr/constinit-extern-declaration.cpp declarations/constexpr/constinit-only-on-definition.cpp declarations/constexpr/constinit-on-function.cpp declarations/constexpr/constinit-on-declaration-only.cpp
 
 `constinit` applies only to variables, and a `constinit` variable must
 have static or thread {term}`storage duration`. A declaration must not
 have both `constinit` and `constexpr`.
-If a declaration of a variable has `constinit`, the initializing
-declaration must also have it ({question}`Q-0025`).
+If a declaration of a variable that has `constinit` comes before the
+initializing declaration, the initializing declaration must also have
+`constinit` ({question}`Q-0025`).
 :::
 
 :::{rule} CX-6
@@ -219,6 +222,18 @@ This rule merged into {rule}`CX-5`.
 :kind: withdrawn
 
 This rule merged into {rule}`CX-4`.
+:::
+
+## Implementation Requirements
+
+:::{rule} CINIT-3
+:kind: no-diagnostic
+:tests: declarations/constexpr/constinit-added-late.cpp
+
+A declaration of a variable must not have `constinit` if it comes after
+the initializing declaration and the initializing declaration does not
+have `constinit`. An implementation need not diagnose such a declaration
+({question}`Q-0025`).
 :::
 
 ## Examples
@@ -291,10 +306,12 @@ of 72 tests.
   lambda and a `constexpr` function from a template `consteval` when
   the body calls a `consteval` function with arguments that are not
   constant.
-- CINIT-2: Clang rejects `constinit` added after the initializing
-  declaration. GCC and EDG accept the late `constinit`. Clang
-  (pedantic) and EDG reject `constinit` that is only on an earlier
-  declaration. GCC accepts the earlier `constinit`
+- CINIT-3: Clang rejects `constinit` added after the initializing
+  declaration. GCC and EDG accept the late `constinit`. CINIT-3 needs no
+  diagnostic, because the initializing declaration cannot see the later
+  `constinit`, so all three results conform ({question}`Q-0025`).
+- CINIT-2: Clang (pedantic) and EDG reject `constinit` that is only on
+  an earlier declaration. GCC accepts the earlier `constinit`
   ({question}`Q-0025`).
 - CX-2: all compilers reject a `constexpr` aggregate in a block whose
   reference member binds to a temporary, and accept the same aggregate

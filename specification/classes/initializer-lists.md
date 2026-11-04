@@ -196,6 +196,12 @@ Point q{1.5, 2};       // rejected: narrowing
 The results are in `tests/RESULTS.md`. All eight compilers agree on 30
 of 32 tests. The tests declare a minimal `std::initializer_list`.
 
+One question on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on classes and statements (`reports/review/2026-11-03-gap-review-questions-classes-statements.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+
+| Question | Principle | Family that still differs |
+|---|---|---|
+| {question}`Q-0081` | ILC-P2 | none among the newest; Clang 18 |
+
 - ILC-3: Clang 18 copies for `S b{a}` when `S` also has an
   `initializer_list<S>` constructor. Clang 22 and GCC use that
   constructor ({question}`Q-0081`).

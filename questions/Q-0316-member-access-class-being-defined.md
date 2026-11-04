@@ -37,6 +37,12 @@ Yes (PFX-11), as GCC and EDG do; Clang rejects (option 1). Two of three compiler
 member access the same view of the class as unqualified lookup. The test
 expects an acceptance and records Clang's result with an override.
 
+Kept open on 2026-11-03 under decision 0054, because no principle on the page gives the answer. PFX-P3 says what a member access names, and no principle says whether a member access can see into a class that is being defined. Clang 22 is the only newest family that differs.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) agrees with option 1. A member access needs a complete class, except inside the definition of that class. The program is not valid if the result would differ once the class is complete. A member declared after the access is not found there. Clang's rejection is a defect.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

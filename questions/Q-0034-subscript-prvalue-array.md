@@ -1,6 +1,6 @@
 # Q-0034: Is a subscript of an array xvalue or an array member of a prvalue an xvalue?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** PFX-3, VC-3, `tests/expressions/postfix/subscript-prvalue-array.cpp`, `tests/expressions/value-categories/xvalue-array-subscript.cpp`
 
 ## Context
@@ -30,9 +30,15 @@ The two tests in **Affects**. Each has an override for EDG.
    result is a possible defect.
 2. An lvalue.
 
-## Provisional answer
+## Answer
 
 Yes, an xvalue (PFX-3); EDG gives an lvalue (option 1). Clang and GCC agree, and option 1 matches member access on
 an xvalue.
 
+Settled on 2026-11-03 under decision 0054. The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) supports this answer with no doubt, and PFX-P1 gives the same answer: a subscript keeps the array's category, an lvalue for an array lvalue and an xvalue for an array rvalue. Tidal records EDG 7.0's result as a deviation, as for the compiler-defect entries Q-0002 and Q-0003, and the tests keep their overrides for EDG 7.0.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) agrees with option 1. A subscript of an array operand is an lvalue when the array is an lvalue, and an xvalue in every other case. An array prvalue is first materialized as a temporary, which gives an xvalue. EDG's lvalue is a defect.

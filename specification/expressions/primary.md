@@ -81,7 +81,7 @@ else.
 :::
 
 :::{principle} PRIM-P4
-:rules: PRIM-32 PRIM-34 PRIM-6 PRIM-15 PRIM-21 PRIM-22 PRIM-23 PRIM-13
+:rules: PRIM-32 PRIM-34 PRIM-6 PRIM-15 PRIM-21 PRIM-22 PRIM-23 PRIM-35 PRIM-13
 
 The character sets and the floating-point formats of a target belong to
 the implementation, so the parts of a literal that depend on them are
@@ -89,6 +89,8 @@ implementation-defined. The implementation-defined parts are these:
 
 - the ordinary encoding and the wide encoding,
 - the values of the simple escapes in those two encodings,
+- the meaning of a backslash before a character of the basic character
+  set that no escape form uses,
 - the value of a multi-character literal,
 - the signedness of `char`,
 - the rounding of a floating value with no exact representation,
@@ -331,12 +333,13 @@ named escape `\N{...}` gives the character with that Unicode name.
 
 :::{rule} PRIM-18
 :kind: reject
-:tests: expressions/primary/char-delimited-empty.cpp expressions/primary/char-empty.cpp expressions/primary/char-escape-out-of-range.cpp expressions/primary/char-hex-no-digits.cpp expressions/primary/char-octal-too-large.cpp expressions/primary/char-u8-not-single-byte.cpp expressions/primary/char-ucn-surrogate.cpp expressions/primary/char-unicode-multichar.cpp expressions/primary/char-unknown-escape.cpp expressions/primary/char16-not-bmp.cpp expressions/primary/char-named-escape-unknown.cpp
+:tests: expressions/primary/char-delimited-empty.cpp expressions/primary/char-empty.cpp expressions/primary/char-escape-out-of-range.cpp expressions/primary/char-hex-no-digits.cpp expressions/primary/char-octal-too-large.cpp expressions/primary/char-u8-not-single-byte.cpp expressions/primary/char-ucn-surrogate.cpp expressions/primary/char-unicode-multichar.cpp expressions/primary/char-unknown-escape-outside-basic.cpp expressions/primary/char16-not-bmp.cpp expressions/primary/char-named-escape-unknown.cpp
 
 A character literal must contain at least one character. The literal
 must not have:
 
-- an unknown escape sequence, or `\x` or `\x{}` with no digits,
+- a backslash before a character outside the basic character set, or
+  `\x` or `\x{}` with no digits,
 - an octal or hexadecimal escape too large for the type,
 - a universal character name for a surrogate,
 - more than one character with a `u8`, `u`, `U`, or `L` prefix,
@@ -669,6 +672,16 @@ and an implementation-defined value. No implementation in the matrix
 accepts such a literal.
 :::
 
+:::{rule} PRIM-35
+:kind: conditionally-supported
+:tests: expressions/primary/char-unknown-escape.cpp expressions/primary/string-unknown-escape.cpp
+
+A backslash before a character of the basic character set that no
+escape form uses, such as `\q`, is conditionally supported in a
+character literal and in a string literal. An implementation that
+accepts such an escape documents its value ({question}`Q-0330`).
+:::
+
 ## Recommended Practice
 
 :::{rule} PRIM-13
@@ -717,8 +730,14 @@ total(1, 2, 3);           // ((0 + 1) + 2) + 3
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 129
-of 139 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 130
+of 141 tests.
+
+One question on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+
+| Question | Principle | Family that still differs |
+|---|---|---|
+| {question}`Q-0064` | PRIM-P1 | EDG 7.0 |
 
 - PRIM-2: Clang and GCC reject a decimal literal that fits only an
   unsigned type under `-pedantic-errors`. EDG accepts it
@@ -756,10 +775,12 @@ of 139 tests.
   `-Woverflow`) and about a multi-character literal (`-Wmultichar`).
   So `-Werror` alone rejects both. EDG warns about a multi-character
   literal and rejects `1e999f` (PRIM-15).
-- PRIM-18: Clang and GCC give a warning for an unknown escape such as
-  `'\q'`, and `-pedantic-errors` makes the warning an error. EDG in
-  strict mode gives a warning and accepts the program
-  ({question}`Q-0330`).
+- PRIM-35: Clang and GCC give a warning for an unknown escape such as
+  `'\q'` or `"\q"`, and `-pedantic-errors` makes the warning an error.
+  EDG in strict mode gives a warning and accepts the program
+  ({question}`Q-0330`). PRIM-35 is `conditionally-supported`, so each
+  result conforms. Every compiler rejects a backslash before a character
+  outside the basic character set, such as `é` (PRIM-18).
 - PRIM-8: the matrix targets keep string literals in memory that the
   program cannot write. So a write to a literal faults at run time, and
   `-fsanitize=address` reports the fault as SEGV.

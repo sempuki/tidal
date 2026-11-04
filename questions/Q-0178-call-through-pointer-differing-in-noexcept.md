@@ -1,6 +1,6 @@
 # Q-0178: Is a call through a function pointer whose type differs from the function only in `noexcept` undefined?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** PFX-19, CAST-6
 
 ## Context
@@ -42,11 +42,17 @@ runs a call of a `noexcept` function through a pointer without
    program ends when the function throws, as at any `noexcept`
    boundary.
 
-## Provisional answer
+## Answer
 
 Yes, undefined (option 1). EXS-2 treats the specifier as part of the type, and an
 undefined rule allows the result of every implementation in the matrix.
 
+Settled on 2026-11-03 under decision 0054. The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) supports this answer with no doubt, and PFX-P2 gives the same answer: a call through a pointer of another function type is undefined, and `noexcept` is part of a function type (DCL-P3). No newest family differs, because an undefined rule allows the result of every implementation in the matrix.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) agrees with option 1. A call is undefined when the type used for the call differs from the type of the function's definition. The one exception covers a pointer type that a function pointer conversion could make from the function's own pointer type. That conversion only removes the non-throwing property, so the question's direction falls outside the exception.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

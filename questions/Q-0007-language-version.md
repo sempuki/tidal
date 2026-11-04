@@ -23,3 +23,7 @@ C++23, with newer features rejected under strict mode, for the proof of concept 
 follow the language forward.
 
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on classes and statements (`reports/review/2026-11-03-gap-review-questions-classes-statements.md`) finds two answers that follow a change to the language made after C++23. In Q-0087, Clang and GCC follow the later change, and EDG follows the C++23 text. In Q-0181, every newest compiler follows the later change. Both questions wait on this one (row 7 of `documentation/decisions/pending.md`).

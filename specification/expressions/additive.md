@@ -322,6 +322,14 @@ bool add_fits(int a, int b) {
 The results are in `tests/RESULTS.md`. All eight compilers agree on 51
 of 60 tests.
 
+Three questions on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+
+| Question | Principle | Family that still differs |
+|---|---|---|
+| {question}`Q-0005` | ADD-P4 | none |
+| {question}`Q-0031` | ADD-P6 | GCC 16 |
+| {question}`Q-0049` | ADD-P6 | GCC 16 |
+
 - ADD-3: GCC rejects arithmetic on `void*` and on function pointers only
   as a pedantic diagnostic (`-Wpointer-arith`). Clang and EDG reject
   such arithmetic in all modes.

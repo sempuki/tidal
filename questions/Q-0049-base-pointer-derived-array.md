@@ -1,6 +1,6 @@
 # Q-0049: Is arithmetic on a base class pointer into an array of a derived class undefined?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** ADD-14, ADD-P6, `tests/expressions/additive/base-pointer-derived-array.cpp`, `tests/expressions/additive/subtract-base-pointers-derived-array.cpp`, `tests/expressions/additive/base-pointer-one-past-subobject.cpp`, `tests/expressions/additive/base-pointer-beyond-subobject.cpp`
 
 ## Context
@@ -42,9 +42,15 @@ compiler in the matrix. GCC 16 behaves as GCC 14.
    misses these diagnostics.
 3. Only a read through the pointer is undefined.
 
-## Provisional answer
+## Answer
 
 The subobject acts as an array of one element, so moving the pointer outside `p` and `p + 1`, a read through `p + 1`, and a difference of pointers into different elements are undefined (option 2). Clang and EDG agree on every case, and every implementation
 accepts `p + 1` without a read. ADD-14 states option 2.
 
+Settled on 2026-11-03 under decision 0054. The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) supports this answer with no doubt, and ADD-P6 gives the same answer: a pointer of another type, such as a base class pointer into an array of a derived class, sees only its own object, as an array of one. Tidal records GCC 16's result as a deviation, as for the compiler-defect entries Q-0002 and Q-0003, and the tests keep their overrides for GCC 16.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) agrees with option 2. For pointer arithmetic, a lone object counts as the single element of a one-element array. Adding anything other than zero or one to a pointer to a base subobject is undefined. A difference needs two elements of one array, and the two base subobjects are not elements of one array. The position one past the end points to no object, so a read through it is undefined.

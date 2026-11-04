@@ -228,6 +228,12 @@ r(1);                       // rejected: a reference has no defaults
 All eight compilers agree on 32 of 38 tests. The results are in
 `tests/RESULTS.md`.
 
+One question on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+
+| Question | Principle | Family that still differs |
+|---|---|---|
+| {question}`Q-0111` | DEFARG-P2 | Clang 22 |
+
 - DEFARG-2: Clang rejects a call that needs a default argument added by
   a later namespace declaration, through an earlier using declaration.
   GCC and EDG accept the call ({question}`Q-0111`).

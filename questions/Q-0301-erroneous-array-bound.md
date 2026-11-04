@@ -43,6 +43,12 @@ No allocation call, throws `std::bad_array_new_length` (NEW-35); Clang throws `s
 implementation with a handler for `std::bad_alloc`, because
 `std::bad_array_new_length` derives from it.
 
+Kept open on 2026-11-03 under decision 0054, because two newest families differ from the answer in the third form. Clang 22 differs in every form, and GCC 16 at `-O0` calls the allocation function for a bound smaller than the number of initializer elements. NEW-P6 gives the answer.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) agrees with option 1. A bound is erroneous in three cases, and in none of them is an allocation function called. With a potentially throwing allocation function, the expression throws an exception that a handler for `std::bad_array_new_length` catches. In a constant expression the program is not valid. A bound that is too large is measured against an implementation-defined maximum object size.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

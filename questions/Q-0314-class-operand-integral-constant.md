@@ -35,6 +35,12 @@ Yes (ALN-8, BF-1), as Clang and EDG do; GCC rejects (option 1). Two of three com
 `new` size converts a class on every compiler. The tests expect an
 acceptance and record GCC's result with an override.
 
+Kept open on 2026-11-03 under decision 0054, because no principle on the pages of ALN-8 and BF-1 says how a class operand gives an integer value. GCC 16 is the only newest family that differs.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) agrees with option 1. Where an integral constant expression is required, an expression of literal class type converts contextually to an integer or unscoped enumeration type, and the chosen conversion function must be `constexpr`. The `alignas` operand and the bit-field width are such places. GCC's rejection is a defect.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

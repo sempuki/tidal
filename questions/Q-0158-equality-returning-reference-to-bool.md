@@ -36,6 +36,12 @@ that the return type `bool &` of the selected `operator==` is not
 No; Clang and EDG agree, GCC differs (option 1). Two of three implementations agree, and the cv-qualified
 results that all accept are values of type `bool`.
 
+Kept open on 2026-11-03 under decision 0054, because no principle on the page states the case. DCMP-P2 describes which rewritten and reversed candidates an expression tries, and does not give the result type that a chosen `==` must have. GCC 16 is the one newest family that differs.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on classes and statements (`reports/review/2026-11-03-gap-review-questions-classes-statements.md`) agrees with option 1. A rewritten or reversed equality candidate that is chosen must return `bool`, possibly cv-qualified. A reference to `bool` is not that type, and GCC's acceptance is a defect.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

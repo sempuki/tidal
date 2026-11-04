@@ -738,6 +738,13 @@ int* q = new (cell) int(4);     // the int is at cell (NEW-33)
 The results are in `tests/RESULTS.md`. All eight compilers agree on 119
 of 141 tests.
 
+Two questions on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+
+| Question | Principle | Family that still differs |
+|---|---|---|
+| {question}`Q-0035` | NEW-P2 | GCC 16 |
+| {question}`Q-0302` | NEW-P6 | GCC 16 |
+
 - NEW-42: on x86-64, the global allocation functions of Clang and GCC
   throw `std::bad_alloc` for requests of 2^47 bytes, 2^47 + 1 bytes,
   and 2^48 bytes. The limit is the size of the user address space on

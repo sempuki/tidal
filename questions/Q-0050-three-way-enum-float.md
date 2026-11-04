@@ -34,4 +34,10 @@ in the matrix. EDG 7.0 is the only EDG version in the matrix.
 
 No; rejected (option 1). Clang and GCC, in both versions, reject the comparison.
 
+Kept open on 2026-11-03 under decision 0054, because no principle on the page gives the answer. CMP-P5 lists the operand forms that `<=>` rejects, and an unscoped enumeration against a floating-point value is not in the list. EDG 7.0 is the only newest family that differs.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) agrees with option 1. `<=>` uses the usual arithmetic conversions only when both operands are arithmetic, or when one is an integer and the other an unscoped enumeration. An enumeration against a floating-point value fits no case, so the program is not valid.

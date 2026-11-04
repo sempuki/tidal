@@ -43,7 +43,8 @@ one definition, and a static member function has no object to act on. A
 member function defined in the class is `inline`, because every unit
 that includes the class sees the function body. A `const` static member
 of integer type with an initializer in the class is a constant the class
-can use directly, so the initializer must be a constant expression, and
+can use directly, so the member cannot be `volatile`, and the
+initializer must be a constant expression, and
 the member still needs a definition if the program uses the member as an
 object.
 :::
@@ -173,17 +174,19 @@ A static data member is one object for the program. These rules apply:
 - A static data member that is not `inline` needs one definition outside
   the class (LNK-6, LNK-7).
 - An `inline` or `constexpr` static data member is defined in the class.
-- A `const` static data member of integer or enumeration type can have an
-  initializer in the class.
+- A `const` static data member of integer or enumeration type that is
+  not `volatile` can have an initializer in the class.
 :::
 
 :::{rule} CLS-23
 :kind: reject
-:tests: classes/members/static-non-const-in-class-init.cpp classes/members/static-const-double-in-class-init.cpp
+:tests: classes/members/static-non-const-in-class-init.cpp classes/members/static-const-double-in-class-init.cpp declarations/volatile/static-const-volatile-in-class.cpp declarations/volatile/static-inline-const-volatile-in-class.cpp
 
 CLS-3 lists the static data members that can have an initializer in the
 class. Other static data members must not have an initializer in the
-class.
+class. A `static const volatile` integer member that is not `inline` is
+one of them, because constant evaluation cannot read a volatile object
+({principle}`VOL-P1`, {question}`Q-0080`).
 :::
 
 :::{rule} CLS-4
@@ -599,9 +602,12 @@ struct Text {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 128
-of 138 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 129
+of 140 tests.
 
+- CLS-23: Clang rejects an in-class initializer for a `static const
+  volatile` integer member. GCC and EDG accept it ({question}`Q-0080`).
+  CLS-23 follows Clang, and the test records GCC and EDG as overrides.
 - CLS-3: a missing definition of a static data member compiles in each
   translation unit. The linker reports the missing definition.
 - CLS-26: GCC 16 accepts mixed ref-qualified overloads and reports

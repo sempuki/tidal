@@ -20,4 +20,10 @@ and accepts it otherwise.
 Yes; a conversion function can have a deduced return type (option 1). Most implementations accept `operator auto()`, and GCC 16
 rejects it only as a pedantic diagnostic.
 
+Kept open on 2026-11-03 under decision 0054, because no principle on the page states the case. CVF-P1 says that a conversion function declares no return type because its name gives the type, and does not say whether the name can be a placeholder. GCC 16 differs only under `-pedantic-errors`.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on classes and statements (`reports/review/2026-11-03-gap-review-questions-classes-statements.md`) agrees with option 1. Only a conversion function template is barred from a deduced return type, so a plain conversion function can deduce its type. GCC 16's pedantic error is a defect.

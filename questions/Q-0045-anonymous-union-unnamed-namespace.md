@@ -28,8 +28,12 @@ The two tests in **Affects**. Each has an override for Clang.
 
 ## Provisional answer
 
-Yes, `static` at every namespace scope (STO-11, UNI-9); Clang differs (option 1). GCC and EDG agree, and the rule is the same for every
-namespace. The review summary's reading is a strong reason to revisit
-the answer.
+No; an anonymous union in an unnamed namespace needs no `static` (option 2). Clang accepts the union. GCC and EDG reject it.
+
+Changed on 2026-11-03 to option 2. The review reads option 2, Clang 22 accepts, and STO-P2 with STO-P3 gives the same answer: an anonymous union must be `static` because it has no name to share, and a name in an unnamed namespace is shared with nothing already. STO-11 and UNI-9 now exempt an unnamed namespace, and the two tests expect acceptance, with overrides for GCC and EDG. The question stays open under decision 0054, because two newest families differ from the answer.
 
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) reads option 2. `static` is required only for an anonymous union in a namespace with external linkage. An unnamed namespace, and any namespace inside one, has internal linkage, so an anonymous union there needs no `static`. Clang follows this reading. GCC's and EDG's rejection is a defect.

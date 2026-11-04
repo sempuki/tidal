@@ -16,4 +16,10 @@
 
 No; rejected (option 1). Clang and GCC, in both versions, reject the lambda.
 
+Kept open on 2026-11-03 under decision 0054, because no principle on the page gives the answer. LAM-P2 and LAM-P3 say what a closure captures, and they do not say where a capture default can appear. EDG 7.0 accepts the lambda.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) agrees with option 1. A capture default or a simple capture is allowed only when the lambda's innermost enclosing scope is a block, or when the lambda is in a default member initializer and the innermost scope is that class. A lambda at namespace scope is neither, whether or not anything would be captured. EDG's acceptance is a defect. LAM-6 already states the exception for a default member initializer.

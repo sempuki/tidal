@@ -28,6 +28,12 @@ call, so the Clang 18 rejection is a defect that a later version fixes.
 
 Reopened on 2026-11-01. The source-reader gap review of question cluster 1 (`reports/review/2026-11-01-gap-review-question-cluster-1.md`) reads the C++23 text as giving option 2, a copy or move from a materialized temporary. It reports that the newest compilers follow a later change to the language, which gives option 1. The specification follows the matrix until the maintainer decides whether Tidal follows that later change (Q-0007).
 
+Kept on 2026-11-03. The answer follows the later change, which every newest compiler follows, until the maintainer decides Q-0007. The question is in rows 4 and 7 of `documentation/decisions/pending.md`, and it stays open under decision 0054, because the review reads against the answer.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on classes and statements (`reports/review/2026-11-03-gap-review-questions-classes-statements.md`) repeats the reading of the cluster 1 review. In the C++23 text a class prvalue before a dot is materialized as a temporary, and the explicit object parameter is copied or moved from it, so the call is not valid with both constructors deleted (option 2). A later change lets the prvalue initialize the parameter directly (option 1). Every compiler in the table except Clang 18 follows that change. The choice belongs to Q-0007.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

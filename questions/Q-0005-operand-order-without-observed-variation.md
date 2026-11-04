@@ -1,6 +1,6 @@
 # Q-0005: Can operand order be `unspecified` when no compiler varies it?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** MUL-13, ADD-13, `documentation/pipeline.md` step 5
 
 ## Context
@@ -37,11 +37,17 @@ configuration.
    not rely on order.
 2. `required` left to right, matching all observed behavior.
 
-## Provisional answer
+## Answer
 
 Yes, on source evidence (option 1). Choosing option 2 would make Tidal stricter than the
 implementations claim to be, which would break compatibility the first
 time an implementation reorders. The built-in forms show no variation
-in the matrix, so the question stays open for them.
+in the matrix, and SEQ-8 leaves their two operands unsequenced.
+
+Settled on 2026-11-03 under decision 0054. The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) supports this answer with no doubt, and MUL-P4 and ADD-P4 give the same answer: the two operands are not ordered with respect to each other. The review also closes the built-in forms that the answer left open, because the two operands of a built-in operator are unsequenced, which allows any order. No newest family differs from the answer.
 
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) agrees with option 1. The two operands of a built-in operator of this kind are unsequenced, which is stronger than an unspecified order, because the two evaluations can also interleave. An overloaded operator written as an operator is a function call, and the order of a call's arguments is not fixed for these operators. The review finds that the lack of variation in the built-in forms does not change the answer.

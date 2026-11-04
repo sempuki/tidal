@@ -27,4 +27,10 @@ Yes, as the newest Clang and GCC allow (option 1). Both Clang versions and the n
 declaration. GCC's move from rejecting to accepting suggests that the
 implementations are converging on acceptance.
 
+Kept open on 2026-11-03 under decision 0054, because no principle on the page gives the answer. NS-P3 says that a using declaration conflicts with another declaration in the current scope, and it does not say whether a repeated using declaration of one entity conflicts. EDG 7.0 rejects the repeated declaration in a block.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) agrees with option 1. Two using declarations that name one declaration conflict only when both are in the same class scope. In a block, two using declarations that name the same entity refer to one entity and do not conflict. The older rule that rejected the block form is gone in C++23.

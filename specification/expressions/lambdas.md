@@ -41,9 +41,10 @@ through its captures.
 | `*this` | A copy of the object |
 
 The evaluation of the lambda expression initializes the captures. The
-explicit captures go in the order of the capture list. The captures
-exist before the call operator is declared, so the parameter list and
-return type of the call operator can see the captures.
+explicit captures go in the order of the capture list. A trailing
+return type comes after the parameters and can see the captures. The
+parameters are declared as the parameters of any function are, so a
+name in the parameter list means the enclosing variable.
 :::
 
 :::{principle} LAM-P3
@@ -350,10 +351,12 @@ A lambda must not:
 
 :::{rule} LAM-18
 :kind: required
-:tests: expressions/lambdas/capture-visible-in-trailing-return.cpp expressions/decltype/captured-in-lambda.cpp expressions/lambdas/explicit-capture-unevaluated-member.cpp
+:tests: expressions/lambdas/capture-visible-in-trailing-return.cpp expressions/decltype/captured-in-lambda.cpp expressions/lambdas/explicit-capture-unevaluated-member.cpp expressions/lambdas/capture-not-visible-in-parameter-list.cpp
 
-The captures of a lambda are visible in its parameter list and trailing
-return type. In a lambda that is not `mutable`, `decltype((x))` for a
+The captures of a lambda are visible in its trailing return type and its
+body. In the parameter list, a name refers to the enclosing variable,
+also in a parameter type and a default argument ({question}`Q-0092`). In
+a lambda that is not `mutable`, `decltype((x))` for a
 copy capture `x` is a reference to `const`. The same holds for a name
 that a copy default would capture. The rule applies also if the lambda
 names `x` only in unevaluated operands. Such a use makes no implicit
@@ -471,8 +474,8 @@ int dispatch(int base) {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 80
-of 82 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 81
+of 83 tests.
 
 - LAM-6: EDG accepts a capture default on a lambda outside a function.
   Clang and GCC reject it ({question}`Q-0037`).
@@ -513,6 +516,8 @@ of 82 tests.
   GCC does not warn. On every compiler, the closure is at least as
   large as the captured object.
 - LAM-18: GCC 16 and EDG find the capture in the trailing return type.
-  Clang and GCC 14 find the outer variable ({question}`Q-0092`).
+  Clang and GCC 14 find the outer variable ({question}`Q-0092`). In the
+  parameter list, every compiler finds the outer variable, so
+  `decltype((x))` there is `int&`.
 
 Inputs: clang-sema-expr, clang-diag-sema.

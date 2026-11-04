@@ -451,6 +451,12 @@ void conditions() {
 All rules in this page are `required` or `reject`. All eight compilers
 agree on 77 of 78 tests. The results are in `tests/RESULTS.md`.
 
+One question on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on classes and statements (`reports/review/2026-11-03-gap-review-questions-classes-statements.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+
+| Question | Principle | Family that still differs |
+|---|---|---|
+| {question}`Q-0329` | {principle}`CE-P2` | GCC 16 |
+
 - IF-25: Clang and GCC take the then branch of `if consteval` in the
   initializer of a local `const int` or `const` enumeration variable.
   Both take the else branch for a local `const double`, a local

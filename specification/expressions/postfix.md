@@ -342,6 +342,13 @@ top++;            // undefined
 The results are in `tests/RESULTS.md`. All eight compilers agree on 67
 of 75 tests.
 
+Two questions on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+
+| Question | Principle | Family that still differs |
+|---|---|---|
+| {question}`Q-0034` | PFX-P1 | EDG 7.0 |
+| {question}`Q-0178` | PFX-P2 | none; the behavior is undefined |
+
 - PFX-3: EDG gives `int&` for a subscript of an array member of a
   prvalue. Clang and GCC give `int&&` ({question}`Q-0034`).
 - PFX-4, PFX-8: all compilers reject these cases during constant

@@ -23,9 +23,12 @@ Constant evaluation rejects a construct that it cannot handle only when
 an evaluation reaches that construct. So a function can contain such a
 construct and serve both modes. A reference whose object the evaluation
 does not know is a problem only when the evaluation reads through the
-reference. The objects that an evaluation makes need a
-{term}`literal type`, one whose objects the evaluation can build and
-destroy.
+reference. Only a `constexpr` variable needs a {term}`literal type`
+({rule}`CX-1`), because its value outlives the evaluation. A variable or
+a temporary that lives only inside the evaluation can have any type,
+and the evaluation fails only if it reaches an operation that it cannot
+do, such as a read of a volatile member or a call of a function that is
+not `constexpr` ({question}`Q-0335`).
 :::
 
 :::{principle} CE-P2
@@ -353,16 +356,16 @@ definition later in the {term}`translation unit` does not help.
 
 :::{rule} CE-17
 :kind: reject
-:tests: expressions/constant-expressions/static-local-not-reached.cpp expressions/constant-expressions/goto-not-reached.cpp expressions/constant-expressions/nonliteral-variable-not-reached.cpp expressions/constant-expressions/literal-not-reached.cpp expressions/constant-expressions/static-local-reached.cpp expressions/constant-expressions/goto-reached.cpp expressions/constant-expressions/static-local-not-usable-reached.cpp expressions/constant-expressions/static-local-usable-reached.cpp expressions/constant-expressions/literal-temporary-volatile-member.cpp declarations/constexpr/function-static-local-evaluated.cpp
+:tests: expressions/constant-expressions/static-local-not-reached.cpp expressions/constant-expressions/goto-not-reached.cpp expressions/constant-expressions/nonliteral-variable-not-reached.cpp expressions/constant-expressions/literal-not-reached.cpp expressions/constant-expressions/static-local-reached.cpp expressions/constant-expressions/goto-reached.cpp expressions/constant-expressions/static-local-not-usable-reached.cpp expressions/constant-expressions/static-local-usable-reached.cpp declarations/constexpr/function-static-local-evaluated.cpp expressions/constant-expressions/literal-temporary-volatile-member.cpp expressions/constant-expressions/nonliteral-variable-reached.cpp expressions/constant-expressions/nonliteral-temporary-in-function.cpp
 
 Constant evaluation must not reach any of these constructs:
 
 - a `goto`,
 - a `static` or `thread_local` variable that is not usable in constant
-  expressions (CE-3),
-- a variable of a type that is not a {term}`literal type`,
-- a temporary object of a type that is not a literal type
-  ({question}`Q-0335`).
+  expressions (CE-3).
+
+A variable or a temporary of a type that is not a {term}`literal type`
+is not one of these constructs ({question}`Q-0335`).
 
 A `constexpr` function can contain these constructs on a path that the
 evaluation does not take.
@@ -577,7 +580,7 @@ constinit Empty empty;                // fine: Empty has no scalar part
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 127
-of 149 tests.
+of 151 tests.
 
 Of the constant-evaluation cluster, {question}`Q-0090` is settled under
 decision 0051. These questions of the cluster on this page stay open:
@@ -626,8 +629,15 @@ split on each of them.
   global with a constant initializer and is not `constexpr`. Every
   compiler rejects a reference whose initializer calls a function that
   is not `constexpr`.
-- CE-17: GCC, Clang 18, and EDG reject a temporary of a class with a
-  `volatile` member in a constant evaluation. Clang 22 accepts it ({question}`Q-0335`).
+- CE-17: a constant evaluation can make a variable or a temporary of a
+  class that is not a literal type, such as a class with a `volatile`
+  member, and call its `constexpr` functions ({question}`Q-0335`). For a
+  local variable, Clang 22, GCC, and EDG accept the evaluation, and
+  Clang 18 rejects it. For a temporary in a `constexpr` function,
+  Clang 22 and EDG accept, and GCC and Clang 18 reject. For a temporary
+  in the condition of a `static_assert`, Clang 22 accepts, and GCC,
+  EDG, and Clang 18 reject. The tests record each differing compiler as
+  an override.
 - CE-30: Clang and GCC reject a throw in a `constexpr` variable's
   initializer inside a try block of a `constexpr` function, and a throw
   in a `consteval` call inside a run-time try block.

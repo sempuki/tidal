@@ -648,6 +648,12 @@ Any c(1);                          // the template, with T = int
 The results are in `tests/RESULTS.md`. All eight compilers agree on 114
 of 119 tests.
 
+One question on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on classes and statements (`reports/review/2026-11-03-gap-review-questions-classes-statements.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+
+| Question | Principle | Family that still differs |
+|---|---|---|
+| {question}`Q-0055` | CPY-P3 | none among the newest; GCC 14 |
+
 - CPY-15: Clang and GCC reject a constructor `W(W)` of a class
   template at the template's definition, with no instantiation. GCC
   reports the error under `-Wtemplate-body`, a warning group that is an

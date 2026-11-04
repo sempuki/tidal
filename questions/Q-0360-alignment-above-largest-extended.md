@@ -38,6 +38,12 @@ The implementation rejects the alignment (option 1). Two of three
 families reject it, and a dropped alignment breaks ALN-4 for each object
 of the class.
 
+Kept open on 2026-11-03 under decision 0054, because no principle on the page gives the answer. ALN-P3 says that the largest alignment depends on the target, and no principle says that an implementation rejects an alignment above it. Clang 22 is the only newest family that differs.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) agrees with option 1. An operand that gives an extended alignment that the implementation does not support in that context makes the program not valid. Which extended alignments are supported is implementation-defined. A diagnostic is required, so Clang's silent acceptance is a defect.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

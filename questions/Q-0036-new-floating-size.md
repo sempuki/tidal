@@ -16,4 +16,10 @@
 
 Yes; converted to the type of `sizeof` (option 1). Two of three implementations accept the floating-point size.
 
+Kept open on 2026-11-03 under decision 0054, because no principle on the page gives the answer. NEW-P1 says that an array can have a size known only at run time, and it does not say which types the size can have. GCC 16 rejects the floating-point size.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) agrees with option 1. The first array size in a `new` expression converts implicitly to the type of `sizeof`. A floating-point value converts by the ordinary floating-integral conversion, so the form is valid. An older rule limited the size to integral and enumeration types, and GCC still applies that rule.

@@ -20,7 +20,12 @@ compilers in the matrix reject the same pattern (CPY-17).
 
 ## Provisional answer
 
-No; the program is not valid, and the error is `no-diagnostic` (option 1). Clang rejects the definition, and the rule matches CPY-17. GCC
-and EDG still conform.
+No; the program is not valid and must be rejected (option 2). Clang rejects the definition, and DCMP-8 matches CPY-17. GCC and EDG accept it.
+
+Changed on 2026-11-03 to option 2. The review reads option 2, Clang 22 rejects, and DCMP-P1 now gives the same answer: a comparison defaulted after the class is a definition that the program asks for, so a definition that would be deleted is rejected, as CPY-17 rejects it for the copy and move functions on every compiler. DCMP-8 is now a `reject` rule. The tests already expected a rejection, with overrides for GCC and EDG. The question stays open under decision 0054, because two newest families differ from the answer.
 
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on classes and statements (`reports/review/2026-11-03-gap-review-questions-classes-statements.md`) reads option 2. A function that the class declares and defaults later is defined where it is defaulted. If that definition would be deleted, the program is not valid, and nothing exempts the case from diagnosis, so a diagnostic is required also when nothing uses the comparison. Clang follows this reading. GCC and EDG accept.

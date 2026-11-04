@@ -34,6 +34,12 @@ with an override for EDG.
 Yes, and no deallocation function is called; Clang and GCC agree, EDG rejects (option 1). Clang and GCC agree. The answer treats two matches as no
 single match, the same as for a placement form with no match.
 
+Kept open on 2026-11-03 under decision 0054, because the review reads with doubt.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) agrees with option 1, with doubt. A placement deallocation function is called only when lookup finds a single match. Otherwise none is called, and the storage stays allocated after an exception. Nothing makes several matches an error. With no single match nothing is named, so no access or deletion check applies. The doubt is how templates take part. A match compares parameter types, and no deduction or ordering of templates is described for this purpose. EDG's reading, which orders the templates as overload resolution does and finds the tie ambiguous, is possible under that silence.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

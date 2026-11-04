@@ -24,4 +24,10 @@ with GCC and EDG on every `assume` test.
 Per-compiler expectation naming this question (option 1). This option needs no new tooling, and the note makes the reason
 visible in the test.
 
+Kept open on 2026-11-03 under decision 0054, because the review finds the reference silent.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) finds the reference silent. The question concerns Tidal's test format.

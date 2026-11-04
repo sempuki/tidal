@@ -28,6 +28,12 @@ change notation.
 
 A change table for proposals now (option 1), because proposals need it and Tidal specifies one version. Option 2 when Tidal specifies a second version.
 
+Kept open on 2026-11-03 under decision 0054, because the review finds the question outside the C++23 text.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on classes and statements (`reports/review/2026-11-03-gap-review-questions-classes-statements.md`) finds the question outside the C++23 text. The question is about Tidal's notation, and the language text has nothing to say about it.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

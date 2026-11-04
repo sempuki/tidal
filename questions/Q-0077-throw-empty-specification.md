@@ -21,4 +21,10 @@ split.
 
 Implementation-defined; where `throw()` is accepted, it means `noexcept` (option 1). Two implementations accept `throw()` and one rejects it.
 
+Kept on 2026-11-03. The review reads option 2, which only EDG 7.0 follows. Clang 22 and GCC 16 accept `throw()` under `-pedantic-errors`, and EXS-P4 gives the answer: an implementation can accept the old form as `noexcept`. Tidal keeps option 1 until the maintainer decides. The question is in row 4 of `documentation/decisions/pending.md`, and it stays open under decision 0054, because the review reads against the answer.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) reads option 2. The grammar of an exception specification has only the `noexcept` forms, because the empty `throw()` form was removed in C++20. So `throw()` is a syntax error and needs a diagnostic, which EDG gives. Clang and GCC accept it silently in their strictest modes, which is a defect. A warning would be enough to conform.

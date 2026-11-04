@@ -37,8 +37,14 @@ The five tests above. The probes compiled each case with
 
 ## Provisional answer
 
-A union gives a value when any variant member carries a default member initializer, and a class of only anonymous unions is valid (option 1). Tidal follows the majority where the compilers disagree. In the fifth row, GCC and EDG accept by different models.
+A union, named or anonymous, gives a value when one variant member carries a default member initializer, and a class of only anonymous unions without one is not valid (option 2). Clang 22 follows this model in every row. GCC and EDG accept the fifth row.
+
+Changed on 2026-11-03 for the fifth row, to option 2. The review reads option 2, Clang 22 rejects, and CTOR-P2 gives the same answer: a `const` object with no initializer needs a class that gives every part a value, and in the fifth row no part gets one. CTOR-24 no longer has a sentence for that row, and `const-object-only-anonymous-unions.cpp` expects a rejection, with overrides for GCC and EDG. Rows one to four keep their answers. The question stays open under decision 0054, because two newest families differ from the answer in the fifth row, and GCC differs in the second row.
 
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on classes and statements (`reports/review/2026-11-03-gap-review-questions-classes-statements.md`) agrees with rows one to four and reads option 2 for the fifth row. A `const` object of a union with a data member needs exactly one variant member with a default member initializer. In a class, each anonymous union with a data member needs one too. A class whose data members are all in anonymous unions without one fails that condition, and nothing exempts a class with no other data members. Clang 22 follows this reading. GCC and EDG accept the fifth row.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

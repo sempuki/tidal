@@ -367,6 +367,12 @@ low / short(-1)      // 32768: both operands become int
 The results for each compiler in the matrix are in `tests/RESULTS.md`.
 All eight compilers agree on 49 of 54 tests.
 
+One question on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+
+| Question | Principle | Family that still differs |
+|---|---|---|
+| {question}`Q-0005` | MUL-P4 | none |
+
 - **MUL-2, MUL-16.** Clang and GCC warn that an enumeration with a
   floating-point operand is deprecated
   (`-Wdeprecated-enum-float-conversion`). Both compilers warn about two

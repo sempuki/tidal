@@ -199,6 +199,12 @@ int cap = table_limit;            // 64, in any unit order
 All eight compilers agree on all 23 tests. The results are in
 `tests/RESULTS.md`.
 
+One question on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+
+| Question | Principle | Family that still differs |
+|---|---|---|
+| {question}`Q-0014` | SINIT-P2 | none |
+
 - **SINIT-3.** With Clang 22 and GCC 16 at `-O0` and `-O2`, the order
   follows the link order. The initializer in the first unit gets 0 when
   its unit is linked first, and 7 when its unit is linked second.

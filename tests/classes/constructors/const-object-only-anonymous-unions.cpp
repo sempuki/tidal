@@ -1,8 +1,9 @@
 // tidal-rules: CTOR-24
-// tidal-expect: accept
-// tidal-expect-clang: reject
+// tidal-expect: reject
+// tidal-expect-gcc: accept
+// tidal-expect-edg: accept
 // tidal-error-clang: const type .* without a user-provided default constructor
-// tidal-note: Q-0126. Clang rejects a const object whose data members are all in anonymous unions without default member initializers. GCC and EDG accept it.
+// tidal-note: Q-0126. No anonymous union gives a member a value, so the const object has no value. Clang rejects. GCC and EDG accept.
 struct Cell {
   union { int whole; float part; };
   union { int count; float ratio; };

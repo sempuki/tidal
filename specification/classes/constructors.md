@@ -38,7 +38,10 @@ class that writes none, because building and ending the parts is right
 for most classes. Declaring any constructor says that default
 construction needs thought, so the declaration removes the implicit
 default constructor. When a part cannot be default-constructed or
-destroyed, the synthesized function is deleted and only a use fails. A
+destroyed, the synthesized function is deleted and only a use fails.
+Building several parts needs the destructor of each part, because the
+parts already built are destroyed when a later part fails. This holds
+for the elements of an array `new` too. A
 `const` object must state its value where the object is defined,
 because nothing can change the object later. So a `const` object with
 no initializer needs a class that gives every part a value. The zero
@@ -70,7 +73,7 @@ enclosing class is complete.
 A member initializer names one part of the object and gives that part
 its value. A member initializer cannot name anything else, and a
 reference member that the initializer binds to a temporary is dead
-before the body runs. A delegating constructor hands the whole job to
+before the body runs, so the implementation rejects such a binding. A delegating constructor hands the whole job to
 one other constructor and adds only its own body, so its list names the
 target constructor and nothing else. A delegating constructor cannot
 hand the job back to itself, directly or through a cycle, and an
@@ -216,9 +219,9 @@ user-provided.
 For CTOR-4, a union gives its members a value if the union declares a
 default member initializer for at least one of its members. An
 anonymous union member of a class meets the condition of CTOR-4 in the
-same way. A class whose data members are
-all in anonymous unions without default member initializers also meets
-the condition ({question}`Q-0126`).
+same way, so a class whose data members are all in anonymous unions
+without default member initializers does not meet the condition
+({question}`Q-0126`).
 :::
 
 :::{rule} CTOR-5
@@ -385,15 +388,18 @@ must not:
   {term}`storage duration`,
 - write a prvalue of the class, also where the prvalue initializes an
   object directly, as in `return S{};`,
-- apply `delete` to an object of the class.
+- apply `delete` to an object of the class,
+- create an array of the class with `new` ({question}`Q-0082`).
 
 The prvalue rule also covers the operands of `sizeof`, `noexcept`, and
 `typeid`. The one exception is a function call that is the operand of
 `decltype`, also in parentheses or as the right operand of a comma. A
 prvalue of the class as the left operand of the comma is not exempt.
 
-A `new` expression for the class is valid, also for an array
-({question}`Q-0082`). Its initializer must not be a prvalue of the
+A `new` expression for one object of the class is valid. An array
+`new` destroys the elements that it has built when the initialization
+of a later element throws, so the array form needs the destructor. The
+initializer of a `new` expression must not be a prvalue of the
 class, as in `new S(make())`. Braces that initialize the members, as in
 `new S{1}`, are valid.
 
@@ -459,6 +465,16 @@ Each of these makes a destructor non-trivial:
 - A base or a member of class type is ended by a non-trivial one.
 
 With none of these conditions, the destructor is *trivial*.
+:::
+
+:::{rule} CTOR-17
+:kind: reject
+:tests: classes/constructors/reference-member-binds-temporary.cpp classes/constructors/reference-default-member-binds-temporary.cpp classes/constructors/reference-member-binds-converted-parameter.cpp
+
+A constructor must not bind a reference member to a {term}`temporary object`,
+through a `mem_init` or a default member initializer. The temporary ends
+with the constructor. The binding is visible in the constructor or the
+class definition, so an implementation rejects it ({question}`Q-0084`).
 :::
 
 ## Runtime Behavior
@@ -562,16 +578,6 @@ implementation need not diagnose a cycle that does not delegate directly
 to itself ({question}`Q-0053`).
 :::
 
-:::{rule} CTOR-17
-:kind: no-diagnostic
-:tests: classes/constructors/reference-member-binds-temporary.cpp classes/constructors/reference-default-member-binds-temporary.cpp classes/constructors/reference-member-binds-converted-parameter.cpp
-
-A constructor must not bind a reference member to a {term}`temporary object`,
-through a `mem_init` or a default member initializer. The temporary ends
-with the constructor. An implementation need not diagnose such a
-binding ({question}`Q-0084`).
-:::
-
 ## Recommended Practice
 
 :::{rule} CTOR-13
@@ -639,6 +645,13 @@ Span g{{1}};   // Span(int): {1} gives an int directly (ICS-15). The
 The results are in `tests/RESULTS.md`. All eight compilers agree on 170
 of 186 tests.
 
+Two questions on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on classes and statements (`reports/review/2026-11-03-gap-review-questions-classes-statements.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+
+| Question | Principle | Family that still differs |
+|---|---|---|
+| {question}`Q-0053` | CTOR-P6 | none; CTOR-14 needs no diagnostic |
+| {question}`Q-0054` | CTOR-P4 | EDG 7.0 |
+
 - CTOR-23 and DTOR-9: the tests observe triviality through JMP-6 and
   UNI-3. A jump past a declaration is valid only for a trivial default
   constructor (JMP-6), and a union's special member is deleted when a
@@ -652,11 +665,17 @@ of 186 tests.
   too, and for a parameter object that the called function destroyed
   before the caller ends it.
 - DTOR-3: Clang rejects an array `new` of a class with a deleted
-  destructor. GCC and EDG accept it ({question}`Q-0082`).
+  destructor. GCC and EDG accept it ({question}`Q-0082`). The rule
+  follows Clang and the source-reader gap review of the open questions
+  on classes and statements
+  (`reports/review/2026-11-03-gap-review-questions-classes-statements.md`),
+  and the test records GCC and EDG as overrides.
 - CTOR-18: EDG accepts the nested default member initializer. Clang and
   GCC reject it ({question}`Q-0083`).
 - CTOR-17: Clang rejects the binding. GCC accepts it with a warning, and
-  EDG accepts it ({question}`Q-0084`).
+  EDG accepts it ({question}`Q-0084`). CTOR-17 is a `reject` rule,
+  because the binding is visible where the constructor or the class is
+  defined. The tests record GCC and EDG as overrides.
 - CTOR-24: the compilers differ for unions and anonymous unions
   ({question}`Q-0126`):
 
@@ -665,7 +684,7 @@ of 186 tests.
   | Union, one variant member with a default member initializer | accepts | accepts | rejects | rejects | accepts |
   | Anonymous union with such a member, beside another member | accepts | accepts | rejects | accepts | accepts |
   | Anonymous union without one, beside another member | rejects | rejects | rejects | accepts | rejects |
-  | Only anonymous unions, none with a default member initializer | accepts | rejects | rejects | accepts | accepts |
+  | Only anonymous unions, none with a default member initializer | rejects | rejects | rejects | accepts | accepts |
 
   The second column gives the provisional answer of {question}`Q-0126`,
   which each test expects. Each test records the compilers that differ
