@@ -57,8 +57,12 @@ outcome of the test is the outcome on the compilers that run it.
 | Flags | Compilers that skip the test |
 |---|---|
 | `-Werror`, `-Wall`, `-O2`, `-fsanitize=...` | EDG 7.0, EDG 7.0 ILP32 |
+| `-fsanitize=type` | EDG 7.0, EDG 7.0 ILP32, GCC 14, GCC 16, host GCC, Clang 18 |
 | `-m32` | EDG 7.0, GCC 16 |
 | no `-m32` | EDG 7.0 ILP32 |
+
+So a `-fsanitize=type` test runs only on Clang 22 and the host Clang.
+Host GCC runs the `-m32` tests, and GCC 16 does not.
 
 EDG translates each program and links and runs none. For EDG, a test
 that expects `link-fail`, `run`, or `run-fail` expects `accept`.

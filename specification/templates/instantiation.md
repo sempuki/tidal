@@ -414,9 +414,12 @@ these allowances:
 
 - trailing template arguments that deduction finds can be left out
   ({rule}`DED-32`),
-- a function with a deduced return type is named with `auto`,
+- a function with a deduced return type is named with `auto`, not
+  with the deduced type,
 - a variable template with a {term}`placeholder type` is named with the
-  deduced type ({question}`Q-0256`),
+  deduced type ({question}`Q-0256`), and a `constexpr` variable
+  template is named with the `const` type of the variable, because
+  INST-25 forbids `constexpr` there,
 - the bound of an array type can be left out ({question}`Q-0236`).
 
 An exception specification on the explicit instantiation must match
@@ -535,6 +538,11 @@ holds the function, also when the function is not a template. A use can
 see the declarations up to the last point, and INST-32 applies where
 the points differ. A {term}`constant evaluation` that needs a declaration after
 the first point is such a case ({question}`Q-0257`).
+
+The call operator of a generic lambda is a member function template
+({rule}`LAM-15`). Each of its specializations has the points above,
+set by the declarations that use the specialization. The place of the
+lambda expression does not set a point.
 :::
 
 :::{rule} INST-33
@@ -543,7 +551,9 @@ the first point is such a case ({question}`Q-0257`).
 
 An instantiation does not see a declaration after its point of
 instantiation. A class specialization that needs such a declaration is
-not valid. INST-32 covers a function specialization ({question}`Q-0257`).
+not valid. The initializer of a `static constexpr` data member in the
+class body is instantiated with the class, so this rule covers it too.
+INST-32 covers a function specialization ({question}`Q-0257`).
 :::
 
 :::{rule} INST-15
@@ -690,6 +700,34 @@ template <class T> struct Price { static constexpr int value = cost(T{}); };
 
 namespace shop { constexpr int cost(Item) { return 3; } }
 int p = Price<shop::Item>::value;        // 3: cost is declared before the point
+
+auto price = [](auto item) { return cost(item); };
+int q() { return price(shop::Item{}); }  // 3: the point follows q, not the lambda
+```
+
+The same class with the declaration after the point:
+
+% tidal-example: reject
+```cpp
+namespace shop { struct Item {}; }
+template <class T> struct Price { static constexpr int value = cost(T{}); };
+
+int p = Price<shop::Item>::value;        // rejected: the point is before cost (INST-33)
+namespace shop { constexpr int cost(Item) { return 3; } }
+```
+
+Explicit instantiations of a function with a deduced return type and of
+a `constexpr` variable template (INST-22, INST-25):
+
+% tidal-example: reject
+```cpp
+template <class T> auto get(T) { return 1; }
+template auto get(int);                  // fine
+template int get(long);                  // rejected: named with the deduced type
+
+template <class T> constexpr int size_of = sizeof(T);
+extern template const int size_of<int>;  // fine: the type is const int
+extern template constexpr int size_of<long>;  // rejected: constexpr (INST-25)
 ```
 
 ## Evidence
@@ -779,7 +817,9 @@ bullets below say so.
   braced initializer in `decltype` names. Clang and GCC also do so on
   the branch of a conditional that is not taken, and EDG does not. GCC
   also instantiates a `constexpr` function in a `sizeof` operand
-  without braces, and Clang and EDG do not ({question}`Q-0252`).
+  without braces, and Clang and EDG do not ({question}`Q-0252`). In a
+  `decltype` operand without braces, no compiler instantiates the
+  function, GCC included (`function-unevaluated-parentheses.cpp`).
 - INST-9: a call to an explicit specialization that leaves out an
   argument instantiates the template's default argument on every
   compiler.
@@ -858,7 +898,9 @@ bullets below say so.
   declarations at the end of the unit. Clang and EDG instantiate at
   the first point and reject ({question}`Q-0310`). The call operator of
   a lambda is `constexpr` when it can be, so a generic lambda gives the
-  same split.
+  same split. The split needs a first use before the declaration. When
+  the first use follows it, every compiler accepts
+  (`generic-lambda-argument-lookup.cpp`).
 - INST-36: every compiler gives one counter to each specialization of
   a function template and of a generic lambda's call operator, and a
   different closure type to each specialization.

@@ -333,7 +333,8 @@ These types are
 These operations create objects implicitly in the storage that they
 name:
 
-- a call of an allocation function, by name or from a `new` expression,
+- a call of an allocation function, by name or from a `new` expression.
+  A class's own `operator new` counts as well as the global one,
 - the start of the lifetime of a byte array,
 - some library functions *(library referenced)*.
 
@@ -402,9 +403,11 @@ pointer ({question}`Q-0328`).
 A program can copy the bytes of an object of a {term}`trivially
 copyable` type ({rule}`CPY-28`) into an array of `std::byte`,
 `unsigned char`, or `char`, and back. The object then has its original
-value. A copy that reads each byte through a `char` glvalue needs a
-value in each byte, padding bytes included ({rule}`INIT-1`,
-{question}`Q-0328`). A copy by the library's copy functions
+value. A copy that reads each byte through a glvalue of plain `char`
+needs a value in each byte, padding bytes included
+({question}`Q-0328`). A copy through `unsigned char` or `std::byte`
+glvalues can copy a byte with no value, such as a padding byte
+({rule}`INIT-1`). A copy by the library's copy functions
 *(library referenced)* does not. STG-25 excludes a base subobject
 and a `[[no_unique_address]]` member, and {rule}`CPY-19` gives a copy
 into a second object. For an object with a volatile part, the copy
@@ -544,7 +547,10 @@ If a new object takes the storage of an old object and STG-9 does not
 apply, the names, pointers, and references to the old object do not
 refer to the new object. A use of them to reach the new object is
 undefined. The launder operation *(library referenced)* gives a
-pointer that reaches the new object.
+pointer that reaches the new object. A new object in another member of
+a union ends the old member ({rule}`STG-6`), and a reference to the old
+member does not reach the new one. A constant evaluation that reads
+through such a reference is rejected ({rule}`CE-9`).
 :::
 
 :::{rule} STG-20
@@ -831,6 +837,21 @@ template <class T> void destroy_all(T* first, int n) {
 }
 ```
 
+A new object in another member of a union, during constant evaluation
+(STG-19):
+
+% tidal-example: fragment
+```cpp
+union U { int whole; float real; };
+constexpr int read_old() {
+  U u{.whole = 1};
+  int& old = u.whole;
+  std::construct_at(&u.real, 2.0f);   // real is now the active member
+  return old;                         // undefined: whole has ended
+}
+static_assert(read_old() == 1);       // rejected (CE-9)
+```
+
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 87
@@ -886,7 +907,9 @@ The table lists each test on which the compilers differ. The
 Expected column gives the outcome that the rules predict. The other
 cells give the outcome of the test on each compiler. EDG builds no
 program, so a run test is only compiled there, and EDG skips the
-sanitizer tests.
+sanitizer tests. In the row of `replace-base-old-pointer-constant.cpp`,
+every compiler accepts the program, although the rules expect a
+rejection.
 
 | Test | Rules | Expected | Clang | GCC | EDG | Question |
 |---|---|---|---|---|---|---|

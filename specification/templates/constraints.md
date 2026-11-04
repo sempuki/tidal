@@ -297,7 +297,10 @@ right operand is not substituted or checked.
 To check an atomic constraint, the implementation substitutes the
 arguments of its mapping, and no others, into its expression. Names
 are looked up as in a template ({rule}`DEP-9`), and the point of the
-check acts as the {term}`point of instantiation`. Then:
+check acts as the {term}`point of instantiation`. Access to a member is
+also judged at the point of the check, so a member function of a class
+can satisfy a constraint on the class's private members where a check
+at namespace scope cannot ({rule}`CPT-26`). Then:
 
 - If the substitution forms a type or an expression that is not valid,
   the constraint is not satisfied.
@@ -342,7 +345,11 @@ program is not valid, even if another candidate would be chosen.
 
 The check of an atomic constraint must not need the result of the same
 atomic constraint with the same arguments. Such a check can arise
-through overload resolution inside a requirement.
+through overload resolution inside a requirement. A call in a
+requirement looks up its name at the point of the check (CNS-7), so
+argument-dependent lookup can find a template declared after the
+concept. If that template's constraint is the same concept, overload
+resolution needs the check that is in progress.
 :::
 
 ### Uses that check constraints
@@ -558,10 +565,14 @@ declaration with other constraints declares another template
 Two constraints are equivalent if their expressions have the same
 tokens, and each name means the same entity. A template parameter
 matches the parameter at the same position. Two concept-ids that name
-the same specialization of a concept are equivalent. A placeholder
+the same specialization of a concept are equivalent. An argument with
+no template parameter in it names the specialization by its value, so
+`Answer<42>` and `Answer<40 + 2>` are equivalent. An argument that uses
+a template parameter matches only an argument with the same tokens, so
+`sizeof(T) + 1` and `1 + sizeof(T)` are not equivalent. A placeholder
 parameter does not match a template parameter of another declaration,
 so a function with a placeholder parameter declares a template of its
-own ({question}`Q-0269`). A
+own, with or without constraints ({question}`Q-0269`). A
 constraint that contains a lambda expression is not equivalent to any
 other constraint.
 :::
@@ -592,8 +603,12 @@ clause matches no member.
 An explicit specialization of a member template of a class template
 specialization can be declared outside the class. It specializes the
 member whose constraints, after substitution of the class's template
-arguments, are equivalent to its own. A member whose constraints are
-not valid after that substitution does not match.
+arguments, are equivalent to its own. The comparison is of form, under
+CNS-27, and does not check the constraints. A member whose
+constraints form a type or an expression that is not valid after that
+substitution does not match. A requires expression that becomes
+`false` after the substitution is still valid, and the member is
+compared like any other.
 :::
 
 :::{rule} CNS-30
@@ -635,7 +650,9 @@ An atomic constraint with the same arguments must give the same result
 at each point where it is checked. A program in which the result
 changes is not valid, for example when a class is completed between
 two checks. An implementation need not diagnose the change
-({question}`Q-0264`).
+({question}`Q-0264`). A change of access between two checks of one
+concept-id, such as a check inside a member and a check at namespace
+scope, is such a change (CNS-7, {rule}`CPT-26`).
 :::
 
 :::{rule} CNS-39
@@ -744,6 +761,45 @@ template <class T> int Box<T>::get() { return 2; }   // rejected: matches no mem
 decltype(&Box<long>::get)               // int (Box<long>::*)(): the clause is not in the type
 ```
 
+Equivalence of constraints and of templates (CNS-27, CNS-34, CNS-40):
+
+% tidal-example: fragment
+```cpp
+template <int N> concept Answer = N == 42;
+template <class T> requires Answer<42> int f(T);
+template <class T> requires Answer<40 + 2> int f(T) { return 1; }   // redeclares f
+
+template <int N> concept Inner = N > 2;
+template <class T> concept First = Inner<sizeof(T) + 1>;
+template <class T> concept Second = Inner<1 + sizeof(T)>;   // not the atom of First
+
+template <class T> int g(T);
+int g(auto) { return 1; }       // a second template, not a definition of the first
+g(1);                           // not valid, no diagnostic required (CNS-40)
+
+template <class T> concept A = sizeof(T) > 0;
+template <class T, class U> requires A<T> int h(T, U);
+template <class U, class T> requires A<T> && true int h(T, U);
+h(1, 2);    // ambiguous: by position, T of the second template is U
+            // of the first, so the function parameters differ and
+            // the constraints are not compared (CNS-34)
+template <class T, class U> requires A<T> int k(T, U);
+template <class U, class T> requires A<U> && true int k(U, T);
+k(1, 2);    // the second: the types agree by position, and its
+            // constraints subsume those of the first
+```
+
+A requirement that finds a later template by argument-dependent lookup
+(CNS-35):
+
+% tidal-example: reject
+```cpp
+template <class T> concept Usable = requires (T t) { use(t); };
+template <Usable T> void use(T);   // found by the check of Usable<Item>
+struct Item {};
+bool usable = Usable<Item>;        // rejected: the check needs itself
+```
+
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 103
@@ -798,8 +854,9 @@ waits on the maintainer (`documentation/decisions/pending.md`).
   cannot. EDG and Clang 18 differ.
 - {question}`Q-0269` (CNS-27, CNS-40; open): whether a function with a
   placeholder parameter redeclares the template with the same invented
-  head. It does not, and a program with both needs no diagnostic. Clang
-  treats the two as one template.
+  head. It does not, with or without constraints, and a program with
+  both needs no diagnostic. Clang treats the two as one template, and
+  GCC and EDG find a call ambiguous.
 - {question}`Q-0267` (CNS-31; settled on CNS-P5): whether a friend
   template whose constraint uses the class's template parameter must be
   a definition. It must. EDG differs.

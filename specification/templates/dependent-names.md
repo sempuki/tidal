@@ -330,7 +330,10 @@ before the definition. {term}`Argument-dependent lookup
 definition and those before the {term}`point of instantiation`
 ({rule}`INST-31`). Overload resolution chooses among all of them. An
 operator expression with a type-dependent operand finds its non-member
-operator functions in the same way.
+operator functions in the same way. A dependent call inside a requires
+expression uses the same two lookups, also where the requires
+expression is not a constraint, as in the condition of `if constexpr`
+or the initializer of a variable template ({rule}`CPT-26`).
 :::
 
 :::{rule} DEP-10
@@ -439,9 +442,11 @@ looked up at the definition. A member type found so needs no
 
 If the current instantiation has no dependent base, a qualified name
 into the current instantiation must find a declaration. The same holds
-for a member access through `this`, such as `this->f`. The name is not
-dependent, so DEP-30 applies when no specialization is made
-({question}`Q-0228`).
+for a member access through `this`, such as the call `this->f()` or
+the read `this->n`. An explicit specialization of the class that
+declares the member does not change the lookup in the primary
+template. The name is not dependent, so DEP-30 applies when no
+specialization is made ({question}`Q-0228`).
 :::
 
 :::{rule} DEP-39
@@ -622,7 +627,14 @@ A specialization made right after the definition of a template must not
 fail because of a construct in its {term}`templated context` that does
 not depend on the parameters. An
 implementation need not diagnose such a template if no specialization
-is made ({question}`Q-0223`).
+is made ({question}`Q-0223`). These are such constructs:
+
+- an expression, a conversion, or a name in the body,
+- a default argument of a function template that does not depend on
+  the parameters ({rule}`DEFARG-10`), although {rule}`INST-9`
+  instantiates a default argument only for a call that uses it,
+- `override` on a member that overrides nothing, in a class template
+  whose bases do not depend on the parameters ({rule}`VIRT-3`).
 :::
 
 :::{rule} DEP-31
@@ -709,6 +721,20 @@ namespace geo { int area(Point) { return 10; } }   // found by argument lookup
 
 int x = measure(geo::Point{});  // 11
 int y = measure(1);             // rejected: area(int) is not found
+```
+
+A member alias of the current instantiation whose target does not
+depend on the parameters (DEP-1). The call is not dependent, so it
+binds at the definition (DEP-5):
+
+```cpp
+namespace shop { struct Item {}; int pick(Item, long = 0) { return 1; } }
+template <class T> struct Box {
+  using item = shop::Item;            // not a dependent type
+  int get() { item i; return pick(i); }   // bound here: pick(Item, long)
+};
+namespace shop { int pick(Item) { return 2; } }   // not seen by get
+int one = Box<int>{}.get();           // 1
 ```
 
 A dependent base:
@@ -817,7 +843,8 @@ waits on the maintainer (`documentation/decisions/pending.md`).
 - {question}`Q-0228` (DEP-17, DEP-30; settled on DEP-P4 and DEP-P6):
   whether a missing member of the current instantiation is diagnosed in
   an unused template. No diagnostic is required. No family differs from
-  the answer, and GCC 14 accepts the template.
+  the answer. GCC 14 accepts the template, and Clang 18 accepts a
+  member access through `this`.
 - {question}`Q-0224` (DEP-19; settled on DEP-P5): whether a dependent
   name without `typename` that becomes a type at instantiation is an
   error outside a type-only position. It is. EDG uses the type.
@@ -863,6 +890,17 @@ with the same compilers. Where the compilers differ from the outcome
 that the review predicts, the rules follow the compilers, and the notes
 and the questions say so.
 
+- DEP-30: the compilers split on an unused template with an
+  independent error. Clang and EDG reject an invalid conversion, an
+  invalid call, and a default argument that cannot convert, and GCC
+  accepts them. Every compiler rejects an undeclared name. Clang rejects
+  `override` on a member that overrides nothing in an independent base,
+  and GCC and EDG accept it
+  (`override-independent-base-unused.cpp`). For a member that
+  `this->` names and the class lacks, GCC 14 and Clang 18 accept, and
+  GCC 16, Clang 22, and EDG reject, for a call and for a data member,
+  also when an explicit specialization declares the member. DEP-30
+  allows each result.
 - DEP-29: every compiler rejects `template <class T> int take(T::type)`
   with a body at the definition, with no specialization. Clang reports
   a missing `typename`, GCC expects `;` before the body, and EDG reports

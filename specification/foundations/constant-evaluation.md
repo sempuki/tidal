@@ -21,7 +21,9 @@ Constant evaluation is the same program run at translation time
 
 Constant evaluation rejects a construct that it cannot handle only when
 an evaluation reaches that construct. So a function can contain such a
-construct and serve both modes. A reference whose object the evaluation
+construct and serve both modes. A `constexpr` function that no
+evaluation can complete is valid too ({rule}`CX-3`), and only a call
+that an evaluation reaches is rejected. A reference whose object the evaluation
 does not know is a problem only when the evaluation reads through the
 reference. Only a `constexpr` variable needs a {term}`literal type`
 ({rule}`CX-1`), because its value outlives the evaluation. A variable or
@@ -176,7 +178,10 @@ These variables are usable:
   {term}`constant initializer` (CV-8), if the variable is not also
   `volatile`,
 - a reference variable with a constant initializer, also if the
-  reference is not `constexpr`,
+  reference is not `constexpr`. A reference bound to an object with
+  automatic storage, or to a temporary that does not get static
+  storage, has no constant initializer, because a constant expression
+  cannot refer to such an object (CE-14),
 - a `const` temporary that the initializer of a `constexpr` reference
   extends (CE-14, {question}`Q-0193`).
 
@@ -246,7 +251,7 @@ freed in the same evaluation. These conditions apply:
 
 :::{rule} CE-8
 :kind: reject
-:tests: expressions/constant-expressions/throw-evaluated.cpp expressions/constant-expressions/throw-not-evaluated.cpp exceptions/throw/constant-evaluation-throw-rejected.cpp exceptions/throw/constant-evaluation-throw-not-taken.cpp classes/virtual/dynamic-cast-reference-fails-constant.cpp expressions/constant-expressions/termination-noexcept-rejected.cpp expressions/constant-expressions/termination-rethrow-rejected.cpp declarations/constexpr/consteval-converting-constructor-throws.cpp expressions/new-delete/bad-bound-constant-negative.cpp expressions/new-delete/bad-bound-constant-too-few.cpp expressions/constant-expressions/try-around-constexpr-variable.cpp expressions/constant-expressions/try-around-consteval-call.cpp expressions/constant-expressions/termination-not-reached.cpp
+:tests: expressions/constant-expressions/throw-evaluated.cpp expressions/constant-expressions/throw-not-evaluated.cpp exceptions/throw/constant-evaluation-throw-rejected.cpp exceptions/throw/constant-evaluation-throw-not-taken.cpp classes/virtual/dynamic-cast-reference-fails-constant.cpp expressions/constant-expressions/termination-noexcept-rejected.cpp expressions/constant-expressions/termination-rethrow-rejected.cpp expressions/constant-expressions/rethrow-not-reached.cpp declarations/constexpr/consteval-converting-constructor-throws.cpp expressions/new-delete/bad-bound-constant-negative.cpp expressions/new-delete/bad-bound-constant-too-few.cpp expressions/constant-expressions/try-around-constexpr-variable.cpp expressions/constant-expressions/try-around-consteval-call.cpp expressions/constant-expressions/termination-not-reached.cpp
 
 Constant evaluation must not evaluate any of these operations, each of
 which throws:
@@ -257,8 +262,11 @@ which throws:
   ({rule}`NEW-39`).
 
 A throw-expression on a path that the evaluation does not take is
-valid. Each point where the program terminates ({rule}`UNW-5`)
-follows a throw, so constant evaluation never reaches such a point.
+valid. A rethrow that the evaluation reaches is rejected. No exception
+is ever handled during translation, so the rethrow is the case where a
+run would terminate ({rule}`UNW-5`). Each point where the program
+terminates follows a throw, so constant evaluation never reaches such a
+point.
 :::
 
 :::{rule} CE-9
@@ -267,7 +275,11 @@ follows a throw, so constant evaluation never reaches such a point.
 
 Constant evaluation must not evaluate an operation that has undefined
 behavior. Each rule of class `undefined` gives such an operation. CE-26
-gives the operations that an implementation need not detect. The
+gives the operations that an implementation need not detect. A read of
+an object after its lifetime ends is such an operation ({rule}`OBJ-2`),
+also through a pointer to a local of a function that has returned, or
+through a reference member that a default member initializer bound to a
+temporary ({rule}`CTOR-17`). The
 Evidence segment lists the `undefined` rules and the compilers that
 reject each rule during constant evaluation.
 :::
@@ -446,7 +458,9 @@ CE-21 judge the {term}`default initialization` ({rule}`INIT-9`):
 A reference whose object is not known during constant evaluation can
 still occur in a constant expression if the evaluation does not read
 through the reference. An example is a call of a `constexpr` member
-function that does not use the object.
+function that does not use the object. A call of a static member
+function through the reference, as in `s.size()`, does not use the
+object either.
 :::
 
 :::{rule} CE-20
@@ -578,12 +592,44 @@ constinit int counter;                // fine: the zero is the value
 constinit Pair pair;                  // rejected: the default constructor
                                       // gives first and second no value
 constinit Empty empty;                // fine: Empty has no scalar part
+
+constexpr int pass_on(bool rethrow) {
+  if (rethrow) throw;                 // a rethrow with no exception
+  return 1;
+}
+static_assert(pass_on(false) == 1);   // fine: the rethrow is not reached
+static_assert(pass_on(true) == 1);    // rejected: the rethrow is reached
+
+constexpr const int* dangling() { int x = 1; return &x; }
+static_assert(*dangling() == 1);      // rejected: x ended with the call
+
+struct Box {
+  constexpr int size() const { return 4; }
+  static constexpr int count() { return 2; }
+};
+int sizes(Box& b) {                   // the object of b is unknown
+  constexpr int n = b.size();         // fine: size reads nothing of b
+  constexpr int c = b.count();        // fine: count is static (CE-18)
+  return n + c;
+}
+
+int local() {
+  constexpr int table[] = {1, 2};     // automatic storage
+  auto&& view = table;                // no constant initializer (CE-3)
+  constexpr int second = view[1];     // rejected: view is not usable
+  return second;
+}
+
+union Some { volatile int a; int b; };          // literal: b is not volatile
+union All { volatile int a; volatile long b; }; // not a literal type
+constexpr Some some{.b = 1};          // fine
+constexpr All all{.a = 1};            // rejected: All is not literal (CE-23)
 ```
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 130
-of 154 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 131
+of 155 tests.
 
 ### Divergences
 
@@ -596,8 +642,9 @@ of 154 tests.
   Q-0002.
 - {question}`Q-0020` (CE-12; open): how a test records a compiler that
   does not implement a feature yet. An override names the question.
-  Clang 18 also rejects a `constexpr` function that is never
-  constant.
+  Clang 18 also rejects the definition of a `constexpr` function that
+  can never give a constant, also when no evaluation calls it
+  ({rule}`CX-3`).
 - {question}`Q-0033` (CE-13; open): whether constant evaluation may
   compare the addresses of two string literals. CE-13 rejects the
   comparison, as Clang does. GCC and EDG fold some or all such
@@ -607,7 +654,8 @@ of 154 tests.
   and GCC say. EDG 7.0 accepts `explicit(2)`.
 - {question}`Q-0090` (CE-18; settled): whether an evaluation can use a
   reference whose referent is unknown when it reads nothing through it.
-  It can. Only Clang 18 differs.
+  It can. Only Clang 18 differs, for a call of a static member function
+  and of a non-static one that does not use the object.
 - {question}`Q-0115` (CE-21, CE-22; compiler defect): whether GCC's
   acceptance of a copy of an object with a part that has no value
   changes CE-22. The copy is rejected, as Clang and EDG do. GCC 14 and
@@ -622,8 +670,9 @@ of 154 tests.
 - {question}`Q-0193` (CE-3, CE-14; open): whether a constant can refer
   to, and read, every temporary that a namespace reference extends. It
   can, and a read needs a `const` type, as Clang says. EDG rejects two
-  forms of the reference, and GCC rejects the read of a class
-  temporary.
+  forms of the reference. GCC rejects a read of a class temporary, also
+  through its reference member. In `read-extended-temporary-nested.cpp`,
+  EDG rejects the declaration and GCC rejects the read.
 - {question}`Q-0335` (CE-17; open): whether a temporary that a constant
   evaluation makes needs a literal type. It does not, as Clang 22 says.
   GCC rejects such a temporary, EDG rejects one in a `static_assert`
@@ -636,7 +685,9 @@ of 154 tests.
 ### Notes
 
 - CE-10: all three implementations reject a recursion depth of 100000
-  and a loop of 100000000 steps by default. All accept a depth of 400.
+  and a loop of 100000000 steps by default. All accept a depth of 400,
+  four loops of 100000 iterations in one evaluation, and 150049 calls
+  (`moderate-loops-split.cpp`, `moderate-call-count.cpp`).
   In a template argument of a function template's signature, a failed
   evaluation is a {term}`substitution failure` ({rule}`DED-24`). So the limits
   can decide which overload a call selects.
@@ -648,7 +699,9 @@ of 154 tests.
     (`-fconstexpr-depth`, `-fconstexpr-loop-limit`,
     `-fconstexpr-ops-limit`). The loop limit counts each loop on its
     own, so four loops of 100000 iterations pass.
-  - Clang counts every step of the evaluation together. A naive
+  - Clang counts every step of the evaluation together. Clang 18 and 22
+    accept one loop of 1000000 iterations and reject one of 2000000.
+    EDG accepts one of 500000 and rejects one of 1000000. A naive
     recursive Fibonacci function that makes 1028457 calls fails on
     every Clang version, and one that makes 635621 calls fails on Clang
     22 at `-O2`. EDG accepts 635621 calls and rejects 1028457. Every
@@ -682,9 +735,14 @@ of 154 tests.
   with no value, for `constexpr` and `constinit` alike, when a
   constructor leaves the part without a value.
 - CE-26: all eight compilers accept constant evaluation of
-  `i++ + i++`, `i + i++`, and `i++ * i`. CE-26 is class `no-diagnostic`
-  because no compiler detects the pair. So the table below shows "no
-  test" for SEQ-4 and MUL-14.
+  `i++ + i++`, `i + i++`, `i++ * i`, `(i = 1) + (i = 2)`, and
+  `i - ++i`. CE-26 is class `no-diagnostic` because no compiler detects
+  the pair. So the table below shows "no test" for SEQ-4 and MUL-14.
+- CE-22: every compiler rejects a copy of an `unsigned char` that has
+  no value into another `unsigned char`
+  (`copy-indeterminate-unsigned-char.cpp`). The "some cases" entries of
+  INIT-1 and OBJ-2 below name the tests that a compiler accepts. Each
+  other test of the two rules is rejected.
 - CE-27: Clang and EDG evaluate the arguments of a call left to right in
   constant evaluation. GCC also evaluates them left to right in constant
   evaluation, and right to left at run time. CE-27 allows both results.
@@ -704,7 +762,8 @@ these:
 
 - "rejects": the compiler rejects every case.
 - "accepts": the compiler rejects no case.
-- "some cases": the compiler rejects some cases and not others.
+- "some cases": the compiler rejects some cases and not others. The
+  entry names the tests that the compiler accepts.
 
 Where the versions of a compiler differ, the entry names each version.
 "no test" means that the rule has no case.

@@ -105,7 +105,10 @@ for the cleanup of UNW-3 must not be a usual deallocation function. For
 example, a class declares a placement allocation function with one
 extra size parameter and a sized deallocation function. The sized
 function takes the same extra parameter, so a placement `new` expression
-for the class is not valid.
+for the class is not valid. The global sized deallocation function
+exists in every program ({principle}`NEW-P3`), so a global placement
+allocation function with one extra size parameter makes a placement
+`new` expression with that form not valid in the same way.
 :::
 
 ## Runtime Behavior
@@ -146,7 +149,8 @@ These rules apply:
   constructor can be written, defaulted, or inherited.
 - If the initialization of an aggregate throws, the members that were
   initialized before the throw are destroyed in reverse order. The
-  same holds for the captures of a lambda's closure object.
+  same holds for the captures of a lambda's closure object, which are
+  initialized in the order of the capture list ({rule}`LAM-28`).
 - If a reference member of the object keeps a temporary alive, the
   temporary ends when the member would be destroyed in that order.
 - If an element of an array throws during construction, the elements
@@ -394,7 +398,8 @@ programs are valid.
 - {question}`Q-0365` (UNW-1; settled on UNW-P1): whether the result of
   a return statement is destroyed when a local destructor then throws.
   It is, and it ends after the local objects built before it, as GCC
-  does. Clang never destroys the result.
+  does. Clang 18, Clang 22, and the host Clang never destroy the
+  result.
 - {question}`Q-0179` (UNW-8; open): which throws in a non-throwing
   function get a warning. UNW-8 recommends one for each throw that no
   enclosing handler catches by static type, and a rethrow needs
@@ -420,6 +425,13 @@ the compile.
 
 ### Notes
 
+- UNW-8: Clang and GCC give these warnings by default, with no warning
+  flag. `-Wall` neither adds nor removes them. The tests use `-Wall
+  -Werror`, so a warning rejects the program, and EDG skips the tests.
+  Clang's warning says that the function "can still throw", and GCC's
+  says that the `throw` "will always call terminate". Both warn about
+  a rethrow inside a handler of a try block in the function
+  (`rethrow-in-noexcept-warns.cpp`).
 - UNW-5, UNW-7: the harness sees only that the program ended with a
   nonzero status or a signal, and cannot see why. The tests ending in
   `-unobservable` show only that the program ends. The other UNW-7
@@ -463,9 +475,10 @@ the compile.
   selects a sized deallocation function of the class.
 - UNW-2: Clang and GCC destroy the initialized members of an aggregate,
   the initialized captures of a closure object, and the temporary that
-  a reference member keeps alive, in reverse order. GCC 14 differs for
-  the temporary of a reference member. When a destructor throws, Clang
-  and GCC still destroy the members.
+  a reference member keeps alive, in reverse order. GCC 14 destroys the
+  members but never destroys the temporary of a reference member
+  (`reference-member-temporary-ended.cpp`). When a destructor throws,
+  Clang and GCC still destroy the members.
 - UNW-5, UNW-7: Clang and GCC end the program when the constructor or
   the destructor of an object at namespace scope throws. When a
   destructor throws during unwinding, neither destroys the objects that

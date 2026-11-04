@@ -89,7 +89,10 @@ are valid:
 - two `extern` declarations of one variable,
 - two `typedef` declarations that name the same type.
 
-STMT-9 allows a class and a variable with one name.
+STMT-9 allows a class and a variable with one name. A declaration in
+the outermost block of a function that reuses a parameter's name falls
+under NAM-3, because the parameters are declared in the scope of that
+block and not in the block itself.
 :::
 
 :::{rule} STMT-9

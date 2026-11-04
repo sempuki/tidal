@@ -271,12 +271,16 @@ All eight compilers agree on all 40 tests. The results are in
   GCC evaluates the arguments of `f(a(), b())` from right to left. The
   test accepts `pair(0, 0)` too, because the rule allows it.
 - SEQ-4: during constant evaluation, no compiler rejects two
-  unsequenced modifications of one object, such as `i++ + i++`.
-  {rule}`CE-26` allows this.
-- SEQ-4: Clang warns "multiple unsequenced modifications" and GCC warns
-  "operation may be undefined". The test makes these warnings errors. No
+  unsequenced accesses to one object, such as `i++ + i++`, `i + i++`,
+  or `(i = 1) + (i = 2)`. {rule}`CE-26` allows this.
+- SEQ-4, SEQ-7: Clang and GCC warn about both forms, two writes and a
+  read beside a write. Clang warns "multiple unsequenced modifications"
+  for two writes and "unsequenced modification and access" for a read
+  beside a write, by default. GCC warns "operation may be undefined"
+  for both, under `-Wall`. The tests `unsequenced-increments.cpp` and
+  `unsequenced-read-and-increment.cpp` make these warnings errors. No
   compiler warns about two bit-fields of one memory location or two
-  reads of a volatile object; those tests only show the programs
+  reads of a volatile object. Those tests only show that the programs
   compile.
 - SEQ-4: no sanitizer of GCC or Clang stops two unsequenced
   modifications at run time. The front end's interpreter stops them

@@ -216,8 +216,16 @@ def predict(page: str, out: Path) -> int:
         "are the eight baseline compilers, old versions included.",
         "",
         "Some programs break a rule that needs no diagnostic, or a rule whose",
-        "behavior is undefined during translation. For these, answer with",
-        "what the compilers do, and cite the rule.",
+        "behavior is undefined during translation, such as a constant evaluation",
+        "that reaches an operation of class `undefined`. For these, answer with",
+        "what the compilers do, and cite the rule: `compiles` or `runs` when",
+        "the specification records that every compiler accepts the program,",
+        "`reject` when every compiler rejects it, and `depends` when they differ.",
+        "",
+        "A program whose run has undefined behavior is answered `undefined`.",
+        "Such a program's test checks only that it compiles, so `compiles` is",
+        "also right for it. The specification's notes say this as \"checks only",
+        "that the program compiles\".",
     ]
     (out / "README.md").write_text("\n".join(readme) + "\n")
     KEYS.mkdir(parents=True, exist_ok=True)

@@ -452,8 +452,8 @@ One question on this page settled on 2026-11-04 under decision 0054 after the so
 | {question}`Q-0363` | TRY-P2 | GCC 16 |
 
 - TRY-4, TRY-12, TRY-13: the table gives the warnings of each compiler
-  with no warning flag. `-Wall` adds none of these warnings on Clang or
-  GCC. The tests use `-Wall -Werror`, so a warning rejects the program,
+  with no warning flag. `-Wall` neither adds nor removes any of these
+  warnings on Clang or GCC. The tests use `-Wall -Werror`, so a warning rejects the program,
   and EDG skips the tests. A test whose GCC result is `accept` only
   compiles on GCC.
 

@@ -302,7 +302,9 @@ outermost block of a function is one scope with its parameter list. A
 variable and a function with one name in one scope are not valid.
 {rule}`NAM-39` allows a class or an enumeration to share its name.
 {rule}`STMT-8` names the specific case of a block, and {rule}`NAM-42`
-the case of a template (decision 0042).
+the case of a template (decision 0042). A declaration in the outermost
+block of a function with the name of a parameter falls under this rule,
+because the parameter is not declared in the block.
 :::
 
 :::{rule} NAM-39
@@ -494,6 +496,9 @@ covers only the class and its bases. It finds every kind of member:
 - nested classes and type aliases,
 - the enumerators of an unscoped enumeration in the class,
 - the injected class name.
+
+{rule}`PFX-11` rejects a member access whose lookup finds nothing or
+finds a type.
 
 A qualifier between the operator and the member name, as in `E.Q::m`,
 is first looked up in the class of `E`. If the class has no member
@@ -693,7 +698,7 @@ Argument-dependent lookup does not find these functions:
 - functions declared after the call or only in a block.
 
 A private base still adds its namespace, and the call can then fail the
-access check.
+access check of the conversion to that base ({rule}`ACC-12`).
 :::
 
 :::{rule} NAM-31
@@ -772,7 +777,9 @@ The first case is a specific case of {rule}`DER-4`, and
 
 A member function body sees all members of its class, including the
 members declared after the member function (CLS-2). A member declaration
-sees only the members declared before that declaration.
+sees only the members declared before that declaration. A member access
+`E.m` in a member declaration also needs a complete class, or the class
+being defined, and must find `m` ({rule}`PFX-11`, {question}`Q-0316`).
 :::
 
 :::{rule} NAM-10

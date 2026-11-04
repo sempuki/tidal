@@ -439,7 +439,8 @@ assignment operators. Each of these makes such a function non-trivial:
   move selects for the part decides ({question}`Q-0339`).
 
 With none of these conditions, the function is *trivial*. Default member
-initializers play no part.
+initializers play no part, and neither does a `volatile` member
+of scalar type.
 :::
 
 ## Runtime Behavior

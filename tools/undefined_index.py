@@ -8,7 +8,9 @@ no directive processing. Both use rows() so that the two agree.
 
 A compiler rejects a rule's case if a test of the rule expects `reject`
 from it. Tests with -Werror check a warning, not constant evaluation,
-so they don't count.
+so they don't count. Program tests under tests/programs/ don't count
+either: a program test decides no rule alone (decision 0054), and its
+rejection can come from any part of the program.
 """
 
 import fnmatch
@@ -54,7 +56,8 @@ def undefined_rules(root: Path):
 def mark(tests, compilers) -> str:
     """How the compilers of one family treat a rule's rejection tests.
 
-    Each compiler rejects every case, some cases, or none. A family whose
+    Each compiler rejects every case, some cases, or none. A "some cases"
+    entry names the tests that the compiler accepts. A family whose
     compilers differ lists them by id.
     """
     cases = [t for t in tests if t.default == "reject" or "reject" in t.overrides.values()]
@@ -64,8 +67,12 @@ def mark(tests, compilers) -> str:
     def status(c):
         ran = [t for t in cases
                if not any(fnmatch.fnmatch(f, p) for f in t.flags for p in c.unsupported_flags)]
-        n = sum(t.expect(c) == "reject" for t in ran)
-        return "rejects" if n == len(ran) else "accepts" if n == 0 else "some cases"
+        accepted = [t.path.name for t in ran if t.expect(c) != "reject"]
+        if not accepted:
+            return "rejects"
+        if len(accepted) == len(ran):
+            return "accepts"
+        return "some cases (accepts " + ", ".join(sorted(accepted)) + ")"
 
     by_status = {}
     for c in compilers:
@@ -87,6 +94,8 @@ def rows(root: Path):
     for path in test_paths():
         t = run_tests.parse_test(path)
         if "-Werror" in t.flags:
+            continue
+        if path.resolve().is_relative_to(matrix.TESTS.resolve() / "programs"):
             continue
         for rid in t.rules:
             tests.setdefault(rid, []).append(t)

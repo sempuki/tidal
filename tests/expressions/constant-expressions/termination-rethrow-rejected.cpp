@@ -3,8 +3,9 @@
 // tidal-error-clang: subexpression not valid in a constant expression
 // tidal-error-gcc: <throw-expression>. is not a constant expression
 // tidal-error-edg: expression must have a constant value
-constexpr int pass_on(bool handling) {
-  if (!handling) throw;
+// tidal-note: The evaluation reaches the rethrow, and no exception is being handled. A run would terminate (UNW-5).
+constexpr int pass_on(bool rethrow) {
+  if (rethrow) throw;
   return 1;
 }
-static_assert(pass_on(false) == 1);
+static_assert(pass_on(true) == 1);
