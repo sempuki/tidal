@@ -17,6 +17,7 @@ findings by rule ID, and never cites ISO wording. Reports go under
 | Predict (R) | reads a Tidal test with its directives removed, and says whether it compiles, links, runs, or has undefined behavior, citing rules | wrong, ambiguous, and missing rules | automatic, against the test's expectations |
 | Diagnose (D) | gets a program and a compiler or sanitizer message, names the rule that explains it, and fixes the program | rules that do not match how compilers report errors | automatic for the rule ID; the fix is built and run |
 | Propose (X) | writes the design and impact sections of a proposal for a new feature, citing the rules it changes or meets | missing rules that a change to the language must state its effect on | by hand, from the report |
+| Implement (I) | builds one component, such as class layout, from the rules with the tests hidden, then scores it on the tests | steps of a procedure that the text does not give | automatic, against the tests' assertions |
 | Guide (G) | writes a tutorial or a how-to guide for a task from the specification alone, citing a rule for every claim | facts that a task needs and no rule states, rules that are hard to combine | by hand, from the report; the guide goes to `guides/` |
 
 Write and Port need tasks written by hand, and they test whether a
@@ -214,6 +215,7 @@ Foundations batch and the 11 templates pages.
 | X14 | done: 57 rule changes; findings X14-1 to X14-10 | `reports/clean-room/X14/` |
 | X15 | done: 60 rule changes; findings X15-1 to X15-9 | `reports/clean-room/X15/` |
 | X16 | done: 41 rule changes, 3 tests change outcome; findings X16-1 to X16-7 | `reports/clean-room/X16/` |
+| I1 | done: class layout from the rules alone, 241 of 243 `static_assert` checks, 24 of 24 run checks; findings I1-1 to I1-13 | `reports/clean-room/I1/` |
 | W4 | done: four programs build and run on GCC and Clang; findings W4-1 to W4-10 | `reports/clean-room/W4/` |
 | W8 | done: four programs build and run on GCC and Clang; findings W8-1 to W8-9 | `reports/clean-room/W8/` |
 | W1 | done: five programs build and run on GCC and Clang; findings W1-1 to W1-9 | `reports/clean-room/W1/` |
@@ -300,6 +302,18 @@ persona's language and ask for C++ programs with the same behavior.
 > batch's answers to its answers.json. In your final message, list specification
 > findings with batch and program ID, rule IDs, what you needed, and a
 > suggestion.
+
+### Implement
+
+The Implement prompt names one component and its pages. In a blind
+phase the reader reads those pages with the Evidence segments and
+`:tests:` lines removed, does not read `tests/` or `frontend/`, and
+writes the component and a list of each step the text did not give.
+In a scoring phase the reader reads the tests that cite the pages'
+rules, turns their assertions into calls of the component, and scores
+the component as written in the blind phase. Each assertion the
+component gets wrong, and each step the text did not give, is a
+finding.
 
 ### Front end
 
