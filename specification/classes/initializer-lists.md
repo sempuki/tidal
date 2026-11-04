@@ -129,7 +129,7 @@ the same fault for a function parameter ({question}`Q-0132`).
 :kind: reject
 :tests: classes/initializer-lists/list-ctor-narrowing-still-chosen.cpp classes/initializer-lists/narrowing-constant-fits.cpp classes/initializer-lists/narrowing-in-ctor-args.cpp classes/initializer-lists/narrowing-in-list-elements.cpp classes/initializer-lists/narrowing-paren-ok.cpp
 
-A narrowing conversion of an element to its parameter or element type is
+A {term}`narrowing conversion` of an element to its parameter or element type is
 not valid. In the first phase, an initializer-list constructor stays
 viable when an element narrows. If that phase selects the constructor,
 the narrowing makes the program not valid. A constant that fits the target type does not

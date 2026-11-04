@@ -186,6 +186,12 @@ If constant evaluation can reach the behavior, a separate test expects
 `reject`. The notes and the rule's Evidence describe which
 configurations stop the behavior, and give no run result.
 
+A test of an `impl-defined` or `unspecified` rule gives one choice that
+the rule allows as its base expectation. Each override records another
+allowed choice. An implementation that makes the choice of an override
+still conforms. The rule's Evidence names the compiler whose choices
+the base expectations follow, when one compiler gives all of them.
+
 A `tidal-error` pattern names the reason for the rejection in words that
 the compiler's message uses, without its quote characters. The host GCC
 quotes with `‘’` and the container GCCs with `''`. Write one pattern per

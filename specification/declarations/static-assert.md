@@ -79,8 +79,8 @@ must not need a complete class.
 :tests: declarations/static-assert/condition-contextual-bool.cpp declarations/static-assert/condition-narrowing.cpp declarations/static-assert/condition-pointer.cpp declarations/static-assert/constexpr-function-call.cpp
 
 The condition is a constant expression. It is converted to `bool` by
-{term}`contextual conversion`, and a conversion that loses information
-is permitted. SA-7 lists what is not valid.
+{term}`contextual conversion`, and a {term}`narrowing conversion` is
+permitted. SA-7 lists what is not valid.
 :::
 
 :::{rule} SA-7

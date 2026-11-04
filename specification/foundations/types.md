@@ -143,10 +143,11 @@ rank.
 
 :::{rule} TYP-4
 :kind: required
-:tests: foundations/types/integer-ranges-lp64.cpp foundations/types/integer-ranges-ilp32.cpp foundations/types/int-max-overflow.cpp
+:tests: foundations/types/integer-ranges-lp64.cpp foundations/types/integer-ranges-ilp32.cpp foundations/types/int-max-overflow.cpp foundations/types/integer-ranges-character-types.cpp
 
-Every integer type other than `bool` uses two's complement. For a type
-whose width in TYP-1 is `N` bits, the table gives the bounds:
+Every {term}`integral type` other than `bool` uses two's complement.
+For a type whose width in TYP-1 is `N` bits, the table gives the
+bounds:
 
 | Kind | Lowest | Highest |
 |---|---|---|
@@ -185,8 +186,8 @@ limits:
   do not decrease in that order.
 - The type of `nullptr` has the size of a pointer to `void`.
 
-The width of each integer type, which is the number of bits of its
-value, is implementation-defined. On the matrix targets, the width is 8
+The width of each {term}`integral type` other than `bool`, which is
+the number of bits of its value, is implementation-defined. On the matrix targets, the width is 8
 times the size. The table gives the sizes in bytes on the matrix
 targets:
 
@@ -213,9 +214,10 @@ targets:
 
 The alignment of each fundamental type is implementation-defined. On
 x86-64 Linux each type's alignment equals its size. On `-m32` the types
-in this table have a smaller alignment, also as a member of a class:
+in this table have a smaller alignment. The table gives the value of
+`alignof`, and a member of a class has the same alignment:
 
-| Type | `-m32`, GCC and Clang | `-m32`, EDG |
+| Type | `alignof` on `-m32`, GCC and Clang | `alignof` on `-m32`, EDG |
 |---|---|---|
 | `long long` | 4 | 8 ({question}`Q-0120`) |
 | `double` | 4 | 4 |
@@ -313,8 +315,8 @@ static_assert(sizeof(u16) == 2 && sizeof(u32) == 4 && sizeof(u64) == 8);
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 59
-of 61 tests. The x86-64 build of EDG skips the `-m32` tests, and the
+The results are in `tests/RESULTS.md`. All eight compilers agree on 60
+of 62 tests. The x86-64 build of EDG skips the `-m32` tests, and the
 ILP32 build runs only those.
 
 - TYP-1, TYP-2, TYP-10, TYP-12: the values come from probes on both
@@ -343,6 +345,13 @@ ILP32 build runs only those.
   the size.
 - TYP-7: every compiler rejects `signed` or `unsigned` with `double`
   and with `long double`.
+- TYP-1: Clang and GCC predefine a type of each exact width for their
+  own headers. The 8-bit, 16-bit, and 32-bit types are `signed char`,
+  `short`, and `int`, and their unsigned types, on both targets. The
+  64-bit type is `long` on x86-64 and `long long` with `-m32`. The
+  `u64` alias of the Examples is `unsigned long long` on both targets,
+  so on x86-64 the alias names a different type from the compilers'
+  64-bit unsigned type, with the same size.
 - Settled on 2026-11-03 under decision 0054. A source-reader gap
   review supports each answer with no doubt, and a principle gives the
   same answer:

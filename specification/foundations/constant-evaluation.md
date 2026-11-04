@@ -88,11 +88,11 @@ unsequenced accesses to one object, which are undefined.
 :rules: CE-11 CE-19 CE-30
 
 Where the language needs a constant to build the program, it needs the
-exact value. In most such places, a conversion that could lose
-information is not a constant. A condition that only needs a yes or no
-permits such a conversion:
+exact value. In most such places, a {term}`narrowing conversion` is not
+valid. A condition that only needs a yes or no permits such a
+conversion:
 
-| Place | Value | Lossy conversion | Rules |
+| Place | Value | Narrowing conversion | Rules |
 |---|---|---|---|
 | an array bound | integer or enumeration | rejected | CE-11, CE-19, {rule}`DCL-19` |
 | an enumerator value | integer or enumeration | rejected | CE-11, CE-19, {rule}`ENUM-17` |
@@ -292,7 +292,7 @@ translation, is not valid in these places.
 :tests: expressions/constant-expressions/converted-constant-narrowing.cpp expressions/constant-expressions/explicit-condition-narrowing.cpp
 
 Where a constant converts to another type for a use in CE-11, the
-conversion must not narrow. The condition of `if constexpr` is an
+conversion must not be a {term}`narrowing conversion`. The condition of `if constexpr` is an
 exception (IF-16). The same condition applies to:
 
 - the condition of `explicit(...)`,

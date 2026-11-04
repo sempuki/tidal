@@ -160,7 +160,8 @@ An operand of `%` must not have floating-point type.
 
 Both operands go through the {term}`usual arithmetic conversions`. The
 result has the common type and is a prvalue (see
-{term}`value category`).
+{term}`value category`). If the common type is unsigned, a negative
+signed operand converts first ({rule}`CONV-2`).
 :::
 
 :::{rule} MUL-19
@@ -336,6 +337,7 @@ c * c                // type int
 7 % -2               // 1
 
 ~0u * 2u             // ~0u - 1u
+-1 * 1u              // ~0u: -1 converts to unsigned first
 
 double zero = 0.0;
 1.0 / zero           // positive infinity if double follows IEEE 754

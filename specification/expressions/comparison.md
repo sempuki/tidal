@@ -13,7 +13,9 @@ A comparison compares two values and gives a `bool` prvalue
 ({principle}`VC-P1`). Arithmetic operands are first brought to one
 common type by the {term}`usual arithmetic conversions`, and the
 comparison sees the converted values, so a negative `int` compared with
-an `unsigned` has become a large unsigned value. The operators bind in
+an `unsigned` by `<` has become a large unsigned value. The operator
+`<=>` rejects that conversion, because the conversion narrows
+({rule}`CMP-13`). The operators bind in
 three groups, and each group associates to the left:
 
 ```text
@@ -247,7 +249,7 @@ must not compare:
 
 These operands of `<=>` are not valid:
 
-- operands that need a narrowing conversion. The conversion of an
+- operands that need a {term}`narrowing conversion`. The conversion of an
   integer to a floating-point type is not counted as narrowing here.
 - a `bool` and an operand of another type,
 - a pointer and the literal `0`.

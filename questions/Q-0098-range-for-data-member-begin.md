@@ -1,11 +1,14 @@
 # Q-0098: Do data members named begin and end select the member form of a range-based for?
 
 **Status:** settled
-**Affects:** RFOR-2, `tests/statements/range-for/callable-data-members.cpp`, `tests/statements/range-for/data-member-begin-counts.cpp`
+**Affects:** RFOR-2, `tests/statements/range-for/callable-data-members.cpp`, `tests/statements/range-for/data-member-begin-counts.cpp`, `tests/statements/range-for/data-member-function-pointers.cpp`, `tests/statements/range-for/data-member-begin-not-callable-class.cpp`
 
 ## Context
 
-A class has members named begin and end. In one test both are data members of a callable class type. In the other, begin is an int data member and end is a member function. Clang and GCC use the member form whenever both names are members of any kind, so they accept the first test and reject the second. EDG 7.0 uses the member form only for member functions, so it does the opposite.
+A class has members named begin and end. In one test both are data members of a callable class type. In the other, begin is an int data member and end is a member function. Clang and GCC use the member form whenever both names are members of any kind, so they accept the first test and reject the second. EDG 7.0 uses the member form only for member functions, so it does the opposite. The same split holds for data members that are
+pointers to functions, which Clang and GCC call, and for a data member
+`begin` of a class type with no `operator()`, which Clang and GCC
+reject (finding G141 of `reports/clean-room/rust-frontend/report-19.md`).
 
 ## Options
 

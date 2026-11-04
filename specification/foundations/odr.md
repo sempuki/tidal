@@ -382,12 +382,14 @@ rule for `inline` entities.
 
 :::{rule} ODR-10
 :kind: no-diagnostic
-:tests: foundations/odr/class-differs-across-units.cpp foundations/odr/enumeration-differs-across-units.cpp foundations/odr/inline-variable-differs-across-units.cpp foundations/odr/inline-same-tokens-different-meaning.cpp foundations/odr/class-template-differs-across-units.cpp foundations/odr/function-template-same-tokens-different-meaning.cpp foundations/odr/variable-template-differs-across-units.cpp foundations/odr/const-value-in-inline-two-units.cpp foundations/odr/inline-callee-defaults-differ.cpp
+:tests: foundations/odr/class-differs-across-units.cpp foundations/odr/enumeration-differs-across-units.cpp foundations/odr/inline-variable-differs-across-units.cpp foundations/odr/inline-same-tokens-different-meaning.cpp foundations/odr/class-template-differs-across-units.cpp foundations/odr/function-template-same-tokens-different-meaning.cpp foundations/odr/variable-template-differs-across-units.cpp foundations/odr/const-value-in-inline-two-units.cpp foundations/odr/inline-callee-defaults-differ.cpp foundations/odr/inline-alias-differs-across-units.cpp
 
 If several translation units define the same entity of a kind in
 ODR-7 or ODR-12, the definitions must match. Matching definitions have
 the same tokens, and each name in them refers to the same entity, also
-where a specialization is instantiated ({rule}`INST-32`). Each call in
+where a specialization is instantiated ({rule}`INST-32`). A type alias
+counts as the type that it names, and that type must be the same in
+each unit. Each call in
 them uses the same default arguments ({rule}`DEFARG-2`). An
 implementation need not diagnose a mismatch. A name can refer to a
 different object in each unit if the object meets these conditions:
@@ -500,7 +502,7 @@ template <> int rank<bool> = 2;                // two units: two definitions
 
 ## Evidence
 
-All eight compilers agree on 81 of 94 tests. EDG checks each unit and
+All eight compilers agree on 82 of 95 tests. EDG checks each unit and
 does not link, so its results for the link and run tests say only that
 the units are valid.
 

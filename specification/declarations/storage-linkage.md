@@ -163,10 +163,10 @@ or follow a local variable of the same name in the same block.
 
 :::{rule} LNK-1
 :kind: required
-:tests: declarations/storage-linkage/external-default.cpp declarations/storage-linkage/external-namespace-member.cpp
+:tests: declarations/storage-linkage/external-default.cpp declarations/storage-linkage/external-namespace-member.cpp declarations/storage-linkage/class-external-linkage.cpp declarations/storage-linkage/class-unnamed-namespace-internal.cpp
 
-A variable or function at namespace scope has external linkage, unless a
-rule on this page gives it another linkage. A name with external linkage
+A variable, function, class, or enumeration at namespace scope has
+external linkage, unless a rule on this page gives it another linkage. A name with external linkage
 refers to one entity in all translation units.
 :::
 
@@ -206,7 +206,7 @@ definitions are one entity with one address.
 
 :::{rule} LNK-5
 :kind: required
-:tests: declarations/storage-linkage/unnamed-namespace-internal.cpp declarations/storage-linkage/unnamed-namespace-nested.cpp declarations/linkage-specifications/c-name-unnamed-namespace-other-unit.cpp
+:tests: declarations/storage-linkage/unnamed-namespace-internal.cpp declarations/storage-linkage/unnamed-namespace-nested.cpp declarations/linkage-specifications/c-name-unnamed-namespace-other-unit.cpp declarations/storage-linkage/class-unnamed-namespace-internal.cpp
 
 Each name in an unnamed namespace has internal {term}`linkage`, except
 a C name ({rule}`LSP-4`). The name refers to an entity of its own
@@ -365,7 +365,7 @@ static int y;                  // rejected
 
 ## Evidence
 
-All eight compilers agree on 77 of 79 tests. The results are in
+All eight compilers agree on 79 of 81 tests. The results are in
 `tests/RESULTS.md`. 21 tests use two translation units (decision 0014).
 EDG checks each unit and does not link.
 

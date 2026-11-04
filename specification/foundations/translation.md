@@ -607,7 +607,7 @@ and Clang warns with no flag.
 | {rule}`UNEV-3` | on: `-Wunused-comparison` | `-Wall`: `-Wunused-value` |
 | {rule}`UNEV-4` | on: `-Wunevaluated-expression` | no warning |
 | {rule}`UNW-8` | on: `-Wexceptions` | on: `-Wterminate` |
-| {rule}`VIRT-13` | `-Wall`: `-Wdelete-non-abstract-non-virtual-dtor`, `-Wdelete-abstract-non-virtual-dtor`, `-Woverloaded-virtual` | `-Wall`: `-Wdelete-non-virtual-dtor`, `-Woverloaded-virtual` |
+| {rule}`VIRT-13` | `-Wall`: `-Wdelete-non-abstract-non-virtual-dtor`, `-Wdelete-abstract-non-virtual-dtor`, `-Woverloaded-virtual`; on: `-Winconsistent-missing-override` | `-Wall`: `-Wdelete-non-virtual-dtor`, `-Woverloaded-virtual`; `-Wsuggest-override` only, for every override with no `override` or `final` |
 | {rule}`VOL-5` | on: `-Wdeprecated-volatile` | on: `-Wvolatile` |
 - TR-9, TR-11 with `-m32`: the matrix runs no program built with
   `-m32`, because the host compilers have no 32-bit C library. In the

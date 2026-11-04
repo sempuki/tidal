@@ -59,7 +59,7 @@ would give the name two meanings, so both are rejected.
 
 :::{rule} RFOR-2
 :kind: required
-:tests: statements/range-for/member-begin-end.cpp statements/range-for/free-begin-end.cpp statements/range-for/sentinel-end.cpp statements/range-for/data-member-named-begin.cpp statements/range-for/equality-only-iterator.cpp statements/range-for/member-begin-only-uses-free.cpp statements/range-for/callable-data-members.cpp
+:tests: statements/range-for/member-begin-end.cpp statements/range-for/free-begin-end.cpp statements/range-for/sentinel-end.cpp statements/range-for/data-member-named-begin.cpp statements/range-for/equality-only-iterator.cpp statements/range-for/member-begin-only-uses-free.cpp statements/range-for/callable-data-members.cpp statements/range-for/data-member-function-pointers.cpp
 
 For a range of class type, `begin` and `end` are found as follows:
 
@@ -78,15 +78,18 @@ iterator with prefix `++`. The loop compares the iterator with `end` by
 
 :::{rule} RFOR-7
 :kind: reject
-:tests: statements/range-for/not-a-range.cpp statements/range-for/member-begin-only.cpp statements/range-for/incomplete-element.cpp statements/range-for/begin-end-not-adl.cpp statements/range-for/postfix-only-iterator.cpp statements/range-for/data-member-begin-counts.cpp
+:tests: statements/range-for/not-a-range.cpp statements/range-for/member-begin-only.cpp statements/range-for/incomplete-element.cpp statements/range-for/begin-end-not-adl.cpp statements/range-for/postfix-only-iterator.cpp statements/range-for/data-member-begin-counts.cpp statements/range-for/data-member-begin-not-callable-class.cpp statements/range-for/data-member-function-pointers.cpp
 
 The range must be an array, a braced list, or an object of class
 type. A pointer is not a range. For a range of class type (RFOR-2):
 
 - The range must have a complete type, and the range must have both
   `begin` and `end`.
-- A data member `begin` or `end` of type `int` makes the loop not valid
-  ({question}`Q-0098`).
+- A data member named `begin` or `end` counts as a member, and the
+  loop then uses the member form ({question}`Q-0098`). The loop is
+  valid only if `range.begin()` and `range.end()` are valid calls. So a
+  data member of type `int`, or of a class type with no `operator()`,
+  makes the loop not valid, and a pointer to function does not.
 - Free functions that argument-dependent lookup does not find are not
   used.
 - The iterator must have prefix `++`.
@@ -200,7 +203,9 @@ One question on this page settled on 2026-11-03 under decision 0054 after the so
   Otherwise EDG uses free `begin` and `end`. So EDG accepts a data
   member `begin` of type `int` if argument-dependent lookup finds free
   functions, and EDG rejects a range with callable data members and no
-  free functions.
+  free functions. Clang and GCC call data members that are pointers to
+  functions, and reject a data member `begin` of a class type with no
+  `operator()`. EDG does the opposite in both cases.
 - RFOR-3: every compiler accepts a prvalue range of a class with no
   move constructor and with `begin` and `end` callable only on lvalues.
 - RFOR-5: GCC 14 accepts `static` and `thread_local` on the loop

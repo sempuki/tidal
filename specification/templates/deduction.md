@@ -126,6 +126,7 @@ Some positions give no value, because no single argument determines them:
 | the operand of `decltype` | `decltype(T{})` | many `T` can give one type |
 | an expression of a {term}`constant parameter` | `Fixed<N + 1>` | the value of `N` would need to be solved |
 | the first bound of an array parameter | `int values[N]` | the parameter is a pointer ({rule}`DCL-8`) |
+| a parameter of an {term}`alias template` that the aliased type does not use | `Id<Tag>`, with `Id<Tag>` the type `int` | the specialization is the aliased type ({rule}`TPL-28`), and `Tag` is not part of it |
 
 A template parameter in such a position takes its value from another
 position, from an explicit argument, or from a default.
@@ -323,7 +324,7 @@ fails.
 
 :::{rule} DED-13
 :kind: required
-:tests: templates/deduction/nondeduced-qualified-name.cpp templates/deduction/nondeduced-qualified-only.cpp templates/deduction/nondeduced-expression.cpp templates/deduction/nondeduced-decltype.cpp templates/deduction/nondeduced-array-by-value.cpp templates/deduction/nondeduced-explicit.cpp templates/deduction/nondeduced-member-template-arguments.cpp templates/deduction/nondeduced-member-template-explicit.cpp
+:tests: templates/deduction/nondeduced-qualified-name.cpp templates/deduction/nondeduced-qualified-only.cpp templates/deduction/nondeduced-expression.cpp templates/deduction/nondeduced-decltype.cpp templates/deduction/nondeduced-array-by-value.cpp templates/deduction/nondeduced-explicit.cpp templates/deduction/nondeduced-member-template-arguments.cpp templates/deduction/nondeduced-member-template-explicit.cpp templates/deduction/nondeduced-alias-unused-parameter.cpp templates/deduction/nondeduced-alias-unused-other-position.cpp
 
 A template parameter in a {term}`non-deduced position` takes no value
 from the pair. The table in {principle}`DED-P3` lists these positions,
@@ -644,7 +645,7 @@ template are two matches, and {rule}`NEW-24` calls neither
 
 :::{rule} DED-35
 :kind: reject
-:tests: templates/deduction/explicit-fixed-not-deduced.cpp templates/deduction/adjust-reference-rvalue.cpp templates/deduction/forwarding-const-not.cpp templates/deduction/pack-not-last-call.cpp templates/deduction/context-address-mismatch.cpp templates/deduction/match-shape-mismatch.cpp templates/deduction/match-constant-type-differs.cpp templates/deduction/nondeduced-qualified-only.cpp templates/deduction/nondeduced-expression.cpp templates/deduction/nondeduced-decltype.cpp templates/deduction/nondeduced-array-by-value.cpp templates/deduction/default-argument-not-deduced.cpp templates/deduction/difference-derived-two-bases.cpp templates/deduction/braced-elements-differ.cpp templates/deduction/braced-empty.cpp templates/deduction/braced-other-parameter.cpp templates/deduction/combine-conflict.cpp templates/deduction/combine-conflict-one-pair.cpp templates/deduction/combine-missing.cpp templates/deduction/overload-set-two-match.cpp templates/deduction/overload-set-template.cpp templates/deduction/nondeduced-member-template-arguments.cpp templates/deduction/forwarding-nested-not.cpp templates/deduction/pack-not-last-other-position.cpp templates/packs/nondeduced-before-end-call.cpp
+:tests: templates/deduction/explicit-fixed-not-deduced.cpp templates/deduction/adjust-reference-rvalue.cpp templates/deduction/forwarding-const-not.cpp templates/deduction/pack-not-last-call.cpp templates/deduction/context-address-mismatch.cpp templates/deduction/match-shape-mismatch.cpp templates/deduction/match-constant-type-differs.cpp templates/deduction/nondeduced-qualified-only.cpp templates/deduction/nondeduced-expression.cpp templates/deduction/nondeduced-decltype.cpp templates/deduction/nondeduced-array-by-value.cpp templates/deduction/default-argument-not-deduced.cpp templates/deduction/difference-derived-two-bases.cpp templates/deduction/braced-elements-differ.cpp templates/deduction/braced-empty.cpp templates/deduction/braced-other-parameter.cpp templates/deduction/combine-conflict.cpp templates/deduction/combine-conflict-one-pair.cpp templates/deduction/combine-missing.cpp templates/deduction/overload-set-two-match.cpp templates/deduction/overload-set-template.cpp templates/deduction/nondeduced-member-template-arguments.cpp templates/deduction/forwarding-nested-not.cpp templates/deduction/pack-not-last-other-position.cpp templates/packs/nondeduced-before-end-call.cpp templates/deduction/nondeduced-alias-unused-parameter.cpp
 
 A use of a function template name must have a function after
 deduction. These uses are not valid:
@@ -731,8 +732,8 @@ all<long>(1, 'c');              // Ts = long, char
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 114
-of 123 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 116
+of 125 tests.
 
 Three questions on this page settled on 2026-11-03 under decision 0054.
 For each, a source-reader gap review supports the answer with no doubt,

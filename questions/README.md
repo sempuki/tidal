@@ -393,6 +393,11 @@ status, and the first sentence of its answer section.
 | [Q-0377](Q-0377-qualified-class-body-lookup.md) | Does the body of a class defined with a qualified name see the members of the qualifier without qualification? | provisional | Yes; the class body sees the members of the qualifier |
 | [Q-0378](Q-0378-conditional-class-operand-splits.md) | Which class operands of `?:` convert when the compilers split? | provisional | The deleted conversion counts, and a `const` and a `volatile` class lvalue do not convert |
 | [Q-0379](Q-0379-default-argument-immediate-call.md) | Is a `consteval` call in a default argument checked at the declaration? | provisional | The call is checked where a call uses the default argument |
+| [Q-0380](Q-0380-hex-literal-size-suffix-type.md) | What type does a hexadecimal literal with a `z` suffix get when only `std::size_t` can hold it? | provisional | `std::size_t` |
+| [Q-0381](Q-0381-no-unique-address-end-padding.md) | Does a `[[no_unique_address]]` member make a class lend its end padding? | provisional | The attribute does not change the end padding |
+| [Q-0382](Q-0382-override-after-class-name.md) | Is `override` after the name of a class an identifier? | provisional | An identifier |
+| [Q-0383](Q-0383-reserved-literal-suffix-use.md) | Does a literal call a literal operator whose suffix does not start with `_`? | provisional | Yes; the literal calls the literal operator |
+| [Q-0384](Q-0384-union-end-padding.md) | Does a union follow the end-padding conditions of a class? | provisional | The conditions of a class apply to a union |
 
 ## Status values
 

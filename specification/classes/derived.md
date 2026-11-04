@@ -111,7 +111,7 @@ derived class* of an object is the class that the object was created as.
 
 :::{rule} DER-1
 :kind: reject
-:tests: classes/derived/base-alias.cpp classes/derived/base-duplicate.cpp classes/derived/base-enum.cpp classes/derived/base-final.cpp classes/derived/base-incomplete.cpp classes/derived/base-not-class.cpp classes/derived/base-qualified.cpp classes/derived/base-self.cpp classes/derived/base-union.cpp classes/derived/final-not-keyword.cpp classes/derived/union-as-derived.cpp
+:tests: classes/derived/base-alias.cpp classes/derived/base-duplicate.cpp classes/derived/base-enum.cpp classes/derived/base-final.cpp classes/derived/base-incomplete.cpp classes/derived/base-not-class.cpp classes/derived/base-qualified.cpp classes/derived/base-self.cpp classes/derived/base-union.cpp classes/derived/final-not-keyword.cpp classes/derived/union-as-derived.cpp foundations/keywords/final-after-complete-class-redefines.cpp classes/unions/union-final-not-base.cpp
 
 Each class in a base list must be:
 
@@ -121,7 +121,8 @@ Each class in a base list must be:
 - named only once in the list.
 
 The name can be a type alias or a qualified name. A union must not have a
-base list. `final` after the class name is a marker only in that position.
+base list. `final` after the class name is a marker only in that position
+({rule}`KW-3`).
 :::
 
 :::{rule} DER-2
@@ -500,8 +501,8 @@ static_assert(make(true) == 3);  // rejected: Left() is not constexpr
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 88
-of 89 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 90
+of 91 tests.
 
 One question on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on classes and statements (`reports/review/2026-11-03-gap-review-questions-classes-statements.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
 

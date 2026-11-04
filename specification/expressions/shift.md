@@ -89,7 +89,7 @@ A class operand is valid only through a usable conversion or an {term}`operator 
 
 :::{rule} SHF-4
 :kind: required
-:tests: expressions/shift/result-type.cpp expressions/shift/result-prvalue.cpp
+:tests: expressions/shift/result-type.cpp expressions/shift/result-prvalue.cpp expressions/conversions/binary-operator-common-type-contexts.cpp
 
 Each operand goes through {term}`integer promotion` on its own. The
 result is a prvalue with the promoted type of the left operand. The type
@@ -160,8 +160,8 @@ c << 20;             // fine: c is promoted to int first
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 27
-of 29 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 28
+of 30 tests.
 
 - SHF-5, SHF-6: all compilers accept left shifts of negative values and
   overflowing left shifts during {term}`constant evaluation`. The

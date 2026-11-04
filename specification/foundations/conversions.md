@@ -25,7 +25,7 @@ sees it:
 :::
 
 :::{principle} CONV-P2
-:rules: CONV-2 CONV-3
+:rules: CONV-2 CONV-3 CONV-21
 :exceptions: CONV-12
 
 A conversion between integer types keeps the value when the target can
@@ -33,6 +33,11 @@ hold it. When the target cannot, the target keeps the low bits, so the
 result is the value modulo the target's range, for signed and unsigned
 targets alike. A conversion to `bool` gives `false` for zero and `true`
 for any other value, and a null pointer counts as zero.
+
+A conversion that can change the value in this way, or drop a fraction,
+is a {term}`narrowing conversion`. Braces and the constants of
+{rule}`CE-19` reject it. A constant whose value the target holds is
+exempt, because its value does not change.
 :::
 
 :::{principle} CONV-P4
@@ -101,7 +106,7 @@ A `float` operand does not change to `double` in arithmetic.
 
 :::{rule} CONV-19
 :kind: required
-:tests: expressions/conversions/uac-floating.cpp expressions/decltype/arithmetic-common-type.cpp expressions/conversions/uac-promoted-same.cpp expressions/conversions/uac-same-signedness.cpp expressions/conversions/uac-unsigned-rank-not-lower.cpp expressions/conversions/uac-signed-holds-unsigned-lp64.cpp expressions/conversions/uac-unsigned-of-signed-lp64.cpp expressions/conversions/uac-unsigned-of-signed-ilp32.cpp
+:tests: expressions/conversions/uac-floating.cpp expressions/decltype/arithmetic-common-type.cpp expressions/conversions/uac-promoted-same.cpp expressions/conversions/uac-same-signedness.cpp expressions/conversions/uac-unsigned-rank-not-lower.cpp expressions/conversions/uac-signed-holds-unsigned-lp64.cpp expressions/conversions/uac-unsigned-of-signed-lp64.cpp expressions/conversions/uac-unsigned-of-signed-ilp32.cpp expressions/conversions/binary-operator-common-type-contexts.cpp
 
 The {term}`usual arithmetic conversions` give the two operands of a
 binary arithmetic operator one common type. The first step that applies
@@ -122,23 +127,40 @@ decides the common type:
    common type is the signed type.
 6. Otherwise the common type is the unsigned type of the signed type's
    rank.
+
+When the common type is unsigned, a negative signed operand converts to
+a large value ({rule}`CONV-2`). The operator `<=>` rejects such a
+{term}`narrowing conversion` ({rule}`CMP-13`).
 :::
 
 :::{rule} CONV-20
 :kind: required
-:tests: expressions/conversions/implicit-conversion-contexts.cpp expressions/conversions/implicit-conversion-more-contexts.cpp
+:tests: expressions/conversions/implicit-conversion-contexts.cpp expressions/conversions/implicit-conversion-more-contexts.cpp expressions/conversions/implicit-conversion-member-and-new-contexts.cpp expressions/conversions/binary-operator-common-type-contexts.cpp
 
 An implicit conversion happens in each of these contexts. The rule named
 for each context gives the target type:
 
 - the initializer of a variable ({rule}`INIT-4`),
+- a member initializer and a default member initializer, to the type of
+  the member ({rule}`CTOR-5`),
+- the initializer of `new T(e)`, to `T`, and the size of an array
+  `new`, to the type of `sizeof` ({rule}`NEW-2`),
+- the initializer of a reference that binds to a temporary, to the
+  referenced type ({rule}`REF-7`),
 - a function argument ({rule}`PFX-6`),
+- the standard conversions before and after the conversion function in
+  a user-defined conversion sequence ({rule}`ICS-3`),
 - a default argument, to the type of its parameter ({rule}`DEFARG-10`),
 - the expression of a `return` statement ({rule}`JMP-3`),
 - the right operand of an assignment ({rule}`ASN-1`),
 - the result of `op` in a compound assignment `E1 op= E2`, to the type
   of `E1` ({rule}`ASN-5`),
-- the operands of a binary arithmetic or comparison operator (CONV-19),
+- the operands of the binary operators `*`, `/`, `%`, `+`, `-`, `&`,
+  `|`, `^`, and the comparison operators, to their common type
+  (CONV-19). Each operand of a shift is promoted alone
+  ({rule}`SHF-4`).
+- the step of `++` or `--` on a type that {term}`integer promotion`
+  changes, back to the operand's type ({rule}`UN-20`),
 - the second and third operands of `?:`, to the result type
   ({rule}`COND-3`),
 - a condition, by {term}`contextual conversion` ({rule}`IF-3`),
@@ -146,6 +168,29 @@ for each context gives the target type:
 - the condition of a `switch` ({rule}`SW-2`),
 - the parameter of a {term}`handler`, from the {term}`exception object`, by the
   conversions of {rule}`TRY-2` only.
+:::
+
+:::{rule} CONV-21
+:kind: required
+:tests: declarations/initialization/list/narrowing-constant-fits.cpp declarations/initialization/list/narrowing-constant-fits-bool.cpp declarations/initialization/list/narrowing-int-to-float-exact.cpp declarations/initialization/list/narrowing-double-to-float-in-range.cpp declarations/initialization/list/narrowing-nonconstant-long-ilp32.cpp declarations/initialization/list/narrowing-integer-to-bool.cpp declarations/initialization/list/narrowing-floating-to-bool.cpp declarations/initialization/list/narrowing-constant-to-bool-out-of-range.cpp declarations/initialization/list/narrowing-bit-field-fits.cpp declarations/initialization/list/narrowing-unscoped-enum-values-fit.cpp
+
+A {term}`narrowing conversion` is an implicit conversion in this table,
+unless the last column holds:
+
+| From | To | Not narrowing if |
+|---|---|---|
+| Floating-point type | {term}`Integral type <integral type>`, `bool` included | Never |
+| Integral type | Floating-point type | The value is a constant that the target type holds exactly. |
+| `long double` | `double` or `float` | The value is a constant in the range of the target type. |
+| `double` | `float` | The value is a constant in the range of the target type. |
+| Integral type | An integral type that cannot hold all its values on the target ({rule}`TYP-1`), `bool` included | The value is a constant that fits. |
+| Pointer or pointer to member | `bool` | Never |
+
+An unscoped enumeration source counts as an integral source. Without a
+fixed type, its values are those that {rule}`ENUM-22` gives
+({question}`Q-0331`). A bit-field source counts by its width, so a
+bit-field whose values all fit in the target is not narrowing
+({question}`Q-0042`).
 :::
 
 :::{rule} CONV-8
@@ -262,7 +307,7 @@ pointer to an array of the same element type with no bound.
 
 :::{rule} CONV-2
 :kind: required
-:tests: expressions/conversions/to-unsigned-modulo.cpp expressions/conversions/to-signed-modulo.cpp
+:tests: expressions/conversions/to-unsigned-modulo.cpp expressions/conversions/to-signed-modulo.cpp expressions/assignment/compound-narrow-operand-promoted.cpp expressions/bitwise/negative-with-unsigned.cpp
 
 An integer value that converts to another integer type keeps its low N
 bits, where N is the width of the target type. The target can be signed
@@ -387,7 +432,8 @@ The results are in `tests/RESULTS.md`.
 - CONV-11: Clang and GCC give infinity, during constant evaluation and
   at run time. EDG rejects the conversion during constant evaluation
   ({question}`Q-0028`). EDG builds no program, so its run-time choice
-  is not observed.
+  is not observed. The base expectation of each test follows Clang and
+  GCC, and the tests record EDG's choice as an override.
 - CONV-7, CONV-11 with `-m32`: the matrix runs no program built with
   `-m32`, because the host compilers have no 32-bit C library. The
   `-m32` tests check the choices during constant evaluation. In the

@@ -85,14 +85,14 @@ parentheses that have the form of a parameter list.
 
 An initializer after `=` or in parentheses is converted to the type of
 the variable by implicit conversion ({rule}`ICS-1`, {rule}`ICS-3`).
-A conversion that loses information is permitted. `nullptr` converts to
+A {term}`narrowing conversion` is permitted. `nullptr` converts to
 `bool` in direct initialization, with parentheses or braces, and gives
 `false`. INIT-7 lists what is not valid.
 :::
 
 :::{rule} INIT-7
 :kind: reject
-:tests: declarations/initialization/forms/copy-init-no-conversion.cpp declarations/initialization/forms/direct-init-multiple.cpp declarations/initialization/forms/copy-init-explicit-rejected.cpp declarations/initialization/forms/scalar-list-in-parens.cpp declarations/initialization/forms/incomplete-type.cpp declarations/initialization/forms/incomplete-type-copy.cpp declarations/initialization/forms/incomplete-type-paren.cpp declarations/initialization/forms/nullptr-bool-copy.cpp
+:tests: declarations/initialization/forms/copy-init-no-conversion.cpp declarations/initialization/forms/direct-init-multiple.cpp declarations/initialization/forms/copy-init-explicit-rejected.cpp declarations/initialization/forms/scalar-list-in-parens.cpp declarations/initialization/forms/incomplete-type.cpp declarations/initialization/forms/incomplete-type-copy.cpp declarations/initialization/forms/incomplete-type-paren.cpp declarations/initialization/forms/nullptr-bool-copy.cpp foundations/keywords/override-after-class-name.cpp
 
 A variable with an initializer of any form, braces included, must have
 a complete type. An initializer after `=` or in parentheses must also
@@ -111,8 +111,8 @@ meet these conditions:
 
 An array is initialized from a list of values in braces or in
 parentheses. In both forms, an array without a bound gets the number of
-values as its bound ({rule}`DCL-5`). In parentheses, a conversion that
-loses information is permitted, and INIT-8 lists what is not valid.
+values as its bound ({rule}`DCL-5`). In parentheses, a {term}`narrowing
+conversion` is permitted, and INIT-8 lists what is not valid.
 :::
 
 :::{rule} INIT-8
@@ -223,7 +223,7 @@ struct Bits {
 
 ## Evidence
 
-All eight compilers agree on 37 of 38 tests. The results are in
+All eight compilers agree on 38 of 39 tests. The results are in
 `tests/RESULTS.md`.
 
 - **INIT-1.** All compilers reject a read of an uninitialized scalar

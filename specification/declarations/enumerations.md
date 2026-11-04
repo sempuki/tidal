@@ -134,17 +134,17 @@ enclosing scope.
 
 :::{rule} ENUM-3
 :kind: required
-:tests: declarations/enumerations/scoped-compare-same-type.cpp declarations/enumerations/scoped-explicit-conversion.cpp
+:tests: declarations/enumerations/scoped-compare-same-type.cpp declarations/enumerations/scoped-explicit-conversion.cpp declarations/enumerations/scoped-functional-cast.cpp
 
 The enumerators of a scoped enumeration are named through the
 enumeration. A value converts to and from an integer with an explicit
-cast. Two values of the same scoped enumeration can be compared. ENUM-16
+cast, which includes the form `F(5)` ({rule}`CAST-9`). Two values of the same scoped enumeration can be compared. ENUM-16
 lists what is not valid.
 :::
 
 :::{rule} ENUM-16
 :kind: reject
-:tests: declarations/enumerations/scoped-names-scoped.cpp declarations/enumerations/scoped-no-conversion.cpp declarations/enumerations/scoped-no-arithmetic.cpp declarations/enumerations/scoped-compare-int.cpp declarations/enumerations/increment-enum.cpp
+:tests: declarations/enumerations/scoped-names-scoped.cpp declarations/enumerations/scoped-no-conversion.cpp declarations/enumerations/scoped-no-arithmetic.cpp declarations/enumerations/scoped-compare-int.cpp declarations/enumerations/increment-enum.cpp declarations/enumerations/scoped-parentheses-from-integer.cpp
 
 The forms that ENUM-3 allows are the only valid forms. A program must
 not:
@@ -154,6 +154,8 @@ not:
 - use a scoped value in arithmetic,
 - compare a scoped value with an integer,
 - initialize an integer from a scoped value,
+- initialize a scoped enumeration from an integer in parentheses, as
+  in `F f(5);`,
 - apply `++` or `--` to an enumeration without a user-declared operator
   ({rule}`OPR-6`).
 :::
@@ -174,7 +176,8 @@ The fixed underlying type can be `bool` or a character type. A
 :tests: declarations/enumerations/scoped-value-too-large.cpp declarations/enumerations/fixed-underlying-narrowing.cpp declarations/enumerations/fixed-underlying-non-integral.cpp
 
 A fixed underlying type (ENUM-4) must be an integer type. Each
-enumerator value must fit in the underlying type without narrowing.
+enumerator value must fit in the underlying type without a
+{term}`narrowing conversion`.
 :::
 
 :::{rule} ENUM-7
@@ -182,7 +185,7 @@ enumerator value must fit in the underlying type without narrowing.
 :tests: declarations/enumerations/opaque-declaration.cpp declarations/enumerations/opaque-declaration-member.cpp
 
 An enumeration can be declared without its enumerators before its
-definition. ENUM-18 lists what such a declaration needs.
+definition, in an {term}`opaque enumeration declaration`. ENUM-18 lists what such a declaration needs.
 :::
 
 :::{rule} ENUM-18
@@ -212,7 +215,7 @@ enumerations. ENUM-19 lists what is not valid.
 :tests: declarations/enumerations/list-init-no-fixed.cpp declarations/enumerations/list-init-narrowing.cpp declarations/enumerations/copy-list-from-integer.cpp
 
 In the initialization that ENUM-8 allows, the conversion to the
-underlying type must not narrow. An enumeration without a fixed
+underlying type must not be a {term}`narrowing conversion`. An enumeration without a fixed
 underlying type cannot be initialized from an integer in braces.
 
 Initialization from an integer in braces is valid only as
@@ -338,7 +341,7 @@ value. Which type is unspecified ({question}`Q-0114`).
 The underlying type of an unscoped enumeration without `: type` is
 implementation-defined. The underlying type is an integer type that can
 hold all enumerator values, and it is not wider than `int` unless a
-value needs more. If no standard integer type can hold all values, the
+value needs more. If no {term}`integer type` can hold all values, the
 implementation can use a wider type or reject the enumeration. The
 matrix compilers take the first type that holds all values, on x86-64
 and with `-m32`, and try the types in this order:
@@ -394,7 +397,7 @@ static_assert(sizeof names / sizeof names[0] ==
 
 ## Evidence
 
-All eight compilers agree on 71 of 74 tests. The results are in
+All eight compilers agree on 73 of 76 tests. The results are in
 `tests/RESULTS.md`.
 
 - **ENUM-5.** With `-fshort-enums`, Clang and GCC give `enum { S = 1 }`

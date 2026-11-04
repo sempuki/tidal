@@ -1,4 +1,4 @@
-// tidal-rules: LIST-2
+// tidal-rules: LIST-2 CONV-21
 // tidal-expect: accept
 // tidal-expect-gcc-14: reject
 // tidal-expect-clang-18: reject

@@ -103,11 +103,12 @@ from right to left, so `a = b = c` assigns `c` to `b` and then to `a`.
 
 :::{rule} ASN-5
 :kind: required
-:tests: expressions/assignment/compound-operators.cpp expressions/assignment/compound-pointer.cpp expressions/assignment/compound-converts.cpp expressions/assignment/bool-compound.cpp
+:tests: expressions/assignment/compound-operators.cpp expressions/assignment/compound-pointer.cpp expressions/assignment/compound-converts.cpp expressions/assignment/bool-compound.cpp expressions/assignment/compound-narrow-operand-promoted.cpp
 
-`E1 op= E2` has the effect of `E1 = E1 op E2`. The result of `op` is
-converted to the type of `E1`, so a `bool` operand becomes `true` or
-`false`. For `+=` and `-=`, `E1` can be a pointer and `E2` an integer.
+`E1 op= E2` has the effect of `E1 = E1 op E2`. So an arithmetic `E1`
+is promoted inside `op` ({rule}`CONV-19`, {rule}`SHF-4`). The result of
+`op` is converted back to the type of `E1` ({rule}`CONV-2`), so a
+`bool` operand becomes `true` or `false`. For `+=` and `-=`, `E1` can be a pointer and `E2` an integer.
 :::
 
 :::{rule} ASN-13
@@ -198,6 +199,9 @@ slot() = make();  // make() is called before slot()
 
 slot() += 4;      // slot() is called once
 
+unsigned char c = 250;
+c += 10;          // 260 as an int, then 4 as an unsigned char
+
 int x = 0;
 x = {};           // 0
 x = {2.5};        // rejected: narrowing
@@ -215,8 +219,8 @@ struct Counter {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 35
-of 36 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 36
+of 37 tests.
 
 - ASN-4: `i = i++ + 1;` gives 2 on all compilers. The right operand,
   with its side effect, completes before the store.

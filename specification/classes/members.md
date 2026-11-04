@@ -485,10 +485,10 @@ holds during {term}`constant evaluation`
 
 :::{rule} CLS-33
 :kind: required
-:tests: classes/members/empty-standard-layout-base-zero-size.cpp classes/members/empty-standard-layout-base-zero-size-ilp32.cpp classes/members/standard-layout-empty-bases.cpp classes/members/layout-empty-base-not-standard-layout.cpp classes/members/layout-base-type-first-member.cpp
+:tests: classes/members/empty-standard-layout-base-zero-size.cpp classes/members/empty-standard-layout-base-zero-size-ilp32.cpp classes/members/standard-layout-empty-bases.cpp classes/members/layout-empty-base-not-standard-layout.cpp classes/members/layout-base-type-first-member.cpp classes/members/empty-class-cases.cpp
 
-A base subobject takes no bytes if its class is empty and
-standard-layout. The derived class need not be standard-layout. The
+A base subobject takes no bytes if its class is an {term}`empty class`
+and standard-layout. The derived class need not be standard-layout. The
 offset of such a base is unspecified (CLS-34).
 :::
 
@@ -496,19 +496,19 @@ offset of such a base is unspecified (CLS-34).
 
 :::{rule} CLS-11
 :kind: impl-defined
-:tests: classes/members/empty-class-size-one.cpp classes/members/empty-class-array-size.cpp classes/members/empty-class-size-one-ilp32.cpp
+:tests: classes/members/empty-class-size-one.cpp classes/members/empty-class-array-size.cpp classes/members/empty-class-size-one-ilp32.cpp classes/members/empty-class-cases.cpp
 
-The size of an empty class is implementation-defined. Every compiler in
+The size of an {term}`empty class` is implementation-defined. Every compiler in
 the matrix gives size 1, on x86-64 and with `-m32`.
 :::
 
 :::{rule} CLS-31
 :kind: impl-defined
-:tests: classes/members/layout-empty-base-not-standard-layout.cpp classes/members/layout-overlap-member.cpp classes/members/layout-overlap-member-ilp32.cpp declarations/attributes/no-unique-address.cpp
+:tests: classes/members/layout-empty-base-not-standard-layout.cpp classes/members/layout-overlap-member.cpp classes/members/layout-overlap-member-ilp32.cpp declarations/attributes/no-unique-address.cpp classes/members/empty-class-cases.cpp classes/members/layout-empty-member-placement.cpp classes/members/layout-empty-member-placement-ilp32.cpp
 
 These parts of a class layout are implementation-defined:
 
-- whether an object of an empty class takes no bytes, if the object is
+- whether an object of an {term}`empty class` takes no bytes, if the object is
   a base subobject outside CLS-33, or a `[[no_unique_address]]` member,
 - the allocation and alignment of bit-fields ({rule}`BF-9`),
 - alignment requirements ({rule}`ALN-5`).
@@ -524,7 +524,7 @@ Every compiler in the matrix makes these choices, on x86-64 and with
 
 :::{rule} CLS-34
 :kind: unspecified
-:tests: classes/members/layout-base-type-first-member.cpp classes/members/layout-virtual-first-member.cpp classes/members/layout-virtual-first-member-ilp32.cpp classes/members/layout-base-tail-padding.cpp classes/members/layout-base-tail-padding-ilp32.cpp classes/members/layout-base-tail-padding-defaulted.cpp classes/members/layout-overlap-member.cpp classes/members/layout-overlap-member-ilp32.cpp classes/members/layout-order-and-pointer.cpp classes/members/layout-order-and-pointer-ilp32.cpp classes/members/layout-tail-padding-conditions.cpp classes/members/layout-tail-padding-conditions-ilp32.cpp classes/members/layout-tail-padding-deleted-constructor.cpp classes/members/layout-tail-padding-deleted-constructor-ilp32.cpp classes/members/layout-tail-padding-move-assignment.cpp classes/members/layout-tail-padding-move-assignment-ilp32.cpp classes/members/layout-empty-bases-depths.cpp classes/members/layout-empty-member-after-empty-base.cpp classes/members/layout-tail-padding-assignment-forms.cpp classes/members/layout-virtual-base-order.cpp classes/members/layout-virtual-base-part-ilp32.cpp classes/members/layout-virtual-base-part.cpp
+:tests: classes/members/layout-base-type-first-member.cpp classes/members/layout-virtual-first-member.cpp classes/members/layout-virtual-first-member-ilp32.cpp classes/members/layout-base-tail-padding.cpp classes/members/layout-base-tail-padding-ilp32.cpp classes/members/layout-base-tail-padding-defaulted.cpp classes/members/layout-overlap-member.cpp classes/members/layout-overlap-member-ilp32.cpp classes/members/layout-order-and-pointer.cpp classes/members/layout-order-and-pointer-ilp32.cpp classes/members/layout-tail-padding-conditions.cpp classes/members/layout-tail-padding-conditions-ilp32.cpp classes/members/layout-tail-padding-deleted-constructor.cpp classes/members/layout-tail-padding-deleted-constructor-ilp32.cpp classes/members/layout-tail-padding-move-assignment.cpp classes/members/layout-tail-padding-move-assignment-ilp32.cpp classes/members/layout-empty-bases-depths.cpp classes/members/layout-empty-member-after-empty-base.cpp classes/members/layout-tail-padding-assignment-forms.cpp classes/members/layout-virtual-base-order.cpp classes/members/layout-virtual-base-part-ilp32.cpp classes/members/layout-virtual-base-part.cpp classes/members/layout-empty-member-placement.cpp classes/members/layout-empty-member-placement-ilp32.cpp classes/members/layout-virtual-base-alignment.cpp classes/members/layout-virtual-base-nested-order.cpp classes/members/layout-empty-virtual-base.cpp classes/members/layout-no-unique-address-end-padding.cpp classes/members/layout-no-unique-address-end-padding-ilp32.cpp classes/members/layout-union-size.cpp classes/members/layout-union-size-ilp32.cpp classes/members/layout-union-end-padding.cpp classes/members/layout-union-end-padding-ilp32.cpp classes/members/layout-member-sizes.cpp classes/members/layout-member-sizes-ilp32.cpp
 
 These parts of a class layout are unspecified, within CLS-10, CLS-30,
 CLS-31, and CLS-33:
@@ -540,29 +540,37 @@ CLS-31, and CLS-33:
 
 :::{rule} CLS-35
 :kind: unspecified
-:tests: classes/members/layout-order-and-pointer.cpp classes/members/layout-order-and-pointer-ilp32.cpp classes/members/layout-virtual-base-part.cpp classes/members/layout-virtual-base-part-ilp32.cpp classes/members/layout-virtual-base-order.cpp classes/members/layout-empty-member-after-empty-base.cpp classes/members/layout-empty-bases-depths.cpp classes/members/layout-tail-padding-assignment-forms.cpp classes/members/layout-virtual-first-member.cpp classes/members/layout-virtual-first-member-ilp32.cpp classes/members/layout-base-type-first-member.cpp classes/members/layout-base-tail-padding.cpp classes/members/layout-base-tail-padding-ilp32.cpp classes/members/layout-tail-padding-conditions.cpp classes/members/layout-tail-padding-conditions-ilp32.cpp classes/members/layout-base-tail-padding-defaulted.cpp classes/members/layout-tail-padding-deleted-constructor.cpp classes/members/layout-tail-padding-deleted-constructor-ilp32.cpp classes/members/layout-tail-padding-move-assignment.cpp classes/members/layout-tail-padding-move-assignment-ilp32.cpp classes/members/layout-overlap-member.cpp classes/members/layout-overlap-member-ilp32.cpp foundations/storage/empty-base-takes-no-bytes.cpp foundations/storage/base-bytes-shared-with-member.cpp foundations/storage/no-unique-address-member-shares-bytes.cpp
+:tests: classes/members/layout-order-and-pointer.cpp classes/members/layout-order-and-pointer-ilp32.cpp classes/members/layout-virtual-base-part.cpp classes/members/layout-virtual-base-part-ilp32.cpp classes/members/layout-virtual-base-order.cpp classes/members/layout-empty-member-after-empty-base.cpp classes/members/layout-empty-bases-depths.cpp classes/members/layout-tail-padding-assignment-forms.cpp classes/members/layout-virtual-first-member.cpp classes/members/layout-virtual-first-member-ilp32.cpp classes/members/layout-base-type-first-member.cpp classes/members/layout-base-tail-padding.cpp classes/members/layout-base-tail-padding-ilp32.cpp classes/members/layout-tail-padding-conditions.cpp classes/members/layout-tail-padding-conditions-ilp32.cpp classes/members/layout-base-tail-padding-defaulted.cpp classes/members/layout-tail-padding-deleted-constructor.cpp classes/members/layout-tail-padding-deleted-constructor-ilp32.cpp classes/members/layout-tail-padding-move-assignment.cpp classes/members/layout-tail-padding-move-assignment-ilp32.cpp classes/members/layout-overlap-member.cpp classes/members/layout-overlap-member-ilp32.cpp foundations/storage/empty-base-takes-no-bytes.cpp foundations/storage/base-bytes-shared-with-member.cpp foundations/storage/no-unique-address-member-shares-bytes.cpp classes/members/layout-empty-member-placement.cpp classes/members/layout-empty-member-placement-ilp32.cpp classes/members/layout-virtual-base-alignment.cpp classes/members/layout-virtual-base-nested-order.cpp classes/members/layout-empty-virtual-base.cpp classes/members/layout-no-unique-address-end-padding.cpp classes/members/layout-no-unique-address-end-padding-ilp32.cpp classes/members/layout-union-size.cpp classes/members/layout-union-size-ilp32.cpp classes/members/layout-union-end-padding.cpp classes/members/layout-union-end-padding-ilp32.cpp classes/members/layout-member-sizes.cpp classes/members/layout-member-sizes-ilp32.cpp
 
 The matrix targets, x86-64 and `-m32`, make the choices of CLS-34 as
-the table gives:
+the table gives. The *data size* of a class is the offset just past
+the last byte that its pointer, bases, members, and bit-fields hold.
+An empty subobject at offset 0 adds nothing to the data size, and an
+empty subobject at another offset adds one byte. The *data size so
+far* is the data size of the parts placed before the current one.
 
 | Part of the layout | Choice |
 |---|---|
-| Order | The pointer for virtual calls comes first, if the class has its own. The bases that are not virtual follow in the order of the base list. Then come the members, and then the virtual bases. The virtual bases come in the order that a depth-first walk of the base lists, from left to right, first meets them. |
-| Pointer for virtual calls | A class with a virtual function or a {term}`virtual base` has the pointer at offset 0. If a base that is not virtual has such a pointer, the first such base goes to offset 0, and the class uses the pointer of that base. |
-| Padding | Each base and member starts at the end of the data so far, rounded up to a multiple of its alignment ({rule}`TYP-2`). The size of the class covers every subobject and is a multiple of the largest alignment of its pointer, bases, and members. |
-| An empty base | The base goes to offset 0 and adds nothing to the data so far, so a later member can start at the same offset. |
-| Two empty subobjects of one type | No base or member goes where it would put a subobject of an empty class type at the address of another subobject of that type. The check covers every empty subobject that the base or member holds. On a conflict, the base or member tries the end of the data so far, rounded up to its alignment, and then each next multiple of its alignment. |
-| A base, or a `[[no_unique_address]]` member, of class type `C` | If `C` keeps its end padding, the subobject takes `sizeof(C)` bytes. If not, the next bases and members can start in the padding at the end of `C`. |
-| A base of class type `C` with virtual bases | The base subobject holds only the pointer of `C`, the bases of `C` that are not virtual, and the members of `C`. The next bases and members can start after the last member of `C`. The complete object holds each virtual base once. |
+| Order | The pointer for virtual calls comes first, if the class has its own. The bases that are not virtual follow in the order of the base list. Then come the members, and then the virtual bases. The virtual bases come in the order that a depth-first walk of the base lists, from left to right, first meets them. The walk records a virtual base before it walks the base list of that base. |
+| Pointer for virtual calls | A class with a virtual function or a {term}`virtual base` has the pointer at offset 0. If a base that is not virtual has such a pointer, the first such base goes to offset 0, and the class uses the pointer of that base. The pointer has the size and alignment of `void*` ({rule}`TYP-1`, {rule}`TYP-2`). |
+| Padding | Each base and member starts at the data size so far, rounded up to a multiple of its alignment ({rule}`TYP-2`). The size of the class is at least its data size and is a multiple of the largest alignment of its pointer, bases, and members. |
+| An empty base, virtual or not | The base goes to offset 0 and adds nothing to the data size, so a later member can start at the same offset. |
+| An empty `[[no_unique_address]]` member | The member goes to offset 0 and adds nothing to the data size, as an empty base does. |
+| Two empty subobjects of one type | No base or member goes where it would put a subobject of an empty class type at the address of another subobject of that type. The check covers every empty subobject that the base or member holds. On a conflict, the base or member tries the data size so far, rounded up to its alignment, and then each next multiple of its alignment. |
+| A base, or a `[[no_unique_address]]` member, of class type `C` | If `C` keeps its end padding, the subobject takes `sizeof(C)` bytes. If not, the subobject adds the data size of `C`, and the next bases and members can start in the padding at the end of `C`. |
+| A base of class type `C` with virtual bases | The base subobject holds only the pointer of `C`, the bases of `C` that are not virtual, and the members of `C`. The base starts at a multiple of the largest alignment of these parts, which can be less than `alignof(C)`. The complete object holds each virtual base once. |
+| A union | Every member starts at offset 0. The data size is the largest `sizeof` of a member. The size is the data size rounded up to the largest alignment of the members, and at least 1. |
+| A reference member, or a pointer to data member | The member takes the size and alignment of `void*`. |
+| A pointer to member function | The member takes twice the size of `void*`, with the alignment of `void*`. |
 | Any other member | The next members start after its `sizeof` bytes. |
 
-On GCC 16, Clang 22, and Clang 18, a class keeps its end padding if all
-of these conditions hold:
+On GCC 16, Clang 22, and Clang 18, a class or union keeps its end
+padding if all of these conditions hold:
 
 - The class has no base and no virtual function.
 - No data member that is not static is `private` or `protected`, or has
   a default member initializer.
-- The class declares no constructor template, and no user-provided
+- The class declares no constructor template, and no {term}`user-provided`
   constructor, destructor, or copy assignment operator. The copy
   assignment operator has one of the parameter forms of {rule}`CPY-3`,
   and an `operator=` template or a move assignment operator does not
@@ -570,13 +578,13 @@ of these conditions hold:
 - Each data member that is not static has a scalar type, a class or
   union type that keeps its end padding, or an array of such a type.
 
-Two compilers add conditions. A class does not keep its end padding if
-it also declares the member that the table names:
+The compilers differ from this list in these cases:
 
-| Compiler | Member |
+| Compiler | Difference |
 |---|---|
-| GCC 14 | a constructor, also a defaulted or deleted one ({question}`Q-0342`) |
-| EDG 7.0 | a deleted constructor, or a user-provided move assignment operator ({question}`Q-0361`) |
+| GCC 14 | A class with a constructor, also a defaulted or deleted one, lends its end padding ({question}`Q-0342`). |
+| GCC 14, GCC 16 | A class with a `[[no_unique_address]]` member lends its end padding ({question}`Q-0381`). |
+| EDG 7.0 | A class with a deleted constructor, or a user-provided move assignment operator, lends its end padding ({question}`Q-0361`). A union always keeps its end padding ({question}`Q-0384`). |
 :::
 
 :::{rule} CLS-21
@@ -613,10 +621,53 @@ struct Text {
 };
 ```
 
+The layout choices of CLS-35 on the matrix targets. Each comment gives
+the offsets on x86-64, then on `-m32` where they differ.
+
+```cpp
+struct Empty {};
+
+// Order and padding: pointer 0, c 8, i 12, size 16 (-m32: 0, 4, 8, 12).
+struct Shape { virtual void draw() {} char c; int i; };
+
+// An empty base: Empty 0, n 0, size 4.
+struct Counted : Empty { int n; };
+
+// An empty [[no_unique_address]] member: n 0, tag 0, size 4.
+struct Tagged { int n; [[no_unique_address]] Empty tag; };
+
+// Two empty subobjects of one type: first 0, n 0, data size 4,
+// second 4, size 8.
+struct Twice {
+  [[no_unique_address]] Empty first;
+  int n;
+  [[no_unique_address]] Empty second;
+};
+
+// End padding: Plain keeps it, so z goes to 8 and the size is 12.
+// Built has a user-provided constructor and lends it: z 5, size 8.
+struct Plain { int i; char c; };
+struct Built { Built() {} int i; char c; };
+struct AfterPlain : Plain { char z; };
+struct AfterBuilt : Built { char z; };
+
+// A virtual base comes last: pointer 0, y 8, Shared 12, size 16
+// (-m32: 0, 4, 8, 12).
+struct Shared { int v; };
+struct Middle : virtual Shared { char y; };
+
+// A union: every member at 0, data size 5, size 8.
+union Bytes { char c[5]; int i; };
+
+// Members of pointer size: r 8, p 16, f 24, size 40
+// (-m32: 4, 8, 12, 20). A pointer to member function takes two pointers.
+struct Pointers { char c; int& r; int Plain::* p; void (Shape::* f)(); };
+```
+
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 136
-of 147 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 146
+of 161 tests.
 
 - CLS-23: Clang rejects an in-class initializer for a `static const
   volatile` integer member. GCC and EDG accept it ({question}`Q-0080`).
@@ -688,6 +739,24 @@ of 147 tests.
   Clang and GCC give the same offsets at run time. Every compiler lends
   the end padding for each copy assignment operator form of CPY-3 and
   for a constructor template, and keeps it for an `operator=` template.
+- CLS-35: every compiler places an empty `[[no_unique_address]]`
+  member as it places an empty base, and an empty virtual base as an
+  empty base that is not virtual. Every compiler starts a base with
+  virtual bases at the alignment of the part that it holds, and puts a
+  virtual base before its own virtual bases. Every compiler gives a
+  reference member and a pointer to data member the size of a pointer,
+  and a pointer to member function twice that size.
+- CLS-35: GCC 14 and GCC 16 lend the end padding of a class with a
+  `[[no_unique_address]]` member. Clang and EDG keep the padding if
+  the class meets the other conditions
+  ({question}`Q-0381`).
+- CLS-35: EDG keeps the end padding of every union. Clang and GCC apply
+  the conditions of a class to a union
+  ({question}`Q-0384`).
+- CLS-11, CLS-33: every compiler treats a class whose only member is an
+  empty `[[no_unique_address]]` member, or an unnamed bit-field of
+  width 0, as an {term}`empty class`. An unnamed bit-field of nonzero
+  width makes the class take its byte as a base.
 - CLS-11: the size is 1 on every compiler in the matrix, on both
   targets.
 - Sources: CLS-19 and CLS-32 come from the grid `standard-layout.json`

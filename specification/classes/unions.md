@@ -152,7 +152,7 @@ tracks the active member and rejects the read.
 
 ```{eval-rst}
 .. productionlist:: tidal
-   union_def: "union" {`attribute_spec` | `alignment_specifier`} [`class_name`] "{" {`member_decl`} "}"
+   union_def: "union" {`attribute_spec` | `alignment_specifier`} [`class_name` ["final"]] "{" {`member_decl`} "}"
    anonymous_union: ["static"] "union" "{" {`member_decl`} "}" ";"
    bitfield: [`identifier`] ":" `constant_expr` [`member_init`]
 ```
@@ -183,10 +183,12 @@ The members of a union are public unless an access label says otherwise.
 
 :::{rule} UNI-2
 :kind: reject
-:tests: classes/unions/union-reference-member.cpp classes/unions/union-rvalue-reference-member.cpp
+:tests: classes/unions/union-reference-member.cpp classes/unions/union-rvalue-reference-member.cpp classes/unions/union-final.cpp classes/unions/union-final-not-base.cpp
 
 A union must not have a member of reference type. Rules DER-1 and VIRT-2
-give the limits on bases and virtual functions.
+give the limits on bases and virtual functions. A union can carry
+`final` after its name, and the marker changes nothing, because DER-1
+already forbids a union as a base.
 :::
 
 :::{rule} UNI-3
@@ -361,16 +363,18 @@ The type of the bit-field for `auto` {term}`deduction` is the declared type.
 :tests: classes/unions/bitfield-aggregate-skips-unnamed.cpp classes/unions/bitfield-constant-fits.cpp classes/unions/bitfield-constant-too-wide.cpp classes/unions/bitfield-init-default-member.cpp classes/unions/bitfield-unnamed-not-member.cpp
 
 A named bit-field can have a default member initializer, with `=` or
-braces. Aggregate initialization skips unnamed bit-fields. The test for
-narrowing uses the declared type, not the width.
+braces. Aggregate initialization skips unnamed bit-fields. For a
+bit-field target, the test for a {term}`narrowing conversion` uses the
+declared type, not the width. A bit-field source counts by its width
+({rule}`CONV-21`).
 :::
 
 :::{rule} BF-11
 :kind: reject
 :tests: classes/unions/bitfield-narrowing-init.cpp classes/unions/bitfield-narrowing-double.cpp
 
-A braced initializer for a bit-field must not need a narrowing
-conversion to the declared type of the bit-field.
+A braced initializer for a bit-field must not need a
+{term}`narrowing conversion` to the declared type of the bit-field.
 :::
 
 :::{rule} BF-12
@@ -542,6 +546,8 @@ way:
 - A bit that no named bit-field or other member covers is a padding
   bit ({rule}`STG-11`, {question}`Q-0372`). An unnamed bit-field is not
   a member, so its bits are padding bits.
+- A named bit-field of type `T` gives the class at least the alignment
+  of `T`, as a member of type `T` does ({rule}`ALN-1`).
 - An unnamed bit-field does not change the alignment of the class. An
   unnamed bit-field of width 0 and type `T` moves the next member to the
   next multiple of `alignof(T)`, and the class covers that position.
@@ -680,8 +686,8 @@ int y = s.span.range.second;     // 2: Point and Pair are layout-compatible
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 143
-of 156 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 145
+of 158 tests.
 
 - UNI-9: Clang accepts an anonymous union without `static` in an unnamed
   namespace. GCC and EDG reject the declaration ({question}`Q-0045`).

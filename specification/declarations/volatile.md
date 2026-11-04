@@ -63,7 +63,7 @@ parameter list, as `const` can.
 
 :::{rule} VOL-2
 :kind: required
-:tests: declarations/volatile/overload-on-volatile.cpp declarations/volatile/volatile-member-function.cpp declarations/volatile/volatile-member-of-volatile-object.cpp declarations/volatile/volatile-member-on-plain.cpp declarations/volatile/volatile-object-ordinary-ctor.cpp
+:tests: declarations/volatile/overload-on-volatile.cpp declarations/volatile/volatile-member-function.cpp declarations/volatile/volatile-member-of-volatile-object.cpp declarations/volatile/volatile-member-on-plain.cpp declarations/volatile/volatile-object-ordinary-ctor.cpp declarations/volatile/volatile-object-ordinary-dtor.cpp
 
 These rules apply to `volatile` and classes:
 
@@ -72,7 +72,10 @@ These rules apply to `volatile` and classes:
 - Two member functions can overload on `volatile`.
 - A member of a volatile object is volatile.
 - A volatile object of class type is initialized by an ordinary
-  constructor, and it is volatile after the constructor ends.
+  constructor and destroyed by an ordinary destructor.
+- The object is volatile from the end of its constructor to the start
+  of its destructor. Inside the constructor and the destructor, `this`
+  is not volatile.
 :::
 
 :::{rule} VOL-9
@@ -171,7 +174,9 @@ before the program runs and are not accesses ({question}`Q-0176`).
 If a program accesses a volatile object through a glvalue that is not
 volatile, the behavior is undefined. A glvalue of type `unsigned char`,
 `char`, or `std::byte` that reads or writes the bytes of a volatile
-object is such a glvalue ({rule}`STG-12`, {question}`Q-0359`).
+object is such a glvalue ({rule}`STG-12`, {question}`Q-0359`). An
+access while the object's constructor or destructor runs is not an
+access to a volatile object ({rule}`VOL-2`).
 :::
 
 ## Implementation Requirements
@@ -245,8 +250,8 @@ volatile Control* control = nullptr;           // set to the device address
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 40
-of 41 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 41
+of 42 tests.
 
 - VOL-1: the tests check that programs with volatile accesses compile
   and run. A test cannot observe if an access was removed.
@@ -282,10 +287,10 @@ of 41 tests.
   checks only that the program compiles. During constant evaluation Clang rejects the read,
   and GCC and EDG accept it ({question}`Q-0320`). Q-0320 stays open
   under decision 0051, because on 2026-11-03 Clang 22 still differs from
-  GCC 16 and EDG 7.0. The front end's interpreter runs the program to
-  its result, because the interpreter does not check the kind of
-  glvalue that reaches a volatile object. No tool stops VOL-6 at run
-  time.
+  GCC 16 and EDG 7.0. Only the front end's interpreter stops VOL-6 at
+  run time. The interpreter stops the read in
+  `nonvolatile-access-to-volatile-constant.cpp` and names VOL-6
+  (decision 0053).
 - VOL-13 with `-m32`: the matrix runs no program built with
   `-m32`, because the host compilers have no 32-bit C library. In the
   writer's probes, the run tests of the rule give the same

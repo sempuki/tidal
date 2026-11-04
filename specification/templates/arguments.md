@@ -345,14 +345,16 @@ overloaded function name selects the overload of that type.
 
 :::{rule} TARG-13
 :kind: reject
-:tests: templates/arguments/constant-not-constant.cpp templates/arguments/constant-narrowing.cpp templates/arguments/constant-floating-to-integer.cpp templates/arguments/constant-integer-to-floating.cpp templates/arguments/constant-int-to-bool.cpp templates/arguments/constant-scoped-enum.cpp templates/arguments/constant-pointer-to-void.cpp templates/arguments/constant-pointer-to-base.cpp
+:tests: templates/arguments/constant-not-constant.cpp templates/arguments/constant-narrowing.cpp templates/arguments/constant-floating-to-integer.cpp templates/arguments/constant-integer-to-floating.cpp templates/arguments/constant-int-to-bool.cpp templates/arguments/constant-scoped-enum.cpp templates/arguments/constant-pointer-to-void.cpp templates/arguments/constant-pointer-to-base.cpp templates/arguments/constant-integer-to-scoped-enum.cpp templates/arguments/constant-other-enumeration.cpp
 
 The argument for a constant parameter must be a constant expression. Its
 conversion to the parameter's type must not:
 
-- narrow, as `300` to `unsigned char` or `2` to `bool` does,
+- be a {term}`narrowing conversion`, as `300` to `unsigned char` or `2`
+  to `bool` is,
 - convert between an integer type and a floating-point type,
 - need an explicit conversion, as a scoped enumeration to `int` does,
+  and an integer or another enumeration to a scoped enumeration,
 - convert a pointer to a pointer to `void` or to a base class.
 
 The narrowing case is the case of {rule}`CE-19` for template arguments,
@@ -547,8 +549,8 @@ Use<Small> m;                  // rejected: Small is a concept
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 83
-of 89 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 85
+of 91 tests.
 
 {question}`Q-0170` settled on 2026-11-03 under decision 0054. The
 source-reader gap review of question cluster 5 supports its answer with
@@ -601,27 +603,31 @@ The probe grid is in `tests/templates/arguments/grids/`, and
 `accept` means that the argument is valid for the parameter. The
 compilers agree on every cell:
 
-| | int | unsigned char | bool | long | double | Plain | int* | const int* | int& | const int& | int (*)() | auto |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 1 | accept | accept | accept | accept | reject | reject | reject | reject | reject | reject | reject | accept |
-| 300 | accept | reject | reject | accept | reject | reject | reject | reject | reject | reject | reject | accept |
-| 'a' | accept | accept | reject | accept | reject | reject | reject | reject | reject | reject | reject | accept |
-| true | accept | accept | accept | accept | reject | reject | reject | reject | reject | reject | reject | accept |
-| 2.0 | reject | reject | reject | reject | accept | reject | reject | reject | reject | reject | reject | accept |
-| unscoped enumerator | accept | accept | accept | accept | reject | accept | reject | reject | reject | reject | reject | accept |
-| scoped enumerator | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | accept |
-| class with conversion to int | accept | accept | accept | accept | reject | reject | reject | reject | reject | reject | reject | accept |
-| constexpr int variable | accept | accept | accept | accept | reject | reject | reject | reject | reject | accept | reject | accept |
-| int variable | reject | reject | reject | reject | reject | reject | reject | reject | accept | accept | reject | reject |
-| nullptr | reject | reject | reject | reject | reject | reject | accept | accept | reject | reject | accept | accept |
-| 0 | accept | accept | accept | accept | reject | reject | reject | reject | reject | reject | reject | accept |
-| &object | reject | reject | reject | reject | reject | reject | accept | accept | reject | reject | reject | accept |
-| object | reject | reject | reject | reject | reject | reject | reject | reject | accept | accept | reject | reject |
-| const_object | accept | accept | accept | accept | reject | reject | reject | reject | reject | accept | reject | accept |
-| string literal | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject |
-| function | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | accept | accept |
+| | int | unsigned char | bool | long | double | Plain | Scoped | int* | const int* | int& | const int& | int (*)() | auto |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 1 | accept | accept | accept | accept | reject | reject | reject | reject | reject | reject | reject | reject | accept |
+| 300 | accept | reject | reject | accept | reject | reject | reject | reject | reject | reject | reject | reject | accept |
+| 'a' | accept | accept | reject | accept | reject | reject | reject | reject | reject | reject | reject | reject | accept |
+| true | accept | accept | accept | accept | reject | reject | reject | reject | reject | reject | reject | reject | accept |
+| 2.0 | reject | reject | reject | reject | accept | reject | reject | reject | reject | reject | reject | reject | accept |
+| unscoped enumerator | accept | accept | accept | accept | reject | accept | reject | reject | reject | reject | reject | reject | accept |
+| scoped enumerator | reject | reject | reject | reject | reject | reject | accept | reject | reject | reject | reject | reject | accept |
+| enumerator of another scoped enumeration | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | accept |
+| braced Scoped value | reject | reject | reject | reject | reject | reject | accept | reject | reject | reject | reject | reject | accept |
+| class with conversion to int | accept | accept | accept | accept | reject | reject | reject | reject | reject | reject | reject | reject | accept |
+| constexpr int variable | accept | accept | accept | accept | reject | reject | reject | reject | reject | reject | accept | reject | accept |
+| int variable | reject | reject | reject | reject | reject | reject | reject | reject | reject | accept | accept | reject | reject |
+| nullptr | reject | reject | reject | reject | reject | reject | reject | accept | accept | reject | reject | accept | accept |
+| 0 | accept | accept | accept | accept | reject | reject | reject | reject | reject | reject | reject | reject | accept |
+| &object | reject | reject | reject | reject | reject | reject | reject | accept | accept | reject | reject | reject | accept |
+| object | reject | reject | reject | reject | reject | reject | reject | reject | reject | accept | accept | reject | reject |
+| const_object | accept | accept | accept | accept | reject | reject | reject | reject | reject | reject | accept | reject | accept |
+| string literal | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject |
+| function | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | accept | accept |
 
 `Plain` is an unscoped enumeration with the enumerator of value 1.
+`Scoped` and `Other` are scoped enumerations with the enumerator `one`
+of value 1.
 `object` is an `int` variable, and `const_object` is a `const int`
 variable initialized with a constant. The `auto` column follows {rule}`TPL-11`:
 the argument gives the type, so only an argument that is not a constant

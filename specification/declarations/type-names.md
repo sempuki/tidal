@@ -212,7 +212,7 @@ These rules apply to forward declarations and complete types:
 - A forward declaration after the definition is valid.
 - A nested class can be declared in its class and defined outside the
   enclosing class.
-- An opaque enumeration declaration has a fixed underlying type, which
+- An {term}`opaque enumeration declaration` has a fixed underlying type, which
   is `int` for a scoped enumeration without one.
 - A deleted function can have parameters and a return type of incomplete
   class type.

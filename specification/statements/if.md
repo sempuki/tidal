@@ -280,8 +280,8 @@ be valid (IF-15).
 :tests: statements/if/constexpr-condition-not-constant.cpp statements/if/constexpr-condition-narrowing.cpp statements/if/constexpr-condition-pointer.cpp statements/if/constexpr-condition-explicit-bool.cpp statements/if/constexpr-with-init.cpp
 
 The condition of the `if constexpr` form must be a constant expression
-after contextual conversion to `bool`. A conversion that loses
-information is permitted, such as an integer or an address to `bool`.
+after contextual conversion to `bool`. A {term}`narrowing conversion`
+is permitted, such as an integer or an address to `bool`.
 :::
 
 :::{rule} IF-17

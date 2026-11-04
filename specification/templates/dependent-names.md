@@ -583,7 +583,7 @@ The keyword `template` must not come before the name of a destructor
 
 :::{rule} DEP-28
 :kind: required
-:tests: templates/dependent-names/checked-at-instantiation.cpp templates/dependent-names/dependent-error-unused.cpp templates/dependent-names/dependent-error-at-instantiation.cpp templates/dependent-names/template-keyword-not-template-unused.cpp templates/dependent-names/dependent-call-braced-list.cpp
+:tests: templates/dependent-names/checked-at-instantiation.cpp templates/dependent-names/dependent-error-unused.cpp templates/dependent-names/dependent-error-at-instantiation.cpp templates/dependent-names/template-keyword-not-template-unused.cpp templates/dependent-names/dependent-call-braced-list.cpp classes/virtual/override-dependent-base-missing.cpp classes/virtual/override-dependent-base-run.cpp
 
 A construct that depends on the template parameters is checked for each
 specialization. If some argument list makes the template valid, the
@@ -616,7 +616,7 @@ also when no specialization is made. DEP-33 gives the general case.
 
 :::{rule} DEP-30
 :kind: no-diagnostic
-:tests: templates/dependent-names/independent-error-unused-name.cpp templates/dependent-names/independent-error-unused-base-member.cpp templates/dependent-names/independent-error-unused-conversion.cpp templates/dependent-names/independent-error-unused-call.cpp templates/dependent-names/current-member-missing.cpp templates/dependent-names/this-member-missing-specialized.cpp templates/dependent-names/this-member-missing.cpp declarations/functions/default-arguments/template-default-independent-unused.cpp
+:tests: templates/dependent-names/independent-error-unused-name.cpp templates/dependent-names/independent-error-unused-base-member.cpp templates/dependent-names/independent-error-unused-conversion.cpp templates/dependent-names/independent-error-unused-call.cpp templates/dependent-names/current-member-missing.cpp templates/dependent-names/this-member-missing-specialized.cpp templates/dependent-names/this-member-missing.cpp declarations/functions/default-arguments/template-default-independent-unused.cpp classes/virtual/override-independent-base-unused.cpp
 
 A specialization made right after the definition of a template must not
 fail because of a construct in its {term}`templated context` that does
@@ -791,8 +791,8 @@ template <class... T> int count() {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 102
-of 124 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 104
+of 127 tests.
 
 Six questions on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
 

@@ -410,7 +410,9 @@ One question on this page settled on 2026-11-04 under decision 0054 after the so
   of the called function. With no handler at all, neither compiler
   destroys an automatic object. GCC 16 at `-O2` destroys no object of
   a called function either. The table of UNW-7 gives the choices at
-  `-O0`. EDG builds no program, so its choice is not observed.
+  `-O0`. EDG builds no program, so its choice is not observed. The
+  base expectation of each test follows Clang's column of the UNW-7
+  table, and the tests record GCC's choice as an override.
 - UNW-7, UNW-10 with `-m32`: the matrix runs no program built with
   `-m32`, because the host compilers have no 32-bit C library. In the
   writer's probes, the run tests of the two rules give the same results

@@ -434,13 +434,15 @@ checked or substituted.
 
 :::{rule} CPT-26
 :kind: required
-:tests: templates/concepts/requirement-failure-false.cpp templates/concepts/requirement-access-concept.cpp templates/concepts/requirement-access-member.cpp templates/concepts/requirement-access-concept-in-member.cpp templates/concepts/requirement-access-concept-kept.cpp templates/concepts/requirement-access-concept-kept-false.cpp templates/concepts/requirement-false-outside-template.cpp templates/concepts/requires-expression-lookup-outside-constraint.cpp templates/concepts/requirement-deleted-function-false.cpp
+:tests: templates/concepts/requirement-failure-false.cpp templates/concepts/requirement-access-concept.cpp templates/concepts/requirement-access-member.cpp templates/concepts/requirement-access-concept-in-member.cpp templates/concepts/requirement-access-concept-kept.cpp templates/concepts/requirement-access-concept-kept-false.cpp templates/concepts/requirement-false-outside-template.cpp templates/concepts/requires-expression-lookup-outside-constraint.cpp templates/concepts/requirement-deleted-function-false.cpp templates/concepts/requirement-narrowing-in-braces-false.cpp
 
 A requirement that depends on template parameters does not hold if
 substitution forms a type or an expression that is not valid. The
 program stays valid. A name that is not accessible where the check
 happens, and a call that selects a deleted function ({rule}`DEL-1`),
-are not valid in this sense ({question}`Q-0288`). If the same
+are not valid in this sense ({question}`Q-0288`). A
+{term}`narrowing conversion` in braces ({rule}`LIST-2`) is also not
+valid in this sense. If the same
 concept-id is checked again where the access differs, and the result
 would change, the program is not valid ({rule}`CNS-10`). In a
 constraint, {rule}`CNS-7` gives the lookup. A requires expression
@@ -626,8 +628,8 @@ template <class T> concept Old [[deprecated]] = true;   // the attribute apperta
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 106
-of 123 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 107
+of 124 tests.
 
 One question on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
 

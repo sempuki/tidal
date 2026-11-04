@@ -349,9 +349,9 @@ only that the programs are valid.
 - OBJ-12: Clang and GCC run the tests, and no sanitizer of the matrix
   reports the pass through the declaration, also for a `thread_local`
   block variable. The test checks only that
-  the program compiles. The front end's interpreter does not stop at the
-  pass either. The interpreter stops at the later increment of the ended
-  object, under OBJ-2. No tool stops OBJ-12 itself at run time.
+  the program compiles. Only the front end's interpreter stops OBJ-12
+  at run time. The interpreter stops at the pass through the declaration
+  in each of the three tests and names OBJ-12 (decision 0053).
 - OBJ-4: the test for the destruction order of static objects makes a
   static object declared first, and so destroyed last, check the order
   in its destructor.

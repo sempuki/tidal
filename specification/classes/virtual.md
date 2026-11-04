@@ -105,16 +105,15 @@ a {term}`polymorphic class`, except for the harmless direction toward a base.
 
 ```{eval-rst}
 .. productionlist:: tidal
-   virtual_decl: "virtual" [`decl_specifiers`] `declarator`
-               :    [`virt_specifiers`] [`pure_specifier`] ";"
-   virt_specifiers: `virt_specifier` [`virt_specifier`]
-   virt_specifier: "override" | "final"
+   virt_specifiers: "override" | "final" | "override" "final" | "final" "override"
    pure_specifier: "=" "0"
    dynamic_cast: "dynamic_cast" "<" `type_id` ">" "(" `expression` ")"
 ```
 
 `virt_specifiers` and `pure_specifier` come after the {term}`declarator` of a
-member function. `override` and `final` are identifiers with a special
+member function, in `member_declarator` ({doc}`/classes/members`) and in
+`function_definition` ({doc}`/declarations/functions/definitions`). Neither
+form needs the keyword `virtual`. `override` and `final` are identifiers with a special
 meaning only in that position. A *polymorphic class* declares or inherits
 a virtual function.
 
@@ -149,12 +148,12 @@ function does not use the keyword `virtual`.
 
 :::{rule} VIRT-3
 :kind: reject
-:tests: classes/virtual/final-different-params-ok.cpp classes/virtual/final-function.cpp classes/virtual/final-nonvirtual.cpp classes/virtual/final-on-override.cpp classes/virtual/override-final-order.cpp classes/virtual/override-identifier.cpp classes/virtual/override-nonvirtual.cpp classes/virtual/override-nothing.cpp classes/virtual/override-out-of-class.cpp classes/virtual/ref-qualifier-must-match.cpp
+:tests: classes/virtual/final-different-params-ok.cpp classes/virtual/final-function.cpp classes/virtual/final-nonvirtual.cpp classes/virtual/final-on-override.cpp classes/virtual/override-final-order.cpp classes/virtual/override-identifier.cpp classes/virtual/override-nothing.cpp classes/virtual/override-nonvirtual.cpp classes/virtual/override-out-of-class.cpp classes/virtual/ref-qualifier-must-match.cpp classes/virtual/override-twice.cpp classes/virtual/final-twice.cpp classes/virtual/destructor-override.cpp classes/virtual/destructor-override-nonvirtual.cpp classes/virtual/destructor-final-implicit-override.cpp classes/virtual/destructor-final-declared-override.cpp classes/virtual/override-dependent-base-missing.cpp classes/virtual/override-dependent-base-run.cpp classes/virtual/override-dependent-base-pointer.cpp classes/virtual/override-independent-base-unused.cpp
 
 A function marked `override` must override a virtual function of a base.
 A function marked `final` must be virtual, and a derived class must not
-override it. `override` and `final` can occur in either order. The two
-specifiers occur only on the declaration in the class.
+override it. Each specifier occurs at most once, in either order, and
+only on the declaration in the class.
 :::
 
 :::{rule} VIRT-14
@@ -275,10 +274,10 @@ must not have the name and parameters of a virtual function of a base
 
 :::{rule} VIRT-1
 :kind: required
-:tests: classes/virtual/const-qualifier-must-match.cpp classes/virtual/default-args-static-type.cpp classes/virtual/different-params-no-override.cpp classes/virtual/dispatch.cpp classes/virtual/object-call-no-dispatch.cpp classes/virtual/override-through-intermediate.cpp classes/virtual/override-without-virtual-keyword.cpp classes/virtual/private-override.cpp classes/virtual/qualified-call-no-dispatch.cpp classes/virtual/virtual-in-constexpr.cpp classes/virtual/virtual-call-override-not-constexpr.cpp classes/virtual/pure-virtual-constexpr-order.cpp classes/virtual/call-on-other-object-during-construction.cpp
+:tests: classes/virtual/override-two-bases.cpp classes/virtual/override-two-bases-constant.cpp classes/virtual/const-qualifier-must-match.cpp classes/virtual/default-args-static-type.cpp classes/virtual/different-params-no-override.cpp classes/virtual/dispatch.cpp classes/virtual/object-call-no-dispatch.cpp classes/virtual/override-through-intermediate.cpp classes/virtual/override-without-virtual-keyword.cpp classes/virtual/private-override.cpp classes/virtual/qualified-call-no-dispatch.cpp classes/virtual/virtual-in-constexpr.cpp classes/virtual/virtual-call-override-not-constexpr.cpp classes/virtual/pure-virtual-constexpr-order.cpp classes/virtual/call-on-other-object-during-construction.cpp
 
-A member function overrides a virtual function of a base if the member
-function has the same:
+A member function overrides each virtual function of each base that has
+the same:
 
 - name,
 - parameter types,
@@ -316,11 +315,12 @@ the {term}`most derived class`.
 
 :::{rule} VIRT-7
 :kind: required
-:tests: classes/virtual/virtual-dtor-delete-constant.cpp classes/virtual/virtual-dtor-delete.cpp classes/virtual/virtual-dtor-inherited.cpp
+:tests: classes/virtual/virtual-dtor-delete-constant.cpp classes/virtual/virtual-dtor-delete.cpp classes/virtual/virtual-dtor-inherited.cpp classes/virtual/destructor-override.cpp classes/virtual/destructor-final-implicit-override.cpp classes/virtual/destructor-final-declared-override.cpp classes/virtual/destructor-override-nonvirtual.cpp
 
-If the destructor of a base is virtual, the destructors of all derived
-classes are virtual. `delete` through a pointer to that base then calls
-the destructor of the most derived class.
+If the destructor of a base is virtual, the destructor of each derived
+class, declared or implicit, overrides it and is virtual. `delete`
+through a pointer to that base then calls the destructor of the most
+derived class.
 :::
 
 :::{rule} VIRT-10
@@ -390,14 +390,16 @@ before linking.
 
 :::{rule} VIRT-13
 :kind: recommended
-:tests: classes/virtual/delete-nonvirtual-warns.cpp classes/virtual/delete-nonvirtual-abstract-warns.cpp classes/virtual/delete-nonvirtual-final-no-warning.cpp classes/virtual/hidden-virtual-warns.cpp
+:tests: classes/virtual/delete-nonvirtual-warns.cpp classes/virtual/delete-nonvirtual-abstract-warns.cpp classes/virtual/delete-nonvirtual-final-no-warning.cpp classes/virtual/hidden-virtual-warns.cpp classes/virtual/missing-override-inconsistent-warns.cpp classes/virtual/missing-override-all-marked-no-warning.cpp
 
 An implementation should warn about these cases:
 
 - `delete` through a pointer to a polymorphic class whose destructor is
   not virtual, unless the class is `final`,
 - a derived function that hides a virtual function of a base and does not
-  override it.
+  override it,
+- an override with neither `override` nor `final`, in a class where
+  another override has `override`.
 :::
 
 ## Examples
@@ -494,10 +496,25 @@ struct MoreConst : Maker {
 };
 ```
 
+One override can override functions of two bases (VIRT-1), and a
+destructor overrides a virtual destructor (VIRT-7):
+
+% tidal-example: reject
+```cpp
+struct Reader { virtual int id() const; virtual ~Reader(); };
+struct Writer { virtual int id() const; };
+struct File : Reader, Writer {
+  int id() const override;         // overrides Reader::id and Writer::id
+  ~File() override;                // overrides Reader::~Reader
+};
+struct Sealed { virtual ~Sealed() final; };
+struct Child : Sealed { };         // rejected: the implicit ~Child overrides a final destructor
+```
+
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 122
-of 126 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 135
+of 140 tests.
 
 Two questions on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on classes and statements (`reports/review/2026-11-03-gap-review-questions-classes-statements.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
 
@@ -568,6 +585,24 @@ Two questions on this page settled on 2026-11-03 under decision 0054 after the s
   Clang and GCC configuration, and a handler `catch (...)` catches the
   exception. Constant evaluation rejects the failed cast on every
   compiler.
+
+- VIRT-3: in a template whose base does not depend on the parameters,
+  Clang rejects a member marked `override` that overrides nothing,
+  also when no specialization is made. GCC and EDG accept the template
+  until a specialization is made. {rule}`DEP-30` allows both results.
+  With a base that is a template parameter, every compiler checks
+  `override` for each specialization ({rule}`DEP-28`), and a pointer to
+  a specialization checks nothing ({rule}`INST-2`).
+- VIRT-3: Clang, GCC, and EDG reject a repeated `override` or `final`.
+  Clang also warns, with no flag, about a class whose destructor is
+  `final` and that is not `final` itself
+  (`-Wfinal-dtor-non-final-class`).
+- VIRT-13: Clang warns with no flag about an override with no
+  `override` in a class where another override has `override`
+  (`-Winconsistent-missing-override`). GCC gives the warning only under
+  `-Wsuggest-override`, which warns about every override with no
+  `override` or `final`, as Clang's `-Wsuggest-override` does. The
+  tests pass `-Wsuggest-override`.
 
 Inputs: clang-sema-declcxx, clang-sema-expr, clang-diag-sema,
 edg-class-decl.

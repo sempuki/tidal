@@ -789,12 +789,17 @@ never takes its place. Each check has its own rule (decision 0042):
 
 :::{rule} OVL-38
 :kind: reject
-:tests: foundations/overload-resolution/default-from-two-scopes.cpp foundations/overload-resolution/default-from-two-scopes-passed.cpp foundations/overload-resolution/default-from-two-scopes-same.cpp
+:tests: foundations/overload-resolution/default-from-two-scopes.cpp foundations/overload-resolution/default-from-two-scopes-passed.cpp foundations/overload-resolution/default-from-two-scopes-same.cpp foundations/overload-resolution/default-from-two-scopes-same-value.cpp foundations/overload-resolution/default-from-two-scopes-same-literal.cpp
 
 The best viable function can have declarations in two scopes that give
 different default arguments for one parameter. A call that uses the
 default argument is not valid ({question}`Q-0140`). A call that passes
 the argument is valid.
+
+Two default arguments are the same if they are the same expression.
+Parentheses around the whole argument do not count, and two literals
+with the same value are the same. Two expressions with one value, such
+as `5` and `2 + 3`, are different.
 :::
 
 ## Examples
@@ -835,8 +840,8 @@ struct Self {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 150
-of 177 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 151
+of 179 tests.
 
 One question on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on overloading, references, and list initialization (`reports/review/2026-11-03-gap-review-questions-overloading.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
 
@@ -1014,6 +1019,9 @@ reading. The review finds the reference unclear on Q-0189.
   two scopes. Clang and EDG accept it ({question}`Q-0140`). Every
   compiler accepts equal default arguments, which item E-4 of the gap
   review describes as not valid.
+  GCC also accepts `5` with `(5)` and with `0x5`, and rejects `5` with
+  `2 + 3` and two variables that hold one value. OVL-38 follows GCC in
+  what counts as the same default argument.
 
 ### Results where every compiler agrees
 

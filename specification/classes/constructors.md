@@ -240,7 +240,8 @@ a member with the same name.
 :kind: reject
 :tests: classes/constructors/mem-init-braces-narrowing.cpp classes/constructors/mem-init-braces-narrowing-array.cpp
 
-A member initializer with braces must not need a narrowing conversion.
+A member initializer with braces must not need a
+{term}`narrowing conversion`.
 :::
 
 :::{rule} CTOR-15
@@ -469,7 +470,7 @@ With none of these conditions, the destructor is *trivial*.
 
 :::{rule} CTOR-17
 :kind: reject
-:tests: classes/constructors/reference-member-binds-temporary.cpp classes/constructors/reference-default-member-binds-temporary.cpp classes/constructors/reference-member-binds-converted-parameter.cpp classes/constructors/initializer-list-default-member-from-braces.cpp classes/constructors/initializer-list-member-from-braces.cpp classes/constructors/reference-default-member-read-constant.cpp
+:tests: classes/constructors/reference-member-binds-temporary.cpp classes/constructors/reference-default-member-binds-temporary.cpp classes/constructors/reference-member-binds-converted-parameter.cpp classes/constructors/initializer-list-default-member-from-braces.cpp classes/constructors/initializer-list-member-from-braces.cpp classes/constructors/reference-default-member-read-constant.cpp classes/constructors/reference-default-member-unused.cpp classes/constructors/reference-default-member-aggregate-value.cpp
 
 A constructor must not bind a reference member to a {term}`temporary object`,
 through a `mem_init` or a default member initializer. The temporary ends
@@ -480,6 +481,11 @@ The same holds for a member of type `std::initializer_list<E>` *(library
 referenced)* that a `mem_init` or a default member initializer sets
 from a braced list. The array that holds the elements is a temporary
 bound as if to a reference member.
+
+A default member initializer breaks the rule only through a
+constructor that uses it, including an implicit constructor that the
+program uses. If each constructor gives the member a `mem_init`, or an
+aggregate initialization gives the member a value, the class is valid.
 :::
 
 ## Runtime Behavior
@@ -660,8 +666,8 @@ Span g{{1}};   // Span(int): {1} gives an int directly (ICS-15). The
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 174
-of 195 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 176
+of 197 tests.
 
 Two questions on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on classes and statements (`reports/review/2026-11-03-gap-review-questions-classes-statements.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
 
@@ -707,6 +713,13 @@ Two questions on this page settled on 2026-11-03 under decision 0054 after the s
   In `reference-default-member-read-constant.cpp` constant evaluation
   reads the member after its temporary ends, and every compiler rejects
   the program. GCC and EDG reject the read ({rule}`CE-9`).
+  Clang rejects a default member initializer of a reference member only
+  at a constructor that uses the initializer, and the implicit default
+  constructor counts when the program uses it. Every compiler accepts a
+  class whose constructor gives the member its own `mem_init`
+  (`reference-default-member-unused.cpp`) and an aggregate whose
+  initialization gives the member a value
+  (`reference-default-member-aggregate-value.cpp`).
 - CTOR-24: the compilers differ for unions and anonymous unions
   ({question}`Q-0126`):
 

@@ -201,7 +201,7 @@ use. These uses instantiate the class:
 
 :::{rule} INST-2
 :kind: required
-:tests: templates/instantiation/class-pointer-only.cpp templates/instantiation/class-defined-after-pointer.cpp
+:tests: templates/instantiation/class-pointer-only.cpp templates/instantiation/class-defined-after-pointer.cpp classes/virtual/override-dependent-base-pointer.cpp
 
 A pointer or reference type, an alias, a template argument, and a
 function declaration can name a specialization of a class template
@@ -643,8 +643,8 @@ int p = Price<shop::Item>::value;        // 3: cost is declared before the point
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 114
-of 136 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 115
+of 137 tests.
 
 Three questions on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
 

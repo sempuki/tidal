@@ -37,6 +37,9 @@ literal gets the first type in that list that can hold it:
 | decimal, no `u` | the signed types, from `int` up to `long long` |
 | octal, hexadecimal, or binary, no `u` | at each rank from `int` up, the signed type and then its unsigned partner |
 | any base, with `u` | the unsigned types, from `unsigned int` up |
+| decimal, with `z` | the signed type that matches `std::size_t` |
+| octal, hexadecimal, or binary, with `z` | the signed type that matches `std::size_t`, then `std::size_t` |
+| any base, with `uz` | `std::size_t` |
 
 An `l` or `ll` suffix drops the types of lower rank. So a literal never
 loses part of its value in silence, and a literal that no type in its
@@ -235,7 +238,7 @@ sequences.
 
 :::{rule} PRIM-1
 :kind: required
-:tests: expressions/primary/int-decimal-types.cpp expressions/primary/int-hex-fits-unsigned-ll.cpp expressions/primary/int-hex-types.cpp expressions/primary/int-negative-is-unary.cpp expressions/primary/int-size-suffix.cpp expressions/primary/int-suffix-types.cpp
+:tests: expressions/primary/int-decimal-types.cpp expressions/primary/int-hex-fits-unsigned-ll.cpp expressions/primary/int-hex-types.cpp expressions/primary/int-negative-is-unary.cpp expressions/primary/int-size-suffix.cpp expressions/primary/int-suffix-types.cpp expressions/primary/int-size-suffix-hex-unsigned.cpp
 
 An integer literal has the first type from its candidate list that can
 hold its value. The list is built in four steps:
@@ -249,7 +252,9 @@ hold its value. The list is built in four steps:
    `long long` forms.
 
 A `z` suffix gives the signed type that matches `std::size_t`, and `uz`
-gives `std::size_t`. A minus sign is a unary operator and is not part
+gives `std::size_t`. An octal, hexadecimal, or binary literal with a
+`z` suffix that only `std::size_t` can hold has that type
+({question}`Q-0380`). A minus sign is a unary operator and is not part
 of the literal.
 :::
 
@@ -273,7 +278,7 @@ case, and `u` can come before or after the length suffix.
 
 :::{rule} PRIM-16
 :kind: reject
-:tests: expressions/primary/int-bad-digit-binary.cpp expressions/primary/int-bad-digit-octal.cpp expressions/primary/int-bad-suffix.cpp expressions/primary/int-separator-leading.cpp expressions/primary/int-separator-trailing.cpp expressions/primary/int-prefix-no-digits-hex.cpp expressions/primary/int-prefix-no-digits-binary.cpp
+:tests: expressions/primary/int-bad-digit-binary.cpp expressions/primary/int-bad-digit-octal.cpp expressions/primary/int-bad-suffix.cpp expressions/primary/int-separator-leading.cpp expressions/primary/int-separator-trailing.cpp expressions/primary/int-prefix-no-digits-hex.cpp expressions/primary/int-prefix-no-digits-binary.cpp expressions/primary/number-runs-over-letters.cpp
 
 These requirements apply to an integer literal:
 
@@ -752,10 +757,14 @@ total(1, 2, 3);           // ((0 + 1) + 2) + 3
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 131
-of 142 tests.
+of 143 tests.
 
-{question}`Q-0064` is provisional. A gap review supports its answer with no doubt, and PRIM-P1 does not give the answer under the test of the style guide (section 3). The test keeps its override for EDG 7.0.
+{question}`Q-0064` is provisional. A gap review supports its answer with no doubt. The Propose exercise X19 used PRIM-P1 and reached the same answer, and the question records that use. The test keeps its override for EDG 7.0.
 
+- PRIM-1: for a hexadecimal literal with a `z` suffix that only
+  `std::size_t` can hold, Clang and EDG give the type `std::size_t`.
+  GCC gives the signed type with no diagnostic
+  ({question}`Q-0380`).
 - PRIM-2: Clang and GCC reject a decimal literal that fits only an
   unsigned type under `-pedantic-errors`. EDG accepts it
   ({question}`Q-0064`).

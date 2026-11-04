@@ -62,12 +62,17 @@ Each alternative spelling means the operator it names:
 
 :::{rule} KW-3
 :kind: required
-:tests: foundations/keywords/contextual-names.cpp foundations/keywords/contextual-final-class.cpp
+:tests: foundations/keywords/contextual-names.cpp foundations/keywords/contextual-final-class.cpp foundations/keywords/override-after-class-name.cpp foundations/keywords/final-after-complete-class-redefines.cpp foundations/keywords/override-after-complete-class-variable.cpp
 
-`override`, `final`, `import`, and `module` are identifiers. They can
+`override`, `final`, `import`, and `module` are identifiers that can
 name variables, functions, and classes. `override` and `final` have
-their special meaning only after the {term}`declarator` of a member function or
-after the name of a class ({rule}`VIRT-3`).
+their special meaning only in these places:
+
+- after the {term}`declarator` of a member function, both words ({rule}`VIRT-3`),
+- after the name of a class in a class head, `final` only ({rule}`DER-1`).
+
+`final` after the name of a class and before `{` or `:` always begins a
+class head, also when the class is complete.
 :::
 
 ## Implementation Requirements
@@ -83,7 +88,9 @@ declare them:
 - a name that starts with an underscore and an uppercase letter,
 - in the global namespace, a name that starts with an underscore.
 
-An implementation need not diagnose a use of a reserved name.
+An implementation need not diagnose a use of a reserved name. A
+literal suffix that does not start with `_` is also reserved, and
+{rule}`OPR-9` gives its rule.
 :::
 
 ## Examples
@@ -98,10 +105,20 @@ int long = 0;                      // rejected: long joins the type int,
 bool both = true and false;        // the same as true && false
 ```
 
+After the name of a complete class, `final` begins a class head and
+`override` names a variable (KW-3):
+
+% tidal-example: reject
+```cpp
+struct Tag { int value; };
+struct Tag override { 3 };         // a variable named override
+struct Tag final { };              // rejected: Tag is defined again
+```
+
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on all
-98 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 100
+of 101 tests.
 
 - KW-1: each probe declares a variable named by one keyword. The
   compilers give different messages, mostly that a name was expected,
@@ -110,3 +127,9 @@ The results are in `tests/RESULTS.md`. All eight compilers agree on all
   out of scope.
 - KW-4: Clang, GCC, and EDG accept the reserved names without a
   warning in the default mode.
+- KW-3: Clang, GCC, and EDG read `struct D override { }` as a
+  variable named `override`. If `D` is incomplete, each rejects the
+  variable ({rule}`INIT-7`). Each reads `struct D final { }` after a
+  definition of `D` as a second definition of `D`. GCC 14 reads
+  `override` there as a marker of the class and rejects it
+  ({question}`Q-0382`).

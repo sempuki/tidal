@@ -484,13 +484,18 @@ arithmetic over the elements ({rule}`ADD-6`) is valid before then.
 
 :::{rule} STG-29
 :kind: required
-:tests: foundations/storage/byte-array-placement-reaches-object.cpp foundations/storage/byte-array-cast-reaches-byte.cpp foundations/storage/cast-to-target-then-construct.cpp foundations/storage/placement-then-cast-read.cpp
+:tests: foundations/storage/byte-array-placement-reaches-object.cpp foundations/storage/byte-array-cast-reaches-byte.cpp foundations/storage/cast-to-target-then-construct.cpp foundations/storage/placement-then-cast-read.cpp foundations/storage/member-byte-array-cast-then-construct.cpp foundations/storage/member-byte-array-cast-then-placement.cpp
 
 A cast of a pointer into a byte array gives a pointer to a byte
 (STG-16). The result does not reach an object that the array hosts,
 also an object that STG-8 created ({question}`Q-0324`).
 A program reaches such an object through the pointer that placement
 `new` returns, or through the launder operation *(library referenced)*.
+
+The rule holds for a byte array that is a complete object and for one
+that is a member. The result still gives the address of the storage.
+So placement `new` and `std::construct_at` ({rule}`LSUP-10`) can take
+the result as the place for a new object.
 :::
 
 ## Undefined Behavior
@@ -577,7 +582,7 @@ of a pointer or glvalue that refers to its storage are undefined:
 
 :::{rule} STG-23
 :kind: undefined
-:tests: foundations/storage/access-unrelated-scalar-sanitizer.cpp foundations/storage/access-unrelated-class-sanitizer.cpp foundations/storage/access-signed-char.cpp foundations/storage/byte-array-cast-reaches-byte.cpp foundations/storage/misaligned-read-sanitizer.cpp classes/unions/common-initial-sequence-enum.cpp classes/unions/common-initial-sequence-nested.cpp foundations/storage/placement-then-cast-read.cpp
+:tests: foundations/storage/access-unrelated-scalar-sanitizer.cpp foundations/storage/access-unrelated-class-sanitizer.cpp foundations/storage/access-signed-char.cpp foundations/storage/byte-array-cast-reaches-byte.cpp foundations/storage/misaligned-read-sanitizer.cpp classes/unions/common-initial-sequence-enum.cpp classes/unions/common-initial-sequence-nested.cpp foundations/storage/placement-then-cast-read.cpp foundations/storage/access-enumeration-underlying-sanitizer.cpp
 
 If a program reads or writes an object through a glvalue of a type
 that STG-14 does not list, the behavior is undefined. These cases
@@ -586,6 +591,8 @@ apply:
 - `signed char` is not listed ({question}`Q-0306`).
 - A class with the same members as the class of the object is not
   listed.
+- An enumeration is not listed for its underlying type, and the
+  underlying type is not listed for the enumeration ({rule}`ENUM-10`).
 - A glvalue from a cast of a byte array's address refers to a byte
   (STG-29).
 - A glvalue whose address is not a multiple of the alignment of its
@@ -788,8 +795,8 @@ template <class T> void destroy_all(T* first, int n) {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 84
-of 90 tests. EDG runs no programs, so its results for the run tests say
+The results are in `tests/RESULTS.md`. All eight compilers agree on 87
+of 93 tests. EDG runs no programs, so its results for the run tests say
 only that the programs are valid.
 
 - Constant evaluation: in C++23 mode no compiler in the matrix accepts
@@ -825,7 +832,10 @@ only that the programs are valid.
   cast of a byte array's address. No sanitizer reports the write, and
   constant evaluation cannot form the cast ({rule}`CAST-8`). The rule
   follows STG-16 and is provisional
-  ({question}`Q-0324`).
+  ({question}`Q-0324`). Every configuration also runs a program that
+  passes such a cast of a member byte array to placement `new` or to
+  `std::construct_at` and uses the pointer that the call returns, with
+  no sanitizer report.
 - STG-9: every compiler gives the new values through the old names at
   `-O0` and at `-O2`, also for a class with a `const` member, and
   accepts the constant tests. During constant evaluation, every
@@ -860,6 +870,12 @@ only that the programs are valid.
   only that the programs compile. The sanitizer reports nothing when an
   assignment to a union member changes the active member
   (`implicit-union-member-assignment.cpp`).
+- STG-23, enumerations: the type sanitizer reports a write through a
+  scoped enumeration with underlying type `long` to a `long` object
+  (`access-enumeration-underlying-sanitizer.cpp`). At `-O2`, Clang 22
+  and GCC 16 assume that the write does not change the `long`, and the
+  function returns the old value. At `-O0` the function returns the new
+  value.
 - STG-19: the `vptr` sanitizer of GCC and Clang reports a call through
   the old name after a replacement by another type. No sanitizer
   reports a call through a pointer to a replaced base subobject, so

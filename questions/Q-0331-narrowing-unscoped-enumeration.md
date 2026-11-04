@@ -1,7 +1,7 @@
 # Q-0331: Which values does an unscoped enumeration without a fixed type have for narrowing?
 
 **Status:** provisional
-**Affects:** LIST-2, `tests/declarations/initialization/list/narrowing-unscoped-enum-values-fit.cpp`
+**Affects:** LIST-2, CONV-21, `tests/declarations/initialization/list/narrowing-unscoped-enum-values-fit.cpp`
 
 ## Context
 

@@ -1,7 +1,7 @@
 # Q-0042: Is converting a bit-field whose values all fit the target a narrowing conversion?
 
 **Status:** settled
-**Affects:** LIST-2, `tests/declarations/initialization/list/narrowing-bit-field-fits.cpp`
+**Affects:** LIST-2, CONV-21, `tests/declarations/initialization/list/narrowing-bit-field-fits.cpp`
 
 ## Context
 

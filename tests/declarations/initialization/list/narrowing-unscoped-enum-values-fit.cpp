@@ -1,4 +1,4 @@
-// tidal-rules: LIST-2
+// tidal-rules: LIST-2 CONV-21
 // tidal-expect: accept
 // tidal-expect-clang: reject
 // tidal-error-clang: cannot be narrowed from type .E. to .unsigned char.

@@ -105,11 +105,13 @@ A class operand is valid only through a usable conversion or an {term}`operator 
 
 :::{rule} BIT-4
 :kind: required
-:tests: expressions/bitwise/result-types.cpp expressions/bitwise/complement-promotes.cpp
+:tests: expressions/bitwise/result-types.cpp expressions/bitwise/complement-promotes.cpp expressions/bitwise/negative-with-unsigned.cpp
 
 The operands of `&`, `^`, and `|` go through the {term}`usual
 arithmetic conversions`. The operand of `~` goes through {term}`integer
-promotion`. The result has the converted type and is a prvalue.
+promotion`. The result has the converted type and is a prvalue. If the
+common type is unsigned, a negative signed operand converts first
+({rule}`CONV-2`).
 :::
 
 ## Runtime Behavior
@@ -162,6 +164,7 @@ deprecated (BIT-2).
 6 ^ 3                // 5
 ~5                   // -6
 -1 & 0xFF            // 255
+-1 & 0xFFu           // 255u: -1 converts to ~0u first
 
 unsigned char zero = 0;
 ~zero                // -1: zero is promoted to int first
@@ -175,7 +178,7 @@ Mode::Read | Mode::Write   // rejected without an operator|
 
 ## Evidence
 
-All eight compilers agree on all 23 tests. The results are in
+All eight compilers agree on all 24 tests. The results are in
 `tests/RESULTS.md`.
 
 - BIT-6: Clang warns "& has lower precedence than ==" and GCC warns

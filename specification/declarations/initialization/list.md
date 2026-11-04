@@ -21,8 +21,8 @@ An *aggregate* is an array, or a class with these properties (the
 :rules: LIST-1 LIST-11 LIST-2 LIST-7
 
 Braces are the careful form of initialization. A value in braces must
-not lose information on its way to the target type, so a narrowing
-conversion is rejected, unless the value is a constant that fits. The
+not lose information on its way to the target type, so a
+{term}`narrowing conversion` is rejected, unless the value is a constant that fits. The
 values are evaluated from left to right, each one complete before the
 next. A scalar takes one value, and no nesting.
 :::
@@ -87,25 +87,11 @@ expression must not itself be a braced list.
 
 :::{rule} LIST-2
 :kind: reject
-:tests: declarations/initialization/list/narrowing-float-to-int.cpp declarations/initialization/list/narrowing-float-to-int-exact.cpp declarations/initialization/list/narrowing-constant-out-of-range.cpp declarations/initialization/list/narrowing-constant-fits.cpp declarations/initialization/list/narrowing-negative-to-unsigned.cpp declarations/initialization/list/narrowing-nonconstant-int.cpp declarations/initialization/list/narrowing-double-to-float-in-range.cpp declarations/initialization/list/narrowing-double-to-float-out-of-range.cpp declarations/initialization/list/narrowing-double-to-float-nonconstant.cpp declarations/initialization/list/narrowing-int-to-float-inexact.cpp declarations/initialization/list/narrowing-int-to-float-exact.cpp declarations/initialization/list/narrowing-pointer-to-bool.cpp declarations/initialization/list/narrowing-in-aggregate.cpp declarations/initialization/list/narrowing-not-in-parens.cpp declarations/initialization/list/narrowing-bit-field-fits.cpp declarations/initialization/list/narrowing-member-pointer-to-bool.cpp declarations/initialization/list/narrowing-unscoped-enum.cpp declarations/initialization/list/narrowing-unscoped-enum-values-fit.cpp declarations/initialization/list/narrowing-nonconstant-long-ilp32.cpp foundations/conversion-sequences/chosen-narrowing.cpp
+:tests: declarations/initialization/list/narrowing-float-to-int.cpp declarations/initialization/list/narrowing-float-to-int-exact.cpp declarations/initialization/list/narrowing-constant-out-of-range.cpp declarations/initialization/list/narrowing-constant-fits.cpp declarations/initialization/list/narrowing-negative-to-unsigned.cpp declarations/initialization/list/narrowing-nonconstant-int.cpp declarations/initialization/list/narrowing-double-to-float-in-range.cpp declarations/initialization/list/narrowing-double-to-float-out-of-range.cpp declarations/initialization/list/narrowing-double-to-float-nonconstant.cpp declarations/initialization/list/narrowing-int-to-float-inexact.cpp declarations/initialization/list/narrowing-int-to-float-exact.cpp declarations/initialization/list/narrowing-pointer-to-bool.cpp declarations/initialization/list/narrowing-in-aggregate.cpp declarations/initialization/list/narrowing-not-in-parens.cpp declarations/initialization/list/narrowing-bit-field-fits.cpp declarations/initialization/list/narrowing-member-pointer-to-bool.cpp declarations/initialization/list/narrowing-unscoped-enum.cpp declarations/initialization/list/narrowing-unscoped-enum-values-fit.cpp declarations/initialization/list/narrowing-nonconstant-long-ilp32.cpp foundations/conversion-sequences/chosen-narrowing.cpp declarations/initialization/list/narrowing-integer-to-bool.cpp declarations/initialization/list/narrowing-floating-to-bool.cpp declarations/initialization/list/narrowing-constant-to-bool-out-of-range.cpp declarations/initialization/list/narrowing-constant-fits-bool.cpp templates/concepts/requirement-narrowing-in-braces-false.cpp
 
-In braces, a value must not go through a *narrowing* conversion. These
-conversions are narrowing:
-
-| From | To | Not narrowing if |
-|---|---|---|
-| Floating-point | Integer | Never |
-| Integer | Floating-point | The value is a constant that the target type holds exactly. |
-| `long double` | `double` or `float` | The value is a constant in the range of the target type. |
-| `double` | `float` | The value is a constant in the range of the target type. |
-| Integer | An integer type that cannot hold all its values on the target ({rule}`TYP-1`) | The value is a constant that fits. |
-| Pointer or pointer to member | `bool` | Never |
-
-An unscoped enumeration without a fixed type counts as an integer
-source whose values are those that {rule}`ENUM-22` gives
-({question}`Q-0331`). A bit-field counts by its width, so a bit-field whose values all
-fit in the target is not narrowing ({question}`Q-0042`). The same
-conversions are permitted in parentheses (INIT-4).
+In braces, a value must not go through a {term}`narrowing conversion`
+({rule}`CONV-21`). The same conversions are permitted in parentheses
+(INIT-4).
 :::
 
 :::{rule} LIST-3
@@ -303,7 +289,7 @@ signed char o[] = u8"x";  // rejected: wrong character type
 
 ## Evidence
 
-All eight compilers agree on 62 of 66 tests. The results are in
+All eight compilers agree on 67 of 71 tests. The results are in
 `tests/RESULTS.md`.
 
 Three questions on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on overloading, references, and list initialization (`reports/review/2026-11-03-gap-review-questions-overloading.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
@@ -314,11 +300,15 @@ Three questions on this page settled on 2026-11-03 under decision 0054 after the
 | {question}`Q-0043` | LIST-P2 | EDG 7.0 |
 | {question}`Q-0166` | {principle}`REF-P3` | GCC 16 |
 
-- **LIST-2.** For an unscoped enumeration without a fixed type, GCC
+- **LIST-2, CONV-21.** For an unscoped enumeration without a fixed type, GCC
   uses the values that {rule}`ENUM-22` gives. So GCC accepts an enumeration with
   the enumerators 0 and 100 as the value of an `unsigned char`. Clang
   and EDG use every value of the underlying type and reject the same
   program ({question}`Q-0331`).
+- **LIST-2, CONV-21.** The table of {rule}`CONV-21` says "integral
+  type", so `bool` is a target of the integral rows. Every compiler
+  rejects `bool b{i}` for an `int` variable `i`, `bool b{2}`, and
+  `bool b{1.0}`, and accepts `bool b{1}`.
 - **LIST-2.** With `-m32`, `long` and `int` have the same size, so a
   `long` value that is not constant initializes an `int` in braces.
   Without `-m32`, every compiler rejects the same initialization.

@@ -140,7 +140,8 @@ a function is not valid.
 :tests: expressions/additive/result-types.cpp expressions/additive/result-prvalue.cpp expressions/additive/operands-mixed.cpp
 
 Arithmetic operands go through the {term}`usual arithmetic conversions`.
-The result has the common type. A pointer and an integer give the type
+The result has the common type. If the common type is unsigned, a
+negative signed operand converts first ({rule}`CONV-2`). A pointer and an integer give the type
 of the pointer. The result is a prvalue.
 :::
 
@@ -291,6 +292,7 @@ enumeration types, or between an enumeration and a floating-point value.
 ```cpp
 10 - 3 - 2;               // (10 - 3) - 2 == 5
 0u - 1u;                  // the largest unsigned value
+-1 + 0u;                  // ~0u: -1 converts to unsigned first
 
 int a[4] = {10, 20, 30, 40};
 int* p = a + 3;           // points to a[3]

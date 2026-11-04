@@ -22,7 +22,7 @@ dereferences a pointer to nothing, which is undefined (ADD-P3).
 :::
 
 :::{principle} PFX-P2
-:rules: PFX-5 PFX-6 PFX-7 PFX-8 PFX-9 PFX-15 PFX-16 PFX-17 PFX-19
+:rules: PFX-5 PFX-6 PFX-7 PFX-8 PFX-9 PFX-15 PFX-16 PFX-17 PFX-19 PFX-22
 
 A call passes one argument to each parameter, so the counts must match,
 with default arguments filling in and an ellipsis taking any extra. Each
@@ -34,7 +34,9 @@ function that the pointer points at, with or without `*`. A null
 function pointer points at no function, so the call is undefined. A
 call through a pointer of another function type is undefined too. Each
 implementation chooses whether a class with its own copy or destruction
-can go through an ellipsis.
+can go through an ellipsis. An ellipsis parameter has no declared type,
+so promotion sets the type of the argument. A narrow integer becomes an
+`int`, and a `float` becomes a `double`.
 :::
 
 :::{principle} PFX-P3
@@ -128,6 +130,23 @@ specific case of {rule}`OVL-35`.
 :tests: expressions/postfix/call-copy-initializes.cpp expressions/postfix/call-copy-list-initializes.cpp
 
 Each parameter is copy-initialized from its argument.
+:::
+
+:::{rule} PFX-22
+:kind: required
+:tests: expressions/postfix/ellipsis-argument-conversions.cpp expressions/postfix/ellipsis-argument-kinds.cpp
+
+An argument that matches an ellipsis parameter has these conversions,
+and the parameter has the type of the result:
+
+- An lvalue gives its value. An array or a function gives a pointer
+  ({rule}`CONV-13`).
+- An operand that {term}`integer promotion` changes takes its promoted
+  type ({rule}`CONV-1`). This item includes a bit-field and an unscoped
+  enumeration.
+- A `float` becomes a `double`.
+
+A scoped enumeration keeps its type, as does every other type.
 :::
 
 :::{rule} PFX-16
@@ -348,8 +367,8 @@ top++;            // undefined
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 68
-of 76 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 70
+of 78 tests.
 
 Two questions on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
 
@@ -387,6 +406,10 @@ Two questions on this page settled on 2026-11-03 under decision 0054 after the s
   warning that is an error by default. For `++` on `void*`, Clang and
   EDG give an error. GCC accepts it as an extension with a
   `-Wpointer-arith` warning, which `-pedantic-errors` makes an error.
+- PFX-22: Clang 22 and GCC 16 read back each ellipsis argument with
+  `va_arg` as the type that the rule gives. EDG in strict mode has no
+  `va_list`, so the run test leaves EDG out, and EDG accepts each kind
+  of argument in `ellipsis-argument-kinds.cpp`.
 - PFX-15: GCC and EDG accept a class with a non-trivial copy
   constructor as an ellipsis argument. Clang rejects it. Support is
   conditional.

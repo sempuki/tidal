@@ -110,7 +110,7 @@ complete
   a fixed underlying type is complete from its first declaration on,
   also inside its enumerator list. An enumeration without a fixed
   underlying type is complete after its closing brace ({rule}`ENUM-10`).
-  An opaque enumeration declaration ({rule}`ENUM-7`) makes the
+  An {term}`opaque enumeration declaration` ({rule}`ENUM-7`) makes the
   enumeration complete and declares no enumerator, so a use that needs
   the enumerators needs the definition ({rule}`ENUM-20`,
   {rule}`NAM-16`).
@@ -266,6 +266,13 @@ ellipsis conversion sequence
   The sequence of an argument that matches the `...` of a function. It is
   worse than every other sequence ({rule}`ICS-6`, {rule}`ICS-21`).
 
+empty class
+  A class with no virtual function, no {term}`virtual base`, and only
+  empty classes as bases. Its only data members that are not static are
+  `[[no_unique_address]]` members of empty class type, and its only
+  bit-fields are unnamed bit-fields of width 0 ({rule}`CLS-11`,
+  {rule}`CLS-33`, {rule}`CLS-35`).
+
 exception object
   The object that a `throw` makes from its operand ({rule}`THR-1`). The
   implementation provides its storage, and the object ends when the
@@ -393,15 +400,24 @@ integer promotion
 
   If `int` can hold all values of the type, the result is `int`. If not,
   the result is `unsigned int`. The types `wchar_t`, `char8_t`,
-  `char16_t`, and `char32_t` promote to the narrowest standard integer
-  type that can hold all their values. The candidates are tried by rank
+  `char16_t`, and `char32_t` promote to the narrowest
+  {term}`integer type` that can hold all their values. The candidates are tried by rank
   from `int` upward, the signed type of each rank before the unsigned
   type. Unscoped enumerations and bit-fields also promote (CONV-1).
 
+integer type
+  A {term}`standard signed integer type` or a
+  {term}`standard unsigned integer type`. A signed integer type is a standard signed integer
+  type, and an unsigned integer type is a standard unsigned integer
+  type. `signed char` and `unsigned char` are integer types and also
+  character types.
+
 integral type
-  `bool`, a character type, or a signed or unsigned integer type. The
+  `bool`, a character type, or an {term}`integer type`. The
   character types are `char`, `signed char`, `unsigned char`, `wchar_t`,
   `char8_t`, `char16_t`, and `char32_t` ({doc}`/foundations/types`).
+  `bool`, `char`, and the wide character types are integral types that
+  are not integer types.
 
 layout-compatible
   Said of two types with the same layout: the same type apart from
@@ -465,6 +481,14 @@ most derived class
   The class that an object was created as. Its constructors initialize
   the virtual bases ({rule}`DER-13`).
 
+narrowing conversion
+  An implicit conversion that can change a value or drop a fraction,
+  such as `double` to `int` or `int` to `bool`. The table of
+  {rule}`CONV-21` lists these conversions. A constant whose value the
+  target holds is exempt. Braces reject a narrowing conversion
+  ({rule}`LIST-2`), and so do several places that need a constant
+  ({rule}`CE-19`).
+
 natural alignment
   The alignment of the type of an entity, before any `alignas` on its
   declaration. `alignas` must not make the alignment weaker than the
@@ -497,6 +521,13 @@ observable behavior
   - the exit status.
 
   An implementation can change anything else (TR-P5).
+
+opaque enumeration declaration
+  A declaration of an enumeration without its list of enumerators, such
+  as `enum class Mode : unsigned char;` ({rule}`ENUM-7`). The
+  enumeration must be scoped or have a fixed underlying type
+  ({rule}`ENUM-18`), so its size is known. The word "opaque" in Tidal
+  has only this meaning.
 
 operator function
   A function whose name is `operator` followed by an operator, such as
@@ -631,6 +662,15 @@ standard conversion sequence
   An {term}`implicit conversion sequence` of at most three standard
   conversions, in a fixed order ({rule}`ICS-1`).
 
+standard signed integer type
+  One of the five types `signed char`, `short`, `int`, `long`, and
+  `long long` ({rule}`TYP-1`).
+
+standard unsigned integer type
+  The unsigned type of a {term}`standard signed integer type`. The five
+  types are `unsigned char`, `unsigned short`, `unsigned int`,
+  `unsigned long`, and `unsigned long long`.
+
 standard-layout
   Said of a class whose object starts with its first member, with no
   virtual parts, no members split over classes or accesses, and no two
@@ -649,8 +689,8 @@ storage duration
     ({rule}`NEW-9`).
 
 structural type
-  A type that a constant parameter can have. Scalar types and lvalue
-  references are structural. A literal class is structural when its bases
+  A type that a constant parameter can have. Each {term}`scalar type`
+  and each lvalue reference is structural. A literal class is structural when its bases
   and members are public, not `mutable`, and structural ({rule}`TPL-6`).
 
 subobject
@@ -803,6 +843,12 @@ use
 user-defined conversion sequence
   An {term}`implicit conversion sequence` that calls one constructor or
   conversion function between two standard sequences ({rule}`ICS-3`).
+
+user-provided
+  Said of a function that the program declares. The first declaration
+  of the function has no `= default` and no `= delete`. So a function
+  declared in its class and defaulted outside the class is
+  user-provided ({rule}`CTOR-4`, {rule}`CLS-35`).
 
 usual arithmetic conversions
   The conversions that give the two operands of a binary arithmetic

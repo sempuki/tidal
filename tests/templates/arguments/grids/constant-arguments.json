@@ -1,5 +1,5 @@
 {
- "prelude": "enum Plain { plain_one = 1 };\nenum class Scoped { one = 1 };\nstruct Wrap { int v; constexpr operator int() const { return v; } };\nconstexpr Wrap wrapped{1};\nconstexpr int fixed = 1;\nint changing = 1;\nint object = 1;\nconst int const_object = 1;\nint function() { return 1; }\nusing FunctionPointer = int (*)();\n",
+ "prelude": "enum Plain { plain_one = 1 };\nenum class Scoped { one = 1 };\nenum class Other { one = 1 };\nstruct Wrap { int v; constexpr operator int() const { return v; } };\nconstexpr Wrap wrapped{1};\nconstexpr int fixed = 1;\nint changing = 1;\nint object = 1;\nconst int const_object = 1;\nint function() { return 1; }\nusing FunctionPointer = int (*)();\n",
  "template": "{prelude}template <{col} P> struct Take {{}};\n{row}",
  "rows": {
   "1": "Take<1> t;",
@@ -9,6 +9,8 @@
   "2.0": "Take<2.0> t;",
   "unscoped enumerator": "Take<plain_one> t;",
   "scoped enumerator": "Take<Scoped::one> t;",
+  "enumerator of another scoped enumeration": "Take<Other::one> t;",
+  "braced Scoped value": "Take<Scoped{1}> t;",
   "class with conversion to int": "Take<wrapped> t;",
   "constexpr int variable": "Take<fixed> t;",
   "int variable": "Take<changing> t;",
@@ -27,6 +29,7 @@
   "long": "long",
   "double": "double",
   "Plain": "Plain",
+  "Scoped": "Scoped",
   "int*": "int*",
   "const int*": "const int*",
   "int&": "int&",

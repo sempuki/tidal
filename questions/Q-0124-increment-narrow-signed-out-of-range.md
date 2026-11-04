@@ -22,6 +22,12 @@ undefined behavior.
 For an operand of type `int` or wider, all three compilers reject an
 overflow during constant evaluation (UN-21, PFX-18).
 
+A compound assignment converts back in the same way (ASN-5). EDG 7.0
+also rejects `s += 1` on a `short` that holds 32767 during constant
+evaluation, and Clang and GCC give -32768. So
+`tests/expressions/assignment/compound-narrow-operand-promoted.cpp`
+checks the `short` case only at run time (finding X17-7).
+
 ## Evidence
 
 `tests/RESULTS.md`, rows `prefix-narrow-signed-wraps.cpp` and

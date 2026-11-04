@@ -1,7 +1,7 @@
 # Q-0140: Is a call valid when it uses a default argument that two scopes give?
 
 **Status:** provisional
-**Affects:** OVL-38, `tests/foundations/overload-resolution/default-from-two-scopes.cpp`, `tests/foundations/overload-resolution/default-from-two-scopes-same.cpp`
+**Affects:** OVL-38, `tests/foundations/overload-resolution/default-from-two-scopes.cpp`, `tests/foundations/overload-resolution/default-from-two-scopes-same.cpp`, `tests/foundations/overload-resolution/default-from-two-scopes-same-value.cpp`, `tests/foundations/overload-resolution/default-from-two-scopes-same-literal.cpp`
 
 ## Context
 
@@ -20,6 +20,14 @@ The results are the same with using-declarations and with
 using-directives. A call that passes the argument is accepted by all
 compilers. A redeclaration in a block scope that repeats the default
 argument is also accepted by all compilers.
+
+GCC compares the two default arguments as expressions (finding G140 of
+`reports/clean-room/rust-frontend/report-19.md`). GCC 14 and 16 accept
+`5` with `(5)` and with `0x5`. They reject `5` with `2 + 3`, which has
+the same value, and two different variables that hold one value. Clang
+and EDG accept every pair. OVL-38 follows GCC: two default arguments
+are the same if they are the same expression, apart from parentheses
+around the whole argument and the spelling of a literal's value.
 
 ## Evidence
 

@@ -264,12 +264,10 @@ can be left out.
 A {term}`constant parameter` is declared like a function parameter. Its
 type must be a {term}`structural type`, which is one of these:
 
-- an integral or enumeration type,
-- a pointer to an object type, to `void`, or to a function type,
+- a {term}`scalar type`, which includes the integral, enumeration,
+  floating-point, pointer, and pointer-to-member types and the type of
+  `nullptr`,
 - an lvalue reference to an object or function type,
-- a pointer to member,
-- the type of `nullptr`,
-- a floating-point type,
 - a literal class type whose bases and non-static data members are all
   public, not `mutable`, and of structural types or arrays of them.
 
@@ -685,7 +683,7 @@ A non-static data member must not be a template.
 
 :::{rule} TPL-28
 :kind: required
-:tests: templates/declarations/alias-template.cpp templates/declarations/alias-template-deduce.cpp
+:tests: templates/declarations/alias-template.cpp templates/declarations/alias-template-deduce.cpp templates/deduction/nondeduced-alias-unused-parameter.cpp templates/deduction/nondeduced-alias-unused-other-position.cpp
 
 A specialization of an alias template is the type that the alias gives,
 with the arguments in place of the parameters. The specialization is
@@ -802,8 +800,8 @@ template <class U> int pick(Host);                // rejected: the same template
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 115
-of 126 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 117
+of 128 tests.
 
 Two questions on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
 

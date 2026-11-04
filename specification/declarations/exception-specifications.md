@@ -112,8 +112,8 @@ function. EXS-7 lists what is not valid.
 :tests: declarations/exception-specifications/narrowing-operand.cpp declarations/exception-specifications/non-constant.cpp declarations/exception-specifications/pointer-operand.cpp declarations/exception-specifications/throw-type-removed.cpp
 
 The operand of `noexcept` (EXS-1) must be a constant expression. The
-conversion of the operand to `bool` must not narrow
-({question}`Q-0078`). A list of types in the form `throw(T)` is not
+conversion of the operand to `bool` must not be a
+{term}`narrowing conversion` ({question}`Q-0078`). A list of types in the form `throw(T)` is not
 valid.
 :::
 

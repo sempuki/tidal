@@ -23,6 +23,14 @@ Reopened as provisional on 2026-11-04 under the principle test of the style guid
 
 On 2026-11-04, item PQ widened PRIM-P1 to state the case. PRIM-P1 now gives the list of types for each base and suffix in a table. A decimal literal with no `u` has only signed types in its list, so a decimal value that only `unsigned long long` can hold is rejected. Under decision 0055, the question does not settle on a principle that phase 8 wrote. The question stays provisional until a reader or a reviewer uses PRIM-P1.
 
+On 2026-11-04, the Propose exercise X19 (`reports/clean-room/X19/report.md`, finding X19-6) used PRIM-P1 to design new literal suffixes. The test of the style guide (section 3) applied to that use:
+
+1. The program is the literal `9223372036854775808` with no suffix.
+2. The PRIM-P1 table gives a decimal literal with no `u` only the signed types, from `int` up to `long long`, and none of them holds the value.
+3. The model rejects a literal that no type in its list can hold, so it reaches option 1 and rules out option 2.
+
+PRIM-P1 passes all three steps in that use. The question stays provisional in this change (decision 0055).
+
 ## Opinions
 
 ### Gap review, 2026-11-03

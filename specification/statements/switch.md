@@ -70,7 +70,7 @@ The condition must have one of these types:
 :tests: statements/switch/case-not-constant.cpp statements/switch/case-narrowing.cpp statements/switch/case-duplicate.cpp statements/switch/case-duplicate-after-conversion.cpp statements/switch/two-defaults.cpp statements/switch/case-outside-switch.cpp statements/switch/case-out-of-char-range.cpp statements/switch/scoped-enum-int-case.cpp statements/switch/case-in-lambda-body.cpp statements/switch/case-in-local-class.cpp
 
 Each case value must be a constant expression that converts to the
-promoted type of the condition without narrowing. For a scoped
+promoted type of the condition without a {term}`narrowing conversion`. For a scoped
 enumeration condition, each case value must have that enumeration type.
 A case value that the condition's own type cannot hold is valid and never
 matches. In one `switch`:

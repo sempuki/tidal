@@ -317,7 +317,12 @@ All eight compilers agree on 49 of 62 tests. The results are in
   under `-pedantic-errors`. With three parameters, Clang and GCC on
   Linux pass a pointer that is not null as the third argument, the list
   of environment variables. The matrix runs no program built with
-  `-m32`, so the `-m32` tests check acceptance only.
+  `-m32`, so the `-m32` tests check acceptance only. The base
+  expectation of each test follows Clang's column of the table. So the
+  tests accept `()`, `(int)`, `(int, char**)`, and
+  `(int, char**, char**)`, and reject the other lists. The tests record
+  the choices of GCC and EDG as overrides, and FN-6 allows each of them.
+  A test that cites TR-3 for a parameter list follows the same column.
 - FN-7 is Tidal's own advice. The gap review of the rules that phase 7
   rewrote (`reports/review/2026-11-04-gap-review-phase-7-repairs.md`)
   finds no such recommendation in the reference, which makes reaching

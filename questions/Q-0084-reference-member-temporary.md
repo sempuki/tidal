@@ -1,7 +1,7 @@
 # Q-0084: Must an implementation reject a constructor that binds a reference member to a temporary?
 
 **Status:** provisional
-**Affects:** CTOR-17, `tests/classes/constructors/reference-member-binds-temporary.cpp`, `tests/classes/constructors/reference-default-member-binds-temporary.cpp`, `tests/classes/constructors/reference-member-binds-converted-parameter.cpp`, `tests/classes/constructors/initializer-list-member-from-braces.cpp`, `tests/classes/constructors/initializer-list-default-member-from-braces.cpp`
+**Affects:** CTOR-17, `tests/classes/constructors/reference-member-binds-temporary.cpp`, `tests/classes/constructors/reference-default-member-binds-temporary.cpp`, `tests/classes/constructors/reference-member-binds-converted-parameter.cpp`, `tests/classes/constructors/initializer-list-member-from-braces.cpp`, `tests/classes/constructors/initializer-list-default-member-from-braces.cpp`, `tests/classes/constructors/reference-default-member-unused.cpp`, `tests/classes/constructors/reference-default-member-aggregate-value.cpp`
 
 ## Context
 
@@ -9,6 +9,13 @@ A constructor binds a reference member to a temporary, through a
 member initializer or a default member initializer. The temporary ends with
 the constructor, so the reference dangles. Clang rejects both forms. GCC
 accepts with a warning. EDG accepts.
+
+A default member initializer counts only through a constructor that
+uses it (finding G136 of `reports/clean-room/rust-frontend/report-19.md`).
+Clang rejects the initializer at such a constructor, including an
+implicit default constructor that the program uses. Every compiler
+accepts a class whose constructors all give the member a `mem_init`,
+and an aggregate whose initialization gives the member a value.
 
 ## Options
 
