@@ -1,0 +1,1301 @@
+{
+ "p01": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-18",
+   "MPTR-4"
+  ],
+  "why": "The target type picks f(long), the class of the pointer to member takes no part, and the call gives 2."
+ },
+ "p02": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-17"
+  ],
+  "why": "The inherited Base(Derived&) is removed for a one-argument call, so the implicit copy constructor copies tag 1."
+ },
+ "p03": {
+  "outcome": "reject",
+  "rules": [
+   "OVL-20"
+  ],
+  "why": "A cast to void gives no target type, and two plain functions remain."
+ },
+ "p04": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-31"
+  ],
+  "why": "Both constructors fit the one argument, and the derived class's own constructor wins over the inherited one."
+ },
+ "p05": {
+  "outcome": "reject",
+  "rules": [
+   "OVL-20"
+  ],
+  "why": "decltype gives no target type, and the template without explicit arguments makes the program not valid."
+ },
+ "p06": {
+  "outcome": "reject",
+  "rules": [
+   "OVL-36"
+  ],
+  "why": "Each function is better on one argument, so the call is ambiguous."
+ },
+ "p07": {
+  "outcome": "reject",
+  "rules": [
+   "OVL-9",
+   "OVL-36"
+  ],
+  "why": "The built-in ! with the explicit conversion to bool ties with operator!(Gate), which needs a converting constructor."
+ },
+ "p08": {
+  "outcome": "reject",
+  "rules": [
+   "OVL-11",
+   "OVL-9"
+  ],
+  "why": "The built-in (int*, ptrdiff_t) candidate wins, then the built-in + rejects int* plus a double."
+ },
+ "p09": {
+  "outcome": "depends",
+  "rules": [
+   "OVL-21",
+   "OVL-44",
+   "OVL-3"
+  ],
+  "why": "By OVL-21 the static f(int) is called and the program is valid; the Evidence records that GCC and Clang 18 reject and EDG fails for a call of a static member through the address of a member set (Q-0143)."
+ },
+ "p10": {
+  "outcome": "reject",
+  "rules": [
+   "OVL-43",
+   "OVL-13"
+  ],
+  "why": "a >= b rewrites to (a <=> b) >= 0 with a Diff, and that comparison gets no rewritten candidates, so nothing is viable."
+ },
+ "p11": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-21"
+  ],
+  "why": "(&pick)(1) and (pick)(1L) resolve as ordinary calls and pick One and Two."
+ },
+ "p12": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-40",
+   "OVL-14"
+  ],
+  "why": "Direct initialization lets the explicit conversion make the move constructor's argument, so t.v is 4."
+ },
+ "p13": {
+  "outcome": "reject",
+  "rules": [
+   "OVL-15",
+   "ICS-45"
+  ],
+  "why": "Copy initialization of the reference does not take the explicit conversion function, and nothing else converts Source to int."
+ },
+ "p14": {
+  "outcome": "reject",
+  "rules": [
+   "OVL-23",
+   "OVL-25",
+   "OVL-36"
+  ],
+  "why": "With no object the two reset functions tie (the default argument and the object parameter take no part), so the call is ambiguous."
+ },
+ "p15": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-14"
+  ],
+  "why": "Copy initialization takes the conversion function to Derived, and Base is initialized from it with tag 3."
+ },
+ "p16": {
+  "outcome": "depends",
+  "rules": [
+   "OVL-30",
+   "ORD-13",
+   "OVL-36"
+  ],
+  "why": "The ellipsis keeps the constraints from deciding, so Clang 22 and GCC find the call ambiguous; EDG and Clang 18 let the constraint decide (Q-0146)."
+ },
+ "p17": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-30",
+   "CNS-23"
+  ],
+  "why": "For int both are satisfied and SmallWhole is more constrained; for double SmallWhole fails."
+ },
+ "p18": {
+  "outcome": "reject",
+  "rules": [
+   "OVL-25",
+   "OVL-36"
+  ],
+  "why": "The defaulted parameter takes no part, so f(int) and f(int, int = 0) tie."
+ },
+ "p19": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-28",
+   "ORD-7",
+   "OVL-32"
+  ],
+  "why": "Partial ordering does not order the written and the swapped friend templates, so the written candidate wins each time."
+ },
+ "p20": {
+  "outcome": "reject",
+  "rules": [
+   "OVL-35",
+   "OVL-9"
+  ],
+  "why": "A scoped enumeration has no built-in + candidate, so nothing is viable."
+ },
+ "p21": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-9",
+   "OVL-11"
+  ],
+  "why": "The built-in <=> candidates (int, long), (int, int), and (int, double) give strong, strong, and partial ordering."
+ },
+ "p22": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-39"
+  ],
+  "why": "Only g(void(*)(int)) can select a function from the set f."
+ },
+ "p23": {
+  "outcome": "depends",
+  "rules": [
+   "OVL-20",
+   "ORD-13"
+  ],
+  "why": "The two functions have different parameter lists, so the constraints do not decide and no single function remains; Clang 18 keeps the more constrained one."
+ },
+ "p24": {
+  "outcome": "reject",
+  "rules": [
+   "OVL-37",
+   "DEL-1"
+  ],
+  "why": "The deleted put(int) wins."
+ },
+ "p25": {
+  "outcome": "runs",
+  "rules": [
+   "OVL-25",
+   "OVL-6"
+  ],
+  "why": "The static call operator beats the surrogate with the same parameter types, so c(1) is 2."
+ },
+ "p26": {
+  "outcome": "reject",
+  "rules": [
+   "OVL-35",
+   "OVL-9"
+  ],
+  "why": "Member pointers have only == and != built-in candidates, so < has no viable function."
+ },
+ "p27": {
+  "outcome": "reject",
+  "rules": [
+   "OVL-20"
+  ],
+  "why": "A return type deduced with auto gives no target type for a set of two."
+ },
+ "p28": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-25",
+   "OVL-34"
+  ],
+  "why": "f(int, int) is exact on both arguments and is better than each other function."
+ },
+ "p29": {
+  "outcome": "reject",
+  "rules": [
+   "OVL-18",
+   "OVL-20"
+  ],
+  "why": "void(Base*) is not the target's function type, so no function matches."
+ },
+ "p30": {
+  "outcome": "reject",
+  "rules": [
+   "OVL-20"
+  ],
+  "why": "auto gives no target type, and the template has no explicit arguments."
+ },
+ "p31": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-16",
+   "OVL-26"
+  ],
+  "why": "For long the template specialization is explicit and removed, so double gives 2; for int the template's identity result beats double."
+ },
+ "p32": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-25",
+   "ICS-14"
+  ],
+  "why": "The static member's object slot takes no part, so the argument decides each call."
+ },
+ "p33": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-20"
+  ],
+  "why": "A set of one plain function needs no target type."
+ },
+ "p34": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-39"
+  ],
+  "why": "In each call only the candidate with void(*)(int) can select a function from f."
+ },
+ "p35": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-6"
+  ],
+  "why": "An explicit conversion function gives no surrogate, so operator()(long) is called."
+ },
+ "p36": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-9"
+  ],
+  "why": "The built-in (E, E) candidates take the scoped enumeration Mode."
+ },
+ "p37": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-9"
+  ],
+  "why": "The (M, M) and (nullptr_t, nullptr_t) candidates of == and != are viable."
+ },
+ "p38": {
+  "outcome": "reject",
+  "rules": [
+   "OVL-9",
+   "OVL-35"
+  ],
+  "why": "A call by the name operator+ has no built-in candidates, and operator+(Meter, int) does not take 1."
+ },
+ "p39": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-9",
+   "ICS-45"
+  ],
+  "why": "The built-in !, &&, and || take the explicit conversion to bool and give bool."
+ },
+ "p40": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-21",
+   "OVL-2"
+  ],
+  "why": "(get)() and (Box::get)() keep *this as the implied object."
+ },
+ "p41": {
+  "outcome": "reject",
+  "rules": [
+   "OVL-21",
+   "OVL-3"
+  ],
+  "why": "(&Item::reset)() has no object, the non-static reset() is the only viable function, and it wins without an object."
+ },
+ "p42": {
+  "outcome": "reject",
+  "rules": [
+   "OVL-20"
+  ],
+  "why": "An expression statement gives no target type."
+ },
+ "p43": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-20"
+  ],
+  "why": "Every use names a set of one plain function or a template with all its arguments given."
+ },
+ "p44": {
+  "outcome": "runs",
+  "rules": [
+   "OVL-15",
+   "ICS-45"
+  ],
+  "why": "Direct initialization of the reference takes the explicit conversion to int&, so r refers to value."
+ },
+ "p45": {
+  "outcome": "reject",
+  "rules": [
+   "OVL-14",
+   "OVL-35"
+  ],
+  "why": "Copy initialization does not take the explicit conversion, and Target(int) does not take a Source."
+ },
+ "p46": {
+  "outcome": "reject",
+  "rules": [
+   "OVL-2",
+   "OVL-22"
+  ],
+  "why": "*this fills the explicit object parameter, so take(*this, 1) passes two arguments to one remaining parameter."
+ },
+ "p47": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-26"
+  ],
+  "why": "The conversion whose result is the target type without conversion wins each time."
+ },
+ "p48": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-15"
+  ],
+  "why": "int& takes operator int& and int&& takes operator int&&, so the bound is 1."
+ },
+ "p49": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-6",
+   "OVL-25"
+  ],
+  "why": "Derived's conversion hides Base's; in Both each surrogate wins on the argument that fits it exactly."
+ },
+ "p50": {
+  "outcome": "runs",
+  "rules": [
+   "OVL-7",
+   "NAM-38"
+  ],
+  "why": "Non-member lookup for the operator passes over the class scope, so ::operator+ is found and gives 3."
+ },
+ "p51": {
+  "outcome": "depends",
+  "rules": [
+   "OVL-40"
+  ],
+  "why": "In copy-list-initialization the explicit conversion cannot make the copy constructor's argument, so GCC and EDG reject; Clang accepts (Q-0145)."
+ },
+ "p52": {
+  "outcome": "runs",
+  "rules": [
+   "OVL-21",
+   "OVL-4"
+  ],
+  "why": "(g.scale)(m) is g.scale(m), so no argument-dependent lookup applies and each check passes."
+ },
+ "p53": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-9",
+   "ICS-10"
+  ],
+  "why": "The built-in assignment, compound assignment, and increment candidates give the listed types; only the right operands of the assignments use conversion functions."
+ },
+ "p54": {
+  "outcome": "runs",
+  "rules": [
+   "OVL-25",
+   "ICS-13"
+  ],
+  "why": "Exact matches and the object parameter's ref-qualifier and cv-qualifiers pick each expected function."
+ },
+ "p55": {
+  "outcome": "reject",
+  "rules": [
+   "OVL-11"
+  ],
+  "why": "The (int, int) candidate wins, and the built-in <=> rejects a char against a bool."
+ },
+ "p56": {
+  "outcome": "depends",
+  "rules": [
+   "OVL-38"
+  ],
+  "why": "The call uses default arguments that differ between two scopes; GCC rejects, Clang and EDG accept (Q-0140)."
+ },
+ "p57": {
+  "outcome": "reject",
+  "rules": [
+   "OVL-12",
+   "OVL-37",
+   "DEL-1"
+  ],
+  "why": "The deleted member operator& is viable and wins, so the built-in meaning does not apply."
+ },
+ "p58": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-22"
+  ],
+  "why": "The argument count decides which of the two is viable in each call."
+ },
+ "p59": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-9"
+  ],
+  "why": "The built-in (int, int) and (double, double) candidates give strong and partial ordering."
+ },
+ "p60": {
+  "outcome": "depends",
+  "rules": [
+   "OVL-21",
+   "OVL-23",
+   "OVL-36"
+  ],
+  "why": "(&f)() ties the two f and OVL-36 rejects it; Clang 22 and EDG call the static member."
+ },
+ "p61": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-20"
+  ],
+  "why": "id<int> and id<long> fix every template parameter, so no target type is needed."
+ },
+ "p62": {
+  "outcome": "reject",
+  "rules": [
+   "OVL-44"
+  ],
+  "why": "The operand of & is a qualified name in parentheses and the set holds a non-static member."
+ },
+ "p63": {
+  "outcome": "depends",
+  "rules": [
+   "OVL-2",
+   "OVL-3"
+  ],
+  "why": "By OVL-2 the call in Inner has no object, f(long) wins, and the program is not valid; Clang and EDG take the current object and call the static f(int) (Q-0159)."
+ },
+ "p64": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-27",
+   "DCMP-6",
+   "DCMP-13"
+  ],
+  "why": "The template != does not match the plain ==, and the plain rewritten == beats the template, so the result is true."
+ },
+ "p65": {
+  "outcome": "reject",
+  "rules": [
+   "OVL-10",
+   "OVL-36"
+  ],
+  "why": "The reference parameters keep the built-in ==, and the built-in candidate and the function tie."
+ },
+ "p66": {
+  "outcome": "depends",
+  "rules": [
+   "OVL-15",
+   "OVL-27",
+   "OVL-29"
+  ],
+  "why": "For an rvalue function reference GCC chooses the T&& template; Clang and EDG choose the T& template, so the assertion fails there."
+ },
+ "p67": {
+  "outcome": "depends",
+  "rules": [
+   "OVL-19"
+  ],
+  "why": "The target keeps the more constrained pick in Clang 22 and GCC 16; EDG, Clang 18, and GCC 14 find the set ambiguous (Q-0142)."
+ },
+ "p68": {
+  "outcome": "reject",
+  "rules": [
+   "OVL-7",
+   "OVL-35"
+  ],
+  "why": "Lookup from inner finds inner::operator+, which hides the global one, and it does not take a second Value."
+ },
+ "p69": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-5",
+   "OVL-6"
+  ],
+  "why": "The argument count separates the call operator and the surrogate."
+ },
+ "p70": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-14"
+  ],
+  "why": "A conversion function to const Box& counts as a conversion to Box."
+ },
+ "p71": {
+  "outcome": "reject",
+  "rules": [
+   "OVL-6",
+   "OVL-35"
+  ],
+  "why": "A conversion function template gives no surrogate, and Maker has no call operator."
+ },
+ "p72": {
+  "outcome": "reject",
+  "rules": [
+   "OVL-36"
+  ],
+  "why": "f(int, long) and f(long, int) each beat f(long, long), and neither beats the other."
+ },
+ "p73": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-8",
+   "OVL-13"
+  ],
+  "why": "The swapped candidate meets both enumeration operands."
+ },
+ "p74": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-3"
+  ],
+  "why": "Only the static reset(int) is viable."
+ },
+ "p75": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-25"
+  ],
+  "why": "The template gives f(long), an exact match."
+ },
+ "p76": {
+  "outcome": "reject",
+  "rules": [
+   "OVL-36"
+  ],
+  "why": "The non-const member == ties with its own swapped form."
+ },
+ "p77": {
+  "outcome": "runs",
+  "rules": [
+   "OVL-42",
+   "CPY-7"
+  ],
+  "why": "Holder's defaulted moves are deleted and are not candidates, so the copies run twice."
+ },
+ "p78": {
+  "outcome": "depends",
+  "rules": [
+   "OVL-28",
+   "OVL-41",
+   "ORD-13"
+  ],
+  "why": "Partial ordering does not order f(const T&) and f(T), and the constraint does not decide; EDG lets the constraint choose the second (Q-0146)."
+ },
+ "p79": {
+  "outcome": "reject",
+  "rules": [
+   "OVL-26",
+   "OVL-36"
+  ],
+  "why": "The constructor and the conversion function tie on the argument and on the result."
+ },
+ "p80": {
+  "outcome": "reject",
+  "rules": [
+   "OVL-20"
+  ],
+  "why": "auto gives no target type for a set of two."
+ },
+ "p81": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-38"
+  ],
+  "why": "The default arguments are equal, and every compiler accepts the call."
+ },
+ "p82": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-6"
+  ],
+  "why": "Each surrogate fits one argument list."
+ },
+ "p83": {
+  "outcome": "depends",
+  "rules": [
+   "OVL-10",
+   "OVL-32"
+  ],
+  "why": "Clang and EDG remove the built-in < and use the rewritten <=>, giving One; GCC keeps the built-in, which wins, so the assertion fails (Q-0147)."
+ },
+ "p84": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-41"
+  ],
+  "why": "Same parameter lists, so the more constrained template wins for int, and only One is viable for char."
+ },
+ "p85": {
+  "outcome": "depends",
+  "rules": [
+   "OVL-30",
+   "ORD-13"
+  ],
+  "why": "The defaulted parameter keeps the constraints from deciding, so Clang and GCC reject as ambiguous; EDG accepts (Q-0146)."
+ },
+ "p86": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-16",
+   "OVL-26",
+   "OVL-27"
+  ],
+  "why": "The explicit specialization is removed for long, and the template is exact for int."
+ },
+ "p87": {
+  "outcome": "reject",
+  "rules": [
+   "OVL-39",
+   "OVL-36"
+  ],
+  "why": "Each g selects an exact match from f, so the call is ambiguous."
+ },
+ "p88": {
+  "outcome": "reject",
+  "rules": [
+   "OVL-9",
+   "ICS-45"
+  ],
+  "why": "An explicit conversion function to int gives no sequence to bool."
+ },
+ "p89": {
+  "outcome": "depends",
+  "rules": [
+   "OVL-15",
+   "OVL-27",
+   "OVL-29"
+  ],
+  "why": "GCC and Clang choose the template that returns T&, which the assertion expects; EDG chooses the plain F&& function (Q-0148)."
+ },
+ "p90": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-32"
+  ],
+  "why": "The written member < beats the rewritten <=>."
+ },
+ "p91": {
+  "outcome": "reject",
+  "rules": [
+   "OVL-8",
+   "OVL-35"
+  ],
+  "why": "No operand has class type and operator+ takes no Mode parameter, so it is no candidate."
+ },
+ "p92": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-18"
+  ],
+  "why": "A noexcept function matches a target that is not noexcept."
+ },
+ "p93": {
+  "outcome": "reject",
+  "rules": [
+   "OVL-20"
+  ],
+  "why": "A constant template parameter declared with auto gives no target type."
+ },
+ "p94": {
+  "outcome": "reject",
+  "rules": [
+   "OVL-18",
+   "OVL-20"
+  ],
+  "why": "pick(int) is not noexcept, so it does not match the noexcept target."
+ },
+ "p95": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-27",
+   "OVL-32"
+  ],
+  "why": "The plain swapped == beats the template, so the result is false."
+ },
+ "p96": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-15",
+   "OVL-29"
+  ],
+  "why": "The lvalue reference prefers the F& conversion before the constraints are looked at, so r is a."
+ },
+ "p97": {
+  "outcome": "reject",
+  "rules": [
+   "OVL-13",
+   "OVL-35"
+  ],
+  "why": "The swapped member == needs Maker as its object, which no user-defined conversion can reach."
+ },
+ "p98": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-13",
+   "DCMP-6"
+  ],
+  "why": "The swapped non-member == converts Maker to Right."
+ },
+ "p99": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-38"
+  ],
+  "why": "The call passes the argument, so the two default arguments do not matter."
+ },
+ "p100": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-25",
+   "OVL-24"
+  ],
+  "why": "The constrained template is exact for double, and fails its constraint for char."
+ },
+ "p101": {
+  "outcome": "depends",
+  "rules": [
+   "OVL-21"
+  ],
+  "why": "By OVL-21 the static reset(int) is called; Clang 18 and GCC reject and EDG stops with an internal error (Q-0143)."
+ },
+ "p102": {
+  "outcome": "reject",
+  "rules": [
+   "OVL-42",
+   "OVL-37"
+  ],
+  "why": "A move constructor declared deleted is a candidate and wins."
+ },
+ "p103": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-2",
+   "OVL-25"
+  ],
+  "why": "*this is a non-const lvalue in use and const in look."
+ },
+ "p104": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-2",
+   "ICS-41"
+  ],
+  "why": "*this meets the explicit object parameter, and const in look leaves only the second."
+ },
+ "p105": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-12"
+  ],
+  "why": "When no operator function is viable, & and , have their built-in meaning."
+ },
+ "p106": {
+  "outcome": "reject",
+  "rules": [
+   "OVL-20"
+  ],
+  "why": "An init capture gives no target type."
+ },
+ "p107": {
+  "outcome": "reject",
+  "rules": [
+   "OVL-20"
+  ],
+  "why": "The explicit arguments do not fix U."
+ },
+ "p108": {
+  "outcome": "reject",
+  "rules": [
+   "OVL-7",
+   "OVL-35"
+  ],
+  "why": "The block-scope declaration hides the global operator+, and it does not take a second Value."
+ },
+ "p109": {
+  "outcome": "reject",
+  "rules": [
+   "OVL-7",
+   "OVL-22"
+  ],
+  "why": "A call by the name operator== finds the member, which hides the non-member and does not take two arguments."
+ },
+ "p110": {
+  "outcome": "depends",
+  "rules": [
+   "OVL-26"
+  ],
+  "why": "GCC and EDG choose the constructor, whose result needs no conversion; Clang finds the call ambiguous (Q-0189)."
+ },
+ "p111": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-25"
+  ],
+  "why": "Target(Source&) binds the non-const s better than the const conversion function."
+ },
+ "p112": {
+  "outcome": "depends",
+  "rules": [
+   "OVL-20"
+  ],
+  "why": "Clang 22 and GCC 16 remove the function whose constraint fails; GCC 14 and EDG do not reduce the set and reject."
+ },
+ "p113": {
+  "outcome": "depends",
+  "rules": [
+   "OVL-15"
+  ],
+  "why": "GCC and EDG give the lvalue function reference the F&& conversion; Clang does not and rejects (Q-0138)."
+ },
+ "p114": {
+  "outcome": "depends",
+  "rules": [
+   "OVL-26"
+  ],
+  "why": "Clang and GCC prefer the identity result over the function pointer conversion; EDG finds the two ambiguous (Q-0163)."
+ },
+ "p115": {
+  "outcome": "depends",
+  "rules": [
+   "OVL-26"
+  ],
+  "why": "The identity result beats the function pointer conversion between two templates; EDG finds them ambiguous (Q-0163)."
+ },
+ "p116": {
+  "outcome": "reject",
+  "rules": [
+   "OVL-43"
+  ],
+  "why": "(a <=> b) < 0 is a Diff against 0 with no rewritten candidates, so nothing is viable."
+ },
+ "p117": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-1"
+  ],
+  "why": "put found through several using-declarations is one candidate."
+ },
+ "p118": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-8"
+  ],
+  "why": "The first parameter has the enumeration type of the left operand, so the function is a candidate."
+ },
+ "p119": {
+  "outcome": "reject",
+  "rules": [
+   "OVL-37",
+   "ACC-3"
+  ],
+  "why": "The private put(int) wins."
+ },
+ "p120": {
+  "outcome": "depends",
+  "rules": [
+   "OVL-6"
+  ],
+  "why": "Clang and EDG give the const object no surrogate and call operator()(long); GCC adds the surrogate and the call is ambiguous (Q-0144)."
+ },
+ "p121": {
+  "outcome": "depends",
+  "rules": [
+   "OVL-23",
+   "OVL-3"
+  ],
+  "why": "Clang and EDG let put(int) && win and reject; GCC gives an lvalue object and calls the static put(long) (Q-0187)."
+ },
+ "p122": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-28"
+  ],
+  "why": "f(T*) is more specialized."
+ },
+ "p123": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-4",
+   "ICS-13"
+  ],
+  "why": "The ref-qualifiers pick each get."
+ },
+ "p124": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-25",
+   "OVL-23"
+  ],
+  "why": "Each call has one better candidate or only one viable one."
+ },
+ "p125": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-7",
+   "OVL-9",
+   "OVL-25"
+  ],
+  "why": "The member wins for int, the non-member for double, and the built-in (long, int) for *."
+ },
+ "p126": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-6"
+  ],
+  "why": "An && conversion gives a surrogate for a prvalue and an & conversion for an lvalue."
+ },
+ "p127": {
+  "outcome": "runs",
+  "rules": [
+   "OVL-15"
+  ],
+  "why": "long& is not a conversion to int, so r binds to a temporary int with value 5."
+ },
+ "p128": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-9"
+  ],
+  "why": "The pointer built-in candidates give each listed type."
+ },
+ "p129": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-17"
+  ],
+  "why": "The call has two arguments, so the inherited constructor stays."
+ },
+ "p130": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-5"
+  ],
+  "why": "A static lambda converts to a function pointer and can be called."
+ },
+ "p131": {
+  "outcome": "depends",
+  "rules": [
+   "OVL-44"
+  ],
+  "why": "OVL-44 rejects; EDG accepts the parenthesized form with no argument."
+ },
+ "p132": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-10"
+  ],
+  "why": "The non-member with the same parameter types removes the built-in ==."
+ },
+ "p133": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-22",
+   "OVL-25"
+  ],
+  "why": "The counts and the ellipsis decide each call."
+ },
+ "p134": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-27"
+  ],
+  "why": "A plain function beats the specialization."
+ },
+ "p135": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-2"
+  ],
+  "why": "A default member initializer can use this, so start() gives 7."
+ },
+ "p136": {
+  "outcome": "reject",
+  "rules": [
+   "OVL-9",
+   "OVL-35"
+  ],
+  "why": "The built-in ++ has no bool& candidate."
+ },
+ "p137": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-27",
+   "OVL-31"
+  ],
+  "why": "The inherited plain constructor beats the derived template constructor."
+ },
+ "p138": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-26"
+  ],
+  "why": "The result int is exact, which decides before the constraints."
+ },
+ "p139": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-27",
+   "OVL-10"
+  ],
+  "why": "The built-in candidate counts as a plain function and beats each template."
+ },
+ "p140": {
+  "outcome": "depends",
+  "rules": [
+   "OVL-15",
+   "OVL-29"
+  ],
+  "why": "GCC and EDG choose by the kind of reference; Clang finds the rvalue binding ambiguous (Q-0138)."
+ },
+ "p141": {
+  "outcome": "reject",
+  "rules": [
+   "ICS-6",
+   "OVL-35"
+  ],
+  "why": "A braced list has no ellipsis sequence, and Label does not take an Item."
+ },
+ "p142": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-1",
+   "OVL-25"
+  ],
+  "why": "Argument-dependent lookup adds geo::near, which is exact for int."
+ },
+ "p143": {
+  "outcome": "depends",
+  "rules": [
+   "OVL-20"
+  ],
+  "why": "Clang 22 and GCC 16 keep the more constrained f; GCC 14 and EDG do not reduce the set, and Clang 18 does not compare constraints."
+ },
+ "p144": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-13"
+  ],
+  "why": "The rewritten and swapped <=> give each comparison."
+ },
+ "p145": {
+  "outcome": "reject",
+  "rules": [
+   "OVL-9"
+  ],
+  "why": "The Evidence says every compiler rejects ToDouble{} % 2."
+ },
+ "p146": {
+  "outcome": "reject",
+  "rules": [
+   "OVL-6",
+   "OVL-35"
+  ],
+  "why": "An && conversion gives no surrogate for an lvalue."
+ },
+ "p147": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-18",
+   "MPTR-4"
+  ],
+  "why": "Each target matches one function; explicit object members match plain pointers."
+ },
+ "p148": {
+  "outcome": "reject",
+  "rules": [
+   "OVL-25",
+   "OVL-36"
+  ],
+  "why": "The surrogate fits the argument better, and the static slot beats its object conversion, so the call is ambiguous."
+ },
+ "p149": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-26"
+  ],
+  "why": "The template's int result is exact, which beats long."
+ },
+ "p150": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-18"
+  ],
+  "why": "Each context gives a target type."
+ },
+ "p151": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-33"
+  ],
+  "why": "The rewritten candidate in written order beats the swapped one."
+ },
+ "p152": {
+  "outcome": "reject",
+  "rules": [
+   "OVL-39",
+   "OVL-36"
+  ],
+  "why": "The reference and the pointer parameter each select f(int) with an exact match, so the call is ambiguous."
+ },
+ "p153": {
+  "outcome": "reject",
+  "rules": [
+   "OVL-20"
+  ],
+  "why": "An argument for an ellipsis gives no target type."
+ },
+ "p154": {
+  "outcome": "reject",
+  "rules": [
+   "OVL-9",
+   "OVL-36"
+  ],
+  "why": "The built-in && with explicit bool ties with operator&&(Gate, Gate)."
+ },
+ "p155": {
+  "outcome": "reject",
+  "rules": [
+   "OVL-17",
+   "OVL-35"
+  ],
+  "why": "No constructor of Derived takes a Base."
+ },
+ "p156": {
+  "outcome": "reject",
+  "rules": [
+   "OVL-35"
+  ],
+  "why": "No f takes an Empty."
+ },
+ "p157": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-6"
+  ],
+  "why": "A conversion to a reference to function gives a surrogate."
+ },
+ "p158": {
+  "outcome": "reject",
+  "rules": [
+   "OVL-3"
+  ],
+  "why": "The non-static reset() wins in a static member function."
+ },
+ "p159": {
+  "outcome": "depends",
+  "rules": [
+   "OVL-11"
+  ],
+  "why": "Clang and GCC reject int* plus double; EDG converts the class operand to the parameter type and accepts (Q-0141)."
+ },
+ "p160": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-9",
+   "OVL-11"
+  ],
+  "why": "The built-in candidates give each listed type."
+ },
+ "p161": {
+  "outcome": "depends",
+  "rules": [
+   "OVL-15",
+   "OVL-27",
+   "OVL-29"
+  ],
+  "why": "GCC chooses the T&& template, which the assertion expects; Clang and EDG choose the plain F& function."
+ },
+ "p162": {
+  "outcome": "reject",
+  "rules": [
+   "OVL-17"
+  ],
+  "why": "The inherited copy-shaped constructor is removed for one argument."
+ },
+ "p163": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-25"
+  ],
+  "why": "f(int, long) is better on the first argument."
+ },
+ "p164": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-13"
+  ],
+  "why": "!= rewrites to == and its swapped form."
+ },
+ "p165": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-9"
+  ],
+  "why": "The compound assignment candidates take char, wchar_t, and bool."
+ },
+ "p166": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-19",
+   "OVL-28"
+  ],
+  "why": "The more specialized template remains."
+ },
+ "p167": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-7"
+  ],
+  "why": "Operator lookup passes over the class scope and finds the non-member."
+ },
+ "p168": {
+  "outcome": "depends",
+  "rules": [
+   "OVL-6",
+   "OVL-36"
+  ],
+  "why": "Clang and EDG find the two surrogates ambiguous; GCC accepts (Q-0139)."
+ },
+ "p169": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-24",
+   "OVL-25"
+  ],
+  "why": "The constraint fails for char, and put(T) is exact for double."
+ },
+ "p170": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-13",
+   "OVL-43"
+  ],
+  "why": "Each <=> uses a direct or swapped candidate, and the comparison with 0 uses a direct function."
+ },
+ "p171": {
+  "outcome": "compiles",
+  "rules": [
+   "OVL-19"
+  ],
+  "why": "The plain function beats the specialization."
+ }
+}

@@ -1,0 +1,285 @@
+{
+ "p01": {
+  "outcome": "run-fail",
+  "rules": [
+   "UNW-5",
+   "UNW-10"
+  ],
+  "why": "An exception leaves main; the program aborts with SIGABRT without running the static destructor."
+ },
+ "p02": {
+  "outcome": "reject",
+  "rules": [
+   "UNW-8"
+  ],
+  "why": "A throw in a noexcept function with no try block warns under -Wall on Clang and GCC, and -Werror makes it an error."
+ },
+ "p03": {
+  "outcome": "runs",
+  "rules": [
+   "UNW-2"
+  ],
+  "why": "Elements 1 and 2 are built, 3 throws, then 2 and 1 are destroyed, then the handler runs."
+ },
+ "p04": {
+  "outcome": "compiles",
+  "rules": [
+   "UNW-8"
+  ],
+  "why": "The rethrow is in a handler whose try block holds a direct throw, so neither compiler warns (best guess from the Evidence); no main."
+ },
+ "p05": {
+  "outcome": "runs",
+  "rules": [
+   "UNW-2"
+  ],
+  "why": "The target constructor completed, so ~W runs (9) and then member a ends (1)."
+ },
+ "p06": {
+  "outcome": "run-fail",
+  "rules": [
+   "UNW-5",
+   "UNW-7"
+  ],
+  "why": "The exception reaches the noexcept boundary of closed, so the program ends."
+ },
+ "p07": {
+  "outcome": "runs",
+  "rules": [
+   "UNW-3"
+  ],
+  "why": "The class-specific operator delete releases the storage once."
+ },
+ "p08": {
+  "outcome": "runs",
+  "rules": [
+   "TRY-15",
+   "UNW-1"
+  ],
+  "why": "The handler's object ends at the end of the handler; outer is not affected."
+ },
+ "p09": {
+  "outcome": "runs",
+  "rules": [
+   "UNW-3"
+  ],
+  "why": "No placement operator delete matches the placement new, so the storage is not released."
+ },
+ "p10": {
+  "outcome": "runs",
+  "rules": [
+   "UNW-1"
+  ],
+  "why": "The blocks' objects end innermost first, then the handler runs."
+ },
+ "p11": {
+  "outcome": "runs",
+  "rules": [
+   "UNW-4"
+  ],
+  "why": "The static local is not initialized after the throw and the next call initializes it."
+ },
+ "p12": {
+  "outcome": "run-fail",
+  "rules": [
+   "UNW-5"
+  ],
+  "why": "An exception leaves main."
+ },
+ "p13": {
+  "outcome": "run-fail",
+  "rules": [
+   "UNW-5"
+  ],
+  "why": "The exception leaves the noexcept outer, so the program ends before main's handler can run."
+ },
+ "p14": {
+  "outcome": "runs",
+  "rules": [
+   "UNW-1"
+  ],
+  "why": "b then a end, then the handler marks 7."
+ },
+ "p15": {
+  "outcome": "depends",
+  "rules": [
+   "UNW-8"
+  ],
+  "why": "Clang warns that no handler matches the int in the noexcept function and -Werror rejects; GCC does not warn and compiles (no main)."
+ },
+ "p16": {
+  "outcome": "run-fail",
+  "rules": [
+   "UNW-5",
+   "TRY-2"
+  ],
+  "why": "No handler matches int (long does not), so the program ends."
+ },
+ "p17": {
+  "outcome": "runs",
+  "rules": [
+   "UNW-6"
+  ],
+  "why": "A noexcept(false) destructor throws with no other exception in flight, and the handler catches it."
+ },
+ "p18": {
+  "outcome": "runs",
+  "rules": [
+   "DTOR-4",
+   "UNW-6"
+  ],
+  "why": "A member with a potentially throwing destructor makes ~Outer potentially throwing, so the throw reaches the handler."
+ },
+ "p19": {
+  "outcome": "run-fail",
+  "rules": [
+   "UNW-5",
+   "THR-9"
+  ],
+  "why": "The exception leaves the noexcept function risky."
+ },
+ "p20": {
+  "outcome": "runs",
+  "rules": [
+   "UNW-2"
+  ],
+  "why": "The base B was completed and is destroyed (its member t marks 1) when member bad throws."
+ },
+ "p21": {
+  "outcome": "runs",
+  "rules": [
+   "UNW-6"
+  ],
+  "why": "A noexcept function can throw and catch inside itself."
+ },
+ "p22": {
+  "outcome": "runs",
+  "rules": [
+   "UNW-4"
+  ],
+  "why": "Static objects are not destroyed by unwinding."
+ },
+ "p23": {
+  "outcome": "runs",
+  "rules": [
+   "UNW-2"
+  ],
+  "why": "The completed members b and a are destroyed, and ~W does not run."
+ },
+ "p24": {
+  "outcome": "run-fail",
+  "rules": [
+   "UNW-5"
+  ],
+  "why": "No handler matches, so the program ends."
+ },
+ "p25": {
+  "outcome": "runs",
+  "rules": [
+   "UNW-3"
+  ],
+  "why": "The replaced global operator delete, sized or unsized, is called once."
+ },
+ "p26": {
+  "outcome": "run-fail",
+  "rules": [
+   "UNW-5",
+   "UNW-10"
+  ],
+  "why": "The exception leaves a noexcept function, and the abort skips the static destructor."
+ },
+ "p27": {
+  "outcome": "runs",
+  "rules": [
+   "UNW-2"
+  ],
+  "why": "Only member a was completed and is destroyed; c was never made and ~W does not run."
+ },
+ "p28": {
+  "outcome": "run-fail",
+  "rules": [
+   "UNW-5"
+  ],
+  "why": "The destructor throws during unwinding of another exception."
+ },
+ "p29": {
+  "outcome": "runs",
+  "rules": [
+   "UNW-1"
+  ],
+  "why": "b is never created, so only a is destroyed."
+ },
+ "p30": {
+  "outcome": "runs",
+  "rules": [
+   "UNW-3"
+  ],
+  "why": "The matching placement operator delete with a Tag parameter is called."
+ },
+ "p31": {
+  "outcome": "run-fail",
+  "rules": [
+   "UNW-5",
+   "DTOR-4"
+  ],
+  "why": "The destructor is noexcept by default, so its throw ends the program."
+ },
+ "p32": {
+  "outcome": "runs",
+  "rules": [
+   "UNW-1"
+  ],
+  "why": "Objects in deep, middle, and the try block end innermost first, and mark(9) never runs."
+ },
+ "p33": {
+  "outcome": "compiles",
+  "rules": [
+   "UNW-8"
+  ],
+  "why": "A call to a function that can throw needs no warning; no main."
+ },
+ "p34": {
+  "outcome": "runs",
+  "rules": [
+   "UNW-2"
+  ],
+  "why": "Items built one at a time by placement new are not destroyed by the language, so alive is 3 in the handler, and the program cleans up."
+ },
+ "p35": {
+  "outcome": "runs",
+  "rules": [
+   "UNW-2"
+  ],
+  "why": "The target constructor did not complete, so ~W does not run and only a is destroyed."
+ },
+ "p36": {
+  "outcome": "runs",
+  "rules": [
+   "UNW-1",
+   "VC-10"
+  ],
+  "why": "The temporaries and the parameter end before outer and the handler, in either order the test accepts."
+ },
+ "p37": {
+  "outcome": "reject",
+  "rules": [
+   "UNW-8"
+  ],
+  "why": "A throw in a noexcept function with no try block warns under -Wall, and -Werror rejects it."
+ },
+ "p38": {
+  "outcome": "runs",
+  "rules": [
+   "UNW-2",
+   "UNW-3"
+  ],
+  "why": "The two built elements are destroyed and the class-specific operator delete[] is called."
+ },
+ "p39": {
+  "outcome": "compiles",
+  "rules": [
+   "UNW-8"
+  ],
+  "why": "Each throw has a matching handler in its try block, so no warning; no main."
+ }
+}

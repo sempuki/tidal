@@ -1,0 +1,444 @@
+{
+ "p01": {
+  "outcome": "reject",
+  "rules": [
+   "LSUP-1"
+  ],
+  "why": "The initializer_list template has no members or constructor, so auto cannot deduce a list of that shape."
+ },
+ "p02": {
+  "outcome": "reject",
+  "rules": [
+   "LSUP-3",
+   "SB-5"
+  ],
+  "why": "tuple_size is not specialized for const Range, so the binding falls back to the private data members."
+ },
+ "p03": {
+  "outcome": "depends",
+  "rules": [
+   "LSUP-5"
+  ],
+  "why": "An unscoped align_val_t: Clang accepts, GCC and EDG reject; no main."
+ },
+ "p04": {
+  "outcome": "runs",
+  "rules": [
+   "LSUP-7",
+   "NEW-33"
+  ],
+  "why": "The program's inline placement forms return the address they get."
+ },
+ "p05": {
+  "outcome": "compiles",
+  "rules": [
+   "LSUP-2",
+   "LSUP-12",
+   "LSUP-13"
+  ],
+  "why": "The ordering classes have every member, comparison with 0, and conversion that the uses need; no main."
+ },
+ "p06": {
+  "outcome": "depends",
+  "rules": [
+   "NEW-35",
+   "LSUP-8"
+  ],
+  "why": "A negative bound: GCC throws bad_array_new_length with no allocation call (exit 0); Clang calls operator new[] with the largest size, which throws bad_alloc (exit 3)."
+ },
+ "p07": {
+  "outcome": "compiles",
+  "rules": [
+   "LSUP-4"
+  ],
+  "why": "The typedefs name the core types of sizeof, a pointer difference, and nullptr; no main."
+ },
+ "p08": {
+  "outcome": "runs",
+  "rules": [
+   "LSUP-7",
+   "NEW-33"
+  ],
+  "why": "The array placement form puts each array at the buffer with no extra storage, also for a class with a destructor."
+ },
+ "p09": {
+  "outcome": "runs",
+  "rules": [
+   "STG-12",
+   "LSUP-9"
+  ],
+  "why": "A byte copy of a double through char and through std::byte restores the value."
+ },
+ "p10": {
+  "outcome": "reject",
+  "rules": [
+   "LSUP-10",
+   "NEW-37"
+  ],
+  "why": "Placement new in a construct_at outside namespace std is not valid in constant evaluation."
+ },
+ "p11": {
+  "outcome": "reject",
+  "rules": [
+   "LSUP-11",
+   "NEW-37",
+   "CE-4"
+  ],
+  "why": "A call of ::operator new by name is valid in constant evaluation only inside std::allocator."
+ },
+ "p12": {
+  "outcome": "compiles",
+  "rules": [
+   "LSUP-10",
+   "LSUP-11"
+  ],
+  "why": "std::allocator and std::construct_at run in constant evaluation; no main."
+ },
+ "p13": {
+  "outcome": "compiles",
+  "rules": [
+   "LSUP-10",
+   "STG-9"
+  ],
+  "why": "construct_at replaces the Item, and the old reference gives 9; no main."
+ },
+ "p14": {
+  "outcome": "compiles",
+  "rules": [
+   "LSUP-10",
+   "STG-9"
+  ],
+  "why": "construct_at replaces an Entry with a const member; no main."
+ },
+ "p15": {
+  "outcome": "runs",
+  "rules": [
+   "LSUP-6",
+   "NEW-31"
+  ],
+  "why": "The nothrow form returns null, so no argument is evaluated, nothing is built, and nothing is freed."
+ },
+ "p16": {
+  "outcome": "depends",
+  "rules": [
+   "LSUP-1"
+  ],
+  "why": "GCC checks the shape of every initializer_list definition and rejects; Clang and EDG drop the non-viable candidate, call take(Point), and run."
+ },
+ "p17": {
+  "outcome": "reject",
+  "rules": [
+   "LSUP-1"
+  ],
+  "why": "No std::initializer_list is declared before auto deduces one."
+ },
+ "p18": {
+  "outcome": "runs",
+  "rules": [
+   "LSUP-9",
+   "STG-4",
+   "STG-14"
+  ],
+  "why": "A std::byte array hosts the Meter, and a std::byte write reaches the int."
+ },
+ "p19": {
+  "outcome": "reject",
+  "rules": [
+   "CE-6",
+   "UNI-6"
+  ],
+  "why": "construct_at makes real active, so reading whole through the old reference is rejected."
+ },
+ "p20": {
+  "outcome": "reject",
+  "rules": [
+   "LSUP-12"
+  ],
+  "why": "5 <=> Meter needs 0 <=> v on strong_ordering, which is not declared."
+ },
+ "p21": {
+  "outcome": "reject",
+  "rules": [
+   "LSUP-12"
+  ],
+  "why": "Date > Date needs v > 0 on strong_ordering, which is not declared."
+ },
+ "p22": {
+  "outcome": "compiles",
+  "rules": [
+   "LSUP-4"
+  ],
+  "why": "The aliases name the core types; no main."
+ },
+ "p23": {
+  "outcome": "reject",
+  "rules": [
+   "LSUP-1"
+  ],
+  "why": "std::initializer_list is not a class template."
+ },
+ "p24": {
+  "outcome": "depends",
+  "rules": [
+   "NEW-37",
+   "LSUP-6"
+  ],
+  "why": "nothrow new in constant evaluation: Clang 18, Clang 22, and GCC 16 accept; GCC 14 and EDG reject."
+ },
+ "p25": {
+  "outcome": "runs",
+  "rules": [
+   "LSUP-5",
+   "NEW-26"
+  ],
+  "why": "A scoped align_val_t with underlying std::size_t matches the library, so the aligned forms link and align."
+ },
+ "p26": {
+  "outcome": "reject",
+  "rules": [
+   "LSUP-2"
+  ],
+  "why": "strong_ordering lacks the member equal that the rule requires."
+ },
+ "p27": {
+  "outcome": "runs",
+  "rules": [
+   "LSUP-2"
+  ],
+  "why": "The implementation copies the static members less, equal, and greater, so the values -7, 5, and 9 come through."
+ },
+ "p28": {
+  "outcome": "reject",
+  "rules": [
+   "LSUP-12"
+  ],
+  "why": "A defaulted <=> needs v == 0 (or != 0) on strong_ordering, and the class has neither."
+ },
+ "p29": {
+  "outcome": "depends",
+  "rules": [
+   "LSUP-1"
+  ],
+  "why": "GCC rejects any definition of initializer_list with the wrong shape; Clang and EDG accept a parameter declaration and run."
+ },
+ "p30": {
+  "outcome": "reject",
+  "rules": [
+   "LSUP-13"
+  ],
+  "why": "The int part gives strong_ordering, and nothing converts it to the declared partial_ordering."
+ },
+ "p31": {
+  "outcome": "reject",
+  "rules": [
+   "LSUP-1"
+  ],
+  "why": "A braced list initializes an initializer_list<int> whose class has the wrong shape."
+ },
+ "p32": {
+  "outcome": "reject",
+  "rules": [
+   "LSUP-12"
+  ],
+  "why": "5 < Meter needs 0 < v on strong_ordering, which is not declared."
+ },
+ "p33": {
+  "outcome": "runs",
+  "rules": [
+   "STG-14",
+   "LSUP-9"
+  ],
+  "why": "char, unsigned char, and std::byte writes reach the int."
+ },
+ "p34": {
+  "outcome": "compiles",
+  "rules": [
+   "LSUP-3",
+   "SB-5"
+  ],
+  "why": "tuple_size and tuple_element are specialized for Pair, and auto binds a non-const Pair; no main."
+ },
+ "p35": {
+  "outcome": "compiles",
+  "rules": [
+   "LSUP-1"
+  ],
+  "why": "The class template has the pointer, the count, and the constructor; no main."
+ },
+ "p36": {
+  "outcome": "depends",
+  "rules": [
+   "NEW-36",
+   "NEW-35"
+  ],
+  "why": "Clang gives null for each erroneous bound with the nothrow form (exit 0); GCC throws bad_array_new_length, so check returns 2 (exit 1)."
+ },
+ "p37": {
+  "outcome": "runs",
+  "rules": [
+   "LSUP-9",
+   "STG-4"
+  ],
+  "why": "A std::byte array hosts both Readings."
+ },
+ "p38": {
+  "outcome": "run-fail",
+  "rules": [
+   "NEW-35"
+  ],
+  "why": "Too many initializers: GCC calls the allocation function and then throws bad_array_new_length (exit 2), Clang's call throws bad_alloc (exit 3)."
+ },
+ "p39": {
+  "outcome": "depends",
+  "rules": [
+   "NEW-35",
+   "LSUP-8"
+  ],
+  "why": "GCC throws bad_array_new_length and every handler catches (exit 0); Clang throws bad_alloc, which the first handler misses (exit 2)."
+ },
+ "p40": {
+  "outcome": "compiles",
+  "rules": [
+   "LSUP-10",
+   "STG-9"
+  ],
+  "why": "std::construct_at runs in constant evaluation and replaces the Span; no main."
+ },
+ "p41": {
+  "outcome": "compiles",
+  "rules": [
+   "LSUP-2",
+   "LSUP-12"
+  ],
+  "why": "Each comparison needs only v < 0 and ==, which the classes declare; the private constructors do not matter; no main."
+ },
+ "p42": {
+  "outcome": "runs",
+  "rules": [
+   "LSUP-8",
+   "VIRT-10"
+  ],
+  "why": "A failed dynamic_cast to a reference throws bad_cast, and the program's declared classes catch it."
+ },
+ "p43": {
+  "outcome": "runs",
+  "rules": [
+   "NEW-28",
+   "NEW-26"
+  ],
+  "why": "new for an over-aligned type needs no declaration of align_val_t."
+ },
+ "p44": {
+  "outcome": "reject",
+  "rules": [
+   "LSUP-2"
+  ],
+  "why": "No ordering class is declared before <=>."
+ },
+ "p45": {
+  "outcome": "compiles",
+  "rules": [
+   "LSUP-13",
+   "LSUP-12"
+  ],
+  "why": "Converting constructors on the weaker classes serve the defaulted <=>; no main."
+ },
+ "p46": {
+  "outcome": "reject",
+  "rules": [
+   "LSUP-7",
+   "NEW-20"
+  ],
+  "why": "Only the single-object placement form is declared, so the array placement new finds no operator new[]."
+ },
+ "p47": {
+  "outcome": "runs",
+  "rules": [
+   "NEW-38",
+   "LSUP-8"
+  ],
+  "why": "The global allocation function throws bad_alloc for a request it cannot meet, and the declared classes catch it."
+ },
+ "p48": {
+  "outcome": "compiles",
+  "rules": [
+   "LSUP-3",
+   "SB-5"
+  ],
+  "why": "Specializations for Range and const Range serve both bindings; no main."
+ },
+ "p49": {
+  "outcome": "depends",
+  "rules": [
+   "LSUP-5"
+  ],
+  "why": "align_val_t with underlying unsigned char: Clang accepts, GCC and EDG reject; no main."
+ },
+ "p50": {
+  "outcome": "runs",
+  "rules": [
+   "LSUP-5",
+   "NEW-26"
+  ],
+  "why": "new for an over-aligned type calls the program's aligned form with the size and alignment 64."
+ },
+ "p51": {
+  "outcome": "runs",
+  "rules": [
+   "LSUP-6",
+   "NEW-31"
+  ],
+  "why": "The declared nothrow forms link to the library, and a request too large gives null."
+ },
+ "p52": {
+  "outcome": "depends",
+  "rules": [
+   "LSUP-5"
+  ],
+  "why": "align_val_t as a class: Clang accepts, GCC and EDG reject; no main."
+ },
+ "p53": {
+  "outcome": "depends",
+  "rules": [
+   "LSUP-12"
+  ],
+  "why": "Only != against 0: Clang and EDG accept the defaulted <=>, GCC rejects."
+ },
+ "p54": {
+  "outcome": "reject",
+  "rules": [
+   "LSUP-13"
+  ],
+  "why": "The int part gives strong_ordering, and no conversion to partial_ordering is declared."
+ },
+ "p55": {
+  "outcome": "compiles",
+  "rules": [
+   "LSUP-10",
+   "STG-9"
+  ],
+  "why": "The new Item becomes element 1; no main."
+ },
+ "p56": {
+  "outcome": "compiles",
+  "rules": [
+   "LSUP-11",
+   "STG-28"
+  ],
+  "why": "Elements are built out of order with std::construct_at before any is read; no main."
+ },
+ "p57": {
+  "outcome": "runs",
+  "rules": [
+   "LSUP-5"
+  ],
+  "why": "align_val_t can have enumerators, and the aligned forms honor the alignment 4096."
+ },
+ "p58": {
+  "outcome": "depends",
+  "rules": [
+   "NEW-35"
+  ],
+  "why": "Size too large: GCC throws bad_array_new_length with no call (exit 0); Clang calls operator new[], which throws bad_alloc (exit 3)."
+ }
+}

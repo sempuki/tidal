@@ -214,6 +214,11 @@ catalog counts as done.
 | R-copy-move, R-derived, R-members | done, 269/270 (256 cite a rule of the test), without test names; findings RCB-1 to RCB-11 | `reports/clean-room/R-classes/` |
 | R-operators, R-comparisons, R-conversion-functions | done, 234/236 (225 cite a rule of the test), without test names; findings RCC-1 to RCC-9 | `reports/clean-room/R-classes/` |
 | R-unions, R-virtual | done, 241/241 (237 cite a rule of the test), without test names; findings RCD-1 to RCD-6 | `reports/clean-room/R-classes/` |
+| R-overload-resolution | done, 171/171 (166 cite a rule of the test), without test names; findings RPA-1 to RPA-10 | `reports/clean-room/R-overloading/` |
+| R-conversion-sequences | done, 129/129 (122 cite a rule of the test), without test names; findings RPB-1 to RPB-8 | `reports/clean-room/R-overloading/` |
+| R-storage, R-language-support | done, 141/141 (138 cite a rule of the test), without test names; findings RPC-1 to RPC-11 | `reports/clean-room/R-foundations/` |
+| R-types, R-odr, R-keywords | done, 227/227 (224 cite a rule of the test), without test names; findings RPD-1 to RPD-11 | `reports/clean-room/R-foundations/` |
+| R-handlers, R-throw, R-unwinding | done, 171/172 (165 cite a rule of the test), without test names; findings RPE-1 to RPE-6 | `reports/clean-room/R-exceptions/` |
 | All others | planned | |
 
 ## 9. Prompts

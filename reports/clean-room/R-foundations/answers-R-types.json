@@ -1,0 +1,444 @@
+{
+ "p01": {
+  "outcome": "compiles",
+  "rules": [
+   "TYP-1"
+  ],
+  "why": "On -m32 pointers, function pointers, and the type of nullptr have size 4; no main."
+ },
+ "p02": {
+  "outcome": "reject",
+  "rules": [
+   "TYP-7"
+  ],
+  "why": "short with double is a forbidden combination."
+ },
+ "p03": {
+  "outcome": "compiles",
+  "rules": [
+   "TYP-14",
+   "TYP-10",
+   "MUL-17"
+  ],
+  "why": "Each sum is rounded to its type by the cast, and ties go to even, so every assertion holds even with GCC's extra precision on -m32."
+ },
+ "p04": {
+  "outcome": "compiles",
+  "rules": [
+   "TYP-6"
+  ],
+  "why": "Specifier order does not matter and int adds nothing, so each pair names one type."
+ },
+ "p05": {
+  "outcome": "reject",
+  "rules": [
+   "TYP-7"
+  ],
+  "why": "A sign with bool is forbidden."
+ },
+ "p06": {
+  "outcome": "reject",
+  "rules": [
+   "TYP-7"
+  ],
+  "why": "long long with double is forbidden."
+ },
+ "p07": {
+  "outcome": "compiles",
+  "rules": [
+   "TYP-10"
+  ],
+  "why": "The literals are the largest finite values of the three formats on x86-64, so every comparison holds."
+ },
+ "p08": {
+  "outcome": "compiles",
+  "rules": [
+   "TYP-10",
+   "TYP-14"
+  ],
+  "why": "x87 long double has 64 bits of precision, so 2^53+1 is exact and 2^64+1 is a tie that rounds to even 2^64."
+ },
+ "p09": {
+  "outcome": "compiles",
+  "rules": [
+   "TYP-10",
+   "TYP-14"
+  ],
+  "why": "float has 24 and double 53 bits of precision; 2^24+1 and 2^53+1 are ties that round to even, the smaller sums are exact."
+ },
+ "p10": {
+  "outcome": "compiles",
+  "rules": [
+   "TYP-10"
+  ],
+  "why": "long double on -m32 is still 80-bit x87 with 64 bits of precision, so 2^53+1 is exact."
+ },
+ "p11": {
+  "outcome": "reject",
+  "rules": [
+   "TYP-7"
+  ],
+  "why": "signed with unsigned is forbidden."
+ },
+ "p12": {
+  "outcome": "reject",
+  "rules": [
+   "TYP-7"
+  ],
+  "why": "A size with char is forbidden."
+ },
+ "p13": {
+  "outcome": "compiles",
+  "rules": [
+   "TYP-9",
+   "CONV-19"
+  ],
+  "why": "The common type is the floating-point type of higher rank, and an integer operand of any rank gives the floating-point type."
+ },
+ "p14": {
+  "outcome": "compiles",
+  "rules": [
+   "TYP-14",
+   "TYP-10"
+  ],
+  "why": "Round to nearest, ties to even, on x86-64 where double and float arithmetic is exact to the type."
+ },
+ "p15": {
+  "outcome": "reject",
+  "rules": [
+   "TYP-7"
+  ],
+  "why": "Two base types."
+ },
+ "p16": {
+  "outcome": "compiles",
+  "rules": [
+   "TYP-3",
+   "CONV-2"
+  ],
+  "why": "char is signed, so char(-1) is negative and char(200) keeps the low 8 bits as -56."
+ },
+ "p17": {
+  "outcome": "compiles",
+  "rules": [
+   "TYP-1"
+  ],
+  "why": "x86-64 sizes are 4, 8, 16."
+ },
+ "p18": {
+  "outcome": "reject",
+  "rules": [
+   "TYP-7"
+  ],
+  "why": "A sign with wchar_t is forbidden; Clang's error is warning-controlled but on by default."
+ },
+ "p19": {
+  "outcome": "compiles",
+  "rules": [
+   "TYP-1"
+  ],
+  "why": "On -m32 the type of sizeof and alignof is unsigned int."
+ },
+ "p20": {
+  "outcome": "compiles",
+  "rules": [
+   "TYP-4",
+   "TYP-1",
+   "CONV-2"
+  ],
+  "why": "Unsigned wrap gives 2^N-1 at 32 and 64 bits, -int_max-1 does not overflow, and -1 to unsigned short is 65535."
+ },
+ "p21": {
+  "outcome": "compiles",
+  "rules": [
+   "TYP-4",
+   "TYP-1"
+  ],
+  "why": "On -m32 unsigned long has 32 bits, so 0ul-1ul is 4294967295."
+ },
+ "p22": {
+  "outcome": "compiles",
+  "rules": [
+   "TYP-1"
+  ],
+  "why": "On x86-64 the three sizes are 8."
+ },
+ "p23": {
+  "outcome": "depends",
+  "rules": [
+   "TYP-2",
+   "Q-0120"
+  ],
+  "why": "GCC and Clang give long long alignment 4 on -m32 and accept; EDG ILP32 gives 8 and rejects the second assertion."
+ },
+ "p24": {
+  "outcome": "compiles",
+  "rules": [
+   "TYP-5"
+  ],
+  "why": "Each character type is distinct from char's sign variants and from its underlying type."
+ },
+ "p25": {
+  "outcome": "compiles",
+  "rules": [
+   "TYP-5",
+   "TYP-1"
+  ],
+  "why": "On -m32 long and int have the same size but stay distinct types."
+ },
+ "p26": {
+  "outcome": "compiles",
+  "rules": [
+   "TYP-2",
+   "TYP-1"
+  ],
+  "why": "On x86-64 each alignment equals the size, long double 16."
+ },
+ "p27": {
+  "outcome": "compiles",
+  "rules": [
+   "TYP-11"
+  ],
+  "why": "Nonzero converts to true, and true+true is 2."
+ },
+ "p28": {
+  "outcome": "reject",
+  "rules": [
+   "TYP-7"
+  ],
+  "why": "A sign with float is forbidden."
+ },
+ "p29": {
+  "outcome": "compiles",
+  "rules": [
+   "TYP-1"
+  ],
+  "why": "On x86-64 the type of sizeof and alignof is unsigned long."
+ },
+ "p30": {
+  "outcome": "depends",
+  "rules": [
+   "TYP-12",
+   "TYP-2",
+   "Q-0120"
+  ],
+  "why": "char then long long is 12 bytes with GCC and Clang on -m32 but 16 with EDG ILP32, so EDG rejects; char then double is 12 everywhere."
+ },
+ "p31": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-1",
+   "TYP-3",
+   "TYP-13"
+  ],
+  "why": "bool, char8_t, char16_t, wchar_t and unsigned short promote to int; char32_t's values do not fit int, so it promotes to unsigned int."
+ },
+ "p32": {
+  "outcome": "compiles",
+  "rules": [
+   "TYP-10"
+  ],
+  "why": "The formats are the same on -m32, so the largest values are the same."
+ },
+ "p33": {
+  "outcome": "compiles",
+  "rules": [
+   "TYP-3"
+  ],
+  "why": "wchar_t is signed with underlying type int, so wchar_t(-1) is negative."
+ },
+ "p34": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-3",
+   "CONV-12",
+   "TYP-11"
+  ],
+  "why": "A non-null address and 0.5 convert to true, 0.0 to false, false-true is -1, and nullptr may convert to bool in direct initialization."
+ },
+ "p35": {
+  "outcome": "compiles",
+  "rules": [
+   "TYP-1"
+  ],
+  "why": "On -m32 long is 4 bytes and long long 8."
+ },
+ "p36": {
+  "outcome": "reject",
+  "rules": [
+   "ADD-9",
+   "CE-9"
+  ],
+  "why": "int_max+1 overflows int, which is undefined, so the constexpr initializer is not a constant."
+ },
+ "p37": {
+  "outcome": "compiles",
+  "rules": [
+   "TYP-3"
+  ],
+  "why": "char is signed on -m32 too."
+ },
+ "p38": {
+  "outcome": "compiles",
+  "rules": [
+   "TYP-6"
+  ],
+  "why": "long double may be written in either order; no main."
+ },
+ "p39": {
+  "outcome": "reject",
+  "rules": [
+   "TYP-7"
+  ],
+  "why": "A sign with char8_t is forbidden."
+ },
+ "p40": {
+  "outcome": "compiles",
+  "rules": [
+   "TYP-13",
+   "CONV-2"
+  ],
+  "why": "char8_t has the values of unsigned char, so 256 wraps to 0 and -1 to 255; char32_t(-1) is 0xffffffff."
+ },
+ "p41": {
+  "outcome": "reject",
+  "rules": [
+   "TYP-7"
+  ],
+  "why": "A size with char is forbidden."
+ },
+ "p42": {
+  "outcome": "compiles",
+  "rules": [
+   "TYP-5",
+   "TYP-1"
+  ],
+  "why": "On x86-64 long and long long are both 8 bytes but distinct types."
+ },
+ "p43": {
+  "outcome": "reject",
+  "rules": [
+   "TYP-7"
+  ],
+  "why": "long three times is forbidden."
+ },
+ "p44": {
+  "outcome": "compiles",
+  "rules": [
+   "TYP-1"
+  ],
+  "why": "The sizes are the same on -m32."
+ },
+ "p45": {
+  "outcome": "runs",
+  "rules": [
+   "TYP-14",
+   "TYP-10"
+  ],
+  "why": "On x86-64 each sum is rounded to its type at run time, ties to even, so no early return fires."
+ },
+ "p46": {
+  "outcome": "compiles",
+  "rules": [
+   "TYP-13",
+   "CONV-1"
+  ],
+  "why": "char8_t, char16_t, char32_t are unsigned, so -1 gives their maximum, which is positive after promotion."
+ },
+ "p47": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-19",
+   "TYP-1"
+  ],
+  "why": "On -m32 long and unsigned int share a size so 1L+1u is unsigned long; long long holds every unsigned long so 1LL+1ul is long long."
+ },
+ "p48": {
+  "outcome": "compiles",
+  "rules": [
+   "TYP-9",
+   "CONV-19"
+  ],
+  "why": "The floating-point operand decides the type, and the higher floating-point rank wins."
+ },
+ "p49": {
+  "outcome": "compiles",
+  "rules": [
+   "TYP-1"
+  ],
+  "why": "On -m32 long double is 12 bytes."
+ },
+ "p50": {
+  "outcome": "reject",
+  "rules": [
+   "TYP-7"
+  ],
+  "why": "A size with float is forbidden."
+ },
+ "p51": {
+  "outcome": "reject",
+  "rules": [
+   "TYP-7"
+  ],
+  "why": "A sign with char32_t is forbidden."
+ },
+ "p52": {
+  "outcome": "compiles",
+  "rules": [
+   "TYP-12",
+   "TYP-2"
+  ],
+  "why": "On -m32 long double has alignment 4, so char then long double takes 16 bytes with alignment 4."
+ },
+ "p53": {
+  "outcome": "reject",
+  "rules": [
+   "TYP-7"
+  ],
+  "why": "A size with bool is forbidden."
+ },
+ "p54": {
+  "outcome": "reject",
+  "rules": [
+   "TYP-7"
+  ],
+  "why": "Two sizes."
+ },
+ "p55": {
+  "outcome": "compiles",
+  "rules": [
+   "TYP-1"
+  ],
+  "why": "x86-64 sizes 1, 4, 1, 2, 4."
+ },
+ "p56": {
+  "outcome": "reject",
+  "rules": [
+   "TYP-7"
+  ],
+  "why": "A sign with char16_t is forbidden."
+ },
+ "p57": {
+  "outcome": "reject",
+  "rules": [
+   "TYP-7"
+  ],
+  "why": "A size with float is forbidden."
+ },
+ "p58": {
+  "outcome": "compiles",
+  "rules": [
+   "TYP-1"
+  ],
+  "why": "x86-64 sizes."
+ },
+ "p59": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-19",
+   "TYP-8",
+   "TYP-1"
+  ],
+  "why": "On x86-64 long holds every unsigned int so 1L+1u is long; long long cannot hold every unsigned long, so 1LL+1ul is unsigned long long."
+ }
+}

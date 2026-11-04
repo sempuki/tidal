@@ -1,0 +1,659 @@
+{
+ "p01": {
+  "outcome": "runs",
+  "rules": [
+   "TRY-9"
+  ],
+  "why": "The function try block catches 1 and the handler sets trace, then the function returns."
+ },
+ "p02": {
+  "outcome": "run-fail",
+  "rules": [
+   "TRY-18",
+   "UNW-5"
+  ],
+  "why": "The copy into the by-value handler parameter throws, so the program ends even though an outer handler for int exists."
+ },
+ "p03": {
+  "outcome": "compiles",
+  "rules": [
+   "TRY-5",
+   "TRY-2"
+  ],
+  "why": "The handler type int() decays to a pointer to function, which is valid; there is no main."
+ },
+ "p04": {
+  "outcome": "runs",
+  "rules": [
+   "TRY-10"
+  ],
+  "why": "The constructor's handler sets trace to 7 and the exception is rethrown at the end of the handler to main."
+ },
+ "p05": {
+  "outcome": "reject",
+  "rules": [
+   "TRY-4"
+  ],
+  "why": "With -Wall -Werror the warning for a derived handler after its base handler becomes an error (the Evidence does not say which compilers warn; guessed all)."
+ },
+ "p06": {
+  "outcome": "runs",
+  "rules": [
+   "TRY-2"
+  ],
+  "why": "A user-defined conversion from int to W does not make a match, so catch (int) runs."
+ },
+ "p07": {
+  "outcome": "runs",
+  "rules": [
+   "TRY-15"
+  ],
+  "why": "continue leaves the handler, t ends each time, so count is 3 and i is 3."
+ },
+ "p08": {
+  "outcome": "runs",
+  "rules": [
+   "THR-2",
+   "TRY-2"
+  ],
+  "why": "The function decays to a pointer to function, which the handler matches."
+ },
+ "p09": {
+  "outcome": "runs",
+  "rules": [
+   "TRY-2"
+  ],
+  "why": "An int* matches a handler for void*."
+ },
+ "p10": {
+  "outcome": "runs",
+  "rules": [
+   "TRY-2",
+   "TRY-1"
+  ],
+  "why": "A char does not match int (no arithmetic conversion), so the outer char handler gets it."
+ },
+ "p11": {
+  "outcome": "runs",
+  "rules": [
+   "TRY-9"
+  ],
+  "why": "The handler of the function try block sees the parameter and its return gives the result."
+ },
+ "p12": {
+  "outcome": "runs",
+  "rules": [
+   "TRY-8"
+  ],
+  "why": "A rethrow in a function that the handler calls passes on the handled 4."
+ },
+ "p13": {
+  "outcome": "runs",
+  "rules": [
+   "TRY-8"
+  ],
+  "why": "After the inner handler ends, the rethrow passes on the outer exception 1."
+ },
+ "p14": {
+  "outcome": "reject",
+  "rules": [
+   "TRY-5"
+  ],
+  "why": "The by-value handler parameter needs an accessible copy constructor, and P's is private, also with a prvalue operand."
+ },
+ "p15": {
+  "outcome": "reject",
+  "rules": [
+   "TRY-14"
+  ],
+  "why": "The outermost block of the handler declares the parameter name again."
+ },
+ "p16": {
+  "outcome": "runs",
+  "rules": [
+   "TRY-2"
+  ],
+  "why": "D* converts to an accessible unambiguous base pointer B*."
+ },
+ "p17": {
+  "outcome": "reject",
+  "rules": [
+   "TRY-4"
+  ],
+  "why": "A second handler for int is always shadowed; with -Wall -Werror the warning becomes an error (guessed that all compilers warn)."
+ },
+ "p18": {
+  "outcome": "reject",
+  "rules": [
+   "TRY-3"
+  ],
+  "why": "catch (...) must be the last handler."
+ },
+ "p19": {
+  "outcome": "run-fail",
+  "rules": [
+   "TRY-18",
+   "UNW-5"
+  ],
+  "why": "The copy into the Base by-value parameter uses Base's copy constructor, which throws, so the program ends."
+ },
+ "p20": {
+  "outcome": "compiles",
+  "rules": [
+   "TRY-6"
+  ],
+  "why": "Two handlers can use one parameter name; there is no main."
+ },
+ "p21": {
+  "outcome": "runs",
+  "rules": [
+   "TRY-3",
+   "TRY-1"
+  ],
+  "why": "The catch-all handler catches the int."
+ },
+ "p22": {
+  "outcome": "runs",
+  "rules": [
+   "TRY-2"
+  ],
+  "why": "const int* does not match void*, so the const void* handler catches it."
+ },
+ "p23": {
+  "outcome": "runs",
+  "rules": [
+   "TRY-8"
+  ],
+  "why": "The rethrow passes 3 to the outer handler."
+ },
+ "p24": {
+  "outcome": "reject",
+  "rules": [
+   "TRY-5"
+  ],
+  "why": "A handler parameter cannot have an rvalue reference type."
+ },
+ "p25": {
+  "outcome": "runs",
+  "rules": [
+   "TRY-1"
+  ],
+  "why": "The handler returns 5."
+ },
+ "p26": {
+  "outcome": "runs",
+  "rules": [
+   "TRY-2"
+  ],
+  "why": "A pointer to a member of a base does not match a handler for a pointer to a member of a derived class."
+ },
+ "p27": {
+  "outcome": "runs",
+  "rules": [
+   "TRY-8"
+  ],
+  "why": "The other handler of the same try block does not catch throw 2; the outer handler does."
+ },
+ "p28": {
+  "outcome": "runs",
+  "rules": [
+   "TRY-15"
+  ],
+  "why": "break leaves the handler and the loop when v is 1, so n is 1."
+ },
+ "p29": {
+  "outcome": "compiles",
+  "rules": [
+   "TRY-5"
+  ],
+  "why": "int[] decays to int*, as for a function parameter; there is no main."
+ },
+ "p30": {
+  "outcome": "runs",
+  "rules": [
+   "TRY-6"
+  ],
+  "why": "A block inside the handler hides the parameter, and the parameter is 1 again after it."
+ },
+ "p31": {
+  "outcome": "runs",
+  "rules": [
+   "TRY-2"
+  ],
+  "why": "int* matches const int* by a qualification conversion."
+ },
+ "p32": {
+  "outcome": "reject",
+  "rules": [
+   "TRY-5"
+  ],
+  "why": "A handler parameter cannot have the type void."
+ },
+ "p33": {
+  "outcome": "reject",
+  "rules": [
+   "TRY-7"
+  ],
+  "why": "A case label cannot transfer control into a handler."
+ },
+ "p34": {
+  "outcome": "runs",
+  "rules": [
+   "TRY-9"
+  ],
+  "why": "The handler returns v + 1, which is 2."
+ },
+ "p35": {
+  "outcome": "reject",
+  "rules": [
+   "TRY-5"
+  ],
+  "why": "An abstract class cannot be a handler parameter by value."
+ },
+ "p36": {
+  "outcome": "reject",
+  "rules": [
+   "TRY-17"
+  ],
+  "why": "A return statement in a handler of a constructor's function try block is not valid."
+ },
+ "p37": {
+  "outcome": "compiles",
+  "rules": [
+   "TRY-11",
+   "TRY-13"
+  ],
+  "why": "Reading a member in a destructor's handler is undefined but compiles; no -Wall, and there is no main."
+ },
+ "p38": {
+  "outcome": "runs",
+  "rules": [
+   "TRY-2"
+  ],
+  "why": "The reference handler refers to the D object, so the virtual call gives 2."
+ },
+ "p39": {
+  "outcome": "runs",
+  "rules": [
+   "TRY-1"
+  ],
+  "why": "The int handler catches 3."
+ },
+ "p40": {
+  "outcome": "runs",
+  "rules": [
+   "TRY-10"
+  ],
+  "why": "Control reaches the end of the constructor's handler, so 1 is rethrown to main."
+ },
+ "p41": {
+  "outcome": "runs",
+  "rules": [
+   "TRY-2"
+  ],
+  "why": "A pointer to a noexcept function matches a handler for a pointer to a function without noexcept."
+ },
+ "p42": {
+  "outcome": "reject",
+  "rules": [
+   "TRY-7"
+  ],
+  "why": "A goto cannot jump into a try block."
+ },
+ "p43": {
+  "outcome": "runs",
+  "rules": [
+   "TRY-2",
+   "TRY-1"
+  ],
+  "why": "A double does not match int, so catch (...) runs."
+ },
+ "p44": {
+  "outcome": "compiles",
+  "rules": [
+   "TRY-4"
+  ],
+  "why": "The derived handler comes before the base handler, so nothing is shadowed and no warning is given."
+ },
+ "p45": {
+  "outcome": "runs",
+  "rules": [
+   "TRY-9"
+  ],
+  "why": "The function try block of main catches 1 and returns 0."
+ },
+ "p46": {
+  "outcome": "runs",
+  "rules": [
+   "TRY-2"
+  ],
+  "why": "The by-value handler slices D to B, so id() gives 1."
+ },
+ "p47": {
+  "outcome": "compiles",
+  "rules": [
+   "TRY-1"
+  ],
+  "why": "Two ordinary handlers; there is no main."
+ },
+ "p48": {
+  "outcome": "runs",
+  "rules": [
+   "TRY-15"
+  ],
+  "why": "goto leaves the handler and t ends, so count is 1."
+ },
+ "p49": {
+  "outcome": "reject",
+  "rules": [
+   "TRY-5"
+  ],
+  "why": "A handler parameter cannot be a reference to an array of unknown bound."
+ },
+ "p50": {
+  "outcome": "runs",
+  "rules": [
+   "TRY-2"
+  ],
+  "why": "int** converts to const volatile void*, which has more cv-qualifiers."
+ },
+ "p51": {
+  "outcome": "runs",
+  "rules": [
+   "TRY-2"
+  ],
+  "why": "A thrown nullptr matches a handler for a pointer to member."
+ },
+ "p52": {
+  "outcome": "depends",
+  "rules": [
+   "TRY-12"
+  ],
+  "why": "f's handler flows off the end; Clang warns under -Wall (reject with -Werror) and EDG rejects, while GCC compiles, and on GCC main returns 1 so the run fails."
+ },
+ "p53": {
+  "outcome": "runs",
+  "rules": [
+   "TRY-10"
+  ],
+  "why": "m is destroyed (1), the handler runs (2), the exception is rethrown and main's handler runs (3)."
+ },
+ "p54": {
+  "outcome": "runs",
+  "rules": [
+   "TRY-2"
+  ],
+  "why": "A thrown nullptr matches a pointer handler."
+ },
+ "p55": {
+  "outcome": "runs",
+  "rules": [
+   "TRY-2"
+  ],
+  "why": "A pointer to function does not match const void*, so the function pointer handler runs."
+ },
+ "p56": {
+  "outcome": "runs",
+  "rules": [
+   "TRY-2"
+  ],
+  "why": "char does not match int, so the char handler runs."
+ },
+ "p57": {
+  "outcome": "reject",
+  "rules": [
+   "TRY-5"
+  ],
+  "why": "An incomplete class cannot be a handler parameter by value."
+ },
+ "p58": {
+  "outcome": "compiles",
+  "rules": [
+   "TRY-5"
+  ],
+  "why": "A pointer to function is a valid handler parameter; there is no main."
+ },
+ "p59": {
+  "outcome": "reject",
+  "rules": [
+   "TRY-16"
+  ],
+  "why": "A function try block needs at least one handler."
+ },
+ "p60": {
+  "outcome": "runs",
+  "rules": [
+   "TRY-10",
+   "UNW-6"
+  ],
+  "why": "The noexcept(false) destructor's handler reaches its end and rethrows 1, and no other exception is in flight, so main catches it."
+ },
+ "p61": {
+  "outcome": "reject",
+  "rules": [
+   "TRY-14"
+  ],
+  "why": "A name declared in the try block is not visible in the handler."
+ },
+ "p62": {
+  "outcome": "runs",
+  "rules": [
+   "TRY-10"
+  ],
+  "why": "The constructor's handler throws a new exception 2 instead."
+ },
+ "p63": {
+  "outcome": "runs",
+  "rules": [
+   "TRY-2",
+   "TRY-8"
+  ],
+  "why": "The change through the reference goes with the rethrown object."
+ },
+ "p64": {
+  "outcome": "runs",
+  "rules": [
+   "TRY-2"
+  ],
+  "why": "The qualification conversion matches, and &D::m has type int B::* which matches exactly, so both return 0."
+ },
+ "p65": {
+  "outcome": "reject",
+  "rules": [
+   "TRY-14"
+  ],
+  "why": "The handler parameter is not visible after the try block."
+ },
+ "p66": {
+  "outcome": "compiles",
+  "rules": [
+   "TRY-11",
+   "TRY-13"
+  ],
+  "why": "Reading a member in a constructor's handler is undefined but compiles; no -Wall, no main."
+ },
+ "p67": {
+  "outcome": "reject",
+  "rules": [
+   "TRY-5"
+  ],
+  "why": "A handler parameter cannot use auto."
+ },
+ "p68": {
+  "outcome": "runs",
+  "rules": [
+   "TRY-2"
+  ],
+  "why": "B is a private base, so B& does not match and D& does."
+ },
+ "p69": {
+  "outcome": "reject",
+  "rules": [
+   "TRY-7"
+  ],
+  "why": "A goto cannot jump into a handler."
+ },
+ "p70": {
+  "outcome": "compiles",
+  "rules": [
+   "TRY-5"
+  ],
+  "why": "An abstract class by reference is a valid handler parameter; no main."
+ },
+ "p71": {
+  "outcome": "depends",
+  "rules": [
+   "TRY-12"
+  ],
+  "why": "The member function's handler flows off the end; Clang warns under -Wall and EDG rejects, while GCC compiles and main returns 1, so the run fails."
+ },
+ "p72": {
+  "outcome": "depends",
+  "rules": [
+   "TRY-13"
+  ],
+  "why": "The destructor's handler names a member; Clang warns under -Wall so -Werror rejects, GCC gives no warning and compiles (no main)."
+ },
+ "p73": {
+  "outcome": "runs",
+  "rules": [
+   "TRY-1"
+  ],
+  "why": "No exception, so no handler runs and r is 0."
+ },
+ "p74": {
+  "outcome": "runs",
+  "rules": [
+   "TRY-2"
+  ],
+  "why": "The double handler catches 2.5."
+ },
+ "p75": {
+  "outcome": "runs",
+  "rules": [
+   "TRY-15"
+  ],
+  "why": "p ends while the exception is still handled, so the rethrow in its destructor is caught there."
+ },
+ "p76": {
+  "outcome": "reject",
+  "rules": [
+   "TRY-5"
+  ],
+  "why": "A handler parameter cannot have a qualified name."
+ },
+ "p77": {
+  "outcome": "runs",
+  "rules": [
+   "THR-2",
+   "TRY-2"
+  ],
+  "why": "The array decays to int* pointing at arr."
+ },
+ "p78": {
+  "outcome": "reject",
+  "rules": [
+   "TRY-5"
+  ],
+  "why": "An incomplete class is not allowed by pointer in a handler parameter."
+ },
+ "p79": {
+  "outcome": "runs",
+  "rules": [
+   "TRY-8"
+  ],
+  "why": "A change to a by-value parameter does not reach the exception object."
+ },
+ "p80": {
+  "outcome": "runs",
+  "rules": [
+   "TRY-2"
+  ],
+  "why": "The reference handler refers to the exception object and can change it."
+ },
+ "p81": {
+  "outcome": "runs",
+  "rules": [
+   "TRY-2",
+   "TRY-1"
+  ],
+  "why": "B& is the first handler that matches."
+ },
+ "p82": {
+  "outcome": "runs",
+  "rules": [
+   "TRY-6"
+  ],
+  "why": "The handler parameter hides the outer v, which stays 9."
+ },
+ "p83": {
+  "outcome": "runs",
+  "rules": [
+   "TRY-2"
+  ],
+  "why": "const int& matches an int."
+ },
+ "p84": {
+  "outcome": "runs",
+  "rules": [
+   "TRY-2"
+  ],
+  "why": "A is an ambiguous base of D, so A& does not match and D& does."
+ },
+ "p85": {
+  "outcome": "runs",
+  "rules": [
+   "TRY-8"
+  ],
+  "why": "A new throw from a handler goes outward to the double handler."
+ },
+ "p86": {
+  "outcome": "runs",
+  "rules": [
+   "TRY-8"
+  ],
+  "why": "A try block inside a handler catches its own exception."
+ },
+ "p87": {
+  "outcome": "depends",
+  "rules": [
+   "TRY-13"
+  ],
+  "why": "The constructor's handler names a member; Clang warns under -Wall so -Werror rejects, GCC compiles (no main)."
+ },
+ "p88": {
+  "outcome": "reject",
+  "rules": [
+   "TRY-5"
+  ],
+  "why": "An incomplete class cannot be a handler parameter by reference."
+ },
+ "p89": {
+  "outcome": "reject",
+  "rules": [
+   "TRY-17"
+  ],
+  "why": "A return in a constructor's function try block handler is not valid, also inside a nested block."
+ },
+ "p90": {
+  "outcome": "reject",
+  "rules": [
+   "TRY-5"
+  ],
+  "why": "The by-value handler parameter needs the deleted copy constructor, even though the throw needs none."
+ },
+ "p91": {
+  "outcome": "reject",
+  "rules": [
+   "TRY-14"
+  ],
+  "why": "A name declared in the try block is not visible after the try block."
+ },
+ "p92": {
+  "outcome": "reject",
+  "rules": [
+   "TRY-16"
+  ],
+  "why": "A try block must have at least one handler."
+ }
+}

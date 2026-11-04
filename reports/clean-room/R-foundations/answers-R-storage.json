@@ -1,0 +1,637 @@
+{
+ "p01": {
+  "outcome": "runs",
+  "rules": [
+   "STG-7",
+   "STG-8"
+  ],
+  "why": "Celsius has a trivial default constructor and destructor, so the allocation call creates a Celsius implicitly."
+ },
+ "p02": {
+  "outcome": "runs",
+  "rules": [
+   "STG-10",
+   "STG-9",
+   "STG-21"
+  ],
+  "why": "After the destructor call only address uses happen, and the placement new replaces the Item, so the name reaches the new value 2."
+ },
+ "p03": {
+  "outcome": "runs",
+  "rules": [
+   "STG-14",
+   "STG-26"
+  ],
+  "why": "char, unsigned char, and std::byte glvalues can write the int, and the zero low byte of 1 gives 0 each time."
+ },
+ "p04": {
+  "outcome": "runs",
+  "rules": [
+   "STG-4",
+   "STG-5",
+   "STG-6"
+  ],
+  "why": "A char array hosts no object, but placement new still creates the long and the program uses the returned pointer; no compiler treats char differently."
+ },
+ "p05": {
+  "outcome": "runs",
+  "rules": [
+   "STG-5"
+  ],
+  "why": "Placement new returns the address it gets and builds the Gauge there."
+ },
+ "p06": {
+  "outcome": "reject",
+  "rules": [
+   "STG-1",
+   "DCL-19"
+  ],
+  "why": "The array's size in bytes does not fit in std::size_t."
+ },
+ "p07": {
+  "outcome": "runs",
+  "rules": [
+   "STG-3"
+  ],
+  "why": "The Tag base and the Tag member have the same type, so they cannot share an address."
+ },
+ "p08": {
+  "outcome": "depends",
+  "rules": [
+   "STG-21"
+  ],
+  "why": "The block end destroys an Other as a Plain; the GCC vptr sanitizer reports it (run-fail), and Clang's does not, so Clang exits 0."
+ },
+ "p09": {
+  "outcome": "runs",
+  "rules": [
+   "STG-16"
+  ],
+  "why": "A standard-layout class and its base subobject are pointer-interconvertible."
+ },
+ "p10": {
+  "outcome": "runs",
+  "rules": [
+   "STG-26"
+  ],
+  "why": "Integers are stored least significant byte first in two's complement."
+ },
+ "p11": {
+  "outcome": "reject",
+  "rules": [
+   "STG-22",
+   "CE-6",
+   "CE-9"
+  ],
+  "why": "The member call reads a union member that is not active, which constant evaluation rejects."
+ },
+ "p12": {
+  "outcome": "runs",
+  "rules": [
+   "LSUP-9",
+   "STG-4",
+   "STG-14"
+  ],
+  "why": "A std::byte array hosts the Meter, and a std::byte write reaches the int's low byte."
+ },
+ "p13": {
+  "outcome": "runs",
+  "rules": [
+   "UNI-10",
+   "UNI-15",
+   "UNI-16"
+  ],
+  "why": "Enumerations with the same underlying type are layout-compatible, so kind is in the common initial sequence and reads 1."
+ },
+ "p14": {
+  "outcome": "runs",
+  "rules": [
+   "STG-13"
+  ],
+  "why": "A byte pointer from a member's address can step over the whole object; the bytes sum to 3."
+ },
+ "p15": {
+  "outcome": "runs",
+  "rules": [
+   "STG-25",
+   "STG-3"
+  ],
+  "why": "The member extra goes in the tail padding of the no_unique_address Head, whose constructor is user-provided."
+ },
+ "p16": {
+  "outcome": "runs",
+  "rules": [
+   "STG-5",
+   "NEW-33",
+   "LSUP-7"
+  ],
+  "why": "Array placement new with the non-allocating form puts the int array at the buffer with no extra storage."
+ },
+ "p17": {
+  "outcome": "runs",
+  "rules": [
+   "STG-13",
+   "STG-2"
+  ],
+  "why": "Array elements are consecutive and the byte pointers compare as positions in one byte array."
+ },
+ "p18": {
+  "outcome": "runs",
+  "rules": [
+   "STG-5",
+   "STG-6"
+  ],
+  "why": "The arena reuses the Point's bytes for ints through the pointers placement new returns."
+ },
+ "p19": {
+  "outcome": "depends",
+  "rules": [
+   "STG-20"
+  ],
+  "why": "A new object in a const automatic object during constant evaluation: Clang 22 rejects, GCC 14, GCC 16, Clang 18, and EDG accept."
+ },
+ "p20": {
+  "outcome": "run-fail",
+  "rules": [
+   "STG-15",
+   "UN-7"
+  ],
+  "why": "The read goes through an integer address with no object, and the address sanitizer stops it."
+ },
+ "p21": {
+  "outcome": "runs",
+  "rules": [
+   "STG-8"
+  ],
+  "why": "The allocation call creates a Pair implicitly."
+ },
+ "p22": {
+  "outcome": "reject",
+  "rules": [
+   "STG-28",
+   "STG-22",
+   "CE-9"
+  ],
+  "why": "Constant evaluation rejects a read of an element that has not begun its lifetime."
+ },
+ "p23": {
+  "outcome": "runs",
+  "rules": [
+   "STG-12",
+   "CPY-28"
+  ],
+  "why": "Arrays, member pointers, enumerations, and pointers are trivially copyable, so byte copies carry the values."
+ },
+ "p24": {
+  "outcome": "runs",
+  "rules": [
+   "STG-16"
+  ],
+  "why": "A union and its member are pointer-interconvertible."
+ },
+ "p25": {
+  "outcome": "runs",
+  "rules": [
+   "STG-12"
+  ],
+  "why": "A byte copy out to unsigned char and back restores a trivially copyable object."
+ },
+ "p26": {
+  "outcome": "runs",
+  "rules": [
+   "STG-11"
+  ],
+  "why": "Writing padding bytes does not change the value."
+ },
+ "p27": {
+  "outcome": "runs",
+  "rules": [
+   "STG-3",
+   "STG-16"
+  ],
+  "why": "The empty base has zero size and shares the address of number."
+ },
+ "p28": {
+  "outcome": "compiles",
+  "rules": [
+   "STG-19",
+   "STG-9"
+  ],
+  "why": "Every compiler accepts the read through the old base pointer during constant evaluation and gives 2; no main."
+ },
+ "p29": {
+  "outcome": "undefined",
+  "rules": [
+   "STG-19"
+  ],
+  "why": "A complete Base in the bytes of a base subobject does not replace it, so the call through the old pointer is undefined; no sanitizer is in the build."
+ },
+ "p30": {
+  "outcome": "runs",
+  "rules": [
+   "STG-16",
+   "STG-5"
+  ],
+  "why": "The cast result can be converted to void* and given to placement new, and the program uses the pointer that new returns."
+ },
+ "p31": {
+  "outcome": "runs",
+  "rules": [
+   "STG-6",
+   "STG-4"
+  ],
+  "why": "The byte array lives on while it hosts objects, so its bytes can be read after the int is placed."
+ },
+ "p32": {
+  "outcome": "run-fail",
+  "rules": [
+   "STG-22",
+   "STG-6"
+  ],
+  "why": "The Base ends the Derived, and the vptr sanitizer reports the member call through the name of the ended Derived."
+ },
+ "p33": {
+  "outcome": "undefined",
+  "rules": [
+   "STG-21"
+  ],
+  "why": "The exit by an exception destroys an Other as a Plain; no sanitizer is in the build."
+ },
+ "p34": {
+  "outcome": "runs",
+  "rules": [
+   "STG-8"
+  ],
+  "why": "The later use as Pair decides the set, and the earlier int pointer is the member first."
+ },
+ "p35": {
+  "outcome": "runs",
+  "rules": [
+   "STG-14"
+  ],
+  "why": "The unsigned type of int and a cv-qualified int can access the int."
+ },
+ "p36": {
+  "outcome": "runs",
+  "rules": [
+   "STG-9"
+  ],
+  "why": "The new Setting replaces the old one, also with a const member, so the name gives the new values."
+ },
+ "p37": {
+  "outcome": "undefined",
+  "rules": [
+   "STG-23",
+   "STG-14"
+  ],
+  "why": "signed char is not in the list of types that can access an int; no sanitizer is in the build."
+ },
+ "p38": {
+  "outcome": "run-fail",
+  "rules": [
+   "STG-17"
+  ],
+  "why": "The long is misaligned, and the undefined behavior sanitizer stops the run."
+ },
+ "p39": {
+  "outcome": "reject",
+  "rules": [
+   "STG-22",
+   "CE-9"
+  ],
+  "why": "A member call after the destructor ran is undefined, and constant evaluation rejects it."
+ },
+ "p40": {
+  "outcome": "run-fail",
+  "rules": [
+   "STG-23"
+  ],
+  "why": "Clang 22's type sanitizer reports the write through a class with the same members, and the runner counts the report as a failure; the other compilers skip the flag."
+ },
+ "p41": {
+  "outcome": "compiles",
+  "rules": [
+   "STG-9",
+   "LSUP-10"
+  ],
+  "why": "construct_at replaces the Span, so the old name gives the new high; no main."
+ },
+ "p42": {
+  "outcome": "reject",
+  "rules": [
+   "CE-6",
+   "UNI-6",
+   "CE-9"
+  ],
+  "why": "construct_at makes real active, so the read through the reference to whole reads an inactive member."
+ },
+ "p43": {
+  "outcome": "depends",
+  "rules": [
+   "STG-1"
+  ],
+  "why": "With -m32 Clang 22 and 18 accept a class larger than std::size_t holds; GCC 14 and EDG ILP32 reject it (GCC 16 and EDG 7.0 skip)."
+ },
+ "p44": {
+  "outcome": "depends",
+  "rules": [
+   "STG-1"
+  ],
+  "why": "Clang 18 accepts and reduces sizeof, GCC rejects sizeof of the class, Clang 22 and EDG reject the class."
+ },
+ "p45": {
+  "outcome": "depends",
+  "rules": [
+   "STG-22"
+  ],
+  "why": "The static_cast to a derived class after the lifetime ends: the GCC vptr sanitizer reports it (run-fail), Clang's does not (exit 0)."
+ },
+ "p46": {
+  "outcome": "run-fail",
+  "rules": [
+   "STG-18",
+   "STG-23"
+  ],
+  "why": "Clang 22's type sanitizer reports the read of an int through float; other compilers skip the flag."
+ },
+ "p47": {
+  "outcome": "compiles",
+  "rules": [
+   "STG-9"
+  ],
+  "why": "construct_at replaces the Item, so the old reference reads 9; no main."
+ },
+ "p48": {
+  "outcome": "runs",
+  "rules": [
+   "STG-9",
+   "STG-21"
+  ],
+  "why": "The new Counter replaces c, so the block destroys a Counter and ended is 2."
+ },
+ "p49": {
+  "outcome": "run-fail",
+  "rules": [
+   "STG-19",
+   "STG-22"
+  ],
+  "why": "The Other does not replace the Derived, and the vptr sanitizer reports the call through the old name."
+ },
+ "p50": {
+  "outcome": "runs",
+  "rules": [
+   "STG-25",
+   "STG-12"
+  ],
+  "why": "extra sits in the tail padding of Base, so the byte copy into the base subobject overwrites it."
+ },
+ "p51": {
+  "outcome": "runs",
+  "rules": [
+   "STG-11"
+  ],
+  "why": "Equal values 0.0 and -0.0 have different bytes."
+ },
+ "p52": {
+  "outcome": "runs",
+  "rules": [
+   "UNI-10",
+   "UNI-15",
+   "UNI-16"
+  ],
+  "why": "Point and Pair are layout-compatible, so the whole of Line and Span is a common initial sequence."
+ },
+ "p53": {
+  "outcome": "compiles",
+  "rules": [
+   "STG-28",
+   "LSUP-11",
+   "LSUP-10"
+  ],
+  "why": "Placement before earlier elements exist is accepted, and every element is built before it is read; no main."
+ },
+ "p54": {
+  "outcome": "runs",
+  "rules": [
+   "STG-2",
+   "STG-13"
+  ],
+  "why": "The first member is at the object's address and the second lies inside its bytes."
+ },
+ "p55": {
+  "outcome": "run-fail",
+  "rules": [
+   "STG-23"
+  ],
+  "why": "Clang 22's type sanitizer reports the float write to an int; other compilers skip the flag."
+ },
+ "p56": {
+  "outcome": "runs",
+  "rules": [
+   "STG-8"
+  ],
+  "why": "The allocation call creates whatever set the branch taken needs, here an int array."
+ },
+ "p57": {
+  "outcome": "run-fail",
+  "rules": [
+   "STG-20"
+  ],
+  "why": "The new object goes in a static const object in storage that cannot be written, and the write faults."
+ },
+ "p58": {
+  "outcome": "runs",
+  "rules": [
+   "CPY-27",
+   "CPY-19",
+   "STG-12"
+  ],
+  "why": "A volatile member keeps the copy functions trivial, so Port is trivially copyable and a byte copy carries the values."
+ },
+ "p59": {
+  "outcome": "runs",
+  "rules": [
+   "STG-8",
+   "STG-28"
+  ],
+  "why": "The allocation creates an int[4], so pointer arithmetic over it is valid."
+ },
+ "p60": {
+  "outcome": "runs",
+  "rules": [
+   "STG-7",
+   "STG-8"
+  ],
+  "why": "Entry is an aggregate with a destructor that is not user-provided, so it is an implicit-lifetime type."
+ },
+ "p61": {
+  "outcome": "runs",
+  "rules": [
+   "STG-9"
+  ],
+  "why": "The new int replaces count, so the name, pointer, and reference give 5."
+ },
+ "p62": {
+  "outcome": "compiles",
+  "rules": [
+   "STG-9"
+  ],
+  "why": "construct_at replaces an Entry with a const member, and the old names give 7, 7, 8; no main."
+ },
+ "p63": {
+  "outcome": "compiles",
+  "rules": [
+   "STG-9"
+  ],
+  "why": "The new Item becomes element 1 of the array; no main."
+ },
+ "p64": {
+  "outcome": "runs",
+  "rules": [
+   "STG-8"
+  ],
+  "why": "A call of an allocation function by name creates the Sample implicitly."
+ },
+ "p65": {
+  "outcome": "undefined",
+  "rules": [
+   "STG-29",
+   "STG-23"
+  ],
+  "why": "The cast of the byte array's address refers to a byte, so the int write and read do not reach an int; no sanitizer reports it."
+ },
+ "p66": {
+  "outcome": "runs",
+  "rules": [
+   "STG-12",
+   "LSUP-9"
+  ],
+  "why": "double has no padding, so a copy through char and through std::byte restores the value."
+ },
+ "p67": {
+  "outcome": "run-fail",
+  "rules": [
+   "STG-29",
+   "STG-22"
+  ],
+  "why": "No Shape exists in the buffer, and the vptr sanitizer reports the member call."
+ },
+ "p68": {
+  "outcome": "runs",
+  "rules": [
+   "STG-27"
+  ],
+  "why": "A copy of an invalid pointer value keeps the old address on the matrix, and no sanitizer reports it."
+ },
+ "p69": {
+  "outcome": "runs",
+  "rules": [
+   "STG-4",
+   "STG-5"
+  ],
+  "why": "A std::byte array hosts both Readings."
+ },
+ "p70": {
+  "outcome": "runs",
+  "rules": [
+   "STG-5",
+   "NEW-33"
+  ],
+  "why": "Array placement new creates the Registers array at the device address."
+ },
+ "p71": {
+  "outcome": "runs",
+  "rules": [
+   "STG-6"
+  ],
+  "why": "The second object ends the first without running its destructor."
+ },
+ "p72": {
+  "outcome": "runs",
+  "rules": [
+   "STG-26"
+  ],
+  "why": "The bytes of a pointer equal the bytes of its integer value, least significant first."
+ },
+ "p73": {
+  "outcome": "run-fail",
+  "rules": [
+   "STG-17"
+  ],
+  "why": "The Quad does not fit in the buffer, and the address sanitizer stops the write."
+ },
+ "p74": {
+  "outcome": "undefined",
+  "rules": [
+   "STG-20"
+  ],
+  "why": "A new object in a const automatic object is undefined, and no sanitizer is in the build."
+ },
+ "p75": {
+  "outcome": "runs",
+  "rules": [
+   "STG-27"
+  ],
+  "why": "A copy of a pointer to freed storage keeps the address."
+ },
+ "p76": {
+  "outcome": "runs",
+  "rules": [
+   "STG-5",
+   "STG-6"
+  ],
+  "why": "Maybe keeps the pointer that placement new returns, so each access reaches the live Reading."
+ },
+ "p77": {
+  "outcome": "runs",
+  "rules": [
+   "STG-13",
+   "STG-26"
+  ],
+  "why": "The byte pointer steps to one past the last byte, and the bytes sum to 36."
+ },
+ "p78": {
+  "outcome": "run-fail",
+  "rules": [
+   "STG-18",
+   "STG-22"
+  ],
+  "why": "Shape is not an implicit-lifetime type, so no Shape exists, and the vptr sanitizer reports the call."
+ },
+ "p79": {
+  "outcome": "runs",
+  "rules": [
+   "STG-16"
+  ],
+  "why": "Union, member, first member, and its first member form a chain of pointer-interconvertible objects."
+ },
+ "p80": {
+  "outcome": "runs",
+  "rules": [
+   "STG-8"
+  ],
+  "why": "The allocation creates the int array that the branch taken uses."
+ },
+ "p81": {
+  "outcome": "runs",
+  "rules": [
+   "STG-13",
+   "STG-15"
+  ],
+  "why": "A past-the-end pointer and a byte pointer past the last byte have the same address."
+ },
+ "p82": {
+  "outcome": "runs",
+  "rules": [
+   "STG-28"
+  ],
+  "why": "Pointer arithmetic over the elements is valid before they are built."
+ },
+ "p83": {
+  "outcome": "runs",
+  "rules": [
+   "STG-9"
+  ],
+  "why": "The new Entry replaces the old one also with a const member, so the name gives 7 and 8."
+ }
+}

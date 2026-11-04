@@ -1,0 +1,1036 @@
+{
+ "p01": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-20",
+   "ICS-28"
+  ],
+  "why": "Both braced lists make a temporary, and the rvalue reference wins by ICS-28 for the aggregate and for the class with a constructor."
+ },
+ "p02": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-15",
+   "ICS-19",
+   "ICS-27"
+  ],
+  "why": "Empty braces give int* the identity and Pair has no default constructor; float to double is a promotion; two elements give int no sequence."
+ },
+ "p03": {
+  "outcome": "reject",
+  "rules": [
+   "ICS-8",
+   "CONV-17"
+  ],
+  "why": "The private base still forms a sequence, take(Base*) beats the ellipsis, and the chosen call is rejected."
+ },
+ "p04": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-7",
+   "ICS-25",
+   "ICS-27"
+  ],
+  "why": "Source to double is ambiguous (user-defined), Source to Wrap is user-defined, they tie, and the exact int second argument picks take(Wrap, int)."
+ },
+ "p05": {
+  "outcome": "reject",
+  "rules": [
+   "ICS-8",
+   "DEL-1"
+  ],
+  "why": "The deleted conversion function still forms a sequence that beats the ellipsis, so take(int) is chosen and rejected."
+ },
+ "p06": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-18",
+   "ICS-8",
+   "ICS-25",
+   "ICS-27"
+  ],
+  "why": "Both aggregates take the designated list and tie, the int argument picks Point; Other has no member x."
+ },
+ "p07": {
+  "outcome": "reject",
+  "rules": [
+   "ICS-47",
+   "ICS-6",
+   "OVL-20"
+  ],
+  "why": "An overload set of two functions passed to ... leaves no single function, so g is not viable."
+ },
+ "p08": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-24"
+  ],
+  "why": "Same element count, so the array of known bound is better."
+ },
+ "p09": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-37",
+   "ICS-42"
+  ],
+  "why": "Each conversion picks the function whose result is the nearer class (Middle) for the base target, and the farther member pointer base for the Derived target."
+ },
+ "p10": {
+  "outcome": "depends",
+  "rules": [
+   "ICS-31",
+   "CONV-16"
+  ],
+  "why": "ICS-31 prefers the known bound and Clang follows it; GCC and EDG find a tie and reject (Q-0153)."
+ },
+ "p11": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-11",
+   "ICS-25",
+   "ICS-28",
+   "ICS-12"
+  ],
+  "why": "The same conversion function serves both references and the rvalue reference wins; Item& cannot bind the prvalue result; Derived binds Base&& directly."
+ },
+ "p12": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-19",
+   "ICS-25",
+   "ICS-27"
+  ],
+  "why": "Split gives the ambiguous sequence, which ties with Even's user-defined sequence, and the exact int argument picks take(Even, int)."
+ },
+ "p13": {
+  "outcome": "reject",
+  "rules": [
+   "ICS-7",
+   "ICS-8",
+   "CVF-12"
+  ],
+  "why": "Source to double is ambiguous but counts as user-defined and beats the ellipsis, so take(double) is chosen and rejected."
+ },
+ "p14": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-21",
+   "ICS-9",
+   "ICS-6"
+  ],
+  "why": "A standard conversion to long beats Box; each element of {1, 2} uses its own conversion to Num and the ellipsis cannot take a braced list."
+ },
+ "p15": {
+  "outcome": "depends",
+  "rules": [
+   "ICS-17",
+   "ICS-27"
+  ],
+  "why": "Clang and EDG tie the first argument and pick Two by the second; GCC prefers int for the first argument and finds the call ambiguous (Q-0135)."
+ },
+ "p16": {
+  "outcome": "depends",
+  "rules": [
+   "ICS-45",
+   "OVL-15"
+  ],
+  "why": "Clang lets static_cast to an rvalue reference use an explicit conversion function that returns a value, so it compiles; GCC and EDG do not, and the makes<...&&> assertions fail (Q-0156)."
+ },
+ "p17": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-41",
+   "ICS-10"
+  ],
+  "why": "A user-defined sequence reaches the explicit object parameter of the assignment operators; the implicit copy assignment is not viable for 1."
+ },
+ "p18": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-9"
+  ],
+  "why": "Source to Target would need two user-defined conversions, so only the ellipsis is viable; Middle converts with one."
+ },
+ "p19": {
+  "outcome": "depends",
+  "rules": [
+   "ICS-44",
+   "PRIM-22"
+  ],
+  "why": "GCC and EDG pick the conversion from the floating type of equal rank; Clang has no f32 or f64 suffix and rejects."
+ },
+ "p20": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-6",
+   "ICS-15"
+  ],
+  "why": "A braced list has no ellipsis sequence, so only show(int, ...) is viable."
+ },
+ "p21": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-17",
+   "ICS-6",
+   "ICS-38",
+   "ICS-27"
+  ],
+  "why": "The array references take the lists by identity, the arrays too short have no sequence, and the ellipsis cannot take a braced list."
+ },
+ "p22": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-30"
+  ],
+  "why": "The reference with fewer cv-qualifiers wins."
+ },
+ "p23": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-13",
+   "ICS-27"
+  ],
+  "why": "The using-declaration gives both functions the object parameter of the derived class, and the second argument decides."
+ },
+ "p24": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-38",
+   "ICS-21"
+  ],
+  "why": "A wide literal cannot initialize a char array; a narrow literal binds the char array by identity, which beats user-defined."
+ },
+ "p25": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-2",
+   "ICS-11",
+   "ICS-27"
+  ],
+  "why": "Derived to Base by value is a conversion and the reference is the identity; Cell by value and const Cell& tie and the second argument decides."
+ },
+ "p26": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-25",
+   "ICS-37",
+   "ICS-27"
+  ],
+  "why": "User-defined sequences through different functions tie, so the second argument decides each call."
+ },
+ "p27": {
+  "outcome": "depends",
+  "rules": [
+   "ICS-2"
+  ],
+  "why": "Clang promotes the long long bit-field to int and picks One; GCC and EDG give two conversions and find the call ambiguous (Q-0134)."
+ },
+ "p28": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-28"
+  ],
+  "why": "Both bind an rvalue and the rvalue reference wins."
+ },
+ "p29": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-20",
+   "ICS-27",
+   "ICS-28",
+   "ICS-18",
+   "ICS-25"
+  ],
+  "why": "short to int is a promotion; the rvalue reference wins for {1}; the two aggregates tie and the int argument decides."
+ },
+ "p30": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-14",
+   "ICS-27"
+  ],
+  "why": "The static function's object slot ties, so the second argument decides."
+ },
+ "p31": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-14",
+   "ICS-27"
+  ],
+  "why": "The static function's object slot ties, so the second argument decides."
+ },
+ "p32": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-21",
+   "ICS-3"
+  ],
+  "why": "A user-defined sequence through Wide(long) beats the ellipsis."
+ },
+ "p33": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-2",
+   "ICS-27"
+  ],
+  "why": "short to int and float to double are promotions."
+ },
+ "p34": {
+  "outcome": "depends",
+  "rules": [
+   "ICS-45",
+   "OVL-15"
+  ],
+  "why": "Every compiler binds Item&& to the Item&& result; GCC rejects const Item& and compiles, while Clang and EDG accept it and the negative assertion fails (Q-0337)."
+ },
+ "p35": {
+  "outcome": "reject",
+  "rules": [
+   "ICS-8",
+   "CONV-17"
+  ],
+  "why": "The ambiguous base still forms a sequence that beats the ellipsis, so the chosen call is rejected."
+ },
+ "p36": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-39",
+   "ICS-34"
+  ],
+  "why": "The promotion to the fixed underlying type beats the promotion to int."
+ },
+ "p37": {
+  "outcome": "depends",
+  "rules": [
+   "ICS-38"
+  ],
+  "why": "\"ab\" is too long for char[2], so GCC and EDG pick the pointer; Clang gives the short array a sequence and rejects (Q-0155)."
+ },
+ "p38": {
+  "outcome": "depends",
+  "rules": [
+   "ICS-45"
+  ],
+  "why": "GCC and EDG do not use an explicit function that returns a value for const Item&, so they compile; Clang does, and the assertion fails (Q-0337)."
+ },
+ "p39": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-31"
+  ],
+  "why": "The result with fewer added cv-qualifiers wins."
+ },
+ "p40": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-2",
+   "ICS-11",
+   "ICS-27"
+  ],
+  "why": "Binding const Base& to a Derived is a conversion; Derived by value is an exact match."
+ },
+ "p41": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-4",
+   "ICS-45",
+   "OVL-14",
+   "OVL-40"
+  ],
+  "why": "Each initialization finds a usable conversion function, explicit ones only in direct initialization with the allowed targets."
+ },
+ "p42": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-26"
+  ],
+  "why": "The noexcept pointer is a proper subsequence of the one that drops noexcept."
+ },
+ "p43": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-13",
+   "ICS-37"
+  ],
+  "why": "Both object parameters are of the object's class and tie, and operator int gives the exact third part."
+ },
+ "p44": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-16",
+   "ICS-21",
+   "ICS-6"
+  ],
+  "why": "Worst element conversions: promotion beats conversion, standard beats user-defined, and the ellipsis cannot take {}."
+ },
+ "p45": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-47",
+   "ICS-6",
+   "OVL-20",
+   "ICS-26",
+   "ICS-32"
+  ],
+  "why": "Each candidate selects its own function; sets of two give no ellipsis or bool sequence; identity beats bool and dropping noexcept."
+ },
+ "p46": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-29"
+  ],
+  "why": "The cast yields a function lvalue, and the lvalue reference wins."
+ },
+ "p47": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-22"
+  ],
+  "why": "The initializer_list target wins before rank."
+ },
+ "p48": {
+  "outcome": "depends",
+  "rules": [
+   "ICS-44",
+   "PRIM-22"
+  ],
+  "why": "GCC and EDG pick operator float; Clang has no f32 suffix and rejects."
+ },
+ "p49": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-39",
+   "ICS-27"
+  ],
+  "why": "The enumerations promote to short or int, which beats the conversion to long."
+ },
+ "p50": {
+  "outcome": "reject",
+  "rules": [
+   "ICS-8",
+   "REF-8"
+  ],
+  "why": "The bit-field still forms an identity sequence to int&, take(int&) wins, and the binding is rejected."
+ },
+ "p51": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-29"
+  ],
+  "why": "The lvalue reference to function wins."
+ },
+ "p52": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-10"
+  ],
+  "why": "The built-in assignment cannot use operator int& on its left operand, so Cell::operator=(long) is chosen."
+ },
+ "p53": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-23"
+  ],
+  "why": "The array with fewer elements wins."
+ },
+ "p54": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-11",
+   "ICS-12"
+  ],
+  "why": "Other types bind the rvalue reference through a temporary; a Derived lvalue or a Base lvalue result has no sequence to Base&&."
+ },
+ "p55": {
+  "outcome": "depends",
+  "rules": [
+   "ICS-34",
+   "ICS-28"
+  ],
+  "why": "Clang applies ICS-34 first and picks const short&; GCC and EDG pick int&& and the assertion fails (Q-0152)."
+ },
+ "p56": {
+  "outcome": "reject",
+  "rules": [
+   "ICS-6",
+   "ICS-15"
+  ],
+  "why": "Item does not convert to int for Label, and the ellipsis cannot take a braced list, so no function is viable."
+ },
+ "p57": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-10",
+   "ICS-18"
+  ],
+  "why": "Pair's copy constructor cannot take the inner list by a user-defined conversion, so only the aggregate Holder is viable."
+ },
+ "p58": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-25",
+   "ICS-11",
+   "ICS-27"
+  ],
+  "why": "Both use operator Middle&, and the identity third part beats derived to base."
+ },
+ "p59": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-22"
+  ],
+  "why": "A reference to an initializer_list wins before rank."
+ },
+ "p60": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-26"
+  ],
+  "why": "The identity (after the array-to-pointer step) is a subsequence of the qualification step."
+ },
+ "p61": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-18",
+   "ICS-36"
+  ],
+  "why": "A one-element list of a derived class has the derived-to-base sequence, and the nearer base wins."
+ },
+ "p62": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-1",
+   "ICS-27"
+  ],
+  "why": "Top-level const adds no conversion."
+ },
+ "p63": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-22"
+  ],
+  "why": "The initializer_list target wins."
+ },
+ "p64": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-39",
+   "ICS-27"
+  ],
+  "why": "unsigned char to unsigned char and to int are promotions; to unsigned int and double are conversions."
+ },
+ "p65": {
+  "outcome": "depends",
+  "rules": [
+   "ICS-35",
+   "PRIM-22"
+  ],
+  "why": "GCC and EDG prefer double, of the rank of float64; Clang has no f64 suffix and rejects."
+ },
+ "p66": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-27"
+  ],
+  "why": "Array to pointer plus a qualification step is exact, which beats a pointer conversion; short to int is a promotion."
+ },
+ "p67": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-43",
+   "ICS-37"
+  ],
+  "why": "For a void pointer target, the conversion from Middle* beats the one from Bottom*."
+ },
+ "p68": {
+  "outcome": "depends",
+  "rules": [
+   "ICS-19",
+   "ICS-36"
+  ],
+  "why": "GCC and Clang pick the nearer base Middle; EDG finds a tie for classes that are not aggregates and rejects (Q-0154)."
+ },
+ "p69": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-40",
+   "ICS-30"
+  ],
+  "why": "The object parameters bind the rvalue and the one with fewer cv-qualifiers wins."
+ },
+ "p70": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-40",
+   "ICS-28",
+   "ICS-27"
+  ],
+  "why": "Without a ref-qualifier ICS-28 does not apply and the int argument decides; with & it applies and the rvalue reference wins."
+ },
+ "p71": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-16",
+   "ICS-18"
+  ],
+  "why": "A designated list has no initializer_list sequence."
+ },
+ "p72": {
+  "outcome": "depends",
+  "rules": [
+   "ICS-32",
+   "ICS-33",
+   "ICS-36",
+   "ICS-28"
+  ],
+  "why": "GCC and Clang apply the same-rank tie-breakers before ICS-28 and compile; EDG applies ICS-28 first and the assertions fail (Q-0152)."
+ },
+ "p73": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-23"
+  ],
+  "why": "The array with fewer elements wins."
+ },
+ "p74": {
+  "outcome": "depends",
+  "rules": [
+   "ICS-20",
+   "ICS-12"
+  ],
+  "why": "Clang and EDG make a temporary, so int& has no sequence and long wins; GCC binds through operator int& and picks int& (Q-0157)."
+ },
+ "p75": {
+  "outcome": "depends",
+  "rules": [
+   "ICS-33",
+   "ICS-36",
+   "ICS-26"
+  ],
+  "why": "Clang and EDG apply ICS-33 and ICS-36 after array to pointer; GCC does not and finds both calls ambiguous (Q-0137)."
+ },
+ "p76": {
+  "outcome": "depends",
+  "rules": [
+   "ICS-38"
+  ],
+  "why": "Clang and EDG let the UTF-8 literal initialize the char array by identity; GCC gives it no sequence and picks Utf8 (Q-0155)."
+ },
+ "p77": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-6"
+  ],
+  "why": "Every argument matches the ellipsis."
+ },
+ "p78": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-37",
+   "ICS-42"
+  ],
+  "why": "For a target of class Base, the conversion from Middle beats the one from Derived."
+ },
+ "p79": {
+  "outcome": "depends",
+  "rules": [
+   "ICS-20",
+   "ICS-12",
+   "ICS-30"
+  ],
+  "why": "Clang and EDG make a temporary, so only const Item& is viable; GCC binds through operator Item& and picks Item& (Q-0157)."
+ },
+ "p80": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-21"
+  ],
+  "why": "The standard sequence beats the ellipsis."
+ },
+ "p81": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-9"
+  ],
+  "why": "int to Outer needs two user-defined conversions, so only the ellipsis is viable."
+ },
+ "p82": {
+  "outcome": "runs",
+  "rules": [
+   "ICS-16",
+   "LSUP-1",
+   "ICS-18"
+  ],
+  "why": "1 does not convert to int*, so the aggregate Point is chosen and no initializer_list is made."
+ },
+ "p83": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-21"
+  ],
+  "why": "Standard beats user-defined, which beats the ellipsis."
+ },
+ "p84": {
+  "outcome": "depends",
+  "rules": [
+   "ICS-28",
+   "ICS-31"
+  ],
+  "why": "Clang and EDG apply ICS-28 first and pick the rvalue reference; GCC applies ICS-31 first and the assertion fails (Q-0152)."
+ },
+ "p85": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-15",
+   "ICS-19",
+   "ICS-10"
+  ],
+  "why": "{} and {1} give int the identity; {{1}} gives int no sequence and goes to Box(int)."
+ },
+ "p86": {
+  "outcome": "depends",
+  "rules": [
+   "ICS-35",
+   "ICS-28",
+   "PRIM-22"
+  ],
+  "why": "GCC applies ICS-35 first and compiles; EDG applies ICS-28 first and fails; Clang has no f64 suffix."
+ },
+ "p87": {
+  "outcome": "reject",
+  "rules": [
+   "ICS-8",
+   "LIST-14"
+  ],
+  "why": "Out-of-order designators still form a sequence, take(Swapped, int) wins by its int argument, and is rejected."
+ },
+ "p88": {
+  "outcome": "depends",
+  "rules": [
+   "ICS-46"
+  ],
+  "why": "GCC and EDG prefer the known bound; Clang finds a tie and rejects (Q-0188)."
+ },
+ "p89": {
+  "outcome": "reject",
+  "rules": [
+   "ICS-7",
+   "ICS-8",
+   "CVF-12"
+  ],
+  "why": "The ambiguous sequence to double ties with Wrap, the int argument chooses take(double, int), and the call is rejected."
+ },
+ "p90": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-25",
+   "ICS-27"
+  ],
+  "why": "The same conversion function serves both, and the better third part wins."
+ },
+ "p91": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-7",
+   "ICS-30"
+  ],
+  "why": "The conversion function or constructor whose binding of s has fewer cv-qualifiers wins, so no conversion is ambiguous."
+ },
+ "p92": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-12"
+  ],
+  "why": "None of the references can bind, so the ellipsis is chosen."
+ },
+ "p93": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-43",
+   "ICS-37"
+  ],
+  "why": "For a void pointer target, the conversion from Base* beats the one from Derived*."
+ },
+ "p94": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-5"
+  ],
+  "why": "The template serves long by an exact third part, and not double."
+ },
+ "p95": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-46"
+  ],
+  "why": "Both references bind directly and the one with fewer cv-qualifiers below the top level wins."
+ },
+ "p96": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-13",
+   "ICS-12"
+  ],
+  "why": "A const object cannot bind the non-const object parameter."
+ },
+ "p97": {
+  "outcome": "reject",
+  "rules": [
+   "ICS-47",
+   "ICS-26"
+  ],
+  "why": "Both g select f(int); the reference and the pointer are exact matches and tie."
+ },
+ "p98": {
+  "outcome": "depends",
+  "rules": [
+   "ICS-8",
+   "ILC-8"
+  ],
+  "why": "GCC keeps the explicit constructor, chooses take(Strict, int), and rejects; Clang and EDG form no sequence and choose take(Loose, long) (Q-0132)."
+ },
+ "p99": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-33"
+  ],
+  "why": "A base pointer beats void*."
+ },
+ "p100": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-41"
+  ],
+  "why": "A user-defined conversion reaches the explicit object parameter."
+ },
+ "p101": {
+  "outcome": "reject",
+  "rules": [
+   "ICS-8",
+   "LIST-2"
+  ],
+  "why": "double to int is standard and wins over Real, and the narrowing is rejected for the chosen function."
+ },
+ "p102": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-36"
+  ],
+  "why": "The conversion to the nearer class wins for pointers, references, values, and member pointers."
+ },
+ "p103": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-18",
+   "ICS-21"
+  ],
+  "why": "{1} to Point is user-defined; a one-element list of the class or a derived class has a standard sequence."
+ },
+ "p104": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-11",
+   "ICS-27"
+  ],
+  "why": "Each reference to a temporary takes the conversion rank, so the other argument decides."
+ },
+ "p105": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-38",
+   "ICS-12"
+  ],
+  "why": "The literal binds directly as an lvalue, and the rvalue references cannot bind it."
+ },
+ "p106": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-25",
+   "ICS-28",
+   "ICS-31"
+  ],
+  "why": "Same conversion function, and the rvalue reference wins; int* converts to const int*."
+ },
+ "p107": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-9"
+  ],
+  "why": "Each conversion needs two user-defined conversions."
+ },
+ "p108": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-13",
+   "ICS-12",
+   "ICS-28"
+  ],
+  "why": "With ref-qualifiers the lvalue only fits & and the rvalue only fits &&, or && wins by ICS-28."
+ },
+ "p109": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-37",
+   "ICS-27"
+  ],
+  "why": "operator long is exact for long; for int, short promotes and long converts."
+ },
+ "p110": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-28"
+  ],
+  "why": "Binding an rvalue reference wins before cv-qualifiers."
+ },
+ "p111": {
+  "outcome": "depends",
+  "rules": [
+   "ICS-46"
+  ],
+  "why": "GCC and EDG prefer the known bound even with fewer cv-qualifiers; Clang finds a tie and rejects (Q-0188)."
+ },
+ "p112": {
+  "outcome": "depends",
+  "rules": [
+   "ICS-31"
+  ],
+  "why": "ICS-31 prefers const int*; EDG does not compare a reference to a temporary with a value parameter and rejects (Q-0153)."
+ },
+ "p113": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-37",
+   "ICS-27"
+  ],
+  "why": "float to double is a promotion and int to double a conversion."
+ },
+ "p114": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-5"
+  ],
+  "why": "The template serves only an exact third part; the plain function serves int to long."
+ },
+ "p115": {
+  "outcome": "depends",
+  "rules": [
+   "ICS-19",
+   "ICS-25"
+  ],
+  "why": "The initializer_list constructor makes Cell user-defined, the tie goes to the int argument; Clang 18 gives Cell an exact match and finds the call ambiguous (Q-0081)."
+ },
+ "p116": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-11",
+   "ICS-27"
+  ],
+  "why": "The reference to a temporary long is a conversion; const int& is the identity."
+ },
+ "p117": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-20",
+   "ICS-12",
+   "ICS-30"
+  ],
+  "why": "One-element lists of lvalues bind to the element directly, and rvalue references cannot."
+ },
+ "p118": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-19",
+   "ICS-21"
+  ],
+  "why": "A one-element list of the class or a derived class has a standard sequence."
+ },
+ "p119": {
+  "outcome": "reject",
+  "rules": [
+   "ICS-19",
+   "ICS-8",
+   "CTOR-25"
+  ],
+  "why": "The list gives Split the ambiguous sequence, the ellipsis cannot take a list, and the chosen call is rejected."
+ },
+ "p120": {
+  "outcome": "depends",
+  "rules": [
+   "ICS-21",
+   "ICS-22"
+  ],
+  "why": "Clang compares kinds first and picks int; GCC and EDG pick the initializer_list and the assertion fails (Q-0133)."
+ },
+ "p121": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-24"
+  ],
+  "why": "Same element count, so the known bound wins."
+ },
+ "p122": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-32"
+  ],
+  "why": "A pointer to bool is worse; bool beats the ellipsis."
+ },
+ "p123": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-10",
+   "ICS-7",
+   "ICS-21"
+  ],
+  "why": "Both would need two user-defined conversions; Source to Source is exact."
+ },
+ "p124": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-12"
+  ],
+  "why": "An rvalue reference to function binds a function lvalue."
+ },
+ "p125": {
+  "outcome": "reject",
+  "rules": [
+   "ICS-8",
+   "DEL-1"
+  ],
+  "why": "The deleted constructor still forms a sequence that beats the ellipsis, and the call is rejected."
+ },
+ "p126": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-20",
+   "ICS-27",
+   "ICS-6"
+  ],
+  "why": "The list converts to long through a temporary; to const int& it is the identity."
+ },
+ "p127": {
+  "outcome": "compiles",
+  "rules": [
+   "ICS-45",
+   "ICS-4"
+  ],
+  "why": "Explicit conversion functions serve static_cast only for the class itself or a qualification adjustment."
+ },
+ "p128": {
+  "outcome": "reject",
+  "rules": [
+   "ICS-7",
+   "ICS-8",
+   "CVF-12"
+  ],
+  "why": "The constructor and the conversion function bind s equally, so the sequence is ambiguous, take(Target) still beats the ellipsis, and is rejected."
+ },
+ "p129": {
+  "outcome": "depends",
+  "rules": [
+   "ICS-46",
+   "ICS-38"
+  ],
+  "why": "GCC and EDG prefer the known bound; Clang finds a tie and rejects (Q-0155)."
+ }
+}

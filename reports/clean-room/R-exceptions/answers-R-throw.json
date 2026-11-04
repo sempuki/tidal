@@ -1,0 +1,299 @@
+{
+ "p01": {
+  "outcome": "runs",
+  "rules": [
+   "THR-8",
+   "TRY-15"
+  ],
+  "why": "The parameter ends ('p'), then the exception object ('o'), then the outer handler runs ('h')."
+ },
+ "p02": {
+  "outcome": "runs",
+  "rules": [
+   "THR-6"
+  ],
+  "why": "The rethrow passes on the same object, so the address matches."
+ },
+ "p03": {
+  "outcome": "reject",
+  "rules": [
+   "THR-3"
+  ],
+  "why": "The operand of throw has an incomplete type."
+ },
+ "p04": {
+  "outcome": "runs",
+  "rules": [
+   "THR-1"
+  ],
+  "why": "local is outside the inner try block around the throw, so it is copied."
+ },
+ "p05": {
+  "outcome": "runs",
+  "rules": [
+   "THR-1"
+  ],
+  "why": "A parameter inside the function whose try block surrounds the throw is copied."
+ },
+ "p06": {
+  "outcome": "runs",
+  "rules": [
+   "THR-1",
+   "THR-8"
+  ],
+  "why": "The prvalue becomes the exception object directly and ends when the handler ends, so one destructor runs then."
+ },
+ "p07": {
+  "outcome": "runs",
+  "rules": [
+   "THR-6"
+  ],
+  "why": "The change made through the reference goes with the rethrown object."
+ },
+ "p08": {
+  "outcome": "runs",
+  "rules": [
+   "THR-12",
+   "THR-6"
+  ],
+  "why": "The rethrow keeps the object alive; at the end of the second handler its destructor throws 7, which skips r += 100, so r is 18."
+ },
+ "p09": {
+  "outcome": "runs",
+  "rules": [
+   "THR-12"
+  ],
+  "why": "At the end of the handler the destructor throws 7, which skips r += 100, so r is 8."
+ },
+ "p10": {
+  "outcome": "runs",
+  "rules": [
+   "THR-4"
+  ],
+  "why": "The static type is B, so the exception object is a B copy with tag 2, and the D handler does not match."
+ },
+ "p11": {
+  "outcome": "compiles",
+  "rules": [
+   "THR-5",
+   "THR-10"
+  ],
+  "why": "throw is a void prvalue, works as an operand of ?:, the throw is on an untaken path in constant evaluation, and a void return of a void expression is fine; no main."
+ },
+ "p12": {
+  "outcome": "runs",
+  "rules": [
+   "THR-4"
+  ],
+  "why": "The exception object is a sliced B, so the B& handler matches and id() gives 1."
+ },
+ "p13": {
+  "outcome": "runs",
+  "rules": [
+   "THR-10"
+  ],
+  "why": "The constexpr function called at run time throws normally."
+ },
+ "p14": {
+  "outcome": "runs",
+  "rules": [
+   "THR-2"
+  ],
+  "why": "The array decays to a pointer to its first element."
+ },
+ "p15": {
+  "outcome": "runs",
+  "rules": [
+   "THR-13"
+  ],
+  "why": "The exception object storage does not come from operator new, and throw e copies the changed object."
+ },
+ "p16": {
+  "outcome": "runs",
+  "rules": [
+   "THR-8"
+  ],
+  "why": "The old exception object ends before the handler for 7 starts."
+ },
+ "p17": {
+  "outcome": "reject",
+  "rules": [
+   "THR-3"
+  ],
+  "why": "The operand of throw has an abstract type."
+ },
+ "p18": {
+  "outcome": "reject",
+  "rules": [
+   "THR-3"
+  ],
+  "why": "The copy of the global lvalue needs a deleted copy constructor."
+ },
+ "p19": {
+  "outcome": "runs",
+  "rules": [
+   "THR-1"
+  ],
+  "why": "A global lvalue operand is copied."
+ },
+ "p20": {
+  "outcome": "runs",
+  "rules": [
+   "THR-1"
+  ],
+  "why": "A prvalue operand initializes the exception object with no copy or move."
+ },
+ "p21": {
+  "outcome": "run-fail",
+  "rules": [
+   "THR-7",
+   "UNW-5"
+  ],
+  "why": "The rethrow happens after the handler ended, so no exception is handled and the program ends."
+ },
+ "p22": {
+  "outcome": "runs",
+  "rules": [
+   "THR-2"
+  ],
+  "why": "The string literal decays to const char*."
+ },
+ "p23": {
+  "outcome": "runs",
+  "rules": [
+   "THR-8"
+  ],
+  "why": "The object lives through the rethrow until the last handler ends."
+ },
+ "p24": {
+  "outcome": "runs",
+  "rules": [
+   "THR-1"
+  ],
+  "why": "The throw from the copy into the exception object leaves the throw and is caught by the int handler."
+ },
+ "p25": {
+  "outcome": "runs",
+  "rules": [
+   "THR-1"
+  ],
+  "why": "local is declared outside the try block, so it is copied."
+ },
+ "p26": {
+  "outcome": "compiles",
+  "rules": [
+   "THR-3"
+  ],
+  "why": "A potentially throwing destructor is permitted; no main."
+ },
+ "p27": {
+  "outcome": "run-fail",
+  "rules": [
+   "THR-7",
+   "UNW-5"
+  ],
+  "why": "A rethrow with no handled exception ends the program."
+ },
+ "p28": {
+  "outcome": "runs",
+  "rules": [
+   "THR-1"
+  ],
+  "why": "local is inside every try block around the throw, so it is moved."
+ },
+ "p29": {
+  "outcome": "compiles",
+  "rules": [
+   "THR-5"
+  ],
+  "why": "throw is a void prvalue and can be an operand of ?:; no main."
+ },
+ "p30": {
+  "outcome": "compiles",
+  "rules": [
+   "THR-1",
+   "THR-3"
+  ],
+  "why": "A prvalue operand needs no copy or move, so deleted ones do not matter; no main."
+ },
+ "p31": {
+  "outcome": "run-fail",
+  "rules": [
+   "UNW-5",
+   "DTOR-4"
+  ],
+  "why": "Bad's destructor is noexcept by default, so the throw from it ends the program."
+ },
+ "p32": {
+  "outcome": "reject",
+  "rules": [
+   "THR-3"
+  ],
+  "why": "The copy constructor needed for the lvalue operand is private."
+ },
+ "p33": {
+  "outcome": "runs",
+  "rules": [
+   "THR-10"
+  ],
+  "why": "The constexpr constructor runs at run time and throws -argc normally."
+ },
+ "p34": {
+  "outcome": "runs",
+  "rules": [
+   "THR-6"
+  ],
+  "why": "The rethrow passes the same 3 on."
+ },
+ "p35": {
+  "outcome": "reject",
+  "rules": [
+   "THR-3"
+  ],
+  "why": "The destructor of the exception object is private."
+ },
+ "p36": {
+  "outcome": "runs",
+  "rules": [
+   "THR-2"
+  ],
+  "why": "The exception object has no const, so a non-const reference binds to it."
+ },
+ "p37": {
+  "outcome": "runs",
+  "rules": [
+   "THR-8",
+   "THR-1"
+  ],
+  "why": "The prvalue needs no copy, the by-value handler makes one copy, and both the parameter and the exception object end before the return."
+ },
+ "p38": {
+  "outcome": "runs",
+  "rules": [
+   "THR-13"
+  ],
+  "why": "Neither the global nor the class operator new is called for exception storage."
+ },
+ "p39": {
+  "outcome": "runs",
+  "rules": [
+   "THR-1"
+  ],
+  "why": "raise has no try block, so the parameter is moved."
+ },
+ "p40": {
+  "outcome": "run-fail",
+  "rules": [
+   "THR-9",
+   "UNW-5"
+  ],
+  "why": "An exception leaves a noexcept function, so the program ends."
+ },
+ "p41": {
+  "outcome": "runs",
+  "rules": [
+   "THR-2"
+  ],
+  "why": "The function decays to a pointer to function."
+ }
+}

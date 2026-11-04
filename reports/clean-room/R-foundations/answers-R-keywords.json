@@ -1,0 +1,700 @@
+{
+ "p01": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "break is a keyword, so it cannot name the variable."
+ },
+ "p02": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "while is a keyword, so it cannot name the variable."
+ },
+ "p03": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "char16_t is a keyword, so it cannot name the variable."
+ },
+ "p04": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "typedef is a keyword, so it cannot name the variable."
+ },
+ "p05": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "using is a keyword, so it cannot name the variable."
+ },
+ "p06": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "co_await is a keyword, so it cannot name the variable."
+ },
+ "p07": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1",
+   "KW-2"
+  ],
+  "why": "compl is a keyword, so it cannot name the variable. It is an alternative operator spelling (KW-2)."
+ },
+ "p08": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "co_yield is a keyword, so it cannot name the variable."
+ },
+ "p09": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "asm is a keyword, so it cannot name the variable."
+ },
+ "p10": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1",
+   "KW-2"
+  ],
+  "why": "not_eq is a keyword, so it cannot name the variable. It is an alternative operator spelling (KW-2)."
+ },
+ "p11": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1",
+   "KW-2"
+  ],
+  "why": "and_eq is a keyword, so it cannot name the variable. It is an alternative operator spelling (KW-2)."
+ },
+ "p12": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "default is a keyword, so it cannot name the variable."
+ },
+ "p13": {
+  "outcome": "compiles",
+  "rules": [
+   "KW-4"
+  ],
+  "why": "The names are reserved, but the rule needs no diagnostic and every compiler accepts them; there is no main."
+ },
+ "p14": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "sizeof is a keyword, so it cannot name the variable."
+ },
+ "p15": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "protected is a keyword, so it cannot name the variable."
+ },
+ "p16": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "decltype is a keyword, so it cannot name the variable."
+ },
+ "p17": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "reinterpret_cast is a keyword, so it cannot name the variable."
+ },
+ "p18": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "static_cast is a keyword, so it cannot name the variable."
+ },
+ "p19": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "thread_local is a keyword, so it cannot name the variable."
+ },
+ "p20": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "template is a keyword, so it cannot name the variable."
+ },
+ "p21": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "if is a keyword, so it cannot name the variable."
+ },
+ "p22": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "constexpr is a keyword, so it cannot name the variable."
+ },
+ "p23": {
+  "outcome": "runs",
+  "rules": [
+   "KW-2"
+  ],
+  "why": "and/or short-circuit like && and ||, not_eq is !=, xor is ^, and compl 0 == -1 is (~0) == -1, so main returns 0."
+ },
+ "p24": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "virtual is a keyword, so it cannot name the variable."
+ },
+ "p25": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "signed is a keyword, so it cannot name the variable."
+ },
+ "p26": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "alignof is a keyword, so it cannot name the variable."
+ },
+ "p27": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "false is a keyword, so it cannot name the variable."
+ },
+ "p28": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "typename is a keyword, so it cannot name the variable."
+ },
+ "p29": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "delete is a keyword, so it cannot name the variable."
+ },
+ "p30": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "try is a keyword, so it cannot name the variable."
+ },
+ "p31": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "export is a keyword, so it cannot name the variable."
+ },
+ "p32": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "union is a keyword, so it cannot name the variable."
+ },
+ "p33": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "requires is a keyword, so it cannot name the variable."
+ },
+ "p34": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "catch is a keyword, so it cannot name the variable."
+ },
+ "p35": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "static_assert is a keyword, so it cannot name the variable."
+ },
+ "p36": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "switch is a keyword, so it cannot name the variable."
+ },
+ "p37": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "concept is a keyword, so it cannot name the variable."
+ },
+ "p38": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "explicit is a keyword, so it cannot name the variable."
+ },
+ "p39": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "long is a keyword, so it cannot name the variable."
+ },
+ "p40": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "return is a keyword, so it cannot name the variable."
+ },
+ "p41": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "auto is a keyword, so it cannot name the variable."
+ },
+ "p42": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "co_return is a keyword, so it cannot name the variable."
+ },
+ "p43": {
+  "outcome": "compiles",
+  "rules": [
+   "KW-4"
+  ],
+  "why": "Reserved names need no diagnostic and the compilers accept them; there is no main."
+ },
+ "p44": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "for is a keyword, so it cannot name the variable."
+ },
+ "p45": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1",
+   "KW-2"
+  ],
+  "why": "bitand is a keyword, so it cannot name the variable. It is an alternative operator spelling (KW-2)."
+ },
+ "p46": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "constinit is a keyword, so it cannot name the variable."
+ },
+ "p47": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "float is a keyword, so it cannot name the variable."
+ },
+ "p48": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "case is a keyword, so it cannot name the variable."
+ },
+ "p49": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "enum is a keyword, so it cannot name the variable."
+ },
+ "p50": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1",
+   "KW-2"
+  ],
+  "why": "and is a keyword, so it cannot name the variable. It is an alternative operator spelling (KW-2)."
+ },
+ "p51": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "const is a keyword, so it cannot name the variable."
+ },
+ "p52": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "const_cast is a keyword, so it cannot name the variable."
+ },
+ "p53": {
+  "outcome": "compiles",
+  "rules": [
+   "KW-2"
+  ],
+  "why": "Each alternative spelling means its operator; v goes 6, 2, 10, 11."
+ },
+ "p54": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "mutable is a keyword, so it cannot name the variable."
+ },
+ "p55": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "dynamic_cast is a keyword, so it cannot name the variable."
+ },
+ "p56": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "static is a keyword, so it cannot name the variable."
+ },
+ "p57": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "inline is a keyword, so it cannot name the variable."
+ },
+ "p58": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "register is a keyword, so it cannot name the variable."
+ },
+ "p59": {
+  "outcome": "compiles",
+  "rules": [
+   "KW-3"
+  ],
+  "why": "final is an identifier and can name a class."
+ },
+ "p60": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1",
+   "KW-2"
+  ],
+  "why": "bitor is a keyword, so it cannot name the variable. It is an alternative operator spelling (KW-2)."
+ },
+ "p61": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "typeid is a keyword, so it cannot name the variable."
+ },
+ "p62": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "this is a keyword, so it cannot name the variable."
+ },
+ "p63": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "bool is a keyword, so it cannot name the variable."
+ },
+ "p64": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "int is a keyword, so it cannot name the variable."
+ },
+ "p65": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "do is a keyword, so it cannot name the variable."
+ },
+ "p66": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "new is a keyword, so it cannot name the variable."
+ },
+ "p67": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "unsigned is a keyword, so it cannot name the variable."
+ },
+ "p68": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "char is a keyword, so it cannot name the variable."
+ },
+ "p69": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "alignas is a keyword, so it cannot name the variable."
+ },
+ "p70": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "throw is a keyword, so it cannot name the variable."
+ },
+ "p71": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1",
+   "KW-2"
+  ],
+  "why": "xor is a keyword, so it cannot name the variable. It is an alternative operator spelling (KW-2)."
+ },
+ "p72": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "wchar_t is a keyword, so it cannot name the variable."
+ },
+ "p73": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "volatile is a keyword, so it cannot name the variable."
+ },
+ "p74": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "operator is a keyword, so it cannot name the variable."
+ },
+ "p75": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "namespace is a keyword, so it cannot name the variable."
+ },
+ "p76": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "continue is a keyword, so it cannot name the variable."
+ },
+ "p77": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1",
+   "KW-2"
+  ],
+  "why": "or_eq is a keyword, so it cannot name the variable. It is an alternative operator spelling (KW-2)."
+ },
+ "p78": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "else is a keyword, so it cannot name the variable."
+ },
+ "p79": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "private is a keyword, so it cannot name the variable."
+ },
+ "p80": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "char32_t is a keyword, so it cannot name the variable."
+ },
+ "p81": {
+  "outcome": "compiles",
+  "rules": [
+   "KW-3",
+   "VIRT-3"
+  ],
+  "why": "override, final, import, and module are identifiers; final and override keep their special meaning after the class name and the member declarator."
+ },
+ "p82": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "public is a keyword, so it cannot name the variable."
+ },
+ "p83": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "true is a keyword, so it cannot name the variable."
+ },
+ "p84": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "noexcept is a keyword, so it cannot name the variable."
+ },
+ "p85": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "struct is a keyword, so it cannot name the variable."
+ },
+ "p86": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1",
+   "KW-2"
+  ],
+  "why": "xor_eq is a keyword, so it cannot name the variable. It is an alternative operator spelling (KW-2)."
+ },
+ "p87": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "char8_t is a keyword, so it cannot name the variable."
+ },
+ "p88": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "extern is a keyword, so it cannot name the variable."
+ },
+ "p89": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "friend is a keyword, so it cannot name the variable."
+ },
+ "p90": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "short is a keyword, so it cannot name the variable."
+ },
+ "p91": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "nullptr is a keyword, so it cannot name the variable."
+ },
+ "p92": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1",
+   "KW-2"
+  ],
+  "why": "or is a keyword, so it cannot name the variable. It is an alternative operator spelling (KW-2)."
+ },
+ "p93": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "void is a keyword, so it cannot name the variable."
+ },
+ "p94": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "class is a keyword, so it cannot name the variable."
+ },
+ "p95": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "goto is a keyword, so it cannot name the variable."
+ },
+ "p96": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "consteval is a keyword, so it cannot name the variable."
+ },
+ "p97": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1",
+   "KW-2"
+  ],
+  "why": "not is a keyword, so it cannot name the variable. It is an alternative operator spelling (KW-2)."
+ },
+ "p98": {
+  "outcome": "reject",
+  "rules": [
+   "KW-1"
+  ],
+  "why": "double is a keyword, so it cannot name the variable."
+ }
+}

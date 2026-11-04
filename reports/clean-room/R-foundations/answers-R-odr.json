@@ -1,0 +1,534 @@
+{
+ "p01": {
+  "outcome": "link-fail",
+  "rules": [
+   "ODR-8",
+   "INC-1"
+  ],
+  "why": "twice.h defines a non-inline function, and both units include it, so the program has two definitions of twice."
+ },
+ "p02": {
+  "outcome": "reject",
+  "rules": [
+   "ODR-1"
+  ],
+  "why": "The static data member Box::count is defined twice in one unit."
+ },
+ "p03": {
+  "outcome": "runs",
+  "rules": [
+   "ODR-12"
+  ],
+  "why": "start_of<int> is one variable in the program, so the other unit sees the 8, and start_of<long> keeps 7."
+ },
+ "p04": {
+  "outcome": "runs",
+  "rules": [
+   "INC-4"
+  ],
+  "why": "A guard value does not change the guard, so the second inclusion adds nothing; the macro value 1 is usable in the static_assert."
+ },
+ "p05": {
+  "outcome": "runs",
+  "rules": [
+   "ODR-3",
+   "ODR-2"
+  ],
+  "why": "The local class only reads the value of a local constant and a non-mutable member of a local constexpr object, which is no use."
+ },
+ "p06": {
+  "outcome": "runs",
+  "rules": [
+   "INC-4"
+  ],
+  "why": "The include guard makes the second inclusion empty."
+ },
+ "p07": {
+  "outcome": "reject",
+  "rules": [
+   "ODR-1"
+  ],
+  "why": "An inline variable is defined twice in one unit."
+ },
+ "p08": {
+  "outcome": "link-fail",
+  "rules": [
+   "ODR-3",
+   "ODR-8"
+  ],
+  "why": "Binding a reference to Limits::top uses it, and the static member has no definition outside the class."
+ },
+ "p09": {
+  "outcome": "reject",
+  "rules": [
+   "ODR-1"
+  ],
+  "why": "The enumeration Color is defined twice in one unit."
+ },
+ "p10": {
+  "outcome": "runs",
+  "rules": [
+   "ODR-14"
+  ],
+  "why": "Only one unit declares the explicit specialization; no diagnostic is required and the program accepts either result."
+ },
+ "p11": {
+  "outcome": "runs",
+  "rules": [
+   "INC-5"
+  ],
+  "why": "pragma once after text still makes every later inclusion add nothing, including the text before it."
+ },
+ "p12": {
+  "outcome": "runs",
+  "rules": [
+   "INC-2",
+   "INC-1"
+  ],
+  "why": "\"../level.h\" is found relative to nested/, so it is the top-level level.h with level 1."
+ },
+ "p13": {
+  "outcome": "runs",
+  "rules": [
+   "ODR-1"
+  ],
+  "why": "Repeated declarations are not definitions, and each entity is defined once; 2+1+1 is 4."
+ },
+ "p14": {
+  "outcome": "depends",
+  "rules": [
+   "ODR-2",
+   "ODR-3",
+   "Q-0130"
+  ],
+  "why": "Binding a reference to the local constant in a local class is a use; Clang and GCC reject, EDG accepts."
+ },
+ "p15": {
+  "outcome": "runs",
+  "rules": [
+   "ODR-3",
+   "UNEV-1"
+  ],
+  "why": "Every name of the undefined entities is in an unevaluated operand or a discarded statement, so nothing is used and the program links."
+ },
+ "p16": {
+  "outcome": "depends",
+  "rules": [
+   "ODR-2",
+   "ODR-3",
+   "Q-0129"
+  ],
+  "why": "The lambda copies a whole local constexpr class object without a capture; Clang rejects, GCC and EDG accept and the program returns 0."
+ },
+ "p17": {
+  "outcome": "link-fail",
+  "rules": [
+   "ODR-13"
+  ],
+  "why": "rate<char> is a non-inline explicit specialization of a variable template defined in a header that two units include."
+ },
+ "p18": {
+  "outcome": "runs",
+  "rules": [
+   "ODR-14"
+  ],
+  "why": "Only one unit declares the partial specialization; no diagnostic is required and the program accepts either result."
+ },
+ "p19": {
+  "outcome": "depends",
+  "rules": [
+   "ODR-2",
+   "ODR-3",
+   "Q-0130"
+  ],
+  "why": "Reading a mutable member of a local constant is a use without a capture; Clang and GCC reject, EDG accepts."
+ },
+ "p20": {
+  "outcome": "link-fail",
+  "rules": [
+   "ODR-4"
+  ],
+  "why": "Derived's destructor uses Base's pure destructor, which has no definition."
+ },
+ "p21": {
+  "outcome": "runs",
+  "rules": [
+   "ODR-10"
+  ],
+  "why": "The two definitions of Level differ, which needs no diagnostic; each unit uses its own enumerator values, 1 and 5, so the sum is 6."
+ },
+ "p22": {
+  "outcome": "runs",
+  "rules": [
+   "ODR-12"
+  ],
+  "why": "Members and the static data member of the class template are shared across units, with one Box<int>::made."
+ },
+ "p23": {
+  "outcome": "runs",
+  "rules": [
+   "ODR-6"
+  ],
+  "why": "The call does not use the default argument, so seed is not used and needs no definition."
+ },
+ "p24": {
+  "outcome": "reject",
+  "rules": [
+   "ODR-9",
+   "ODR-11"
+  ],
+  "why": "A function with internal linkage is used and not defined; Clang and GCC warn, and -Werror makes the warning an error (EDG skips the test)."
+ },
+ "p25": {
+  "outcome": "runs",
+  "rules": [
+   "ODR-12",
+   "ODR-13"
+  ],
+  "why": "The partial specialization's member, the class specialization's member defined in one unit, and the inline explicit specializations each have one address."
+ },
+ "p26": {
+  "outcome": "runs",
+  "rules": [
+   "INC-5"
+  ],
+  "why": "pragma once makes the second inclusion add nothing."
+ },
+ "p27": {
+  "outcome": "depends",
+  "rules": [
+   "ODR-12",
+   "Q-0297"
+  ],
+  "why": "Clang and GCC 16 give lower<int> and upper<int> one object and run; GCC 14 gives each unit its own object of a const or constexpr variable template, so the run returns 3."
+ },
+ "p28": {
+  "outcome": "runs",
+  "rules": [
+   "INC-4"
+  ],
+  "why": "Comments before the guard do not stop it."
+ },
+ "p29": {
+  "outcome": "link-fail",
+  "rules": [
+   "ODR-5"
+  ],
+  "why": "A virtual destructor uses its class's operator delete, which is declared and not defined."
+ },
+ "p30": {
+  "outcome": "reject",
+  "rules": [
+   "ODR-1"
+  ],
+  "why": "total is defined twice in one unit."
+ },
+ "p31": {
+  "outcome": "link-fail",
+  "rules": [
+   "ODR-13",
+   "ODR-8"
+  ],
+  "why": "The static member of an explicit class specialization follows ODR-8, and the header defines it in both units."
+ },
+ "p32": {
+  "outcome": "link-fail",
+  "rules": [
+   "ODR-5"
+  ],
+  "why": "The delete expression uses Item's destructor, which has no definition."
+ },
+ "p33": {
+  "outcome": "runs",
+  "rules": [
+   "ODR-12"
+  ],
+  "why": "The function template specialization and its static local have one address in the program."
+ },
+ "p34": {
+  "outcome": "reject",
+  "rules": [
+   "INC-3"
+  ],
+  "why": "No file matches the include."
+ },
+ "p35": {
+  "outcome": "link-fail",
+  "rules": [
+   "ODR-4"
+  ],
+  "why": "Whole's default constructor uses Part's constructor, which has no definition."
+ },
+ "p36": {
+  "outcome": "link-fail",
+  "rules": [
+   "ODR-6",
+   "ODR-8"
+  ],
+  "why": "The call uses the default argument, so seed is used and has no definition."
+ },
+ "p37": {
+  "outcome": "runs",
+  "rules": [
+   "INC-1"
+  ],
+  "why": "The include is replaced by the text 1, so main returns 1 - 1."
+ },
+ "p38": {
+  "outcome": "link-fail",
+  "rules": [
+   "ODR-3",
+   "ODR-8"
+  ],
+  "why": "Taking the function's address uses it, and it has no definition."
+ },
+ "p39": {
+  "outcome": "runs",
+  "rules": [
+   "ODR-3",
+   "ODR-8",
+   "Q-0315"
+  ],
+  "why": "The template argument uses declared_only, but every compiler links when nothing calls the function, which ODR-8 allows."
+ },
+ "p40": {
+  "outcome": "link-fail",
+  "rules": [
+   "ODR-5",
+   "ODR-8"
+  ],
+  "why": "Node's constructor can throw, so the new expression uses Node::operator delete, which has no definition."
+ },
+ "p41": {
+  "outcome": "reject",
+  "rules": [
+   "INC-4",
+   "ODR-1"
+  ],
+  "why": "Text after the guard's endif is added at each inclusion, so Outside is defined twice."
+ },
+ "p42": {
+  "outcome": "runs",
+  "rules": [
+   "ODR-3",
+   "UNEV-1"
+  ],
+  "why": "Both names appear only in sizeof, so neither is used."
+ },
+ "p43": {
+  "outcome": "runs",
+  "rules": [
+   "ODR-8"
+  ],
+  "why": "Member functions that are never used need no definition."
+ },
+ "p44": {
+  "outcome": "reject",
+  "rules": [
+   "INC-3"
+  ],
+  "why": "No file matches the include."
+ },
+ "p45": {
+  "outcome": "runs",
+  "rules": [
+   "INL-1",
+   "LNK-3",
+   "CE-3",
+   "INC-1"
+  ],
+  "why": "The inline constexpr is one object, the plain constexpr is one per unit, and far_limit is defined once with external linkage and read at run time."
+ },
+ "p46": {
+  "outcome": "depends",
+  "rules": [
+   "ODR-3",
+   "ODR-9",
+   "ODR-11",
+   "Q-0315"
+  ],
+  "why": "The template argument uses a function with internal linkage that has no definition; Clang warns and -Werror rejects, GCC gives no diagnostic and runs; EDG skips."
+ },
+ "p47": {
+  "outcome": "reject",
+  "rules": [
+   "ODR-1",
+   "INC-1"
+  ],
+  "why": "counter.h has no guard, so counter is defined twice in the unit."
+ },
+ "p48": {
+  "outcome": "depends",
+  "rules": [
+   "ODR-9",
+   "ODR-11",
+   "Q-0128"
+  ],
+  "why": "The only use of the undefined internal function is in an inline function nothing calls; Clang 22 and EDG reject, GCC gives no diagnostic and Clang 18 only warns, so both run."
+ },
+ "p49": {
+  "outcome": "runs",
+  "rules": [
+   "INC-4"
+  ],
+  "why": "Nested conditionals inside the guard do not stop it; Nested's v is 4."
+ },
+ "p50": {
+  "outcome": "runs",
+  "rules": [
+   "ODR-3",
+   "OVL-18"
+  ],
+  "why": "Only pick(int) is selected from the overload set, so the undefined pick(double) is not used."
+ },
+ "p51": {
+  "outcome": "runs",
+  "rules": [
+   "ODR-7",
+   "ODR-8"
+  ],
+  "why": "The enumeration is defined the same way in both units and next_code once."
+ },
+ "p52": {
+  "outcome": "runs",
+  "rules": [
+   "ODR-10"
+  ],
+  "why": "The class templates differ, which needs no diagnostic; the program accepts either size."
+ },
+ "p53": {
+  "outcome": "runs",
+  "rules": [
+   "ODR-10",
+   "ODR-7"
+  ],
+  "why": "The inline variables differ, which needs no diagnostic; the program accepts either value."
+ },
+ "p54": {
+  "outcome": "runs",
+  "rules": [
+   "ODR-14",
+   "ODR-13"
+  ],
+  "why": "Only one unit declares the explicit specialization; no diagnostic, and the program accepts either result."
+ },
+ "p55": {
+  "outcome": "link-fail",
+  "rules": [
+   "ODR-4"
+  ],
+  "why": "The copy uses the copy constructor, which has no definition."
+ },
+ "p56": {
+  "outcome": "runs",
+  "rules": [
+   "ODR-4"
+  ],
+  "why": "Each prvalue initializes an object of its own type, so no copy or move constructor is used."
+ },
+ "p57": {
+  "outcome": "runs",
+  "rules": [
+   "INC-5"
+  ],
+  "why": "pragma once makes the second inclusion add nothing."
+ },
+ "p58": {
+  "outcome": "runs",
+  "rules": [
+   "ODR-3"
+  ],
+  "why": "Every occurrence of Limits::top and width only reads a constant value, so Limits::top needs no definition; 5 + 8 is 13."
+ },
+ "p59": {
+  "outcome": "runs",
+  "rules": [
+   "ODR-14",
+   "ODR-13"
+  ],
+  "why": "Both units declare the explicit specialization, and one unit defines it."
+ },
+ "p60": {
+  "outcome": "runs",
+  "rules": [
+   "INC-4",
+   "ODR-7",
+   "ODR-8"
+  ],
+  "why": "The guard skips the second inclusion, the inline variable has one address, and perimeter is defined once."
+ },
+ "p61": {
+  "outcome": "reject",
+  "rules": [
+   "ODR-1"
+  ],
+  "why": "Each `int total;` is a definition, so total is defined twice in one unit."
+ },
+ "p62": {
+  "outcome": "runs",
+  "rules": [
+   "ODR-10",
+   "ODR-12"
+  ],
+  "why": "The variable templates differ, which needs no diagnostic; the program accepts either value."
+ },
+ "p63": {
+  "outcome": "runs",
+  "rules": [
+   "ODR-10"
+  ],
+  "why": "factor names a different entity in each unit, so the definitions do not match; no diagnostic, and either result is accepted."
+ },
+ "p64": {
+  "outcome": "runs",
+  "rules": [
+   "INC-2"
+  ],
+  "why": "\"level.h\" from nested/outer.h finds nested/level.h first, so level is 2."
+ },
+ "p65": {
+  "outcome": "link-fail",
+  "rules": [
+   "ODR-6",
+   "VIRT-20"
+  ],
+  "why": "Creating a Widget uses every virtual function that is not pure, and draw has no definition."
+ },
+ "p66": {
+  "outcome": "link-fail",
+  "rules": [
+   "ODR-4"
+  ],
+  "why": "Destroying guard uses ~Guard, which has no definition."
+ },
+ "p67": {
+  "outcome": "runs",
+  "rules": [
+   "ODR-10"
+  ],
+  "why": "The class definitions differ, which needs no diagnostic; the program accepts either size."
+ },
+ "p68": {
+  "outcome": "runs",
+  "rules": [
+   "ODR-3",
+   "ODR-2"
+  ],
+  "why": "The lambdas only read values of local constants (through ?:) and of a constexpr member, and alias is a namespace-scope reference, so no capture is needed."
+ },
+ "p69": {
+  "outcome": "runs",
+  "rules": [
+   "ODR-10"
+  ],
+  "why": "The inline functions name different factor objects, so they do not match; no diagnostic, and either result is accepted."
+ },
+ "p70": {
+  "outcome": "reject",
+  "rules": [
+   "ODR-9",
+   "ODR-11"
+  ],
+  "why": "A function in an unnamed namespace has internal linkage and is used without a definition; the warning becomes an error under -Werror."
+ }
+}
