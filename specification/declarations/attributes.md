@@ -252,7 +252,8 @@ point. If the expression is false there, the behavior is undefined.
 
 `[[no_unique_address]]` can apply to a data member. If the type of the
 member is empty, the implementation can give the member no storage of
-its own. This choice is implementation-defined.
+its own. This choice is implementation-defined. {rule}`CLS-31` gives
+the choice of the matrix targets.
 :::
 
 ## Recommended Practice

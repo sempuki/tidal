@@ -141,13 +141,23 @@ applies to objects in:
 
 :::{rule} ALN-5
 :kind: impl-defined
-:tests: declarations/alignment/extended-huge.cpp declarations/alignment/max-fundamental.cpp
+:tests: declarations/alignment/extended-huge.cpp declarations/alignment/max-fundamental.cpp declarations/alignment/extended-huge-ilp32.cpp declarations/alignment/extended-edg-largest.cpp declarations/alignment/extended-edg-largest-ilp32.cpp declarations/alignment/extended-edg-beyond.cpp declarations/alignment/extended-edg-beyond-ilp32.cpp declarations/alignment/extended-beyond-largest.cpp declarations/alignment/extended-beyond-largest-ilp32.cpp
 
 The alignments of the fundamental types, the largest
 {term}`fundamental alignment`, and the largest extended alignment are
-implementation-defined. On the x86-64 Linux targets in the matrix,
-`long double` has alignment 16, and 16 is the largest fundamental
-alignment. EDG 7.0 rejects an alignment of 2^28, which Clang and GCC accept.
+implementation-defined. An implementation rejects an `alignas` operand
+that is larger than its largest extended alignment
+({question}`Q-0360`). The matrix
+compilers choose these values:
+
+| Alignment | Compiler | x86-64 Linux | `-m32` |
+|---|---|---|---|
+| of each fundamental type | Clang, GCC, EDG | {rule}`TYP-2` | {rule}`TYP-2` |
+| the largest fundamental alignment | Clang | 16 | 8 (Evidence) |
+| the largest fundamental alignment | GCC | 16 | 16 (Evidence) |
+| the largest fundamental alignment | EDG | no library type (Evidence) | no library type (Evidence) |
+| the largest extended alignment | Clang, GCC | 2<sup>28</sup> | 2<sup>28</sup> |
+| the largest extended alignment | EDG | 2<sup>15</sup> | 2<sup>15</sup> |
 :::
 
 :::{rule} ALN-6
@@ -190,9 +200,9 @@ static_assert(round_up(13, 8) == 16 && round_up(16, 8) == 16);
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 21
-of 37 tests. Each divergence has a question, except the
-implementation-defined limit of ALN-5.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 23
+of 44 tests. Each divergence has a question, except the
+implementation-defined limits of ALN-5.
 
 - ALN-1: GCC uses the last of several `alignas` on a class. On a
   variable and on a data member, GCC uses the strictest, as Clang and
@@ -215,10 +225,18 @@ implementation-defined limit of ALN-5.
   library type *(library referenced)*. With that type, Clang and GCC
   give 16 on x86-64. With `-m32`, GCC 14 gives 16, and Clang 18 and 22
   give 8, which is also the default new alignment of Clang there
-  ({rule}`NEW-27`).
+  ({rule}`NEW-27`). Tests use no standard header, so these values come
+  from the writer's probes. The x86-64 value is also the alignment of
+  `long double`, which a test checks. In the matrix, EDG has no library.
+  Its largest alignment of a fundamental type is 16 on x86-64 and 8
+  with `-m32` ({question}`Q-0120`).
 - ALN-5 is implementation-defined because the alignments come from the
-  target's conventions. EDG 7.0 rejects an alignment of 2^28 ("invalid
-  alignment value"), which Clang and GCC accept.
+  target's conventions. The tests check the largest extended alignment
+  of each compiler and the next power of two, on both targets. EDG 7.0
+  rejects 2^16 and larger ("invalid alignment value"). GCC rejects
+  2^29 and larger ("exceeds maximum"). Clang accepts an `alignas` of
+  2^29 to 2^32 with no diagnostic, and the class then has alignment 1.
+  Clang rejects 2^33 ({question}`Q-0360`).
 - ALN-6 needs no diagnostic because each translation unit is checked
   alone. Every compiler accepts two units whose declarations of one
   variable have different `alignas`. Clang and GCC link the units, and

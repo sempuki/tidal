@@ -228,6 +228,10 @@ All eight compilers agree on all 22 tests. The results are in
   evaluation succeeds, the constant branch gives the value. If the
   evaluation fails, the initializer runs at run time and takes the other
   branch. With every compiler, `fixed` is 1 and `moved` is 2.
+- SINIT-5, SINIT-6 with `-m32`: the matrix runs no program built with
+  `-m32`, because the host compilers have no 32-bit C library. In the
+  writer's probes, the run tests of the two rules give the same
+  results with `-m32` in the GCC 14, Clang 18, and Clang 22 containers.
 
 Inputs: clang-sema-init, edg-decl-inits, clang-diag-sema (see
 `inputs/MANIFEST.md`).

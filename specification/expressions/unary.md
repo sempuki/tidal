@@ -351,7 +351,7 @@ The behavior of prefix `++` and `--` is undefined in these cases:
 
 The sizes of types other than the character types are
 implementation-defined. These sizes include the size of the type of
-`sizeof 0`.
+`sizeof 0`. {rule}`TYP-1` gives the sizes on the matrix targets.
 :::
 
 ## Recommended Practice

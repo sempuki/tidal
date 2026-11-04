@@ -318,13 +318,20 @@ value. Which type is unspecified ({question}`Q-0114`).
 
 :::{rule} ENUM-5
 :kind: impl-defined
-:tests: declarations/enumerations/unscoped-underlying-holds-values.cpp declarations/enumerations/unscoped-size-lp64.cpp declarations/enumerations/implicit-value-overflow-unscoped.cpp declarations/enumerations/unscoped-value-too-large.cpp
+:tests: declarations/enumerations/unscoped-underlying-holds-values.cpp declarations/enumerations/unscoped-size-lp64.cpp declarations/enumerations/implicit-value-overflow-unscoped.cpp declarations/enumerations/unscoped-value-too-large.cpp declarations/enumerations/unscoped-size-wide-lp64.cpp declarations/enumerations/unscoped-size-ilp32.cpp
 
 The underlying type of an unscoped enumeration without `: type` is
 implementation-defined. The underlying type is an integer type that can
 hold all enumerator values, and it is not wider than `int` unless a
 value needs more. If no standard integer type can hold all values, the
-implementation can use a wider type or reject the enumeration.
+implementation can use a wider type or reject the enumeration. The
+matrix compilers take the first type that holds all values, on x86-64
+and with `-m32`, and try the types in this order:
+
+| Compiler | No value is negative | A value is negative |
+|---|---|---|
+| Clang, GCC | the unsigned forms of `int`, `long`, and `long long` | `int`, `long`, `long long` |
+| EDG | `int`, `long`, and `long long`, each followed by its unsigned form | the same |
 :::
 
 ## Examples
@@ -371,12 +378,19 @@ static_assert(sizeof names / sizeof names[0] ==
 
 ## Evidence
 
-All eight compilers agree on 69 of 72 tests. The results are in
+All eight compilers agree on 71 of 74 tests. The results are in
 `tests/RESULTS.md`.
 
 - **ENUM-5.** With `-fshort-enums`, Clang and GCC give `enum { S = 1 }`
   an underlying type of 1 byte. By default its size is the size of
   `int`.
+- **ENUM-5, the matrix types.** A test with no standard header observes
+  the size of the underlying type and the values that it holds. The
+  tests check the sizes, which agree on every compiler. The types of
+  the table come from the writer's probes with each compiler's builtin
+  query (decision 0051). The families differ only in signedness. An
+  enumeration with no enumerators gets `unsigned int` from Clang and
+  GCC, and `int` from EDG.
 - **ENUM-5, no standard underlying type.** GCC accepts an unscoped
   enumeration that needs more than 64 bits, and uses a 128-bit type.
   Clang and EDG reject the enumeration. The provisional answer is that

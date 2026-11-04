@@ -265,7 +265,8 @@ The order of evaluation of the two operands is unspecified.
 
 The common type, and so the result type, can depend on the sizes of the
 integer types. The sizes of the integer types are
-implementation-defined.
+implementation-defined, and {rule}`TYP-1` gives the sizes on the
+matrix targets.
 :::
 
 :::{rule} MUL-20
@@ -447,5 +448,9 @@ All eight compilers agree on 47 of 52 tests.
 - MUL-14: no sanitizer of GCC or Clang stops an unsequenced
   modification. The compilers warn at translation instead
   (`unsequenced-modification.cpp`).
+- MUL-11, MUL-20 with `-m32`: the matrix runs no program built with
+  `-m32`, because the host compilers have no 32-bit C library. In the
+  writer's probes, the run tests of the two rules give the same
+  results with `-m32` in the GCC 14, Clang 18, and Clang 22 containers.
 
 Inputs: clang-sema-expr.

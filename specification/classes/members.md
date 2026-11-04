@@ -67,7 +67,7 @@ static.
 :::
 
 :::{principle} CLS-P4
-:rules: CLS-10 CLS-11 CLS-19 CLS-29 CLS-30 CLS-31 CLS-32 CLS-33 CLS-34
+:rules: CLS-10 CLS-11 CLS-19 CLS-29 CLS-30 CLS-31 CLS-32 CLS-33 CLS-34 CLS-35
 
 The members of an object lie in the object in the order of their
 declarations, and each object has a size, even an empty one, so that two
@@ -103,6 +103,8 @@ implementation's choice, in two grades:
 |---|---|
 | Implementation-defined (CLS-11, CLS-31) | the size of an empty class, the size of other empty bases and members, alignment, bit-fields |
 | Unspecified (CLS-34) | the place of the pointer for virtual calls, padding, the use of the end padding of a base |
+
+CLS-31, BF-9, and CLS-35 give the choices of the matrix targets.
 :::
 
 ## Syntax
@@ -483,14 +485,15 @@ offset of such a base is unspecified (CLS-34).
 
 :::{rule} CLS-11
 :kind: impl-defined
-:tests: classes/members/empty-class-size-one.cpp classes/members/empty-class-array-size.cpp
+:tests: classes/members/empty-class-size-one.cpp classes/members/empty-class-array-size.cpp classes/members/empty-class-size-one-ilp32.cpp
 
-The size of an empty class is implementation-defined.
+The size of an empty class is implementation-defined. Every compiler in
+the matrix gives size 1, on x86-64 and with `-m32`.
 :::
 
 :::{rule} CLS-31
 :kind: impl-defined
-:tests: classes/members/layout-empty-base-not-standard-layout.cpp classes/members/layout-overlap-member.cpp classes/members/layout-overlap-member-ilp32.cpp
+:tests: classes/members/layout-empty-base-not-standard-layout.cpp classes/members/layout-overlap-member.cpp classes/members/layout-overlap-member-ilp32.cpp declarations/attributes/no-unique-address.cpp
 
 These parts of a class layout are implementation-defined:
 
@@ -510,7 +513,7 @@ Every compiler in the matrix makes these choices, on x86-64 and with
 
 :::{rule} CLS-34
 :kind: unspecified
-:tests: classes/members/layout-base-type-first-member.cpp classes/members/layout-virtual-first-member.cpp classes/members/layout-virtual-first-member-ilp32.cpp classes/members/layout-base-tail-padding.cpp classes/members/layout-base-tail-padding-ilp32.cpp classes/members/layout-base-tail-padding-defaulted.cpp classes/members/layout-overlap-member.cpp classes/members/layout-overlap-member-ilp32.cpp
+:tests: classes/members/layout-base-type-first-member.cpp classes/members/layout-virtual-first-member.cpp classes/members/layout-virtual-first-member-ilp32.cpp classes/members/layout-base-tail-padding.cpp classes/members/layout-base-tail-padding-ilp32.cpp classes/members/layout-base-tail-padding-defaulted.cpp classes/members/layout-overlap-member.cpp classes/members/layout-overlap-member-ilp32.cpp classes/members/layout-order-and-pointer.cpp classes/members/layout-order-and-pointer-ilp32.cpp classes/members/layout-tail-padding-conditions.cpp classes/members/layout-tail-padding-conditions-ilp32.cpp classes/members/layout-tail-padding-deleted-constructor.cpp classes/members/layout-tail-padding-deleted-constructor-ilp32.cpp classes/members/layout-tail-padding-move-assignment.cpp classes/members/layout-tail-padding-move-assignment-ilp32.cpp
 
 These parts of a class layout are unspecified, within CLS-10, CLS-30,
 CLS-31, and CLS-33:
@@ -520,6 +523,44 @@ CLS-31, and CLS-33:
 - the padding between members and at the end of the class,
 - whether later members use the padding at the end of a base or of a
   `[[no_unique_address]]` member.
+
+{rule}`CLS-35` gives the choices of the matrix targets.
+:::
+
+:::{rule} CLS-35
+:kind: unspecified
+:tests: classes/members/layout-order-and-pointer.cpp classes/members/layout-order-and-pointer-ilp32.cpp classes/members/layout-virtual-first-member.cpp classes/members/layout-virtual-first-member-ilp32.cpp classes/members/layout-base-type-first-member.cpp classes/members/layout-base-tail-padding.cpp classes/members/layout-base-tail-padding-ilp32.cpp classes/members/layout-tail-padding-conditions.cpp classes/members/layout-tail-padding-conditions-ilp32.cpp classes/members/layout-base-tail-padding-defaulted.cpp classes/members/layout-tail-padding-deleted-constructor.cpp classes/members/layout-tail-padding-deleted-constructor-ilp32.cpp classes/members/layout-tail-padding-move-assignment.cpp classes/members/layout-tail-padding-move-assignment-ilp32.cpp classes/members/layout-overlap-member.cpp classes/members/layout-overlap-member-ilp32.cpp foundations/storage/empty-base-takes-no-bytes.cpp foundations/storage/base-bytes-shared-with-member.cpp foundations/storage/no-unique-address-member-shares-bytes.cpp
+
+The matrix targets, x86-64 and `-m32`, make the choices of CLS-34 as
+the table gives:
+
+| Part of the layout | Choice |
+|---|---|
+| Order | The pointer for virtual calls comes first, if the class has its own. The bases that are not virtual follow in the order of the base list. Then come the members, and then the virtual bases. |
+| Pointer for virtual calls | A class with a virtual function or a {term}`virtual base` has the pointer at offset 0. If a base that is not virtual has such a pointer, the first such base goes to offset 0, and the class uses the pointer of that base. |
+| Padding | Each base and member starts at the next multiple of its alignment ({rule}`TYP-2`). The size of the class is a multiple of the largest alignment of its pointer, bases, and members. |
+| An empty base | The base goes to offset 0. A later base or member that would put two subobjects of one type at one address moves to the next free offset. |
+| A base, or a `[[no_unique_address]]` member, of class type `C` | If `C` keeps its end padding, the subobject takes `sizeof(C)` bytes. If not, the next bases and members can start in the padding at the end of `C`. |
+| Any other member | The next members start after its `sizeof` bytes. |
+
+On GCC 16, Clang 22, and Clang 18, a class keeps its end padding if all
+of these conditions hold:
+
+- The class has no base and no virtual function.
+- No data member that is not static is `private` or `protected`, or has
+  a default member initializer.
+- The class has no user-provided constructor, destructor, or copy
+  assignment operator.
+- Each data member that is not static has a scalar type, a class or
+  union type that keeps its end padding, or an array of such a type.
+
+Two compilers add conditions. A class does not keep its end padding if
+it also declares the member that the table names:
+
+| Compiler | Member |
+|---|---|
+| GCC 14 | a constructor, also a defaulted or deleted one ({question}`Q-0342`) |
+| EDG 7.0 | a deleted constructor, or a user-provided move assignment operator ({question}`Q-0361`) |
 :::
 
 :::{rule} CLS-21
@@ -558,8 +599,8 @@ struct Text {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 119
-of 125 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 128
+of 138 tests.
 
 - CLS-3: a missing definition of a static data member compiles in each
   translation unit. The linker reports the missing definition.
@@ -567,7 +608,6 @@ of 125 tests.
   ambiguity only at a call ({question}`Q-0027`).
 - CLS-9: Clang and GCC accept an anonymous struct member as an
   extension, and reject the member only under `-pedantic-errors`.
-- CLS-11: the size is 1 on every compiler in the matrix.
 - CLS-19, CLS-29, CLS-32: no core-language check gives a yes or no for
   standard-layout (inventory item OBS-no-core-standard-layout). The
   tests check the guarantees of CLS-30 for classes that meet the
@@ -599,25 +639,30 @@ of 125 tests.
 - CLS-33: an empty standard-layout base takes no bytes on every
   compiler, also in a class with a virtual function or with members in
   two accesses.
-- CLS-31, CLS-34: the layout tests use `sizeof` and run-time address
-  differences. The size and alignment come from the probes in each
-  test. CLS-31 holds the choices that each implementation documents:
-  the size of other empty objects, bit-fields, and alignment. The other
-  layout choices are unspecified (CLS-34), because an implementation
-  need not document them. Every compiler in the matrix makes these
-  choices for them, on x86-64 and with `-m32`:
+- CLS-31, CLS-34, CLS-35: the layout tests use `sizeof` and run-time
+  address differences. The size and alignment come from the probes in
+  each test. CLS-31 holds the choices that each implementation
+  documents: the size of other empty objects, bit-fields, and
+  alignment. The other layout choices are unspecified (CLS-34), because
+  an implementation need not document them. CLS-35 gives the choices
+  of the matrix compilers. The tests of CLS-35 check each condition of
+  its list with a base whose last member leaves 3 bytes of padding.
+- CLS-35: the compilers split on three kinds of declared member. The
+  table gives the size of a derived class that adds one `char` to such
+  a base, where 12 means that the base keeps its end padding:
 
-  | Case | Choice |
-  |---|---|
-  | An empty base whose type is the type of the first member | The base is at offset 0, and the member follows it. |
-  | A class with a virtual function | A pointer for virtual calls is at offset 0, and the first data member follows it. |
-  | A derived class whose base has padding at its end | The derived class puts its members into that padding if the base has a default member initializer, a user-provided special member, or a `private` or `protected` data member. Otherwise the members follow the padding ({question}`Q-0342`). |
-  | A `[[no_unique_address]]` member of class type with padding at its end | The next members use that padding under the same condition as for a base. |
+  | Member of the base | GCC 16, Clang 22, Clang 18 | GCC 14 | EDG 7.0 |
+  |---|---|---|---|
+  | a defaulted default constructor ({question}`Q-0342`) | 12 | 8 | 12 |
+  | a deleted constructor | 12 | 8 | 8 |
+  | a user-provided move assignment operator | 12 | 12 | 8 |
 
-  GCC 14 puts a derived member into the end padding of a base that
-  declares a defaulted default constructor and copy assignment
-  operator. GCC 16, Clang, and EDG do not
-  ({question}`Q-0342`).
+  The results are the same on x86-64 and with `-m32`
+  ({question}`Q-0361`). Every
+  compiler keeps the end padding for a defaulted or deleted destructor
+  or assignment operator.
+- CLS-11: the size is 1 on every compiler in the matrix, on both
+  targets.
 - Sources: CLS-19 and CLS-32 come from the grid `standard-layout.json`
   and the inventory items SL-access, SL-base-standard-layout,
   SL-bit-field-counts, SL-first-member-type, SL-member-standard-layout,
@@ -627,8 +672,9 @@ of 125 tests.
   SLG-first-member-address, and SLG-pointer-interconvertible, and from
   the tests. CLS-33 comes from item SLG-empty-base-zero, the tests, and
   the gap review of item O
-  (`reports/review/2026-11-03-gap-review-item-o.md`). CLS-31 and CLS-34
-  come from the layout tests, the same gap review, and items LAY-empty-base-non-standard-layout,
+  (`reports/review/2026-11-03-gap-review-item-o.md`). CLS-31, CLS-34,
+  and CLS-35 come from the layout tests, the writer's probes of the
+  conditions on every matrix compiler, the same gap review, and items LAY-empty-base-non-standard-layout,
   LAY-empty-base-same-type, LAY-overlap-attribute-empty,
   LAY-overlap-attribute-tail, LAY-tail-padding-base, and
   LAY-virtual-placement.

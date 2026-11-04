@@ -199,11 +199,12 @@ must also obey EXS-7.
 
 :::{rule} EXS-5
 :kind: impl-defined
-:tests: declarations/exception-specifications/throw-empty-removed.cpp declarations/exception-specifications/throw-empty-pointer.cpp
+:tests: declarations/exception-specifications/throw-empty-removed.cpp declarations/exception-specifications/throw-empty-pointer.cpp declarations/exception-specifications/throw-empty-removed-ilp32.cpp
 
 Acceptance of `throw()` with an empty list is implementation-defined
 ({question}`Q-0077`). If an implementation accepts `throw()`, the form
-means `noexcept`.
+means `noexcept`. Clang and GCC accept the form, and EDG rejects it, on
+x86-64 and with `-m32`.
 :::
 
 :::{rule} EXS-6
@@ -235,7 +236,7 @@ struct File : Base { void close() override; };  // rejected: throwing override
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 35
-of 43 tests.
+of 44 tests.
 
 - EXS-7: EDG accepts `noexcept(2)` and a pointer operand. Clang and GCC
   reject them ({question}`Q-0078`).

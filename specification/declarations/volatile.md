@@ -283,5 +283,9 @@ of 41 tests.
   and GCC and EDG accept it ({question}`Q-0320`). Q-0320 stays open
   under decision 0051, because on 2026-11-03 Clang 22 still differs from
   GCC 16 and EDG 7.0.
+- VOL-13 with `-m32`: the matrix runs no program built with
+  `-m32`, because the host compilers have no 32-bit C library. In the
+  writer's probes, the run tests of the rule give the same
+  results with `-m32` in the GCC 14, Clang 18, and Clang 22 containers.
 
 Inputs: clang-sema-expr, clang-sema-decl, clang-diag-sema, edg-decls.

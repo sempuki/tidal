@@ -204,14 +204,22 @@ with the signal `SIGABRT`.
 
 :::{rule} UNW-7
 :kind: impl-defined
-:tests: exceptions/unwinding/no-handler-unwinding-unobservable.cpp exceptions/unwinding/noexcept-boundary-unwinding-unobservable.cpp
+:tests: exceptions/unwinding/no-handler-unwinding-unobservable.cpp exceptions/unwinding/noexcept-boundary-unwinding-unobservable.cpp exceptions/unwinding/no-handler-objects-kept.cpp exceptions/unwinding/noexcept-boundary-callee-objects-destroyed.cpp exceptions/unwinding/noexcept-boundary-own-objects-kept.cpp exceptions/unwinding/noexcept-boundary-unmatched-try.cpp
 
 If an exception has no matching handler, it is implementation-defined
 whether the automatic objects between the throw and `main` are
 destroyed before the program ends. If an exception reaches the boundary
 of a non-throwing function (UNW-5), it is implementation-defined which
 automatic objects between the throw and that boundary are destroyed
-before the program ends.
+before the program ends. Clang and GCC choose in this way on the matrix
+targets:
+
+| Case | Clang | GCC |
+|---|---|---|
+| no matching handler | no object is destroyed | no object is destroyed |
+| the boundary of a non-throwing function, objects of the functions that it calls | destroyed | destroyed |
+| the same boundary, objects of the non-throwing function | not destroyed | not destroyed |
+| the same boundary, if a try block of the non-throwing function holds the call and no handler of the try block matches | only the objects of the called functions are destroyed | no object is destroyed |
 :::
 
 ## Recommended Practice
@@ -315,15 +323,16 @@ void transfer(Account& from, Account& to, int amount) {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 38
-of 39 tests. EDG runs no programs, so its results say only that the
+The results are in `tests/RESULTS.md`. All eight compilers agree on 41
+of 43 tests. EDG runs no programs, so its results say only that the
 programs are valid.
 
 - UNW-5 and UNW-7: the harness sees only that the program ended with a
   nonzero status or a signal. The harness cannot see why the program
-  ended or what the implementation did before ending. The test for UNW-7
-  shows the program ends; the choice that the test documents is not
-  observable through the harness.
+  ended. The tests ending in `-unobservable` show only that the program
+  ends. The other UNW-7 tests make the choice observable. The
+  destructor of the object in question ends the program with status 0,
+  so the run succeeds only if the object is destroyed.
 - UNW-7: when an exception reaches the boundary of a `noexcept`
   function, Clang and GCC do not destroy the automatic objects of the
   `noexcept` function itself. Both destroy the objects of a function
@@ -331,8 +340,13 @@ programs are valid.
   function has a try block around the call whose handlers do not match,
   GCC destroys none of the objects and Clang still destroys the objects
   of the called function. With no handler at all, neither compiler
-  destroys an automatic object. The output in these probes was flushed
-  before each destructor returned.
+  destroys an automatic object. GCC 16 at `-O2` destroys no object of
+  a called function either. The table of UNW-7 gives the choices at
+  `-O0`. EDG builds no program, so its choice is not observed.
+- UNW-7, UNW-10 with `-m32`: the matrix runs no program built with
+  `-m32`, because the host compilers have no 32-bit C library. In the
+  writer's probes, the run tests of the two rules give the same results
+  with `-m32` in the GCC 14, Clang 18, and Clang 22 containers.
 - UNW-3: the global deallocation test replaces both the sized and the
   unsized `operator delete`. Clang 18 calls the unsized form after a
   failed `new`, and the other compilers call the sized form.

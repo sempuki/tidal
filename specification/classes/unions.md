@@ -500,7 +500,7 @@ way:
 
 :::{rule} BF-10
 :kind: impl-defined
-:tests: classes/unions/bitfield-unsigned-wraps.cpp classes/unions/bitfield-signed-wraps.cpp classes/unions/bitfield-constant-wraps.cpp
+:tests: classes/unions/bitfield-unsigned-wraps.cpp classes/unions/bitfield-signed-wraps.cpp classes/unions/bitfield-constant-wraps.cpp classes/unions/bitfield-constant-wraps-ilp32.cpp
 
 If a value stored in a bit-field of width `n` does not fit, the value
 that the bit-field holds is implementation-defined. On the x86-64 targets
@@ -630,8 +630,8 @@ int y = s.span.range.second;     // 2: Point and Pair are layout-compatible
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 133
-of 144 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 134
+of 145 tests.
 
 - UNI-9: Clang accepts an anonymous union without `static` in an unnamed
   namespace. GCC and EDG reject the declaration ({question}`Q-0045`).
@@ -714,6 +714,10 @@ of 144 tests.
 - UNI-6: the undefined sanitizer of GCC and Clang stops a read of an
   inactive `bool` member whose bytes hold no valid `bool` value. No
   sanitizer stops a read whose bytes give a valid value.
+- BF-9, BF-10 with `-m32`: the matrix runs no program built with
+  `-m32`, because the host compilers have no 32-bit C library. In the
+  writer's probes, the run tests of the two rules give the same
+  results with `-m32` in the GCC 14, Clang 18, and Clang 22 containers.
 
 Inputs: clang-sema-decl, clang-sema-declcxx, clang-sema-init,
 clang-diag-sema, edg-class-decl.

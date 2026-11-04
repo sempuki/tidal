@@ -1,4 +1,4 @@
-// tidal-rules: CLS-34
+// tidal-rules: CLS-34 CLS-35
 // tidal-expect: accept
 // tidal-note: x86-64. Each base has 3 bytes of tail padding after b. A derived member c goes into that padding for the bases in the second and third lines of checks, and after it for the others.
 struct Plain { int a; char b; };                         // keeps its tail padding

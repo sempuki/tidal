@@ -373,6 +373,8 @@ status, and the first sentence of its answer section.
 | [Q-0357](Q-0357-byte-copy-into-shared-padding.md) | What value does a derived member have after a byte copy into the base subobject writes over it? | provisional | The member takes the value of its new bytes, and a padding byte with no value gives it none |
 | [Q-0358](Q-0358-new-deallocation-noexcept-constructor.md) | Does a `new` expression use the deallocation function when its constructor is `noexcept`? | provisional | No; a `noexcept` constructor leaves the deallocation function unused |
 | [Q-0359](Q-0359-volatile-byte-copy.md) | Is a read of a volatile object's bytes through `unsigned char` that is not volatile an access under VOL-6? | provisional | Yes; the plain byte copy is undefined, and a copy uses volatile byte glvalues |
+| [Q-0360](Q-0360-alignment-above-largest-extended.md) | Does an implementation reject an `alignas` above its largest extended alignment? | provisional | The implementation rejects the alignment |
+| [Q-0361](Q-0361-tail-padding-deleted-and-move-members.md) | Does a base with a deleted constructor or a user-provided move assignment operator lend its tail padding? | provisional | The base keeps its padding |
 
 ## Status values
 

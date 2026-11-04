@@ -593,11 +593,10 @@ choice is unspecified.
 
 A base subobject, or a member declared `[[no_unique_address]]`, can
 share its last bytes with other subobjects of the same object. The
-implementation chooses when the bytes are shared. In the matrix, a
-member of a derived class can occupy the padding at the end of a base
-class whose constructor is user-provided. A byte copy into the base
-subobject then also writes the bytes of that member. The member takes
-the value that its new bytes give, and a padding byte of the source
+implementation chooses when the bytes are shared, and {rule}`CLS-35`
+gives the conditions of the matrix targets. If a byte copy into the
+base or member writes the bytes of another subobject, that subobject
+takes the value that its new bytes give. A padding byte of the source
 gives it no value ({rule}`STG-11`, {question}`Q-0357`).
 :::
 
@@ -611,7 +610,7 @@ matrix targets, the table gives the bytes from first to last:
 | Type | Bytes |
 |---|---|
 | an integer | the two's complement value ({rule}`TYP-4`), least significant byte first |
-| a pointer, on x86-64 | the integer that {rule}`CAST-16` gives for the pointer, in the order of an integer |
+| a pointer | the integer that {rule}`CAST-16` gives for the pointer, in the order of an integer |
 :::
 
 :::{rule} STG-27
@@ -871,10 +870,16 @@ only that the programs are valid.
   that each use of the storage is valid.
 - STG-25: GCC, Clang, and EDG give the derived class of the test the
   size of its base. The rule is implementation-defined because the
-  layout of a class is the implementation's choice.
+  layout of a class is the implementation's choice. The tests of
+  {rule}`CLS-35` check each condition under which a base or a marked
+  member shares its end padding.
 - STG-26: every target in the matrix stores the least significant byte
-  first. On x86-64, the bytes of a pointer equal the bytes of the
-  integer that `reinterpret_cast` gives.
+  first. The bytes of a pointer equal the bytes of the integer that
+  `reinterpret_cast` gives.
+- STG-25, STG-26, STG-27 with `-m32`: the matrix runs no program built
+  with `-m32`, because the host compilers have no 32-bit C library. In
+  the writer's probes, the run tests of the three rules give the same
+  results with `-m32` in the GCC 14, Clang 18, and Clang 22 containers.
 - STG-11, STG-12: no configuration in the matrix shows whether a padding
   byte has a value. The rules follow INIT-1 and are provisional
   ({question}`Q-0328`).

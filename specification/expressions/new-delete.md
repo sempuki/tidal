@@ -644,10 +644,14 @@ predefined macro `__STDCPP_DEFAULT_NEW_ALIGNMENT__` gives its value
 :tests: expressions/new-delete/allocation-beyond-address-space.cpp foundations/language-support/exception-classes-allocation.cpp
 
 The requests that a global allocation function cannot satisfy
-({rule}`NEW-38`) are implementation-defined. On the x86-64 targets,
-each request for 2^47 bytes or more fails, because a process cannot map
-that much storage. A smaller request can fail when the system lacks
-memory.
+({rule}`NEW-38`) are implementation-defined. On the matrix targets,
+these requests fail, and a smaller request can fail when the system
+lacks memory:
+
+| Target | Requests that fail |
+|---|---|
+| x86-64 Linux | 2<sup>47</sup> bytes or more, because a process cannot map that much storage |
+| `-m32` | 2<sup>31</sup> bytes or more (Evidence) |
 :::
 
 :::{rule} NEW-34
@@ -738,6 +742,12 @@ of 140 tests.
   throw `std::bad_alloc` for requests of 2^47 bytes, 2^47 + 1 bytes,
   and 2^48 bytes. The limit is the size of the user address space on
   the targets, so the rule is implementation-defined.
+- NEW-42 with `-m32`: the matrix runs no program built with `-m32`,
+  because the host compilers have no 32-bit C library. In the writer's
+  probes in the GCC 14 and Clang 22 containers, `operator new` throws
+  `std::bad_alloc` for requests of 2^31 bytes, 3 x 2^30 bytes, and
+  2^32 - 1 bytes, and returns storage for 2^31 - 4096 bytes. No test
+  checks the `-m32` row.
 - NEW-18: Clang 22 and GCC 16 both evaluate the array bound before the
   placement arguments. No compiler in the matrix varies the order, so
   NEW-18 is unspecified by the provisional answer of {question}`Q-0005`.

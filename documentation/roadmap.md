@@ -124,7 +124,7 @@ clean-room roadmaps (`reports/clean-room/roadmap-4/`).
 | R1 | Close the phase 6 record: full matrix results, questions in similarity runs, roadmap and exercise rows, cluster 2 readings, Q-0312 | none |
 | WP | Done: the 67 Write programs are run tests under `tests/programs/` | none |
 | SR | A second settling rule, applied to reviewed questions, and one decision packet for the maintainer | R1 |
-| TP | A matrix choice for every `impl-defined` rule, and the matrix layout as a table | none |
+| TP | Done: a matrix choice for every `impl-defined` rule, and the matrix layout as a table (CLS-35) | none |
 | UW | A run witness for each `undefined` rule | none |
 | GR | Gap reviews of the eleven pages that never had one, then of open questions with no review | SR |
 | PR | Predict batches for the pages with no batch, first overloading and storage | none |

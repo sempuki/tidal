@@ -518,5 +518,9 @@ and Clang warns with no flag.
 | {rule}`UNW-8` | on: `-Wexceptions` | on: `-Wterminate` |
 | {rule}`VIRT-13` | `-Wall`: `-Wdelete-non-abstract-non-virtual-dtor`, `-Wdelete-abstract-non-virtual-dtor`, `-Woverloaded-virtual` | `-Wall`: `-Wdelete-non-virtual-dtor`, `-Woverloaded-virtual` |
 | {rule}`VOL-5` | on: `-Wdeprecated-volatile` | on: `-Wvolatile` |
+- TR-9, TR-11 with `-m32`: the matrix runs no program built with
+  `-m32`, because the host compilers have no 32-bit C library. In the
+  writer's probes, the run tests of the two rules give the same
+  results with `-m32` in the GCC 14, Clang 18, and Clang 22 containers.
 
 Inputs: clang-sema-decl, clang-diag-sema, edg-decls.

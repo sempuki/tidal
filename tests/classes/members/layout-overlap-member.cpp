@@ -1,4 +1,4 @@
-// tidal-rules: CLS-31 CLS-34 ATTR-9 CLS-10
+// tidal-rules: CLS-31 CLS-34 ATTR-9 CLS-10 CLS-35
 // tidal-expect: run
 // tidal-note: x86-64. An empty member with [[no_unique_address]] takes no bytes, and two such members of one type get two addresses. A marked member of a class with tail padding lends the padding to the next member under the same choice as a base (layout-base-tail-padding.cpp).
 struct Empty {};

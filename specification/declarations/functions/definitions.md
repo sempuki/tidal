@@ -210,13 +210,22 @@ function that returns `void` returns normally at the end.
 
 :::{rule} FN-6
 :kind: impl-defined
-:tests: declarations/functions/definitions/main-one-param.cpp declarations/functions/definitions/main-three-params.cpp declarations/functions/definitions/main-wrong-first-param.cpp declarations/functions/definitions/main-four-params.cpp declarations/functions/definitions/argv-zero.cpp foundations/translation/main-wrong-parameter-types.cpp
+:tests: declarations/functions/definitions/main-one-param.cpp declarations/functions/definitions/main-three-params.cpp declarations/functions/definitions/main-wrong-first-param.cpp declarations/functions/definitions/main-four-params.cpp declarations/functions/definitions/argv-zero.cpp foundations/translation/main-wrong-parameter-types.cpp declarations/functions/definitions/main-one-param-ilp32.cpp declarations/functions/definitions/main-three-params-ilp32.cpp declarations/functions/definitions/main-wrong-first-param-ilp32.cpp declarations/functions/definitions/main-four-params-ilp32.cpp foundations/translation/main-wrong-parameter-types-ilp32.cpp
 
 An implementation accepts `main` with the parameter lists `()` and
 `(int, char**)`. Acceptance of other parameter lists, and the values
 of their parameters, are implementation-defined ({question}`Q-0024`).
 If `argc` is greater than zero, `argv[0]` points to the name used to
-start the program or to an empty string.
+start the program or to an empty string. The matrix compilers accept
+these other lists, on x86-64 and with `-m32`:
+
+| Parameters | Clang | GCC | EDG |
+|---|---|---|---|
+| `(int)` | accepts | rejects | accepts |
+| `(double)` | rejects | rejects | accepts |
+| `(long, char**)` | rejects | rejects | accepts |
+| `(int, char**, char**)` | accepts, and the third parameter points to the list of environment variables | the same as Clang | accepts |
+| `(int, char**, char**, char**)` | rejects | rejects | accepts |
 :::
 
 :::{rule} FN-10
@@ -226,8 +235,8 @@ start the program or to an empty string.
 Each implementation chooses the time at which a parameter object ends:
 either as the called function returns, or later, when the caller
 finishes the statement or expression that holds the call. The choice is
-implementation-defined. VC-10 states the same choice from the caller's
-side.
+implementation-defined. {rule}`VC-10` states the same choice from the
+caller's side and gives the choice of the matrix targets.
 :::
 
 :::{rule} FN-11
@@ -271,7 +280,7 @@ void name() {
 
 ## Evidence
 
-All eight compilers agree on 42 of 49 tests. The results are in
+All eight compilers agree on 43 of 54 tests. The results are in
 `tests/RESULTS.md`.
 
 - FN-3: all compilers reject a call that reaches the end of the function
@@ -289,26 +298,22 @@ All eight compilers agree on 42 of 49 tests. The results are in
   pedantic diagnostics. EDG rejects them in all modes.
 - FN-5: Clang accepts `__func__` outside a function with a warning. GCC
   and EDG reject such a use ({question}`Q-0022`).
-- FN-6: the compilers accept these parameter lists of `main`
-  ({question}`Q-0024`):
-
-  | Parameters | Clang | GCC | EDG |
-  |---|---|---|---|
-  | `(int)` | accepts | rejects | accepts |
-  | `(double)` | rejects | rejects | accepts |
-  | `(long, char**)` | rejects | rejects | accepts |
-  | `(int, char**, char**)` | accepts | accepts | accepts |
-  | `(int, char**, char**, char**)` | rejects | rejects | accepts |
-
-  GCC rejects `(int)` only under `-pedantic-errors`. With three
-  parameters, Clang and GCC on Linux pass a pointer that is not null as
-  the third argument, the list of environment variables.
+- FN-6: the compilers split on the parameter lists of `main` that the
+  table of FN-6 gives ({question}`Q-0024`). GCC rejects `(int)` only
+  under `-pedantic-errors`. With three parameters, Clang and GCC on
+  Linux pass a pointer that is not null as the third argument, the list
+  of environment variables. The matrix runs no program built with
+  `-m32`, so the `-m32` tests check acceptance only.
 - FN-7: Clang and GCC warn with `-Wreturn-type`.
 - FN-10: Clang 22 and GCC 16 destroy a by-value parameter at the end of
   the caller's full expression, after the next operand of a comma.
 - FN-4: GCC 14 and Clang 18 accept `main` with C language linkage in a
   namespace. GCC 16, Clang 22, and EDG reject such a `main`
   ({question}`Q-0076`).
+- FN-6, FN-10, FN-11 with `-m32`: the matrix runs no program built with
+  `-m32`, because the host compilers have no 32-bit C library. In the
+  writer's probes, the run tests of the three rules give the same
+  results with `-m32` in the GCC 14, Clang 18, and Clang 22 containers.
 
 Inputs: clang-sema-decl, clang-sema-declcxx, clang-sema-stmt,
 clang-diag-sema, edg-func-def.

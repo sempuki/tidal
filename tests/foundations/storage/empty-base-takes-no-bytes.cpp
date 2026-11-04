@@ -1,4 +1,4 @@
-// tidal-rules: STG-3
+// tidal-rules: STG-3 CLS-35
 // tidal-expect: run
 struct Tag {};
 struct Value : Tag { int number; };

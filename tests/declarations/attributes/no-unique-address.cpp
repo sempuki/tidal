@@ -1,4 +1,4 @@
-// tidal-rules: ATTR-9
+// tidal-rules: ATTR-9 CLS-31
 // tidal-expect: accept
 struct Empty {};
 struct Plain { Empty e; int v; };

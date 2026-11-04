@@ -150,13 +150,15 @@ support no others, and they reject an unknown language.
 
 :::{rule} LSP-6
 :kind: impl-defined
-:tests: declarations/linkage-specifications/c-function-pointer-assign.cpp declarations/linkage-specifications/function-type-linkage-overload.cpp declarations/linkage-specifications/c-callback-alias.cpp declarations/linkage-specifications/c-parameter-type-linkage.cpp
+:tests: declarations/linkage-specifications/c-function-pointer-assign.cpp declarations/linkage-specifications/function-type-linkage-overload.cpp declarations/linkage-specifications/c-callback-alias.cpp declarations/linkage-specifications/c-parameter-type-linkage.cpp declarations/linkage-specifications/c-function-pointer-assign-ilp32.cpp
 
 Each implementation chooses if a function type records its language
 linkage ({question}`Q-0074`). If the implementation does, a pointer to a
 C function and a pointer to a C++ function have different types, and
 neither converts to the other. If not, the two types are the same, so
 two declarations that differ only in that linkage declare one function.
+EDG records the linkage, and Clang and GCC do not, on x86-64 and with
+`-m32`.
 :::
 
 ## Examples
@@ -192,7 +194,7 @@ apply(twice, 2);                 // rejected where the type records the linkage 
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 27
-of 33 tests.
+of 34 tests.
 
 - LSP-6: EDG treats C language linkage as part of the function type.
   Clang and GCC do not ({question}`Q-0074`). EDG gives the linkage to a

@@ -639,7 +639,7 @@ value ({question}`Q-0063`).
 
 :::{rule} PRIM-21
 :kind: impl-defined
-:tests: expressions/primary/float-nearest-value.cpp expressions/primary/float-nearest-value-float.cpp
+:tests: expressions/primary/float-nearest-value.cpp expressions/primary/float-nearest-value-float.cpp expressions/primary/float-nearest-value-ilp32.cpp
 
 If the value of a floating literal is in the range of its type but has
 no exact representation, the result is one of the two nearest values
@@ -716,8 +716,8 @@ total(1, 2, 3);           // ((0 + 1) + 2) + 3
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 128
-of 137 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 129
+of 138 tests.
 
 - PRIM-2: Clang and GCC reject a decimal literal that fits only an
   unsigned type under `-pedantic-errors`. EDG accepts it

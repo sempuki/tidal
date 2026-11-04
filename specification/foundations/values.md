@@ -316,5 +316,9 @@ All eight compilers agree on 62 of 64 tests. The results are in
 - VC-9: on Clang and GCC, the temporaries of a member initializer end
   before the next member is initialized. The temporaries of an init
   capture end with the full expression that contains the lambda.
+- VC-10 with `-m32`: the matrix runs no program built with
+  `-m32`, because the host compilers have no 32-bit C library. In the
+  writer's probes, the run tests of the rule give the same
+  results with `-m32` in the GCC 14, Clang 18, and Clang 22 containers.
 
 Inputs: clang-sema-expr, clang-diag-sema.

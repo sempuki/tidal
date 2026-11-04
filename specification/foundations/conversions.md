@@ -313,21 +313,31 @@ undefined.
 
 :::{rule} CONV-7
 :kind: impl-defined
-:tests: expressions/conversions/integral-to-floating-rounding.cpp expressions/conversions/integral-to-floating-nearest.cpp
+:tests: expressions/conversions/integral-to-floating-rounding.cpp expressions/conversions/integral-to-floating-nearest.cpp expressions/conversions/integral-to-floating-nearest-ilp32.cpp expressions/conversions/integral-to-floating-nearest-run.cpp
 
 If a value is between two adjacent values of the target floating-point
 type, the result is one of the two. The implementation defines which
-one.
+one. The matrix compilers choose in this way:
+
+| Compiler | x86-64 Linux | `-m32` |
+|---|---|---|
+| Clang, GCC, EDG | the nearer value, and at a tie the value whose last bit of precision is zero ({rule}`TYP-14`) | the same |
 :::
 
 :::{rule} CONV-11
 :kind: impl-defined
-:tests: expressions/conversions/floating-narrowing-out-of-range.cpp expressions/conversions/floating-narrowing-out-of-range-run.cpp
+:tests: expressions/conversions/floating-narrowing-out-of-range.cpp expressions/conversions/floating-narrowing-out-of-range-run.cpp expressions/conversions/floating-narrowing-infinity.cpp expressions/conversions/floating-narrowing-infinity-ilp32.cpp expressions/conversions/floating-narrowing-infinity-run.cpp
 
 If the target floating-point type has infinities, a value above the
 largest finite value of the type converts to the largest finite value or
 to infinity. The implementation defines which one ({question}`Q-0028`).
 The conversion is not undefined, so it can occur in {term}`constant evaluation`.
+The matrix compilers choose in this way:
+
+| Compiler | x86-64 Linux | `-m32` |
+|---|---|---|
+| Clang, GCC | infinity | infinity |
+| EDG | rejects the conversion during constant evaluation | the same |
 :::
 
 ## Examples
@@ -367,9 +377,18 @@ The results are in `tests/RESULTS.md`.
 - CONV-8: EDG accepts a character literal with the value zero as a null
   pointer constant. Clang and GCC reject it ({question}`Q-0100`).
 - CONV-7: every compiler in the matrix rounds to the nearest value, and
-  to the even value at a tie. {rule}`TYP-14` gives the same rounding
-  for floating-point arithmetic.
-- CONV-11: Clang and GCC give infinity. EDG rejects the conversion
-  during constant evaluation ({question}`Q-0028`).
+  to the even value at a tie, during constant evaluation and at run
+  time. {rule}`TYP-14` gives the same rounding for floating-point
+  arithmetic. The tests convert from `int` and from `double` to
+  `float`.
+- CONV-11: Clang and GCC give infinity, during constant evaluation and
+  at run time. EDG rejects the conversion during constant evaluation
+  ({question}`Q-0028`). EDG builds no program, so its run-time choice
+  is not observed.
+- CONV-7, CONV-11 with `-m32`: the matrix runs no program built with
+  `-m32`, because the host compilers have no 32-bit C library. The
+  `-m32` tests check the choices during constant evaluation. In the
+  writer's probes, the run tests give the same results with `-m32` in
+  the GCC 14, Clang 18, and Clang 22 containers.
 
 Inputs: clang-sema-expr, clang-diag-sema.

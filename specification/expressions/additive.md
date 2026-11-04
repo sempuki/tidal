@@ -262,7 +262,8 @@ If the difference of two pointers does not fit in the type of `p - q`
 :tests: expressions/additive/pointer-difference-type-lp64.cpp expressions/additive/pointer-difference-type-ilp32.cpp
 
 The type of `p - q` is a signed integer type that the implementation
-chooses. The library names it `std::ptrdiff_t` ({rule}`LSUP-4`).
+chooses. The library names it `std::ptrdiff_t` ({rule}`LSUP-4`). Every
+compiler in the matrix chooses `long` on x86-64 and `int` with `-m32`.
 :::
 
 :::{rule} ADD-13

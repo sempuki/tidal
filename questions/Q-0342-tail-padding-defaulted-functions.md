@@ -1,7 +1,7 @@
 # Q-0342: Does a base that declares defaulted special members lend its tail padding to a derived class?
 
 **Status:** provisional
-**Affects:** CLS-34, `tests/classes/members/layout-base-tail-padding-defaulted.cpp`
+**Affects:** CLS-34, CLS-35, `tests/classes/members/layout-base-tail-padding-defaulted.cpp`
 
 ## Context
 
@@ -22,8 +22,9 @@ and a base with a user-provided special member lends it on every
 compiler (size 8).
 
 The use of the end padding of a base is unspecified (CLS-34), so each
-answer is allowed. The question records which choice the Evidence of
-CLS-34 lists for the matrix.
+answer is allowed. The question records which choice CLS-35 lists for
+the matrix. CLS-35 gives the GCC 14 choice as an extra condition of
+that compiler.
 
 ## Evidence
 

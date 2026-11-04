@@ -1,4 +1,4 @@
-// tidal-rules: STG-25
+// tidal-rules: STG-25 CLS-35
 // tidal-expect: run
 // tidal-note: A no_unique_address member whose class has a user-provided constructor. In the matrix, the next member occupies the padding at the end of that member.
 struct Head {

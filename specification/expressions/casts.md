@@ -273,10 +273,15 @@ The behavior is undefined in these cases:
 
 :::{rule} CAST-12
 :kind: impl-defined
-:tests: expressions/casts/reinterpret-function-to-object.cpp expressions/casts/reinterpret-function-to-char-pointer.cpp
+:tests: expressions/casts/reinterpret-function-to-object.cpp expressions/casts/reinterpret-function-to-char-pointer.cpp expressions/casts/reinterpret-function-to-object-ilp32.cpp
 
 Each implementation chooses whether `reinterpret_cast` can turn a
-pointer to a function into a pointer to an object type, and back.
+pointer to a function into a pointer to an object type, and back. The
+matrix compilers choose in this way:
+
+| Compiler | x86-64 Linux | `-m32` |
+|---|---|---|
+| Clang, GCC, EDG | accepts both directions, and the round trip gives the original pointer | the same |
 :::
 
 :::{rule} CAST-16
@@ -320,7 +325,7 @@ auto* port = reinterpret_cast<volatile unsigned*>(size_t{0x4000'1000});
 
 ## Evidence
 
-All eight compilers agree on 59 of 60 tests. The results are in
+All eight compilers agree on 60 of 61 tests. The results are in
 `tests/RESULTS.md`.
 
 - CAST-14: GCC and EDG accept an out-of-range enumeration value during
@@ -341,7 +346,15 @@ All eight compilers agree on 59 of 60 tests. The results are in
   `static-cast-downcast-wrong-object-sanitizer.cpp` and
   `cast-out-of-range-sanitizer.cpp`.
 - CAST-12: every compiler in the matrix accepts the conversion and the
-  round trip works.
+  round trip works. A pointer to a function and a pointer to an object
+  have the same size on both targets.
+- CAST-12, CAST-16 with `-m32`: the matrix runs no program built with
+  `-m32`, because the host compilers have no 32-bit C library. The
+  `-m32` tests check that the compilers accept the conversions. In the
+  writer's probes, the run tests of the two rules give the same results
+  with `-m32` in the GCC 14, Clang 18, and Clang 22 containers. The
+  exception is `pointer-sized-integer.cpp`, which checks the x86-64
+  sizes.
 - CAST-16: the library names integer types for a pointer value
   *(library referenced)*. The table gives the core types of the same
   size. Whether an object exists at an address that the program did
