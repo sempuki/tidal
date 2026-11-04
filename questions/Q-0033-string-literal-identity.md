@@ -11,6 +11,10 @@ two such literals share storage is not fixed. Clang 22 and 18 reject the
 comparison ("comparison of addresses of potentially overlapping literals").
 GCC 16 and 14 and EDG 7.0 accept it and give a value.
 
+EDG folds each comparison of literal addresses that the probes tried.
+GCC folds the comparison of two equal literals, and rejects the
+comparison of `"abc" + 1` with `"bc"`.
+
 ## Options
 
 1. Rejected during constant evaluation, because the result depends on

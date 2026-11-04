@@ -21,6 +21,8 @@ member of that class needs the member's constructor to be trivial.
 
 The four tests above. In `eligible-unsatisfied-more-constrained.cpp` the user-provided constructor is more constrained but not satisfied, and EDG again treats the default constructor as not trivial. With destructors, every compiler chooses the trivial one (`destructor-trivial.cpp`).
 
+No test shows the kinds of the third condition of CNS-21 apart from another split. A class with a defaulted copy constructor and a user-provided one with another first parameter type, or two copy assignment operators with different ref-qualifiers, makes a union member that Clang copies and GCC and EDG do not. The split appears without constraints too.
+
 ## Options
 
 1. Only eligible special members count (Clang, GCC). The others can

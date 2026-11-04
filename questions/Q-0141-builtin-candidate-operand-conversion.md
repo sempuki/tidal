@@ -17,7 +17,9 @@ conversion from `double` to the integer type.
 | EDG 7.0 | accepts |
 
 When the class operand converts to the pointer instead, as in
-`Holder{} + 1.5`, every compiler rejects.
+`Holder{} + 1.5`, every compiler rejects. No compiler converts an
+operand that is not of class type, such as `1.5`, to the parameter type
+of the winning candidate (`builtin-chosen-then-checked.cpp`).
 
 ## Evidence
 

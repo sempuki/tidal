@@ -24,6 +24,23 @@ only use is in a function that GCC does not translate to code.
 The three tests above. Clang 18 needs `-Werror` to make the warning an
 error.
 
+The table gives each compiler's diagnostic under `-pedantic-errors`
+and no other flag, for three uses of a function with internal linkage
+that has no definition. An error from Clang 22 and GCC is a warning
+that `-pedantic-errors` makes an error. A warning from Clang 18 stays a
+warning, so the program builds. The tests that add `-Werror` reject on
+Clang 18 too, and EDG skips them.
+
+| The use | Test | Clang 18 | Clang 22 | GCC | EDG |
+|---|---|---|---|---|---|
+| a call in a function that is not `inline` | `internal-function-not-defined-warns.cpp` (`-Werror`) | warning | error | error | error |
+| a call only in an `inline` function that nothing calls | `internal-function-used-in-unused-inline.cpp` | warning | error | none | error |
+| the address as a template argument | `template-argument-address-is-use.cpp` (`-Werror`) | warning | error | none | error |
+
+With `-Wall` or `-Wunused-function`, GCC 16 gives a `-Wunused-function`
+warning in place of that diagnostic, and `-pedantic-errors` leaves the
+new warning a warning.
+
 ## Options
 
 1. `no-diagnostic`, with a `recommended` rule that asks for a warning.

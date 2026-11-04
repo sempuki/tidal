@@ -849,159 +849,80 @@ send(s);                    // rejected: Target(Source&) and operator Target()
 The results are in `tests/RESULTS.md`. All eight compilers agree on 106
 of 133 tests.
 
-Three questions on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on overloading, references, and list initialization (`reports/review/2026-11-03-gap-review-questions-overloading.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
-
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0135` | ICS-P5 | GCC 16 |
-| {question}`Q-0157` | {principle}`REF-P3` | GCC 16 |
-| {question}`Q-0167` | ICS-P5 | GCC 16 |
-
-### Sources
-
-The source of each rule:
-
-| Rule | Source |
-|---|---|
-| ICS-1, ICS-2 | grids arithmetic, pointers, classes; inventory A5, A8 to A13, B1, B3 to B5 |
-| ICS-3 | grid user-defined; inventory A14 to A17 |
-| ICS-4 | diagnostics for explicit conversion functions; probes of conversion functions that return a value; inventory E1 to E5; gap review E5, M6 |
-| ICS-5 | probe of a defaulted conversion template; inventory A18 |
-| ICS-6 | grids classes, user-defined; probes of braced lists for an ellipsis; inventory A4; front-end finding G51 |
-| ICS-7 | grid user-defined (ToBoth); probes of a constructor against a conversion function; inventory A1 to A3; gap review E2 |
-| ICS-8 | diagnostics in the `chosen-*` tests; inventory A7, C1, F6, F9, F19; gap review M1; front-end finding G43 |
-| ICS-9, ICS-10 | probes; inventory D1, D3 to D7, G1, G3; gap review M9 |
-| ICS-11, ICS-12 | grids references, list-references; inventory B2, C2 to C6; front-end finding G38 |
-| ICS-13, ICS-14, ICS-40, ICS-41 | grid object-parameter; inventory B6, C7 to C10, D2; gap review S4, S5, M9 |
-| ICS-15 to ICS-20 | grids lists, list-references, classes; inventory D8, D9, F1 to F18; gap review E1, M5, M7, M8; front-end finding G41 |
-| ICS-21 | grids classes, user-defined; inventory H1 to H3 |
-| ICS-22 to ICS-24 | grid lists; edg-overload (the list checks before the level comparison); inventory I1 to I3; gap review O3, M5; gap review of question cluster 2 |
-| ICS-25 | grid user-defined; inventory L1 to L3 |
-| ICS-26, ICS-31 | grids pointers, functions, order; edg-overload (identity against qualification); inventory J3, J7, J8; gap review E3; gap review of question cluster 2 |
-| ICS-27 | grid arithmetic; inventory J4 |
-| ICS-28 to ICS-30 | grids references, functions, object-parameter, order; edg-overload (reference comparison); inventory J1, J2, J5, J6; gap review O1, O2, S4 |
-| ICS-32 to ICS-36 | grids arithmetic, pointers, member-pointers, classes, order; edg-overload (standard conversion comparison); inventory K1, K2, K4 to K9; gap review O1, O2, M4, M8, S1 |
-| ICS-37 | probes of conversion functions; edg-overload (the source-class check after a user-defined conversion); inventory K3, K10, K11, L4; gap review E2, M2, S2 |
-| ICS-38 | probes of braced string literals; gap review S3; front-end finding G49 |
-| ICS-46 | probes of references to arrays of known and unknown bound; probes of direct bindings to pointers; front-end finding G49; gap review of question cluster 2 |
-| ICS-39 | grid arithmetic (enum : short); gap review S1 |
-| ICS-42, ICS-43 | probes of conversion functions; edg-overload (the source-class check after a user-defined conversion); inventory K10, K11; gap review S2 |
-| ICS-44 | probes of conversion functions to extended floating-point types; gap review M3 |
-| ICS-45 | probes of `static_cast` with explicit conversion functions; gap review E4; gap review of question cluster 2 |
-
-ICS-8 is a `reject` rule because each fault is rejected once its
-function is chosen. Every test has a fallback function that the call
-would use if the fault removed the sequence.
-
-Inputs: edg-overload.
-
 ### Divergences
 
-The questions of the tie-breaker cluster on this page stay open under
-decision 0051: {question}`Q-0133`, {question}`Q-0137`,
-{question}`Q-0138`, {question}`Q-0152`, {question}`Q-0153`,
-{question}`Q-0156`, and {question}`Q-0188`. On 2026-11-03, Clang 22,
-GCC 16, and EDG 7.0 still split on each of them. The source-reader gap
-review of the cluster
-(`reports/review/2026-11-03-gap-review-question-cluster-2.md`) reads
-the reference against Q-0133, the array bound of Q-0153, the rvalue
-references of Q-0156, and the plain bindings of Q-0188. ICS-21, ICS-22,
-ICS-31, and ICS-45 follow the review's reading. ICS-46 keeps the known
-bound, for the reasons in Q-0188.
-
-- ICS-15 to ICS-20, ICS-38, ICS-46: the splits on braced lists below
-  share one model, the table of {principle}`REF-P3`.
-  {question}`Q-0294` names the model and lists each split with its
-  question.
-- ICS-8: GCC keeps an `explicit` constructor in the sequence of a
-  copy-list-initialized parameter, chooses the function, and rejects the
-  call. Clang and EDG form no sequence and choose the other function.
-  The last bullet of ICS-8 follows GCC, and the answer is provisional
-  ({question}`Q-0132`).
-- ICS-21, ICS-22: GCC and EDG prefer a user-defined list sequence to
-  `std::initializer_list` over a standard sequence to `int`. Clang
-  compares the kinds first and chooses `int`. The rules follow Clang,
-  ICS-P5, and the gap review ({question}`Q-0133`).
-- ICS-19: Clang 18 gives a one-element list of a class with an
-  initializer-list constructor an exact match. The other compilers use
-  the initializer-list constructor ({question}`Q-0081`).
-- ICS-35, ICS-44: Clang has no `f32`, `f64`, or `f128` suffix
-  ({rule}`PRIM-22`). GCC and EDG follow the rules. No matrix target has
-  three floating-point types of one rank, so no rule orders two targets
-  that both have the rank of the source.
-  Only the extended floating-point types have equal ranks, and Clang has
-  none of them. So every test of ICS-35 and ICS-44 needs an override for
-  Clang.
-- ICS-2: Clang gives a `long long` bit-field of width 3 a promotion to
-  `int`. GCC and EDG give it a conversion, so `int` and `long` tie
-  ({question}`Q-0134`).
-- ICS-17: GCC prefers a scalar parameter to a reference to an array when
-  both sequences are the identity. Clang and EDG find a tie
-  ({question}`Q-0135`).
-- ICS-17, ICS-18: for empty braces and a reference to an array of
-  unknown bound, and for a designated list and a reference to an array,
-  the compilers differ in the lists grid ({question}`Q-0136`).
-- ICS-26, ICS-33, ICS-36: after an array-to-pointer step, GCC applies
-  neither ICS-33 nor ICS-36. Clang and EDG apply both
-  ({question}`Q-0137`).
-- ICS-28, ICS-31 to ICS-36: Clang applies every same-rank tie-breaker
-  before ICS-28. GCC does so except for ICS-34, and EDG applies ICS-28
-  first. Clang and EDG apply ICS-28 before ICS-31, and GCC applies
-  ICS-31 first ({question}`Q-0152`, the order grid).
-- ICS-31, array bound (`qualification-array-bound.cpp`): Clang prefers
-  a pointer to an array of known bound, as ICS-31 does. GCC and EDG find
-  a tie and reject the call ({question}`Q-0153`).
-- ICS-31, a reference that binds a temporary against a value parameter
-  (`qualification-reference-temporary.cpp`): Clang and GCC prefer the
-  sequence that adds fewer cv-qualifiers, as ICS-31 does. EDG does not
-  compare the two, finds a tie, and rejects the call
-  ({question}`Q-0153`).
-- ICS-19, ICS-36: EDG finds a tie between `Middle` and `Base` for a
-  one-element list of `Derived` when the classes are not aggregates
-  ({question}`Q-0154`).
-- ICS-38: GCC gives a braced UTF-8 literal no sequence to a `char`
-  array. Clang gives a literal a sequence to an array that is too short,
-  and finds a tie between a known and an unknown bound
-  ({question}`Q-0155`). For `{"ab"}` against `const char (&)[2]` and
-  `const char*`, Clang finds a tie and rejects the call. GCC and EDG
-  choose the pointer (`list-string-literal-too-short.cpp`).
-- ICS-46: two references bind directly to one array, one with a known
-  bound and one without. GCC and EDG prefer the known bound, with or
-  without braces, and also when the known bound has fewer
-  cv-qualifiers. Clang finds a tie ({question}`Q-0188`). Every compiler
-  prefers `int* const&` to `const int* const&` for an `int*` lvalue.
-  Clang and GCC bind both references directly in a constant
-  evaluation.
-- ICS-45: Clang lets direct initialization of a reference use an
-  `explicit` conversion function that returns a value. GCC and EDG do
-  not. ICS-45 follows Clang for an rvalue reference
-  ({question}`Q-0156`), and GCC and EDG for an lvalue reference to
-  `const` ({question}`Q-0337`). The table gives, for `static_cast` to
-  each reference, whether the `explicit` conversion function serves the
-  cast. `T` is a class type or `int`, and the results are the same for
-  both. `U` is a base of the class, or `long` for `int`.
-
-  | Target | `explicit operator T()` | `explicit operator T&()` | `explicit operator T&&()` |
-  |---|---|---|---|
-  | `T&&` | rule: yes; Clang: yes; GCC, EDG: no | no | yes |
-  | `const T&` | rule: no; Clang: yes; GCC, EDG: no | yes | rule: no; Clang, EDG: yes; GCC: no |
-  | `T&` | no | yes | no |
-  | `U&&` or `const U&` | no | no | no |
-
-  The tests are `user-defined-explicit-rvalue-reference-value.cpp`,
-  `user-defined-explicit-reference-value.cpp`,
-  `user-defined-explicit-reference-xvalue.cpp`, and
-  `user-defined-explicit-reference-other-type.cpp`. A cell with one
-  answer holds on every compiler.
-- ICS-20: for a list with one class element that converts to the
-  referenced type, Clang and EDG make a temporary unless the element
-  has the referenced type or a derived class. GCC binds through the
-  conversion function. ICS-20 follows REF-6 and REF-14
-  ({question}`Q-0157`). Every compiler binds a reference to an array
-  directly to a one-element list of an array lvalue of that type.
-- ICS-37: Clang finds two conversion functions to `F&` and `F&&`
-  ambiguous for a reference `F&&` to a function type. GCC and EDG apply
-  {rule}`OVL-29` ({question}`Q-0138`).
+- {question}`Q-0081` (ICS-19; settled on ILC-P2): whether a one-element
+  list of a class with an initializer-list constructor uses that
+  constructor. It does. Clang 18 differs.
+- {question}`Q-0132` (ICS-8; open): whether a braced list has a
+  sequence to a class parameter when the chosen constructor is
+  `explicit`. It does, so the call chooses that function and is
+  rejected, as on GCC. Clang and EDG choose the other function.
+- {question}`Q-0133` (ICS-21, ICS-22; open): whether a user-defined list
+  sequence to `std::initializer_list` beats a standard sequence. It does
+  not, because the kinds are compared first, as on Clang. GCC and EDG
+  choose the initializer list.
+- {question}`Q-0134` (ICS-2; open): whether a `long long` bit-field of
+  width 3 has a promotion to `int`. It does, as on Clang. GCC and EDG
+  give it a conversion, so `int` and `long` tie.
+- {question}`Q-0135` (ICS-17; settled on ICS-P5): whether a braced list
+  prefers a scalar parameter to a reference to an array when both
+  sequences are the identity. The two tie. GCC 16 prefers the scalar.
+- {question}`Q-0136` (ICS-17, ICS-18; open): whether empty braces or a
+  designated list have a sequence to a reference to an array. They do
+  not, as on Clang. GCC and EDG differ.
+- {question}`Q-0137` (ICS-26, ICS-33, ICS-36; open): whether the
+  pointer tie-breakers apply after an array-to-pointer step. They do, as
+  on Clang and EDG. GCC finds a tie.
+- {question}`Q-0138` (ICS-37; settled on OVL-P3): whether the kind of a
+  function reference breaks a tie between conversion functions to `F&`
+  and `F&&`. It does ({rule}`OVL-29`). Clang 22 finds the two ambiguous
+  for `F&&`.
+- {question}`Q-0152` (ICS-28, ICS-31 to ICS-36; open): whether the
+  same-rank tie-breakers come before the rvalue-reference preference,
+  and that preference before the qualification step. Both do, as on
+  Clang. GCC applies ICS-28 before ICS-34 and ICS-31 before ICS-28. EDG
+  applies ICS-28 before every same-rank tie-breaker.
+- {question}`Q-0153` (ICS-31; open): whether the qualification step
+  compares array bounds, and a reference that binds a temporary. It
+  compares both, as Clang does. GCC and EDG tie on the bound
+  (`qualification-array-bound.cpp`). EDG ties on the temporary
+  (`qualification-reference-temporary.cpp`).
+- {question}`Q-0154` (ICS-19, ICS-36; open): whether the nearest-base
+  tie-breaker applies to a one-element list of a derived class that is
+  not an aggregate. It does, as on Clang and GCC. EDG finds a tie.
+- {question}`Q-0155` (ICS-38; open): when one braced string literal has
+  a sequence to a reference to a character array. It has one when the
+  literal can initialize the array. GCC gives a UTF-8 literal no
+  sequence to a `char` array. Clang gives a literal a sequence to an
+  array that is too short, and ties a known and an unknown bound.
+- {question}`Q-0156` (ICS-45; open): whether direct initialization of
+  an rvalue reference can use an `explicit` conversion function that
+  returns a value. It can, as on Clang. GCC and EDG reject it.
+- {question}`Q-0157` (ICS-20; settled on {principle}`REF-P3`): whether a
+  one-element list of a class binds a reference through the element's
+  conversion function. It binds through the element only when the
+  element has the referenced type or a derived class, and makes a
+  temporary otherwise (REF-6, REF-14). GCC 16 binds through the
+  conversion function.
+- {question}`Q-0167` (ICS-38; settled on ICS-P5): whether one braced
+  string literal prefers a reference to a `char` array over one to an
+  `unsigned char` array. The two tie. GCC 16 picks `char`.
+- {question}`Q-0188` (ICS-46; open): whether the reference to the known
+  bound is better when two references bind directly to one array. It
+  is, as on GCC and EDG. Clang finds a tie.
+- {question}`Q-0294` (ICS-15 to ICS-20, ICS-38, ICS-46; open): how a
+  braced list binds a reference, initializes an array, and forms a
+  sequence. The rules follow the table of {principle}`REF-P3`. The
+  question lists each split with its own question.
+- {question}`Q-0321` (ICS-16; open): when a program needs the class
+  `std::initializer_list`. It needs the class where a braced list
+  initializes such an object or `auto` deduces one ({rule}`LSUP-1`). GCC
+  checks every definition.
+- {question}`Q-0337` (ICS-45; open): whether direct initialization of an
+  lvalue reference to `const` can use an `explicit` conversion function
+  that does not return an lvalue. It cannot, as on GCC. Clang accepts
+  both forms, and EDG accepts an rvalue reference result.
 
 ### Split tests
 
@@ -1039,8 +960,17 @@ cells give the outcome of the test on each compiler.
 | `user-defined-explicit-rvalue-reference-value.cpp` | ICS-45 | accept | accept | reject | reject | {question}`Q-0156` |
 | `foundations/language-support/initializer-list-candidate-not-viable.cpp` | ICS-16 | accept | accept | reject | accept | {question}`Q-0321` |
 
-### Results where every compiler agrees
+### Notes
 
+- ICS-8 is a `reject` rule because each fault is rejected once its
+  function is chosen. Every test has a fallback function that the call
+  would use if the fault removed the sequence.
+- ICS-35, ICS-44: Clang has no `f32`, `f64`, or `f128` suffix
+  ({rule}`PRIM-22`). GCC and EDG follow the rules. Only the extended
+  floating-point types have equal ranks, and Clang has none of them. So
+  every test of ICS-35 and ICS-44 needs an override for Clang. No
+  matrix target has three floating-point types of one rank, so no rule
+  orders two targets that both have the rank of the source.
 - ICS-38: every compiler binds a reference to a braced string literal of
   the referenced type directly. An rvalue reference cannot bind to the
   literal, and an lvalue reference wins over an rvalue reference.
@@ -1051,196 +981,44 @@ cells give the outcome of the test on each compiler.
 
 ### Probe grids
 
-The probe grids are in `tests/foundations/conversion-sequences/grids/`,
-and `tools/probe_grid.py` prints these tables from them. Each column of a
-grid declares two overloads, `One f(a)` and `Two f(b)`. The row
-"X → first" checks that the call with X chooses `f(a)`, and the row
-"X → second" checks that it chooses `f(b)`. An `accept` in one of the two
-rows names the better sequence. A `reject` in both rows means that the
-sequences tie or that no function is viable. In the labels, lref stands
-for `&` and rref for `&&`. In the object-parameter grid, each column
-gives the qualifiers of a member `operator~` and the parameter of a
-non-member `operator~`. In the order grid, each column gives the
-parameters of `f(a)` and `f(b)`, and each row gives the argument.
+The 11 probe grids of this page are in
+`tests/foundations/conversion-sequences/grids/`. Each grid probes every
+pair of a set of parameters against a set of arguments, and its table
+shows which parameter each argument chooses. The tables are in
+[`grids/tables.md`](https://github.com/sempuki/tidal/blob/main/tests/foundations/conversion-sequences/grids/tables.md),
+which also says how to read them. `tools/probe_grid.py` prints each
+table from its grid file.
 
-<details>
-<summary>The 11 probe grids of this page</summary>
+### Sources
 
-Arithmetic arguments (ICS-2, ICS-27, ICS-32, ICS-34):
+The table gives the source of each rule (decision 0044).
 
-| | bool / short | bool / int | bool / long | bool / float | bool / double | short / int | short / long | short / float | short / double | int / long | int / float | int / double | long / float | long / double | float / double |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| bool → first | accept | accept | accept | accept | accept | reject | reject | reject | reject | accept | accept | accept | reject | reject | reject |
-| bool → second | reject | reject | reject | reject | reject | accept | reject | reject | reject | reject | reject | reject | reject | reject | reject |
-| char → first | reject | reject | reject | reject | reject | reject | reject | reject | reject | accept | accept | accept | reject | reject | reject |
-| char → second | reject | accept | reject | reject | reject | accept | reject | reject | reject | reject | reject | reject | reject | reject | reject |
-| short → first | reject | reject | reject | reject | reject | accept | accept | accept | accept | accept | accept | accept | reject | reject | reject |
-| short → second | accept | accept | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject |
-| int → first | reject | reject | reject | reject | reject | reject | reject | reject | reject | accept | accept | accept | reject | reject | reject |
-| int → second | reject | accept | reject | reject | reject | accept | reject | reject | reject | reject | reject | reject | reject | reject | reject |
-| unsigned → first | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject |
-| unsigned → second | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject |
-| long → first | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | accept | accept | reject |
-| long → second | reject | reject | accept | reject | reject | reject | accept | reject | reject | accept | reject | reject | reject | reject | reject |
-| float → first | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | accept |
-| float → second | reject | reject | reject | accept | accept | reject | reject | accept | accept | reject | accept | accept | accept | accept | reject |
-| double → first | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject |
-| double → second | reject | reject | reject | reject | accept | reject | reject | reject | accept | reject | reject | accept | reject | accept | accept |
-| long double → first | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject |
-| long double → second | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject |
-| enum → first | reject | reject | reject | reject | reject | reject | reject | reject | reject | accept | accept | accept | reject | reject | reject |
-| enum → second | reject | accept | reject | reject | reject | accept | reject | reject | reject | reject | reject | reject | reject | reject | reject |
-| enum : short → first | reject | reject | reject | reject | reject | accept | accept | accept | accept | accept | accept | accept | reject | reject | reject |
-| enum : short → second | accept | accept | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject |
-| enum class → first | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject |
-| enum class → second | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject |
-| long long : 3 bit-field → first | reject | reject | reject | reject | reject | reject | reject | reject | reject | accept: clang-host, clang-22, clang-18; reject: gcc-host, edg-7.0, gcc-14, gcc-16, edg-7.0-ilp32 | accept: clang-host, clang-22, clang-18; reject: edg-7.0, gcc-16, edg-7.0-ilp32, gcc-host, gcc-14 | accept: clang-22, clang-18, clang-host; reject: edg-7.0, gcc-host, edg-7.0-ilp32, gcc-16, gcc-14 | reject | reject | reject |
-| long long : 3 bit-field → second | reject | accept: clang-host, clang-22, clang-18; reject: edg-7.0, edg-7.0-ilp32, gcc-14, gcc-host, gcc-16 | reject | reject | reject | accept: clang-host, clang-18, clang-22; reject: edg-7.0, gcc-16, gcc-host, edg-7.0-ilp32, gcc-14 | reject | reject | reject | reject | reject | reject | reject | reject | reject |
+| Rule | Source |
+|---|---|
+| ICS-1, ICS-2 | grids arithmetic, pointers, classes; inventory A5, A8 to A13, B1, B3 to B5 |
+| ICS-3 | grid user-defined; inventory A14 to A17 |
+| ICS-4 | diagnostics for explicit conversion functions; probes of conversion functions that return a value; inventory E1 to E5; gap review E5, M6 |
+| ICS-5 | probe of a defaulted conversion template; inventory A18 |
+| ICS-6 | grids classes, user-defined; probes of braced lists for an ellipsis; inventory A4; front-end finding G51 |
+| ICS-7 | grid user-defined (ToBoth); probes of a constructor against a conversion function; inventory A1 to A3; gap review E2 |
+| ICS-8 | diagnostics in the `chosen-*` tests; inventory A7, C1, F6, F9, F19; gap review M1; front-end finding G43 |
+| ICS-9, ICS-10 | probes; inventory D1, D3 to D7, G1, G3; gap review M9 |
+| ICS-11, ICS-12 | grids references, list-references; inventory B2, C2 to C6; front-end finding G38 |
+| ICS-13, ICS-14, ICS-40, ICS-41 | grid object-parameter; inventory B6, C7 to C10, D2; gap review S4, S5, M9 |
+| ICS-15 to ICS-20 | grids lists, list-references, classes; inventory D8, D9, F1 to F18; gap review E1, M5, M7, M8; front-end finding G41 |
+| ICS-21 | grids classes, user-defined; inventory H1 to H3 |
+| ICS-22 to ICS-24 | grid lists; edg-overload (the list checks before the level comparison); inventory I1 to I3; gap review O3, M5; gap review of question cluster 2 |
+| ICS-25 | grid user-defined; inventory L1 to L3 |
+| ICS-26, ICS-31 | grids pointers, functions, order; edg-overload (identity against qualification); inventory J3, J7, J8; gap review E3; gap review of question cluster 2 |
+| ICS-27 | grid arithmetic; inventory J4 |
+| ICS-28 to ICS-30 | grids references, functions, object-parameter, order; edg-overload (reference comparison); inventory J1, J2, J5, J6; gap review O1, O2, S4 |
+| ICS-32 to ICS-36 | grids arithmetic, pointers, member-pointers, classes, order; edg-overload (standard conversion comparison); inventory K1, K2, K4 to K9; gap review O1, O2, M4, M8, S1 |
+| ICS-37 | probes of conversion functions; edg-overload (the source-class check after a user-defined conversion); inventory K3, K10, K11, L4; gap review E2, M2, S2 |
+| ICS-38 | probes of braced string literals; gap review S3; front-end finding G49 |
+| ICS-46 | probes of references to arrays of known and unknown bound; probes of direct bindings to pointers; front-end finding G49; gap review of question cluster 2 |
+| ICS-39 | grid arithmetic (enum : short); gap review S1 |
+| ICS-42, ICS-43 | probes of conversion functions; edg-overload (the source-class check after a user-defined conversion); inventory K10, K11; gap review S2 |
+| ICS-44 | probes of conversion functions to extended floating-point types; gap review M3 |
+| ICS-45 | probes of `static_cast` with explicit conversion functions; gap review E4; gap review of question cluster 2 |
 
-Pointer arguments (ICS-26, ICS-31 to ICS-33, ICS-36):
-
-| | void* / const void* | void* / Base* | void* / Middle* | void* / const Middle* | void* / bool | const void* / Base* | const void* / Middle* | const void* / const Middle* | const void* / bool | Base* / Middle* | Base* / const Middle* | Base* / bool | Middle* / const Middle* | Middle* / bool | const Middle* / bool |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| Derived* → first | accept | reject | reject | reject | accept | reject | reject | reject | accept | reject | reject | accept | accept | accept | accept |
-| Derived* → second | reject | accept | accept | accept | reject | accept | accept | accept | reject | accept | accept | reject | reject | reject | reject |
-| const Derived* → first | reject | reject | reject | reject | reject | accept | accept | reject | accept | reject | reject | reject | reject | reject | accept |
-| const Derived* → second | accept | reject | reject | accept | accept | reject | reject | accept | reject | reject | accept | accept | accept | accept | reject |
-| Middle* → first | accept | reject | reject | reject | accept | reject | reject | reject | accept | reject | reject | accept | accept | accept | accept |
-| Middle* → second | reject | accept | accept | accept | reject | accept | accept | accept | reject | accept | accept | reject | reject | reject | reject |
-| Derived[2] → first | accept | reject | reject | reject | accept | reject | reject | reject | accept | reject | reject | accept | accept | accept | accept |
-| Derived[2] → second | reject | accept: edg-7.0, edg-7.0-ilp32, clang-host, clang-18, clang-22; reject: gcc-host, gcc-14, gcc-16 | accept: edg-7.0, edg-7.0-ilp32, clang-host, clang-18, clang-22; reject: gcc-host, gcc-14, gcc-16 | accept: edg-7.0-ilp32, edg-7.0, clang-host, clang-18, clang-22; reject: gcc-host, gcc-14, gcc-16 | reject | accept: edg-7.0, edg-7.0-ilp32, clang-host, clang-22, clang-18; reject: gcc-host, gcc-14, gcc-16 | accept: edg-7.0-ilp32, edg-7.0, clang-host, clang-18, clang-22; reject: gcc-host, gcc-14, gcc-16 | accept: edg-7.0-ilp32, edg-7.0, clang-host, clang-18, clang-22; reject: gcc-14, gcc-host, gcc-16 | reject | accept: edg-7.0, edg-7.0-ilp32, clang-host, clang-18, clang-22; reject: gcc-14, gcc-host, gcc-16 | accept: edg-7.0, edg-7.0-ilp32, clang-host, clang-18, clang-22; reject: gcc-host, gcc-14, gcc-16 | reject | reject | reject | reject |
-| 0 → first | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject |
-| 0 → second | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject |
-| nullptr → first | reject | reject | reject | reject | accept | reject | reject | reject | accept | reject | reject | accept | reject | accept | accept |
-| nullptr → second | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject |
-
-Member pointer arguments (ICS-32, ICS-36):
-
-| | int Base::* / int Middle::* | int Base::* / int Derived::* | int Base::* / bool | int Middle::* / int Derived::* | int Middle::* / bool | int Derived::* / bool |
-|---|---|---|---|---|---|---|
-| &Base::x → first | accept | accept | accept | accept | accept | accept |
-| &Base::x → second | reject | reject | reject | reject | reject | reject |
-| &Middle::y → first | reject | reject | reject | accept | accept | accept |
-| &Middle::y → second | accept | accept | accept | reject | reject | reject |
-| 0 → first | reject | reject | reject | reject | reject | reject |
-| 0 → second | reject | reject | reject | reject | reject | reject |
-| nullptr → first | reject | reject | accept | reject | accept | accept |
-| nullptr → second | reject | reject | reject | reject | reject | reject |
-
-Function arguments (ICS-26, ICS-29, ICS-32):
-
-| | pointer / noexcept pointer | pointer / lref | pointer / rref | pointer / bool | noexcept pointer / lref | noexcept pointer / rref | noexcept pointer / bool | lref / rref | lref / bool | rref / bool |
-|---|---|---|---|---|---|---|---|---|---|---|
-| run → first | accept | reject | reject | accept | reject | reject | reject | accept | accept | accept |
-| run → second | reject | reject | reject | reject | accept | accept | accept | reject | reject | reject |
-| stop (noexcept) → first | reject | reject | reject | accept | reject | reject | accept | accept | accept | accept |
-| stop (noexcept) → second | accept | accept | accept | reject | reject | reject | reject | reject | reject | reject |
-
-Reference parameters (ICS-11, ICS-12, ICS-28, ICS-30):
-
-| | int / int lref | int / const int lref | int / const volatile int lref | int / int rref | int / const int rref | int / const long lref | int lref / const int lref | int lref / const volatile int lref | int lref / int rref | int lref / const int rref | int lref / const long lref | const int lref / const volatile int lref | const int lref / int rref | const int lref / const int rref | const int lref / const long lref | const volatile int lref / int rref | const volatile int lref / const int rref | const volatile int lref / const long lref | int rref / const int rref | int rref / const long lref | const int rref / const long lref |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| int lvalue → first | reject | reject | reject | accept | accept | accept | accept | accept | accept | accept | accept | accept | accept | accept | accept | accept | accept | accept | reject | reject | reject |
-| int lvalue → second | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | accept | accept |
-| const int lvalue → first | accept | reject | reject | accept | accept | accept | reject | reject | reject | reject | reject | accept | accept | accept | accept | accept | accept | accept | reject | reject | reject |
-| const int lvalue → second | reject | reject | reject | reject | reject | reject | accept | accept | reject | reject | accept | reject | reject | reject | reject | reject | reject | reject | reject | accept | accept |
-| int xvalue → first | accept | reject | accept | reject | reject | accept | reject | reject | reject | reject | reject | accept | reject | reject | accept | reject | reject | reject | accept | accept | accept |
-| int xvalue → second | reject | reject | reject | reject | reject | reject | accept | reject | accept | accept | accept | reject | accept | accept | reject | accept | accept | accept | reject | reject | reject |
-| int prvalue → first | accept | reject | accept | reject | reject | accept | reject | reject | reject | reject | reject | accept | reject | reject | accept | reject | reject | reject | accept | accept | accept |
-| int prvalue → second | reject | reject | reject | reject | reject | reject | accept | reject | accept | accept | accept | reject | accept | accept | reject | accept | accept | accept | reject | reject | reject |
-| short lvalue → first | accept | reject | accept | reject | reject | accept | reject | reject | reject | reject | reject | accept | reject | reject | accept | reject | reject | reject | accept | accept | accept |
-| short lvalue → second | reject | reject | reject | reject | reject | reject | accept | reject | accept | accept | accept | reject | accept | accept | reject | accept | accept | accept | reject | reject | reject |
-| int : 3 bit-field → first | reject | reject | reject | accept | accept | accept | reject | reject | reject | reject | reject | accept | accept | accept | accept | reject | reject | reject | reject | reject | reject |
-| int : 3 bit-field → second | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | accept | accept |
-
-Class arguments and parameters (ICS-2, ICS-11, ICS-18, ICS-21, ICS-36):
-
-| | Base / Middle | Base / const Middle lref | Base / Middle rref | Base / long | Base / Box | Base / ellipsis | Middle / const Middle lref | Middle / Middle rref | Middle / long | Middle / Box | Middle / ellipsis | const Middle lref / Middle rref | const Middle lref / long | const Middle lref / Box | const Middle lref / ellipsis | Middle rref / long | Middle rref / Box | Middle rref / ellipsis | long / Box | long / ellipsis | Box / ellipsis |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| Derived lvalue → first | reject | reject | accept | accept | accept | accept | reject | accept | accept | accept | accept | accept | accept | accept | accept | reject | reject | reject | reject | reject | reject |
-| Derived lvalue → second | accept | accept | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | accept | reject | accept | accept |
-| Derived prvalue → first | reject | reject | reject | accept | accept | accept | reject | reject | accept | accept | accept | reject | accept | accept | accept | accept | accept | accept | reject | reject | reject |
-| Derived prvalue → second | accept | accept | accept | reject | reject | reject | reject | reject | reject | reject | reject | accept | reject | reject | reject | reject | reject | reject | reject | accept | accept |
-| Middle prvalue → first | reject | reject | reject | accept | accept | accept | reject | reject | accept | accept | accept | reject | accept | accept | accept | accept | accept | accept | reject | reject | reject |
-| Middle prvalue → second | accept | accept | accept | reject | reject | reject | reject | reject | reject | reject | reject | accept | reject | reject | reject | reject | reject | reject | reject | accept | accept |
-| int → first | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | accept | accept | accept |
-| int → second | reject | reject | reject | accept | accept | accept | reject | reject | accept | accept | accept | reject | accept | accept | accept | accept | accept | accept | reject | reject | reject |
-| ToMiddle → first | reject | reject | reject | accept | accept | accept | reject | reject | accept | accept | accept | reject | accept | accept | accept | accept | accept | accept | reject | reject | reject |
-| ToMiddle → second | accept | accept | accept | reject | reject | reject | reject | reject | reject | reject | reject | accept | reject | reject | reject | reject | reject | reject | reject | accept | accept |
-| ToInt → first | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | accept | accept | reject |
-| ToInt → second | reject | reject | reject | accept | reject | accept | reject | reject | accept | reject | accept | reject | accept | reject | accept | accept | reject | accept | reject | reject | accept |
-| braced {d} → first | reject | reject | accept | accept | accept | accept | reject | accept | accept | accept | accept | accept | accept | accept | accept | reject | reject | reject | reject | reject | reject |
-| braced {d} → second | accept | accept | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject |
-
-User-defined sequences (ICS-3, ICS-7, ICS-21, ICS-25):
-
-| | int / long | int / double | int / Box | int / Wide | int / ellipsis | long / double | long / Box | long / Wide | long / ellipsis | double / Box | double / Wide | double / ellipsis | Box / Wide | Box / ellipsis | Wide / ellipsis |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| int → first | accept | accept | accept | accept | accept | reject | accept | accept | accept | accept | accept | accept | reject | accept | accept |
-| int → second | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject |
-| ToInt → first | accept | accept | accept | accept | accept | reject | accept | accept | accept | accept | accept | accept | reject | reject | reject |
-| ToInt → second | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | accept | accept |
-| ToShort → first | accept | accept | accept | accept | accept | reject | accept | accept | accept | accept | accept | accept | reject | reject | reject |
-| ToShort → second | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | accept | accept |
-| ToBoth → first | reject | reject | accept | accept | accept | reject | accept | accept | accept | reject | reject | reject | reject | reject | reject |
-| ToBoth → second | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | accept | accept |
-
-Braced-list arguments (ICS-15 to ICS-19, ICS-22 to ICS-24):
-
-| | int / initializer_list<int> | int / initializer_list<long> | int / int[2] rref | int / int[] rref | int / Point | int / Pair | initializer_list<int> / initializer_list<long> | initializer_list<int> / int[2] rref | initializer_list<int> / int[] rref | initializer_list<int> / Point | initializer_list<int> / Pair | initializer_list<long> / int[2] rref | initializer_list<long> / int[] rref | initializer_list<long> / Point | initializer_list<long> / Pair | int[2] rref / int[] rref | int[2] rref / Point | int[2] rref / Pair | int[] rref / Point | int[] rref / Pair | Point / Pair |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| empty {} → first | reject | reject | accept: gcc-14, gcc-16, gcc-host; reject: edg-7.0-ilp32, clang-18, clang-host, edg-7.0, clang-22 | accept: clang-host, clang-18, gcc-16, gcc-14, gcc-host, clang-22; reject: edg-7.0-ilp32, edg-7.0 | accept | accept | reject | accept | accept | accept | accept | accept | accept | accept | accept | accept: clang-host, clang-18, clang-22; reject: edg-7.0-ilp32, gcc-16, gcc-14, edg-7.0, gcc-host | accept | accept | accept: gcc-host, gcc-14, gcc-16; reject: clang-host, edg-7.0-ilp32, edg-7.0, clang-18, clang-22 | accept: gcc-16, gcc-host, gcc-14; reject: edg-7.0-ilp32, edg-7.0, clang-host, clang-18, clang-22 | accept |
-| empty {} → second | accept | accept | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | accept: gcc-14, gcc-host, gcc-16; reject: edg-7.0, edg-7.0-ilp32, clang-host, clang-18, clang-22 | reject | reject | accept: clang-host, clang-18, clang-22; reject: edg-7.0, edg-7.0-ilp32, gcc-host, gcc-14, gcc-16 | reject | reject |
-| one {1} → first | reject | reject | accept: gcc-host, gcc-14, gcc-16; reject: edg-7.0, edg-7.0-ilp32, clang-host, clang-18, clang-22 | accept: gcc-host, gcc-14, gcc-16; reject: edg-7.0, edg-7.0-ilp32, clang-host, clang-18, clang-22 | accept | accept | accept | accept | accept | accept | accept | accept | accept | accept | accept | reject | accept | accept | accept | accept | accept |
-| one {1} → second | accept | accept | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | accept | reject | reject | reject | reject | reject |
-| two {1, 2} → first | reject | reject | reject | reject | reject | reject | accept | accept | accept | accept | accept | accept | accept | accept | accept | accept | accept | accept | accept | accept | reject |
-| two {1, 2} → second | accept | accept | accept | accept | accept | accept | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject |
-| three {1, 2, 3} → first | reject | reject | reject | reject | reject | reject | accept | accept | accept | accept | accept | accept | accept | accept | accept | reject | reject | reject | accept | accept | reject |
-| three {1, 2, 3} → second | accept | accept | reject | accept | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | accept | reject | reject | reject | reject | reject |
-| nested {{1}} → first | reject | reject | reject | reject | reject | reject | accept | accept | accept | accept | accept | accept | accept | accept | accept | reject | accept | accept | accept | accept | accept |
-| nested {{1}} → second | accept | accept | accept | accept | accept | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | accept | reject | reject | reject | reject | reject |
-| designated {.x = 1} → first | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | accept |
-| designated {.x = 1} → second | reject | reject | reject | reject | accept | reject | reject | reject | reject | accept | reject | reject | reject | accept | reject | reject | accept: clang-host, clang-18, clang-22; reject: gcc-host, gcc-14, edg-7.0-ilp32, edg-7.0, gcc-16 | reject | accept: clang-host, clang-18, clang-22; reject: gcc-host, edg-7.0, edg-7.0-ilp32, gcc-14, gcc-16 | reject | reject |
-
-Object parameters (ICS-13, ICS-28):
-
-| | no qualifier / Item lref | no qualifier / Item rref | const / const Item lref | const / const Item rref | const lref / const Item rref | lref / Item rref | rref / Item lref | rref / const Item lref |
-|---|---|---|---|---|---|---|---|---|
-| Item lvalue → member | reject | accept | reject | accept | accept | accept | reject | reject |
-| Item lvalue → non-member | reject | reject | reject | reject | reject | reject | accept | accept |
-| const Item lvalue → member | reject | reject | reject | accept | accept | reject | reject | reject |
-| const Item lvalue → non-member | reject | reject | reject | reject | reject | reject | reject | accept |
-| Item prvalue → member | accept | reject | reject | reject | reject | reject | accept | accept |
-| Item prvalue → non-member | reject | reject | reject | reject | accept | accept | reject | reject |
-
-Comparison order (ICS-28, ICS-31 to ICS-36):
-
-| | const short lref / int rref | void* const lref / bool rref | const Middle lref / Base rref | Base* const lref / void* rref | Middle* const lref / Base* rref | int Middle::* const lref / int Derived::* rref | const double lref / long double rref | const int* const lref / const volatile int* rref |
-|---|---|---|---|---|---|---|---|---|
-| low (enum : short) → first | accept: clang-18, clang-host, clang-22; reject: gcc-host, gcc-16, gcc-14, edg-7.0-ilp32, edg-7.0 | reject | reject | reject | reject | reject | reject | reject |
-| low (enum : short) → second | accept: gcc-14, edg-7.0-ilp32, edg-7.0, gcc-host, gcc-16; reject: clang-18, clang-host, clang-22 | accept | reject | reject | reject | reject | accept | reject |
-| &n (int*) → first | reject | accept: gcc-host, gcc-16, clang-host, gcc-14, clang-18, clang-22; reject: edg-7.0-ilp32, edg-7.0 | reject | reject | reject | reject | reject | accept: gcc-14, gcc-16, gcc-host; reject: edg-7.0-ilp32, edg-7.0, clang-host, clang-18, clang-22 |
-| &n (int*) → second | reject | accept: edg-7.0-ilp32, edg-7.0; reject: gcc-host, gcc-14, gcc-16, clang-host, clang-18, clang-22 | reject | accept | reject | reject | reject | accept: edg-7.0, edg-7.0-ilp32, clang-host, clang-18, clang-22; reject: gcc-host, gcc-14, gcc-16 |
-| Derived{} → first | reject | reject | accept: gcc-host, gcc-14, gcc-16, clang-host, clang-18, clang-22; reject: edg-7.0, edg-7.0-ilp32 | reject | reject | reject | reject | reject |
-| Derived{} → second | reject | reject | accept: edg-7.0, edg-7.0-ilp32; reject: gcc-host, gcc-14, gcc-16, clang-host, clang-18, clang-22 | reject | reject | reject | reject | reject |
-| &d (Derived*) → first | reject | accept: gcc-host, gcc-14, gcc-16, clang-host, clang-18, clang-22; reject: edg-7.0, edg-7.0-ilp32 | reject | accept: gcc-host, gcc-14, gcc-16, clang-host, clang-18, clang-22; reject: edg-7.0, edg-7.0-ilp32 | accept: gcc-host, gcc-14, gcc-16, clang-host, clang-18, clang-22; reject: edg-7.0-ilp32, edg-7.0 | reject | reject | reject |
-| &d (Derived*) → second | reject | accept: edg-7.0, edg-7.0-ilp32; reject: gcc-host, gcc-14, gcc-16, clang-host, clang-18, clang-22 | reject | accept: edg-7.0, edg-7.0-ilp32; reject: gcc-host, gcc-14, gcc-16, clang-host, clang-18, clang-22 | accept: edg-7.0, edg-7.0-ilp32; reject: gcc-host, gcc-14, gcc-16, clang-host, clang-18, clang-22 | reject | reject | reject |
-| &Base::x → first | reject | reject | reject | reject | reject | accept: gcc-host, gcc-14, gcc-16, clang-host, clang-18, clang-22; reject: edg-7.0, edg-7.0-ilp32 | reject | reject |
-| &Base::x → second | reject | accept | reject | reject | reject | accept: edg-7.0-ilp32, edg-7.0; reject: gcc-14, gcc-host, gcc-16, clang-host, clang-18, clang-22 | reject | reject |
-| 1.0f64 → first | reject | reject | reject | reject | reject | reject | accept: gcc-14, gcc-host, gcc-16; reject: edg-7.0, edg-7.0-ilp32, clang-host, clang-18, clang-22 | reject |
-| 1.0f64 → second | accept: edg-7.0, edg-7.0-ilp32, gcc-host, gcc-14, gcc-16; reject: clang-host, clang-18, clang-22 | accept: edg-7.0-ilp32, edg-7.0, gcc-14, gcc-host, gcc-16; reject: clang-host, clang-18, clang-22 | reject | reject | reject | reject | accept: edg-7.0-ilp32, edg-7.0; reject: gcc-host, gcc-14, gcc-16, clang-host, clang-18, clang-22 | reject |
-
-Braced lists for references (ICS-12, ICS-20, ICS-30):
-
-| | int lref / const int lref | int lref / int rref | int lref / const int rref | int lref / const long lref | int lref / long | const int lref / int rref | const int lref / const int rref | const int lref / const long lref | const int lref / long | int rref / const int rref | int rref / const long lref | int rref / long | const int rref / const long lref | const int rref / long | const long lref / long |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| {i} int lvalue → first | accept | accept | accept | accept | accept | accept | accept | accept | accept | reject | reject | reject | reject | reject | reject |
-| {i} int lvalue → second | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | accept | accept | accept | accept | reject |
-| {ci} const int lvalue → first | reject | reject | reject | reject | reject | accept | accept | accept | accept | reject | reject | reject | reject | reject | reject |
-| {ci} const int lvalue → second | accept | reject | reject | accept | accept | reject | reject | reject | reject | reject | accept | accept | accept | accept | reject |
-| {1} prvalue → first | reject | reject | reject | reject | reject | reject | reject | accept | accept | accept | accept | accept | accept | accept | reject |
-| {1} prvalue → second | accept | accept | accept | accept | accept | accept | accept | reject | reject | reject | reject | reject | reject | reject | reject |
-| {s} short lvalue → first | reject | reject | reject | reject | reject | reject | reject | accept | accept | accept | accept | accept | accept | accept | reject |
-| {s} short lvalue → second | accept | accept | accept | accept | accept | accept | accept | reject | reject | reject | reject | reject | reject | reject | reject |
-
-</details>
+Inputs: edg-overload.

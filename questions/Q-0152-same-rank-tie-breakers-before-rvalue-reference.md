@@ -24,7 +24,7 @@ or ICS-31 prefers the other function.
 
 ## Evidence
 
-The four tests in **Affects**, and the order grid on the page
+The four tests in **Affects**, and the order grid in `tests/foundations/conversion-sequences/grids/tables.md`
 (`tests/foundations/conversion-sequences/grids/order.json`). A source
 reader's gap review (items O1 and O2 of
 `reports/review/2026-10-31-gap-review-conversion-sequences.md`) reports

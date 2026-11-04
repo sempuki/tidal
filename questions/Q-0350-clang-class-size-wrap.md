@@ -22,7 +22,8 @@ below the range of `std::size_t`. A class of two members of
 
 The tests in Affects. The x86-64 case of a class larger than
 `std::size_t` holds is Q-0308, where Clang 22 rejects and Clang 18
-accepts.
+accepts. GCC 16 and the x86-64 build of EDG skip the `-m32` test.
+Every compiler rejects a smaller limit too, as TR-14 and TR-15 allow.
 
 ## Options
 

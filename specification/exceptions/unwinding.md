@@ -389,18 +389,43 @@ The results are in `tests/RESULTS.md`. All eight compilers agree on 51
 of 60 tests. EDG runs no programs, so its results say only that the
 programs are valid.
 
-One question on this page settled on 2026-11-04 under decision 0054 after the source-reader gap review of the rules that phase 7 added (`reports/review/2026-11-04-gap-review-phase-7-additions.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+### Divergences
 
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0365` | UNW-P1 | Clang 22 |
+- {question}`Q-0365` (UNW-1; settled on UNW-P1): whether the result of
+  a return statement is destroyed when a local destructor then throws.
+  It is, and it ends after the local objects built before it, as GCC
+  does. Clang never destroys the result.
+- {question}`Q-0179` (UNW-8; open): which throws in a non-throwing
+  function get a warning. UNW-8 recommends one for each throw that no
+  enclosing handler catches by static type, and a rethrow needs
+  `catch (...)`. GCC gives no warning for an unmatched handler, Clang
+  none for a rethrow from `catch (...)`, and EDG none at all.
 
-- UNW-5 and UNW-7: the harness sees only that the program ended with a
-  nonzero status or a signal. The harness cannot see why the program
-  ended. The tests ending in `-unobservable` show only that the program
-  ends. The other UNW-7 tests make the choice observable. The
-  destructor of the object in question ends the program with status 0,
-  so the run succeeds only if the object is destroyed.
+### Split tests
+
+EDG runs no programs, so its cell for a run test gives the result of
+the compile.
+
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `new-array-destructor-sized-delete.cpp` | UNW-3 | run | Clang 22: run; Clang 18: run-fail | run | accept | |
+| `new-single-object-sized-delete.cpp` | UNW-3, NEW-22 | run | Clang 22: run; Clang 18: run-fail | run | accept | |
+| `noexcept-boundary-unmatched-try.cpp` | UNW-7 | run | run | run-fail | accept | |
+| `placement-new-global-usual-delete-rejected.cpp` | UNW-11 | reject | Clang 22: reject; Clang 18: accept | reject | reject | |
+| `reference-member-temporary-ended.cpp` | UNW-2 | run | run | GCC 16: run; GCC 14: run-fail | accept | |
+| `return-local-destructor-throws-caught-inside.cpp` | UNW-1 | run | run-fail | run | accept | {question}`Q-0365` |
+| `return-local-destructor-throws-result-destroyed.cpp` | UNW-1 | run | run-fail | run | accept | {question}`Q-0365` |
+| `return-local-destructor-throws-result-order.cpp` | UNW-1 | run | run-fail | run | accept | {question}`Q-0365` |
+| `throw-unmatched-in-noexcept-warns.cpp` | UNW-8 | reject | reject | accept | skips | {question}`Q-0179` |
+
+### Notes
+
+- UNW-5, UNW-7: the harness sees only that the program ended with a
+  nonzero status or a signal, and cannot see why. The tests ending in
+  `-unobservable` show only that the program ends. The other UNW-7
+  tests make the choice observable. The destructor of the object in
+  question ends the program with status 0, so the run succeeds only if
+  the object is destroyed.
 - UNW-7: when an exception reaches the boundary of a `noexcept`
   function, Clang and GCC do not destroy the automatic objects of the
   `noexcept` function itself. Both destroy the objects of a function
@@ -436,20 +461,6 @@ One question on this page settled on 2026-11-04 under decision 0054 after the so
   declares only an allocation function through the global deallocation
   function. Both reject a placement `new` expression whose cleanup
   selects a sized deallocation function of the class.
-- UNW-1: after a return statement builds the result, and the destructor
-  of a local object then throws, GCC destroys the result before the
-  handler runs. Clang never destroys the result
-  ({question}`Q-0365`). The two compilers do the same when a handler
-  in the same function catches the exception and a second return
-  statement builds the result. GCC destroys the result after the local
-  objects that were built before it, as UNW-1 says
-  (`return-local-destructor-throws-result-order.cpp`). The gap review
-  of the rules that phase 7 rewrote
-  (`reports/review/2026-11-04-gap-review-phase-7-repairs.md`) reads the
-  reference as destroying the result first among the objects that
-  remain, in the reverse order of construction. No compiler that runs
-  the program follows that order, and UNW-1 keeps GCC's order
-  (`documentation/decisions/pending.md`, row 4).
 - UNW-2: Clang and GCC destroy the initialized members of an aggregate,
   the initialized captures of a closure object, and the temporary that
   a reference member keeps alive, in reverse order. GCC 14 differs for
@@ -459,21 +470,6 @@ One question on this page settled on 2026-11-04 under decision 0054 after the so
   the destructor of an object at namespace scope throws. When a
   destructor throws during unwinding, neither destroys the objects that
   unwinding has not reached.
-- UNW-8: the table gives the warnings of each compiler for a `throw`
-  in a `noexcept` function, with no warning flag. `-Wall` adds none of
-  these warnings on Clang or GCC ({question}`Q-0179`). The tests use
-  `-Wall -Werror`, and EDG skips them. The UNW-8 column gives the
-  rule's answer.
-
-  | Function body | Test | UNW-8 | Clang | GCC | EDG |
-  |---|---|---|---|---|---|
-  | `throw 1;` | `throw-in-noexcept-warns.cpp` | warn | warns | warns | none |
-  | `try { throw 1; } catch (int) { throw; }` | `rethrow-in-noexcept-warns.cpp` | warn | warns | warns | none |
-  | `throw;` outside a handler | | warn | warns | warns | none |
-  | `try { throw 1; } catch (long) {}` | `throw-unmatched-in-noexcept-warns.cpp` | warn | warns | none | none |
-  | `try { g(); } catch (...) { throw; }` | | warn | none | warns | none |
-  | `try { throw 1; } catch (int) {}` | `throw-caught-in-noexcept-no-warning.cpp` | none | none | none | none |
-  | `try { throw Derived{}; } catch (Base&) {}` | `throw-caught-in-noexcept-no-warning.cpp` | none | none | none | none |
 - UNW-10: Clang and GCC print "terminate called after throwing an
   instance of" and the type of the exception, then abort. The test
   gives a static object a destructor that would end the program with

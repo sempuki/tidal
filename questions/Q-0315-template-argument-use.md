@@ -23,7 +23,8 @@ second test, because it does not take `-Werror`.
 
 The two tests above. The link test shows nothing about the question,
 because ODR-8 allows a program that uses an entity with no definition
-to link.
+to link. The GCC build of the program with the function of internal
+linkage links and runs at `-O0` and at `-O2`.
 
 ## Options
 

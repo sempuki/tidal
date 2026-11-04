@@ -29,6 +29,8 @@ GCC. The sanitized Clang source (clang-sema-deduction) reverses the
 compared parameters of a reversed candidate. Item L7 of the deduction
 inventory describes the behavior.
 
+The test also shows that partial ordering (OVL-28) comes before the preference for a written candidate (OVL-32).
+
 ## Options
 
 1. Partial ordering reverses the parameters of a swapped candidate

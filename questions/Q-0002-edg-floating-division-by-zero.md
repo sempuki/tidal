@@ -19,7 +19,9 @@ others.
 `tests/RESULTS.md`, rows `floating-divide-by-zero.cpp` and
 `floating-zero-by-zero.cpp`. A probe of the two values in `constexpr`
 initializers on every compiler in the matrix. EDG 7.0 is the only EDG
-version in the matrix.
+version in the matrix. EDG 7.0 also accepts the division as the
+initializer of a `constexpr` variable, as a `float` division, and in a
+template argument.
 
 ## Options
 

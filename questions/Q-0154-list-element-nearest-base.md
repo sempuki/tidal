@@ -25,7 +25,7 @@ With aggregate classes (ICS-18), every compiler chooses `Middle`
 
 `tests/foundations/conversion-sequences/list-class-nearest-base.cpp`,
 `tests/foundations/conversion-sequences/list-aggregate-nearest-base.cpp`,
-and the row "braced {d}" of the classes grid on the page. A source
+and the row "braced {d}" of the classes grid in `tests/foundations/conversion-sequences/grids/tables.md`. A source
 reader's gap review (item M8) reports that the source gives the
 sequence conversion rank and does not say whether the tie-breaker
 applies.

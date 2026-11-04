@@ -11,6 +11,9 @@ GCC 14 and 16 give the same result, and so do Clang 18 and 22. The host
 GCC 16.2 and Clang 22.1 agree with them. No newer version settles the
 split.
 
+EDG 7.0 also accepts `explicit(2)` and converts the condition to `bool`
+(CE-11).
+
 ## Options
 
 1. The operand must convert to `bool` without narrowing.

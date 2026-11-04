@@ -22,7 +22,7 @@ The lists grid shows the same split for `int (&&)[]`.
 ## Evidence
 
 `tests/foundations/conversion-sequences/list-array-against-scalar.cpp`,
-and the "one {1}" rows of the lists grid on the page.
+and the "one {1}" rows of the lists grid in `tests/foundations/conversion-sequences/grids/tables.md`.
 
 ## Options
 

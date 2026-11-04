@@ -794,127 +794,86 @@ template <class... T> int count() {
 The results are in `tests/RESULTS.md`. All eight compilers agree on 104
 of 127 tests.
 
-Six questions on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+### Divergences
 
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0223` | DEP-P6 | none; the rule needs no diagnostic |
-| {question}`Q-0228` | DEP-P4, DEP-P6 | none; the rule needs no diagnostic |
-| {question}`Q-0230` | DEP-P3 | GCC 16 |
-| {question}`Q-0249` | DEP-P1, DEP-P6 | none; the rule needs no diagnostic |
-| {question}`Q-0250` | DEP-P6 | none; the rule needs no diagnostic |
-| {question}`Q-0354` | DEP-P2 | EDG 7.0 |
+Each settled question below keeps its test's override for the family
+that still differs. Reporting the EDG differences to the EDG project
+waits on the maintainer (`documentation/decisions/pending.md`).
 
-The questions of the cluster of EDG differences (cluster 5) on this page
-settled on 2026-11-03 under decision 0054. For each, the source-reader
-gap review of question cluster 5 supports the answer with no doubt, and
-a principle gives the same answer:
+- {question}`Q-0354` (DEP-1, DEP-2; settled on DEP-P2): whether `decltype`
+  of a generic lambda's parameter makes a call dependent. It does, and
+  the program is valid. EDG rejects the call before the instantiation.
+- {question}`Q-0248` (DEP-11, DEP-12; open): whether an unqualified
+  conversion function name finds `operator T` of a dependent base. It
+  does, as Clang does. GCC and EDG reject the call.
+- {question}`Q-0230` (DEP-13; settled on DEP-P3): whether a qualified
+  member name of the current instantiation is looked up again at the
+  instantiation. It is, and an ambiguity makes the program not valid.
+  GCC 16 keeps the member that the definition found.
+- {question}`Q-0229` (DEP-15; settled on DEP-P4): whether an alias
+  template specialization names the current instantiation. It does.
+  EDG differs, and GCC 16 rejects a member of a dependent base through
+  the alias (DEP-18).
+- {question}`Q-0228` (DEP-17, DEP-30; settled on DEP-P4 and DEP-P6):
+  whether a missing member of the current instantiation is diagnosed in
+  an unused template. No diagnostic is required. No family differs from
+  the answer, and GCC 14 accepts the template.
+- {question}`Q-0224` (DEP-19; settled on DEP-P5): whether a dependent
+  name without `typename` that becomes a type at instantiation is an
+  error outside a type-only position. It is. EDG uses the type.
+- {question}`Q-0225` (DEP-24; open): whether a name after `typename T::`
+  needs `template` before an argument list. It does, as Clang and EDG
+  say. GCC accepts the name without the keyword.
+- {question}`Q-0226` (DEP-26; open): whether `template` can come before
+  a member with no argument list after it. Only before a template
+  template argument or a class or alias template. GCC accepts a data
+  member, and Clang rejects a class template with deduced arguments.
+- {question}`Q-0227` (DEP-27; open): whether `template` can follow the
+  qualifier of a name that a declaration declares. It cannot. GCC and
+  EDG accept it for a member function, and EDG for a member class
+  template.
+- {question}`Q-0223` (DEP-30; settled on DEP-P6): whether an
+  implementation diagnoses an independent error in an unused template.
+  No diagnostic is required. No family differs from the answer, and GCC
+  accepts the template.
+- {question}`Q-0249` (DEP-31; settled on DEP-P1 and DEP-P6): whether a
+  qualified call uses a default argument that a later declaration adds.
+  No diagnostic is required. No family differs from the answer, and GCC
+  uses the default.
+- {question}`Q-0250` (DEP-31; settled on DEP-P6): whether an
+  independent constant can use a `constexpr` function defined after the
+  template. No diagnostic is required. No family differs from the
+  answer, and Clang rejects the template.
+- {question}`Q-0247` (DEP-33, DEP-37; open): whether a base list that
+  expands one pack twice is diagnosed before instantiation. No
+  diagnostic is required. Every compiler's result fits, and GCC waits
+  for the instantiation.
+- {question}`Q-0245` (DEP-34; settled on DEP-P5): whether `template`
+  can come before a destructor name. It cannot. EDG accepts it.
+- {question}`Q-0246` (DEP-35; open): whether a name that finds another
+  single member at the instantiation makes the program an error. It
+  does, with no diagnostic required. Every compiler accepts the program
+  and uses the other member.
 
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0224` | DEP-P5 | EDG 7.0 |
-| {question}`Q-0229` | DEP-P4 | EDG 7.0; GCC 16 for a member of a dependent base (DEP-18) |
-| {question}`Q-0245` | DEP-P5 | EDG 7.0 |
-
-Each test keeps its override for the family that differs. Reporting the
-EDG differences to the EDG project waits on the maintainer
-(`documentation/decisions/pending.md`).
-
-The questions of the cluster of template syntax corners (cluster 6) on
-this page stay open: {question}`Q-0225`, {question}`Q-0226`, and
-{question}`Q-0227`. On 2026-11-03, Clang 22, GCC 16, and EDG 7.0 still
-split on each of them, and the probes of that day added no case where
-the three agree with a provisional answer. Q-0227 stays open under
-decision 0054 too, because GCC 16 and EDG 7.0 both differ from it for a
-member function. {question}`Q-0224` and {question}`Q-0245` belong to
-the same cluster and keep their cluster 5 notes. The source-reader gap review of the
-cluster (`reports/review/2026-11-03-gap-review-question-cluster-6.md`)
-agrees with Q-0227. It reads Q-0225 as GCC 16 does, and it also reads
-`T::box<int>` as valid in the target of an alias declaration, which
-every compiler rejects. DEP-24 keeps the keyword in each position, as
-Clang 22 and EDG 7.0 do. The review rejects every form of Q-0226, as
-Clang 22 does. For the deduced form, it relies in part on the reading
-of Q-0243 that Tidal does not follow. DEP-26 keeps the deduced form, as GCC 16 and EDG 7.0 do. The alias
-target of Q-0225 waits on the maintainer, and the deduced form of
-Q-0226 waits with Q-0243 (`documentation/decisions/pending.md`).
-
-The clean-room writer probed each rule with the eight baseline
-compilers and the two `-O2` report compilers, and wrote the grids
-below. The sanitized Clang lookup source returns "not found in the
-current instantiation" for a qualified lookup into a class with a
-dependent base (DEP-18). Its scope source treats the injected class
-name and a template-id with the class's own parameters as the current
-instantiation (DEP-15).
+### Notes
 
 The clean-room writer probed each item of the gap review
 `reports/review/2026-10-31-gap-review-dependent-names-and-instantiation.md`
 with the same compilers. Where the compilers differ from the outcome
-that the review predicts, the rules follow the compilers, and the
-bullets below say so.
+that the review predicts, the rules follow the compilers, and the notes
+and the questions say so.
 
-- DEP-30: Clang and EDG reject an unused template whose body has an
-  invalid conversion or call with no dependent operand. GCC accepts the
-  template. Every compiler rejects an undeclared name and a name from
-  a dependent base. The rule needs no diagnostic, so both results are
-  allowed ({question}`Q-0223`).
-- DEP-19: EDG accepts `sizeof(T::type)`, a functional cast, and a
-  function declared in a block, when the instantiation makes `T::type`
-  a type. Clang and GCC reject them ({question}`Q-0224`).
 - DEP-29: every compiler rejects `template <class T> int take(T::type)`
   with a body at the definition, with no specialization. Clang reports
   a missing `typename`, GCC expects `;` before the body, and EDG reports
   that `T::type` is not a type name. Without a body, every compiler
   accepts the declaration as a variable template, and `take<C>` is a
   variable when `C::type` is a constant.
-- DEP-24: GCC accepts `typename T::box<int>`, and `T::box<int>` as a
-  base, without `template`. Clang and EDG reject both
-  ({question}`Q-0225`). Every compiler rejects `T::box<int>` without
-  `typename` as the target of an alias declaration. The review predicts
-  that GCC accepts that alias.
-- DEP-26: GCC accepts `object.template field` for a data member. Clang
-  and EDG reject it. Clang rejects `typename T::template box b(1)`,
-  where the arguments of `box` are deduced. GCC and EDG accept it
-  ({question}`Q-0226`). The split is the same for a member alias
-  template. Every compiler, GCC too, rejects `T::template field` for a
-  static data member.
-- DEP-34: Clang and GCC reject `p->template ~T()` and
-  `r.template ~T()`. EDG accepts both ({question}`Q-0245`).
-  EDG also accepts `p->template ~Item()` and `p->T::template ~T()`. So
-  every test of DEP-34 needs an override for EDG.
-- DEP-27: GCC and EDG accept `template` after the qualifier of a
-  declared member function template. Clang rejects it
-  ({question}`Q-0227`). For a member class template, Clang and GCC
-  reject the keyword, and EDG accepts it.
-  GCC also accepts the keyword in the definition of a member variable
-  template. GCC and EDG accept the keyword after a namespace qualifier.
-  Each form that the probes tried splits, so every test of DEP-27 needs
-  an override.
-- DEP-24: GCC also accepts `typename T::box<int>` without `template`
-  as an alias target and as a function parameter type. Clang and EDG
-  reject both. Every compiler rejects a friend declaration that names
-  `T::get<int>` without the keyword ({question}`Q-0225`).
-- DEP-17: GCC 14 accepts an unused template whose qualified name into
-  the current instantiation finds nothing. GCC 16 and the other
-  compilers reject the template. GCC 16 puts the error in its
-  `-Wtemplate-body` group, which also holds the independent errors of
-  DEP-30. Every compiler rejects the name once the class is
-  instantiated. DEP-30 allows both results for the unused template
-  ({question}`Q-0228`).
-  For a member access through `this` that finds nothing, GCC 14 and
-  Clang 18 accept the unused template, and GCC 16, Clang 22, and EDG
-  reject it.
-- DEP-15: EDG does not treat an alias template specialization as the
-  current instantiation. GCC treats the alias as the current
-  instantiation but rejects a name that only a dependent base declares
-  ({question}`Q-0229`).
-- DEP-13: Clang and EDG reject a qualified name into the current
-  instantiation that becomes ambiguous at the instantiation. GCC keeps
-  the member that the definition found ({question}`Q-0230`). Every
-  compiler rejects `this->m` in the same class.
-- DEP-35: when the second lookup finds one other member, every
-  compiler accepts the program and uses that member. The review
-  predicts a rejection. DEP-35 needs no diagnostic, so the result is
-  allowed ({question}`Q-0246`).
+- DEP-24: every compiler rejects `T::box<int>` without `typename` as
+  the target of an alias declaration. The review predicts that GCC
+  accepts that alias.
+- DEP-27, DEP-34: each form that the probes tried splits the
+  compilers, so every test of DEP-27 and DEP-34 needs an override.
 - DEP-15: inside the partial specialization `Box<T*>`, every compiler
   reads `Box<pointer>` after `using pointer = T*;`, `Box<self*>` after
   `using self = T;`, and `Box<Ptr<T>>` with an alias template `Ptr<U>`
@@ -924,104 +883,43 @@ bullets below say so.
   specialization. The result holds for `const` and `constexpr` members,
   with or without parentheses. The review predicts the current
   instantiation.
-- DEP-11: Clang finds a conversion function `operator T` of a dependent
-  base without `this->`, as DEP-11 does. GCC and EDG do not
-  ({question}`Q-0248`). Every compiler rejects `operator int` without
-  `this->` when only a dependent base declares it (DEP-12).
 - DEP-31: every compiler rejects `sizeof` of a class that is
   incomplete at the definition, even if the class is complete before
   the use. An explicit specialization declared after an instantiation
   is rejected under {rule}`TSP-6`.
-- DEP-31: a qualified call finds a function at the definition, and a
-  later declaration adds a default argument. GCC uses the default.
-  Clang and EDG reject the call ({question}`Q-0249`). For the
-  unqualified call `probe(item)`, lookup at the definition finds no
-  function, and every compiler uses the default that argument-dependent
-  lookup finds at the instantiation (`argument-lookup-later-default.cpp`,
-  DEP-9).
-- DEP-31: a `constexpr` variable in the template is initialized by a
-  call to a function that is defined after the template. Clang rejects
-  the template, GCC and EDG accept it ({question}`Q-0250`). As an array
-  bound, the same call makes Clang and GCC reject the array, and EDG
-  accepts it.
-- DEP-32 and DEP-33: every compiler accepts the templates, and no
-  compiler diagnoses them. For a base list that expands a pack twice,
-  Clang and EDG reject the template at the definition, and GCC accepts
-  it until the class is instantiated. DEP-33 allows both
-  ({question}`Q-0247`).
+- DEP-32, DEP-33: every compiler accepts the templates, and no compiler
+  diagnoses them.
 - DEP-37: every compiler rejects an operator template whose pack must
-  be empty. An operator template whose pack can have one
-  element, such as an assignment operator with only a pack, is valid,
-  and every compiler accepts it.
+  be empty. An operator template whose pack can have one element, such
+  as an assignment operator with only a pack, is valid, and every
+  compiler accepts it.
 - DEP-38: a better function that only another translation unit
   declares is not used, and no compiler or linker reports it.
 
-Positions of a dependent qualified name (DEP-19, DEP-20). Each row
-writes `T::type` in one position and instantiates the template with a
-class whose `type` is `int`. The first column writes the name alone,
-the second with `typename`:
+### Probe grids
 
-| | T::type | typename T::type |
-|---|---|---|
-| alias target | accept | accept |
-| data member | accept | accept |
-| member function return, in class | accept | accept |
-| member function parameter, in class | accept | accept |
-| member function return, outside class | accept | accept |
-| member function parameter, outside class | accept | accept |
-| function template return | accept | accept |
-| function template parameter | reject | accept |
-| trailing return type | accept | accept |
-| default type argument | accept | accept |
-| constant parameter type | accept | accept |
-| static_cast type | accept | accept |
-| new type | accept | accept |
-| variable in a block | reject | accept |
-| sizeof operand | accept: edg-7.0, edg-7.0-ilp32; reject: gcc-host, clang-host, gcc-14, gcc-16, clang-18, clang-22 | accept |
-| functional cast | accept: edg-7.0, edg-7.0-ilp32; reject: gcc-host, clang-host, gcc-14, gcc-16, clang-18, clang-22 | accept |
-| template argument | reject | accept |
-| lambda parameter | accept | accept |
-| function declared in a block | accept: edg-7.0, edg-7.0-ilp32; reject: gcc-host, gcc-14, gcc-16, clang-host, clang-18, clang-22 | accept |
-| variable template type | accept | accept |
-| friend function parameter | accept | accept |
+The probe grids are in `tests/templates/dependent-names/grids/`, and
+[their tables](https://github.com/sempuki/tidal/blob/main/tests/templates/dependent-names/grids/tables.md)
+sit beside them. The typename-positions grid (DEP-19, DEP-20) writes
+`T::type` in each position, with and without `typename`. The
+template-keyword grid (DEP-24 to DEP-26) names a member of a class in
+each position, with and without `template`. The current-instantiation
+grid (DEP-15 to DEP-18) names `Box<T>` inside `Box` in each way, and
+reads a member type, a missing member, and a member of a dependent base
+through it.
 
-The keyword `template` (DEP-24 to DEP-26). Each row names a member of
-a class `Has` and instantiates the template where there is one:
+### Sources
 
-| | no keyword | template |
-|---|---|---|
-| after T:: in a call | reject | accept |
-| after a dot | reject | accept |
-| after an arrow | reject | accept |
-| after typename T:: | accept: gcc-host, gcc-14, gcc-16; reject: edg-7.0, edg-7.0-ilp32, clang-host, clang-18, clang-22 | accept |
-| alias target | accept: gcc-host, gcc-14, gcc-16; reject: edg-7.0, edg-7.0-ilp32, clang-host, clang-18, clang-22 | accept |
-| template template argument, no list | reject | accept |
-| independent qualifier | accept | accept |
-| independent object | accept | accept |
-| member that is not a template | accept | reject |
-| data member that is not a template | accept | accept: gcc-14, gcc-host, gcc-16; reject: edg-7.0, edg-7.0-ilp32, clang-host, clang-18, clang-22 |
+The clean-room writer probed each rule with the eight baseline
+compilers and the two `-O2` report compilers, and wrote the grids. The
+sanitized Clang lookup source returns "not found in the current
+instantiation" for a qualified lookup into a class with a dependent
+base (DEP-18). Its scope source treats the injected class name and a
+template-id with the class's own parameters as the current
+instantiation (DEP-15).
 
-The current instantiation (DEP-15 to DEP-18). Each row is a way to
-name `Box<T>` inside `Box`. The first column reads a member type
-without `typename`. The second reads a missing member in a class with
-no dependent base, and the template is not used. The third reads a
-member that only a dependent base declares:
-
-| | member type without typename | missing member, no dependent base | missing member, dependent base |
-|---|---|---|---|
-| Box | accept | accept: gcc-14; reject: edg-7.0-ilp32, edg-7.0, gcc-host, gcc-16, clang-host, clang-18, clang-22 | accept |
-| Box<T> | accept | accept: gcc-14; reject: edg-7.0, edg-7.0-ilp32, gcc-16, gcc-host, clang-host, clang-18, clang-22 | accept |
-| ::Box<T> | accept | accept: gcc-14; reject: edg-7.0, edg-7.0-ilp32, gcc-host, clang-host, gcc-16, clang-18, clang-22 | accept |
-| Same<T> | accept: gcc-host, gcc-14, clang-host, gcc-16, clang-18, clang-22; reject: edg-7.0, edg-7.0-ilp32 | accept: edg-7.0, edg-7.0-ilp32, gcc-14; reject: gcc-host, clang-host, gcc-16, clang-18, clang-22 | accept: edg-7.0, edg-7.0-ilp32, gcc-14, clang-host, clang-18, clang-22; reject: gcc-host, gcc-16 |
-| Box<T*> | reject | accept | accept |
-| Pointer<T> | reject | accept | accept |
-| Box<const T> | reject | accept | accept |
-
-`Same<U>` is an alias for `Box<U>`, and `Pointer<U>` is an alias for
-`Box<U*>`.
-
-The probe grids are in `tests/templates/dependent-names/grids/`. This
-table gives the source of each rule. Inventory items have the numbers of
+This table gives the source of each rule. Inventory items have the
+numbers of
 `reports/review/2026-10-31-inventory-dependent-names-and-instantiation.md`:
 
 | Rule | Source |

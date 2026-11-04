@@ -34,6 +34,25 @@ covers the two rvalue reference columns.
 `tests/foundations/conversion-sequences/user-defined-explicit-rvalue-reference-value.cpp`
 and `user-defined-explicit-reference-xvalue.cpp`.
 
+The table gives, for `static_cast` to each reference, whether the
+`explicit` conversion function serves the cast, under ICS-45 and on
+each compiler. `T` is a class type or `int`, and the results are the
+same for both. `U` is a base of the class, or `long` for `int`. A cell
+with one answer holds on every compiler and agrees with ICS-45.
+
+| Target | `explicit operator T()` | `explicit operator T&()` | `explicit operator T&&()` |
+|---|---|---|---|
+| `T&&` | rule: yes; Clang: yes; GCC, EDG: no | no | yes |
+| `const T&` | rule: no; Clang: yes; GCC, EDG: no | yes | rule: no; Clang, EDG: yes; GCC: no |
+| `T&` | no | yes | no |
+| `U&&` or `const U&` | no | no | no |
+
+The tests are `user-defined-explicit-rvalue-reference-value.cpp`,
+`user-defined-explicit-reference-value.cpp`,
+`user-defined-explicit-reference-xvalue.cpp`, and
+`user-defined-explicit-reference-other-type.cpp`. The `const T&` row is
+Q-0337.
+
 ## Options
 
 1. Only an explicit conversion function that returns an lvalue reference

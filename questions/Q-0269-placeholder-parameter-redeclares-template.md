@@ -18,6 +18,8 @@ The same holds without the constraint.
 
 The test above, and the columns `A T / A auto` and `AB T / AB auto` of the spellings grid, where Clang reports a redefinition.
 
+In those two grid columns every compiler rejects, for different reasons. Clang reports a redefinition, and GCC and EDG find the call ambiguous.
+
 ## Options
 
 1. One template (Clang). DED-34 makes the placeholder an

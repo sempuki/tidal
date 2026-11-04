@@ -16,7 +16,9 @@ function calls `(&Item::reset)(1)`.
 | EDG 7.0 | stops with an internal error |
 
 For free functions, `(&pick)(1)` works on every compiler
-(`call-through-address.cpp`).
+(`call-through-address.cpp`). With no argument, `(&Item::reset)()`
+can only call the non-static member, and every compiler rejects the
+call (`call-through-address-nonstatic.cpp`).
 
 ## Evidence
 

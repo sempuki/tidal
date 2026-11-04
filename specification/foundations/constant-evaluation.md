@@ -585,11 +585,55 @@ constinit Empty empty;                // fine: Empty has no scalar part
 The results are in `tests/RESULTS.md`. All eight compilers agree on 130
 of 154 tests.
 
-Of the constant-evaluation cluster, {question}`Q-0090` is settled under
-decision 0051. These questions of the cluster on this page stay open:
-{question}`Q-0002`, {question}`Q-0117`, {question}`Q-0192`, and
-{question}`Q-0193`. On 2026-11-03, Clang 22, GCC 16, and EDG 7.0 still
-split on each of them.
+### Divergences
+
+- {question}`Q-0002` (CE-28; compiler defect): whether EDG's acceptance
+  of a floating division by zero in constant evaluation changes CE-28.
+  CE-28 rejects the division, as Clang and GCC do. EDG 7.0 accepts it.
+- {question}`Q-0004` (CE-28; settled): whether a floating division by
+  zero is implementation-defined on IEEE 754 targets. It is at run
+  time, and constant evaluation rejects it. Only EDG differs, under
+  Q-0002.
+- {question}`Q-0020` (CE-12; open): how a test records a compiler that
+  does not implement a feature yet. An override names the question.
+  Clang 18 also rejects a `constexpr` function that is never
+  constant.
+- {question}`Q-0033` (CE-13; open): whether constant evaluation may
+  compare the addresses of two string literals. CE-13 rejects the
+  comparison, as Clang does. GCC and EDG fold some or all such
+  comparisons.
+- {question}`Q-0078` (CE-11; open): whether the operand of `noexcept` or
+  `explicit` can narrow when it converts to `bool`. It cannot, as Clang
+  and GCC say. EDG 7.0 accepts `explicit(2)`.
+- {question}`Q-0090` (CE-18; settled): whether an evaluation can use a
+  reference whose referent is unknown when it reads nothing through it.
+  It can. Only Clang 18 differs.
+- {question}`Q-0115` (CE-21, CE-22; compiler defect): whether GCC's
+  acceptance of a copy of an object with a part that has no value
+  changes CE-22. The copy is rejected, as Clang and EDG do. GCC 14 and
+  16 accept the copy and read the part as 0.
+- {question}`Q-0117` (CE-21; open): whether a union with no active
+  member is a valid constant. It is, as Clang and EDG say. GCC rejects
+  it.
+- {question}`Q-0192` (CE-24; open): whether a class with a trivial
+  default constructor and no initializer has a constant initializer. A
+  class with a scalar member has none, as Clang says. GCC and EDG
+  accept the variable.
+- {question}`Q-0193` (CE-3, CE-14; open): whether a constant can refer
+  to, and read, every temporary that a namespace reference extends. It
+  can, and a read needs a `const` type, as Clang says. EDG rejects two
+  forms of the reference, and GCC rejects the read of a class
+  temporary.
+- {question}`Q-0335` (CE-17; open): whether a temporary that a constant
+  evaluation makes needs a literal type. It does not, as Clang 22 says.
+  GCC rejects such a temporary, EDG rejects one in a `static_assert`
+  condition, and Clang 18 also rejects a local variable.
+- {question}`Q-0349` (CE-4; open): whether a member of
+  `std::allocator<T>` can convert the result of `::operator new` to a
+  pointer to a type other than `T`. It cannot, as Clang says. GCC and
+  EDG accept the conversion.
+
+### Notes
 
 - CE-10: all three implementations reject a recursion depth of 100000
   and a loop of 100000000 steps by default. All accept a depth of 400.
@@ -612,45 +656,20 @@ split on each of them.
   - The limit on total work is reached long before the depth limit. A
     recursion of depth 40 that makes 331 million calls fails on every
     compiler.
-- CE-4: Clang, GCC, and EDG accept the conversion of the result of
-  `::operator new` to `T*` in `std::allocator<T>::allocate`, also through
-  a local variable of type `void*`. Each compiler rejects the call of
-  `::operator new` in a member that returns the `void*` without a
-  conversion. For a conversion to another type, such as `long*` in
-  `std::allocator<int>`, Clang rejects the conversion, and GCC and EDG
-  accept it ({question}`Q-0349`).
-- CE-12: Clang 18 also reports the `constexpr` function as never
-  constant (compare {question}`Q-0020`).
-- CE-13: Clang rejects the comparison of two string literal addresses.
-  GCC and EDG accept it and fold it to a value ({question}`Q-0033`).
-  EDG folds each comparison that the probes tried. GCC rejects the
-  comparison of `"abc" + 1` with `"bc"`, and folds the comparison of two
-  equal literals. So every test of CE-13 needs an override for EDG.
-- CE-11: EDG accepts `explicit(2)` and converts the condition to `bool`
-  ({question}`Q-0078`).
-- CE-18: Clang 18 rejects the use of the reference. Clang 22, GCC, and
-  EDG accept it. {question}`Q-0090` is settled under decision 0051.
+- CE-28, CE-13: every test of the two rules needs an override for EDG,
+  because EDG accepts each division and folds each comparison that the
+  probes tried.
 - CE-3: every compiler accepts `&alias` in a constant expression and
   `alias` as a template argument, where `alias` is a reference to a
   global with a constant initializer and is not `constexpr`. Every
   compiler rejects a reference whose initializer calls a function that
   is not `constexpr`.
-- CE-17: a constant evaluation can make a variable or a temporary of a
-  class that is not a literal type, such as a class with a `volatile`
-  member, and call its `constexpr` functions ({question}`Q-0335`). For a
-  local variable, Clang 22, GCC, and EDG accept the evaluation, and
-  Clang 18 rejects it. For a temporary in a `constexpr` function,
-  Clang 22 and EDG accept, and GCC and Clang 18 reject. For a temporary
-  in the condition of a `static_assert`, Clang 22 accepts, and GCC,
-  EDG, and Clang 18 reject. The tests record each differing compiler as
-  an override.
 - CE-17, CE-2: every compiler rejects the evaluation when a variable or
   a temporary of a class with a destructor that is not `constexpr`
   ends, also when the destructor's body is empty. Clang 22 and EDG
   name the destructor call. GCC names the call for a variable, and for
   a temporary names the destructor as the reason that the class is not
-  a literal type. Clang 18 rejects the type that is not a literal type
-  (Q-0335).
+  a literal type. Clang 18 rejects the type that is not a literal type.
 - CE-30: Clang and GCC reject a throw in a `constexpr` variable's
   initializer inside a try block of a `constexpr` function, and a throw
   in a `consteval` call inside a run-time try block.
@@ -662,45 +681,6 @@ split on each of them.
 - CE-21: every compiler rejects a constant whose value has a scalar part
   with no value, for `constexpr` and `constinit` alike, when a
   constructor leaves the part without a value.
-- CE-21 and CE-22: a builder function that returns a local with a part
-  that has no value splits the compilers. Clang and EDG reject the
-  constant. GCC 14 and 16 accept it, and read the part as 0
-  ({question}`Q-0115`). A default member initializer gives every part
-  a value, and every compiler accepts the constant.
-- CE-21: a union with no active member is a valid constant for Clang
-  and EDG. GCC rejects it ({question}`Q-0117`).
-- CE-22: Clang and EDG reject a copy of an object that has a part with
-  no value, and name the part in a note. GCC 14 and 16 accept the copy
-  ({question}`Q-0115`). At run time the same copy is a read under
-  {rule}`OBJ-2`.
-- CE-28: Clang and GCC reject `1.0 / 0.0` and `0.0 / 0.0` and note a
-  division by zero, although both give an infinity or a NaN at run time
-  ({question}`Q-0004`). EDG 7.0 accepts both ({question}`Q-0002`).
-  EDG also accepts the division as the initializer of a `constexpr`
-  variable, as a `float` division, and in a template argument. So every
-  test of CE-28 needs an override for EDG.
-- CE-3 and CE-14: the compilers split on temporaries that a namespace
-  `constexpr` reference extends ({question}`Q-0193`).
-  - EDG rejects a `constexpr` reference variable when its temporary is
-    extended through a member access, or when the variable binds a
-    temporary aggregate whose reference member binds another
-    temporary. Clang and GCC accept both references. Every compiler
-    accepts a `constexpr` aggregate variable whose reference member
-    binds a temporary ({rule}`CX-2`).
-  - GCC rejects a read of a `const` temporary of class type. Clang and
-    EDG accept the read. Every compiler accepts the read of a `const`
-    scalar temporary and rejects the read of a temporary that is not
-    `const`.
-- CE-24: every compiler accepts `constinit` on a scalar or an array of
-  scalars with no initializer. Every compiler also accepts `constinit`
-  on an empty class with a trivial default constructor. For a class
-  with a trivial default constructor and a scalar member, Clang rejects
-  the variable and names the member that has no value. GCC and EDG
-  accept it ({question}`Q-0192`). The same split holds for an array of
-  that class and for a `static` variable in a block. The gap review of
-  question cluster 4
-  (`reports/review/2026-11-03-gap-review-question-cluster-4.md`) reads
-  the reference as supporting Clang.
 - CE-26: all eight compilers accept constant evaluation of
   `i++ + i++`, `i + i++`, and `i++ * i`. CE-26 is class `no-diagnostic`
   because no compiler detects the pair. So the table below shows "no

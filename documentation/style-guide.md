@@ -217,6 +217,9 @@ Do not use `shall`, `may`, `might`, or `will` in rules.
 The `Evidence` segment is informative. The segment records compiler results, links
 to questions in `questions/`, and notes divergences. Each divergence names
 the compilers and the question that holds the provisional answer.
+`documentation/specification-format.md`, section "Evidence", gives the
+parts of the segment and their order. A question gets one line in
+Evidence, and the question file keeps the details.
 
 ## 8. Grammar
 

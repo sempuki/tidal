@@ -19,7 +19,8 @@ A builder function that returns a local with an unset array element
 shows the same split (Write report W11). Clang and EDG reject the
 `constexpr` variable that the result initializes. GCC 14 and 16 accept
 the variable, and a `static_assert` that reads the unset element as 0
-passes on GCC.
+passes on GCC. When a default member initializer gives every part a
+value, every compiler accepts the constant.
 
 ## Evidence
 

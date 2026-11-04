@@ -19,6 +19,8 @@ template, and the clause names the function template's parameter.
 
 The four tests above. EDG also rejects the clause on a lambda in a default member initializer of a class template. Every compiler accepts the clause on a member of a class nested in a class template (`trailing-clause-member.cpp`).
 
+EDG rejects a trailing requires clause on each lambda that is not a template, also after a trailing return type.
+
 ## Options
 
 1. Valid (Clang, GCC). The lambda and the local class are part of the

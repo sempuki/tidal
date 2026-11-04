@@ -51,6 +51,8 @@ Kept on 2026-11-03. The source-reader gap review of question cluster 6 (`reports
 
 Kept open on 2026-11-03 under decision 0054, because the question waits on the maintainer (`documentation/decisions/pending.md`).
 
+The probes of 2026-11-03 added no case where Clang 22, GCC 16, and EDG 7.0 agree with the provisional answer. For the deduced form, the cluster 6 review relies in part on the reading of Q-0243 that Tidal does not follow. DEP-26 keeps the deduced form, as GCC 16 and EDG 7.0 do, and that form waits with Q-0243 (`documentation/decisions/pending.md`).
+
 ## Opinions
 
 ### Gap review, 2026-11-03

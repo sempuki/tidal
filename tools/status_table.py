@@ -14,6 +14,9 @@ The tool writes:
     the page's rules, leaving out the roadmap reports
     (reports/clean-room/roadmap*/).
   - Questions lists the questions the page names.
+  - Evidence words counts the whitespace-separated tokens of the page's
+    Evidence segment, from its heading to the next segment or the end of
+    the page, the heading left out.
   - Similarity comes from the latest report under reports/similarity/ that
     checked any unit of the page. Reports are ordered by the date in their
     name, then by the time git first recorded them, then by name. A report
@@ -77,7 +80,7 @@ SECTIONS = ["foundations", "statements", "expressions", "declarations", "classes
 KINDS = ["required", "reject", "undefined", "unspecified", "impl-defined",
          "no-diagnostic", "conditionally-supported", "recommended"]
 HEADER = ("| Section | Rules | Classes | Tests | Single-test rules | Overrides "
-          "| Report mentions | Questions | Similarity |")
+          "| Report mentions | Questions | Evidence words | Similarity |")
 RULE_ID = re.compile(r"\b[A-Z]+-\d+\b")
 REPORT_LINE = re.compile(r"^(ok  |FLAG) (.*?)\s+longest=\d+\s+overlap=[\d.]+$")
 MARKER = re.compile(r"\*\(([^()*]*?)\breferenced\)\*")
@@ -193,6 +196,15 @@ def mention_index() -> dict[str, set[int]]:
     return index
 
 
+EVIDENCE = re.compile(r"^## Evidence[ \t]*\n(.*?)(?=^## |\Z)", re.M | re.S)
+
+
+def evidence(src: str) -> str:
+    """The page's Evidence segment, without its heading, or "" when it has none."""
+    m = EVIDENCE.search(src)
+    return m.group(1) if m else ""
+
+
 def page_ids(src: str) -> tuple[set[str], set[str]]:
     """The rule IDs and the principle IDs a page defines."""
     rules = set(re.findall(r"^:::\{rule\} (\S+)$", src, flags=re.M))
@@ -217,7 +229,8 @@ def row(page: Path, mentions: dict[str, set[int]], similarity: Similarity) -> st
     questions = ", ".join(sorted(set(re.findall(r"Q-\d{4}", src))))
     rel = page.relative_to(ROOT)
     return (f"| [{title}](../{rel}) | {sum(kinds.values())} | {classes} | {len(tests)} | {single} "
-            f"| {overrides} | {len(lines)} | {questions} | {similarity.cell(page, rules | principles)} |")
+            f"| {overrides} | {len(lines)} | {questions} | {len(evidence(src).split())} "
+            f"| {similarity.cell(page, rules | principles)} |")
 
 
 def table(similarity: Similarity) -> list[str]:
@@ -226,7 +239,7 @@ def table(similarity: Similarity) -> list[str]:
     glossary = SPEC / "glossary.md"
     text = glossary.read_text()
     terms = len(re.findall(r"^\S.*$", text.split(":::{glossary}")[1].split(":::")[0], flags=re.M))
-    rows.append(f"| [Glossary](../specification/glossary.md) | {terms} terms | | | | | | "
+    rows.append(f"| [Glossary](../specification/glossary.md) | {terms} terms | | | | | | | "
                 f"| {similarity.cell(glossary, set())} |")
     return rows
 

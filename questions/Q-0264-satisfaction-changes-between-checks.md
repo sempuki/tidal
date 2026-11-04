@@ -20,6 +20,8 @@ time.
 
 The test above.
 
+For a function declared between two checks, every compiler keeps the first result, GCC 16 included (`satisfaction-changes-declaration.cpp`). For a concept-id whose requirement names a private member, checked inside a member of the class and at namespace scope, every compiler keeps the first result in either order, GCC 16 included (`requirement-access-concept-kept.cpp`, `requirement-access-concept-kept-false.cpp`).
+
 ## Options
 
 1. The program is not valid, and no diagnostic is required. Both

@@ -46,7 +46,7 @@ model: a use is where the program needs the entity itself, and a
 capture rule asks only whether the lambda names the entity where the
 program needs it.
 
-Settled on 2026-11-04 under decision 0054. The gap review of the rules that phase 7 added (`reports/review/2026-11-04-gap-review-phase-7-additions.md`) supports the answer in each form with no doubt, and ODR-P1 gives the same answer: a use is a point where the program needs the entity itself, and a capture rule asks whether the lambda names the entity there. In each form one newest family still differs, as the ODR-3 table of the page gives, and each test keeps its override.
+Settled on 2026-11-04 under decision 0054. The gap review of the rules that phase 7 added (`reports/review/2026-11-04-gap-review-phase-7-additions.md`) supports the answer in each form with no doubt, and ODR-P1 gives the same answer: a use is a point where the program needs the entity itself, and a capture rule asks whether the lambda names the entity there. In each form one newest family still differs, as the table in Context gives, and each test keeps its override.
 
 ## Opinions
 

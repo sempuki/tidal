@@ -30,6 +30,8 @@ instantiation and need not. GCC 16 accepts the template under
 errors of DEP-30. Every compiler rejects the name when the class is
 instantiated (`current-member-missing-used.cpp`).
 
+For a member access through `this` that finds nothing in an unused template, GCC 14 and Clang 18 accept the template, and GCC 16, Clang 22, and EDG reject it (`this-member-missing.cpp`).
+
 ## Options
 
 1. The implementation must reject the unused template, and GCC 14 has

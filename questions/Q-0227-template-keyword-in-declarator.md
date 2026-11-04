@@ -21,6 +21,8 @@ class template, `struct Box<T>::template Inner { ... };`.
 The tests above. Inventory item F7 says that the keyword must not
 follow the qualifier of a name being declared.
 
+GCC also accepts the keyword in the definition of a member variable template. GCC and EDG accept the keyword after a namespace qualifier. Each form that the probes tried splits the compilers.
+
 ## Options
 
 1. The keyword is not valid there (Clang).
@@ -38,6 +40,8 @@ The question stays open under decision 0051 (2026-11-03). Clang 22 rejects the k
 Kept on 2026-11-03. The source-reader gap review of question cluster 6 (`reports/review/2026-11-03-gap-review-question-cluster-6.md`) agrees with option 1 for each form. DEP-27 stays a `reject` rule.
 
 Kept open on 2026-11-03 under decision 0054, because two of the newest families differ from the answer in at least one form, and the rule records one differing family.
+
+The probes of 2026-11-03 added no case where Clang 22, GCC 16, and EDG 7.0 agree with the provisional answer.
 
 ## Opinions
 

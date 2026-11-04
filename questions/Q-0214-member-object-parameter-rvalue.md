@@ -34,6 +34,8 @@ Clang 18 and EDG. Item E6 of the gap review of 2026-10-31
 (`reports/review/2026-10-31-gap-review-deduction-and-ordering.md`)
 describes the rvalue reference.
 
+Every compiler agrees on a member with the ref-qualifier `&&`, and on a member with no ref-qualifier against an lvalue reference first parameter.
+
 ## Options
 
 1. The object parameter is an rvalue reference when the other

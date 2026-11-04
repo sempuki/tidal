@@ -22,8 +22,8 @@ The first point is the declaration of the reference.
 | bound to a braced aggregate whose reference member binds a temporary | accepts | accepts | rejects |
 
 EDG says that the reference refers to a temporary with a limited
-lifetime. EDG accepts a `constexpr` aggregate variable whose reference
-member binds a temporary (CX-2).
+lifetime. Every compiler, EDG included, accepts a `constexpr` aggregate variable
+whose reference member binds a temporary (CX-2).
 
 The second point is a later read of the temporary in a constant
 expression.

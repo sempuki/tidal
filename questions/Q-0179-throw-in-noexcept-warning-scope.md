@@ -22,10 +22,23 @@ draw the line in different places.
 
 ## Evidence
 
-Probes with `-Wall` on the six Clang and GCC compilers. Tests:
-`tests/exceptions/unwinding/rethrow-in-noexcept-warns.cpp`,
-`tests/exceptions/unwinding/throw-caught-in-noexcept-no-warning.cpp`,
-`tests/exceptions/unwinding/throw-unmatched-in-noexcept-warns.cpp`.
+Probes with `-Wall` on the six Clang and GCC compilers. Clang and GCC
+give each warning in the table with no warning flag, and `-Wall` adds
+none of them. EDG gives none of the warnings. The tests use
+`-Wall -Werror`, and EDG skips them. The table gives UNW-8's answer
+for each body and the test that checks it.
+
+| Function body | UNW-8 | Test |
+|---|---|---|
+| `throw 1;` | warn | `throw-in-noexcept-warns.cpp` |
+| `try { throw 1; } catch (int) { throw; }` | warn | `rethrow-in-noexcept-warns.cpp` |
+| `throw;` outside a handler | warn | none |
+| `try { throw 1; } catch (long) {}` | warn | `throw-unmatched-in-noexcept-warns.cpp` |
+| `try { g(); } catch (...) { throw; }` | warn | none |
+| `try { throw 1; } catch (int) {}` | no warning | `throw-caught-in-noexcept-no-warning.cpp` |
+| `try { throw Derived{}; } catch (Base&) {}` | no warning | `throw-caught-in-noexcept-no-warning.cpp` |
+
+The tests are under `tests/exceptions/unwinding/`.
 
 ## Options
 

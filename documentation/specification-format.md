@@ -59,19 +59,91 @@ rule was put in that class.
 ## Evidence
 
 The `Evidence` segment ends a page and is informative
-(`documentation/style-guide.md`, section 7). The segment has these parts:
+(`documentation/style-guide.md`, section 7). The segment has these
+parts, in this order. Each part after the first appears only when the
+page has something for it.
 
-- the agreement sentence, which `tools/status_table.py` keeps current,
-- one bullet for each divergence or classification note. A divergence
-  bullet names the compilers on each side and links the question that
-  holds the provisional answer, for example ``({question}`Q-0053`)``.
-- an `Inputs:` line, last.
+| Part | Form | Holds |
+|---|---|---|
+| Agreement | a paragraph with no heading | the agreement sentence, which `tools/status_table.py` keeps current, and a sentence on any compiler that does not take part in some tests, such as EDG, which does not link |
+| Divergences | `### Divergences`, a list | one line for each question that the page names, open or settled |
+| Split tests | `### Split tests`, a table | each test of the page on which the newest compilers differ: the test, its rules, the expected outcome, the outcome on each family, and the question |
+| Notes | `### Notes`, a list | one bullet for each classification note, thin-evidence note, or result that every compiler agrees on, led by the rule IDs |
+| Probe grids | `### Probe grids`, a paragraph and a link | what the page's grids probe, and a link to the generated tables |
+| Undefined rules | `### Undefined rules`, a generated table | on the constant-evaluation page only, the `tidal-undefined-index` table |
+| Sources | `### Sources`, a table and the `Inputs:` line | the source of each rule, and the sanitized inputs that the clean-room writer read |
 
-The `Inputs:` line lists the sanitized implementation sources that the
-clean-room writer read for the page. Each entry is an input ID from
-`tools/inputs.json`, such as `clang-sema-declcxx`, and
-`inputs/MANIFEST.md` gives the file and revision for each ID. A page
-written without such sources has no `Inputs:` line.
+A page with notes and no other part keeps its note bullets under the
+agreement paragraph with no heading. `tools/check_specification.py`
+fails when a page's Evidence has a `###` heading that this table does
+not name, or names two parts out of order. The check warns, in one
+line, for each page that names a question in Evidence and has no
+`### Divergences` heading. Such a page keeps the older form, with the
+divergences among the note bullets. `tools/status_table.py` gives the
+words of each page's Evidence in the status table.
+
+### Divergences
+
+A divergence line names one question, the rules it touches, and its
+status, then gives three facts: what the question asks, the answer the
+page follows, and the family that differs. A settled line names the
+principle that gives the answer:
+
+```text
+- {question}`Q-0129` (ODR-2, ODR-3; open): whether a lambda that copies a
+  whole local constant of class type uses the constant. The rules say it
+  does, as Clang does. GCC and EDG accept the lambda.
+- {question}`Q-0127` (INC-4, INC-5; settled on ODR-P3): whether a guard
+  or `#pragma once` skips a second inclusion under strict flags. It
+  does. No family differs.
+```
+
+The question file holds the rest: the probes, the forms that each
+compiler accepts, the compiler messages, the reasoning, and the reviews
+that read the question. A fact that only the page held moves to the
+question file before the line replaces it. A line can name the test
+that shows the split, when the question has more than one form.
+
+### Split tests
+
+The table has one row for each test of the page that carries an
+override for a baseline compiler. The Expected
+column gives the outcome that the rules predict. A cell where versions
+of one family differ names each version.
+
+```text
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `bit-field-promotion.cpp` | ICS-2 | accept | accept | reject | reject | {question}`Q-0134` |
+```
+
+### Probe grids
+
+The tables that `tools/probe_grid.py` prints from a page's grids sit in
+a `tables.md` file beside the grid files, under
+`tests/<page>/grids/`. The page's Probe grids part says what each grid
+probes and how to read its rows and columns, and links the file. The
+tables do not appear on the page. A table that a later run of the tool
+changes replaces the old one in `tables.md`, with the command that made
+it.
+
+### Sources
+
+The Sources table gives the source of each rule on a page that
+specifies a procedure (decision 0044). A source is a probe grid, a
+compiler diagnostic, a probe, a sanitized input, a front-end finding,
+or an item of a source reader's summary. An item of a source reader's
+inventory or gap review keeps that summary's own numbering, such as
+"inventory A5" or "gap review M3", so the note leads back to the
+summary under `reports/review/` and quotes nothing from it. A page that
+names sources for only a few rules gives them as notes instead.
+
+The `Inputs:` line ends the segment. The line lists the sanitized
+implementation sources that the clean-room writer read for the page.
+Each entry is an input ID from `tools/inputs.json`, such as
+`clang-sema-declcxx`, and `inputs/MANIFEST.md` gives the file and
+revision for each ID. A page written without such sources has no
+`Inputs:` line.
 
 ## Thin evidence
 

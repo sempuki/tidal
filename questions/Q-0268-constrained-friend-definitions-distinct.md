@@ -18,6 +18,8 @@ requires (sizeof(T) > 1)`.
 
 The first test above. In `friend-distinct-from-namespace.cpp`, a namespace template declares `touch` with the same parameters and a constraint that does not use `T`. Clang and GCC find a call ambiguous between the friend and that template. EDG accepts the call, so it treats the two as one template. INST-13 makes two definitions of an unconstrained friend not valid.
 
+Every compiler accepts a constrained friend template that two specializations define (`friend-template-per-specialization.cpp`).
+
 ## Options
 
 1. Two functions (Clang, GCC). The clause names `T`, so the two

@@ -30,6 +30,11 @@ as an object definition or `sizeof`.
 tests of `tests/foundations/translation/`. Each test declares one array
 or one class at a figure of the table, or one byte past it.
 
+For an array, GCC's message says that the size "exceeds maximum object
+size", and Clang's says "array is too large". For a class, Clang 22
+says "structure is too large", GCC says "size of type is too large",
+and EDG says "class is too large".
+
 ## Options
 
 1. Leave each limit to each implementation (`impl-defined`), with only

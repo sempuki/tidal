@@ -19,6 +19,9 @@ extern "C++" int main() { return 0; }
 | GCC 14, 16 | accepts |
 | EDG 7.0 | rejects: `main` cannot be declared in a linkage specification |
 
+The results are the same when `main` is declared inside an
+`extern "C++" { }` block (`main-cpp-linkage-block.cpp`).
+
 The source-reader gap review of program structure
 (`reports/review/2026-11-03-gap-review-program-structure.md`) reads the
 reference as rejecting `main` declared with any language linkage

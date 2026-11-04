@@ -19,6 +19,8 @@ The constraint is not satisfied, and another function takes the call.
 
 The test above. Every compiler accepts the same case with the class in a parameter type (`before-parameters.cpp`).
 
+Every compiler forms the default template arguments before the check.
+
 ## Options
 
 1. The constraints come first, and a failure stops the substitution

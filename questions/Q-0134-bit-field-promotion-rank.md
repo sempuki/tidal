@@ -22,7 +22,7 @@ The arithmetic grid shows the same split for every pair with `int`.
 ## Evidence
 
 `tests/foundations/conversion-sequences/bit-field-promotion.cpp`, and
-the row "long long : 3 bit-field" of the arithmetic grid on the page.
+the row "long long : 3 bit-field" of the arithmetic grid in `tests/foundations/conversion-sequences/grids/tables.md`.
 
 ## Options
 

@@ -22,6 +22,8 @@ specialization is more constrained
 (`partial-specialization-same-arguments.cpp`), and rejects it when both
 have the same constraint (`partial-specialization-same-constraints.cpp`).
 
+For the case with the same constraint, EDG reports that a primary template cannot have a template argument list.
+
 ## Options
 
 1. Not valid (Clang, GCC). For an argument that satisfies both

@@ -20,6 +20,8 @@ The test above. Item 2 of the gap review `reports/review/2026-10-31-gap-review-d
 that the keyword must not come before a destructor name. EDG also
 accepts `p->T::template ~T()`, and Clang and GCC reject it.
 
+EDG also accepts `r.template ~T()` on a reference and `p->template ~Item()` with a class name, and Clang and GCC reject both.
+
 ## Options
 
 1. The keyword is not valid before a destructor name (Clang, GCC).

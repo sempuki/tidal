@@ -11,6 +11,10 @@ acceptance. The compiler predates the feature, so the difference says
 nothing about the language. Clang 22 implements the attribute and agrees
 with GCC and EDG on every `assume` test.
 
+Clang 18 also rejects a `constexpr` function that can never give a
+constant (CE-12, CX-3). The newer compilers accept the function
+(`tests/declarations/constexpr/function-never-constant.cpp`).
+
 ## Options
 
 1. A per-compiler expectation (`tidal-expect-clang-18: accept`) with a note

@@ -506,55 +506,57 @@ All eight compilers agree on 82 of 95 tests. EDG checks each unit and
 does not link, so its results for the link and run tests say only that
 the units are valid.
 
-- ODR-2: Clang rejects a lambda that copies a whole local constant of
-  class type. GCC and EDG accept the lambda ({question}`Q-0129`). The
-  copy binds the parameter of the copy constructor, so ODR-3 counts it
-  as a use, as Clang does.
-- ODR-2: EDG accepts a lambda that reads a `mutable` member of a local
-  constant, and a local class that binds a reference to a local
-  constant. Clang and GCC reject both ({question}`Q-0130`). Clang and
-  GCC also reject a read of a member that is not `mutable` when another
-  member is `mutable`, and EDG accepts it.
-- ODR-3: the table gives the forms where one family differs
-  ({question}`Q-0367`).
+### Divergences
 
-  | Test | Form | Clang | GCC | EDG |
-  |---|---|---|---|---|
-  | `discarded-value-constant-in-lambda.cpp` | a local `const int` as a discarded expression | reject | accept | accept |
-  | `discarded-value-class-constant-in-lambda.cpp` | a local constant of class type as a discarded expression | reject | accept | accept |
-  | `constant-array-element-in-lambda.cpp` | an element of a local constant array | accept | reject | accept |
-  | `discarded-branch-address-in-lambda.cpp` | the address of a local variable in a discarded branch | accept | reject | reject |
-- ODR-3: every compiler links a program whose template argument takes
-  the address of a function with external linkage that has no
-  definition, when nothing calls the function. ODR-8 allows the result.
-  For a function with internal linkage, Clang reports the use under
-  ODR-11, and GCC gives no diagnostic ({question}`Q-0315`). The GCC
-  build of that program links and runs at `-O0` and at `-O2`.
-- ODR-8: Each translation unit compiles without a diagnostic, and only
+- {question}`Q-0129` (ODR-2, ODR-3; open): whether a lambda that copies
+  a whole local constant of class type uses the constant. The rules say
+  it does, as Clang does. GCC and EDG accept the lambda.
+- {question}`Q-0130` (ODR-2; settled on ODR-P1): whether a read of a
+  `mutable` member of a local constant, or a reference that a local
+  class binds to one, uses the constant. Both are uses, as Clang and GCC
+  say. EDG accepts both.
+- {question}`Q-0367` (ODR-2, ODR-3; settled on ODR-P1): which of four
+  forms in a lambda use a local variable: a discarded `const int`, a
+  discarded class constant, an element of a constant array, and an
+  address in a discarded branch. Only the address is a use. Clang
+  differs in the first, second, and fourth forms, and GCC in the third.
+- {question}`Q-0315` (ODR-3; settled on ODR-P1): whether a constant
+  template argument uses the function it names. It does. GCC gives no
+  diagnostic for such a function with internal linkage, which ODR-9
+  allows, so no family differs on the use.
+- {question}`Q-0128` (ODR-9, ODR-11; settled on ODR-P2): whether an
+  implementation must diagnose a used function with internal linkage
+  that has no definition. The rule needs no diagnostic, and ODR-11 asks
+  for a warning. No family differs. GCC gives no diagnostic when the
+  only use is in an `inline` function that nothing calls, and Clang 18
+  gives a warning that `-pedantic-errors` leaves a warning.
+- {question}`Q-0358` (ODR-5, ODR-8; open): whether a `new` expression
+  uses the deallocation function when its constructor is `noexcept`.
+  It does, and ODR-8 needs no diagnostic. GCC 16 at `-O0` fails to link,
+  and Clang, GCC 14, and GCC 16 at `-O2` link and run.
+- {question}`Q-0297` (ODR-12; settled on ODR-P2): whether a `const`
+  variable template has one object for each specialization across
+  units. It has. GCC 14 gives each unit its own object, and EDG does
+  not link.
+- {question}`Q-0127` (INC-4, INC-5; settled on ODR-P3): whether an
+  include guard and `#pragma once` skip a second inclusion, also under
+  strict flags. Both do, and the guard is the form in `required` text.
+  No family differs.
+
+### Notes
+
+- ODR-8: each translation unit compiles without a diagnostic, and only
   the linker reports a missing or extra definition. At `-O2`, the
   report compilers `gcc-16-o2` and `clang-22-o2` link four of the
   programs that fail to link at the default level. ODR-8 allows both
-  results, because the rule needs no diagnostic (decision 0047). The four tests are `constant-address-is-use.cpp`,
+  results, because the rule needs no diagnostic (decision 0047). The
+  four tests are `constant-address-is-use.cpp`,
   `function-address-is-use.cpp`,
   `virtual-destructor-uses-deallocation-function.cpp`, and
   `virtual-function-not-called-is-used.cpp`.
-- ODR-9, ODR-11: the table gives each compiler's diagnostic for a
-  function with internal linkage that is used and not defined, under
-  `-pedantic-errors` and no other flag ({question}`Q-0128`,
-  {question}`Q-0315`). An error from Clang 22 and GCC is a warning that
-  `-pedantic-errors` makes an error. A warning from Clang 18 stays a
-  warning, so the program builds. The tests that add `-Werror` reject
-  on Clang 18 too, and EDG skips them. The rule needs no diagnostic,
-  and ODR-11 asks for the warning. With `-Wall` or
-  `-Wunused-function`, GCC 16 gives a `-Wunused-function` warning in
-  place of that diagnostic, and `-pedantic-errors` leaves the new warning a
-  warning.
-
-  | The use | Test | Clang 18 | Clang 22 | GCC | EDG |
-  |---|---|---|---|---|---|
-  | a call in a function that is not `inline` | `internal-function-not-defined-warns.cpp` (`-Werror`) | warning | error | error | error |
-  | a call only in an `inline` function that nothing calls | `internal-function-used-in-unused-inline.cpp` | warning | error | none | error |
-  | the address as a template argument | `template-argument-address-is-use.cpp` (`-Werror`) | warning | error | none | error |
+- ODR-3: every compiler links a program whose template argument takes
+  the address of a function with external linkage that has no
+  definition, when nothing calls the function. ODR-8 allows the result.
 - ODR-10, ODR-14: Different definitions in two units link and run.
   So does a partial or explicit specialization that only one unit
   declares. The tests accept the result of either definition. In the
@@ -566,16 +568,10 @@ the units are valid.
   function that uses the default argument of another function behaves
   the same way. If the units give that function different defaults,
   Clang and GCC give 1 in both units at `-O0` and a different value in
-  each unit at `-O2` (`inline-callee-defaults-differ.cpp`). Only functions and objects
-  are shared across units when the program is linked. ODR-10 and ODR-14 allow both
-  results, because the rules need no diagnostic (decision 0047).
-- ODR-5: Clang and GCC 14 do not refer to the deallocation function
-  when the constructor is `noexcept`. GCC 16 at `-O0` refers to it, and
-  the program fails to link. On Clang 22 and GCC 16, a constructor
-  without `noexcept` makes the program refer to the function, also when
-  the constructor only calls `noexcept` functions
-  ({question}`Q-0358`). The `new` expression uses the function in both
-  cases, and ODR-8 needs no diagnostic, so both results are allowed.
+  each unit at `-O2` (`inline-callee-defaults-differ.cpp`). Only
+  functions and objects are shared across units when the program is
+  linked. ODR-10 and ODR-14 allow both results, because the rules need
+  no diagnostic (decision 0047).
 - ODR-4, ODR-5, ODR-6: Clang and GCC fail to link a constructor that
   can throw when the destructor of a member has no definition. They
   link a program whose constructor or non-virtual destructor uses
@@ -593,9 +589,7 @@ the units are valid.
 - ODR-12: Every compiler that links gives each specialization one
   address in the program. That includes the static members of class
   templates and partial specializations, and a static local variable in
-  a function template. GCC 14 gives each unit its own object of a
-  `const` or `constexpr` variable template. Clang and GCC 16 give one
-  object ({question}`Q-0297`).
+  a function template.
 - ODR-13: Two units that define a non-`inline` explicit specialization
   of a variable template fail to link on every compiler that links. So
   do two units that define a static data member of an explicit
@@ -603,34 +597,14 @@ the units are valid.
 - INC-2: The search order is each implementation's choice. Clang, GCC,
   and EDG take a header in the directory of the including header
   before a header of the same name in the directory of the test.
-- INC-4, INC-5: Clang, GCC, and EDG skip the second inclusion for both
-  an include guard and `#pragma once`, also under strict flags
-  ({question}`Q-0127`). The result is the same with comments before the
-  guard, nested conditional directives in it, and a value in its
-  `#define`. All three compilers skip the whole file at a later
-  inclusion when `#pragma once` follows a definition.
-- The tests keep their headers as `*.h` files next to them.
-- Settled on 2026-11-03 under decision 0054. A source-reader gap
-  review supports each answer with no doubt, and a principle gives the
-  same answer:
-
-  | Question | Principle | Family that still differs |
-  |---|---|---|
-  | {question}`Q-0127` | ODR-P3 | none |
-  | {question}`Q-0128` | ODR-P2 | none; GCC 16 gives no diagnostic in one form, which ODR-9 allows |
-  | {question}`Q-0130` | ODR-P1 | EDG 7.0 |
-  | {question}`Q-0297` | ODR-P2 | none; EDG 7.0 does not link |
-  | {question}`Q-0315` | ODR-P1 | none |
-- Settled on 2026-11-04 under decision 0054, after the gap review of
-  the rules that phase 7 added
-  (`reports/review/2026-11-04-gap-review-phase-7-additions.md`):
-
-  | Question | Principle | Family that still differs |
-  |---|---|---|
-  | {question}`Q-0367` | ODR-P1 | one family in each form, as the ODR-3 table gives |
+- INC-4, INC-5: the guard and `#pragma once` give the same result with
+  comments before the guard, nested conditional directives in it, and a
+  value in its `#define`. All three compilers skip the whole file at a
+  later inclusion when `#pragma once` follows a definition.
 - ODR-15: the gap review of the rules that phase 7 added lists four
   more variable declarations that are not definitions. Every compiler
   accepts each of them twice in one unit, and rejects a second explicit
   specialization of a static data member that has an initializer.
+- The tests keep their headers as `*.h` files next to them.
 
 Inputs: clang-sema-expr, clang-sema-decl, clang-diag-sema, edg-decls.

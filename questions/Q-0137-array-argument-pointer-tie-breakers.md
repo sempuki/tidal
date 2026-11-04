@@ -20,7 +20,7 @@ and ICS-36 (the nearer base wins).
 ## Evidence
 
 `tests/foundations/conversion-sequences/array-pointer-tie-breaker.cpp`,
-and the row "Derived[2]" of the pointers grid on the page.
+and the row "Derived[2]" of the pointers grid in `tests/foundations/conversion-sequences/grids/tables.md`.
 
 ## Options
 

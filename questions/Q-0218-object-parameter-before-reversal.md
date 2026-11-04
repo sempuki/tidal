@@ -36,6 +36,8 @@ for GCC and EDG. Item O11 of the gap review of 2026-10-31
 (`reports/review/2026-10-31-gap-review-deduction-and-ordering.md`)
 describes option 1.
 
+When both candidates are swapped, the reversal keeps their order, and every compiler chooses the more specialized one (`swapped-candidates-ordered.cpp`, `swapped-member-candidates-ordered.cpp`).
+
 ## Options
 
 1. The object parameter is added, and then the two parameters are

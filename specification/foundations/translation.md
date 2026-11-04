@@ -438,6 +438,36 @@ of 88 tests. EDG takes no optimization flag, so the three `-O2` tests
 are skipped there. EDG runs and links no programs, so its results for
 the run and link tests say only that the programs are valid.
 
+### Divergences
+
+- {question}`Q-0012` (TR-14, TR-15; settled on TR-P6): whether Tidal
+  sets a minimum for the largest array or class. It sets none, and each
+  limit is implementation-defined. No family differs.
+- {question}`Q-0024` (TR-3; settled on TR-P3): which parameter lists
+  `main` may have. `()` and `(int, char**)` everywhere, and others by
+  the implementation's choice. EDG accepts a first parameter of type
+  `long`, which the answer allows, so no family differs.
+- {question}`Q-0029` (CMP-14; settled on CMP-P6): whether a chained
+  comparison is valid. It is, and a warning is recommended. Clang 22
+  rejects some forms with no flag, and Clang 18 gives no warning.
+- {question}`Q-0312` (TR-12; open): whether the specification lists
+  token sequences that no production accepts. It does not, and TR-12
+  gives the grammar its effect. No family differs, and the question
+  waits on the maintainer.
+- {question}`Q-0350` (TR-15; open): whether Clang conforms when it
+  accepts a class whose size it cannot represent. It does not. Clang 22
+  and 18 with `-m32`, and Clang 18 on x86-64, accept such a class and
+  give `sizeof` a wrong value.
+- {question}`Q-0351` (TR-13; settled on TR-P6): how the depth of nested
+  instantiations is counted, and whether it must reach a minimum. Both
+  are implementation-defined, with no minimum. No family differs.
+- {question}`Q-0366` (TR-3; open): whether `main` can be declared with
+  `extern "C++"`. It can, as Clang 22 and GCC 16 say. EDG rejects it,
+  and the gap review of the rules that phase 7 added reads the
+  reference as EDG does (`documentation/decisions/pending.md`, row 4).
+
+### Notes
+
 - TR-4: 45 tests expect a link failure on at least one compiler. Each
   of these tests cites a `no-diagnostic` rule that its program breaks:
   LNK-6, LNK-7, ODR-8, INL-6, INL-7, VIRT-17, VIRT-20, CLS-21, or
@@ -452,17 +482,9 @@ the run and link tests say only that the programs are valid.
 - TR-11: on every Clang and GCC configuration, `return 256;` gives
   status 0, `return 257;` gives status 1, and `return -1;` gives status
   255.
-- TR-3: EDG accepts `main` with a first parameter of type `long`. Clang
-  and GCC reject it ({question}`Q-0024`).
 - TR-3: Clang 22, GCC 16, and EDG reject each form of `main` in the
   list. GCC 14 accepts a deleted `main`. GCC 14 and Clang 18 accept the
-  forms with C language linkage. Clang 22 and GCC 16 accept `main` with
-  `extern "C++"`, in the plain form and in a block, and EDG rejects both
-  ({question}`Q-0366`). The gap review of the rules that phase 7 added
-  (`reports/review/2026-11-04-gap-review-phase-7-additions.md`) reads
-  the reference as forbidding every linkage specification on `main`, as
-  EDG does. Tidal keeps the answer of Clang 22 and GCC 16
-  (`documentation/decisions/pending.md`, row 4).
+  forms with C language linkage.
 - TR-1: Clang 22 reports C language linkage on `main` through a warning
   flag (`-Wmain`), and GCC 16 through `-Wpedantic`. In the strict mode
   of the tests, both diagnostics are errors. Without
@@ -485,49 +507,19 @@ the run and link tests say only that the programs are valid.
   row 4).
 - TR-12: every compiler rejects each token sequence of the tests. Each
   message names the token that the parser expected, or says that an
-  expression or a statement was expected. The grammar states which
-  sequences are valid, and TR-12 gives the effect of a sequence outside
-  them. No rule lists such sequences one by one ({question}`Q-0312`).
-- TR-13: each compiler names the limit in its message. Clang says
-  "recursive template instantiation exceeded maximum depth of 1024",
-  GCC says "template instantiation depth exceeds maximum of 900", and
-  EDG says "excessive recursion at instantiation". Clang and GCC accept
-  a chain of 100 instantiations of one template, and EDG rejects it.
-  All three accept a chain of 100 that alternates between two
-  templates. Clang accepts a chain of 1000 that alternates, and GCC and EDG
-  reject it ({question}`Q-0351`).
-  The flag tests lower each limit with the option of the table. The
-  other compilers reject the unknown option. So each flag test expects
-  a reject from every implementation, also from an implementation
-  outside the table.
+  expression or a statement was expected.
+- TR-13: the flag tests lower each limit with the option of the table.
+  The other compilers reject the unknown option. So each flag test
+  expects a reject from every implementation, also from an
+  implementation outside the table.
 - TR-13: on an endless chain of function templates, Clang 22 and 18
   print the depth message and then end with a segmentation fault. Each
   compiler rejects the program with a diagnostic first
   ({rule}`INST-15`).
-- TR-14: EDG rejects an array only when its size does not fit in
-  `std::size_t`, and Clang does the same with `-m32`. GCC's largest
-  array has the largest value of `std::ptrdiff_t` as its size, and its
-  message says that the size "exceeds maximum object size". Clang's
-  message says "array is too large" ({question}`Q-0012`).
-- TR-15: no compiler rejects the definition of a large class, only the
-  uses that need its size. Clang 22 says "structure is too large", GCC
-  says "size of type is too large", and EDG says "class is too large".
-  Clang 18 rejects no class. On x86-64, Clang 18 gives the right
-  `sizeof` up to 2<sup>61</sup> - 1 bytes and a wrong value above. With
-  `-m32`, Clang 22 and 18 give the right `sizeof` up to
-  2<sup>32</sup> - 1 bytes. Above that, they accept the class and give
-  `sizeof` the size reduced modulo 2<sup>32</sup>, against
-  {rule}`STG-1` ({question}`Q-0350`,
-  {question}`Q-0012`).
-- Settled on 2026-11-03 under decision 0054. A source-reader gap
-  review supports each answer with no doubt, and a principle gives the
-  same answer:
-
-  | Question | Principle | Family that still differs |
-  |---|---|---|
-  | {question}`Q-0012` | TR-P6 | none |
-  | {question}`Q-0024` | TR-P3 | none |
-  | {question}`Q-0351` | TR-P6 | none |
+- TR-9, TR-11 with `-m32`: the matrix runs no program built with
+  `-m32`, because the host compilers have no 32-bit C library. In the
+  writer's probes, the run tests of the two rules give the same
+  results with `-m32` in the GCC 14, Clang 18, and Clang 22 containers.
 
 The table below gives, for each `recommended` rule that asks for a
 warning, the flag that turns the warning on in Clang 22 and GCC 16. The
@@ -614,9 +606,5 @@ and Clang warns with no flag.
 | {rule}`UNW-8` | on: `-Wexceptions` | on: `-Wterminate` |
 | {rule}`VIRT-13` | `-Wall`: `-Wdelete-non-abstract-non-virtual-dtor`, `-Wdelete-abstract-non-virtual-dtor`, `-Woverloaded-virtual`; on: `-Winconsistent-missing-override` | `-Wall`: `-Wdelete-non-virtual-dtor`, `-Woverloaded-virtual`; `-Wsuggest-override` only, for every override with no `override` or `final` |
 | {rule}`VOL-5` | on: `-Wdeprecated-volatile` | on: `-Wvolatile` |
-- TR-9, TR-11 with `-m32`: the matrix runs no program built with
-  `-m32`, because the host compilers have no 32-bit C library. In the
-  writer's probes, the run tests of the two rules give the same
-  results with `-m32` in the GCC 14, Clang 18, and Clang 22 containers.
 
 Inputs: clang-sema-decl, clang-diag-sema, edg-decls.

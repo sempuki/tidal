@@ -28,6 +28,15 @@ second return statement, GCC destroys the first result before the
 handler runs, and Clang never destroys it. The caller receives the
 result of the second return statement on both.
 
+GCC destroys the result after the local objects that were built before
+it, as UNW-1 says (`return-local-destructor-throws-result-order.cpp`).
+The gap review of the rules that phase 7 rewrote
+(`reports/review/2026-11-04-gap-review-phase-7-repairs.md`) reads the
+reference as destroying the result first among the objects that remain,
+in the reverse order of construction. No compiler that runs the program
+follows that order, and UNW-1 keeps GCC's order
+(`documentation/decisions/pending.md`, row 4).
+
 The source-reader gap review of the exceptions chapter
 (`reports/review/2026-11-03-gap-review-exceptions.md`) reads the
 reference as destroying the result in this case.

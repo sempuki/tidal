@@ -25,6 +25,8 @@ and rejects the same operand in the requires clause of a function
 template at its definition (`atomic-not-bool-nondependent-clause.cpp`).
 CNS-39 states the check at the definition.
 
+Every compiler accepts a skipped atomic constraint whose type depends on the argument, such as `T::value` for a class whose `value` is an `int` (`or-short-circuit.cpp`).
+
 ## Options
 
 1. Not valid (Clang, EDG). The type does not depend on the

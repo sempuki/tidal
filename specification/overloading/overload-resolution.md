@@ -843,11 +843,141 @@ struct Self {
 The results are in `tests/RESULTS.md`. All eight compilers agree on 151
 of 179 tests.
 
-One question on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on overloading, references, and list initialization (`reports/review/2026-11-03-gap-review-questions-overloading.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+### Divergences
 
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0141` | OVL-P4 | EDG 7.0 |
+- {question}`Q-0138` (OVL-15, OVL-29; settled on OVL-P3, step 2b):
+  whether the kind of a function reference breaks a tie between
+  conversion functions to `F&` and `F&&`. It does, and an lvalue
+  reference to a function takes either kind. Clang finds the binding
+  of `F&&` ambiguous.
+- {question}`Q-0139` (OVL-6, OVL-36; settled on OVL-P3): whether two
+  surrogates that differ only in the qualifiers of their conversion
+  functions tie. They tie, and the call is ambiguous. GCC accepts the
+  call.
+- {question}`Q-0140` (OVL-38; open): whether a call can use a default
+  argument that two scopes give. It cannot when the two arguments
+  differ, as GCC says. Clang and EDG accept the call.
+- {question}`Q-0141` (OVL-11; settled on OVL-P4): whether a class
+  operand converts past its conversion function to the parameter type
+  of the winning built-in candidate. It does not. EDG converts it.
+- {question}`Q-0142` (OVL-19, OVL-20; open): whether constraints reduce
+  an overload set whose address is taken. They do, when the functions
+  meet the conditions of ORD-13, as Clang 22 and GCC 16 do. EDG, and
+  the older versions of Clang and GCC, differ in some forms.
+- {question}`Q-0143` (OVL-21; open): whether a call through `&C::f` can
+  choose a static member of a set that holds a non-static member. It
+  can, as Clang 22 does. GCC rejects the call, and EDG stops with an
+  internal error.
+- {question}`Q-0144` (OVL-6; settled on OVL-P2): whether a `const`
+  object gets a surrogate from a conversion function that is not
+  `const`. It does not. GCC gives it one.
+- {question}`Q-0145` (OVL-40; open): whether copy-list-initialization
+  can use an `explicit` conversion function for the copy constructor's
+  parameter. It cannot. Clang uses the function.
+- {question}`Q-0146` (OVL-30, OVL-41; settled on {principle}`ORD-P2`
+  and {principle}`CNS-P4`): which conditions two functions meet before
+  their constraints decide between them. They are the conditions of
+  ORD-13. EDG lets a constraint decide in every case, and Clang 18 does
+  for an ellipsis.
+- {question}`Q-0147` (OVL-10; open): whether a rewritten candidate
+  removes the built-in candidate with its parameter list. It does. GCC
+  keeps the built-in candidate.
+- {question}`Q-0148` (OVL-27 to OVL-29; open): whether the kind of a
+  function reference comes before the template tie-breakers. It comes
+  first, as GCC says. EDG applies the template tie-breakers first, and
+  Clang does not apply the kind.
+- {question}`Q-0159` (OVL-2, OVL-3; open): whether `*this` is the
+  object of a call by name that finds members of an enclosing class.
+  It is not, and the call has no object, as GCC says. Clang and EDG
+  take the current object and call a static member.
+- {question}`Q-0161` (OVL-21, OVL-36, OVL-44; open): whether a call
+  through `&(C::f)` or `&f` can use a set that holds a non-static
+  member. `&(C::f)` cannot, and `&f` resolves the set as `&C::f` does,
+  so `(&f)()` ties. GCC rejects every form, Clang 22 accepts `(&f)()`,
+  and EDG accepts both forms with no argument.
+- {question}`Q-0163` (OVL-26; settled on OVL-P3, step 2a): whether the
+  result tie-breaker prefers the identity to a function pointer
+  conversion. It does. EDG finds the results ambiguous.
+- {question}`Q-0187` (OVL-3, OVL-23; open): whether a member's object
+  parameter takes part in a call with no object. It takes no part. GCC
+  gives the call an lvalue object.
+- {question}`Q-0189` (OVL-26; open): whether the result tie-breaker
+  compares a constructor with a conversion function. It does, and the
+  constructor's result is the identity. Clang finds the two ambiguous.
+
+### Split tests
+
+The table lists each test on which the compilers differ. The Expected
+column gives the outcome that the rules predict.
+
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `address-more-constrained.cpp` | OVL-19 | accept | Clang 22, Clang host: accept; Clang 18: reject | GCC 16, GCC host: accept; GCC 14: reject | reject | {question}`Q-0142` |
+| `address-no-target-constraints-different-parameters.cpp` | OVL-20 | reject | Clang 18: accept; Clang 22, Clang host: reject | reject | reject | {question}`Q-0142` |
+| `address-no-target-constraints.cpp` | OVL-20 | accept | accept | GCC 16, GCC host: accept; GCC 14: reject | reject | {question}`Q-0142` |
+| `address-no-target-more-constrained.cpp` | OVL-20 | accept | Clang 22, Clang host: accept; Clang 18: reject | GCC 16, GCC host: accept; GCC 14: reject | reject | {question}`Q-0142` |
+| `builtin-chosen-other-operand.cpp` | OVL-11 | reject | reject | reject | accept | {question}`Q-0141` |
+| `builtin-removed-by-rewritten.cpp` | OVL-10 | accept | accept | reject | accept | {question}`Q-0147` |
+| `call-through-address-parenthesized-qualified.cpp` | OVL-21, OVL-44 | reject | reject | reject | accept | {question}`Q-0161` |
+| `call-through-address-static-member.cpp` | OVL-21 | accept | Clang 22, Clang host: accept; Clang 18: reject | reject | reject | {question}`Q-0143` |
+| `call-through-address-unqualified-argument.cpp` | OVL-21 | accept | accept | reject | reject | {question}`Q-0161` |
+| `call-through-address-unqualified.cpp` | OVL-21, OVL-36 | reject | Clang 22, Clang host: accept; Clang 18: reject | reject | accept | {question}`Q-0161` |
+| `current-object-other-class.cpp` | OVL-2, OVL-3 | reject | accept | reject | accept | {question}`Q-0159` |
+| `default-from-two-scopes-same-value.cpp` | OVL-38 | reject | accept | reject | accept | {question}`Q-0140` |
+| `default-from-two-scopes.cpp` | OVL-38 | reject | accept | reject | accept | {question}`Q-0140` |
+| `init-copy-list-explicit-conversion.cpp` | OVL-40, OVL-35 | reject | accept | reject | reject | {question}`Q-0145` |
+| `no-object-ref-qualified-member.cpp` | OVL-3, OVL-23 | reject | reject | accept | reject | {question}`Q-0187` |
+| `reference-function-both-kinds.cpp` | OVL-15 | accept | reject | accept | accept | {question}`Q-0138` |
+| `surrogate-qualifiers.cpp` | OVL-6 | accept | accept | reject | accept | {question}`Q-0144` |
+| `surrogate-same-parameters.cpp` | OVL-6, OVL-36 | reject | reject | accept | reject | {question}`Q-0139` |
+| `tie-constraints-default-parameter.cpp` | OVL-30, OVL-36 | reject | reject | reject | accept | {question}`Q-0146` |
+| `tie-constraints-different-parameters.cpp` | OVL-41, OVL-36 | reject | reject | reject | accept | {question}`Q-0146` |
+| `tie-constraints-ellipsis.cpp` | OVL-30, OVL-36 | reject | Clang 18: accept; Clang 22, Clang host: reject | reject | accept | {question}`Q-0146` |
+| `tie-conversion-result-constructor.cpp` | OVL-26 | accept | reject | accept | accept | {question}`Q-0189` |
+| `tie-conversion-result-noexcept.cpp` | OVL-26 | accept | accept | accept | reject | {question}`Q-0163` |
+| `tie-conversion-result-templates.cpp` | OVL-26 | accept | accept | accept | reject | {question}`Q-0163` |
+| `tie-function-reference-kind.cpp` | OVL-29 | accept | reject | accept | accept | {question}`Q-0138` |
+| `tie-reference-kind-before-more-specialized.cpp` | OVL-28, OVL-29 | accept | reject | accept | reject | {question}`Q-0138`, {question}`Q-0148` |
+| `tie-reference-kind-before-template-lvalue.cpp` | OVL-27, OVL-29 | accept | accept | accept | reject | {question}`Q-0138`, {question}`Q-0148` |
+| `tie-reference-kind-before-template.cpp` | OVL-27, OVL-29 | accept | reject | accept | reject | {question}`Q-0148` |
+
+### Notes
+
+- OVL-25, OVL-6: every compiler chooses a static call operator over a
+  surrogate candidate with the same parameter types. Every compiler
+  finds the call ambiguous when the surrogate's parameter fits the
+  argument better. So the static member's object slot beats the
+  surrogate's user-defined conversion of the object.
+- OVL-9: every compiler gives the built-in `!`, `&&`, and `||` an
+  `explicit` conversion function to `bool`. The built-in candidate then
+  ties with an operator function that needs a converting constructor,
+  so the expression is ambiguous, and every compiler rejects it (OVL-36).
+  An `explicit` conversion function to `int` gives no sequence.
+- OVL-8: every compiler takes a swapped `==` whose parameters meet the
+  enumeration operands only in the swapped order.
+- OVL-9: for `ToDouble{} % 2`, Clang reports that the integer candidates
+  are ambiguous, and GCC and EDG report no match. All reject.
+- OVL-9, OVL-11: in the three-way grid, `unsigned` against `long` is
+  rejected on the ILP32 target only. There `long` cannot hold every
+  `unsigned` value, and the built-in `<=>` rejects the narrowing.
+- OVL-20: gap G-11 of the inventory expects that a set of one plain
+  function and one template keeps the plain function when no target
+  type exists. Every compiler rejects such a set with `auto`,
+  `decltype`, a cast to `void`, and an expression statement. The rule
+  follows the compilers.
+- OVL-36: a written `==` that is not `const` ties with its own swapped
+  form (inventory RK-16). Every compiler rejects the comparison in
+  strict mode, and {rule}`DCMP-7` recommends a warning.
+
+### Probe grids
+
+The 12 probe grids of this page are in
+`tests/foundations/overload-resolution/grids/`. The tables that
+`tools/probe_grid.py` prints from them are in
+[`grids/tables.md`](https://github.com/sempuki/tidal/blob/main/tests/foundations/overload-resolution/grids/tables.md),
+with a caption for each grid that says what its rows and columns
+declare. A cell shows `accept` or `reject` when every compiler agrees,
+and lists the compilers on each side when they split.
 
 ### Sources
 
@@ -897,329 +1027,3 @@ gives it:
   {rule}`ICS-13`, {rule}`ICS-14`), and AO-8 ({rule}`MPTR-2`).
 
 Inputs: edg-overload, clang-diag-sema.
-
-### Divergences
-
-Five questions on this page settled on 2026-11-03 under decision 0054.
-For each, a source-reader gap review supports the answer with no doubt,
-and a principle gives the same answer:
-
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0138` | OVL-P3, step 2b | Clang 22 |
-| {question}`Q-0139` | OVL-P3, steps 1 and 3 | GCC 16 |
-| {question}`Q-0144` | OVL-P2 | GCC 16 |
-| {question}`Q-0146` | {principle}`ORD-P2`, {principle}`CNS-P4` | EDG 7.0 |
-| {question}`Q-0163` | OVL-P3, step 2a | EDG 7.0 |
-
-Each test keeps its override for the family that differs. Reporting the
-EDG difference of Q-0146 to the EDG project waits on the maintainer
-(`documentation/decisions/pending.md`).
-
-The other questions of the tie-breaker cluster stay open:
-{question}`Q-0145`, {question}`Q-0147`, {question}`Q-0148`,
-{question}`Q-0159`, {question}`Q-0161`, {question}`Q-0187`, and
-{question}`Q-0189`. On 2026-11-03, Clang 22, GCC 16, and EDG 7.0 still
-split on each of them. The source-reader gap review of the cluster
-(`reports/review/2026-11-03-gap-review-question-cluster-2.md`) leans
-against Q-0161 for the unqualified form, and OVL-21 follows that
-reading. The review finds the reference unclear on Q-0189.
-
-- OVL-27, OVL-28, OVL-29: the kind of function reference prefers one
-  conversion function, and a template tie-breaker prefers the other.
-  GCC follows the kind of reference, and EDG the template tie-breaker.
-  Clang does not apply the kind of reference ({question}`Q-0148`).
-- OVL-15, OVL-29: GCC and EDG choose the conversion that returns the
-  target's kind of function reference. Clang finds the binding of an
-  rvalue reference ambiguous. Clang also gives an lvalue reference to
-  function no conversion that returns an rvalue reference
-  ({question}`Q-0138`).
-- OVL-15, OVL-27 to OVL-29: the table gives the function that each
-  compiler binds to a reference to the function type `F`, for each pair
-  of conversion functions in the tests. "Template" names a conversion
-  function template, and "none" means that the binding is ambiguous or
-  has no candidate.
-
-  | Conversion functions | Target | Test | Rules | Clang | GCC | EDG |
-  |---|---|---|---|---|---|---|
-  | `F&`, `F&&` | `F&` | `tie-function-reference-kind.cpp` | `F&` | `F&` | `F&` | `F&` |
-  | `F&`, `F&&` | `F&&` | `tie-function-reference-kind.cpp` | `F&&` | none | `F&&` | `F&&` |
-  | `F&&` only | `F&` | `reference-function-both-kinds.cpp` | `F&&` | none | `F&&` | `F&&` |
-  | `F&`, template `T&&` | `F&&` | `tie-reference-kind-before-template.cpp` | `T&&` | `F&` | `T&&` | `F&` |
-  | `F&&`, template `T&` | `F&` | `tie-reference-kind-before-template-lvalue.cpp` | `T&` | `T&` | `T&` | `F&&` |
-  | template `T&`, template `T&&` | `F&&` | `tie-reference-kind-before-more-specialized.cpp` | `T&&` | `T&` | `T&&` | `T&` |
-- OVL-2, OVL-3: a member function of a nested class calls a name that
-  finds members of the enclosing class. GCC gives the call no object.
-  Clang and EDG take the current object and choose a static member
-  ({question}`Q-0159`).
-- OVL-6, OVL-36: Clang and EDG find two surrogates that differ only in
-  the qualifiers of their conversion functions ambiguous. GCC accepts
-  the call ({question}`Q-0139`).
-- OVL-6: GCC gives a `const` object a surrogate from a conversion
-  function that is not `const`. Clang and EDG do not
-  ({question}`Q-0144`).
-- OVL-10: Clang and EDG remove a built-in candidate when a rewritten
-  candidate has its parameter list. GCC keeps the built-in candidate
-  ({question}`Q-0147`).
-- OVL-11: EDG converts a class operand to the parameter type of the
-  winning built-in candidate. Clang and GCC stop after the conversion
-  function ({question}`Q-0141`). No compiler converts an operand that
-  is not of class type, so every compiler rejects `Holder{} + 1.5` for
-  a class `Holder` that converts to `int*`.
-- OVL-40: Clang uses an `explicit` conversion function for the copy
-  constructor's parameter in copy-list-initialization. GCC and EDG do
-  not ({question}`Q-0145`).
-- OVL-19: Clang 22 and GCC 16 keep the more constrained function when a
-  target type selects from a set. EDG, Clang 18, and GCC 14 find the set
-  ambiguous ({question}`Q-0142`).
-- OVL-20: without a target type, Clang 22 and GCC 16 remove the
-  functions whose constraints fail, and the less constrained function.
-  GCC 16 does so for `auto` only. GCC 14 and EDG do not reduce the set,
-  and Clang 18 does not compare constraints ({question}`Q-0142`).
-- OVL-20: without a target type, Clang 22, GCC, and EDG find no single
-  function when the two constrained functions have different parameter
-  lists. Clang 18 keeps the more constrained one ({question}`Q-0142`).
-- OVL-21, OVL-44: the compilers split on calls through the address of
-  a set that holds a non-static member ({question}`Q-0143`,
-  {question}`Q-0161`). The table gives each test. The set in the first
-  two rows is `void reset()` and `static void reset(int)`. In the other
-  rows, the set is `int f() &` and `static int f(int = 0)`. "Error"
-  means that EDG stops with an internal error. OVL-21 follows Clang 22
-  for `&f`, as for `&C::f`. The call `(&f)()` ties under OVL-23 and
-  OVL-25, as the call `f()` with no object does, and OVL-36 rejects it.
-
-  | Call | Test | Rules | Clang 18 | Clang 22 | GCC | EDG |
-  |---|---|---|---|---|---|---|
-  | `(&C::reset)()` | `call-through-address-nonstatic.cpp` | reject | reject | reject | reject | reject |
-  | `(&C::reset)(1)` | `call-through-address-static-member.cpp` | accept | reject | accept | reject | error |
-  | `(&(C::f))()` | `call-through-address-parenthesized-qualified.cpp` | reject | reject | reject | reject | accept |
-  | `(&(C::f))(1)` | `call-through-address-parenthesized-static.cpp` | reject | reject | reject | reject | error |
-  | `(&f)()` | `call-through-address-unqualified.cpp` | reject | reject | accept | reject | accept |
-  | `(&f)(1)` | `call-through-address-unqualified-argument.cpp` | accept | accept | accept | reject | error |
-- OVL-26: EDG finds two conversion results ambiguous when they differ
-  only by a function pointer conversion. Clang and GCC prefer the
-  identity ({question}`Q-0163`).
-- OVL-26: a constructor and a conversion function to a derived class
-  tie on the argument. The forms are copy initialization of the class
-  and an argument of a function. GCC and EDG choose the constructor,
-  whose result needs no conversion. Clang finds the two ambiguous
-  ({question}`Q-0189`).
-- OVL-23, OVL-3: in a call with no object, Clang and EDG let a member
-  with the ref-qualifier `&&` win and then reject the call. GCC gives
-  the call an lvalue object, so the member is not viable and a static
-  member wins ({question}`Q-0187`).
-- OVL-30: EDG lets a constraint decide between plain functions whose
-  parameter lists differ in a defaulted parameter or an ellipsis. Clang
-  18 does so for an ellipsis. Clang 22 and GCC find the call ambiguous
-  ({question}`Q-0146`).
-- OVL-41: EDG lets a constraint decide between templates with different
-  function parameters. Clang and GCC find the call ambiguous
-  ({question}`Q-0146`).
-- OVL-38: GCC rejects a call that uses different default arguments from
-  two scopes. Clang and EDG accept it ({question}`Q-0140`). Every
-  compiler accepts equal default arguments, which item E-4 of the gap
-  review describes as not valid.
-  GCC also accepts `5` with `(5)` and with `0x5`, and rejects `5` with
-  `2 + 3` and two variables that hold one value. OVL-38 follows GCC in
-  what counts as the same default argument.
-
-### Results where every compiler agrees
-
-- OVL-25, OVL-6: every compiler chooses a static call operator over a
-  surrogate candidate with the same parameter types. Every compiler
-  finds the call ambiguous when the surrogate's parameter fits the
-  argument better. So the static member's object slot beats the
-  surrogate's user-defined conversion of the object.
-- OVL-9: every compiler gives the built-in `!`, `&&`, and `||` an
-  `explicit` conversion function to `bool`. The built-in candidate then
-  ties with an operator function that needs a converting constructor,
-  so the expression is ambiguous, and every compiler rejects it (OVL-36).
-  An `explicit` conversion function to `int` gives no sequence.
-- OVL-8: every compiler takes a swapped `==` whose parameters meet the
-  enumeration operands only in the swapped order.
-- OVL-9: for `ToDouble{} % 2`, Clang reports that the integer candidates
-  are ambiguous, and GCC and EDG report no match. All reject.
-- OVL-9, OVL-11: in the three-way grid, `unsigned` against `long` is
-  rejected on the ILP32 target only. There `long` cannot hold every
-  `unsigned` value, and the built-in `<=>` rejects the narrowing.
-- OVL-20: gap G-11 of the inventory expects that a set of one plain
-  function and one template keeps the plain function when no target
-  type exists. Every compiler rejects such a set with `auto`,
-  `decltype`, a cast to `void`, and an expression statement. The rule
-  follows the compilers.
-- OVL-36: a written `==` that is not `const` ties with its own swapped
-  form (inventory RK-16). Every compiler rejects the comparison in
-  strict mode, and {rule}`DCMP-7` recommends a warning.
-
-### Probe grids
-
-The probe grids are in `tests/foundations/overload-resolution/grids/`,
-and `tools/probe_grid.py` prints these tables from them. A cell shows
-`accept` or `reject` when every compiler agrees, and lists the compilers
-on each side when they split. In the labels, lref stands for `&` and
-rref for `&&`.
-
-<details>
-<summary>The 12 probe grids of this page</summary>
-
-Viability (OVL-22). Each column declares one `f`, and each row calls it.
-An `accept` means that the function is viable for the call:
-
-| | none | one | one default | two | one then default | ellipsis | one then ellipsis | pack | one then pack |
-|---|---|---|---|---|---|---|---|---|---|
-| no argument | accept | reject | accept | reject | reject | accept | reject | accept | reject |
-| one argument | reject | accept | accept | reject | accept | accept | accept | accept | accept |
-| two arguments | reject | reject | reject | accept | accept | accept | accept | accept | accept |
-| three arguments | reject | reject | reject | reject | reject | accept | accept | accept | accept |
-
-Call contexts (OVL-1 to OVL-5). Each column declares one kind of
-candidate, and each row calls it from one context. An `accept` means
-that the context takes that kind of candidate:
-
-| | free function | member | static member | explicit object member | call operator | surrogate |
-|---|---|---|---|---|---|---|
-| name at namespace scope | accept | reject | reject | reject | reject | reject |
-| name in a member function | accept | accept | accept | accept | reject | reject |
-| name in a static member function | accept | reject | accept | reject | reject | reject |
-| qualified name | reject | reject | accept | reject | reject | reject |
-| dot call | reject | accept | accept | accept | reject | reject |
-| arrow call | reject | accept | accept | accept | reject | reject |
-| call on the object | reject | reject | reject | reject | accept | accept |
-
-Calls on a class object (OVL-5, OVL-6, OVL-36). Each column declares two
-members of `S`. The first returns `One` and the second `Two`. The row
-"X → first" checks that the call `X(1)` chooses the first member, and
-"X → second" checks the second. A `reject` in both rows means that the
-call is ambiguous or that no candidate is viable:
-
-| | lref call / const lref call | lref call / rref call | lref call / long call | lref call / surrogate | lref call / const surrogate | lref call / reference surrogate | const lref call / rref call | const lref call / long call | const lref call / surrogate | const lref call / const surrogate | const lref call / reference surrogate | rref call / long call | rref call / surrogate | rref call / const surrogate | rref call / reference surrogate | long call / surrogate | long call / const surrogate | long call / reference surrogate | surrogate / const surrogate | surrogate / reference surrogate | const surrogate / reference surrogate |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| S lvalue → first | accept | accept | accept | accept | accept | accept | accept | accept | accept | accept | accept | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject |
-| S lvalue → second | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | accept | accept | accept | accept | reject | reject | reject | reject | reject | reject |
-| const S lvalue → first | reject | reject | reject | reject | reject | reject | accept | accept | accept | accept | accept | reject | reject | reject | reject | accept: edg-7.0, edg-7.0-ilp32, clang-host, clang-18, clang-22; reject: gcc-host, gcc-14, gcc-16 | reject | reject | reject | reject | reject |
-| const S lvalue → second | accept | reject | accept | reject | accept | accept | reject | reject | reject | reject | reject | accept | reject | accept | accept | reject | reject | reject | accept: edg-7.0, edg-7.0-ilp32, clang-host, clang-18, clang-22; reject: gcc-host, gcc-14, gcc-16 | accept: edg-7.0, edg-7.0-ilp32, clang-host, clang-18, clang-22; reject: gcc-host, gcc-14, gcc-16 | reject |
-| S prvalue → first | reject | reject | reject | reject | reject | reject | reject | accept | accept | accept | accept | accept | accept | accept | accept | reject | reject | reject | reject | reject | reject |
-| S prvalue → second | accept | accept | accept | accept | accept | accept | accept | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject |
-
-Operators (OVL-7, OVL-9, OVL-32, OVL-33). Each column gives `X` two kinds
-of candidate for `x < 1`. Each kind returns its own type, so each row
-checks that one kind wins. "rewritten" is a member `operator<=>`, and
-"swapped" is a non-member `operator<=>(int, const X&)`:
-
-| | member / non-member | member / built-in | member / rewritten | member / swapped | non-member / built-in | non-member / rewritten | non-member / swapped | built-in / rewritten | built-in / swapped | rewritten / swapped |
-|---|---|---|---|---|---|---|---|---|---|---|
-| x < 1 → member | reject | accept | accept | accept | reject | reject | reject | reject | reject | reject |
-| x < 1 → non-member | reject | reject | reject | reject | accept | accept | accept | reject | reject | reject |
-| x < 1 → built-in | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject |
-| x < 1 → rewritten | reject | reject | reject | reject | reject | reject | reject | accept | reject | accept |
-| x < 1 → swapped | reject | reject | reject | reject | reject | reject | reject | reject | accept | reject |
-
-Initialization (OVL-14). Each column declares how `Src` converts to
-`T`, and each row initializes a `T` from the lvalue `s` in one form:
-
-| | converting constructor | explicit constructor | conversion function | explicit conversion function | conversion to derived | constructor and conversion function | explicit constructor and conversion function |
-|---|---|---|---|---|---|---|---|
-| copy init | accept | reject | accept | reject | accept | reject | accept |
-| direct init | accept | accept | accept | accept | accept | accept | accept |
-| direct list init | accept | accept | accept | accept | accept | accept | accept |
-| copy list init | accept | reject | accept | accept: clang-host, clang-18, clang-22; reject: edg-7.0-ilp32, edg-7.0, gcc-host, gcc-14, gcc-16 | accept | accept | reject |
-| functional cast | accept | accept | accept | accept | accept | accept | accept |
-| static cast | accept | accept | accept | accept | accept | accept | accept |
-| argument | accept | reject | accept | reject | accept | reject | accept |
-| return | accept | reject | accept | reject | accept | reject | accept |
-
-The address of an overload set (OVL-18 to OVL-20). Each column declares
-an overload set `f`, and each row takes its address for one target:
-
-| | one plain | two plain | noexcept plain | plain and template | two templates | one template |
-|---|---|---|---|---|---|---|
-| pointer to One(int) | accept | accept | accept | accept | accept | accept |
-| noexcept pointer to One(int) | reject | reject | accept | reject | reject | reject |
-| reference to One(int) | accept | accept | accept | accept | accept | accept |
-| pointer to Two(long) | reject | accept | accept | accept | reject | reject |
-| pointer to Two(int pointer) | reject | reject | reject | accept | accept | reject |
-| pointer to Two(double) | reject | reject | reject | accept | reject | reject |
-| cast to pointer to One(int) | accept | accept | accept | accept | accept | accept |
-| no target | accept | reject | reject | reject | reject | reject |
-
-Explicit template arguments with no target type (OVL-20). Each column
-declares an overload set `f`, and each row takes the address of
-`f<int>`:
-
-| | one template | two templates | plain and template | template of two parameters |
-|---|---|---|---|---|
-| pointer to One(int) | accept | accept | reject | reject |
-| no target | accept | reject | accept | reject |
-| decltype | accept | reject | accept | reject |
-
-Surrogates (OVL-6). Each column declares one conversion function to the
-pointer type `F`, and each row calls an object of the class with one
-argument. An `accept` means that the conversion function gives a
-surrogate for that object:
-
-| | plain | const | lref qualified | const lref qualified | rref qualified | explicit | template |
-|---|---|---|---|---|---|---|---|
-| S lvalue | accept | accept | accept | accept | reject | reject | reject |
-| const S lvalue | reject | accept | reject | accept | reject | reject | reject |
-| S prvalue | accept | accept | reject | accept | accept | reject | reject |
-
-Function references (OVL-15, OVL-27 to OVL-29). Each column declares two
-conversion functions of `Source`. The first returns a function that
-gives 1, and the second one that gives 2. Each row binds a reference to
-function to a `Source` prvalue and checks which function it refers to.
-A `reject` in both rows of a target means that the binding is
-ambiguous or has no candidate:
-
-| | plain lref / plain rref | plain lref / template lref | plain lref / template rref | plain rref / template lref | plain rref / template rref | template lref / template rref |
-|---|---|---|---|---|---|---|
-| lref target → first | accept | accept | accept | accept: edg-7.0-ilp32, edg-7.0; reject: gcc-16, gcc-14, clang-18, gcc-host, clang-host, clang-22 | accept: gcc-16, gcc-14, edg-7.0-ilp32, edg-7.0, gcc-host; reject: clang-host, clang-18, clang-22 | accept |
-| lref target → second | reject | reject | reject | accept: gcc-host, gcc-16, gcc-14, clang-18, clang-host, clang-22; reject: edg-7.0, edg-7.0-ilp32 | reject | reject |
-| rref target → first | reject | accept | accept: edg-7.0, edg-7.0-ilp32, clang-host, clang-18, clang-22; reject: gcc-16, gcc-host, gcc-14 | accept | accept | accept: edg-7.0, edg-7.0-ilp32, clang-host, clang-18, clang-22; reject: gcc-14, gcc-host, gcc-16 |
-| rref target → second | accept: edg-7.0, edg-7.0-ilp32, gcc-host, gcc-16, gcc-14; reject: clang-host, clang-18, clang-22 | reject | accept: gcc-16, gcc-host, gcc-14; reject: edg-7.0-ilp32, edg-7.0, clang-host, clang-18, clang-22 | reject | reject | accept: gcc-14, gcc-host, gcc-16; reject: edg-7.0-ilp32, edg-7.0, clang-host, clang-18, clang-22 |
-
-Compound assignment (OVL-9). Each row declares `x` of one type, and each
-column applies one operator to `x` and a class that converts to `int`:
-
-| | plus assign | remainder assign | and assign | or assign | shift assign |
-|---|---|---|---|---|---|
-| bool | accept | accept | accept | accept | accept |
-| char | accept | accept | accept | accept | accept |
-| signed char | accept | accept | accept | accept | accept |
-| unsigned char | accept | accept | accept | accept | accept |
-| wchar_t | accept | accept | accept | accept | accept |
-| char8_t | accept | accept | accept | accept | accept |
-| char16_t | accept | accept | accept | accept | accept |
-| short | accept | accept | accept | accept | accept |
-| int | accept | accept | accept | accept | accept |
-| unsigned long | accept | accept | accept | accept | accept |
-
-Three-way comparison (OVL-9, OVL-11). The row's class is the left
-operand and the column's class the right operand of `<=>`. Each class
-converts to the type in its label:
-
-| | To bool | To char | To short | To int | To unsigned | To long | To double |
-|---|---|---|---|---|---|---|---|
-| To bool | accept | reject | reject | reject | reject | reject | reject |
-| To char | reject | accept | accept | accept | reject | accept | accept |
-| To short | reject | accept | accept | accept | reject | accept | accept |
-| To int | reject | accept | accept | accept | reject | accept | accept |
-| To unsigned | reject | reject | reject | reject | accept | accept: edg-7.0, gcc-14, gcc-host, gcc-16, clang-host, clang-18, clang-22; reject: edg-7.0-ilp32 | accept |
-| To long | reject | accept | accept | accept | accept: edg-7.0, gcc-host, gcc-14, clang-host, gcc-16, clang-18, clang-22; reject: edg-7.0-ilp32 | accept | accept |
-| To double | reject | accept | accept | accept | accept | accept | accept |
-
-Plain functions and templates (OVL-25, OVL-27, OVL-28). Each column
-declares two functions `f`, in two namespaces that a using-declaration
-merges. The first returns `One` and the second `Two`:
-
-| | plain int / plain const int lref | plain int / plain long | plain int / template value | plain int / template const lref | plain int / template pointer | plain int / template forwarding | plain int / constrained template | plain int / ellipsis | plain const int lref / plain long | plain const int lref / template value | plain const int lref / template const lref | plain const int lref / template pointer | plain const int lref / template forwarding | plain const int lref / constrained template | plain const int lref / ellipsis | plain long / template value | plain long / template const lref | plain long / template pointer | plain long / template forwarding | plain long / constrained template | plain long / ellipsis | template value / template const lref | template value / template pointer | template value / template forwarding | template value / constrained template | template value / ellipsis | template const lref / template pointer | template const lref / template forwarding | template const lref / constrained template | template const lref / ellipsis | template pointer / template forwarding | template pointer / constrained template | template pointer / ellipsis | template forwarding / constrained template | template forwarding / ellipsis | constrained template / ellipsis |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| int lvalue → first | reject | accept | accept | accept | accept | accept | accept | accept | accept | accept | accept | accept | reject | accept | accept | reject | reject | accept | reject | reject | accept | reject | accept | reject | reject | accept | accept | reject | reject | accept | reject | reject | reject | reject | accept | accept |
-| int lvalue → second | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | accept | reject | reject | accept | accept | reject | accept | accept | reject | reject | reject | reject | accept | reject | reject | accept | accept: edg-7.0, edg-7.0-ilp32; reject: gcc-host, gcc-14, gcc-16, clang-host, clang-18, clang-22 | reject | accept | accept | accept | accept: edg-7.0, edg-7.0-ilp32; reject: gcc-host, gcc-14, gcc-16, clang-host, clang-18, clang-22 | reject | reject |
-| int prvalue → first | reject | accept | accept | accept | accept | accept | accept | accept | accept | accept | accept | accept | reject | accept | accept | reject | reject | accept | reject | reject | accept | reject | accept | reject | reject | accept | accept | reject | reject | accept | reject | reject | reject | reject | accept | accept |
-| int prvalue → second | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | accept | reject | reject | accept | accept | reject | accept | accept | reject | reject | reject | reject | accept | reject | reject | accept | accept: edg-7.0-ilp32, edg-7.0; reject: gcc-host, gcc-14, clang-host, gcc-16, clang-18, clang-22 | reject | accept | accept | accept | accept: edg-7.0, edg-7.0-ilp32; reject: gcc-14, gcc-host, gcc-16, clang-host, clang-18, clang-22 | reject | reject |
-| long → first | reject | reject | reject | reject | accept | reject | reject | accept | reject | reject | reject | accept | reject | reject | accept | accept | accept | accept | accept | accept | accept | reject | accept | reject | reject | accept | accept | reject | reject | accept | reject | reject | reject | reject | accept | accept |
-| long → second | reject | accept | accept | accept | reject | accept | accept | reject | accept | accept | accept | reject | accept | accept | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | accept | reject | reject | accept | accept: edg-7.0-ilp32, edg-7.0; reject: gcc-host, gcc-14, clang-host, gcc-16, clang-22, clang-18 | reject | accept | accept | accept | accept: edg-7.0, edg-7.0-ilp32; reject: gcc-host, gcc-16, clang-host, gcc-14, clang-18, clang-22 | reject | reject |
-| int pointer → first | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | accept | reject | reject | reject | accept | accept | accept | accept | reject | accept | accept |
-| int pointer → second | reject | reject | accept | accept | accept | accept | accept | accept | reject | accept | accept | accept | accept | accept | accept | accept | accept | accept | accept | accept | accept | reject | accept | reject | accept | reject | accept | accept | accept: edg-7.0-ilp32, edg-7.0; reject: gcc-14, gcc-host, gcc-16, clang-22, clang-18, clang-host | reject | reject | reject | reject | accept: edg-7.0, edg-7.0-ilp32; reject: gcc-14, gcc-host, gcc-16, clang-22, clang-18, clang-host | reject | reject |
-
-</details>

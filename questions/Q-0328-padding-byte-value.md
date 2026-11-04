@@ -25,7 +25,8 @@ address and undefined sanitizers and report nothing.
 `padding-bytes-not-in-value.cpp` writes each padding byte through
 `unsigned char`, and the value of the object stays the same. No
 sanitizer in the matrix tracks bytes with no value, so no configuration
-can tell the options apart.
+can tell the options apart. A copy by a library function reads no byte
+through a `char` glvalue, so STG-12 sets no such condition on it.
 
 ## Options
 

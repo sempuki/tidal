@@ -6,7 +6,7 @@
 
 ## Context
 
-The lists grid on the page shows two cases where the compilers differ.
+The lists grid in `tests/foundations/conversion-sequences/grids/tables.md` shows two cases where the compilers differ.
 
 Empty braces `{}` and a parameter `int (&&)[]`, an array of unknown
 bound:
@@ -28,8 +28,7 @@ A designated list `{.x = 1}` and a parameter `int (&&)[2]` or
 
 ## Evidence
 
-The rows "empty {}" and "designated {.x = 1}" of the lists grid on the
-page (`tests/foundations/conversion-sequences/grids/lists.json`).
+The rows "empty {}" and "designated {.x = 1}" of the lists grid in `tests/foundations/conversion-sequences/grids/tables.md` (`tests/foundations/conversion-sequences/grids/lists.json`).
 
 ## Options
 

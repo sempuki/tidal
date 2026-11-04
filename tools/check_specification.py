@@ -33,10 +33,14 @@ Fails when:
 - a page of specification/ or guides/ refers with {rule} or {principle} to an ID
   that no page defines, or a specification page links to a guide,
 - a rule that the working tree adds, or whose class it changes, relative to
-  HEAD rests on thin evidence (see check_thin_evidence).
+  HEAD rests on thin evidence (see check_thin_evidence),
+- a page's Evidence segment has a ### heading that the Evidence format does
+  not name, or names two parts out of order (documentation/specification-format.md,
+  section "Evidence").
 
 Warns for every rule that rests on thin evidence: one test, or only tests that
-carry an override for a newest compiler.
+carry an override for a newest compiler. Warns once for the pages whose
+Evidence names a question and has no Divergences part, the older form.
 
 guides/ holds the tutorials and how-to guides, which are not part of the
 specification (decision 0045). The question, marker, and reference checks
@@ -236,6 +240,33 @@ def check_records(errors: list[str], warnings: list[str]) -> None:
                             "the integrator runs tools/number_questions.py")
 
 
+# The subsections of an Evidence segment, in order (documentation/specification-format.md).
+EVIDENCE_PARTS = ["Divergences", "Split tests", "Notes", "Probe grids", "Undefined rules", "Sources"]
+
+
+def check_evidence(errors: list[str], warnings: list[str]) -> None:
+    """Evidence subsections come from EVIDENCE_PARTS, in that order."""
+    import status_table
+    older = []
+    for f in sorted(SPEC.rglob("*.md")):
+        text = status_table.evidence(f.read_text())
+        where = f.relative_to(ROOT)
+        headings = re.findall(r"^### (.+?)\s*$", text, re.M)
+        for h in headings:
+            if h not in EVIDENCE_PARTS:
+                errors.append(f"{where}: Evidence has a part {h!r} that the Evidence format does not name")
+        known = [h for h in headings if h in EVIDENCE_PARTS]
+        order = [EVIDENCE_PARTS.index(h) for h in known]
+        if order != sorted(set(order)) or len(order) != len(set(order)):
+            errors.append(f"{where}: Evidence parts out of order: {', '.join(known)}; "
+                          f"the order is {', '.join(EVIDENCE_PARTS)}")
+        if re.search(r"\bQ-\d{4}\b", text) and "Divergences" not in headings:
+            older.append(str(f.relative_to(SPEC)))
+    if older:
+        warnings.append(f"{len(older)} pages name questions in Evidence and have no Divergences part "
+                        f"(the older form): {', '.join(older)}")
+
+
 def newest_overrides() -> set[str]:
     """The override keys that apply to a newest baseline compiler.
 
@@ -403,6 +434,7 @@ def main() -> int:
             errors.append(f"{f.relative_to(ROOT)}: the agreement sentence is out of date; run tools/status_table.py")
     check_grammar(errors)
     check_records(errors, warnings)
+    check_evidence(errors, warnings)
     check_thin_evidence(rules, errors, warnings)
 
     for w in warnings:

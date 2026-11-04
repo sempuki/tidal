@@ -21,8 +21,10 @@ instead, the compilers split:
 | GCC 16 | accepts |
 | EDG 7.0 | accepts |
 
-Every compiler rejects the call of `::operator new` in a member that
-returns the `void*` with no conversion.
+Every compiler accepts the conversion to `T*`, also through a local
+variable of type `void*`. Every compiler rejects the call of
+`::operator new` in a member that returns the `void*` with no
+conversion.
 
 ## Evidence
 

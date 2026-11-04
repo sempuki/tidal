@@ -27,6 +27,10 @@ returns.
 ## Evidence
 
 The two tests above. No configuration can tell the two answers apart.
+Every configuration also runs a program that passes such a cast of a
+member byte array to placement `new` or to `std::construct_at` and uses
+the pointer that the call returns, with no sanitizer report
+(`byte-array-placement-reaches-object.cpp`).
 
 ## Options
 

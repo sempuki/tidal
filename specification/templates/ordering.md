@@ -372,77 +372,45 @@ Pair<int*, int*> c;                                   // C, more specialized tha
 The results are in `tests/RESULTS.md`. All eight compilers agree on 33
 of 44 tests.
 
-Two questions on this page settled on 2026-11-03 under decision 0054.
-For each, a source-reader gap review supports the answer with no doubt,
-and a principle gives the same answer:
+### Divergences
 
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0146` | ORD-P2, {principle}`CNS-P4` | EDG 7.0 |
-| {question}`Q-0211` | ORD-P1 | GCC 16 |
+Each settled question below keeps its test's override for the family
+that still differs. Reporting the EDG difference of Q-0146 to the EDG
+project waits on the maintainer (`documentation/decisions/pending.md`).
 
-Each test keeps its override for the family that differs. Reporting the
-EDG difference of Q-0146 to the EDG project waits on the maintainer
-(`documentation/decisions/pending.md`).
+- {question}`Q-0214` (ORD-6; open): whether the object parameter of a
+  member with no ref-qualifier is an rvalue reference in ordering
+  against an rvalue reference. It is, so the call is ambiguous, as
+  Clang 22 and GCC say. EDG and Clang 18 choose the member.
+- {question}`Q-0211` (ORD-7; settled on ORD-P1): whether the
+  parameters of a swapped candidate are reversed for partial ordering.
+  They are. GCC differs.
+- {question}`Q-0218` (ORD-7; open): whether the object parameter of a
+  swapped member candidate is added before the reversal. It is, as
+  Clang does. GCC and EDG choose the non-member.
+- {question}`Q-0217` (ORD-11; open): whether the qualifier tie-breaker
+  applies to an lvalue reference against an rvalue reference. It does,
+  and Clang finds no order. GCC and EDG choose `T&`.
+- {question}`Q-0216` (ORD-12; open): whether a parameter with a default
+  argument counts against a trailing pack. It does, and Clang finds the
+  call ambiguous. GCC and EDG choose the template with no pack.
+- {question}`Q-0146` (ORD-13; settled on ORD-P2 and {principle}`CNS-P4`):
+  which conditions two functions meet before their constraints decide.
+  The heads, the parameter lists, and the conversion results are the
+  same. EDG lets a constraint decide in more cases.
+- {question}`Q-0293` (ORD-13; open): whether constraints decide between
+  two templates that differ only in an ellipsis. They do, as Clang and
+  EDG say. GCC finds the call ambiguous.
 
-The other questions of the partial-ordering cluster stay open:
-{question}`Q-0214`, {question}`Q-0216`, {question}`Q-0217`,
-{question}`Q-0218`, and {question}`Q-0293`. On 2026-11-03, Clang 22,
-GCC 16, and EDG 7.0 still split on each of them. The provisional
-answers of Q-0216, Q-0217, and Q-0218 follow Clang against GCC and EDG,
-and the gap review of question cluster 3 supports each of them, Q-0218
-with a small doubt.
+### Notes
 
-The clean-room writer probed each step and tie-breaker with Clang 22,
-GCC 16, and EDG 7.0, and checked the tests and grids on the eight
-{ref}`baseline compilers <baseline-compilers>`. The compilers agree on every
-cell of the grids below.
-
-- ORD-7: Clang and EDG reverse the parameters of a swapped candidate
-  for partial ordering, and choose the swapped candidate as more
-  specialized. GCC does not
-  reverse them and chooses the written candidate ({question}`Q-0211`).
-  The test also shows that partial ordering ({rule}`OVL-28`) comes
-  before the preference for a written candidate ({rule}`OVL-32`).
-- ORD-13: EDG lets a constraint decide in three cases where Clang and
-  GCC find the call ambiguous ({question}`Q-0146`). The cases are
-  templates whose heads differ in length
-  (`constraints-different-heads.cpp`), conversion function templates
-  whose results differ (`constraints-conversion-results-differ.cpp`),
-  and parameter lists that differ in length by a parameter with a
-  default argument (`constraints-default-parameter.cpp`).
-- ORD-13: two templates that differ only in an ellipsis tie in ordering
-  by types on every compiler. Clang and EDG then let the constraint
-  decide, and GCC finds the call ambiguous ({question}`Q-0293`). For
-  two functions that are not templates, Clang 22 and GCC count the
-  ellipsis ({question}`Q-0146`).
 - ORD-5: two templates that differ only in a parameter with a default
   argument are ambiguous for a call that uses the default, on every
   compiler.
-- ORD-6: a member with no ref-qualifier against an rvalue reference
-  first parameter is ambiguous on Clang 22 and GCC, which give the
-  member an rvalue reference. Clang 18 and EDG give it an lvalue
-  reference and choose the member ({question}`Q-0214`). Every compiler
-  agrees on the ref-qualifier `&&`, and on no ref-qualifier against an
-  lvalue reference.
-- ORD-7: for a member used as a swapped candidate, Clang adds the
-  object parameter before the reversal and chooses the member. GCC and
-  EDG choose the non-member ({question}`Q-0218`).
-  When both candidates are swapped, the reversal keeps their order, and
-  every compiler chooses the more specialized one
-  (`swapped-candidates-ordered.cpp`,
-  `swapped-member-candidates-ordered.cpp`).
 - ORD-10, ORD-11: every compiler finds the call of
-  `reference-pairs-one-way.cpp` ambiguous. The reference tie-breakers
-  therefore act inside each pair, as the gap review describes (item
+  `reference-pairs-one-way.cpp` ambiguous. So the reference
+  tie-breakers act inside each pair, as the gap review describes (item
   S1), and the diagram of {principle}`ORD-P2` follows that model.
-- ORD-11: for the results `T&` and `const T&&`, Clang finds no order.
-  GCC and EDG apply ORD-11 only to references of one kind and choose
-  `T&` ({question}`Q-0217`). The other combinations of kind and
-  `const` agree on every compiler (`reference-kinds-conversion.cpp`).
-- ORD-12: a parameter with a default argument at the position of the
-  pack makes the call ambiguous on Clang. GCC and EDG choose the
-  template with no pack ({question}`Q-0216`).
 - ORD-16: the gap review (item O9) expected the compilers to differ on
   a non-deduced position in partial ordering. Every compiler gives the
   same result in both calls of `nondeduced-position.cpp`.
@@ -451,55 +419,24 @@ cell of the grids below.
 - ORD-14: the constant parameters `auto*` and `auto**` order as the
   matching function templates on every compiler.
 
-Function templates (ORD-1, ORD-2, ORD-4, ORD-10, ORD-11). Each column declares
-two templates `f` in two namespaces that a using-declaration merges.
-The first returns `One` and the second `Two`. The row "X → first" checks
-that the call `f(X)` chooses the first template. A `reject` in both rows
-means that the call is ambiguous or has no viable function:
+### Probe grids
 
-| | T / T pointer | T / const T pointer | T / T lref | T / const T lref | T / T rref | T / Box of T | T / pack | T pointer / const T pointer | T pointer / T lref | T pointer / const T lref | T pointer / T rref | T pointer / Box of T | T pointer / pack | const T pointer / T lref | const T pointer / const T lref | const T pointer / T rref | const T pointer / Box of T | const T pointer / pack | T lref / const T lref | T lref / T rref | T lref / Box of T | T lref / pack | const T lref / T rref | const T lref / Box of T | const T lref / pack | T rref / Box of T | T rref / pack | Box of T / pack |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| int lvalue → first | accept | accept | reject | reject | reject | accept | accept | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | accept | accept | accept | accept | reject | accept | accept | accept | accept | reject |
-| int lvalue → second | reject | reject | reject | reject | reject | reject | reject | reject | accept | accept | accept | reject | accept | accept | accept | accept | reject | accept | reject | reject | reject | reject | accept | reject | reject | reject | reject | accept |
-| const int lvalue → first | accept | accept | reject | reject | reject | accept | accept | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | accept | accept | accept | accept | accept | accept | accept | accept | reject |
-| const int lvalue → second | reject | reject | reject | reject | reject | reject | reject | reject | accept | accept | accept | reject | accept | accept | accept | accept | reject | accept | accept | reject | reject | reject | reject | reject | reject | reject | reject | accept |
-| int prvalue → first | accept | accept | accept | reject | reject | accept | accept | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | accept | accept | accept | accept | reject |
-| int prvalue → second | reject | reject | reject | reject | reject | reject | reject | reject | reject | accept | accept | reject | accept | reject | accept | accept | reject | accept | accept | accept | reject | accept | accept | reject | reject | reject | reject | accept |
-| int pointer → first | reject | accept | reject | reject | reject | accept | accept | accept | accept | accept | accept | accept | accept | reject | reject | reject | accept | reject | accept | accept | accept | accept | reject | accept | accept | accept | accept | reject |
-| int pointer → second | accept | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | accept | accept | accept | reject | accept | reject | reject | reject | reject | accept | reject | reject | reject | reject | accept |
-| const int pointer → first | reject | reject | reject | reject | reject | accept | accept | reject | accept | accept | accept | accept | accept | accept | accept | accept | accept | accept | accept | accept | accept | accept | reject | accept | accept | accept | accept | reject |
-| const int pointer → second | accept | accept | reject | reject | reject | reject | reject | accept | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | accept | reject | reject | reject | reject | accept |
-| Box lvalue → first | accept | accept | reject | reject | reject | reject | accept | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | accept | accept | reject | accept | reject | reject | accept | reject | accept | accept |
-| Box lvalue → second | reject | reject | reject | reject | reject | accept | reject | reject | accept | accept | accept | accept | accept | accept | accept | accept | accept | accept | reject | reject | accept | reject | accept | accept | reject | accept | reject | reject |
+The probe grids are in `tests/templates/ordering/grids/`, and
+[their tables](https://github.com/sempuki/tidal/blob/main/tests/templates/ordering/grids/tables.md)
+sit beside them. The compilers agree on every cell. The
+function-templates grid (ORD-1, ORD-2, ORD-4, ORD-10, ORD-11) declares
+two templates in each column, and a row checks which one a call with
+an argument of each kind chooses. The partial-specializations grid
+(ORD-14, {rule}`TSP-15`, {rule}`TSP-16`) declares two partial
+specializations in each column, and a row checks which one a
+specialization selects.
 
-Many cells are decided before partial ordering, by viability or by the
-sequences ({rule}`ICS-28`, {rule}`ICS-30`). The columns `T / T lref`,
-`T / const T lref`, and `T / T rref` reject in every row: the sequences
-tie, and after ORD-2 both types are `T`.
+### Sources
 
-Partial specializations (ORD-14, {rule}`TSP-15`, {rule}`TSP-16`). Each
-column declares two partial specializations of `Pair`. The first
-gives `value` 1 and the second 2. The row "X → first" checks that
-`Pair<X>` selects the first. A `reject` in both rows means that the
-selection is ambiguous or that the primary template is selected:
-
-| | T T / T pointer U | T T / T U pointer | T T / T pointer T pointer | T T / T int | T T / const T U | T pointer U / T U pointer | T pointer U / T pointer T pointer | T pointer U / T int | T pointer U / const T U | T U pointer / T pointer T pointer | T U pointer / T int | T U pointer / const T U | T pointer T pointer / T int | T pointer T pointer / const T U | T int / const T U |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| int int → first | accept | accept | accept | reject | accept | reject | reject | reject | reject | reject | reject | reject | reject | reject | accept |
-| int int → second | reject | reject | reject | reject | reject | reject | reject | accept | reject | reject | accept | reject | accept | reject | reject |
-| int pointer int pointer → first | reject | reject | reject | accept | accept | reject | reject | accept | accept | reject | accept | accept | accept | accept | reject |
-| int pointer int pointer → second | reject | reject | accept | reject | reject | reject | accept | reject | reject | accept | reject | reject | reject | reject | reject |
-| int pointer char → first | reject | reject | reject | reject | reject | accept | accept | accept | accept | reject | reject | reject | reject | reject | reject |
-| int pointer char → second | accept | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject |
-| int int pointer → first | reject | reject | reject | reject | reject | reject | reject | reject | reject | accept | accept | accept | reject | reject | reject |
-| int int pointer → second | reject | accept | reject | reject | reject | accept | reject | reject | reject | reject | reject | reject | reject | reject | reject |
-| const int int → first | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject |
-| const int int → second | reject | reject | reject | accept | accept | reject | reject | accept | accept | reject | accept | accept | accept | accept | reject |
-| char int → first | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | accept |
-| char int → second | reject | reject | reject | accept | reject | reject | reject | accept | reject | reject | accept | reject | accept | reject | reject |
-
-The probe grids are in `tests/templates/ordering/grids/`. This table
-gives the source of each rule. Inventory items have the numbers of
+The clean-room writer probed each step and tie-breaker with Clang 22,
+GCC 16, and EDG 7.0, and checked the tests and grids on the eight
+{ref}`baseline compilers <baseline-compilers>`. This table gives the
+source of each rule. Inventory items have the numbers of
 `reports/review/2026-10-31-inventory-deduction.md`, and gap review
 items those of
 `reports/review/2026-10-31-gap-review-deduction-and-ordering.md`:

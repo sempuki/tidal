@@ -749,39 +749,108 @@ decltype(&Box<long>::get)               // int (Box<long>::*)(): the clause is n
 The results are in `tests/RESULTS.md`. All eight compilers agree on 103
 of 131 tests.
 
-One question on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+### Divergences
 
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0262` | CNS-P1 | Clang 22 |
+Each settled question below keeps its test's override for the family
+that still differs. Reporting the EDG differences to the EDG project
+waits on the maintainer (`documentation/decisions/pending.md`).
 
-Nine questions on this page settled on 2026-11-03 under decision 0054.
-For each, a source-reader gap review supports the answer with no doubt,
-and a principle gives the same answer:
+- {question}`Q-0262` (CNS-1; settled on CNS-P1): whether the requires
+  clause after the template parameter list comes before the constraints
+  of placeholder parameters. It does. Clang differs.
+- {question}`Q-0282` (CNS-1; open): whether the constraint of a
+  constrained constant parameter is checked in the order of the template
+  parameters. The rules say it is, as Clang and GCC 16 do. EDG and
+  GCC 14 check it first.
+- {question}`Q-0281` (CNS-1, CNS-23; settled on CNS-P1): whether a
+  template with a constrained constant parameter is more constrained
+  than the same template with `auto`. It is. EDG, Clang 18, and GCC 14
+  find the call ambiguous.
+- {question}`Q-0284` (CNS-4, CNS-7; settled on CNS-P1): whether the
+  mapping of an atomic constraint holds only the parameters that its
+  expression uses. It does. EDG differs, and Clang 18 substitutes an
+  unused argument.
+- {question}`Q-0285` (CNS-3; settled on CNS-P1): whether two variadic
+  templates are ordered by the type constraints on their packs. They
+  are not. EDG differs.
+- {question}`Q-0263` (CNS-9, CNS-39; open): whether an atomic
+  constraint whose type is never `bool` is an error when a short
+  circuit skips it. The program is not valid, and no diagnostic is
+  required. Clang and EDG diagnose it at the definition, and GCC does
+  only in the requires clause of a function template.
+- {question}`Q-0264` (CNS-10; open): whether an implementation
+  diagnoses an atomic constraint whose result changes between two
+  checks. No diagnostic is required. GCC 16 diagnoses it.
+- {question}`Q-0261` (CNS-11; settled under decision 0051): whether the
+  constraints are checked before the return type is formed. They are.
+  Clang 18 differs.
+- {question}`Q-0291` (CNS-13; settled under decision 0051): whether a
+  program can explicitly instantiate a member function whose constraints
+  fail. It cannot. Clang 18 differs.
+- {question}`Q-0260` (CNS-18; settled on {principle}`CPT-P1`): whether
+  a lambda or a member of a local class in a function template can have
+  a trailing requires clause. It can. EDG differs.
+- {question}`Q-0266` (CNS-21; open): whether the constraints of special
+  members decide which ones make a class trivial. They do, as Clang and
+  GCC say. EDG differs.
+- {question}`Q-0265` (CNS-25; settled on CNS-P4): whether a template
+  template argument can be more constrained than its parameter. It
+  cannot. EDG and Clang 18 differ.
+- {question}`Q-0269` (CNS-27, CNS-40; open): whether a function with a
+  placeholder parameter redeclares the template with the same invented
+  head. It does not, and a program with both needs no diagnostic. Clang
+  treats the two as one template.
+- {question}`Q-0267` (CNS-31; settled on CNS-P5): whether a friend
+  template whose constraint uses the class's template parameter must be
+  a definition. It must. EDG differs.
+- {question}`Q-0268` (CNS-32; settled on CNS-P5): whether the
+  constrained friend definitions of two specializations are two
+  functions. They are. EDG differs.
+- {question}`Q-0292` (CNS-36; settled on CNS-P3 and {principle}`TSP-P3`):
+  whether a partial specialization can repeat the primary template's
+  parameters when it is not more constrained. It cannot. EDG differs.
+- {question}`Q-0283` (CNS-38; settled on CNS-P3): whether an
+  implementation diagnoses a use of a template template parameter that
+  fails the parameter's own constraints. No diagnostic is required. No
+  family differs from the answer, and EDG diagnoses the use.
 
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0260` | {principle}`CPT-P1` | EDG 7.0 |
-| {question}`Q-0265` | CNS-P4 | EDG 7.0 |
-| {question}`Q-0267` | CNS-P5 | EDG 7.0 |
-| {question}`Q-0268` | CNS-P5 | EDG 7.0 |
-| {question}`Q-0281` | CNS-P1 | EDG 7.0 |
-| {question}`Q-0283` | CNS-P3 | none; EDG 7.0 diagnoses a program that needs no diagnostic |
-| {question}`Q-0284` | CNS-P1 | EDG 7.0 |
-| {question}`Q-0285` | CNS-P1 | EDG 7.0 |
-| {question}`Q-0292` | CNS-P3, {principle}`TSP-P3` | EDG 7.0 |
+### Notes
 
-Each test keeps its override for EDG. Reporting these EDG differences to
-the EDG project waits on the maintainer
-(`documentation/decisions/pending.md`).
+- CNS-10: the rule is `no-diagnostic` because the change shows only
+  against an earlier check, which an implementation need not keep.
+- CNS-13: every compiler rejects a template-id with arguments that do
+  not depend on template parameters and fail the constraints, inside a
+  template that is never instantiated. The gap review describes that
+  case as one that needs no diagnostic (item 6), and {rule}`DEP-30`
+  covers the general case. The rule follows the compilers.
+- CNS-18: the rule is about lambdas that are not templates, and EDG
+  rejects the clause on each of them, so every test of CNS-18 needs an
+  override for EDG.
+- CNS-38: the rule is `no-diagnostic`. A use that fails the parameter's
+  own constraints can never be valid, and the compilers differ only in
+  whether they diagnose it. Every test of CNS-38 has an override, and
+  each override records a result that the class allows.
+- CNS-40: the gap review of the rules that phase 7 added
+  (`reports/review/2026-11-04-gap-review-phase-7-additions.md`) reads
+  the reference as covering any two such templates that accept the
+  same argument lists, also with constraints that differ in form. Every
+  compiler accepts the declarations of two templates whose constraints
+  name two concepts with one meaning, and finds a call ambiguous.
+- CNS-3: the inventory doubts whether newer compilers split a fold
+  expression into its operands (gap E8). Every compiler in the matrix
+  treats the fold as one atomic constraint.
 
-{question}`Q-0266` and {question}`Q-0282` stay open. On 2026-11-03,
-Clang 22 and GCC 16 still agree with the provisional answer of each,
-and EDG 7.0 still differs. The source-reader gap review of the cluster
-(`reports/review/2026-11-03-gap-review-question-cluster-5.md`) finds the
-default-constructor part of Q-0266 unclear, and it reads Q-0282 as EDG
-and GCC 14 do, with doubt. CPT-21 and CNS-1 keep
-the order of the head, which Clang 22 and GCC 16 follow.
+### Probe grids
+
+The probe grids are in `tests/templates/constraints/grids/`, and
+[their tables](https://github.com/sempuki/tidal/blob/main/tests/templates/constraints/grids/tables.md)
+sit beside them. The subsumption grid (CNS-4, CNS-22 to CNS-24) declares
+two members with two requires clauses in each column, and a row checks
+which one is more constrained. The spellings grid (CNS-1, CNS-23,
+CNS-26, CNS-27, {rule}`ORD-13`) declares two function templates that
+write one constraint in two forms, and a row checks the call.
+
+### Sources
 
 The clean-room writer probed each rule with Clang 18 and 22, GCC 14 and
 16, the host Clang and GCC, and EDG 7.0, and checked the tests and the
@@ -790,136 +859,8 @@ compiler's own words, for example "atomic constraint must be of type
 'bool'" and "requires clause differs in template redeclaration"
 (clang-diag-sema).
 
-- CNS-1: GCC and EDG check the requires clause after the template
-  parameter list before the type constraints of placeholder parameters.
-  Clang checks the placeholders first ({question}`Q-0262`). Every
-  compiler checks the type constraints of the head first and the
-  trailing clause last.
-- CNS-1: Clang and GCC 16 check the constraints of the head in
-  parameter order. GCC 14 and EDG check the constraint of a constant
-  placeholder before the type constraint of an earlier type parameter
-  ({question}`Q-0282`). Every compiler checks the constraint of a
-  constant placeholder before the requires clause after the head.
-- CNS-1, CNS-23: Clang 22 and GCC 16 find a template with a constrained
-  constant parameter more constrained than the same template with
-  `auto`. Clang 18, GCC 14, and EDG find the call ambiguous
-  ({question}`Q-0281`).
-- CNS-4, CNS-7: EDG keeps every parameter of a concept in the mapping,
-  so two concept-ids that differ in an unused argument give two atomic
-  constraints. EDG and Clang 18 also substitute an unused argument.
-  Clang 22 and GCC do neither ({question}`Q-0284`).
-- CNS-9, CNS-39: Clang and EDG reject an atomic constraint whose type is never
-  `bool`, such as `sizeof(T)`, at the definition, even if a short circuit skips it. GCC
-  rejects such an atomic constraint in the requires clause of a function
-  template at the definition, and accepts it in a concept until a check
-  reaches it. CNS-39 needs no diagnostic, so each result conforms
-  ({question}`Q-0263`). Every compiler accepts a skipped
-  atomic constraint whose type depends on the argument, such as
-  `T::value` for a class whose `value` is an `int`
-  (`or-short-circuit.cpp`).
-- CNS-10: GCC 16 diagnoses a result that changes after a class is
-  completed. Clang, EDG, and GCC 14 keep the first result. The rule is
-  `no-diagnostic` because the change shows only against an earlier
-  check, which an implementation need not keep ({question}`Q-0264`).
-  For a function declared between two checks, every compiler keeps the
-  first result, GCC 16 included (`satisfaction-changes-declaration.cpp`).
-  For a concept-id whose requirement names a private member, checked
-  inside a member of the class and at namespace scope, every compiler
-  keeps the first result in either order, GCC 16 included
-  (`requirement-access-concept-kept.cpp`,
-  `requirement-access-concept-kept-false.cpp`).
-- CNS-11: Clang 18 forms the return type of a function template before
-  it checks the constraints. The other compilers check the constraints
-  first ({question}`Q-0261`). Every compiler forms the default template
-  arguments before the check.
-- CNS-13: Clang 18 accepts an explicit instantiation of a member
-  function whose constraints fail ({question}`Q-0291`). Every compiler
-  rejects a template-id with arguments that do not depend on template
-  parameters and fail the constraints, inside a template that is never
-  instantiated. The gap review describes that case as one that needs no
-  diagnostic (item 6), and {rule}`DEP-30` covers the general case. The
-  rule follows the compilers.
-- CNS-18: EDG rejects the trailing clause on the lambda
-  ({question}`Q-0260`).
-  EDG rejects a trailing requires clause on each lambda that is not a
-  template, also after a trailing return type. CNS-18 is about such
-  lambdas only, so every test of CNS-18 needs an override for EDG.
-- CNS-21: EDG does not treat a constructor as trivial when a less
-  constrained or unsatisfied constructor of the same kind is
-  user-provided. Clang and GCC do ({question}`Q-0266`). Every compiler
-  chooses the trivial destructor in `destructor-trivial.cpp`. No test
-  shows the kinds of the third condition apart from another split. A
-  class with a defaulted copy constructor and a user-provided one with
-  another first parameter type, or two copy assignment operators with
-  different ref-qualifiers, makes a union member that Clang copies and
-  GCC and EDG do not. The split appears without constraints too.
-- CNS-25: Clang 18 and EDG accept a template template argument that is
-  more constrained than its parameter. Clang 22 and GCC reject it
-  ({question}`Q-0265`). Every compiler accepts a constrained argument
-  for a parameter with no constraints (`template-template-constrained.cpp`).
-- CNS-27, CNS-40: Clang treats `int f(A auto)` as a redeclaration of
-  `template <A T> int f(T)`. GCC and EDG treat the two as different
-  templates, as CNS-27 does, and find the call ambiguous. CNS-40 needs
-  no diagnostic, so each result conforms ({question}`Q-0269`). The `spellings` grid shows the same
-  split as a rejection on every compiler, for different reasons.
-- CNS-40: the gap review of the rules that phase 7 added
-  (`reports/review/2026-11-04-gap-review-phase-7-additions.md`) reads
-  the reference as covering any two such templates that accept the
-  same argument lists, also with constraints that differ in form. Every
-  compiler accepts the declarations of two templates whose constraints
-  name two concepts with one meaning, and finds a call ambiguous.
-- CNS-31: EDG accepts a friend template declaration whose constraint
-  uses the class's template parameter ({question}`Q-0267`).
-- CNS-32: EDG reports two definitions of a constrained friend from two
-  specializations. EDG also treats the friend and a namespace template
-  of the same form as one template ({question}`Q-0268`).
-  Every compiler accepts a constrained friend template that two
-  specializations define (`friend-template-per-specialization.cpp`).
-- CNS-36: the primary template has the constraint `A` and the partial
-  specialization `B`, and neither subsumes the other. EDG accepts such
-  a partial specialization, and Clang and GCC reject it
-  ({question}`Q-0292`). Every compiler rejects a partial specialization
-  with the same constraint as the primary template
-  (`partial-specialization-same-constraints.cpp`). EDG reports that a
-  primary template cannot have a template argument list.
-- CNS-38: the rule is `no-diagnostic`. A use that fails the parameter's
-  own constraints can never be valid, and the compilers differ only in
-  whether they diagnose it. EDG rejects the definition. Clang and GCC
-  accept it, also after an instantiation with an argument template
-  that has no constraints ({question}`Q-0283`).
-  Every test of CNS-38 has an override, and each override records a
-  result that the class allows.
-- CNS-3: the inventory doubts whether newer compilers split a fold
-  expression into its operands (gap E8). Every compiler in the matrix
-  treats the fold as one atomic constraint.
-
-Subsumption (CNS-4, CNS-22 to CNS-24). Each column declares two static
-members `f` of `Box<T>`, with the two requires clauses. The first
-returns 1 and the second 2. `int` satisfies every clause, so the row
-"int → first" checks that the first is more constrained. A `reject` in
-both rows means that neither is more constrained. `A2` has the same
-text as `A`, `Z` is never satisfied for `int`, and `NotZ` is the
-concept `!Z<T>`:
-
-| | none / A | none / B | none / A and B | none / A or B | none / AB | none / A2 | none / not Z | none / A and not Z | none / NotZ | none / A and NotZ | A / B | A / A and B | A / A or B | A / AB | A / A2 | A / not Z | A / A and not Z | A / NotZ | A / A and NotZ | B / A and B | B / A or B | B / AB | B / A2 | B / not Z | B / A and not Z | B / NotZ | B / A and NotZ | A and B / A or B | A and B / AB | A and B / A2 | A and B / not Z | A and B / A and not Z | A and B / NotZ | A and B / A and NotZ | A or B / AB | A or B / A2 | A or B / not Z | A or B / A and not Z | A or B / NotZ | A or B / A and NotZ | AB / A2 | AB / not Z | AB / A and not Z | AB / NotZ | AB / A and NotZ | A2 / not Z | A2 / A and not Z | A2 / NotZ | A2 / A and NotZ | not Z / A and not Z | not Z / NotZ | not Z / A and NotZ | A and not Z / NotZ | A and not Z / A and NotZ | NotZ / A and NotZ |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| int → first | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | accept | reject | reject | reject | reject | reject | reject | reject | accept | reject | reject | reject | reject | reject | reject | accept | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject |
-| int → second | accept | accept | accept | accept | accept | accept | accept | accept | accept | accept | reject | accept | reject | accept | reject | reject | accept | reject | accept | accept | reject | accept | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | accept | reject | reject | accept | reject | accept | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | accept |
-
-Spellings (CNS-1, CNS-23, CNS-26, CNS-27, {rule}`ORD-13`). Each column
-declares two function templates `f` with the two forms, and the row
-checks the call `f(1)`. A `reject` in both rows means an ambiguous call,
-or for `A T / A auto` and `AB T / AB auto` a redefinition on Clang
-({question}`Q-0269`):
-
-| | none / A T | none / A leading | none / A trailing | none / A auto | none / AB T | none / AB trailing | none / AB auto | A T / A leading | A T / A trailing | A T / A auto | A T / AB T | A T / AB trailing | A T / AB auto | A leading / A trailing | A leading / A auto | A leading / AB T | A leading / AB trailing | A leading / AB auto | A trailing / A auto | A trailing / AB T | A trailing / AB trailing | A trailing / AB auto | A auto / AB T | A auto / AB trailing | A auto / AB auto | AB T / AB trailing | AB T / AB auto | AB trailing / AB auto |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| int → first | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject |
-| int → second | accept | accept | accept | accept | accept | accept | accept | reject | reject | reject | accept | accept | accept | reject | reject | accept | accept | accept | reject | accept | accept | accept | accept | accept | accept | reject | reject | reject |
-
-The probe grids are in `tests/templates/constraints/grids/`. This
-table gives the source of each rule. Inventory items have the numbers
-of `reports/review/2026-10-31-inventory-concepts-and-constraints.md`:
+This table gives the source of each rule. Inventory items have the
+numbers of `reports/review/2026-10-31-inventory-concepts-and-constraints.md`:
 
 | Rule | Source |
 |---|---|
