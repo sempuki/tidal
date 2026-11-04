@@ -324,7 +324,7 @@ status, and the first sentence of its answer section.
 | [Q-0308](Q-0308-class-size-overflow.md) | Must an implementation reject a class whose size does not fit in `std::size_t`? | settled | Yes (STG-1); Clang 18 accepts |
 | [Q-0309](Q-0309-union-member-read-after-destructor-constant.md) | Must constant evaluation reject a read of a union member after an explicit destructor call ends it? | compiler defect | Yes, undefined (UNI-14, OBJ-2); Clang and EDG reject, GCC accepts |
 | [Q-0310](Q-0310-constexpr-function-first-point.md) | Which point of instantiation does a constexpr function specialization use outside constant evaluation? | provisional | Either point (INST-32); GCC takes the end of the unit, Clang and EDG the first point |
-| [Q-0311](Q-0311-adl-template-id-argument.md) | Does an argument that is a template-id for a function template add the namespaces of its template arguments? | provisional | Yes; a template-id adds what each type template argument adds (NAM-27, option 1), as GCC does |
+| [Q-0311](Q-0311-adl-template-id-argument.md) | Does an argument that is a template-id for a function template add the namespaces of its template arguments? | settled | Yes; a template-id adds what each type template argument adds (NAM-27, option 1), as GCC does |
 | [Q-0312](Q-0312-token-sequences-no-production-accepts.md) | Should the specification list token sequences that no production accepts, such as `for constexpr`? | provisional | The grammar is the statement, and TR-12 gives its effect |
 | [Q-0313](Q-0313-scoped-enumeration-integral-operand.md) | Can an enumerator of a scoped enumeration give the operand of `alignas`, the width of a bit-field, or the size in an array `new`? | provisional | No (ALN-8, BF-2, NEW-2); EDG accepts it in `alignas` and a width, GCC in `new` |
 | [Q-0314](Q-0314-class-operand-integral-constant.md) | Can a constant of class type that converts to an integer give the operand of `alignas` or the width of a bit-field? | provisional | Yes (ALN-8, BF-1), as Clang and EDG do; GCC rejects |
@@ -375,6 +375,10 @@ status, and the first sentence of its answer section.
 | [Q-0359](Q-0359-volatile-byte-copy.md) | Is a read of a volatile object's bytes through `unsigned char` that is not volatile an access under VOL-6? | provisional | Yes; the plain byte copy is undefined, and a copy uses volatile byte glvalues |
 | [Q-0360](Q-0360-alignment-above-largest-extended.md) | Does an implementation reject an `alignas` above its largest extended alignment? | provisional | The implementation rejects the alignment |
 | [Q-0361](Q-0361-tail-padding-deleted-and-move-members.md) | Does a base with a deleted constructor or a user-provided move assignment operator lend its tail padding? | provisional | The base keeps its padding |
+| [Q-0362](Q-0362-anonymous-union-member-shares-class-name.md) | Can a member of an anonymous union share its name with a class? | provisional | The member can share the name |
+| [Q-0363](Q-0363-handler-reference-to-array-or-function.md) | Does a handler of a reference to an array or a function match a thrown array or function? | provisional | The handler never matches |
+| [Q-0364](Q-0364-operator-lookup-block-declaration.md) | Does a block declaration of an operator function turn off argument-dependent lookup for an operator? | provisional | Argument-dependent lookup always adds its functions |
+| [Q-0365](Q-0365-return-value-destroyed-on-throw.md) | Is the result of a return statement destroyed when a local destructor then throws? | provisional | The result is destroyed |
 
 ## Status values
 

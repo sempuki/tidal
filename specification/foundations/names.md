@@ -28,7 +28,9 @@ scope is one of these:
 
 - a block,
 - a function's parameter list,
+- a template's parameter list,
 - a class body,
+- the body of a scoped enumeration,
 - a namespace,
 - the whole {term}`translation unit`.
 
@@ -57,7 +59,10 @@ outermost scope                  searched last
 The search stops at the first scope that declares the name, whatever
 kind of thing the name is. So an inner declaration hides an outer one,
 and a variable in an inner scope hides a function of the same name
-outside the inner scope. A qualified name skips the search and goes to
+outside the inner scope. A few places need a type or a namespace and
+nothing else: the name before `::`, the name after a class key, and a
+name in a list of bases. There the search passes over the other kinds
+of declaration and goes on outward. A qualified name skips the search and goes to
 the scope that it names ({principle}`NAM-P5`). A program uses a
 qualified name to reach a hidden name. A namespace is a scope that a
 program can reopen and add to. A member declared in a namespace can be
@@ -94,7 +99,7 @@ class body sees these members:
 
 | Part of a class body | Members that the part sees |
 |---|---|
-| Member function bodies and default member initializers | Every member of the class, also those declared later, because the class is complete there |
+| Member function bodies, default arguments, exception specifications, and default member initializers | Every member of the class, also those declared later, because the class is complete there ({rule}`CLS-2`) |
 | The other parts | Only earlier members |
 
 Labels have their own scope, the whole function, and their own name
@@ -110,7 +115,7 @@ never goes outward to an enclosing scope.
 
 | Qualifier | Searched | Not searched |
 |---|---|---|
-| Namespace `N::` | `N`, its inline namespaces, then the namespaces that `N`'s using directives name, if `N` has no match | Enclosing namespaces, other nested namespaces |
+| Namespace `N::` | `N`, its inline namespaces, then the namespaces that the using directives of `N` and of its inline namespaces name, if `N` has no match | Enclosing namespaces, other nested namespaces |
 | `::` alone | The global namespace, in the same way as `N::` | Named namespaces |
 | Class `C::` | `C`, then its bases | Enclosing classes and namespaces |
 | Enumeration `E::` | The enumerators of `E` | Everything else |
@@ -229,13 +234,16 @@ name: after `struct` or `enum`, before `::`, and in a list of bases.
 
 :::{rule} NAM-1
 :kind: required
-:tests: foundations/names/visible-from-declaration.cpp foundations/names/visible-in-own-initializer.cpp foundations/names/function-sees-earlier-globals.cpp
+:tests: foundations/names/visible-from-declaration.cpp foundations/names/visible-in-own-initializer.cpp foundations/names/function-sees-earlier-globals.cpp foundations/names/enumerator-point-of-declaration.cpp
 
 A name is visible from its point of declaration to the end of its scope.
-The point of declaration comes before the initializer, so a variable is
-in scope in its own initializer. Reading the variable there is
-undefined, because the object has no value yet (OBJ-2). A function body
-sees the names declared before the function in its translation unit.
+The point of declaration of a variable comes after its declarator and
+before the initializer, so a variable is in scope in its own
+initializer. Reading the variable there is undefined, because the
+object has no value yet (OBJ-2). The point of declaration of an
+enumerator comes after its initializer, so the initializer sees an
+outer entity of the same name. A function body sees the names declared
+before the function in its translation unit.
 :::
 
 :::{rule} NAM-8
@@ -269,11 +277,18 @@ a name outside the function. The qualified name `::x` finds the global
 
 :::{rule} NAM-12
 :kind: reject
-:tests: foundations/names/hiding-ignores-kind.cpp foundations/names/hiding-variable-hides-type.cpp
+:tests: foundations/names/hiding-ignores-kind.cpp foundations/names/hiding-variable-hides-type.cpp foundations/names/hiding-class-key-skips-variable.cpp foundations/names/hiding-base-list-skips-variable.cpp
 
 An unqualified use of a hidden name finds only the inner declaration
 (NAM-2). If that declaration does not fit the use, the use is not
 valid, even when the hidden declaration fits the use.
+
+The rule has exceptions where the lookup considers only some kinds of
+declaration. After a class key and in a list of bases, the lookup
+considers only types. Before `::`, the lookup considers only types and
+namespaces ({rule}`NAM-15`). In these places a declaration of another
+kind does not stop the search, and the search finds the outer
+declaration.
 :::
 
 :::{rule} NAM-3
@@ -292,7 +307,7 @@ the case of a template (decision 0042).
 
 :::{rule} NAM-39
 :kind: required
-:tests: foundations/names/shared-name-class-variable.cpp foundations/names/shared-name-variable-then-class.cpp foundations/names/shared-name-class-function.cpp foundations/names/shared-name-enumeration.cpp foundations/names/shared-name-enumerator-class.cpp foundations/names/shared-name-class-members.cpp
+:tests: foundations/names/shared-name-anonymous-union-member.cpp foundations/names/shared-name-class-variable.cpp foundations/names/shared-name-variable-then-class.cpp foundations/names/shared-name-class-function.cpp foundations/names/shared-name-enumeration.cpp foundations/names/shared-name-enumerator-class.cpp foundations/names/shared-name-class-members.cpp
 
 One scope can declare a class or an enumeration and one of these with
 the same name:
@@ -302,7 +317,9 @@ the same name:
 - an enumerator.
 
 The declarations can come in any order. In a class, the variable or the
-functions can be members. {rule}`STMT-9` is this rule for a block.
+functions can be members, also a member of an anonymous union in the
+class ({question}`Q-0362`).
+{rule}`STMT-9` is this rule for a block.
 :::
 
 :::{rule} NAM-40
@@ -322,7 +339,7 @@ only in these places:
 
 :::{rule} NAM-41
 :kind: reject
-:tests: foundations/names/shared-name-class-alone.cpp foundations/names/shared-name-class-alone-variable-first.cpp foundations/names/shared-name-qualified-not-class.cpp foundations/names/shared-name-member-not-class.cpp foundations/names/shared-name-in-class-not-class.cpp foundations/names/shared-name-enumeration-alone.cpp foundations/names/shared-name-inner-block.cpp
+:tests: foundations/names/shared-name-conversion-function-type.cpp foundations/names/shared-name-class-alone.cpp foundations/names/shared-name-class-alone-variable-first.cpp foundations/names/shared-name-qualified-not-class.cpp foundations/names/shared-name-member-not-class.cpp foundations/names/shared-name-in-class-not-class.cpp foundations/names/shared-name-enumeration-alone.cpp foundations/names/shared-name-inner-block.cpp
 
 Where lookup finds the other entity (NAM-40), the name must not name the
 class or enumeration. The rule holds for `S`, `N::S`, and `C::S`.
@@ -358,19 +375,22 @@ qualification (NAM-4).
 
 :::{rule} NAM-38
 :kind: required
-:tests: foundations/names/operator-lookup-skips-class.cpp foundations/names/operator-lookup-block-hides.cpp foundations/names/operator-lookup-namespace-hides.cpp
+:tests: foundations/names/operator-lookup-skips-class.cpp foundations/names/operator-lookup-block-hides.cpp foundations/names/operator-lookup-namespace-hides.cpp foundations/names/operator-lookup-block-declaration-keeps-adl.cpp
 
 The lookup of non-member {term}`operator functions <operator function>` for an operator expression
 ({rule}`OVL-7`) searches outward from the use, as NAM-2 gives, and
 passes over each class scope. A block or a namespace that declares the
 operator function ends the search and hides the declarations outside
 it. {term}`Argument-dependent lookup <argument-dependent lookup>` then
-adds its functions (NAM-29).
+adds its functions (NAM-29). A block declaration of an operator function
+does not stop argument-dependent lookup, as a block declaration of a
+function does for a call ({rule}`NAM-32`,
+{question}`Q-0364`).
 :::
 
 :::{rule} NAM-13
 :kind: required
-:tests: foundations/names/qualified-using-declaration.cpp foundations/names/qualified-follows-directive.cpp foundations/names/qualified-direct-member-wins.cpp foundations/names/qualified-directive-transitive.cpp foundations/names/qualified-directive-stops.cpp foundations/names/qualified-same-entity-two-paths.cpp foundations/names/qualified-same-entity-using-declarations.cpp foundations/names/qualified-inline-nested.cpp foundations/names/qualified-directive-cycle.cpp foundations/names/qualified-global-directive.cpp foundations/names/qualified-unnamed-namespace-second.cpp foundations/names/qualified-unnamed-namespace-member.cpp
+:tests: foundations/names/qualified-directive-in-inline-namespace.cpp foundations/names/qualified-directive-functions-overload.cpp foundations/names/qualified-using-declaration.cpp foundations/names/qualified-follows-directive.cpp foundations/names/qualified-direct-member-wins.cpp foundations/names/qualified-directive-transitive.cpp foundations/names/qualified-directive-stops.cpp foundations/names/qualified-same-entity-two-paths.cpp foundations/names/qualified-same-entity-using-declarations.cpp foundations/names/qualified-inline-nested.cpp foundations/names/qualified-directive-cycle.cpp foundations/names/qualified-global-directive.cpp foundations/names/qualified-unnamed-namespace-second.cpp foundations/names/qualified-unnamed-namespace-member.cpp
 
 A qualified name `N::x`, where `N` names a namespace, finds `x` in
 these steps:
@@ -378,8 +398,9 @@ these steps:
 1. The search looks at the declarations and using declarations in `N`
    and in the inline namespaces of `N`, at any depth.
 2. If step 1 finds nothing, the search repeats for each namespace that a
-   using directive in `N` names. An unnamed namespace in `N` counts as
-   a namespace that a using directive in `N` names.
+   using directive names, if the directive is in `N` or in an inline
+   namespace of `N` and comes before the use. An unnamed namespace in
+   `N` counts as a namespace that a using directive in `N` names.
 3. Along each path of directives, the search stops at the first
    namespace that declares `x`.
 
@@ -389,7 +410,7 @@ reach one entity do not make `x` ambiguous.
 
 :::{rule} NAM-14
 :kind: reject
-:tests: foundations/names/qualified-not-enclosing-namespace.cpp foundations/names/qualified-not-nested-namespace.cpp foundations/names/qualified-before-declaration.cpp foundations/names/qualified-directive-ambiguous.cpp foundations/names/qualified-directive-type-and-variable.cpp foundations/names/qualified-directive-cycle-missing.cpp foundations/names/qualified-block-extern-not-member.cpp foundations/names/qualified-hidden-friend.cpp foundations/names/qualified-global-not-named-namespace.cpp
+:tests: foundations/names/qualified-directive-functions-overload.cpp foundations/names/qualified-not-enclosing-namespace.cpp foundations/names/qualified-not-nested-namespace.cpp foundations/names/qualified-before-declaration.cpp foundations/names/qualified-directive-ambiguous.cpp foundations/names/qualified-directive-type-and-variable.cpp foundations/names/qualified-directive-cycle-missing.cpp foundations/names/qualified-block-extern-not-member.cpp foundations/names/qualified-hidden-friend.cpp foundations/names/qualified-global-not-named-namespace.cpp
 
 `N::x` must find `x` by the steps of NAM-13. The steps do not find
 these declarations:
@@ -400,8 +421,11 @@ these declarations:
 - a declaration in a block, or a friend declaration in a class
   ({rule}`ACC-7`).
 
-If the paths of NAM-13 end at different entities, `N::x` is ambiguous.
-This rule also applies when one entity is a class.
+If the paths of NAM-13 end at different entities, and the entities are
+not all functions or function templates, `N::x` is ambiguous. This rule
+also applies when one entity is a class. Functions found along
+different paths form one overload set, and overload resolution chooses
+among them ({rule}`NAM-25`).
 :::
 
 :::{rule} NAM-15
@@ -415,15 +439,21 @@ be a type alias or a `decltype` specifier.
 
 :::{rule} NAM-16
 :kind: reject
-:tests: foundations/names/qualifier-variable-only.cpp foundations/names/qualifier-fundamental-alias.cpp foundations/names/qualifier-incomplete-class.cpp foundations/names/qualifier-opaque-enum.cpp
+:tests: foundations/names/qualifier-variable-only.cpp foundations/names/qualifier-fundamental-alias.cpp foundations/names/qualifier-incomplete-class.cpp foundations/names/qualifier-opaque-enum.cpp foundations/names/qualifier-class-being-defined.cpp foundations/names/qualifier-fundamental-alias-destructor.cpp
 
 The qualifier before `::` must denote one of these:
 
 - a namespace,
-- a complete class,
+- a class that is complete or whose definition contains the use,
 - an enumeration whose enumerators are declared.
 
+Inside the definition of a class `C`, `C::x` finds the members declared
+before the use. A class that is only declared has no members to find,
+so a use such as `C::x` is not valid.
+
 A fundamental type, also through an alias, is not valid as a qualifier.
+The one exception is a destructor name: `p->T::~T()` can name a scalar
+type `T` through an alias ({rule}`DTOR-6`).
 :::
 
 :::{rule} NAM-17
@@ -453,7 +483,7 @@ This ambiguity is a specific case of {rule}`DER-4` (decision 0042).
 
 :::{rule} NAM-37
 :kind: required
-:tests: foundations/names/member-access-lookup-kinds.cpp foundations/names/member-access-no-enclosing-scope.cpp foundations/names/member-access-no-free-function.cpp foundations/names/member-access-type-member.cpp
+:tests: foundations/names/member-access-lookup-kinds.cpp foundations/names/member-access-no-enclosing-scope.cpp foundations/names/member-access-no-free-function.cpp foundations/names/member-access-type-member.cpp foundations/names/member-access-qualifier-outside-class.cpp
 
 In a member access `E.m` or `E->m`, lookup of `m` searches the class of
 `E` and then its bases, as for `C::m` ({rule}`NAM-17`). The search
@@ -463,6 +493,11 @@ covers only the class and its bases. It finds every kind of member:
 - nested classes and type aliases,
 - the enumerators of an unscoped enumeration in the class,
 - the injected class name.
+
+A qualifier between the operator and the member name, as in `E.Q::m`,
+is first looked up in the class of `E`. If the class has no member
+`Q`, `Q` is looked up from the point of the use, as an unqualified
+name.
 :::
 
 :::{rule} NAM-19
@@ -484,13 +519,15 @@ In `E::x`, `x` must be an enumerator of `E` (NAM-19).
 
 :::{rule} NAM-21
 :kind: required
-:tests: foundations/names/definition-body-sees-namespace.cpp foundations/names/definition-initializer-sees-namespace.cpp foundations/names/definition-parameter-sees-class.cpp foundations/names/definition-trailing-return-sees-class.cpp
+:tests: foundations/names/definition-body-sees-namespace.cpp foundations/names/definition-initializer-sees-namespace.cpp foundations/names/definition-parameter-sees-class.cpp foundations/names/definition-trailing-return-sees-class.cpp foundations/names/definition-bound-default-noexcept-see-scope.cpp
 
 A declaration can name a member with a qualified name, such as `N::f`
 or `C::f`. After that name, the declaration sees the members of `N` or
 `C` without qualification. These parts come after the name:
 
-- the parameters,
+- the parameters and their default arguments,
+- an array bound,
+- an exception specification,
 - a trailing return type,
 - the function body,
 - the initializer.
@@ -506,14 +543,17 @@ members of `N` or `C`. A member type there needs qualification.
 
 :::{rule} NAM-23
 :kind: required
-:tests: foundations/names/directive-local-hides.cpp foundations/names/directive-inner-namespace-hides.cpp foundations/names/directive-namespace-reopened.cpp foundations/names/directive-inline-members.cpp foundations/names/directive-chain-level-ambiguous.cpp foundations/names/directive-chain-between-hides.cpp foundations/names/directive-chain-found.cpp foundations/names/directive-unnamed-namespace-ambiguous.cpp
+:tests: foundations/names/directive-out-of-namespace-member-definition.cpp foundations/names/directive-local-hides.cpp foundations/names/directive-inner-namespace-hides.cpp foundations/names/directive-namespace-reopened.cpp foundations/names/directive-inline-members.cpp foundations/names/directive-chain-level-ambiguous.cpp foundations/names/directive-chain-between-hides.cpp foundations/names/directive-chain-found.cpp foundations/names/directive-unnamed-namespace-ambiguous.cpp
 
 A using directive makes the members of a namespace visible in these
 regions ({rule}`NS-8`):
 
 - in a block, to the end of the block,
 - in a namespace, to the end of that definition and in later
-  definitions of the same namespace.
+  definitions of the same namespace,
+- in a namespace, also in a later definition of a member of that
+  namespace outside the namespace, after the qualified name of the
+  member ({rule}`NAM-21`).
 
 For unqualified lookup, the members act as members of the namespace
 that the table gives. A declaration in a scope inside that namespace
@@ -578,7 +618,7 @@ this way join the functions that ordinary lookup finds.
 
 :::{rule} NAM-27
 :kind: required
-:tests: foundations/names/adl-class.cpp foundations/names/adl-union.cpp foundations/names/adl-nested-class-namespace.cpp foundations/names/adl-nested-class-friend.cpp foundations/names/adl-base.cpp foundations/names/adl-indirect-base.cpp foundations/names/adl-base-friend.cpp foundations/names/adl-enum.cpp foundations/names/adl-enum-in-class-friend.cpp foundations/names/adl-enum-in-class-namespace.cpp foundations/names/adl-pointer.cpp foundations/names/adl-reference.cpp foundations/names/adl-array.cpp foundations/names/adl-function-pointer-parameter.cpp foundations/names/adl-function-pointer-return.cpp foundations/names/adl-function-name.cpp foundations/names/adl-member-pointer-class.cpp foundations/names/adl-member-pointer-type.cpp foundations/names/adl-member-function-pointer-parameter.cpp foundations/names/adl-template-argument.cpp foundations/names/adl-template-namespace.cpp foundations/names/adl-template-template-argument.cpp foundations/names/adl-lambda-namespace.cpp foundations/names/adl-lambda-function.cpp foundations/names/adl-lambda-class-member.cpp foundations/names/adl-local-class.cpp foundations/names/adl-local-enum.cpp foundations/names/adl-incomplete-class.cpp foundations/names/adl-second-argument.cpp foundations/names/adl-function-template-in-set.cpp foundations/names/adl-function-template-parameter-adds-nothing.cpp foundations/names/adl-template-id-argument.cpp
+:tests: foundations/names/adl-member-template-template-argument.cpp foundations/names/adl-address-of-overload-set.cpp foundations/names/adl-class.cpp foundations/names/adl-union.cpp foundations/names/adl-nested-class-namespace.cpp foundations/names/adl-nested-class-friend.cpp foundations/names/adl-base.cpp foundations/names/adl-indirect-base.cpp foundations/names/adl-base-friend.cpp foundations/names/adl-enum.cpp foundations/names/adl-enum-in-class-friend.cpp foundations/names/adl-enum-in-class-namespace.cpp foundations/names/adl-pointer.cpp foundations/names/adl-reference.cpp foundations/names/adl-array.cpp foundations/names/adl-function-pointer-parameter.cpp foundations/names/adl-function-pointer-return.cpp foundations/names/adl-function-name.cpp foundations/names/adl-member-pointer-class.cpp foundations/names/adl-member-pointer-type.cpp foundations/names/adl-member-function-pointer-parameter.cpp foundations/names/adl-template-argument.cpp foundations/names/adl-template-namespace.cpp foundations/names/adl-template-template-argument.cpp foundations/names/adl-lambda-namespace.cpp foundations/names/adl-lambda-function.cpp foundations/names/adl-lambda-class-member.cpp foundations/names/adl-local-class.cpp foundations/names/adl-local-enum.cpp foundations/names/adl-incomplete-class.cpp foundations/names/adl-second-argument.cpp foundations/names/adl-function-template-in-set.cpp foundations/names/adl-function-template-parameter-adds-nothing.cpp foundations/names/adl-template-id-argument.cpp
 
 Each argument of an unqualified call adds
 {term}`associated namespaces <associated namespace>` and
@@ -595,10 +635,10 @@ classes of all the arguments (NAM-29).
 | A pointer to `T`, an array of `T`, a reference to `T` | What `T` adds |
 | A function, or a pointer to a function | What the parameter types and the return type add |
 | A pointer to a member of `C` of type `T` | What `C` adds and what `T` adds |
-| A {term}`specialization` of a {term}`class template` ({rule}`TARG-19`) | Also the namespace of the template, what each type argument adds, and the namespace of each {term}`template argument` that is a template |
-| A lambda's closure type | The innermost namespace that contains the lambda, and the class whose body contains the lambda |
+| A {term}`specialization` of a {term}`class template` ({rule}`TARG-19`) | Also the namespace of the template, what each type argument adds, and for each {term}`template argument` that is a template, its namespace and the class that it is a member of |
+| A lambda's closure type | The innermost namespace that contains the lambda. If the lambda is in a class body outside any function body, as in a default member initializer, also that class |
 | A class or enumeration declared in a function | The innermost namespace that contains the function |
-| A name of an {term}`overload set` | What the type of each function adds. A function template adds what its parameter types and return type add, apart from the types that depend on its template parameters. For a {term}`template-id`, see {question}`Q-0311` |
+| A name of an {term}`overload set`, or its address | What the type of each function adds. A function template adds what its parameter types and return type add, apart from the types that depend on its template parameters. A {term}`template-id` also adds what each type template argument adds, and the namespace of each template template argument ({question}`Q-0311`) |
 
 A class adds its associated namespaces also when the class is
 incomplete.
@@ -606,7 +646,7 @@ incomplete.
 
 :::{rule} NAM-28
 :kind: reject
-:tests: foundations/names/adl-null-pointer.cpp foundations/names/adl-alias-namespace.cpp foundations/names/adl-lambda-parameter-type.cpp foundations/names/adl-template-value-argument.cpp foundations/names/adl-not-derived.cpp foundations/names/adl-braced-list.cpp foundations/names/adl-function-pointer-fundamental.cpp foundations/names/adl-local-class-member-function.cpp
+:tests: foundations/names/adl-null-pointer.cpp foundations/names/adl-alias-namespace.cpp foundations/names/adl-lambda-parameter-type.cpp foundations/names/adl-template-value-argument.cpp foundations/names/adl-not-derived.cpp foundations/names/adl-braced-list.cpp foundations/names/adl-function-pointer-fundamental.cpp foundations/names/adl-local-class-member-function.cpp foundations/names/adl-lambda-member-function-body.cpp
 
 An argument adds only what the table of NAM-27 gives. In particular,
 these add nothing:
@@ -617,7 +657,8 @@ these add nothing:
 - the parameter types of a lambda,
 - a template argument that is a value,
 - the classes derived from the argument's class,
-- the class of a member function that declares a local class.
+- the class of a member function that declares a local class or
+  contains a lambda.
 :::
 
 :::{rule} NAM-29
@@ -843,20 +884,53 @@ File::File* q = nullptr;        // rejected: names the constructor
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 219
-of 221 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 233
+of 237 tests.
 
 The clean-room writer probed qualified lookup, using directives,
 argument-dependent lookup, and the injected class name with Clang 22,
 GCC 16, and EDG 7.0, and checked the tests on Clang 18, GCC 14, and EDG
-7.0 for ILP32. The compilers agree on every probe except the one
-that Q-0311 records. The
+7.0 for ILP32. The compilers agree on every probe except those that
+Q-0311 and the two questions below record. The
 argument-dependent lookup grid of NAM-27 and NAM-28 has one test for
 each row, and a rejected test for each kind of type that adds nothing.
 
 - NAM-27: for an argument that is a template-id naming a function
-  template, GCC adds the namespaces of the type arguments, and Clang
-  adds nothing for them ({question}`Q-0311`).
+  template, GCC and EDG add the namespaces of the type arguments, and
+  Clang adds nothing for them ({question}`Q-0311`, settled). Clang 22
+  stays a recorded deviation.
+- NAM-27, NAM-28: all compilers add the class of a member template that
+  is a template argument, and the namespaces of an overload set whose
+  address is the argument. A lambda in a member function body does not
+  add the class.
+- NAM-12, NAM-13, NAM-14, NAM-16, NAM-23, NAM-37: all compilers find an
+  outer class past an inner variable after a class key and in a list of
+  bases, follow a using directive in an inline namespace of `N`, merge
+  functions from two paths of directives into one overload set, accept
+  `C::x` for an earlier member inside the definition of `C`, apply a
+  directive in a namespace to a member definition outside the
+  namespace, and look up a qualifier after `.` from the point of use
+  when the class has no member of that name.
+- NAM-1: an enumerator's initializer sees an outer constant of the same
+  name on all compilers.
+- NAM-16: all compilers accept a destructor call `p->T::~T()` where `T`
+  is an alias for `int`. The source-reader gap review of names and
+  lookup (`reports/review/2026-11-03-gap-review-names.md`) finds two
+  readings of the C++23 text here. NAM-16 follows the compilers.
+- NAM-38: Clang 22 and GCC 16 keep argument-dependent lookup for an
+  operator when a block declares an operator function that does not
+  fit. EDG 7.0 does not
+  ({question}`Q-0364`). The gap review
+  reads the C++23 text strictly as EDG does, with doubt.
+- NAM-39: GCC and EDG let a member of an anonymous union share its name
+  with a class, and Clang rejects the class. The gap review reads the
+  C++23 text as Clang does. Tidal follows GCC and EDG
+  ({question}`Q-0362`).
+- NAM-40, NAM-41: in the type of a conversion function, all compilers
+  find a variable that shares its name with a class, and reject the
+  class there. The gap review reads the C++23 text as finding the class.
+  Tidal follows the compilers (`documentation/decisions/pending.md`,
+  row 4).
 - NAM-23: for a namespace that a chain of using directives reaches, all
   compilers put the members at the level of the first directive in the
   chain. A declaration at that level makes a use ambiguous, and a

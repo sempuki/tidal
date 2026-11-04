@@ -48,7 +48,7 @@ a function body runs to its end without suspension *(coroutines referenced)*.
 :::
 
 :::{principle} UNW-P2
-:rules: UNW-2 UNW-3
+:rules: UNW-2 UNW-3 UNW-11
 
 A constructor that throws has built some parts and not others, and only
 the parts that exist can be ended ({principle}`OBJ-P1`).
@@ -56,10 +56,16 @@ the parts that exist can be ended ({principle}`OBJ-P1`).
 | What throws | What happens |
 |---|---|
 | A constructor | The bases and members that it completed are destroyed, in reverse. The object's own destructor never runs, because the object never existed. |
+| Aggregate initialization, or the captures of a lambda | The members that were initialized so far are destroyed, in reverse. A temporary that a reference member keeps alive ends with them. |
 | The construction of an array | The same holds for the elements built so far. |
+| A destructor | The members and bases that the destructor has not reached are still destroyed. |
 | One placement `new` in a loop that builds elements one at a time | Only that element's parts are destroyed. The elements that earlier iterations built stay, and the program's own handler must destroy them. |
 | A delegating constructor whose target completed | The object is complete, so its destructor does run. |
-| The constructor in a `new` expression | The object never existed, but its storage does. The storage goes back through the deallocation function that matches the allocation function, placement arguments included, and only if such a match exists. |
+| The constructor in a `new` expression | The object never existed, but its storage does. The storage goes back through the deallocation function that lookup finds for the type, with the same placement arguments, and only if such a function exists. |
+
+A placement deallocation function that is also a usual deallocation
+function would be called for storage that the placement allocation did
+not get in the usual way, so such a pair is not valid.
 :::
 
 :::{principle} UNW-P3
@@ -88,11 +94,25 @@ alone whether it runs because of an exception, so a cleanup object that
 must act only on failure keeps a flag that the success path sets.
 :::
 
+## Constraints
+
+:::{rule} UNW-11
+:kind: reject
+:tests: exceptions/unwinding/placement-new-usual-delete-rejected.cpp
+
+The deallocation function that a placement `new` expression selects
+for the cleanup of UNW-3 must not be a usual deallocation function. For
+example, a class declares a placement allocation function with one
+extra size parameter and a sized deallocation function. The sized
+function takes the same extra parameter, so a placement `new` expression
+for the class is not valid.
+:::
+
 ## Runtime Behavior
 
 :::{rule} UNW-1
 :kind: required
-:tests: exceptions/unwinding/block-objects-end-before-handler.cpp exceptions/unwinding/every-block-between-throw-and-handler.cpp exceptions/unwinding/nested-blocks-ended-in-order.cpp exceptions/unwinding/objects-after-throw-not-created.cpp exceptions/unwinding/handler-block-objects-unaffected.cpp exceptions/unwinding/full-expression-temporaries-unwound.cpp
+:tests: exceptions/unwinding/block-objects-end-before-handler.cpp exceptions/unwinding/every-block-between-throw-and-handler.cpp exceptions/unwinding/nested-blocks-ended-in-order.cpp exceptions/unwinding/objects-after-throw-not-created.cpp exceptions/unwinding/handler-block-objects-unaffected.cpp exceptions/unwinding/full-expression-temporaries-unwound.cpp exceptions/unwinding/return-local-destructor-throws-result-destroyed.cpp
 
 When an exception leaves a {term}`full expression`, these objects
 end, in this order, before the handler runs:
@@ -105,19 +125,34 @@ end, in this order, before the handler runs:
 No later part of the full expression runs, and objects declared after
 the throw are not created. Objects of the handler's own block and of
 blocks that enclose the try block are not affected.
+
+A return statement can build the result of the call and then throw
+from the destructor of a local object or a temporary as it leaves the
+function. The result is then also destroyed, after the objects of the
+function that the exception leaves
+({question}`Q-0365`).
 :::
 
 :::{rule} UNW-2
 :kind: required
-:tests: exceptions/unwinding/constructor-throws-parts-destroyed.cpp exceptions/unwinding/member-initializer-throws-earlier-parts-destroyed.cpp exceptions/unwinding/base-built-before-member-throws.cpp exceptions/unwinding/array-element-throws-built-destroyed.cpp exceptions/unwinding/delegating-target-completed-destructor-runs.cpp exceptions/unwinding/delegating-target-throws-no-destructor.cpp exceptions/unwinding/placement-loop-no-automatic-cleanup.cpp
+:tests: exceptions/unwinding/constructor-throws-parts-destroyed.cpp exceptions/unwinding/member-initializer-throws-earlier-parts-destroyed.cpp exceptions/unwinding/base-built-before-member-throws.cpp exceptions/unwinding/array-element-throws-built-destroyed.cpp exceptions/unwinding/delegating-target-completed-destructor-runs.cpp exceptions/unwinding/delegating-target-throws-no-destructor.cpp exceptions/unwinding/placement-loop-no-automatic-cleanup.cpp exceptions/unwinding/aggregate-init-throws-members-destroyed.cpp exceptions/unwinding/lambda-capture-throws-captures-destroyed.cpp exceptions/unwinding/reference-member-temporary-ended.cpp exceptions/unwinding/destructor-throws-members-still-destroyed.cpp
 
 These rules apply:
 
 - If a constructor throws, from its body or from a member initializer,
   the bases and members that it completed are destroyed in reverse
-  order, and the destructor of the object itself does not run.
+  order, and the destructor of the object itself does not run. The
+  constructor can be written, defaulted, or inherited.
+- If the initialization of an aggregate throws, the members that were
+  initialized before the throw are destroyed in reverse order. The
+  same holds for the captures of a lambda's closure object.
+- If a reference member of the object keeps a temporary alive, the
+  temporary ends when the member would be destroyed in that order.
 - If an element of an array throws during construction, the elements
   built before that element are destroyed in reverse order.
+- If a destructor throws, the members and bases that it has not yet
+  destroyed are still destroyed in reverse order, before a handler
+  runs.
 - If the target of a delegating constructor completed, the object is
   complete, and its destructor runs when the delegating constructor
   throws.
@@ -129,20 +164,32 @@ example with placement `new` in a loop, get no such cleanup.
 
 :::{rule} UNW-3
 :kind: required
-:tests: exceptions/unwinding/new-constructor-throws-storage-released.cpp exceptions/unwinding/new-array-constructor-throws-storage-released.cpp exceptions/unwinding/placement-new-throws-placement-delete.cpp exceptions/unwinding/placement-new-no-matching-delete-leaks.cpp exceptions/unwinding/new-initializer-throws-global-delete.cpp
+:tests: exceptions/unwinding/new-constructor-throws-storage-released.cpp exceptions/unwinding/new-array-constructor-throws-storage-released.cpp exceptions/unwinding/placement-new-throws-placement-delete.cpp exceptions/unwinding/placement-new-no-matching-delete-leaks.cpp exceptions/unwinding/new-initializer-throws-global-delete.cpp exceptions/unwinding/class-new-only-global-delete.cpp exceptions/unwinding/new-single-object-sized-delete.cpp exceptions/unwinding/new-array-destructor-sized-delete.cpp exceptions/unwinding/new-extended-alignment-aligned-delete.cpp
 
 If the initialization in a `new` expression throws, the storage is
-released by the deallocation function that matches the allocation
-function that obtained the storage. The matching function is:
+released by a deallocation function. The `new` expression finds the
+deallocation function by name, as {rule}`NEW-13` finds the allocation
+function:
 
-- the class-specific one if the allocation was class-specific,
-- the array form for an array,
-- a placement deallocation function with the same extra parameters for
-  a placement form.
+- For a class type, the search looks in the class first, unless the
+  expression starts with `::`. If the class declares no deallocation
+  function, the search finds the global one. The choice does not depend
+  on which allocation function ran.
+- An array uses the array form.
+- A placement form uses the one deallocation function whose extra
+  parameters match the extra parameters of the allocation function. If
+  no such function exists, the storage is not released.
 
-If no matching deallocation function exists, the storage is not
-released. For the global allocation function, the implementation calls
-the sized or the unsized global deallocation function.
+For the global deallocation function of a type that is not a placement
+form:
+
+- A type with extended alignment uses a form that takes the alignment.
+- A single object of complete type without extended alignment uses the
+  sized form.
+- An array whose element type has a destructor that is not trivial
+  uses the sized form.
+- In the other cases, the implementation calls the sized or the unsized
+  form.
 :::
 
 :::{rule} UNW-4
@@ -157,7 +204,7 @@ initialization runs again.
 
 :::{rule} UNW-5
 :kind: required
-:tests: exceptions/unwinding/leaves-noexcept-function-terminates.cpp exceptions/unwinding/leaves-implicit-noexcept-destructor-terminates.cpp exceptions/unwinding/leaves-destructor-during-unwinding-terminates.cpp exceptions/unwinding/leaves-main-terminates.cpp exceptions/unwinding/no-handler-terminates.cpp exceptions/unwinding/noexcept-boundary-is-the-function.cpp exceptions/unwinding/leaves-destructor-member-throwing-caught.cpp exceptions/unwinding/termination-abnormal-end.cpp
+:tests: exceptions/unwinding/leaves-noexcept-function-terminates.cpp exceptions/unwinding/leaves-implicit-noexcept-destructor-terminates.cpp exceptions/unwinding/leaves-destructor-during-unwinding-terminates.cpp exceptions/unwinding/leaves-main-terminates.cpp exceptions/unwinding/no-handler-terminates.cpp exceptions/unwinding/noexcept-boundary-is-the-function.cpp exceptions/unwinding/leaves-destructor-member-throwing-caught.cpp exceptions/unwinding/termination-abnormal-end.cpp exceptions/unwinding/static-destructor-throws-terminates.cpp exceptions/unwinding/destructor-throws-during-unwinding-stops.cpp exceptions/handlers/main-try-block-misses-static-init.cpp exceptions/handlers/main-try-block-misses-static-destructor.cpp
 
 The program ends, without returning from `main`, in each of these
 cases:
@@ -172,11 +219,18 @@ cases:
 - An exception has no matching handler in any enclosing try block.
 - A rethrow finds no {term}`handled exception` ({rule}`THR-7`).
 - The copy into a by-value handler parameter throws ({rule}`TRY-18`).
+- The initializer of a static or `thread_local` variable declared
+  outside any block throws.
+- The destructor of a static or `thread_local` object throws.
+
+The cases have one cause in common. An exception leaves a function that
+the exception machinery or the program's start and end call directly,
+and no handler of the program can be active there.
 :::
 
 :::{rule} UNW-6
 :kind: required
-:tests: exceptions/unwinding/noexcept-false-destructor-can-throw.cpp exceptions/unwinding/noexcept-function-handles-inside.cpp
+:tests: exceptions/unwinding/noexcept-false-destructor-can-throw.cpp exceptions/unwinding/noexcept-function-handles-inside.cpp exceptions/unwinding/destructor-throws-members-still-destroyed.cpp
 
 A `noexcept` function can throw and catch exceptions inside itself. A
 destructor declared `noexcept(false)` can throw when no other exception
@@ -204,7 +258,7 @@ with the signal `SIGABRT`.
 
 :::{rule} UNW-7
 :kind: impl-defined
-:tests: exceptions/unwinding/no-handler-unwinding-unobservable.cpp exceptions/unwinding/noexcept-boundary-unwinding-unobservable.cpp exceptions/unwinding/no-handler-objects-kept.cpp exceptions/unwinding/noexcept-boundary-callee-objects-destroyed.cpp exceptions/unwinding/noexcept-boundary-own-objects-kept.cpp exceptions/unwinding/noexcept-boundary-unmatched-try.cpp
+:tests: exceptions/unwinding/no-handler-unwinding-unobservable.cpp exceptions/unwinding/noexcept-boundary-unwinding-unobservable.cpp exceptions/unwinding/no-handler-objects-kept.cpp exceptions/unwinding/noexcept-boundary-callee-objects-destroyed.cpp exceptions/unwinding/noexcept-boundary-own-objects-kept.cpp exceptions/unwinding/noexcept-boundary-unmatched-try.cpp exceptions/unwinding/destructor-throws-during-unwinding-stops.cpp
 
 If an exception has no matching handler, it is implementation-defined
 whether the automatic objects between the throw and `main` are
@@ -220,6 +274,11 @@ targets:
 | the boundary of a non-throwing function, objects of the functions that it calls | destroyed | destroyed |
 | the same boundary, objects of the non-throwing function | not destroyed | not destroyed |
 | the same boundary, if a try block of the non-throwing function holds the call and no handler of the try block matches | only the objects of the called functions are destroyed | no object is destroyed |
+
+In the other cases of UNW-5, the program ends where the case arises,
+and no further object is destroyed. For example, a destructor that
+throws during unwinding ends the program, and the objects that
+unwinding has not yet reached are not destroyed.
 :::
 
 ## Recommended Practice
@@ -323,8 +382,8 @@ void transfer(Account& from, Account& to, int amount) {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 41
-of 43 tests. EDG runs no programs, so its results say only that the
+The results are in `tests/RESULTS.md`. All eight compilers agree on 51
+of 57 tests. EDG runs no programs, so its results say only that the
 programs are valid.
 
 - UNW-5 and UNW-7: the harness sees only that the program ended with a
@@ -348,8 +407,37 @@ programs are valid.
   writer's probes, the run tests of the two rules give the same results
   with `-m32` in the GCC 14, Clang 18, and Clang 22 containers.
 - UNW-3: the global deallocation test replaces both the sized and the
-  unsized `operator delete`. Clang 18 calls the unsized form after a
-  failed `new`, and the other compilers call the sized form.
+  unsized `operator delete`. After a failed `new` of a single object,
+  and of an array whose element type has a destructor, Clang 18 calls
+  the unsized form and the other compilers call the sized form. Newer
+  Clang calls the sized form by default. For an array whose element
+  type has a trivial destructor, Clang 22 calls the sized form and GCC
+  16 the unsized form.
+- UNW-3: for a type with extended alignment, Clang and GCC call the
+  form that takes the alignment and no size, for a single object and
+  for an array. The source-reader gap review of the exceptions chapter
+  (`reports/review/2026-11-03-gap-review-exceptions.md`) reads the
+  C++23 text as asking for the sized form for a single object of
+  complete type, also with extended alignment. UNW-3 allows both forms
+  there, so the compilers' choice and the review's reading both fit
+  (`documentation/decisions/pending.md`, row 4).
+- UNW-3, UNW-11: Clang and GCC release the storage of a class that
+  declares only an allocation function through the global deallocation
+  function. Both reject a placement `new` expression whose cleanup
+  selects a sized deallocation function of the class.
+- UNW-1: after a return statement builds the result, and the destructor
+  of a local object then throws, GCC destroys the result before the
+  handler runs. Clang never destroys the result
+  ({question}`Q-0365`).
+- UNW-2: Clang and GCC destroy the initialized members of an aggregate,
+  the initialized captures of a closure object, and the temporary that
+  a reference member keeps alive, in reverse order. GCC 14 differs for
+  the temporary of a reference member. When a destructor throws, Clang
+  and GCC still destroy the members.
+- UNW-5, UNW-7: Clang and GCC end the program when the constructor or
+  the destructor of an object at namespace scope throws. When a
+  destructor throws during unwinding, neither destroys the objects that
+  unwinding has not reached.
 - UNW-8: the table gives the warnings of each compiler for a `throw`
   in a `noexcept` function, with no warning flag. `-Wall` adds none of
   these warnings on Clang or GCC ({question}`Q-0179`). The tests use

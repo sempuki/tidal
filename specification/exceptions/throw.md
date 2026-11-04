@@ -25,6 +25,7 @@ declaration makes a variable from an initializer.
 |---|---|
 | A prvalue | The operand becomes the exception object directly, so no copy or move happens and none needs to exist ({principle}`VC-P2`) |
 | A local variable or parameter that every try block around the `throw` also contains | Moved from the operand, because the variable ends before any {term}`handler` of the function can run |
+| An xvalue | Moved from the operand, because the program asked for a move |
 | Any other lvalue | Copied from the operand |
 
 A local variable that a try block around the `throw` does not contain
@@ -33,11 +34,16 @@ copies the variable. The copy or move belongs to the `throw`. An
 exception from the copy or move leaves the `throw` like any other
 exception.
 
+A `volatile` variable can be in use outside the program's view, and a
+variable of lvalue reference type names an object that the function
+may not own, so the `throw` copies from both.
+
 Arrays and functions decay to pointers, and {term}`cv-qualifiers <cv-qualifier>` are dropped,
 because the exception object is a fresh object of its own. So the
-operand's type must be complete and not abstract, and the copy or move
-that would run must be usable, as must the destructor that ends the
-exception object.
+operand's type must be complete and not abstract, a pointer must point
+to a complete type or to `void`, and the copy or move that runs must be
+usable. The destructor that ends the exception object must be usable in
+every case.
 :::
 
 :::{principle} THR-P2
@@ -104,13 +110,20 @@ A `throw` with no operand is a *rethrow*.
 
 :::{rule} THR-3
 :kind: reject
-:tests: exceptions/throw/deleted-copy-lvalue-rejected.cpp exceptions/throw/private-copy-rejected.cpp exceptions/throw/abstract-operand-rejected.cpp exceptions/throw/incomplete-operand-rejected.cpp exceptions/throw/private-destructor-rejected.cpp exceptions/throw/throwing-destructor-accepted.cpp
+:tests: exceptions/throw/deleted-copy-lvalue-rejected.cpp exceptions/throw/private-copy-rejected.cpp exceptions/throw/abstract-operand-rejected.cpp exceptions/throw/incomplete-operand-rejected.cpp exceptions/throw/private-destructor-rejected.cpp exceptions/throw/throwing-destructor-accepted.cpp exceptions/throw/pointer-to-incomplete-rejected.cpp exceptions/throw/pointer-to-unknown-bound-array-rejected.cpp exceptions/throw/pointer-to-void-accepted.cpp exceptions/throw/move-only-local-accepted.cpp
 
 The operand of `throw` must have a complete type that is not abstract.
+After the decay of THR-2, a pointer type must point to a complete type
+or to `void` with any cv-qualifiers. A pointer to an incomplete class
+or to an array of unknown bound is not valid.
+
 If the exception object is copied or moved from the operand, the copy or
-move constructor must be usable and accessible, and so must the
-destructor of the exception object. A destructor that is potentially
-throwing is permitted.
+move constructor that runs must be usable and accessible. No other
+constructor needs to exist, so a prvalue of a class with no copy or
+move constructor can be thrown, and so can a variable of a class that
+can only be moved. The destructor of the exception object must be
+usable and accessible for every operand, a prvalue included. A
+destructor that is potentially throwing is permitted.
 :::
 
 :::{rule} THR-5
@@ -134,19 +147,33 @@ follows {rule}`CE-8`.
 
 :::{rule} THR-1
 :kind: required
-:tests: exceptions/throw/prvalue-initializes-directly.cpp exceptions/throw/deleted-copy-prvalue.cpp exceptions/throw/global-lvalue-copied.cpp exceptions/throw/local-variable-moved.cpp exceptions/throw/local-outside-try-copied.cpp exceptions/throw/local-outside-inner-try-copied.cpp exceptions/throw/parameter-moved.cpp exceptions/throw/parameter-in-try-copied.cpp exceptions/throw/copy-into-exception-object-throws.cpp
+:tests: exceptions/throw/prvalue-initializes-directly.cpp exceptions/throw/deleted-copy-prvalue.cpp exceptions/throw/global-lvalue-copied.cpp exceptions/throw/local-variable-moved.cpp exceptions/throw/local-outside-try-copied.cpp exceptions/throw/local-outside-inner-try-copied.cpp exceptions/throw/parameter-moved.cpp exceptions/throw/parameter-in-try-copied.cpp exceptions/throw/copy-into-exception-object-throws.cpp exceptions/throw/local-lvalue-reference-copied.cpp exceptions/throw/local-rvalue-reference-moved.cpp exceptions/throw/volatile-local-copied.cpp exceptions/throw/handler-parameter-moved.cpp exceptions/throw/xvalue-operand-moved.cpp exceptions/throw/move-only-local-accepted.cpp
 
 A `throw` initializes the exception object from its operand:
 
 - A prvalue operand initializes the exception object directly, with no
   copy or move.
-- An operand that names a local variable or a parameter is moved if
+- An operand that names a variable of one of these kinds is moved if
   each try block around the `throw` in the same function also contains
-  the declaration of the variable. A parameter is declared outside
-  every try block of its function, also outside a function try block.
-  So a parameter is moved only if no try block in the function encloses
-  the `throw`.
-- Any other lvalue operand is copied.
+  the declaration of the variable:
+  - a local variable or a parameter of an object type that is not
+    `volatile`,
+  - a local variable or a parameter of rvalue reference type to such
+    an object type. The `throw` moves from the object that the
+    reference names.
+
+  The parameter of a handler counts as a local variable of that
+  handler. A function parameter is declared outside every try block of
+  its function, also outside a function try block. So a function
+  parameter is moved only if no try block in the function encloses the
+  `throw`.
+- An xvalue operand initializes the exception object from the xvalue,
+  so the move constructor runs.
+- Any other lvalue operand is copied. This includes a `volatile`
+  variable and a variable of lvalue reference type.
+
+The move from a variable always happens. The exception object is never
+the variable itself.
 
 If the copy or move throws, the new exception leaves the `throw`, and a
 handler can catch the new exception. The program does not end.
@@ -273,7 +300,7 @@ static_assert(checked(5) == 5);          // the throw is on an untaken path
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on all
-41 tests. EDG runs no programs, so its results for the run and run-fail
+50 tests. EDG runs no programs, so its results for the run and run-fail
 tests say only that the programs are valid. A `run-fail` test shows that
 the program ended with a nonzero status or a signal; the harness cannot
 see that termination was the reason.
@@ -284,9 +311,29 @@ see that termination was the reason.
   declared outside a try block around the `throw`, outside the
   innermost of two nested try blocks, or as a parameter of a function
   whose body or function try block encloses the `throw`.
+- THR-1: Clang and GCC copy from a local lvalue reference and from a
+  `volatile` local variable. They move from a local rvalue reference,
+  from an xvalue, and from a handler parameter that a `throw` in the
+  same handler names.
+- THR-1: every compiler that runs programs moves a named local variable
+  into the exception object, and none builds the variable in the
+  exception object in its place. The source-reader gap review of the
+  exceptions chapter (`reports/review/2026-11-03-gap-review-exceptions.md`)
+  reads the C++23 text as letting an implementation skip that move.
+  Tidal requires the move, as every compiler makes it, so a program can
+  count on one move. The same holds for the copy into a by-value
+  handler parameter ({rule}`TRY-2`, {rule}`TRY-18`).
 - THR-1: when the copy constructor that makes the exception object
   throws an `int`, Clang and GCC propagate the `int` to a handler for
   `int`. Neither compiler ends the program.
+- THR-3: Clang and GCC reject a pointer to an incomplete class and a
+  pointer to an array of unknown bound as the operand. Every compiler
+  accepts a prvalue of a class with no copy or move constructor, and a
+  local variable of a class that can only be moved. The gap review
+  reads the C++23 text as also asking for a usable copy constructor
+  from an lvalue, even when no copy runs, and states doubt about what
+  the text means for a prvalue. Tidal follows the compilers
+  (`documentation/decisions/pending.md`, row 4).
 - THR-8: Clang and GCC end the by-value handler parameter, then the
   old exception object, and then start the outer handler.
 - THR-12: Clang and GCC propagate the exception from the destructor of

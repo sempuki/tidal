@@ -55,11 +55,15 @@ A handler accepts an exception by its type, with only the conversions
 that keep the {term}`exception object` what it is:
 
 - adding {term}`cv-qualifiers <cv-qualifier>`,
-- going from a derived class to an accessible unambiguous base,
+- going from a derived class to a public unambiguous base,
 - adjusting a pointer's qualification or pointee base,
-- dropping `noexcept` from a pointer to a function,
-- adjusting the qualification of a pointer to member,
-- the decay of an array or function to a pointer.
+- dropping `noexcept` from a pointer to a function or a pointer to a
+  member function,
+- adjusting the qualification of a pointer to member.
+
+A thrown array or function is already a pointer ({rule}`THR-2`), so a
+handler for the pointer matches it, and a handler of a reference to an
+array or a function does not.
 
 Arithmetic conversions and user-defined conversions change the value, so
 these conversions take no part. The form of the handler decides what the
@@ -76,9 +80,10 @@ for a by-value handler throws, the program ends.
 The handler's parameter is a declaration of a narrow kind. The parameter
 has:
 
-- a type and at most a name,
+- a type, at most a name, and attributes,
 - no storage class, no default, and no `auto`,
-- a type that an object can have.
+- a complete object type, or a pointer or reference whose target is a
+  complete object type or `void`.
 :::
 
 :::{principle} TRY-P3
@@ -119,14 +124,20 @@ nothing to pass on, so the program ends ({rule}`THR-7`).
 A function try block makes the whole body of a function a try block,
 including the member initializers of a constructor, and the handlers of
 the function try block see the parameters. For an ordinary function the
-function try block is a plain try block around the body. For a
-constructor the handler runs on an object that failed to come into
-being. The parts built so far are already destroyed when the handler
+function try block is a plain try block around the body, and the end
+of a handler is the end of the function. So the end of a handler of
+`main` returns zero. The function try block of `main` guards only the
+body of `main`. The objects with static storage duration begin before
+`main` and end after it, so the handlers of `main` never see their
+exceptions. For a constructor the handler runs on an object that failed
+to come into being. The parts built so far are already destroyed when the handler
 starts, so the handler cannot use those parts or return as if
 construction succeeded. When control reaches the end of the handler, the
 exception continues outward.
 
-A destructor's handler works the same way. Flowing off the end of a
+A destructor's function try block also guards the destruction of the
+members and bases, and its handler runs after all of them have ended.
+The handler then works as the constructor's does. Flowing off the end of a
 handler in a function that returns a value is as wrong as flowing off
 the end of the function, and an implementation should warn.
 :::
@@ -137,7 +148,7 @@ the end of the function, and an implementation should warn.
 .. productionlist:: tidal
    try_block: "try" `compound_stmt` `handler` {`handler`}
    handler: "catch" "(" `exception_decl` ")" `compound_stmt`
-   exception_decl: `type_specifiers` [`declarator` | `abstract_declarator`]
+   exception_decl: {`attribute_spec`} `type_specifiers` [`declarator` | `abstract_declarator`]
                  : | "..."
    function_try_block: "try" [`ctor_init`] `compound_stmt` `handler` {`handler`}
 ```
@@ -165,14 +176,15 @@ the last handler of its try block.
 
 :::{rule} TRY-5
 :kind: reject
-:tests: exceptions/handlers/param-deleted-copy.cpp exceptions/handlers/param-private-copy.cpp exceptions/handlers/param-abstract-reference-ok.cpp exceptions/handlers/param-abstract.cpp exceptions/handlers/param-array-decays-to-pointer.cpp exceptions/handlers/param-auto.cpp exceptions/handlers/param-function-type.cpp exceptions/handlers/param-incomplete-pointer.cpp exceptions/handlers/param-incomplete.cpp exceptions/handlers/param-incomplete-reference.cpp exceptions/handlers/param-function-decays-to-pointer.cpp exceptions/handlers/param-qualified-name.cpp exceptions/handlers/param-reference-to-unknown-bound-array.cpp exceptions/handlers/param-rvalue-reference.cpp exceptions/handlers/param-unnamed.cpp exceptions/handlers/param-void.cpp
+:tests: exceptions/handlers/param-deleted-copy.cpp exceptions/handlers/param-private-copy.cpp exceptions/handlers/param-abstract-reference-ok.cpp exceptions/handlers/param-abstract.cpp exceptions/handlers/param-array-decays-to-pointer.cpp exceptions/handlers/param-auto.cpp exceptions/handlers/param-function-type.cpp exceptions/handlers/param-incomplete-pointer.cpp exceptions/handlers/param-incomplete.cpp exceptions/handlers/param-incomplete-reference.cpp exceptions/handlers/param-function-decays-to-pointer.cpp exceptions/handlers/param-qualified-name.cpp exceptions/handlers/param-reference-to-unknown-bound-array.cpp exceptions/handlers/param-rvalue-reference.cpp exceptions/handlers/param-unnamed.cpp exceptions/handlers/param-void.cpp exceptions/handlers/param-pointer-unknown-bound-array.cpp exceptions/handlers/param-attribute.cpp
 
 The handler parameter must not:
 
 - be an {term}`abstract class` by value,
-- be an incomplete class by value, by pointer, or by reference,
-- have an rvalue reference type, a reference to an array of unknown
-  bound, or the type `void`,
+- have an incomplete type, or the type `void`,
+- be a pointer or a reference to an incomplete type other than `void`,
+  such as an incomplete class or an array of unknown bound,
+- have an rvalue reference type,
 - have a qualified name or `auto`.
 
 The copy constructor of a handler parameter of class type by value must
@@ -180,7 +192,8 @@ be usable and accessible, also when the operand of the `throw` is a
 prvalue. An array type or a function type decays to a pointer, as in a function
 parameter. A pointer to `void` is valid. The parameter can have no name.
 The `exception_decl` production derives no storage class and no default
-argument ({rule}`TR-12`).
+argument ({rule}`TR-12`). Attributes at the start of the handler
+parameter apply to the parameter.
 :::
 
 :::{rule} TRY-14
@@ -228,28 +241,34 @@ without an exception, no handler runs.
 
 :::{rule} TRY-2
 :kind: required
-:tests: exceptions/handlers/match-ambiguous-base-no.cpp exceptions/handlers/match-array-decays.cpp exceptions/handlers/match-base-by-reference.cpp exceptions/handlers/match-base-by-value-slices.cpp exceptions/handlers/match-cv-qualified.cpp exceptions/handlers/match-function-decays.cpp exceptions/handlers/match-no-arithmetic-conversion.cpp exceptions/handlers/match-no-user-conversion.cpp exceptions/handlers/match-nonconst-reference-to-exception-object.cpp exceptions/handlers/match-nullptr-to-pointer.cpp exceptions/handlers/match-pointer-qualification.cpp exceptions/handlers/match-pointer-to-base.cpp exceptions/handlers/match-private-base-no.cpp exceptions/handlers/match-void-pointer.cpp exceptions/handlers/match-void-pointer-keeps-const.cpp exceptions/handlers/match-function-pointer-not-void.cpp exceptions/handlers/match-void-pointer-from-pointer-to-pointer.cpp exceptions/handlers/match-noexcept-function-pointer.cpp exceptions/handlers/match-nullptr-to-member-pointer.cpp exceptions/handlers/match-member-pointer-qualification.cpp exceptions/handlers/match-member-pointer-no-base-to-derived.cpp
+:tests: exceptions/handlers/match-ambiguous-base-no.cpp exceptions/handlers/match-array-decays.cpp exceptions/handlers/match-base-by-reference.cpp exceptions/handlers/match-base-by-value-slices.cpp exceptions/handlers/match-cv-qualified.cpp exceptions/handlers/match-function-decays.cpp exceptions/handlers/match-no-arithmetic-conversion.cpp exceptions/handlers/match-no-user-conversion.cpp exceptions/handlers/match-nonconst-reference-to-exception-object.cpp exceptions/handlers/match-nullptr-to-pointer.cpp exceptions/handlers/match-pointer-qualification.cpp exceptions/handlers/match-pointer-to-base.cpp exceptions/handlers/match-private-base-no.cpp exceptions/handlers/match-void-pointer.cpp exceptions/handlers/match-void-pointer-keeps-const.cpp exceptions/handlers/match-function-pointer-not-void.cpp exceptions/handlers/match-void-pointer-from-pointer-to-pointer.cpp exceptions/handlers/match-noexcept-function-pointer.cpp exceptions/handlers/match-nullptr-to-member-pointer.cpp exceptions/handlers/match-member-pointer-qualification.cpp exceptions/handlers/match-member-pointer-no-base-to-derived.cpp exceptions/handlers/match-private-base-in-member-no.cpp exceptions/handlers/match-reference-to-pointer-converts.cpp exceptions/handlers/match-noexcept-member-function-pointer.cpp exceptions/handlers/match-reference-to-array-never.cpp exceptions/handlers/match-reference-to-function-never.cpp
 
-A handler with parameter type `T` matches an exception object of type
-`E` if one of these holds:
+A handler with parameter type `T`, or a reference to `T`, matches an
+exception object of type `E` if one of these holds:
 
-- `T` is `E`, or a reference to `E`, with any cv-qualifiers added.
-- `T` is an accessible unambiguous base of `E`, or a reference to one.
+- `T` is `E`, with any cv-qualifiers added.
+- `T` is a public unambiguous base of `E`. A private or protected base
+  does not match, also inside a member of `E` where the base is
+  accessible.
 - `T` and `E` are pointers, and `E` converts to `T` by one or more of
   these conversions:
   - a qualification conversion,
-  - a conversion to a pointer to a base class that is accessible and
-    unambiguous,
+  - a conversion to a pointer to a public unambiguous base class,
   - a conversion of a pointer to an object type to a pointer to `void`
     with the same or more cv-qualifiers,
   - a conversion of a pointer to a `noexcept` function to a pointer to
     a function without `noexcept`.
 - `T` and `E` are pointers to members, and `E` converts to `T` by a
-  qualification conversion.
+  qualification conversion, or by the conversion of a pointer to a
+  `noexcept` member function to one without `noexcept`.
 - `T` is a pointer or a pointer to member, and `E` is the type of
   `nullptr`.
-- `E` is an array or function type and `T` is the pointer that `E`
-  decays to.
+
+The pointer conversions apply also when the handler is a reference to
+a pointer that is not `const`. The exception object of a thrown array
+or function is a pointer ({rule}`THR-2`), so a handler of a reference
+to an array or to a function does not match
+({question}`Q-0363`).
 
 An arithmetic conversion or a user-defined conversion does not make a
 match. A pointer to a member of a base does not match a handler for a
@@ -303,24 +322,38 @@ no handled exception.
 
 :::{rule} TRY-9
 :kind: required
-:tests: exceptions/handlers/function-try-block-falls-off-end.cpp exceptions/handlers/function-try-block-main.cpp exceptions/handlers/function-try-block-sees-parameters.cpp exceptions/handlers/function-try-block.cpp
+:tests: exceptions/handlers/function-try-block-falls-off-end.cpp exceptions/handlers/function-try-block-main.cpp exceptions/handlers/function-try-block-sees-parameters.cpp exceptions/handlers/function-try-block.cpp exceptions/handlers/function-try-block-main-falls-off-end.cpp exceptions/handlers/main-try-block-misses-static-init.cpp exceptions/handlers/main-try-block-misses-static-destructor.cpp
 
 A function try block wraps the full body of a function. Inside the
 handlers of the function try block the parameters are visible, and a
 `return` there gives the function's result, so a handler in `main` can
-set the exit status. In a function that returns nothing, reaching the
-end of a handler returns from the function.
+set the exit status. Reaching the end of a handler is reaching the end
+of the function:
+
+- In a function that returns nothing, the function returns.
+- In `main`, the function returns zero ({rule}`FN-8`).
+- In another function that returns a value, the behavior is undefined
+  ({rule}`FN-3`).
+
+An exception that a static or `thread_local` object throws while it is
+built or destroyed never reaches the function try block of `main`
+({rule}`UNW-5`).
 :::
 
 :::{rule} TRY-10
 :kind: required
-:tests: exceptions/handlers/ctor-try-block-members-destroyed-first.cpp exceptions/handlers/ctor-try-block-new-throw.cpp exceptions/handlers/ctor-try-block-rethrows-at-end.cpp exceptions/handlers/ctor-try-block-sees-member-init-exception.cpp exceptions/handlers/dtor-try-block-rethrows.cpp
+:tests: exceptions/handlers/ctor-try-block-members-destroyed-first.cpp exceptions/handlers/ctor-try-block-new-throw.cpp exceptions/handlers/ctor-try-block-rethrows-at-end.cpp exceptions/handlers/ctor-try-block-sees-member-init-exception.cpp exceptions/handlers/dtor-try-block-rethrows.cpp exceptions/handlers/dtor-try-block-member-destructor-throws.cpp
 
 A function try block on a constructor also guards the member
 initializers. Before the handler runs, the parts of the object that were
 constructed are destroyed. If control reaches the end of the handler,
 the exception is rethrown. A handler can throw a new exception instead.
-A function try block on a destructor rethrows the same way.
+
+A function try block on a destructor also guards the destruction of the
+members and bases. If one of these destructors throws, the remaining
+members and bases are still destroyed before the handler runs. If
+control reaches the end of the handler, the exception is rethrown, as
+for a constructor.
 :::
 
 :::{rule} TRY-18
@@ -335,12 +368,16 @@ program ends. No handler catches the new exception.
 
 :::{rule} TRY-11
 :kind: undefined
-:tests: exceptions/handlers/ctor-try-block-member-named-in-handler.cpp exceptions/handlers/dtor-try-block-member-named-in-handler.cpp
+:tests: exceptions/handlers/ctor-try-block-member-named-in-handler.cpp exceptions/handlers/dtor-try-block-member-named-in-handler.cpp exceptions/handlers/ctor-try-block-member-function-called-in-handler.cpp
 
 The members and bases are gone by the time a constructor's or
 destructor's function try block reaches a handler. A handler that still
-reads or writes one of these members or bases has undefined behavior,
-and the program compiles all the same.
+uses a non-static member or a base of the object has undefined
+behavior, and the program compiles all the same. A use includes:
+
+- a read or a write of a data member,
+- a call of a non-static member function,
+- taking the address of a member or a base.
 :::
 
 ## Recommended Practice
@@ -402,8 +439,8 @@ struct Widget {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 88
-of 92 tests. EDG runs no programs, so its results for the run tests say
+The results are in `tests/RESULTS.md`. All eight compilers agree on 98
+of 104 tests. EDG runs no programs, so its results for the run tests say
 only that the programs are valid, and the harness sees a terminating
 program only as a nonzero exit.
 
@@ -444,7 +481,35 @@ program only as a nonzero exit.
   still handled while the local objects end.
 - TRY-18: Clang and GCC end the program when the copy into a by-value
   handler parameter throws, also when an enclosing try block has a
-  matching handler.
+  matching handler. The source-reader gap review of the exceptions
+  chapter (`reports/review/2026-11-03-gap-review-exceptions.md`) reads
+  the C++23 text as letting an implementation skip the copy into the
+  handler parameter, and then the program does not end. Every compiler
+  that runs programs makes the copy, and Tidal requires the copy, so
+  TRY-2 and TRY-18 hold on every implementation that follows Tidal.
+- TRY-2: Clang and GCC give no match for a handler of a private or
+  protected base, also inside a member function of the derived class,
+  and match a pointer to a `noexcept` member function with a handler
+  for a pointer to a member function without `noexcept`.
+- TRY-2: a handler of a reference to a pointer that is not `const`
+  matches a pointer to a derived class, a pointer whose pointee gains
+  `const`, and `nullptr`, on Clang and GCC. The gap review reads the
+  C++23 text as allowing these conversions only for a by-value handler
+  or a reference to a `const` pointer. Tidal follows the compilers
+  (`documentation/decisions/pending.md`, row 4).
+- TRY-2: GCC matches a thrown array with a handler of a reference to an
+  array, and a thrown function with a handler of a reference to a
+  function. Clang matches neither
+  ({question}`Q-0363`).
+- TRY-5: Clang and GCC reject a handler parameter that points to an
+  array of unknown bound, and accept an attribute at the start of the
+  parameter.
+- TRY-9, TRY-10: Clang and GCC return zero from the end of a handler of
+  `main`. Neither lets the function try block of `main` catch an
+  exception from the constructor or the destructor of an object at
+  namespace scope. A destructor's function try block catches an
+  exception from the destructor of a member after the remaining members
+  have ended.
 - TRY-11: the `vptr` sanitizer of GCC stops a call of a member function
   of a destroyed member in the handler. The Clang sanitizers and the
   address sanitizers do not, so no run test covers the rule.
