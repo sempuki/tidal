@@ -117,19 +117,20 @@ clean-room roadmaps (`reports/clean-room/roadmap-3/`).
 ## Phase 7: close the record, test by whole programs, and review every page
 
 Decision 0054 (provisional) adopts this phase from the fourth round of
-clean-room roadmaps (`reports/clean-room/roadmap-4/`).
+clean-room roadmaps (`reports/clean-room/roadmap-4/`). All items are
+done. Open questions went from 310 to 209.
 
 | Item | Work | Prerequisites |
 |---|---|---|
-| R1 | Close the phase 6 record: full matrix results, questions in similarity runs, roadmap and exercise rows, cluster 2 readings, Q-0312 | none |
+| R1 | Done: close the phase 6 record: full matrix results, questions in similarity runs, roadmap and exercise rows, cluster 2 readings, Q-0312 | none |
 | WP | Done: the 67 Write programs are run tests under `tests/programs/` | none |
-| SR | A second settling rule, applied to reviewed questions, and one decision packet for the maintainer | R1 |
+| SR | Done: a second settling rule, applied to reviewed questions, and one decision packet for the maintainer | R1 |
 | TP | Done: a matrix choice for every `impl-defined` rule, and the matrix layout as a table (CLS-35) | none |
 | UW | Done: a run witness for each `undefined` rule, or an Evidence note that no tool stops it (ADD-18, OBJ-12, VOL-6) | none |
-| GR | Gap reviews of the eleven pages that never had one, then of open questions with no review | SR |
-| PR | Predict batches for the pages with no batch, first overloading and storage | none |
-| FE | Front-end rounds from 15: class layout, allocation by name, virtual bases, false rejects, Write programs | TP, WP |
-| X | A refresh check for Propose reports, then Propose X13 to X16 | none |
+| GR | Done: gap reviews of the eleven pages that never had one, then of open questions with no review | SR |
+| PR | Done: Predict batches for the pages with no batch, first overloading and storage | none |
+| FE | Done: front-end rounds 15 to 17: class layout, allocation by name, virtual bases, false rejects, Write programs | TP, WP |
+| X | Done: a refresh check for Propose reports, then Propose X13 to X16 | none |
 
 ## Parallel lanes
 
