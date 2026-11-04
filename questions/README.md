@@ -382,6 +382,9 @@ status, and the first sentence of its answer section.
 | [Q-0366](Q-0366-main-cpp-linkage-specification.md) | Can `main` be declared inside an `extern "C++"` block? | provisional | Accept the form |
 | [Q-0367](Q-0367-odr-use-exemption-forms.md) | Which further forms does ODR-3 exempt from a use, and does a discarded statement exempt a use from the capture rules? | provisional | Follow the review in each form |
 | [Q-0368](Q-0368-scalar-lifetime-own-initializer.md) | Is a write to a scalar during its own initializer outside the scalar's lifetime? | provisional | The write is outside the lifetime and undefined |
+| [Q-0369](Q-0369-c-name-internal-linkage.md) | Are C names with internal linkage in two namespaces one entity? | provisional | Two entities |
+| [Q-0370](Q-0370-default-argument-makes-special-member.md) | Can a definition outside the class add a default argument that makes a constructor a default, copy, or move constructor? | provisional | No; the program is not valid |
+| [Q-0371](Q-0371-qualified-definition-in-own-namespace.md) | Can a member of `N` be defined with the name `N::f` inside `N` itself? | provisional | No; the definition is not valid |
 
 ## Status values
 

@@ -1,4 +1,4 @@
-// tidal-rules: DEFARG-5
+// tidal-rules: DEFARG-10
 // tidal-expect: reject
 // tidal-error-clang: cannot initialize a parameter of type .int \*. with an rvalue of type .double
 // tidal-error-gcc: could not convert .* from .double. to .int\*

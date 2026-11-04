@@ -129,7 +129,7 @@ and almost surely wrong:
 
 :::{rule} CMP-1
 :kind: required
-:tests: expressions/comparison/grouping.cpp expressions/comparison/chained-comparison.cpp
+:tests: expressions/comparison/grouping.cpp expressions/comparison/chained-comparison.cpp expressions/comparison/chained-requires-not-dependent.cpp expressions/comparison/chained-in-concept-no-warning.cpp expressions/comparison/chained-equality-gcc-warns.cpp expressions/comparison/chained-relational-equality-gcc-warns.cpp
 
 `<=>` binds more tightly than the relational operators. The relational
 operators bind more tightly than `==` and `!=`. Each group associates
@@ -391,12 +391,17 @@ warning.
 
 :::{rule} CMP-14
 :kind: recommended
-:tests: expressions/comparison/chained-comparison-warns.cpp expressions/comparison/chained-less-equal-warns.cpp expressions/comparison/chained-mixed-relational-warns.cpp expressions/comparison/chained-parenthesized-no-warning.cpp
+:tests: expressions/comparison/chained-comparison-warns.cpp expressions/comparison/chained-less-equal-warns.cpp expressions/comparison/chained-mixed-relational-warns.cpp expressions/comparison/chained-parenthesized-no-warning.cpp expressions/comparison/chained-class-bool-warns.cpp expressions/comparison/chained-class-result-no-warning.cpp expressions/comparison/chained-fold-not-chain.cpp
 
 An implementation should warn about a chained comparison. In a
 *chained comparison*, the left operand of a relational operator is a
-relational comparison without parentheses, as in `a < b >= c`.
-Parentheses around the inner comparison should silence the warning.
+relational comparison of type `bool` without parentheses, as in
+`a < b >= c`. These rules apply:
+
+- The inner comparison can be built-in or call an operator function.
+- A fold expression is not a chained comparison, because each nested
+  part acts as if it were in parentheses ({rule}`PRIM-27`).
+- Parentheses around the inner comparison should silence the warning.
 :::
 
 :::{rule} CMP-16
@@ -454,8 +459,8 @@ balance <=> count      // valid if long is wider than unsigned
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 79
-of 90 tests. The `<=>` tests declare a minimal `std::strong_ordering`,
+The results are in `tests/RESULTS.md`. All eight compilers agree on 81
+of 97 tests. The `<=>` tests declare a minimal `std::strong_ordering`,
 `std::weak_ordering`, and `std::partial_ordering`, because tests include
 no headers. EDG needs `std::weak_ordering` declared even for integer
 operands.
@@ -471,17 +476,27 @@ operands.
   operators only. These are the results for a chained comparison
   ({question}`Q-0029`):
 
-  | Compiler | No flags | Relational chain, `-Werror -Wparentheses` | Equality chain, `-Werror -Wparentheses` |
-  |---|---|---|---|
-  | Clang 22 | rejects a relational chain, accepts an equality chain | rejects | accepts, no warning |
-  | Clang 18 | accepts | accepts, no warning | accepts, no warning |
-  | GCC 14 and 16 | accepts | rejects | rejects |
-  | EDG 7.0 | accepts | skips the test | skips the test |
+  | Compiler | No flags | Relational chain, `-Werror -Wparentheses` | `a == b == c`, `-Werror -Wparentheses` | `a < b == c`, `-Werror -Wparentheses` |
+  |---|---|---|---|---|
+  | Clang 22 | rejects a relational chain, accepts an equality chain | rejects | accepts, no warning | accepts, no warning |
+  | Clang 18 | accepts | accepts, no warning | accepts, no warning | accepts, no warning |
+  | GCC 14 and 16 | accepts | rejects | rejects | rejects |
+  | EDG 7.0 | accepts | skips the test | skips the test | skips the test |
 
   A relational chain of variables (`a < b < c`) and of constants
-  (`1 < 2 < 3`) give the same result on each compiler. An equality
-  chain is `a == b == c` or `a < b == c`. EDG does not accept the
-  warning flags.
+  (`1 < 2 < 3`) give the same result on each compiler. For both
+  equality forms, GCC gives a warning other than its chain warning
+  ("suggest parentheses around comparison in operand of `==`"). EDG
+  does not accept the warning flags. The results also depend on the
+  form and the context of the chain:
+
+  | Form | Clang 22 | Clang 18 | GCC | Test |
+  |---|---|---|---|---|
+  | The inner `<` is an operator function that returns `bool` | no warning | no warning | warns under `-Wall` | `chained-class-bool-warns.cpp` |
+  | The inner `<` returns a class | no warning | no warning | no warning | `chained-class-result-no-warning.cpp` |
+  | A fold `(... < p)` | rejects with no flag | no warning | no warning, also under `-Wall` | `chained-fold-not-chain.cpp` |
+  | In a requires expression that depends on no template parameter | rejects with no flag | accepts | no warning, also under `-Wall` | `chained-requires-not-dependent.cpp` |
+  | In a dependent requirement, or in a template that is never instantiated | no warning | no warning | no warning | `chained-in-concept-no-warning.cpp` |
 - CMP-7, CMP-26: every compiler orders pointers into two rows of one
   array of arrays, and into an array member and the member after it,
   during constant evaluation. Every compiler gives `true` for a pointer

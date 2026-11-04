@@ -63,16 +63,16 @@ anonymous union at namespace scope, which has no name to share, must be
 :rules: LNK-1 LNK-2 LNK-3 LNK-5 LNK-8 LNK-10 LNK-9
 
 Linkage says whether declarations in different scopes or translation
-units name one entity. A name at namespace scope is shared across the
-program unless something keeps it private.
+units name one entity. A name at namespace scope has external linkage
+unless something gives it internal linkage.
 
 | Declaration | Linkage |
 |---|---|
-| A name at namespace scope | Shared across the program |
-| The same, with `static` | Private |
-| A name in an unnamed namespace | Private |
-| A `const` variable at namespace scope | Private, because `const` marks a local constant rather than a shared object |
-| A block-scope variable | Shared with nothing |
+| A name at namespace scope | External: shared across the program |
+| The same, with `static` | Internal: shared within its unit only |
+| A name in an unnamed namespace | Internal |
+| A `const` variable at namespace scope | Internal, because `const` marks a local constant rather than a shared object |
+| A block-scope variable | None: shared with nothing |
 | A block-scope variable with `extern` | The namespace-scope entity of that name |
 
 The first declaration settles the linkage, and later declarations
@@ -205,10 +205,11 @@ definitions are one entity with one address.
 
 :::{rule} LNK-5
 :kind: required
-:tests: declarations/storage-linkage/unnamed-namespace-internal.cpp declarations/storage-linkage/unnamed-namespace-nested.cpp
+:tests: declarations/storage-linkage/unnamed-namespace-internal.cpp declarations/storage-linkage/unnamed-namespace-nested.cpp declarations/linkage-specifications/c-name-unnamed-namespace-other-unit.cpp
 
-Each name in an unnamed namespace has internal {term}`linkage`. The name
-refers to an entity of its own translation unit only.
+Each name in an unnamed namespace has internal {term}`linkage`, except
+a C name ({rule}`LSP-4`). The name refers to an entity of its own
+translation unit only.
 :::
 
 :::{rule} LNK-8
@@ -361,7 +362,7 @@ static int y;                  // rejected
 
 ## Evidence
 
-All eight compilers agree on 66 of 68 tests. The results are in
+All eight compilers agree on 67 of 69 tests. The results are in
 `tests/RESULTS.md`. 21 tests use two translation units (decision 0014).
 EDG checks each unit and does not link.
 

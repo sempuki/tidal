@@ -35,13 +35,13 @@ scope that contains it, so no other entity there can have that name.
 An `inline` namespace and an unnamed namespace lend their members to
 the enclosing namespace.
 
-| Namespace | Lends its members | Result |
-|---|---|---|
-| `inline` | By name | A qualified name through the enclosing namespace finds the members. |
-| Unnamed | Without a name | Its members have internal linkage. |
+| Namespace | Lends its members | Result | A name declared in both places is ambiguous for |
+|---|---|---|---|
+| `inline` | By name | A qualified name through the enclosing namespace finds the members. | a qualified use through the enclosing namespace (NS-12) |
+| Unnamed | Without a name | Its members have internal linkage. | an unqualified use (NS-13). A qualified use finds the direct member ({rule}`NAM-13`). |
 
-In both cases a name declared in both places is ambiguous, because
-neither declaration hides the other.
+Neither declaration hides the other, so a lookup that reaches both
+places finds two entities.
 :::
 
 :::{principle} NS-P3
@@ -86,7 +86,12 @@ can name a member from outside its namespace in these forms:
 
 - `N::member` for a member of `N`,
 - `::member` for a member of the global namespace,
-- a name that a using declaration or using directive makes visible.
+- a name that a using declaration or using directive makes visible,
+- an unqualified function call that argument-dependent lookup resolves
+  ({rule}`NAM-5`),
+- an unqualified name in the parts of a declaration that come after a
+  qualified name of the member, such as the body of `N::f`
+  ({rule}`NAM-21`).
 
 NS-10 lists what is not valid.
 :::
@@ -96,7 +101,8 @@ NS-10 lists what is not valid.
 :tests: declarations/namespaces/unqualified-outside.cpp declarations/namespaces/block-scope-namespace.cpp declarations/namespaces/name-conflict.cpp declarations/namespaces/using-directive-block-scope.cpp
 
 A namespace definition must be at namespace scope. A program must use
-the forms that NS-1 lists to name a member from outside its namespace.
+the forms that NS-1 lists to name a member from outside its namespace
+({rule}`NAM-8`).
 A namespace must not have the name of another entity in the same scope.
 :::
 
@@ -119,7 +125,7 @@ The first name in the path of a nested namespace definition must not be
 
 :::{rule} NS-3
 :kind: required
-:tests: declarations/namespaces/inline-namespace.cpp declarations/namespaces/inline-then-reopen-plain.cpp
+:tests: declarations/namespaces/inline-namespace.cpp declarations/namespaces/inline-then-reopen-plain.cpp declarations/namespaces/qualified-definition-inline-namespace-member.cpp
 
 The members of an `inline` namespace are also members of the enclosing
 namespace. A later definition of an inline namespace can omit `inline`.
@@ -146,7 +152,8 @@ The enclosing scope can use the members of an unnamed namespace without
 qualification. These members have internal {term}`linkage` (LNK-5).
 NS-13 lists what is not valid. Lookup treats an unnamed namespace as a
 using directive in the namespace that contains it ({rule}`NAM-13`,
-{rule}`NAM-23`).
+{rule}`NAM-23`). So a qualified name `N::x` also finds a member `x` of
+an unnamed namespace in `N`.
 :::
 
 :::{rule} NS-13
@@ -185,11 +192,15 @@ as to any later declaration. NS-15 lists what is not valid.
 
 :::{rule} NS-15
 :kind: reject
-:tests: declarations/namespaces/undeclared-qualified-definition.cpp declarations/namespaces/definition-in-unrelated-namespace.cpp
+:tests: declarations/namespaces/undeclared-qualified-definition.cpp declarations/namespaces/definition-in-unrelated-namespace.cpp declarations/namespaces/qualified-definition-inside-own-namespace.cpp declarations/namespaces/qualified-definition-inline-namespace-member.cpp declarations/namespaces/qualified-definition-through-directive.cpp declarations/namespaces/qualified-definition-unnamed-namespace-member.cpp
 
-For a definition of a member of `N` outside `N`, the member must have a
-declaration in `N` first. The definition must be in a namespace that
-encloses `N`.
+For a definition of a member of `N` outside `N`, these rules apply:
+
+- The member must have a declaration first, in `N` or in an inline
+  namespace of `N` ({rule}`NS-3`). A declaration that a using directive
+  or an unnamed namespace in `N` makes visible does not count.
+- The definition must be in a namespace that encloses `N`, and not in
+  `N` itself ({question}`Q-0371`).
 :::
 
 :::{rule} NS-7
@@ -295,8 +306,15 @@ int read() {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 46
-of 47 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 49
+of 51 tests.
+
+- NS-15: GCC and EDG reject a definition with the name `N::f` inside
+  `N` itself. Clang accepts it with a warning ("extra qualification")
+  ({question}`Q-0371`). Every
+  compiler accepts `N::f` for a member of an inline namespace of `N`.
+  Every compiler rejects `N::f` for a function that only a using
+  directive or an unnamed namespace in `N` declares.
 
 Divergence NS-D1 is about a repeated using declaration in a block. Clang
 22, Clang 18, and GCC 16 accept the repeated declaration. GCC 14 and

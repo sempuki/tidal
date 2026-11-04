@@ -117,7 +117,7 @@ An operator function must obey these limits:
 
 :::{rule} OPR-11
 :kind: required
-:tests: classes/operators/associativity-kept.cpp classes/operators/precedence-kept.cpp
+:tests: classes/operators/associativity-kept.cpp classes/operators/precedence-kept.cpp classes/operators/relational-chain-class.cpp
 
 An overloaded operator keeps the precedence and associativity of the
 built-in operator.
@@ -305,8 +305,8 @@ Meters len = 2.5_m;
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 101
-of 102 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 102
+of 103 tests.
 
 - OPR-10: GCC accepts a default argument on a literal operator. Clang
   and EDG reject the default argument ({question}`Q-0060`).

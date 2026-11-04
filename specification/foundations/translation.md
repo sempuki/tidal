@@ -526,7 +526,10 @@ two compilers, a test of the two rules fails to compile with no
 warnings in the table stay warnings under `-pedantic-errors`. Clang 22
 reports two further cases as errors with no flag at all:
 
-- the chained comparison of CMP-14,
+- the chained comparison of CMP-14 with operands of built-in type, a
+  fold expression over a relational operator, and a chain in a requires
+  expression that depends on no template parameter
+  ({question}`Q-0029`),
 - the literal operator of the OPR-9 test, which has no space between
   `""` and the suffix (`-Wreserved-user-defined-literal`).
 

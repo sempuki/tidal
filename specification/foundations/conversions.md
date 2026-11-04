@@ -131,7 +131,7 @@ for each context gives the target type:
 
 - the initializer of a variable ({rule}`INIT-4`),
 - a function argument ({rule}`PFX-6`),
-- a default argument, to the type of its parameter ({rule}`DEFARG-5`),
+- a default argument, to the type of its parameter ({rule}`DEFARG-10`),
 - the expression of a `return` statement ({rule}`JMP-3`),
 - the right operand of an assignment ({rule}`ASN-1`),
 - the result of `op` in a compound assignment `E1 op= E2`, to the type

@@ -362,7 +362,7 @@ parts of the rule.
 
 :::{rule} ODR-9
 :kind: no-diagnostic
-:tests: foundations/odr/internal-function-not-defined-warns.cpp foundations/odr/unnamed-namespace-function-not-defined-warns.cpp foundations/odr/internal-function-used-in-unused-inline.cpp foundations/odr/internal-declarations-not-used.cpp foundations/odr/template-argument-address-is-use.cpp
+:tests: foundations/odr/internal-function-not-defined-warns.cpp foundations/odr/unnamed-namespace-function-not-defined-warns.cpp foundations/odr/internal-function-used-in-unused-inline.cpp foundations/odr/internal-declarations-not-used.cpp foundations/odr/template-argument-address-is-use.cpp declarations/linkage-specifications/c-static-not-joined.cpp
 
 A variable or function with internal linkage that a translation unit
 uses must be defined in that unit. An implementation need not diagnose a
@@ -372,12 +372,13 @@ rule for `inline` entities.
 
 :::{rule} ODR-10
 :kind: no-diagnostic
-:tests: foundations/odr/class-differs-across-units.cpp foundations/odr/enumeration-differs-across-units.cpp foundations/odr/inline-variable-differs-across-units.cpp foundations/odr/inline-same-tokens-different-meaning.cpp foundations/odr/class-template-differs-across-units.cpp foundations/odr/function-template-same-tokens-different-meaning.cpp foundations/odr/variable-template-differs-across-units.cpp foundations/odr/const-value-in-inline-two-units.cpp
+:tests: foundations/odr/class-differs-across-units.cpp foundations/odr/enumeration-differs-across-units.cpp foundations/odr/inline-variable-differs-across-units.cpp foundations/odr/inline-same-tokens-different-meaning.cpp foundations/odr/class-template-differs-across-units.cpp foundations/odr/function-template-same-tokens-different-meaning.cpp foundations/odr/variable-template-differs-across-units.cpp foundations/odr/const-value-in-inline-two-units.cpp foundations/odr/inline-callee-defaults-differ.cpp
 
 If several translation units define the same entity of a kind in
 ODR-7 or ODR-12, the definitions must match. Matching definitions have
 the same tokens, and each name in them refers to the same entity, also
-where a specialization is instantiated ({rule}`INST-32`). An
+where a specialization is instantiated ({rule}`INST-32`). Each call in
+them uses the same default arguments ({rule}`DEFARG-2`). An
 implementation need not diagnose a mismatch. A name can refer to a
 different object in each unit if the object meets these conditions:
 
@@ -487,7 +488,7 @@ template <> int rank<bool> = 2;                // two units: two definitions
 
 ## Evidence
 
-All eight compilers agree on 75 of 87 tests. EDG checks each unit and
+All eight compilers agree on 76 of 89 tests. EDG checks each unit and
 does not link, so its results for the link and run tests say only that
 the units are valid.
 
@@ -547,7 +548,11 @@ the units are valid.
   function or variable. In the `-O2` builds, each unit can use its own.
   An enumerator, and the value of a constant variable, is fixed in each
   unit when the unit is translated, so each unit uses its own value
-  (`enumeration-differs-across-units.cpp`). Only functions and objects
+  (`enumeration-differs-across-units.cpp`). A call in an `inline`
+  function that uses the default argument of another function behaves
+  the same way. If the units give that function different defaults,
+  Clang and GCC give 1 in both units at `-O0` and a different value in
+  each unit at `-O2` (`inline-callee-defaults-differ.cpp`). Only functions and objects
   are shared across units when the program is linked. ODR-10 and ODR-14 allow both
   results, because the rules need no diagnostic (decision 0047).
 - ODR-5: Clang and GCC 14 do not refer to the deallocation function

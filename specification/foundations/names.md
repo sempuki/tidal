@@ -115,7 +115,7 @@ never goes outward to an enclosing scope.
 
 | Qualifier | Searched | Not searched |
 |---|---|---|
-| Namespace `N::` | `N`, its inline namespaces, then the namespaces that the using directives of `N` and of its inline namespaces name, if `N` has no match | Enclosing namespaces, other nested namespaces |
+| Namespace `N::` | `N`, its inline namespaces, then the namespaces that the using directives of `N` and of its inline namespaces name, and the unnamed namespaces in them, if `N` has no match | Enclosing namespaces, other nested namespaces |
 | `::` alone | The global namespace, in the same way as `N::` | Named namespaces |
 | Class `C::` | `C`, then its bases | Enclosing classes and namespaces |
 | Enumeration `E::` | The enumerators of `E` | Everything else |
@@ -370,7 +370,8 @@ the namespace with a qualified name.
 :tests: foundations/names/namespace-qualified-use.cpp foundations/names/namespace-qualified-call.cpp
 
 From outside a namespace, a name declared in the namespace needs
-qualification (NAM-4).
+qualification (NAM-4). {rule}`NS-1` lists the other forms that name the
+member, and NAM-8 states the general rule.
 :::
 
 :::{rule} NAM-38

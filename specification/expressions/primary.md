@@ -498,12 +498,13 @@ category as the expression.
 
 :::{rule} PRIM-27
 :kind: required
-:tests: expressions/primary/fold-expansion.cpp expressions/primary/fold-shift-and-comma.cpp
+:tests: expressions/primary/fold-expansion.cpp expressions/primary/fold-shift-and-comma.cpp expressions/comparison/chained-fold-not-chain.cpp
 
 A fold expression stands for an expression with one copy of the pack
 operand for each element, in the order of the pack. A right fold, with
 `...` after the pack operand, nests to the right. A left fold nests to
-the left, and an extra operand goes at the outer end.
+the left, and an extra operand goes at the outer end. Each nested part
+acts as if it were in parentheses, as in `(p1 - p2) - p3`.
 :::
 
 :::{rule} PRIM-28
@@ -717,7 +718,7 @@ total(1, 2, 3);           // ((0 + 1) + 2) + 3
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 129
-of 138 tests.
+of 139 tests.
 
 - PRIM-2: Clang and GCC reject a decimal literal that fits only an
   unsigned type under `-pedantic-errors`. EDG accepts it

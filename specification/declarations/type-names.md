@@ -74,7 +74,7 @@ not valid, and an implementation need not notice ({principle}`NAM-P4`).
    elaborated_type: `class_key` [`nested_name`] (`identifier` | `template_id`)
                   : | "enum" [`nested_name`] `identifier`
    class_key: "class" | "struct" | "union"
-   forward_class: `class_key` `identifier` ";"
+   forward_class: `class_key` {`attribute_spec` | `alignment_specifier`} `identifier` ";"
 ```
 
 A *forward declaration* declares a class or enumeration without its

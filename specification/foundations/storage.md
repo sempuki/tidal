@@ -498,8 +498,8 @@ A program reaches such an object through the pointer that placement
 :tests: foundations/storage/placement-misaligned-sanitizer.cpp foundations/storage/placement-too-small-sanitizer.cpp
 
 If placement `new` creates an object in storage that is smaller than
-the type, or not aligned for the type ({rule}`TYP-2`), the behavior is
-undefined.
+the type, or not aligned for the type, the behavior is undefined.
+{rule}`TYP-2`, {rule}`ALN-1`, and {rule}`ALN-4` give the alignment.
 :::
 
 :::{rule} STG-18
@@ -565,7 +565,7 @@ of a pointer or glvalue that refers to its storage are undefined:
 
 :::{rule} STG-23
 :kind: undefined
-:tests: foundations/storage/access-unrelated-scalar-sanitizer.cpp foundations/storage/access-unrelated-class-sanitizer.cpp foundations/storage/access-signed-char.cpp foundations/storage/byte-array-cast-reaches-byte.cpp classes/unions/common-initial-sequence-enum.cpp classes/unions/common-initial-sequence-nested.cpp
+:tests: foundations/storage/access-unrelated-scalar-sanitizer.cpp foundations/storage/access-unrelated-class-sanitizer.cpp foundations/storage/access-signed-char.cpp foundations/storage/byte-array-cast-reaches-byte.cpp foundations/storage/misaligned-read-sanitizer.cpp classes/unions/common-initial-sequence-enum.cpp classes/unions/common-initial-sequence-nested.cpp
 
 If a program reads or writes an object through a glvalue of a type
 that STG-14 does not list, the behavior is undefined. These cases
@@ -576,6 +576,8 @@ apply:
   listed.
 - A glvalue from a cast of a byte array's address refers to a byte
   (STG-29).
+- A glvalue whose address is not a multiple of the alignment of its
+  type refers to no object of that type ({rule}`ALN-4`).
 - A read of a member in the {term}`common initial sequence` that
   {rule}`UNI-10` allows is not such a read.
 :::
@@ -772,8 +774,8 @@ template <class T> void destroy_all(T* first, int n) {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 78
-of 84 tests. EDG runs no programs, so its results for the run tests say
+The results are in `tests/RESULTS.md`. All eight compilers agree on 79
+of 85 tests. EDG runs no programs, so its results for the run tests say
 only that the programs are valid.
 
 - Constant evaluation: in C++23 mode no compiler in the matrix accepts

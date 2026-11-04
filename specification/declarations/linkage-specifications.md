@@ -107,12 +107,19 @@ if the declaration would be a definition without the braces.
 
 :::{rule} LSP-4
 :kind: required
-:tests: declarations/linkage-specifications/c-and-cpp-overload.cpp declarations/linkage-specifications/c-cross-unit.cpp declarations/linkage-specifications/c-name-across-namespaces.cpp declarations/linkage-specifications/redeclare-c-then-plain.cpp
+:tests: declarations/linkage-specifications/c-and-cpp-overload.cpp declarations/linkage-specifications/c-cross-unit.cpp declarations/linkage-specifications/c-name-across-namespaces.cpp declarations/linkage-specifications/redeclare-c-then-plain.cpp declarations/linkage-specifications/c-static-function-two-namespaces.cpp declarations/linkage-specifications/c-static-variable-two-namespaces.cpp declarations/linkage-specifications/c-static-not-joined.cpp declarations/linkage-specifications/c-name-unnamed-namespace.cpp declarations/linkage-specifications/c-name-unnamed-namespace-other-unit.cpp
 
 A C name is known by its spelling alone. These rules follow:
 
 - C names with the same spelling in different namespaces are one entity,
   and one candidate in overload resolution ({rule}`OVL-1`).
+- A C name in an unnamed namespace is one entity with the other C
+  names of its spelling, also in other translation units. {rule}`LNK-5` does
+  not apply to the C name.
+- A C name that `static` gives internal linkage is an entity of its own
+  namespace only. C names with one spelling and internal linkage in two
+  namespaces are two entities
+  ({question}`Q-0369`).
 - A C function and a C++ function can overload.
 - A later declaration without a linkage specification keeps the C
   language linkage.
@@ -193,8 +200,8 @@ apply(twice, 2);                 // rejected where the type records the linkage 
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 27
-of 34 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 29
+of 39 tests.
 
 - LSP-6: EDG treats C language linkage as part of the function type.
   Clang and GCC do not ({question}`Q-0074`). EDG gives the linkage to a

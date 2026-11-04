@@ -37,8 +37,10 @@ the entity, and that all the definitions are one entity
 :::{principle} INL-P2
 :rules: INL-2
 
-`inline` has a meaning only for a function or a variable with static
-storage, so the keyword belongs nowhere else. `inline` is a promise
+As a declaration specifier, `inline` has a meaning only for a function
+or a variable with static storage, so the specifier belongs nowhere
+else. An `inline` namespace is a separate use of the keyword
+({rule}`NS-3`). `inline` is a promise
 about definitions, so the keyword must come no later than the
 definition, and a unit defines an inline function once.
 :::

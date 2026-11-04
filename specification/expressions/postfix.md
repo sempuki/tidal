@@ -106,7 +106,7 @@ prvalue or xvalue is an xvalue.
 
 :::{rule} PFX-5
 :kind: reject
-:tests: expressions/postfix/call-argument-count.cpp expressions/postfix/call-too-many-arguments.cpp expressions/postfix/call-defaults-and-ellipsis.cpp
+:tests: expressions/postfix/call-argument-count.cpp expressions/postfix/call-too-many-arguments.cpp expressions/postfix/call-defaults-and-ellipsis.cpp declarations/functions/default-arguments/block-declaration-hides-outer-default.cpp
 
 A function call must give one argument for each parameter that has no
 default argument. The call must not give more arguments than
@@ -339,8 +339,8 @@ top++;            // undefined
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 66
-of 74 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 67
+of 75 tests.
 
 - PFX-3: EDG gives `int&` for a subscript of an array member of a
   prvalue. Clang and GCC give `int&&` ({question}`Q-0034`).

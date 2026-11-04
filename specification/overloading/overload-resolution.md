@@ -368,7 +368,7 @@ meaning.
 
 :::{rule} OVL-13
 :kind: required
-:tests: foundations/overload-resolution/rewritten-three-way-result.cpp foundations/overload-resolution/rewritten-not-equal-result.cpp foundations/overload-resolution/rewritten-swapped-member-object.cpp foundations/overload-resolution/rewritten-swapped-nonmember-converts.cpp foundations/overload-resolution/rewritten-three-way-reversed.cpp
+:tests: foundations/overload-resolution/rewritten-three-way-result.cpp foundations/overload-resolution/rewritten-not-equal-result.cpp foundations/overload-resolution/rewritten-swapped-member-object.cpp foundations/overload-resolution/rewritten-swapped-nonmember-converts.cpp foundations/overload-resolution/rewritten-three-way-reversed.cpp classes/operators/relational-chain-class.cpp
 
 A rewritten candidate of {rule}`DCMP-6` evaluates as this table gives:
 
@@ -822,8 +822,8 @@ struct Self {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 148
-of 175 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 149
+of 176 tests.
 
 ### Sources
 

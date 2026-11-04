@@ -1,7 +1,7 @@
 # Alignment
 
-The alignment of a type is the number of bytes that its address is a
-multiple of. `alignas` makes the alignment of a variable, a data member,
+The {term}`alignment` of a type is the number that the address of every
+object of the type is a multiple of. `alignas` makes the alignment of a variable, a data member,
 or a class stricter. This page covers:
 
 - where `alignas` can occur,
@@ -53,28 +53,29 @@ can be asked for depend on the target.
 
 An `alignment_specifier` with `...` expands a pack ({rule}`PACK-16`).
 
-An `alignment_specifier` occurs before a variable or member declaration,
-or after the class key of a class definition, as in
-`struct alignas(16) S { ... };`.
+An `alignment_specifier` occurs before a variable or member declaration.
+In a class or union definition, and in a forward declaration of a class
+or union, the specifier occurs after the class key, as in
+`struct alignas(16) S { ... };` and `union alignas(8) U;`.
 
 ## Constraints
 
 :::{rule} ALN-1
 :kind: required
-:tests: declarations/alignment/alignof-variable-type.cpp declarations/alignment/array-of-aligned.cpp declarations/alignment/class.cpp declarations/alignment/member-raises-class.cpp declarations/alignment/member.cpp declarations/alignment/strictest-wins.cpp declarations/alignment/type-operand.cpp declarations/alignment/variable.cpp declarations/alignment/zero-ignored.cpp declarations/alignment/class-forward-alignas.cpp
+:tests: declarations/alignment/alignof-variable-type.cpp declarations/alignment/array-of-aligned.cpp declarations/alignment/class.cpp declarations/alignment/member-raises-class.cpp declarations/alignment/member.cpp declarations/alignment/strictest-wins.cpp declarations/alignment/type-operand.cpp declarations/alignment/variable.cpp declarations/alignment/zero-ignored.cpp declarations/alignment/class-forward-alignas.cpp declarations/alignment/base-raises-class.cpp declarations/alignment/union-alignas.cpp
 
 `alignas` applies to these declarations:
 
 - a variable declaration,
 - a declaration of a non-static data member,
-- a class declaration, including a forward declaration.
+- a class or union declaration, including a forward declaration.
 
 `alignas(T)` means `alignas(alignof(T))`, and `alignas(0)` has no
 effect. If a declaration has several `alignas`, the strictest applies
 ({question}`Q-0071`).
 
-The alignment of a class is the strictest of its own `alignas` and of
-its members. The size of a class is a multiple of its alignment, so an
+The alignment of a class is the strictest of its own `alignas`, of its
+bases, and of its members. The size of a class is a multiple of its alignment, so an
 array of the class keeps each element aligned. `alignas` on a variable
 does not change the type of the variable.
 :::
@@ -89,11 +90,11 @@ must not apply `alignas` to an enumeration ({question}`Q-0073`).
 
 :::{rule} ALN-2
 :kind: reject
-:tests: declarations/alignment/negative.cpp declarations/alignment/not-constant.cpp declarations/alignment/not-power-of-two.cpp declarations/alignment/on-alias-declaration.cpp declarations/alignment/on-bitfield.cpp declarations/alignment/on-function.cpp declarations/alignment/on-parameter.cpp declarations/alignment/on-typedef.cpp declarations/alignment/weaker-on-class-member.cpp declarations/alignment/weaker-than-natural.cpp
+:tests: declarations/alignment/negative.cpp declarations/alignment/not-constant.cpp declarations/alignment/not-power-of-two.cpp declarations/alignment/on-alias-declaration.cpp declarations/alignment/on-bitfield.cpp declarations/alignment/on-function.cpp declarations/alignment/on-parameter.cpp declarations/alignment/on-typedef.cpp declarations/alignment/weaker-on-class-member.cpp declarations/alignment/weaker-than-natural.cpp declarations/alignment/weaker-on-class.cpp
 
 The operand of `alignas` must be a constant expression whose value is
 zero or a positive power of two. {rule}`ALN-8` gives its type. The
-result must not be weaker than the natural alignment of the entity
+result must not be weaker than the {term}`natural alignment` of the entity
 ({question}`Q-0069`). `alignas` must not apply to any of these
 ({question}`Q-0072`):
 
@@ -126,7 +127,7 @@ definition can add `alignas` if the earlier declarations have none.
 
 :::{rule} ALN-4
 :kind: required
-:tests: declarations/alignment/extended-new.cpp declarations/alignment/extended-supported.cpp
+:tests: declarations/alignment/extended-new.cpp declarations/alignment/extended-supported.cpp foundations/storage/misaligned-read-sanitizer.cpp
 
 An object has the alignment of its declaration or type. This rule
 applies to objects in:
@@ -135,6 +136,10 @@ applies to objects in:
 - {term}`automatic storage`,
 - dynamic storage, including objects and arrays that `new` creates with
   an alignment larger than the largest {term}`fundamental alignment`.
+
+So no object of a type sits at an address that is not a multiple of the
+type's alignment. A read or write through a glvalue at such an address
+is undefined ({rule}`STG-23`).
 :::
 
 ## Implementation Requirements
@@ -200,8 +205,8 @@ static_assert(round_up(13, 8) == 16 && round_up(16, 8) == 16);
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 23
-of 44 tests. Each divergence has a question, except the
+The results are in `tests/RESULTS.md`. All eight compilers agree on 26
+of 48 tests. Each divergence has a question, except the
 implementation-defined limits of ALN-5.
 
 - ALN-1: GCC uses the last of several `alignas` on a class. On a
@@ -211,6 +216,7 @@ implementation-defined limits of ALN-5.
   and GCC 16 reject it ({question}`Q-0073`).
 - ALN-2: GCC accepts `alignas` weaker than the natural alignment, with
   no warning, and keeps the natural alignment ({question}`Q-0069`).
+  The result is the same for a variable, a data member, and a class.
   GCC 14 accepts `alignas` on a function, a `typedef`, an alias
   declaration, and a bit-field. GCC 16, Clang, and EDG reject all four, so GCC 14 has a
   defect that GCC 16 fixes ({question}`Q-0072`).
@@ -237,6 +243,9 @@ implementation-defined limits of ALN-5.
   2^29 and larger ("exceeds maximum"). Clang accepts an `alignas` of
   2^29 to 2^32 with no diagnostic, and the class then has alignment 1.
   Clang rejects 2^33 ({question}`Q-0360`).
+- ALN-4: the undefined behavior sanitizers of Clang and GCC stop a read
+  of an `int` through a pointer to an odd address ("load of misaligned
+  address").
 - ALN-6 needs no diagnostic because each translation unit is checked
   alone. Every compiler accepts two units whose declarations of one
   variable have different `alignas`. Clang and GCC link the units, and

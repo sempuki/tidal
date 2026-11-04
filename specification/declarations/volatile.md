@@ -96,7 +96,7 @@ between `T&` and `volatile T&`. VOL-10 lists what is not valid.
 
 :::{rule} VOL-10
 :kind: reject
-:tests: declarations/volatile/const-ref-volatile-no-temporary.cpp declarations/volatile/pointer-remove-volatile.cpp declarations/volatile/ref-plain-to-volatile.cpp
+:tests: declarations/volatile/const-ref-volatile-no-temporary.cpp declarations/volatile/pointer-remove-volatile.cpp declarations/volatile/ref-plain-to-volatile.cpp classes/unions/bitfield-const-volatile-ref.cpp
 
 A conversion other than `const_cast` cannot remove `volatile` from the
 target of a pointer or reference (VOL-3). So a reference that is not
@@ -246,8 +246,8 @@ volatile Control* control = nullptr;           // set to the device address
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 39
-of 41 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 40
+of 42 tests.
 
 - VOL-1: the tests check that programs with volatile accesses compile
   and run. A test cannot observe if an access was removed.

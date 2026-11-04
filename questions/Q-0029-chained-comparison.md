@@ -1,7 +1,7 @@
 # Q-0029: Is a chained comparison such as `3 > 2 > 1` valid?
 
 **Status:** provisional
-**Affects:** CMP-1, CMP-14, `tests/expressions/comparison/chained-comparison.cpp`, `tests/expressions/comparison/chained-comparison-warns.cpp`, `tests/expressions/comparison/chained-less-equal-warns.cpp`
+**Affects:** CMP-1, CMP-14, `tests/expressions/comparison/chained-comparison.cpp`, `tests/expressions/comparison/chained-comparison-warns.cpp`, `tests/expressions/comparison/chained-less-equal-warns.cpp`, `tests/expressions/comparison/chained-class-bool-warns.cpp`, `tests/expressions/comparison/chained-fold-not-chain.cpp`, `tests/expressions/comparison/chained-requires-not-dependent.cpp`, `tests/expressions/comparison/chained-in-concept-no-warning.cpp`, `tests/expressions/comparison/chained-equality-gcc-warns.cpp`, `tests/expressions/comparison/chained-relational-equality-gcc-warns.cpp`
 
 ## Context
 
@@ -20,6 +20,20 @@ warning and accepts the program. With `-Wno-parentheses`, Clang 22 gives
 nothing. Clang 22 accepts the same expression with parentheses,
 `(3 > 2) > 1`. GCC also warns about `a == b == c` and `a < b == c`, and
 Clang 22 does not.
+
+The results differ by form and context:
+
+| Form | Clang 22 | Clang 18 | GCC 16 and 14 |
+|---|---|---|---|
+| `a < b < c` where `<` is an operator function that returns `bool`, `-Werror -Wparentheses` | accepts, no warning | accepts, no warning | rejects |
+| A fold `(... < p)`, no flags | rejects | accepts | accepts, no warning under `-Wall` |
+| A chain in a requires expression that depends on no template parameter, no flags | rejects | accepts | accepts, no warning under `-Wall` |
+| A chain in a dependent requirement or a template never instantiated, `-Werror -Wparentheses` | accepts | accepts | accepts |
+| `a == b == c` or `a < b == c`, `-Werror -Wparentheses` | accepts | accepts | rejects ("suggest parentheses around comparison in operand of `==`") |
+
+Each program is valid under the provisional answer. CMP-14 does not
+count a fold as a chained comparison, because each nested part of a
+fold acts as if it were in parentheses (PRIM-27).
 
 ## Evidence
 

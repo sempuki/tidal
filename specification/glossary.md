@@ -20,6 +20,12 @@ alias template
   alias template is the type that the alias gives, and no new type
   ({rule}`TPL-28`).
 
+alignment
+  A number of bytes, always a power of two. The address of every object
+  of a type is a multiple of the type's alignment ({rule}`ALN-1`,
+  {rule}`ALN-4`). `alignof` gives the alignment of a type, and
+  `alignas` can make the alignment of a declaration stricter.
+
 ambiguous conversion sequence
   The sequence of an argument that two or more user-defined conversions
   can convert equally well. The sequence counts as user-defined, and a
@@ -458,6 +464,11 @@ more specialized
 most derived class
   The class that an object was created as. Its constructors initialize
   the virtual bases ({rule}`DER-13`).
+
+natural alignment
+  The alignment of the type of an entity, before any `alignas` on its
+  declaration. `alignas` must not make the alignment weaker than the
+  natural alignment ({rule}`ALN-2`).
 
 non-allocating placement form
   An `operator new` or `operator new[]` with a `void*` parameter after

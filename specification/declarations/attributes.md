@@ -20,7 +20,7 @@ This page covers these standard attributes:
 ## Principles
 
 :::{principle} ATTR-P1
-:rules: ATTR-1 ATTR-17 ATTR-2 ATTR-13 ATTR-18 ATTR-19
+:rules: ATTR-1 ATTR-17 ATTR-2 ATTR-13 ATTR-18 ATTR-19 ATTR-20
 
 An attribute attaches information to a declaration, a statement, or a
 type, in a form that an implementation can skip. The double brackets
@@ -28,7 +28,8 @@ make an attribute specifier, several attributes can share one, and an
 attribute that the implementation does not know is ignored. Each
 standard attribute has a fixed set of arguments and a fixed set of
 places where it can go, so a standard attribute is not skippable in this
-sense.
+sense. An implementation can also recognize attributes of its own, and
+such an attribute can change what a program does.
 :::
 
 :::{principle} ATTR-P2
@@ -95,7 +96,8 @@ entity in a {term}`declarator`. ATTR-19 lists every position.
 An attribute specifier can contain several attributes, and several
 specifiers can follow each other. `[[using ns: a, b]]` applies the
 namespace `ns` to each attribute. An implementation ignores an attribute
-that it does not recognize.
+that it does not recognize. ATTR-20 covers an attribute that it
+recognizes.
 :::
 
 :::{rule} ATTR-2
@@ -256,6 +258,22 @@ its own. This choice is implementation-defined. {rule}`CLS-31` gives
 the choice of the matrix targets.
 :::
 
+:::{rule} ATTR-20
+:kind: impl-defined
+:tests: declarations/attributes/vendor-attribute-changes-layout.cpp declarations/attributes/vendor-attribute-not-applied.cpp
+
+Each implementation chooses which attributes other than the standard
+attributes it recognizes, and the effect of each one. A recognized
+attribute can change the layout or the behavior of a valid program.
+The matrix compilers make these choices for `[[gnu::packed]]` on a
+class:
+
+| Compiler | Effect |
+|---|---|
+| Clang, GCC | The class has no padding. |
+| EDG 7.0 in strict mode | None. The class keeps its usual layout. |
+:::
+
 ## Recommended Practice
 
 :::{rule} ATTR-4
@@ -363,7 +381,7 @@ switch (k) {
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 66
-of 80 tests. EDG skips the tests that use `-Werror`.
+of 82 tests. EDG skips the tests that use `-Werror`.
 
 - An implementation should warn if a `noreturn` function can return.
   Clang and GCC give this warning ("function declared 'noreturn' should
@@ -399,6 +417,10 @@ of 80 tests. EDG skips the tests that use `-Werror`.
   `noreturn` function returns. The same program built by GCC 14
   crashes. The sanitizers also stop a program whose assumption is
   false.
+- ATTR-20 is implementation-defined because each implementation
+  chooses its own attributes. Under `-pedantic-errors`, Clang and GCC
+  apply `[[gnu::packed]]`, so a class of a `char` and an `int` has size
+  5. EDG 7.0 with `--strict` gives the class size 8.
 - ATTR-9 is implementation-defined because the layout of a class is the
   implementation's choice. Every compiler in the matrix gives an empty
   member with `no_unique_address` no storage of its own.

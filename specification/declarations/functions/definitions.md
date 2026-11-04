@@ -28,7 +28,7 @@ apart from the parameter names:
 | `static` among member functions | {rule}`CLS-9` |
 | ref-qualifiers among overloads | {rule}`CLS-26` |
 | {term}`template head`, for a {term}`function template` | {rule}`TPL-20` |
-| each default argument, given in one declaration only | {rule}`DEFARG-9` |
+| each default argument, given in one declaration of each scope only | {rule}`DEFARG-9` |
 | parameter names, which can differ or be left out | FN-16 |
 
 A definition is the whole function, so the definition needs complete

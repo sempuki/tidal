@@ -123,7 +123,7 @@ tracks the active member and rejects the read.
 
 ```{eval-rst}
 .. productionlist:: tidal
-   union_def: "union" {`attribute_spec`} [`class_name`] "{" {`member_decl`} "}"
+   union_def: "union" {`attribute_spec` | `alignment_specifier`} [`class_name`] "{" {`member_decl`} "}"
    anonymous_union: ["static"] "union" "{" {`member_decl`} "}" ";"
    bitfield: [`identifier`] ":" `constant_expr` [`member_init`]
 ```
@@ -291,7 +291,7 @@ type.
 
 :::{rule} BF-4
 :kind: reject
-:tests: classes/unions/bitfield-address.cpp classes/unions/bitfield-alignof-type-ok.cpp classes/unions/bitfield-const-ref-temp.cpp classes/unions/bitfield-nonconst-ref.cpp classes/unions/bitfield-sizeof.cpp
+:tests: classes/unions/bitfield-address.cpp classes/unions/bitfield-alignof-type-ok.cpp classes/unions/bitfield-const-ref-temp.cpp classes/unions/bitfield-nonconst-ref.cpp classes/unions/bitfield-sizeof.cpp classes/unions/bitfield-const-volatile-ref.cpp
 
 A program must not:
 
@@ -299,7 +299,9 @@ A program must not:
 - apply `sizeof` to it,
 - bind a non-const reference to it.
 
-A `const` reference binds to a temporary that holds a copy of the value.
+A `const` reference that is not `volatile` binds to a temporary that
+holds a copy of the value ({rule}`REF-2`). A `const volatile` reference
+does not bind to a bit-field ({rule}`VOL-10`).
 :::
 
 :::{rule} BF-6
@@ -630,8 +632,8 @@ int y = s.span.range.second;     // 2: Point and Pair are layout-compatible
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 134
-of 145 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 135
+of 146 tests.
 
 - UNI-9: Clang accepts an anonymous union without `static` in an unnamed
   namespace. GCC and EDG reject the declaration ({question}`Q-0045`).
