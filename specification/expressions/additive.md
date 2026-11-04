@@ -287,6 +287,7 @@ enumeration types, or between an enumeration and a floating-point value.
 
 ## Examples
 
+% tidal-example: fragment
 ```cpp
 10 - 3 - 2;               // (10 - 3) - 2 == 5
 0u - 1u;                  // the largest unsigned value

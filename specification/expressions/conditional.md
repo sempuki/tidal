@@ -248,6 +248,7 @@ constructor is called, so the class needs none.
 
 ## Examples
 
+% tidal-example: reject
 ```cpp
 int x = 1, y = 2;
 (c ? x : y) = 10;              // fine: both are lvalues of type int

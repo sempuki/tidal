@@ -219,7 +219,7 @@ parameter has a default argument.
 
 :::{rule} CPY-3
 :kind: required
-:tests: classes/copy-move/copy-assign-forms.cpp classes/copy-move/explicit-object-copy-assign.cpp
+:tests: classes/copy-move/copy-assign-forms.cpp classes/copy-move/explicit-object-copy-assign.cpp classes/copy-move/move-assign-only-from-prvalue.cpp
 
 A *copy assignment operator* of class `T` is a non-static member
 `operator=` with one parameter of type `T` or a reference to `T` with any
@@ -241,7 +241,7 @@ valid.
 
 :::{rule} CPY-4
 :kind: required
-:tests: classes/copy-move/defaulted-copy-restores.cpp classes/copy-move/implicit-copy.cpp classes/copy-move/user-dtor-keeps-copy.cpp classes/copy-move/implicit-copy-of-owner-sanitizer.cpp
+:tests: classes/copy-move/defaulted-copy-restores.cpp classes/copy-move/implicit-copy.cpp classes/copy-move/user-dtor-keeps-copy.cpp classes/copy-move/implicit-copy-of-owner-sanitizer.cpp classes/copy-move/move-assign-only-from-prvalue.cpp classes/copy-move/move-assign-deletes-copy-assign.cpp
 
 A class has an implicit copy constructor if it has no user-declared copy
 constructor, and an implicit copy assignment operator if it has no
@@ -253,7 +253,7 @@ implicit copy functions.
 
 :::{rule} CPY-21
 :kind: reject
-:tests: classes/copy-move/move-assign-deletes-copy-ctor.cpp classes/copy-move/move-ctor-deletes-copy-assign.cpp classes/copy-move/move-ctor-deletes-copy.cpp
+:tests: classes/copy-move/move-assign-deletes-copy-ctor.cpp classes/copy-move/move-ctor-deletes-copy-assign.cpp classes/copy-move/move-ctor-deletes-copy.cpp classes/copy-move/move-assign-deletes-copy-assign.cpp
 
 A program must not use an implicit copy function that CPY-4 deletes.
 :::
@@ -393,7 +393,7 @@ deleted. The rule applies to:
 
 :::{rule} CPY-11
 :kind: required
-:tests: classes/copy-move/return-converting-move.cpp classes/copy-move/return-local-move-only.cpp classes/copy-move/return-local-prefers-move.cpp classes/copy-move/return-param-move-only.cpp classes/copy-move/return-parenthesized-local.cpp classes/copy-move/return-rvalue-ref-move-only.cpp classes/copy-move/return-rvalue-ref-to-ref.cpp classes/copy-move/parameter-return-moved.cpp
+:tests: classes/copy-move/return-converting-move.cpp classes/copy-move/return-local-move-only.cpp classes/copy-move/return-local-prefers-move.cpp classes/copy-move/return-param-move-only.cpp classes/copy-move/return-parenthesized-local.cpp classes/copy-move/return-rvalue-ref-move-only.cpp classes/copy-move/return-rvalue-ref-to-ref.cpp classes/copy-move/parameter-return-moved.cpp classes/constructors/return-owner-converts-to-base-owner.cpp
 
 In a `return` statement, a name of one of these is an xvalue:
 
@@ -530,6 +530,7 @@ such as `static_cast`.
 
 ## Examples
 
+% tidal-example: reject
 ```cpp
 struct Handle {
   Handle(int fd);
@@ -601,6 +602,7 @@ through the parameter after a change to `*this` then sees the change. A
 counted owner saves what it needs from the source before it releases
 its own resource:
 
+% tidal-example: fragment
 ```cpp
 struct Block { int count; int value; };
 struct Shared {
@@ -645,8 +647,8 @@ Any c(1);                          // the template, with T = int
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 114
-of 119 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 117
+of 122 tests.
 
 One question on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on classes and statements (`reports/review/2026-11-03-gap-review-questions-classes-statements.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
 

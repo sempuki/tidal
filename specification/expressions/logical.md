@@ -217,6 +217,7 @@ a comparison without parentheses, as in `!a == b`. Parentheses around
 
 ## Examples
 
+% tidal-example: fragment
 ```cpp
 int* p = find();
 if (p && p->ready) use(p);      // p->ready runs only if p is not null

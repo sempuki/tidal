@@ -255,6 +255,7 @@ must not rely on the result.
 
 ## Examples
 
+% tidal-example: reject
 ```cpp
 struct Point { int x, y; int norm() const; };
 

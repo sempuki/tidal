@@ -177,6 +177,7 @@ behavior.
 
 ## Examples
 
+% tidal-example: diverges
 ```cpp
 struct alignas(64) CacheLine {   // one line per object
   int counter;

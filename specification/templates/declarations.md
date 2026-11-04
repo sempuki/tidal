@@ -742,6 +742,7 @@ Registry<List> registry;
 
 Parameters with a pack, a placeholder, and a default:
 
+% tidal-example: reject
 ```cpp
 template <class... T = int> struct Bad;           // rejected: a pack has no default
 template <auto V> struct Hold { };
@@ -767,6 +768,7 @@ Hold<Size{2.5}> half;              // S has type Size<double>
 
 Defaults go from the right. The defaults of earlier declarations count:
 
+% tidal-example: reject
 ```cpp
 template <class T = int, class U> struct One;     // rejected on every compiler
 template <class T, class U> struct Two;
@@ -777,6 +779,7 @@ template <class T = int, class U> struct Three;   // valid: U has its default
 
 A member defined outside the class lists the parameters in order:
 
+% tidal-example: reject
 ```cpp
 template <class K, class V> struct Map { int size(); };
 template <class A, class B> int Map<A, B>::size() { return 0; }   // names differ
@@ -786,6 +789,7 @@ template <class A, class B> int Map<B, A>::size();                // rejected: o
 A friend definition with a default and the overloads of its name. Only
 another declaration of the same template breaks TPL-38:
 
+% tidal-example: diverges
 ```cpp
 struct Host {
   template <class T = int> friend int pick(Host) { return sizeof(T); }

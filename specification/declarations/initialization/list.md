@@ -258,6 +258,7 @@ the conversion sequence of such a list.
 
 ## Examples
 
+% tidal-example: reject
 ```cpp
 int a{5};                 // 5
 int b{1, 2};              // rejected

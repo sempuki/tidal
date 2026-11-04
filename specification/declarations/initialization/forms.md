@@ -189,6 +189,7 @@ time is undefined. These rules also apply:
 
 ## Examples
 
+% tidal-example: reject
 ```cpp
 int x;
 int y = x;           // undefined: x has no value

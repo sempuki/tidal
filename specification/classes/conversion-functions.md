@@ -220,6 +220,7 @@ base, or `void`.
 
 ## Examples
 
+% tidal-example: reject
 ```cpp
 struct Path {
   const char* text;
@@ -255,6 +256,7 @@ void touch() { (void)r; }  // valid: names r and reads nothing
 An ambiguous conversion stops a call only when overload resolution
 chooses the function that needs the conversion (CVF-12):
 
+% tidal-example: reject
 ```cpp
 struct Number { operator int(); operator long(); };
 int scale(double);
@@ -267,6 +269,7 @@ long n = scale(Number{});  // rejected: scale(double) wins over the
 A converting constructor and a conversion function tie when the
 argument binds to their parameters in the same way:
 
+% tidal-example: reject
 ```cpp
 struct Target;
 struct Source { operator Target(); };

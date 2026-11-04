@@ -117,6 +117,7 @@ undefined, and {term}`constant evaluation` rejects the use ({rule}`CE-9`).
 
 ## Examples
 
+% tidal-example: reject
 ```cpp
 auto a() { return 1; }              // int
 auto b(bool c) {

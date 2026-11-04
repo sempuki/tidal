@@ -277,6 +277,7 @@ with EDG.
 
 ## Examples
 
+% tidal-example: reject
 ```cpp
 static_assert(sizeof(int) == 4);        // true on both matrix targets
 unsigned long size = sizeof(long);      // 8 on x86-64, 4 on -m32

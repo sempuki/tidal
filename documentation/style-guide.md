@@ -173,6 +173,9 @@ Do not use `shall`, `may`, `might`, or `will` in rules.
   `// rejected`.
 - Use names that show the purpose, such as `limit` or `make`.
 - Do not copy an example from another source.
+- `tools/check_examples.py` compiles each block alone. A block that does
+  not compile alone carries a marker
+  (`documentation/specification-format.md`, Examples).
 
 ## 7. Evidence
 

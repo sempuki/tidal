@@ -89,6 +89,7 @@ A cast of a byte array's own address does not reach the objects that
 the array hosts ({rule}`STG-29`). The pointer that an allocation
 function returns does reach them:
 
+% tidal-example: fragment
 ```cpp
 int* a = static_cast<int*>(::operator new(sizeof(int)));
 *a = 1;                         // an int that the call created
@@ -268,7 +269,7 @@ member declared `[[no_unique_address]]` ({rule}`ATTR-9`, {rule}`ATTR-16`).
 
 :::{rule} STG-4
 :kind: required
-:tests: foundations/storage/byte-array-hosts-objects.cpp foundations/storage/std-byte-array-hosts-objects.cpp foundations/storage/char-array-holds-object.cpp foundations/language-support/byte-self-declared.cpp
+:tests: foundations/storage/byte-array-hosts-objects.cpp foundations/storage/std-byte-array-hosts-objects.cpp foundations/storage/char-array-holds-object.cpp foundations/language-support/byte-self-declared.cpp foundations/storage/byte-array-rows-host-objects.cpp foundations/storage/byte-array-member-of-array-hosts.cpp
 
 A *byte array* is an array of `unsigned char` or of `std::byte`
 ({rule}`LSUP-9`). A byte array in its lifetime *hosts* an object
@@ -283,7 +284,7 @@ An array of `char` or `signed char` hosts no object
 
 :::{rule} STG-5
 :kind: required
-:tests: foundations/storage/placement-new-result-is-address.cpp foundations/storage/keep-placement-new-pointer.cpp foundations/storage/cast-to-target-then-construct.cpp foundations/storage/placement-new-array.cpp foundations/storage/byte-array-hosts-objects.cpp foundations/storage/std-byte-array-hosts-objects.cpp foundations/language-support/construct-at-self-declared.cpp foundations/storage/allocation-array-class-elements.cpp foundations/storage/arena-reset-reuses-bytes.cpp foundations/storage/byte-array-placement-reaches-object.cpp
+:tests: foundations/storage/placement-new-result-is-address.cpp foundations/storage/keep-placement-new-pointer.cpp foundations/storage/cast-to-target-then-construct.cpp foundations/storage/placement-new-array.cpp foundations/storage/byte-array-hosts-objects.cpp foundations/storage/std-byte-array-hosts-objects.cpp foundations/language-support/construct-at-self-declared.cpp foundations/storage/allocation-array-class-elements.cpp foundations/storage/arena-reset-reuses-bytes.cpp foundations/storage/byte-array-placement-reaches-object.cpp foundations/storage/byte-array-rows-host-objects.cpp foundations/storage/byte-array-member-of-array-hosts.cpp foundations/storage/placement-then-cast-read.cpp
 
 `new (p) T(args)` creates an object of type `T` at the address `p`, with
 a {term}`non-allocating placement form` ({rule}`LSUP-7`). The result
@@ -293,7 +294,7 @@ points to the new object. The array form `new (p) T[n]` calls the
 
 :::{rule} STG-6
 :kind: required
-:tests: foundations/storage/reuse-does-not-call-destructor.cpp foundations/storage/byte-array-hosts-objects.cpp foundations/storage/replace-base-ends-enclosing-sanitizer.cpp foundations/storage/arena-reset-reuses-bytes.cpp
+:tests: foundations/storage/reuse-does-not-call-destructor.cpp foundations/storage/byte-array-hosts-objects.cpp foundations/storage/replace-base-ends-enclosing-sanitizer.cpp foundations/storage/arena-reset-reuses-bytes.cpp foundations/storage/byte-array-rows-host-objects.cpp
 
 If a new object takes storage that another object occupies, the
 lifetime of the other object ends, and its destructor does not run.
@@ -483,7 +484,7 @@ arithmetic over the elements ({rule}`ADD-6`) is valid before then.
 
 :::{rule} STG-29
 :kind: required
-:tests: foundations/storage/byte-array-placement-reaches-object.cpp foundations/storage/byte-array-cast-reaches-byte.cpp foundations/storage/cast-to-target-then-construct.cpp
+:tests: foundations/storage/byte-array-placement-reaches-object.cpp foundations/storage/byte-array-cast-reaches-byte.cpp foundations/storage/cast-to-target-then-construct.cpp foundations/storage/placement-then-cast-read.cpp
 
 A cast of a pointer into a byte array gives a pointer to a byte
 (STG-16). The result does not reach an object that the array hosts,
@@ -573,7 +574,7 @@ of a pointer or glvalue that refers to its storage are undefined:
 
 :::{rule} STG-23
 :kind: undefined
-:tests: foundations/storage/access-unrelated-scalar-sanitizer.cpp foundations/storage/access-unrelated-class-sanitizer.cpp foundations/storage/access-signed-char.cpp foundations/storage/byte-array-cast-reaches-byte.cpp foundations/storage/misaligned-read-sanitizer.cpp classes/unions/common-initial-sequence-enum.cpp classes/unions/common-initial-sequence-nested.cpp
+:tests: foundations/storage/access-unrelated-scalar-sanitizer.cpp foundations/storage/access-unrelated-class-sanitizer.cpp foundations/storage/access-signed-char.cpp foundations/storage/byte-array-cast-reaches-byte.cpp foundations/storage/misaligned-read-sanitizer.cpp classes/unions/common-initial-sequence-enum.cpp classes/unions/common-initial-sequence-nested.cpp foundations/storage/placement-then-cast-read.cpp
 
 If a program reads or writes an object through a glvalue of a type
 that STG-14 does not list, the behavior is undefined. These cases
@@ -640,6 +641,7 @@ targets the copy keeps the old address.
 
 ## Examples
 
+% tidal-example: fragment
 ```cpp
 struct Point { int x, y; Point(int a, int b) : x(a), y(b) {} };
 
@@ -669,6 +671,7 @@ byte + sizeof v;                      // one past the last byte of v
 The set of implicitly created objects depends on every use of the
 storage, later ones included (STG-8):
 
+% tidal-example: fragment
 ```cpp
 void* raw = ::operator new(4 * sizeof(int));
 int* one = static_cast<int*>(raw);
@@ -782,8 +785,8 @@ template <class T> void destroy_all(T* first, int n) {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 80
-of 86 tests. EDG runs no programs, so its results for the run tests say
+The results are in `tests/RESULTS.md`. All eight compilers agree on 83
+of 89 tests. EDG runs no programs, so its results for the run tests say
 only that the programs are valid.
 
 - Constant evaluation: in C++23 mode no compiler in the matrix accepts

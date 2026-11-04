@@ -514,6 +514,7 @@ static_assert(Traits<void*>::kind == 3);        // the explicit specialization
 
 A variable template and a function template:
 
+% tidal-example: diverges
 ```cpp
 template <class T> constexpr bool is_array = false;
 template <class T, int N> constexpr bool is_array<T[N]> = true;
@@ -537,6 +538,7 @@ static_assert(Constant<int> && !Constant<char>);
 
 Members of class specializations:
 
+% tidal-example: reject
 ```cpp
 template <class T> struct Store {
   int get();

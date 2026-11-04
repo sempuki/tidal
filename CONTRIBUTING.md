@@ -74,8 +74,9 @@ built.
 ## 5. Before you push
 
 Run `tools/check_all.sh`. It runs the specification cross-reference check, the
-full test matrix, and the site build. The similarity check needs a local
-copy of the reference corpus outside the repository; see
+check of the page examples, the full test matrix, and the site build. The
+similarity check needs a local copy of the reference corpus outside the
+repository; see
 `documentation/clean-room.md`. CI runs all of these on every push and pull
 request.
 

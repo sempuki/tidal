@@ -157,7 +157,7 @@ on the weaker class both serve.
 
 :::{rule} LSUP-3
 :kind: required
-:tests: foundations/language-support/tuple-protocol-minimal.cpp declarations/structured-bindings/tuple-const-specialization.cpp declarations/structured-bindings/tuple-const-hidden-variable.cpp
+:tests: foundations/language-support/tuple-protocol-minimal.cpp declarations/structured-bindings/tuple-const-specialization.cpp declarations/structured-bindings/tuple-const-hidden-variable.cpp foundations/language-support/tuple-protocol-page-example.cpp
 
 A class uses the tuple protocol of {rule}`SB-5` when the program
 declares these templates in namespace `std` and specializes them for
@@ -473,6 +473,7 @@ int code() {
 The four non-allocating placement forms, as a program that includes no
 header defines them (LSUP-7):
 
+% tidal-example: fragment
 ```cpp
 inline void* operator new(std::size_t, void* at) noexcept { return at; }
 inline void* operator new[](std::size_t, void* at) noexcept { return at; }
@@ -505,8 +506,8 @@ int* r = new (raw) int(3);          // raw hosts the int
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 47
-of 60 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 48
+of 61 tests.
 
 - LSUP-1: each compiler checks the shape in its own way. Clang checks
   the layout of the two members, and also accepts a second pointer in

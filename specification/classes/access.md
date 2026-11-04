@@ -317,6 +317,7 @@ default argument that names a private member.
 
 ## Examples
 
+% tidal-example: reject
 ```cpp
 class Account {
   long balance = 0;              // private by default

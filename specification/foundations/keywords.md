@@ -88,6 +88,7 @@ An implementation need not diagnose a use of a reserved name.
 
 ## Examples
 
+% tidal-example: reject
 ```cpp
 int final = 0;                     // fine: final is an identifier
 struct Leaf final {};              // final has its special meaning

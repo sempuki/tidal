@@ -155,6 +155,7 @@ deprecated (BIT-2).
 
 ## Examples
 
+% tidal-example: reject
 ```cpp
 6 & 3                // 2
 6 | 3                // 7

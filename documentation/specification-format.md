@@ -66,6 +66,40 @@ clean-room writer read for the page. Each entry is an input ID from
 `inputs/MANIFEST.md` gives the file and revision for each ID. A page
 written without such sources has no `Inputs:` line.
 
+## Examples
+
+`tools/check_examples.py` reads every `cpp` block under
+`specification/` and compiles each block alone, as one translation
+unit. The tool uses the `check` command of each baseline compiler in
+`tools/compilers.json`, so each compile has the matrix flags. The tool
+does not run the front end. `tools/check_all.sh` runs the tool.
+
+A block with no marker must compile on every baseline compiler. A
+block that does not compile alone has a marker on the line just before
+its opening fence. The marker is a MyST comment, so the site does not
+show it:
+
+````text
+% tidal-example: reject
+```cpp
+struct Base { virtual void reset(); };
+struct Derived : Base { static void reset(); };  // rejected
+```
+````
+
+| Marker | Meaning | The tool fails when |
+|---|---|---|
+| none | The block is a whole translation unit. | a compiler rejects the block |
+| `fragment` | The block needs context from the page, such as declarations from another block, statements outside a function, or more than one file. | every compiler accepts the block |
+| `reject` | The block shows code that a rule rejects. Each compiler rejects the block. | a compiler accepts the block |
+| `diverges` | The compilers differ on the block. The page's Evidence names the divergence. | every compiler gives the same result |
+
+The tool caches each result under `build/cache/examples/` by the block
+text and the compiler's identity. A run with every result in the cache
+starts no container. `--compilers` selects other compilers, with the
+forms of `tools/run_tests.py`. CI has no host compilers and runs the
+tool with `--compilers containers`.
+
 ## Tests
 
 Tests are single C++ files under `tests/`, mirroring the `specification/` layout. A

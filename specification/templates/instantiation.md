@@ -589,6 +589,7 @@ of this rule. INST-19 and INST-26 give the cases in one unit.
 
 What a use instantiates:
 
+% tidal-example: reject
 ```cpp
 template <class T> struct Wrapper {
   T value;
@@ -602,6 +603,7 @@ int n = w.size();                        // rejected: the body is instantiated
 
 An explicit instantiation in one unit, used from another:
 
+% tidal-example: fragment
 ```cpp
 // unit A
 template <class T> T twice(T x) { return x + x; }

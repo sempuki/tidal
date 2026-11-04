@@ -172,6 +172,7 @@ EDG records the linkage, and Clang and GCC do not, on x86-64 and with
 
 ## Examples
 
+% tidal-example: reject
 ```cpp
 extern "C" {
   int c_add(int, int);           // callable from C
@@ -188,6 +189,7 @@ extern "C" int c_add(double, double);  // rejected: C functions cannot overload
 A C function that takes a callback expects a C function. An alias in
 the `extern "C"` block names that type:
 
+% tidal-example: reject
 ```cpp
 extern "C" {
   using callback = int(int);     // a function type with C language linkage

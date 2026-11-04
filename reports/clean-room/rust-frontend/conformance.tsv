@@ -308,6 +308,7 @@ pass	classes/constructors/pseudo-dtor-wrong-type.cpp
 EDG-AGREES	classes/constructors/reference-default-member-binds-temporary.cpp
 EDG-AGREES	classes/constructors/reference-member-binds-converted-parameter.cpp
 EDG-AGREES	classes/constructors/reference-member-binds-temporary.cpp
+run-unsupported	classes/constructors/return-owner-converts-to-base-owner.cpp
 pass	classes/constructors/trivial-default-base-nontrivial.cpp
 pass	classes/constructors/trivial-default-defaulted-later.cpp
 pass	classes/constructors/trivial-default-defaulted.cpp
@@ -439,7 +440,9 @@ pass	classes/copy-move/member-dtor-keeps-assignment.cpp
 pass	classes/copy-move/memberwise-array.cpp
 pass	classes/copy-move/memberwise-assign-order.cpp
 run-unsupported	classes/copy-move/memberwise-order.cpp
+pass	classes/copy-move/move-assign-deletes-copy-assign.cpp
 pass	classes/copy-move/move-assign-deletes-copy-ctor.cpp
+run-unsupported	classes/copy-move/move-assign-only-from-prvalue.cpp
 pass	classes/copy-move/move-ctor-default-args.cpp
 pass	classes/copy-move/move-ctor-deletes-copy-assign.cpp
 pass	classes/copy-move/move-ctor-deletes-copy.cpp
@@ -4150,6 +4153,7 @@ pass	foundations/language-support/strong-ordering-minimal.cpp
 pass	foundations/language-support/strong-ordering-missing-member.cpp
 pass	foundations/language-support/strong-ordering-missing.cpp
 pass	foundations/language-support/tuple-protocol-minimal.cpp
+FALSE-REJECT	foundations/language-support/tuple-protocol-page-example.cpp
 pass	foundations/names/adl-address-of-overload-set.cpp
 pass	foundations/names/adl-alias-namespace.cpp
 pass	foundations/names/adl-array.cpp
@@ -4233,10 +4237,12 @@ pass	foundations/names/class-qualified-scoped-enumerator.cpp
 pass	foundations/names/class-scope-outside-needs-qualification.cpp
 pass	foundations/names/definition-body-sees-namespace.cpp
 pass	foundations/names/definition-bound-default-noexcept-see-scope.cpp
+FALSE-REJECT	foundations/names/definition-class-body-sees-namespace.cpp
 pass	foundations/names/definition-initializer-sees-namespace.cpp
 pass	foundations/names/definition-parameter-sees-class.cpp
 pass	foundations/names/definition-return-type-before-name.cpp
 pass	foundations/names/definition-return-type-namespace.cpp
+FALSE-REJECT	foundations/names/definition-template-member-alias.cpp
 pass	foundations/names/definition-trailing-return-sees-class.cpp
 pass	foundations/names/directive-block-ends.cpp
 pass	foundations/names/directive-chain-between-hides.cpp
@@ -4687,7 +4693,9 @@ pass	foundations/storage/assignment-by-destroy-and-construct.cpp
 pass	foundations/storage/base-bytes-shared-with-member.cpp
 pass	foundations/storage/byte-array-cast-reaches-byte.cpp
 pass	foundations/storage/byte-array-hosts-objects.cpp
+RUN-UNEXPECTED-UB	foundations/storage/byte-array-member-of-array-hosts.cpp
 pass	foundations/storage/byte-array-placement-reaches-object.cpp
+RUN-UNEXPECTED-UB	foundations/storage/byte-array-rows-host-objects.cpp
 pass	foundations/storage/byte-order-little-endian.cpp
 pass	foundations/storage/byte-pointer-from-member-walks-object.cpp
 pass	foundations/storage/byte-pointer-walks-object.cpp
@@ -4730,6 +4738,7 @@ pass	foundations/storage/past-end-address.cpp
 pass	foundations/storage/placement-misaligned-sanitizer.cpp
 pass	foundations/storage/placement-new-array.cpp
 pass	foundations/storage/placement-new-result-is-address.cpp
+RUN-MISSED-UB	foundations/storage/placement-then-cast-read.cpp
 pass	foundations/storage/placement-too-small-sanitizer.cpp
 pass	foundations/storage/pointer-bytes-are-address.cpp
 pass	foundations/storage/replace-array-element-constant.cpp
@@ -5558,6 +5567,7 @@ pass	templates/constraints/dependent-postponed.cpp
 pass	templates/constraints/destructor-ambiguous.cpp
 pass	templates/constraints/destructor-none.cpp
 pass	templates/constraints/destructor-selection.cpp
+pass	templates/constraints/destructor-trivial-by-concept.cpp
 pass	templates/constraints/destructor-trivial.cpp
 pass	templates/constraints/different-spellings.cpp
 EDG-ONLY	templates/constraints/eligible-copy.cpp

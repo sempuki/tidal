@@ -157,6 +157,7 @@ type has that value.
 
 ## Examples
 
+% tidal-example: reject
 ```cpp
 int pick(int v) {
   int r = 0;

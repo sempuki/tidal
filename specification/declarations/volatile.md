@@ -230,6 +230,7 @@ A program that simulates a device in its own memory creates the
 registers with placement `new` in a byte array and keeps that pointer
 ({rule}`STG-29`). A cast of the array's address would point to a byte:
 
+% tidal-example: fragment
 ```cpp
 inline void* operator new[](decltype(sizeof 0), void* at) noexcept { return at; }
 

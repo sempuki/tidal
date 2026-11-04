@@ -386,6 +386,7 @@ An implementation should warn about these cases:
 
 ## Examples
 
+% tidal-example: reject
 ```cpp
 struct Shape {
   virtual ~Shape() = default;
@@ -408,6 +409,7 @@ delete p;                          // calls ~Circle, then ~Shape
 A virtual call during constant evaluation reaches a `constexpr` final
 overrider (VIRT-1):
 
+% tidal-example: reject
 ```cpp
 struct Tile {
   constexpr virtual int cost() const = 0;
@@ -442,6 +444,7 @@ Base copy(d);                      // k is 2
 A static member function cannot take the place of a virtual function
 (VIRT-21):
 
+% tidal-example: reject
 ```cpp
 struct Base { virtual void reset(); };
 struct Derived : Base {
@@ -452,6 +455,7 @@ struct Derived : Base {
 Each failed condition of VIRT-4 makes the return type of an override
 not covariant (VIRT-15):
 
+% tidal-example: reject
 ```cpp
 struct Node { };
 struct Leaf : private Node { };

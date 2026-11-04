@@ -303,6 +303,7 @@ A call to a function that can throw does not need a warning.
 
 ## Examples
 
+% tidal-example: fragment
 ```cpp
 struct Lock { Lock(); ~Lock(); };
 struct Buffer { Buffer(int n); ~Buffer(); };
@@ -362,6 +363,7 @@ exception, unless the code dismisses it. Its destructor is `noexcept`
 ({rule}`DTOR-4`), so a cleanup that throws ends the program (UNW-5). A
 guard in a loop body runs once for each pass:
 
+% tidal-example: fragment
 ```cpp
 template <class F> struct Guard {
   F cleanup;

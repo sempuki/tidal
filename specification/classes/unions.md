@@ -162,7 +162,7 @@ give the limits on bases and virtual functions.
 
 :::{rule} UNI-3
 :kind: required
-:tests: classes/unions/union-default-member-init-enables-ctor.cpp classes/unions/union-copy-two-copy-constructors.cpp classes/unions/union-nontrivial-member-user-ctor-dtor.cpp classes/unions/union-trivial-copy.cpp classes/unions/union-deleted-move-uses-copy.cpp classes/unions/union-member-deleted-copy.cpp classes/copy-move/trivially-copyable-at-least-one.cpp classes/copy-move/trivially-copyable-const-member.cpp classes/copy-move/trivially-copyable-constraint-fails.cpp classes/copy-move/trivially-copyable-defaulted-later.cpp classes/copy-move/trivially-copyable-deleted-destructor.cpp classes/copy-move/trivially-copyable-member-selected.cpp
+:tests: classes/unions/union-default-member-init-enables-ctor.cpp classes/unions/union-copy-two-copy-constructors.cpp classes/unions/union-nontrivial-member-user-ctor-dtor.cpp classes/unions/union-trivial-copy.cpp classes/unions/union-deleted-move-uses-copy.cpp classes/unions/union-member-deleted-copy.cpp classes/copy-move/trivially-copyable-at-least-one.cpp classes/copy-move/trivially-copyable-const-member.cpp classes/copy-move/trivially-copyable-constraint-fails.cpp classes/copy-move/trivially-copyable-defaulted-later.cpp classes/copy-move/trivially-copyable-deleted-destructor.cpp classes/copy-move/trivially-copyable-member-selected.cpp templates/constraints/destructor-trivial-by-concept.cpp
 
 If a variant member has one of these non-trivial functions (CTOR-23,
 DTOR-9, CPY-27), the matching special member of the union is deleted.
@@ -604,6 +604,7 @@ A union slot holds an object of a type that has no default
 constructor. The slot starts with no active member, `std::construct_at`
 fills it, and an explicit destructor call empties it (UNI-14):
 
+% tidal-example: fragment
 ```cpp
 template <class T, int Capacity>
 class FixedStack {
@@ -645,8 +646,8 @@ int y = s.span.range.second;     // 2: Point and Pair are layout-compatible
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 139
-of 152 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 140
+of 153 tests.
 
 - UNI-9: Clang accepts an anonymous union without `static` in an unnamed
   namespace. GCC and EDG reject the declaration ({question}`Q-0045`).

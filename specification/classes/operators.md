@@ -285,6 +285,7 @@ not start with `_`. Such suffixes are reserved.
 
 ## Examples
 
+% tidal-example: reject
 ```cpp
 struct Vec { double x, y; };
 Vec operator+(Vec a, Vec b) { return {a.x + b.x, a.y + b.y}; }

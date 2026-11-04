@@ -355,6 +355,7 @@ function.
 
 ## Examples
 
+% tidal-example: reject
 ```cpp
 [[nodiscard]] int f();
 f();                       // warning

@@ -303,6 +303,7 @@ GCC and EDG accept such an argument, and Clang rejects it.
 
 ## Examples
 
+% tidal-example: reject
 ```cpp
 int a[3] = {10, 20, 30};
 a[1];             // 20

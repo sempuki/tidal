@@ -145,6 +145,7 @@ is at least the width of the promoted left operand.
 
 ## Examples
 
+% tidal-example: fragment
 ```cpp
 1 << 1 + 1;          // 1 << 2 == 4
 3 << 2;              // 12

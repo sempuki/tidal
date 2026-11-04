@@ -520,7 +520,7 @@ In `E::x`, `x` must be an enumerator of `E` (NAM-19).
 
 :::{rule} NAM-21
 :kind: required
-:tests: foundations/names/definition-body-sees-namespace.cpp foundations/names/definition-initializer-sees-namespace.cpp foundations/names/definition-parameter-sees-class.cpp foundations/names/definition-trailing-return-sees-class.cpp foundations/names/definition-bound-default-noexcept-see-scope.cpp
+:tests: foundations/names/definition-body-sees-namespace.cpp foundations/names/definition-initializer-sees-namespace.cpp foundations/names/definition-parameter-sees-class.cpp foundations/names/definition-trailing-return-sees-class.cpp foundations/names/definition-bound-default-noexcept-see-scope.cpp foundations/names/definition-template-member-alias.cpp foundations/names/definition-class-body-sees-namespace.cpp foundations/language-support/tuple-protocol-page-example.cpp
 
 A declaration can name a member with a qualified name, such as `N::f`
 or `C::f`. After that name, the declaration sees the members of `N` or
@@ -531,7 +531,9 @@ or `C::f`. After that name, the declaration sees the members of `N` or
 - an exception specification,
 - a trailing return type,
 - the function body,
-- the initializer.
+- the initializer,
+- the body of a class that the declaration defines
+  ({question}`Q-0377`).
 :::
 
 :::{rule} NAM-22
@@ -846,6 +848,7 @@ int pick() {
 
 Argument-dependent lookup reaches through pointers, bases, and friends:
 
+% tidal-example: reject
 ```cpp
 namespace shapes {
   struct Shape { friend int area(const Shape&); };
@@ -861,6 +864,7 @@ area(c);                        // finds the friend through the base
 A class and a variable can share a name. The variable takes the name,
 and a class key reaches the class:
 
+% tidal-example: reject
 ```cpp
 struct stat { long size; };
 int stat(const char* path);
@@ -874,6 +878,7 @@ int box = 0;                    // rejected: box is a class template
 
 The injected class name works through a base in another namespace:
 
+% tidal-example: reject
 ```cpp
 namespace io { struct Stream { }; }
 struct File : io::Stream {
@@ -885,8 +890,8 @@ File::File* q = nullptr;        // rejected: names the constructor
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 233
-of 237 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 236
+of 240 tests.
 
 The clean-room writer probed qualified lookup, using directives,
 argument-dependent lookup, and the injected class name with Clang 22,

@@ -155,6 +155,7 @@ loop ends.
 
 ## Examples
 
+% tidal-example: reject
 ```cpp
 int a[] = {1, 2, 3};
 for (int v : a) sum += v;            // 1, then 2, then 3

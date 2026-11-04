@@ -146,6 +146,7 @@ destroyed one time, when the statement ends, also after a `break`.
 
 ## Examples
 
+% tidal-example: reject
 ```cpp
 int i = 0;
 while (i < 3) ++i;            // i is 3

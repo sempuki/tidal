@@ -249,6 +249,7 @@ effect, such as `sizeof(i++)`, because the effect does not occur.
 
 ## Examples
 
+% tidal-example: reject
 ```cpp
 int i = 0;
 const int& cr = i;

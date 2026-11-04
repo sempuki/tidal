@@ -177,6 +177,7 @@ reference that binds to a temporary.
 
 ## Examples
 
+% tidal-example: reject
 ```cpp
 struct Buffer {
   Buffer(int size, char fill);

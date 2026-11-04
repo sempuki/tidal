@@ -49,7 +49,8 @@ between. So the integer that a pointer becomes, and whether a function
 pointer can become an object pointer at all, are implementation-defined.
 The cast is not valid in {term}`constant evaluation`, because constant
 evaluation has no bits to show. The rules on raw storage say when a program can read or
-write an object through the result ({rule}`STG-14`, {rule}`STG-16`).
+write an object through the result ({rule}`STG-14`, {rule}`STG-16`,
+{rule}`STG-29`).
 :::
 
 :::{principle} CAST-P4
@@ -244,6 +245,10 @@ The result of `const_cast` refers to the same object as its operand.
 - to a reference type `T&`. The result is an lvalue that refers to the
   operand as type `T`.
 - a null pointer value of type `std::nullptr_t` to an integer type.
+
+A cast of a pointer into a byte array gives a pointer to a byte, also
+when the array hosts an object of the target type there. Such a result
+does not reach the hosted object ({rule}`STG-29`).
 :::
 
 ## Undefined Behavior
@@ -301,6 +306,7 @@ directions. The integer types that hold a pointer are these:
 
 ## Examples
 
+% tidal-example: reject
 ```cpp
 static_cast<int>(3.9);          // 3
 enum class E { A = 2 };

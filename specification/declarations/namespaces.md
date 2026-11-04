@@ -271,6 +271,7 @@ namespace scope must not name a class member.
 
 ## Examples
 
+% tidal-example: reject
 ```cpp
 namespace Lib {
   inline namespace V2 { int version = 2; }

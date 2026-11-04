@@ -430,6 +430,7 @@ capture is deprecated.
 
 ## Examples
 
+% tidal-example: fragment
 ```cpp
 int n = 1;
 auto by_copy = [n] { return n; };

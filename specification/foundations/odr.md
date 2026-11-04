@@ -443,6 +443,7 @@ that the unit uses and does not define.
 
 ## Examples
 
+% tidal-example: reject
 ```cpp
 struct Limits { static const int top = 5; };   // declared, not defined
 
@@ -463,6 +464,7 @@ void run() {
 }
 ```
 
+% tidal-example: fragment
 ```cpp
 // guard.h
 #ifndef PROJECT_GUARD_H

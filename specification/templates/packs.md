@@ -454,6 +454,7 @@ An implementation need not diagnose the error ({question}`Q-0274`).
 
 ## Examples
 
+% tidal-example: reject
 ```cpp
 template <class... T> struct List {};
 template <class... T> using Pointers = List<T*...>;
@@ -482,6 +483,7 @@ template <class... T> void call(T...);
 call<void>();                              // rejected: a parameter of type void
 ```
 
+% tidal-example: reject
 ```cpp
 template <class... T> struct List {};
 template <class... T> void put(List<T..., int>);
@@ -500,6 +502,7 @@ template <class... B> struct Merge : B... {
 Merge<>{}.f(1);                            // f(double): the using-declaration declares nothing
 ```
 
+% tidal-example: fragment
 ```cpp
 template <class... T> struct Outer {
   template <class... U> struct Inner {
@@ -518,6 +521,7 @@ template <class... T> int total(T... x) {
 A forwarded call keeps the value category of each argument, but it
 differs from a direct call in these ways:
 
+% tidal-example: reject
 ```cpp
 void take(int*);
 void list(const int (&)[2]);
@@ -537,6 +541,7 @@ struct Item { int bits : 3; } item;
 relay(item.bits);     // rejected: a bit-field that is not const (PACK-31)
 ```
 
+% tidal-example: reject
 ```cpp
 template <class... A> int make(A... a) { return int(a...); }
 make();                                    // 0: int() with no elements

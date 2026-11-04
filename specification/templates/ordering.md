@@ -306,6 +306,7 @@ of a partial specialization.
 
 ## Examples
 
+% tidal-example: reject
 ```cpp
 template <class T> int pick(T);          // 1
 template <class T> int pick(T*);         // 2

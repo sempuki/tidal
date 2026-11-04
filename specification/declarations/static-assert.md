@@ -121,6 +121,7 @@ outside one a discarded statement is checked.
 
 ## Examples
 
+% tidal-example: diverges
 ```cpp
 static_assert(sizeof(void*) == 8, "needs a 64-bit target");
 

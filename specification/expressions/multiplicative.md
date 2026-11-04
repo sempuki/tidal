@@ -321,6 +321,7 @@ enumeration types.
 
 ## Examples
 
+% tidal-example: fragment
 ```cpp
 12 / 3 * 2           // (12 / 3) * 2, which is 8
 2 + 3 * 4            // 2 + (3 * 4), which is 14

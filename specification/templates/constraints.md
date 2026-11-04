@@ -439,7 +439,7 @@ satisfied ({rule}`LAM-10`).
 
 :::{rule} CNS-19
 :kind: required
-:tests: templates/constraints/destructor-selection.cpp templates/constraints/destructor-trivial.cpp
+:tests: templates/constraints/destructor-selection.cpp templates/constraints/destructor-trivial.cpp templates/constraints/destructor-trivial-by-concept.cpp
 
 A class can declare several {term}`prospective destructors
 <prospective destructor>` with different constraints. At the end of
@@ -459,7 +459,7 @@ constrained than each of the others.
 
 :::{rule} CNS-21
 :kind: required
-:tests: templates/constraints/eligible-default.cpp templates/constraints/eligible-copy.cpp templates/constraints/eligible-more-constrained.cpp templates/constraints/destructor-trivial.cpp templates/constraints/eligible-unsatisfied-more-constrained.cpp classes/copy-move/trivially-copyable-constraint-fails.cpp
+:tests: templates/constraints/eligible-default.cpp templates/constraints/eligible-copy.cpp templates/constraints/eligible-more-constrained.cpp templates/constraints/destructor-trivial.cpp templates/constraints/eligible-unsatisfied-more-constrained.cpp classes/copy-move/trivially-copyable-constraint-fails.cpp templates/constraints/destructor-trivial-by-concept.cpp
 
 A special member function is {term}`eligible` if all of these hold
 ({question}`Q-0266`):
@@ -667,6 +667,7 @@ not diagnose a template-id that does not ({question}`Q-0283`).
 
 ## Examples
 
+% tidal-example: reject
 ```cpp
 template <class T> concept Sized = sizeof(T) > 1;
 template <class T> concept Small = Sized<T> && sizeof(T) < 16;
@@ -685,6 +686,7 @@ template <class T> requires (!HasSize<T>) int count(T);   // satisfied for int
 template <class T> requires (!T::size) int other(T);      // not satisfied for int
 ```
 
+% tidal-example: fragment
 ```cpp
 template <class T> concept Tagged = requires { typename T::tag; };
 template <class T> requires Tagged<T> && (sizeof(typename T::tag) < 4)
@@ -700,6 +702,7 @@ any(1);                          // valid
 Subsumption compares the two normal forms of CNS-22. Take the concepts
 `A`, `B`, and `C`, and these two clauses:
 
+% tidal-example: reject
 ```cpp
 template <class T> int f() requires (A<T> || B<T>) && C<T>;        // P
 template <class T> int f() requires (A<T> && C<T>) || (B<T> && C<T>); // Q
@@ -716,6 +719,7 @@ with each disjunction of Q: {A, B}, {A, C}, {C, B}, and {C}. Q subsumes
 P in the same way, with the disjunctions {A, B} and {C} of P. Neither
 is more constrained (CNS-23), so the call is ambiguous (CNS-24).
 
+% tidal-example: reject
 ```cpp
 template <class T> struct Box {
   Box() requires (sizeof(T) > 100) {}   // declared, even where it is not satisfied
@@ -730,8 +734,8 @@ decltype(&Box<long>::get)               // int (Box<long>::*)(): the clause is n
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 99
-of 126 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 100
+of 127 tests.
 
 One question on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
 

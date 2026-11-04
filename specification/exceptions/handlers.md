@@ -410,6 +410,7 @@ constructor or destructor names a member of the object.
 
 ## Examples
 
+% tidal-example: fragment
 ```cpp
 struct Error { int code; };
 struct IoError : Error { const char* path; };

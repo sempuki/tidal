@@ -244,6 +244,7 @@ ambiguous, for example an `==` that is not `const`. In strict mode,
 
 ## Examples
 
+% tidal-example: fragment
 ```cpp
 struct Version {
   int major, minor, patch;
@@ -278,6 +279,7 @@ each candidate is better for one argument. With a `const` member, both
 candidates bind `const` references, and the normal one wins
 ({rule}`OVL-32`):
 
+% tidal-example: reject
 ```cpp
 struct Loose { int v; bool operator==(const Loose& o) { return v == o.v; } };
 struct Tight { int v; bool operator==(const Tight& o) const { return v == o.v; } };

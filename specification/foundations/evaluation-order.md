@@ -215,6 +215,7 @@ where one modifies the object and the other reads the object.
 
 ## Examples
 
+% tidal-example: fragment
 ```cpp
 sum(a(), b());        // a() or b() can be called first
 pick()(arg());        // pick() is called before arg()

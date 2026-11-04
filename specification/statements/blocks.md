@@ -172,6 +172,7 @@ warning.
 
 ## Examples
 
+% tidal-example: reject
 ```cpp
 void f(int a) {
   a + 1;                 // warning: the value is unused

@@ -325,6 +325,7 @@ compilers affect the Status column.
 | `classes/constructors/reference-default-member-binds-temporary.cpp` | CTOR-17 | reject | reject | accept | accept | skip | accept | reject | accept | accept | reject | reject | pass |
 | `classes/constructors/reference-member-binds-converted-parameter.cpp` | CTOR-17 | reject | reject | accept | accept | skip | accept | reject | accept | accept | reject | reject | pass |
 | `classes/constructors/reference-member-binds-temporary.cpp` | CTOR-17 | reject | reject | accept | accept | skip | accept | reject | accept | accept | reject | reject | pass |
+| `classes/constructors/return-owner-converts-to-base-owner.cpp` | CTOR-10 DED-1 OVL-14 JMP-3 CPY-11 | run | run | run | skip | skip | run | run | run | run | run | run | pass |
 | `classes/constructors/trivial-default-base-nontrivial.cpp` | CTOR-23 JMP-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/constructors/trivial-default-defaulted-later.cpp` | CTOR-23 JMP-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/constructors/trivial-default-defaulted.cpp` | CTOR-23 JMP-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -456,7 +457,9 @@ compilers affect the Status column.
 | `classes/copy-move/memberwise-array.cpp` | CPY-8 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/copy-move/memberwise-assign-order.cpp` | CPY-8 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/copy-move/memberwise-order.cpp` | CPY-8 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `classes/copy-move/move-assign-deletes-copy-assign.cpp` | CPY-21 CPY-4 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/copy-move/move-assign-deletes-copy-ctor.cpp` | CPY-21 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `classes/copy-move/move-assign-only-from-prvalue.cpp` | CPY-4 CPY-3 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/copy-move/move-ctor-default-args.cpp` | CPY-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `classes/copy-move/move-ctor-deletes-copy-assign.cpp` | CPY-21 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `classes/copy-move/move-ctor-deletes-copy.cpp` | CPY-21 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -1329,6 +1332,7 @@ compilers affect the Status column.
 | `declarations/constexpr/constexpr-redeclaration-mismatch.cpp` | CX-5 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/constexpr/constexpr-ref-temporary-block.cpp` | CX-1 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/constexpr/constexpr-ref-temporary-namespace.cpp` | CX-1 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `declarations/constexpr/constinit-added-late-thread-local.cpp` | CINIT-3 | reject | reject | accept | accept | skip | accept | reject | accept | accept | reject | reject | pass |
 | `declarations/constexpr/constinit-added-late.cpp` | CINIT-3 | reject | reject | accept | accept | skip | accept | reject | accept | accept | reject | reject | pass |
 | `declarations/constexpr/constinit-automatic.cpp` | CINIT-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `declarations/constexpr/constinit-block-static.cpp` | CINIT-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -2501,6 +2505,7 @@ compilers affect the Status column.
 | `exceptions/unwinding/noexcept-function-handles-inside.cpp` | UNW-6 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `exceptions/unwinding/objects-after-throw-not-created.cpp` | UNW-1 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `exceptions/unwinding/placement-loop-no-automatic-cleanup.cpp` | UNW-2 | run | run | run | skip | skip | run | run | run | run | run | run | pass |
+| `exceptions/unwinding/placement-new-global-usual-delete-rejected.cpp` | UNW-11 | reject | reject | reject | reject | skip | reject | accept | reject | reject | reject | reject | pass |
 | `exceptions/unwinding/placement-new-no-matching-delete-leaks.cpp` | UNW-3 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `exceptions/unwinding/placement-new-throws-placement-delete.cpp` | UNW-3 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `exceptions/unwinding/placement-new-usual-delete-rejected.cpp` | UNW-11 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -4165,6 +4170,7 @@ compilers affect the Status column.
 | `foundations/language-support/strong-ordering-missing-member.cpp` | LSUP-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/language-support/strong-ordering-missing.cpp` | LSUP-2 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/language-support/tuple-protocol-minimal.cpp` | LSUP-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/language-support/tuple-protocol-page-example.cpp` | LSUP-3 SB-5 NAM-21 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/names/adl-address-of-overload-set.cpp` | NAM-27 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/names/adl-alias-namespace.cpp` | NAM-28 NAM-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/names/adl-array.cpp` | NAM-27 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -4248,10 +4254,12 @@ compilers affect the Status column.
 | `foundations/names/class-scope-outside-needs-qualification.cpp` | NAM-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/names/definition-body-sees-namespace.cpp` | NAM-21 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/names/definition-bound-default-noexcept-see-scope.cpp` | NAM-21 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/names/definition-class-body-sees-namespace.cpp` | NAM-21 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/names/definition-initializer-sees-namespace.cpp` | NAM-21 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/names/definition-parameter-sees-class.cpp` | NAM-21 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/names/definition-return-type-before-name.cpp` | NAM-22 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/names/definition-return-type-namespace.cpp` | NAM-22 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `foundations/names/definition-template-member-alias.cpp` | NAM-21 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/names/definition-trailing-return-sees-class.cpp` | NAM-21 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/names/directive-block-ends.cpp` | NAM-24 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/names/directive-chain-between-hides.cpp` | NAM-23 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -4418,6 +4426,7 @@ compilers affect the Status column.
 | `foundations/objects/scalar-write-through-pointer-in-own-initializer-constant.cpp` | OBJ-1 OBJ-2 | reject | reject | accept | accept | skip | accept | reject | accept | accept | reject | reject | pass |
 | `foundations/objects/static-constant-initialized-destroyed-in-place.cpp` | OBJ-4 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/objects/static-local-after-destruction.cpp` | OBJ-12 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `foundations/objects/static-local-used-by-earlier-static.cpp` | OBJ-12 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/objects/static-never-reached-not-constructed.cpp` | OBJ-4 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/objects/static-order.cpp` | OBJ-4 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/objects/storage-reuse-ends-old-object-constant.cpp` | OBJ-10 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -4701,7 +4710,9 @@ compilers affect the Status column.
 | `foundations/storage/base-bytes-shared-with-member.cpp` | STG-25 STG-11 STG-13 CLS-35 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/storage/byte-array-cast-reaches-byte.cpp` | STG-29 STG-23 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/storage/byte-array-hosts-objects.cpp` | STG-4 STG-5 STG-6 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `foundations/storage/byte-array-member-of-array-hosts.cpp` | STG-4 STG-5 | run | run | run | skip | skip | run | run | run | run | run | run | pass |
 | `foundations/storage/byte-array-placement-reaches-object.cpp` | STG-29 STG-5 STG-8 | run | run | run | skip | skip | run | run | run | run | run | run | pass |
+| `foundations/storage/byte-array-rows-host-objects.cpp` | STG-4 STG-5 STG-6 | run | run | run | skip | skip | run | run | run | run | run | run | pass |
 | `foundations/storage/byte-order-little-endian.cpp` | STG-26 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/storage/byte-pointer-from-member-walks-object.cpp` | STG-13 | run | run | run | skip | skip | run | run | run | run | run | run | pass |
 | `foundations/storage/byte-pointer-walks-object.cpp` | STG-13 ADD-6 | run | run | run | skip | skip | run | run | run | run | run | run | pass |
@@ -4744,6 +4755,7 @@ compilers affect the Status column.
 | `foundations/storage/placement-misaligned-sanitizer.cpp` | STG-17 | run-fail | run-fail | run-fail | skip | skip | run-fail | run-fail | run-fail | run-fail | run-fail | run-fail | pass |
 | `foundations/storage/placement-new-array.cpp` | STG-5 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/storage/placement-new-result-is-address.cpp` | STG-5 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `foundations/storage/placement-then-cast-read.cpp` | STG-29 STG-23 STG-5 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/storage/placement-too-small-sanitizer.cpp` | STG-17 | run-fail | run-fail | run-fail | skip | skip | run-fail | run-fail | run-fail | run-fail | run-fail | run-fail | pass |
 | `foundations/storage/pointer-bytes-are-address.cpp` | STG-26 CAST-16 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/storage/replace-array-element-constant.cpp` | STG-9 LSUP-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -4772,6 +4784,7 @@ compilers affect the Status column.
 | `foundations/translation/constant-initializer-tried.cpp` | TR-5 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/translation/exit-status-kept-optimized.cpp` | TR-7 | run-fail | run-fail | run-fail | skip | skip | run-fail | run-fail | run-fail | run-fail | run-fail | run-fail | pass |
 | `foundations/translation/floating-constant-and-run-either.cpp` | TR-16 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `foundations/translation/floating-sum-constant-and-run-either.cpp` | TR-16 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `foundations/translation/grammar-else-without-if.cpp` | TR-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/translation/grammar-for-constexpr.cpp` | TR-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `foundations/translation/grammar-mismatched-bracket.cpp` | TR-12 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -5571,6 +5584,7 @@ compilers affect the Status column.
 | `templates/constraints/destructor-ambiguous.cpp` | CNS-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/constraints/destructor-none.cpp` | CNS-20 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/constraints/destructor-selection.cpp` | CNS-19 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `templates/constraints/destructor-trivial-by-concept.cpp` | CNS-19 CNS-21 UNI-3 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `templates/constraints/destructor-trivial.cpp` | CNS-19 CNS-21 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/constraints/different-spellings.cpp` | CNS-26 CNS-24 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/constraints/eligible-copy.cpp` | CNS-21 | accept | accept | accept | reject | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -5754,6 +5768,7 @@ compilers affect the Status column.
 | `templates/declarations/pack-typed-by-enclosing-pack.cpp` | TPL-36 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/declarations/pack-typed-by-same-head.cpp` | TPL-36 TPL-30 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/declarations/parameter-class-template-name.cpp` | TPL-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
+| `templates/declarations/parameter-friend-name-uninstantiated.cpp` | TPL-48 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/declarations/parameter-friend-name.cpp` | TPL-48 | accept | accept | accept | reject | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/declarations/parameter-hidden-by-base.cpp` | TPL-41 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `templates/declarations/parameter-local-name.cpp` | TPL-18 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -5906,6 +5921,7 @@ compilers affect the Status column.
 | `templates/dependent-names/base-member-hides-constant-parameter.cpp` | DEP-36 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/dependent-names/base-member-hides-parameter.cpp` | DEP-36 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `templates/dependent-names/base-pack-expanded-twice.cpp` | DEP-33 | reject | reject | accept | reject | skip | accept | reject | accept | accept | reject | reject | pass |
+| `templates/dependent-names/binary-operator-pack-never-fits.cpp` | DEP-37 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/dependent-names/checked-at-instantiation.cpp` | DEP-1 DEP-28 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `templates/dependent-names/constant-function-defined-later.cpp` | DEP-31 | run | reject | run | accept | skip | run | reject | run | run | reject | reject | pass |
 | `templates/dependent-names/current-instantiation-alias.cpp` | DEP-15 | run | run | run | reject | skip | run | run | run | run | run | run | pass |
@@ -6037,6 +6053,7 @@ compilers affect the Status column.
 | `templates/instantiation/class-overload-two-candidates.cpp` | INST-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/instantiation/class-overload-void-pointer.cpp` | INST-3 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/instantiation/class-point-in-specialization.cpp` | INST-30 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `templates/instantiation/class-point-not-later-type.cpp` | INST-33 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/instantiation/class-point-not-later.cpp` | INST-30 INST-33 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/instantiation/class-point-sees-earlier.cpp` | INST-30 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `templates/instantiation/class-pointer-only.cpp` | INST-2 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
@@ -6135,6 +6152,7 @@ compilers affect the Status column.
 | `templates/instantiation/local-class-member-initializer.cpp` | INST-12 INST-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/instantiation/local-class-member.cpp` | INST-12 INST-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/instantiation/local-entities-per-specialization.cpp` | INST-36 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `templates/instantiation/local-entities-thread-local-and-nested-lambda.cpp` | INST-36 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `templates/instantiation/local-enumeration.cpp` | INST-12 INST-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/instantiation/member-function-called.cpp` | INST-7 INST-6 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
 | `templates/instantiation/member-partial-specializations-collide.cpp` | INST-6 | reject | reject | accept | accept | skip | accept | reject | accept | accept | reject | reject | pass |
@@ -6355,7 +6373,7 @@ compilers affect the Status column.
 | `templates/specialization/variable-partial-two-parameters.cpp` | TSP-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/specialization/variable-partial.cpp` | TSP-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 
-6337/6337 tests pass on baseline compilers.
+6355/6355 tests pass on baseline compilers.
 
 ## Rejections
 
@@ -8413,6 +8431,15 @@ check that the rejection has the intended cause.
 - `classes/copy-move/lvalue-move-only-rejected.cpp` (gcc-16-o2): error: use of deleted function 'constexpr M::M(const M&)' / note: 'constexpr M::M(const M&)' is implicitly declared as deleted because 'M' declares a move constructor or move assignment operator / note: use '-fdiagnostics-all-candidates' to display considered candidates / note: initializing argument 1 of 'void take(M)'
 - `classes/copy-move/lvalue-move-only-rejected.cpp` (clang-22): error: call to implicitly-deleted copy constructor of 'M' / note: copy constructor is implicitly deleted because 'M' has a user-declared move constructor / note: passing argument to parameter here
 - `classes/copy-move/lvalue-move-only-rejected.cpp` (clang-22-o2): error: call to implicitly-deleted copy constructor of 'M' / note: copy constructor is implicitly deleted because 'M' has a user-declared move constructor / note: passing argument to parameter here
+- `classes/copy-move/move-assign-deletes-copy-assign.cpp` (clang-host): error: object of type 'Token' cannot be assigned because its copy assignment operator is implicitly deleted / note: copy assignment operator is implicitly deleted because 'Token' has a user-declared move assignment operator
+- `classes/copy-move/move-assign-deletes-copy-assign.cpp` (gcc-host): error: use of deleted function ‘constexpr Token& Token::operator=(const Token&)’ / note: ‘constexpr Token& Token::operator=(const Token&)’ is implicitly declared as deleted because ‘Token’ declares a move constructor or move assignment operator / note: use ‘-fdiagnostics-all-candidates’ to display considered candidates
+- `classes/copy-move/move-assign-deletes-copy-assign.cpp` (edg-7.0): error: function "Token::operator=(const Token &) noexcept" (declared implicitly) cannot be referenced -- it is a deleted function
+- `classes/copy-move/move-assign-deletes-copy-assign.cpp` (gcc-14): error: use of deleted function 'constexpr Token& Token::operator=(const Token&)' / note: 'constexpr Token& Token::operator=(const Token&)' is implicitly declared as deleted because 'Token' declares a move constructor or move assignment operator / note: use '-fdiagnostics-all-candidates' to display considered candidates
+- `classes/copy-move/move-assign-deletes-copy-assign.cpp` (clang-18): error: object of type 'Token' cannot be assigned because its copy assignment operator is implicitly deleted / note: copy assignment operator is implicitly deleted because 'Token' has a user-declared move assignment operator
+- `classes/copy-move/move-assign-deletes-copy-assign.cpp` (gcc-16): error: use of deleted function 'constexpr Token& Token::operator=(const Token&)' / note: 'constexpr Token& Token::operator=(const Token&)' is implicitly declared as deleted because 'Token' declares a move constructor or move assignment operator / note: use '-fdiagnostics-all-candidates' to display considered candidates
+- `classes/copy-move/move-assign-deletes-copy-assign.cpp` (gcc-16-o2): error: use of deleted function 'constexpr Token& Token::operator=(const Token&)' / note: 'constexpr Token& Token::operator=(const Token&)' is implicitly declared as deleted because 'Token' declares a move constructor or move assignment operator / note: use '-fdiagnostics-all-candidates' to display considered candidates
+- `classes/copy-move/move-assign-deletes-copy-assign.cpp` (clang-22): error: object of type 'Token' cannot be assigned because its copy assignment operator is implicitly deleted / note: copy assignment operator is implicitly deleted because 'Token' has a user-declared move assignment operator
+- `classes/copy-move/move-assign-deletes-copy-assign.cpp` (clang-22-o2): error: object of type 'Token' cannot be assigned because its copy assignment operator is implicitly deleted / note: copy assignment operator is implicitly deleted because 'Token' has a user-declared move assignment operator
 - `classes/copy-move/move-assign-deletes-copy-ctor.cpp` (clang-host): error: call to implicitly-deleted copy constructor of 'S' / note: copy constructor is implicitly deleted because 'S' has a user-declared move assignment operator
 - `classes/copy-move/move-assign-deletes-copy-ctor.cpp` (gcc-host): error: use of deleted function ‘constexpr S::S(const S&)’ / note: ‘constexpr S::S(const S&)’ is implicitly declared as deleted because ‘S’ declares a move constructor or move assignment operator / note: use ‘-fdiagnostics-all-candidates’ to display considered candidates
 - `classes/copy-move/move-assign-deletes-copy-ctor.cpp` (edg-7.0): error: function "S::S(const S &) noexcept" (declared implicitly) cannot be referenced -- it is a deleted function
@@ -11769,6 +11796,10 @@ check that the rejection has the intended cause.
 - `declarations/constexpr/constexpr-ref-temporary-block.cpp` (gcc-16-o2): error: '<anonymous>' is not a constant expression
 - `declarations/constexpr/constexpr-ref-temporary-block.cpp` (clang-22): error: constexpr variable 'r' must be initialized by a constant expression / note: reference to temporary is not a constant expression / note: temporary created here
 - `declarations/constexpr/constexpr-ref-temporary-block.cpp` (clang-22-o2): error: constexpr variable 'r' must be initialized by a constant expression / note: reference to temporary is not a constant expression / note: temporary created here
+- `declarations/constexpr/constinit-added-late-thread-local.cpp` (clang-host): error: 'constinit' specifier added after initialization of variable / note: add the 'constinit' specifier to the initializing declaration here
+- `declarations/constexpr/constinit-added-late-thread-local.cpp` (clang-18): error: 'constinit' specifier added after initialization of variable / note: add the 'constinit' specifier to the initializing declaration here
+- `declarations/constexpr/constinit-added-late-thread-local.cpp` (clang-22): error: 'constinit' specifier added after initialization of variable / note: add the 'constinit' specifier to the initializing declaration here
+- `declarations/constexpr/constinit-added-late-thread-local.cpp` (clang-22-o2): error: 'constinit' specifier added after initialization of variable / note: add the 'constinit' specifier to the initializing declaration here
 - `declarations/constexpr/constinit-added-late.cpp` (clang-host): error: 'constinit' specifier added after initialization of variable / note: add the 'constinit' specifier to the initializing declaration here
 - `declarations/constexpr/constinit-added-late.cpp` (clang-18): error: 'constinit' specifier added after initialization of variable / note: add the 'constinit' specifier to the initializing declaration here
 - `declarations/constexpr/constinit-added-late.cpp` (clang-22): error: 'constinit' specifier added after initialization of variable / note: add the 'constinit' specifier to the initializing declaration here
@@ -15998,6 +16029,14 @@ check that the rejection has the intended cause.
 - `exceptions/throw/throw-in-noexcept-warns.cpp` (gcc-16-o2): error: 'throw' will always call 'terminate' [-Werror=terminate]
 - `exceptions/throw/throw-in-noexcept-warns.cpp` (clang-22): error: 'f' has a non-throwing exception specification but can still throw [-Werror,-Wexceptions] / note: function declared non-throwing here
 - `exceptions/throw/throw-in-noexcept-warns.cpp` (clang-22-o2): error: 'f' has a non-throwing exception specification but can still throw [-Werror,-Wexceptions] / note: function declared non-throwing here
+- `exceptions/unwinding/placement-new-global-usual-delete-rejected.cpp` (clang-host): error: 'new' expression with placement arguments refers to non-placement 'operator delete'
+- `exceptions/unwinding/placement-new-global-usual-delete-rejected.cpp` (gcc-host): error: exception cleanup for this placement new selects non-placement ‘operator delete’ [-fpermissive]
+- `exceptions/unwinding/placement-new-global-usual-delete-rejected.cpp` (edg-7.0): error: placement "new" expression refers to non-placement function "operator delete(void *, unsigned long) noexcept" (declared implicitly)
+- `exceptions/unwinding/placement-new-global-usual-delete-rejected.cpp` (gcc-14): error: exception cleanup for this placement new selects non-placement 'operator delete' [-fpermissive]
+- `exceptions/unwinding/placement-new-global-usual-delete-rejected.cpp` (gcc-16): error: exception cleanup for this placement new selects non-placement 'operator delete' [-fpermissive]
+- `exceptions/unwinding/placement-new-global-usual-delete-rejected.cpp` (gcc-16-o2): error: exception cleanup for this placement new selects non-placement 'operator delete' [-fpermissive]
+- `exceptions/unwinding/placement-new-global-usual-delete-rejected.cpp` (clang-22): error: 'new' expression with placement arguments refers to non-placement 'operator delete'
+- `exceptions/unwinding/placement-new-global-usual-delete-rejected.cpp` (clang-22-o2): error: 'new' expression with placement arguments refers to non-placement 'operator delete'
 - `exceptions/unwinding/placement-new-usual-delete-rejected.cpp` (clang-host): error: 'new' expression with placement arguments refers to non-placement 'operator delete'
 - `exceptions/unwinding/placement-new-usual-delete-rejected.cpp` (gcc-host): error: exception cleanup for this placement new selects non-placement ‘operator delete’ [-fpermissive] / note: ‘static void S::operator delete(void*, Size)’ is a usual (non-placement) deallocation function
 - `exceptions/unwinding/placement-new-usual-delete-rejected.cpp` (edg-7.0): error: placement "new" expression refers to non-placement function "S::operator delete" (declared at line 8)
@@ -28263,6 +28302,15 @@ check that the rejection has the intended cause.
 - `templates/dependent-names/base-pack-expanded-twice.cpp` (clang-18): error: base class 'T' specified more than once as a direct base class
 - `templates/dependent-names/base-pack-expanded-twice.cpp` (clang-22): error: base class 'T' specified more than once as a direct base class
 - `templates/dependent-names/base-pack-expanded-twice.cpp` (clang-22-o2): error: base class 'T' specified more than once as a direct base class
+- `templates/dependent-names/binary-operator-pack-never-fits.cpp` (clang-host): error: overloaded 'operator<' must be a binary operator (has 3 parameters)
+- `templates/dependent-names/binary-operator-pack-never-fits.cpp` (gcc-host): error: ‘bool operator<(Item, Item, T ...)’ must have exactly two arguments
+- `templates/dependent-names/binary-operator-pack-never-fits.cpp` (edg-7.0): error: too many parameters for this operator function
+- `templates/dependent-names/binary-operator-pack-never-fits.cpp` (gcc-14): error: 'bool operator<(Item, Item, T ...)' must have exactly two arguments
+- `templates/dependent-names/binary-operator-pack-never-fits.cpp` (clang-18): error: overloaded 'operator<' must be a binary operator (has 3 parameters)
+- `templates/dependent-names/binary-operator-pack-never-fits.cpp` (gcc-16): error: 'bool operator<(Item, Item, T ...)' must have exactly two arguments
+- `templates/dependent-names/binary-operator-pack-never-fits.cpp` (gcc-16-o2): error: 'bool operator<(Item, Item, T ...)' must have exactly two arguments
+- `templates/dependent-names/binary-operator-pack-never-fits.cpp` (clang-22): error: overloaded 'operator<' must be a binary operator (has 3 parameters)
+- `templates/dependent-names/binary-operator-pack-never-fits.cpp` (clang-22-o2): error: overloaded 'operator<' must be a binary operator (has 3 parameters)
 - `templates/dependent-names/constant-function-defined-later.cpp` (clang-host): error: constexpr variable 'n' must be initialized by a constant expression / note: undefined function 'limit' cannot be used in a constant expression
 - `templates/dependent-names/constant-function-defined-later.cpp` (clang-18): error: constexpr variable 'n' must be initialized by a constant expression / note: undefined function 'limit' cannot be used in a constant expression
 - `templates/dependent-names/constant-function-defined-later.cpp` (clang-22): error: constexpr variable 'n' must be initialized by a constant expression / note: undefined function 'limit' cannot be used in a constant expression
@@ -28807,6 +28855,15 @@ check that the rejection has the intended cause.
 - `templates/instantiation/class-overload-void-pointer.cpp` (gcc-16-o2): error: static assertion failed
 - `templates/instantiation/class-overload-void-pointer.cpp` (clang-22): error: static assertion failed due to requirement 'sizeof(int) == 0' / note: in instantiation of template class 'Box<int>' requested here / note: expression evaluates to '4 == 0'
 - `templates/instantiation/class-overload-void-pointer.cpp` (clang-22-o2): error: static assertion failed due to requirement 'sizeof(int) == 0' / note: in instantiation of template class 'Box<int>' requested here / note: expression evaluates to '4 == 0'
+- `templates/instantiation/class-point-not-later-type.cpp` (clang-host): error: use of undeclared identifier 'probe' / note: in instantiation of template class 'Kind<lib::Item>' requested here
+- `templates/instantiation/class-point-not-later-type.cpp` (gcc-host): error: ‘probe’ was not declared in this scope
+- `templates/instantiation/class-point-not-later-type.cpp` (edg-7.0): error: identifier "probe" is undefined
+- `templates/instantiation/class-point-not-later-type.cpp` (gcc-14): error: 'probe' was not declared in this scope
+- `templates/instantiation/class-point-not-later-type.cpp` (clang-18): error: use of undeclared identifier 'probe' / note: in instantiation of template class 'Kind<lib::Item>' requested here
+- `templates/instantiation/class-point-not-later-type.cpp` (gcc-16): error: 'probe' was not declared in this scope
+- `templates/instantiation/class-point-not-later-type.cpp` (gcc-16-o2): error: 'probe' was not declared in this scope
+- `templates/instantiation/class-point-not-later-type.cpp` (clang-22): error: use of undeclared identifier 'probe' / note: in instantiation of template class 'Kind<lib::Item>' requested here
+- `templates/instantiation/class-point-not-later-type.cpp` (clang-22-o2): error: use of undeclared identifier 'probe' / note: in instantiation of template class 'Kind<lib::Item>' requested here
 - `templates/instantiation/class-point-not-later.cpp` (clang-host): error: use of undeclared identifier 'probe' / note: in instantiation of static data member 'Info<lib::Item>::value' requested here
 - `templates/instantiation/class-point-not-later.cpp` (gcc-host): error: ‘probe’ was not declared in this scope
 - `templates/instantiation/class-point-not-later.cpp` (edg-7.0): error: identifier "probe" is undefined

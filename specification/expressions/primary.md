@@ -694,6 +694,7 @@ of its type and about a multi-character literal.
 
 ## Examples
 
+% tidal-example: reject
 ```cpp
 auto a = 4'294'967'295;   // long: too large for int
 auto b = 0xFFFF'FFFF;     // unsigned int

@@ -176,7 +176,7 @@ The defaults of the template parameters come before the function type
 
 :::{rule} DED-1
 :kind: required
-:tests: templates/deduction/call-each-argument.cpp templates/deduction/call-member-and-operator.cpp
+:tests: templates/deduction/call-each-argument.cpp templates/deduction/call-member-and-operator.cpp classes/constructors/return-owner-converts-to-base-owner.cpp
 
 In a call that names a function template, {term}`deduction` finds the
 {term}`template arguments <template argument>` from the call arguments. The specialization that
@@ -651,6 +651,7 @@ The rule is the case of {rule}`OVL-35` and {rule}`OVL-20` for templates
 
 ## Examples
 
+% tidal-example: reject
 ```cpp
 template <class T> T larger(T a, T b);
 larger(1, 2);                   // T = int
@@ -670,6 +671,7 @@ count({1, 2, 3});               // T = int, N = 3
 
 A substitution failure removes a template, and the call goes on:
 
+% tidal-example: reject
 ```cpp
 template <class T> int size(const T& c, typename T::size_type = 0);
 int size(...);
@@ -680,6 +682,7 @@ An error in the function type removes the template, also a call of a
 lambda with no viable function there (DED-24). An error in the body of
 a lambda makes the program not valid (DED-29):
 
+% tidal-example: reject
 ```cpp
 template <class T>
 auto first(T t) -> decltype([](auto x) -> decltype(x.size()) { return x.size(); }(t), 1);
@@ -696,6 +699,7 @@ A braced list for a reference to an array deduces from each element
 conversion sequence, which then ranks as usual ({rule}`ICS-8`,
 {rule}`ICS-2`):
 
+% tidal-example: fragment
 ```cpp
 template <class T, int N> int len(const T (&)[N]);   // 1
 int len(const long (&)[2]);                          // 2
@@ -706,6 +710,7 @@ len({1, 2L});                   // 2: T is int and long, so 1 is not viable
 Explicit arguments fill the template parameters from the left, and a
 parameter that they fix converts its argument:
 
+% tidal-example: fragment
 ```cpp
 template <class To, class From> To convert(From);
 convert<long>('c');             // To = long, From = char
@@ -717,8 +722,8 @@ all<long>(1, 'c');              // Ts = long, char
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 112
-of 121 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 113
+of 122 tests.
 
 Three questions on this page settled on 2026-11-03 under decision 0054.
 For each, a source-reader gap review supports the answer with no doubt,

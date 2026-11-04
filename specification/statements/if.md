@@ -394,6 +394,7 @@ or of a local reference that binds a temporary ({question}`Q-0329`).
 
 ## Examples
 
+% tidal-example: reject
 ```cpp
 if (a)
   if (b) x();

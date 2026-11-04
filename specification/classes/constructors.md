@@ -295,7 +295,7 @@ expression `c` is `true`. Only a constructor or conversion function
 
 :::{rule} CTOR-10
 :kind: required
-:tests: classes/constructors/converting-ctor-multi-arg-list.cpp classes/constructors/converting-ctor.cpp classes/constructors/one-user-conversion-plus-standard.cpp
+:tests: classes/constructors/converting-ctor-multi-arg-list.cpp classes/constructors/converting-ctor.cpp classes/constructors/one-user-conversion-plus-standard.cpp classes/constructors/return-owner-converts-to-base-owner.cpp
 
 A constructor that is not `explicit` is a *{term}`converting constructor`*. An
 implicit conversion can use a converting constructor to make an object
@@ -598,6 +598,7 @@ order different from the order of initialization.
 
 ## Examples
 
+% tidal-example: reject
 ```cpp
 struct Buffer {
   int size;
@@ -629,6 +630,7 @@ struct Range {
 A deleted destructor permits `new`, but not every initializer of it
 (DTOR-3):
 
+% tidal-example: reject
 ```cpp
 struct Pinned { int v; ~Pinned() = delete; };
 Pinned make();
@@ -650,8 +652,8 @@ Span g{{1}};   // Span(int): {1} gives an int directly (ICS-15). The
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 171
-of 189 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 172
+of 190 tests.
 
 Two questions on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on classes and statements (`reports/review/2026-11-03-gap-review-questions-classes-statements.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
 

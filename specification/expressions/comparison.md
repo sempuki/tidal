@@ -422,6 +422,7 @@ floating-point value. Both comparisons are deprecated.
 
 ## Examples
 
+% tidal-example: reject
 ```cpp
 1 < 2 == 3 > 4         // (1 < 2) == (3 > 4), false
 3 > 2 > 1              // (3 > 2) > 1, so 1 > 1, false

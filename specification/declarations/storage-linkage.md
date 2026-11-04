@@ -339,6 +339,7 @@ implementation need not diagnose a break of this rule
 
 ## Examples
 
+% tidal-example: reject
 ```cpp
 int next() {
   static int counter = 0;      // initialized on the first call only

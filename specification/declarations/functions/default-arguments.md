@@ -198,6 +198,7 @@ declarations. An implementation need not diagnose a difference.
 
 ## Examples
 
+% tidal-example: reject
 ```cpp
 int f(int a, int b = 2, int c = 3);
 f(1);                       // f(1, 2, 3)

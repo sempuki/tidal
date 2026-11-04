@@ -666,6 +666,7 @@ unspecified place in the storage.
 
 ## Examples
 
+% tidal-example: reject
 ```cpp
 int* a = new int(5);            // 5
 int* b = new int();             // 0
@@ -693,6 +694,7 @@ int x;
 new (&x) int(3);                // rejected without a declared placement form
 ```
 
+% tidal-example: fragment
 ```cpp
 struct alignas(64) Block { int v; };
 Block* b = new Block;           // operator new(sizeof(Block), std::align_val_t(64))
@@ -708,6 +710,7 @@ int* g = new int[count];        // throws std::bad_array_new_length
 int* h = new (std::nothrow) int[count];  // null
 ```
 
+% tidal-example: reject
 ```cpp
 struct Plain {                  // ordinary alignment
   static void* operator new(std::size_t, std::align_val_t);

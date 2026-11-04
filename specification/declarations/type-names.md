@@ -238,6 +238,7 @@ An implementation need not diagnose the change of meaning
 
 ## Examples
 
+% tidal-example: reject
 ```cpp
 typedef unsigned long Count, *CountPtr;
 using Handler = void(int);      // a function type

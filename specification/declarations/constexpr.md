@@ -238,6 +238,7 @@ have `constinit`. An implementation need not diagnose such a declaration
 
 ## Examples
 
+% tidal-example: reject
 ```cpp
 constexpr int limit = 3;          // const int
 int buffer[limit];
@@ -278,6 +279,7 @@ A `consteval` constructor checks its argument where the program converts
 it. A `throw` on bad input makes the call not constant, so the
 implementation rejects the declaration ({rule}`CE-8`):
 
+% tidal-example: reject
 ```cpp
 struct Identifier {
   const char* text;

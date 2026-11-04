@@ -511,6 +511,7 @@ reference to a `volatile` type has no top-level `volatile` and is valid.
 
 ## Examples
 
+% tidal-example: reject
 ```cpp
 int *p, q;                     // p is int*, q is int
 int* a[3];                     // array of 3 pointers to int

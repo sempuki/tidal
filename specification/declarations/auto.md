@@ -337,6 +337,7 @@ the declaration is not valid.
 
 ## Examples
 
+% tidal-example: reject
 ```cpp
 const int& r = ci;
 auto a = r;                     // int

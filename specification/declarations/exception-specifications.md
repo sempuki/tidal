@@ -218,6 +218,7 @@ itself. An implementation need not diagnose such a dependency
 
 ## Examples
 
+% tidal-example: reject
 ```cpp
 void log(const char*) noexcept;
 void (*safe)(const char*) noexcept = log;   // valid

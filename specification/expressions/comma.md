@@ -139,6 +139,7 @@ of the left operand to `void` should prevent the warning.
 
 ## Examples
 
+% tidal-example: reject
 ```cpp
 int r = (a(), b());        // a() first, then b(); r gets the value of b()
 (x, y) = 9;                // assigns to y

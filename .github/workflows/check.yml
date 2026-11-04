@@ -51,6 +51,9 @@ jobs:
           mkdir -p build && touch build/run-start
           python3 -I tools/run_tests.py --compilers containers --report build/RESULTS.md
 
+      - name: Page examples
+        run: python3 -I tools/check_examples.py --compilers containers
+
       # Entries that this run did not use belong to old tests or old
       # images. Dropping them keeps the cache from growing without bound.
       - name: Prune test result cache

@@ -397,7 +397,7 @@ the program is not valid.
 
 :::{rule} OVL-14
 :kind: required
-:tests: foundations/overload-resolution/init-constructor-against-conversion.cpp foundations/overload-resolution/init-constructor-conversion-tie.cpp foundations/overload-resolution/init-conversion-to-derived.cpp foundations/overload-resolution/init-qualified-result.cpp foundations/overload-resolution/init-copy-explicit-conversion.cpp foundations/overload-resolution/init-copy-constructor-standard-only.cpp
+:tests: foundations/overload-resolution/init-constructor-against-conversion.cpp foundations/overload-resolution/init-constructor-conversion-tie.cpp foundations/overload-resolution/init-conversion-to-derived.cpp foundations/overload-resolution/init-qualified-result.cpp foundations/overload-resolution/init-copy-explicit-conversion.cpp foundations/overload-resolution/init-copy-constructor-standard-only.cpp classes/constructors/return-owner-converts-to-base-owner.cpp
 
 The initialization of an object of class `T` from one initializer `v`
 has these candidates:
@@ -787,6 +787,7 @@ the argument is valid.
 
 ## Examples
 
+% tidal-example: reject
 ```cpp
 void show(int);                  // 1
 void show(long);                 // 2
@@ -822,8 +823,8 @@ struct Self {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 149
-of 176 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 150
+of 177 tests.
 
 One question on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on overloading, references, and list initialization (`reports/review/2026-11-03-gap-review-questions-overloading.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
 

@@ -336,6 +336,7 @@ and with `-m32`, and try the types in this order:
 
 ## Examples
 
+% tidal-example: reject
 ```cpp
 enum E { A, B, C = 10, D, F = B + 1 };   // 0, 1, 10, 11, 2
 

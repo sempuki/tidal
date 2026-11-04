@@ -282,6 +282,7 @@ The parameter objects of one call are destroyed in an unspecified order.
 
 ## Examples
 
+% tidal-example: reject
 ```cpp
 int x = 0;
 decltype((x))                      // int&: an lvalue

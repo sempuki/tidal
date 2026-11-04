@@ -68,6 +68,7 @@ counts and next steps.
     tools/run_tests.py --report tests/RESULTS.md   # full matrix
     tools/run_tests.py --compilers clang-host,gcc-host   # host only, no containers
     tools/check_specification.py                     # rules and tests refer to each other
+    tools/check_examples.py                 # the page examples compile, or carry a marker
     tools/build_site.py                     # build/site (HTML, searchable)
     tools/frontend_check.py                 # the compiler front end against its baseline
     tools/check_all.sh                      # all of the above; run before pushing

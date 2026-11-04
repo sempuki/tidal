@@ -342,6 +342,7 @@ The matrix compilers choose in this way:
 
 ## Examples
 
+% tidal-example: reject
 ```cpp
 unsigned u = -1;           // ~0u
 unsigned char uc = 300;    // 44: the low 8 bits

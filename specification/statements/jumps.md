@@ -111,7 +111,7 @@ be inside the lambda too.
 
 :::{rule} JMP-3
 :kind: required
-:tests: statements/jumps/return-converts.cpp statements/jumps/return-braced.cpp statements/jumps/return-void-expression.cpp statements/jumps/void-function-return-void-expression.cpp
+:tests: statements/jumps/return-converts.cpp statements/jumps/return-braced.cpp statements/jumps/return-void-expression.cpp statements/jumps/void-function-return-void-expression.cpp classes/constructors/return-owner-converts-to-base-owner.cpp
 
 In a function that returns a value, the value of `return` is converted
 to the return type, and a braced list initializes the result. In a
@@ -281,6 +281,7 @@ constructor one time (CPY-12).
 
 ## Examples
 
+% tidal-example: reject
 ```cpp
 for (int i = 0; i < 3; ++i) {
   for (int j = 0; j < 3; ++j) {
@@ -351,7 +352,7 @@ int pick(int v) {
 
 ## Evidence
 
-All eight compilers agree on 57 of 60 tests. The results are in
+All eight compilers agree on 58 of 61 tests. The results are in
 `tests/RESULTS.md`.
 
 - JMP-6: GCC accepts a `goto` past a variable without an initializer

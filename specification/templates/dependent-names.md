@@ -694,6 +694,7 @@ valid. An implementation need not diagnose a break of this rule.
 
 Two phases, and the lookup of a dependent call:
 
+% tidal-example: reject
 ```cpp
 int scale(double) { return 1; }
 namespace geo { struct Point {}; }
@@ -712,6 +713,7 @@ int y = measure(1);             // rejected: area(int) is not found
 
 A dependent base:
 
+% tidal-example: reject
 ```cpp
 template <class T> struct Base { int size = 0; };
 template <class T> struct List : Base<T> {
@@ -723,6 +725,7 @@ template <class T> struct List : Base<T> {
 
 The keywords:
 
+% tidal-example: reject
 ```cpp
 template <class C> int first(C& items) {
   typename C::value_type* p = items.data();       // a type
@@ -757,6 +760,7 @@ A second lookup through `this` or the current instantiation
 (DEP-13, DEP-35). A member of a class hides the same member of its
 {term}`virtual bases <virtual base>` ({rule}`DER-4`):
 
+% tidal-example: reject
 ```cpp
 struct Fixed { int m = 1; };
 struct Extra : virtual Fixed { int m = 2; };

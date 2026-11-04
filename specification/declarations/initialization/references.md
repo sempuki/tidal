@@ -283,6 +283,7 @@ that `new` makes, bound to a temporary ({question}`Q-0180`).
 
 ## Examples
 
+% tidal-example: reject
 ```cpp
 long l = 1;
 int& r = l;                  // rejected: different type

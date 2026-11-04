@@ -269,6 +269,7 @@ An `if` with a constant condition takes only the selected branch. A
 
 ## Examples
 
+% tidal-example: reject
 ```cpp
 int pick(int, int b) { return b; }   // the first parameter has no name
 

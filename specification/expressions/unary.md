@@ -366,6 +366,7 @@ declared as an array, because the parameter is a pointer (DCL-8).
 
 ## Examples
 
+% tidal-example: reject
 ```cpp
 char c = 1;
 +c;                     // int

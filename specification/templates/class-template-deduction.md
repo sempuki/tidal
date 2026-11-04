@@ -527,6 +527,7 @@ apply, such as {rule}`CTOR-25`, {rule}`DEL-1`, and {rule}`ACC-3`.
 
 ## Examples
 
+% tidal-example: reject
 ```cpp
 template <class T> struct Box { Box(T); };
 Box a(1);                         // Box<int>
@@ -551,6 +552,7 @@ template <class... B> struct Mix : B... { int x; };
 Mix m{5};                         // Mix<>: the pack before x takes no element
 ```
 
+% tidal-example: reject
 ```cpp
 template <class T> struct Size {
   T value;
@@ -564,6 +566,7 @@ Size x(1), y(2);                  // both Size<int>
 Size u(1), v(2.0);                // rejected: Size<int> and Size<double>
 ```
 
+% tidal-example: reject
 ```cpp
 template <class T, class U = T> struct Pair { constexpr Pair(T, U) {} };
 Pair<int> p(1, 2.5);              // Pair<int, int>: U takes its default
@@ -585,6 +588,7 @@ An alias that fixes an argument gives a guide whose parameter has the
 fixed type (CTAD-14). The argument for that parameter converts, and
 deduction does not use it:
 
+% tidal-example: diverges
 ```cpp
 template <class T, class U> struct Duo { Duo(T, U); };
 template <class U> using IntDuo = Duo<int, U>;
@@ -599,6 +603,7 @@ conversion to `const char*` both have exact-match rank
 ({rule}`ICS-2`). The guide that is not a template then wins
 ({rule}`OVL-27`).
 
+% tidal-example: reject
 ```cpp
 template <class T> struct Mark {
   Mark(T);

@@ -793,6 +793,7 @@ result is an integer type or a floating-point type of other rank
 
 ## Examples
 
+% tidal-example: reject
 ```cpp
 struct Base {};
 struct Derived : Base {};

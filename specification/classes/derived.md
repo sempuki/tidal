@@ -367,6 +367,7 @@ rejects such a cast.
 
 ## Examples
 
+% tidal-example: reject
 ```cpp
 struct Shape { int id; };
 struct Square : Shape { int side; };
@@ -401,6 +402,7 @@ Server s(3);                     // rejected: Socket(int) is private here
 A base name reached through two paths is ambiguous only if the paths
 lead to different classes (DER-4):
 
+% tidal-example: reject
 ```cpp
 struct Node { };
 struct Left : Node { };
@@ -419,6 +421,7 @@ struct Both : a::Item, b::Item {
 A class that inherits constructors keeps its implicit constructors
 (DER-8). The using-declaration also makes the class a non-aggregate:
 
+% tidal-example: reject
 ```cpp
 struct Plain { };
 struct Wrapper : Plain {
@@ -433,6 +436,7 @@ Wrapper bad{{}, 1};              // rejected: Wrapper is not an aggregate
 The access rules decide whether a derived class can use the destructor
 of a base (DER-21). A friend has access:
 
+% tidal-example: reject
 ```cpp
 class Handle { ~Handle() {} friend struct Owner; };
 struct Owner : virtual Handle { };
@@ -462,6 +466,7 @@ A mixin casts itself to the class that derives from it (DER-16). The
 protected constructor keeps other code from making a mixin that is not
 part of a `Self`, which DER-17 makes undefined:
 
+% tidal-example: reject
 ```cpp
 template <class Self> struct Doubling {
   int twice() const { return 2 * static_cast<const Self&>(*this).value(); }
@@ -481,6 +486,7 @@ A class with a virtual base has no `constexpr` constructor, so constant
 evaluation cannot create one (DER-12, {rule}`CE-2`). A `constexpr`
 function can still create one on a path that runs only at run time:
 
+% tidal-example: reject
 ```cpp
 struct Base { int n = 3; };
 struct Left : virtual Base { };

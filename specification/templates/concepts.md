@@ -534,6 +534,7 @@ that starts with `requires` is always a nested requirement.
 
 ## Examples
 
+% tidal-example: reject
 ```cpp
 template <class T> concept Whole = T(1) / 2 == 0;
 template <class T> concept Sized = requires (T t) {
@@ -560,6 +561,7 @@ instead. A nested requirement holds a concept-id, which is valid and
 only has the value `false` (CPT-35). A concept gives the requirement a
 template parameter (CPT-26).
 
+% tidal-example: reject
 ```cpp
 struct Label {};
 template <class T> concept Shape = requires (const T& s) { s.area(); };
@@ -576,6 +578,7 @@ static_assert(!Makes<int, 0>);                             // valid
 A concept cannot be a template argument ({rule}`TARG-7`). A class
 template that holds the value of the concept-id can be one:
 
+% tidal-example: reject
 ```cpp
 template <class T> concept Integral = T(1) / 2 == 0;
 template <class T> struct IsIntegral { static constexpr bool value = Integral<T>; };
@@ -596,6 +599,7 @@ template <class T> concept Tagged = requires {
 static_assert(!Tagged<int>);               // false, and no error
 ```
 
+% tidal-example: diverges
 ```cpp
 template <class T> int size_of(const T& t) {
   if constexpr (requires { t.size(); })    // true if t.size() is valid

@@ -76,6 +76,7 @@ the same deleted definition.
 
 ## Examples
 
+% tidal-example: reject
 ```cpp
 void f(int);
 void f(double) = delete;
@@ -94,6 +95,7 @@ not valid in a call.
 A deleted overload still takes part in overload resolution, so each
 call picks a function by the usual ranks ({principle}`ICS-P2`):
 
+% tidal-example: reject
 ```cpp
 int twice(int v) { return 2 * v; }
 int twice(bool) = delete;
@@ -113,6 +115,7 @@ its call selects a deleted function, so a {term}`concept` can test the deletion
 ({rule}`CPT-26`). The same call outside a template is not valid
 ({rule}`CPT-27`):
 
+% tidal-example: reject
 ```cpp
 template <class T> concept Twiceable = requires(T v) { twice(v); };
 static_assert(!Twiceable<double>);         // fine

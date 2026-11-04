@@ -186,6 +186,7 @@ undefined. {term}`Constant evaluation <constant evaluation>` also picks one of t
 
 ## Examples
 
+% tidal-example: reject
 ```cpp
 int i;
 i = 3.9;          // 3

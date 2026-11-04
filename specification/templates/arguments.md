@@ -472,6 +472,7 @@ private members of a class that it receives as an argument.
 
 ## Examples
 
+% tidal-example: reject
 ```cpp
 template <int N> struct Bits { };
 template <class T> struct Box { };
@@ -488,6 +489,7 @@ Byte<300> e;                   // rejected: narrows
 
 Arguments of a pointer type need an object with one address:
 
+% tidal-example: reject
 ```cpp
 template <const int* P> struct At { };
 int counter;
@@ -511,6 +513,7 @@ Ref<alias> k;                  // the same type as Ref<value>
 
 Conversions that keep the address are valid. Others are not:
 
+% tidal-example: reject
 ```cpp
 template <const int* P> struct Read { };
 template <void* P> struct Raw { };
@@ -521,6 +524,7 @@ Raw<&values[0]> j;             // rejected: int* to void*
 
 Access is checked where the argument is written:
 
+% tidal-example: reject
 ```cpp
 template <class T> struct Box { };
 class Owner {
@@ -533,6 +537,7 @@ Box<Owner::Secret> theirs;     // rejected: Secret is private
 A template template parameter takes a class template or an alias
 template:
 
+% tidal-example: reject
 ```cpp
 template <class T> concept Small = sizeof(T) < 4;
 template <template <class> class C> struct Use { };

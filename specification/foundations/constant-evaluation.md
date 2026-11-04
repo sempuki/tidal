@@ -519,6 +519,7 @@ implementation uses at run time for the same expression.
 
 ## Examples
 
+% tidal-example: reject
 ```cpp
 constexpr int square(int v) { return v * v; }
 static_assert(square(4) == 16);       // fine

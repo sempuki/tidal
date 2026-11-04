@@ -390,6 +390,7 @@ status, and the first sentence of its answer section.
 | [Q-0374](Q-0374-early-call-member-subobject.md) | Is a call of a member function on a member that is not yet initialized undefined, when the function reads nothing? | provisional | The call is undefined |
 | [Q-0375](Q-0375-qualified-definition-inline-namespace.md) | For a member of an inline namespace, which namespace must a qualified definition lie outside? | provisional | `N` is the namespace that declares the member |
 | [Q-0376](Q-0376-tuple-index-type.md) | What type does the index of `get` have in the tuple protocol of a structured binding? | provisional | `std::size_t` |
+| [Q-0377](Q-0377-qualified-class-body-lookup.md) | Does the body of a class defined with a qualified name see the members of the qualifier without qualification? | provisional | Yes; the class body sees the members of the qualifier |
 
 ## Status values
 
