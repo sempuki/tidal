@@ -193,7 +193,7 @@ and {rule}`OVL-9` lists the {term}`built-in candidates <built-in candidate>`.
 
 :::{rule} OPR-15
 :kind: reject
-:tests: classes/operators/compound-not-synthesized.cpp classes/operators/left-operand-no-conversion-member.cpp classes/operators/member-and-nonmember-ambiguous.cpp classes/operators/no-candidate.cpp foundations/overload-resolution/enum-operand-no-parameter.cpp foundations/overload-resolution/builtin-enumeration-no-arithmetic.cpp foundations/overload-resolution/builtin-integer-only.cpp foundations/overload-resolution/builtin-bool-increment.cpp foundations/overload-resolution/builtin-member-pointer-order.cpp foundations/overload-resolution/builtin-other-shape-kept.cpp foundations/names/operator-lookup-block-hides.cpp foundations/names/operator-lookup-namespace-hides.cpp classes/comparisons/rewritten-ambiguous-strict.cpp
+:tests: classes/operators/compound-not-synthesized.cpp classes/operators/left-operand-no-conversion-member.cpp classes/operators/member-and-nonmember-ambiguous.cpp classes/operators/no-candidate.cpp overloading/overload-resolution/enum-operand-no-parameter.cpp overloading/overload-resolution/builtin-enumeration-no-arithmetic.cpp overloading/overload-resolution/builtin-integer-only.cpp overloading/overload-resolution/builtin-bool-increment.cpp overloading/overload-resolution/builtin-member-pointer-order.cpp overloading/overload-resolution/builtin-other-shape-kept.cpp foundations/names/operator-lookup-block-hides.cpp foundations/names/operator-lookup-namespace-hides.cpp classes/comparisons/rewritten-ambiguous-strict.cpp
 
 For an expression that OPR-6 describes, an ambiguity or no viable
 candidate makes the expression not valid. The rule is a specific case of

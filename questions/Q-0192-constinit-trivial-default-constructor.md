@@ -1,7 +1,7 @@
 # Q-0192: Does a class with a trivial default constructor and no initializer have a constant initializer?
 
 **Status:** provisional
-**Affects:** CE-24, CE-21, CINIT-1, `tests/expressions/constant-expressions/constant-initializer-zero-trivial-class.cpp`, `tests/expressions/constant-expressions/constant-initializer-trivial-class-block-static.cpp`, `tests/expressions/constant-expressions/constant-initializer-trivial-class-array.cpp`, `tests/expressions/constant-expressions/constant-initializer-trivial-empty-class.cpp`
+**Affects:** CE-24, CE-21, CINIT-1, `tests/foundations/constant-evaluation/constant-initializer-zero-trivial-class.cpp`, `tests/foundations/constant-evaluation/constant-initializer-trivial-class-block-static.cpp`, `tests/foundations/constant-evaluation/constant-initializer-trivial-class-array.cpp`, `tests/foundations/constant-evaluation/constant-initializer-trivial-empty-class.cpp`
 
 ## Context
 
@@ -29,15 +29,15 @@ variable, and the members read as zero at run time. Clang 18 and Clang
 
 ## Evidence
 
-- `tests/expressions/constant-expressions/constant-initializer-zero-scalar.cpp`
-- `tests/expressions/constant-expressions/constant-initializer-zero-trivial-class.cpp`,
+- `tests/foundations/constant-evaluation/constant-initializer-zero-scalar.cpp`
+- `tests/foundations/constant-evaluation/constant-initializer-zero-trivial-class.cpp`,
   with overrides for GCC and EDG
-- `tests/expressions/constant-expressions/constant-initializer-trivial-class-block-static.cpp`,
+- `tests/foundations/constant-evaluation/constant-initializer-trivial-class-block-static.cpp`,
   with overrides for GCC and EDG
-- `tests/expressions/constant-expressions/constant-initializer-trivial-class-array.cpp`,
+- `tests/foundations/constant-evaluation/constant-initializer-trivial-class-array.cpp`,
   with overrides for GCC and EDG
-- `tests/expressions/constant-expressions/constant-initializer-trivial-empty-class.cpp`
-- `tests/expressions/constant-expressions/result-unset-member.cpp`
+- `tests/foundations/constant-evaluation/constant-initializer-trivial-empty-class.cpp`
+- `tests/foundations/constant-evaluation/result-unset-member.cpp`
 - The gap review of question cluster 4
   (`reports/review/2026-11-03-gap-review-question-cluster-4.md`) reads
   the reference.

@@ -35,7 +35,7 @@ matrix shows one outcome.
   |---|---|---|
   | `classes/virtual/virtual-not-defined.cpp` | VIRT-20 | links |
   | `declarations/inline/inline-in-one-unit-only.cpp` | INL-7 | does not link |
-  | `expressions/sequencing/implicit-calls.cpp` | NEW-14 | Clang omits a `new` and `delete` pair |
+  | `foundations/evaluation-order/implicit-calls.cpp` | NEW-14 | Clang omits a `new` and `delete` pair |
   | three sanitizer tests | NEW-5, OBJ-2, LAM-19 | the sanitizer reports nothing |
 
   The first two tests have overrides for the variants. The third test

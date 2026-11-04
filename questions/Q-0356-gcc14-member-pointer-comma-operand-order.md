@@ -19,7 +19,7 @@ records its turn and then gives an object or a member pointer:
 
 GCC 14 takes the left operand first when the left operand is a call
 that returns a reference, and for `->*` with a comma expression on the
-left. `tests/expressions/sequencing/member-pointer-object-first.cpp`
+left. `tests/foundations/evaluation-order/member-pointer-object-first.cpp`
 passes on GCC 14.
 
 ## Evidence

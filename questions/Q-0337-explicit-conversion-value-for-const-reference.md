@@ -1,7 +1,7 @@
 # Q-0337: Can direct initialization of an lvalue reference to `const` use an explicit conversion function that does not return an lvalue?
 
 **Status:** provisional
-**Affects:** ICS-45, OVL-15, `tests/foundations/conversion-sequences/user-defined-explicit-reference-value.cpp`, `tests/foundations/conversion-sequences/user-defined-explicit-reference-xvalue.cpp`
+**Affects:** ICS-45, OVL-15, `tests/overloading/conversion-sequences/user-defined-explicit-reference-value.cpp`, `tests/overloading/conversion-sequences/user-defined-explicit-reference-xvalue.cpp`
 **Parent:** Q-0156, which covers rvalue references
 
 ## Context

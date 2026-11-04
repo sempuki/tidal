@@ -1,7 +1,7 @@
 # Q-0187: In a call with no object, does a member's object parameter take part in overload resolution?
 
 **Status:** provisional
-**Affects:** OVL-23, OVL-25, OVL-3, `tests/foundations/overload-resolution/no-object-ref-qualified-member.cpp`
+**Affects:** OVL-23, OVL-25, OVL-3, `tests/overloading/overload-resolution/no-object-ref-qualified-member.cpp`
 
 ## Context
 
@@ -22,7 +22,7 @@ ambiguous call. Clang and GCC report a call without an object. GCC names
 
 ## Evidence
 
-`tests/foundations/overload-resolution/no-object-ref-qualified-member.cpp`.
+`tests/overloading/overload-resolution/no-object-ref-qualified-member.cpp`.
 The same split appears for `S::put(1)` at namespace scope: GCC accepts
 the call, and Clang and EDG reject it.
 

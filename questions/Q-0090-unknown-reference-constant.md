@@ -1,7 +1,7 @@
 # Q-0090: Can constant evaluation use a reference whose referent is unknown, if it does not read through it?
 
 **Status:** settled
-**Affects:** CE-18, `tests/expressions/constant-expressions/unknown-reference-not-read.cpp`
+**Affects:** CE-18, `tests/foundations/constant-evaluation/unknown-reference-not-read.cpp`
 
 ## Context
 

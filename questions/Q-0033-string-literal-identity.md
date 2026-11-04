@@ -1,7 +1,7 @@
 # Q-0033: May constant evaluation compare the addresses of two string literals?
 
 **Status:** provisional
-**Affects:** CE-13, PRIM-9, `tests/expressions/constant-expressions/string-literal-identity.cpp`, `tests/expressions/primary/string-compare-constant.cpp`
+**Affects:** CE-13, PRIM-9, `tests/foundations/constant-evaluation/string-literal-identity.cpp`, `tests/expressions/primary/string-compare-constant.cpp`
 
 ## Context
 

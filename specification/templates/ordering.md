@@ -271,7 +271,7 @@ parameter at that position ({question}`Q-0216`).
 
 :::{rule} ORD-13
 :kind: required
-:tests: templates/ordering/constraints-partial.cpp templates/ordering/constraints-conversion.cpp templates/ordering/constraints-different-heads.cpp templates/ordering/constraints-conversion-results-differ.cpp templates/ordering/constraints-default-parameter.cpp templates/ordering/constraints-placeholder-parameter.cpp templates/ordering/constraints-type-constraint.cpp templates/ordering/constraints-ellipsis.cpp foundations/overload-resolution/address-no-target-constraints-different-parameters.cpp
+:tests: templates/ordering/constraints-partial.cpp templates/ordering/constraints-conversion.cpp templates/ordering/constraints-different-heads.cpp templates/ordering/constraints-conversion-results-differ.cpp templates/ordering/constraints-default-parameter.cpp templates/ordering/constraints-placeholder-parameter.cpp templates/ordering/constraints-type-constraint.cpp templates/ordering/constraints-ellipsis.cpp overloading/overload-resolution/address-no-target-constraints-different-parameters.cpp
 
 If no earlier step decides, the {term}`more constrained` template
 ({rule}`CNS-23`) is more specialized. {term}`Constraints <constraint>` decide between two

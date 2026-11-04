@@ -1,7 +1,7 @@
 # Q-0132: Does a braced list have a conversion sequence to a class parameter when the chosen constructor is `explicit`?
 
 **Status:** provisional
-**Affects:** ICS-8, ICS-19, `tests/foundations/conversion-sequences/chosen-explicit-copy-list.cpp`
+**Affects:** ICS-8, ICS-19, `tests/overloading/conversion-sequences/chosen-explicit-copy-list.cpp`
 **Parent:** Q-0294, the model of braced lists for references, arrays, and conversion sequences
 
 ## Context
@@ -27,7 +27,7 @@ With only the function for `Strict`, every compiler rejects the call.
 
 ## Evidence
 
-`tests/foundations/conversion-sequences/chosen-explicit-copy-list.cpp`.
+`tests/overloading/conversion-sequences/chosen-explicit-copy-list.cpp`.
 The probe compiled the test with `-std=c++23 -pedantic-errors` (Clang,
 GCC) and `--c++23 --strict` (EDG).
 

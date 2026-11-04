@@ -1,7 +1,7 @@
 # Q-0146: Which conditions must two functions meet before their constraints decide between them?
 
 **Status:** settled
-**Affects:** ORD-13, OVL-30, OVL-41, `tests/foundations/overload-resolution/tie-constraints-different-parameters.cpp`, `tests/foundations/overload-resolution/tie-constraints-default-parameter.cpp`, `tests/foundations/overload-resolution/tie-constraints-ellipsis.cpp`, `tests/templates/ordering/constraints-default-parameter.cpp`, `tests/templates/ordering/constraints-different-heads.cpp`, `tests/templates/ordering/constraints-conversion-results-differ.cpp`
+**Affects:** ORD-13, OVL-30, OVL-41, `tests/overloading/overload-resolution/tie-constraints-different-parameters.cpp`, `tests/overloading/overload-resolution/tie-constraints-default-parameter.cpp`, `tests/overloading/overload-resolution/tie-constraints-ellipsis.cpp`, `tests/templates/ordering/constraints-default-parameter.cpp`, `tests/templates/ordering/constraints-different-heads.cpp`, `tests/templates/ordering/constraints-conversion-results-differ.cpp`
 
 ## Context
 

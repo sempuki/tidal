@@ -1,7 +1,7 @@
 # Q-0335: Must a temporary that a constant evaluation makes have a literal type?
 
 **Status:** provisional
-**Affects:** CE-17, CE-23, CE-P1, `tests/expressions/constant-expressions/literal-temporary-volatile-member.cpp`, `tests/expressions/constant-expressions/nonliteral-variable-reached.cpp`, `tests/expressions/constant-expressions/nonliteral-temporary-in-function.cpp`
+**Affects:** CE-17, CE-23, CE-P1, `tests/foundations/constant-evaluation/literal-temporary-volatile-member.cpp`, `tests/foundations/constant-evaluation/nonliteral-variable-reached.cpp`, `tests/foundations/constant-evaluation/nonliteral-temporary-in-function.cpp`
 
 ## Context
 
@@ -22,8 +22,8 @@ literal type (CE-23). The evaluation of `Port(1).get()` in a
 
 ## Evidence
 
-- `tests/expressions/constant-expressions/literal-temporary-volatile-member.cpp`.
-- `tests/expressions/constant-expressions/literal-volatile-member.cpp`:
+- `tests/foundations/constant-evaluation/literal-temporary-volatile-member.cpp`.
+- `tests/foundations/constant-evaluation/literal-volatile-member.cpp`:
   every compiler rejects a `constexpr` variable of the same kind of
   class.
 

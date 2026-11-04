@@ -392,7 +392,7 @@ conversion removes a cv-qualifier or adds an array bound.
 
 :::{rule} CV-8
 :kind: required
-:tests: declarations/declarators/const-integral-constant.cpp expressions/constant-expressions/constant-initializer-usable.cpp
+:tests: declarations/declarators/const-integral-constant.cpp foundations/constant-evaluation/constant-initializer-usable.cpp
 
 A `const` variable of integer or enumeration type with a
 {term}`constant initializer` is {term}`usable in constant expressions`

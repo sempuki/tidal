@@ -1,7 +1,7 @@
 # Q-0140: Is a call valid when it uses a default argument that two scopes give?
 
 **Status:** provisional
-**Affects:** OVL-38, `tests/foundations/overload-resolution/default-from-two-scopes.cpp`, `tests/foundations/overload-resolution/default-from-two-scopes-same.cpp`, `tests/foundations/overload-resolution/default-from-two-scopes-same-value.cpp`, `tests/foundations/overload-resolution/default-from-two-scopes-same-literal.cpp`
+**Affects:** OVL-38, `tests/overloading/overload-resolution/default-from-two-scopes.cpp`, `tests/overloading/overload-resolution/default-from-two-scopes-same.cpp`, `tests/overloading/overload-resolution/default-from-two-scopes-same-value.cpp`, `tests/overloading/overload-resolution/default-from-two-scopes-same-literal.cpp`
 
 ## Context
 
@@ -31,7 +31,7 @@ around the whole argument and the spelling of a literal's value.
 
 ## Evidence
 
-`tests/foundations/overload-resolution/default-from-two-scopes.cpp` and
+`tests/overloading/overload-resolution/default-from-two-scopes.cpp` and
 `default-from-two-scopes-same.cpp`. GCC reports "default argument
 mismatch in overload resolution". Item AF-4 of the overload resolution
 inventory describes the call as not valid whenever two scopes give the

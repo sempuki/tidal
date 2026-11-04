@@ -1,7 +1,7 @@
 # Q-0154: Does the nearest-base tie-breaker apply to a braced list with one element of a derived class?
 
 **Status:** provisional
-**Affects:** ICS-19, ICS-36, `tests/foundations/conversion-sequences/list-class-nearest-base.cpp`
+**Affects:** ICS-19, ICS-36, `tests/overloading/conversion-sequences/list-class-nearest-base.cpp`
 **Parent:** Q-0294, the model of braced lists for references, arrays, and conversion sequences
 
 ## Context
@@ -23,9 +23,9 @@ With aggregate classes (ICS-18), every compiler chooses `Middle`
 
 ## Evidence
 
-`tests/foundations/conversion-sequences/list-class-nearest-base.cpp`,
-`tests/foundations/conversion-sequences/list-aggregate-nearest-base.cpp`,
-and the row "braced {d}" of the classes grid in `tests/foundations/conversion-sequences/grids/tables.md`. A source
+`tests/overloading/conversion-sequences/list-class-nearest-base.cpp`,
+`tests/overloading/conversion-sequences/list-aggregate-nearest-base.cpp`,
+and the row "braced {d}" of the classes grid in `tests/overloading/conversion-sequences/grids/tables.md`. A source
 reader's gap review (item M8) reports that the source gives the
 sequence conversion rank and does not say whether the tie-breaker
 applies.

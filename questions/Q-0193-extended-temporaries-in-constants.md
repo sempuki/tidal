@@ -1,7 +1,7 @@
 # Q-0193: Can a constant refer to, and read, every temporary that a namespace reference extends?
 
 **Status:** provisional
-**Affects:** CE-14, CE-3, `tests/expressions/constant-expressions/extended-temporary-member.cpp`, `tests/expressions/constant-expressions/extended-temporary-nested.cpp`, `tests/expressions/constant-expressions/read-extended-temporary-class.cpp`, `tests/expressions/constant-expressions/read-extended-temporary-nested.cpp`
+**Affects:** CE-14, CE-3, `tests/foundations/constant-evaluation/extended-temporary-member.cpp`, `tests/foundations/constant-evaluation/extended-temporary-nested.cpp`, `tests/foundations/constant-evaluation/read-extended-temporary-class.cpp`, `tests/foundations/constant-evaluation/read-extended-temporary-nested.cpp`
 
 ## Context
 
@@ -42,7 +42,7 @@ and 16.
 ## Evidence
 
 The test files listed under **Affects**, and
-`tests/expressions/constant-expressions/extended-temporary-through-cast.cpp`
+`tests/foundations/constant-evaluation/extended-temporary-through-cast.cpp`
 and `read-extended-temporary-not-const.cpp`.
 
 ## Options

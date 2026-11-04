@@ -1,7 +1,7 @@
 # Q-0161: Can a call through `&(C::f)` or `&f` use a set that holds a non-static member?
 
 **Status:** provisional
-**Affects:** OVL-44, OVL-21, OVL-36, `tests/foundations/overload-resolution/call-through-address-parenthesized-qualified.cpp`, `tests/foundations/overload-resolution/call-through-address-unqualified.cpp`, `tests/foundations/overload-resolution/call-through-address-unqualified-argument.cpp`
+**Affects:** OVL-44, OVL-21, OVL-36, `tests/overloading/overload-resolution/call-through-address-parenthesized-qualified.cpp`, `tests/overloading/overload-resolution/call-through-address-unqualified.cpp`, `tests/overloading/overload-resolution/call-through-address-unqualified-argument.cpp`
 
 ## Context
 
@@ -21,7 +21,7 @@ the parenthesized name. With `&Item::f`, Q-0143 records the results.
 
 ## Evidence
 
-`tests/foundations/overload-resolution/call-through-address-parenthesized-static.cpp`,
+`tests/overloading/overload-resolution/call-through-address-parenthesized-static.cpp`,
 `call-through-address-parenthesized-qualified.cpp`,
 `call-through-address-unqualified.cpp`, and
 `call-through-address-unqualified-argument.cpp`. Item E-7 of the gap review of

@@ -1,7 +1,7 @@
 # Q-0349: In constant evaluation, can a member of `std::allocator<T>` convert the result of `::operator new` to a pointer to a type other than `T`?
 
 **Status:** provisional
-**Affects:** CE-4, LSUP-11, `tests/expressions/constant-expressions/allocator-result-other-type.cpp`
+**Affects:** CE-4, LSUP-11, `tests/foundations/constant-evaluation/allocator-result-other-type.cpp`
 
 ## Context
 
@@ -28,7 +28,7 @@ conversion.
 
 ## Evidence
 
-`tests/expressions/constant-expressions/allocator-result-other-type.cpp`,
+`tests/foundations/constant-evaluation/allocator-result-other-type.cpp`,
 with overrides for GCC and EDG. Probes of the clean-room writer with
 Clang 22, GCC 16, and EDG 7.0 on the self-declared allocator of
 `tests/foundations/language-support/allocator-self-declared-constant.cpp`.

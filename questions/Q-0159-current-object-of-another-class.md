@@ -1,7 +1,7 @@
 # Q-0159: Is `*this` the implied object argument when its class is not the class of the members found?
 
 **Status:** provisional
-**Affects:** OVL-2, OVL-3, `tests/foundations/overload-resolution/current-object-other-class.cpp`
+**Affects:** OVL-2, OVL-3, `tests/overloading/overload-resolution/current-object-other-class.cpp`
 
 ## Context
 
@@ -22,7 +22,7 @@ Every compiler rejects the same call in a static member function of
 
 ## Evidence
 
-`tests/foundations/overload-resolution/current-object-other-class.cpp`.
+`tests/overloading/overload-resolution/current-object-other-class.cpp`.
 Item E-2 of the gap review of overload resolution
 (`reports/review/2026-10-31-gap-review-overload-resolution.md`)
 describes the call as not valid.

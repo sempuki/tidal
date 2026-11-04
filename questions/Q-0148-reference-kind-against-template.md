@@ -1,7 +1,7 @@
 # Q-0148: Does the function reference kind come before the template tie-breakers?
 
 **Status:** provisional
-**Affects:** OVL-27, OVL-28, OVL-29, `tests/foundations/overload-resolution/tie-reference-kind-before-template.cpp`, `tests/foundations/overload-resolution/tie-reference-kind-before-template-lvalue.cpp`, `tests/foundations/overload-resolution/tie-reference-kind-before-more-specialized.cpp`
+**Affects:** OVL-27, OVL-28, OVL-29, `tests/overloading/overload-resolution/tie-reference-kind-before-template.cpp`, `tests/overloading/overload-resolution/tie-reference-kind-before-template-lvalue.cpp`, `tests/overloading/overload-resolution/tie-reference-kind-before-more-specialized.cpp`
 
 ## Context
 
@@ -24,7 +24,7 @@ GCC applies the kind of reference first.
 
 ## Evidence
 
-`tests/foundations/overload-resolution/tie-reference-kind-before-template.cpp`,
+`tests/overloading/overload-resolution/tie-reference-kind-before-template.cpp`,
 `tie-reference-kind-before-template-lvalue.cpp`, and
 `tie-reference-kind-before-more-specialized.cpp`. The probe grid
 `grids/reference-kind.json`. Items RK-4 and RK-5 of the overload

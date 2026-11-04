@@ -1,7 +1,7 @@
 # Q-0138: Does the kind of a function reference break a tie between two conversion functions?
 
 **Status:** settled
-**Affects:** OVL-15, OVL-29, `tests/foundations/overload-resolution/tie-function-reference-kind.cpp`, `tests/foundations/overload-resolution/reference-function-both-kinds.cpp`
+**Affects:** OVL-15, OVL-29, `tests/overloading/overload-resolution/tie-function-reference-kind.cpp`, `tests/overloading/overload-resolution/reference-function-both-kinds.cpp`
 
 ## Context
 
@@ -22,7 +22,7 @@ then chooses `F&` for an lvalue reference without a tie-breaker.
 
 ## Evidence
 
-`tests/foundations/overload-resolution/tie-function-reference-kind.cpp`
+`tests/overloading/overload-resolution/tie-function-reference-kind.cpp`
 and `reference-function-both-kinds.cpp`. The probe grid
 `grids/reference-kind.json` covers every pair of the four conversion
 functions `F&`, `F&&`, template `T&`, and template `T&&`. Item RK-4 of

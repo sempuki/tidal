@@ -116,7 +116,7 @@ object of its class.
 
 :::{rule} ACC-3
 :kind: reject
-:tests: classes/access/access-after-overload-resolution.cpp classes/access/private-hides-public-base.cpp foundations/overload-resolution/chosen-not-accessible.cpp classes/access/target-selects-private.cpp classes/access/target-selects-private-in-friend.cpp classes/access/template-call-selects-private.cpp
+:tests: classes/access/access-after-overload-resolution.cpp classes/access/private-hides-public-base.cpp overloading/overload-resolution/chosen-not-accessible.cpp classes/access/target-selects-private.cpp classes/access/target-selects-private-in-friend.cpp classes/access/template-call-selects-private.cpp
 
 The implementation checks access after overload resolution
 ({rule}`OVL-34`) selects a function. If the selected

@@ -1,7 +1,7 @@
 # Q-0163: Does the result tie-breaker prefer the identity to a function pointer conversion?
 
 **Status:** settled
-**Affects:** OVL-26, `tests/foundations/overload-resolution/tie-conversion-result-templates.cpp`, `tests/foundations/overload-resolution/tie-conversion-result-noexcept.cpp`
+**Affects:** OVL-26, `tests/overloading/overload-resolution/tie-conversion-result-templates.cpp`, `tests/overloading/overload-resolution/tie-conversion-result-noexcept.cpp`
 
 ## Context
 
@@ -21,7 +21,7 @@ conversion.
 
 ## Evidence
 
-`tests/foundations/overload-resolution/tie-conversion-result-noexcept.cpp`
+`tests/overloading/overload-resolution/tie-conversion-result-noexcept.cpp`
 and `tie-conversion-result-templates.cpp`. Item O-3 of the gap review of
 overload resolution
 (`reports/review/2026-10-31-gap-review-overload-resolution.md`)

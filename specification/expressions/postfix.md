@@ -200,7 +200,7 @@ earlier members, and a member function body sees all members
 
 :::{rule} PFX-20
 :kind: reject
-:tests: expressions/postfix/member-function-not-called.cpp expressions/postfix/member-function-statement.cpp expressions/postfix/member-function-not-value.cpp expressions/postfix/member-function-called.cpp foundations/overload-resolution/call-parenthesized-member-access.cpp
+:tests: expressions/postfix/member-function-not-called.cpp expressions/postfix/member-function-statement.cpp expressions/postfix/member-function-not-value.cpp expressions/postfix/member-function-called.cpp overloading/overload-resolution/call-parenthesized-member-access.cpp
 
 A member access `x.f` or `p->f` that names a non-static member function
 must be the operand of a call, also inside parentheses ({rule}`VC-2`).

@@ -135,7 +135,7 @@ among the limits of translation that {principle}`TR-P6` lists.
 
 :::{rule} CE-1
 :kind: required
-:tests: expressions/constant-expressions/arithmetic-and-calls.cpp expressions/constant-expressions/lambda-call.cpp expressions/constant-expressions/virtual-call.cpp expressions/constant-expressions/try-without-throw.cpp expressions/constant-expressions/new-delete-transient.cpp expressions/constant-expressions/function-pointer-equality.cpp expressions/constant-expressions/call-through-function-pointer.cpp expressions/member-pointers/compare-equal-constant.cpp
+:tests: foundations/constant-evaluation/arithmetic-and-calls.cpp foundations/constant-evaluation/lambda-call.cpp foundations/constant-evaluation/virtual-call.cpp foundations/constant-evaluation/try-without-throw.cpp foundations/constant-evaluation/new-delete-transient.cpp foundations/constant-evaluation/function-pointer-equality.cpp foundations/constant-evaluation/call-through-function-pointer.cpp expressions/member-pointers/compare-equal-constant.cpp
 
 Constant evaluation can contain these operations:
 
@@ -150,7 +150,7 @@ Constant evaluation can contain these operations:
 
 :::{rule} CE-2
 :kind: reject
-:tests: expressions/constant-expressions/non-constexpr-call.cpp expressions/constant-expressions/implicit-constructor-calls-constexpr.cpp expressions/constant-expressions/implicit-constructor-member-not-constexpr.cpp expressions/constant-expressions/defaulted-constructor-member-not-constexpr.cpp expressions/constant-expressions/implicit-destructor-member-not-constexpr.cpp expressions/constant-expressions/nonliteral-variable-destructor-called.cpp expressions/constant-expressions/nonliteral-temporary-destructor-called.cpp expressions/constant-expressions/implicit-assignment-constant.cpp expressions/constant-expressions/implicit-assignment-member-not-constexpr.cpp expressions/constant-expressions/implicit-constructor-virtual-base.cpp expressions/constant-expressions/defaulted-constructor-virtual-base.cpp expressions/constant-expressions/implicit-copy-virtual-base.cpp expressions/constant-expressions/virtual-base-path-not-reached.cpp expressions/constant-expressions/call-through-function-pointer-not-constexpr.cpp classes/virtual/virtual-call-override-not-constexpr.cpp declarations/constexpr/function-not-constant-call.cpp
+:tests: foundations/constant-evaluation/non-constexpr-call.cpp foundations/constant-evaluation/implicit-constructor-calls-constexpr.cpp foundations/constant-evaluation/implicit-constructor-member-not-constexpr.cpp foundations/constant-evaluation/defaulted-constructor-member-not-constexpr.cpp foundations/constant-evaluation/implicit-destructor-member-not-constexpr.cpp foundations/constant-evaluation/nonliteral-variable-destructor-called.cpp foundations/constant-evaluation/nonliteral-temporary-destructor-called.cpp foundations/constant-evaluation/implicit-assignment-constant.cpp foundations/constant-evaluation/implicit-assignment-member-not-constexpr.cpp foundations/constant-evaluation/implicit-constructor-virtual-base.cpp foundations/constant-evaluation/defaulted-constructor-virtual-base.cpp foundations/constant-evaluation/implicit-copy-virtual-base.cpp foundations/constant-evaluation/virtual-base-path-not-reached.cpp foundations/constant-evaluation/call-through-function-pointer-not-constexpr.cpp classes/virtual/virtual-call-override-not-constexpr.cpp declarations/constexpr/function-not-constant-call.cpp
 
 During constant evaluation, the program can call only `constexpr` and
 `consteval` functions. An implicit or defaulted constructor,
@@ -162,7 +162,7 @@ must also obey this rule.
 
 :::{rule} CE-3
 :kind: reject
-:tests: expressions/constant-expressions/read-non-const-variable.cpp expressions/constant-expressions/read-const-runtime-init.cpp expressions/constant-expressions/read-const-constant-init.cpp expressions/constant-expressions/read-parameter-outside.cpp expressions/constant-expressions/const-enum-usable.cpp expressions/constant-expressions/const-volatile-not-usable.cpp expressions/constant-expressions/read-extended-temporary-not-const.cpp expressions/constant-expressions/read-extended-temporary-class.cpp expressions/constant-expressions/read-extended-temporary-nested.cpp expressions/constant-expressions/reference-reads-constant-object.cpp expressions/constant-expressions/parameter-if-constexpr-consteval.cpp expressions/constant-expressions/parameter-nested-call.cpp expressions/constant-expressions/parameter-static-assert.cpp expressions/constant-expressions/parameter-template-argument-consteval.cpp expressions/constant-expressions/reference-runtime-initializer.cpp expressions/constant-expressions/reference-constant-initializer.cpp expressions/constant-expressions/reference-to-local-not-usable.cpp
+:tests: foundations/constant-evaluation/read-non-const-variable.cpp foundations/constant-evaluation/read-const-runtime-init.cpp foundations/constant-evaluation/read-const-constant-init.cpp foundations/constant-evaluation/read-parameter-outside.cpp foundations/constant-evaluation/const-enum-usable.cpp foundations/constant-evaluation/const-volatile-not-usable.cpp foundations/constant-evaluation/read-extended-temporary-not-const.cpp foundations/constant-evaluation/read-extended-temporary-class.cpp foundations/constant-evaluation/read-extended-temporary-nested.cpp foundations/constant-evaluation/reference-reads-constant-object.cpp foundations/constant-evaluation/parameter-if-constexpr-consteval.cpp foundations/constant-evaluation/parameter-nested-call.cpp foundations/constant-evaluation/parameter-static-assert.cpp foundations/constant-evaluation/parameter-template-argument-consteval.cpp foundations/constant-evaluation/reference-runtime-initializer.cpp foundations/constant-evaluation/reference-constant-initializer.cpp foundations/constant-evaluation/reference-to-local-not-usable.cpp
 
 Constant evaluation must not do either of these with a variable that
 the evaluation did not create, unless the variable is
@@ -193,7 +193,7 @@ the evaluation does not read through.
 
 :::{rule} CE-30
 :kind: reject
-:tests: expressions/constant-expressions/read-parameter-outside.cpp expressions/constant-expressions/parameter-template-argument-consteval.cpp expressions/constant-expressions/parameter-if-constexpr-consteval.cpp expressions/constant-expressions/parameter-static-assert.cpp expressions/constant-expressions/parameter-nested-call.cpp expressions/constant-expressions/try-around-constexpr-variable.cpp expressions/constant-expressions/try-around-consteval-call.cpp
+:tests: foundations/constant-evaluation/read-parameter-outside.cpp foundations/constant-evaluation/parameter-template-argument-consteval.cpp foundations/constant-evaluation/parameter-if-constexpr-consteval.cpp foundations/constant-evaluation/parameter-static-assert.cpp foundations/constant-evaluation/parameter-nested-call.cpp foundations/constant-evaluation/try-around-constexpr-variable.cpp foundations/constant-evaluation/try-around-consteval-call.cpp
 
 Each place in the table of {principle}`CE-P4` starts its own constant
 evaluation where the place occurs. This holds also in the body of a
@@ -206,7 +206,7 @@ by {rule}`CE-8`.
 
 :::{rule} CE-4
 :kind: reject
-:tests: expressions/constant-expressions/reinterpret-cast.cpp expressions/constant-expressions/void-pointer-to-object.cpp foundations/language-support/allocator-self-declared-constant.cpp expressions/constant-expressions/allocator-result-other-type.cpp
+:tests: foundations/constant-evaluation/reinterpret-cast.cpp foundations/constant-evaluation/void-pointer-to-object.cpp foundations/language-support/allocator-self-declared-constant.cpp foundations/constant-evaluation/allocator-result-other-type.cpp
 
 Constant evaluation must not contain a `reinterpret_cast` or convert a
 pointer to `void` to a pointer to an object type. Inside a member of
@@ -217,7 +217,7 @@ pointer to `void` to a pointer to an object type. Inside a member of
 
 :::{rule} CE-5
 :kind: reject
-:tests: expressions/constant-expressions/modify-outside-object.cpp expressions/constant-expressions/modify-local-object.cpp foundations/language-support/construct-at-object-outside-evaluation.cpp
+:tests: foundations/constant-evaluation/modify-outside-object.cpp foundations/constant-evaluation/modify-local-object.cpp foundations/language-support/construct-at-object-outside-evaluation.cpp
 
 Constant evaluation must not change an object that existed before the
 evaluation started. The evaluation can change the objects that it
@@ -226,7 +226,7 @@ created.
 
 :::{rule} CE-6
 :kind: reject
-:tests: expressions/constant-expressions/inactive-union-member.cpp expressions/constant-expressions/active-union-member.cpp classes/unions/construct-activates-constant.cpp
+:tests: foundations/constant-evaluation/inactive-union-member.cpp foundations/constant-evaluation/active-union-member.cpp classes/unions/construct-activates-constant.cpp
 
 Constant evaluation must not read a union member that is not the active
 member ({rule}`UNI-6`). Each of these makes a member active:
@@ -238,7 +238,7 @@ member ({rule}`UNI-6`). Each of these makes a member active:
 
 :::{rule} CE-7
 :kind: reject
-:tests: expressions/constant-expressions/allocation-not-freed.cpp expressions/constant-expressions/allocation-in-result.cpp expressions/constant-expressions/delete-mismatch.cpp expressions/constant-expressions/double-delete.cpp
+:tests: foundations/constant-evaluation/allocation-not-freed.cpp foundations/constant-evaluation/allocation-in-result.cpp foundations/constant-evaluation/delete-mismatch.cpp foundations/constant-evaluation/double-delete.cpp
 
 Storage that a `new` expression gets during constant evaluation must be
 freed in the same evaluation. These conditions apply:
@@ -251,7 +251,7 @@ freed in the same evaluation. These conditions apply:
 
 :::{rule} CE-8
 :kind: reject
-:tests: expressions/constant-expressions/throw-evaluated.cpp expressions/constant-expressions/throw-not-evaluated.cpp exceptions/throw/constant-evaluation-throw-rejected.cpp exceptions/throw/constant-evaluation-throw-not-taken.cpp classes/virtual/dynamic-cast-reference-fails-constant.cpp expressions/constant-expressions/termination-noexcept-rejected.cpp expressions/constant-expressions/termination-rethrow-rejected.cpp expressions/constant-expressions/rethrow-not-reached.cpp declarations/constexpr/consteval-converting-constructor-throws.cpp expressions/new-delete/bad-bound-constant-negative.cpp expressions/new-delete/bad-bound-constant-too-few.cpp expressions/constant-expressions/try-around-constexpr-variable.cpp expressions/constant-expressions/try-around-consteval-call.cpp expressions/constant-expressions/termination-not-reached.cpp
+:tests: foundations/constant-evaluation/throw-evaluated.cpp foundations/constant-evaluation/throw-not-evaluated.cpp exceptions/throw/constant-evaluation-throw-rejected.cpp exceptions/throw/constant-evaluation-throw-not-taken.cpp classes/virtual/dynamic-cast-reference-fails-constant.cpp foundations/constant-evaluation/termination-noexcept-rejected.cpp foundations/constant-evaluation/termination-rethrow-rejected.cpp foundations/constant-evaluation/rethrow-not-reached.cpp declarations/constexpr/consteval-converting-constructor-throws.cpp expressions/new-delete/bad-bound-constant-negative.cpp expressions/new-delete/bad-bound-constant-too-few.cpp foundations/constant-evaluation/try-around-constexpr-variable.cpp foundations/constant-evaluation/try-around-consteval-call.cpp foundations/constant-evaluation/termination-not-reached.cpp
 
 Constant evaluation must not evaluate any of these operations, each of
 which throws:
@@ -271,7 +271,7 @@ point.
 
 :::{rule} CE-9
 :kind: reject
-:tests: expressions/constant-expressions/undefined-behavior.cpp expressions/constant-expressions/undefined-behavior-dangling.cpp expressions/postfix/member-call-null-pointer-constant.cpp templates/deduction/substitution-failure-undefined-operation.cpp classes/constructors/reference-default-member-read-constant.cpp
+:tests: foundations/constant-evaluation/undefined-behavior.cpp foundations/constant-evaluation/undefined-behavior-dangling.cpp expressions/postfix/member-call-null-pointer-constant.cpp templates/deduction/substitution-failure-undefined-operation.cpp classes/constructors/reference-default-member-read-constant.cpp
 
 Constant evaluation must not evaluate an operation that has undefined
 behavior. Each rule of class `undefined` gives such an operation. CE-26
@@ -286,7 +286,7 @@ reject each rule during constant evaluation.
 
 :::{rule} CE-11
 :kind: reject
-:tests: expressions/constant-expressions/integral-constant-array-bound.cpp expressions/constant-expressions/array-bound-floating.cpp expressions/constant-expressions/array-bound-not-constant.cpp expressions/constant-expressions/enumerator-floating.cpp expressions/constant-expressions/case-label-floating.cpp expressions/constant-expressions/case-label-not-constant.cpp
+:tests: foundations/constant-evaluation/integral-constant-array-bound.cpp foundations/constant-evaluation/array-bound-floating.cpp foundations/constant-evaluation/array-bound-not-constant.cpp foundations/constant-evaluation/enumerator-floating.cpp foundations/constant-evaluation/case-label-floating.cpp foundations/constant-evaluation/case-label-not-constant.cpp
 
 Each of these must be a constant expression of integer or enumeration
 type:
@@ -301,7 +301,7 @@ translation, is not valid in these places.
 
 :::{rule} CE-19
 :kind: reject
-:tests: expressions/constant-expressions/converted-constant-narrowing.cpp expressions/constant-expressions/explicit-condition-narrowing.cpp
+:tests: foundations/constant-evaluation/converted-constant-narrowing.cpp foundations/constant-evaluation/explicit-condition-narrowing.cpp
 
 Where a constant converts to another type for a use in CE-11, the
 conversion must not be a {term}`narrowing conversion`. The condition of `if constexpr` is an
@@ -314,14 +314,14 @@ exception (IF-16). The same condition applies to:
 
 :::{rule} CE-12
 :kind: reject
-:tests: expressions/constant-expressions/volatile-read.cpp expressions/constant-expressions/volatile-reference-read.cpp
+:tests: foundations/constant-evaluation/volatile-read.cpp foundations/constant-evaluation/volatile-reference-read.cpp
 
 Constant evaluation must not read an object through a `volatile` lvalue.
 :::
 
 :::{rule} CE-13
 :kind: reject
-:tests: expressions/constant-expressions/string-literal-identity.cpp expressions/constant-expressions/string-literal-identity-variables.cpp
+:tests: foundations/constant-evaluation/string-literal-identity.cpp foundations/constant-evaluation/string-literal-identity-variables.cpp
 
 Constant evaluation must not compare the addresses of two string
 literals for equality. Two equal literals can share storage or not, and
@@ -330,7 +330,7 @@ the choice is unspecified.
 
 :::{rule} CE-14
 :kind: reject
-:tests: expressions/constant-expressions/result-points-to-local.cpp expressions/constant-expressions/result-points-to-static.cpp expressions/constant-expressions/result-refers-to-temporary.cpp expressions/constant-expressions/result-refers-to-static-temporary.cpp expressions/constant-expressions/extended-temporary-through-cast.cpp expressions/constant-expressions/extended-temporary-static-local.cpp expressions/constant-expressions/extended-temporary-member.cpp expressions/constant-expressions/extended-temporary-nested.cpp expressions/constant-expressions/read-extended-temporary-class.cpp expressions/constant-expressions/read-extended-temporary-nested.cpp
+:tests: foundations/constant-evaluation/result-points-to-local.cpp foundations/constant-evaluation/result-points-to-static.cpp foundations/constant-evaluation/result-refers-to-temporary.cpp foundations/constant-evaluation/result-refers-to-static-temporary.cpp foundations/constant-evaluation/extended-temporary-through-cast.cpp foundations/constant-evaluation/extended-temporary-static-local.cpp foundations/constant-evaluation/extended-temporary-member.cpp foundations/constant-evaluation/extended-temporary-nested.cpp foundations/constant-evaluation/read-extended-temporary-class.cpp foundations/constant-evaluation/read-extended-temporary-nested.cpp
 
 A pointer or reference that is the value of a constant expression must
 not refer to an object with {term}`automatic storage` duration or to a temporary
@@ -342,7 +342,7 @@ static ({question}`Q-0193`).
 
 :::{rule} CE-15
 :kind: reject
-:tests: expressions/constant-expressions/relational-unrelated-pointers.cpp expressions/constant-expressions/relational-unrelated-array-elements.cpp
+:tests: foundations/constant-evaluation/relational-unrelated-pointers.cpp foundations/constant-evaluation/relational-unrelated-array-elements.cpp
 
 Constant evaluation must not compare pointers to unrelated objects with
 `<`, `>`, `<=`, or `>=`, because the result is unspecified.
@@ -359,7 +359,7 @@ where the division has a result at run time ({rule}`MUL-11`).
 
 :::{rule} CE-16
 :kind: reject
-:tests: expressions/constant-expressions/call-before-definition.cpp expressions/constant-expressions/member-call-before-definition.cpp
+:tests: foundations/constant-evaluation/call-before-definition.cpp foundations/constant-evaluation/member-call-before-definition.cpp
 
 If a `constexpr` function has only a declaration at the point where
 constant evaluation calls it, the call is not a constant expression. A
@@ -368,7 +368,7 @@ definition later in the {term}`translation unit` does not help.
 
 :::{rule} CE-17
 :kind: reject
-:tests: expressions/constant-expressions/static-local-not-reached.cpp expressions/constant-expressions/goto-not-reached.cpp expressions/constant-expressions/nonliteral-variable-not-reached.cpp expressions/constant-expressions/literal-not-reached.cpp expressions/constant-expressions/static-local-reached.cpp expressions/constant-expressions/goto-reached.cpp expressions/constant-expressions/static-local-not-usable-reached.cpp expressions/constant-expressions/static-local-usable-reached.cpp declarations/constexpr/function-static-local-evaluated.cpp expressions/constant-expressions/literal-temporary-volatile-member.cpp expressions/constant-expressions/nonliteral-variable-reached.cpp expressions/constant-expressions/nonliteral-temporary-in-function.cpp expressions/constant-expressions/nonliteral-variable-destructor-called.cpp expressions/constant-expressions/nonliteral-temporary-destructor-called.cpp
+:tests: foundations/constant-evaluation/static-local-not-reached.cpp foundations/constant-evaluation/goto-not-reached.cpp foundations/constant-evaluation/nonliteral-variable-not-reached.cpp foundations/constant-evaluation/literal-not-reached.cpp foundations/constant-evaluation/static-local-reached.cpp foundations/constant-evaluation/goto-reached.cpp foundations/constant-evaluation/static-local-not-usable-reached.cpp foundations/constant-evaluation/static-local-usable-reached.cpp declarations/constexpr/function-static-local-evaluated.cpp foundations/constant-evaluation/literal-temporary-volatile-member.cpp foundations/constant-evaluation/nonliteral-variable-reached.cpp foundations/constant-evaluation/nonliteral-temporary-in-function.cpp foundations/constant-evaluation/nonliteral-variable-destructor-called.cpp foundations/constant-evaluation/nonliteral-temporary-destructor-called.cpp
 
 Constant evaluation must not reach any of these constructs:
 
@@ -387,7 +387,7 @@ evaluation does not take.
 
 :::{rule} CE-21
 :kind: reject
-:tests: expressions/constant-expressions/result-unset-member.cpp expressions/constant-expressions/result-unset-array-element.cpp expressions/constant-expressions/result-every-part-set.cpp expressions/constant-expressions/result-returned-local-unset-element.cpp expressions/constant-expressions/result-returned-local-every-element.cpp expressions/constant-expressions/read-returned-local-unset-element.cpp expressions/constant-expressions/result-union-no-active-member.cpp expressions/constant-expressions/result-union-one-active-member.cpp expressions/constant-expressions/constant-initializer-zero-trivial-class.cpp expressions/constant-expressions/constant-initializer-trivial-class-block-static.cpp expressions/constant-expressions/constant-initializer-trivial-class-array.cpp
+:tests: foundations/constant-evaluation/result-unset-member.cpp foundations/constant-evaluation/result-unset-array-element.cpp foundations/constant-evaluation/result-every-part-set.cpp foundations/constant-evaluation/result-returned-local-unset-element.cpp foundations/constant-evaluation/result-returned-local-every-element.cpp foundations/constant-evaluation/read-returned-local-unset-element.cpp foundations/constant-evaluation/result-union-no-active-member.cpp foundations/constant-evaluation/result-union-one-active-member.cpp foundations/constant-evaluation/constant-initializer-zero-trivial-class.cpp foundations/constant-evaluation/constant-initializer-trivial-class-block-static.cpp foundations/constant-evaluation/constant-initializer-trivial-class-array.cpp
 
 The value of a constant expression of class or array type must give a
 value to each of its scalar parts. These conditions apply:
@@ -404,7 +404,7 @@ value to each of its scalar parts. These conditions apply:
 
 :::{rule} CE-22
 :kind: reject
-:tests: expressions/constant-expressions/copy-unset-member.cpp expressions/constant-expressions/copy-unset-array-element.cpp expressions/constant-expressions/unset-member-not-copied.cpp expressions/constant-expressions/copy-after-every-part-set.cpp expressions/constant-expressions/result-returned-local-unset-element.cpp declarations/initialization/forms/copy-indeterminate-unsigned-char.cpp expressions/constant-expressions/read-returned-local-unset-element.cpp
+:tests: foundations/constant-evaluation/copy-unset-member.cpp foundations/constant-evaluation/copy-unset-array-element.cpp foundations/constant-evaluation/unset-member-not-copied.cpp foundations/constant-evaluation/copy-after-every-part-set.cpp foundations/constant-evaluation/result-returned-local-unset-element.cpp declarations/initialization/forms/copy-indeterminate-unsigned-char.cpp foundations/constant-evaluation/read-returned-local-unset-element.cpp
 
 Constant evaluation must not read a scalar object that has no value
 ({rule}`OBJ-2`). The rule also applies where a run-time read is not
@@ -417,7 +417,7 @@ reads only what its body reads.
 
 :::{rule} CE-23
 :kind: required
-:tests: expressions/constant-expressions/literal-destructor.cpp expressions/constant-expressions/literal-member.cpp expressions/constant-expressions/literal-base.cpp expressions/constant-expressions/literal-volatile-member.cpp expressions/constant-expressions/literal-union-volatile-member.cpp expressions/constant-expressions/literal-union-all-volatile.cpp expressions/constant-expressions/literal-constexpr-destructor.cpp expressions/constant-expressions/literal-closure.cpp expressions/constant-expressions/literal-not-reached.cpp expressions/constant-expressions/literal-one-constexpr-constructor.cpp expressions/constant-expressions/literal-temporary-volatile-member.cpp
+:tests: foundations/constant-evaluation/literal-destructor.cpp foundations/constant-evaluation/literal-member.cpp foundations/constant-evaluation/literal-base.cpp foundations/constant-evaluation/literal-volatile-member.cpp foundations/constant-evaluation/literal-union-volatile-member.cpp foundations/constant-evaluation/literal-union-all-volatile.cpp foundations/constant-evaluation/literal-constexpr-destructor.cpp foundations/constant-evaluation/literal-closure.cpp foundations/constant-evaluation/literal-not-reached.cpp foundations/constant-evaluation/literal-one-constexpr-constructor.cpp foundations/constant-evaluation/literal-temporary-volatile-member.cpp
 
 A *literal type* is one of these types:
 
@@ -436,7 +436,7 @@ fails the last condition.
 
 :::{rule} CE-24
 :kind: required
-:tests: expressions/constant-expressions/constant-initializer-usable.cpp expressions/constant-expressions/constant-initializer-not-constant.cpp expressions/constant-expressions/constant-initializer-zero-scalar.cpp expressions/constant-expressions/constant-initializer-zero-trivial-class.cpp expressions/constant-expressions/constant-initializer-trivial-class-block-static.cpp expressions/constant-expressions/constant-initializer-trivial-class-array.cpp expressions/constant-expressions/constant-initializer-trivial-empty-class.cpp
+:tests: foundations/constant-evaluation/constant-initializer-usable.cpp foundations/constant-evaluation/constant-initializer-not-constant.cpp foundations/constant-evaluation/constant-initializer-zero-scalar.cpp foundations/constant-evaluation/constant-initializer-zero-trivial-class.cpp foundations/constant-evaluation/constant-initializer-trivial-class-block-static.cpp foundations/constant-evaluation/constant-initializer-trivial-class-array.cpp foundations/constant-evaluation/constant-initializer-trivial-empty-class.cpp
 
 A *constant initializer* is an initializer whose whole initialization of
 the variable, with each conversion and constructor call in it, is a
@@ -453,7 +453,7 @@ CE-21 judge the {term}`default initialization` ({rule}`INIT-9`):
 
 :::{rule} CE-18
 :kind: required
-:tests: expressions/constant-expressions/unknown-reference-not-read.cpp expressions/constant-expressions/unknown-reference-static-member.cpp
+:tests: foundations/constant-evaluation/unknown-reference-not-read.cpp foundations/constant-evaluation/unknown-reference-static-member.cpp
 
 A reference whose object is not known during constant evaluation can
 still occur in a constant expression if the evaluation does not read
@@ -497,7 +497,7 @@ This rule merged into {rule}`CE-22`.
 
 :::{rule} CE-10
 :kind: impl-defined
-:tests: expressions/constant-expressions/deep-recursion.cpp expressions/constant-expressions/moderate-recursion.cpp expressions/constant-expressions/long-loop.cpp expressions/constant-expressions/moderate-loop.cpp expressions/constant-expressions/moderate-loops-split.cpp expressions/constant-expressions/moderate-call-count.cpp expressions/constant-expressions/excessive-call-count.cpp templates/deduction/substitution-failure-evaluation-limit.cpp
+:tests: foundations/constant-evaluation/deep-recursion.cpp foundations/constant-evaluation/moderate-recursion.cpp foundations/constant-evaluation/long-loop.cpp foundations/constant-evaluation/moderate-loop.cpp foundations/constant-evaluation/moderate-loops-split.cpp foundations/constant-evaluation/moderate-call-count.cpp foundations/constant-evaluation/excessive-call-count.cpp templates/deduction/substitution-failure-evaluation-limit.cpp
 
 An implementation sets limits on the depth of recursion and on the
 number of steps in one constant evaluation. The implementation rejects
@@ -514,7 +514,7 @@ these figures:
 
 :::{rule} CE-26
 :kind: no-diagnostic
-:tests: expressions/constant-expressions/unsequenced-not-detected.cpp expressions/constant-expressions/unsequenced-assignments-not-detected.cpp
+:tests: foundations/constant-evaluation/unsequenced-not-detected.cpp foundations/constant-evaluation/unsequenced-assignments-not-detected.cpp
 
 Constant evaluation must not evaluate two {term}`unsequenced` accesses
 to one {term}`memory location` where one access writes ({rule}`SEQ-4`,
@@ -523,7 +523,7 @@ to one {term}`memory location` where one access writes ({rule}`SEQ-4`,
 
 :::{rule} CE-27
 :kind: unspecified
-:tests: expressions/constant-expressions/order-may-differ-from-run.cpp expressions/constant-expressions/order-of-operands-may-differ-from-run.cpp
+:tests: foundations/constant-evaluation/order-may-differ-from-run.cpp foundations/constant-evaluation/order-of-operands-may-differ-from-run.cpp
 
 Where the order of evaluation is unspecified ({rule}`SEQ-1`,
 {rule}`SEQ-8`, {rule}`ASN-11`), constant evaluation also uses an

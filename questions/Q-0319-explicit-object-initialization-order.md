@@ -1,7 +1,7 @@
 # Q-0319: When is an explicit object parameter initialized, relative to the other arguments?
 
 **Status:** provisional
-**Affects:** SEQ-1, SEQ-2, `tests/expressions/sequencing/explicit-object-order-unspecified.cpp`
+**Affects:** SEQ-1, SEQ-2, `tests/foundations/evaluation-order/explicit-object-order-unspecified.cpp`
 
 ## Context
 

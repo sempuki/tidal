@@ -183,7 +183,7 @@ DCMP-5 deletes.
 
 :::{rule} DCMP-6
 :kind: required
-:tests: classes/comparisons/ne-declared-direct-ok.cpp classes/comparisons/ne-declared-not-rewritten.cpp classes/comparisons/non-member-reversed.cpp classes/comparisons/reversed-eq.cpp classes/comparisons/rewritten-ne.cpp classes/comparisons/rewritten-relational-reversed.cpp foundations/overload-resolution/rewritten-three-way-reversed.cpp
+:tests: classes/comparisons/ne-declared-direct-ok.cpp classes/comparisons/ne-declared-not-rewritten.cpp classes/comparisons/non-member-reversed.cpp classes/comparisons/reversed-eq.cpp classes/comparisons/rewritten-ne.cpp classes/comparisons/rewritten-relational-reversed.cpp overloading/overload-resolution/rewritten-three-way-reversed.cpp
 
 An expression with `==`, `!=`, `<`, `>`, `<=`, `>=`, or `<=>` also
 considers these candidates:

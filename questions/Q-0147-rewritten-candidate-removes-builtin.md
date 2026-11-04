@@ -1,7 +1,7 @@
 # Q-0147: Does a rewritten candidate remove the built-in candidate with the same parameter list?
 
 **Status:** provisional
-**Affects:** OVL-10, `tests/foundations/overload-resolution/builtin-removed-by-rewritten.cpp`
+**Affects:** OVL-10, `tests/overloading/overload-resolution/builtin-removed-by-rewritten.cpp`
 
 ## Context
 
@@ -23,7 +23,7 @@ that is not rewritten beats a rewritten one (OVL-32). A non-member
 
 ## Evidence
 
-`tests/foundations/overload-resolution/builtin-removed-by-rewritten.cpp`.
+`tests/overloading/overload-resolution/builtin-removed-by-rewritten.cpp`.
 Item BI-5 of the overload resolution inventory names rewritten
 candidates among those that remove a built-in candidate.
 

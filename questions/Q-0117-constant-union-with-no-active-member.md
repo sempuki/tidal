@@ -1,7 +1,7 @@
 # Q-0117: Is a union with no active member a valid constant?
 
 **Status:** provisional
-**Affects:** CE-21, TARG-19, `tests/expressions/constant-expressions/result-union-no-active-member.cpp`, `tests/templates/arguments/same-specialization-union-empty.cpp`
+**Affects:** CE-21, TARG-19, `tests/foundations/constant-evaluation/result-union-no-active-member.cpp`, `tests/templates/arguments/same-specialization-union-empty.cpp`
 
 ## Context
 

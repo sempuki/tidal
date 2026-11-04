@@ -79,7 +79,7 @@ not notice it.
 
 :::{rule} CX-1
 :kind: reject
-:tests: declarations/constexpr/variable-const.cpp declarations/constexpr/variable-not-constant.cpp declarations/constexpr/variable-no-initializer.cpp declarations/constexpr/variable-non-literal.cpp declarations/constexpr/variable-assign.cpp declarations/constexpr/constexpr-ref-temporary-namespace.cpp declarations/constexpr/constexpr-ref-temporary-block.cpp declarations/constexpr/variable-default-constructor.cpp declarations/constexpr/variable-default-initialized-no-value.cpp expressions/constant-expressions/literal-destructor.cpp expressions/constant-expressions/literal-member.cpp expressions/constant-expressions/literal-base.cpp expressions/constant-expressions/literal-volatile-member.cpp expressions/constant-expressions/literal-union-all-volatile.cpp declarations/constexpr/variable-implicit-constructor-member-initializers.cpp declarations/constexpr/variable-implicit-constructor-member-unset.cpp declarations/constexpr/aggregate-reference-member-temporary-block.cpp
+:tests: declarations/constexpr/variable-const.cpp declarations/constexpr/variable-not-constant.cpp declarations/constexpr/variable-no-initializer.cpp declarations/constexpr/variable-non-literal.cpp declarations/constexpr/variable-assign.cpp declarations/constexpr/constexpr-ref-temporary-namespace.cpp declarations/constexpr/constexpr-ref-temporary-block.cpp declarations/constexpr/variable-default-constructor.cpp declarations/constexpr/variable-default-initialized-no-value.cpp foundations/constant-evaluation/literal-destructor.cpp foundations/constant-evaluation/literal-member.cpp foundations/constant-evaluation/literal-base.cpp foundations/constant-evaluation/literal-volatile-member.cpp foundations/constant-evaluation/literal-union-all-volatile.cpp declarations/constexpr/variable-implicit-constructor-member-initializers.cpp declarations/constexpr/variable-implicit-constructor-member-unset.cpp declarations/constexpr/aggregate-reference-member-temporary-block.cpp
 
 A `constexpr` variable is `const`, and it must obey these rules:
 
@@ -184,7 +184,7 @@ function from an {term}`overload set` ({rule}`OVL-18`) takes its address.
 
 :::{rule} CINIT-1
 :kind: reject
-:tests: declarations/constexpr/constinit-static.cpp declarations/constexpr/constinit-not-const.cpp declarations/constexpr/constinit-dynamic.cpp declarations/constexpr/constinit-nonconstexpr-dtor.cpp expressions/constant-expressions/constant-initializer-not-constant.cpp expressions/constant-expressions/constant-initializer-zero-trivial-class.cpp expressions/constant-expressions/constant-initializer-trivial-class-block-static.cpp expressions/constant-expressions/constant-initializer-trivial-class-array.cpp
+:tests: declarations/constexpr/constinit-static.cpp declarations/constexpr/constinit-not-const.cpp declarations/constexpr/constinit-dynamic.cpp declarations/constexpr/constinit-nonconstexpr-dtor.cpp foundations/constant-evaluation/constant-initializer-not-constant.cpp foundations/constant-evaluation/constant-initializer-zero-trivial-class.cpp foundations/constant-evaluation/constant-initializer-trivial-class-block-static.cpp foundations/constant-evaluation/constant-initializer-trivial-class-array.cpp
 
 A `constinit` variable must have a {term}`constant initializer`. For a
 variable with no initializer, {rule}`CE-24` and {rule}`CE-21` say when

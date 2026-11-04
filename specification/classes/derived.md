@@ -232,7 +232,7 @@ to a derived class.
 
 :::{rule} DER-12
 :kind: reject
-:tests: classes/derived/constexpr-ctor-virtual-base.cpp classes/derived/constexpr-dtor-virtual-base.cpp classes/derived/constexpr-object-virtual-base.cpp expressions/constant-expressions/implicit-constructor-virtual-base.cpp expressions/constant-expressions/defaulted-constructor-virtual-base.cpp expressions/constant-expressions/virtual-base-path-not-reached.cpp expressions/constant-expressions/implicit-copy-virtual-base.cpp
+:tests: classes/derived/constexpr-ctor-virtual-base.cpp classes/derived/constexpr-dtor-virtual-base.cpp classes/derived/constexpr-object-virtual-base.cpp foundations/constant-evaluation/implicit-constructor-virtual-base.cpp foundations/constant-evaluation/defaulted-constructor-virtual-base.cpp foundations/constant-evaluation/virtual-base-path-not-reached.cpp foundations/constant-evaluation/implicit-copy-virtual-base.cpp
 
 A class with a virtual base must not have a `constexpr` constructor or a
 `constexpr` destructor. Its implicit and defaulted constructors are not

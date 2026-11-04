@@ -1,7 +1,7 @@
 # Q-0144: Does a const object get a surrogate from a conversion function that is not const?
 
 **Status:** settled
-**Affects:** OVL-6, `tests/foundations/overload-resolution/surrogate-qualifiers.cpp`
+**Affects:** OVL-6, `tests/overloading/overload-resolution/surrogate-qualifiers.cpp`
 
 ## Context
 
@@ -20,7 +20,7 @@ With no call operator, GCC chooses the surrogate and then rejects the
 
 ## Evidence
 
-`tests/foundations/overload-resolution/surrogate-qualifiers.cpp`, and
+`tests/overloading/overload-resolution/surrogate-qualifiers.cpp`, and
 the rows "const S lvalue" of the object-call grid. Items CC-8 and gap
 G-10 of the overload resolution inventory.
 

@@ -89,7 +89,7 @@ A class operand is valid only through a usable conversion or an {term}`operator 
 
 :::{rule} SHF-4
 :kind: required
-:tests: expressions/shift/result-type.cpp expressions/shift/result-prvalue.cpp expressions/conversions/binary-operator-common-type-contexts.cpp
+:tests: expressions/shift/result-type.cpp expressions/shift/result-prvalue.cpp foundations/conversions/binary-operator-common-type-contexts.cpp
 
 Each operand goes through {term}`integer promotion` on its own. The
 result is a prvalue with the promoted type of the left operand. The type

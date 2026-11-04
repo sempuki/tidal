@@ -1,7 +1,7 @@
 # Q-0188: When two references bind directly to one array, is the reference to the known bound better?
 
 **Status:** provisional
-**Affects:** ICS-46, `tests/foundations/conversion-sequences/array-known-bound-direct.cpp`, `tests/foundations/conversion-sequences/list-string-literal-bound.cpp`, `tests/foundations/conversion-sequences/array-known-bound-direct-cv.cpp`
+**Affects:** ICS-46, `tests/overloading/conversion-sequences/array-known-bound-direct.cpp`, `tests/overloading/conversion-sequences/list-string-literal-bound.cpp`, `tests/overloading/conversion-sequences/array-known-bound-direct-cv.cpp`
 **Parent:** Q-0294, the model of braced lists for references, arrays, and conversion sequences
 
 ## Context

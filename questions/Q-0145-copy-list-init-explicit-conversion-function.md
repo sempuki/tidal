@@ -1,7 +1,7 @@
 # Q-0145: Can copy-list-initialization use an explicit conversion function for the copy constructor's parameter?
 
 **Status:** provisional
-**Affects:** OVL-40, `tests/foundations/overload-resolution/init-copy-list-explicit-conversion.cpp`
+**Affects:** OVL-40, `tests/overloading/overload-resolution/init-copy-list-explicit-conversion.cpp`
 
 ## Context
 
@@ -20,7 +20,7 @@ compiler uses the explicit conversion function (initialization grid).
 
 ## Evidence
 
-`tests/foundations/overload-resolution/init-copy-list-explicit-conversion.cpp`,
+`tests/overloading/overload-resolution/init-copy-list-explicit-conversion.cpp`,
 and the row "copy list init" of the initialization grid. Item CI-4 of
 the overload resolution inventory names direct-initialization only.
 

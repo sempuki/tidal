@@ -1,7 +1,7 @@
 # Q-0141: After a built-in candidate wins, does a class operand convert past its conversion function?
 
 **Status:** settled
-**Affects:** OVL-11, `tests/foundations/overload-resolution/builtin-chosen-other-operand.cpp`
+**Affects:** OVL-11, `tests/overloading/overload-resolution/builtin-chosen-other-operand.cpp`
 
 ## Context
 
@@ -23,7 +23,7 @@ of the winning candidate (`builtin-chosen-then-checked.cpp`).
 
 ## Evidence
 
-`tests/foundations/overload-resolution/builtin-chosen-other-operand.cpp`
+`tests/overloading/overload-resolution/builtin-chosen-other-operand.cpp`
 and `builtin-chosen-then-checked.cpp`. Item BI-16 of the overload
 resolution inventory.
 

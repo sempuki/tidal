@@ -118,7 +118,7 @@ initialization.
 
 :::{rule} ILC-8
 :kind: reject
-:tests: classes/initializer-lists/list-ctor-explicit-copy-list.cpp classes/initializer-lists/explicit-best-match-braced.cpp foundations/conversion-sequences/chosen-explicit-copy-list.cpp
+:tests: classes/initializer-lists/list-ctor-explicit-copy-list.cpp classes/initializer-lists/explicit-best-match-braced.cpp overloading/conversion-sequences/chosen-explicit-copy-list.cpp
 
 In copy list initialization, if the best match is `explicit`, the
 program is not valid. A worse match is not used. {rule}`ICS-8` gives

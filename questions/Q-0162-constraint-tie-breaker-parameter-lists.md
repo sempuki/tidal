@@ -1,7 +1,7 @@
 # Q-0162: Does the constraint tie-breaker apply when the parameter lists differ beyond the parameters that the call uses?
 
 **Status:** settled
-**Affects:** OVL-30, `tests/foundations/overload-resolution/tie-constraints-default-parameter.cpp`, `tests/foundations/overload-resolution/tie-constraints-ellipsis.cpp`
+**Affects:** OVL-30, `tests/overloading/overload-resolution/tie-constraints-default-parameter.cpp`, `tests/overloading/overload-resolution/tie-constraints-ellipsis.cpp`
 
 Duplicate of Q-0146.
 

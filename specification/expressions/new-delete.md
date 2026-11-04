@@ -412,7 +412,7 @@ destroys the elements of an array from the last element to the first.
 
 :::{rule} NEW-12
 :kind: required
-:tests: expressions/new-delete/allocation-before-initializer.cpp expressions/sequencing/new-placement-and-bound-order.cpp expressions/new-delete/throw-in-initializer-argument.cpp
+:tests: expressions/new-delete/allocation-before-initializer.cpp foundations/evaluation-order/new-placement-and-bound-order.cpp expressions/new-delete/throw-in-initializer-argument.cpp
 
 The allocation function is called after the placement arguments and
 the array bound are evaluated, and before the arguments of the
@@ -625,7 +625,7 @@ pointer, the behavior is undefined.
 
 :::{rule} NEW-18
 :kind: unspecified
-:tests: expressions/sequencing/new-placement-and-bound-order.cpp expressions/sequencing/new-class-placement-and-bound-order.cpp
+:tests: foundations/evaluation-order/new-placement-and-bound-order.cpp foundations/evaluation-order/new-class-placement-and-bound-order.cpp
 
 The placement arguments and the array bound of a `new` expression are
 evaluated in an unspecified order.

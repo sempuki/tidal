@@ -1,7 +1,7 @@
 # Q-0156: Can direct initialization of an rvalue reference use an explicit conversion function that returns a value?
 
 **Status:** provisional
-**Affects:** ICS-45, `tests/foundations/conversion-sequences/user-defined-explicit-rvalue-reference-value.cpp`
+**Affects:** ICS-45, `tests/overloading/conversion-sequences/user-defined-explicit-rvalue-reference-value.cpp`
 
 ## Context
 
@@ -31,7 +31,7 @@ covers the two rvalue reference columns.
 
 ## Evidence
 
-`tests/foundations/conversion-sequences/user-defined-explicit-rvalue-reference-value.cpp`
+`tests/overloading/conversion-sequences/user-defined-explicit-rvalue-reference-value.cpp`
 and `user-defined-explicit-reference-xvalue.cpp`.
 
 The table gives, for `static_cast` to each reference, whether the

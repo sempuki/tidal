@@ -1,7 +1,7 @@
 # Q-0189: Does the result tie-breaker compare a constructor with a conversion function?
 
 **Status:** provisional
-**Affects:** OVL-26, `tests/foundations/overload-resolution/tie-conversion-result-constructor.cpp`
+**Affects:** OVL-26, `tests/overloading/overload-resolution/tie-conversion-result-constructor.cpp`
 
 ## Context
 
@@ -23,7 +23,7 @@ ambiguous.
 
 ## Evidence
 
-`tests/foundations/overload-resolution/tie-conversion-result-constructor.cpp`
+`tests/overloading/overload-resolution/tie-conversion-result-constructor.cpp`
 and `init-constructor-conversion-tie.cpp`.
 
 ## Options

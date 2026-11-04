@@ -1,7 +1,7 @@
 # Q-0152: Do the same-rank tie-breakers come before the rvalue-reference preference, and does that preference come before the qualification step?
 
 **Status:** provisional
-**Affects:** ICS-28, ICS-31, ICS-32 to ICS-36, ICS-P5, `tests/foundations/conversion-sequences/tie-breaker-before-rvalue-reference.cpp`, `tests/foundations/conversion-sequences/fixed-enumeration-before-rvalue-reference.cpp`, `tests/foundations/conversion-sequences/floating-before-rvalue-reference.cpp`, `tests/foundations/conversion-sequences/rvalue-reference-before-qualification.cpp`
+**Affects:** ICS-28, ICS-31, ICS-32 to ICS-36, ICS-P5, `tests/overloading/conversion-sequences/tie-breaker-before-rvalue-reference.cpp`, `tests/overloading/conversion-sequences/fixed-enumeration-before-rvalue-reference.cpp`, `tests/overloading/conversion-sequences/floating-before-rvalue-reference.cpp`, `tests/overloading/conversion-sequences/rvalue-reference-before-qualification.cpp`
 
 ## Context
 
@@ -24,8 +24,8 @@ or ICS-31 prefers the other function.
 
 ## Evidence
 
-The four tests in **Affects**, and the order grid in `tests/foundations/conversion-sequences/grids/tables.md`
-(`tests/foundations/conversion-sequences/grids/order.json`). A source
+The four tests in **Affects**, and the order grid in `tests/overloading/conversion-sequences/grids/tables.md`
+(`tests/overloading/conversion-sequences/grids/order.json`). A source
 reader's gap review (items O1 and O2 of
 `reports/review/2026-10-31-gap-review-conversion-sequences.md`) reports
 that the same-rank tie-breakers belong to the rank comparison, before

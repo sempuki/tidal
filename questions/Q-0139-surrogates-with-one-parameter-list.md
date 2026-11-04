@@ -1,7 +1,7 @@
 # Q-0139: Is a call ambiguous when two surrogates differ only in the qualifiers of their conversion functions?
 
 **Status:** settled
-**Affects:** OVL-6, OVL-36, `tests/foundations/overload-resolution/surrogate-same-parameters.cpp`
+**Affects:** OVL-6, OVL-36, `tests/overloading/overload-resolution/surrogate-same-parameters.cpp`
 
 ## Context
 
@@ -23,7 +23,7 @@ types, every compiler reports the tie (object-call grid, columns
 
 ## Evidence
 
-`tests/foundations/overload-resolution/surrogate-same-parameters.cpp`.
+`tests/overloading/overload-resolution/surrogate-same-parameters.cpp`.
 Item AF-7 of the overload resolution inventory.
 
 ## Options

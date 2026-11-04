@@ -77,7 +77,7 @@ or on the point where the object is destroyed.
 
 :::{rule} VC-1
 :kind: required
-:tests: expressions/value-categories/lvalues.cpp expressions/value-categories/rvalue-reference-name-is-lvalue.cpp expressions/value-categories/more-categories.cpp expressions/value-categories/member-access-lvalue.cpp
+:tests: foundations/values/lvalues.cpp foundations/values/rvalue-reference-name-is-lvalue.cpp foundations/values/more-categories.cpp foundations/values/member-access-lvalue.cpp
 
 These expressions are lvalues:
 
@@ -94,7 +94,7 @@ These expressions are lvalues:
 
 :::{rule} VC-14
 :kind: reject
-:tests: expressions/value-categories/rvalue-reference-name-binding.cpp expressions/value-categories/rvalue-reference-parameter-name-binding.cpp
+:tests: foundations/values/rvalue-reference-name-binding.cpp foundations/values/rvalue-reference-parameter-name-binding.cpp
 
 The name of a variable of rvalue reference type is an lvalue (VC-1). An
 rvalue reference must not bind to that name directly.
@@ -102,7 +102,7 @@ rvalue reference must not bind to that name directly.
 
 :::{rule} VC-2
 :kind: required
-:tests: expressions/value-categories/prvalues.cpp expressions/value-categories/cv-prvalue-dropped.cpp expressions/value-categories/assign-to-class-prvalue.cpp
+:tests: foundations/values/prvalues.cpp foundations/values/cv-prvalue-dropped.cpp foundations/values/assign-to-class-prvalue.cpp
 
 These expressions are prvalues:
 
@@ -123,7 +123,7 @@ a braced list as the right operand.
 
 :::{rule} VC-12
 :kind: reject
-:tests: expressions/value-categories/address-of-prvalue.cpp expressions/value-categories/assign-to-prvalue.cpp expressions/value-categories/member-function-access-not-address.cpp expressions/value-categories/assign-to-scalar-prvalue.cpp expressions/additive/result-prvalue.cpp expressions/shift/result-prvalue.cpp expressions/conditional/mixed-category-prvalue.cpp expressions/conditional/const-volatile-lvalues-prvalue.cpp expressions/primary/this-prvalue.cpp expressions/primary/name-enumerator-prvalue.cpp
+:tests: foundations/values/address-of-prvalue.cpp foundations/values/assign-to-prvalue.cpp foundations/values/member-function-access-not-address.cpp foundations/values/assign-to-scalar-prvalue.cpp expressions/additive/result-prvalue.cpp expressions/shift/result-prvalue.cpp expressions/conditional/mixed-category-prvalue.cpp expressions/conditional/const-volatile-lvalues-prvalue.cpp expressions/primary/this-prvalue.cpp expressions/primary/name-enumerator-prvalue.cpp
 
 VC-2 gives the prvalues. A program must not take the address of a
 prvalue. A prvalue of a type that is not a class cannot be assigned to.
@@ -131,7 +131,7 @@ prvalue. A prvalue of a type that is not a class cannot be assigned to.
 
 :::{rule} VC-3
 :kind: required
-:tests: expressions/value-categories/xvalues.cpp expressions/value-categories/member-reference-of-prvalue.cpp expressions/value-categories/rvalue-ref-to-function-cast.cpp expressions/value-categories/static-member-of-prvalue.cpp expressions/value-categories/xvalue-array-subscript.cpp expressions/value-categories/xvalue-member-pointer.cpp
+:tests: foundations/values/xvalues.cpp foundations/values/member-reference-of-prvalue.cpp foundations/values/rvalue-ref-to-function-cast.cpp foundations/values/static-member-of-prvalue.cpp foundations/values/xvalue-array-subscript.cpp foundations/values/xvalue-member-pointer.cpp
 
 These expressions are xvalues:
 
@@ -150,14 +150,14 @@ reference member and a static data member give lvalues.
 
 :::{rule} VC-13
 :kind: reject
-:tests: expressions/value-categories/address-of-xvalue.cpp expressions/value-categories/address-of-xvalue-call.cpp
+:tests: foundations/values/address-of-xvalue.cpp foundations/values/address-of-xvalue-call.cpp
 
 A program must not take the address of an xvalue (VC-3).
 :::
 
 :::{rule} VC-11
 :kind: reject
-:tests: expressions/value-categories/discarded-call-deleted-destructor.cpp expressions/value-categories/decltype-call-deleted-destructor.cpp
+:tests: foundations/values/discarded-call-deleted-destructor.cpp foundations/values/decltype-call-deleted-destructor.cpp
 
 A discarded class prvalue makes a temporary object, so its destructor
 must be usable. In the operand of `decltype`, a call makes no temporary,
@@ -168,7 +168,7 @@ and the destructor is not needed (UNEV-1).
 
 :::{rule} VC-4
 :kind: required
-:tests: expressions/value-categories/guaranteed-elision.cpp expressions/value-categories/materialization-binds.cpp expressions/value-categories/prvalue-no-object-until-needed.cpp
+:tests: foundations/values/guaranteed-elision.cpp foundations/values/materialization-binds.cpp foundations/values/prvalue-no-object-until-needed.cpp
 
 A prvalue that initializes an object of the same type initializes that
 object directly. No temporary object exists, and no copy or move
@@ -178,7 +178,7 @@ cases that VC-5 and VC-8 list, and not before.
 
 :::{rule} VC-5
 :kind: required
-:tests: expressions/value-categories/discarded-prvalue-destroyed.cpp expressions/value-categories/discarded-prvalue-braced.cpp
+:tests: foundations/values/discarded-prvalue-destroyed.cpp foundations/values/discarded-prvalue-braced.cpp
 
 If an expression statement is only a class prvalue, the program makes a
 temporary object from the prvalue. The program calls the destructor of
@@ -187,7 +187,7 @@ the temporary when the statement ends.
 
 :::{rule} VC-6
 :kind: required
-:tests: expressions/value-categories/temporaries-reverse-order.cpp expressions/value-categories/temporaries-reverse-order-comma.cpp
+:tests: foundations/values/temporaries-reverse-order.cpp foundations/values/temporaries-reverse-order-comma.cpp
 
 The life of a temporary object ends when its full expression ends. A
 reference bound to the temporary or to a member of the temporary
@@ -198,7 +198,7 @@ of their creation.
 
 :::{rule} VC-8
 :kind: required
-:tests: expressions/value-categories/materialize-reference-binding.cpp expressions/value-categories/materialize-member-call.cpp expressions/value-categories/materialize-member-access.cpp expressions/value-categories/materialize-array-subscript.cpp expressions/value-categories/materialize-array-decay.cpp expressions/value-categories/temporary-constant-evaluation.cpp expressions/value-categories/materialize-pointer-to-member.cpp expressions/value-categories/array-prvalue-argument.cpp
+:tests: foundations/values/materialize-reference-binding.cpp foundations/values/materialize-member-call.cpp foundations/values/materialize-member-access.cpp foundations/values/materialize-array-subscript.cpp foundations/values/materialize-array-decay.cpp foundations/values/temporary-constant-evaluation.cpp foundations/values/materialize-pointer-to-member.cpp foundations/values/array-prvalue-argument.cpp
 
 A prvalue becomes a temporary object in these cases, in addition to
 VC-5:
@@ -214,7 +214,7 @@ Constant evaluation creates temporaries in the same cases.
 
 :::{rule} VC-9
 :kind: required
-:tests: expressions/value-categories/argument-lives-to-end.cpp expressions/value-categories/default-argument-temporary.cpp expressions/value-categories/return-temporaries-before-locals.cpp expressions/value-categories/declarators-separate.cpp expressions/value-categories/condition-temporaries.cpp expressions/value-categories/aggregate-element-temporaries.cpp expressions/value-categories/array-element-default-argument.cpp expressions/sequencing/full-expression-statement.cpp expressions/sequencing/full-expression-for-clauses.cpp expressions/sequencing/full-expression-subexpression-not.cpp expressions/value-categories/member-initializer-full-expression.cpp expressions/value-categories/init-capture-temporary.cpp
+:tests: foundations/values/argument-lives-to-end.cpp foundations/values/default-argument-temporary.cpp foundations/values/return-temporaries-before-locals.cpp foundations/values/declarators-separate.cpp foundations/values/condition-temporaries.cpp foundations/values/aggregate-element-temporaries.cpp foundations/values/array-element-default-argument.cpp foundations/evaluation-order/full-expression-statement.cpp foundations/evaluation-order/full-expression-for-clauses.cpp foundations/evaluation-order/full-expression-subexpression-not.cpp foundations/values/member-initializer-full-expression.cpp foundations/values/init-capture-temporary.cpp
 
 A *full expression* is an expression that is not part of a larger
 expression. The temporaries of a full expression end with the full
@@ -240,7 +240,7 @@ contains the lambda expression.
 
 :::{rule} VC-16
 :kind: required
-:tests: expressions/value-categories/parameter-belongs-to-caller.cpp expressions/value-categories/parameter-conversion-throws-in-caller.cpp
+:tests: foundations/values/parameter-belongs-to-caller.cpp foundations/values/parameter-conversion-throws-in-caller.cpp
 
 The caller initializes and destroys the parameter objects of a call. An
 exception from either step leaves the call expression in the caller and
@@ -252,7 +252,7 @@ does not end the program ({rule}`UNW-5`).
 
 :::{rule} VC-7
 :kind: unspecified
-:tests: expressions/value-categories/trivial-parameter-address.cpp expressions/value-categories/trivial-parameter-address-constructor.cpp
+:tests: foundations/values/trivial-parameter-address.cpp foundations/values/trivial-parameter-address-constructor.cpp
 
 An implementation can make an extra temporary copy of a trivially
 copyable class object for a function argument or a return value
@@ -262,7 +262,7 @@ same address is unspecified.
 
 :::{rule} VC-10
 :kind: impl-defined
-:tests: expressions/value-categories/parameter-destruction-point.cpp classes/constructors/parameter-destroyed-by-callee-constant.cpp
+:tests: foundations/values/parameter-destruction-point.cpp classes/constructors/parameter-destroyed-by-callee-constant.cpp
 
 Each implementation chooses where to destroy a parameter object, and
 documents the choice. The point is either the return from the function
@@ -275,7 +275,7 @@ that end a second destruction ({rule}`DTOR-7`).
 
 :::{rule} VC-15
 :kind: unspecified
-:tests: expressions/sequencing/parameter-destruction-order.cpp expressions/sequencing/parameter-destruction-order-three.cpp
+:tests: foundations/evaluation-order/parameter-destruction-order.cpp foundations/evaluation-order/parameter-destruction-order-three.cpp
 
 The parameter objects of one call are destroyed in an unspecified order.
 :::

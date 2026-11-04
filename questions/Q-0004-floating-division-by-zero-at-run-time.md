@@ -8,7 +8,7 @@
 `tests/expressions/multiplicative/ieee-types.cpp`,
 `tests/expressions/comparison/nan.cpp`,
 `tests/expressions/comparison/three-way-floating.cpp`,
-`tests/expressions/conversions/nan-to-bool.cpp`.
+`tests/foundations/conversions/nan-to-bool.cpp`.
 
 ## Context
 

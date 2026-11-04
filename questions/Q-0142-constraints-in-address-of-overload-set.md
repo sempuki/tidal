@@ -1,7 +1,7 @@
 # Q-0142: Do constraints reduce an overload set whose address is taken, with or without a target type?
 
 **Status:** provisional
-**Affects:** OVL-19, OVL-20, `tests/foundations/overload-resolution/address-more-constrained.cpp`, `tests/foundations/overload-resolution/address-no-target-constraints.cpp`, `tests/foundations/overload-resolution/address-no-target-more-constrained.cpp`, `tests/foundations/overload-resolution/address-no-target-constraints-different-parameters.cpp`
+**Affects:** OVL-19, OVL-20, `tests/overloading/overload-resolution/address-more-constrained.cpp`, `tests/overloading/overload-resolution/address-no-target-constraints.cpp`, `tests/overloading/overload-resolution/address-no-target-more-constrained.cpp`, `tests/overloading/overload-resolution/address-no-target-constraints-different-parameters.cpp`
 
 ## Context
 

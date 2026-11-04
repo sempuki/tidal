@@ -62,7 +62,7 @@ report the pair.
 
 :::{rule} SEQ-2
 :kind: required
-:tests: expressions/sequencing/callee-before-arguments.cpp expressions/sequencing/object-before-member-call-arguments.cpp expressions/sequencing/arguments-before-body.cpp expressions/sequencing/subscript-order.cpp expressions/sequencing/assignment-increment-defined.cpp expressions/sequencing/braced-list-order.cpp expressions/sequencing/compound-assignment-order.cpp expressions/sequencing/member-pointer-object-first.cpp expressions/sequencing/chained-assignment-order.cpp expressions/sequencing/assignment-right-before-left-index.cpp
+:tests: foundations/evaluation-order/callee-before-arguments.cpp foundations/evaluation-order/object-before-member-call-arguments.cpp foundations/evaluation-order/arguments-before-body.cpp foundations/evaluation-order/subscript-order.cpp foundations/evaluation-order/assignment-increment-defined.cpp foundations/evaluation-order/braced-list-order.cpp foundations/evaluation-order/compound-assignment-order.cpp foundations/evaluation-order/member-pointer-object-first.cpp foundations/evaluation-order/chained-assignment-order.cpp foundations/evaluation-order/assignment-right-before-left-index.cpp
 
 These evaluations take place in a fixed order:
 
@@ -82,7 +82,7 @@ SEQ-8 gives the order of the object.
 
 :::{rule} SEQ-9
 :kind: required
-:tests: expressions/sequencing/implicit-calls.cpp expressions/sequencing/implicit-calls-unwinding-and-operators.cpp
+:tests: foundations/evaluation-order/implicit-calls.cpp foundations/evaluation-order/implicit-calls-unwinding-and-operators.cpp
 
 A program calls a function without naming it in these places:
 
@@ -102,7 +102,7 @@ A program calls a function without naming it in these places:
 
 :::{rule} SEQ-5
 :kind: required
-:tests: expressions/sequencing/full-expression-side-effects.cpp expressions/sequencing/default-argument-temporary.cpp
+:tests: foundations/evaluation-order/full-expression-side-effects.cpp foundations/evaluation-order/default-argument-temporary.cpp
 
 All side effects of a full expression are complete before the next full
 expression is evaluated. Default arguments of a call, and temporaries
@@ -111,7 +111,7 @@ that they create, belong to the full expression that contains the call.
 
 :::{rule} SEQ-6
 :kind: required
-:tests: expressions/sequencing/overloaded-assignment-order.cpp expressions/sequencing/overloaded-shift-order.cpp expressions/sequencing/overloaded-subscript-order.cpp expressions/sequencing/overloaded-compound-assignment-order.cpp expressions/sequencing/overloaded-member-pointer-order.cpp expressions/sequencing/overloaded-explicit-call-order.cpp
+:tests: foundations/evaluation-order/overloaded-assignment-order.cpp foundations/evaluation-order/overloaded-shift-order.cpp foundations/evaluation-order/overloaded-subscript-order.cpp foundations/evaluation-order/overloaded-compound-assignment-order.cpp foundations/evaluation-order/overloaded-member-pointer-order.cpp foundations/evaluation-order/overloaded-explicit-call-order.cpp
 
 An overloaded operator ({rule}`OPR-7`) in operator notation keeps the
 order of the built-in operator for these operators:
@@ -129,7 +129,7 @@ call, and {rule}`SEQ-1` gives its order.
 
 :::{rule} SEQ-11
 :kind: required
-:tests: expressions/sequencing/operand-used-twice-evaluated-once.cpp expressions/sequencing/operand-used-twice-run-time.cpp
+:tests: foundations/evaluation-order/operand-used-twice-evaluated-once.cpp foundations/evaluation-order/operand-used-twice-run-time.cpp
 
 One evaluation of a construct evaluates each of its operands at most
 once. If the construct uses the result of an operand more than once,
@@ -161,7 +161,7 @@ This rule merged into {rule}`SEQ-2`.
 
 :::{rule} SEQ-4
 :kind: undefined
-:tests: expressions/sequencing/unsequenced-increments.cpp expressions/sequencing/unsequenced-constant-evaluation.cpp expressions/sequencing/adjacent-bitfields-unsequenced.cpp expressions/sequencing/volatile-reads-unsequenced.cpp expressions/sequencing/unsequenced-increments-run.cpp expressions/multiplicative/unsequenced-modification-run.cpp
+:tests: foundations/evaluation-order/unsequenced-increments.cpp foundations/evaluation-order/unsequenced-constant-evaluation.cpp foundations/evaluation-order/adjacent-bitfields-unsequenced.cpp foundations/evaluation-order/volatile-reads-unsequenced.cpp foundations/evaluation-order/unsequenced-increments-run.cpp expressions/multiplicative/unsequenced-modification-run.cpp
 
 If two {term}`unsequenced` evaluations both modify the same
 {term}`memory location`, or one modifies it and the other reads its value, the behavior
@@ -175,7 +175,7 @@ case of SEQ-4 for the operands of `*`, `/`, and `%` (decision 0052).
 
 :::{rule} SEQ-1
 :kind: unspecified
-:tests: expressions/sequencing/function-arguments-order.cpp expressions/sequencing/function-arguments-not-interleaved.cpp expressions/sequencing/calls-not-interleaved.cpp expressions/sequencing/default-argument-order.cpp expressions/sequencing/argument-read-and-write.cpp expressions/sequencing/explicit-object-order-unspecified.cpp expressions/sequencing/overloaded-explicit-call-order.cpp
+:tests: foundations/evaluation-order/function-arguments-order.cpp foundations/evaluation-order/function-arguments-not-interleaved.cpp foundations/evaluation-order/calls-not-interleaved.cpp foundations/evaluation-order/default-argument-order.cpp foundations/evaluation-order/argument-read-and-write.cpp foundations/evaluation-order/explicit-object-order-unspecified.cpp foundations/evaluation-order/overloaded-explicit-call-order.cpp
 
 The arguments of a function call, including its default arguments, are
 evaluated in an unspecified order. Each argument is evaluated completely
@@ -189,7 +189,7 @@ place in this order ({question}`Q-0319`).
 
 :::{rule} SEQ-8
 :kind: unspecified
-:tests: expressions/sequencing/calls-not-interleaved.cpp expressions/sequencing/comparison-operand-order.cpp expressions/sequencing/bitwise-operand-order.cpp expressions/sequencing/multiplicative-operand-order.cpp expressions/sequencing/member-operator-order.cpp expressions/sequencing/reversed-comparison-order.cpp
+:tests: foundations/evaluation-order/calls-not-interleaved.cpp foundations/evaluation-order/comparison-operand-order.cpp foundations/evaluation-order/bitwise-operand-order.cpp foundations/evaluation-order/multiplicative-operand-order.cpp foundations/evaluation-order/member-operator-order.cpp foundations/evaluation-order/reversed-comparison-order.cpp
 
 The operands of an operator are evaluated in an unspecified order,
 unless one of the rules below fixes the order. The order is unspecified
@@ -212,7 +212,7 @@ operand (SEQ-1).
 
 :::{rule} SEQ-7
 :kind: recommended
-:tests: expressions/sequencing/unsequenced-increments.cpp expressions/sequencing/unsequenced-read-and-increment.cpp
+:tests: foundations/evaluation-order/unsequenced-increments.cpp foundations/evaluation-order/unsequenced-read-and-increment.cpp
 
 An implementation should warn when it can see two unsequenced
 evaluations in one expression where both modify the same object, or

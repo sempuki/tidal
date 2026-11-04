@@ -1,7 +1,7 @@
 # Q-0034: Is a subscript of an array xvalue or an array member of a prvalue an xvalue?
 
 **Status:** settled
-**Affects:** PFX-3, VC-3, `tests/expressions/postfix/subscript-prvalue-array.cpp`, `tests/expressions/value-categories/xvalue-array-subscript.cpp`
+**Affects:** PFX-3, VC-3, `tests/expressions/postfix/subscript-prvalue-array.cpp`, `tests/foundations/values/xvalue-array-subscript.cpp`
 
 ## Context
 

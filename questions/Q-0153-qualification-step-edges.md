@@ -1,7 +1,7 @@
 # Q-0153: Does the qualification step compare array bounds, and does it compare a reference that binds a temporary?
 
 **Status:** provisional
-**Affects:** ICS-31, ICS-P2, `tests/foundations/conversion-sequences/qualification-array-bound.cpp`, `tests/foundations/conversion-sequences/qualification-reference-temporary.cpp`
+**Affects:** ICS-31, ICS-P2, `tests/overloading/conversion-sequences/qualification-array-bound.cpp`, `tests/overloading/conversion-sequences/qualification-reference-temporary.cpp`
 
 ## Context
 

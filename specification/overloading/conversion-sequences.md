@@ -198,7 +198,7 @@ different types.
 
 :::{rule} ICS-1
 :kind: required
-:tests: foundations/conversion-sequences/standard-top-level-cv.cpp foundations/conversion-sequences/standard-three-steps.cpp
+:tests: overloading/conversion-sequences/standard-top-level-cv.cpp overloading/conversion-sequences/standard-three-steps.cpp
 
 A {term}`standard conversion sequence` is the identity, or one to three
 standard conversions. The sequence has at most one conversion from each
@@ -209,7 +209,7 @@ conversion.
 
 :::{rule} ICS-2
 :kind: required
-:tests: foundations/conversion-sequences/rank-worst-step.cpp foundations/conversion-sequences/rank-class-value.cpp foundations/conversion-sequences/bit-field-promotion.cpp
+:tests: overloading/conversion-sequences/rank-worst-step.cpp overloading/conversion-sequences/rank-class-value.cpp overloading/conversion-sequences/bit-field-promotion.cpp
 
 Each conversion has a {term}`sequence rank`:
 
@@ -226,7 +226,7 @@ of a base class, the rank is conversion.
 
 :::{rule} ICS-39
 :kind: required
-:tests: foundations/conversion-sequences/fixed-enumeration-promotion.cpp foundations/conversion-sequences/fixed-enumeration-promotion-unsigned-char.cpp
+:tests: overloading/conversion-sequences/fixed-enumeration-promotion.cpp overloading/conversion-sequences/fixed-enumeration-promotion-unsigned-char.cpp
 
 An unscoped enumeration with a fixed underlying type `U` has a
 promotion to `U` and to the type that `U` promotes to ({rule}`CONV-1`).
@@ -234,7 +234,7 @@ promotion to `U` and to the type that `U` promotes to ({rule}`CONV-1`).
 
 :::{rule} ICS-3
 :kind: required
-:tests: foundations/conversion-sequences/user-defined-first-part.cpp foundations/conversion-sequences/user-defined-second-part.cpp
+:tests: overloading/conversion-sequences/user-defined-first-part.cpp overloading/conversion-sequences/user-defined-second-part.cpp
 
 A {term}`user-defined conversion sequence` has three parts:
 
@@ -249,7 +249,7 @@ third part.
 
 :::{rule} ICS-4
 :kind: required
-:tests: foundations/conversion-sequences/user-defined-candidates.cpp foundations/conversion-sequences/reference-conversion-value-result.cpp
+:tests: overloading/conversion-sequences/user-defined-candidates.cpp overloading/conversion-sequences/reference-conversion-value-result.cpp
 
 These functions can be the second part of ICS-3:
 
@@ -268,7 +268,7 @@ and for the operands of the built-in `!`, `&&`, and `||` ({rule}`OVL-9`).
 
 :::{rule} ICS-45
 :kind: required
-:tests: foundations/conversion-sequences/user-defined-explicit.cpp foundations/conversion-sequences/user-defined-explicit-reference-value.cpp foundations/conversion-sequences/user-defined-explicit-rvalue-reference-value.cpp foundations/conversion-sequences/user-defined-explicit-reference-xvalue.cpp foundations/conversion-sequences/user-defined-candidates.cpp foundations/conversion-sequences/user-defined-explicit-reference-other-type.cpp
+:tests: overloading/conversion-sequences/user-defined-explicit.cpp overloading/conversion-sequences/user-defined-explicit-reference-value.cpp overloading/conversion-sequences/user-defined-explicit-rvalue-reference-value.cpp overloading/conversion-sequences/user-defined-explicit-reference-xvalue.cpp overloading/conversion-sequences/user-defined-candidates.cpp overloading/conversion-sequences/user-defined-explicit-reference-other-type.cpp
 
 Direct initialization can also use an `explicit` conversion function
 ({rule}`CVF-3`) for these targets:
@@ -291,7 +291,7 @@ serve it.
 
 :::{rule} ICS-5
 :kind: required
-:tests: foundations/conversion-sequences/template-conversion-exact.cpp foundations/conversion-sequences/template-conversion-exact-long.cpp
+:tests: overloading/conversion-sequences/template-conversion-exact.cpp overloading/conversion-sequences/template-conversion-exact-long.cpp
 
 A conversion {term}`function template` serves a user-defined conversion only if
 the third part of ICS-3 has exact-match rank.
@@ -299,7 +299,7 @@ the third part of ICS-3 has exact-match rank.
 
 :::{rule} ICS-6
 :kind: required
-:tests: foundations/conversion-sequences/ellipsis-sequence.cpp foundations/conversion-sequences/ellipsis-braced-list.cpp foundations/conversion-sequences/ellipsis-braced-list-other-wins.cpp foundations/conversion-sequences/overload-set-to-ellipsis.cpp
+:tests: overloading/conversion-sequences/ellipsis-sequence.cpp overloading/conversion-sequences/ellipsis-braced-list.cpp overloading/conversion-sequences/ellipsis-braced-list-other-wins.cpp overloading/conversion-sequences/overload-set-to-ellipsis.cpp
 
 An argument that matches the `...` of a function has an
 {term}`ellipsis conversion sequence`. A braced list has no ellipsis
@@ -311,7 +311,7 @@ sequence only if {rule}`OVL-20` leaves one function (ICS-47).
 
 :::{rule} ICS-47
 :kind: required
-:tests: foundations/conversion-sequences/overload-set-argument-sequence.cpp foundations/conversion-sequences/overload-set-reference-or-pointer.cpp foundations/conversion-sequences/overload-set-to-ellipsis.cpp
+:tests: overloading/conversion-sequences/overload-set-argument-sequence.cpp overloading/conversion-sequences/overload-set-reference-or-pointer.cpp overloading/conversion-sequences/overload-set-to-ellipsis.cpp
 
 An argument that names an overload set selects one function of the set
 by the type of the parameter:
@@ -328,7 +328,7 @@ function. If no single function remains, the candidate is not viable.
 
 :::{rule} ICS-7
 :kind: required
-:tests: foundations/conversion-sequences/ambiguous-loses-to-standard.cpp foundations/conversion-sequences/ambiguous-ties-user-defined.cpp foundations/conversion-sequences/chosen-ambiguous.cpp foundations/conversion-sequences/chosen-ambiguous-tie.cpp foundations/conversion-sequences/user-defined-choice-object-parameter.cpp foundations/conversion-sequences/chosen-ambiguous-constructor-conversion.cpp
+:tests: overloading/conversion-sequences/ambiguous-loses-to-standard.cpp overloading/conversion-sequences/ambiguous-ties-user-defined.cpp overloading/conversion-sequences/chosen-ambiguous.cpp overloading/conversion-sequences/chosen-ambiguous-tie.cpp overloading/conversion-sequences/user-defined-choice-object-parameter.cpp overloading/conversion-sequences/chosen-ambiguous-constructor-conversion.cpp
 
 If two or more constructors or conversion functions can convert an
 argument, overload resolution chooses one ({rule}`OVL-25`):
@@ -343,7 +343,7 @@ argument, overload resolution chooses one ({rule}`OVL-25`):
 
 :::{rule} ICS-8
 :kind: reject
-:tests: foundations/conversion-sequences/chosen-ambiguous.cpp foundations/conversion-sequences/chosen-ambiguous-tie.cpp foundations/conversion-sequences/chosen-ambiguous-constructor-conversion.cpp foundations/conversion-sequences/chosen-list-ambiguous.cpp foundations/conversion-sequences/chosen-deleted-constructor.cpp foundations/conversion-sequences/chosen-deleted-conversion-function.cpp foundations/conversion-sequences/chosen-bit-field.cpp foundations/conversion-sequences/chosen-private-base.cpp foundations/conversion-sequences/chosen-ambiguous-base.cpp foundations/conversion-sequences/chosen-narrowing.cpp foundations/conversion-sequences/chosen-designator-order.cpp foundations/conversion-sequences/chosen-explicit-copy-list.cpp
+:tests: overloading/conversion-sequences/chosen-ambiguous.cpp overloading/conversion-sequences/chosen-ambiguous-tie.cpp overloading/conversion-sequences/chosen-ambiguous-constructor-conversion.cpp overloading/conversion-sequences/chosen-list-ambiguous.cpp overloading/conversion-sequences/chosen-deleted-constructor.cpp overloading/conversion-sequences/chosen-deleted-conversion-function.cpp overloading/conversion-sequences/chosen-bit-field.cpp overloading/conversion-sequences/chosen-private-base.cpp overloading/conversion-sequences/chosen-ambiguous-base.cpp overloading/conversion-sequences/chosen-narrowing.cpp overloading/conversion-sequences/chosen-designator-order.cpp overloading/conversion-sequences/chosen-explicit-copy-list.cpp
 
 A sequence forms in spite of these faults:
 
@@ -366,7 +366,7 @@ the program. The rule named with each fault is the specific rule.
 
 :::{rule} ICS-9
 :kind: required
-:tests: foundations/conversion-sequences/two-user-defined-none.cpp foundations/conversion-sequences/two-user-defined-function-then-constructor.cpp
+:tests: overloading/conversion-sequences/two-user-defined-none.cpp overloading/conversion-sequences/two-user-defined-function-then-constructor.cpp
 
 A sequence holds at most one user-defined conversion. A conversion that
 needs two has no sequence, and {rule}`CTOR-22` and {rule}`CVF-10` reject
@@ -376,7 +376,7 @@ conversions.
 
 :::{rule} ICS-10
 :kind: required
-:tests: foundations/conversion-sequences/user-defined-step-standard-only.cpp foundations/conversion-sequences/implicit-object-standard-only.cpp foundations/conversion-sequences/assignment-left-standard-only.cpp foundations/conversion-sequences/double-brace-standard-only.cpp foundations/conversion-sequences/object-explicit-assignment.cpp foundations/overload-resolution/init-copy-constructor-standard-only.cpp foundations/conversion-sequences/assignment-left-no-builtin.cpp foundations/overload-resolution/builtin-increment-from-conversion.cpp
+:tests: overloading/conversion-sequences/user-defined-step-standard-only.cpp overloading/conversion-sequences/implicit-object-standard-only.cpp overloading/conversion-sequences/assignment-left-standard-only.cpp overloading/conversion-sequences/double-brace-standard-only.cpp overloading/conversion-sequences/object-explicit-assignment.cpp overloading/overload-resolution/init-copy-constructor-standard-only.cpp overloading/conversion-sequences/assignment-left-no-builtin.cpp overloading/overload-resolution/builtin-increment-from-conversion.cpp
 
 Only a standard sequence can reach these parameters:
 
@@ -394,7 +394,7 @@ Only a standard sequence can reach these parameters:
 
 :::{rule} ICS-11
 :kind: required
-:tests: foundations/conversion-sequences/reference-direct-derived.cpp foundations/conversion-sequences/reference-temporary.cpp foundations/conversion-sequences/reference-conversion-result.cpp foundations/conversion-sequences/reference-conversion-value-result.cpp
+:tests: overloading/conversion-sequences/reference-direct-derived.cpp overloading/conversion-sequences/reference-temporary.cpp overloading/conversion-sequences/reference-conversion-result.cpp overloading/conversion-sequences/reference-conversion-value-result.cpp
 
 The sequence of a reference parameter depends on how the reference binds
 ({rule}`REF-1`, {rule}`REF-2`, {rule}`REF-3`):
@@ -411,7 +411,7 @@ The sequence of a reference parameter depends on how the reference binds
 
 :::{rule} ICS-12
 :kind: required
-:tests: foundations/conversion-sequences/reference-no-sequence.cpp foundations/conversion-sequences/reference-function-rvalue.cpp foundations/conversion-sequences/reference-rvalue-other-type.cpp
+:tests: overloading/conversion-sequences/reference-no-sequence.cpp overloading/conversion-sequences/reference-function-rvalue.cpp overloading/conversion-sequences/reference-rvalue-other-type.cpp
 
 No sequence binds these references ({rule}`REF-9`, {rule}`REF-10`):
 
@@ -428,7 +428,7 @@ ICS-40 gives the exception for the implicit object parameter.
 
 :::{rule} ICS-13
 :kind: required
-:tests: foundations/conversion-sequences/object-ref-qualifier.cpp foundations/conversion-sequences/object-conversion-function-class.cpp foundations/conversion-sequences/object-using-declaration.cpp foundations/conversion-sequences/object-rvalue-non-const.cpp foundations/conversion-sequences/object-explicit-user-defined.cpp
+:tests: overloading/conversion-sequences/object-ref-qualifier.cpp overloading/conversion-sequences/object-conversion-function-class.cpp overloading/conversion-sequences/object-using-declaration.cpp overloading/conversion-sequences/object-rvalue-non-const.cpp overloading/conversion-sequences/object-explicit-user-defined.cpp
 
 A non-static member function has an {term}`implicit object parameter`:
 
@@ -443,7 +443,7 @@ A non-static member function has an {term}`implicit object parameter`:
 
 :::{rule} ICS-40
 :kind: required
-:tests: foundations/conversion-sequences/object-rvalue-non-const.cpp foundations/conversion-sequences/rvalue-reference-object-exception.cpp
+:tests: overloading/conversion-sequences/object-rvalue-non-const.cpp overloading/conversion-sequences/rvalue-reference-object-exception.cpp
 
 If a member function has no ref-qualifier, its implicit object
 parameter also binds to an rvalue, in spite of ICS-12. Two such
@@ -453,7 +453,7 @@ applies. ICS-28 does not apply to such a binding.
 
 :::{rule} ICS-41
 :kind: required
-:tests: foundations/conversion-sequences/object-explicit-user-defined.cpp foundations/conversion-sequences/object-explicit-assignment.cpp
+:tests: overloading/conversion-sequences/object-explicit-user-defined.cpp overloading/conversion-sequences/object-explicit-assignment.cpp
 
 An explicit object parameter is an ordinary parameter. A user-defined
 sequence can reach it, also when the function is an assignment
@@ -462,7 +462,7 @@ operator.
 
 :::{rule} ICS-14
 :kind: required
-:tests: foundations/conversion-sequences/static-object-slot.cpp foundations/conversion-sequences/static-object-slot-derived.cpp
+:tests: overloading/conversion-sequences/static-object-slot.cpp overloading/conversion-sequences/static-object-slot-derived.cpp
 
 A static member function that is a candidate in a member call has an
 object slot. Any object matches the slot. The slot's sequence ties with
@@ -473,7 +473,7 @@ every standard sequence.
 
 :::{rule} ICS-15
 :kind: required
-:tests: foundations/conversion-sequences/list-scalar.cpp foundations/conversion-sequences/list-scalar-pointer-and-pair.cpp
+:tests: overloading/conversion-sequences/list-scalar.cpp overloading/conversion-sequences/list-scalar-pointer-and-pair.cpp
 
 For a parameter that is not a class or a reference, a braced list has
 this sequence:
@@ -486,7 +486,7 @@ this sequence:
 
 :::{rule} ICS-16
 :kind: required
-:tests: foundations/conversion-sequences/list-initializer-list.cpp foundations/conversion-sequences/list-initializer-list-designated.cpp foundations/language-support/initializer-list-candidate-not-viable.cpp
+:tests: overloading/conversion-sequences/list-initializer-list.cpp overloading/conversion-sequences/list-initializer-list-designated.cpp foundations/language-support/initializer-list-candidate-not-viable.cpp
 
 For a parameter of type `std::initializer_list<E>` ({rule}`LSUP-1`), a
 braced list has a sequence if each element converts to `E`. An element
@@ -497,7 +497,7 @@ sequence.
 
 :::{rule} ICS-17
 :kind: required
-:tests: foundations/conversion-sequences/list-array.cpp foundations/conversion-sequences/list-array-against-scalar.cpp
+:tests: overloading/conversion-sequences/list-array.cpp overloading/conversion-sequences/list-array-against-scalar.cpp
 
 For a reference to an array of `E` that binds a temporary (ICS-20,
 {principle}`REF-P3`), a braced list has a sequence if each element converts to `E` and these
@@ -512,7 +512,7 @@ literal for an array of characters.
 
 :::{rule} ICS-38
 :kind: required
-:tests: foundations/conversion-sequences/list-string-literal.cpp foundations/conversion-sequences/list-string-literal-utf8.cpp foundations/conversion-sequences/list-string-literal-too-short.cpp foundations/conversion-sequences/list-string-literal-bound.cpp foundations/conversion-sequences/list-array.cpp foundations/conversion-sequences/list-string-literal-binds-literal.cpp
+:tests: overloading/conversion-sequences/list-string-literal.cpp overloading/conversion-sequences/list-string-literal-utf8.cpp overloading/conversion-sequences/list-string-literal-too-short.cpp overloading/conversion-sequences/list-string-literal-bound.cpp overloading/conversion-sequences/list-array.cpp overloading/conversion-sequences/list-string-literal-binds-literal.cpp
 
 For a reference to an array of a character type, one string literal in
 braces has the identity if the literal can initialize the array
@@ -524,7 +524,7 @@ to the literal ({rule}`REF-6`).
 
 :::{rule} ICS-18
 :kind: required
-:tests: foundations/conversion-sequences/list-aggregate.cpp foundations/conversion-sequences/list-designated.cpp foundations/conversion-sequences/list-aggregate-nearest-base.cpp
+:tests: overloading/conversion-sequences/list-aggregate.cpp overloading/conversion-sequences/list-designated.cpp overloading/conversion-sequences/list-aggregate-nearest-base.cpp
 
 For a parameter of an aggregate class, a braced list that can initialize
 the aggregate ({rule}`LIST-3`) has a user-defined sequence. A designated
@@ -534,7 +534,7 @@ one element of the class or a derived class has the element's sequence.
 
 :::{rule} ICS-19
 :kind: required
-:tests: foundations/conversion-sequences/list-class-constructor.cpp foundations/conversion-sequences/list-class-tie.cpp foundations/conversion-sequences/list-class-same-class.cpp foundations/conversion-sequences/list-class-list-constructor.cpp foundations/conversion-sequences/list-class-nearest-base.cpp
+:tests: overloading/conversion-sequences/list-class-constructor.cpp overloading/conversion-sequences/list-class-tie.cpp overloading/conversion-sequences/list-class-same-class.cpp overloading/conversion-sequences/list-class-list-constructor.cpp overloading/conversion-sequences/list-class-nearest-base.cpp
 
 For a parameter of a class with constructors, a braced list chooses a
 constructor as {rule}`ILC-2` and {rule}`ILC-3` give:
@@ -551,7 +551,7 @@ Each element can use its own user-defined conversion.
 
 :::{rule} ICS-20
 :kind: required
-:tests: foundations/conversion-sequences/list-reference.cpp foundations/conversion-sequences/list-reference-direct.cpp foundations/conversion-sequences/list-reference-temporary.cpp foundations/conversion-sequences/list-reference-class-element-scalar.cpp foundations/conversion-sequences/list-reference-class-element-class.cpp
+:tests: overloading/conversion-sequences/list-reference.cpp overloading/conversion-sequences/list-reference-direct.cpp overloading/conversion-sequences/list-reference-temporary.cpp overloading/conversion-sequences/list-reference-class-element-scalar.cpp overloading/conversion-sequences/list-reference-class-element-class.cpp
 
 For a reference parameter, a braced list binds the reference as
 {rule}`REF-6` and {rule}`REF-14` give, by the table of
@@ -570,7 +570,7 @@ the reference directly.
 
 :::{rule} ICS-21
 :kind: required
-:tests: foundations/conversion-sequences/kind-order.cpp foundations/conversion-sequences/initializer-list-over-kind.cpp
+:tests: overloading/conversion-sequences/kind-order.cpp overloading/conversion-sequences/initializer-list-over-kind.cpp
 
 A standard sequence is better than a user-defined sequence or an
 ellipsis sequence. A user-defined sequence is better than an ellipsis
@@ -579,7 +579,7 @@ sequence. The rule comes before ICS-22 to ICS-24 ({question}`Q-0133`).
 
 :::{rule} ICS-22
 :kind: required
-:tests: foundations/conversion-sequences/initializer-list-target.cpp foundations/conversion-sequences/initializer-list-over-rank.cpp foundations/conversion-sequences/initializer-list-over-kind.cpp foundations/conversion-sequences/initializer-list-reference.cpp
+:tests: overloading/conversion-sequences/initializer-list-target.cpp overloading/conversion-sequences/initializer-list-over-rank.cpp overloading/conversion-sequences/initializer-list-over-kind.cpp overloading/conversion-sequences/initializer-list-reference.cpp
 
 A list sequence to `std::initializer_list<E>`, or to a reference to it,
 is better than a list sequence to any other type. The rule compares only
@@ -589,7 +589,7 @@ comes before rank.
 
 :::{rule} ICS-23
 :kind: required
-:tests: foundations/conversion-sequences/array-fewer-elements.cpp foundations/conversion-sequences/array-fewer-elements-const-lvalue.cpp
+:tests: overloading/conversion-sequences/array-fewer-elements.cpp overloading/conversion-sequences/array-fewer-elements-const-lvalue.cpp
 
 If two list sequences go to references to arrays of the same element
 type, the sequence to the array with fewer elements is better.
@@ -597,7 +597,7 @@ type, the sequence to the array with fewer elements is better.
 
 :::{rule} ICS-24
 :kind: required
-:tests: foundations/conversion-sequences/array-known-bound.cpp foundations/conversion-sequences/array-known-bound-const-lvalue.cpp
+:tests: overloading/conversion-sequences/array-known-bound.cpp overloading/conversion-sequences/array-known-bound-const-lvalue.cpp
 
 If the two arrays of ICS-23 have the same number of elements, the array
 of known bound is better than the array of unknown bound.
@@ -605,7 +605,7 @@ of known bound is better than the array of unknown bound.
 
 :::{rule} ICS-46
 :kind: required
-:tests: foundations/conversion-sequences/array-known-bound-direct.cpp foundations/conversion-sequences/list-string-literal-bound.cpp foundations/conversion-sequences/reference-direct-fewer-qualifiers.cpp foundations/conversion-sequences/array-known-bound-direct-cv.cpp
+:tests: overloading/conversion-sequences/array-known-bound-direct.cpp overloading/conversion-sequences/list-string-literal-bound.cpp overloading/conversion-sequences/reference-direct-fewer-qualifiers.cpp overloading/conversion-sequences/array-known-bound-direct-cv.cpp
 
 Two references can bind directly to one object. If the referenced type
 of one converts to the other's by a qualification adjustment, that
@@ -622,7 +622,7 @@ ICS-38, {principle}`REF-P3`).
 
 :::{rule} ICS-25
 :kind: required
-:tests: foundations/conversion-sequences/user-defined-same-function.cpp foundations/conversion-sequences/user-defined-same-aggregate.cpp foundations/conversion-sequences/user-defined-different-functions.cpp
+:tests: overloading/conversion-sequences/user-defined-same-function.cpp overloading/conversion-sequences/user-defined-same-aggregate.cpp overloading/conversion-sequences/user-defined-different-functions.cpp
 
 Two user-defined sequences compare by their third parts, as standard
 sequences, in these cases:
@@ -636,7 +636,7 @@ user-defined sequence.
 
 :::{rule} ICS-26
 :kind: required
-:tests: foundations/conversion-sequences/subsequence-function-pointer.cpp foundations/conversion-sequences/subsequence-qualification.cpp
+:tests: overloading/conversion-sequences/subsequence-function-pointer.cpp overloading/conversion-sequences/subsequence-qualification.cpp
 
 Two standard sequences are compared without their lvalue
 transformations. If one is a proper subsequence of the other, the
@@ -646,7 +646,7 @@ sequence.
 
 :::{rule} ICS-27
 :kind: required
-:tests: foundations/conversion-sequences/rank-comparison.cpp foundations/conversion-sequences/rank-before-reference.cpp
+:tests: overloading/conversion-sequences/rank-comparison.cpp overloading/conversion-sequences/rank-before-reference.cpp
 
 Of two standard sequences, the one of better rank is better. Exact
 match is better than promotion, and promotion is better than
@@ -655,7 +655,7 @@ conversion. ICS-28 to ICS-36 apply only to sequences of equal rank.
 
 :::{rule} ICS-32
 :kind: required
-:tests: foundations/conversion-sequences/pointer-to-bool.cpp foundations/conversion-sequences/tie-breaker-before-rvalue-reference.cpp
+:tests: overloading/conversion-sequences/pointer-to-bool.cpp overloading/conversion-sequences/tie-breaker-before-rvalue-reference.cpp
 
 A sequence that converts a pointer or a member pointer to `bool` is
 worse than a sequence of equal rank that does not. ICS-26 and ICS-27
@@ -664,7 +664,7 @@ come first.
 
 :::{rule} ICS-33
 :kind: required
-:tests: foundations/conversion-sequences/base-pointer-over-void.cpp foundations/conversion-sequences/array-pointer-tie-breaker.cpp foundations/conversion-sequences/tie-breaker-before-rvalue-reference.cpp
+:tests: overloading/conversion-sequences/base-pointer-over-void.cpp overloading/conversion-sequences/array-pointer-tie-breaker.cpp overloading/conversion-sequences/tie-breaker-before-rvalue-reference.cpp
 
 A conversion of a pointer to a class into a pointer to its base is
 better than a conversion of the same pointer into a pointer to `void`.
@@ -673,7 +673,7 @@ ICS-26 and ICS-27 come first.
 
 :::{rule} ICS-34
 :kind: required
-:tests: foundations/conversion-sequences/fixed-enumeration.cpp foundations/conversion-sequences/fixed-enumeration-before-rvalue-reference.cpp
+:tests: overloading/conversion-sequences/fixed-enumeration.cpp overloading/conversion-sequences/fixed-enumeration-before-rvalue-reference.cpp
 
 If two sequences promote an unscoped enumeration with a fixed
 underlying type to different types (ICS-39), the promotion to the
@@ -682,7 +682,7 @@ underlying type is better. ICS-26 and ICS-27 come first.
 
 :::{rule} ICS-35
 :kind: required
-:tests: foundations/conversion-sequences/floating-equal-rank.cpp foundations/conversion-sequences/floating-before-rvalue-reference.cpp
+:tests: overloading/conversion-sequences/floating-equal-rank.cpp overloading/conversion-sequences/floating-before-rvalue-reference.cpp
 
 A conversion from a floating-point type to a floating-point type of
 equal rank is better than a conversion to an integer type or to a
@@ -693,7 +693,7 @@ ICS-26 and ICS-27 come first.
 
 :::{rule} ICS-36
 :kind: required
-:tests: foundations/conversion-sequences/nearest-base.cpp foundations/conversion-sequences/array-pointer-tie-breaker.cpp foundations/conversion-sequences/tie-breaker-before-rvalue-reference.cpp foundations/conversion-sequences/list-class-nearest-base.cpp foundations/conversion-sequences/list-aggregate-nearest-base.cpp
+:tests: overloading/conversion-sequences/nearest-base.cpp overloading/conversion-sequences/array-pointer-tie-breaker.cpp overloading/conversion-sequences/tie-breaker-before-rvalue-reference.cpp overloading/conversion-sequences/list-class-nearest-base.cpp overloading/conversion-sequences/list-aggregate-nearest-base.cpp
 
 Let `B` be a base of `M`, and `M` a base of `D`. These conversions are
 better than the alternative in parentheses:
@@ -706,7 +706,7 @@ ICS-26 and ICS-27 come first.
 
 :::{rule} ICS-28
 :kind: required
-:tests: foundations/conversion-sequences/rvalue-reference-binding.cpp foundations/conversion-sequences/rvalue-reference-before-cv.cpp foundations/conversion-sequences/rvalue-reference-object-exception.cpp foundations/conversion-sequences/rank-before-reference.cpp foundations/conversion-sequences/tie-breaker-before-rvalue-reference.cpp foundations/conversion-sequences/fixed-enumeration-before-rvalue-reference.cpp foundations/conversion-sequences/floating-before-rvalue-reference.cpp foundations/conversion-sequences/rvalue-reference-before-qualification.cpp
+:tests: overloading/conversion-sequences/rvalue-reference-binding.cpp overloading/conversion-sequences/rvalue-reference-before-cv.cpp overloading/conversion-sequences/rvalue-reference-object-exception.cpp overloading/conversion-sequences/rank-before-reference.cpp overloading/conversion-sequences/tie-breaker-before-rvalue-reference.cpp overloading/conversion-sequences/fixed-enumeration-before-rvalue-reference.cpp overloading/conversion-sequences/floating-before-rvalue-reference.cpp overloading/conversion-sequences/rvalue-reference-before-qualification.cpp
 
 If both sequences bind references to an rvalue, binding an rvalue
 reference is better than binding an lvalue reference. The rule does not
@@ -717,7 +717,7 @@ function without a ref-qualifier (ICS-40). ICS-32 to ICS-36 come first
 
 :::{rule} ICS-29
 :kind: required
-:tests: foundations/conversion-sequences/function-lvalue-reference.cpp foundations/conversion-sequences/function-lvalue-reference-cast.cpp
+:tests: overloading/conversion-sequences/function-lvalue-reference.cpp overloading/conversion-sequences/function-lvalue-reference-cast.cpp
 
 If both sequences bind references to a function lvalue, binding an
 lvalue reference is better than binding an rvalue reference.
@@ -725,7 +725,7 @@ lvalue reference is better than binding an rvalue reference.
 
 :::{rule} ICS-31
 :kind: required
-:tests: foundations/conversion-sequences/qualification-fewer.cpp foundations/conversion-sequences/subsequence-qualification.cpp foundations/conversion-sequences/rvalue-reference-before-qualification.cpp foundations/conversion-sequences/qualification-array-bound.cpp foundations/conversion-sequences/qualification-reference-temporary.cpp
+:tests: overloading/conversion-sequences/qualification-fewer.cpp overloading/conversion-sequences/subsequence-qualification.cpp overloading/conversion-sequences/rvalue-reference-before-qualification.cpp overloading/conversion-sequences/qualification-array-bound.cpp overloading/conversion-sequences/qualification-reference-temporary.cpp
 
 Two sequences can differ only in a qualification adjustment. If the
 result of one converts to the other's result by a qualification
@@ -736,7 +736,7 @@ cv-qualifiers or drop an array bound ({rule}`CONV-16`,
 
 :::{rule} ICS-30
 :kind: required
-:tests: foundations/conversion-sequences/reference-less-cv.cpp foundations/conversion-sequences/rvalue-reference-before-cv.cpp
+:tests: overloading/conversion-sequences/reference-less-cv.cpp overloading/conversion-sequences/rvalue-reference-before-cv.cpp
 
 If both sequences bind references to the same type apart from top-level
 cv-qualifiers, the reference with fewer cv-qualifiers is better. Its
@@ -747,7 +747,7 @@ cv-qualifiers are a subset of the other's. ICS-28 comes first.
 
 :::{rule} ICS-37
 :kind: required
-:tests: foundations/conversion-sequences/conversion-choice-second-part.cpp foundations/conversion-sequences/conversion-choice-promotion-result.cpp
+:tests: overloading/conversion-sequences/conversion-choice-second-part.cpp overloading/conversion-sequences/conversion-choice-promotion-result.cpp
 
 When a user-defined conversion chooses between two conversion functions
 whose object parameters tie (ICS-7), the function whose result has the
@@ -760,7 +760,7 @@ between results that still tie ({question}`Q-0138`).
 
 :::{rule} ICS-42
 :kind: required
-:tests: foundations/conversion-sequences/conversion-choice-nearest-source.cpp foundations/conversion-sequences/conversion-choice-class-value.cpp
+:tests: overloading/conversion-sequences/conversion-choice-nearest-source.cpp overloading/conversion-sequences/conversion-choice-class-value.cpp
 
 Let `B`, `M`, and `D` be as in ICS-36. When two results of different
 types convert to one target, these conversions are better than the
@@ -774,7 +774,7 @@ alternative in parentheses:
 
 :::{rule} ICS-43
 :kind: required
-:tests: foundations/conversion-sequences/conversion-choice-void.cpp foundations/conversion-sequences/conversion-choice-void-const.cpp
+:tests: overloading/conversion-sequences/conversion-choice-void.cpp overloading/conversion-sequences/conversion-choice-void-const.cpp
 
 When two results convert to `void*`, a conversion from a pointer to a
 class is better than a conversion from a pointer to a class derived
@@ -783,7 +783,7 @@ from it.
 
 :::{rule} ICS-44
 :kind: required
-:tests: foundations/conversion-sequences/conversion-choice-equal-rank-source.cpp foundations/conversion-sequences/conversion-choice-equal-rank-extended-target.cpp
+:tests: overloading/conversion-sequences/conversion-choice-equal-rank-source.cpp overloading/conversion-sequences/conversion-choice-equal-rank-extended-target.cpp
 
 When two results convert to a floating-point type `A`, a conversion from
 a floating-point type of the same rank as `A` is better. The other
@@ -982,10 +982,10 @@ cells give the outcome of the test on each compiler.
 ### Probe grids
 
 The 11 probe grids of this page are in
-`tests/foundations/conversion-sequences/grids/`. Each grid probes every
+`tests/overloading/conversion-sequences/grids/`. Each grid probes every
 pair of a set of parameters against a set of arguments, and its table
 shows which parameter each argument chooses. The tables are in
-[`grids/tables.md`](https://github.com/sempuki/tidal/blob/main/tests/foundations/conversion-sequences/grids/tables.md),
+[`grids/tables.md`](https://github.com/sempuki/tidal/blob/main/tests/overloading/conversion-sequences/grids/tables.md),
 which also says how to read them. `tools/probe_grid.py` prints each
 table from its grid file.
 

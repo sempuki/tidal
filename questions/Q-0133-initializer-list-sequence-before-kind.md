@@ -1,7 +1,7 @@
 # Q-0133: Does a list sequence to `std::initializer_list` beat a standard sequence when its own sequence is user-defined?
 
 **Status:** provisional
-**Affects:** ICS-21, ICS-22, `tests/foundations/conversion-sequences/initializer-list-over-kind.cpp`
+**Affects:** ICS-21, ICS-22, `tests/overloading/conversion-sequences/initializer-list-over-kind.cpp`
 
 ## Context
 
@@ -28,7 +28,7 @@ constructor, every compiler chooses the initializer list.
 
 ## Evidence
 
-`tests/foundations/conversion-sequences/initializer-list-over-kind.cpp`.
+`tests/overloading/conversion-sequences/initializer-list-over-kind.cpp`.
 The sanitized EDG source (`edg-overload`) checks for an initializer-list
 target before it compares the kinds of the two sequences. A source reader's
 gap review (item O3 of

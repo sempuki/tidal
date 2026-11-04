@@ -1,7 +1,7 @@
 # Q-0143: Can a call through the address of an overload set choose a static member?
 
 **Status:** provisional
-**Affects:** OVL-21, `tests/foundations/overload-resolution/call-through-address-static-member.cpp`
+**Affects:** OVL-21, `tests/overloading/overload-resolution/call-through-address-static-member.cpp`
 
 ## Context
 
@@ -22,7 +22,7 @@ call (`call-through-address-nonstatic.cpp`).
 
 ## Evidence
 
-`tests/foundations/overload-resolution/call-through-address-static-member.cpp`.
+`tests/overloading/overload-resolution/call-through-address-static-member.cpp`.
 Item AO-1 of the overload resolution inventory, and gap G-2, which says
 that support for this form may be partial.
 

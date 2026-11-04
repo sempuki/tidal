@@ -1,7 +1,7 @@
 # Q-0137: Do the pointer tie-breakers apply after an array-to-pointer step?
 
 **Status:** provisional
-**Affects:** ICS-26, ICS-33, ICS-36, `tests/foundations/conversion-sequences/array-pointer-tie-breaker.cpp`
+**Affects:** ICS-26, ICS-33, ICS-36, `tests/overloading/conversion-sequences/array-pointer-tie-breaker.cpp`
 
 ## Context
 
@@ -19,8 +19,8 @@ and ICS-36 (the nearer base wins).
 
 ## Evidence
 
-`tests/foundations/conversion-sequences/array-pointer-tie-breaker.cpp`,
-and the row "Derived[2]" of the pointers grid in `tests/foundations/conversion-sequences/grids/tables.md`.
+`tests/overloading/conversion-sequences/array-pointer-tie-breaker.cpp`,
+and the row "Derived[2]" of the pointers grid in `tests/overloading/conversion-sequences/grids/tables.md`.
 
 ## Options
 

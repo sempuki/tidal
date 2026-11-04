@@ -1,7 +1,7 @@
 # Q-0155: When does one braced string literal have a sequence to a reference to a character array?
 
 **Status:** provisional
-**Affects:** ICS-38, `tests/foundations/conversion-sequences/list-string-literal-utf8.cpp`, `tests/foundations/conversion-sequences/list-string-literal-too-short.cpp`, `tests/foundations/conversion-sequences/list-string-literal-bound.cpp`
+**Affects:** ICS-38, `tests/overloading/conversion-sequences/list-string-literal-utf8.cpp`, `tests/overloading/conversion-sequences/list-string-literal-too-short.cpp`, `tests/overloading/conversion-sequences/list-string-literal-bound.cpp`
 **Parent:** Q-0294, the model of braced lists for references, arrays, and conversion sequences
 
 ## Context

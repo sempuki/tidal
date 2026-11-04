@@ -1,7 +1,7 @@
 # Q-0100: Is a character literal with value zero a null pointer constant?
 
 **Status:** provisional
-**Affects:** CONV-8, `tests/expressions/conversions/char-zero-not-null.cpp`
+**Affects:** CONV-8, `tests/foundations/conversions/char-zero-not-null.cpp`
 
 ## Context
 

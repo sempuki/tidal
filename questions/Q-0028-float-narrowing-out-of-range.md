@@ -1,7 +1,7 @@
 # Q-0028: Is converting a floating value above the target's finite range implementation-defined or undefined?
 
 **Status:** provisional
-**Affects:** CONV-11, `tests/expressions/conversions/floating-narrowing-out-of-range.cpp`
+**Affects:** CONV-11, `tests/foundations/conversions/floating-narrowing-out-of-range.cpp`
 
 ## Context
 

@@ -1,7 +1,7 @@
 # Q-0135: Does a braced list prefer a scalar parameter to a reference to an array when both sequences are the identity?
 
 **Status:** settled
-**Affects:** ICS-17, `tests/foundations/conversion-sequences/list-array-against-scalar.cpp`
+**Affects:** ICS-17, `tests/overloading/conversion-sequences/list-array-against-scalar.cpp`
 **Parent:** Q-0294, the model of braced lists for references, arrays, and conversion sequences
 
 ## Context
@@ -21,8 +21,8 @@ The lists grid shows the same split for `int (&&)[]`.
 
 ## Evidence
 
-`tests/foundations/conversion-sequences/list-array-against-scalar.cpp`,
-and the "one {1}" rows of the lists grid in `tests/foundations/conversion-sequences/grids/tables.md`.
+`tests/overloading/conversion-sequences/list-array-against-scalar.cpp`,
+and the "one {1}" rows of the lists grid in `tests/overloading/conversion-sequences/grids/tables.md`.
 
 ## Options
 

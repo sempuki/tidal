@@ -111,7 +111,7 @@ page, and `tools/check_specification.py` fails when one is stale.
 
 ## Test matrix
 
-The matrix has 8 baseline compilers, and 6355 of 6355 tests pass on each. The tree has 6500 test files, and 145 of them have no row in `tests/RESULTS.md`. Two
+The matrix has 8 baseline compilers, and 6500 of 6500 tests pass on each. Two
 report compilers build at `-O2` (decision 0043). Tests may
 span several translation units (decision 0014). CI runs the
 containerized compilers on every push and pull request (decision 0012).

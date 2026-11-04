@@ -218,7 +218,7 @@ the `char` and the `bool`.
 
 :::{rule} OVL-1
 :kind: required
-:tests: foundations/overload-resolution/call-by-name-candidates.cpp foundations/overload-resolution/call-same-function-found-twice.cpp foundations/overload-resolution/default-from-two-scopes-passed.cpp declarations/functions/definitions/different-parameter-types-overload.cpp
+:tests: overloading/overload-resolution/call-by-name-candidates.cpp overloading/overload-resolution/call-same-function-found-twice.cpp overloading/overload-resolution/default-from-two-scopes-passed.cpp declarations/functions/definitions/different-parameter-types-overload.cpp
 
 The {term}`candidate functions <candidate function>` of a call by name
 are the functions that name lookup finds ({rule}`NAM-5`):
@@ -235,7 +235,7 @@ are the functions that name lookup finds ({rule}`NAM-5`):
 
 :::{rule} OVL-2
 :kind: required
-:tests: foundations/overload-resolution/current-object-argument.cpp foundations/overload-resolution/current-object-explicit-parameter.cpp foundations/overload-resolution/current-object-explicit-extra-argument.cpp foundations/overload-resolution/current-object-default-member-init.cpp foundations/overload-resolution/current-object-other-class.cpp foundations/overload-resolution/call-parenthesized-name.cpp
+:tests: overloading/overload-resolution/current-object-argument.cpp overloading/overload-resolution/current-object-explicit-parameter.cpp overloading/overload-resolution/current-object-explicit-extra-argument.cpp overloading/overload-resolution/current-object-default-member-init.cpp overloading/overload-resolution/current-object-other-class.cpp overloading/overload-resolution/call-parenthesized-name.cpp
 
 A call by name that finds members of a class `C` has `*this` as the
 implied object argument if these conditions hold:
@@ -252,7 +252,7 @@ object (OVL-3).
 
 :::{rule} OVL-3
 :kind: reject
-:tests: foundations/overload-resolution/no-object-nonstatic-chosen.cpp foundations/overload-resolution/no-object-static-chosen.cpp foundations/overload-resolution/no-object-static-default-ambiguous.cpp foundations/overload-resolution/no-object-ref-qualified-member.cpp foundations/overload-resolution/call-through-address-nonstatic.cpp foundations/overload-resolution/current-object-other-class.cpp
+:tests: overloading/overload-resolution/no-object-nonstatic-chosen.cpp overloading/overload-resolution/no-object-static-chosen.cpp overloading/overload-resolution/no-object-static-default-ambiguous.cpp overloading/overload-resolution/no-object-ref-qualified-member.cpp overloading/overload-resolution/call-through-address-nonstatic.cpp overloading/overload-resolution/current-object-other-class.cpp
 
 A call with no object can still have members as candidates, for example
 a call by name in a static member function. If such a call chooses a
@@ -262,7 +262,7 @@ static member can be chosen.
 
 :::{rule} OVL-4
 :kind: required
-:tests: foundations/overload-resolution/member-call-object.cpp foundations/overload-resolution/call-parenthesized-member-access.cpp
+:tests: overloading/overload-resolution/member-call-object.cpp overloading/overload-resolution/call-parenthesized-member-access.cpp
 
 The candidates of `x.f(a)` are the members `f` that member lookup
 ({rule}`NAM-37`) finds in the class of `x`. `x` is the implied object
@@ -272,7 +272,7 @@ argument, with its cv-qualifiers and {term}`value category`. `p->f(a)` is
 
 :::{rule} OVL-5
 :kind: required
-:tests: foundations/overload-resolution/object-call-candidates.cpp foundations/overload-resolution/object-call-surrogate-reference.cpp
+:tests: overloading/overload-resolution/object-call-candidates.cpp overloading/overload-resolution/object-call-surrogate-reference.cpp
 
 The candidates of `c(a)`, for an object `c` of class type, are these:
 
@@ -283,7 +283,7 @@ The candidates of `c(a)`, for an object `c` of class type, are these:
 
 :::{rule} OVL-6
 :kind: required
-:tests: foundations/overload-resolution/surrogate-forms.cpp foundations/overload-resolution/surrogate-from-base.cpp foundations/overload-resolution/surrogate-qualifiers.cpp foundations/overload-resolution/surrogate-explicit-not-candidate.cpp foundations/overload-resolution/surrogate-same-parameters.cpp foundations/overload-resolution/surrogate-template-not-candidate.cpp foundations/overload-resolution/surrogate-ref-qualifier.cpp foundations/overload-resolution/surrogate-ref-qualifier-lvalue.cpp foundations/overload-resolution/static-call-operator-over-surrogate.cpp foundations/overload-resolution/static-call-operator-surrogate-ambiguous.cpp
+:tests: overloading/overload-resolution/surrogate-forms.cpp overloading/overload-resolution/surrogate-from-base.cpp overloading/overload-resolution/surrogate-qualifiers.cpp overloading/overload-resolution/surrogate-explicit-not-candidate.cpp overloading/overload-resolution/surrogate-same-parameters.cpp overloading/overload-resolution/surrogate-template-not-candidate.cpp overloading/overload-resolution/surrogate-ref-qualifier.cpp overloading/overload-resolution/surrogate-ref-qualifier-lvalue.cpp overloading/overload-resolution/static-call-operator-over-surrogate.cpp overloading/overload-resolution/static-call-operator-surrogate-ambiguous.cpp
 
 A conversion function gives a {term}`surrogate candidate` for `c(a)` if
 these conditions hold:
@@ -305,7 +305,7 @@ those of the function type.
 
 :::{rule} OVL-7
 :kind: required
-:tests: foundations/overload-resolution/operator-sets.cpp foundations/overload-resolution/operator-lookup-skips-members.cpp foundations/overload-resolution/operator-call-by-name-hidden.cpp foundations/names/operator-lookup-block-hides.cpp foundations/names/operator-lookup-namespace-hides.cpp foundations/names/operator-lookup-skips-class.cpp
+:tests: overloading/overload-resolution/operator-sets.cpp overloading/overload-resolution/operator-lookup-skips-members.cpp overloading/overload-resolution/operator-call-by-name-hidden.cpp foundations/names/operator-lookup-block-hides.cpp foundations/names/operator-lookup-namespace-hides.cpp foundations/names/operator-lookup-skips-class.cpp
 
 For an operator with an operand of class or enumeration type, the
 candidates are these ({rule}`OPR-6`):
@@ -323,7 +323,7 @@ member, argument-dependent lookup does not run ({rule}`NAM-32`).
 
 :::{rule} OVL-8
 :kind: required
-:tests: foundations/overload-resolution/enum-operand-parameter.cpp foundations/overload-resolution/enum-operand-no-parameter.cpp foundations/overload-resolution/enum-operand-swapped.cpp
+:tests: overloading/overload-resolution/enum-operand-parameter.cpp overloading/overload-resolution/enum-operand-no-parameter.cpp overloading/overload-resolution/enum-operand-swapped.cpp
 
 If no operand has class type, a non-member operator function is a
 candidate only if one of its parameters has the type of the matching
@@ -334,7 +334,7 @@ right operand, and the second parameter matches the left operand.
 
 :::{rule} OVL-9
 :kind: required
-:tests: foundations/overload-resolution/builtin-arithmetic.cpp foundations/overload-resolution/builtin-pointer.cpp foundations/overload-resolution/builtin-assignment.cpp foundations/overload-resolution/builtin-enumeration.cpp foundations/overload-resolution/builtin-enumeration-no-arithmetic.cpp foundations/overload-resolution/builtin-three-way.cpp foundations/overload-resolution/builtin-integer-only.cpp foundations/overload-resolution/builtin-bool-increment.cpp foundations/overload-resolution/builtin-member-pointer-equality.cpp foundations/overload-resolution/builtin-member-pointer-order.cpp foundations/overload-resolution/builtin-integral-compound.cpp foundations/overload-resolution/builtin-three-way-mixed.cpp foundations/overload-resolution/builtin-three-way-bool-operand.cpp foundations/overload-resolution/builtin-not-callable-by-name.cpp foundations/overload-resolution/builtin-over-template.cpp foundations/overload-resolution/builtin-logical-explicit-bool.cpp foundations/overload-resolution/builtin-logical-explicit-competes.cpp foundations/overload-resolution/builtin-logical-explicit-competes-and.cpp foundations/overload-resolution/builtin-logical-explicit-int.cpp foundations/overload-resolution/builtin-increment-from-conversion.cpp foundations/overload-resolution/builtin-increment-from-value.cpp
+:tests: overloading/overload-resolution/builtin-arithmetic.cpp overloading/overload-resolution/builtin-pointer.cpp overloading/overload-resolution/builtin-assignment.cpp overloading/overload-resolution/builtin-enumeration.cpp overloading/overload-resolution/builtin-enumeration-no-arithmetic.cpp overloading/overload-resolution/builtin-three-way.cpp overloading/overload-resolution/builtin-integer-only.cpp overloading/overload-resolution/builtin-bool-increment.cpp overloading/overload-resolution/builtin-member-pointer-equality.cpp overloading/overload-resolution/builtin-member-pointer-order.cpp overloading/overload-resolution/builtin-integral-compound.cpp overloading/overload-resolution/builtin-three-way-mixed.cpp overloading/overload-resolution/builtin-three-way-bool-operand.cpp overloading/overload-resolution/builtin-not-callable-by-name.cpp overloading/overload-resolution/builtin-over-template.cpp overloading/overload-resolution/builtin-logical-explicit-bool.cpp overloading/overload-resolution/builtin-logical-explicit-competes.cpp overloading/overload-resolution/builtin-logical-explicit-competes-and.cpp overloading/overload-resolution/builtin-logical-explicit-int.cpp overloading/overload-resolution/builtin-increment-from-conversion.cpp overloading/overload-resolution/builtin-increment-from-value.cpp
 
 An operator has the {term}`built-in candidates <built-in candidate>` that
 the table of OVL-P4 lists, each a function with the parameter types of
@@ -346,7 +346,7 @@ its row. A call by the operator function's name, such as
 
 :::{rule} OVL-10
 :kind: required
-:tests: foundations/overload-resolution/builtin-same-shape-removed.cpp foundations/overload-resolution/builtin-other-shape-kept.cpp foundations/overload-resolution/builtin-removed-by-rewritten.cpp
+:tests: overloading/overload-resolution/builtin-same-shape-removed.cpp overloading/overload-resolution/builtin-other-shape-kept.cpp overloading/overload-resolution/builtin-removed-by-rewritten.cpp
 
 A built-in candidate is removed if a non-member candidate that is not a
 template has the same parameter types. A reference parameter differs
@@ -359,7 +359,7 @@ also removes the built-in candidate ({question}`Q-0147`).
 
 :::{rule} OVL-11
 :kind: reject
-:tests: foundations/overload-resolution/builtin-chosen-then-checked.cpp foundations/overload-resolution/builtin-chosen-other-operand.cpp foundations/overload-resolution/builtin-three-way-bool-operand.cpp
+:tests: overloading/overload-resolution/builtin-chosen-then-checked.cpp overloading/overload-resolution/builtin-chosen-other-operand.cpp overloading/overload-resolution/builtin-three-way-bool-operand.cpp
 
 If a built-in candidate wins, each class operand converts by the
 conversion function of its sequence. The standard conversions after the
@@ -371,7 +371,7 @@ reject them.
 
 :::{rule} OVL-12
 :kind: required
-:tests: foundations/overload-resolution/builtin-none-for-address-comma.cpp foundations/overload-resolution/address-of-deleted-chosen.cpp
+:tests: overloading/overload-resolution/builtin-none-for-address-comma.cpp overloading/overload-resolution/address-of-deleted-chosen.cpp
 
 The comma operator, unary `&`, and `->` have no built-in candidates. If
 none of their candidates is viable, the operator has its built-in
@@ -380,7 +380,7 @@ meaning.
 
 :::{rule} OVL-13
 :kind: required
-:tests: foundations/overload-resolution/rewritten-three-way-result.cpp foundations/overload-resolution/rewritten-not-equal-result.cpp foundations/overload-resolution/rewritten-swapped-member-object.cpp foundations/overload-resolution/rewritten-swapped-nonmember-converts.cpp foundations/overload-resolution/rewritten-three-way-reversed.cpp classes/operators/relational-chain-class.cpp
+:tests: overloading/overload-resolution/rewritten-three-way-result.cpp overloading/overload-resolution/rewritten-not-equal-result.cpp overloading/overload-resolution/rewritten-swapped-member-object.cpp overloading/overload-resolution/rewritten-swapped-nonmember-converts.cpp overloading/overload-resolution/rewritten-three-way-reversed.cpp classes/operators/relational-chain-class.cpp
 
 A rewritten candidate of {rule}`DCMP-6` evaluates as this table gives:
 
@@ -398,7 +398,7 @@ its object, which no user-defined conversion can reach.
 
 :::{rule} OVL-43
 :kind: reject
-:tests: foundations/overload-resolution/rewritten-inner-no-rewrite.cpp foundations/overload-resolution/rewritten-inner-reversed-only.cpp
+:tests: overloading/overload-resolution/rewritten-inner-no-rewrite.cpp overloading/overload-resolution/rewritten-inner-reversed-only.cpp
 
 In a rewritten candidate, the comparison of the `<=>` result with `0`
 has no rewritten candidates. If that comparison has no viable function,
@@ -409,7 +409,7 @@ the program is not valid.
 
 :::{rule} OVL-14
 :kind: required
-:tests: foundations/overload-resolution/init-constructor-against-conversion.cpp foundations/overload-resolution/init-constructor-conversion-tie.cpp foundations/overload-resolution/init-conversion-to-derived.cpp foundations/overload-resolution/init-qualified-result.cpp foundations/overload-resolution/init-copy-explicit-conversion.cpp foundations/overload-resolution/init-copy-constructor-standard-only.cpp classes/constructors/return-owner-converts-to-base-owner.cpp
+:tests: overloading/overload-resolution/init-constructor-against-conversion.cpp overloading/overload-resolution/init-constructor-conversion-tie.cpp overloading/overload-resolution/init-conversion-to-derived.cpp overloading/overload-resolution/init-qualified-result.cpp overloading/overload-resolution/init-copy-explicit-conversion.cpp overloading/overload-resolution/init-copy-constructor-standard-only.cpp classes/constructors/return-owner-converts-to-base-owner.cpp
 
 The initialization of an object of class `T` from one initializer `v`
 has these candidates:
@@ -430,7 +430,7 @@ the copy or move constructor, takes `v` through a conversion function.
 
 :::{rule} OVL-15
 :kind: required
-:tests: foundations/overload-resolution/reference-conversion-kind.cpp foundations/overload-resolution/reference-function-both-kinds.cpp foundations/overload-resolution/reference-conversion-not-compatible.cpp foundations/overload-resolution/reference-explicit-direct.cpp foundations/overload-resolution/reference-explicit-copy.cpp
+:tests: overloading/overload-resolution/reference-conversion-kind.cpp overloading/overload-resolution/reference-function-both-kinds.cpp overloading/overload-resolution/reference-conversion-not-compatible.cpp overloading/overload-resolution/reference-explicit-direct.cpp overloading/overload-resolution/reference-explicit-copy.cpp
 
 When a reference binds directly to the result of a conversion function
 ({rule}`ICS-4`), the reference decides the candidates:
@@ -450,7 +450,7 @@ Without such a candidate, the reference binds to a temporary.
 
 :::{rule} OVL-16
 :kind: required
-:tests: foundations/overload-resolution/explicit-condition-after-deduction.cpp foundations/overload-resolution/explicit-condition-conversion-function.cpp
+:tests: overloading/overload-resolution/explicit-condition-after-deduction.cpp overloading/overload-resolution/explicit-condition-conversion-function.cpp
 
 If the `explicit` condition of a constructor or conversion function
 template depends on a template parameter, deduction comes first
@@ -460,7 +460,7 @@ template depends on a template parameter, deduction comes first
 
 :::{rule} OVL-40
 :kind: required
-:tests: foundations/overload-resolution/init-direct-explicit-conversion.cpp foundations/overload-resolution/init-copy-list-explicit-conversion.cpp
+:tests: overloading/overload-resolution/init-direct-explicit-conversion.cpp overloading/overload-resolution/init-copy-list-explicit-conversion.cpp
 
 In direct initialization of a class `T`, an `explicit` conversion
 function can make the temporary for the parameter of a copy or move
@@ -470,7 +470,7 @@ conversion function cannot make that temporary ({question}`Q-0145`).
 
 :::{rule} OVL-17
 :kind: required
-:tests: foundations/overload-resolution/inherited-copy-shape-excluded.cpp foundations/overload-resolution/inherited-copy-shape-any-argument.cpp foundations/overload-resolution/inherited-copy-shape-default.cpp foundations/overload-resolution/inherited-copy-shape-two-arguments.cpp
+:tests: overloading/overload-resolution/inherited-copy-shape-excluded.cpp overloading/overload-resolution/inherited-copy-shape-any-argument.cpp overloading/overload-resolution/inherited-copy-shape-default.cpp overloading/overload-resolution/inherited-copy-shape-two-arguments.cpp
 
 A constructor that the derived class `D` inherits from a base `B` is
 removed from the candidates of a call with exactly one argument, of any
@@ -480,7 +480,7 @@ reference to `B`, to `D`, or to a class between them.
 
 :::{rule} OVL-42
 :kind: required
-:tests: foundations/overload-resolution/deleted-defaulted-move-not-candidate.cpp foundations/overload-resolution/user-deleted-move-candidate.cpp
+:tests: overloading/overload-resolution/deleted-defaulted-move-not-candidate.cpp overloading/overload-resolution/user-deleted-move-candidate.cpp
 
 A defaulted move constructor or move assignment operator that is
 deleted ({rule}`CPY-7`) is not a candidate. A move function that is
@@ -491,7 +491,7 @@ declared deleted is a candidate, and OVL-37 applies when it wins.
 
 :::{rule} OVL-18
 :kind: required
-:tests: foundations/overload-resolution/address-targets.cpp foundations/overload-resolution/address-exact-type.cpp foundations/overload-resolution/address-no-conversion.cpp foundations/overload-resolution/address-noexcept-target.cpp foundations/overload-resolution/address-member-kinds.cpp foundations/overload-resolution/address-base-member.cpp
+:tests: overloading/overload-resolution/address-targets.cpp overloading/overload-resolution/address-exact-type.cpp overloading/overload-resolution/address-no-conversion.cpp overloading/overload-resolution/address-noexcept-target.cpp overloading/overload-resolution/address-member-kinds.cpp overloading/overload-resolution/address-base-member.cpp
 
 The name of an overload set, with or without `&`, takes its function
 from a target type. These contexts give a target type:
@@ -514,7 +514,7 @@ and the class of the pointer to member takes no part ({rule}`MPTR-4`).
 
 :::{rule} OVL-19
 :kind: required
-:tests: foundations/overload-resolution/address-plain-over-template.cpp foundations/overload-resolution/address-more-specialized.cpp foundations/overload-resolution/address-more-constrained.cpp
+:tests: overloading/overload-resolution/address-plain-over-template.cpp overloading/overload-resolution/address-more-specialized.cpp overloading/overload-resolution/address-more-constrained.cpp
 
 The matching functions of OVL-18 are reduced in these steps:
 
@@ -532,7 +532,7 @@ The matching functions of OVL-18 are reduced in these steps:
 
 :::{rule} OVL-20
 :kind: reject
-:tests: foundations/overload-resolution/address-ambiguous.cpp foundations/overload-resolution/address-no-target-return.cpp foundations/overload-resolution/address-no-target-init-capture.cpp foundations/overload-resolution/address-no-target-auto-template-parameter.cpp foundations/overload-resolution/address-no-target-cast-void.cpp foundations/overload-resolution/address-no-target-expression-statement.cpp foundations/overload-resolution/address-no-target-single-positions.cpp foundations/overload-resolution/address-no-target-template.cpp foundations/overload-resolution/address-no-target-single.cpp foundations/overload-resolution/address-no-conversion.cpp foundations/overload-resolution/address-noexcept-target.cpp foundations/overload-resolution/address-no-target-explicit-arguments.cpp foundations/overload-resolution/address-no-target-explicit-partial.cpp foundations/overload-resolution/address-no-target-constraints.cpp foundations/overload-resolution/address-no-target-more-constrained.cpp foundations/overload-resolution/address-no-target-constraints-different-parameters.cpp declarations/auto/overload-set-template.cpp
+:tests: overloading/overload-resolution/address-ambiguous.cpp overloading/overload-resolution/address-no-target-return.cpp overloading/overload-resolution/address-no-target-init-capture.cpp overloading/overload-resolution/address-no-target-auto-template-parameter.cpp overloading/overload-resolution/address-no-target-cast-void.cpp overloading/overload-resolution/address-no-target-expression-statement.cpp overloading/overload-resolution/address-no-target-single-positions.cpp overloading/overload-resolution/address-no-target-template.cpp overloading/overload-resolution/address-no-target-single.cpp overloading/overload-resolution/address-no-conversion.cpp overloading/overload-resolution/address-noexcept-target.cpp overloading/overload-resolution/address-no-target-explicit-arguments.cpp overloading/overload-resolution/address-no-target-explicit-partial.cpp overloading/overload-resolution/address-no-target-constraints.cpp overloading/overload-resolution/address-no-target-more-constrained.cpp overloading/overload-resolution/address-no-target-constraints-different-parameters.cpp declarations/auto/overload-set-template.cpp
 
 After OVL-19, exactly one function must remain. Without a target type,
 these steps apply:
@@ -559,7 +559,7 @@ of a function template matches (decision 0042).
 
 :::{rule} OVL-21
 :kind: required
-:tests: foundations/overload-resolution/call-through-address.cpp foundations/overload-resolution/call-through-address-static-member.cpp foundations/overload-resolution/call-through-address-nonstatic.cpp foundations/overload-resolution/call-parenthesized-name.cpp foundations/overload-resolution/call-through-address-parenthesized-static.cpp foundations/overload-resolution/call-through-address-parenthesized-qualified.cpp foundations/overload-resolution/call-through-address-unqualified.cpp foundations/overload-resolution/call-through-address-unqualified-argument.cpp foundations/overload-resolution/call-parenthesized-member-access.cpp
+:tests: overloading/overload-resolution/call-through-address.cpp overloading/overload-resolution/call-through-address-static-member.cpp overloading/overload-resolution/call-through-address-nonstatic.cpp overloading/overload-resolution/call-parenthesized-name.cpp overloading/overload-resolution/call-through-address-parenthesized-static.cpp overloading/overload-resolution/call-through-address-parenthesized-qualified.cpp overloading/overload-resolution/call-through-address-unqualified.cpp overloading/overload-resolution/call-through-address-unqualified-argument.cpp overloading/overload-resolution/call-parenthesized-member-access.cpp
 
 A call `(&f)(a)` resolves `f` as a call by name, with no implied object
 argument. A call `(f)(a)` is the same call as `f(a)`, and keeps the
@@ -569,7 +569,7 @@ the call `x.f(a)` or `p->f(a)` of {rule}`OVL-4`.
 
 :::{rule} OVL-44
 :kind: reject
-:tests: foundations/overload-resolution/call-through-address-parenthesized-static.cpp foundations/overload-resolution/call-through-address-parenthesized-qualified.cpp
+:tests: overloading/overload-resolution/call-through-address-parenthesized-static.cpp overloading/overload-resolution/call-through-address-parenthesized-qualified.cpp
 
 In a call `(&f)(a)`, if the set `f` holds a member with an implicit
 object parameter, the operand of `&` must not be a qualified name in
@@ -580,7 +580,7 @@ of the set would win. An unqualified name without parentheses follows
 
 :::{rule} OVL-39
 :kind: required
-:tests: foundations/overload-resolution/overload-set-argument.cpp foundations/overload-resolution/overload-set-argument-ambiguous.cpp foundations/overload-resolution/overload-set-argument-with-other.cpp
+:tests: overloading/overload-resolution/overload-set-argument.cpp overloading/overload-resolution/overload-set-argument-ambiguous.cpp overloading/overload-resolution/overload-set-argument-with-other.cpp
 
 If an argument of a call names an overload set, each candidate selects
 its own function from the set, with its parameter type as the target
@@ -592,7 +592,7 @@ argument, and one candidate must win (OVL-36).
 
 :::{rule} OVL-22
 :kind: required
-:tests: foundations/overload-resolution/viable-count.cpp foundations/overload-resolution/viable-count-defaults-and-ellipsis.cpp
+:tests: overloading/overload-resolution/viable-count.cpp overloading/overload-resolution/viable-count-defaults-and-ellipsis.cpp
 
 A candidate is a {term}`viable function` only if its parameters fit the
 arguments ({rule}`PFX-5`):
@@ -606,7 +606,7 @@ arguments ({rule}`PFX-5`):
 
 :::{rule} OVL-23
 :kind: required
-:tests: foundations/overload-resolution/viable-sequence.cpp foundations/overload-resolution/no-object-ref-qualified-member.cpp
+:tests: overloading/overload-resolution/viable-sequence.cpp overloading/overload-resolution/no-object-ref-qualified-member.cpp
 
 A viable function has an {term}`implicit conversion sequence` ({rule}`ICS-1`)
 from each argument to its parameter, and a reference that cannot bind
@@ -618,7 +618,7 @@ cv-qualifiers and ref-qualifier ({question}`Q-0187`).
 
 :::{rule} OVL-24
 :kind: required
-:tests: foundations/overload-resolution/viable-constraints.cpp foundations/overload-resolution/viable-constraints-function-template.cpp
+:tests: overloading/overload-resolution/viable-constraints.cpp overloading/overload-resolution/viable-constraints-function-template.cpp
 
 A candidate whose constraints are not satisfied ({rule}`CNS-7`) is not
 viable. {rule}`CNS-11` says when a function template's constraints are
@@ -629,7 +629,7 @@ checked.
 
 :::{rule} OVL-25
 :kind: required
-:tests: foundations/overload-resolution/better-one-argument.cpp foundations/overload-resolution/better-crossing-arguments.cpp foundations/overload-resolution/defaults-take-no-part.cpp foundations/overload-resolution/static-slot-no-part.cpp foundations/overload-resolution/template-exact-over-plain.cpp foundations/overload-resolution/static-call-operator-over-surrogate.cpp foundations/overload-resolution/static-call-operator-surrogate-ambiguous.cpp expressions/lambdas/static-call-operator.cpp
+:tests: overloading/overload-resolution/better-one-argument.cpp overloading/overload-resolution/better-crossing-arguments.cpp overloading/overload-resolution/defaults-take-no-part.cpp overloading/overload-resolution/static-slot-no-part.cpp overloading/overload-resolution/template-exact-over-plain.cpp overloading/overload-resolution/static-call-operator-over-surrogate.cpp overloading/overload-resolution/static-call-operator-surrogate-ambiguous.cpp expressions/lambdas/static-call-operator.cpp
 
 A viable function `F1` is better than `F2` if no sequence of `F1` is
 worse than the sequence of `F2` for the same argument
@@ -648,7 +648,7 @@ standard sequence. Against the first sequence of a surrogate candidate
 
 :::{rule} OVL-26
 :kind: required
-:tests: foundations/overload-resolution/tie-conversion-result.cpp foundations/overload-resolution/tie-conversion-result-before-template.cpp foundations/overload-resolution/tie-conversion-result-before-constraints.cpp foundations/overload-resolution/tie-conversion-result-templates.cpp foundations/overload-resolution/tie-conversion-result-noexcept.cpp foundations/overload-resolution/tie-conversion-result-constructor.cpp foundations/overload-resolution/init-constructor-conversion-tie.cpp
+:tests: overloading/overload-resolution/tie-conversion-result.cpp overloading/overload-resolution/tie-conversion-result-before-template.cpp overloading/overload-resolution/tie-conversion-result-before-constraints.cpp overloading/overload-resolution/tie-conversion-result-templates.cpp overloading/overload-resolution/tie-conversion-result-noexcept.cpp overloading/overload-resolution/tie-conversion-result-constructor.cpp overloading/overload-resolution/init-constructor-conversion-tie.cpp
 
 In an initialization by a user-defined conversion, the function whose
 result has the better sequence to the target wins. The results compare
@@ -665,7 +665,7 @@ The identity is better than a function pointer conversion
 
 :::{rule} OVL-27
 :kind: required
-:tests: foundations/overload-resolution/tie-plain-over-template.cpp foundations/overload-resolution/template-exact-over-plain.cpp foundations/overload-resolution/tie-conversion-result-before-template.cpp foundations/overload-resolution/tie-template-before-inherited.cpp foundations/overload-resolution/tie-template-before-rewritten.cpp foundations/overload-resolution/tie-template-before-swapped.cpp foundations/overload-resolution/tie-reference-kind-before-template.cpp foundations/overload-resolution/tie-reference-kind-before-template-lvalue.cpp foundations/overload-resolution/builtin-over-template.cpp
+:tests: overloading/overload-resolution/tie-plain-over-template.cpp overloading/overload-resolution/template-exact-over-plain.cpp overloading/overload-resolution/tie-conversion-result-before-template.cpp overloading/overload-resolution/tie-template-before-inherited.cpp overloading/overload-resolution/tie-template-before-rewritten.cpp overloading/overload-resolution/tie-template-before-swapped.cpp overloading/overload-resolution/tie-reference-kind-before-template.cpp overloading/overload-resolution/tie-reference-kind-before-template-lvalue.cpp overloading/overload-resolution/builtin-over-template.cpp
 
 A function that is not a template specialization wins over a
 specialization. A built-in candidate counts as such a function. The
@@ -674,7 +674,7 @@ rule comes after OVL-26 and OVL-29.
 
 :::{rule} OVL-28
 :kind: required
-:tests: foundations/overload-resolution/tie-more-specialized.cpp foundations/overload-resolution/tie-reference-kind-before-more-specialized.cpp
+:tests: overloading/overload-resolution/tie-more-specialized.cpp overloading/overload-resolution/tie-reference-kind-before-more-specialized.cpp
 
 Of two specializations, the one from the more specialized template wins
 ({rule}`ORD-1`, {rule}`ORD-5`).
@@ -682,7 +682,7 @@ Of two specializations, the one from the more specialized template wins
 
 :::{rule} OVL-41
 :kind: required
-:tests: foundations/overload-resolution/tie-more-specialized-constraints.cpp foundations/overload-resolution/tie-constraints-different-parameters.cpp
+:tests: overloading/overload-resolution/tie-more-specialized-constraints.cpp overloading/overload-resolution/tie-constraints-different-parameters.cpp
 
 Of two specializations, the one from the {term}`more constrained` template
 ({rule}`CNS-23`) wins if the two templates meet the conditions of
@@ -692,7 +692,7 @@ Of two specializations, the one from the {term}`more constrained` template
 
 :::{rule} OVL-29
 :kind: required
-:tests: foundations/overload-resolution/tie-function-reference-kind.cpp foundations/overload-resolution/tie-reference-kind-before-template.cpp foundations/overload-resolution/tie-reference-kind-before-template-lvalue.cpp foundations/overload-resolution/tie-reference-kind-before-more-specialized.cpp foundations/overload-resolution/tie-reference-kind-before-constraints.cpp
+:tests: overloading/overload-resolution/tie-function-reference-kind.cpp overloading/overload-resolution/tie-reference-kind-before-template.cpp overloading/overload-resolution/tie-reference-kind-before-template-lvalue.cpp overloading/overload-resolution/tie-reference-kind-before-more-specialized.cpp overloading/overload-resolution/tie-reference-kind-before-constraints.cpp
 
 If a reference to function binds directly to the result of either of
 two conversion functions, the one that returns the same kind of
@@ -703,7 +703,7 @@ The rule comes after OVL-26 and before OVL-27 and OVL-28
 
 :::{rule} OVL-30
 :kind: required
-:tests: foundations/overload-resolution/tie-more-constrained.cpp foundations/overload-resolution/tie-conversion-result-before-constraints.cpp foundations/overload-resolution/tie-reference-kind-before-constraints.cpp foundations/overload-resolution/tie-constraints-default-parameter.cpp foundations/overload-resolution/tie-constraints-ellipsis.cpp
+:tests: overloading/overload-resolution/tie-more-constrained.cpp overloading/overload-resolution/tie-conversion-result-before-constraints.cpp overloading/overload-resolution/tie-reference-kind-before-constraints.cpp overloading/overload-resolution/tie-constraints-default-parameter.cpp overloading/overload-resolution/tie-constraints-ellipsis.cpp
 
 Of two functions that are not specializations, the more constrained one
 ({rule}`CNS-23`) wins if the two functions meet the conditions of
@@ -713,7 +713,7 @@ OVL-29.
 
 :::{rule} OVL-31
 :kind: required
-:tests: foundations/overload-resolution/tie-derived-over-inherited.cpp foundations/overload-resolution/tie-template-before-inherited.cpp
+:tests: overloading/overload-resolution/tie-derived-over-inherited.cpp overloading/overload-resolution/tie-template-before-inherited.cpp
 
 A constructor of a derived class wins over a constructor inherited from
 a base, if both have the same types for the parameters that the call
@@ -722,7 +722,7 @@ uses. The rule comes after OVL-27.
 
 :::{rule} OVL-32
 :kind: required
-:tests: foundations/overload-resolution/tie-written-over-rewritten.cpp foundations/overload-resolution/tie-template-before-rewritten.cpp foundations/overload-resolution/tie-template-before-swapped.cpp classes/comparisons/eq-across-specializations.cpp
+:tests: overloading/overload-resolution/tie-written-over-rewritten.cpp overloading/overload-resolution/tie-template-before-rewritten.cpp overloading/overload-resolution/tie-template-before-swapped.cpp classes/comparisons/eq-across-specializations.cpp
 
 A candidate that is not rewritten wins over a rewritten candidate
 ({rule}`DCMP-6`). A swapped candidate counts as rewritten. The rule
@@ -731,7 +731,7 @@ comes after OVL-27.
 
 :::{rule} OVL-33
 :kind: required
-:tests: foundations/overload-resolution/tie-written-order.cpp foundations/overload-resolution/tie-swapped-same-function.cpp
+:tests: overloading/overload-resolution/tie-written-order.cpp overloading/overload-resolution/tie-swapped-same-function.cpp
 
 Of two rewritten candidates, the one that keeps the written order of
 the operands wins over a swapped one. No test observes the place of
@@ -740,7 +740,7 @@ this rule before OVL-32 or after OVL-27.
 
 :::{rule} OVL-34
 :kind: required
-:tests: foundations/overload-resolution/best-beats-each.cpp foundations/overload-resolution/best-no-single-winner.cpp
+:tests: overloading/overload-resolution/best-beats-each.cpp overloading/overload-resolution/best-no-single-winner.cpp
 
 The {term}`best viable function` is the viable function that is better
 than each other viable function. The result does not depend on the
@@ -751,7 +751,7 @@ order of the declarations.
 
 :::{rule} OVL-35
 :kind: reject
-:tests: foundations/overload-resolution/no-viable-function.cpp foundations/overload-resolution/current-object-explicit-extra-argument.cpp foundations/overload-resolution/operator-call-by-name-hidden.cpp foundations/overload-resolution/init-copy-explicit-conversion.cpp foundations/overload-resolution/init-copy-list-explicit-conversion.cpp foundations/overload-resolution/rewritten-swapped-member-object.cpp foundations/overload-resolution/rewritten-inner-no-rewrite.cpp foundations/overload-resolution/surrogate-template-not-candidate.cpp foundations/overload-resolution/surrogate-ref-qualifier-lvalue.cpp foundations/overload-resolution/builtin-not-callable-by-name.cpp foundations/overload-resolution/reference-explicit-copy.cpp foundations/overload-resolution/inherited-copy-shape-any-argument.cpp foundations/overload-resolution/inherited-copy-shape-default.cpp foundations/overload-resolution/builtin-logical-explicit-int.cpp foundations/conversion-sequences/ellipsis-braced-list.cpp foundations/overload-resolution/builtin-increment-from-value.cpp foundations/overload-resolution/init-copy-constructor-standard-only.cpp foundations/conversion-sequences/assignment-left-no-builtin.cpp
+:tests: overloading/overload-resolution/no-viable-function.cpp overloading/overload-resolution/current-object-explicit-extra-argument.cpp overloading/overload-resolution/operator-call-by-name-hidden.cpp overloading/overload-resolution/init-copy-explicit-conversion.cpp overloading/overload-resolution/init-copy-list-explicit-conversion.cpp overloading/overload-resolution/rewritten-swapped-member-object.cpp overloading/overload-resolution/rewritten-inner-no-rewrite.cpp overloading/overload-resolution/surrogate-template-not-candidate.cpp overloading/overload-resolution/surrogate-ref-qualifier-lvalue.cpp overloading/overload-resolution/builtin-not-callable-by-name.cpp overloading/overload-resolution/reference-explicit-copy.cpp overloading/overload-resolution/inherited-copy-shape-any-argument.cpp overloading/overload-resolution/inherited-copy-shape-default.cpp overloading/overload-resolution/builtin-logical-explicit-int.cpp overloading/conversion-sequences/ellipsis-braced-list.cpp overloading/overload-resolution/builtin-increment-from-value.cpp overloading/overload-resolution/init-copy-constructor-standard-only.cpp overloading/conversion-sequences/assignment-left-no-builtin.cpp
 
 If a use has no viable function, the program is not valid. These rules
 name specific cases (decision 0042): {rule}`PFX-5`, {rule}`OPR-15`,
@@ -760,7 +760,7 @@ name specific cases (decision 0042): {rule}`PFX-5`, {rule}`OPR-15`,
 
 :::{rule} OVL-36
 :kind: reject
-:tests: foundations/overload-resolution/best-no-single-winner.cpp foundations/overload-resolution/better-crossing-arguments.cpp foundations/overload-resolution/defaults-take-no-part.cpp foundations/overload-resolution/no-object-static-default-ambiguous.cpp foundations/overload-resolution/surrogate-same-parameters.cpp foundations/overload-resolution/builtin-other-shape-kept.cpp foundations/overload-resolution/init-constructor-conversion-tie.cpp foundations/overload-resolution/overload-set-argument-ambiguous.cpp foundations/overload-resolution/tie-swapped-same-function.cpp foundations/overload-resolution/tie-constraints-different-parameters.cpp foundations/overload-resolution/tie-constraints-default-parameter.cpp foundations/overload-resolution/tie-constraints-ellipsis.cpp foundations/overload-resolution/builtin-logical-explicit-competes.cpp foundations/overload-resolution/builtin-logical-explicit-competes-and.cpp foundations/overload-resolution/static-call-operator-surrogate-ambiguous.cpp foundations/overload-resolution/call-through-address-unqualified.cpp foundations/conversion-sequences/overload-set-reference-or-pointer.cpp foundations/conversion-sequences/overload-set-to-ellipsis.cpp
+:tests: overloading/overload-resolution/best-no-single-winner.cpp overloading/overload-resolution/better-crossing-arguments.cpp overloading/overload-resolution/defaults-take-no-part.cpp overloading/overload-resolution/no-object-static-default-ambiguous.cpp overloading/overload-resolution/surrogate-same-parameters.cpp overloading/overload-resolution/builtin-other-shape-kept.cpp overloading/overload-resolution/init-constructor-conversion-tie.cpp overloading/overload-resolution/overload-set-argument-ambiguous.cpp overloading/overload-resolution/tie-swapped-same-function.cpp overloading/overload-resolution/tie-constraints-different-parameters.cpp overloading/overload-resolution/tie-constraints-default-parameter.cpp overloading/overload-resolution/tie-constraints-ellipsis.cpp overloading/overload-resolution/builtin-logical-explicit-competes.cpp overloading/overload-resolution/builtin-logical-explicit-competes-and.cpp overloading/overload-resolution/static-call-operator-surrogate-ambiguous.cpp overloading/overload-resolution/call-through-address-unqualified.cpp overloading/conversion-sequences/overload-set-reference-or-pointer.cpp overloading/conversion-sequences/overload-set-to-ellipsis.cpp
 
 If no viable function is better than each of the others, the program
 is not valid. Such a use is ambiguous. These rules name specific cases
@@ -775,7 +775,7 @@ is not valid. Such a use is ambiguous. These rules name specific cases
 
 :::{rule} OVL-37
 :kind: reject
-:tests: foundations/overload-resolution/chosen-deleted.cpp foundations/overload-resolution/chosen-not-accessible.cpp foundations/overload-resolution/address-of-deleted-chosen.cpp foundations/overload-resolution/user-deleted-move-candidate.cpp
+:tests: overloading/overload-resolution/chosen-deleted.cpp overloading/overload-resolution/chosen-not-accessible.cpp overloading/overload-resolution/address-of-deleted-chosen.cpp overloading/overload-resolution/user-deleted-move-candidate.cpp
 
 The best viable function must pass these checks. A worse viable function
 never takes its place. Each check has its own rule (decision 0042):
@@ -789,7 +789,7 @@ never takes its place. Each check has its own rule (decision 0042):
 
 :::{rule} OVL-38
 :kind: reject
-:tests: foundations/overload-resolution/default-from-two-scopes.cpp foundations/overload-resolution/default-from-two-scopes-passed.cpp foundations/overload-resolution/default-from-two-scopes-same.cpp foundations/overload-resolution/default-from-two-scopes-same-value.cpp foundations/overload-resolution/default-from-two-scopes-same-literal.cpp
+:tests: overloading/overload-resolution/default-from-two-scopes.cpp overloading/overload-resolution/default-from-two-scopes-passed.cpp overloading/overload-resolution/default-from-two-scopes-same.cpp overloading/overload-resolution/default-from-two-scopes-same-value.cpp overloading/overload-resolution/default-from-two-scopes-same-literal.cpp
 
 The best viable function can have declarations in two scopes that give
 different default arguments for one parameter. A call that uses the
@@ -972,9 +972,9 @@ column gives the outcome that the rules predict.
 ### Probe grids
 
 The 12 probe grids of this page are in
-`tests/foundations/overload-resolution/grids/`. The tables that
+`tests/overloading/overload-resolution/grids/`. The tables that
 `tools/probe_grid.py` prints from them are in
-[`grids/tables.md`](https://github.com/sempuki/tidal/blob/main/tests/foundations/overload-resolution/grids/tables.md),
+[`grids/tables.md`](https://github.com/sempuki/tidal/blob/main/tests/overloading/overload-resolution/grids/tables.md),
 with a caption for each grid that says what its rows and columns
 declare. A cell shows `accept` or `reject` when every compiler agrees,
 and lists the compilers on each side when they split.

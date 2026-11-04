@@ -82,7 +82,7 @@ single path, so a conversion through such a base is not implicit.
 
 :::{rule} CONV-1
 :kind: required
-:tests: expressions/conversions/integral-promotion.cpp expressions/conversions/bitfield-promotes.cpp expressions/conversions/enum-promotion.cpp expressions/conversions/bitfield-promotion-by-width.cpp expressions/conversions/enum-promotion-no-fixed-type.cpp foundations/types/rank-promotions.cpp
+:tests: foundations/conversions/integral-promotion.cpp foundations/conversions/bitfield-promotes.cpp foundations/conversions/enum-promotion.cpp foundations/conversions/bitfield-promotion-by-width.cpp foundations/conversions/enum-promotion-no-fixed-type.cpp foundations/types/rank-promotions.cpp
 
 The following operands go through {term}`integer promotion` in
 arithmetic:
@@ -106,7 +106,7 @@ A `float` operand does not change to `double` in arithmetic.
 
 :::{rule} CONV-19
 :kind: required
-:tests: expressions/conversions/uac-floating.cpp expressions/decltype/arithmetic-common-type.cpp expressions/conversions/uac-promoted-same.cpp expressions/conversions/uac-same-signedness.cpp expressions/conversions/uac-unsigned-rank-not-lower.cpp expressions/conversions/uac-signed-holds-unsigned-lp64.cpp expressions/conversions/uac-unsigned-of-signed-lp64.cpp expressions/conversions/uac-unsigned-of-signed-ilp32.cpp expressions/conversions/binary-operator-common-type-contexts.cpp
+:tests: foundations/conversions/uac-floating.cpp expressions/decltype/arithmetic-common-type.cpp foundations/conversions/uac-promoted-same.cpp foundations/conversions/uac-same-signedness.cpp foundations/conversions/uac-unsigned-rank-not-lower.cpp foundations/conversions/uac-signed-holds-unsigned-lp64.cpp foundations/conversions/uac-unsigned-of-signed-lp64.cpp foundations/conversions/uac-unsigned-of-signed-ilp32.cpp foundations/conversions/binary-operator-common-type-contexts.cpp
 
 The {term}`usual arithmetic conversions` give the two operands of a
 binary arithmetic operator one common type. The first step that applies
@@ -135,7 +135,7 @@ a large value ({rule}`CONV-2`). The operator `<=>` rejects such a
 
 :::{rule} CONV-20
 :kind: required
-:tests: expressions/conversions/implicit-conversion-contexts.cpp expressions/conversions/implicit-conversion-more-contexts.cpp expressions/conversions/implicit-conversion-member-and-new-contexts.cpp expressions/conversions/binary-operator-common-type-contexts.cpp
+:tests: foundations/conversions/implicit-conversion-contexts.cpp foundations/conversions/implicit-conversion-more-contexts.cpp foundations/conversions/implicit-conversion-member-and-new-contexts.cpp foundations/conversions/binary-operator-common-type-contexts.cpp
 
 An implicit conversion happens in each of these contexts. The rule named
 for each context gives the target type:
@@ -195,7 +195,7 @@ bit-field whose values all fit in the target is not narrowing
 
 :::{rule} CONV-8
 :kind: reject
-:tests: expressions/conversions/null-pointer-constants.cpp expressions/conversions/nonzero-to-pointer.cpp expressions/conversions/integer-variable-to-pointer.cpp expressions/conversions/false-not-null-pointer.cpp expressions/conversions/null-member-pointer-from-zero.cpp expressions/conversions/parenthesized-zero-null.cpp expressions/conversions/char-zero-not-null.cpp
+:tests: foundations/conversions/null-pointer-constants.cpp foundations/conversions/nonzero-to-pointer.cpp foundations/conversions/integer-variable-to-pointer.cpp foundations/conversions/false-not-null-pointer.cpp foundations/conversions/null-member-pointer-from-zero.cpp foundations/conversions/parenthesized-zero-null.cpp foundations/conversions/char-zero-not-null.cpp
 
 `nullptr` and an integer literal with the value zero convert to a null
 pointer of any pointer type and to a null pointer to member of any
@@ -208,7 +208,7 @@ zero and to the literal `false`.
 
 :::{rule} CONV-9
 :kind: reject
-:tests: expressions/conversions/pointer-to-void-pointer.cpp expressions/conversions/void-pointer-to-pointer.cpp expressions/conversions/const-pointer-to-void-pointer.cpp expressions/conversions/function-pointer-to-void-pointer.cpp expressions/conversions/deep-const-every-level.cpp expressions/conversions/deep-const-not-at-every-level.cpp
+:tests: foundations/conversions/pointer-to-void-pointer.cpp foundations/conversions/void-pointer-to-pointer.cpp foundations/conversions/const-pointer-to-void-pointer.cpp foundations/conversions/function-pointer-to-void-pointer.cpp foundations/conversions/deep-const-every-level.cpp foundations/conversions/deep-const-not-at-every-level.cpp
 
 A pointer to an object type converts implicitly to a pointer to `void`
 with the same or more {term}`cv-qualifiers <cv-qualifier>`. These
@@ -223,7 +223,7 @@ conversions must not occur implicitly:
 
 :::{rule} CONV-10
 :kind: reject
-:tests: expressions/conversions/noexcept-function-pointer.cpp expressions/conversions/potentially-throwing-to-noexcept.cpp expressions/conversions/member-function-noexcept-drop.cpp expressions/conversions/member-function-noexcept-add.cpp
+:tests: foundations/conversions/noexcept-function-pointer.cpp foundations/conversions/potentially-throwing-to-noexcept.cpp foundations/conversions/member-function-noexcept-drop.cpp foundations/conversions/member-function-noexcept-add.cpp
 
 A pointer to a `noexcept` function converts to a pointer to a function
 without `noexcept`. The opposite conversion must not occur implicitly.
@@ -232,7 +232,7 @@ The same rules apply to pointers to member functions.
 
 :::{rule} CONV-12
 :kind: reject
-:tests: expressions/conversions/nullptr-to-bool-copy.cpp expressions/conversions/nullptr-to-bool-direct.cpp
+:tests: foundations/conversions/nullptr-to-bool-copy.cpp foundations/conversions/nullptr-to-bool-direct.cpp
 
 `nullptr` converts to `bool` only in direct initialization, with
 parentheses or braces. The conversion gives `false`.
@@ -240,7 +240,7 @@ parentheses or braces. The conversion gives `false`.
 
 :::{rule} CONV-13
 :kind: required
-:tests: expressions/conversions/array-function-to-pointer.cpp expressions/conversions/array-function-to-pointer-constant.cpp
+:tests: foundations/conversions/array-function-to-pointer.cpp foundations/conversions/array-function-to-pointer-constant.cpp
 
 An array lvalue can be used as a pointer to element zero of the array.
 A function name can be used as a pointer that calls that function.
@@ -248,7 +248,7 @@ A function name can be used as a pointer that calls that function.
 
 :::{rule} CONV-14
 :kind: required
-:tests: expressions/conversions/derived-to-base.cpp expressions/conversions/null-derived-to-second-base.cpp
+:tests: foundations/conversions/derived-to-base.cpp foundations/conversions/null-derived-to-second-base.cpp
 
 A pointer or reference to a derived class converts implicitly to a
 pointer or reference to a base class (DER-5). A null pointer converts to
@@ -258,7 +258,7 @@ CONV-17 lists the bases that do not allow the conversion.
 
 :::{rule} CONV-15
 :kind: required
-:tests: expressions/conversions/member-pointer-base-to-derived.cpp expressions/conversions/member-function-pointer-base-to-derived.cpp
+:tests: foundations/conversions/member-pointer-base-to-derived.cpp foundations/conversions/member-function-pointer-base-to-derived.cpp
 
 A member pointer that names a member of a base class can be used as a
 member pointer of a derived class without a cast. The member pointer
@@ -267,7 +267,7 @@ still names the member that the base declares.
 
 :::{rule} CONV-17
 :kind: reject
-:tests: expressions/conversions/member-pointer-virtual-base.cpp expressions/conversions/member-pointer-ambiguous-base.cpp expressions/conversions/ambiguous-base.cpp expressions/conversions/member-pointer-derived-to-base.cpp foundations/conversion-sequences/chosen-private-base.cpp foundations/conversion-sequences/chosen-ambiguous-base.cpp
+:tests: foundations/conversions/member-pointer-virtual-base.cpp foundations/conversions/member-pointer-ambiguous-base.cpp foundations/conversions/ambiguous-base.cpp foundations/conversions/member-pointer-derived-to-base.cpp overloading/conversion-sequences/chosen-private-base.cpp overloading/conversion-sequences/chosen-ambiguous-base.cpp
 
 These conversions must not occur implicitly:
 
@@ -281,7 +281,7 @@ These conversions must not occur implicitly:
 
 :::{rule} CONV-18
 :kind: reject
-:tests: expressions/conversions/pointer-to-integer.cpp expressions/conversions/nullptr-to-integer.cpp expressions/conversions/member-pointer-to-integer.cpp foundations/translation/ill-formed-diagnosed.cpp
+:tests: foundations/conversions/pointer-to-integer.cpp foundations/conversions/nullptr-to-integer.cpp foundations/conversions/member-pointer-to-integer.cpp foundations/translation/ill-formed-diagnosed.cpp
 
 These values must not convert implicitly to an integer type:
 
@@ -297,7 +297,7 @@ explicitly (CAST-6).
 
 :::{rule} CONV-16
 :kind: required
-:tests: expressions/conversions/array-pointer-unknown-bound.cpp expressions/conversions/array-pointer-unknown-bound-argument.cpp
+:tests: foundations/conversions/array-pointer-unknown-bound.cpp foundations/conversions/array-pointer-unknown-bound-argument.cpp
 
 A pointer to an array with a known bound converts implicitly to a
 pointer to an array of the same element type with no bound.
@@ -307,7 +307,7 @@ pointer to an array of the same element type with no bound.
 
 :::{rule} CONV-2
 :kind: required
-:tests: expressions/conversions/to-unsigned-modulo.cpp expressions/conversions/to-signed-modulo.cpp expressions/assignment/compound-narrow-operand-promoted.cpp expressions/bitwise/negative-with-unsigned.cpp
+:tests: foundations/conversions/to-unsigned-modulo.cpp foundations/conversions/to-signed-modulo.cpp expressions/assignment/compound-narrow-operand-promoted.cpp expressions/bitwise/negative-with-unsigned.cpp
 
 An integer value that converts to another integer type keeps its low N
 bits, where N is the width of the target type. The target can be signed
@@ -316,7 +316,7 @@ or unsigned. Signed types use two's complement.
 
 :::{rule} CONV-3
 :kind: required
-:tests: expressions/conversions/to-bool.cpp expressions/conversions/member-pointer-to-bool.cpp expressions/conversions/nan-to-bool.cpp
+:tests: foundations/conversions/to-bool.cpp foundations/conversions/member-pointer-to-bool.cpp foundations/conversions/nan-to-bool.cpp
 
 A conversion to `bool` gives `false` for these values:
 
@@ -329,7 +329,7 @@ The conversion gives `true` for other values, including a NaN.
 
 :::{rule} CONV-4
 :kind: required
-:tests: expressions/conversions/floating-to-integral-truncates.cpp expressions/conversions/floating-to-integral-truncates-run.cpp
+:tests: foundations/conversions/floating-to-integral-truncates.cpp foundations/conversions/floating-to-integral-truncates-run.cpp
 
 A floating-point value converts to an integer type by discarding the
 fractional part. The result rounds toward zero.
@@ -337,7 +337,7 @@ fractional part. The result rounds toward zero.
 
 :::{rule} CONV-6
 :kind: required
-:tests: expressions/conversions/integral-to-floating-exact.cpp expressions/conversions/floating-narrowing-in-range.cpp
+:tests: foundations/conversions/integral-to-floating-exact.cpp foundations/conversions/floating-narrowing-in-range.cpp
 
 When a value converts to a floating-point type that can represent it
 exactly, the result is that value.
@@ -347,7 +347,7 @@ exactly, the result is that value.
 
 :::{rule} CONV-5
 :kind: undefined
-:tests: expressions/conversions/floating-to-integral-out-of-range.cpp expressions/conversions/floating-to-unsigned-negative.cpp expressions/conversions/negative-fraction-to-unsigned.cpp expressions/conversions/floating-to-integral-sanitizer.cpp
+:tests: foundations/conversions/floating-to-integral-out-of-range.cpp foundations/conversions/floating-to-unsigned-negative.cpp foundations/conversions/negative-fraction-to-unsigned.cpp foundations/conversions/floating-to-integral-sanitizer.cpp
 
 If a floating-point value, without its fractional part, is outside the
 range of the target integer type, the conversion is undefined. The
@@ -360,7 +360,7 @@ undefined.
 
 :::{rule} CONV-7
 :kind: impl-defined
-:tests: expressions/conversions/integral-to-floating-rounding.cpp expressions/conversions/integral-to-floating-nearest.cpp expressions/conversions/integral-to-floating-nearest-ilp32.cpp expressions/conversions/integral-to-floating-nearest-run.cpp
+:tests: foundations/conversions/integral-to-floating-rounding.cpp foundations/conversions/integral-to-floating-nearest.cpp foundations/conversions/integral-to-floating-nearest-ilp32.cpp foundations/conversions/integral-to-floating-nearest-run.cpp
 
 If a value is between two adjacent values of the target floating-point
 type, the result is one of the two. The implementation defines which
@@ -373,7 +373,7 @@ one. The matrix compilers choose in this way:
 
 :::{rule} CONV-11
 :kind: impl-defined
-:tests: expressions/conversions/floating-narrowing-out-of-range.cpp expressions/conversions/floating-narrowing-out-of-range-run.cpp expressions/conversions/floating-narrowing-infinity.cpp expressions/conversions/floating-narrowing-infinity-ilp32.cpp expressions/conversions/floating-narrowing-infinity-run.cpp
+:tests: foundations/conversions/floating-narrowing-out-of-range.cpp foundations/conversions/floating-narrowing-out-of-range-run.cpp foundations/conversions/floating-narrowing-infinity.cpp foundations/conversions/floating-narrowing-infinity-ilp32.cpp foundations/conversions/floating-narrowing-infinity-run.cpp
 
 If the target floating-point type has infinities, a value above the
 largest finite value of the type converts to the largest finite value or

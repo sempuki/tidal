@@ -196,7 +196,7 @@ A capture list must obey these rules:
 
 :::{rule} LAM-7
 :kind: required
-:tests: expressions/lambdas/capture-structured-binding.cpp expressions/lambdas/init-capture.cpp expressions/lambdas/explicit-capture-order.cpp expressions/lambdas/namespace-init-capture.cpp expressions/lambdas/init-capture-outer-lookup.cpp expressions/sequencing/init-capture-order.cpp expressions/lambdas/init-capture-extends-temporary.cpp
+:tests: expressions/lambdas/capture-structured-binding.cpp expressions/lambdas/init-capture.cpp expressions/lambdas/explicit-capture-order.cpp expressions/lambdas/namespace-init-capture.cpp expressions/lambdas/init-capture-outer-lookup.cpp foundations/evaluation-order/init-capture-order.cpp expressions/lambdas/init-capture-extends-temporary.cpp
 
 An init capture `[x = e]` declares a new member `x` that `e`
 initializes, and `[&r = v]` declares a reference to `v`. These rules

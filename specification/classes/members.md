@@ -337,7 +337,7 @@ variables of the function, except as CLS-12 allows.
 
 :::{rule} CLS-13
 :kind: required
-:tests: classes/members/explicit-object-parameter.cpp classes/members/explicit-object-from-prvalue.cpp expressions/sequencing/explicit-object-order-unspecified.cpp
+:tests: classes/members/explicit-object-parameter.cpp classes/members/explicit-object-from-prvalue.cpp foundations/evaluation-order/explicit-object-order-unspecified.cpp
 
 A member function can declare its first parameter as an explicit object
 parameter, written `this T self`. The object of the call initializes that

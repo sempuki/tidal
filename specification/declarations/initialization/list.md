@@ -87,7 +87,7 @@ expression must not itself be a braced list.
 
 :::{rule} LIST-2
 :kind: reject
-:tests: declarations/initialization/list/narrowing-float-to-int.cpp declarations/initialization/list/narrowing-float-to-int-exact.cpp declarations/initialization/list/narrowing-constant-out-of-range.cpp declarations/initialization/list/narrowing-constant-fits.cpp declarations/initialization/list/narrowing-negative-to-unsigned.cpp declarations/initialization/list/narrowing-nonconstant-int.cpp declarations/initialization/list/narrowing-double-to-float-in-range.cpp declarations/initialization/list/narrowing-double-to-float-out-of-range.cpp declarations/initialization/list/narrowing-double-to-float-nonconstant.cpp declarations/initialization/list/narrowing-int-to-float-inexact.cpp declarations/initialization/list/narrowing-int-to-float-exact.cpp declarations/initialization/list/narrowing-pointer-to-bool.cpp declarations/initialization/list/narrowing-in-aggregate.cpp declarations/initialization/list/narrowing-not-in-parens.cpp declarations/initialization/list/narrowing-bit-field-fits.cpp declarations/initialization/list/narrowing-member-pointer-to-bool.cpp declarations/initialization/list/narrowing-unscoped-enum.cpp declarations/initialization/list/narrowing-unscoped-enum-values-fit.cpp declarations/initialization/list/narrowing-nonconstant-long-ilp32.cpp foundations/conversion-sequences/chosen-narrowing.cpp declarations/initialization/list/narrowing-integer-to-bool.cpp declarations/initialization/list/narrowing-floating-to-bool.cpp declarations/initialization/list/narrowing-constant-to-bool-out-of-range.cpp declarations/initialization/list/narrowing-constant-fits-bool.cpp templates/concepts/requirement-narrowing-in-braces-false.cpp
+:tests: declarations/initialization/list/narrowing-float-to-int.cpp declarations/initialization/list/narrowing-float-to-int-exact.cpp declarations/initialization/list/narrowing-constant-out-of-range.cpp declarations/initialization/list/narrowing-constant-fits.cpp declarations/initialization/list/narrowing-negative-to-unsigned.cpp declarations/initialization/list/narrowing-nonconstant-int.cpp declarations/initialization/list/narrowing-double-to-float-in-range.cpp declarations/initialization/list/narrowing-double-to-float-out-of-range.cpp declarations/initialization/list/narrowing-double-to-float-nonconstant.cpp declarations/initialization/list/narrowing-int-to-float-inexact.cpp declarations/initialization/list/narrowing-int-to-float-exact.cpp declarations/initialization/list/narrowing-pointer-to-bool.cpp declarations/initialization/list/narrowing-in-aggregate.cpp declarations/initialization/list/narrowing-not-in-parens.cpp declarations/initialization/list/narrowing-bit-field-fits.cpp declarations/initialization/list/narrowing-member-pointer-to-bool.cpp declarations/initialization/list/narrowing-unscoped-enum.cpp declarations/initialization/list/narrowing-unscoped-enum-values-fit.cpp declarations/initialization/list/narrowing-nonconstant-long-ilp32.cpp overloading/conversion-sequences/chosen-narrowing.cpp declarations/initialization/list/narrowing-integer-to-bool.cpp declarations/initialization/list/narrowing-floating-to-bool.cpp declarations/initialization/list/narrowing-constant-to-bool-out-of-range.cpp declarations/initialization/list/narrowing-constant-fits-bool.cpp templates/concepts/requirement-narrowing-in-braces-false.cpp
 
 In braces, a value must not go through a {term}`narrowing conversion`
 ({rule}`CONV-21`). The same conversions are permitted in parentheses
@@ -144,7 +144,7 @@ LIST-14 lists what is not valid.
 
 :::{rule} LIST-14
 :kind: reject
-:tests: declarations/initialization/list/designated-out-of-order.cpp declarations/initialization/list/designated-mixed.cpp declarations/initialization/list/designated-nested.cpp declarations/initialization/list/designated-array.cpp declarations/initialization/list/designated-repeated.cpp declarations/initialization/list/designator-on-scalar.cpp foundations/conversion-sequences/chosen-designator-order.cpp
+:tests: declarations/initialization/list/designated-out-of-order.cpp declarations/initialization/list/designated-mixed.cpp declarations/initialization/list/designated-nested.cpp declarations/initialization/list/designated-array.cpp declarations/initialization/list/designated-repeated.cpp declarations/initialization/list/designator-on-scalar.cpp overloading/conversion-sequences/chosen-designator-order.cpp
 
 The designators in a braced list must obey these conditions:
 
@@ -215,7 +215,7 @@ value in the list (LIST-8). Such a member must have a value in the list.
 
 :::{rule} LIST-7
 :kind: required
-:tests: declarations/initialization/list/braced-order.cpp expressions/sequencing/parenthesized-aggregate-order.cpp
+:tests: declarations/initialization/list/braced-order.cpp foundations/evaluation-order/parenthesized-aggregate-order.cpp
 
 The values in a braced list, and in a parenthesized list that
 initializes an aggregate, are evaluated from left to right. Each value

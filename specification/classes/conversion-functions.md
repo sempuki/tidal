@@ -180,7 +180,7 @@ conversion. A call by name still calls such a function.
 
 :::{rule} CVF-12
 :kind: reject
-:tests: classes/conversion-functions/ambiguous-ctor-and-conversion.cpp classes/conversion-functions/ambiguous-two-functions.cpp foundations/conversion-sequences/chosen-ambiguous.cpp foundations/conversion-sequences/chosen-ambiguous-tie.cpp foundations/conversion-sequences/chosen-ambiguous-constructor-conversion.cpp
+:tests: classes/conversion-functions/ambiguous-ctor-and-conversion.cpp classes/conversion-functions/ambiguous-two-functions.cpp overloading/conversion-sequences/chosen-ambiguous.cpp overloading/conversion-sequences/chosen-ambiguous-tie.cpp overloading/conversion-sequences/chosen-ambiguous-constructor-conversion.cpp
 
 A conversion is ambiguous if two or more converting constructors or
 conversion functions can do the conversion and none is better
