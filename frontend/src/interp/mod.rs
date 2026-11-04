@@ -281,11 +281,22 @@ pub struct Machine<'a> {
     /// not an implicit-lifetime type and whose lifetime has not begun
     /// (STG-28).
     pub implicit: std::collections::HashSet<usize>,
+    /// The implicitly created objects that the program read or wrote,
+    /// and the objects that took their storage after such a use: no
+    /// set of objects serves both uses (STG-18).
+    pub implicit_used: std::collections::HashSet<usize>,
+    pub no_set: std::collections::HashSet<usize>,
     pub unbuilt: std::collections::HashSet<(usize, usize)>,
     /// Complete objects that an explicit destructor call ended (DTOR-7).
     pub ended_by_call: std::collections::HashSet<usize>,
     /// Storage from `operator new[]` called by name (NEW-40).
     pub raw_array: std::collections::HashSet<usize>,
+    /// The size and the alignment argument of each allocation by name,
+    /// for the partner check of NEW-40.
+    pub raw_args: HashMap<usize, (i128, Option<i128>)>,
+    /// NEW-28: the alignment of storage that a new expression for an
+    /// over-aligned type obtains.
+    pub raw_align: HashMap<usize, u64>,
     /// Objects of `new` expressions whose allocation function the program
     /// declares, and the storage that the function returned.
     pub user_storage: HashMap<usize, Ptr>,
@@ -347,9 +358,13 @@ impl<'a> Machine<'a> {
             next_addr: 0,
             fn_addrs: Vec::new(),
             implicit: Default::default(),
+            implicit_used: Default::default(),
+            no_set: Default::default(),
             unbuilt: Default::default(),
             ended_by_call: Default::default(),
             raw_array: Default::default(),
+            raw_args: Default::default(),
+            raw_align: Default::default(),
             user_storage: HashMap::new(),
             script: Vec::new(),
             taken: Vec::new(),
@@ -739,9 +754,24 @@ impl<'a> Machine<'a> {
         false
     }
 
+    /// STG-8, STG-18: the use of an implicitly created object.
+    fn implicit_use(&mut self, p: &Ptr) -> R<()> {
+        if p.bytes {
+            return Ok(());
+        }
+        if self.no_set.contains(&p.obj) {
+            return ub("STG-18", "access to storage as an object of another type than the implicitly created object that the program used");
+        }
+        if self.implicit.contains(&p.obj) {
+            self.implicit_used.insert(p.obj);
+        }
+        Ok(())
+    }
+
     pub fn write(&mut self, p: &Ptr, v: Val, init: bool) -> R<()> {
         if !init {
             self.record(p, true);
+            self.implicit_use(p)?;
         }
         if p.bytes || self.hosted_byte(p).is_some() {
             // STG-13: a write of one byte of an object representation.
@@ -779,6 +809,7 @@ impl<'a> Machine<'a> {
         // volatile object twice in one operator (finding G102).
         let _ = volatile;
         self.record(p, false);
+        self.implicit_use(p)?;
         if p.bytes || self.hosted_byte(p).is_some() {
             // STG-13: a byte of an object representation, as `unsigned
             // char` (or as the element type of the host array).

@@ -74,8 +74,12 @@ impl P {
 
     fn parse_declaration_inner(&mut self, ctx: Ctx) -> PR<Option<Stmt>> {
         let line = self.line();
-        self.last_align = 0;
-        self.saw_alignas = false;
+        // A statement read the attributes, alignas among them, already.
+        if self.align_end != self.pos {
+            self.last_align = 0;
+            self.saw_alignas = false;
+        }
+        self.align_end = usize::MAX;
         self.saw_nua = false;
         self.skip_attributes();
         // The leading attributes apply to the declared entities.
@@ -2607,6 +2611,12 @@ impl P {
                     DK::Namespace(sc) => self.lookup_in_scope(sc, "tuple_size", false),
                     _ => None,
                 }).is_some();
+                if tuple && !self.in_template() && !init.ty.is_unknown() && !matches!(init.k, EK::Unknown(_)) {
+                    if let Some(ids) = self.bind_tuple(ds, is_ref, &init, c, names, ctx, line, il)? {
+                        return Ok(ids);
+                    }
+                }
+                let tuple = tuple && (self.in_template() || init.ty.is_unknown() || matches!(init.k, EK::Unknown(_)));
                 let fs = if tuple { None } else { self.sb_fields(c, il) };
                 if let Some(fs) = fs {
                     let mut v = Vec::new();
@@ -2733,6 +2743,153 @@ impl P {
         Ok(ids)
     }
 
+    /// A class template of namespace `std`.
+    fn std_templ(&self, name: &str) -> Option<usize> {
+        let ids = self.lookup_in_scope(self.global, "std", false)?;
+        let DK::Namespace(sc) = self.decls[ids[0]].k else { return None };
+        let ids = self.lookup_in_scope(sc, name, false)?;
+        self.tid_of(ids[0])
+    }
+
+    /// SB-5, SB-14, SB-17: the tuple protocol. None when
+    /// `std::tuple_size<E>` is not complete or has no `value`, so the
+    /// names refer to data members (SB-3).
+    #[allow(clippy::too_many_arguments)]
+    fn bind_tuple(&mut self, ds: &DeclSpec, is_ref: Option<bool>, init: &Expr, c: usize, names: &[(String, u32)], ctx: Ctx, line: u32, il: u32) -> PR<Option<Vec<DeclId>>> {
+        let et = nonref(&init.ty);
+        let mut base = if is_ref.is_some() { et.clone() } else { et.unqual() };
+        base.c |= ds.c > 0;
+        base.v |= ds.v > 0;
+        let Some(ts) = self.std_templ("tuple_size") else { return Ok(None) };
+        let q = self.class_inst(ts, vec![TArg::Type(base.clone())], il);
+        let Ty::Class(tc) = q.t else { return Ok(None) };
+        self.require_class(tc, il);
+        if !self.classes[tc].complete || self.class_uncertain(tc) {
+            return Ok(None);
+        }
+        let Some(vids) = self.lookup_member(tc, "value") else { return Ok(None) };
+        let Some(v) = self.var(vids[0]).cloned() else { return Ok(None) };
+        let ve = Expr::new(EK::Var(vids[0]), nonref(&v.ty), Cat::L, il);
+        let Ok(n) = self.const_int(&ve) else { return Ok(None) };
+        let storage = if ds.storage.contains(&Storage::Static) {
+            Storage::Static
+        } else if ds.storage.contains(&Storage::ThreadLocal) {
+            Storage::ThreadLocal
+        } else {
+            Storage::Auto
+        };
+        let local = ctx != Ctx::Namespace;
+        let mut ids = Vec::new();
+        let mut refs = Vec::new();
+        let mut places: Vec<Option<(QTy, DeclId)>> = vec![None; names.len()];
+        if n != names.len() as i128 {
+            // SB-2: one name per element.
+            self.error(line, "SB-2", format!("structured binding declares {} names but the tuple size is {}", names.len(), n));
+        } else {
+            // SB-1: the hidden variable.
+            let hty = match is_ref {
+                Some(true) => QTy::new(Ty::LRef(Box::new(base.clone()))),
+                Some(false) if init.cat == Cat::L => QTy::new(Ty::LRef(Box::new(base.clone()))),
+                Some(false) => QTy::new(Ty::RRef(Box::new(base.clone()))),
+                None => base.clone(),
+            };
+            let mark = self.d.list.len();
+            let hinit = self.convert_init(init.clone(), &hty, InitForm::Copy, il);
+            if self.d.list.len() == mark && !matches!(hinit.k, EK::Unknown(_)) {
+                let vi = VarInfo { ty: hty, storage, constexpr: false, constinit: false, init: Some(Rc::new(hinit)), param: false, local, dependent: false, defined: true, class: None };
+                let hid = self.add_decl("\u{1}sb", DK::Var(vi), line);
+                ids.push(hid);
+                let var = Expr::new(EK::Var(hid), base.clone(), Cat::L, il);
+                // SB-17: `e` is an lvalue for `&`, and an xvalue otherwise.
+                let arg = if is_ref == Some(true) { var } else { self.build_cast(crate::expr::CastKind::Static, QTy::new(Ty::RRef(Box::new(base.clone()))), var, il) };
+                let te = self.std_templ("tuple_element");
+                let member_get = self.lookup_member(c, "get").filter(|v| v.iter().any(|&d| self.is_func_templ(d)));
+                for (i, place) in places.iter_mut().enumerate() {
+                    // LSUP-3: the element type.
+                    let ti = te.and_then(|te| {
+                        let pty = match self.templs[te].params.first().map(|p| p.kind.clone()) {
+                            Some(crate::templ::TPK::Const(t)) => t,
+                            _ => QTy::new(Ty::size_t()),
+                        };
+                        let ie = Expr::new(EK::Int(i as i128), QTy::int(), Cat::PR, il);
+                        let tv = self.const_targ(ie, &pty, il, true).ok()?;
+                        let q = self.class_inst(te, vec![TArg::Val(tv), TArg::Type(base.clone())], il);
+                        let Ty::Class(ec) = q.t else { return None };
+                        self.require_class(ec, il);
+                        let tids = self.lookup_member(ec, "type")?;
+                        match &self.decls[tids[0]].k {
+                            DK::Type(t) => Some(t.clone()),
+                            DK::Class(x) => Some(QTy::new(Ty::Class(*x))),
+                            _ => None,
+                        }
+                    });
+                    let Some(ti) = ti else {
+                        // SB-14: the element type must exist.
+                        self.error(il, "SB-14", format!("std::tuple_element<{}, E>::type does not exist for the structured binding", i));
+                        break;
+                    };
+                    let raw = Rc::new(vec![crate::templ::RawArg::Expr(Expr::new(EK::Int(i as i128), QTy::int(), Cat::PR, il))]);
+                    let mark = self.d.list.len();
+                    let g = match &member_get {
+                        Some(fs) => {
+                            self.call_explicit = Some(raw);
+                            self.call_overloads(Some(arg.clone()), fs.clone(), vec![], il)
+                        }
+                        None => {
+                            let (fs, _) = self.adl_lookup("get", std::slice::from_ref(&arg));
+                            let fs: Vec<DeclId> = fs.into_iter().filter(|&d| self.is_func_templ(d)).collect();
+                            if fs.is_empty() {
+                                // SB-14: argument-dependent lookup finds no `get`.
+                                self.error(il, "SB-14", "no 'get' for the structured binding: argument-dependent lookup finds no function template");
+                                break;
+                            }
+                            self.call_explicit = Some(raw);
+                            self.call_overloads(None, fs, vec![arg.clone()], il)
+                        }
+                    };
+                    if self.d.list.len() != mark || matches!(g.k, EK::Unknown(_)) || g.ty.is_unknown() {
+                        break;
+                    }
+                    let bt = nonref(&ti);
+                    let lref = g.cat == Cat::L || matches!(ti.t, Ty::LRef(_));
+                    let rty = if lref { QTy::new(Ty::LRef(Box::new(bt.clone()))) } else { QTy::new(Ty::RRef(Box::new(bt.clone()))) };
+                    let mark = self.d.list.len();
+                    let r = self.convert_init(g, &rty, InitForm::Copy, il);
+                    if self.d.list.len() != mark || matches!(r.k, EK::Unknown(_)) {
+                        break;
+                    }
+                    let vi = VarInfo { ty: rty, storage, constexpr: false, constinit: false, init: Some(Rc::new(r)), param: false, local, dependent: false, defined: true, class: None };
+                    let rid = self.add_decl("\u{1}sbr", DK::Var(vi), line);
+                    refs.push(rid);
+                    *place = Some((ti, rid));
+                }
+            }
+        }
+        let complete = places.iter().all(|p| p.is_some());
+        let mut name_ids = Vec::new();
+        for (i, (nm, nl)) in names.iter().enumerate() {
+            let ty = places[i].as_ref().map(|p| p.0.clone()).unwrap_or(QTy::unknown());
+            let vi = VarInfo { ty: ty.clone(), storage, constexpr: false, constinit: false, init: None, param: false, local, dependent: true, defined: true, class: None };
+            let id = self.add_decl(nm, DK::Var(vi), *nl);
+            if let (true, Some((_, rid))) = (complete, &places[i]) {
+                self.sb_place.insert(id, Rc::new(Expr::new(EK::Var(*rid), nonref(&ty), Cat::L, il)));
+            }
+            name_ids.push(id);
+        }
+        let maybe_unused = self.decl_attrs.iter().any(|a| a.name == "maybe_unused") || self.pending_attrs.iter().any(|a| a.name == "maybe_unused");
+        if ctx == Ctx::Block && storage == Storage::Auto && !name_ids.is_empty() && !maybe_unused {
+            self.unused_cands.push((name_ids[0], line));
+            self.binding_groups.insert(name_ids[0], name_ids.clone());
+        }
+        if !complete {
+            // The names are declared, and the hidden parts are left out.
+            return Ok(Some(name_ids));
+        }
+        ids.extend(refs);
+        ids.extend(name_ids);
+        Ok(Some(ids))
+    }
+
     fn check_decl_specs(&mut self, ds: &DeclSpec, ctx: Ctx, line: u32) {
         if ds.register {
             // STO-5: `register` is not a storage class.
@@ -2796,6 +2953,38 @@ impl P {
         }
         let fields = self.classes[c].fields.clone();
         let cur = self.decl_scope();
+        if let Ctx::Class(cc) = ctx {
+            // UNI-7: the anonymous union is an unnamed member of the class.
+            // Its members are named in the class scope, and a use goes
+            // through the unnamed member.
+            if !self.classes[cc].anon_unions.contains(&c) {
+                self.classes[cc].anon_unions.push(c);
+            }
+            let idx = self.classes[cc].fields.len();
+            let fi = FieldInfo { ty: QTy::new(Ty::Class(c)), class: cc, index: idx, bits: None, mutable: false, init: None, align: 0, nua: false };
+            let id = self.add_decl_in(cur, "", DK::Field(fi), line);
+            self.classes[cc].fields.push(id);
+            self.anon_parent.insert(c, (cc, id));
+            for f in fields {
+                let name = self.decls[f].name.clone();
+                if name.is_empty() {
+                    continue;
+                }
+                if let Some(prev) = self.scopes[cur].names.get(&name) {
+                    if !prev.is_empty() {
+                        self.error(line, "NAM-3", format!("anonymous union member '{}' conflicts with a declaration", name));
+                        continue;
+                    }
+                }
+                self.scopes[cur].names.entry(name).or_default().push(f);
+            }
+            // The names of a nested anonymous union.
+            let inner: Vec<(String, Vec<DeclId>)> = self.scopes[self.classes[c].scope].names.iter().filter(|(_, v)| v.iter().any(|&d| matches!(self.decls[d].k, DK::Field(_)) && self.decls[d].scope != self.classes[c].scope)).map(|(n, v)| (n.clone(), v.clone())).collect();
+            for (n, v) in inner {
+                self.scopes[cur].names.entry(n).or_default().extend(v);
+            }
+            return;
+        }
         for f in fields {
             let name = self.decls[f].name.clone();
             if name.is_empty() {
@@ -3217,7 +3406,9 @@ impl P {
         }
         let sc = self.classes[c].scope;
         if let Some(prev) = self.scopes[sc].names.get(&name).cloned() {
-            if prev.iter().any(|&p| !matches!(self.decls[p].k, DK::Class(cc) if cc == c)) && !name.is_empty() {
+            // NAM-39: a data member can share its name with a nested class
+            // or enumeration.
+            if prev.iter().any(|&p| !matches!(self.decls[p].k, DK::Class(cc) if cc == c) && !matches!(self.decls[p].k, DK::Class(_) | DK::Enum(_))) && !name.is_empty() {
                 self.error(line, "CLS-9", format!("member '{}' declared twice", name));
             }
         }
@@ -3573,6 +3764,9 @@ impl P {
                 Some(p) => p,
                 None => {
                     let id = self.add_decl_in(target_scope, &name, DK::Var(vi), line);
+                    if ds.has_alignas && ds.align > 0 && !self.align_unknown {
+                        self.var_align.insert(id, ds.align as u64);
+                    }
                     // LNK rules: a namespace-scope variable has internal
                     // linkage if it is static, in an unnamed namespace, or
                     // const and neither inline nor extern.
@@ -3955,6 +4149,13 @@ impl P {
                     // brace elision: count only if every item is braced
                     if items.iter().all(|i| matches!(i.k, EK::InitList(_))) || matches!(el.t, Ty::Class(_)) && items.iter().all(|i| !matches!(i.k, EK::InitList(_))) == false {
                         return Some(items.len());
+                    }
+                    // An element of the class type itself initializes one
+                    // element, with no brace elision (INIT rules).
+                    if let Ty::Class(c) = el.t {
+                        if items.iter().all(|i| matches!(i.k, EK::InitList(_)) || nonref(&i.ty).t == Ty::Class(c)) {
+                            return Some(items.len());
+                        }
                     }
                     if let Ty::Array(_, Some(n)) = &el.t {
                         if items.iter().all(|i| !matches!(i.k, EK::InitList(_))) {
@@ -4984,11 +5185,24 @@ impl P {
                     (scope, f.ret_auto.is_some())
                 };
                 let scope = scope.unwrap_or_else(|| self.new_scope(SK::Params, Some(self.cur_scope()), ""));
+                // INST-5: the body of a constructor of an instance is made
+                // with its class, and its diagnostics wait for a use.
+                let keep = !self.force_bodies && self.in_instance(df.class) && self.func(fid).is_some_and(|f| f.kind == FnKind::Ctor && !f.constexpr && !f.consteval);
+                let mark = self.d.list.len();
+                let saved_uses = if keep { self.collect_uses.replace(Vec::new()) } else { self.collect_uses.take() };
                 if let Err(e) = self.parse_function_body(fid, scope, Some(df.class), auto_ret) {
                     self.parse_failure(&e);
                     if let Some(f) = self.func_mut(fid) {
                         f.opaque = true;
                     }
+                }
+                let uses = std::mem::replace(&mut self.collect_uses, saved_uses);
+                if let Some(u) = uses.filter(|u| !u.is_empty()) {
+                    self.ctor_uses.insert(fid, u);
+                }
+                if keep && self.d.list.len() > mark {
+                    let kept: Vec<crate::diag::Diag> = self.d.list.drain(mark..).collect();
+                    self.body_errors.insert(fid, kept);
                 }
             } else if let Some(pid) = df.param {
                 let keep = self.in_instance(df.class);
@@ -5369,7 +5583,7 @@ impl P {
             }
             // A mem-initializer for a direct member: convert its arguments
             // to the member's type, for constant evaluation.
-            let field = target.as_ref().and_then(|ids| ids.iter().copied().find(|&i| matches!(&self.decls[i].k, DK::Field(fi) if Some(fi.class) == class)));
+            let field = target.as_ref().and_then(|ids| ids.iter().copied().find(|&i| matches!(&self.decls[i].k, DK::Field(fi) if Some(fi.class) == class || class.is_some_and(|c| self.anon_top(fi.class, c).is_some()))));
             let init = match field {
                 Some(fd) if !self.in_template() => {
                     let fty = match &self.decls[fd].k {
@@ -5391,7 +5605,11 @@ impl P {
                 _ => None,
             };
             if let Some(fd) = field {
-                if let DK::Field(fi) = &self.decls[fd].k {
+                let top = match (&self.decls[fd].k, class) {
+                    (DK::Field(fi), Some(c)) => self.anon_top(fi.class, c).unwrap_or(fd),
+                    _ => fd,
+                };
+                if let DK::Field(fi) = &self.decls[top].k {
                     field_order.push((fi.index, line));
                 }
             }

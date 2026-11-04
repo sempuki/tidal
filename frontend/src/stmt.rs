@@ -105,7 +105,12 @@ impl P {
 
     fn parse_statement_inner(&mut self) -> PR<Stmt> {
         self.pending_attrs.clear();
+        self.saw_alignas = false;
+        self.last_align = 0;
         self.skip_attributes();
+        if self.saw_alignas {
+            self.align_end = self.pos;
+        }
         let attrs = std::mem::take(&mut self.pending_attrs);
         if !attrs.is_empty() {
             if let Some(s) = self.statement_attrs(attrs)? {
@@ -1365,6 +1370,7 @@ impl P {
         // raises a diagnostic leaves the statement unsupported, as before.
         let lowered = if (decl.is_some() || ds.auto == Some(false)) && !self.in_template() { self.lower_range_for(&range, s, line) } else { None };
         let mut loop_var = None;
+        let mut hidden_parts: Vec<DeclId> = Vec::new();
         if let Some(d) = decl {
             let base = match (&ds.ty, ds.auto) {
                 (Some(t), _) => t.clone(),
@@ -1430,8 +1436,11 @@ impl P {
             let named: Vec<(String, u32)> = names.iter().map(|n| (n.clone(), line)).collect();
             let mark = self.d.list.len();
             let ids = self.bind_names(&ds, sb_ref, lw.3.clone(), &named, Ctx::Block, line, line)?;
-            if self.d.list.len() == mark && ids.len() == names.len() + 1 {
+            if self.d.list.len() == mark && ids.len() > names.len() {
+                // The hidden variable, and for the tuple protocol the
+                // hidden references (SB-17).
                 loop_var = Some(ids[0]);
+                hidden_parts = ids[..ids.len() - names.len()].to_vec();
             }
         } else {
             for n in names {
@@ -1442,7 +1451,8 @@ impl P {
         let body = self.loop_body(Some((cs, "RFOR-6")))?;
         if let (Some((range_var, begin_var, end_var, _, cond, inc)), Some(lv)) = (lowered, loop_var) {
             let decls = Stmt::Decl(vec![begin_var, end_var]);
-            let body = Stmt::Block(vec![Stmt::Decl(vec![lv]), body]);
+            let parts = if hidden_parts.is_empty() { vec![lv] } else { hidden_parts };
+            let body = Stmt::Block(vec![Stmt::Decl(parts), body]);
             let lp = Stmt::For { init: Some(Box::new(decls)), cond: Some(CondK::Expr(cond)), inc: Some(inc), body: Box::new(body) };
             let mut items = Vec::new();
             if let Some(i) = init {

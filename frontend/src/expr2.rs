@@ -39,6 +39,37 @@ impl P {
                     }
                 }
                 let lib_taken = |p: &P, n: &str| p.scopes[p.global].names.get(n).is_some_and(|v| v.iter().any(|&d| p.func(d).is_some_and(|f| f.fty.params.len() == 1)));
+                // NEW-19, NEW-26: the sized and the aligned forms, by the
+                // types of the arguments after the first.
+                let is_align = |p: &P, e: &Expr| matches!(nonref(&e.ty).t, Ty::Enum(en) if p.enums[en].name == "align_val_t");
+                if !self.in_template() && (2..=3).contains(&args.len()) && !args.iter().any(|a| a.ty.is_unknown()) {
+                    let newf = name.starts_with("operatornew");
+                    let vp = QTy::new(Ty::Ptr(Box::new(QTy::new(Ty::Void))));
+                    let st = QTy::new(Ty::size_t());
+                    let mark = self.d.list.len();
+                    let mut out = Vec::new();
+                    let mut ok = true;
+                    let mut seen_align = false;
+                    for (i, a) in args.iter().enumerate() {
+                        let x = if i == 0 {
+                            self.convert_init(a.clone(), if newf { &st } else { &vp }, InitForm::Copy, line)
+                        } else if is_align(self, a) && !seen_align {
+                            seen_align = true;
+                            self.rvalue(a.clone())
+                        } else if i == 1 && !newf && nonref(&a.ty).t.is_integral() {
+                            self.convert_init(a.clone(), &st, InitForm::Copy, line)
+                        } else {
+                            ok = false;
+                            break;
+                        };
+                        out.push(x);
+                    }
+                    if ok && self.d.list.len() == mark && !out.iter().any(|x| matches!(x.k, EK::Unknown(_))) {
+                        let rt = if newf { vp } else { QTy::new(Ty::Void) };
+                        return Expr::new(EK::Call(Box::new(callee), out, None), rt, Cat::PR, line);
+                    }
+                    self.d.list.truncate(mark);
+                }
                 if !lib_taken(self, name) && !self.in_template() && args.len() == 1 {
                     let vp = QTy::new(Ty::Ptr(Box::new(QTy::new(Ty::Void))));
                     let mark = self.d.list.len();
@@ -123,7 +154,7 @@ impl P {
                         // OPR-7: a call of a class object calls its operator().
                         if !self.in_template() && !self.class_uncertain(c) && !self.scopes[self.classes[c].scope].uncertain && !self.any_conv(c, 0) {
                             if let Some(ids) = self.lookup_member(c, "operator()") {
-                                if ids.iter().all(|&i| self.func(i).is_some_and(|f| !f.template)) {
+                                if ids.iter().all(|&i| self.func(i).is_some_and(|f| !f.template) || self.generic_lambdas.contains_key(&i)) {
                                     return self.call_overloads(Some(callee), ids, args, line);
                                 }
                             }
@@ -1761,7 +1792,8 @@ impl P {
             return unknown;
         }
         let mut chosen_for_build = crate::ovl::CtorRes::Unknown;
-        match self.ctor_resolve(c, args, list, copy, copy_list) {
+        let rr = self.ctor_resolve(c, args, list, copy, copy_list);
+        match rr {
             crate::ovl::CtorRes::Ambiguous => {
                 // CTOR-25, OVL-36.
                 self.error(line, "CTOR-25", format!("ambiguous constructor call: no constructor of '{}' is better than each of the others", self.classes[c].name));

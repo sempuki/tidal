@@ -1261,6 +1261,13 @@ impl P {
 
     // ---- replay ----
 
+    pub fn save_state_pub(&mut self) -> Saved {
+        self.save_state()
+    }
+    pub fn restore_state_pub(&mut self, s: Saved) {
+        self.restore_state(s)
+    }
+
     fn save_state(&mut self) -> Saved {
         Saved {
             // The packs named in an expansion being parsed are not those
@@ -2744,7 +2751,13 @@ impl P {
         if let Some(fs) = set {
             return self.deduce_ovset(p, &fs, b);
         }
-        if a.ty.is_unknown() || has_unknown(a) {
+        // A reinterpret_cast has a known type, which is all that
+        // deduction needs (CAST-6).
+        let modeled = match &a.k {
+            EK::Reinterpret(x, _) => !has_unknown(x),
+            _ => !has_unknown(a),
+        };
+        if a.ty.is_unknown() || !modeled {
             return Pair::Unknown;
         }
         let at = nonref(&a.ty);
@@ -3110,6 +3123,9 @@ impl P {
         self.body_busy.insert(id);
         let ctx = src.ctx;
         let saved_muted = std::mem::take(&mut self.d.muted);
+        // INST-7: the body of a specialization is a context of its own,
+        // also when an unevaluated operand needed it.
+        let saved_uneval = std::mem::take(&mut self.in_unevaluated);
         let r = self.replay(&src, &params, &args, Some(InstReq::Func { name, existing: Some(id) }), |p| {
             let _ = p.parse_declaration(ctx);
             if !p.deferred.is_empty() {
@@ -3119,6 +3135,7 @@ impl P {
             }
         });
         self.d.muted = saved_muted;
+        self.in_unevaluated = saved_uneval;
         self.body_busy.remove(&id);
         if let Some((_, Some(InstOut::Func(nid)))) = r {
             if nid != id {
@@ -3164,6 +3181,17 @@ impl P {
                     }
                     Ded::Fail => {}
                     Ded::Unknown => return Err(true),
+                }
+            } else if self.generic_lambdas.contains_key(&c) && explicit.is_none() {
+                // LAM-15: the call operator of a generic lambda.
+                match self.generic_lambda_spec(c, args, line) {
+                    Ok(s) => {
+                        if !out.contains(&s) {
+                            out.push(s);
+                        }
+                    }
+                    Err(false) => {}
+                    Err(true) => return Err(true),
                 }
             } else if self.func(c).is_some_and(|f| f.template) {
                 return Err(true);
@@ -3553,6 +3581,7 @@ impl P {
         let limit = self.lazy_limits.get(&fid).copied().unwrap_or(usize::MAX);
         let origin = self.lazy_origins.get(&fid).copied().unwrap_or((usize::MAX, 0));
         let saved = self.save_state();
+        self.in_unevaluated = 0;
         self.lookup_limit = limit;
         self.tok_origin = origin;
         self.toks = (*toks).clone();
@@ -3576,7 +3605,18 @@ impl P {
         // return type is deduced, is made now; any other at the end of
         // the unit, where it sees every declaration.
         let now = self.func(fid).is_some_and(|f| f.constexpr || f.consteval || f.fty.ret.is_unknown() || f.ret_auto.is_some());
+        if let Some(u) = self.ctor_uses.remove(&fid) {
+            for g in u {
+                self.use_fn(g);
+            }
+        }
         if !now && !self.finishing && (self.lazy_bodies.contains_key(&fid) || self.spec_of.contains_key(&fid)) {
+            if let Some(c) = &mut self.collect_uses {
+                // A use in the body of a constructor of an instance waits
+                // for a use of the constructor.
+                c.push(fid);
+                return;
+            }
             if !self.used_later.contains(&fid) {
                 self.used_later.push(fid);
             }

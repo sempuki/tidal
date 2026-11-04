@@ -1307,7 +1307,11 @@ impl P {
                     return None;
                 }
                 let assign_left = op == "=" && std::ptr::eq(*o, l);
-                if !assign_left && self.class_converts(c) != Some(false) {
+                // OVL-14: when each assignment operator takes the class
+                // itself, a conversion function of the right operand
+                // takes no part.
+                let own = op == "=" && Some(Ty::Class(c)) == Some(nonref(&l.ty).t) && self.lookup_member(c, "operator=").is_some_and(|ids| ids.iter().all(|&d| self.func(d).is_some_and(|f| !f.template && f.fty.params.len() == 1 && nonref(&f.fty.params[0]).t == Ty::Class(c))));
+                if !assign_left && !own && self.class_converts(c) != Some(false) {
                     return None;
                 }
             }

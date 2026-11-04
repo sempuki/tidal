@@ -888,7 +888,7 @@ impl P {
                     // A user-defined sequence to an implicit copy or move
                     // constructor loses to a candidate whose sequences are
                     // all standard (ICS-21).
-                    Ok(Some(s)) if matches!(s.kind, crate::ics::IK::User | crate::ics::IK::Ambig) && !matches!(nonref(&args[0].ty).t, Ty::Class(_)) && !list => implicit_user = true,
+                    Ok(Some(s)) if matches!(s.kind, crate::ics::IK::User | crate::ics::IK::Ambig) && !matches!(nonref(&args[0].ty).t, Ty::Class(_)) && !own => implicit_user = true,
                     _ => return CtorRes::Unknown,
                 }
             }

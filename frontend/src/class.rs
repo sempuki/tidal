@@ -334,7 +334,13 @@ impl P {
                     let r = self.parse_typename_type();
                     self.in_base_clause -= 1;
                     r?
-                } else if self.qualified_names_type(0) {
+                } else if {
+                    // NAM-40: a base name finds a class that a variable hides.
+                    self.in_base_clause += 1;
+                    let t = self.qualified_names_type(0);
+                    self.in_base_clause -= 1;
+                    t
+                } {
                     self.in_base_clause += 1;
                     let r = self.parse_type_name();
                     self.in_base_clause -= 1;
@@ -808,7 +814,7 @@ impl P {
     pub fn lookup_tag(&self, name: &str) -> Option<Vec<DeclId>> {
         let noms = self.nominations();
         for &s in self.stack.iter().rev() {
-            if let (Some(v), _) = self.lookup_level(s, name, &noms) {
+            if let (Some(v), _) = self.lookup_level_k(s, name, &noms, false) {
                 let tags: Vec<DeclId> = v.into_iter().filter(|&i| matches!(self.decls[i].k, DK::Class(_) | DK::Enum(_) | DK::Template(_) | DK::Type(_))).collect();
                 if !tags.is_empty() {
                     return Some(tags);
@@ -1096,7 +1102,10 @@ impl P {
             if !scoped {
                 // ENUM-2: unscoped enumerators go in the enclosing scope.
                 if let Some(prev) = self.scopes[outer].names.get(&name) {
-                    if !prev.is_empty() {
+                    // NAM-39: an enumerator can share its name with a class
+                    // or enumeration.
+                    let own_class = matches!(self.scopes[outer].kind, SK::Class(oc) if self.classes[oc].name == name);
+                    if own_class || prev.iter().any(|&p| !matches!(self.decls[p].k, DK::Class(_) | DK::Enum(_))) {
                         self.error(line, "ENUM-15", format!("enumerator '{}' conflicts with an earlier declaration", name));
                     }
                 }

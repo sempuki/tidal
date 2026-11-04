@@ -387,7 +387,7 @@ impl P {
             }
         }
         let variant_names: Vec<String> = ci.anon_unions.iter().flat_map(|&u| self.classes[u].fields.iter().map(|&f| self.decls[f].name.clone())).collect();
-        let is_variant = |f: DeclId| variant_names.contains(&self.decls[f].name);
+        let is_variant = |f: DeclId| variant_names.contains(&self.decls[f].name) || matches!(&self.decls[f].k, DK::Field(x) if matches!(x.ty.t, Ty::Class(u) if ci.anon_unions.contains(&u)));
         let has_regular = ci.fields.iter().any(|&f| !is_variant(f) && matches!(&self.decls[f].k, DK::Field(x) if x.bits != Some(0)));
         // CTOR-24: an anonymous union without a default member
         // initializer, unless every data member is in such a union

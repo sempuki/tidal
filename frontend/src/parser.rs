@@ -243,6 +243,21 @@ pub struct SwitchCtx {
     pub has_default: bool,
 }
 
+/// A generic lambda: where its tokens are, and its placeholder
+/// parameters as invented template parameters (LAM-15).
+#[derive(Clone, Debug)]
+pub struct GenLambda {
+    pub toks: Rc<Vec<crate::lexer::Token>>,
+    pub start: usize,
+    pub stack: Vec<usize>,
+    pub fns: Vec<FnCtx>,
+    pub depth: u32,
+    pub params: Vec<crate::templ::TParam>,
+    pub ptys: Vec<QTy>,
+    pub limit: usize,
+    pub origin: (usize, usize),
+}
+
 #[derive(Clone, Debug)]
 pub struct FnCtx {
     pub ret: Option<QTy>,
@@ -535,6 +550,30 @@ pub struct P {
     /// Errors in the bodies of members of instances, reported when the
     /// member is used.
     pub body_errors: HashMap<DeclId, Vec<crate::diag::Diag>>,
+    /// The uses that the body of a constructor of an instance makes,
+    /// made when the constructor is used (INST-5).
+    pub ctor_uses: HashMap<DeclId, Vec<DeclId>>,
+    /// An anonymous union that is a member of a class: the class and the
+    /// unnamed member that holds the union (UNI-7).
+    pub anon_parent: HashMap<usize, (usize, DeclId)>,
+    /// The generic lambdas, by the call operator of their closure type
+    /// (LAM-15), and the specializations made for calls.
+    pub generic_lambdas: HashMap<DeclId, Rc<GenLambda>>,
+    pub generic_insts: Vec<(DeclId, Vec<QTy>, Option<DeclId>, bool, bool)>,
+    /// The types of the placeholder parameters of the generic lambda that
+    /// is parsed again for a call.
+    pub lambda_inst: Option<Vec<QTy>>,
+    /// The parameters or the result type of the generic lambda parsed
+    /// again had an error: substitution failed (DED-29).
+    pub lambda_inst_failed: bool,
+    /// The closure types of generic lambdas without captures, whose
+    /// conversion to a pointer to function the front end does not make.
+    pub generic_conv: std::collections::HashSet<usize>,
+    /// ALN-1: the alignment that alignas gives a variable.
+    pub var_align: HashMap<DeclId, u64>,
+    /// The token after the last attribute list that held alignas.
+    pub align_end: usize,
+    pub collect_uses: Option<Vec<DeclId>>,
     /// A declaration in a replay that declares a new entity.
     pub inst_fresh: bool,
     pub in_inst_body: bool,
@@ -844,6 +883,16 @@ impl P {
             fn_label: HashMap::new(),
             explicit_spec: false,
             body_errors: HashMap::new(),
+            ctor_uses: HashMap::new(),
+            anon_parent: HashMap::new(),
+            generic_lambdas: HashMap::new(),
+            generic_insts: Vec::new(),
+            lambda_inst: None,
+            lambda_inst_failed: false,
+            generic_conv: std::collections::HashSet::new(),
+            var_align: HashMap::new(),
+            align_end: usize::MAX,
+            collect_uses: None,
             inst_fresh: false,
             in_inst_body: false,
             member_replay: false,
@@ -1530,6 +1579,11 @@ impl P {
     }
     /// The declarations of a name at one scope of unqualified lookup.
     pub fn lookup_level(&self, s: usize, name: &str, noms: &[(usize, usize)]) -> (Option<Vec<DeclId>>, bool) {
+        self.lookup_level_k(s, name, noms, self.in_base_clause == 0)
+    }
+    /// `hide` false: the lookup of a class or enumeration name after a
+    /// class key, which a variable of the same name does not hide.
+    pub fn lookup_level_k(&self, s: usize, name: &str, noms: &[(usize, usize)], hide: bool) -> (Option<Vec<DeclId>>, bool) {
         let mut sources: Vec<Vec<DeclId>> = Vec::new();
         let mut own = self.own_names(s, name);
         if self.scopes[s].kind == SK::Namespace {
@@ -1538,6 +1592,11 @@ impl P {
             own.retain(|&d| d < self.lookup_limit);
         }
         let mut amb = false;
+        // NAM-40: a variable, function, data member, or enumerator hides
+        // a class or enumeration of the same name in the same scope.
+        if hide && self.hides_class(&own) {
+            own.retain(|&d| !matches!(self.decls[d].k, DK::Class(_) | DK::Enum(_)));
+        }
         if !own.is_empty() {
             sources.push(own);
         } else if let SK::Class(c) = self.scopes[s].kind {
@@ -1562,6 +1621,15 @@ impl P {
         }
         amb |= self.sources_ambiguous(&sources);
         (Some(merge_sources(sources)), amb)
+    }
+    /// NAM-40: the declarations hold a class or enumeration and a
+    /// variable, data member, function, or enumerator that hides it.
+    pub fn hides_class(&self, own: &[DeclId]) -> bool {
+        own.len() > 1 && own.iter().any(|&d| matches!(self.decls[d].k, DK::Class(_) | DK::Enum(_))) && own.iter().any(|&d| match &self.decls[d].k {
+            DK::Var(_) | DK::Field(_) | DK::Enumerator(..) => true,
+            DK::Func(f) => !matches!(f.kind, FnKind::Ctor | FnKind::Dtor),
+            _ => false,
+        })
     }
     /// The names a scope declares itself, without hidden friends.
     pub fn own_names(&self, s: usize, name: &str) -> Vec<DeclId> {

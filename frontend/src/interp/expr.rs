@@ -82,6 +82,9 @@ impl<'a> Machine<'a> {
             // A variable of a caller that is not part of this evaluation.
             let o = self.new_obj(Val::NotUsable(format!("'{}' is not usable in constant expressions", name)), false);
             self.globals.insert((self.tu, id), o);
+            if let Some(&a) = self.p.var_align.get(&id) {
+                self.raw_align.insert(o, a);
+            }
             return Ok(Ptr::whole(o));
         }
         // CE-3: usable if constexpr, or const integral/enum with a
@@ -186,6 +189,9 @@ impl<'a> Machine<'a> {
         self.objs[o].volatile = v.ty.v;
         self.objs[o].ty = Some(v.ty.clone());
         self.globals.insert((self.tu, id), o);
+        if let Some(&a) = self.p.var_align.get(&id) {
+            self.raw_align.insert(o, a);
+        }
         Ok(Ptr::whole(o))
     }
 
@@ -1051,11 +1057,36 @@ impl<'a> Machine<'a> {
         if self.constant && !(in_allocator && matches!(name, "operatornew" | "operatordelete")) {
             return limit("CE-2", "call of an allocation function");
         }
+        // NEW-19, NEW-26: the size and the alignment arguments, by type.
+        let mut extra_size: Option<i128> = None;
+        let mut align: Option<i128> = None;
+        for a in args.iter().skip(1) {
+            let is_align = matches!(nonref(&a.ty).t, Ty::Enum(en) if self.p.enums[en].name == "align_val_t");
+            let is_size = nonref(&a.ty).t.is_integral();
+            if !is_align && !is_size {
+                continue;
+            }
+            let v = match self.eval(a)? {
+                Val::Int(v) => v,
+                _ => return unsup("allocation argument"),
+            };
+            if is_align {
+                align = Some(v);
+            } else {
+                extra_size = Some(v);
+            }
+        }
         if name.starts_with("operatornew") {
             let n = match self.eval(&args[0])? {
                 Val::Int(v) => v,
                 _ => return unsup("allocation size"),
             };
+            if let Some(a) = align {
+                if a <= 0 || a & (a - 1) != 0 {
+                    // NEW-27: the alignment is a power of two.
+                    return ub("NEW-27", "aligned allocation with an alignment that is not a power of two");
+                }
+            }
             if n > ALLOC_LIMIT as i128 {
                 // NEW-38: the allocation function fails.
                 return Err(self.throw_std("bad_alloc")?);
@@ -1069,6 +1100,7 @@ impl<'a> Machine<'a> {
             if name.ends_with("[]") {
                 self.raw_array.insert(p.obj);
             }
+            self.raw_args.insert(p.obj, (n, align));
             self.residents.entry(p.obj).or_default();
             return Ok(Ret::Val(Val::Ptr(Ptr { obj: p.obj, path: vec![], off: 0, array: true, bytes: false })));
         }
@@ -1088,6 +1120,21 @@ impl<'a> Machine<'a> {
             // NEW-40: the deallocation function must be the partner of the
             // allocation function.
             return ub("NEW-40", "deallocation by a function that is not the partner of the allocation function");
+        }
+        if self.objs[host].heap == Heap::Raw {
+            if let Some(&(n, al)) = self.raw_args.get(&host) {
+                if al != align {
+                    // NEW-40: an aligned form with an aligned form, with the
+                    // same alignment.
+                    return ub("NEW-40", "deallocation whose alignment argument differs from the allocation's");
+                }
+                if extra_size.is_some_and(|s| s != n) {
+                    return ub("NEW-40", "sized deallocation with a size other than the allocation's");
+                }
+            }
+            if !self.objs[host].alive {
+                return ub("NEW-40", "second deallocation of the same storage");
+            }
         }
         if let Some(v) = self.residents.get(&host).cloned() {
             for (_, _, o) in v {
@@ -1173,6 +1220,23 @@ impl<'a> Machine<'a> {
                     }
                     self.residents.entry(p.obj).or_default().push((0, (n * size) as i64, r.obj));
                     self.resident_of.insert(r.obj, (p.obj, 0));
+                    // Only two scalar types that the aliasing rules keep
+                    // apart: a class can hold the old object as a member.
+                    let old_el = replaced.and_then(|o| self.obj_ty(o)).map(|q| match q.t {
+                        Ty::Array(el, _) => el.unqual().t,
+                        x => x,
+                    });
+                    let scalars_apart = old_el.is_some_and(|a| {
+                        let b = &t.t;
+                        let scalar = |x: &Ty| !matches!(x, Ty::Class(_) | Ty::Array(..) | Ty::Unknown | Ty::Dep(_));
+                        let same_int = a.is_integral() && b.is_integral() && a.int_bits() == b.int_bits();
+                        scalar(&a) && scalar(b) && a != *b && !same_int && !self.is_byte_type(&a) && !self.is_byte_type(b)
+                    });
+                    if scalars_apart && replaced.is_some_and(|o| self.implicit_used.contains(&o)) {
+                        // STG-18: the replaced object was used, so no one
+                        // set of objects serves both uses.
+                        self.no_set.insert(r.obj);
+                    }
                     if built {
                         self.implicit.insert(r.obj);
                     } else {
@@ -1519,7 +1583,15 @@ impl<'a> Machine<'a> {
                     return limit("NEW-37", "new expression that calls an allocation function the program declares");
                 }
                 None => match self.call_allocation(aname, std::slice::from_ref(&size_e))? {
-                    Ret::Val(v) => v,
+                    Ret::Val(v) => {
+                        // NEW-28: the storage has the type's alignment.
+                        if let (Val::Ptr(p), Some(a)) = (&v, self.p.alignof_ty(&ty.t)) {
+                            if a > 16 {
+                                self.raw_align.insert(p.obj, a);
+                            }
+                        }
+                        v
+                    }
                     _ => return unsup("allocation result"),
                 },
                 Some(f) => {
@@ -1592,9 +1664,8 @@ impl<'a> Machine<'a> {
                 let mut args = vec![Expr::new(EK::Conv(Conv::LToR, Box::new(pl)), vp, Cat::PR, self.line)];
                 if *sized {
                     args.push(Expr::new(EK::Int(size), QTy::new(Ty::size_t()), Cat::PR, self.line));
-                } else {
-                    args.extend(pargs.iter().cloned());
                 }
+                args.extend(pargs.iter().cloned());
                 let callee = Expr::new(EK::Func(f), QTy::new(Ty::Func(Box::new(fty.clone()))), Cat::L, self.line);
                 let call = Expr::new(EK::Call(Box::new(callee), args, Some(f)), fty.ret.clone(), Cat::PR, self.line);
                 self.call(&call, None)?;
@@ -1664,14 +1735,23 @@ impl<'a> Machine<'a> {
             },
             _ => None,
         };
-        let d = if tu == self.tu { self.delete_fn(class, arr, global) } else { Dealloc::Library };
+        let elem_t = match &t.t {
+            Ty::Array(el, _) => el.t.clone(),
+            x => x.clone(),
+        };
+        let align = self.p.alignof_ty(&elem_t).filter(|&a| a > 16);
+        let (d, extra) = match (tu == self.tu, align.and_then(|a| self.aligned_delete_fn(class, arr, global, a))) {
+            (true, Some(x)) => x,
+            (true, None) => (self.delete_fn(class, arr, global), vec![]),
+            _ => (Dealloc::Library, vec![]),
+        };
         let size = self.p.sizeof_ty(&t.t).unwrap_or(0) as i128;
         let aname = if arr { "operatornew[]" } else { "operatornew" };
         match (&d, storage) {
-            (Dealloc::Func(..), Some(s)) => self.call_dealloc(&d, &s, size, &[], aname)?,
+            (Dealloc::Func(..), Some(s)) => self.call_dealloc(&d, &s, size, &extra, aname)?,
             (Dealloc::Func(..), None) => {
                 let whole = if arr { Ptr { obj: p.obj, path: vec![], off: 0, array: true, bytes: false } } else { Ptr::whole(p.obj) };
-                self.call_dealloc(&d, &whole, size, &[], aname)?
+                self.call_dealloc(&d, &whole, size, &extra, aname)?
             }
             (_, Some(s)) => {
                 let host = self.resident_of.get(&p.obj).map(|x| x.0).unwrap_or(s.obj);
@@ -1682,6 +1762,32 @@ impl<'a> Machine<'a> {
             _ => {}
         }
         Ok(())
+    }
+
+    /// NEW-28: the aligned usual deallocation function for a type with
+    /// alignment `a`, with the alignment argument; None when the class
+    /// or the program declares none (NEW-29).
+    fn aligned_delete_fn(&self, class: Option<usize>, arr: bool, global: bool, a: u64) -> Option<(Dealloc, Vec<Expr>)> {
+        let dname = if arr { "operatordelete[]" } else { "operatordelete" };
+        let size_t = Ty::size_t();
+        let fns: Vec<DeclId> = match class.filter(|_| !global).and_then(|c| self.p.lookup_member(c, dname)) {
+            Some(v) if !v.is_empty() => v,
+            _ => self.p.scopes[self.p.global].names.get(dname).cloned().unwrap_or_default(),
+        };
+        let is_align = |q: &QTy| matches!(q.t, Ty::Enum(e) if self.p.enums[e].name == "align_val_t");
+        let form = |d: DeclId| -> Option<(bool, QTy)> {
+            let f = self.p.func(d)?;
+            let ps = &f.fty.params;
+            let first = matches!(&ps.first().map(|q| q.t.clone()), Some(Ty::Ptr(x)) if x.t == Ty::Void);
+            match ps.len() {
+                2 if first && is_align(&ps[1]) => Some((false, ps[1].clone())),
+                3 if first && ps[1].t == size_t && is_align(&ps[2]) => Some((true, ps[2].clone())),
+                _ => None,
+            }
+        };
+        let pick = fns.iter().copied().find(|&d| form(d).is_some_and(|f| !f.0)).or_else(|| fns.iter().copied().find(|&d| form(d).is_some()))?;
+        let (sized, at) = form(pick)?;
+        Some((Dealloc::Func(pick, sized), vec![Expr::new(EK::Int(a as i128), at.unqual(), Cat::PR, self.line)]))
     }
 
     /// The deallocation function of a `delete` expression: a usual form
@@ -3139,7 +3245,23 @@ impl<'a> Machine<'a> {
         for (fd, fi) in self.fields(c) {
             let sub = place.sub(nb + fi.index);
             let mi = mem_inits.iter().find(|m| m.field == Some(fd)).and_then(|m| m.init.clone());
+            // UNI-7: a mem-initializer for a member of an anonymous union
+            // initializes the unnamed member that holds it.
+            if let Ty::Class(u) = fi.ty.t {
+                if mi.is_none() && self.p.anon_parent.get(&u).is_some_and(|x| x.1 == fd) {
+                    let names: Vec<DeclId> = mem_inits.iter().filter_map(|m| m.field).filter(|&g| matches!(&self.p.decls[g].k, DK::Field(gi) if gi.class == u || self.p.anon_top(gi.class, u).is_some())).collect();
+                    if !names.is_empty() {
+                        let mut inner = Vec::new();
+                        self.construct_parts(&sub, u, mem_inits, &mut inner)?;
+                        continue;
+                    }
+                }
+            }
             if let Some(init) = mi.or(fi.init.clone()) {
+                if union {
+                    // UNI-5: the member that is initialized is active.
+                    self.activate_member(&sub)?;
+                }
                 // PRIM-11: `this` in a default member initializer is the
                 // object being built.
                 let here = place.clone();
@@ -3656,6 +3778,18 @@ impl<'a> Machine<'a> {
             }
             return self.call_defaulted(&f, fid, this, args);
         }
+        let (fid, f) = match (&f.body, cp.c_fns.contains(&fid)) {
+            (None, true) => {
+                // LSP-4: a function with C linkage declared in a namespace
+                // is the function of that name declared elsewhere.
+                let other = cp.c_fns.iter().copied().filter(|&g| g != fid && cp.decls[g].name == cp.decls[fid].name).find(|&g| cp.func(g).is_some_and(|x| x.body.is_some()));
+                match other {
+                    Some(g) => (g, cp.func(g).unwrap().clone()),
+                    None => (fid, f),
+                }
+            }
+            _ => (fid, f),
+        };
         let Some(body) = f.body.clone() else {
             if self.constant {
                 if f.defined {
@@ -3666,6 +3800,11 @@ impl<'a> Machine<'a> {
             }
             if f.defined {
                 return unsup(format!("body of '{}' is not available", name));
+            }
+            if (name.starts_with("operatornew") || name.starts_with("operatordelete")) && f.class.is_none() && cp.decls[fid].scope == cp.global {
+                // LSUP-6: a declared form of the library's allocation and
+                // deallocation functions, such as the nothrow forms.
+                return self.call_allocation(&name, args);
             }
             return unsup(format!("function '{}' has no definition in the program", name));
         };

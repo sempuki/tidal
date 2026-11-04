@@ -389,6 +389,55 @@ impl P {
                         if theirs.iter().map(|x| x.as_str()).collect::<Vec<_>>() == mine {
                             return true;
                         }
+                        // G116: an argument that names a type alias for the
+                        // partial specialization's argument is equivalent
+                        // (TPL-20).
+                        let split = |v: &[&str]| -> Vec<Vec<String>> {
+                            let mut out = vec![Vec::new()];
+                            let mut d = 0i32;
+                            for &x in v {
+                                match x {
+                                    "<" | "(" | "[" => d += 1,
+                                    ">" | ")" | "]" => d -= 1,
+                                    ">>" => d -= 2,
+                                    _ => {}
+                                }
+                                if x == "," && d == 0 {
+                                    out.push(Vec::new());
+                                } else {
+                                    out.last_mut().unwrap().push(x.to_string());
+                                }
+                            }
+                            out
+                        };
+                        let simple_ty = |v: &[String]| -> Option<QTy> {
+                            let first = v.first()?;
+                            let ids = self.lookup(first)?;
+                            let id = ids[0];
+                            let mut q = match self.tparam.get(&id) {
+                                Some(&(d, j)) => crate::templ::dep(crate::types::Dep::Param(d, j)),
+                                None => match &self.decls[id].k {
+                                    DK::Type(q) => q.clone(),
+                                    DK::Class(c) => QTy::new(Ty::Class(*c)),
+                                    _ => return None,
+                                },
+                            };
+                            for x in &v[1..] {
+                                q = match x.as_str() {
+                                    "*" => QTy::new(Ty::Ptr(Box::new(q))),
+                                    "&" => QTy::new(Ty::LRef(Box::new(q))),
+                                    "&&" => QTy::new(Ty::RRef(Box::new(q))),
+                                    "const" => QTy { c: true, ..q },
+                                    _ => return None,
+                                };
+                            }
+                            Some(q)
+                        };
+                        let theirs_v: Vec<&str> = theirs.iter().map(|x| x.as_str()).collect();
+                        let (a, b) = (split(&mine), split(&theirs_v));
+                        if a.len() == b.len() && a.iter().zip(b.iter()).all(|(x, y)| x == y || matches!((simple_ty(x), simple_ty(y)), (Some(p), Some(q)) if p == q)) {
+                            return true;
+                        }
                     }
                 }
             }
@@ -1212,7 +1261,9 @@ impl P {
     pub fn lookup_scope_name(&self, name: &str) -> Option<Vec<DeclId>> {
         let noms = self.nominations();
         for &s in self.stack.iter().rev() {
-            if let (Some(v), _) = self.lookup_level(s, name, &noms) {
+            // NAM-40: a name before `::` finds a class that a variable
+            // hides.
+            if let (Some(v), _) = self.lookup_level_k(s, name, &noms, false) {
                 let v = self.scope_names_only(v);
                 if !v.is_empty() {
                     return Some(v);
@@ -1256,6 +1307,14 @@ impl P {
                     self.report_ambiguous(scope.and_then(|r| r.ok()), &name, line);
                 }
                 return Ok(QTy::unknown());
+            }
+            if let (Some(Ok(_)), Some(ids), 0) = (scope, &found, self.in_base_clause) {
+                if !self.at("::") && self.hides_class(ids) {
+                    // NAM-41: the qualified name finds the variable, data
+                    // member, function, or enumerator, which hides the class.
+                    self.error(line, "NAM-41", format!("'{}' names a member that is not a type, which hides the class", name));
+                    return Ok(QTy::unknown());
+                }
             }
             if let Some(Ok(s)) = scope {
                 if let SK::Class(c) = self.scopes[s].kind {
@@ -1422,7 +1481,12 @@ impl P {
         if let Ok(Some(Ok(s))) = scope {
             let kw = self.eat("template");
             let name = self.ident()?;
-            let found = self.lookup_qualified(s, &name).0;
+            let mut found = self.lookup_qualified(s, &name).0;
+            if !self.in_template() && !self.at("::") && found.as_ref().is_some_and(|ids| self.hides_class(ids)) {
+                // NAM-41, DEP-22: the qualified name finds the member that
+                // hides the class, which is not a type.
+                found = None;
+            }
             if let Some(ids) = found {
                 if let Some(&id) = ids.iter().find(|&&i| matches!(self.decls[i].k, DK::Type(_) | DK::Class(_) | DK::Enum(_) | DK::Template(_) | DK::TypeParam)) {
                     if !self.in_template() && !self.accessible(id, false) {

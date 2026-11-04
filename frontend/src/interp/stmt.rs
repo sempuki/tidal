@@ -604,6 +604,10 @@ impl<'a> Machine<'a> {
         let place = self.alloc(&v.ty.unqual())?;
         self.objs[place.obj].volatile = v.ty.v;
         self.frame_mut().vars.insert(id, place.obj);
+        if let Some(&a) = self.p.var_align.get(&id) {
+            // ALN-1: the alignment that alignas gives the variable.
+            self.raw_align.insert(place.obj, a);
+        }
         // IF-25, CE-3: the initializer of a `const` local of integer or
         // enumeration type that is not `volatile` is a constant evaluation
         // when it is a constant expression.
@@ -688,6 +692,9 @@ impl<'a> Machine<'a> {
                 self.objs[place.obj].is_static = true;
                 self.objs[place.obj].volatile = v.ty.v;
                 self.globals.insert((self.tu, id), place.obj);
+                if let Some(&a) = self.p.var_align.get(&id) {
+                    self.raw_align.insert(place.obj, a);
+                }
                 place
             }
         };

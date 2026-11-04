@@ -31,6 +31,9 @@ pub fn is_assign_op(s: &str) -> bool {
     matches!(s, "=" | "*=" | "/=" | "%=" | "+=" | "-=" | "<<=" | ">>=" | "&=" | "^=" | "|=")
 }
 
+/// The depth of the invented template parameters of a generic lambda.
+pub const LAMBDA_DEPTH: u32 = u32::MAX - 5;
+
 impl P {
     // ---------------- parsing ----------------
 
@@ -300,7 +303,23 @@ impl P {
                         false
                     };
                     let e = self.parse_cast()?;
-                    let e = self.rvalue(e);
+                    let mut e = self.rvalue(e);
+                    if let (Ty::Class(c), false) = (nonref(&e.ty).t, self.in_template()) {
+                        // NEW-15: a class operand converts by its one
+                        // conversion function to a pointer to an object type.
+                        if !self.class_uncertain(c) {
+                            let mut fns = Vec::new();
+                            self.conv_fns(c, 0, &mut fns);
+                            let ptrs: Vec<QTy> = fns.iter().filter_map(|&f| self.func(f)).filter(|f| !f.template && !f.explicit).map(|f| nonref(&f.fty.ret).unqual()).filter(|t| matches!(&t.t, Ty::Ptr(x) if !matches!(x.t, Ty::Func(_)))).collect();
+                            if ptrs.len() == 1 {
+                                let mark = self.d.list.len();
+                                match self.implicit(e.clone(), &ptrs[0], false) {
+                                    Ok(x) if self.d.list.len() == mark && !matches!(x.k, EK::Unknown(_)) => e = x,
+                                    _ => self.d.list.truncate(mark),
+                                }
+                            }
+                        }
+                    }
                     let pt = e.ty.clone();
                     self.require_pointee(&pt, line);
                     match &pt.t {
@@ -489,7 +508,27 @@ impl P {
     /// expression, and NEW-21 to NEW-24: the deallocation function that a
     /// throw from the initialization calls. None when the front end cannot
     /// tell.
-    fn resolve_new_alloc(&mut self, class: Option<usize>, array: bool, pa: &[Expr], global: bool, line: u32) -> Option<NewAlloc> {
+    fn resolve_new_alloc(&mut self, class: Option<usize>, array: bool, pa: &[Expr], global: bool, line: u32, align: Option<u64>) -> Option<NewAlloc> {
+        // NEW-28: an over-aligned type passes its alignment after the size;
+        // NEW-29: without a function that accepts it, the call drops it.
+        if let Some(a) = align {
+            let en = self.lookup_in_scope(self.global, "std", false).and_then(|ids| match self.decls[ids[0]].k {
+                DK::Namespace(sc) => self.lookup_in_scope(sc, "align_val_t", false),
+                _ => None,
+            }).and_then(|ids| match self.decls[ids[0]].k {
+                DK::Enum(e) => Some(e),
+                _ => None,
+            });
+            if let Some(e) = en {
+                let mut pa2 = vec![Expr::new(EK::Int(a as i128), QTy::new(Ty::Enum(e)), Cat::PR, line)];
+                pa2.extend(pa.iter().cloned());
+                if let Some(r) = self.resolve_new_alloc(class, array, &pa2, global, line, None) {
+                    if r.func.is_some() {
+                        return Some(r);
+                    }
+                }
+            }
+        }
         let aname = if array { "operatornew[]" } else { "operatornew" };
         let dname = if array { "operatordelete[]" } else { "operatordelete" };
         let size_t = Ty::size_t();
@@ -908,9 +947,9 @@ impl P {
         // NEW-10, NEW-13: the allocation function that a class or the
         // program declares, and the deallocation function of NEW-21.
         let mut alloc_info: Option<NewAlloc> = None;
-        let over_aligned = self.alignof_ty(&rt.t).is_some_and(|a| a > 16);
-        if !self.in_template() && !over_aligned && place_arg.is_none() && !rt.is_unknown() && !bounds.iter().skip(1).any(|b| b.is_none()) && ((placement.is_some() && place_arg.is_none()) || global || (place_arg.is_none() && user_alloc(self, elem_class))) {
-            alloc_info = self.resolve_new_alloc(elem_class, !bounds.is_empty(), placement.as_deref().unwrap_or(&[]), global, line);
+        let over_aligned = self.alignof_ty(&rt.t).filter(|&a| a > 16);
+        if !self.in_template() && place_arg.is_none() && !rt.is_unknown() && !bounds.iter().skip(1).any(|b| b.is_none()) && ((placement.is_some() && place_arg.is_none()) || global || (place_arg.is_none() && user_alloc(self, elem_class))) {
+            alloc_info = self.resolve_new_alloc(elem_class, !bounds.is_empty(), placement.as_deref().unwrap_or(&[]), global, line, over_aligned);
         }
         if alloc_info.is_none() && ((placement.is_some() && place_arg.is_none()) || global || self.in_template() || rt.is_unknown() || (place_arg.is_none() && user_alloc(self, elem_class)) || bounds.iter().skip(1).any(|b| b.is_none())) {
             // UN-18: a placement form of a scalar whose allocation
@@ -1065,18 +1104,21 @@ impl P {
                 }
                 self.pos += 1;
                 if self.at("]") && matches!(nonref(&e.ty).t, Ty::Class(_) | Ty::Unknown | Ty::Dep(_)) {
-                    // an overloaded operator[] with no parameters (OPR)
+                    // OPR-3: an overloaded operator[] with no arguments.
                     self.pos += 1;
-                    e = Expr::unknown(line, "overloaded operator[]");
+                    e = self.member_subscript(e, vec![], line);
                     continue;
                 }
                 let save = self.no_gt;
                 self.no_gt = 0;
                 let idx = if self.at("{") { self.parse_braced_init() } else { self.parse_assignment() };
                 let mut extra = false;
+                let mut more = Vec::new();
                 while self.at(",") {
                     self.pos += 1;
-                    let _ = self.parse_assignment();
+                    if let Ok(x) = self.parse_assignment() {
+                        more.push(x);
+                    }
                     extra = true;
                 }
                 self.no_gt = save;
@@ -1087,9 +1129,10 @@ impl P {
                     self.error(line, "COMMA-6", "comma in a built-in subscript");
                 }
                 e = if extra {
-                    // Several arguments for a member operator[] (OPR-3) are
-                    // not modeled.
-                    Expr::unknown(line, "operator[] with several arguments")
+                    // OPR-3: several arguments for a member operator[].
+                    let mut args = vec![idx];
+                    args.extend(more);
+                    self.member_subscript(e, args, line)
                 } else {
                     self.build_subscript(e, idx, line)
                 };
@@ -1337,6 +1380,7 @@ impl P {
         }
         // object expression
         let obj = if arrow {
+            let orig = obj.clone();
             let o = self.rvalue(obj);
             match &o.ty.t {
                 Ty::Ptr(p) => {
@@ -1389,7 +1433,38 @@ impl P {
                             }
                         }
                     }
-                    return Ok(Expr::unknown(line, "overloaded operator->"));
+                    // OPR-14: `x->m` is `(x.operator->())->m`, until the
+                    // result is a pointer.
+                    let mut cur = orig;
+                    for _ in 0..16 {
+                        let cc = match nonref(&cur.ty).t {
+                            Ty::Class(cc) => cc,
+                            _ => return Ok(Expr::unknown(line, "overloaded operator->")),
+                        };
+                        let ids = self.lookup_member(cc, "operator->").unwrap_or_default();
+                        let mark = self.d.list.len();
+                        let x = if ids.is_empty() { Expr::unknown(line, "no operator->") } else { self.call_overloads(Some(cur.clone()), ids, vec![], line) };
+                        match x {
+                            x if !matches!(x.k, EK::Unknown(_)) && self.d.list.len() == mark => {
+                                let x = self.rvalue(x);
+                                match &x.ty.t {
+                                    Ty::Ptr(p) => {
+                                        let pt = (**p).clone();
+                                        cur = Expr::new(EK::Unary(UOp::Deref, Box::new(x)), pt, Cat::L, line);
+                                        break;
+                                    }
+                                    Ty::Class(_) => cur = x,
+                                    _ => return Ok(Expr::unknown(line, "overloaded operator->")),
+                                }
+                            }
+                            _ => return Ok(Expr::unknown(line, "overloaded operator->")),
+                        }
+                    }
+                    if matches!(nonref(&cur.ty).t, Ty::Class(_)) && cur.cat == Cat::L {
+                        cur
+                    } else {
+                        return Ok(Expr::unknown(line, "overloaded operator->"));
+                    }
                 }
                 _ => {
                     self.error(line, "PFX-11", "'->' applied to a non-pointer");
@@ -1474,6 +1549,7 @@ impl P {
                     t.v |= ot.v;
                 }
                 let cat = if f.ty.t.is_ref() || obj.cat == Cat::L { Cat::L } else { Cat::X };
+                let obj = self.anon_path(obj, f.class, line);
                 Ok(Expr::new(EK::Member(Box::new(obj), id), t, cat, line))
             }
             DK::Var(v) => {
@@ -2020,6 +2096,90 @@ impl P {
         Ok(Expr::new(EK::InitList(items), QTy::unknown(), Cat::PR, line))
     }
 
+    /// LAM-15: the call operator of a generic lambda for a call with
+    /// these arguments. None when the front end cannot make it.
+    pub fn generic_lambda_spec(&mut self, op: DeclId, args: &[Expr], line: u32) -> Result<DeclId, bool> {
+        match self.generic_lambda_spec0(op, args, line) {
+            Some(s) => Ok(s),
+            None if self.generic_insts.iter().any(|x| x.0 == op && x.3) => Err(false),
+            None => Err(true),
+        }
+    }
+
+    fn generic_lambda_spec0(&mut self, op: DeclId, args: &[Expr], line: u32) -> Option<DeclId> {
+        let g = self.generic_lambdas.get(&op)?.clone();
+        if args.len() != g.ptys.len() {
+            return None;
+        }
+        let mut b = crate::templ::Binds::new(g.depth, &g.params);
+        for (p, a) in g.ptys.iter().zip(args) {
+            match self.deduce_pair(p, a, &mut b) {
+                crate::templ::Pair::Ok => {}
+                _ => return None,
+            }
+        }
+        let mut tys = Vec::new();
+        for v in &b.vals {
+            match v {
+                Some(TArg::Type(q)) if !q.t.contains_unknown() => tys.push(q.clone()),
+                _ => return None,
+            }
+        }
+        for x in self.generic_insts.iter_mut() {
+            x.3 = false;
+        }
+        if let Some(r) = self.generic_insts.iter_mut().find(|x| x.0 == op && x.1 == tys) {
+            r.3 = r.4;
+            return r.2;
+        }
+        self.generic_insts.push((op, tys.clone(), None, false, false));
+        let slot = self.generic_insts.len() - 1;
+        let c = self.func(op)?.class?;
+        let vals: Vec<TArg> = tys.iter().map(|t| TArg::Type(t.clone())).collect();
+        let saved = self.save_state_pub();
+        self.toks = (*g.toks).clone();
+        self.pos = g.start;
+        self.stack = g.stack.clone();
+        self.fns = g.fns.clone();
+        let scope = self.push_scope(SK::Template);
+        self.binding_scopes.insert(scope);
+        self.bind_params(scope, &g.params, &vals);
+        self.lookup_limit = g.limit;
+        self.tok_origin = g.origin;
+        self.templ = 0;
+        self.inst_depth += 1;
+        self.lambda_inst = Some(tys);
+        self.lambda_inst_failed = false;
+        let r = self.parse_lambda_inner();
+        self.lambda_inst = None;
+        let failed = std::mem::take(&mut self.lambda_inst_failed);
+        if failed {
+            self.generic_insts[slot].3 = true;
+            self.generic_insts[slot].4 = true;
+        }
+        self.inst_depth -= 1;
+        self.restore_state_pub(saved);
+        let x = r.ok()?;
+        let EK::Closure(c2, _, _) = x.k else { return None };
+        let cs = self.classes[c2].scope;
+        let op2 = self.scopes[cs].names.get("operator()").and_then(|v| v.first().copied())?;
+        // The closure types must hold the same members, so that the call
+        // operator can run on the object of the generic closure type.
+        let f1: Vec<QTy> = self.classes[c].fields.iter().filter_map(|&f| match &self.decls[f].k { DK::Field(fi) => Some(fi.ty.clone()), _ => None }).collect();
+        let f2: Vec<QTy> = self.classes[c2].fields.iter().filter_map(|&f| match &self.decls[f].k { DK::Field(fi) => Some(fi.ty.clone()), _ => None }).collect();
+        let caps1: Vec<(usize, bool)> = self.closure_caps.get(&op).map(|v| v.iter().map(|x| (x.1, x.2)).collect()).unwrap_or_default();
+        let caps2: Vec<(usize, bool)> = self.closure_caps.get(&op2).map(|v| v.iter().map(|x| (x.1, x.2)).collect()).unwrap_or_default();
+        if f1 != f2 || caps1 != caps2 || self.closure_this.get(&op) != self.closure_this.get(&op2) {
+            return None;
+        }
+        if let Some(f) = self.func_mut(op2) {
+            f.class = Some(c);
+        }
+        let _ = line;
+        self.generic_insts[slot].2 = Some(op2);
+        Some(op2)
+    }
+
     fn parse_lambda(&mut self) -> PR<Expr> {
         let saved = self.templ;
         let r = self.parse_lambda_inner();
@@ -2029,6 +2189,14 @@ impl P {
 
     fn parse_lambda_inner(&mut self) -> PR<Expr> {
         let line = self.line();
+        // LAM-15: a generic lambda parsed again for a call, with the types
+        // of its placeholder parameters bound.
+        let inst = self.lambda_inst.take();
+        let templ0 = self.templ;
+        let lstart = self.pos;
+        let lstack = self.stack.clone();
+        let lfns = self.fns.clone();
+        let sig_mark = (self.d.list.len(), self.d.muted_errors);
         self.expect("[")?;
         // captures (specification/expressions/lambdas.md grammar)
         let in_fn = !self.fns.is_empty();
@@ -2068,9 +2236,52 @@ impl P {
         self.skip_attributes();
         let mark = self.decls.len();
         let ppos = self.pos;
+        let mut gen_params: Option<Vec<crate::templ::TParam>> = None;
         let (scope, fdecl) = if self.at("(") {
             self.params_tn = true;
-            let f = self.parse_params()?;
+            // LAM-15: the placeholder parameters of a generic lambda are
+            // invented template parameters, as for an abbreviated function
+            // template (DED-34).
+            let mut k = 0;
+            let mut d = 0i32;
+            let mut has_auto = false;
+            loop {
+                let t = self.peek(k);
+                if t.kind == TK::Eof {
+                    break;
+                }
+                if t.kind == TK::Punct {
+                    match t.text.as_str() {
+                        "(" => d += 1,
+                        ")" => {
+                            d -= 1;
+                            if d == 0 {
+                                break;
+                            }
+                        }
+                        _ => {}
+                    }
+                }
+                if t.kind == TK::Ident && t.text == "auto" {
+                    has_auto = true;
+                }
+                k += 1;
+            }
+            let as_template = has_auto && inst.is_none() && !generic && !self.in_template();
+            let saved_ab = if as_template { Some(self.abbrev.replace(crate::cons::Abbrev { depth: LAMBDA_DEPTH, base: 0, params: vec![], cons: None, closed: false })) } else { None };
+            let saved_nest = (self.param_nest, self.auto_param_k);
+            self.param_nest = 0;
+            let f = self.parse_params();
+            (self.param_nest, self.auto_param_k) = saved_nest;
+            if let Some(sa) = saved_ab {
+                if let Some(ab) = std::mem::replace(&mut self.abbrev, sa) {
+                    // A constrained placeholder (CPT-20) stays unknown.
+                    if ab.cons.is_none() {
+                        gen_params = Some(ab.params);
+                    }
+                }
+            }
+            let f = f?;
             (f.scope, Some(f))
         } else {
             (self.new_scope(SK::Params, Some(self.cur_scope()), ""), None)
@@ -2078,17 +2289,17 @@ impl P {
         // The parameter list can carry `noexcept` and the trailing return
         // type. A `decltype` there can name a capture (Q-0092), which the
         // front end does not model, so such a lambda stays unknown.
-        let has_decltype = self.toks[ppos..self.pos].iter().any(|t| t.text == "decltype");
+        let has_decltype = self.toks[ppos..self.pos].iter().any(|t| t.text == "decltype") && inst.is_none();
         if has_decltype {
             generic = true;
         }
-        if self.toks[ppos..self.pos].iter().any(|t| t.text == "auto" && t.kind == TK::Ident) && !generic {
+        if self.toks[ppos..self.pos].iter().any(|t| t.text == "auto" && t.kind == TK::Ident) && !generic && inst.is_none() {
             // LAM-15: a placeholder parameter makes the call operator a
             // template, whose body is a pattern (SA-5).
             self.templ += 1;
             generic = true;
         }
-        let mut ret = if has_decltype { None } else { fdecl.as_ref().and_then(|f| f.trailing.clone()) };
+        let mut ret = if has_decltype || (inst.is_some() && fdecl.as_ref().is_some_and(|f| f.trailing_auto.is_some())) { None } else { fdecl.as_ref().and_then(|f| f.trailing.clone()) };
         let mut lambda_noexcept = fdecl.as_ref().is_some_and(|f| f.noexcept);
         let mut lambda_noexcept_expr = false;
         loop {
@@ -2124,6 +2335,14 @@ impl P {
                 break;
             }
         }
+        if inst.is_some() && (self.d.list.len() > sig_mark.0 || self.d.muted_errors != sig_mark.1) {
+            // DED-29: the parameters or the result type of a call
+            // operator made for a call are not valid.
+            self.d.list.truncate(sig_mark.0);
+            self.lambda_inst_failed = true;
+            self.pop_scope();
+            return Ok(Expr::unknown(line, "lambda"));
+        }
         if self.inst_depth == 0 {
             if is_static && (cap_default.is_some() || !cap_items.is_empty()) {
                 // LAM-27: a static lambda captures nothing.
@@ -2144,6 +2363,10 @@ impl P {
         // body: a separate function (JMP-7, SW-3)
         let mut ctx = FnCtx::new(ret.clone());
         ctx.deduce = ret.is_none();
+        if inst.is_some() && ret.is_none() {
+            // RET-2: `-> decltype(auto)` or another placeholder.
+            ctx.ret_auto = fdecl.as_ref().and_then(|f| f.trailing_auto.clone());
+        }
         ctx.is_lambda = true;
         ctx.lambda_mutable = is_mutable;
         ctx.lambda_copy_default = cap_default == Some(true);
@@ -2173,6 +2396,50 @@ impl P {
         }
         let what = if ctx.lambda_refs.is_empty() || !in_fn { "lambda" } else { "lambda with reference captures" };
         let refs = what != "lambda";
+        // LAM-15: a generic lambda's closure type, whose call operator is
+        // made for each call from the lambda's tokens.
+        if let (Some(gp), Some(fd)) = (&gen_params, &fdecl) {
+            if !gp.is_empty() && !gp.iter().any(|p| p.pack) && !fd.variadic {
+                self.templ = templ0;
+                let ptys = fd.ptys.clone();
+                let noexcept = !lambda_noexcept_expr && lambda_noexcept;
+                if let Some(x) = self.build_closure(line, mark, cap_default, &cap_items, fdecl.clone(), QTy::new(Ty::Void), body.clone(), is_mutable, is_static, is_consteval, refs, in_fn, noexcept) {
+                    if let EK::Closure(c, _, _) = &x.k {
+                        let c = *c;
+                        let cs = self.classes[c].scope;
+                        if let Some(op) = self.scopes[cs].names.get("operator()").and_then(|v| v.first().copied()) {
+                            if let Some(f) = self.func_mut(op) {
+                                f.template = true;
+                                f.body = None;
+                            }
+                            // The conversion to a pointer to function is a
+                            // template too, which the front end leaves out.
+                            if let Some(cv) = self.scopes[cs].names.remove("operator (lambda function pointer)") {
+                                for d in cv {
+                                    self.closure_conv.remove(&d);
+                                }
+                                self.classes[c].has_conv = false;
+                                self.classes[c].conv_targets.clear();
+                                self.generic_conv.insert(c);
+                            }
+                            let g = crate::parser::GenLambda {
+                                toks: Rc::new(self.toks.clone()),
+                                start: lstart,
+                                stack: lstack,
+                                fns: lfns,
+                                depth: LAMBDA_DEPTH,
+                                params: gp.clone(),
+                                ptys,
+                                limit: self.lookup_limit,
+                                origin: self.tok_origin,
+                            };
+                            self.generic_lambdas.insert(op, Rc::new(g));
+                            return Ok(x);
+                        }
+                    }
+                }
+            }
+        }
         // The closure type, for the interpreter and for calls. A generic
         // lambda, or one in a template, stays unknown.
         let generic = generic || fdecl.as_ref().is_some_and(|f| f.ptys.iter().any(|t| t.t.contains_unknown()) || f.variadic);
@@ -3335,6 +3602,7 @@ impl P {
                         if !f.ty.t.is_ref() && !f.mutable {
                             t.c |= obj_t.c;
                         }
+                        let obj = self.anon_path(obj, f.class, line);
                         Expr::new(EK::Member(Box::new(obj), id), t, Cat::L, line)
                     }
                     None => {
@@ -3605,11 +3873,55 @@ impl P {
             })
     }
 
+    /// UNI-7: a member of an anonymous union is reached through the
+    /// unnamed members that hold the union, from the object `obj`.
+    pub fn anon_path(&self, obj: Expr, u: usize, line: u32) -> Expr {
+        let mut chain = Vec::new();
+        let mut cur = u;
+        let oc = match nonref(&obj.ty).t {
+            Ty::Class(c) => Some(c),
+            _ => None,
+        };
+        while Some(cur) != oc {
+            let Some(&(p, fd)) = self.anon_parent.get(&cur) else { break };
+            chain.push(fd);
+            cur = p;
+        }
+        if Some(cur) != oc {
+            return obj;
+        }
+        let mut e = obj;
+        for fd in chain.into_iter().rev() {
+            let DK::Field(fi) = &self.decls[fd].k else { return e };
+            let ot = nonref(&e.ty);
+            let mut t = fi.ty.clone();
+            t.c |= ot.c;
+            t.v |= ot.v;
+            let cat = if e.cat == Cat::L { Cat::L } else { Cat::X };
+            e = Expr::new(EK::Member(Box::new(e), fd), t, cat, line);
+        }
+        e
+    }
+
+    /// UNI-7: the unnamed member of class `c` that holds the anonymous
+    /// union `u`, directly or through other anonymous unions.
+    pub fn anon_top(&self, u: usize, c: usize) -> Option<DeclId> {
+        let mut cur = u;
+        for _ in 0..16 {
+            let &(p, fd) = self.anon_parent.get(&cur)?;
+            if p == c {
+                return Some(fd);
+            }
+            cur = p;
+        }
+        None
+    }
+
     pub fn class_converts(&self, c: usize) -> Option<bool> {
         if self.class_uncertain(c) {
             return None;
         }
-        if self.classes[c].has_conv {
+        if self.classes[c].has_conv || self.generic_conv.contains(&c) {
             return Some(true);
         }
         for b in &self.classes[c].bases {
@@ -5023,6 +5335,18 @@ impl P {
                 if same && !self.in_template() && !self.class_uncertain(c) && !self.scopes[self.classes[c].scope].names.contains_key("operator=") && (l.cat == Cat::L || self.in_unevaluated > 0) && !matches!(r.k, EK::Unknown(_)) {
                     return Expr::new(EK::Assign(None, Box::new(l), Box::new(r)), nonref(&lt), Cat::L, line);
                 }
+                // ASG rules: `x = {...}` with the implicit assignment
+                // takes a `C` made by copy-list-initialization.
+                if matches!(r.k, EK::InitList(_)) && !self.in_template() && !self.class_uncertain(c) && !self.scopes[self.classes[c].scope].names.contains_key("operator=") && l.cat == Cat::L && !lt.c {
+                    let mark = self.d.list.len();
+                    let x = self.convert_init(r.clone(), &QTy::new(Ty::Class(c)), crate::decl2::InitForm::CopyList, line);
+                    if self.d.list.len() != mark {
+                        return Expr::unknown(line, "bad class assignment");
+                    }
+                    if !matches!(x.k, EK::Unknown(_)) && !x.ty.is_unknown() {
+                        return Expr::new(EK::Assign(None, Box::new(l), Box::new(x)), nonref(&lt), Cat::L, line);
+                    }
+                }
                 // CPY-21, OVL-14: the implicit copy and move assignment
                 // operators take a `C` made from a value of another type by
                 // a converting constructor.
@@ -5140,6 +5464,119 @@ impl P {
         Expr::new(EK::Assign(Some((bop, ct)), Box::new(l), Box::new(r)), lt, Cat::L, line)
     }
 
+    /// COND-3, COND-11: operands of different types, at least one of
+    /// class type. None when the front end cannot decide.
+    fn class_cond(&mut self, c: &Expr, a: &Expr, b: &Expr, line: u32) -> Option<Expr> {
+        if self.in_template() {
+            return None;
+        }
+        let (at, bt) = (a.ty.clone(), b.ty.clone());
+        let class_of = |t: &QTy| match t.t {
+            Ty::Class(k) => Some(k),
+            _ => None,
+        };
+        let (ac, bc) = (class_of(&at), class_of(&bt));
+        if ac.is_some_and(|k| self.class_uncertain(k)) || bc.is_some_and(|k| self.class_uncertain(k)) {
+            return None;
+        }
+        // A derived class lvalue and a base class lvalue give a base class
+        // lvalue.
+        if let (Some(x), Some(y), Cat::L, Cat::L) = (ac, bc, a.cat, b.cat) {
+            let to_base = |p: &mut P, from: &Expr, ft: &QTy, base: usize, bt: &QTy| -> Option<Expr> {
+                if !p.is_base_of(base, match ft.t { Ty::Class(k) => k, _ => return None }) || (ft.c && !bt.c) || (ft.v && !bt.v) {
+                    return None;
+                }
+                let target = QTy::new(Ty::LRef(Box::new(QTy { t: Ty::Class(base), c: bt.c, v: bt.v })));
+                let mark = p.d.list.len();
+                let r = p.bind_ref(from.clone(), &target, line, "COND-3");
+                if p.d.list.len() != mark || matches!(r.k, EK::Unknown(_)) {
+                    p.d.list.truncate(mark);
+                    return None;
+                }
+                Some(r)
+            };
+            if x != y {
+                if let Some(a2) = to_base(self, a, &at, y, &bt) {
+                    return Some(self.build_cond(c.clone(), a2, b.clone(), line));
+                }
+                if let Some(b2) = to_base(self, b, &bt, x, &at) {
+                    return Some(self.build_cond(c.clone(), a.clone(), b2, line));
+                }
+            }
+            if x == y || self.is_base_of(x, y) || self.is_base_of(y, x) {
+                return None;
+            }
+        }
+        // One operand converts to the type of the other, which does not
+        // convert back.
+        let converts = |p: &mut P, e: &Expr, t: &QTy| -> Option<bool> {
+            match p.ics_value_pub(e, &t.unqual()) {
+                Ok(Some(s)) if s.kind == crate::ics::IK::Ambig => None,
+                Ok(Some(_)) => Some(true),
+                Ok(None) => Some(false),
+                Err(()) => None,
+            }
+        };
+        let convert = |p: &mut P, e: &Expr, t: &QTy| -> Option<Expr> {
+            let mark = p.d.list.len();
+            let r = p.implicit(e.clone(), &t.unqual(), false).ok();
+            if p.d.list.len() != mark || r.as_ref().is_none_or(|x| matches!(x.k, EK::Unknown(_))) {
+                p.d.list.truncate(mark);
+                return None;
+            }
+            r
+        };
+        // Two classes with no constructors of their own and conversion
+        // functions only to types that are not classes convert to
+        // neither.
+        let conv_rets = |p: &P, k: usize| -> Vec<QTy> {
+            let mut fns = Vec::new();
+            p.conv_fns(k, 0, &mut fns);
+            fns.iter().filter_map(|&f| p.func(f)).filter(|f| !f.template && !f.explicit).map(|f| nonref(&f.fty.ret).unqual()).collect()
+        };
+        let plain = |p: &P, k: usize| p.classes[k].ctors.is_empty() && p.classes[k].bases.is_empty() && conv_rets(p, k).iter().all(|t| !matches!(t.t, Ty::Class(_) | Ty::Unknown | Ty::Dep(_)));
+        let (a2b, b2a) = match (ac, bc) {
+            (Some(x), Some(y)) if plain(self, x) && plain(self, y) => (false, false),
+            _ => (converts(self, a, &bt)?, converts(self, b, &at)?),
+        };
+        match (a2b, b2a) {
+            (true, false) if bc.is_none() => {
+                let a2 = convert(self, a, &bt)?;
+                return Some(self.build_cond(c.clone(), a2, b.clone(), line));
+            }
+            (false, true) if ac.is_none() => {
+                let b2 = convert(self, b, &at)?;
+                return Some(self.build_cond(c.clone(), a.clone(), b2, line));
+            }
+            (false, false) => {}
+            _ => return None,
+        }
+        // COND-11: two operands that convert to no common class: each
+        // converts by its one conversion function to a type that is not a
+        // class, and the built-in candidates take those types.
+        let target = |p: &P, k: Option<usize>, t: &QTy| -> Option<QTy> {
+            match k {
+                None => Some(t.unqual()),
+                Some(k) => {
+                    let v = conv_rets(p, k);
+                    if v.len() == 1 && !matches!(v[0].t, Ty::Class(_)) {
+                        Some(v[0].clone())
+                    } else {
+                        None
+                    }
+                }
+            }
+        };
+        let ta = target(self, ac, &at)?;
+        let tb = target(self, bc, &bt)?;
+        let a2 = if ac.is_some() { convert(self, a, &ta)? } else { a.clone() };
+        let b2 = if bc.is_some() { convert(self, b, &tb)? } else { b.clone() };
+        if matches!(a2.ty.t, Ty::Class(_)) || matches!(b2.ty.t, Ty::Class(_)) {
+            return None;
+        }
+        Some(self.build_cond(c.clone(), a2, b2, line))
+    }
+
     pub fn build_cond(&mut self, c: Expr, a: Expr, b: Expr, line: u32) -> Expr {
         let c = self.contextual_bool(c, "COND-1");
         let at = a.ty.clone();
@@ -5179,6 +5616,9 @@ impl P {
                 let t = at.clone();
                 let cat = a.cat;
                 return mk(self, a, b, t, cat);
+            }
+            if let Some(x) = self.class_cond(&c, &a, &b, line) {
+                return x;
             }
             return Expr::unknown(line, "class conditional");
         }
@@ -5327,6 +5767,19 @@ impl P {
         }
     }
 
+    /// OPR-3: `x[args]` with a number of arguments other than one, as a
+    /// call of the member operator[].
+    fn member_subscript(&mut self, obj: Expr, args: Vec<Expr>, line: u32) -> Expr {
+        let Ty::Class(c) = nonref(&obj.ty).t else { return Expr::unknown(line, "overloaded operator[]") };
+        if self.in_template() || self.class_uncertain(c) {
+            return Expr::unknown(line, "overloaded operator[]");
+        }
+        match self.lookup_member(c, "operator[]") {
+            Some(ids) if ids.iter().all(|&i| self.func(i).is_some()) => self.call_overloads(Some(obj), ids, args, line),
+            _ => Expr::unknown(line, "overloaded operator[]"),
+        }
+    }
+
     pub fn build_subscript(&mut self, a: Expr, i: Expr, line: u32) -> Expr {
         let (a, i) = if (matches!(nonref(&a.ty).t, Ty::Class(_)) || matches!(nonref(&i.ty).t, Ty::Class(_))) {
             match self.op_resolve("[]", &[a.clone(), i.clone()], false, line) {
@@ -5342,7 +5795,8 @@ impl P {
         };
         let at = nonref(&a.ty);
         if let Ty::Class(_) = at.t {
-            return Expr::unknown(line, "overloaded operator[]");
+            // OPR-3: a static operator[] or one with a default argument.
+            return self.member_subscript(a, vec![i], line);
         }
         if matches!(i.k, EK::InitList(_)) {
             return Expr::unknown(line, "braced subscript");

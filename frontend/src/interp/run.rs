@@ -318,6 +318,9 @@ impl<'a> Machine<'a> {
         self.objs[place.obj].is_static = true;
         self.objs[place.obj].volatile = v.ty.v;
         self.globals.insert((self.tu, id), place.obj);
+        if let Some(&a) = self.p.var_align.get(&id) {
+            self.raw_align.insert(place.obj, a);
+        }
         Ok(())
     }
 

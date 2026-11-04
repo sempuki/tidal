@@ -194,6 +194,13 @@ impl<'a> Machine<'a> {
         let size = self.obj_ty(o).and_then(|t| self.p.sizeof_ty(&t.t)).unwrap_or(16).max(1);
         // TYP-2, ALN-4: the address meets the alignment of the type.
         let align = self.obj_ty(o).and_then(|t| self.p.alignof_ty(&t.t)).unwrap_or(16).max(16);
+        // NEW-26: an aligned allocation function gives storage aligned to
+        // its argument.
+        let align = match self.raw_args.get(&o) {
+            Some(&(_, Some(a))) if a > 0 && (a as u64) <= 1 << 20 => align.max(a as u64),
+            _ => align,
+        };
+        let align = align.max(self.raw_align.get(&o).copied().unwrap_or(0));
         let base = self.next_addr.max(FIRST_ADDR).div_ceil(align) * align;
         self.next_addr = base + size + 16;
         self.addr_of.insert(o, base);
