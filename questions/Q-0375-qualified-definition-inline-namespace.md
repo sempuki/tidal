@@ -43,8 +43,12 @@ Clang accept the definition, and option 1 gives the same result as the
 definition `int geo::v2::area()` in the same place, which every
 compiler accepts.
 
-Kept open on 2026-11-03 under decision 0054, because no review has read the provisional answer. EDG 7.0 is the one newest family that differs.
+Kept open on 2026-11-04 under decision 0054, because the gap review of the rules that phase 7 rewrote agrees with the result and not with the test that NS-15 states, and reads the definition inside the inline namespace as valid, with doubt. EDG 7.0 is the one newest family that differs from the result.
 
 ## Opinions
+
+### Gap review, 2026-11-04
+
+The source-reader gap review of the rules that the phase 7 front-end and Propose repairs rewrote (`reports/review/2026-11-04-gap-review-phase-7-repairs.md`) agrees with the result of option 1 for the case in dispute, and not with the test that NS-15 states. In the reference, a qualified definition must be in a namespace that contains the member. The global namespace, the named namespace, and the inline namespace all contain it, so the definition through the named namespace is valid in all three places. The row inside the named namespace matches option 1. The row inside the inline namespace is valid in the reference, and every compiler rejects it. The compilers seem to keep an older rule, under which the definition had to be in a namespace that encloses the one the qualifier names. The review holds this reading of the third row with some doubt, because the reference does not define what it means for a namespace to contain an entity.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

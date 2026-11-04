@@ -28,13 +28,14 @@ does.
 :::
 
 :::{principle} LSP-P2
-:rules: LSP-4 LSP-7
+:rules: LSP-4 LSP-7 LSP-8
 
 C has no namespaces and no overloading, so a C name is its spelling
 alone. All declarations of one spelling with C language linkage are one
 entity, wherever they sit, and two C functions cannot share a name. A
 C name also cannot share its spelling with a global variable, because
-the linker would see one symbol.
+the linker would see one symbol. A translation unit sees only its own
+declarations, so a clash between two units needs no diagnostic.
 :::
 
 :::{principle} LSP-P3
@@ -107,7 +108,7 @@ if the declaration would be a definition without the braces.
 
 :::{rule} LSP-4
 :kind: required
-:tests: declarations/linkage-specifications/c-and-cpp-overload.cpp declarations/linkage-specifications/c-cross-unit.cpp declarations/linkage-specifications/c-name-across-namespaces.cpp declarations/linkage-specifications/redeclare-c-then-plain.cpp declarations/linkage-specifications/c-static-function-two-namespaces.cpp declarations/linkage-specifications/c-static-variable-two-namespaces.cpp declarations/linkage-specifications/c-static-not-joined.cpp declarations/linkage-specifications/c-name-unnamed-namespace.cpp declarations/linkage-specifications/c-name-unnamed-namespace-other-unit.cpp
+:tests: declarations/linkage-specifications/c-and-cpp-overload.cpp declarations/linkage-specifications/c-cross-unit.cpp declarations/linkage-specifications/c-name-across-namespaces.cpp declarations/linkage-specifications/redeclare-c-then-plain.cpp declarations/linkage-specifications/c-static-function-two-namespaces.cpp declarations/linkage-specifications/c-static-variable-two-namespaces.cpp declarations/linkage-specifications/c-static-not-joined.cpp declarations/linkage-specifications/c-name-unnamed-namespace.cpp declarations/linkage-specifications/c-name-unnamed-namespace-other-unit.cpp declarations/linkage-specifications/c-name-unnamed-namespace-redefined.cpp
 
 A C name is known by its spelling alone. These rules follow:
 
@@ -170,6 +171,18 @@ EDG records the linkage, and Clang and GCC do not, on x86-64 and with
 `-m32`.
 :::
 
+:::{rule} LSP-8
+:kind: no-diagnostic
+:tests: declarations/linkage-specifications/c-variable-and-global-variable-two-units.cpp declarations/linkage-specifications/global-variable-and-c-variable-two-units.cpp
+
+LSP-7 asks for a diagnostic when one declaration of the clash comes
+before the other in one translation unit. When the two declarations are
+in different translation units, the program is not valid, and an
+implementation need not diagnose it. An example is a C variable in one
+unit and a global variable with C++ language linkage and the same
+spelling in another.
+:::
+
 ## Examples
 
 % tidal-example: reject
@@ -204,8 +217,8 @@ apply(twice, 2);                 // rejected where the type records the linkage 
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 30
-of 42 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 32
+of 45 tests.
 
 One question on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
 
@@ -231,5 +244,19 @@ One question on this page settled on 2026-11-03 under decision 0054 after the so
   spelling of a C name.
 - LSP-2, LSP-4: GCC 14 and Clang 18 accept C language linkage on `main`
   and on a variable named `main` ({question}`Q-0076`).
+- LSP-4, LNK-5: Clang and GCC treat a C name in an unnamed namespace as
+  one entity with the other C names of its spelling. Clang rejects a
+  second definition in another namespace, and GCC fails at assembly
+  with one symbol for the two. EDG accepts the two definitions
+  ({question}`Q-0369`). The gap review of the rules that phase 7
+  rewrote (`reports/review/2026-11-04-gap-review-phase-7-repairs.md`)
+  reads the reference as EDG does: the name has internal linkage and so
+  no language linkage. Tidal keeps the answer of Clang and GCC
+  (`documentation/decisions/pending.md`, row 4).
+- LSP-8: Clang and GCC link a C variable in one unit with a global
+  variable of the same spelling in another, in either order, and give
+  no diagnostic. The gap review of the rules that phase 7 rewrote reads
+  the reference as requiring no diagnostic when neither declaration is
+  reachable from the other.
 
 Inputs: clang-sema-decl, clang-sema-declcxx, clang-diag-sema, edg-decls.

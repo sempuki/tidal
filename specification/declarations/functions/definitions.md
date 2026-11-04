@@ -114,7 +114,7 @@ lists what is not valid.
 
 :::{rule} FN-14
 :kind: reject
-:tests: declarations/functions/definitions/redefinition.cpp declarations/functions/definitions/return-type-mismatch.cpp declarations/functions/definitions/same-parameter-types-two-definitions.cpp
+:tests: declarations/functions/definitions/redefinition.cpp declarations/functions/definitions/return-type-mismatch.cpp declarations/functions/definitions/same-parameter-types-two-definitions.cpp declarations/linkage-specifications/c-name-unnamed-namespace-redefined.cpp
 
 A function can have only one definition in a translation unit (FN-2).
 All declarations of a function must have the same return type.
@@ -252,10 +252,11 @@ function.
 
 :::{rule} FN-7
 :kind: recommended
-:tests: declarations/functions/definitions/flow-off-end-warns.cpp declarations/functions/definitions/switch-every-enumerator-no-return.cpp declarations/functions/definitions/flow-off-end-constant-paths.cpp declarations/functions/definitions/flow-off-end-ending-calls.cpp declarations/functions/definitions/flow-off-end-loop-break-warns.cpp declarations/functions/definitions/flow-off-end-switch-no-default-warns.cpp declarations/functions/definitions/flow-off-end-plain-call-warns.cpp declarations/functions/definitions/flow-off-end-goto-loop.cpp
+:tests: declarations/functions/definitions/flow-off-end-warns.cpp declarations/functions/definitions/switch-every-enumerator-no-return.cpp declarations/functions/definitions/flow-off-end-constant-paths.cpp declarations/functions/definitions/flow-off-end-ending-calls.cpp declarations/functions/definitions/flow-off-end-loop-break-warns.cpp declarations/functions/definitions/flow-off-end-switch-no-default-warns.cpp declarations/functions/definitions/flow-off-end-plain-call-warns.cpp declarations/functions/definitions/flow-off-end-goto-loop.cpp declarations/functions/definitions/flow-off-end-main-no-warning.cpp
 
 An implementation should warn if control can reach the end of a function
-that returns a value. For this check, these statements and expressions
+that returns a value, other than `main`. Reaching the end of `main`
+returns zero (FN-8). For this check, these statements and expressions
 end a path:
 
 - a `return` statement,
@@ -290,7 +291,7 @@ void name() {
 
 ## Evidence
 
-All eight compilers agree on 48 of 60 tests. The results are in
+All eight compilers agree on 49 of 62 tests. The results are in
 `tests/RESULTS.md`.
 
 - FN-3: all compilers reject a call that reaches the end of the function
@@ -314,6 +315,12 @@ All eight compilers agree on 48 of 60 tests. The results are in
   Linux pass a pointer that is not null as the third argument, the list
   of environment variables. The matrix runs no program built with
   `-m32`, so the `-m32` tests check acceptance only.
+- FN-7 is Tidal's own advice. The gap review of the rules that phase 7
+  rewrote (`reports/review/2026-11-04-gap-review-phase-7-repairs.md`)
+  finds no such recommendation in the reference, which makes reaching
+  the end undefined (FN-3) and recommends a warning only for a
+  `[[noreturn]]` function that can return. FN-7 follows the warnings
+  that Clang and GCC give. Neither warns at the end of `main`.
 - FN-7: Clang and GCC warn with `-Wreturn-type`. Both give no warning
   for the paths that FN-7 ends, and both warn after a loop with a
   `break`, a `switch` without `default`, and a call of a function

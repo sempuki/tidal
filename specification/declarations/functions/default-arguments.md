@@ -40,11 +40,14 @@ exist only inside a call:
 :::
 
 :::{principle} DEFARG-P2
-:rules: DEFARG-1 DEFARG-8 DEFARG-2 DEFARG-9 DEFARG-11 DEFARG-12 DEFARG-5 DEFARG-10 DEFARG-6 DEFARG-7
+:rules: DEFARG-1 DEFARG-8 DEFARG-2 DEFARG-9 DEFARG-11 DEFARG-12 DEFARG-13 DEFARG-5 DEFARG-10 DEFARG-6 DEFARG-7
 
 Default arguments belong to the declarations of a function, and the
 declarations in one scope add them up. Each later declaration can add
-defaults, and none can repeat one. A declaration in a block starts a
+defaults, and none can repeat one. A template is the exception, because
+each of its specializations has to see the defaults at once: a function
+template and a member function of a class template take their defaults
+from the first declaration only. A declaration in a block starts a
 set of its own. A call matches arguments to parameters from the left,
 so defaults fill the parameter list from the right. A pointer or a
 reference to the function carries no default arguments. An
@@ -87,8 +90,9 @@ are exempt.
 :kind: required
 :tests: declarations/functions/default-arguments/added-later.cpp declarations/functions/default-arguments/block-scope-declaration.cpp declarations/functions/default-arguments/using-sees-later-default.cpp declarations/functions/default-arguments/member-defined-outside-adds-default.cpp declarations/functions/default-arguments/block-declaration-hides-outer-default.cpp declarations/functions/default-arguments/block-declaration-repeats-outer-default.cpp
 
-A later declaration in the same scope can add default arguments. These
-rules apply:
+A later declaration in the same scope can add default arguments, except
+when the function is a template, or its class is a class template or
+lies inside one (DEFARG-13). These rules apply:
 
 - A declaration outside its class or namespace, such as the definition
   `int S::f(int x = 4)`, counts as a declaration in the scope of that
@@ -100,7 +104,7 @@ rules apply:
   also usable through an earlier using declaration of the function
   ({question}`Q-0111`).
 
-DEFARG-9, DEFARG-11, and DEFARG-12 list what is not valid.
+DEFARG-9, DEFARG-11, DEFARG-12, and DEFARG-13 list what is not valid.
 :::
 
 :::{rule} DEFARG-9
@@ -133,6 +137,21 @@ or a move constructor ({rule}`CPY-2`,
 {question}`Q-0370`).
 :::
 
+:::{rule} DEFARG-13
+:kind: reject
+:tests: declarations/functions/default-arguments/function-template-added-later.cpp declarations/functions/default-arguments/class-template-member-outside-adds.cpp declarations/functions/default-arguments/member-template-outside-adds.cpp declarations/functions/default-arguments/nested-class-of-template-outside-adds.cpp
+
+A later declaration must not add a default argument to these
+functions:
+
+- a function template, also a member function template of a class,
+- a member function whose class is a class template or lies inside
+  one. Its default arguments must be on its declaration in the class.
+
+A definition outside the class is such a later declaration. The rule
+applies also if no call uses the default argument.
+:::
+
 :::{rule} DEFARG-4
 :kind: reject
 :tests: declarations/functions/default-arguments/refers-to-parameter.cpp declarations/functions/default-arguments/refers-to-local.cpp declarations/functions/default-arguments/local-unevaluated.cpp declarations/functions/default-arguments/parameter-in-sizeof.cpp declarations/functions/default-arguments/this-in-default.cpp
@@ -155,11 +174,22 @@ through the pointer or the reference must give each argument.
 
 :::{rule} DEFARG-10
 :kind: reject
-:tests: declarations/functions/default-arguments/default-checked-unused.cpp declarations/functions/default-arguments/template-default-independent-unused.cpp
+:tests: declarations/functions/default-arguments/default-checked-unused.cpp declarations/functions/default-arguments/template-default-independent-unused.cpp declarations/functions/default-arguments/default-immediate-call-checked-at-call.cpp declarations/functions/default-arguments/default-immediate-call-unused-not-checked.cpp declarations/functions/default-arguments/member-default-sees-later-members.cpp
 
-A default argument must be valid for its parameter type at the
-declaration, also if no call uses it. In a template, a default argument
-that depends on a template parameter is checked when a call uses it
+A default argument must be valid for its parameter type, also if no
+call uses it. The check happens at the declaration, with two
+exceptions:
+
+- A default argument of a member function is checked as if at the end
+  of the class, so it can use members and nested classes that the class
+  declares later (DEFARG-3).
+- A call of an immediate function in a default argument is neither
+  evaluated nor checked as a constant at the declaration. Each call
+  that uses the default argument checks it
+  ({question}`Q-0379`).
+
+In a template, a default argument that depends on a template parameter
+is checked when a call uses it
 ({rule}`INST-9`). For a default argument that depends on no template
 parameter, {rule}`DEP-30` applies.
 :::
@@ -226,7 +256,7 @@ r(1);                       // rejected: a reference has no defaults
 
 ## Evidence
 
-All eight compilers agree on 32 of 38 tests. The results are in
+All eight compilers agree on 37 of 45 tests. The results are in
 `tests/RESULTS.md`.
 
 One question on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
@@ -250,7 +280,21 @@ One question on this page settled on 2026-11-03 under decision 0054 after the so
   or move constructor. GCC accepts it
   ({question}`Q-0370`). A
   definition outside the class that adds a default argument to another
-  member function is valid on every compiler.
+  member function of a class that is not a template is valid on every
+  compiler.
+- DEFARG-13: every compiler rejects a default argument that a later
+  declaration adds to a function template, to a member function
+  template, or to a member function whose class is a class template or
+  lies inside one. The gap review of the rules that phase 7 rewrote
+  (`reports/review/2026-11-04-gap-review-phase-7-repairs.md`) found no
+  rule that stated this limit.
+- DEFARG-10: a call of a `consteval` function in a default argument is
+  checked at each call that uses the default, on Clang and GCC. EDG
+  checks the call at the declaration, and rejects a call whose function
+  has no definition yet or whose argument is not a constant
+  ({question}`Q-0379`). Every compiler
+  accepts a default argument of a member function that uses a static
+  member and a nested class declared later in the class.
 - DEFARG-7 needs no diagnostic because each unit is translated alone.
   Two units with different defaults compile and link without a
   diagnostic. The test accepts either value. The tests of DEFARG-7

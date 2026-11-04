@@ -480,6 +480,10 @@ Four questions on this page settled on 2026-11-03 under decision 0054 after the 
   accepts the comparison with `-Wno-error=parentheses` or with the
   warning off. Clang 18, GCC, and EDG accept a chained comparison
   ({question}`Q-0029`).
+- CMP-14 is Tidal's own advice. The gap review of the rules that phase
+  7 rewrote (`reports/review/2026-11-04-gap-review-phase-7-repairs.md`)
+  finds no recommendation about chained comparisons in the reference.
+  CMP-14 follows the warnings that Clang and GCC give.
 - CMP-4, CMP-14, CMP-16: Clang and GCC give the warnings under
   `-Wsign-compare`, `-Wparentheses`, and `-Wall -Wextra`. GCC turns on
   `-Wparentheses` under `-Wall`. CMP-14 covers the four relational

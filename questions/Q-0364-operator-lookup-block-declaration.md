@@ -50,8 +50,12 @@ argument-dependent lookup is part of the non-member search. An operator
 has no form that turns off argument-dependent lookup on purpose, as
 parentheses do for a call.
 
-Kept open on 2026-11-03 under decision 0054, because no review has read the provisional answer. EDG 7.0 is the one newest family that differs.
+Kept open on 2026-11-04 under decision 0054, because the gap review of the rules that phase 7 added finds the reference unclear, and its literal text supports option 2. EDG 7.0 is the one newest family that differs.
 
 ## Opinions
+
+### Gap review, 2026-11-04
+
+The source-reader gap review of the rules that phase 7 added (`reports/review/2026-11-04-gap-review-phase-7-additions.md`) finds the reference unclear, with a literal reading for option 2. The non-member candidates of an operator come from the unqualified lookup of the operator function name in the call that the expression becomes, under both the ordinary rules and the argument-dependent rules. The argument-dependent rules turn off when ordinary lookup finds a function declared in a block, so a literal reading turns them off for the operator too, as EDG does. The reference also says to ignore member functions in that lookup and does not fix the order of that step and the test. The review knows of no resolution on the point. Clang and GCC keep argument-dependent lookup, and the answer is a defensible reading of the intent.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

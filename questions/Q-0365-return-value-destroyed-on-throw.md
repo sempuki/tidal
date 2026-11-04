@@ -1,6 +1,6 @@
 # Q-0365: Is the result of a return statement destroyed when a local destructor then throws?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** UNW-1, `tests/exceptions/unwinding/return-local-destructor-throws-result-destroyed.cpp`, `tests/exceptions/unwinding/return-local-destructor-throws-caught-inside.cpp`
 
 ## Context
@@ -43,14 +43,18 @@ Clang's result with an override.
    was fully built (GCC).
 2. The result is not destroyed (Clang).
 
-## Provisional answer
+## Answer
 
 The result is destroyed (option 1). UNW-P2 ends every object that was fully built, and the
 result is fully built before the local objects end. Option 2 leaves an
 object that no code can ever destroy.
 
-Kept open on 2026-11-03 under decision 0054, because no review has read the provisional answer. The gap review of the exceptions chapter raised the question, and GCC 16 is the one newest family that differs.
+Settled on 2026-11-04 under decision 0054. The gap review of the rules that phase 7 added (`reports/review/2026-11-04-gap-review-phase-7-additions.md`) supports this answer with no doubt, and UNW-P1 gives the same answer: by the time the handler runs, nothing that the code inside the try block created still exists. Clang 22 still differs, and the tests keep their overrides for Clang. EDG does not run the programs. The place of the result in the order of destruction is a separate item, which `documentation/decisions/pending.md` row 4 records.
 
 ## Opinions
+
+### Gap review, 2026-11-04
+
+The source-reader gap review of the rules that phase 7 added (`reports/review/2026-11-04-gap-review-phase-7-additions.md`) agrees with option 1. The reference says that when the destructor of a local object or a temporary throws during a return statement, the returned object is destroyed too. Its example also shows a handler in the same function: the first result is destroyed, and a second return statement builds a new one. The rule came from a core defect resolution that Clang appears not to implement. The gap review of the rules that phase 7 rewrote (`reports/review/2026-11-04-gap-review-phase-7-repairs.md`) reads the order differently from UNW-1. In its reading the result ends before the local objects that were built before it, in the reverse order of construction.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

@@ -36,8 +36,12 @@ The call is undefined (option 1). OBJ-1 starts the lifetime of a class
 object when its initialization completes, and a member function works
 on its object. Clang names this reason.
 
-Kept open on 2026-11-03 under decision 0054, because no review has read the provisional answer. GCC 16 and EDG 7.0 also differ from the answer.
+Kept open on 2026-11-04 under decision 0054. The gap review of the rules that phase 7 rewrote supports the answer with no doubt, but CTOR-12 changed in the same commit (decision 0055), and two newest families, GCC 16 and EDG 7.0, differ from the answer.
 
 ## Opinions
+
+### Gap review, 2026-11-04
+
+The source-reader gap review of the rules that the phase 7 front-end and Propose repairs rewrote (`reports/review/2026-11-04-gap-review-phase-7-repairs.md`) agrees with option 1. The member's lifetime has not begun, because its initialization, even one that does nothing, has not happened yet. The reference lists a call of a non-static member function through a glvalue to such an object as undefined, and the member is not an object under construction. Undefined behavior ends constant evaluation, as Clang finds.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

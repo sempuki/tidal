@@ -159,7 +159,7 @@ Each directive is on a line of its own. The rules for these lines are:
 
 :::{rule} ODR-15
 :kind: required
-:tests: foundations/odr/variable-declaration-forms.cpp foundations/odr/variable-without-initializer-twice.cpp foundations/odr/extern-initializer-is-definition.cpp foundations/odr/declarations-and-one-definition.cpp
+:tests: foundations/odr/variable-declaration-forms.cpp foundations/odr/variable-without-initializer-twice.cpp foundations/odr/extern-initializer-is-definition.cpp foundations/odr/declarations-and-one-definition.cpp foundations/odr/constexpr-member-redeclared-outside.cpp foundations/odr/explicit-instantiation-declaration-not-definition.cpp foundations/odr/explicit-specialization-with-initializer-twice.cpp foundations/odr/explicit-specialization-without-initializer.cpp foundations/odr/parameter-of-declaration-not-definition.cpp
 
 A declaration of a variable is a definition, with these exceptions:
 
@@ -167,6 +167,16 @@ A declaration of a variable is a definition, with these exceptions:
   initializer ({rule}`STO-7`, {rule}`LSP-3`).
 - The declaration is of a static data member in its class, and the
   member is neither `inline` nor `constexpr` ({rule}`CLS-3`).
+- The declaration is outside the class, without an initializer, of a
+  static data member that its class declares `constexpr`. This form is
+  deprecated.
+- The declaration is a parameter of a function declaration that is not
+  a definition. Its type can be incomplete.
+- The declaration is an explicit instantiation declaration, with
+  `extern template`, of a variable template or of a static data member.
+- The declaration explicitly specializes, with no initializer, a static
+  data member that a class template declares, or a member variable
+  template.
 
 So `int total;` at namespace scope is a definition, also without an
 initializer.
@@ -174,7 +184,7 @@ initializer.
 
 :::{rule} ODR-1
 :kind: reject
-:tests: foundations/odr/variable-defined-twice.cpp foundations/odr/variable-without-initializer-twice.cpp foundations/odr/enumeration-defined-twice.cpp foundations/odr/static-member-defined-twice.cpp foundations/odr/inline-variable-defined-twice.cpp foundations/odr/header-included-twice.cpp foundations/odr/declarations-and-one-definition.cpp foundations/odr/guard-text-after-endif.cpp foundations/odr/extern-initializer-is-definition.cpp
+:tests: foundations/odr/variable-defined-twice.cpp foundations/odr/variable-without-initializer-twice.cpp foundations/odr/enumeration-defined-twice.cpp foundations/odr/static-member-defined-twice.cpp foundations/odr/inline-variable-defined-twice.cpp foundations/odr/header-included-twice.cpp foundations/odr/declarations-and-one-definition.cpp foundations/odr/guard-text-after-endif.cpp foundations/odr/extern-initializer-is-definition.cpp foundations/odr/explicit-specialization-with-initializer-twice.cpp
 
 A translation unit must not define a variable, a function, a class, or
 an enumeration more than once. The rule also applies to `inline`
@@ -490,7 +500,7 @@ template <> int rank<bool> = 2;                // two units: two definitions
 
 ## Evidence
 
-All eight compilers agree on 76 of 89 tests. EDG checks each unit and
+All eight compilers agree on 81 of 94 tests. EDG checks each unit and
 does not link, so its results for the link and run tests say only that
 the units are valid.
 
@@ -609,5 +619,16 @@ the units are valid.
   | {question}`Q-0130` | ODR-P1 | EDG 7.0 |
   | {question}`Q-0297` | ODR-P2 | none; EDG 7.0 does not link |
   | {question}`Q-0315` | ODR-P1 | none |
+- Settled on 2026-11-04 under decision 0054, after the gap review of
+  the rules that phase 7 added
+  (`reports/review/2026-11-04-gap-review-phase-7-additions.md`):
+
+  | Question | Principle | Family that still differs |
+  |---|---|---|
+  | {question}`Q-0367` | ODR-P1 | one family in each form, as the ODR-3 table gives |
+- ODR-15: the gap review of the rules that phase 7 added lists four
+  more variable declarations that are not definitions. Every compiler
+  accepts each of them twice in one unit, and rejects a second explicit
+  specialization of a static data member that has an initializer.
 
 Inputs: clang-sema-expr, clang-sema-decl, clang-diag-sema, edg-decls.

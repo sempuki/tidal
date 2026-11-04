@@ -212,7 +212,7 @@ matrix compiler, the diagnostic stops the translation.
 
 :::{rule} TR-3
 :kind: reject
-:tests: foundations/translation/main-return-type-not-int.cpp foundations/translation/main-called.cpp foundations/translation/main-address.cpp foundations/translation/main-no-definition.cpp foundations/translation/main-template.cpp foundations/translation/main-wrong-parameter-types.cpp foundations/translation/main-inline.cpp foundations/translation/main-static.cpp foundations/translation/main-constexpr.cpp foundations/translation/main-consteval.cpp foundations/translation/main-deleted.cpp foundations/translation/main-c-linkage.cpp foundations/translation/main-c-linkage-in-namespace.cpp foundations/translation/main-c-linkage-variable-in-namespace.cpp foundations/translation/main-variable.cpp foundations/translation/main-deduced-return-type.cpp foundations/translation/main-trailing-return-int.cpp foundations/translation/main-in-namespace.cpp foundations/translation/main-cpp-linkage-specification.cpp
+:tests: foundations/translation/main-return-type-not-int.cpp foundations/translation/main-called.cpp foundations/translation/main-address.cpp foundations/translation/main-no-definition.cpp foundations/translation/main-template.cpp foundations/translation/main-wrong-parameter-types.cpp foundations/translation/main-inline.cpp foundations/translation/main-static.cpp foundations/translation/main-constexpr.cpp foundations/translation/main-consteval.cpp foundations/translation/main-deleted.cpp foundations/translation/main-c-linkage.cpp foundations/translation/main-c-linkage-in-namespace.cpp foundations/translation/main-c-linkage-variable-in-namespace.cpp foundations/translation/main-variable.cpp foundations/translation/main-deduced-return-type.cpp foundations/translation/main-trailing-return-int.cpp foundations/translation/main-in-namespace.cpp foundations/translation/main-cpp-linkage-specification.cpp foundations/translation/main-cpp-linkage-block.cpp
 
 These rules apply to `main` at global scope:
 
@@ -428,7 +428,7 @@ int at_run_time = half(9);    // the same function, at run time
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 64
-of 87 tests. EDG takes no optimization flag, so the three `-O2` tests
+of 88 tests. EDG takes no optimization flag, so the three `-O2` tests
 are skipped there. EDG runs and links no programs, so its results for
 the run and link tests say only that the programs are valid.
 
@@ -439,9 +439,13 @@ the run and link tests say only that the programs are valid.
   and GCC reject it ({question}`Q-0024`).
 - TR-3: Clang 22, GCC 16, and EDG reject each form of `main` in the
   list. GCC 14 accepts a deleted `main`. GCC 14 and Clang 18 accept the
-  forms with C language linkage. Clang 22 and GCC 16 accept `main` in an
-  `extern "C++"` block, and EDG rejects it
-  ({question}`Q-0366`).
+  forms with C language linkage. Clang 22 and GCC 16 accept `main` with
+  `extern "C++"`, in the plain form and in a block, and EDG rejects both
+  ({question}`Q-0366`). The gap review of the rules that phase 7 added
+  (`reports/review/2026-11-04-gap-review-phase-7-additions.md`) reads
+  the reference as forbidding every linkage specification on `main`, as
+  EDG does. Tidal keeps the answer of Clang 22 and GCC 16
+  (`documentation/decisions/pending.md`, row 4).
 - TR-1: Clang 22 reports C language linkage on `main` through a warning
   flag (`-Wmain`), and GCC 16 through `-Wpedantic`. In the strict mode
   of the tests, both diagnostics are errors. Without
@@ -452,7 +456,11 @@ the run and link tests say only that the programs are valid.
   (`constant-initializer-tried.cpp`).
 - TR-16: on x86-64 every configuration gives the same floating-point
   result at translation and at run time. The test accepts both results
-  of {rule}`MUL-17`.
+  of {rule}`MUL-17`. The gap review of the rules that phase 7 added
+  reads the reference as recommending that the two results agree.
+  Tidal states no `recommended` rule for that. Every configuration that
+  the matrix runs gives the same results, so no test could show a
+  difference.
 - TR-P6, TR-13, TR-14, TR-15: the gap review of program structure reads
   the C++23 text as asking only that an implementation document its
   limits, with no requirement on a program past a limit. Tidal keeps the

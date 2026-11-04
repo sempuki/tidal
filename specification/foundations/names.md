@@ -927,11 +927,17 @@ each row, and a rejected test for each kind of type that adds nothing.
   operator when a block declares an operator function that does not
   fit. EDG 7.0 does not
   ({question}`Q-0364`). The gap review
-  reads the C++23 text strictly as EDG does, with doubt.
+  reads the C++23 text strictly as EDG does, with doubt. The gap review
+  of the rules that phase 7 added
+  (`reports/review/2026-11-04-gap-review-phase-7-additions.md`) finds
+  the text unclear on the order of two lookup steps, and the literal
+  text as EDG reads it.
 - NAM-39: GCC and EDG let a member of an anonymous union share its name
   with a class, and Clang rejects the class. The gap review reads the
   C++23 text as Clang does. Tidal follows GCC and EDG
-  ({question}`Q-0362`).
+  ({question}`Q-0362`), with NAM-P10. The gap review of the rules that
+  phase 7 added reads the text in the same way as the first review
+  (`documentation/decisions/pending.md`, row 4).
 - NAM-40, NAM-41: in the type of a conversion function, all compilers
   find a variable that shares its name with a class, and reject the
   class there. The gap review reads the C++23 text as finding the class.

@@ -469,12 +469,17 @@ With none of these conditions, the destructor is *trivial*.
 
 :::{rule} CTOR-17
 :kind: reject
-:tests: classes/constructors/reference-member-binds-temporary.cpp classes/constructors/reference-default-member-binds-temporary.cpp classes/constructors/reference-member-binds-converted-parameter.cpp
+:tests: classes/constructors/reference-member-binds-temporary.cpp classes/constructors/reference-default-member-binds-temporary.cpp classes/constructors/reference-member-binds-converted-parameter.cpp classes/constructors/initializer-list-default-member-from-braces.cpp classes/constructors/initializer-list-member-from-braces.cpp
 
 A constructor must not bind a reference member to a {term}`temporary object`,
 through a `mem_init` or a default member initializer. The temporary ends
 with the constructor. The binding is visible in the constructor or the
 class definition, so an implementation rejects it ({question}`Q-0084`).
+
+The same holds for a member of type `std::initializer_list<E>` *(library
+referenced)* that a `mem_init` or a default member initializer sets
+from a braced list. The array that holds the elements is a temporary
+bound as if to a reference member.
 :::
 
 ## Runtime Behavior
@@ -538,7 +543,7 @@ of scalar type through a type name.
 
 :::{rule} CTOR-12
 :kind: undefined
-:tests: classes/constructors/defaulted-leaves-members.cpp classes/constructors/base-init-calls-member-through-pointer-sanitizer.cpp classes/constructors/base-init-calls-member-of-member-constant.cpp classes/constructors/own-member-call-in-own-constructor.cpp classes/constructors/init-order-reads-later.cpp classes/constructors/base-init-calls-member-early-constant.cpp classes/constructors/init-order-reads-later-run.cpp classes/constructors/base-init-calls-member-early-sanitizer.cpp
+:tests: classes/constructors/defaulted-leaves-members.cpp classes/constructors/base-init-calls-member-through-pointer-sanitizer.cpp classes/constructors/base-init-calls-member-of-member-constant.cpp classes/constructors/own-member-call-in-own-constructor.cpp classes/constructors/init-order-reads-later.cpp classes/constructors/base-init-calls-member-early-constant.cpp classes/constructors/init-order-reads-later-run.cpp classes/constructors/base-init-calls-member-early-sanitizer.cpp classes/constructors/base-init-calls-member-indirectly-sanitizer.cpp classes/constructors/base-init-dynamic-cast-early-constant.cpp
 
 If a member is read before it has a value, the behavior is undefined.
 This includes a member that a later `mem_init` initializes, and a member
@@ -547,10 +552,13 @@ of a non-static member function are also undefined:
 
 - a call on the object under construction, through `this` or a pointer
   or reference to it, from the `mem_init` of a base before all bases
-  are initialized,
+  are initialized, also a call that a function called from there makes,
 - a call on a member subobject before its initialization, which is a
   use outside its lifetime ({rule}`OBJ-2`,
   {question}`Q-0374`).
+
+The same holds when the object under construction, before all bases
+are initialized, is the operand of `typeid` or of a `dynamic_cast`.
 
 A base's own constructor can call the member functions of that base.
 :::
@@ -652,8 +660,8 @@ Span g{{1}};   // Span(int): {1} gives an int directly (ICS-15). The
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 172
-of 190 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 173
+of 194 tests.
 
 Two questions on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on classes and statements (`reports/review/2026-11-03-gap-review-questions-classes-statements.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
 
@@ -685,7 +693,12 @@ Two questions on this page settled on 2026-11-03 under decision 0054 after the s
 - CTOR-17: Clang rejects the binding. GCC accepts it with a warning, and
   EDG accepts it ({question}`Q-0084`). CTOR-17 is a `reject` rule,
   because the binding is visible where the constructor or the class is
-  defined. The tests record GCC and EDG as overrides.
+  defined. The tests record GCC and EDG as overrides. The gap review of
+  the rules that phase 7 added
+  (`reports/review/2026-11-04-gap-review-phase-7-additions.md`) reads
+  the reference as treating an `std::initializer_list` member set from
+  a braced list in the same way. The compilers split in the same way:
+  Clang rejects both forms, and GCC and EDG accept them.
 - CTOR-24: the compilers differ for unions and anonymous unions
   ({question}`Q-0126`):
 
@@ -722,7 +735,14 @@ Two questions on this page settled on 2026-11-03 under decision 0054 after the s
   a call of a member function from the `mem_init` of a base, and the
   Clang sanitizer does not (`base-init-calls-member-early-sanitizer.cpp`).
   The same holds for a call through a pointer to the object under
-  construction. In constant evaluation, no compiler rejects the early
+  construction, and for a call that a function called from the
+  `mem_init` makes (`base-init-calls-member-indirectly-sanitizer.cpp`).
+  Every compiler rejects a constant evaluation that uses the object as
+  the operand of a `dynamic_cast` before its base is initialized. EDG
+  also rejects the `dynamic_cast` after the base is initialized. At run
+  time neither `vptr` sanitizer reports the `dynamic_cast`. The GCC
+  build crashes, and the Clang build runs to the end.
+  In constant evaluation, no compiler rejects the early
   call of a member function that reads no member. For a call on a
   member subobject that is not yet initialized, Clang rejects the
   constant evaluation, and GCC and EDG accept it

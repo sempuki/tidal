@@ -66,7 +66,7 @@ or union, the specifier occurs after the class key, as in
 
 `alignas` applies to these declarations:
 
-- a variable declaration,
+- a variable declaration, other than the variable of a handler,
 - a declaration of a non-static data member,
 - a class or union declaration, including a forward declaration.
 
@@ -90,7 +90,7 @@ must not apply `alignas` to an enumeration ({question}`Q-0073`).
 
 :::{rule} ALN-2
 :kind: reject
-:tests: declarations/alignment/negative.cpp declarations/alignment/not-constant.cpp declarations/alignment/not-power-of-two.cpp declarations/alignment/on-alias-declaration.cpp declarations/alignment/on-bitfield.cpp declarations/alignment/on-function.cpp declarations/alignment/on-parameter.cpp declarations/alignment/on-typedef.cpp declarations/alignment/weaker-on-class-member.cpp declarations/alignment/weaker-than-natural.cpp declarations/alignment/weaker-on-class.cpp
+:tests: declarations/alignment/negative.cpp declarations/alignment/not-constant.cpp declarations/alignment/not-power-of-two.cpp declarations/alignment/on-alias-declaration.cpp declarations/alignment/on-bitfield.cpp declarations/alignment/on-function.cpp declarations/alignment/on-parameter.cpp declarations/alignment/on-typedef.cpp declarations/alignment/weaker-on-class-member.cpp declarations/alignment/weaker-than-natural.cpp declarations/alignment/weaker-on-class.cpp declarations/alignment/on-handler-variable.cpp
 
 The operand of `alignas` must be a constant expression whose value is
 zero or a positive power of two. {rule}`ALN-8` gives its type. The
@@ -100,6 +100,7 @@ result must not be weaker than the {term}`natural alignment` of the entity
 
 - a function,
 - a parameter,
+- the variable that a handler declares,
 - a bit-field,
 - a type alias.
 :::
@@ -207,8 +208,8 @@ static_assert(round_up(13, 8) == 16 && round_up(16, 8) == 16);
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 26
-of 48 tests. Each divergence has a question, except the
-implementation-defined limits of ALN-5.
+of 49 tests. Each divergence has a question, except the
+implementation-defined limits of ALN-5 and the GCC 14 result of ALN-2.
 
 Two questions on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
 
@@ -258,5 +259,9 @@ Two questions on this page settled on 2026-11-03 under decision 0054 after the s
   alone. Every compiler accepts two units whose declarations of one
   variable have different `alignas`. Clang and GCC link the units, and
   the program runs and exits normally.
+- ALN-1, ALN-2: the gap review of the rules that phase 7 rewrote
+  (`reports/review/2026-11-04-gap-review-phase-7-repairs.md`) reads the
+  reference as forbidding `alignas` on the variable of a handler.
+  Clang 22, GCC 16, and EDG reject it, and GCC 14 accepts it.
 
 Inputs: clang-sema-declattr, clang-diag-sema, edg-attribute, edg-decls.

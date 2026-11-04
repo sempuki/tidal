@@ -36,6 +36,10 @@ Kept open on 2026-11-03 under decision 0054, because LSUP-5 changed on the same 
 
 ## Opinions
 
+### Gap review, 2026-11-04
+
+The source-reader gap review of the rules that phase 7 added (`reports/review/2026-11-04-gap-review-phase-7-additions.md`) reads LSUP-5 against the classification. In the reference, a program that adds a declaration to namespace `std` has undefined behavior unless a rule allows it, and no rule allows a declaration of `std::align_val_t`. A note says that the implicit declarations of the allocation functions do not declare the type. So every shape that a program declares is undefined, the right one included. The `no-diagnostic` class matches the compilers, and LSUP-P2's model of a program that supplies a library declaration is Tidal's own choice.
+
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
 
 ### Gap review, 2026-11-03

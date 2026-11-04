@@ -1,7 +1,7 @@
 # Q-0084: Must an implementation reject a constructor that binds a reference member to a temporary?
 
 **Status:** provisional
-**Affects:** CTOR-17, `tests/classes/constructors/reference-member-binds-temporary.cpp`, `tests/classes/constructors/reference-default-member-binds-temporary.cpp`, `tests/classes/constructors/reference-member-binds-converted-parameter.cpp`
+**Affects:** CTOR-17, `tests/classes/constructors/reference-member-binds-temporary.cpp`, `tests/classes/constructors/reference-default-member-binds-temporary.cpp`, `tests/classes/constructors/reference-member-binds-converted-parameter.cpp`, `tests/classes/constructors/initializer-list-member-from-braces.cpp`, `tests/classes/constructors/initializer-list-default-member-from-braces.cpp`
 
 ## Context
 
@@ -28,3 +28,7 @@ Changed on 2026-11-03 to option 2. The review reads option 2, Clang 22 rejects b
 ### Gap review, 2026-11-03
 
 The source-reader gap review of the open questions on classes and statements (`reports/review/2026-11-03-gap-review-questions-classes-statements.md`) reads option 2. A member initializer that binds a reference member to a temporary makes the program not valid, and so does a default member initializer that does so. Neither rule is exempt from diagnosis, so both forms must be rejected. Clang follows this reading. GCC's warning with acceptance and EDG's acceptance do not. Option 3 does not fit, because the binding itself is the fault.
+
+### Gap review, 2026-11-04
+
+The source-reader gap review of the rules that phase 7 added (`reports/review/2026-11-04-gap-review-phase-7-additions.md`) agrees with CTOR-17 for both forms, and finds one more case. The reference treats a member of type `std::initializer_list` that a member initializer sets from a braced list as a reference member bound to the backing array, so the program is not valid. A probe splits as for a reference member: Clang 22 rejects both forms, and GCC 16 and EDG 7.0 accept them. CTOR-17 now covers the case, with two tests that record GCC and EDG as overrides.

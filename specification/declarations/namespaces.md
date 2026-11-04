@@ -37,7 +37,7 @@ the enclosing namespace.
 
 | Namespace | Lends its members | Result | A name declared in both places is ambiguous for |
 |---|---|---|---|
-| `inline` | By name | A qualified name through the enclosing namespace finds the members. | a qualified use through the enclosing namespace (NS-12) |
+| `inline` | By name | A qualified name through the enclosing namespace finds the members. | a qualified use through the enclosing namespace, and an unqualified use in the enclosing namespace (NS-12) |
 | Unnamed | Without a name | Its members have internal linkage. | an unqualified use (NS-13). A qualified use finds the direct member ({rule}`NAM-13`). |
 
 Neither declaration hides the other, so a lookup that reaches both
@@ -134,7 +134,7 @@ NS-12 lists what is not valid.
 
 :::{rule} NS-12
 :kind: reject
-:tests: declarations/namespaces/inline-on-reopen.cpp declarations/namespaces/inline-namespace-duplicate.cpp
+:tests: declarations/namespaces/inline-on-reopen.cpp declarations/namespaces/inline-namespace-duplicate.cpp declarations/namespaces/inline-namespace-unqualified-ambiguous.cpp
 
 An inline namespace must have `inline` in its first definition. A
 namespace that is first defined without `inline` must not be defined
@@ -142,6 +142,7 @@ with `inline` later.
 
 If a name is declared both in an inline namespace and in its enclosing
 namespace, a qualified use through the enclosing namespace is ambiguous.
+So is an unqualified use in the enclosing namespace.
 :::
 
 :::{rule} NS-4
@@ -309,8 +310,8 @@ int read() {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 50
-of 53 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 51
+of 54 tests.
 
 - NS-15: GCC and EDG reject a definition with the name `N::f` inside
   `N` itself. Clang accepts it with a warning ("extra qualification")
@@ -321,6 +322,17 @@ of 53 tests.
   inline namespace, every compiler rejects it.
   Every compiler rejects `N::f` for a function that only a using
   directive or an unnamed namespace in `N` declares.
+- NS-15: the gap review of the rules that phase 7 rewrote
+  (`reports/review/2026-11-04-gap-review-phase-7-repairs.md`) reads the
+  reference as allowing a qualified definition in any namespace that
+  contains the member, `N` itself included, as Clang does. NS-15 keeps
+  the answer of GCC and EDG for `N::f` inside `N`
+  (`documentation/decisions/pending.md`, row 4). The review reads the
+  definition inside the inline namespace as valid too, with doubt, and
+  every compiler rejects it.
+- NS-12, NS-P2: every compiler finds a name declared in an inline
+  namespace and in its enclosing namespace ambiguous for an unqualified
+  use in the enclosing namespace.
 
 Divergence NS-D1 is about a repeated using declaration in a block. Clang
 22, Clang 18, and GCC 16 accept the repeated declaration. GCC 14 and

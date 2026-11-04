@@ -445,6 +445,12 @@ of 105 tests. EDG runs no programs, so its results for the run tests say
 only that the programs are valid, and the harness sees a terminating
 program only as a nonzero exit.
 
+One question on this page settled on 2026-11-04 under decision 0054 after the source-reader gap review of the rules that phase 7 added (`reports/review/2026-11-04-gap-review-phase-7-additions.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+
+| Question | Principle | Family that still differs |
+|---|---|---|
+| {question}`Q-0363` | TRY-P2 | GCC 16 |
+
 - TRY-4, TRY-12, TRY-13: the table gives the warnings of each compiler
   with no warning flag. `-Wall` adds none of these warnings on Clang or
   GCC. The tests use `-Wall -Werror`, so a warning rejects the program,

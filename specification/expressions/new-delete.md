@@ -422,7 +422,7 @@ initializer's arguments. The function is an `operator delete`, or an
 
 :::{rule} NEW-22
 :kind: required
-:tests: expressions/new-delete/throw-class-both-usual-forms.cpp expressions/new-delete/aligned-class-both-forms.cpp expressions/new-delete/throw-class-sized-form-only.cpp expressions/new-delete/throw-global-scope-new.cpp expressions/new-delete/aligned-global-delete.cpp
+:tests: expressions/new-delete/throw-class-both-usual-forms.cpp expressions/new-delete/aligned-class-both-forms.cpp expressions/new-delete/throw-class-sized-form-only.cpp expressions/new-delete/throw-global-scope-new.cpp expressions/new-delete/aligned-global-delete.cpp exceptions/unwinding/new-single-object-sized-delete.cpp
 
 Without placement arguments, the deallocation function is a usual form.
 A usual form has a `void*` parameter, and can have a second parameter
@@ -432,7 +432,9 @@ the aligned forms, the forms that the search finds decide the call:
 
 - If a class declares both forms, the form without the size is called.
 - If a class declares one form, that form is called.
-- For the global functions, either form can be called ({rule}`UNW-3`).
+- For the global functions, {rule}`UNW-3` gives the form. A single
+  object of complete type without extended alignment uses the sized
+  form. In the cases that UNW-3 leaves open, either form can be called.
 :::
 
 :::{rule} NEW-23
@@ -739,7 +741,7 @@ int* q = new (cell) int(4);     // the int is at cell (NEW-33)
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 120
-of 142 tests.
+of 143 tests.
 
 Two questions on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
 
@@ -763,8 +765,14 @@ Two questions on this page settled on 2026-11-03 under decision 0054 after the s
   `delete` and after a constructor throws. When the program replaces
   both global aligned forms, Clang 22 and GCC call the form with the
   size after `delete`, and Clang 18 calls the form without it. After a
-  throw, both call the form without the size. NEW-22 lets either global
-  form be called.
+  throw, both call the form without the size. NEW-22 and UNW-3 let
+  either global aligned form be called.
+- NEW-22: the gap review of the rules that phase 7 rewrote
+  (`reports/review/2026-11-04-gap-review-phase-7-repairs.md`) reads the
+  reference as fixing the sized global form for a single object of
+  complete type, as UNW-3 says. Clang 22 and GCC call the sized form
+  after a constructor throws, and Clang 18 calls the unsized form
+  (`new-single-object-sized-delete.cpp`).
 - NEW-18: Clang 22 and GCC 16 both evaluate the array bound before the
   placement arguments. No compiler in the matrix varies the order, so
   NEW-18 is unspecified by the provisional answer of {question}`Q-0005`.

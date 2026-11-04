@@ -1,4 +1,4 @@
-// tidal-rules: UNW-3
+// tidal-rules: UNW-3 NEW-22
 // tidal-expect: run
 // tidal-expect-clang-18: run-fail
 // tidal-note: The constructor of a single object of complete type throws in a new expression. The sized global deallocation function releases the storage. Clang 18 calls the unsized form, and the program returns 1.

@@ -46,6 +46,10 @@ No; the program is not valid (option 1). Two of three families reject
 it, and the kinds of a class's special member functions stay fixed after
 the class definition.
 
-Kept open on 2026-11-03 under decision 0054, because no review has read the provisional answer. GCC 16 is the one newest family that differs.
+Kept open on 2026-11-04 under decision 0054. The gap review of the rules that phase 7 rewrote supports the answer with no doubt, but DEFARG-2 changed in the same commit, to name the limit of the new rule DEFARG-13. The question settles after a reader or a review has used the changed rule (decision 0055). GCC 16 is the one newest family that differs.
 
 ## Opinions
+
+### Gap review, 2026-11-04
+
+The source-reader gap review of the rules that the phase 7 front-end and Propose repairs rewrote (`reports/review/2026-11-04-gap-review-phase-7-repairs.md`) agrees with option 1. The reference makes a program not valid when a default argument that a member definition outside the class adds makes a default, copy, or move constructor. It names the copy and move assignment operators too, which cannot have default arguments in any case.

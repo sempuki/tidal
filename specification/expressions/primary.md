@@ -501,13 +501,15 @@ category as the expression.
 
 :::{rule} PRIM-27
 :kind: required
-:tests: expressions/primary/fold-expansion.cpp expressions/primary/fold-shift-and-comma.cpp expressions/comparison/chained-fold-not-chain.cpp
+:tests: expressions/primary/fold-expansion.cpp expressions/primary/fold-shift-and-comma.cpp expressions/comparison/chained-fold-not-chain.cpp expressions/primary/fold-right-extra-operand.cpp
 
 A fold expression stands for an expression with one copy of the pack
 operand for each element, in the order of the pack. A right fold, with
 `...` after the pack operand, nests to the right. A left fold nests to
-the left, and an extra operand goes at the outer end. Each nested part
-acts as if it were in parentheses, as in `(p1 - p2) - p3`.
+the left. Each nested part acts as if it were in parentheses, as in
+`(p1 - p2) - p3`. An extra operand joins the innermost pair, in either
+kind of fold. So `(x - ... - p)` is `(x - p1) - p2`, and
+`(p - ... - x)` is `p1 - (p2 - x)`.
 :::
 
 :::{rule} PRIM-28
@@ -731,8 +733,8 @@ total(1, 2, 3);           // ((0 + 1) + 2) + 3
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 130
-of 141 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 131
+of 142 tests.
 
 One question on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
 
@@ -780,7 +782,13 @@ One question on this page settled on 2026-11-03 under decision 0054 after the so
   `'\q'` or `"\q"`, and `-pedantic-errors` makes the warning an error.
   EDG in strict mode gives a warning and accepts the program
   ({question}`Q-0330`). PRIM-35 is `conditionally-supported`, so each
-  result conforms. Every compiler rejects a backslash before a character
+  result conforms. The gap review of the rules that phase 7 added
+  (`reports/review/2026-11-04-gap-review-phase-7-additions.md`) reads
+  the reference as giving the escape in a string literal an
+  implementation-defined sequence of code units, with no permission to
+  reject it. EDG follows that reading. PRIM-35 keeps the class for both
+  literals, because Clang 22 and GCC 16 reject the string form
+  (`documentation/decisions/pending.md`, row 4). Every compiler rejects a backslash before a character
   outside the basic character set, such as `é` (PRIM-18).
 - PRIM-8: the matrix targets keep string literals in memory that the
   program cannot write. So a write to a literal faults at run time, and

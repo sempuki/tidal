@@ -112,7 +112,7 @@ for the class is not valid.
 
 :::{rule} UNW-1
 :kind: required
-:tests: exceptions/unwinding/block-objects-end-before-handler.cpp exceptions/unwinding/every-block-between-throw-and-handler.cpp exceptions/unwinding/nested-blocks-ended-in-order.cpp exceptions/unwinding/objects-after-throw-not-created.cpp exceptions/unwinding/handler-block-objects-unaffected.cpp exceptions/unwinding/full-expression-temporaries-unwound.cpp exceptions/unwinding/return-local-destructor-throws-result-destroyed.cpp exceptions/unwinding/return-local-destructor-throws-caught-inside.cpp
+:tests: exceptions/unwinding/block-objects-end-before-handler.cpp exceptions/unwinding/every-block-between-throw-and-handler.cpp exceptions/unwinding/nested-blocks-ended-in-order.cpp exceptions/unwinding/objects-after-throw-not-created.cpp exceptions/unwinding/handler-block-objects-unaffected.cpp exceptions/unwinding/full-expression-temporaries-unwound.cpp exceptions/unwinding/return-local-destructor-throws-result-destroyed.cpp exceptions/unwinding/return-local-destructor-throws-caught-inside.cpp exceptions/unwinding/return-local-destructor-throws-result-order.cpp
 
 When an exception leaves a {term}`full expression`, these objects
 end, in this order, before the handler runs:
@@ -386,8 +386,14 @@ void transfer(Account& from, Account& to, int amount) {
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 51
-of 59 tests. EDG runs no programs, so its results say only that the
+of 60 tests. EDG runs no programs, so its results say only that the
 programs are valid.
+
+One question on this page settled on 2026-11-04 under decision 0054 after the source-reader gap review of the rules that phase 7 added (`reports/review/2026-11-04-gap-review-phase-7-additions.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+
+| Question | Principle | Family that still differs |
+|---|---|---|
+| {question}`Q-0365` | UNW-P1 | Clang 22 |
 
 - UNW-5 and UNW-7: the harness sees only that the program ended with a
   nonzero status or a signal. The harness cannot see why the program
@@ -433,7 +439,15 @@ programs are valid.
   handler runs. Clang never destroys the result
   ({question}`Q-0365`). The two compilers do the same when a handler
   in the same function catches the exception and a second return
-  statement builds the result.
+  statement builds the result. GCC destroys the result after the local
+  objects that were built before it, as UNW-1 says
+  (`return-local-destructor-throws-result-order.cpp`). The gap review
+  of the rules that phase 7 rewrote
+  (`reports/review/2026-11-04-gap-review-phase-7-repairs.md`) reads the
+  reference as destroying the result first among the objects that
+  remain, in the reverse order of construction. No compiler that runs
+  the program follows that order, and UNW-1 keeps GCC's order
+  (`documentation/decisions/pending.md`, row 4).
 - UNW-2: Clang and GCC destroy the initialized members of an aggregate,
   the initialized captures of a closure object, and the temporary that
   a reference member keeps alive, in reverse order. GCC 14 differs for

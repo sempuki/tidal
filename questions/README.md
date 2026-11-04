@@ -376,21 +376,23 @@ status, and the first sentence of its answer section.
 | [Q-0360](Q-0360-alignment-above-largest-extended.md) | Does an implementation reject an `alignas` above its largest extended alignment? | provisional | The implementation rejects the alignment |
 | [Q-0361](Q-0361-tail-padding-deleted-and-move-members.md) | Does a base with a deleted constructor or a user-provided move assignment operator lend its tail padding? | provisional | The base keeps its padding |
 | [Q-0362](Q-0362-anonymous-union-member-shares-class-name.md) | Can a member of an anonymous union share its name with a class? | provisional | The member can share the name |
-| [Q-0363](Q-0363-handler-reference-to-array-or-function.md) | Does a handler of a reference to an array or a function match a thrown array or function? | provisional | The handler never matches |
+| [Q-0363](Q-0363-handler-reference-to-array-or-function.md) | Does a handler of a reference to an array or a function match a thrown array or function? | settled | The handler never matches |
 | [Q-0364](Q-0364-operator-lookup-block-declaration.md) | Does a block declaration of an operator function turn off argument-dependent lookup for an operator? | provisional | Argument-dependent lookup always adds its functions |
-| [Q-0365](Q-0365-return-value-destroyed-on-throw.md) | Is the result of a return statement destroyed when a local destructor then throws? | provisional | The result is destroyed |
+| [Q-0365](Q-0365-return-value-destroyed-on-throw.md) | Is the result of a return statement destroyed when a local destructor then throws? | settled | The result is destroyed |
 | [Q-0366](Q-0366-main-cpp-linkage-specification.md) | Can `main` be declared inside an `extern "C++"` block? | provisional | Accept the form |
-| [Q-0367](Q-0367-odr-use-exemption-forms.md) | Which further forms does ODR-3 exempt from a use, and does a discarded statement exempt a use from the capture rules? | provisional | Follow the review in each form |
+| [Q-0367](Q-0367-odr-use-exemption-forms.md) | Which further forms does ODR-3 exempt from a use, and does a discarded statement exempt a use from the capture rules? | settled | Follow the review in each form |
 | [Q-0368](Q-0368-scalar-lifetime-own-initializer.md) | Is a write to a scalar during its own initializer outside the scalar's lifetime? | provisional | The write is outside the lifetime and undefined |
 | [Q-0369](Q-0369-c-name-internal-linkage.md) | Are C names with internal linkage in two namespaces one entity? | provisional | Two entities |
 | [Q-0370](Q-0370-default-argument-makes-special-member.md) | Can a definition outside the class add a default argument that makes a constructor a default, copy, or move constructor? | provisional | No; the program is not valid |
 | [Q-0371](Q-0371-qualified-definition-in-own-namespace.md) | Can a member of `N` be defined with the name `N::f` inside `N` itself? | provisional | No; the definition is not valid |
 | [Q-0372](Q-0372-bit-field-padding-bits.md) | What does a byte read give for the bits of a byte that no bit-field covers? | provisional | The bits are padding bits with unspecified values, and the read is defined |
-| [Q-0373](Q-0373-conditional-builtin-candidates.md) | Which built-in candidates does `?:` have for two class operands that convert to a scoped enumeration or to `float`? | provisional | The candidates of option 1 |
+| [Q-0373](Q-0373-conditional-builtin-candidates.md) | Which built-in candidates does `?:` have for two class operands that convert to a scoped enumeration or to `float`? | settled | The candidates of option 1 |
 | [Q-0374](Q-0374-early-call-member-subobject.md) | Is a call of a member function on a member that is not yet initialized undefined, when the function reads nothing? | provisional | The call is undefined |
 | [Q-0375](Q-0375-qualified-definition-inline-namespace.md) | For a member of an inline namespace, which namespace must a qualified definition lie outside? | provisional | `N` is the namespace that declares the member |
 | [Q-0376](Q-0376-tuple-index-type.md) | What type does the index of `get` have in the tuple protocol of a structured binding? | provisional | `std::size_t` |
 | [Q-0377](Q-0377-qualified-class-body-lookup.md) | Does the body of a class defined with a qualified name see the members of the qualifier without qualification? | provisional | Yes; the class body sees the members of the qualifier |
+| [Q-0378](Q-0378-conditional-class-operand-splits.md) | Which class operands of `?:` convert when the compilers split? | provisional | The deleted conversion counts, and a `const` and a `volatile` class lvalue do not convert |
+| [Q-0379](Q-0379-default-argument-immediate-call.md) | Is a `consteval` call in a default argument checked at the declaration? | provisional | The call is checked where a call uses the default argument |
 
 ## Status values
 

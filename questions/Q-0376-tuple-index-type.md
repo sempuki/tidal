@@ -37,8 +37,12 @@ which Clang and EDG reject and GCC accepts.
 matches the parameter of `std::tuple_element` that SB-5 also uses with
 the index.
 
-Kept open on 2026-11-03 under decision 0054, because no review has read the provisional answer. GCC 16 is the one newest family that differs.
+Kept open on 2026-11-04 under decision 0054. The gap review of the rules that phase 7 rewrote supports the answer with no doubt, but SB-5 changed in the same commit, in the condition for the member form of `get` (decision 0055). GCC 16 is the one newest family that differs.
 
 ## Opinions
+
+### Gap review, 2026-11-04
+
+The source-reader gap review of the rules that the phase 7 front-end and Propose repairs rewrote (`reports/review/2026-11-04-gap-review-phase-7-repairs.md`) agrees with option 1. The reference defines the index as a prvalue of type `std::size_t`.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

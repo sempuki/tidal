@@ -46,4 +46,8 @@ Changed on 2026-11-03 to option 3. The review reads option 3, every compiler con
 
 The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) reads option 3. A backslash before a member of the basic character set that no other escape uses forms an escape of a third kind. Such an escape is conditionally supported, with an implementation-defined value, in a character literal and in a string literal. An implementation that does not support it must diagnose the program. EDG's warning with a translated program, and the errors of Clang and GCC under their strict options, all conform. A backslash before a character outside the basic character set fits no escape form, and that program is not valid.
 
+### Gap review, 2026-11-04
+
+The source-reader gap review of the rules that phase 7 added (`reports/review/2026-11-04-gap-review-phase-7-additions.md`) agrees for a character literal and reads the string literal case with doubt. The set of characters matches the reference, and a character literal of one such escape is conditionally supported with an implementation-defined value. For a string literal, the reference says only that each such escape gives an implementation-defined sequence of code units, and does not call it conditionally supported. In that reading EDG's acceptance of `"\q"` is required, and the rejections of Clang 22 and GCC 16 are not. Tidal keeps PRIM-35 for both literals (`documentation/decisions/pending.md`, row 4).
+
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

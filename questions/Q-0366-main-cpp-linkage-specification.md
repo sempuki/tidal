@@ -1,7 +1,7 @@
 # Q-0366: Can `main` be declared inside an `extern "C++"` block?
 
 **Status:** provisional
-**Affects:** TR-3, `tests/foundations/translation/main-cpp-linkage-specification.cpp`
+**Affects:** TR-3, `tests/foundations/translation/main-cpp-linkage-specification.cpp`, `tests/foundations/translation/main-cpp-linkage-block.cpp`
 
 ## Context
 
@@ -44,8 +44,12 @@ the two when EDG alone differs (`documentation/decisions/pending.md`,
 row 3). The form gives `main` no property that it lacks without the
 block.
 
-Kept open on 2026-11-03 under decision 0054, because no review has read the provisional answer. EDG 7.0 is the one newest family that differs.
+Kept open on 2026-11-04 under decision 0054, because the gap review of the rules that phase 7 added reads the reference as option 2, and EDG 7.0 follows that reading. Tidal keeps the answer of Clang 22 and GCC 16 until the maintainer decides (`documentation/decisions/pending.md`, row 4).
 
 ## Opinions
+
+### Gap review, 2026-11-04
+
+The source-reader gap review of the rules that phase 7 added (`reports/review/2026-11-04-gap-review-phase-7-additions.md`) reads the reference as supporting option 2. The reference forbids declaring `main` with any linkage specification, braced or not, whatever language it names. It also makes the linkage of `main` implementation-defined, and separately rejects C language linkage for any function or variable named `main` in any namespace, which TR-3 already states. EDG follows the reference, and TR-3's bullet on `main` is narrower than the reference.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

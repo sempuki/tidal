@@ -548,7 +548,12 @@ of 61 tests.
   type, and a class. Clang accepts all three ({question}`Q-0299`). So
   the rule needs no diagnostic. Every compiler accepts a `new`
   expression for an over-aligned type with no declaration of the
-  enumeration.
+  enumeration. The gap review of the rules that phase 7 added
+  (`reports/review/2026-11-04-gap-review-phase-7-additions.md`) reads
+  the reference as making every declaration of the type by a program
+  undefined, whatever its shape. LSUP-5 follows the compilers, and its
+  model of a program that supplies a library declaration is Tidal's own
+  choice ({principle}`LSUP-P2`).
 - LSUP-2: the rule asks for all three ordering classes, as EDG does.
   Clang and GCC need only the class that a use yields.
 - LSUP-6: no compiler checks the shape of `std::nothrow_t`. The tag is

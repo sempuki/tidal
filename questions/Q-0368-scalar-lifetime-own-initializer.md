@@ -46,8 +46,12 @@ reads the reference this way, and OBJ-1 then gives one rule for class
 and scalar objects: the lifetime begins when the initialization
 completes. Clang 22 follows the answer, and GCC 16 and EDG 7.0 differ.
 
-Kept open on 2026-11-03 under decision 0054, because no review has read the provisional answer. GCC 16 and EDG 7.0 also differ from the answer.
+Kept open on 2026-11-04 under decision 0054. The gap review of the rules that phase 7 added supports the answer with no doubt, and OBJ-1 gives it, but two newest families, GCC 16 and EDG 7.0, differ from the answer.
 
 ## Opinions
+
+### Gap review, 2026-11-04
+
+The source-reader gap review of the rules that phase 7 added (`reports/review/2026-11-04-gap-review-phase-7-additions.md`) agrees with option 1. The reference starts the lifetime of an object of any type when its storage is obtained and its initialization is complete, with no exception for scalars. A write or a read during the variable's own initializer touches the object before its lifetime begins. The behavior is undefined, so constant evaluation rejects it. The review knows of no resolution that gives scalars an earlier start.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

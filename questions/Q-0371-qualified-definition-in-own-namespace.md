@@ -31,6 +31,10 @@ The test in Affects, and probe `q1.cpp` of the Propose exercise X15.
 No; the definition is not valid (option 1). Two of three families
 reject it, and Clang's warning marks the form as one it does not expect.
 
-Kept open on 2026-11-03 under decision 0054, because no review has read the provisional answer. Clang 22 is the one newest family that differs.
+Kept open on 2026-11-04 under decision 0054, because the gap review of the rules that phase 7 rewrote reads the reference as option 2, and Clang 22 follows that reading. Tidal keeps the answer of GCC 16 and EDG 7.0 until the maintainer decides (`documentation/decisions/pending.md`, row 4).
 
 ## Opinions
+
+### Gap review, 2026-11-04
+
+The source-reader gap review of the rules that the phase 7 front-end and Propose repairs rewrote (`reports/review/2026-11-04-gap-review-phase-7-repairs.md`) reads the reference as supporting option 2. The reference requires a declaration with a qualified name to inhabit a namespace scope that contains the entity it declares again, and to match a declaration that the qualifier's namespace can name, its inline namespaces included. A namespace contains its own members in this sense, so a member can be defined with a qualified name inside its own namespace. A core defect resolution long before C++23 made such redundant qualification valid, and Clang's warning reflects that history. GCC and EDG conflict with the reference.

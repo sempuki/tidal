@@ -645,14 +645,19 @@ diagnosed case, where a check reaches the expression.
 
 :::{rule} CNS-40
 :kind: no-diagnostic
-:tests: templates/constraints/redeclare-placeholder.cpp templates/constraints/redeclare-placeholder-unconstrained.cpp
+:tests: templates/constraints/redeclare-placeholder.cpp templates/constraints/redeclare-placeholder-unconstrained.cpp templates/constraints/redeclare-equivalent-constraints.cpp
 
-A function with a placeholder parameter and a function template whose
-head writes the invented parameter are two templates (CNS-27). If they
-have the same name, the same function type, and the same constraints,
-they accept the same argument lists. A program that declares both is
-not valid, and an implementation need not diagnose it
-({question}`Q-0269`).
+Two function templates can be two templates by CNS-27 and still accept
+the same template argument lists. Examples are a function with a
+placeholder parameter and a function template whose head writes the
+invented parameter, and two templates whose constraints name different
+concepts with the same meaning. A program that declares two such
+templates is not valid, and an implementation need not diagnose it,
+when the templates have these in common ({question}`Q-0269`):
+
+- the same name, in the same scope, so they would declare one entity,
+- the same function type,
+- the same set of template argument lists that satisfy the constraints.
 :::
 
 :::{rule} CNS-38
@@ -734,8 +739,8 @@ decltype(&Box<long>::get)               // int (Box<long>::*)(): the clause is n
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 100
-of 127 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 101
+of 128 tests.
 
 One question on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
 
@@ -847,6 +852,12 @@ compiler's own words, for example "atomic constraint must be of type
   templates, as CNS-27 does, and find the call ambiguous. CNS-40 needs
   no diagnostic, so each result conforms ({question}`Q-0269`). The `spellings` grid shows the same
   split as a rejection on every compiler, for different reasons.
+- CNS-40: the gap review of the rules that phase 7 added
+  (`reports/review/2026-11-04-gap-review-phase-7-additions.md`) reads
+  the reference as covering any two such templates that accept the
+  same argument lists, also with constraints that differ in form. Every
+  compiler accepts the declarations of two templates whose constraints
+  name two concepts with one meaning, and finds a call ambiguous.
 - CNS-31: EDG accepts a friend template declaration whose constraint
   uses the class's template parameter ({question}`Q-0267`).
 - CNS-32: EDG reports two definitions of a constrained friend from two

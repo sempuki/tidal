@@ -258,25 +258,39 @@ instead.
 
 :::{rule} OBJ-12
 :kind: undefined
-:tests: foundations/objects/static-local-after-destruction.cpp foundations/objects/static-local-used-by-earlier-static.cpp
+:tests: foundations/objects/static-local-after-destruction.cpp foundations/objects/static-local-used-by-earlier-static.cpp foundations/objects/thread-local-local-after-destruction.cpp
 
-If control passes through the declaration of a static object local to a
-function after the object is destroyed (OBJ-4), the behavior is
-undefined. An example is a call of the function from the destructor of
-another static object that ends later.
+A `static` or `thread_local` variable of a block can end (OBJ-4) while
+another `static` or `thread_local` object has yet to be destroyed. If
+the destruction of that other object then calls the function, and
+control passes through the declaration of the ended variable, the
+behavior is undefined. An example is a call of the
+function from the destructor of another static object that ends later.
+
+Other code that runs after the end, such as a function registered to
+run at program exit, falls under {rule}`OBJ-2` when it uses the ended
+object.
 :::
 
 ## Implementation Requirements
 
 :::{rule} OBJ-11
 :kind: impl-defined
-:tests: foundations/objects/thread-local-init-point.cpp foundations/objects/thread-local-member-init-point.cpp
+:tests: foundations/objects/thread-local-init-point.cpp foundations/objects/thread-local-member-init-point.cpp foundations/objects/thread-local-constant-variable-starts-nothing.cpp foundations/objects/thread-local-started-by-other-variable.cpp
 
-The implementation constructs a `thread_local` object with a constructor
-before the thread runs its first statement, or when the thread first
-uses the object. The choice is implementation-defined, as
-{rule}`SINIT-6` gives. Every compiler of the matrix constructs the
-object at its first use.
+The implementation constructs a `thread_local` object at namespace
+scope that is not `inline` and has a constructor either before the
+thread runs its first statement, or later. The choice is
+implementation-defined, as {rule}`SINIT-6` gives. A later construction
+happens before the thread first uses the object, or another
+`thread_local` variable of the same translation unit that is not
+`inline` and has dynamic initialization. A use of a variable with
+constant initialization does not start it. At which point before that
+use, and in which threads, the construction runs is also
+implementation-defined.
+
+Every compiler of the matrix defers the construction. The first use of
+one such variable of the unit constructs all of them.
 :::
 
 ## Examples
@@ -300,13 +314,22 @@ int main() {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 53
-of 58 tests. EDG runs no programs, so its results for the run tests say
+The results are in `tests/RESULTS.md`. All eight compilers agree on 56
+of 61 tests. EDG runs no programs, so its results for the run tests say
 only that the programs are valid.
 
-- OBJ-11: the tests accept either construction point. On 2026-11-03
-  every Clang and GCC configuration constructs the object at its first
-  use. The choice is implementation-defined, as for {rule}`SINIT-6`.
+- OBJ-11: the tests accept either construction point for one object.
+  Every Clang and GCC configuration defers the construction, and the
+  first use of one `thread_local` variable of the unit with dynamic
+  initialization constructs the others too. The choice is
+  implementation-defined, as for {rule}`SINIT-6`. The gap review of the
+  rules that phase 7 added
+  (`reports/review/2026-11-04-gap-review-phase-7-additions.md`) reads
+  the reference as starting a deferred construction before the first
+  use of any `thread_local` variable of the unit. A use of a variable
+  with constant initialization starts nothing on Clang and GCC, and
+  OBJ-11 keeps that result (`documentation/decisions/pending.md`,
+  row 4).
 - OBJ-1: during constant evaluation, Clang rejects a write to a scalar
   in its own initializer, directly or through a pointer. GCC and EDG
   accept both writes ({question}`Q-0368`).
@@ -323,8 +346,9 @@ only that the programs are valid.
   variables of its unit ({rule}`SINIT-3`).
 - OBJ-6: every compiler builds the virtual bases first, in the order of
   a depth-first walk of the bases.
-- OBJ-12: Clang and GCC run the test, and no sanitizer of the matrix
-  reports the pass through the declaration. The test checks only that
+- OBJ-12: Clang and GCC run the tests, and no sanitizer of the matrix
+  reports the pass through the declaration, also for a `thread_local`
+  block variable. The test checks only that
   the program compiles. The front end's interpreter does not stop at the
   pass either. The interpreter stops at the later increment of the ended
   object, under OBJ-2. No tool stops OBJ-12 itself at run time.

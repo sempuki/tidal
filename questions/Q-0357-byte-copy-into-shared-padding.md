@@ -38,9 +38,13 @@ The member takes the value of its new bytes, and a padding byte with no value gi
 byte in the member, and option 1 follows STG-11 and STG-13 without a
 new kind of undefined behavior.
 
-Kept open on 2026-11-03 under decision 0054, because the review reads the reference with doubt.
+Kept open on 2026-11-04 under decision 0054, because the gap review of the rules that phase 7 added reads a byte copy into a base or a marked member as undefined by omission, with doubt. STG-25 keeps the result that the compilers show.
 
 ## Opinions
+
+### Gap review, 2026-11-04
+
+The source-reader gap review of the rules that phase 7 added (`reports/review/2026-11-04-gap-review-phase-7-additions.md`) reads the reference with doubt, against the answer. The reference gives a byte copy its result only when neither the source nor the target is a subobject that can overlap. For a base or a marked member, the reference does not say what a byte copy into it does, not even for the target's own value, so the case is undefined by omission. STG-25 and this answer promise a result that the reference does not give.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
 

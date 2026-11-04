@@ -321,7 +321,7 @@ These types are
 
 :::{rule} STG-8
 :kind: required
-:tests: foundations/storage/implicit-object-from-allocation-function.cpp foundations/storage/implicit-array-for-arithmetic.cpp foundations/storage/implicit-object-class-allocation-function.cpp foundations/storage/implicit-objects-follow-later-use.cpp foundations/storage/implicit-object-first-use-member.cpp foundations/storage/allocation-array-class-elements.cpp foundations/storage/arena-reset-reuses-bytes.cpp foundations/storage/byte-array-placement-reaches-object.cpp foundations/storage/implicit-objects-fixed-counterpart.cpp
+:tests: foundations/storage/implicit-object-from-allocation-function.cpp foundations/storage/implicit-array-for-arithmetic.cpp foundations/storage/implicit-object-class-allocation-function.cpp foundations/storage/implicit-objects-follow-later-use.cpp foundations/storage/implicit-object-first-use-member.cpp foundations/storage/allocation-array-class-elements.cpp foundations/storage/arena-reset-reuses-bytes.cpp foundations/storage/byte-array-placement-reaches-object.cpp foundations/storage/implicit-objects-fixed-counterpart.cpp foundations/storage/implicit-union-member-assignment.cpp
 
 These operations create objects implicitly in the storage that they
 name:
@@ -506,7 +506,7 @@ the type, or not aligned for the type, the behavior is undefined.
 
 :::{rule} STG-18
 :kind: undefined
-:tests: foundations/storage/implicit-objects-no-set-sanitizer.cpp foundations/storage/implicit-objects-fixed-counterpart.cpp foundations/storage/allocated-storage-not-polymorphic-object-sanitizer.cpp
+:tests: foundations/storage/implicit-objects-no-set-sanitizer.cpp foundations/storage/implicit-objects-fixed-counterpart.cpp foundations/storage/allocated-storage-not-polymorphic-object-sanitizer.cpp foundations/storage/implicit-union-member-assignment.cpp
 
 If no set of implicitly created objects gives the program defined
 behavior (STG-8), the behavior is undefined. No set exists in these
@@ -517,8 +517,11 @@ cases:
 - The program reads or writes the storage as an object of type `T`, and
   later as an object of type `U` that STG-14 does not list for `T`.
   This case does not apply if one of the two objects contains the
-  other, or if an operation of STG-8 or a `new` expression creates new
-  objects in the storage between the two uses.
+  other, or if one of these happens between the two uses:
+  - an operation of STG-8 or a `new` expression creates new objects in
+    the storage,
+  - an assignment to a member of a union in the storage makes that
+    member active ({rule}`UNI-5`).
 :::
 
 :::{rule} STG-19
@@ -785,8 +788,8 @@ template <class T> void destroy_all(T* first, int n) {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 83
-of 89 tests. EDG runs no programs, so its results for the run tests say
+The results are in `tests/RESULTS.md`. All eight compilers agree on 84
+of 90 tests. EDG runs no programs, so its results for the run tests say
 only that the programs are valid.
 
 - Constant evaluation: in C++23 mode no compiler in the matrix accepts
@@ -854,7 +857,9 @@ only that the programs are valid.
   The sanitizer does not report access through `signed char`,
   `std::byte`, or the unsigned type of the object, so
   `access-signed-char.cpp` and `byte-array-cast-reaches-byte.cpp` check
-  only that the programs compile.
+  only that the programs compile. The sanitizer reports nothing when an
+  assignment to a union member changes the active member
+  (`implicit-union-member-assignment.cpp`).
 - STG-19: the `vptr` sanitizer of GCC and Clang reports a call through
   the old name after a replacement by another type. No sanitizer
   reports a call through a pointer to a replaced base subobject, so
@@ -898,6 +903,13 @@ only that the programs are valid.
   use of the end padding of a base, because an implementation need not
   document the choice. The tests of {rule}`CLS-35` check each condition
   under which a base or a marked member shares its end padding.
+- STG-25: the gap review of the rules that phase 7 added
+  (`reports/review/2026-11-04-gap-review-phase-7-additions.md`) reads
+  the reference as giving the byte-copy result only when neither the
+  source nor the target is a base or a marked member. The review reads
+  a byte copy into such a subobject as undefined by omission, with
+  doubt. STG-25 keeps the result that every compiler shows
+  ({question}`Q-0357`).
 - STG-26: every target in the matrix stores the least significant byte
   first. The bytes of a pointer equal the bytes of the integer that
   `reinterpret_cast` gives.

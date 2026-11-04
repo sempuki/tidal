@@ -191,7 +191,7 @@ union must then declare that function itself.
 
 :::{rule} UNI-4
 :kind: required
-:tests: classes/unions/aggregate-first-member.cpp classes/unions/default-member-init-active.cpp classes/unions/designated-member.cpp classes/unions/value-init-zero.cpp classes/unions/default-init-no-active-member.cpp classes/unions/anonymous-union-mem-init-constructor.cpp
+:tests: classes/unions/aggregate-first-member.cpp classes/unions/default-member-init-active.cpp classes/unions/designated-member.cpp classes/unions/value-init-zero.cpp classes/unions/default-init-no-active-member.cpp classes/unions/anonymous-union-mem-init-constructor.cpp classes/unions/anonymous-union-designated-member.cpp
 
 A union is initialized as one of its members:
 
@@ -226,14 +226,18 @@ A braced initializer for the first member must not narrow.
 
 :::{rule} UNI-7
 :kind: required
-:tests: classes/unions/anonymous-union-default-member-init.cpp classes/unions/anonymous-union-mem-init-constructor.cpp classes/unions/anonymous-union-member-order.cpp classes/unions/anonymous-union-init.cpp classes/unions/anonymous-union-local.cpp classes/unions/anonymous-union-member.cpp classes/unions/anonymous-union-namespace-static.cpp
+:tests: classes/unions/anonymous-union-default-member-init.cpp classes/unions/anonymous-union-mem-init-constructor.cpp classes/unions/anonymous-union-member-order.cpp classes/unions/anonymous-union-init.cpp classes/unions/anonymous-union-local.cpp classes/unions/anonymous-union-member.cpp classes/unions/anonymous-union-namespace-static.cpp classes/unions/anonymous-union-brace-elision.cpp classes/unions/anonymous-union-designated-member.cpp
 
 The members of an anonymous union are members of the enclosing scope. In
 a class, the anonymous union is an unnamed data member in its place in
 declaration order, and its members are variant members of the class. A
 `mem_init` or a default member initializer of a variant member
-initializes the union with that member active (UNI-4). A braced list
-initializes an anonymous union member with its own braces. An anonymous
+initializes the union with that member active (UNI-4). In a braced
+list for the class, the anonymous union is one element. Its initializer
+can have its own braces, or the braces can be left out, so `{1, 2, 3}`
+gives the union the value 2 for its first member. A designator can also
+name a member of the anonymous union directly, as in `{.level = 2.0f}`,
+and the union is then initialized with that member active. An anonymous
 union can be:
 
 - local,
@@ -364,7 +368,7 @@ UNI-10 describes.
 
 :::{rule} UNI-5
 :kind: required
-:tests: classes/unions/assign-changes-active.cpp classes/unions/nontrivial-member-needs-construction.cpp classes/unions/union-copy-preserves-active.cpp classes/unions/default-init-no-active-member.cpp
+:tests: classes/unions/assign-changes-active.cpp classes/unions/nontrivial-member-needs-construction.cpp classes/unions/union-copy-preserves-active.cpp classes/unions/default-init-no-active-member.cpp foundations/storage/implicit-union-member-assignment.cpp
 
 An assignment to a member makes that member active if the assignment
 uses the built-in operator or a trivial assignment operator
@@ -506,8 +510,9 @@ way:
   and the later bits are padding (BF-3).
 - In a union, a bit-field starts at byte 0 and takes the bytes that its
   width needs. The union gets the alignment of `T`, or of `U`.
-- A bit that no bit-field or other member covers is a padding bit
-  ({rule}`STG-11`, {question}`Q-0372`).
+- A bit that no named bit-field or other member covers is a padding
+  bit ({rule}`STG-11`, {question}`Q-0372`). An unnamed bit-field is not
+  a member, so its bits are padding bits.
 - An unnamed bit-field does not change the alignment of the class. An
   unnamed bit-field of width 0 and type `T` moves the next member to the
   next multiple of `alignof(T)`, and the class covers that position.
@@ -646,8 +651,8 @@ int y = s.span.range.second;     // 2: Point and Pair are layout-compatible
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 140
-of 153 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 143
+of 156 tests.
 
 - UNI-9: Clang accepts an anonymous union without `static` in an unnamed
   namespace. GCC and EDG reject the declaration ({question}`Q-0045`).
@@ -675,7 +680,14 @@ of 153 tests.
 - BF-9, padding bits: Clang and GCC at `-O0` leave the bits that no
   bit-field covers as the stack held them, also after `{}`. A byte copy
   shows bits there that the program did not write
-  ({question}`Q-0372`).
+  ({question}`Q-0372`). The gap review of the rules that phase 7
+  rewrote (`reports/review/2026-11-04-gap-review-phase-7-repairs.md`)
+  reads the reference as making the bits of an unnamed bit-field
+  padding bits, as BF-9 now says, and as leaving the value of a byte
+  read open.
+- UNI-7: every compiler accepts a braced list for a class that leaves
+  out the braces of its anonymous union, and a designator that names a
+  member of the anonymous union, with or without the union's braces.
 - BF-12: Clang, GCC, and EDG accept a constant evaluation that copies
   and compares a class with an unnamed bit-field, and a structured
   binding that has one name for each named bit-field.

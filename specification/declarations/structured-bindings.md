@@ -128,7 +128,7 @@ that reference type. For the tuple protocol, the result is
 
 :::{rule} SB-5
 :kind: required
-:tests: declarations/structured-bindings/tuple-protocol.cpp declarations/structured-bindings/tuple-index-size-type.cpp declarations/structured-bindings/tuple-index-int-parameter.cpp declarations/structured-bindings/tuple-const-hidden-variable.cpp declarations/structured-bindings/tuple-const-specialization.cpp declarations/structured-bindings/tuple-get-order.cpp declarations/structured-bindings/tuple-size-without-value.cpp declarations/structured-bindings/tuple-free-get.cpp declarations/structured-bindings/tuple-member-get-wins.cpp declarations/structured-bindings/tuple-member-get-not-template.cpp declarations/structured-bindings/tuple-get-ordinary-lookup.cpp foundations/language-support/tuple-protocol-page-example.cpp
+:tests: declarations/structured-bindings/tuple-protocol.cpp declarations/structured-bindings/tuple-index-size-type.cpp declarations/structured-bindings/tuple-index-int-parameter.cpp declarations/structured-bindings/tuple-const-hidden-variable.cpp declarations/structured-bindings/tuple-const-specialization.cpp declarations/structured-bindings/tuple-get-order.cpp declarations/structured-bindings/tuple-size-without-value.cpp declarations/structured-bindings/tuple-free-get.cpp declarations/structured-bindings/tuple-member-get-wins.cpp declarations/structured-bindings/tuple-member-get-not-template.cpp declarations/structured-bindings/tuple-get-ordinary-lookup.cpp foundations/language-support/tuple-protocol-page-example.cpp declarations/structured-bindings/tuple-member-get-type-parameter-no-free.cpp declarations/structured-bindings/tuple-member-get-type-parameter-uses-free.cpp declarations/structured-bindings/tuple-member-get-value-parameter-among-others.cpp
 
 If `std::tuple_size<E>` is a complete type, `E` uses the tuple protocol.
 `E` is the type of the hidden variable `e`, with its cv-qualifiers, so
@@ -137,8 +137,9 @@ If `std::tuple_size<E>` is a complete type, `E` uses the tuple protocol.
 from one of these calls, and its type is
 `std::tuple_element<i, E>::type` ({rule}`LSUP-3`):
 
-- `e.get<i>()`, if member lookup of `get` in `E` finds a member function
-  template,
+- `e.get<i>()`, if member lookup of `get` in `E` finds at least one
+  member template whose template head starts with a value, such as
+  `template <std::size_t I>`,
 - otherwise `get<i>(e)`, where only {term}`argument-dependent lookup`
   ({rule}`NAM-5`) finds `get`.
 
@@ -152,7 +153,7 @@ what is not valid.
 
 :::{rule} SB-14
 :kind: reject
-:tests: declarations/structured-bindings/tuple-element-missing.cpp declarations/structured-bindings/tuple-get-ordinary-lookup.cpp
+:tests: declarations/structured-bindings/tuple-element-missing.cpp declarations/structured-bindings/tuple-get-ordinary-lookup.cpp declarations/structured-bindings/tuple-member-get-type-parameter-no-free.cpp
 
 In the tuple protocol of SB-5, these must hold for each element:
 
@@ -309,7 +310,7 @@ const auto& [cl, ch] = g; // rejected: E is const Range, which has no
 
 ## Evidence
 
-All eight compilers agree on 61 of 66 tests. The results are in
+All eight compilers agree on 64 of 69 tests. The results are in
 `tests/RESULTS.md`.
 
 - **SB-15.** Clang and GCC accept `constexpr` structured bindings and
@@ -333,6 +334,14 @@ All eight compilers agree on 61 of 66 tests. The results are in
   passes an `int`. Every compiler accepts a member `get` with an `int`
   parameter. The provisional answer is `std::size_t`
   ({question}`Q-0376`).
+- **SB-5, member or free `get`.** The gap review of the rules that
+  phase 7 rewrote
+  (`reports/review/2026-11-04-gap-review-phase-7-repairs.md`) reads
+  the reference as using the member form only when member lookup finds
+  a `get` template whose first template parameter is a value. Every
+  compiler follows that reading. A member `get` template whose first
+  parameter is a type leads to the free `get`, and the binding is not
+  valid when argument-dependent lookup finds none.
 
 Inputs: clang-sema-declcxx, edg-decls, clang-diag-sema (see
 `inputs/MANIFEST.md`).

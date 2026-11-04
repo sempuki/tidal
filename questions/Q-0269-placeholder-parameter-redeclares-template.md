@@ -40,6 +40,10 @@ Kept open on 2026-11-03 under decision 0054, because CNS-27 changed and CNS-40 i
 
 The source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`) reads option 2, with doubt, and the program needs no diagnostic. Each placeholder parameter becomes an invented type parameter, and an example treats the declaration with placeholders and the template written out by hand as two declarations that accept the same arguments and are distinct. A program that depends on two such constructs being the same is not valid, with no diagnostic required, and so is a program with two such function templates of one name and signature. So GCC's and EDG's ambiguity and Clang's acceptance all conform. The doubt is that only an example states that the two forms differ. The unconstrained form follows the same reasoning.
 
+### Gap review, 2026-11-04
+
+The source-reader gap review of the rules that phase 7 added (`reports/review/2026-11-04-gap-review-phase-7-additions.md`) agrees with CNS-40 and reads its condition as narrower than the reference. The reference makes a program not valid, with no diagnostic required, when two function templates that are not the same template have one name and one signature, would declare one entity, and accept and are satisfied by the same template argument lists. So two templates whose constraints differ in form and have one meaning also fall under the rule. CNS-40 now states this condition. Editorial notes in the draft ask what two of its terms mean, so the wording is not settled text.
+
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
 
 ### Gap review, 2026-10-31
