@@ -166,7 +166,7 @@ The Write suites W1 to W15, the Propose rounds X1 to X16, the
 Diagnose batches of D-classes, and a Predict batch for every page are
 done (section 8). Decision 0055, item E, orders the next exercises:
 
-1. A second Write wave of four larger programs.
+1. A second Write wave of four larger programs (W16 and W17, done).
 2. An Implement exercise that builds class layout from the rules alone
    and is scored on the layout tests (I1, done).
 3. Predict batches on the pages changed after their batch, on constant
@@ -223,6 +223,8 @@ Foundations batch and the 11 templates pages.
 | W4 | done: four programs build and run on GCC and Clang; findings W4-1 to W4-10 | `reports/clean-room/W4/` |
 | W8 | done: four programs build and run on GCC and Clang; findings W8-1 to W8-9 | `reports/clean-room/W8/` |
 | W1 | done: five programs build and run on GCC and Clang; findings W1-1 to W1-9 | `reports/clean-room/W1/` |
+| W16 | done: two programs (an expression evaluator and a text-statistics program) build and run on GCC and Clang; findings W16-1 to W16-7 | `reports/clean-room/W16/` |
+| W17 | done: a hash map in raw storage and a multi-unit template library build and run on GCC and Clang; findings W17-1 to W17-7 | `reports/clean-room/W17/` |
 | W14 | done: four multi-unit programs build and run on GCC and Clang; findings W14-1 to W14-8 | `reports/clean-room/W14/` |
 | W3 | done: four programs build and run on GCC and Clang; findings W3-1 to W3-6 | `reports/clean-room/W3/` |
 | W13 | done: four programs build and run on GCC, Clang, and EDG; findings W13-1 to W13-9 | `reports/clean-room/W13/` |
