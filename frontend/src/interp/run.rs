@@ -150,6 +150,10 @@ impl<'a> Machine<'a> {
     /// function its parameter types, with classes and enumerations by
     /// name.
     fn link_name(p: &P, id: DeclId) -> String {
+        // LSP-4: a C name is known by its spelling alone.
+        if is_c_name(p, id) {
+            return format!("extern C {}", p.decls[id].name);
+        }
         let mut parts = vec![p.decls[id].name.clone()];
         let mut s = Some(p.decls[id].scope);
         while let Some(x) = s {
@@ -182,13 +186,13 @@ impl<'a> Machine<'a> {
         let linkable = |p: &P, id: DeclId| -> Option<bool> {
             match &p.decls[id].k {
                 DK::Func(f) => {
-                    if p.internal_fns.contains(&id) || f.template || p.in_unnamed_ns(p.decls[id].scope) {
+                    if !is_c_name(p, id) && (p.internal_fns.contains(&id) || f.template || p.in_unnamed_ns(p.decls[id].scope)) {
                         return None;
                     }
                     Some(f.body.is_some() || f.defaulted)
                 }
                 DK::Var(v) => {
-                    if v.local || v.param || v.dependent || p.var_internal.contains(&id) {
+                    if v.local || v.param || v.dependent || (p.var_internal.contains(&id) && !is_c_name(p, id)) {
                         return None;
                     }
                     let defined = if v.class.is_some() { v.init.is_some() || p.static_member_defs.contains(&id) } else { v.storage != Storage::Extern || v.init.is_some() };
@@ -432,4 +436,10 @@ fn type_name(p: &P, q: &QTy) -> String {
         _ => show(&QTy::new(q.t.clone())),
     };
     format!("{}{}", cv, t)
+}
+
+/// A function or variable with C language linkage that is not `static`
+/// (LSP-4).
+fn is_c_name(p: &P, id: DeclId) -> bool {
+    p.c_names.get(&p.decls[id].name).is_some_and(|v| v.contains(&id))
 }

@@ -639,6 +639,15 @@ impl P {
         if x.cat == Cat::PR || x.ty.t != Ty::Class(c) || self.in_template() {
             return;
         }
+        if x.ty.v && !assign && !self.class_uncertain(c) {
+            // VOL-11: the implicit copy functions take `const T&`, which
+            // does not bind to a volatile object.
+            let takes_volatile = self.classes[c].ctors.iter().any(|&f| self.func(f).and_then(|fi| fi.params.first().copied()).and_then(|p| self.var(p)).is_some_and(|v| matches!(&v.ty.t, Ty::LRef(t) | Ty::RRef(t) if t.v && t.t == Ty::Class(c))));
+            if !takes_volatile {
+                self.error(line, "VOL-11", format!("a copy of a volatile '{}', whose copy constructor does not take a volatile object", self.classes[c].name));
+                return;
+            }
+        }
         let rv = x.cat == Cat::X;
         let sm = match (assign, rv) {
             (false, false) => Sm::CopyCtor,
@@ -996,6 +1005,21 @@ impl P {
             return;
         }
         let t = nonref(&e.ty);
+        if let Ty::Ptr(x) = &t.t {
+            // THR-3: a pointer to an incomplete type other than void.
+            match &x.t {
+                Ty::Class(c) => {
+                    let c = *c;
+                    self.require_class(c, line);
+                    if !self.classes[c].complete && !self.class_uncertain(c) {
+                        self.error(line, "THR-3", format!("throw of a pointer to incomplete class '{}'", self.classes[c].name));
+                    }
+                }
+                Ty::Array(_, None) => self.error(line, "THR-3", "throw of a pointer to an array of unknown bound"),
+                _ => {}
+            }
+            return;
+        }
         let Ty::Class(c) = t.t else { return };
         if self.class_uncertain(c) {
             return;

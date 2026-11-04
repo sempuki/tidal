@@ -423,6 +423,13 @@ impl P {
             TArg::Templ(TName::Templ(t)) => {
                 let s = self.templs[*t].scope;
                 self.add_ns(self.ns_of(s), ns);
+                // NAM-27: a member template adds the class it is a
+                // member of.
+                if let SK::Class(o) = self.scopes[s].kind {
+                    if !cls.contains(&o) {
+                        cls.push(o);
+                    }
+                }
             }
             TArg::Pack(v) => {
                 for x in v {
@@ -1172,6 +1179,26 @@ impl P {
         };
         let is_list = matches!(form, InitForm::CopyList | InitForm::DirectList) || (form == InitForm::None && items.is_some());
         let is_paren = matches!(form, InitForm::Paren(_));
+        if let (Some(v), false) = (&items, self.in_template()) {
+            let desig = |x: &Expr| matches!(&x.k, EK::Unknown(s) if s.starts_with("designator"));
+            let n = v.iter().filter(|x| desig(x)).count();
+            if n > 0 {
+                let aggregate = match &ty.t {
+                    Ty::Class(c) => self.classes[*c].ctors.is_empty() || self.class_uncertain(*c) || !self.classes[*c].complete,
+                    _ => false,
+                };
+                if n < v.len() {
+                    // LIST-14: designators on all elements or on none.
+                    self.error(line, "LIST-14", "a braced list with designators on some elements only");
+                    return Expr::unknown(line, "bad designated list");
+                }
+                if !aggregate && !ty.t.is_ref() {
+                    // LIST-14, ILC-7: designators initialize an aggregate.
+                    self.error(line, if matches!(ty.t, Ty::Class(_)) { "ILC-7" } else { "LIST-14" }, "designated initializers for a type that is not an aggregate");
+                    return Expr::unknown(line, "bad designated list");
+                }
+            }
+        }
         if let (Ty::Class(lc), Some(v), true) = (&ty.t, &items, is_list) {
             if self.init_list_elem(*lc).is_some() && !self.classes[*lc].opaque && !self.in_template() {
                 // ILC-1: a braced list makes the list object.
@@ -1207,6 +1234,11 @@ impl P {
                         return self.bind_ref(x, &QTy::new(rt), line, "INIT-7");
                     }
                     return self.bind_ref(x, ty, line, "INIT-7");
+                }
+                if matches!(inner.t, Ty::Func(_)) && !self.in_template() {
+                    // REF-11: a function type has no temporary.
+                    self.error(line, "REF-11", "the braced element does not have the referenced function type, and a function type has no temporary");
+                    return Expr::unknown(line, "bad reference");
                 }
                 // REF-14: the list initializes a temporary of the
                 // referenced type.
@@ -1414,7 +1446,10 @@ impl P {
                             let xl = x.line;
                             let f = if is_paren { InitForm::Copy } else { InitForm::CopyList };
                             let f = if matches!(x.k, EK::InitList(_)) { InitForm::CopyList } else { f };
-                            out.push(self.convert_init(x.clone(), &fty, f, xl));
+                            // LIST-2: an element in braces does not narrow.
+                            let wrap = !is_paren && !matches!(x.k, EK::InitList(_)) && !fty.t.is_ref() && !matches!(fty.t, Ty::Class(_) | Ty::Array(..)) && !fty.is_unknown();
+                            let xe = if wrap { Expr::new(EK::InitList(vec![x.clone()]), QTy::unknown(), Cat::PR, xl) } else { x.clone() };
+                            out.push(self.convert_init(xe, &fty, f, xl));
                         }
                         // missing members: default member initializers or value-init
                         for &f in fields.iter().skip(v.len()).take(nfields.saturating_sub(v.len())) {
@@ -1638,6 +1673,10 @@ impl P {
             return None;
         }
         let direct = match (&inner.t, &xt.t) {
+            // REF-11: a function of another type (such as a noexcept
+            // function) is not the referenced type, and a function type
+            // has no temporary.
+            (Ty::Func(a), Ty::Func(b)) => a == b,
             (Ty::Func(_), _) => true,
             (_, Ty::Unknown | Ty::Dep(_)) => true,
             (a, b) if a == b => true,
@@ -2017,6 +2056,11 @@ impl P {
     pub fn deduce_auto(&mut self, ds: &DeclSpec, d: &Declarator, _ty: &QTy, e: &Expr, form: &InitForm, line: u32) -> Option<QTy> {
         let decltype_auto = ds.auto == Some(true);
         let mut init = e.clone();
+        if d.ops.iter().any(|o| matches!(o, DOp::Array(_))) && !self.in_template() {
+            // AUTO-8: no array of a placeholder type.
+            self.error(line, "AUTO-8", "an array of a placeholder type");
+            return None;
+        }
         match form {
             InitForm::CopyList => {
                 if decltype_auto {
@@ -2025,8 +2069,23 @@ impl P {
                 }
                 // AUTO-7: std::initializer_list, a library type.
                 if let EK::InitList(v) = &e.k {
+                    let elem = |x: &Expr| -> Option<Ty> {
+                        let t = nonref(&x.ty);
+                        if t.is_unknown() || matches!(x.k, EK::InitList(_)) {
+                            return None;
+                        }
+                        Some(match t.t {
+                            Ty::Array(e, _) => Ty::Ptr(e),
+                            Ty::Func(f) => Ty::Ptr(Box::new(QTy::new(Ty::Func(f)))),
+                            t => t,
+                        })
+                    };
+                    let types: Vec<Option<Ty>> = v.iter().map(elem).collect();
                     if v.is_empty() {
                         self.error(line, "AUTO-21", "auto deduced from an empty braced list");
+                    } else if !self.in_template() && types.iter().all(|t| t.is_some()) && types.windows(2).any(|w| w[0] != w[1]) {
+                        // AUTO-21: the elements deduce one type.
+                        self.error(line, "AUTO-21", "the elements of the braced list have different types");
                     } else if !self.in_template() && !self.init_list_shape_ok() {
                         // LSUP-1: the program declares std::initializer_list
                         // with its shape first.

@@ -294,6 +294,11 @@ impl P {
         if !own_attrs.is_empty() {
             self.class_attrs.entry(c).or_default().extend(own_attrs.clone());
         }
+        if !is_template && !self.in_template() && self.classes[c].align > 0 && class_align != self.classes[c].align {
+            // ALN-3: the definition has the alignas of an earlier
+            // declaration.
+            self.error(line, "ALN-3", if class_align == 0 { "a class definition without the alignas of an earlier declaration" } else { "a class definition with an alignas different from an earlier declaration" });
+        }
         self.classes[c].align = self.classes[c].align.max(class_align);
         let class_scope = self.classes[c].scope;
         // bases
@@ -430,6 +435,16 @@ impl P {
         self.stack = saved;
         self.classes[c].complete = true;
         self.pending_template = None;
+        if !is_template && class_align > 0 && !self.in_template() && !self.class_uncertain(c) {
+            // ALN-2: the alignas is not weaker than the natural alignment
+            // of the class.
+            let own = std::mem::replace(&mut self.classes[c].align, 0);
+            let natural = self.layout(c).map(|l| l.align);
+            self.classes[c].align = own;
+            if natural.is_some_and(|n| n > class_align) {
+                self.error(line, "ALN-2", "alignas weaker than the natural alignment of the class");
+            }
+        }
         if !is_template {
             self.inherit_ctors(c, self.line());
             self.check_overrides(c);
@@ -437,6 +452,9 @@ impl P {
         }
         if self.class_depth == 0 {
             self.run_deferred();
+            if !is_template && !self.in_template() {
+                self.check_delegation_cycles(c);
+            }
         }
         if pending.is_some() {
             self.templ_class_defined = true;
@@ -445,6 +463,36 @@ impl P {
             return Ok((QTy::unknown(), true));
         }
         Ok((QTy::new(Ty::Class(c)), true))
+    }
+
+    /// CTOR-14: a constructor does not delegate to itself, directly or
+    /// through other constructors.
+    fn check_delegation_cycles(&mut self, c: usize) {
+        let ctors = self.classes[c].ctors.clone();
+        let target = |p: &P, f: DeclId| -> Option<DeclId> {
+            let fi = p.func(f)?;
+            let m = fi.mem_inits.iter().find(|m| m.base == Some(c))?;
+            match &m.init.as_ref()?.k {
+                EK::Construct(t, _) => Some(*t),
+                _ => None,
+            }
+        };
+        for &start in &ctors {
+            let mut cur = start;
+            let mut seen = vec![start];
+            while let Some(t) = target(self, cur) {
+                if t == start {
+                    let line = self.decls[start].line;
+                    self.error(line, "CTOR-14", "a constructor delegates to itself through a cycle of constructors");
+                    return;
+                }
+                if seen.contains(&t) {
+                    break;
+                }
+                seen.push(t);
+                cur = t;
+            }
+        }
     }
 
     fn elaborated_class(&mut self, key: u8, name: &str, qual: Option<Result<usize, ()>>, spec_args: bool, line: u32) -> PR<QTy> {
@@ -557,6 +605,19 @@ impl P {
     }
 
     /// Whether scope `outer` is `inner` or encloses it.
+    /// NS-15: a qualified definition of a namespace member is in a
+    /// namespace that encloses the named one, and not in that namespace.
+    pub fn check_ns_enclosing(&mut self, q: usize, line: u32) {
+        let here = self.decl_scope();
+        if !matches!(self.scopes[here].kind, SK::Namespace) {
+            return;
+        }
+        if here == q {
+            self.error(line, "NS-15", "a qualified name for a member of the namespace in which the declaration appears");
+        } else if !self.scope_encloses(here, q) {
+            self.error(line, "NS-15", "a qualified definition in a namespace that does not enclose the member's namespace");
+        }
+    }
     pub fn scope_encloses(&self, outer: usize, inner: usize) -> bool {
         let mut s = Some(inner);
         while let Some(x) = s {
@@ -837,6 +898,10 @@ impl P {
             name = self.ident()?;
         }
         let qual_templ = if matches!(qual, Some(Err(()))) { self.last_qual_templ.take() } else { None };
+        if scoped && name.is_empty() {
+            // TR-12: a scoped enumeration has a name.
+            self.error(line, "TR-12", "the grammar does not derive this: a scoped enumeration without a name");
+        }
         let mut fixed: Option<Ty> = None;
         if self.at(":") && !self.at_k(1, ":") {
             self.pos += 1;
@@ -939,7 +1004,20 @@ impl P {
                 if old_fixed != new_fixed {
                     self.error(line, "ENUM-18", "enumeration redeclared with a different underlying type");
                 }
-                if is_def && ei.complete {
+                let parent = self.enum_parent(e);
+                let of_instance = matches!(self.scopes[parent].kind, SK::Class(pc) if self.inst_of.contains_key(&pc));
+                if is_def && ei.complete && ei.scoped && self.explicit_spec && of_instance && self.inst_depth == 0 {
+                    // TSP-30, INST-5: a use of the class specialization made
+                    // only the declaration of the member enumeration, so an
+                    // explicit specialization gives its enumerators.
+                    let es = self.enums[e].scope;
+                    self.scopes[es].names.clear();
+                    for v in self.scopes[parent].names.values_mut() {
+                        v.retain(|&d| !matches!(self.decls[d].k, DK::Enumerator(x, _) if x == e));
+                    }
+                    self.enums[e].enumerators.clear();
+                    self.enums[e].complete = false;
+                } else if is_def && ei.complete {
                     self.error(line, "TYN-7", "enumeration defined twice");
                 }
                 e
@@ -991,6 +1069,18 @@ impl P {
         Ok((QTy::new(Ty::Enum(e)), true))
     }
 
+    /// The scope that declares enumeration `e`.
+    fn enum_parent(&self, e: usize) -> usize {
+        let mut s = self.scopes[self.enums[e].scope].parent;
+        while let Some(x) = s {
+            if !matches!(self.scopes[x].kind, SK::Template | SK::Enum(_)) {
+                return x;
+            }
+            s = self.scopes[x].parent;
+        }
+        self.decl_scope()
+    }
+
     fn parse_enumerators(&mut self, e: usize, _line: u32) -> PR<()> {
         self.expect("{")?;
         let escope0 = self.enums[e].scope;
@@ -1014,7 +1104,9 @@ impl P {
         let scoped = self.enums[e].scoped;
         let fixed = self.enums[e].fixed.clone();
         let escope = self.enums[e].scope;
-        let outer = self.decl_scope();
+        // The enumerators of an unscoped enumeration go to the scope that
+        // declares it, also for a definition with a qualified name.
+        let outer = self.enum_parent(e);
         let mut next: i128 = 0;
         let mut prev_overflow = false;
         let mut values = Vec::new();
@@ -1278,6 +1370,12 @@ impl P {
                 }
                 if self.virt_specs.get(&g).is_some_and(|s| s.1) {
                     self.error(line, "VIRT-3", format!("'{}' overrides a final function", name));
+                    break;
+                }
+                if gi.fty.noexcept && !fi.fty.noexcept && !gi.deleted {
+                    // EXS-3: an override of a non-throwing virtual function
+                    // is non-throwing.
+                    self.error(line, "EXS-3", format!("'{}' can throw, and the function it overrides is non-throwing", name));
                     break;
                 }
                 if self.func(f).is_some_and(|fi| fi.kind == FnKind::Dtor) {

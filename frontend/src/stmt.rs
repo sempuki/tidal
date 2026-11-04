@@ -566,22 +566,6 @@ impl P {
 
     /// STMT-4: an expression statement with no effect.
     fn check_unused(&mut self, e: &Expr) {
-        fn has_effect(p: &P, e: &Expr) -> bool {
-            match &e.k {
-                EK::Call(..) | EK::Construct(..) | EK::Assign(..) | EK::Throw(_) | EK::Unknown(_) | EK::Reinterpret(..) | EK::Delete(..) | EK::New { .. } | EK::Destroy(_) => true,
-                EK::Unary(op, a) => matches!(op, UOp::PreInc | UOp::PreDec | UOp::PostInc | UOp::PostDec) || has_effect(p, a) || (*op == UOp::Deref && a.ty.v),
-                EK::Conv(Conv::ToVoid, _) => true,
-                EK::Conv(Conv::LToR, a) => a.ty.v || has_effect(p, a),
-                EK::Conv(_, a) => has_effect(p, a),
-                EK::Binary(_, a, b) => has_effect(p, a) || has_effect(p, b),
-                EK::Comma(_, b) => has_effect(p, b),
-                EK::Cond(_, b, c) => has_effect(p, b) || has_effect(p, c),
-                EK::Var(id) => p.var(*id).is_some_and(|v| v.ty.v),
-                EK::Member(a, _) => has_effect(p, a) || e.ty.v,
-                EK::Index(a, b) => has_effect(p, a) || has_effect(p, b) || e.ty.v,
-                _ => false,
-            }
-        }
         // ATTR-5: the result of a nodiscard call is discarded.
         if let EK::Call(_, _, Some(f)) = &e.k {
             let by_value_class = matches!(&e.ty.t, Ty::Class(c) if e.cat == Cat::PR && self.class_attrs.get(c).is_some_and(|v| v.iter().any(|n| n == "nodiscard")));
@@ -601,14 +585,6 @@ impl P {
         }
         if !has_effect(self, e) {
             self.warn(e.line, "STMT-4", "expression result unused");
-        }
-        // COMMA-5: a left operand of a comma with no effect.
-        if let EK::Comma(l, _) = &e.k {
-            if let EK::Conv(Conv::ToVoid, inner) = &l.k {
-                if !has_effect(self, inner) && !inner.ty.is_unknown() && !inner.paren {
-                    self.warn(e.line, "COMMA-5", "left operand of comma has no effect");
-                }
-            }
         }
     }
 
@@ -1075,6 +1051,8 @@ impl P {
             };
             let ct = nonref(&ce.ty);
             let mut cond_ty = None;
+            // SW-7, SW-8: the enumeration of the condition before promotion.
+            let mut cond_enum: Option<usize> = if let Ty::Enum(e) = ct.t { Some(e) } else { None };
             let ce = if ct.is_unknown() {
                 ce
             } else if ct.t.is_integral() || matches!(ct.t, Ty::Enum(_)) {
@@ -1105,6 +1083,9 @@ impl P {
                             self.error(line, "SW-2", "switch condition class converts to several integer types");
                         } else if uniq.len() == 1 {
                             cond_ty = Some(QTy::new(if self.is_scoped_enum(&uniq[0]) { uniq[0].clone() } else { self.promoted(&uniq[0]) }));
+                            if let Ty::Enum(e) = uniq[0] {
+                                cond_enum = Some(e);
+                            }
                             target = Some(uniq[0].clone());
                         }
                     }
@@ -1140,9 +1121,26 @@ impl P {
             fc.breakable += 1;
             let body = self.parse_substatement(Some((cs, "SW-6")));
             let fc = self.fns.last_mut().unwrap();
-            fc.switches.pop();
+            let sw = fc.switches.pop();
             fc.breakable -= 1;
             let body = body?;
+            if let (Some(e), Some(sw)) = (cond_enum, sw) {
+                if self.wflag(&["-Wall", "-Wswitch"]) && !self.in_template() && self.enums[e].complete {
+                    let vals: Vec<(String, i128)> = self.enums[e].enumerators.clone();
+                    let mut bad: Vec<(i128, u32)> = sw.cases.iter().filter(|(v, _)| !vals.iter().any(|x| x.1 == **v)).map(|(v, l)| (*v, *l)).collect();
+                    bad.sort();
+                    for (v, l) in bad {
+                        // SW-8: a case value that no enumerator has.
+                        self.warn(l, "SW-8", format!("case value {} is not the value of an enumerator of '{}'", v, self.enums[e].name));
+                    }
+                    if !sw.has_default {
+                        if let Some((n, _)) = vals.iter().find(|x| !sw.cases.contains_key(&x.1)) {
+                            // SW-7: an enumerator without a case label.
+                            self.warn(line, "SW-7", format!("enumerator '{}' has no case label in the switch", n));
+                        }
+                    }
+                }
+            }
             self.check_fallthrough(&body, false);
             if self.wflag(&["-Wimplicit-fallthrough", "-Wextra"]) && !self.in_template() {
                 self.check_implicit_fallthrough(&body);
@@ -1364,6 +1362,21 @@ impl P {
         if !rt.is_unknown() && self.is_scalar(&rt) {
             self.error(line, "RFOR-7", "range-for over a value that is not a range");
         }
+        if let Ty::Class(c) = rt.t {
+            if !self.in_template() && self.classes[c].complete && !self.class_uncertain(c) && !self.lookup_uncertain() {
+                // RFOR-7: a class with a member begin or end needs both;
+                // otherwise argument-dependent lookup finds begin and end.
+                let mb = self.lookup_member(c, "begin").is_some();
+                let me = self.lookup_member(c, "end").is_some();
+                if !(mb && me) {
+                    let (fb, cb) = self.adl_lookup("begin", std::slice::from_ref(&range));
+                    let (fe, ce) = self.adl_lookup("end", std::slice::from_ref(&range));
+                    if cb && ce && (fb.is_empty() || fe.is_empty()) {
+                        self.error(line, "RFOR-7", format!("argument-dependent lookup finds no '{}' for '{}'", if fb.is_empty() { "begin" } else { "end" }, self.classes[c].name));
+                    }
+                }
+            }
+        }
         let s = self.cur_scope();
         // RFOR-1, RFOR-2: the loop as a block with a reference to the
         // range, an iterator and its end, for the interpreter. A step that
@@ -1491,7 +1504,7 @@ impl P {
                     let c = *c;
                     let mb = self.lookup_member(c, "begin");
                     let me = self.lookup_member(c, "end");
-                    if mb.is_some() || me.is_some() {
+                    if mb.is_some() && me.is_some() {
                         let fb: Vec<DeclId> = mb?.into_iter().filter(|&f| self.func(f).is_some()).collect();
                         let fe: Vec<DeclId> = me?.into_iter().filter(|&f| self.func(f).is_some()).collect();
                         let b = self.call_overloads_pub(Some(rv.clone()), fb, vec![], line);
@@ -1764,3 +1777,21 @@ impl P {
         }
     }
 }
+
+    /// Whether an expression has an effect (STMT-4, COMMA-5).
+pub fn has_effect(p: &P, e: &Expr) -> bool {
+        match &e.k {
+            EK::Call(..) | EK::Construct(..) | EK::Assign(..) | EK::Throw(_) | EK::Unknown(_) | EK::Reinterpret(..) | EK::Delete(..) | EK::New { .. } | EK::Destroy(_) => true,
+            EK::Unary(op, a) => matches!(op, UOp::PreInc | UOp::PreDec | UOp::PostInc | UOp::PostDec) || has_effect(p, a) || (*op == UOp::Deref && a.ty.v),
+            EK::Conv(Conv::ToVoid, _) => true,
+            EK::Conv(Conv::LToR, a) => a.ty.v || has_effect(p, a),
+            EK::Conv(_, a) => has_effect(p, a),
+            EK::Binary(_, a, b) => has_effect(p, a) || has_effect(p, b),
+            EK::Comma(_, b) => has_effect(p, b),
+            EK::Cond(_, b, c) => has_effect(p, b) || has_effect(p, c),
+            EK::Var(id) => p.var(*id).is_some_and(|v| v.ty.v),
+            EK::Member(a, _) => has_effect(p, a) || e.ty.v,
+            EK::Index(a, b) => has_effect(p, a) || has_effect(p, b) || e.ty.v,
+            _ => false,
+        }
+    }

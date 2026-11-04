@@ -846,7 +846,17 @@ impl P {
                     if ds.ty.is_some() || !ds.kw.is_empty() {
                         break;
                     }
+                    let start = self.pos;
                     let (q, defined) = self.parse_class_specifier()?;
+                    if !defined && self.at(";") && !ds.friend && ds.kw.is_empty() && !self.in_template() && self.pending_template.is_none() && start > 0 && self.toks[start - 1].text != "template" {
+                        // TYN-7: a class key and a qualified name alone is
+                        // not a declaration.
+                        let named = &self.toks[start + 1..self.pos];
+                        if named.iter().any(|t| t.text == "::") && !named.iter().any(|t| t.text == "<") {
+                            let l = self.line();
+                            self.error(l, "TYN-7", "a declaration of only a class key and a qualified name");
+                        }
+                    }
                     if let Ty::Class(c) = q.t {
                         if defined {
                             ds.defined_class = Some(c);
@@ -1231,6 +1241,11 @@ impl P {
                         Ty::Class(c) => Ok(self.classes[*c].scope),
                         Ty::Enum(e) => Ok(self.enums[*e].scope),
                         Ty::Unknown | Ty::Dep(_) => Err(()),
+                        _ if self.at_k(next + 1, "~") && self.at_k(next + 2, &name) => {
+                            // NAM-16: in a destructor name the qualifier can
+                            // name a scalar type.
+                            return Ok(scope);
+                        }
                         _ => {
                             if !self.in_template() {
                                 // NAM-16: a fundamental type is not a qualifier.
@@ -1721,6 +1736,7 @@ impl P {
         if d.name.is_some() {
             return Err(self.err("unexpected name in type-id"));
         }
+        self.check_no_defaults_in(&d, d.line);
         Ok(self.apply_ops(base, &d.ops, d.line))
     }
 
@@ -1764,6 +1780,11 @@ impl P {
                 }
                 DOp::LRef | DOp::RRef => {
                     let is_l = matches!(op, DOp::LRef);
+                    if oi > 0 && matches!(ops[oi - 1], DOp::LRef | DOp::RRef) {
+                        // DCL-18: no reference to a reference written in
+                        // the declarator.
+                        self.error(line, "DCL-18", "reference to a reference");
+                    }
                     if t.t == Ty::Void {
                         // DCL-3: no reference to void.
                         self.error(line, "DCL-18", "reference to void");
@@ -2503,7 +2524,12 @@ impl P {
             }
         } else if self.at("throw") && self.at_k(1, "(") {
             // dynamic exception specification: removed in C++17 except throw()
+            let tl = self.line();
             self.pos += 1;
+            if !self.at_k(1, ")") {
+                // EXS-7: `throw` with a list of types is not valid.
+                self.error(tl, "EXS-7", "a dynamic exception specification with types");
+            }
             self.skip_balanced();
             f.noexcept = true;
         }
@@ -2732,7 +2758,14 @@ impl P {
                         // DEFARG-5: the default argument is valid for the
                         // parameter type at the declaration.
                         let form = if matches!(e.k, EK::InitList(_)) { crate::decl2::InitForm::CopyList } else { crate::decl2::InitForm::Copy };
-                        let e = if ty.is_unknown() || self.in_template() { e } else { self.convert_init(e, &ty, form, dl) };
+                        // DEFARG-10, DEP-30: in a template, a default made
+                        // only of literals is checked at the declaration.
+                        let literal = {
+                            let mut ok = !e.ty.is_unknown();
+                            crate::ast::walk_expr(&e, &mut |x| if !matches!(x.k, EK::Int(_) | EK::Float(_) | EK::LFloat(_) | EK::NullPtr | EK::Str(_) | EK::Unary(..) | EK::Binary(..) | EK::Conv(..)) || x.ty.is_unknown() { ok = false });
+                            ok
+                        };
+                        let e = if ty.is_unknown() || (self.in_template() && !(literal && self.inst_depth == 0)) { e } else { self.convert_init(e, &ty, form, dl) };
                         self.check_default_arg(&e, dl);
                         Ok(e)
                     })();

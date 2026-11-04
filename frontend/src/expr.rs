@@ -60,7 +60,12 @@ impl P {
             // block around the throw in the function also contains its
             // declaration.
             if let EK::Var(id) = e.k {
-                let local = self.var(id).is_some_and(|v| v.local && v.storage == Storage::Auto && !v.ty.t.is_ref() && matches!(v.ty.t, Ty::Class(_)) && !v.ty.v);
+                let local = self.var(id).is_some_and(|v| v.local && v.storage == Storage::Auto && match &v.ty.t {
+                    // THR-1: a local rvalue reference to an object counts.
+                    Ty::RRef(t) => matches!(t.t, Ty::Class(_)) && !t.v,
+                    Ty::Class(_) => !v.ty.v,
+                    _ => false,
+                });
                 let inside = self.fns.last().is_none_or(|f| f.try_marks.last().is_none_or(|&m| id >= m));
                 if local && inside && e.cat == Cat::L {
                     e.cat = Cat::X;
@@ -266,6 +271,10 @@ impl P {
                     if matches!(e.k, EK::Overloads(_) | EK::Func(_)) {
                         self.error(line, "UN-14", "sizeof applied to a function");
                         return Ok(Expr::new(EK::Int(1), QTy::new(Ty::size_t()), Cat::PR, line));
+                    }
+                    if self.is_bitfield(&e) {
+                        // BF-4: no sizeof of a bit-field.
+                        self.error(line, "BF-4", "sizeof applied to a bit-field");
                     }
                     let ty = e.ty.clone();
                     return Ok(self.build_sizeof(ty, line, true));
@@ -845,12 +854,23 @@ impl P {
                     // NEW-2: the size converts to the type of sizeof.
                     self.error(bl, "NEW-17", "array size in new must not be a pointer");
                 }
+                if !self.in_template() && self.is_scoped_enum(&et.t) {
+                    // NEW-17, NEW-2: a scoped enumeration does not convert
+                    // to the type of sizeof (Q-0313).
+                    self.error(bl, "NEW-17", "array size in new of a scoped enumeration type");
+                }
                 if bounds.is_empty() && !self.in_template() && et.t.is_integral() {
                     if let Ok(v) = self.const_int(&e) {
                         first_const = Some(v);
                         if v < 0 {
                             // NEW-17: a constant size must not be negative.
                             self.error(bl, "NEW-17", "negative constant array size in new");
+                        } else if let Some(es) = self.sizeof_ty(&t.t) {
+                            // NEW-17: the size of the array fits the type
+                            // of sizeof.
+                            if (v as u128).saturating_mul(es as u128) > Ty::size_t().int_max() as u128 {
+                                self.error(bl, "NEW-17", "constant array size in new makes the array too large");
+                            }
                         }
                     }
                 }
@@ -1247,6 +1267,14 @@ impl P {
             self.require_pointee(&obj.ty, line);
         } else {
             self.require_ty(&nonref(&obj.ty), line);
+        }
+        // NAM-16: `p->T::~T()` where `T` names a scalar type; the
+        // qualifier names the same type as the name after `~`.
+        if self.is_ident() && self.at_k(1, "::") && self.at_k(2, "~") && self.peek(3).text == self.tok().text {
+            let scalar = self.lookup(&self.tok().text.clone()).is_some_and(|ids| matches!(&self.decls[ids[0]].k, DK::Type(q) if !matches!(q.t, Ty::Class(_) | Ty::Enum(_) | Ty::Unknown | Ty::Dep(_))));
+            if scalar {
+                self.pos += 2;
+            }
         }
         // destructor call
         if self.at("~") {
@@ -1656,6 +1684,9 @@ impl P {
                             return r;
                         }
                         self.no_gt = save;
+                        if self.in_template() {
+                            self.check_template_fold(line);
+                        }
                         self.pos -= 1;
                         self.skip_balanced();
                         return Ok(Expr::unknown(line, "fold expression"));
@@ -1761,6 +1792,13 @@ impl P {
                     return Ok(Expr::new(EK::Unknown(format!("allocation function {}", name)), QTy::unknown(), Cat::L, line));
                 }
                 let found = self.lookup(&name);
+                let independent_conv = d.kind == crate::decl::NameKind::Conversion && d.conv_ty.as_ref().is_some_and(|t| !t.is_unknown());
+                if found.is_none() && independent_conv && self.in_template() && self.inst_depth == 0 && !self.stack.iter().any(|&s| self.scopes[s].uncertain) {
+                    // DEP-12: the name of a conversion to a type that does
+                    // not depend on a parameter is looked up at the
+                    // definition, which does not search a dependent base.
+                    self.error(line, "DEP-12", format!("'{}' is not declared, and lookup at the definition does not search a dependent base", name));
+                }
                 return Ok(match found {
                     Some(ids) => self.name_expr(ids, line),
                     None => Expr::unknown(line, "operator function name"),
@@ -1803,6 +1841,75 @@ impl P {
             }
         }
         self.parse_id_expression()
+    }
+
+    /// PRIM-29 in a template definition, at the token after `(` of a
+    /// fold: the operator next to `...` is a fold operator, and the
+    /// operands name a pack. The second check is made only when every
+    /// name in the parentheses is found.
+    fn check_template_fold(&mut self, line: u32) {
+        const OPS: &[&str] = &["+", "-", "*", "/", "%", "^", "&", "|", "<<", ">>", "+=", "-=", "*=", "/=", "%=", "^=", "&=", "|=", "<<=", ">>=", "=", "==", "!=", "<", ">", "<=", ">=", "&&", "||", ",", ".*", "->*"];
+        let end = {
+            let mut d = 0i32;
+            let mut k = self.pos;
+            while k < self.toks.len() && self.toks[k].kind != TK::Eof {
+                let t = &self.toks[k];
+                if t.kind == TK::Punct {
+                    match t.text.as_str() {
+                        "(" | "[" | "{" => d += 1,
+                        ")" | "]" | "}" if d == 0 => break,
+                        ")" | "]" | "}" => d -= 1,
+                        _ => {}
+                    }
+                }
+                k += 1;
+            }
+            k
+        };
+        let mut depth = 0;
+        for k in self.pos..end {
+            let t = &self.toks[k];
+            if t.kind == TK::Punct {
+                match t.text.as_str() {
+                    "(" | "[" | "{" => depth += 1,
+                    ")" | "]" | "}" => depth -= 1,
+                    "..." if depth == 0 => {
+                        let before = (k > self.pos).then(|| self.toks[k - 1].clone());
+                        let after = (k + 1 < end).then(|| self.toks[k + 1].clone());
+                        for o in [before, after].into_iter().flatten() {
+                            if o.kind == TK::Punct && !OPS.contains(&o.text.as_str()) && !matches!(o.text.as_str(), "(" | ")" | "]" | "[") {
+                                self.error(line, "PRIM-29", format!("'{}' is not a fold operator", o.text));
+                                return;
+                            }
+                        }
+                    }
+                    _ => {}
+                }
+            }
+        }
+        let mut has_pack = false;
+        let mut sure = true;
+        for k in self.pos..end {
+            let t = self.toks[k].clone();
+            if t.kind == TK::Punct && matches!(t.text.as_str(), "." | "->" | "::" | "<" | "[") {
+                sure = false;
+            }
+            if t.kind != TK::Ident {
+                continue;
+            }
+            if matches!(t.text.as_str(), "sizeof" | "this" | "true" | "false" | "nullptr" | "decltype" | "requires" | "template" | "typename") {
+                sure = false;
+                continue;
+            }
+            match self.lookup(&t.text) {
+                Some(ids) if ids.iter().any(|d| self.pack_decls.contains(d) || self.pack_params.contains(d)) => has_pack = true,
+                Some(_) => {}
+                None => sure = false,
+            }
+        }
+        if sure && !has_pack {
+            self.error(line, "PRIM-29", "the operand of a fold expression names no pack");
+        }
     }
 
     pub fn is_fold(&self) -> bool {
@@ -2536,7 +2643,7 @@ impl P {
                 None => {
                     // A constant read for its value needs no capture.
                     let v = self.var(id)?;
-                    if v.ty.c && (v.ty.t.is_integral() || matches!(v.ty.t, Ty::Enum(_))) {
+                    if (v.constexpr || (v.ty.c && (v.ty.t.is_integral() || matches!(v.ty.t, Ty::Enum(_))))) && !v.ty.t.is_ref() {
                         continue;
                     }
                     return None;
@@ -3004,11 +3111,9 @@ impl P {
         if self.at("operator") {
             // operator function name
             self.pos = start;
-            let d = self.parse_declarator(false, false);
-            let name = match d {
-                Ok(d) => d.name.unwrap_or_default(),
-                Err(e) => return Err(e),
-            };
+            let d = self.parse_declarator(false, false)?;
+            let name = d.name.clone().unwrap_or_default();
+            let independent_conv = d.kind == crate::decl::NameKind::Conversion && d.conv_ty.as_ref().is_some_and(|t| !t.is_unknown());
             let class_scope = matches!(scope, Some(Ok(s)) if matches!(self.scopes[s].kind, SK::Class(_)));
             if !class_scope && matches!(name.as_str(), "operatornew" | "operatornew[]" | "operatordelete" | "operatordelete[]") {
                 return Ok(Expr::new(EK::Unknown(format!("allocation function {}", name)), QTy::unknown(), Cat::L, line));
@@ -3017,6 +3122,12 @@ impl P {
                 Some(Ok(s)) => self.lookup_in_scope(s, &name, true),
                 _ => self.lookup(&name),
             };
+            if found.is_none() && scope.is_none() && independent_conv && self.in_template() && self.inst_depth == 0 && !self.stack.iter().any(|&s| self.scopes[s].uncertain) {
+                // DEP-12: the name of a conversion to a type that does not
+                // depend on a parameter is looked up at the definition,
+                // which does not search a dependent base.
+                self.error(line, "DEP-12", format!("'{}' is not declared, and lookup at the definition does not search a dependent base", name));
+            }
             return Ok(match found {
                 Some(ids) => self.name_expr(ids, line),
                 None => Expr::unknown(line, "operator function"),
@@ -4081,6 +4192,19 @@ impl P {
             if let Some(x) = self.user_conv(&e, &target, line) {
                 return Ok(x);
             }
+            if !self.in_template() && self.class_ok(sc) && !self.class_uncertain(sc) && !target.is_unknown() && !target.t.is_ref() {
+                // CVF-9, ICS-4: no conversion function of the class can
+                // convert this object, for example a function that is not
+                // const for a const object.
+                let et = nonref(&e.ty);
+                if (et.c || et.v) && matches!(self.ics_user_from_class(&e, sc, &target.unqual(), None), Ok(None)) {
+                    let mut plain = e.clone();
+                    plain.ty = QTy::new(et.t.clone());
+                    if let Ok(Some(crate::ics::Ics { kind: crate::ics::IK::User, .. })) = self.ics_user_from_class(&plain, sc, &target.unqual(), None) {
+                        return Err(format!("the conversion function of '{}' is not const or volatile, and the object is", self.classes[sc].name));
+                    }
+                }
+            }
             return match self.class_converts(sc) {
                 Some(false) => Err(format!("class '{}' has no conversion function", self.classes[sc].name)),
                 _ => Ok(Expr::new(EK::Unknown("conversion function".into()), to.clone(), Cat::PR, line)),
@@ -4325,6 +4449,12 @@ impl P {
     pub fn is_bitfield(&self, e: &Expr) -> bool {
         match &e.k {
             EK::Member(_, f) => matches!(&self.decls[*f].k, DK::Field(fi) if fi.bits.is_some()),
+            // ASN-10, COND-9: an assignment to a bit-field, and a
+            // conditional lvalue with a bit-field operand, are bit-fields.
+            EK::Assign(_, l, _) if e.cat == Cat::L => self.is_bitfield(l),
+            EK::Cond(_, a, b) if e.cat == Cat::L => self.is_bitfield(a) || self.is_bitfield(b),
+            EK::Comma(_, b) if e.cat == Cat::L => self.is_bitfield(b),
+            EK::Var(id) => self.sb_place.get(id).is_some_and(|p| self.is_bitfield(p)),
             _ => false,
         }
     }
@@ -4557,6 +4687,10 @@ impl P {
         }
         let ty = r.ty.clone();
         let cat = r.cat;
+        if !self.in_template() && !l.ty.is_unknown() && !l.paren && !crate::stmt::has_effect(self, &l) {
+            // COMMA-5: a left operand of a comma with no effect.
+            self.warn(line, "COMMA-5", "left operand of comma has no effect");
+        }
         let l = Expr::new(EK::Conv(Conv::ToVoid, Box::new(l)), QTy::new(Ty::Void), Cat::PR, line);
         Expr::new(EK::Comma(Box::new(l), Box::new(r)), ty, cat, line)
     }
@@ -4634,6 +4768,14 @@ impl P {
         };
         if matches!(l.k, EK::InitList(_)) || matches!(r.k, EK::InitList(_)) {
             return Expr::unknown(line, "braced list operand");
+        }
+        if matches!(op, BOp::Lt | BOp::Gt | BOp::Le | BOp::Ge) && !l.paren && matches!(nonref(&l.ty).t, Ty::Bool) {
+            // CMP-14: the inner comparison calls an operator function.
+            if let EK::Call(_, _, Some(f)) = &l.k {
+                if matches!(self.decls[*f].name.as_str(), "operator<" | "operator>" | "operator<=" | "operator>=") {
+                    self.warn(line, "CMP-14", "chained comparison");
+                }
+            }
         }
         if let Some(x) = self.class_operand(sp, &l, Some(&r), rule, line) {
             return x;
@@ -4763,7 +4905,14 @@ impl P {
                 }
                 Expr::new(EK::Binary(op, Box::new(l), Box::new(r)), ty, Cat::PR, line)
             }
-            BOp::Lt | BOp::Gt | BOp::Le | BOp::Ge | BOp::Eq | BOp::Ne => self.build_compare(op, l, r, lnull, rnull, line),
+            BOp::Lt | BOp::Gt | BOp::Le | BOp::Ge | BOp::Eq | BOp::Ne => {
+                if both_arrays && !self.in_template() {
+                    // CMP-16: a comparison of two arrays compares their
+                    // addresses.
+                    self.warn(line, "CMP-16", "comparison of two arrays");
+                }
+                self.build_compare(op, l, r, lnull, rnull, line)
+            }
             BOp::Spaceship => self.build_three_way(l, r, lnull, rnull, both_arrays, line),
             BOp::LAnd | BOp::LOr => unreachable!(),
         }
@@ -5216,12 +5365,8 @@ impl P {
                     EK::Var(id) => self.sb_place.get(id).map(|p| (**p).clone()),
                     _ => None,
                 };
-                if let EK::Member(_, f) = &named.as_ref().unwrap_or(&e).k {
-                    if let DK::Field(fi) = &self.decls[*f].k {
-                        if fi.bits.is_some() {
-                            self.error(line, "BF-4", "address of a bit-field");
-                        }
-                    }
+                if self.is_bitfield(named.as_ref().unwrap_or(&e)) {
+                    self.error(line, "BF-4", "address of a bit-field");
                 }
                 if e.cat != Cat::L && !matches!(e.k, EK::Func(_)) {
                     // UN-9: no address of a prvalue or an xvalue.
@@ -5318,6 +5463,12 @@ impl P {
                 if base_assign {
                     self.error(line, "CPY-22", format!("the implicit copy assignment operator of '{}' hides the base assignment operators", self.classes[c].name));
                 }
+            }
+            if op == "=" && nonref(&l.ty).v && !self.in_template() && !self.class_uncertain(c) && !self.scopes[self.classes[c].scope].names.contains_key("operator=") && !self.classes[c].bases.iter().any(|b| b.class.is_none()) {
+                // VOL-11: the implicit assignment operators are not
+                // volatile.
+                self.error(line, "VOL-11", format!("assignment to a volatile '{}', whose assignment operators are not volatile", self.classes[c].name));
+                return Expr::unknown(line, "bad assignment");
             }
             // CPY-21 to CPY-23, UNI-11: the assignment operator used.
             if op == "=" && nonref(&r.ty).t == Ty::Class(c) && !self.in_template() {
@@ -5960,6 +6111,11 @@ impl P {
             return Expr::unknown(line, "functional cast to unknown type");
         }
         if let Ty::Class(c) = ty.t {
+            if !self.in_template() && self.is_abstract(&ty.t) {
+                // VIRT-8: no object of an abstract class, also a temporary.
+                self.error(line, "VIRT-8", format!("a temporary of the abstract class '{}'", self.classes[c].name));
+                return Expr::unknown(line, "bad functional cast");
+            }
             if !braced && items.len() == 1 && items[0].cat == Cat::PR && nonref(&items[0].ty).t == Ty::Class(c) && !matches!(items[0].k, EK::Unknown(_)) {
                 // VC-4: a prvalue of the class initializes the result
                 // directly, with no constructor call.

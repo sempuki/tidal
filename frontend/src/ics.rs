@@ -521,7 +521,7 @@ impl P {
     /// object through one of its conversion functions. `to_ref` is Some
     /// when `p` is the referenced type of a reference parameter, with
     /// whether the reference is an rvalue reference.
-    fn ics_user_from_class(&mut self, a: &Expr, ac: usize, p: &QTy, to_ref: Option<bool>) -> R {
+    pub(crate) fn ics_user_from_class(&mut self, a: &Expr, ac: usize, p: &QTy, to_ref: Option<bool>) -> R {
         let mut fns = Vec::new();
         self.conv_fns(ac, 0, &mut fns);
         let mut cands: Vec<UCand> = Vec::new();

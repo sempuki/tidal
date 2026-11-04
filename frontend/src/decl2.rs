@@ -200,6 +200,16 @@ impl P {
                     _ => None,
                 }) {
                     Some(s) => {
+                        // NS-14: an alias in the same scope names the same
+                        // namespace.
+                        let cur = self.decl_scope();
+                        let clash = self.scopes[cur].names.get(&name).cloned().unwrap_or_default().into_iter().any(|d| match self.decls[d].k {
+                            DK::Namespace(o) => o != s,
+                            _ => true,
+                        });
+                        if clash {
+                            self.error(line, "NS-14", format!("'{}' already declared, not as an alias for the same namespace", name));
+                        }
                         self.add_decl(&name, DK::Namespace(s), line);
                     }
                     None => {
@@ -249,6 +259,10 @@ impl P {
             let mut target = None;
             for id in &existing {
                 if let DK::Namespace(s) = self.decls[*id].k {
+                    if self.scopes[s].parent != Some(cur) || self.scopes[s].name != *name {
+                        // NS-14: an alias does not reopen its namespace.
+                        self.error(line, "NS-14", format!("'{}' is a namespace alias, and a namespace definition cannot use it", name));
+                    }
                     target = Some(s);
                 } else {
                     // NS-1: the namespace name must not name another entity.
@@ -283,6 +297,54 @@ impl P {
         Ok(())
     }
 
+    /// LSP-4, LSP-7, LSP-2, TR-3: a C name is one entity across
+    /// namespaces. The declarations of one C name agree in kind and type,
+    /// a C name is not `main`, and it does not have the spelling of a
+    /// global variable with C++ linkage.
+    fn check_c_name(&mut self, id: DeclId, name: &str, line: u32) {
+        if name == "main" {
+            let what = if matches!(self.decls[id].k, DK::Func(_)) { "function" } else { "variable" };
+            self.error(line, "TR-3", format!("a {} named 'main' with C language linkage", what));
+            return;
+        }
+        let ty_of = |p: &Self, d: DeclId| -> Option<(bool, Ty)> {
+            match &p.decls[d].k {
+                DK::Func(f) => Some((true, Ty::Func(Box::new(FnTy { noexcept: false, ..f.fty.clone() })))),
+                DK::Var(v) => Some((false, v.ty.t.clone())),
+                _ => None,
+            }
+        };
+        let Some((is_fn, t)) = ty_of(self, id) else { return };
+        let others: Vec<DeclId> = self.c_names.get(name).cloned().unwrap_or_default();
+        for o in others {
+            if o == id {
+                continue;
+            }
+            let Some((ofn, ot)) = ty_of(self, o) else { continue };
+            if t.contains_unknown() || ot.contains_unknown() {
+                continue;
+            }
+            if ofn != is_fn {
+                self.error(line, "LSP-7", format!("the C name '{}' names a function and a variable", name));
+                return;
+            }
+            let same = if is_fn { t == ot } else { strip_array_bound(&t) == strip_array_bound(&ot) };
+            if !same {
+                self.error(line, "LSP-7", format!("declarations of the C name '{}' with different types", name));
+                return;
+            }
+        }
+        if !is_fn {
+            // LSP-7: a global variable with C++ linkage of the same name.
+            let globals: Vec<DeclId> = self.scopes[self.global].names.get(name).cloned().unwrap_or_default();
+            if globals.iter().any(|&g| g != id && matches!(self.decls[g].k, DK::Var(_)) && !self.c_names.get(name).is_some_and(|v| v.contains(&g)) && !self.var_internal.contains(&g)) {
+                self.error(line, "LSP-7", format!("the C name '{}' has the spelling of a global variable with C++ linkage", name));
+                return;
+            }
+        }
+        self.c_names.entry(name.to_string()).or_default().push(id);
+    }
+
     fn parse_linkage_spec(&mut self, ctx: Ctx) -> PR<()> {
         let line = self.line();
         self.expect("extern")?;
@@ -300,19 +362,30 @@ impl P {
             self.error(line, "LSP-2", "linkage specification not at namespace scope");
         }
         let c = lang == "C";
-        self.lang_c += c as u32;
+        // LSP-1: the innermost linkage specification gives the language.
+        let saved_lang = self.lang_c;
+        if c {
+            self.lang_c += 1;
+        } else {
+            self.lang_c = 0;
+        }
         let r = (|| {
             if self.eat("{") {
+                let save = std::mem::replace(&mut self.lang_c_single, false);
                 while !self.at("}") && self.tok().kind != TK::Eof {
                     self.parse_declaration_recover(Ctx::Namespace);
                 }
+                self.lang_c_single = save;
                 self.expect("}")?;
             } else {
-                self.parse_declaration(Ctx::Namespace)?;
+                let save = std::mem::replace(&mut self.lang_c_single, c);
+                let r = self.parse_declaration(Ctx::Namespace);
+                self.lang_c_single = save;
+                r?;
             }
             Ok(())
         })();
-        self.lang_c -= c as u32;
+        self.lang_c = saved_lang;
         r
     }
 
@@ -601,8 +674,14 @@ impl P {
                         }
                         return;
                     }
-                    DK::Class(c) if Ty::Class(*c) == q.t => return,
-                    DK::Enum(e) if Ty::Enum(*e) == q.t => return,
+                    DK::Class(c) if Ty::Class(*c) == q.t => {
+                        self.typedef_named.insert(p);
+                        return;
+                    }
+                    DK::Enum(e) if Ty::Enum(*e) == q.t => {
+                        self.typedef_named.insert(p);
+                        return;
+                    }
                     _ => {
                         self.error(line, "TYN-2", format!("'{}' already declared as something else", name));
                         return;
@@ -612,6 +691,15 @@ impl P {
         }
         // TYN-3: a typedef names an unnamed class.
         if let Ty::Class(c) = q.t {
+            if self.classes[c].name.is_empty() && !self.in_template() && self.classes[c].complete {
+                // TYN-9: the class is C-like.
+                let sc = self.classes[c].scope;
+                let has_fn = self.scopes[sc].names.values().flatten().any(|&d| self.func(d).is_some_and(|f| f.class == Some(c) && !f.defaulted) && self.decls[d].line != 0);
+                let has_init = self.classes[c].fields.iter().any(|&f| matches!(&self.decls[f].k, DK::Field(fi) if fi.init.is_some()) || self.deferred.iter().any(|d| d.field == Some(f)));
+                if !self.classes[c].bases.is_empty() || has_fn || has_init {
+                    self.error(line, "TYN-9", "a class named for linkage by a typedef has a base, a member function, or a default member initializer");
+                }
+            }
             if self.classes[c].name.is_empty() {
                 self.classes[c].name = name.to_string();
             }
@@ -2330,6 +2418,10 @@ impl P {
                 if ds.constexpr && (ds.defined_class.is_some() || ds.defined_enum.is_some()) {
                     self.error(line, "CX-5", "'constexpr' on a declaration that only defines a type");
                 }
+                if ds.inline && (ds.defined_class.is_some() || ds.defined_enum.is_some()) {
+                    // INL-2: inline applies to a function or a variable.
+                    self.error(line, "INL-2", "'inline' on a declaration that only defines a type");
+                }
                 if let Some(c) = ds.defined_class {
                     if self.classes[c].name.is_empty() && self.classes[c].key == 2 {
                         self.anonymous_union(c, &ds, ctx, line);
@@ -3074,6 +3166,7 @@ impl P {
             if d.qual.is_some() {
                 return Err(PErr { line, msg: "qualified typedef name".into() });
             }
+            self.check_no_defaults_in(d, line);
             self.declare_typedef(&name, ty, line, ctx);
             return Ok((None, false));
         }
@@ -3332,6 +3425,14 @@ impl P {
         if ds.constexpr {
             self.error(line, "CX-5", "non-static data member declared constexpr");
         }
+        if ds.inline {
+            // INL-2: inline applies to a function or a variable.
+            self.error(line, "INL-2", "non-static data member declared inline");
+        }
+        if self.classes[c].key == 2 && ty.t.is_ref() && !self.in_template() {
+            // UNI-2: no member of reference type in a union.
+            self.error(line, "UNI-2", format!("union member '{}' of reference type", name));
+        }
         if ds.mutable && (ty.c || ty.t.is_ref()) {
             self.error(line, "STO-6", "mutable const or reference member");
         }
@@ -3581,7 +3682,7 @@ impl P {
     }
 
     /// DEFARG-5: only a function declaration has default arguments.
-    fn check_no_defaults_in(&mut self, d: &Declarator, line: u32) {
+    pub fn check_no_defaults_in(&mut self, d: &Declarator, line: u32) {
         for op in &d.ops {
             if let DOp::Func(fd) = op {
                 if fd.defaults > 0 {
@@ -3628,7 +3729,7 @@ impl P {
         };
         let local = ctx == Ctx::Block || ctx == Ctx::Init;
         let class_member = if let Ctx::Class(c) = ctx { Some(c) } else { None };
-        let target_scope = d.qual.unwrap_or_else(|| self.decl_scope());
+        let target_scope = d.qual.map(|q| self.inline_target(q, &name)).unwrap_or_else(|| self.decl_scope());
         if let Some(c) = class_member {
             // CLS-9: limits on a static data member.
             if ds.mutable {
@@ -3656,6 +3757,11 @@ impl P {
         if name == "main" && target_scope == self.global {
             // FN-4: a global variable must not be named main.
             self.error(line, "FN-4", "global variable named 'main'");
+        }
+        if let Some(q) = d.qual {
+            if class_member.is_none() && !local && !self.inst_fresh && self.inst_depth == 0 && matches!(self.scopes[q].kind, SK::Namespace) {
+                self.check_ns_enclosing(q, line);
+            }
         }
         // Push qualified scope for the initializer.
         let saved = self.stack.clone();
@@ -3702,9 +3808,32 @@ impl P {
                     }
                 }
                 DK::Class(_) | DK::Enum(_) => {
-                    // A variable can hide a class name in the same scope.
+                    // A variable can hide a class name in the same scope,
+                    // but not a typedef name (TYN-2).
+                    if self.typedef_named.contains(&p) && !local {
+                        self.error(line, "TYN-2", format!("'{}' is a typedef name in this scope", name));
+                    }
                 }
                 _ => {}
+            }
+        }
+        if let Some(p) = redecl {
+            if class_member.is_none() && !self.in_template() && !self.inst_fresh && !matches!(self.scopes[target_scope].kind, SK::Class(_)) {
+                if storage == Storage::Static && !self.var_internal.contains(&p) {
+                    // LNK-10: static after a declaration with external
+                    // linkage.
+                    self.error(line, "LNK-10", format!("'{}' declared static after a declaration with external linkage", name));
+                }
+                if storage != Storage::Extern && !ds.inline && self.var(p).is_some_and(|v| v.storage == Storage::Extern && v.init.is_some() && !v.constexpr) {
+                    // ODR-15, ODR-1: extern with an initializer is a
+                    // definition, so a later definition defines the
+                    // variable twice.
+                    self.error(line, "ODR-1", format!("'{}' defined twice: the extern declaration with an initializer is a definition", name));
+                }
+                if ds.storage.contains(&Storage::ThreadLocal) != self.thread_vars.contains(&p) {
+                    // STO-12: the declarations agree on thread_local.
+                    self.error(line, "STO-12", format!("declarations of '{}' disagree on 'thread_local'", name));
+                }
             }
         }
         // Conflict with names of an enclosing condition / init (IF-10).
@@ -3783,6 +3912,9 @@ impl P {
                 }
                 None => {
                     let id = self.add_decl_in(target_scope, &name, DK::Var(vi), line);
+                    if ds.storage.contains(&Storage::ThreadLocal) {
+                        self.thread_vars.insert(id);
+                    }
                     if ds.has_alignas && ds.align > 0 && !self.align_unknown {
                         self.var_align.insert(id, ds.align as u64);
                     }
@@ -3795,6 +3927,14 @@ impl P {
                         let internal = storage == Storage::Static || self.in_unnamed_ns(target_scope) || ((ty.c || ds.constexpr) && !ty.v && !ds.inline && storage != Storage::Extern && !self.inst_fresh);
                         if internal {
                             self.var_internal.insert(id);
+                        }
+                        if self.lang_c > 0 && !self.inst_fresh {
+                            if self.lang_c_single && storage == Storage::Static {
+                                self.error(line, "LSP-2", "the form of a linkage specification without braces declares a static entity");
+                            }
+                            if storage != Storage::Static {
+                                self.check_c_name(id, &name, line);
+                            }
                         }
                     }
                     id
@@ -3894,11 +4034,16 @@ impl P {
                 Some(e) => {
                     let ded = self.deduce_auto(ds, d, &ty, e, &form, line);
                     if let Some(q) = ded {
-                        if let Some(prev_t) = auto_ty.as_ref() {
-                            let _ = prev_t;
+                        // AUTO-22: each declarator deduces the same type
+                        // for the placeholder.
+                        let base = peel_ops(&q, &d.ops);
+                        if let (Some(prev), Some(b)) = (auto_ty.as_ref(), base.as_ref()) {
+                            if !prev.is_unknown() && !b.is_unknown() && prev.unqual() != b.unqual() && !self.in_template() {
+                                self.error(line, "AUTO-22", "the declarators of one declaration deduce different types for the placeholder");
+                            }
                         }
                         ty = q;
-                        *auto_ty = Some(ty.clone());
+                        *auto_ty = base.or(Some(QTy::unknown()));
                         // AUTO-16, CPT-23: the type constraint on the type
                         // deduced for the placeholder.
                         if !self.in_template() {
@@ -4332,13 +4477,13 @@ impl P {
             self.error(line, "STO-6", "function declared mutable");
         }
         // TR-3 / FN-4: main.
-        let target_scope = d.qual.unwrap_or_else(|| if in_class_body && is_friend { self.enclosing_ns_scope() } else { self.decl_scope() });
+        let target_scope = d.qual.map(|q| self.inline_target(q, &name)).unwrap_or_else(|| if in_class_body && is_friend { self.enclosing_ns_scope() } else { self.decl_scope() });
         let is_main = name == "main" && target_scope == self.global && member_class.is_none();
         if is_main {
             if self.pending_template.is_some() {
                 self.error(line, "TR-3", "'main' declared as a template");
             }
-            if ds.auto.is_some() {
+            if ds.auto.is_some() && fd.trailing.is_none() {
                 self.error(line, "FN-4", "'main' with a deduced return type");
             } else if fty.ret.t != Ty::Int && !fty.ret.is_unknown() {
                 self.error(line, "TR-3", "'main' must return int");
@@ -4545,7 +4690,11 @@ impl P {
                         };
                     // CNS-26: other constraints declare another template.
                     let keys_differ = template && self.fn_head_key.get(&p).is_some_and(|k| *k != self.head_key(self.abbrev.as_ref().and_then(|a| a.cons.clone())));
-                    let distinct_templates = distinct_templates || heads_differ || keys_differ;
+                    // CNS-27, CNS-40: a placeholder parameter declares a
+                    // template of its own, apart from one whose head writes
+                    // the parameter.
+                    let invented_differ = template && self.fn_invented.get(&p).is_some_and(|&k| k != self.abbrev.as_ref().map_or(0, |a| a.params.len()));
+                    let distinct_templates = distinct_templates || heads_differ || keys_differ || invented_differ;
                     // CNS-26, CNS-28, CNS-29: the trailing clauses must be
                     // equivalent.
                     let same_clause = self.fn_clause_toks.get(&p) == clause_key.as_ref();
@@ -4595,6 +4744,11 @@ impl P {
                 self.error(line, "NS-15", format!("'{}' was not declared in the namespace", name));
             }
         }
+        if let Some(q) = d.qual {
+            if !in_class_body && inst_req.is_none() && self.inst_depth == 0 && !d.qual_unknown && matches!(self.scopes[q].kind, SK::Namespace) {
+                self.check_ns_enclosing(q, line);
+            }
+        }
         let trailing_requires = clause_unmodeled;
         // virt-specifiers come before the body (VIRT grammar)
         let mut virt_spec = (false, false);
@@ -4631,6 +4785,29 @@ impl P {
         if is_def && ctx == Ctx::Block {
             // FN-9: no function definition inside a function body.
             self.error(line, "FN-9", "function definition inside a function body");
+        }
+        if ds.inline && ctx == Ctx::Block {
+            // INL-2: no inline on a function declared in a block.
+            self.error(line, "INL-2", "'inline' on a function declared in a block");
+        }
+        // DEFARG-11: a friend declaration with a default argument is a
+        // definition and the only declaration of the function.
+        let friend_defaults = in_class_body && is_friend && !self.in_template() && fd.params.iter().any(|&q| self.var(q).is_some_and(|v| v.init.is_some()) || self.deferred.iter().any(|d| d.param == Some(q)));
+        if friend_defaults && !is_def {
+            self.error(line, "DEFARG-11", format!("a friend declaration of '{}' with a default argument that is not a definition", name));
+        } else if friend_defaults && existing.is_some() {
+            self.error(line, "DEFARG-11", format!("a friend declaration of '{}' with a default argument after another declaration", name));
+        } else if let Some(p) = existing {
+            if self.friend_default_fns.contains(&p) && !self.in_template() {
+                self.error(line, "DEFARG-11", format!("another declaration of '{}', whose friend declaration gives a default argument", name));
+            }
+        }
+        if let Some(p) = existing {
+            if self.lang_c > 0 && member_class.is_none() && !self.in_template() && !self.c_fns.contains(&p) && self.func(p).is_some_and(|f| f.class.is_none()) {
+                // LSP-7: a C declaration after a C++ declaration of the
+                // same function.
+                self.error(line, "LSP-7", format!("a declaration of '{}' with C language linkage after one with C++ linkage", name));
+            }
         }
         let id = match existing {
             Some(p) => {
@@ -4681,6 +4858,15 @@ impl P {
                 if pce != ds.consteval {
                     self.error(line, "CX-5", format!("declarations of '{}' disagree on 'consteval'", name));
                 }
+                if is_static && member_class.is_none() && !in_class_body && !self.in_template() && !template && !self.internal_fns.contains(&p) && ctx != Ctx::Block {
+                    // LNK-10: static after a declaration with external
+                    // linkage.
+                    self.error(line, "LNK-10", format!("'{}' declared static after a declaration with external linkage", name));
+                }
+                if ds.inline && pdef && !is_def && !self.inline_fns.contains(&p) && !self.in_template() && !in_class_body && member_class.is_none() {
+                    // INL-2: inline on a declaration after the definition.
+                    self.error(line, "INL-2", format!("'{}' declared inline after its definition", name));
+                }
                 if pne != fty.noexcept && !self.in_template() {
                     // DCL-14: all declarations must agree on noexcept.
                     self.error(line, "DCL-14", format!("declarations of '{}' disagree on noexcept", name));
@@ -4720,6 +4906,19 @@ impl P {
                         merged.push(new || old[i]);
                     }
                     self.check_trailing_defaults(&merged, line);
+                    if kind == FnKind::Ctor && !in_class_body && d.qual.is_some() {
+                        // DEFARG-12: a default argument outside the class
+                        // must not make a default, copy, or move
+                        // constructor.
+                        let from = |v: &[bool], k: usize| v.len() >= k && v[k..].iter().all(|&h| h);
+                        let first_self = fd.params.first().and_then(|&q| self.var(q)).is_some_and(|v| match &v.ty.t {
+                            Ty::LRef(t) | Ty::RRef(t) => member_class.is_some_and(|c| t.t == Ty::Class(c)),
+                            _ => false,
+                        });
+                        if (from(&merged, 0) && !from(&old, 0)) || (first_self && from(&merged, 1) && !from(&old, 1)) {
+                            self.error(line, "DEFARG-12", format!("a default argument outside the class makes '{}' a default, copy, or move constructor", name));
+                        }
+                    }
                 }
                 if let Some(f) = self.func_mut(p) {
                     if is_def {
@@ -4828,6 +5027,12 @@ impl P {
                 }
                 if self.lang_c > 0 && member_class.is_none() {
                     self.c_fns.insert(id);
+                    if self.lang_c_single && is_static {
+                        self.error(line, "LSP-2", "the form of a linkage specification without braces declares a static entity");
+                    }
+                    if !is_static && !self.in_template() && ctx != Ctx::Block {
+                        self.check_c_name(id, &name, line);
+                    }
                 }
                 if member_class.is_none() && !is_friend && ctx != Ctx::Block && !template && !self.in_template() && (is_static || self.in_unnamed_ns(sc)) {
                     self.internal_fns.insert(id);
@@ -4851,6 +5056,12 @@ impl P {
                 id
             }
         };
+        if friend_defaults {
+            self.friend_default_fns.insert(id);
+        }
+        if ds.inline || ds.constexpr || ds.consteval {
+            self.inline_fns.insert(id);
+        }
         if let Some(errs) = self.pending_noexcept_errors.take() {
             self.noexcept_errors.insert(id, errs);
         }
@@ -4862,6 +5073,8 @@ impl P {
         if template && inst_req.is_none() && !self.fn_head_key.contains_key(&id) {
             let k = self.head_key(self.abbrev.as_ref().and_then(|a| a.cons.clone()));
             self.fn_head_key.insert(id, k);
+            let n = self.abbrev.as_ref().map_or(0, |a| a.params.len());
+            self.fn_invented.insert(id, n);
         }
         if let Some(c) = clause {
             if inst_req.is_none() {
@@ -5433,6 +5646,11 @@ impl P {
         self.check_jumps(depth);
         let ctx = self.fns.pop().unwrap();
         let body = r?;
+        if !deduce && !self.in_template() && self.func(fid).is_some_and(|f| matches!(f.kind, FnKind::Normal | FnKind::Operator | FnKind::Conversion) && f.fty.ret.t != Ty::Void && !f.fty.ret.is_unknown() && !f.is_main && f.fn_try.is_none()) && falls_off(self, &body) {
+            // FN-7: control can reach the end of a function that returns
+            // a value.
+            self.warn(self.decls[fid].line, "FN-7", format!("control can reach the end of '{}', which returns a value", self.decls[fid].name));
+        }
         if kind == FnKind::Ctor {
             // INST-10: a constructor uses the default member initializers
             // of the members that it does not initialize.
@@ -5821,6 +6039,7 @@ impl P {
             Ty::Void => self.error(line, "TRY-5", "a handler parameter of type void"),
             Ty::RRef(_) => self.error(line, "TRY-5", "a handler parameter of rvalue reference type"),
             Ty::LRef(x) if matches!(x.t, Ty::Array(_, None)) => self.error(line, "TRY-5", "a handler parameter that refers to an array of unknown bound"),
+            Ty::Ptr(x) if matches!(x.t, Ty::Array(_, None)) => self.error(line, "TRY-5", "a handler parameter that points to an array of unknown bound"),
             _ => {}
         }
         let (inner, by_value) = match &ty.t {
@@ -5833,6 +6052,17 @@ impl P {
                 self.error(line, "TRY-5", format!("a handler parameter of incomplete class '{}'", self.classes[c].name));
             } else if by_value && self.is_abstract(&inner.t) {
                 self.error(line, "TRY-5", format!("a handler parameter of abstract class '{}' by value", self.classes[c].name));
+            } else if by_value && self.classes[c].complete && !self.class_uncertain(c) {
+                // TRY-5: the parameter is copied from the exception
+                // object, so the copy constructor is usable.
+                let name = self.classes[c].name.clone();
+                if let crate::special::CopySt::Deleted(_) = self.lv_status(c, false, 0) {
+                    self.error(line, "TRY-5", format!("a handler parameter of '{}', whose copy constructor is deleted", name));
+                } else if let Some(f) = self.sm_decl(c, crate::special::Sm::CopyCtor) {
+                    if !self.accessible(f, false) {
+                        self.error(line, "TRY-5", format!("a handler parameter of '{}', whose copy constructor is not accessible", name));
+                    }
+                }
             }
         }
     }
@@ -6080,6 +6310,74 @@ fn can_complete(p: &P, s: &Stmt) -> bool {
     }
 }
 
+/// FN-7: whether control can reach the end of `s`. When the answer is
+/// not clear, such as after a label or in a discarded branch, the
+/// function says no, so no warning comes.
+fn falls_off(p: &P, s: &Stmt) -> bool {
+    fn breaks(s: &Stmt) -> bool {
+        match s {
+            Stmt::Break => true,
+            Stmt::Block(v) => v.iter().any(breaks),
+            Stmt::If { then, els, .. } => breaks(then) || els.as_deref().is_some_and(breaks),
+            Stmt::Label(_, x) | Stmt::Case(_, x) | Stmt::Default(x) => breaks(x),
+            Stmt::Try(b, hs) => breaks(b) || hs.iter().any(|h| breaks(&h.body)),
+            _ => false,
+        }
+    }
+    fn has_default(s: &Stmt) -> bool {
+        match s {
+            Stmt::Default(_) => true,
+            Stmt::Block(v) => v.iter().any(has_default),
+            Stmt::Label(_, x) | Stmt::Case(_, x) => has_default(x),
+            _ => false,
+        }
+    }
+    fn has_label(s: &Stmt) -> bool {
+        match s {
+            Stmt::Label(..) => true,
+            Stmt::Block(v) => v.iter().any(has_label),
+            Stmt::If { then, els, .. } => has_label(then) || els.as_deref().is_some_and(has_label),
+            Stmt::While { body, .. } | Stmt::Do { body, .. } | Stmt::For { body, .. } | Stmt::Switch { body, .. } => has_label(body),
+            Stmt::Case(_, x) | Stmt::Default(x) => has_label(x),
+            Stmt::Try(b, hs) => has_label(b) || hs.iter().any(|h| has_label(&h.body)),
+            _ => false,
+        }
+    }
+    let always = |c: Option<&CondK>| match c {
+        None => true,
+        Some(CondK::Expr(e)) => p.const_int_quiet(e).is_ok_and(|v| v != 0),
+        Some(CondK::Decl(..)) => false,
+    };
+    match s {
+        Stmt::Return(_) | Stmt::Goto(_) | Stmt::Unsupported(_) | Stmt::Break | Stmt::Continue => false,
+        Stmt::Expr(e) => match &e.k {
+            EK::Throw(_) => false,
+            EK::Call(_, _, Some(f)) => !p.has_attr(*f, "noreturn"),
+            EK::Unknown(_) => false,
+            _ => true,
+        },
+        Stmt::Block(v) => !v.iter().any(has_label) && v.iter().all(|x| falls_off(p, x)),
+        Stmt::If { then, els, kind, .. } => match kind {
+            IfKind::Normal => falls_off(p, then) || els.as_deref().is_none_or(|e| falls_off(p, e)),
+            _ => falls_off(p, then) && els.as_deref().is_none_or(|e| falls_off(p, e)),
+        },
+        Stmt::While { cond, body } => !always(Some(cond)) || breaks(body),
+        Stmt::For { cond, body, .. } => !always(cond.as_ref()) || breaks(body),
+        Stmt::Do { body, cond } => {
+            if breaks(body) {
+                return true;
+            }
+            let c = CondK::Expr(cond.clone());
+            !always(Some(&c)) && falls_off(p, body)
+        }
+        Stmt::Switch { body, .. } => breaks(body) || !has_default(body) || falls_off(p, body),
+        Stmt::Label(..) => false,
+        Stmt::Case(_, x) | Stmt::Default(x) => falls_off(p, x),
+        Stmt::Try(b, hs) => falls_off(p, b) || hs.iter().any(|h| falls_off(p, &h.body)),
+        _ => true,
+    }
+}
+
 /// A variable declaration that creates an object (not `extern`).
 fn storage_is_object(ds: &DeclSpec) -> bool {
     !ds.storage.contains(&Storage::Extern) && !ds.typedef
@@ -6117,4 +6415,28 @@ fn primary_like(pats: &[TArg]) -> bool {
         seen.push(k);
     }
     true
+}
+
+/// An array type with its bound left out, for C names declared with and
+/// without a bound.
+fn strip_array_bound(t: &Ty) -> Ty {
+    match t {
+        Ty::Array(e, _) => Ty::Array(e.clone(), None),
+        t => t.clone(),
+    }
+}
+
+/// The type that declarator operators `ops` were applied to, to give `t`
+/// (AUTO-22).
+fn peel_ops(t: &QTy, ops: &[DOp]) -> Option<QTy> {
+    let mut t = t.clone();
+    for op in ops.iter().rev() {
+        t = match (op, &t.t) {
+            (DOp::Ptr(..), Ty::Ptr(x)) => (**x).clone(),
+            (DOp::LRef | DOp::RRef, Ty::LRef(x) | Ty::RRef(x)) => (**x).clone(),
+            (DOp::Array(_), Ty::Array(x, _)) => (**x).clone(),
+            _ => return None,
+        };
+    }
+    Some(t)
 }

@@ -426,6 +426,10 @@ pub struct P {
     pub inner_rewrite: bool,
     /// Depth of `extern "C"` linkage specifications.
     pub lang_c: u32,
+    /// Inside the form of `extern "C"` without braces (LSP-2).
+    pub lang_c_single: bool,
+    /// The declarations of each C name (LSP-4, LSP-7).
+    pub c_names: HashMap<String, Vec<DeclId>>,
     /// Functions declared with C language linkage.
     pub c_fns: std::collections::HashSet<DeclId>,
     pub ce_depth: u32,
@@ -493,6 +497,9 @@ pub struct P {
     pub hidden_friends: HashMap<DeclId, Vec<usize>>,
     /// The friend functions that each class declares (NAM-29).
     pub class_friends: HashMap<usize, Vec<DeclId>>,
+    /// Friend functions whose friend declaration gives a default
+    /// argument (DEFARG-11).
+    pub friend_default_fns: std::collections::HashSet<DeclId>,
     /// Inline namespaces (NAM-13).
     pub inline_ns: std::collections::HashSet<usize>,
     /// Namespace-scope variables with internal linkage (LNK rules).
@@ -738,6 +745,16 @@ pub struct P {
     /// of a function template.
     pub head_parts: (Option<Rc<crate::cons::CNorm>>, Option<Rc<crate::cons::CNorm>>),
     pub fn_head_key: HashMap<DeclId, String>,
+    /// The number of invented parameters of each function template
+    /// (CNS-27).
+    pub fn_invented: HashMap<DeclId, usize>,
+    /// Functions declared inline, constexpr, or consteval (INL-2).
+    pub inline_fns: std::collections::HashSet<DeclId>,
+    /// Variables declared thread_local (STO-12).
+    pub thread_vars: std::collections::HashSet<DeclId>,
+    /// Class and enumeration names that a typedef of the same name
+    /// declares again (TYN-2).
+    pub typedef_named: std::collections::HashSet<DeclId>,
     pub in_concept_def: bool,
     /// Deduction of class template arguments (ctad.rs): the user guides
     /// of each class template, the parameters that give no forwarding
@@ -815,6 +832,8 @@ impl P {
             call_no_object: false,
             inner_rewrite: false,
             lang_c: 0,
+            lang_c_single: false,
+            c_names: HashMap::new(),
             c_fns: Default::default(),
             ce_depth: 0,
             pending_template: None,
@@ -854,6 +873,7 @@ impl P {
             hidden_friends: HashMap::new(),
             class_friends: HashMap::new(),
             inline_ns: Default::default(),
+            friend_default_fns: Default::default(),
             var_internal: Default::default(),
             in_base_clause: 0,
             adl_pos: None,
@@ -974,6 +994,10 @@ impl P {
             abbrev: None,
             head_parts: (None, None),
             fn_head_key: HashMap::new(),
+            fn_invented: HashMap::new(),
+            inline_fns: Default::default(),
+            thread_vars: Default::default(),
+            typedef_named: Default::default(),
             in_concept_def: false,
             user_guides: HashMap::new(),
             no_fwd: None,
@@ -1480,6 +1504,11 @@ impl P {
         self.wflags.iter().any(|f| names.iter().any(|n| f == n))
     }
     pub fn warn(&mut self, line: u32, rule: &'static str, msg: impl Into<String>) {
+        // A warning in a tentative parse or a substitution is dropped, and
+        // it does not make the substitution fail.
+        if self.d.muted > 0 {
+            return;
+        }
         if self.werror {
             self.d.error(line, Some(rule), format!("{} (warning treated as error)", msg.into()));
         } else {
@@ -1733,6 +1762,28 @@ impl P {
         let amb = self.sources_ambiguous(&sources);
         (Some(merge_sources(sources)), amb)
     }
+    /// NS-15, NS-3: a qualified definition of a member of an inline
+    /// namespace of the named namespace goes to that inline namespace.
+    pub fn inline_target(&self, s: usize, name: &str) -> usize {
+        if !matches!(self.scopes[s].kind, SK::Namespace) || !self.own_names(s, name).is_empty() {
+            return s;
+        }
+        let mut stack = vec![(s, 0)];
+        while let Some((x, depth)) = stack.pop() {
+            if depth > 16 {
+                continue;
+            }
+            for &n in &self.scopes[x].using_ns {
+                if self.inline_ns.contains(&n) && self.scopes[n].parent == Some(x) {
+                    if !self.own_names(n, name).is_empty() {
+                        return n;
+                    }
+                    stack.push((n, depth + 1));
+                }
+            }
+        }
+        s
+    }
     fn inline_names(&self, s: usize, name: &str, out: &mut Vec<DeclId>, depth: u32) {
         for d in self.own_names(s, name) {
             if !out.contains(&d) {
@@ -1753,15 +1804,44 @@ impl P {
         self.inline_names(s, name, &mut own, 0);
         own.retain(|&d| d < self.lookup_limit);
         if !own.is_empty() {
-            return vec![own];
+            // NS-12: a name declared both in `s` and in an inline
+            // namespace of it comes from two sources.
+            let mut by_scope: Vec<Vec<DeclId>> = Vec::new();
+            let mut scopes: Vec<usize> = Vec::new();
+            for d in own {
+                let sc = self.decls[d].scope;
+                match scopes.iter().position(|&x| x == sc) {
+                    Some(k) => by_scope[k].push(d),
+                    None => {
+                        scopes.push(sc);
+                        by_scope.push(vec![d]);
+                    }
+                }
+            }
+            return by_scope;
         }
         let mut out = Vec::new();
-        for &n in &self.scopes[s].using_ns.clone() {
-            if visited.contains(&n) || (self.inline_ns.contains(&n) && self.scopes[n].parent == Some(s)) {
-                continue;
+        // NAM-13: the using directives of `s` and of its inline
+        // namespaces.
+        let mut sets = vec![s];
+        let mut i = 0;
+        while i < sets.len() && sets.len() < 64 {
+            let x = sets[i];
+            for &n in &self.scopes[x].using_ns {
+                if self.inline_ns.contains(&n) && self.scopes[n].parent == Some(x) && !sets.contains(&n) {
+                    sets.push(n);
+                }
             }
-            visited.push(n);
-            out.extend(self.qual_ns(n, name, visited));
+            i += 1;
+        }
+        for x in sets {
+            for &n in &self.scopes[x].using_ns.clone() {
+                if visited.contains(&n) || (self.inline_ns.contains(&n) && self.scopes[n].parent == Some(x)) {
+                    continue;
+                }
+                visited.push(n);
+                out.extend(self.qual_ns(n, name, visited));
+            }
         }
         out
     }

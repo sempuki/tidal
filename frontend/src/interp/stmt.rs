@@ -279,6 +279,11 @@ impl<'a> Machine<'a> {
     /// of type `e`. None is `...`.
     pub fn handler_matches(&self, h: Option<&QTy>, e: &QTy) -> bool {
         let Some(h) = h else { return true };
+        // TRY-2: the exception object is never an array or a function
+        // (THR-2), so a reference to one never matches.
+        if h.t.is_ref() && matches!(nonref(h).t, Ty::Array(..) | Ty::Func(_)) {
+            return false;
+        }
         let t = decay(&nonref(h));
         match (&t.t, &e.t) {
             (Ty::Class(tc), Ty::Class(ec)) => tc == ec || self.public_unique_base(*ec, *tc),
@@ -300,7 +305,12 @@ impl<'a> Machine<'a> {
             }
             // TRY-2: pointers to members of the same class, by a
             // qualification conversion.
-            (Ty::MemPtr(tc, tp), Ty::MemPtr(ec, ep)) => tc == ec && (tp.c || !ep.c) && (tp.v || !ep.v) && (tp.t == ep.t || qual_conv_tail(&tp.t, &ep.t, tp.c)),
+            (Ty::MemPtr(tc, tp), Ty::MemPtr(ec, ep)) => tc == ec && (tp.c || !ep.c) && (tp.v || !ep.v) && (tp.t == ep.t || qual_conv_tail(&tp.t, &ep.t, tp.c) || match (&tp.t, &ep.t) {
+                // TRY-2: a pointer to a `noexcept` member function converts
+                // to one without `noexcept`.
+                (Ty::Func(a), Ty::Func(b)) => !a.noexcept && b.noexcept && **a == FnTy { noexcept: false, ..(**b).clone() },
+                _ => false,
+            }),
             (Ty::Ptr(_) | Ty::MemPtr(..), Ty::NullPtr) => true,
             _ => same_unqual(&t, e),
         }
@@ -570,10 +580,8 @@ impl<'a> Machine<'a> {
             }
             return self.local_static(id, &v);
         }
-        if self.constant && self.p.literal_type(&v.ty) == Some(false) {
-            // CE-17: no variable of a type that is not literal.
-            return limit("CE-17", "definition of a variable of a type that is not a literal type");
-        }
+        // CE-17: a variable of a type that is not a literal type is not a
+        // construct that constant evaluation must not reach (Q-0335).
         if v.ty.t.is_ref() {
             let Some(init) = &v.init else { return unsup("reference without initializer") };
             let init = init.clone();

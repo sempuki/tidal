@@ -64,6 +64,20 @@ impl<'a> Machine<'a> {
         }
         if !self.constant {
             if v.local && v.storage == Storage::Auto {
+                // ODR-2, ODR-3: a lambda or a local class can read a
+                // constant of the enclosing function without a capture. The
+                // object is in the frame of the enclosing call.
+                let usable = !v.param && v.init.is_some() && !v.ty.v && (v.constexpr || (v.ty.c && (v.ty.t.is_integral() || matches!(v.ty.t, Ty::Enum(_)))));
+                if usable {
+                    for fr in self.frames.iter().rev() {
+                        if let Some(r) = fr.refs.get(&id) {
+                            return Ok(r.clone());
+                        }
+                        if let Some(&o) = fr.vars.get(&id) {
+                            return Ok(Ptr::whole(o));
+                        }
+                    }
+                }
                 return unsup("variable of an enclosing function (local class or lambda)");
             }
             if v.local {
@@ -1630,8 +1644,22 @@ impl<'a> Machine<'a> {
                 Ok(v) => v,
                 Err(Stop::Throw(x)) => {
                     // NEW-21: the deallocation function frees the storage
-                    // before the exception leaves the expression.
-                    self.call_dealloc(&al.dealloc, &p, size, &pargs, aname)?;
+                    // before the exception leaves the expression. UNW-3,
+                    // NEW-28: for a type with extended alignment, the
+                    // library storage goes to the aligned form.
+                    let al_ty = self.p.alignof_ty(&ty.t).filter(|&a| a > 16);
+                    let global_dealloc = match &al.dealloc {
+                        Dealloc::Library => true,
+                        Dealloc::Func(f, _) => self.p.func(*f).is_some_and(|x| x.class.is_none()),
+                        Dealloc::None => false,
+                    };
+                    match (&al.dealloc, al_ty) {
+                        (_, Some(a)) if global_dealloc && pargs.is_empty() && al.func.is_none() => match self.aligned_delete_fn(None, array, true, a) {
+                            Some((d, extra)) => self.call_dealloc(&d, &p, size, &extra, aname)?,
+                            None => self.call_dealloc(&al.dealloc, &p, size, &pargs, aname)?,
+                        },
+                        _ => self.call_dealloc(&al.dealloc, &p, size, &pargs, aname)?,
+                    }
                     return Err(Stop::Throw(x));
                 }
                 Err(e) => return Err(e),
@@ -2929,22 +2957,34 @@ impl<'a> Machine<'a> {
                     EK::Construct(cid, args) => return self.construct_into(place, *cid, args, c),
                     EK::Closure(_, inits, _) => {
                         // LAM rules: each member of the closure from its
-                        // capture, in order.
-                        for (i, (_, fi)) in self.fields(c).into_iter().enumerate() {
-                            let Some(x) = inits.get(i) else { break };
-                            if fi.ty.t.is_ref() {
-                                // LAM-7: an init capture by reference extends
-                                // a temporary as a reference variable does.
-                                let p = self.bind_ref(x)?;
-                                if super::stmt::binds_temporary_p(self.p, x) && !matches!(x.k, EK::Var(_)) {
-                                    if let Some(c) = self.extend_temp(p.obj) {
-                                        self.extended.push(c);
+                        // capture, in order. UNW-2: when a capture throws,
+                        // the members built before it end.
+                        let mut done = Vec::new();
+                        let ext = self.extended.len();
+                        let r = (|| -> R<()> {
+                            for (i, (_, fi)) in self.fields(c).into_iter().enumerate() {
+                                let Some(x) = inits.get(i) else { break };
+                                if fi.ty.t.is_ref() {
+                                    // LAM-7: an init capture by reference extends
+                                    // a temporary as a reference variable does.
+                                    let p = self.bind_ref(x)?;
+                                    if super::stmt::binds_temporary_p(self.p, x) && !matches!(x.k, EK::Var(_)) {
+                                        if let Some(c) = self.extend_temp(p.obj) {
+                                            done.push(c.clone());
+                                            self.extended.push(c);
+                                        }
                                     }
+                                    self.write(&place.sub(fi.index), Val::Ptr(p), true)?;
+                                    continue;
                                 }
-                                self.write(&place.sub(fi.index), Val::Ptr(p), true)?;
-                                continue;
+                                self.init_into(&place.sub(fi.index), x, &fi.ty)?;
+                                done.push(Cleanup { place: place.sub(fi.index), ty: fi.ty.clone(), item: 0 });
                             }
-                            self.init_into(&place.sub(fi.index), x, &fi.ty)?;
+                            Ok(())
+                        })();
+                        if let Err(e) = r {
+                            self.extended.truncate(ext);
+                            return Err(self.unwind(done, e));
                         }
                         return Ok(());
                     }
@@ -3119,7 +3159,21 @@ impl<'a> Machine<'a> {
     }
 
     /// Aggregate initialization from a braced list (LIST rules, UNI-4).
+    /// UNW-2: when an initializer throws, the parts built before it end in
+    /// reverse order, with the temporaries that reference members extend.
     fn init_aggregate(&mut self, place: &Ptr, items: &[Expr], c: usize) -> R<()> {
+        let ext = self.extended.len();
+        let mut done = Vec::new();
+        match self.init_aggregate_parts(place, items, c, &mut done, ext) {
+            Err(e) => {
+                self.extended.truncate(ext);
+                Err(self.unwind(done, e))
+            }
+            r => r,
+        }
+    }
+
+    fn init_aggregate_parts(&mut self, place: &Ptr, items: &[Expr], c: usize, done: &mut Vec<Cleanup>, ext: usize) -> R<()> {
         self.class_ok(c)?;
         if !self.p.classes[c].ctors.is_empty() && items.is_empty() {
             return self.value_init(place, &QTy::new(Ty::Class(c)));
@@ -3136,6 +3190,7 @@ impl<'a> Machine<'a> {
             } else {
                 self.value_init(&place.sub(i), &bt)?;
             }
+            done.push(Cleanup { place: place.sub(i), ty: bt, item: 0 });
         }
         let fields = self.fields(c);
         // UNI-4: with no value given, the member with a default member
@@ -3166,6 +3221,7 @@ impl<'a> Machine<'a> {
             } else {
                 None
             };
+            let before = self.extended.len().max(ext);
             if let Some(it) = item {
                 self.in_aggregate += 1;
                 let r = self.init_field(&sub, &it, fi);
@@ -3178,6 +3234,13 @@ impl<'a> Machine<'a> {
                 return unsup("reference member with no initializer");
             } else {
                 self.value_init(&sub, &fi.ty)?;
+            }
+            if fi.ty.t.is_ref() {
+                if self.extended.len() > before {
+                    done.extend(self.extended[before..].iter().cloned());
+                }
+            } else if !union {
+                done.push(Cleanup { place: sub, ty: fi.ty.clone(), item: 0 });
             }
         }
         Ok(())
@@ -3271,6 +3334,11 @@ impl<'a> Machine<'a> {
                 None => self.default_init(&place.sub(i), &bt)?,
             }
             done.push(Cleanup { place: place.sub(i), ty: bt, item: 0 });
+        }
+        // CTOR-12: the bases are initialized, so a member function can
+        // be called on the object.
+        if let Some(k) = self.no_calls.iter().rposition(|(q, r)| *r == "CTOR-12" && q == place) {
+            self.no_calls.remove(k);
         }
         let nb = bases.len();
         let union = self.p.classes[c].key == 2;
@@ -3389,7 +3457,13 @@ impl<'a> Machine<'a> {
                     let init = d.init.clone().unwrap();
                     self.full(|m| m.init_into(place, &init, &QTy::new(Ty::Class(c))))
                 }
-                None => self.construct_parts(place, c, &f.mem_inits, &mut done),
+                None => {
+                    let n = self.no_calls.len();
+                    self.no_calls.push((place.clone(), "CTOR-12"));
+                    let r = self.construct_parts(place, c, &f.mem_inits, &mut done);
+                    self.no_calls.truncate(n);
+                    r
+                }
             };
             // A target constructor that throws has ended its own parts.
             let target_done = delegating.is_some() && r.is_ok();
@@ -3421,7 +3495,11 @@ impl<'a> Machine<'a> {
                         // after the parts end, and rethrow at their end.
                         (Stop::Throw(x), Some(hs)) => {
                             let mut seek = None;
-                            self.handle_fn(x.clone(), &hs, &mut seek, true).map(|_| ())
+                            let n = self.no_calls.len();
+                            self.no_calls.push((place.clone(), "TRY-11"));
+                            let r = self.handle_fn(x.clone(), &hs, &mut seek, true).map(|_| ());
+                            self.no_calls.truncate(n);
+                            r
                         }
                         _ => Err(e),
                     }
@@ -3861,6 +3939,22 @@ impl<'a> Machine<'a> {
                     None => (fid, f),
                 }
             }
+            (None, false) if f.class.is_none() && !matches!(cp.scopes[cp.decls[fid].scope].kind, SK::Namespace | SK::Class(_)) => {
+                // DEFARG-9, NAM rules: a function declared in a block is
+                // the function of the innermost enclosing namespace.
+                let mut s = cp.scopes[cp.decls[fid].scope].parent;
+                while let Some(x) = s {
+                    if matches!(cp.scopes[x].kind, SK::Namespace) {
+                        break;
+                    }
+                    s = cp.scopes[x].parent;
+                }
+                let other = s.and_then(|x| cp.scopes[x].names.get(&cp.decls[fid].name)).and_then(|v| v.iter().copied().find(|&g| cp.func(g).is_some_and(|x| x.body.is_some() && x.fty.params == f.fty.params)));
+                match other {
+                    Some(g) => (g, cp.func(g).unwrap().clone()),
+                    None => (fid, f),
+                }
+            }
             _ => (fid, f),
         };
         let Some(body) = f.body.clone() else {
@@ -3910,6 +4004,16 @@ impl<'a> Machine<'a> {
         };
         let consteval = f.consteval;
         let fn_try = f.fn_try.clone();
+        if let Some(t) = &this {
+            let tp = full_path(t);
+            for (q, rule) in &self.no_calls {
+                let qp = full_path(q);
+                let hit = q.obj == t.obj && !q.bytes && !t.bytes && if *rule == "CTOR-12" { qp == tp } else { tp.starts_with(&qp) };
+                if hit {
+                    return ub(rule, if *rule == "CTOR-12" { "call of a member function before the bases of the object are initialized" } else { "call of a member function of an object whose parts ended before the handler" });
+                }
+            }
+        }
         let (r, ret) = self.in_tu(ctu, |m| {
             m.enter_call(Some(fid), this, ret_ref, ret_class, slot.clone())?;
             m.install_params(frame);
@@ -3918,6 +4022,24 @@ impl<'a> Machine<'a> {
             let r = match fn_try {
                 Some(hs) => m.run_fn_try(&body, &hs, false),
                 None => m.run_body(&body),
+            };
+            // UNW-1: a return statement built the class result, and then
+            // the destructor of a local object threw. The result ends.
+            let r = match r {
+                Err(e @ Stop::Throw(_)) if matches!(m.frame().ret, Some(Ret::InSlot)) && m.frame().slot.is_some() => {
+                    let s = m.frame().slot.clone().unwrap();
+                    m.frame_mut().ret = None;
+                    let t = f.fty.ret.unqual();
+                    m.unwinding += 1;
+                    let d = m.destroy(&s, &t);
+                    m.unwinding -= 1;
+                    match d {
+                        Ok(()) => Err(e),
+                        Err(Stop::Throw(_)) => Err(Stop::Terminate("UNW-5", "a destructor throws during the unwinding of another exception".into())),
+                        Err(o) => Err(o),
+                    }
+                }
+                r => r,
             };
             m.in_consteval_fn = save;
             let ret = m.leave_call();

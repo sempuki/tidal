@@ -1118,6 +1118,11 @@ impl P {
                 if !ok {
                     return bad(self, "TARG-13", "the function does not have the parameter's type");
                 }
+                // ODR-3: the argument uses the function.
+                if self.internal_fns.contains(&d) && !self.in_template() && self.in_unevaluated == 0 {
+                    let l = self.line();
+                    self.internal_uses.push((d, l));
+                }
                 return Ok(TVal::Const(pt, CVal::Addr(d, 0)));
             }
             return Err(false);
@@ -3467,7 +3472,7 @@ impl P {
     /// A fold expression in a specialization, after `(` (PRIM-27 to
     /// PRIM-29).
     pub fn parse_fold(&mut self, line: u32) -> PR<Expr> {
-        const OPS: &[&str] = &["+", "-", "*", "/", "%", "^", "&", "|", "<<", ">>", "+=", "-=", "*=", "/=", "%=", "^=", "&=", "|=", "<<=", ">>=", "=", "==", "!=", "<", ">", "<=", ">=", "&&", "||", ","];
+        const OPS: &[&str] = &["+", "-", "*", "/", "%", "^", "&", "|", "<<", ">>", "+=", "-=", "*=", "/=", "%=", "^=", "&=", "|=", "<<=", ">>=", "=", "==", "!=", "<", ">", "<=", ">=", "&&", "||", ",", ".*", "->*"];
         let take_op = |p: &mut P| -> Option<String> {
             let t = p.tok().text.clone();
             if p.tok().kind == TK::Punct && OPS.contains(&t.as_str()) {
@@ -3558,6 +3563,8 @@ impl P {
                 None => v.remove(0),
             };
             for x in v {
+                // PRIM-27, CMP-14: each nested part acts as if in parentheses.
+                acc.paren = true;
                 acc = bin(self, acc, x);
             }
             acc
@@ -3567,6 +3574,7 @@ impl P {
                 None => v.pop().unwrap(),
             };
             while let Some(x) = v.pop() {
+                acc.paren = true;
                 acc = bin(self, x, acc);
             }
             acc

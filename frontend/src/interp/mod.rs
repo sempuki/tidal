@@ -258,6 +258,11 @@ pub struct Machine<'a> {
     pub in_aggregate: u32,
     /// The exceptions that active handlers handle, innermost last (TRY-8).
     pub caught: Vec<Exc>,
+    /// Objects on which a call of a member function is undefined: a class
+    /// object whose bases are being initialized (CTOR-12, the object only),
+    /// and an object whose parts ended before the handler of its function
+    /// try block (TRY-11, the object and its subobjects).
+    pub no_calls: Vec<(Ptr, &'static str)>,
     /// Depth of unwinding (UNW-5).
     pub unwinding: u32,
     /// Objects that placement `new` made in the storage of another object
@@ -357,6 +362,7 @@ impl<'a> Machine<'a> {
             extended: Vec::new(),
             in_aggregate: 0,
             caught: Vec::new(),
+            no_calls: Vec::new(),
             unwinding: 0,
             residents: HashMap::new(),
             resident_of: HashMap::new(),
@@ -816,7 +822,9 @@ impl<'a> Machine<'a> {
             Ty::Class(c) => {
                 let ci = &self.p.classes[*c];
                 if let Some(d) = ci.dtor {
-                    if self.p.func(d).is_some_and(|f| !f.defaulted && !matches!(f.body.as_deref(), Some(Stmt::Block(v)) if v.is_empty())) {
+                    // CE-2: in constant evaluation, a destructor that is
+                    // not constexpr counts even with an empty body.
+                    if self.p.func(d).is_some_and(|f| !f.defaulted && (!matches!(f.body.as_deref(), Some(Stmt::Block(v)) if v.is_empty()) || (self.constant && !f.constexpr))) {
                         return true;
                     }
                 }
@@ -1061,7 +1069,9 @@ impl<'a> Machine<'a> {
                     if let Some(f) = f {
                         if !f.defaulted {
                             if self.constant && !f.constexpr {
-                                return unsup("destructor evaluation");
+                                // CE-2: a call of a destructor that is not
+                                // constexpr.
+                                return limit("CE-2", format!("call of the destructor of '{}', which is not constexpr", self.p.classes[c].name));
                             }
                             if f.body.is_none() && self.library_exception(c) {
                                 // LSUP-8: the library defines the destructor;
