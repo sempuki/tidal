@@ -142,7 +142,10 @@ A `throw` initializes the exception object from its operand:
   copy or move.
 - An operand that names a local variable or a parameter is moved if
   each try block around the `throw` in the same function also contains
-  the declaration of the variable.
+  the declaration of the variable. A parameter is declared outside
+  every try block of its function, also outside a function try block.
+  So a parameter is moved only if no try block in the function encloses
+  the `throw`.
 - Any other lvalue operand is copied.
 
 If the copy or move throws, the new exception leaves the `throw`, and a
@@ -257,6 +260,11 @@ void retry() {
   catch (Error& e) { e.code += 10; throw; }  // passes on the same object
 }
 // A handler further up sees code == 11.
+
+void raise(Error e) { throw e; }           // e is moved
+void guard(Error e) {
+  try { throw e; } catch (int) {}          // e is copied: the try block
+}                                          // does not contain e
 
 constexpr int checked(int v) { return v < 0 ? throw Error{3} : v; }
 static_assert(checked(5) == 5);          // the throw is on an untaken path

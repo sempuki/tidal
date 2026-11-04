@@ -50,7 +50,7 @@ a capture, or is not valid at all.
 :::
 
 :::{principle} ODR-P2
-:rules: ODR-1 ODR-7 ODR-8 ODR-9 ODR-10 ODR-11 ODR-12 ODR-13 ODR-14
+:rules: ODR-15 ODR-1 ODR-7 ODR-8 ODR-9 ODR-10 ODR-11 ODR-12 ODR-13 ODR-14
 
 A definition creates the entity. A declaration only names it. The
 number of definitions that the language allows depends on the kind of
@@ -153,13 +153,29 @@ Each directive is on a line of its own. The rules for these lines are:
 
 ## Constraints
 
+:::{rule} ODR-15
+:kind: required
+:tests: foundations/odr/variable-declaration-forms.cpp foundations/odr/variable-without-initializer-twice.cpp foundations/odr/extern-initializer-is-definition.cpp foundations/odr/declarations-and-one-definition.cpp
+
+A declaration of a variable is a definition, with these exceptions:
+
+- The declaration has `extern`, or the form `extern "C"`, and no
+  initializer ({rule}`STO-7`, {rule}`LSP-3`).
+- The declaration is of a static data member in its class, and the
+  member is neither `inline` nor `constexpr` ({rule}`CLS-3`).
+
+So `int total;` at namespace scope is a definition, also without an
+initializer.
+:::
+
 :::{rule} ODR-1
 :kind: reject
-:tests: foundations/odr/variable-defined-twice.cpp foundations/odr/variable-without-initializer-twice.cpp foundations/odr/enumeration-defined-twice.cpp foundations/odr/static-member-defined-twice.cpp foundations/odr/inline-variable-defined-twice.cpp foundations/odr/header-included-twice.cpp foundations/odr/declarations-and-one-definition.cpp foundations/odr/guard-text-after-endif.cpp
+:tests: foundations/odr/variable-defined-twice.cpp foundations/odr/variable-without-initializer-twice.cpp foundations/odr/enumeration-defined-twice.cpp foundations/odr/static-member-defined-twice.cpp foundations/odr/inline-variable-defined-twice.cpp foundations/odr/header-included-twice.cpp foundations/odr/declarations-and-one-definition.cpp foundations/odr/guard-text-after-endif.cpp foundations/odr/extern-initializer-is-definition.cpp
 
 A translation unit must not define a variable, a function, a class, or
 an enumeration more than once. The rule also applies to `inline`
-entities and to static data members. {rule}`FN-14` states the rule for
+entities and to static data members. ODR-15 gives the declarations of
+a variable that are definitions. {rule}`FN-14` states the rule for
 functions, and {rule}`TYN-7` for classes.
 :::
 
@@ -186,14 +202,17 @@ implementation rejects the program.
 
 :::{rule} ODR-3
 :kind: required
-:tests: foundations/odr/overload-set-uses-selected-only.cpp foundations/odr/constant-value-read-not-use.cpp foundations/odr/constant-reads-in-lambda.cpp foundations/odr/local-class-reads-constant.cpp foundations/odr/unevaluated-name-not-use.cpp foundations/odr/constant-address-is-use.cpp foundations/odr/function-address-is-use.cpp foundations/odr/template-argument-address-is-use.cpp foundations/odr/template-argument-address-links.cpp
+:tests: foundations/odr/overload-set-uses-selected-only.cpp foundations/odr/constant-value-read-not-use.cpp foundations/odr/constant-reads-in-lambda.cpp foundations/odr/local-class-reads-constant.cpp foundations/odr/unevaluated-name-not-use.cpp foundations/odr/constant-address-is-use.cpp foundations/odr/function-address-is-use.cpp foundations/odr/template-argument-address-is-use.cpp foundations/odr/template-argument-address-links.cpp foundations/odr/constant-read-through-operators.cpp foundations/odr/constant-reference-through-conditional-is-use.cpp
 
 An evaluated expression that names a variable or a function uses it,
 with these exceptions:
 
 - The expression only reads the value of a constant variable. For a
   variable of class type, the read can be of a member that is not
-  `mutable`, or a copy of the whole object ({question}`Q-0129`).
+  `mutable`, or a copy of the whole object ({question}`Q-0129`). The
+  name can be in parentheses, the second or third operand of `?:`, or
+  the right operand of a comma, when the program reads the value of
+  the result.
 - The name is a reference variable that a constant expression
   initializes.
 - The name is in an unevaluated operand ({rule}`UNEV-1`) or in a
@@ -226,11 +245,12 @@ These constructs use {term}`special member functions <special member function>`:
 
 :::{rule} ODR-5
 :kind: required
-:tests: foundations/odr/delete-uses-destructor.cpp foundations/odr/new-uses-deallocation-function.cpp foundations/odr/virtual-destructor-uses-deallocation-function.cpp
+:tests: foundations/odr/delete-uses-destructor.cpp foundations/odr/new-uses-deallocation-function.cpp foundations/odr/virtual-destructor-uses-deallocation-function.cpp foundations/odr/new-noexcept-constructor-no-deallocation.cpp
 
 A `new` expression uses its allocation function and its constructor. If
-the constructor can throw, the `new` expression also uses the matching
-deallocation function. A `delete` expression uses the destructor and the
+the constructor is not non-throwing ({rule}`EXS-4`), the `new`
+expression also uses the matching deallocation function
+({question}`Q-0358`). A `delete` expression uses the destructor and the
 deallocation function. A virtual destructor uses the deallocation
 function of its class.
 :::
@@ -314,7 +334,7 @@ at every inclusion.
 
 :::{rule} ODR-8
 :kind: no-diagnostic
-:tests: foundations/odr/header-function-in-two-units.cpp foundations/odr/unused-member-function-no-definition.cpp foundations/odr/local-object-uses-destructor.cpp foundations/odr/constructor-uses-member-constructor.cpp foundations/odr/destructor-uses-pure-base-destructor.cpp foundations/odr/copy-uses-copy-constructor.cpp foundations/odr/delete-uses-destructor.cpp foundations/odr/new-uses-deallocation-function.cpp foundations/odr/virtual-destructor-uses-deallocation-function.cpp foundations/odr/default-argument-used.cpp foundations/odr/virtual-function-not-called-is-used.cpp foundations/odr/constant-address-is-use.cpp foundations/odr/function-address-is-use.cpp foundations/odr/template-argument-address-links.cpp foundations/odr/explicit-variable-specialization-in-two-units.cpp foundations/odr/explicit-class-member-in-two-units.cpp
+:tests: foundations/odr/header-function-in-two-units.cpp foundations/odr/unused-member-function-no-definition.cpp foundations/odr/local-object-uses-destructor.cpp foundations/odr/constructor-uses-member-constructor.cpp foundations/odr/destructor-uses-pure-base-destructor.cpp foundations/odr/copy-uses-copy-constructor.cpp foundations/odr/delete-uses-destructor.cpp foundations/odr/new-uses-deallocation-function.cpp foundations/odr/virtual-destructor-uses-deallocation-function.cpp foundations/odr/default-argument-used.cpp foundations/odr/virtual-function-not-called-is-used.cpp foundations/odr/constant-address-is-use.cpp foundations/odr/function-address-is-use.cpp foundations/odr/template-argument-address-links.cpp foundations/odr/explicit-variable-specialization-in-two-units.cpp foundations/odr/explicit-class-member-in-two-units.cpp foundations/odr/constant-reference-through-conditional-is-use.cpp foundations/odr/new-noexcept-constructor-no-deallocation.cpp
 
 This rule applies to a variable or function with external linkage that
 is not `inline`. If the program uses such an entity, the program must
@@ -404,6 +424,10 @@ struct Limits { static const int top = 5; };   // declared, not defined
 int cells[Limits::top];        // reads the value: no use
 const int* where = &Limits::top;   // a use: Limits::top needs a definition
 
+int total;                     // a definition: the value is 0
+extern int total;              // a declaration only
+int pick(bool wide) { return wide ? Limits::top : 1; }   // no use
+
 int helper();                  // never defined
 decltype(helper()) count = 0;  // unevaluated: no use, so this is valid
 
@@ -439,7 +463,7 @@ template <> int rank<bool> = 2;                // two units: two definitions
 
 ## Evidence
 
-All eight compilers agree on 64 of 70 tests. EDG checks each unit and
+All eight compilers agree on 68 of 75 tests. EDG checks each unit and
 does not link, so its results for the link and run tests say only that
 the units are valid.
 
@@ -452,7 +476,8 @@ the units are valid.
   the address of a function with external linkage that has no
   definition, when nothing calls the function. ODR-8 allows the result.
   For a function with internal linkage, Clang reports the use under
-  ODR-11, and GCC gives no diagnostic ({question}`Q-0315`).
+  ODR-11, and GCC gives no diagnostic ({question}`Q-0315`). The GCC
+  build of that program links and runs at `-O0` and at `-O2`.
 - ODR-8: Each translation unit compiles without a diagnostic, and only
   the linker reports a missing or extra definition. At `-O2`, the
   report compilers `gcc-16-o2` and `clang-22-o2` link four of the
@@ -461,20 +486,43 @@ the units are valid.
   `function-address-is-use.cpp`,
   `virtual-destructor-uses-deallocation-function.cpp`, and
   `virtual-function-not-called-is-used.cpp`.
-- ODR-9: Clang 22 and GCC warn about a function with internal linkage
-  that is used and not defined, and `-pedantic-errors` makes the
-  warning an error. EDG reports an error. GCC gives no diagnostic when
-  the only use is in an `inline` function that nothing calls, and Clang
-  18 only warns ({question}`Q-0128`). The rule needs no diagnostic, and
-  ODR-11 asks for the warning. With `-Wall` or `-Wunused-function`, GCC
-  16 gives a `-Wunused-function` warning in place of that warning, and
-  `-pedantic-errors` leaves the new warning a warning.
+- ODR-9, ODR-11: the table gives each compiler's diagnostic for a
+  function with internal linkage that is used and not defined, under
+  `-pedantic-errors` and no other flag ({question}`Q-0128`,
+  {question}`Q-0315`). An error from Clang 22 and GCC is a warning that
+  `-pedantic-errors` makes an error. A warning from Clang 18 stays a
+  warning, so the program builds. The tests that add `-Werror` reject
+  on Clang 18 too, and EDG skips them. The rule needs no diagnostic,
+  and ODR-11 asks for the warning. With `-Wall` or
+  `-Wunused-function`, GCC 16 gives a `-Wunused-function` warning in
+  place of that diagnostic, and `-pedantic-errors` leaves the new warning a
+  warning.
+
+  | The use | Test | Clang 18 | Clang 22 | GCC | EDG |
+  |---|---|---|---|---|---|
+  | a call in a function that is not `inline` | `internal-function-not-defined-warns.cpp` (`-Werror`) | warning | error | error | error |
+  | a call only in an `inline` function that nothing calls | `internal-function-used-in-unused-inline.cpp` | warning | error | none | error |
+  | the address as a template argument | `template-argument-address-is-use.cpp` (`-Werror`) | warning | error | none | error |
 - ODR-10, ODR-14: Different definitions in two units link and run.
   So does a partial or explicit specialization that only one unit
   declares. The tests accept the result of either definition. In the
-  default builds, both units use one of the definitions. In the `-O2`
-  builds, each unit can use its own. ODR-10 and ODR-14 allow both
+  default builds, both units use one of the definitions of an `inline`
+  function or variable. In the `-O2` builds, each unit can use its own.
+  An enumerator, and the value of a constant variable, is fixed in each
+  unit when the unit is translated, so each unit uses its own value
+  (`enumeration-differs-across-units.cpp`). Only functions and objects
+  are shared across units when the program is linked. ODR-10 and ODR-14 allow both
   results, because the rules need no diagnostic (decision 0047).
+- ODR-5: Clang and GCC 14 do not refer to the deallocation function
+  when the constructor is `noexcept`. GCC 16 at `-O0` refers to it, and
+  the program fails to link. On Clang 22 and GCC 16, a constructor
+  without `noexcept` makes the program refer to the function, also when
+  the constructor only calls `noexcept` functions
+  ({question}`Q-0358`).
+- ODR-3: Clang and GCC link a program that reads the value of a static
+  member with no definition through `?:`, a comma, or parentheses, and
+  fail to link a program that binds a reference to such a `?:` result
+  at `-O0`.
 - ODR-12: Every compiler that links gives each specialization one
   address in the program. That includes the static members of class
   templates and partial specializations, and a static local variable in

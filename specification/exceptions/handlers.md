@@ -254,7 +254,9 @@ A handler with parameter type `T` matches an exception object of type
 An arithmetic conversion or a user-defined conversion does not make a
 match. A pointer to a member of a base does not match a handler for a
 pointer to a member of a derived class. A handler by value copies the exception object, and a copy to a
-base type slices the object. A handler by reference refers to the
+base type slices the object. The copy constructor of the base then
+initializes the parameter from the base part of the exception object.
+A handler by reference refers to the
 exception object, also through a reference that is not `const`.
 :::
 
@@ -405,9 +407,18 @@ of 92 tests. EDG runs no programs, so its results for the run tests say
 only that the programs are valid, and the harness sees a terminating
 program only as a nonzero exit.
 
-- TRY-12 and TRY-13: Clang warns under `-Wall`. GCC gives no warning
-  for either. EDG rejects the function that flows off the end of its
-  handler without any flag.
+- TRY-4, TRY-12, TRY-13: the table gives the warnings of each compiler
+  with no warning flag. `-Wall` adds none of these warnings on Clang or
+  GCC. The tests use `-Wall -Werror`, so a warning rejects the program,
+  and EDG skips the tests. A test whose GCC result is `accept` only
+  compiles on GCC.
+
+  | Case | Tests | Clang | GCC | EDG |
+  |---|---|---|---|---|
+  | TRY-4: a handler for a derived class after one for its base | `unreachable-handler-warns.cpp` | warns | warns | warns |
+  | TRY-4: a second handler for one type | `duplicate-handler-warns.cpp` | warns | warns | warns |
+  | TRY-12: a handler of a function try block runs off the end of a function that returns `int` | `function-try-block-non-void-no-return.cpp`, `member-function-try-block-no-return.cpp` | warns | none | warns |
+  | TRY-13: a handler of a constructor's or destructor's function try block names a member | `ctor-try-block-member-use-warns.cpp`, `dtor-try-block-member-use-warns.cpp` | warns | none | none |
 - TRY-11: the test only shows that the program compiles.
 - TRY-2: every Clang and GCC configuration matches a thrown pointer to
   an object, and a thrown pointer to a pointer, with a handler for a

@@ -414,7 +414,9 @@ values that fit in its width.
 A standard-layout union ({rule}`CLS-19`) can have two members that are
 standard-layout classes and not unions. While one of them is active, a
 program can read a member of the other one if the member lies in the
-{term}`common initial sequence` of the two classes (UNI-15). The read
+{term}`common initial sequence` of the two classes (UNI-15). The member
+can also be a member of such a member, at any depth, when the two
+enclosing members are of layout-compatible types (UNI-16). The read
 gives the value of the matching member of the active class. If that
 matching member is volatile and the member read is not, the read
 accesses a volatile object through a glvalue that is not volatile, and
@@ -612,6 +614,19 @@ public:
 
 `std::construct_at` is declared as {rule}`LSUP-10` gives. A plain array
 `T items[Capacity]` would need a default constructor for `T`.
+
+A member of a member can be read through the other class when the
+enclosing members are layout-compatible (UNI-10):
+
+```cpp
+struct Point { int x; int y; };
+struct Pair { int first; int second; };
+struct Line { Point from; int width; };
+struct Span { Pair range; int step; };
+union Shape { Line line; Span span; };
+Shape s{.line = {{1, 2}, 3}};
+int y = s.span.range.second;     // 2: Point and Pair are layout-compatible
+```
 
 ## Evidence
 

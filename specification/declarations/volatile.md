@@ -168,10 +168,12 @@ before the program runs and are not accesses ({question}`Q-0176`).
 
 :::{rule} VOL-6
 :kind: undefined
-:tests: declarations/volatile/nonvolatile-access-to-volatile-constant.cpp declarations/volatile/constant-read-through-plain.cpp
+:tests: declarations/volatile/nonvolatile-access-to-volatile-constant.cpp declarations/volatile/constant-read-through-plain.cpp declarations/volatile/byte-copy-through-plain-bytes.cpp
 
 If a program accesses a volatile object through a glvalue that is not
-volatile, the behavior is undefined.
+volatile, the behavior is undefined. A glvalue of type `unsigned char`,
+`char`, or `std::byte` that reads or writes the bytes of a volatile
+object is such a glvalue ({rule}`STG-12`, {question}`Q-0359`).
 :::
 
 ## Implementation Requirements
@@ -244,8 +246,8 @@ volatile Control* control = nullptr;           // set to the device address
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 38
-of 40 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 39
+of 41 tests.
 
 - VOL-1: the tests check that programs with volatile accesses compile
   and run. A test cannot observe if an access was removed.

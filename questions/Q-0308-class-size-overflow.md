@@ -11,7 +11,7 @@ exceeds the largest value of `std::size_t` on x86-64. The test takes
 
 | Compiler | Result |
 |---|---|
-| Clang 22, host 22 | rejects the class: the structure is too large |
+| Clang 22, host 22 | accepts the class definition alone, and at `sizeof` rejects the class: the structure is too large |
 | EDG 7.0 | rejects the class: the class is too large |
 | GCC 14, 16, host 16 | accepts the class definition, and rejects `sizeof` with an overflow in a constant expression |
 | Clang 18 | accepts, and `sizeof` gives the size reduced modulo 2<sup>64</sup> |

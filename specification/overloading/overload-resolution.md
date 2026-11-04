@@ -187,8 +187,12 @@ the table, these letters stand for sets of types:
 | `?:` | {rule}`COND-11` | | {doc}`/expressions/conditional` |
 | `,`, unary `&`, `->` | none (OVL-12) | | |
 
-The left operand of a built-in assignment gets no user-defined
-conversion ({rule}`ICS-10`). The operands of `!`, `&&`, and `||` can
+The left operand of a built-in `=` gets no user-defined conversion
+({rule}`ICS-10`). The operand of a built-in `++` or `--`, and the left
+operand of a built-in compound assignment such as `+=`, can come from a
+conversion function that returns a reference. So for a class object `c`
+that converts to `int&`, `++c` and `c += 1` use the built-in operator,
+and `c = 1` has no built-in candidate. The operands of `!`, `&&`, and `||` can
 use an `explicit` conversion function to `bool` (OVL-9). After a built-in candidate wins, the
 operator's own page decides what the expression does (OVL-11). For
 example, `<=>` between a class that converts to `char` and a class that
@@ -301,7 +305,8 @@ candidates are these ({rule}`OPR-6`):
 - the rewritten candidates of {rule}`DCMP-6`.
 
 A call by the operator function's name uses ordinary lookup instead, so
-a member there can hide a non-member.
+a member there can hide a non-member. If ordinary lookup finds a class
+member, argument-dependent lookup does not run ({rule}`NAM-32`).
 :::
 
 :::{rule} OVL-8
@@ -317,7 +322,7 @@ right operand, and the second parameter matches the left operand.
 
 :::{rule} OVL-9
 :kind: required
-:tests: foundations/overload-resolution/builtin-arithmetic.cpp foundations/overload-resolution/builtin-pointer.cpp foundations/overload-resolution/builtin-assignment.cpp foundations/overload-resolution/builtin-enumeration.cpp foundations/overload-resolution/builtin-enumeration-no-arithmetic.cpp foundations/overload-resolution/builtin-three-way.cpp foundations/overload-resolution/builtin-integer-only.cpp foundations/overload-resolution/builtin-bool-increment.cpp foundations/overload-resolution/builtin-member-pointer-equality.cpp foundations/overload-resolution/builtin-member-pointer-order.cpp foundations/overload-resolution/builtin-integral-compound.cpp foundations/overload-resolution/builtin-three-way-mixed.cpp foundations/overload-resolution/builtin-three-way-bool-operand.cpp foundations/overload-resolution/builtin-not-callable-by-name.cpp foundations/overload-resolution/builtin-over-template.cpp foundations/overload-resolution/builtin-logical-explicit-bool.cpp foundations/overload-resolution/builtin-logical-explicit-competes.cpp foundations/overload-resolution/builtin-logical-explicit-competes-and.cpp foundations/overload-resolution/builtin-logical-explicit-int.cpp
+:tests: foundations/overload-resolution/builtin-arithmetic.cpp foundations/overload-resolution/builtin-pointer.cpp foundations/overload-resolution/builtin-assignment.cpp foundations/overload-resolution/builtin-enumeration.cpp foundations/overload-resolution/builtin-enumeration-no-arithmetic.cpp foundations/overload-resolution/builtin-three-way.cpp foundations/overload-resolution/builtin-integer-only.cpp foundations/overload-resolution/builtin-bool-increment.cpp foundations/overload-resolution/builtin-member-pointer-equality.cpp foundations/overload-resolution/builtin-member-pointer-order.cpp foundations/overload-resolution/builtin-integral-compound.cpp foundations/overload-resolution/builtin-three-way-mixed.cpp foundations/overload-resolution/builtin-three-way-bool-operand.cpp foundations/overload-resolution/builtin-not-callable-by-name.cpp foundations/overload-resolution/builtin-over-template.cpp foundations/overload-resolution/builtin-logical-explicit-bool.cpp foundations/overload-resolution/builtin-logical-explicit-competes.cpp foundations/overload-resolution/builtin-logical-explicit-competes-and.cpp foundations/overload-resolution/builtin-logical-explicit-int.cpp foundations/overload-resolution/builtin-increment-from-conversion.cpp foundations/overload-resolution/builtin-increment-from-value.cpp
 
 An operator has the {term}`built-in candidates <built-in candidate>` that
 the table of OVL-P4 lists, each a function with the parameter types of
@@ -334,7 +339,9 @@ its row. A call by the operator function's name, such as
 A built-in candidate is removed if a non-member candidate that is not a
 template has the same parameter types. A reference parameter differs
 from its referred type, so `operator==(const E&, const E&)` keeps the
-built-in `==` for an enumeration `E`. A rewritten non-member candidate
+built-in `==` for an enumeration `E`. The kept built-in candidate and
+that function then tie ({rule}`ICS-11`), so `a == b` for two
+enumerators of `E` is ambiguous (OVL-36). A rewritten non-member candidate
 also removes the built-in candidate ({question}`Q-0147`).
 :::
 
@@ -344,7 +351,8 @@ also removes the built-in candidate ({question}`Q-0147`).
 
 If a built-in candidate wins, each class operand converts by the
 conversion function of its sequence. The standard conversions after the
-conversion function do not apply. The built-in operator then applies to
+conversion function do not apply, and an operand that is not of class
+type keeps its type. The built-in operator then applies to
 the operands, and the program is not valid if the operator's own rules
 reject them.
 :::
@@ -389,7 +397,7 @@ the program is not valid.
 
 :::{rule} OVL-14
 :kind: required
-:tests: foundations/overload-resolution/init-constructor-against-conversion.cpp foundations/overload-resolution/init-constructor-conversion-tie.cpp foundations/overload-resolution/init-conversion-to-derived.cpp foundations/overload-resolution/init-qualified-result.cpp foundations/overload-resolution/init-copy-explicit-conversion.cpp
+:tests: foundations/overload-resolution/init-constructor-against-conversion.cpp foundations/overload-resolution/init-constructor-conversion-tie.cpp foundations/overload-resolution/init-conversion-to-derived.cpp foundations/overload-resolution/init-qualified-result.cpp foundations/overload-resolution/init-copy-explicit-conversion.cpp foundations/overload-resolution/init-copy-constructor-standard-only.cpp
 
 The initialization of an object of class `T` from one initializer `v`
 has these candidates:
@@ -402,7 +410,10 @@ has these candidates:
 | list initialization | {rule}`ILC-3` |
 
 The argument is `v`. A conversion function that returns a cv-qualified
-`T`, or a reference to `T`, counts as a conversion to `T`.
+`T`, or a reference to `T`, counts as a conversion to `T`. In copy
+initialization from another type, a constructor of `T` gets `v` by a
+standard sequence only ({rule}`ICS-10`). So no constructor of `T`, also
+the copy or move constructor, takes `v` through a conversion function.
 :::
 
 :::{rule} OVL-15
@@ -728,7 +739,7 @@ order of the declarations.
 
 :::{rule} OVL-35
 :kind: reject
-:tests: foundations/overload-resolution/no-viable-function.cpp foundations/overload-resolution/current-object-explicit-extra-argument.cpp foundations/overload-resolution/operator-call-by-name-hidden.cpp foundations/overload-resolution/init-copy-explicit-conversion.cpp foundations/overload-resolution/init-copy-list-explicit-conversion.cpp foundations/overload-resolution/rewritten-swapped-member-object.cpp foundations/overload-resolution/rewritten-inner-no-rewrite.cpp foundations/overload-resolution/surrogate-template-not-candidate.cpp foundations/overload-resolution/surrogate-ref-qualifier-lvalue.cpp foundations/overload-resolution/builtin-not-callable-by-name.cpp foundations/overload-resolution/reference-explicit-copy.cpp foundations/overload-resolution/inherited-copy-shape-any-argument.cpp foundations/overload-resolution/inherited-copy-shape-default.cpp foundations/overload-resolution/builtin-logical-explicit-int.cpp foundations/conversion-sequences/ellipsis-braced-list.cpp
+:tests: foundations/overload-resolution/no-viable-function.cpp foundations/overload-resolution/current-object-explicit-extra-argument.cpp foundations/overload-resolution/operator-call-by-name-hidden.cpp foundations/overload-resolution/init-copy-explicit-conversion.cpp foundations/overload-resolution/init-copy-list-explicit-conversion.cpp foundations/overload-resolution/rewritten-swapped-member-object.cpp foundations/overload-resolution/rewritten-inner-no-rewrite.cpp foundations/overload-resolution/surrogate-template-not-candidate.cpp foundations/overload-resolution/surrogate-ref-qualifier-lvalue.cpp foundations/overload-resolution/builtin-not-callable-by-name.cpp foundations/overload-resolution/reference-explicit-copy.cpp foundations/overload-resolution/inherited-copy-shape-any-argument.cpp foundations/overload-resolution/inherited-copy-shape-default.cpp foundations/overload-resolution/builtin-logical-explicit-int.cpp foundations/conversion-sequences/ellipsis-braced-list.cpp foundations/overload-resolution/builtin-increment-from-value.cpp foundations/overload-resolution/init-copy-constructor-standard-only.cpp foundations/conversion-sequences/assignment-left-no-builtin.cpp
 
 If a use has no viable function, the program is not valid. These rules
 name specific cases (decision 0042): {rule}`PFX-5`, {rule}`OPR-15`,
@@ -799,12 +810,20 @@ put(1);                          // rejected: the deleted put(int) wins
 void tick(int, long);
 void tick(long, int);
 tick(1, 1);                      // rejected: each is better on one argument
+
+struct Self {
+  void take(this Self&, int);
+  void use() {
+    take(1);                     // *this fills the explicit object parameter
+    take(*this, 1);              // rejected: one argument too many
+  }
+};
 ```
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 144
-of 171 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 148
+of 175 tests.
 
 ### Sources
 
@@ -891,6 +910,20 @@ reading. The review finds the reference unclear on Q-0189.
   rvalue reference ambiguous. Clang also gives an lvalue reference to
   function no conversion that returns an rvalue reference
   ({question}`Q-0138`).
+- OVL-15, OVL-27 to OVL-29: the table gives the function that each
+  compiler binds to a reference to the function type `F`, for each pair
+  of conversion functions in the tests. "Template" names a conversion
+  function template, and "none" means that the binding is ambiguous or
+  has no candidate.
+
+  | Conversion functions | Target | Test | Rules | Clang | GCC | EDG |
+  |---|---|---|---|---|---|---|
+  | `F&`, `F&&` | `F&` | `tie-function-reference-kind.cpp` | `F&` | `F&` | `F&` | `F&` |
+  | `F&`, `F&&` | `F&&` | `tie-function-reference-kind.cpp` | `F&&` | none | `F&&` | `F&&` |
+  | `F&&` only | `F&` | `reference-function-both-kinds.cpp` | `F&&` | none | `F&&` | `F&&` |
+  | `F&`, template `T&&` | `F&&` | `tie-reference-kind-before-template.cpp` | `T&&` | `F&` | `T&&` | `F&` |
+  | `F&&`, template `T&` | `F&` | `tie-reference-kind-before-template-lvalue.cpp` | `T&` | `T&` | `T&` | `F&&` |
+  | template `T&`, template `T&&` | `F&&` | `tie-reference-kind-before-more-specialized.cpp` | `T&&` | `T&` | `T&&` | `T&` |
 - OVL-2, OVL-3: a member function of a nested class calls a name that
   finds members of the enclosing class. GCC gives the call no object.
   Clang and EDG take the current object and choose a static member
@@ -906,7 +939,9 @@ reading. The review finds the reference unclear on Q-0189.
   ({question}`Q-0147`).
 - OVL-11: EDG converts a class operand to the parameter type of the
   winning built-in candidate. Clang and GCC stop after the conversion
-  function ({question}`Q-0141`).
+  function ({question}`Q-0141`). No compiler converts an operand that
+  is not of class type, so every compiler rejects `Holder{} + 1.5` for
+  a class `Holder` that converts to `int*`.
 - OVL-40: Clang uses an `explicit` conversion function for the copy
   constructor's parameter in copy-list-initialization. GCC and EDG do
   not ({question}`Q-0145`).
@@ -920,23 +955,30 @@ reading. The review finds the reference unclear on Q-0189.
 - OVL-20: without a target type, Clang 22, GCC, and EDG find no single
   function when the two constrained functions have different parameter
   lists. Clang 18 keeps the more constrained one ({question}`Q-0142`).
-- OVL-21: Clang 22 calls a static member through the address of a set of
-  members. Clang 18 and GCC reject the call, and EDG stops with an
-  internal error ({question}`Q-0143`).
-- OVL-44, OVL-21: GCC rejects a call through `&(C::f)` or `&f` on a set
-  with a non-static member. Clang rejects the parenthesized form, and
-  Clang 22 accepts `&f`. EDG accepts both forms with no argument. OVL-21
-  follows Clang 22 and EDG for `&f`, as for `&C::f`
-  ({question}`Q-0143`, {question}`Q-0161`). With `f() &` and
-  `static f(int = 0)`, the call `(&f)()` ties under OVL-23 and OVL-25,
-  as the call `f()` with no object does. OVL-36 rejects it. Clang 18
-  reports the ambiguity, and Clang 22 and EDG call the static member.
+- OVL-21, OVL-44: the compilers split on calls through the address of
+  a set that holds a non-static member ({question}`Q-0143`,
+  {question}`Q-0161`). The table gives each test. The set in the first
+  two rows is `void reset()` and `static void reset(int)`. In the other
+  rows, the set is `int f() &` and `static int f(int = 0)`. "Error"
+  means that EDG stops with an internal error. OVL-21 follows Clang 22
+  for `&f`, as for `&C::f`. The call `(&f)()` ties under OVL-23 and
+  OVL-25, as the call `f()` with no object does, and OVL-36 rejects it.
+
+  | Call | Test | Rules | Clang 18 | Clang 22 | GCC | EDG |
+  |---|---|---|---|---|---|---|
+  | `(&C::reset)()` | `call-through-address-nonstatic.cpp` | reject | reject | reject | reject | reject |
+  | `(&C::reset)(1)` | `call-through-address-static-member.cpp` | accept | reject | accept | reject | error |
+  | `(&(C::f))()` | `call-through-address-parenthesized-qualified.cpp` | reject | reject | reject | reject | accept |
+  | `(&(C::f))(1)` | `call-through-address-parenthesized-static.cpp` | reject | reject | reject | reject | error |
+  | `(&f)()` | `call-through-address-unqualified.cpp` | reject | reject | accept | reject | accept |
+  | `(&f)(1)` | `call-through-address-unqualified-argument.cpp` | accept | accept | accept | reject | error |
 - OVL-26: EDG finds two conversion results ambiguous when they differ
   only by a function pointer conversion. Clang and GCC prefer the
   identity ({question}`Q-0163`).
 - OVL-26: a constructor and a conversion function to a derived class
-  tie on the argument. GCC and EDG choose the constructor, whose result
-  needs no conversion. Clang finds the two ambiguous
+  tie on the argument. The forms are copy initialization of the class
+  and an argument of a function. GCC and EDG choose the constructor,
+  whose result needs no conversion. Clang finds the two ambiguous
   ({question}`Q-0189`).
 - OVL-23, OVL-3: in a call with no object, Clang and EDG let a member
   with the ref-qualifier `&&` win and then reject the call. GCC gives
@@ -963,7 +1005,8 @@ reading. The review finds the reference unclear on Q-0189.
   surrogate's user-defined conversion of the object.
 - OVL-9: every compiler gives the built-in `!`, `&&`, and `||` an
   `explicit` conversion function to `bool`. The built-in candidate then
-  ties with an operator function that needs a converting constructor.
+  ties with an operator function that needs a converting constructor,
+  so the expression is ambiguous, and every compiler rejects it (OVL-36).
   An `explicit` conversion function to `int` gives no sequence.
 - OVL-8: every compiler takes a swapped `==` whose parameters meet the
   enumeration operands only in the swapped order.

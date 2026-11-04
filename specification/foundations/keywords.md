@@ -92,6 +92,8 @@ An implementation need not diagnose a use of a reserved name.
 int final = 0;                     // fine: final is an identifier
 struct Leaf final {};              // final has its special meaning
 int class = 0;                     // rejected: class is a keyword
+int long = 0;                      // rejected: long joins the type int,
+                                   // and the declaration has no name
 bool both = true and false;        // the same as true && false
 ```
 

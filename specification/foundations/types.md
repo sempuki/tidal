@@ -289,6 +289,8 @@ constexpr int imax = static_cast<int>(umax >> 1);  // 2^31 - 1
 constexpr int imin = -imax - 1;                    // -2^31
 auto wrong = -2147483648;               // long, or long long on -m32:
                                         // the minus is an operator (PRIM-1)
+constexpr int past = imax + 1;          // rejected: the sum overflows (ADD-9),
+                                        // so it is not a constant (CE-9)
 // With the library: std::numeric_limits<int>::max()
 
 // Fixed-width aliases, checked on each target (TYP-1).
@@ -313,8 +315,10 @@ ILP32 build runs only those.
   the underlying types of `wchar_t`, `char16_t`, and `char32_t` for each
   target. `char8_t` always takes the rank of `unsigned char` (TYP-13).
 - TYP-7: Clang reports a sign on `wchar_t` through an error that a
-  warning flag controls (`-Wsigned-unsigned-wchar`). GCC's message for
-  the same error names `typeof`.
+  warning flag controls (`-Wsigned-unsigned-wchar`). The error is on by
+  default, also without `-pedantic-errors`, and only
+  `-Wno-signed-unsigned-wchar` turns it off. GCC's message for the same
+  error names `typeof`.
 - TYP-14: every compiler rounds to nearest, ties to even, during
   constant evaluation and at run time, in `float` and `double`. The
   results hold at `-O2`. With `-m32`, GCC keeps extra precision in
@@ -323,6 +327,18 @@ ILP32 build runs only those.
   to a floating-point type.
 - TYP-8: Clang gives each character type the rank of its underlying
   type. A program sees these ranks only through promotion (CONV-1).
+
+### Split tests
+
+The table lists each test on which the compilers differ. The
+Expected column gives the outcome that the rules predict. The other
+cells give the outcome of the test on each compiler. Only EDG with
+`-m32` differs, on the alignment of `long long` ({question}`Q-0120`).
+
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `align-ilp32.cpp` | TYP-2 | accept | accept | accept | reject (the x86-64 build skips the test) | {question}`Q-0120` |
+| `align-member-ilp32.cpp` | TYP-2, TYP-12 | accept | accept | accept | reject (the x86-64 build skips the test) | {question}`Q-0120` |
 
 Inputs: clang-targets-x86, clang-targetinfo, clang-ast-context,
 edg-targ-def.

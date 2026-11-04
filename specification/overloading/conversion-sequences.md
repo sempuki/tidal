@@ -268,7 +268,7 @@ and for the operands of the built-in `!`, `&&`, and `||` ({rule}`OVL-9`).
 
 :::{rule} ICS-45
 :kind: required
-:tests: foundations/conversion-sequences/user-defined-explicit.cpp foundations/conversion-sequences/user-defined-explicit-reference-value.cpp foundations/conversion-sequences/user-defined-explicit-rvalue-reference-value.cpp foundations/conversion-sequences/user-defined-explicit-reference-xvalue.cpp foundations/conversion-sequences/user-defined-candidates.cpp
+:tests: foundations/conversion-sequences/user-defined-explicit.cpp foundations/conversion-sequences/user-defined-explicit-reference-value.cpp foundations/conversion-sequences/user-defined-explicit-rvalue-reference-value.cpp foundations/conversion-sequences/user-defined-explicit-reference-xvalue.cpp foundations/conversion-sequences/user-defined-candidates.cpp foundations/conversion-sequences/user-defined-explicit-reference-other-type.cpp
 
 Direct initialization can also use an `explicit` conversion function
 ({rule}`CVF-3`) for these targets:
@@ -376,12 +376,13 @@ conversions.
 
 :::{rule} ICS-10
 :kind: required
-:tests: foundations/conversion-sequences/user-defined-step-standard-only.cpp foundations/conversion-sequences/implicit-object-standard-only.cpp foundations/conversion-sequences/assignment-left-standard-only.cpp foundations/conversion-sequences/double-brace-standard-only.cpp foundations/conversion-sequences/object-explicit-assignment.cpp
+:tests: foundations/conversion-sequences/user-defined-step-standard-only.cpp foundations/conversion-sequences/implicit-object-standard-only.cpp foundations/conversion-sequences/assignment-left-standard-only.cpp foundations/conversion-sequences/double-brace-standard-only.cpp foundations/conversion-sequences/object-explicit-assignment.cpp foundations/overload-resolution/init-copy-constructor-standard-only.cpp foundations/conversion-sequences/assignment-left-no-builtin.cpp foundations/overload-resolution/builtin-increment-from-conversion.cpp
 
 Only a standard sequence can reach these parameters:
 
 - the implicit object parameter of a member function,
-- the left operand of a built-in assignment,
+- the left operand of a built-in `=`, but not of a compound assignment
+  or of `++` and `--` ({principle}`OVL-P4`),
 - the first parameter of a constructor, and the object parameter of a
   conversion function, that ICS-4 considers,
 - a parameter of type `C` or reference to `C` of a constructor of class
@@ -433,7 +434,9 @@ A non-static member function has an {term}`implicit object parameter`:
 
 - Its type is an lvalue reference to the class, with the function's
   cv-qualifiers. With the ref-qualifier `&&`, it is an rvalue reference.
-- For a conversion function, the class is the class of the object.
+- For a conversion function, the class is the class of the object. So
+  the object parameters of a conversion function of a base and one of a
+  derived class tie, and ICS-37 decides between the two.
 - For a function that a using-declaration names, the class is the class
   with the using-declaration.
 :::
@@ -750,7 +753,8 @@ When a user-defined conversion chooses between two conversion functions
 whose object parameters tie (ICS-7), the function whose result has the
 better third part of ICS-3 wins ({rule}`OVL-26`). The third parts
 compare by step 4 of ICS-P5, with ICS-42 to ICS-44 for results of
-different types. For a reference to a function, {rule}`OVL-29` decides
+different types. The object parameters of an inherited conversion
+function and one of the derived class tie (ICS-13). For a reference to a function, {rule}`OVL-29` decides
 between results that still tie ({question}`Q-0138`).
 :::
 
@@ -820,12 +824,29 @@ enum Level : short { low };
 void pick(const short&);    // 10
 void pick(int&&);           // 11
 pick(low);                  // 10: ICS-34 comes before ICS-28
+
+struct Pair { Pair(int, int); };
+struct Point { int x, y; };
+struct Holder { Point p; };
+void hold(Pair);            // 12
+void hold(Holder);          // 13
+hold({{1, 2}});             // 13: Pair's copy constructor gets no
+                            // user-defined sequence from {1, 2} (ICS-10)
+
+struct Target;
+struct Source { operator Target(); };
+struct Target { Target(); Target(Source&); };
+Source s;
+void send(Target);          // 14
+void send(...);             // 15
+send(s);                    // rejected: Target(Source&) and operator Target()
+                            // tie (ICS-7), and 14 still beats 15 (ICS-8)
 ```
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 102
-of 129 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 106
+of 133 tests.
 
 ### Sources
 
@@ -885,7 +906,8 @@ bound, for the reasons in Q-0188.
   question.
 - ICS-8: GCC keeps an `explicit` constructor in the sequence of a
   copy-list-initialized parameter, chooses the function, and rejects the
-  call. Clang and EDG form no sequence and choose the other function
+  call. Clang and EDG form no sequence and choose the other function.
+  The last bullet of ICS-8 follows GCC, and the answer is provisional
   ({question}`Q-0132`).
 - ICS-21, ICS-22: GCC and EDG prefer a user-defined list sequence to
   `std::initializer_list` over a standard sequence to `int`. Clang
@@ -914,16 +936,23 @@ bound, for the reasons in Q-0188.
   before ICS-28. GCC does so except for ICS-34, and EDG applies ICS-28
   first. Clang and EDG apply ICS-28 before ICS-31, and GCC applies
   ICS-31 first ({question}`Q-0152`, the order grid).
-- ICS-31: Clang prefers a pointer to an array of known bound, as ICS-31
-  does. GCC and EDG find a tie. EDG does not compare a reference that
-  binds a temporary with a value parameter ({question}`Q-0153`).
+- ICS-31, array bound (`qualification-array-bound.cpp`): Clang prefers
+  a pointer to an array of known bound, as ICS-31 does. GCC and EDG find
+  a tie and reject the call ({question}`Q-0153`).
+- ICS-31, a reference that binds a temporary against a value parameter
+  (`qualification-reference-temporary.cpp`): Clang and GCC prefer the
+  sequence that adds fewer cv-qualifiers, as ICS-31 does. EDG does not
+  compare the two, finds a tie, and rejects the call
+  ({question}`Q-0153`).
 - ICS-19, ICS-36: EDG finds a tie between `Middle` and `Base` for a
   one-element list of `Derived` when the classes are not aggregates
   ({question}`Q-0154`).
 - ICS-38: GCC gives a braced UTF-8 literal no sequence to a `char`
   array. Clang gives a literal a sequence to an array that is too short,
   and finds a tie between a known and an unknown bound
-  ({question}`Q-0155`).
+  ({question}`Q-0155`). For `{"ab"}` against `const char (&)[2]` and
+  `const char*`, Clang finds a tie and rejects the call. GCC and EDG
+  choose the pointer (`list-string-literal-too-short.cpp`).
 - ICS-46: two references bind directly to one array, one with a known
   bound and one without. GCC and EDG prefer the known bound, with or
   without braces, and also when the known bound has fewer
@@ -935,10 +964,23 @@ bound, for the reasons in Q-0188.
   `explicit` conversion function that returns a value. GCC and EDG do
   not. ICS-45 follows Clang for an rvalue reference
   ({question}`Q-0156`), and GCC and EDG for an lvalue reference to
-  `const` ({question}`Q-0337`).
-  Every compiler binds `Item&&` to the result of `explicit operator
-  Item&&()`. For `const Item&`, Clang and EDG use that function, and GCC
-  does not.
+  `const` ({question}`Q-0337`). The table gives, for `static_cast` to
+  each reference, whether the `explicit` conversion function serves the
+  cast. `T` is a class type or `int`, and the results are the same for
+  both. `U` is a base of the class, or `long` for `int`.
+
+  | Target | `explicit operator T()` | `explicit operator T&()` | `explicit operator T&&()` |
+  |---|---|---|---|
+  | `T&&` | rule: yes; Clang: yes; GCC, EDG: no | no | yes |
+  | `const T&` | rule: no; Clang: yes; GCC, EDG: no | yes | rule: no; Clang, EDG: yes; GCC: no |
+  | `T&` | no | yes | no |
+  | `U&&` or `const U&` | no | no | no |
+
+  The tests are `user-defined-explicit-rvalue-reference-value.cpp`,
+  `user-defined-explicit-reference-value.cpp`,
+  `user-defined-explicit-reference-xvalue.cpp`, and
+  `user-defined-explicit-reference-other-type.cpp`. A cell with one
+  answer holds on every compiler.
 - ICS-20: for a list with one class element that converts to the
   referenced type, Clang and EDG make a temporary unless the element
   has the referenced type or a derived class. GCC binds through the
@@ -948,6 +990,42 @@ bound, for the reasons in Q-0188.
 - ICS-37: Clang finds two conversion functions to `F&` and `F&&`
   ambiguous for a reference `F&&` to a function type. GCC and EDG apply
   {rule}`OVL-29` ({question}`Q-0138`).
+
+### Split tests
+
+The table lists each test on which the compilers differ. The
+Expected column gives the outcome that the rules predict. The other
+cells give the outcome of the test on each compiler.
+
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `array-known-bound-direct-cv.cpp` | ICS-46 | accept | reject | accept | accept | {question}`Q-0188` |
+| `array-known-bound-direct.cpp` | ICS-46 | accept | reject | accept | accept | {question}`Q-0188` |
+| `array-pointer-tie-breaker.cpp` | ICS-33, ICS-36 | accept | accept | reject | accept | {question}`Q-0137` |
+| `bit-field-promotion.cpp` | ICS-2 | accept | accept | reject | reject | {question}`Q-0134` |
+| `chosen-explicit-copy-list.cpp` | ICS-8 | reject | accept | reject | accept | {question}`Q-0132` |
+| `conversion-choice-equal-rank-extended-target.cpp` | ICS-44 | accept | reject | accept | accept |  |
+| `conversion-choice-equal-rank-source.cpp` | ICS-44 | accept | reject | accept | accept |  |
+| `fixed-enumeration-before-rvalue-reference.cpp` | ICS-34, ICS-28 | accept | accept | reject | reject | {question}`Q-0152` |
+| `floating-before-rvalue-reference.cpp` | ICS-35, ICS-28 | accept | reject | accept | reject | {question}`Q-0152` |
+| `floating-equal-rank.cpp` | ICS-35 | accept | reject | accept | accept |  |
+| `initializer-list-over-kind.cpp` | ICS-21, ICS-22 | accept | accept | reject | reject | {question}`Q-0133` |
+| `list-array-against-scalar.cpp` | ICS-17 | accept | accept | reject | accept | {question}`Q-0135` |
+| `list-class-list-constructor.cpp` | ICS-19 | accept | Clang host, Clang 22: accept; Clang 18: reject | accept | accept | {question}`Q-0081` |
+| `list-class-nearest-base.cpp` | ICS-19, ICS-36 | accept | accept | accept | reject | {question}`Q-0154` |
+| `list-reference-class-element-class.cpp` | ICS-20 | accept | accept | reject | accept | {question}`Q-0157` |
+| `list-reference-class-element-scalar.cpp` | ICS-20 | accept | accept | reject | accept | {question}`Q-0157` |
+| `list-string-literal-bound.cpp` | ICS-38, ICS-46 | accept | reject | accept | accept | {question}`Q-0155`, {question}`Q-0188` |
+| `list-string-literal-too-short.cpp` | ICS-38 | accept | reject | accept | accept | {question}`Q-0155` |
+| `list-string-literal-utf8.cpp` | ICS-38 | accept | accept | reject | accept | {question}`Q-0155` |
+| `qualification-array-bound.cpp` | ICS-31 | accept | accept | reject | reject | {question}`Q-0153` |
+| `qualification-reference-temporary.cpp` | ICS-31 | accept | accept | accept | reject | {question}`Q-0153` |
+| `rvalue-reference-before-qualification.cpp` | ICS-28, ICS-31 | accept | accept | reject | accept | {question}`Q-0152` |
+| `tie-breaker-before-rvalue-reference.cpp` | ICS-32, ICS-33, ICS-36, ICS-28 | accept | accept | accept | reject | {question}`Q-0152` |
+| `user-defined-explicit-reference-value.cpp` | ICS-45 | accept | reject | accept | accept | {question}`Q-0337` |
+| `user-defined-explicit-reference-xvalue.cpp` | ICS-45 | accept | reject | accept | reject | {question}`Q-0337` |
+| `user-defined-explicit-rvalue-reference-value.cpp` | ICS-45 | accept | accept | reject | reject | {question}`Q-0156` |
+| `foundations/language-support/initializer-list-candidate-not-viable.cpp` | ICS-16 | accept | accept | reject | accept | {question}`Q-0321` |
 
 ### Results where every compiler agrees
 

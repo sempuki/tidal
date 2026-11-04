@@ -83,6 +83,19 @@ can use fresh storage as objects of these types without placement
 | the start of a byte array's {term}`lifetime` | the array |
 | some library functions *(library referenced)* | the storage that they name |
 
+A cast of a byte array's own address does not reach the objects that
+the array hosts ({rule}`STG-29`). The pointer that an allocation
+function returns does reach them:
+
+```cpp
+int* a = static_cast<int*>(::operator new(sizeof(int)));
+*a = 1;                         // an int that the call created
+alignas(int) unsigned char bytes[sizeof(int)];
+int* b = reinterpret_cast<int*>(bytes);
+*b = 1;                         // undefined: b points to a byte
+int* c = new (bytes) int(1);    // c points to the new int
+```
+
 The implementation chooses the objects that give the program defined
 behavior, looking ahead to the program's later use of the storage. If
 no choice works, the behavior is undefined. If several choices work,
@@ -360,7 +373,7 @@ storage exists, a program can do these things:
 
 :::{rule} STG-11
 :kind: required
-:tests: foundations/storage/equal-values-different-bytes.cpp foundations/storage/padding-bytes-not-in-value.cpp foundations/storage/byte-round-trip.cpp
+:tests: foundations/storage/equal-values-different-bytes.cpp foundations/storage/padding-bytes-not-in-value.cpp foundations/storage/byte-round-trip.cpp foundations/storage/base-bytes-shared-with-member.cpp
 
 The {term}`object representation` of an object is its `sizeof` bytes,
 viewed as `unsigned char`. The bits that decide the value are the
@@ -381,12 +394,14 @@ then has its original value. A copy through `char` needs a value in
 each byte, padding bytes included ({rule}`INIT-1`,
 {question}`Q-0328`). STG-25 excludes a base subobject
 and a `[[no_unique_address]]` member, and {rule}`CPY-19` gives a copy
-into a second object.
+into a second object. For an object with a volatile part, the copy
+reads and writes the bytes through `volatile unsigned char` or
+`volatile std::byte` glvalues ({rule}`VOL-6`, {question}`Q-0359`).
 :::
 
 :::{rule} STG-13
 :kind: required
-:tests: foundations/storage/byte-pointer-walks-object.cpp foundations/storage/object-bytes-cover-members.cpp foundations/storage/byte-round-trip.cpp foundations/storage/past-end-address.cpp foundations/storage/padding-bytes-not-in-value.cpp foundations/storage/byte-pointer-from-member-walks-object.cpp
+:tests: foundations/storage/byte-pointer-walks-object.cpp foundations/storage/object-bytes-cover-members.cpp foundations/storage/byte-round-trip.cpp foundations/storage/past-end-address.cpp foundations/storage/padding-bytes-not-in-value.cpp foundations/storage/byte-pointer-from-member-walks-object.cpp foundations/storage/base-bytes-shared-with-member.cpp
 
 A pointer to `std::byte`, `unsigned char`, or `char` that points to a
 byte of a complete object can move over the bytes of that object, also
@@ -580,7 +595,10 @@ A base subobject, or a member declared `[[no_unique_address]]`, can
 share its last bytes with other subobjects of the same object. The
 implementation chooses when the bytes are shared. In the matrix, a
 member of a derived class can occupy the padding at the end of a base
-class whose constructor is user-provided.
+class whose constructor is user-provided. A byte copy into the base
+subobject then also writes the bytes of that member. The member takes
+the value that its new bytes give, and a padding byte of the source
+gives it no value ({rule}`STG-11`, {question}`Q-0357`).
 :::
 
 :::{rule} STG-26
@@ -760,13 +778,20 @@ only that the programs are valid.
   constant evaluation. Each compiler accepts a placement `new` inside a
   function template `std::construct_at` that the program declares, so
   the constant tests declare that function ({rule}`LSUP-10`).
-- STG-1: Clang 18 accepts a class whose size does not fit in
-  `std::size_t` and gives `sizeof` a reduced value. GCC accepts the
-  class definition and rejects `sizeof` of the class. Clang 22 and EDG
-  reject the class ({question}`Q-0308`). With `-m32`, Clang 22 and 18
-  accept a class larger than `std::size_t` holds, and GCC and EDG reject
-  it ({question}`Q-0350`). Every compiler rejects a
-  smaller limit too, as {rule}`TR-14` and {rule}`TR-15` allow.
+- STG-1: the table gives each compiler's result for a type whose size
+  does not fit in `std::size_t`, for the definition alone and for
+  `sizeof` of the type ({question}`Q-0308`, {question}`Q-0350`). A
+  reduced value is the size modulo the range of `std::size_t`. GCC 16
+  and the x86-64 build of EDG skip the `-m32` test. Every compiler
+  rejects a smaller limit too, as {rule}`TR-14` and {rule}`TR-15` allow.
+
+  | Test | Form | Clang 18 | Clang 22 | GCC | EDG |
+  |---|---|---|---|---|---|
+  | `class-size-exceeds-size-type.cpp` | class definition | accept | accept | accept | reject |
+  | | `sizeof` | reduced value | reject | reject | reject |
+  | `class-size-exceeds-size-type-ilp32.cpp` (`-m32`) | class definition | accept | accept | accept | reject |
+  | | `sizeof` | reduced value | reduced value | reject | reject |
+  | `array-size-exceeds-size-type.cpp` | array definition | reject | reject | reject | reject |
 - STG-4: no compiler treats an array of `char` differently from a byte
   array ({question}`Q-0305`).
 - STG-28: Clang and GCC, at `-O0`, at `-O2`, and with the address and
@@ -825,11 +850,20 @@ only that the programs are valid.
   2026-11-03 no family rejects the read through a base pointer, and the
   families split on the `const` case. A placement `new` with a pointer to `const`
   as its argument is rejected by {rule}`NEW-20`.
-- STG-21, STG-22: the `vptr` sanitizer of GCC reports the destructor
-  call at the end of the block and the cast to a derived class. The
-  Clang sanitizer reports neither. Both report a member call on
-  storage with no object. Every compiler rejects a member call outside
-  a lifetime during constant evaluation.
+- STG-18 to STG-22: the table gives the result of each test that uses
+  the `vptr` sanitizer. "Report" means that the sanitizer stops the run,
+  so the test is `run-fail`. "Exit 0" means that the run ends normally.
+  EDG skips these tests. Every compiler rejects a member call outside a
+  lifetime during constant evaluation.
+
+  | Test | Operation | Clang | GCC |
+  |---|---|---|---|
+  | `scope-end-other-type-sanitizer.cpp` | destructor call at the end of the block, on an object of another type | exit 0 | report |
+  | `downcast-after-end-sanitizer.cpp` | cast to a derived class after the lifetime ends | exit 0 | report |
+  | `replace-base-ends-enclosing-sanitizer.cpp` | member call through the name of an ended `Derived` whose storage now holds a `Base` | report | report |
+  | `replace-other-type-old-name-sanitizer.cpp` | member call through the old name after a replacement by another type | report | report |
+  | `member-call-before-construction-sanitizer.cpp` | member call on storage with no object | report | report |
+  | `allocated-storage-not-polymorphic-object-sanitizer.cpp` | member call on allocated storage, which holds no object of a class with virtual functions | report | report |
 - STG-23: `signed char` is outside the list of STG-14
   ({question}`Q-0306`). Constant evaluation cannot form the glvalues
   of the tests ({rule}`CAST-8`).
@@ -856,5 +890,22 @@ only that the programs are valid.
   address and undefined sanitizers.
 - STG-27: every configuration keeps the address in a copy of an invalid
   pointer value, and no sanitizer reports the copy.
+
+### Split tests
+
+The table lists each test on which the compilers differ. The
+Expected column gives the outcome that the rules predict. The other
+cells give the outcome of the test on each compiler. EDG builds no
+program, so a run test is only compiled there, and EDG skips the
+sanitizer tests.
+
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `class-size-exceeds-size-type-ilp32.cpp` | STG-1 | reject | accept | reject | reject | {question}`Q-0350` |
+| `class-size-exceeds-size-type.cpp` | STG-1 | reject | Clang host, Clang 22: reject; Clang 18: accept | reject | reject | {question}`Q-0308` |
+| `downcast-after-end-sanitizer.cpp` | STG-22 | run-fail | run | run-fail | accept (no run) |  |
+| `replace-base-old-pointer-constant.cpp` | STG-19 | reject | accept | accept | accept | {question}`Q-0307` |
+| `reuse-const-automatic-object-constant.cpp` | STG-20 | reject | Clang host, Clang 22: reject; Clang 18: accept | accept | accept | {question}`Q-0307` |
+| `scope-end-other-type-sanitizer.cpp` | STG-21 | run-fail | run | run-fail | accept (no run) |  |
 
 Inputs: clang-diag-sema.

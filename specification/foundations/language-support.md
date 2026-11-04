@@ -90,8 +90,10 @@ includes no header declares these names itself.
 
 A program needs an `std::initializer_list<E>` where a braced list
 initializes an object of that type, or where {rule}`AUTO-7` deduces
-that type ({question}`Q-0321`). Before that point, the program must
-declare `std::initializer_list` with this shape:
+that type ({question}`Q-0321`). A declaration of a parameter of that
+type does not need the type, and neither does a candidate for which a
+braced list has no sequence ({rule}`ICS-16`). Before the point of
+need, the program must declare `std::initializer_list` with this shape:
 
 - a {term}`class template` with one {term}`type parameter` `E`,
 - two non-static data members, a pointer to `const E` and a count of
@@ -114,7 +116,9 @@ class has static data members of its own type, defined as constants
 | `weak_ordering` | `less`, `equivalent`, `greater` |
 | `partial_ordering` | `less`, `equivalent`, `greater`, `unordered` |
 
-LSUP-12 and LSUP-13 give the operations that other uses need.
+The result of a built-in `<=>` is a copy of the matching static
+member ({rule}`CMP-27`). LSUP-12 and LSUP-13 give the operations that
+other uses need.
 :::
 
 :::{rule} LSUP-12
@@ -201,6 +205,9 @@ this shape:
 | `std::nothrow` | an object of type `const std::nothrow_t` |
 | `operator new`, `operator new[]` | parameters `std::size_t` and `const std::nothrow_t&`, and `noexcept` |
 | `operator delete`, `operator delete[]` | parameters `void*` and `const std::nothrow_t&`, and `noexcept` |
+
+A `new` expression can use the nothrow forms during constant
+evaluation ({rule}`NEW-37`, {question}`Q-0303`).
 :::
 
 :::{rule} LSUP-7
@@ -501,6 +508,10 @@ of 58 tests.
 - LSUP-2: EDG needs all three classes declared before it accepts `<=>`
   on any built-in operand. Clang and GCC need only the class that the
   operation yields.
+- LSUP-2: every compiler rejects `1 <=> 2` when `strong_ordering` lacks
+  the member `equal`, although the result is `less`
+  (`strong-ordering-missing-member.cpp`). So a compiler checks a
+  member that the operation does not yield.
 - LSUP-12: GCC tests the result of each part of a defaulted `<=>` with
   `== 0`. Clang and EDG test it with `!= 0`, which an `==` against `0`
   serves through {rule}`DCMP-6`. A class with only `!=` against `0`
@@ -535,8 +546,9 @@ of 58 tests.
   declares its destructor and does not define it, so the program uses
   the library's class data. A handler for a base catches an object of
   a derived class. Clang throws `std::bad_alloc` for an erroneous
-  array bound ({question}`Q-0301`). EDG compiles these programs and
-  does not run them.
+  array bound ({question}`Q-0301`). The table of {rule}`NEW-35` and the
+  Evidence of {rule}`NEW-36` give what each family does for each kind of
+  erroneous bound. EDG compiles these programs and does not run them.
 - LSUP-9: every compiler accepts the declaration of `std::byte`. Clang
   and GCC, at `-O0` and at `-O2`, let a write through a `std::byte`
   glvalue change an `int` and place an object in an array of
@@ -567,3 +579,28 @@ of 58 tests.
   exception class gives through its member functions is
   implementation-defined, and the page leaves those members to the
   library.
+
+### Split tests
+
+The table lists each test on which the compilers differ. The
+Expected column gives the outcome that the rules predict. The other
+cells give the outcome of the test on each compiler. EDG builds no
+program, so a run test is only compiled there. In
+`bad-bound-too-few.cpp`, Clang and GCC both fail, with different exit
+codes.
+
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `expressions/new-delete/aligned-forms-by-name.cpp` | LSUP-5 | run | Clang host, Clang 22: run; Clang 18: reject | run | accept (no run) | {question}`Q-0125` |
+| `expressions/new-delete/bad-bound-negative.cpp` | LSUP-8 | run | run-fail | run | accept (no run) | {question}`Q-0301` |
+| `expressions/new-delete/bad-bound-nothrow.cpp` | LSUP-6 | run | run | run-fail | accept (no run) | {question}`Q-0302` |
+| `expressions/new-delete/bad-bound-too-few.cpp` | LSUP-8 | run | run-fail | run-fail | accept (no run) | {question}`Q-0301` |
+| `expressions/new-delete/bad-bound-too-large.cpp` | LSUP-8 | run | run-fail | run | accept (no run) | {question}`Q-0301` |
+| `expressions/new-delete/constant-evaluation-nothrow.cpp` | LSUP-6 | accept | accept | GCC host, GCC 16: accept; GCC 14: reject | reject | {question}`Q-0303` |
+| `alignment-enumeration-class.cpp` | LSUP-5 | reject | accept | reject | reject | {question}`Q-0299` |
+| `alignment-enumeration-unscoped.cpp` | LSUP-5 | reject | accept | reject | reject | {question}`Q-0299` |
+| `alignment-enumeration-wrong-underlying-type.cpp` | LSUP-5 | reject | accept | reject | reject | {question}`Q-0299` |
+| `exception-classes-array-length.cpp` | LSUP-8 | run | run-fail | run | accept (no run) | {question}`Q-0301` |
+| `initializer-list-candidate-not-viable.cpp` | LSUP-1 | accept | accept | reject | accept | {question}`Q-0321` |
+| `initializer-list-parameter-not-needed.cpp` | LSUP-1 | accept | accept | reject | accept | {question}`Q-0321` |
+| `ordering-defaulted-not-equal-zero-only.cpp` | LSUP-12 | reject | accept | reject | accept | {question}`Q-0334` |

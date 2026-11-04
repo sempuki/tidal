@@ -257,6 +257,14 @@ struct Pair {
 };                             // and ~Pair never runs
 
 void closed() noexcept { throw 2; }   // ends the program
+
+// UNW-8 recommends a warning for these throws in a noexcept function:
+void a() noexcept { try { throw 1; } catch (int) { throw; } }  // warn: the
+                               // rethrow is outside the try block
+void b() noexcept { try { throw 1; } catch (long) {} }   // warn: no handler
+                               // matches int
+void c() noexcept { try { g(); } catch (...) { throw; } } // warn
+void d() noexcept { try { throw 1; } catch (int) {} }    // no warning
 ```
 
 A growable array builds its elements in new storage with placement
@@ -328,10 +336,21 @@ programs are valid.
 - UNW-3: the global deallocation test replaces both the sized and the
   unsized `operator delete`. Clang 18 calls the unsized form after a
   failed `new`, and the other compilers call the sized form.
-- UNW-8: Clang and GCC warn under `-Wall`. Clang warns when no handler
-  matches the static type of the operand, and GCC does not. GCC warns
-  about a rethrow in a handler whose try block holds no direct `throw`,
-  and Clang does not ({question}`Q-0179`).
+- UNW-8: the table gives the warnings of each compiler for a `throw`
+  in a `noexcept` function, with no warning flag. `-Wall` adds none of
+  these warnings on Clang or GCC ({question}`Q-0179`). The tests use
+  `-Wall -Werror`, and EDG skips them. The UNW-8 column gives the
+  rule's answer.
+
+  | Function body | Test | UNW-8 | Clang | GCC | EDG |
+  |---|---|---|---|---|---|
+  | `throw 1;` | `throw-in-noexcept-warns.cpp` | warn | warns | warns | none |
+  | `try { throw 1; } catch (int) { throw; }` | `rethrow-in-noexcept-warns.cpp` | warn | warns | warns | none |
+  | `throw;` outside a handler | | warn | warns | warns | none |
+  | `try { throw 1; } catch (long) {}` | `throw-unmatched-in-noexcept-warns.cpp` | warn | warns | none | none |
+  | `try { g(); } catch (...) { throw; }` | | warn | none | warns | none |
+  | `try { throw 1; } catch (int) {}` | `throw-caught-in-noexcept-no-warning.cpp` | none | none | none | none |
+  | `try { throw Derived{}; } catch (Base&) {}` | `throw-caught-in-noexcept-no-warning.cpp` | none | none | none | none |
 - UNW-10: Clang and GCC print "terminate called after throwing an
   instance of" and the type of the exception, then abort. The test
   gives a static object a destructor that would end the program with

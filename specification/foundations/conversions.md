@@ -75,12 +75,15 @@ single path, so a conversion through such a base is not implicit.
 
 :::{rule} CONV-1
 :kind: required
-:tests: expressions/conversions/integral-promotion.cpp expressions/conversions/bitfield-promotes.cpp expressions/conversions/enum-promotion.cpp expressions/conversions/bitfield-promotion-by-width.cpp expressions/conversions/enum-promotion-no-fixed-type.cpp
+:tests: expressions/conversions/integral-promotion.cpp expressions/conversions/bitfield-promotes.cpp expressions/conversions/enum-promotion.cpp expressions/conversions/bitfield-promotion-by-width.cpp expressions/conversions/enum-promotion-no-fixed-type.cpp foundations/types/rank-promotions.cpp
 
 The following operands go through {term}`integer promotion` in
 arithmetic:
 
-- `bool`, the character types, `short`, and `unsigned short`,
+- `bool`, the character types, `short`, and `unsigned short`. Such a
+  type promotes to `int` if `int` can hold all its values, and
+  otherwise to `unsigned int`. On both matrix targets, `char32_t`
+  promotes to `unsigned int`, and the other types promote to `int`.
 - a bit-field, by its width and not by its declared type (BF-6). A
   bit-field of width 3 declared `long long` promotes to `int`; a
   bit-field of width 40 keeps `long long`,

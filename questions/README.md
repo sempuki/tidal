@@ -370,6 +370,9 @@ status, and the first sentence of its answer section.
 | [Q-0354](Q-0354-edg-decltype-of-placeholder-parameter.md) | Does EDG checking a call whose argument names `decltype` of a generic lambda's parameter before the call is instantiated change DEP-1? | provisional | No; the program is valid, and EDG differs |
 | [Q-0355](Q-0355-edg-virtual-call-from-intermediate-class-constant.md) | Does EDG calling a base's function for a virtual call made inside an intermediate class during constant evaluation change VIRT-1? | provisional | No; the call reaches `W::f`, and EDG differs |
 | [Q-0356](Q-0356-gcc14-member-pointer-comma-operand-order.md) | Does GCC 14 evaluating the right operand of `.*` first, when the left operand is a comma expression, change SEQ-2? | compiler defect | No; the left operand comes first, and GCC 14 is wrong |
+| [Q-0357](Q-0357-byte-copy-into-shared-padding.md) | What value does a derived member have after a byte copy into the base subobject writes over it? | provisional | The member takes the value of its new bytes, and a padding byte with no value gives it none |
+| [Q-0358](Q-0358-new-deallocation-noexcept-constructor.md) | Does a `new` expression use the deallocation function when its constructor is `noexcept`? | provisional | No; a `noexcept` constructor leaves the deallocation function unused |
+| [Q-0359](Q-0359-volatile-byte-copy.md) | Is a read of a volatile object's bytes through `unsigned char` that is not volatile an access under VOL-6? | provisional | Yes; the plain byte copy is undefined, and a copy uses volatile byte glvalues |
 
 ## Status values
 
