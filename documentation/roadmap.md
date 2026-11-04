@@ -132,6 +132,24 @@ done. Open questions went from 310 to 209.
 | FE | Done: front-end rounds 15 to 17: class layout, allocation by name, virtual bases, false rejects, Write programs | TP, WP |
 | X | Done: a refresh check for Propose reports, then Propose X13 to X16 | none |
 
+## Phase 8: honest counts, principles that answer, and exercises by use
+
+Decision 0055 (provisional) adopts this phase from the fifth round of
+clean-room roadmaps (`reports/clean-room/roadmap-5/`).
+
+| Item | Work | Prerequisites |
+|---|---|---|
+| R2 | Close the phase 7 record: counts in `pending.md` from a tool, review readings, `propose_check.py`, stale catalog and roadmap text, size estimate, Q-0322, single-test rules, the later-version plan | none |
+| HN | The harness judges by the base expectation and every explored outcome | none |
+| RT | Tests from the programmer's reductions, and a tool that compiles the page examples | none |
+| RV | A gap review of the text phase 7 wrote, then repairs | R2 |
+| PQ | One test for "a principle gives the answer", then principles for the unanswered questions | R2 |
+| TE | Thin evidence, check warnings for it, and a class for link-time diagnostics | R2 |
+| FE | Front-end rounds from 18 | HN, RT |
+| E | Write wave 2, an Implement exercise on class layout, Predict on repaired pages, Propose X17 to X20 | R2, PQ for Predict |
+| V | The Evidence format, and Evidence that does not repeat the questions | RV |
+| L | Test directories that match the pages | before the closing matrix run |
+
 ## Parallel lanes
 
 These lanes run beside the phases when a phase waits for review.

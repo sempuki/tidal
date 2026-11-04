@@ -183,13 +183,11 @@ forward-progress rule belongs with threads, which are out of scope.
 ## Next steps
 
 `documentation/roadmap.md` orders the work (decisions 0033, 0039, 0050,
-0051, and 0054). Phases 1 to 7 are done. Next:
+0051, 0054, and 0055). Phases 1 to 7 are done, and phase 8 is
+provisional. Next:
 
-1. A fifth round of clean-room roadmaps under
-   `reports/clean-room/roadmap-5/`, from the same five views, then a
-   decision that adopts phase 8.
-2. Item FE continues beside it: the 13 tests from the G118 to G133
-   repairs that the front end does not pass.
+1. Phase 8, items R2, HN, and RT (decision 0055). Then RV, PQ, and TE,
+   then FE, E, and V, and L before the closing matrix run.
 
 The items that wait on the maintainer are in
 `documentation/decisions/pending.md`, one row each, with the options,
