@@ -368,7 +368,7 @@ program ends. No handler catches the new exception.
 
 :::{rule} TRY-11
 :kind: undefined
-:tests: exceptions/handlers/ctor-try-block-member-named-in-handler.cpp exceptions/handlers/dtor-try-block-member-named-in-handler.cpp exceptions/handlers/ctor-try-block-member-function-called-in-handler.cpp
+:tests: exceptions/handlers/ctor-try-block-member-named-in-handler.cpp exceptions/handlers/dtor-try-block-member-named-in-handler.cpp exceptions/handlers/ctor-try-block-member-function-called-in-handler.cpp exceptions/handlers/ctor-try-block-member-call-sanitizer.cpp
 
 The members and bases are gone by the time a constructor's or
 destructor's function try block reaches a handler. A handler that still
@@ -440,7 +440,7 @@ struct Widget {
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 98
-of 104 tests. EDG runs no programs, so its results for the run tests say
+of 105 tests. EDG runs no programs, so its results for the run tests say
 only that the programs are valid, and the harness sees a terminating
 program only as a nonzero exit.
 
@@ -511,8 +511,10 @@ program only as a nonzero exit.
   exception from the destructor of a member after the remaining members
   have ended.
 - TRY-11: the `vptr` sanitizer of GCC stops a call of a member function
-  of a destroyed member in the handler. The Clang sanitizers and the
-  address sanitizers do not, so no run test covers the rule.
+  of a destroyed member in the handler
+  (`ctor-try-block-member-call-sanitizer.cpp`). The Clang sanitizers
+  and the address sanitizers do not, and the front end's interpreter
+  runs the program to its result.
 
 Inputs: clang-sema-stmt, clang-diag-sema, clang-diag-parse,
 edg-statements.

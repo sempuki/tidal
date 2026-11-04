@@ -172,7 +172,7 @@ An object with static or thread storage is zero-initialized first
 
 :::{rule} INIT-1
 :kind: undefined
-:tests: declarations/initialization/forms/read-uninitialized.cpp declarations/initialization/forms/read-uninitialized-array.cpp declarations/initialization/forms/write-before-read.cpp declarations/initialization/forms/copy-indeterminate-unsigned-char-run.cpp declarations/initialization/forms/copy-indeterminate-unsigned-char.cpp declarations/initialization/forms/self-initialization.cpp declarations/initialization/forms/default-init-scalar-no-value.cpp
+:tests: declarations/initialization/forms/read-uninitialized.cpp declarations/initialization/forms/read-uninitialized-array.cpp declarations/initialization/forms/write-before-read.cpp declarations/initialization/forms/copy-indeterminate-unsigned-char-run.cpp declarations/initialization/forms/copy-indeterminate-unsigned-char.cpp declarations/initialization/forms/self-initialization.cpp declarations/initialization/forms/default-init-scalar-no-value.cpp declarations/initialization/forms/read-uninitialized-run.cpp
 
 A variable with {term}`automatic storage` and no initializer has no
 value until the program assigns one. A read of the variable before that
@@ -218,7 +218,7 @@ struct Bits {
 
 ## Evidence
 
-All eight compilers agree on 36 of 37 tests. The results are in
+All eight compilers agree on 37 of 38 tests. The results are in
 `tests/RESULTS.md`.
 
 - **INIT-1.** All compilers reject a read of an uninitialized scalar
@@ -237,8 +237,8 @@ All eight compilers agree on 36 of 37 tests. The results are in
   Clang 22 and GCC 16.
 - **INIT-1 at run time.** No sanitizer of GCC or Clang stops a read
   of an automatic variable with no value, under `-fsanitize=undefined`
-  or `-fsanitize=address`. The tests observe INIT-1 only in constant
-  evaluation.
+  or `-fsanitize=address`. The front end's interpreter stops the read
+  (`read-uninitialized-run.cpp`, decision 0053).
 
 Inputs: clang-sema-init, edg-decl-inits, clang-diag-sema (see
 `inputs/MANIFEST.md`).

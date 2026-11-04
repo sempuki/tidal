@@ -234,7 +234,7 @@ such a case for `/` and for `%`.
 
 :::{rule} MUL-12
 :kind: undefined
-:tests: expressions/multiplicative/floating-overflow-constant.cpp expressions/multiplicative/floating-overflow-divide-constant.cpp
+:tests: expressions/multiplicative/floating-overflow-constant.cpp expressions/multiplicative/floating-overflow-divide-constant.cpp expressions/multiplicative/floating-overflow-run.cpp
 
 If the mathematical result of floating-point `*` or `/` is finite and
 larger in magnitude than the largest finite value of the type, the
@@ -243,7 +243,7 @@ behavior is undefined. This rule is provisional ({question}`Q-0001`).
 
 :::{rule} MUL-14
 :kind: undefined
-:tests: expressions/multiplicative/unsequenced-modification.cpp expressions/multiplicative/unsequenced-modification-remainder.cpp
+:tests: expressions/multiplicative/unsequenced-modification.cpp expressions/multiplicative/unsequenced-modification-remainder.cpp expressions/multiplicative/unsequenced-modification-run.cpp
 
 If one operand modifies a scalar object and the other operand reads or
 modifies the same object, the behavior is undefined. This rule does not
@@ -365,7 +365,7 @@ low / short(-1)      // 32768: both operands become int
 ## Evidence
 
 The results for each compiler in the matrix are in `tests/RESULTS.md`.
-All eight compilers agree on 47 of 52 tests.
+All eight compilers agree on 49 of 54 tests.
 
 - **MUL-2, MUL-16.** Clang and GCC warn that an enumeration with a
   floating-point operand is deprecated
@@ -444,10 +444,12 @@ All eight compilers agree on 47 of 52 tests.
   `1.0` for the sum. A cast, an initializer, and a return value round
   the sum to `1.0` on every compiler. MUL-17 allows both results.
 - MUL-12: no sanitizer of GCC or Clang stops a floating-point `*` whose
-  result is outside the range of its type.
+  result is outside the range of its type. The front end's interpreter
+  stops the product (`floating-overflow-run.cpp`, decision 0053).
 - MUL-14: no sanitizer of GCC or Clang stops an unsequenced
   modification. The compilers warn at translation instead
-  (`unsequenced-modification.cpp`).
+  (`unsequenced-modification.cpp`). The front end's interpreter stops
+  the run and names SEQ-4 (`unsequenced-modification-run.cpp`).
 - MUL-11, MUL-20 with `-m32`: the matrix runs no program built with
   `-m32`, because the host compilers have no 32-bit C library. In the
   writer's probes, the run tests of the two rules give the same

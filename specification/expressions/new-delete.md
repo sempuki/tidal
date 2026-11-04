@@ -550,7 +550,7 @@ returns a null pointer.
 
 :::{rule} NEW-3
 :kind: undefined
-:tests: expressions/new-delete/uninitialized-read.cpp expressions/new-delete/uninitialized-write-then-read.cpp
+:tests: expressions/new-delete/uninitialized-read.cpp expressions/new-delete/uninitialized-write-then-read.cpp expressions/new-delete/uninitialized-read-run.cpp
 
 An object that `new T` creates without an initializer has no value. If
 the program reads the object before writing the object, the behavior is
@@ -735,8 +735,8 @@ int* q = new (cell) int(4);     // the int is at cell (NEW-33)
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 118
-of 140 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 119
+of 141 tests.
 
 - NEW-42: on x86-64, the global allocation functions of Clang and GCC
   throw `std::bad_alloc` for requests of 2^47 bytes, 2^47 + 1 bytes,
@@ -882,6 +882,7 @@ of 140 tests.
   list as LIST-2 requires.
 - NEW-3: no sanitizer of GCC or Clang stops a read of an object that
   `new T` left with no value, under `-fsanitize=undefined` or
-  `-fsanitize=address`.
+  `-fsanitize=address`. The front end's interpreter stops the read
+  (`uninitialized-read-run.cpp`, decision 0053).
 
 Inputs: clang-sema-expr, clang-diag-sema.

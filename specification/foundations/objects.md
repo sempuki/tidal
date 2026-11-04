@@ -223,7 +223,7 @@ element of an array.
 
 :::{rule} OBJ-2
 :kind: undefined
-:tests: foundations/objects/read-before-init-constant.cpp foundations/storage/allocation-array-unbuilt-element-constant.cpp foundations/objects/read-after-end-constant.cpp foundations/objects/uninitialized-member-read-constant.cpp foundations/objects/deleted-object-read-constant.cpp foundations/objects/reference-after-end-constant.cpp foundations/objects/read-after-block-ends-sanitizer.cpp foundations/objects/reference-does-not-extend-named.cpp expressions/constant-expressions/copy-unset-member.cpp expressions/constant-expressions/copy-unset-array-element.cpp declarations/initialization/forms/default-init-member-no-value.cpp declarations/initialization/forms/default-init-member-not-named-no-value.cpp statements/switch/skipped-declaration-read-first.cpp declarations/initialization/static/member-read-before-constructor-constant.cpp expressions/unary/indirection-dangling-constant.cpp classes/constructors/use-after-dtor-constant.cpp classes/constructors/use-after-delete-sanitizer.cpp foundations/objects/write-after-end-constant.cpp classes/unions/chain-assign-other-part-no-value-constant.cpp declarations/initialization/references/returned-reference-temporary-sanitizer.cpp declarations/functions/return-deduction/decltype-auto-paren-local-sanitizer.cpp foundations/objects/scalar-write-in-own-initializer-constant.cpp foundations/objects/scalar-write-through-pointer-in-own-initializer-constant.cpp
+:tests: foundations/objects/read-before-init-constant.cpp foundations/storage/allocation-array-unbuilt-element-constant.cpp foundations/objects/read-after-end-constant.cpp foundations/objects/uninitialized-member-read-constant.cpp foundations/objects/deleted-object-read-constant.cpp foundations/objects/reference-after-end-constant.cpp foundations/objects/read-after-block-ends-sanitizer.cpp foundations/objects/reference-does-not-extend-named.cpp expressions/constant-expressions/copy-unset-member.cpp expressions/constant-expressions/copy-unset-array-element.cpp declarations/initialization/forms/default-init-member-no-value.cpp declarations/initialization/forms/default-init-member-not-named-no-value.cpp statements/switch/skipped-declaration-read-first.cpp declarations/initialization/static/member-read-before-constructor-constant.cpp expressions/unary/indirection-dangling-constant.cpp classes/constructors/use-after-dtor-constant.cpp classes/constructors/use-after-delete-sanitizer.cpp foundations/objects/write-after-end-constant.cpp classes/unions/chain-assign-other-part-no-value-constant.cpp declarations/initialization/references/returned-reference-temporary-sanitizer.cpp declarations/functions/return-deduction/decltype-auto-paren-local-sanitizer.cpp foundations/objects/scalar-write-in-own-initializer-constant.cpp foundations/objects/scalar-write-through-pointer-in-own-initializer-constant.cpp classes/constructors/init-order-reads-later-run.cpp foundations/objects/storage-reuse-ends-old-object-sanitizer.cpp
 
 If a program reads or writes an object outside its lifetime, or reads
 a scalar object or member that has no value yet, the behavior is
@@ -239,14 +239,15 @@ included:
   part. An unnamed bit-field is padding and no such part ({rule}`BF-12`).
 
 Constant evaluation rejects each of them. The specific cases of OBJ-2
-are {rule}`DTOR-7`, {rule}`REF-5`, {rule}`RET-6`, {rule}`STG-19`, and
+are {rule}`CTOR-12`, {rule}`DTOR-7`, {rule}`INIT-1`, {rule}`NEW-3`,
+{rule}`OBJ-10`, {rule}`REF-5`, {rule}`RET-6`, {rule}`STG-19`, and
 {rule}`UNI-6` (decision 0052). {rule}`UN-7` refers to OBJ-2 for these
 accesses.
 :::
 
 :::{rule} OBJ-10
 :kind: undefined
-:tests: foundations/objects/storage-reuse-ends-old-object-constant.cpp foundations/objects/storage-reuse-member-of-member-constant.cpp
+:tests: foundations/objects/storage-reuse-ends-old-object-constant.cpp foundations/objects/storage-reuse-member-of-member-constant.cpp foundations/objects/storage-reuse-ends-old-object-sanitizer.cpp
 
 If the storage of an object is reused for another object, the first
 object's lifetime ends. A later read through a reference to the first
@@ -299,8 +300,8 @@ int main() {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 50
-of 54 tests. EDG runs no programs, so its results for the run tests say
+The results are in `tests/RESULTS.md`. All eight compilers agree on 52
+of 56 tests. EDG runs no programs, so its results for the run tests say
 only that the programs are valid.
 
 - OBJ-11: the tests accept either construction point. On 2026-11-03
@@ -324,7 +325,9 @@ only that the programs are valid.
   a depth-first walk of the bases.
 - OBJ-12: Clang and GCC run the test, and no sanitizer of the matrix
   reports the pass through the declaration. The test checks only that
-  the program compiles.
+  the program compiles. The front end's interpreter does not stop at the
+  pass either. The interpreter stops at the later increment of the ended
+  object, under OBJ-2. No tool stops OBJ-12 itself at run time.
 - OBJ-4: the test for the destruction order of static objects makes a
   static object declared first, and so destroyed last, check the order
   in its destructor.
@@ -339,6 +342,8 @@ only that the programs are valid.
   reports the copy at run time.
 - OBJ-10: the `vptr` sanitizer of GCC stops a read of a member through
   a reference to an object whose storage another object reuses. The
-  Clang sanitizers do not, so no run test covers the rule.
+  Clang sanitizers do not. The `vptr` sanitizers of Clang and GCC both
+  stop a call of a member function through such a reference
+  (`storage-reuse-ends-old-object-sanitizer.cpp`).
 
 Inputs: clang-ast-exprconstant, clang-diag-ast, clang-sema-decl.

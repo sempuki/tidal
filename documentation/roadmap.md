@@ -125,7 +125,7 @@ clean-room roadmaps (`reports/clean-room/roadmap-4/`).
 | WP | Done: the 67 Write programs are run tests under `tests/programs/` | none |
 | SR | A second settling rule, applied to reviewed questions, and one decision packet for the maintainer | R1 |
 | TP | Done: a matrix choice for every `impl-defined` rule, and the matrix layout as a table (CLS-35) | none |
-| UW | A run witness for each `undefined` rule | none |
+| UW | Done: a run witness for each `undefined` rule, or an Evidence note that no tool stops it (ADD-18, OBJ-12, VOL-6) | none |
 | GR | Gap reviews of the eleven pages that never had one, then of open questions with no review | SR |
 | PR | Predict batches for the pages with no batch, first overloading and storage | none |
 | FE | Front-end rounds from 15: class layout, allocation by name, virtual bases, false rejects, Write programs | TP, WP |

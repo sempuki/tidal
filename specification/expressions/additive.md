@@ -196,7 +196,7 @@ does not fit in it, the behavior is undefined.
 
 :::{rule} ADD-10
 :kind: undefined
-:tests: expressions/additive/pointer-beyond-array.cpp expressions/additive/intermediate-step-beyond-array.cpp expressions/additive/pointer-before-array.cpp expressions/additive/null-plus-nonzero.cpp expressions/additive/deref-one-past-end.cpp expressions/additive/past-end-of-row.cpp expressions/additive/null-plus-nonzero-sanitizer.cpp expressions/additive/base-pointer-beyond-subobject.cpp
+:tests: expressions/additive/pointer-beyond-array.cpp expressions/additive/intermediate-step-beyond-array.cpp expressions/additive/pointer-before-array.cpp expressions/additive/null-plus-nonzero.cpp expressions/additive/deref-one-past-end.cpp expressions/additive/past-end-of-row.cpp expressions/additive/null-plus-nonzero-sanitizer.cpp expressions/additive/base-pointer-beyond-subobject.cpp expressions/additive/base-pointer-beyond-subobject-run.cpp
 
 The behavior is undefined if pointer arithmetic gives a position that
 is:
@@ -208,19 +208,21 @@ is:
 Each row of a multidimensional array is a separate array for this rule.
 For a byte pointer that steps through an object, the array is the bytes
 of the object ({rule}`STG-13`, {question}`Q-0304`). Reading through a
-pointer one past the last element is also undefined.
+pointer one past the last element is also undefined. {rule}`ADD-14` is
+the specific case of ADD-10 for a pointer whose type differs from the
+element type of the array (decision 0052).
 :::
 
 :::{rule} ADD-11
 :kind: undefined
-:tests: expressions/additive/pointer-difference-different-arrays.cpp expressions/additive/pointer-difference-separate-objects.cpp
+:tests: expressions/additive/pointer-difference-different-arrays.cpp expressions/additive/pointer-difference-separate-objects.cpp expressions/additive/pointer-difference-different-arrays-run.cpp
 
 If two pointers do not point into the same array, `p - q` is undefined.
 :::
 
 :::{rule} ADD-14
 :kind: undefined
-:tests: expressions/additive/base-pointer-derived-array.cpp expressions/additive/subtract-base-pointers-derived-array.cpp expressions/additive/base-pointer-one-past-subobject.cpp expressions/additive/base-pointer-beyond-subobject.cpp
+:tests: expressions/additive/base-pointer-derived-array.cpp expressions/additive/subtract-base-pointers-derived-array.cpp expressions/additive/base-pointer-one-past-subobject.cpp expressions/additive/base-pointer-beyond-subobject.cpp expressions/additive/base-pointer-beyond-subobject-run.cpp
 
 Arithmetic on a pointer whose type differs from the array's element
 type counts the object as an array of one. Cv-qualifiers do not count
@@ -240,7 +242,7 @@ matches the element type. A read through such a pointer is valid
 
 :::{rule} ADD-17
 :kind: undefined
-:tests: expressions/additive/float-overflow-constant.cpp expressions/additive/float-overflow-subtract-constant.cpp
+:tests: expressions/additive/float-overflow-constant.cpp expressions/additive/float-overflow-subtract-constant.cpp expressions/additive/float-overflow-run.cpp
 
 If the exact result of a floating-point `+` or `-` is finite but outside
 the range of its type, the behavior is undefined, as for MUL-12
@@ -317,8 +319,8 @@ bool add_fits(int a, int b) {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 48
-of 57 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 51
+of 60 tests.
 
 - ADD-3: GCC rejects arithmetic on `void*` and on function pointers only
   as a pedantic diagnostic (`-Wpointer-arith`). Clang and EDG reject
@@ -389,14 +391,21 @@ of 57 tests.
 - ADD-11: the address sanitizer of GCC and Clang stops a difference of
   pointers into two arrays only under `-fsanitize=pointer-subtract`
   and a run-time option that a test cannot set. No other configuration
-  stops it.
+  stops it. The front end's interpreter stops the difference
+  (`pointer-difference-different-arrays-run.cpp`, decision 0053).
 - ADD-14: no sanitizer of GCC or Clang stops a step of a base pointer
-  through an array of derived objects.
+  through an array of derived objects. The front end's interpreter stops
+  the step and names ADD-10 (`base-pointer-beyond-subobject-run.cpp`).
 - ADD-17: no sanitizer of GCC or Clang stops a floating-point `+` whose
-  result is outside the range of its type.
-- ADD-18: no configuration in the matrix runs a 32-bit program, and a
-  64-bit object is too small for the difference to overflow. No run
-  test covers the rule.
+  result is outside the range of its type. The front end's interpreter
+  stops the sum (`float-overflow-run.cpp`).
+- ADD-18: a 64-bit object is too small for the difference to overflow.
+  With `-m32`, GCC rejects an array of more than `INT_MAX` bytes. In the
+  writer's probes in the Clang 18 and Clang 22 containers with `-m32`,
+  `new` throws `std::bad_alloc` for such an array, so the program never
+  reaches the difference. The front end's interpreter cannot hold an
+  array of that size. No tool stops ADD-18 at run time, and no run test
+  covers the rule.
 - Settled on 2026-11-03 under decision 0054. A source-reader gap
   review supports each answer with no doubt, and a principle gives the
   same answer:

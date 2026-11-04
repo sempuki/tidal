@@ -142,6 +142,7 @@ pass	classes/comparisons/spaceship-wrong-return-used.cpp
 pass	classes/comparisons/spaceship-wrong-return.cpp
 MISSED-REJECT	classes/comparisons/template-defaulted.cpp
 pass	classes/constructors/base-init-calls-member-early-constant.cpp
+RUN-MISSED-UB	classes/constructors/base-init-calls-member-early-sanitizer.cpp
 pass	classes/constructors/body-after-members.cpp
 pass	classes/constructors/const-member-all-default-inits.cpp
 pass	classes/constructors/const-object-anonymous-union-init.cpp
@@ -270,6 +271,7 @@ pass	classes/constructors/implicitly-deleted-dtor-member.cpp
 pass	classes/constructors/inherited-ctors-keep-default.cpp
 pass	classes/constructors/init-order-declaration.cpp
 pass	classes/constructors/init-order-no-warning-default.cpp
+pass	classes/constructors/init-order-reads-later-run.cpp
 pass	classes/constructors/init-order-reads-later.cpp
 pass	classes/constructors/init-order-same-order.cpp
 pass	classes/constructors/init-order-uses-earlier.cpp
@@ -1683,6 +1685,7 @@ pass	declarations/initialization/forms/paren-array-unknown-bound.cpp
 pass	declarations/initialization/forms/paren-init-explicit-conversion.cpp
 pass	declarations/initialization/forms/paren-temporary-declares-function.cpp
 EDG-ONLY	declarations/initialization/forms/read-uninitialized-array.cpp
+pass	declarations/initialization/forms/read-uninitialized-run.cpp
 pass	declarations/initialization/forms/read-uninitialized.cpp
 pass	declarations/initialization/forms/scalar-list-in-parens.cpp
 pass	declarations/initialization/forms/self-initialization.cpp
@@ -2229,6 +2232,7 @@ pass	exceptions/handlers/catch-all-not-last.cpp
 pass	exceptions/handlers/catch-all-only.cpp
 pass	exceptions/handlers/catch-all.cpp
 pass	exceptions/handlers/continue-out-of-handler.cpp
+RUN-MISSED-UB	exceptions/handlers/ctor-try-block-member-call-sanitizer.cpp
 pass	exceptions/handlers/ctor-try-block-member-function-called-in-handler.cpp
 pass	exceptions/handlers/ctor-try-block-member-named-in-handler.cpp
 pass	exceptions/handlers/ctor-try-block-member-use-warns.cpp
@@ -2435,12 +2439,14 @@ pass	exceptions/unwinding/termination-no-handler.cpp
 pass	exceptions/unwinding/throw-caught-in-noexcept-no-warning.cpp
 pass	exceptions/unwinding/throw-in-noexcept-warns.cpp
 pass	exceptions/unwinding/throw-unmatched-in-noexcept-warns.cpp
+pass	expressions/additive/base-pointer-beyond-subobject-run.cpp
 pass	expressions/additive/base-pointer-beyond-subobject.cpp
 pass	expressions/additive/base-pointer-derived-array.cpp
 pass	expressions/additive/base-pointer-one-past-subobject.cpp
 pass	expressions/additive/deref-one-past-end.cpp
 pass	expressions/additive/enum-float-warns.cpp
 pass	expressions/additive/float-overflow-constant.cpp
+pass	expressions/additive/float-overflow-run.cpp
 pass	expressions/additive/float-overflow-subtract-constant.cpp
 pass	expressions/additive/function-pointer-arithmetic.cpp
 pass	expressions/additive/grouping-shift.cpp
@@ -2463,6 +2469,7 @@ pass	expressions/additive/past-end-of-row.cpp
 pass	expressions/additive/pointer-arith-runtime.cpp
 pass	expressions/additive/pointer-before-array.cpp
 pass	expressions/additive/pointer-beyond-array.cpp
+pass	expressions/additive/pointer-difference-different-arrays-run.cpp
 pass	expressions/additive/pointer-difference-different-arrays.cpp
 unsupported	expressions/additive/pointer-difference-largest-ilp32.cpp
 unsupported	expressions/additive/pointer-difference-overflow-ilp32.cpp
@@ -3219,6 +3226,7 @@ pass	expressions/multiplicative/floating-divide-by-zero-sanitizer.cpp
 EDG-ONLY	expressions/multiplicative/floating-divide-by-zero.cpp
 pass	expressions/multiplicative/floating-overflow-constant.cpp
 pass	expressions/multiplicative/floating-overflow-divide-constant.cpp
+pass	expressions/multiplicative/floating-overflow-run.cpp
 pass	expressions/multiplicative/floating-zero-by-zero-nan.cpp
 EDG-ONLY	expressions/multiplicative/floating-zero-by-zero.cpp
 pass	expressions/multiplicative/grouping-mixed.cpp
@@ -3256,6 +3264,7 @@ pass	expressions/multiplicative/signed-overflow-multiply.cpp
 pass	expressions/multiplicative/signed-overflow-remainder-sanitizer.cpp
 EDG-ONLY	expressions/multiplicative/signed-overflow-remainder.cpp
 pass	expressions/multiplicative/unsequenced-modification-remainder.cpp
+pass	expressions/multiplicative/unsequenced-modification-run.cpp
 pass	expressions/multiplicative/unsequenced-modification.cpp
 pass	expressions/multiplicative/unsigned-wraps-wide.cpp
 pass	expressions/multiplicative/unsigned-wraps.cpp
@@ -3382,6 +3391,7 @@ pass	expressions/new-delete/throw-placement-in-base-class.cpp
 pass	expressions/new-delete/throw-placement-reference-type-no-match.cpp
 EDG-ONLY	expressions/new-delete/throw-placement-templates-unordered.cpp
 pass	expressions/new-delete/throw-placement-two-parameters.cpp
+pass	expressions/new-delete/uninitialized-read-run.cpp
 pass	expressions/new-delete/uninitialized-read.cpp
 pass	expressions/new-delete/uninitialized-write-then-read.cpp
 pass	expressions/new-delete/zero-length-non-null.cpp
@@ -3634,6 +3644,7 @@ pass	expressions/sequencing/parenthesized-aggregate-order.cpp
 pass	expressions/sequencing/reversed-comparison-order.cpp
 pass	expressions/sequencing/subscript-order.cpp
 pass	expressions/sequencing/unsequenced-constant-evaluation.cpp
+pass	expressions/sequencing/unsequenced-increments-run.cpp
 pass	expressions/sequencing/unsequenced-increments.cpp
 pass	expressions/sequencing/unsequenced-read-and-increment.cpp
 pass	expressions/sequencing/volatile-reads-unsequenced.cpp
@@ -4310,6 +4321,7 @@ pass	foundations/objects/static-local-after-destruction.cpp
 pass	foundations/objects/static-never-reached-not-constructed.cpp
 pass	foundations/objects/static-order.cpp
 pass	foundations/objects/storage-reuse-ends-old-object-constant.cpp
+pass	foundations/objects/storage-reuse-ends-old-object-sanitizer.cpp
 pass	foundations/objects/storage-reuse-member-of-member-constant.cpp
 pass	foundations/objects/temporary-ends-with-full-expression.cpp
 pass	foundations/objects/temporary-member-access.cpp

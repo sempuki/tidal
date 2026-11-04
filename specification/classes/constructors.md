@@ -522,7 +522,7 @@ of scalar type through a type name.
 
 :::{rule} CTOR-12
 :kind: undefined
-:tests: classes/constructors/defaulted-leaves-members.cpp classes/constructors/init-order-reads-later.cpp classes/constructors/base-init-calls-member-early-constant.cpp
+:tests: classes/constructors/defaulted-leaves-members.cpp classes/constructors/init-order-reads-later.cpp classes/constructors/base-init-calls-member-early-constant.cpp classes/constructors/init-order-reads-later-run.cpp classes/constructors/base-init-calls-member-early-sanitizer.cpp
 
 If a member is read before it has a value, the behavior is undefined.
 This includes a member that a later `mem_init` initializes, and a member
@@ -636,8 +636,8 @@ Span g{{1}};   // Span(int): {1} gives an int directly (ICS-15). The
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 169
-of 184 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 170
+of 186 tests.
 
 - CTOR-23 and DTOR-9: the tests observe triviality through JMP-6 and
   UNI-3. A jump past a declaration is valid only for a trivial default
@@ -688,6 +688,10 @@ of 184 tests.
   by default.
 - CTOR-12: no sanitizer of GCC or Clang stops a read of a member that
   has no value yet, under `-fsanitize=undefined` or `-fsanitize=address`.
+  The front end's interpreter stops the read and names OBJ-2
+  (`init-order-reads-later-run.cpp`). The `vptr` sanitizer of GCC stops
+  a call of a member function from the `mem_init` of a base, and the
+  Clang sanitizer does not (`base-init-calls-member-early-sanitizer.cpp`).
 - DTOR-7: the address sanitizer of GCC and Clang stops a second
   destruction whose destructor frees storage. The `vptr` sanitizer of
   GCC stops a member call after the destructor, and the Clang

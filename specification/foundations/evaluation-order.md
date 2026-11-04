@@ -155,13 +155,14 @@ This rule merged into {rule}`SEQ-2`.
 
 :::{rule} SEQ-4
 :kind: undefined
-:tests: expressions/sequencing/unsequenced-increments.cpp expressions/sequencing/unsequenced-constant-evaluation.cpp expressions/sequencing/adjacent-bitfields-unsequenced.cpp expressions/sequencing/volatile-reads-unsequenced.cpp
+:tests: expressions/sequencing/unsequenced-increments.cpp expressions/sequencing/unsequenced-constant-evaluation.cpp expressions/sequencing/adjacent-bitfields-unsequenced.cpp expressions/sequencing/volatile-reads-unsequenced.cpp expressions/sequencing/unsequenced-increments-run.cpp expressions/multiplicative/unsequenced-modification-run.cpp
 
 If two {term}`unsequenced` evaluations both modify the same
 {term}`memory location`, or one modifies it and the other reads its value, the behavior
 is undefined. Adjacent bit-fields can share one memory location. A read
 of a volatile object is a side effect, so two unsequenced reads of the
-same volatile object are undefined too.
+same volatile object are undefined too. {rule}`MUL-14` is the specific
+case of SEQ-4 for the operands of `*`, `/`, and `%` (decision 0052).
 :::
 
 ## Implementation Requirements
@@ -234,7 +235,7 @@ struct Flags { unsigned on : 1, dirty : 1; } f;
 
 ## Evidence
 
-All eight compilers agree on all 38 tests. The results are in
+All eight compilers agree on all 40 tests. The results are in
 `tests/RESULTS.md`.
 
 - SEQ-1: Clang and GCC 16 initialize an explicit object parameter
@@ -269,6 +270,7 @@ All eight compilers agree on all 38 tests. The results are in
   reads of a volatile object; those tests only show the programs
   compile.
 - SEQ-4: no sanitizer of GCC or Clang stops two unsequenced
-  modifications at run time.
+  modifications at run time. The front end's interpreter stops them
+  (`unsequenced-increments-run.cpp`, decision 0053).
 
 Inputs: clang-sema-expr, clang-diag-sema.

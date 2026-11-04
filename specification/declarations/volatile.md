@@ -282,7 +282,10 @@ of 41 tests.
   checks only that the program compiles. During constant evaluation Clang rejects the read,
   and GCC and EDG accept it ({question}`Q-0320`). Q-0320 stays open
   under decision 0051, because on 2026-11-03 Clang 22 still differs from
-  GCC 16 and EDG 7.0.
+  GCC 16 and EDG 7.0. The front end's interpreter runs the program to
+  its result, because the interpreter does not check the kind of
+  glvalue that reaches a volatile object. No tool stops VOL-6 at run
+  time.
 - VOL-13 with `-m32`: the matrix runs no program built with
   `-m32`, because the host compilers have no 32-bit C library. In the
   writer's probes, the run tests of the rule give the same
