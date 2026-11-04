@@ -597,6 +597,14 @@ impl P {
                             {
                                 self.error(line, "NS-16", format!("using declaration of '{}' conflicts with a declaration in this scope", name));
                             }
+                            // ACC-2: the members that a using-declaration
+                            // names in a class take the access of the
+                            // using-declaration.
+                            if let (SK::Class(cc), Some(a)) = (self.scopes[cur].kind.clone(), self.access_stack.last().copied()) {
+                                for &i in &ids {
+                                    self.using_access.insert((cc, i), a);
+                                }
+                            }
                             let e = self.scopes[cur].names.entry(name.clone()).or_default();
                             for i in ids {
                                 if !e.contains(&i) {
@@ -1394,6 +1402,33 @@ impl P {
             }
             return;
         }
+        // ORD-14 (Q-0174): a list that only reorders the type parameters
+        // matches every argument list, so it is not more specialized than
+        // the primary template.
+        let mut seen = vec![false; tparams.len()];
+        let permuted = !same
+            && self.head_cons.is_none()
+            && pats.len() == n
+            && tparams.len() == n
+            && tparams.iter().all(|p| matches!(p.kind, crate::templ::TPK::Type) && !p.pack)
+            && self.templs[t].params.iter().all(|p| matches!(p.kind, crate::templ::TPK::Type) && !p.pack)
+            && pats.iter().all(|a| match a {
+                TArg::Type(q) if !q.c && !q.v => match &q.t {
+                    Ty::Dep(d) => match &**d {
+                        Dep::Param(x, y) if *x == depth && (*y as usize) < seen.len() && !seen[*y as usize] => {
+                            seen[*y as usize] = true;
+                            true
+                        }
+                        _ => false,
+                    },
+                    _ => false,
+                },
+                _ => false,
+            });
+        if permuted {
+            self.error(line, "TSP-11", "the argument list of a partial specialization only reorders the parameters, so it is not more specialized than the primary template");
+            return;
+        }
         // A constant argument whose parameter type uses another parameter
         // is not a fixed value.
         let prim = self.templs[t].params.clone();
@@ -1548,6 +1583,11 @@ impl P {
             let raw = self.parse_raw_targs()?;
             self.expect(";")?;
             let here = self.decl_scope();
+            if ext && self.in_unnamed_ns(self.templs[t].scope) {
+                // INST-29 (Q-0234): no explicit instantiation declaration
+                // of a specialization with internal linkage.
+                self.error(line, "INST-29", "an explicit instantiation declaration of a specialization with internal linkage");
+            }
             if !self.scope_encloses(here, self.templs[t].scope) || (scope.is_none() && here != self.templs[t].scope) {
                 // INST-21: in the template's namespace or one that encloses
                 // it, with a qualified name outside the template's own.
@@ -1628,6 +1668,7 @@ impl P {
             };
             let tid = found.and_then(|ids| ids.iter().find_map(|&i| self.tid_of(i)));
             let raw = self.parse_raw_targs()?;
+            let mut written_bound: Option<i128> = None;
             while !self.at(";") && self.tok().kind != TK::Eof {
                 if self.at("=") || self.at("{") {
                     // INST-23: no initializer.
@@ -1636,6 +1677,9 @@ impl P {
                     return Ok(());
                 }
                 if self.at("[") {
+                    if written_bound.is_none() && self.peek(1).kind == TK::Int && self.at_k(2, "]") {
+                        written_bound = self.peek(1).text.trim_end_matches(|c: char| c.is_ascii_alphabetic()).parse::<i128>().ok();
+                    }
                     self.skip_balanced();
                 } else {
                     self.pos += 1;
@@ -1646,6 +1690,20 @@ impl P {
                 self.error(line, "INST-22", format!("'{}' is not a variable template", name));
                 return Ok(());
             };
+            let here = self.decl_scope();
+            if !self.scope_encloses(here, self.templs[t].scope) || (d.qual.is_none() && here != self.templs[t].scope) {
+                // INST-21 (Q-0235): in the template's namespace or one that
+                // encloses it, with a qualified name outside its own.
+                self.error(line, "INST-21", "an explicit instantiation outside the namespace of its template, or without a qualified name");
+                return Ok(());
+            }
+            let tdecl = self.templs[t].decl;
+            let static_src = self.templs[t].src.as_ref().is_some_and(|s| s.toks.iter().take_while(|x| x.text != "=" && x.text != "{" && x.text != ";" && x.text != "<").any(|x| x.text == "static"));
+            if ext && (self.var_internal.contains(&tdecl) || static_src || self.var(tdecl).is_some_and(|v| v.storage == Storage::Static) || self.in_unnamed_ns(self.templs[t].scope)) {
+                // INST-29 (Q-0234): no explicit instantiation declaration
+                // of a specialization with internal linkage.
+                self.error(line, "INST-29", "an explicit instantiation declaration of a specialization with internal linkage");
+            }
             if let Ok(Some(args)) = self.targs_for(t, raw, line, false) {
                 let k = format!("var {} {}", t, self.show_targs(&args));
                 self.note_explicit_inst(&k, ext, line);
@@ -1657,6 +1715,13 @@ impl P {
                     } else if let Some(v) = self.var_inst(t, args, line) {
                         if let Some(errs) = self.body_errors.remove(&v) {
                             self.d.list.extend(errs);
+                        }
+                        // INST-22 (Q-0346): the written type matches the
+                        // specialization's type, also its bound.
+                        if let (Some(m), Some(Ty::Array(_, Some(n)))) = (written_bound, self.var(v).map(|x| x.ty.t.clone())) {
+                            if m != n as i128 {
+                                self.error(line, "INST-22", format!("the explicit instantiation writes the bound {}, and the specialization has the bound {}", m, n));
+                            }
                         }
                     }
                 }
@@ -2475,6 +2540,10 @@ impl P {
             return Err(PErr { line, msg: format!("expected a declaration, found '{}'", self.tok_desc()) });
         }
         if ds.auto.is_some() && (self.at("[") || ((self.at("&") || self.at("&&")) && self.at_k(1, "["))) {
+            if (ds.concept_auto || ds.cons_auto.is_some()) && !self.in_template() {
+                // SB-15 (Q-0016): no constrained auto.
+                self.error(line, "SB-15", "structured binding declared with a constrained auto");
+            }
             return self.parse_structured_binding(&ds, ctx, line);
         }
         self.templ_head_decl = after_head && self.inst_depth == 0;
@@ -2920,7 +2989,9 @@ impl P {
                         self.error(il, "SB-14", format!("std::tuple_element<{}, E>::type does not exist for the structured binding", i));
                         break;
                     };
-                    let raw = Rc::new(vec![crate::templ::RawArg::Expr(Expr::new(EK::Int(i as i128), QTy::int(), Cat::PR, il))]);
+                    // SB-5 (Q-0376): the index is a constant of type
+                    // std::size_t.
+                    let raw = Rc::new(vec![crate::templ::RawArg::Expr(Expr::new(EK::Int(i as i128), QTy::new(Ty::size_t()), Cat::PR, il))]);
                     let mark = self.d.list.len();
                     let g = match &member_get {
                         Some(fs) => {
@@ -3042,8 +3113,9 @@ impl P {
             }
         }
         // Members of an anonymous union are members of the enclosing scope.
-        if ctx == Ctx::Namespace && !ds.storage.contains(&Storage::Static) {
-            // STO-11: an anonymous union at namespace scope must be static.
+        if ctx == Ctx::Namespace && !ds.storage.contains(&Storage::Static) && !self.in_unnamed_ns(self.decl_scope()) {
+            // STO-11: an anonymous union at namespace scope must be static,
+            // unless it is in an unnamed namespace (Q-0045).
             self.error(line, "STO-11", "anonymous union at namespace scope must be declared static");
         }
         let fields = self.classes[c].fields.clone();
@@ -3449,6 +3521,10 @@ impl P {
         if self.eat(":") {
             let bl = self.line();
             let e = self.parse_conditional()?;
+            if matches!(nonref(&e.ty).t, Ty::Enum(en) if self.enums[en].scoped) && !self.in_template() {
+                // BF-2 (Q-0313): a width of scoped enumeration type.
+                self.error(bl, "BF-2", "bit-field width has a scoped enumeration type");
+            }
             match self.const_int(&e) {
                 Ok(v) => {
                     if v < 0 {
@@ -3760,7 +3836,10 @@ impl P {
         }
         if let Some(q) = d.qual {
             if class_member.is_none() && !local && !self.inst_fresh && self.inst_depth == 0 && matches!(self.scopes[q].kind, SK::Namespace) {
-                self.check_ns_enclosing(q, line);
+                // Q-0375: a member of an inline namespace of `q` checks
+                // against that inline namespace.
+                let t = if matches!(self.scopes[target_scope].kind, SK::Namespace) { target_scope } else { q };
+                self.check_ns_enclosing(t, line);
             }
         }
         // Push qualified scope for the initializer.
@@ -3943,6 +4022,14 @@ impl P {
         };
         self.auto_in_own_init = if ds.auto.is_some() { Some(id_placeholder) } else { None };
         self.record_attrs(id_placeholder);
+        // INST-5 (Q-0231): the initializer of an inline static data member
+        // of a class specialization is made only when a use needs it. The
+        // front end parses it at once and drops its errors (an
+        // approximation, as for scoped enumerations).
+        let lazy_init = class_member.is_some() && ds.inline && !ds.constexpr && self.inst_depth > 0 && !self.in_template();
+        if lazy_init {
+            self.d.muted += 1;
+        }
         let r = (|| -> PR<()> {
             if self.eat("=") {
                 if self.at("{") {
@@ -3975,6 +4062,9 @@ impl P {
         })();
         self.auto_in_own_init = None;
         self.stack = saved;
+        if lazy_init {
+            self.d.muted -= 1;
+        }
         r?;
         // CTAD-1, CTAD-25: a class template named without arguments takes
         // the type that the guides deduce.
@@ -4132,7 +4222,7 @@ impl P {
         if let Some(c) = class_member {
             // static data member in class: CLS-3
             let _ = c;
-            if init.is_some() && !ds.constexpr && !ds.inline && !(ty.c && (ty.t.is_integral() || matches!(ty.t, Ty::Enum(_)))) && !self.in_template() {
+            if init.is_some() && !ds.constexpr && !ds.inline && !(ty.c && !ty.v && (ty.t.is_integral() || matches!(ty.t, Ty::Enum(_)))) && !self.in_template() {
                 self.error(line, "CLS-23", "in-class initializer for a static data member that is not const integral, inline, or constexpr");
             }
         }
@@ -4498,11 +4588,18 @@ impl P {
                 || (fty.params.len() == 2
                     && fty.params[0].t == Ty::Int
                     && matches!(&fty.params[1].t, Ty::Ptr(p) if matches!(&p.t, Ty::Ptr(c) if c.t == Ty::Char)));
-            if !ok_params || fty.variadic {
-                // TR-3 rejects other parameter lists, but FN-6 makes them
-                // implementation-defined (Q-0024). This front end follows
-                // FN-6 and the EDG baseline and accepts them.
-                self.warn(line, "FN-6", "'main' has a parameter list other than () or (int, char**)");
+            // FN-6 (Q-0024): other lists are implementation-defined. This
+            // front end accepts the lists that Clang accepts on the matrix
+            // targets, (int) and (int, char**, char**), and rejects the
+            // others under TR-3 (a front-end choice, decision 0035).
+            let charpp = |q: &QTy| matches!(&q.t, Ty::Ptr(p) if matches!(&p.t, Ty::Ptr(c) if c.t == Ty::Char));
+            let clang_ok = (fty.params.len() == 1 && fty.params[0].t == Ty::Int) || (fty.params.len() == 3 && fty.params[0].t == Ty::Int && charpp(&fty.params[1]) && charpp(&fty.params[2]));
+            if (!ok_params || fty.variadic) && !self.in_template() && !fty.params.iter().any(|q| q.is_unknown()) {
+                if clang_ok && !fty.variadic {
+                    self.warn(line, "FN-6", "'main' has a parameter list other than () or (int, char**)");
+                } else {
+                    self.error(line, "TR-3", "'main' has a parameter list that this implementation does not accept (FN-6)");
+                }
             }
         }
         let fn_targs = self.decl_fn_targs.take();
@@ -4746,7 +4843,10 @@ impl P {
         }
         if let Some(q) = d.qual {
             if !in_class_body && inst_req.is_none() && self.inst_depth == 0 && !d.qual_unknown && matches!(self.scopes[q].kind, SK::Namespace) {
-                self.check_ns_enclosing(q, line);
+                // Q-0375: a member of an inline namespace of `q` checks
+                // against that inline namespace.
+                let t = if matches!(self.scopes[target_scope].kind, SK::Namespace) { target_scope } else { q };
+                self.check_ns_enclosing(t, line);
             }
         }
         let trailing_requires = clause_unmodeled;
@@ -4774,6 +4874,19 @@ impl P {
             }
         }
         let is_def = self.at("{") || self.at(":") || self.at("try") || deleted || defaulted;
+        if is_friend && in_class_body && !is_def && self.inst_depth == 0 {
+            if let Some(k) = &clause_key {
+                // CNS-31 (Q-0267): a friend with a trailing requires clause
+                // must be a definition when it is not a template, or when
+                // its constraints use a template parameter of the enclosing
+                // class.
+                // The key names a template parameter as `$depth.index`.
+                let uses_outer = k.iter().any(|t| t.strip_prefix('$').and_then(|r| r.split('.').next()).and_then(|d| d.parse::<u32>().ok()).is_some_and(|d| d < pending_depth));
+                if !template || uses_outer {
+                    self.error(line, "CNS-31", format!("a friend declaration of '{}' with a trailing requires clause is not a definition", name));
+                }
+            }
+        }
         if is_def && is_friend && !self.in_template() {
             if let Ctx::Class(fc) = ctx {
                 if self.class_is_local(fc) {
@@ -5242,6 +5355,16 @@ impl P {
                 f.deleted |= deleted;
                 f.defaulted |= defaulted;
             }
+            if let Some(c) = self.func(id).and_then(|f| f.class) {
+                if defaulted && existing.is_some() && !in_class_body && !self.in_template() && self.classes[c].complete && matches!(name.as_str(), "operator==" | "operator<=>") {
+                    // DCMP-8 (Q-0062): a comparison defaulted after its
+                    // class must not be one that would be deleted.
+                    self.synth_defaulted_cmp(id);
+                    if self.dcmp_deleted.contains_key(&id) {
+                        self.error(line, "DCMP-8", format!("'{}' defaulted after its class would be deleted", name));
+                    }
+                }
+            }
             return Ok((Some(id), true));
         }
         if !is_def {
@@ -5305,6 +5428,12 @@ impl P {
         if let Some(q) = d.qual {
             // A qualified definition sees the scope it names.
             self.push_enclosing_for(q);
+        } else if let Some(cs) = d.pattern_scope.filter(|_| self.in_template()) {
+            // NAM-21: the body of a member of a class template defined
+            // outside its class sees the members of the pattern class.
+            if !self.stack.contains(&cs) {
+                self.stack.push(cs);
+            }
         }
         let r = self.parse_function_body(id, fd.scope, member_class, ret_auto.is_some());
         self.stack = saved;
@@ -5477,6 +5606,13 @@ impl P {
                         };
                         let form = if matches!(e.k, EK::InitList(_)) { InitForm::DirectList } else { InitForm::Copy };
                         let ce = self.convert_init(e, &ty, form, line);
+                        if ty.t.is_ref() && !self.in_template() && Self::binds_temporary(&ce) {
+                            // CTOR-17 (Q-0084): a constructor that uses the
+                            // initializer binds the member to a temporary
+                            // that ends with the constructor. The front end
+                            // rejects at the initializer.
+                            self.error(line, "CTOR-17", format!("the default member initializer binds the reference member '{}' to a temporary object", self.decls[fid].name));
+                        }
                         if let DK::Field(f) = &mut self.decls[fid].k {
                             f.init = Some(Rc::new(ce));
                         }
@@ -5493,6 +5629,46 @@ impl P {
             self.stack = save_stack;
             self.templ = save_templ;
         }
+    }
+
+    /// CTOR-18 (Q-0083): a default argument of a constructor of class `c`
+    /// must not make an object of a class nested in `c` with a default
+    /// member initializer that the object uses.
+    fn check_nested_dmi_use(&mut self, e: &Expr, c: usize, pid: DeclId, line: u32) {
+        let is_ctor_param = self.classes[c].ctors.iter().any(|&k| self.func(k).is_some_and(|f| f.params.contains(&pid)));
+        if self.in_template() || !is_ctor_param {
+            return;
+        }
+        let mut found: Option<usize> = None;
+        walk_expr(e, &mut |x: &Expr| {
+            if found.is_some() {
+                return;
+            }
+            let Ty::Class(n) = x.ty.t else { return };
+            let uses = match &x.k {
+                EK::InitList(v) => v.len() < self.classes[n].fields.len(),
+                EK::Construct(k, _) => self.func(*k).is_some_and(|f| f.body.is_none() || f.first_defaulted),
+                _ => false,
+            };
+            if uses && n != c && self.class_nested_in(n, c) && self.classes[n].fields.iter().any(|&f| matches!(&self.decls[f].k, DK::Field(fi) if fi.init.is_some())) {
+                found = Some(n);
+            }
+        });
+        if let Some(n) = found {
+            self.error(line, "CTOR-18", format!("the default argument uses a default member initializer of '{}' before the enclosing class is complete", self.classes[n].name));
+        }
+    }
+
+    /// Whether class `n` is nested in class `c`.
+    pub fn class_nested_in(&self, n: usize, c: usize) -> bool {
+        let mut s = self.scopes[self.classes[n].scope].parent;
+        while let Some(x) = s {
+            if self.scopes[x].kind == SK::Class(c) {
+                return true;
+            }
+            s = self.scopes[x].parent;
+        }
+        false
     }
 
     /// A default argument of a member function, parsed after its class.
@@ -5514,6 +5690,7 @@ impl P {
                 let form = if matches!(e.k, EK::InitList(_)) { InitForm::CopyList } else { InitForm::Copy };
                 let ce = self.convert_init(e, &ty, form, line);
                 self.check_default_arg(&ce, line);
+                self.check_nested_dmi_use(&ce, df.class, pid, line);
                 if let DK::Var(v) = &mut self.decls[pid].k {
                     v.init = Some(Rc::new(ce));
                 }
@@ -5570,6 +5747,12 @@ impl P {
             }
         }
         r
+    }
+
+    /// Whether a reference initialization binds a temporary object
+    /// (CTOR-17).
+    pub fn binds_temporary(e: &Expr) -> bool {
+        matches!(&e.k, EK::Conv(Conv::Bind, x) if x.cat == Cat::PR)
     }
 
     fn parse_function_body_in(&mut self, fid: DeclId, param_scope: usize, class: Option<usize>, deduce: bool) -> PR<()> {
@@ -5840,6 +6023,13 @@ impl P {
                         let e = Expr::new(EK::InitList(args.clone()), QTy::unknown(), Cat::PR, line);
                         Some(self.convert_init(e, &fty, InitForm::Paren(n), line))
                     };
+                    if let Some(x) = &e {
+                        if fty.t.is_ref() && Self::binds_temporary(x) {
+                            // CTOR-17 (Q-0084): the temporary ends with the
+                            // constructor.
+                            self.error(line, "CTOR-17", format!("the mem-initializer binds the reference member '{}' to a temporary object", name));
+                        }
+                    }
                     e.map(Rc::new)
                 }
                 _ => None,
@@ -6357,7 +6547,16 @@ fn falls_off(p: &P, s: &Stmt) -> bool {
             _ => true,
         },
         Stmt::Block(v) => !v.iter().any(has_label) && v.iter().all(|x| falls_off(p, x)),
-        Stmt::If { then, els, kind, .. } => match kind {
+        Stmt::If { then, els, kind, cond, .. } => match kind {
+            // FN-7: a constant condition selects one branch.
+            IfKind::Normal if !has_label(then) && !els.as_deref().is_some_and(has_label) && matches!(cond, Some(CondK::Expr(e)) if p.const_int_quiet(e).is_ok()) => {
+                let Some(CondK::Expr(e)) = cond else { unreachable!() };
+                if p.const_int_quiet(e).is_ok_and(|v| v != 0) {
+                    falls_off(p, then)
+                } else {
+                    els.as_deref().is_none_or(|e| falls_off(p, e))
+                }
+            }
             IfKind::Normal => falls_off(p, then) || els.as_deref().is_none_or(|e| falls_off(p, e)),
             _ => falls_off(p, then) && els.as_deref().is_none_or(|e| falls_off(p, e)),
         },

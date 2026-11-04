@@ -974,7 +974,17 @@ impl P {
             }
             return 0;
         }
-        // Step 1: list targets (ICS-22 to ICS-24).
+        // Step 2 comes first: kind (ICS-21, Q-0133).
+        let k = |i: &Ics| match i.kind {
+            IK::Std | IK::Slot => 0,
+            IK::User | IK::Ambig => 1,
+            IK::Ellipsis => 2,
+        };
+        if k(a) != k(b) {
+            return if k(a) < k(b) { 1 } else { -1 };
+        }
+        // Step 1: list targets (ICS-22 to ICS-24), for two sequences of
+        // the same kind.
         match (&a.list, &b.list) {
             (LT::InitList, x) if *x != LT::InitList => return 1,
             (x, LT::InitList) if *x != LT::InitList => return -1,
@@ -1118,6 +1128,8 @@ impl P {
                 }
                 self.qual_adds(a, b)
             }
+            // CONV-16 (Q-0153): the adjustment can drop an array bound.
+            (Ty::Array(ea, na), Ty::Array(eb, nb)) if na == nb || nb.is_none() => (!x.c || y.c) && (!x.v || y.v) && (ea == eb || self.qual_adds(ea, eb) || (ea.t == eb.t && (!ea.c || eb.c) && (!ea.v || eb.v))),
             (a, b) => a == b && (!x.c || y.c) && (!x.v || y.v),
         }
     }
@@ -1229,7 +1241,9 @@ impl P {
                         continue;
                     }
                     let (fa, fb) = (self.func(a).cloned().unwrap(), self.func(b).cloned().unwrap());
-                    if fa.fty.params != fb.fty.params || fa.fty.cv_c != fb.fty.cv_c || fa.fty.refq != fb.fty.refq {
+                    // OVL-30 (Q-0146): an ellipsis makes the parameter
+                    // lists differ.
+                    if fa.fty.params != fb.fty.params || fa.fty.variadic != fb.fty.variadic || fa.fty.cv_c != fb.fty.cv_c || fa.fty.refq != fb.fty.refq {
                         continue;
                     }
                     let (ca, cb) = (self.fn_cons.get(&a).cloned(), self.fn_cons.get(&b).cloned());
@@ -1329,7 +1343,14 @@ impl P {
             // implicit copy or move assignment (CPY-4, CPY-5), so the
             // declared operators are all the candidates.
             let declares_copy = self.copy_cands(c, true, false).is_some_and(|v| !v.is_empty());
-            if !declares_copy && (matches!(rc, Some(Ty::Class(_))) || !self.classes[c].ctors.is_empty()) {
+            // CPY-4: a class that declares a move assignment has a deleted
+            // implicit copy assignment and no implicit move assignment. For
+            // an rvalue of the class, the declared move assignment is better
+            // than the deleted copy assignment (ICS-28), so the declared
+            // operators decide.
+            let declares_move = self.copy_cands(c, true, true).is_some_and(|v| !v.is_empty());
+            let rvalue_same = r.is_some_and(|r| r.cat != Cat::L && nonref(&r.ty).t == Ty::Class(c));
+            if !declares_copy && !(declares_move && rvalue_same) && (matches!(rc, Some(Ty::Class(_))) || !self.classes[c].ctors.is_empty()) {
                 return None;
             }
         }

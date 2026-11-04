@@ -421,7 +421,7 @@ pub fn show(q: &QTy) -> String {
         Ty::LRef(i) => format!("{}&", show(i)),
         Ty::RRef(i) => format!("{}&&", show(i)),
         Ty::Array(i, n) => format!("{}[{}]", show(i), n.map(|x| x.to_string()).unwrap_or_default()),
-        Ty::Func(f) => format!("{}({})", show(&f.ret), f.params.iter().map(show).collect::<Vec<_>>().join(", ")),
+        Ty::Func(f) => format!("{}({}{}){}", show(&f.ret), f.params.iter().map(show).collect::<Vec<_>>().join(", "), if f.variadic { if f.params.is_empty() { "..." } else { ", ..." } } else { "" }, if f.noexcept { " noexcept" } else { "" }),
         Ty::Enum(i) => format!("{}enum#{}", cv, i),
         Ty::Class(i) => format!("{}class#{}", cv, i),
         Ty::MemPtr(c, i) => format!("{} class#{}::*", show(i), c),

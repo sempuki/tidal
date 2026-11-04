@@ -1149,7 +1149,7 @@ impl P {
                 has_template = true;
                 continue;
             }
-            if f.constrained || f.opaque {
+            if (f.constrained && !self.cons_settled.contains(&fid)) || f.opaque {
                 return Err(());
             }
             let mut fty = f.fty.clone();
@@ -1184,6 +1184,60 @@ impl P {
             return Err(());
         }
         Ok(matches)
+    }
+
+    /// OVL-19 steps 2 and 4 for the functions of a set that are not
+    /// templates: a function whose constraints are not satisfied leaves
+    /// the set, and so does a function when another with the same
+    /// parameters is more constrained (Q-0142). None when the front end
+    /// cannot tell. The set comes back unchanged when no function has
+    /// constraints.
+    pub fn constraint_reduced(&mut self, fs: &[DeclId]) -> Option<Vec<DeclId>> {
+        let has = |p: &P, f: DeclId| p.func(f).is_some_and(|x| !x.template && (x.constrained || p.fn_cons.contains_key(&f)));
+        if !fs.iter().any(|&f| has(self, f)) {
+            return Some(fs.to_vec());
+        }
+        let mut kept = Vec::new();
+        for &f in fs {
+            let x = self.func(f)?;
+            if x.template || !has(self, f) {
+                kept.push(f);
+                continue;
+            }
+            if !self.fn_cons.contains_key(&f) {
+                return None;
+            }
+            match self.fn_sat(f) {
+                crate::cons::Sat::Yes => kept.push(f),
+                crate::cons::Sat::No | crate::cons::Sat::Error => {}
+                crate::cons::Sat::Unknown => return None,
+            }
+        }
+        let plain: Vec<DeclId> = kept.iter().copied().filter(|&f| self.func(f).is_some_and(|x| !x.template)).collect();
+        let mut out = Vec::new();
+        for &a in &kept {
+            let beaten = plain.iter().any(|&b| {
+                if a == b || self.func(a).is_some_and(|x| x.template) {
+                    return false;
+                }
+                let (fa, fb) = (self.func(a).cloned().unwrap(), self.func(b).cloned().unwrap());
+                if fa.fty.params != fb.fty.params || fa.fty.cv_c != fb.fty.cv_c || fa.fty.refq != fb.fty.refq {
+                    return false;
+                }
+                let (ca, cb) = (self.fn_cons.get(&a).cloned(), self.fn_cons.get(&b).cloned());
+                self.more_constrained(&cb, u32::MAX, &[], &ca, u32::MAX, &[])
+            });
+            if !beaten {
+                out.push(a);
+            }
+        }
+        // The rest of the checks do not look at the constraints again.
+        for &f in &out {
+            if self.func(f).is_some_and(|x| x.constrained && !x.template) {
+                self.cons_settled.insert(f);
+            }
+        }
+        Some(out)
     }
 
     /// OVL-18 to OVL-20: the function of an overload set that a target
@@ -1229,6 +1283,7 @@ impl P {
         } else {
             fs
         };
+        let fs = self.constraint_reduced(&fs)?;
         let mut matches = self.overload_matches(&fs, to).ok()?;
         if matches.len() > 1 {
             // OVL-19 steps 3 and 5: a plain function removes the
@@ -1281,7 +1336,7 @@ impl P {
         }
         let x = if let Some(fc) = memclass {
             Expr::new(if self.in_template() { EK::Unknown("pointer to member function".into()) } else { EK::MemberPtr(fid) }, QTy::new(Ty::MemPtr(fc, Box::new(QTy::new(Ty::Func(Box::new(fty)))))), Cat::PR, line)
-        } else if f.explicit_obj {
+        } else if f.explicit_obj && (self.in_template() || fty.params.iter().any(|q| q.is_unknown())) {
             Expr::new(EK::Unknown("address of an explicit object member function".into()), QTy::new(Ty::Ptr(Box::new(QTy::new(Ty::Func(Box::new(fty)))))), Cat::PR, line)
         } else {
             Expr::new(EK::Func(fid), QTy::new(Ty::Func(Box::new(fty))), Cat::L, line)

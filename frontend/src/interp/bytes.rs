@@ -467,6 +467,13 @@ impl<'a> Machine<'a> {
             // objects that the program needs.
             return self.storage_pointer(p, &QTy::new(to));
         }
+        if p.array && p.path.is_empty() && !self.constant && self.type_at(&p).is_some_and(|t| self.is_byte_type(&t.t)) && self.residents.contains_key(&p.obj) {
+            // STG-29 (Q-0324): a cast of a pointer into a byte array gives
+            // a pointer to a byte, which does not reach an object that the
+            // array hosts.
+            let (o, k) = self.byte_pos(&p)?;
+            return Ok(Self::byte_ptr(o, k));
+        }
         Ok(p)
     }
 
@@ -827,7 +834,28 @@ impl<'a> Machine<'a> {
         self.read_gl_inner(p, gl, true)
     }
 
+    /// VOL-6 (Q-0359): an access to a volatile object through a glvalue
+    /// that is not volatile, also through the bytes of a volatile
+    /// complete object.
+    fn check_volatile_access(&self, p: &Ptr, gl: &QTy) -> R<()> {
+        // VOL-2: a volatile object is volatile after its construction
+        // and before its destruction.
+        if gl.v || self.cdtor.iter().any(|(q, _)| q.obj == p.obj) {
+            return Ok(());
+        }
+        let vol = self.objs[p.obj].volatile
+            || (!p.bytes && {
+                let fp = full_path(p);
+                (1..=fp.len()).any(|k| self.type_at(&Ptr { obj: p.obj, path: fp[..k].to_vec(), off: 0, array: false, bytes: false }).is_some_and(|t| t.v))
+            });
+        if vol {
+            return ub("VOL-6", format!("access to a volatile object through a glvalue of type {}, which is not volatile", crate::types::show(gl)));
+        }
+        Ok(())
+    }
+
     fn read_gl_inner(&mut self, p: &Ptr, gl: &QTy, indet: bool) -> R<Val> {
+        self.check_volatile_access(p, gl)?;
         let byte = |m: &mut Self, o: usize, k: i64, t: &Ty| -> R<Val> {
             let b = m.read_byte(o, k)?;
             match m.byte_val(b, t) {
@@ -866,6 +894,7 @@ impl<'a> Machine<'a> {
 
     /// Write `v` to the object at `p` through a glvalue of type `gl`.
     pub fn write_gl(&mut self, p: &Ptr, gl: &QTy, v: Val) -> R<()> {
+        self.check_volatile_access(p, gl)?;
         let as_byte = |v: &Val| match v {
             Val::Int(x) => Ok(Byte::Known(*x as u8)),
             Val::Uninit => Ok(Byte::Indet),

@@ -464,6 +464,33 @@ impl P {
                 }
             }
         }
+        // OVL-38 (Q-0140): one function with C language linkage declared
+        // in two scopes with different default arguments, and a call that
+        // uses the default.
+        if !self.in_template() {
+            let cs: Vec<DeclId> = cands.iter().copied().filter(|c| self.c_fns.contains(c)).collect();
+            'pairs: for (i, &a) in cs.iter().enumerate() {
+                for &b in &cs[i + 1..] {
+                    let (Some(fa), Some(fb)) = (self.func(a).cloned(), self.func(b).cloned()) else { continue };
+                    if fa.fty.params != fb.fty.params || args.len() >= fa.params.len() || fa.params.len() != fb.params.len() {
+                        continue;
+                    }
+                    let k = args.len();
+                    let da = self.var(fa.params[k]).and_then(|v| v.init.clone());
+                    let db = self.var(fb.params[k]).and_then(|v| v.init.clone());
+                    if let (Some(da), Some(db)) = (da, db) {
+                        let differ = match (self.const_int_quiet(&da), self.const_int_quiet(&db)) {
+                            (Ok(x), Ok(y)) => x != y,
+                            _ => format!("{:?}", da.k) != format!("{:?}", db.k),
+                        };
+                        if differ {
+                            self.error(line, "OVL-38", format!("the call of '{}' uses a default argument that two declarations in different scopes give differently", self.decls[a].name));
+                            break 'pairs;
+                        }
+                    }
+                }
+            }
+        }
         // DED-1: each function template adds the specialization that
         // deduction gives.
         let explicit = self.call_explicit.take();
@@ -645,7 +672,10 @@ impl P {
             // it; a deduced return type needs it also in an unevaluated
             // operand (INST-7, DED-29).
             let needs_ret = self.func(fid).is_some_and(|f| f.fty.ret.is_unknown());
-            if self.in_unevaluated == 0 || needs_ret {
+            // INST-7 (Q-0252): a constexpr function named in a braced
+            // initializer of an unevaluated operand is instantiated.
+            let braced_constexpr = self.braced_depth > 0 && self.func(fid).is_some_and(|f| f.constexpr);
+            if self.in_unevaluated == 0 || needs_ret || braced_constexpr {
                 self.use_fn(fid);
             }
         }
@@ -1155,7 +1185,9 @@ impl P {
             self.d.list.truncate(mark);
             return None;
         }
-        Some(Expr::new(EK::InitList(out), ty.clone(), Cat::PR, line))
+        let mut x = Expr::new(EK::InitList(out), ty.clone(), Cat::PR, line);
+        x.paren = is_paren;
+        Some(x)
     }
 
     /// A reference bound to the temporary that a converted list
@@ -1173,6 +1205,7 @@ impl P {
         if ty.is_unknown() {
             return e;
         }
+        self.check_class_copy_use(&e, ty, line);
         let items: Option<Vec<Expr>> = match &e.k {
             EK::InitList(v) if e.ty.is_unknown() => Some(v.clone()),
             _ => None,
@@ -1429,6 +1462,12 @@ impl P {
                             return v[0].clone();
                         }
                         let any_nested_aggr = fields.iter().any(|&f| matches!(&self.decls[f].k, DK::Field(fi) if matches!(fi.ty.t, Ty::Array(..) | Ty::Class(_))));
+                        if is_paren && v.len() > nfields && any_nested_aggr && !self.in_template() {
+                            // LIST-9 (Q-0043): no brace elision in
+                            // parentheses, so each value is one member.
+                            self.error(line, "LIST-9", "parenthesized aggregate initialization has more values than members; the values do not split across a nested aggregate");
+                            return Expr::unknown(line, "bad aggregate init");
+                        }
                         if v.len() > nfields && !any_nested_aggr {
                             // LIST-3: not more values than members.
                             self.error(line, "LIST-12", "too many initializers for the aggregate");
@@ -1460,7 +1499,9 @@ impl P {
                                 }
                             }
                         }
-                        Expr::new(EK::InitList(out), ty.clone(), Cat::PR, line)
+                        let mut x = Expr::new(EK::InitList(out), ty.clone(), Cat::PR, line);
+                        x.paren = is_paren;
+                        x
                     }
                     (None, _) => {
                         let et = nonref(&e.ty);
@@ -1503,8 +1544,10 @@ impl P {
                                         let call = Expr::new(EK::Call(Box::new(e.clone()), vec![], Some(fid)), ty.unqual(), Cat::PR, line);
                                         return call;
                                     }
-                                    // OVL-14: a converting constructor won.
-                                    if self.classes[c].ctors.contains(&fid) {
+                                    // OVL-14: a converting constructor won, also
+                                    // a specialization of a constructor
+                                    // template (DED-1).
+                                    if self.classes[c].ctors.contains(&fid) || self.func(fid).is_some_and(|f| f.kind == FnKind::Ctor && f.class == Some(c) && !f.template) {
                                         if let Some(f) = self.func(fid).cloned().filter(|f| !f.deleted && !f.fty.variadic && !f.fty.params.is_empty()) {
                                             let mark = self.d.list.len();
                                             let conv = self.convert_args(&f.fty, vec![e.clone()], line, Some(fid));
@@ -2113,6 +2156,23 @@ impl P {
             return None;
         }
         if let Some((fs, true)) = Self::overload_set_of(&init) {
+            // OVL-20 step 2: constraints remove functions (Q-0142).
+            if !self.in_template() && fs.iter().any(|f| self.fn_cons.contains_key(f)) {
+                if let Some(left) = self.constraint_reduced(&fs) {
+                    if let [f] = left[..] {
+                        if let Some(fi) = self.func(f).cloned() {
+                            if !fi.template && !fi.explicit_obj {
+                                let ft = QTy::new(Ty::Func(Box::new(fi.fty.clone())));
+                                let t = match fi.class {
+                                    Some(c) if !fi.is_static => Ty::MemPtr(c, Box::new(ft)),
+                                    _ => Ty::Ptr(Box::new(ft)),
+                                };
+                                return Some(QTy::new(t));
+                            }
+                        }
+                    }
+                }
+            }
             if !self.in_template() && fs.iter().all(|&f| self.func(f).is_some_and(|f| !f.constrained && f.class.is_none_or(|c| !self.class_uncertain(c)))) {
                 // OVL-20: with no target type, the set must have one
                 // function that is not a template.

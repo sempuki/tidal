@@ -294,7 +294,8 @@ impl P {
     pub fn skippable_type(&self, t: &Ty) -> Option<bool> {
         match t {
             Ty::Array(e, _) => self.skippable_type(&e.t),
-            Ty::Class(c) => Some(self.trivial(*c, Sm::Default)? && self.trivial(*c, Sm::Dtor)?),
+            // JMP-6 (Q-0041): the destructor plays no part.
+            Ty::Class(c) => self.trivial(*c, Sm::Default),
             Ty::Unknown | Ty::Dep(_) => None,
             _ => Some(true),
         }
@@ -390,9 +391,10 @@ impl P {
         let is_variant = |f: DeclId| variant_names.contains(&self.decls[f].name) || matches!(&self.decls[f].k, DK::Field(x) if matches!(x.ty.t, Ty::Class(u) if ci.anon_unions.contains(&u)));
         let has_regular = ci.fields.iter().any(|&f| !is_variant(f) && matches!(&self.decls[f].k, DK::Field(x) if x.bits != Some(0)));
         // CTOR-24: an anonymous union without a default member
-        // initializer, unless every data member is in such a union
+        // initializer, also when every data member is in such a union
         // (Q-0126).
-        if has_regular && ci.anon_unions.iter().any(|&u| !has_dmi(u)) {
+        let _ = has_regular;
+        if ci.anon_unions.iter().any(|&u| !has_dmi(u) && !self.classes[u].fields.is_empty()) {
             return Some(false);
         }
         for &f in &ci.fields {

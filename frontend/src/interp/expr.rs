@@ -80,6 +80,20 @@ impl<'a> Machine<'a> {
                 }
                 return unsup("variable of an enclosing function (local class or lambda)");
             }
+            if v.local && v.storage == Storage::Extern {
+                // STO-7, LNK-9: a block-scope extern declaration names the
+                // variable of the enclosing namespace with that name.
+                let name = self.p.decls[id].name.clone();
+                let mut sc = self.p.scopes[self.p.decls[id].scope].parent;
+                while let Some(x) = sc {
+                    if self.p.scopes[x].kind == SK::Namespace {
+                        if let Some(g) = self.p.scopes[x].names.get(&name).and_then(|v| v.iter().copied().find(|&g| g != id && self.p.var(g).is_some_and(|gv| !gv.local))) {
+                            return self.var_place(g);
+                        }
+                    }
+                    sc = self.p.scopes[x].parent;
+                }
+            }
             if v.local {
                 return unsup("block-scope static variable used before its declaration ran");
             }
@@ -956,6 +970,10 @@ impl<'a> Machine<'a> {
                 }
                 Ok(Val::Void)
             }
+            // NEW-37, LSUP-6: during constant evaluation, the global
+            // nothrow forms are allocation functions of the
+            // implementation (Q-0303), and they do not fail.
+            EK::New { ty, count, init, alloc: Some(al), .. } if self.constant && al.nothrow && al.args.len() == 1 && al.func.is_some_and(|f| self.p.func(f).is_some_and(|fi| fi.class.is_none() && fi.fty.params.len() == 2 && matches!(&fi.fty.params[1].t, Ty::LRef(x) if matches!(x.t, Ty::Class(c) if self.p.classes[c].name == "nothrow_t")))) => self.eval_new(ty, count.as_deref(), init.as_deref()),
             EK::New { ty, count, init, alloc: Some(al), .. } => self.eval_new_user(ty, count.as_deref(), init.as_deref(), al),
             EK::New { ty, count, init, place: None, .. } => self.eval_new(ty, count.as_deref(), init.as_deref()),
             EK::New { ty, count, init, place: Some(pl), .. } => self.eval_placement_new(ty, count.as_deref(), init.as_deref(), pl),
@@ -1067,6 +1085,15 @@ impl<'a> Machine<'a> {
 
     /// A global allocation or deallocation function called by name
     /// (STG-7, NEW-5, NEW-19): storage of bytes with no object yet.
+    /// The library's allocation and deallocation at run time, for
+    /// `malloc` and `free`.
+    fn call_allocation_lib(&mut self, name: &str, args: &[Expr]) -> R<Ret> {
+        if self.constant {
+            return limit("CE-2", "call of a C library function");
+        }
+        self.call_allocation(name, args)
+    }
+
     fn call_allocation(&mut self, name: &str, args: &[Expr]) -> R<Ret> {
         // LSUP-11, NEW-37: during constant evaluation, only the members of
         // std::allocator call ::operator new and ::operator delete by name.
@@ -1164,6 +1191,48 @@ impl<'a> Machine<'a> {
         }
         self.objs[host].alive = false;
         Ok(Ret::Val(Val::Void))
+    }
+
+    /// A closed list of C library functions that a program declares with C
+    /// language linkage and the interpreter knows (a front-end choice
+    /// under decision 0035; the specification states no library):
+    /// `_Exit`, `abort`, `exit`, `malloc`, `free`, `puts`, and `putchar`.
+    /// None when the name or the parameters are not one of these.
+    fn c_library_call(&mut self, name: &str, f: &FuncInfo, args: &[Expr]) -> R<Option<Ret>> {
+        let ps = &f.fty.params;
+        let int_param = ps.len() == 1 && ps[0].t == Ty::Int;
+        let ptr_param = |q: &QTy, inner: Option<Ty>| matches!(&q.t, Ty::Ptr(x) if inner.as_ref().is_none_or(|t| x.t == *t));
+        match name {
+            "_Exit" | "exit" if int_param => {
+                let Val::Int(st) = self.eval(&args[0])? else { return unsup("exit status") };
+                // `exit` ends the static objects; `_Exit` ends no object.
+                Err(Stop::Exit(st, name == "exit"))
+            }
+            "abort" if ps.is_empty() => Err(Stop::Terminate("abort", "the program called abort".into())),
+            "malloc" if ps.len() == 1 && ps[0].t.is_integral() && ptr_param(&f.fty.ret, Some(Ty::Void)) => {
+                let n = match self.eval(&args[0])? {
+                    Val::Int(v) => v,
+                    _ => return unsup("allocation size"),
+                };
+                if n > ALLOC_LIMIT as i128 {
+                    return Ok(Some(Ret::Val(Val::Null)));
+                }
+                let size = Expr::new(EK::Int(n), QTy::new(Ty::size_t()), Cat::PR, self.line);
+                self.call_allocation_lib("operatornew", &[size]).map(Some)
+            }
+            "free" if ps.len() == 1 && ptr_param(&ps[0], Some(Ty::Void)) => self.call_allocation_lib("operatordelete", args).map(Some),
+            "puts" if ps.len() == 1 && ptr_param(&ps[0], None) => {
+                // The text goes to the standard output, which a run does
+                // not record; the result is a nonnegative value.
+                self.eval(&args[0])?;
+                Ok(Some(Ret::Val(Val::Int(1))))
+            }
+            "putchar" if int_param => {
+                let Val::Int(c) = self.eval(&args[0])? else { return unsup("putchar argument") };
+                Ok(Some(Ret::Val(Val::Int(c & 0xff))))
+            }
+            _ => Ok(None),
+        }
     }
 
     /// STG-7, STG-18: an implicit-lifetime type, whose objects an
@@ -1453,15 +1522,22 @@ impl<'a> Machine<'a> {
             if !matches!(t.t, Ty::Class(_) | Ty::Array(..)) {
                 self.objs[r.obj].val = Val::Uninit;
             }
-            // A new object ends the objects whose storage it takes.
+            // A new object ends the objects whose storage it takes (STG-6).
+            // The overlap uses the byte offsets in the complete object, so
+            // that objects in two rows of an array of byte arrays, or in
+            // the byte arrays of two elements, do not overlap (STG-4).
             let (lo, hi) = (p.off, p.off + size as i64);
+            let abs = self.byte_pos(&p).map(|x| x.1).unwrap_or(lo);
             if let Some(v) = self.residents.get(&p.obj).cloned() {
                 for (o, s2, obj) in v {
-                    if o < hi && lo < o + s2 {
+                    let oa = self.resident_abs.get(&obj).copied().unwrap_or(o);
+                    if oa < abs + size as i64 && abs < oa + s2 {
                         self.objs[obj].alive = false;
                     }
                 }
             }
+            let _ = hi;
+            self.resident_abs.insert(r.obj, abs);
             self.residents.entry(p.obj).or_default().push((lo, size as i64, r.obj));
             self.resident_of.insert(r.obj, (p.obj, lo));
             let target = if count.is_some() { r.clone() } else { r.clone() };
@@ -1958,6 +2034,17 @@ impl<'a> Machine<'a> {
                             // std::allocator obtains is an array of T.
                             return limit("CE-4", "conversion from void*");
                         }
+                        if self.constant {
+                            // CE-4 (Q-0349): inside std::allocator<T>, only
+                            // the conversion to T*.
+                            let elem = self.frame().func.and_then(|f| self.p.func(f)).and_then(|f| f.class).and_then(|c| self.p.inst_of.get(&c)).and_then(|(_, args)| match args.first() {
+                                Some(TArg::Type(q)) => Some(q.unqual().t),
+                                _ => None,
+                            });
+                            if elem.is_some_and(|e| e != t.unqual().t) {
+                                return limit("CE-4", "conversion of the storage of std::allocator<T> to a pointer to a type other than T");
+                            }
+                        }
                         if self.residents.contains_key(&p.obj) && !p.bytes {
                             return Ok(Val::Ptr(self.storage_pointer(p.clone(), t)?));
                         }
@@ -2034,12 +2121,9 @@ impl<'a> Machine<'a> {
                 let f = x.to_f64();
                 if to.is_floating() {
                     let r = if *to == Ty::Float { f as f32 as f64 } else { f };
-                    if r.is_infinite() && x.is_finite() {
-                        if self.constant {
-                            return limit("CONV-11", "floating conversion overflows the target type");
-                        }
-                        return unsup("floating conversion out of range (CONV-11, implementation-defined)");
-                    }
+                    // CONV-11: a value above the range gives infinity, as
+                    // the matrix table gives for Clang and GCC on both
+                    // targets, also in constant evaluation.
                     return Ok(Val::Float(r));
                 }
                 Ok(Val::LD(x))
@@ -2056,15 +2140,9 @@ impl<'a> Machine<'a> {
                     return Ok(Val::Int(t as i128));
                 }
                 if *to == Ty::Float {
+                    // CONV-11: a value above the range gives infinity (the
+                    // matrix table: Clang and GCC on both targets).
                     let r = f as f32;
-                    if r.is_infinite() && f.is_finite() {
-                        if self.constant {
-                            // CONV-11 is impl-defined; Clang and GCC reject in
-                            // constant evaluation.
-                            return limit("CONV-11", "floating conversion overflows the target type");
-                        }
-                        return unsup("floating conversion out of range (CONV-11, implementation-defined)");
-                    }
                     return Ok(Val::Float(r as f64));
                 }
                 Ok(Val::Float(f))
@@ -2148,9 +2226,40 @@ impl<'a> Machine<'a> {
     /// active, also when the assignment names a member of the member, as
     /// in `u.a.tag = 7`. The other members end.
     pub fn activate(&mut self, place: &Ptr) -> R<()> {
+        self.activate_last(place, usize::MAX)
+    }
+
+    /// The number of member accesses and subscripts that name the left
+    /// operand of an assignment, from its innermost operand (UNI-13).
+    fn chain_len(e: &Expr) -> usize {
+        match &e.k {
+            EK::Member(o, _) => 1 + Self::chain_len(o),
+            EK::Index(a, _) => 1 + Self::chain_len(a),
+            EK::Conv(Conv::ArrayDecay | Conv::NoOp, x) => Self::chain_len(x),
+            _ => 0,
+        }
+    }
+
+    /// UNI-5, UNI-13: as `activate`, for the last `n` steps of the path
+    /// only. A step before them is not named by the assignment (as in
+    /// `this->v` inside a member function of an inactive member).
+    pub fn activate_last(&mut self, place: &Ptr, n: usize) -> R<()> {
         let fp = full_path(place);
+        let first = fp.len().saturating_sub(n);
         let mut t = self.obj_ty(place.obj).map(|q| q.t);
         for (k, &i) in fp.iter().enumerate() {
+            if k < first {
+                t = match &t {
+                    Some(Ty::Class(c)) => {
+                        let c = *c;
+                        let nb = self.nbases(c);
+                        if i < nb { self.p.classes[c].bases[i].class.map(Ty::Class) } else { self.fields(c).into_iter().find(|(_, fi)| fi.index == i - nb).map(|x| x.1.ty.t) }
+                    }
+                    Some(Ty::Array(el, _)) => Some(el.t.clone()),
+                    _ => None,
+                };
+                continue;
+            }
             let next = match &t {
                 Some(Ty::Class(c)) => {
                     let c = *c;
@@ -2316,7 +2425,7 @@ impl<'a> Machine<'a> {
             let (src, mv) = if r.cat == Cat::PR { (self.materialize(r)?, true) } else { (self.lvalue(r)?, r.cat == Cat::X) };
             let src = self.class_cast(src, &nonref(&r.ty).t, &Ty::Class(c))?;
             let place = self.lvalue(l)?;
-            self.activate(&place)?;
+            self.activate_last(&place, Self::chain_len(l))?;
             self.assign_parts(&place, &src, c, mv)?;
             return Ok(place);
         }
@@ -2336,7 +2445,7 @@ impl<'a> Machine<'a> {
         }
         let place = self.lvalue(l)?;
         if op.is_none() {
-            self.activate(&place)?;
+            self.activate_last(&place, Self::chain_len(l))?;
         }
         let nv = match op {
             None => rv,
@@ -2727,7 +2836,7 @@ impl<'a> Machine<'a> {
                                 }
                             }
                             false
-                        } else if !self.constant && !p.bytes && !q.bytes && !self.is_past_end(p) && !self.is_past_end(q) && self.addr_key(p) != self.addr_key(q) && matches!((self.byte_pos(p), self.byte_pos(q)), (Ok(_), Ok(_))) {
+                        } else if !p.bytes && !q.bytes && !self.is_past_end(p) && !self.is_past_end(q) && self.addr_key(p) != self.addr_key(q) && matches!((self.byte_pos(p), self.byte_pos(q)), (Ok(_), Ok(_))) {
                             // CLS-19, CLS-30: subobjects at the same byte,
                             // such as empty bases and the first member.
                             self.byte_pos(p).ok() == self.byte_pos(q).ok()
@@ -2995,7 +3104,14 @@ impl<'a> Machine<'a> {
                             Ret::Place(_) => unsup("class result"),
                         };
                     }
-                    EK::InitList(items) => return self.init_aggregate(place, items, c),
+                    EK::InitList(items) => {
+                        // REF-5 (Q-0040): parenthesized aggregate
+                        // initialization does not extend a temporary.
+                        let save = std::mem::replace(&mut self.paren_aggregate, e.paren);
+                        let r = self.init_aggregate(place, items, c);
+                        self.paren_aggregate = save;
+                        return r;
+                    }
                     EK::Cond(k, a, b) if e.cat == Cat::PR => {
                         return if self.eval_bool(k)? { self.init_into(place, a, ty) } else { self.init_into(place, b, ty) };
                     }
@@ -3223,9 +3339,10 @@ impl<'a> Machine<'a> {
             };
             let before = self.extended.len().max(ext);
             if let Some(it) = item {
-                self.in_aggregate += 1;
+                let save = self.in_aggregate;
+                self.in_aggregate = if self.paren_aggregate { 0 } else { save + 1 };
                 let r = self.init_field(&sub, &it, fi);
-                self.in_aggregate -= 1;
+                self.in_aggregate = save;
                 r?;
             } else if let Some(init) = &fi.init {
                 let init = init.clone();
@@ -3320,6 +3437,25 @@ impl<'a> Machine<'a> {
             }
         }
         let bases: Vec<usize> = self.p.classes[c].bases.iter().filter_map(|b| b.class).collect();
+        // OBJ-2, CTOR-12 (Q-0374): while the bases are initialized, the
+        // lifetime of each member of class type has not begun, so a call
+        // of its member function stops.
+        let nb0 = bases.len();
+        if self.p.classes[c].key != 2 {
+            for (_, fi) in self.fields(c) {
+                if matches!(fi.ty.t, Ty::Class(_)) {
+                    self.no_calls.push((place.sub(nb0 + fi.index), "OBJ-2"));
+                }
+            }
+        }
+        let r = self.construct_parts_in(place, c, mem_inits, done, &bases);
+        let pp = full_path(place);
+        self.no_calls.retain(|(q, r)| !(*r == "OBJ-2" && q.obj == place.obj && full_path(q).starts_with(&pp)));
+        r
+    }
+
+    fn construct_parts_in(&mut self, place: &Ptr, c: usize, mem_inits: &[MemInit], done: &mut Vec<Cleanup>, bases: &[usize]) -> R<()> {
+        let bases: Vec<usize> = bases.to_vec();
         for (i, bc) in bases.iter().enumerate() {
             if self.p.classes[c].bases[i].virt {
                 continue;
@@ -3344,6 +3480,9 @@ impl<'a> Machine<'a> {
         let union = self.p.classes[c].key == 2;
         for (fd, fi) in self.fields(c) {
             let sub = place.sub(nb + fi.index);
+            if let Some(k) = self.no_calls.iter().rposition(|(q, r)| *r == "OBJ-2" && *q == sub) {
+                self.no_calls.remove(k);
+            }
             let mi = mem_inits.iter().find(|m| m.field == Some(fd)).and_then(|m| m.init.clone());
             // UNI-7: a mem-initializer for a member of an anonymous union
             // initializes the unnamed member that holds it.
@@ -3591,7 +3730,9 @@ impl<'a> Machine<'a> {
                 self.init_into(&place, &a, &pty)?;
                 // VC-10: on the matrix targets the caller ends a parameter
                 // at the end of its full expression.
-                if self.needs_dtor(&pty.t) {
+                // DTOR-7: also with a trivial destructor, so that a second
+                // destruction shows.
+                if self.needs_dtor(&pty.t) || matches!(pty.t, Ty::Class(_)) {
                     self.add_temp(&place, &pty);
                 }
                 frame.vars.insert(pid, place.obj);
@@ -3806,7 +3947,9 @@ impl<'a> Machine<'a> {
         // ICS-41: the object of a call of a function with an explicit object
         // parameter is the first argument.
         let with_obj: Vec<Expr>;
-        let args: &[Expr] = if f.explicit_obj && !matches!(callee.k, EK::Func(_)) {
+        // A call through a pointer to the function (CLS-17) passes the
+        // object among the arguments.
+        let args: &[Expr] = if f.explicit_obj && !matches!(callee.k, EK::Func(_)) && !matches!(nonref(&callee.ty).t, Ty::Ptr(_) | Ty::Func(_)) {
             with_obj = std::iter::once((**callee).clone()).chain(args.iter().cloned()).collect();
             &with_obj
         } else {
@@ -3987,6 +4130,11 @@ impl<'a> Machine<'a> {
                 // deallocation functions, such as the nothrow forms.
                 return self.call_allocation(&name, args);
             }
+            if cp.c_fns.contains(&fid) && f.class.is_none() && cp.decls[fid].scope == cp.global {
+                if let Some(r) = self.c_library_call(&name, &f, args)? {
+                    return Ok(r);
+                }
+            }
             return unsup(format!("function '{}' has no definition in the program", name));
         };
         if f.kind == FnKind::Ctor || f.kind == FnKind::Dtor {
@@ -4018,6 +4166,7 @@ impl<'a> Machine<'a> {
             }
         };
         let consteval = f.consteval;
+        let nothrow = f.fty.noexcept;
         let fn_try = f.fn_try.clone();
         if let Some(t) = &this {
             let tp = full_path(t);
@@ -4025,7 +4174,12 @@ impl<'a> Machine<'a> {
                 let qp = full_path(q);
                 let hit = q.obj == t.obj && !q.bytes && !t.bytes && if *rule == "CTOR-12" { qp == tp } else { tp.starts_with(&qp) };
                 if hit {
-                    return ub(rule, if *rule == "CTOR-12" { "call of a member function before the bases of the object are initialized" } else { "call of a member function of an object whose parts ended before the handler" });
+                    let msg = match *rule {
+                        "CTOR-12" => "call of a member function before the bases of the object are initialized",
+                        "OBJ-2" => "call of a member function of a member whose lifetime has not begun",
+                        _ => "call of a member function of an object whose parts ended before the handler",
+                    };
+                    return ub(rule, msg);
                 }
             }
         }
@@ -4034,10 +4188,16 @@ impl<'a> Machine<'a> {
             m.install_params(frame);
             let save = m.in_consteval_fn;
             m.in_consteval_fn = consteval;
+            // UNW-7: the boundary of a non-throwing function.
+            let n = m.catch_stack.len();
+            if nothrow {
+                m.catch_stack.push(CatchEntry::Boundary(m.depth));
+            }
             let r = match fn_try {
                 Some(hs) => m.run_fn_try(&body, &hs, false),
                 None => m.run_body(&body),
             };
+            m.catch_stack.truncate(n);
             // UNW-1: a return statement built the class result, and then
             // the destructor of a local object threw. The result ends.
             let r = match r {

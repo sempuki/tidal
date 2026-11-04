@@ -222,7 +222,11 @@ impl<'a> Machine<'a> {
     /// A try block (TRY-1): the first handler that matches an exception
     /// that leaves the block runs.
     fn exec_try(&mut self, body: &Stmt, hs: &[Handler], seek: &mut Option<Seek>) -> R<Flow> {
-        match self.in_block(|m| m.exec(body, seek)) {
+        let n = self.catch_stack.len();
+        self.catch_stack.push(CatchEntry::Try(hs.iter().map(|h| h.ty.clone()).collect()));
+        let r = self.in_block(|m| m.exec(body, seek));
+        self.catch_stack.truncate(n);
+        match r {
             Err(Stop::Throw(x)) => self.handle(x, hs, seek),
             r => r,
         }
@@ -380,7 +384,11 @@ impl<'a> Machine<'a> {
     /// handler rethrows.
     pub fn run_fn_try(&mut self, body: &Stmt, hs: &[Handler], rethrow: bool) -> R<Flow> {
         let mut seek = None;
-        match self.run_body(body) {
+        let n = self.catch_stack.len();
+        self.catch_stack.push(CatchEntry::Try(hs.iter().map(|h| h.ty.clone()).collect()));
+        let r = self.run_body(body);
+        self.catch_stack.truncate(n);
+        match r {
             Err(Stop::Throw(x)) => {
                 let r = self.handle_fn(x, hs, &mut seek, rethrow);
                 r
@@ -627,11 +635,18 @@ impl<'a> Machine<'a> {
                 return Ok(());
             }
         }
+        // OBJ-1, OBJ-2 (Q-0368): the lifetime of a scalar begins when its
+        // initializer completes, so a write inside the initializer is
+        // outside the lifetime.
+        let scalar = !matches!(v.ty.t, Ty::Class(_) | Ty::Array(..));
         match &v.init {
             Some(init) => {
                 let init = init.clone();
                 let mark = self.extended.len();
-                self.full(|m| {
+                if scalar {
+                    self.in_own_init.insert(place.obj);
+                }
+                let r = self.full(|m| {
                     m.init_into(&place, &init, &v.ty)?;
                     // REF-4: a temporary that a reference member of the
                     // aggregate binds lives as long as the variable.
@@ -639,7 +654,9 @@ impl<'a> Machine<'a> {
                         m.register_block(&c.place, &c.ty);
                     }
                     Ok(())
-                })?;
+                });
+                self.in_own_init.remove(&place.obj);
+                r?;
             }
             None => self.full(|m| m.default_init(&place, &v.ty))?,
         }
@@ -655,6 +672,13 @@ impl<'a> Machine<'a> {
     fn local_static(&mut self, id: DeclId, v: &VarInfo) -> R<()> {
         let key = (self.tu, id);
         if self.globals.contains_key(&key) || self.global_refs.contains_key(&key) {
+            if let Some(&o) = self.globals.get(&key) {
+                if !self.objs[o].alive && !self.statics_running.contains(&key) && self.static_dtors_running {
+                    // OBJ-12: control passes through the declaration of a
+                    // block-scope static variable that has ended.
+                    return ub("OBJ-12", "control passes through the declaration of a block-scope static variable that has ended");
+                }
+            }
             if self.statics_running.contains(&key) {
                 // STO-9: control reaches the declaration again while its
                 // initialization runs.

@@ -27,6 +27,7 @@ fn stop_outcome(s: Stop, line: u32) -> RunOutcome {
         Stop::Unsupported(m) => RunOutcome::Unsupported(m, line),
         Stop::Terminate(r, m) => RunOutcome::Terminated(r, m, line),
         Stop::Throw(_) => RunOutcome::Terminated("UNW-5", "an exception has no handler".into(), line),
+        Stop::Exit(st, _) => RunOutcome::Result(st, Vec::new()),
     }
 }
 
@@ -236,6 +237,29 @@ impl<'a> Machine<'a> {
     /// Initialize the static objects of every unit, run `main`, and end
     /// the static objects.
     fn run_all(&mut self) -> R<i128> {
+        match self.run_all_inner() {
+            // `exit` ends the static objects that exist, and `_Exit` ends
+            // none; the automatic objects do not end (decision 0035, the
+            // C library list).
+            Err(Stop::Exit(st, statics)) => {
+                if statics {
+                    let list = std::mem::take(&mut self.static_dtors);
+                    self.static_dtors_running = true;
+                    let r = self.cleanup(list);
+                    self.static_dtors_running = false;
+                    match r {
+                        Err(Stop::Exit(st2, _)) => return Ok(st2),
+                        Err(Stop::Throw(_)) => return Err(Stop::Terminate("UNW-5", "an exception leaves the destructor of a static object".into())),
+                        r => r?,
+                    }
+                }
+                Ok(st)
+            }
+            r => r,
+        }
+    }
+
+    fn run_all_inner(&mut self) -> R<i128> {
         let mut main = None;
         for (t, p) in self.ps.clone().iter().enumerate() {
             for (id, d) in p.decls.iter().enumerate() {
@@ -302,7 +326,10 @@ impl<'a> Machine<'a> {
         // OBJ-4: the static objects end after main returns, in the reverse
         // of the order in which their construction completed.
         let list = std::mem::take(&mut self.static_dtors);
-        match self.cleanup(list) {
+        self.static_dtors_running = true;
+        let r = self.cleanup(list);
+        self.static_dtors_running = false;
+        match r {
             Err(Stop::Throw(_)) => return Err(Stop::Terminate("UNW-5", "an exception leaves the destructor of a static object".into())),
             r => r?,
         }
@@ -393,7 +420,14 @@ impl<'a> Machine<'a> {
         // TR-2: execution begins with a call to main.
         let f = self.p.func(main).unwrap().clone();
         let mut frame = Frame::new();
-        if f.params.len() == 2 {
+        if f.params.len() == 3 || f.params.len() == 1 {
+            // FN-6: the lists this front end accepts. The third parameter
+            // points to the list of environment variables, which is empty
+            // here.
+            let argc = self.new_obj(Val::Int(1), true);
+            frame.vars.insert(f.params[0], argc);
+        }
+        if f.params.len() == 2 || f.params.len() == 3 {
             // TR-9: one argument, the program's name.
             let name: Vec<u32> = "tidal-fe".chars().map(|c| c as u32).collect();
             let s = self.string_obj(&name);
@@ -403,7 +437,12 @@ impl<'a> Machine<'a> {
             frame.vars.insert(f.params[0], argc);
             let pv = self.new_obj(Val::Ptr(Ptr { obj: argv, path: vec![], off: 0, array: true, bytes: false }), true);
             frame.vars.insert(f.params[1], pv);
-        } else if !f.params.is_empty() {
+            if f.params.len() == 3 {
+                let env = self.new_obj(Val::Agg(vec![Val::Null]), true);
+                let pe = self.new_obj(Val::Ptr(Ptr { obj: env, path: vec![], off: 0, array: true, bytes: false }), true);
+                frame.vars.insert(f.params[2], pe);
+            }
+        } else if f.params.len() > 1 {
             return unsup("main with parameters other than (int, char**)");
         }
         let body = f.body.clone().unwrap();
@@ -415,9 +454,8 @@ impl<'a> Machine<'a> {
         };
         let ret = self.leave_call();
         if let Err(Stop::Throw(_)) = &r {
-            // UNW-7: whether the stack unwinds before the program ends is
-            // implementation-defined; the interpreter unwinds.
-            self.choice("UNW-7", "the automatic objects end before the program ends");
+            // UNW-7: with no matching handler, no automatic object ends
+            // (the matrix table); the unwinding stops at the throw.
             return Err(Stop::Terminate("UNW-5", "an exception leaves main".into()));
         }
         let flow = r?;

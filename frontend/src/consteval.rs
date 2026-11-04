@@ -37,6 +37,7 @@ impl From<Stop> for CeErr {
             // reaches here.
             Stop::Throw(_) => CeErr::NotConst("CE-8", "an exception was thrown".into()),
             Stop::Terminate(r, m) => CeErr::NotConst(r, m),
+            Stop::Exit(..) => CeErr::NotConst("CE-2", "call of a C library function that ends the program".into()),
         }
     }
 }
@@ -179,12 +180,10 @@ impl P {
             // first (CE-24).
             if matches!(v.ty.t, Ty::Class(_)) {
                 let place = m.alloc(&v.ty.unqual())?;
-                if is_static && v.constinit && !v.constexpr {
-                    // CE-24, Q-0200: a constinit object with no initializer
-                    // keeps the values of its zero-initialization.
-                    let z = m.zero(&v.ty);
-                    m.write(&place, z, true)?;
-                }
+                // CE-24 (Q-0192): the zero of a static object does not
+                // count, so a trivial default constructor leaves each
+                // scalar member without a value.
+                let _ = is_static;
                 m.default_init(&place, &v.ty)?;
                 let val = m.objs[place.obj].val.clone();
                 return check_result(&m, &val);

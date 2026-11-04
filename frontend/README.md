@@ -118,7 +118,48 @@ unsequenced (SEQ-8), the run records the reads and writes of objects in
 the caller's frame. Two accesses to one memory location, one of them a
 write, stop the run with SEQ-4. Adjacent bit-fields are one location.
 Two reads of a volatile object do not stop the run (finding G102 of
-report-10b).
+report-10b). A read or write of a volatile object through a glvalue
+that is not volatile stops the run with VOL-6, after the object's
+construction and before its destruction. The check covers a volatile
+complete object, reached by any glvalue, and a volatile member, reached
+by a member glvalue. It does not cover the bytes of a volatile member.
+
+A floating conversion to a type whose range the value exceeds gives
+infinity, in a run and in constant evaluation (CONV-11, the matrix
+table for Clang and GCC on both targets).
+
+After `main` returns, a pass through the declaration of a block-scope
+`static` variable that has ended stops the run with OBJ-12.
+
+An exception unwinds the stack as the UNW-7 table gives for Clang. With
+no matching handler before `main`, no automatic object is destroyed. At
+the boundary of a non-throwing function, the objects of the functions
+it calls are destroyed and its own objects are not, also when a try
+block of the function has no matching handler.
+
+### C library functions
+
+The specification states no library. As a front-end choice under
+decision 0035, the interpreter knows a closed list of C library
+functions. A program declares each one itself, with C language linkage
+at global scope and the usual parameters:
+
+| Function | What the interpreter does |
+|---|---|
+| `_Exit(int)` | ends the program with the status; no object is destroyed |
+| `exit(int)` | ends the program with the status after the static objects end; no automatic object is destroyed |
+| `abort()` | ends the program as `terminated` |
+| `malloc(n)` | gives storage of `n` bytes, as the library's `operator new` does, or a null pointer for a size above the interpreter's limit |
+| `free(p)` | releases storage, as the library's `operator delete` does |
+| `puts(s)` | returns 1; the run does not record the output |
+| `putchar(c)` | returns `c` as an `unsigned char` value; the run does not record the output |
+
+Any other function without a definition leaves the run unsupported.
+
+`main` can have the parameters `()`, `(int)`, `(int, char**)`, and
+`(int, char**, char**)`. These are the lists that Clang accepts on the
+matrix targets (FN-6), and the check rejects the others under TR-3. The
+run gives one argument, the program's name, and an empty environment.
 
 ## Run the conformance tests
 
@@ -303,4 +344,4 @@ function with that number of arguments is non-throwing.
 
 The findings about the specification are in
 `reports/clean-room/rust-frontend/report.md`, `report-2.md` to
-`report-10.md`, and `report-10b.md`.
+`report-19.md`, and `report-10b.md`.

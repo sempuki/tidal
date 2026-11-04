@@ -42,6 +42,17 @@ pub enum Stop {
     /// The program ends without returning from `main` (UNW-5, THR-7): the
     /// rules that say so.
     Terminate(&'static str, String),
+    /// The program called `exit` (true: the static objects end) or
+    /// `_Exit` (false: no object ends) with a status.
+    Exit(i128, bool),
+}
+
+/// An entry of the catch stack (UNW-7): the handler types of a try
+/// block (None for `...`), or the frame depth of a non-throwing function.
+#[derive(Debug, Clone)]
+pub enum CatchEntry {
+    Try(Vec<Option<QTy>>),
+    Boundary(u32),
 }
 
 /// An exception object and its type (THR-1, THR-4).
@@ -256,6 +267,18 @@ pub struct Machine<'a> {
     pub extended: Vec<Cleanup>,
     /// Depth of aggregate initializations from a braced list.
     pub in_aggregate: u32,
+    /// The static objects end after main (OBJ-4, OBJ-12).
+    pub static_dtors_running: bool,
+    /// The handlers and non-throwing function boundaries that an exception
+    /// can reach, innermost last (UNW-7).
+    pub catch_stack: Vec<CatchEntry>,
+    /// The byte offset of each hosted object in the complete object
+    /// that holds its byte array (STG-4, STG-6).
+    pub resident_abs: HashMap<usize, i64>,
+    /// Scalar variables whose initializer runs (OBJ-1, Q-0368).
+    pub in_own_init: std::collections::HashSet<usize>,
+    /// The aggregate being initialized is in parentheses (REF-5).
+    pub paren_aggregate: bool,
     /// The exceptions that active handlers handle, innermost last (TRY-8).
     pub caught: Vec<Exc>,
     /// Objects on which a call of a member function is undefined: a class
@@ -361,6 +384,11 @@ impl<'a> Machine<'a> {
             synth: Vec::new(),
             extended: Vec::new(),
             in_aggregate: 0,
+            static_dtors_running: false,
+            catch_stack: Vec::new(),
+            resident_abs: HashMap::new(),
+            in_own_init: Default::default(),
+            paren_aggregate: false,
             caught: Vec::new(),
             no_calls: Vec::new(),
             unwinding: 0,
@@ -873,6 +901,10 @@ impl<'a> Machine<'a> {
         if !o.alive {
             return ub(if constant { "OBJ-2" } else { "OBJ-2, DTOR-7" }, "write to an object whose lifetime has ended");
         }
+        if !init && self.in_own_init.contains(&p.obj) {
+            return ub("OBJ-2", "write to a variable inside its own initializer, before its lifetime begins");
+        }
+        let o = &mut self.objs[p.obj];
         if !init && constant && !o.own {
             // CE-5: no change to an object from before the evaluation.
             return limit("CE-5", "modification of an object created outside the constant evaluation");
@@ -1167,7 +1199,7 @@ impl<'a> Machine<'a> {
                     }
                 }
             }
-            if !self.objs[c.place.obj].alive && c.place.path.is_empty() && nontrivial && !self.constant && self.resident_holder(c.place.obj).is_none() && self.ended_by_call.contains(&c.place.obj) {
+            if !self.objs[c.place.obj].alive && c.place.path.is_empty() && self.resident_holder(c.place.obj).is_none() && self.ended_by_call.contains(&c.place.obj) {
                 // DTOR-7: a second destruction of an object whose
                 // destructor a program called (Q-0054).
                 return ub("DTOR-7", "the end of the block destroys an object whose destructor already ran");
@@ -1209,8 +1241,15 @@ impl<'a> Machine<'a> {
     /// end nothing. A destructor that throws during the unwinding ends the
     /// program (UNW-5).
     pub fn unwind(&mut self, list: Vec<Cleanup>, e: Stop) -> Stop {
-        if !matches!(e, Stop::Throw(_)) {
+        let Stop::Throw(x) = &e else {
             return e;
+        };
+        // UNW-7: with no matching handler, no object is destroyed; at the
+        // boundary of a non-throwing function, the objects of the functions
+        // it calls are destroyed and its own objects are not (the matrix
+        // table, Clang's choice for an unmatched try block).
+        if !self.unwinding_reaches(&x.ty.clone()) {
+            return Stop::Terminate("UNW-5, UNW-7", "an exception has no matching handler before main or a non-throwing function, and the objects are not destroyed".into());
         }
         self.unwinding += 1;
         let r = self.cleanup(list);
@@ -1220,6 +1259,22 @@ impl<'a> Machine<'a> {
             Err(Stop::Throw(_)) => Stop::Terminate("UNW-5", "a destructor throws during the unwinding of another exception".into()),
             Err(x) => x,
         }
+    }
+
+    /// UNW-7: whether the unwinding of an exception of type `t` destroys
+    /// the objects of the current frame.
+    fn unwinding_reaches(&self, t: &QTy) -> bool {
+        for c in self.catch_stack.iter().rev() {
+            match c {
+                CatchEntry::Try(hs) => {
+                    if hs.iter().any(|h| self.handler_matches(h.as_ref(), t)) {
+                        return true;
+                    }
+                }
+                CatchEntry::Boundary(d) => return self.depth > *d,
+            }
+        }
+        false
     }
 
     /// Make a temporary object from a prvalue (VC-5, VC-8).

@@ -99,6 +99,9 @@ pub struct Declarator {
     /// Scope named by a qualifier, as in `N::f` or `S::g`.
     pub qual: Option<usize>,
     pub qual_unknown: bool,
+    /// For a member of a class template defined outside its class: the
+    /// scope of the pattern class (NAM-21).
+    pub pattern_scope: Option<usize>,
     pub ops: Vec<DOp>,
     pub line: u32,
     pub conv_ty: Option<QTy>,
@@ -569,6 +572,12 @@ impl P {
                         } else {
                             e
                         };
+                        if matches!(nonref(&e.ty).t, Ty::Enum(en) if self.enums[en].scoped) && !self.in_template() {
+                            // ALN-8 (Q-0313): a scoped enumeration does not
+                            // convert to an integer.
+                            self.error(line, "ALN-8", "the operand of alignas has a scoped enumeration type");
+                            return Ok(Some(0));
+                        }
                         if self.at(")") || self.at("...") {
                             match self.const_int(&e) {
                                 Ok(v) => {
@@ -773,6 +782,11 @@ impl P {
                                     self.pending_explicit_cond = Some(crate::templ::Source { toks: self.copy_toks(cstart, self.pos), stack: self.stack.clone(), ctx: crate::decl2::Ctx::Namespace, access: 0, limit: self.decls.len(), vid, base });
                                 }
                                 self.pos += 1;
+                                if !self.in_template() && !e.ty.is_unknown() && nonref(&e.ty).t != Ty::Bool && self.is_narrowing(&e, &Ty::Bool) {
+                                    // CE-19 (Q-0078): the conversion of the
+                                    // condition to bool must not narrow.
+                                    self.error(l, "CE-19", "the condition of explicit narrows in its conversion to bool");
+                                }
                                 if let Some(v) = self.eval_bool_const(&e, l, "CTOR-9") {
                                     ds.explicit = v;
                                 }
@@ -1454,6 +1468,9 @@ impl P {
                 if !matches!(self.templs[tid].kind, crate::templ::TKind::Class | crate::templ::TKind::Alias) {
                     return Ok(QTy::unknown());
                 }
+                if self.templs[tid].kind == crate::templ::TKind::Alias {
+                    self.check_expansion_to_nonpack(tid, &raw, line);
+                }
                 if self.in_template() || dependent {
                     match self.pattern_targs(tid, raw) {
                         Some(args) => Ok(self.class_ref(tid, args, line)),
@@ -1953,6 +1970,7 @@ impl P {
             kind: NameKind::Plain,
             qual: None,
             qual_unknown: false,
+            pattern_scope: None,
             ops: Vec::new(),
             line,
             conv_ty: None,
@@ -1990,6 +2008,20 @@ impl P {
         if let Some(q) = d.qual {
             if !self.stack.contains(&q) {
                 self.push_enclosing_for(q);
+            }
+        } else if d.qual_unknown && self.in_template() {
+            // NAM-21: a member of a class template defined outside the
+            // class sees the members of the pattern class.
+            if let Some(crate::templ::Last::Member(t, _)) = &self.last_templ {
+                if let DK::Template(TemplKind::Class(pc)) = self.decls[self.templs[*t].decl].k {
+                    if pc != usize::MAX {
+                        let cs = self.classes[pc].scope;
+                        d.pattern_scope = Some(cs);
+                        if !self.stack.contains(&cs) {
+                            self.stack.push(cs);
+                        }
+                    }
+                }
             }
         }
         let r = self.declarator_suffixes(&d, &inner_ops, abstract_ok, param_ctx);
@@ -2147,6 +2179,11 @@ impl P {
         d.line = self.line();
         self.last_qual_templ = None;
         let scope = self.parse_nested_name()?;
+        if scope.is_some() && self.pos > 0 && self.toks[self.pos - 1].text == "template" && self.toks[self.pos - 1].kind == TK::Ident && self.inst_depth == 0 {
+            // DEP-27 (Q-0227): no `template` after the qualifier of the
+            // name that the declaration declares.
+            self.error(d.line, "DEP-27", "the keyword 'template' comes after the qualifier of the declared name");
+        }
         match scope {
             Some(Ok(s)) => d.qual = Some(s),
             Some(Err(())) => {
@@ -2516,6 +2553,10 @@ impl P {
                 if self.in_template() && self.inst_depth == 0 && (e.ty.is_unknown() || matches!(e.k, EK::Unknown(_))) {
                     f.noexcept_dep = true;
                 }
+                // EXS-7 (Q-0078): the conversion to bool must not narrow.
+                if !self.in_template() && !e.ty.is_unknown() && nonref(&e.ty).t != Ty::Bool && self.is_narrowing(&e, &Ty::Bool) {
+                    self.error(l, "EXS-7", "the operand of noexcept narrows in its conversion to bool");
+                }
                 // EXS-1 / CE-11: the operand is a constant of type bool.
                 if let Some(v) = self.eval_bool_const(&e, l, "EXS-7") {
                     f.noexcept = v;
@@ -2727,6 +2768,11 @@ impl P {
             let mut defer_default = None;
             if self.eat("=") {
                 f.defaults += 1;
+                if explicit_this && !self.in_template() {
+                    // CLS-14 (Q-0317): no default argument on the explicit
+                    // object parameter.
+                    self.error(line, "CLS-14", "a default argument on an explicit object parameter");
+                }
                 if self.class_depth > 0 && self.fns.is_empty() && self.current_class_any().is_some() {
                     // CLS-2: a default argument sees the whole class; parse it later.
                     let start = self.pos;

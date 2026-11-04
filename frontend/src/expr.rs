@@ -476,9 +476,21 @@ impl P {
                 Ok(Expr::new(EK::MemberPtr(id), t, Cat::PR, line))
             }
             DK::Func(f) if f.explicit_obj => {
-                // CLS-17: an ordinary pointer to function.
-                let _ = f;
-                Ok(Expr::unknown(line, "address of an explicit object member function"))
+                // CLS-17: an ordinary pointer to function, whose first
+                // parameter is the explicit object parameter.
+                let mut fty = f.fty.clone();
+                if f.params.len() == fty.params.len() + 1 {
+                    fty.params.insert(0, self.var(f.params[0]).map(|v| v.ty.clone()).unwrap_or(QTy::unknown()));
+                }
+                if self.in_template() || f.template || fty.params.iter().any(|q| q.is_unknown()) {
+                    return Ok(Expr::unknown(line, "address of an explicit object member function"));
+                }
+                if self.in_unevaluated == 0 {
+                    self.use_fn(id);
+                }
+                let t = QTy::new(Ty::Ptr(Box::new(QTy::new(Ty::Func(Box::new(fty.clone()))))));
+                let fe = Expr::new(EK::Func(id), QTy::new(Ty::Func(Box::new(fty))), Cat::L, line);
+                Ok(Expr::new(EK::Unary(UOp::AddrOf, Box::new(fe)), t, Cat::PR, line))
             }
             DK::Func(f) if !f.is_static => {
                 let t = QTy::new(Ty::MemPtr(c, Box::new(QTy::new(Ty::Func(Box::new(f.fty.clone()))))));
@@ -599,6 +611,11 @@ impl P {
             // NEW-22: a usual form; the form with one parameter first.
             let one = ds.iter().copied().find(|&d| usual(self, d) == Some(false));
             let two = ds.iter().copied().find(|&d| usual(self, d) == Some(true));
+            // UNW-3: for the global functions, a single object of complete
+            // type, and an array whose element class has a destructor that
+            // is not trivial, use the sized form.
+            let sized_first = !dclass && (!array || class.is_some_and(|c| self.trivial(c, crate::special::Sm::Dtor) == Some(false)));
+            let (one, two) = if sized_first && two.is_some() { (None, two) } else { (one, two) };
             match (one, two) {
                 (Some(d), _) => Dealloc::Func(d, false),
                 (None, Some(d)) => Dealloc::Func(d, true),
@@ -614,26 +631,7 @@ impl P {
             // DED-39, NEW-24 (Q-0220): a template whose parameters after
             // the first deduce to those of the allocation function is a
             // match too, and two matches call no function.
-            let tmatch = |p: &mut P, d: DeclId| -> Option<bool> {
-                let g = p.func(d)?.clone();
-                if !g.template || g.fty.variadic || g.fty.params.len() != 1 + after.len() {
-                    return Some(false);
-                }
-                let &tid = p.decl_tid.get(&d)?;
-                if p.templs[tid].dependent || p.templs[tid].fn_pack.is_some() {
-                    return None;
-                }
-                let params = p.templs[tid].params.clone();
-                let mut b = crate::templ::Binds::new(p.templs[tid].depth, &params);
-                let mut ok = true;
-                for (pt, at) in g.fty.params[1..].iter().zip(after.iter()) {
-                    ok &= p.deduce_ty(pt, at, &mut b);
-                }
-                if b.unknown {
-                    return None;
-                }
-                Some(ok && b.vals.iter().all(|v| v.is_some()))
-            };
+            let tmatch = |p: &mut P, d: DeclId| -> Option<bool> { p.dealloc_template_matches(d, &after) };
             let mut tcount = 0;
             for &d in ds.iter() {
                 match tmatch(self, d) {
@@ -657,6 +655,29 @@ impl P {
             }
         };
         Some(NewAlloc { func, args: conv, nothrow, dealloc })
+    }
+
+    /// DED-39: whether a deallocation function template matches the
+    /// placement parameters `after`; None when deduction cannot tell.
+    pub fn dealloc_template_matches(&mut self, d: DeclId, after: &[QTy]) -> Option<bool> {
+        let g = self.func(d)?.clone();
+        if !g.template || g.fty.variadic || g.fty.params.len() != 1 + after.len() {
+            return Some(false);
+        }
+        let &tid = self.decl_tid.get(&d)?;
+        if self.templs[tid].dependent || self.templs[tid].fn_pack.is_some() {
+            return None;
+        }
+        let params = self.templs[tid].params.clone();
+        let mut b = crate::templ::Binds::new(self.templs[tid].depth, &params);
+        let mut ok = true;
+        for (pt, at) in g.fty.params[1..].iter().zip(after.iter()) {
+            ok &= self.deduce_ty(pt, at, &mut b);
+        }
+        if b.unknown {
+            return None;
+        }
+        Some(ok && b.vals.iter().all(|v| v.is_some()))
     }
 
     /// NEW-21 to NEW-25: the deallocation function that a throw from the
@@ -689,6 +710,11 @@ impl P {
                 let Some(alloc) = ns.into_iter().find(|&n| self.func(n).is_some_and(|f| f.fty.params.len() == 1 + pa.len())) else { return };
                 let after: Vec<QTy> = self.func(alloc).unwrap().fty.params[1..].to_vec();
                 let m = ds.iter().copied().find(|&d| self.func(d).is_some_and(|f| f.fty.params.len() == 1 + after.len() && f.fty.params[1..] == after[..]));
+                // DED-39, NEW-24 (Q-0220): a matching template and a
+                // matching function are two matches, and neither is called.
+                if m.is_some() && ds.clone().into_iter().any(|d| self.dealloc_template_matches(d, &after) != Some(false)) {
+                    return;
+                }
                 if let Some(d) = m {
                     if usual(self, d) {
                         self.error(line, "NEW-25", "the deallocation function that matches the placement allocation function is a usual form");
@@ -932,6 +958,19 @@ impl P {
         if !self.in_template() {
             self.check_new_type(&t, is_auto, &bounds, first_absent, first_const, init, placement.as_deref(), global, line);
             self.check_new_deallocation(&t, !bounds.is_empty(), placement.as_deref(), global, line);
+            if !bounds.is_empty() {
+                // DTOR-3 (Q-0082): an array new destroys the elements it
+                // built when a later one throws, so it needs the destructor.
+                let mut et = &t.t;
+                while let Ty::Array(x, _) = et {
+                    et = &x.t;
+                }
+                if let Ty::Class(c) = *et {
+                    if self.classes[c].complete && self.dtor_unusable(c) {
+                        self.error(line, "DTOR-3", format!("array new of '{}', whose destructor is deleted or not accessible", self.classes[c].name));
+                    }
+                }
+            }
         }
         // NEW-2: the result points to the first element, which is an array
         // for a multi-dimensional new.
@@ -1188,6 +1227,11 @@ impl P {
                 self.pos += 1;
                 let kw = self.eat("template");
                 let name_pos = self.pos;
+                if kw && self.at("~") && self.inst_depth == 0 {
+                    // DEP-34 (Q-0245): no `template` before a destructor
+                    // name.
+                    self.error(line, "DEP-34", "the keyword 'template' comes before a destructor name");
+                }
                 if kw && self.tok().kind == TK::Ident && !self.at_k(1, "<") {
                     // DEP-26: `template` before a member name without an
                     // argument list.
@@ -1347,6 +1391,7 @@ impl P {
                 kind: crate::decl::NameKind::Plain,
                 qual: None,
                 qual_unknown: false,
+                pattern_scope: None,
                 ops: vec![],
                 line,
                 conv_ty: None,
@@ -1568,6 +1613,9 @@ impl P {
             // object's own class, used outside its members and friends.
             let (rule, what) = if self.member_access.get(&id) == Some(&1) { ("ACC-4", "protected") } else { ("ACC-2", "private") };
             self.error(line, rule, format!("'{}' is a {} member of '{}'", name, what, self.classes[c].name));
+        } else if matches!(self.decls[id].k, DK::Field(_) | DK::Var(_) | DK::Func(_)) && !self.in_template() && self.using_access_ok(c, id).is_err() {
+            let rule = self.using_access_ok(c, id).unwrap_err();
+            self.error(line, rule, format!("'{}' is named by a using-declaration of '{}' that is not accessible here", name, self.classes[c].name));
         } else if matches!(self.decls[id].k, DK::Field(_)) && !self.in_template() && scope.is_none() && !self.named_by_using(c, &name, id, 0) {
             // ACC-2: a member of a base that is not accessible; ACC-4: a
             // protected member through an object of another class.
@@ -1777,6 +1825,7 @@ impl P {
                     kind: crate::decl::NameKind::Plain,
                     qual: None,
                     qual_unknown: false,
+                pattern_scope: None,
                     ops: vec![],
                     line,
                     conv_ty: None,
@@ -2174,6 +2223,7 @@ impl P {
         self.expect("{")?;
         let save = self.no_gt;
         self.no_gt = 0;
+        self.braced_depth += 1;
         let mut items = Vec::new();
         let r = (|| -> PR<()> {
             while !self.at("}") {
@@ -2207,6 +2257,7 @@ impl P {
             self.expect("}")?;
             Ok(())
         })();
+        self.braced_depth -= 1;
         self.no_gt = save;
         r?;
         fn continue_after(_p: &mut P) {}
@@ -2419,6 +2470,7 @@ impl P {
         let mut ret = if has_decltype || (inst.is_some() && fdecl.as_ref().is_some_and(|f| f.trailing_auto.is_some())) { None } else { fdecl.as_ref().and_then(|f| f.trailing.clone()) };
         let mut lambda_noexcept = fdecl.as_ref().is_some_and(|f| f.noexcept);
         let mut lambda_noexcept_expr = false;
+        let mut lambda_clause: Option<Rc<crate::cons::CNorm>> = None;
         loop {
             if self.at("mutable") || self.at("constexpr") || self.at("consteval") || self.at("static") {
                 if self.at("mutable") {
@@ -2445,7 +2497,24 @@ impl P {
                 ret = Some(self.parse_type_id()?);
             } else if self.at("requires") {
                 self.pos += 1;
-                self.skip_constraint()?;
+                if self.in_template() || generic || inst.is_some() {
+                    self.skip_constraint()?;
+                } else {
+                    // CNS-18: the clause of the call operator.
+                    let st = self.pos;
+                    let saved_head = self.cons_head.take();
+                    let saved_unmodeled = std::mem::take(&mut self.cons_unmodeled);
+                    let r = self.cons_clause(false);
+                    self.cons_head = saved_head;
+                    let unmodeled = std::mem::replace(&mut self.cons_unmodeled, saved_unmodeled);
+                    match r {
+                        Ok(Some(n)) if !unmodeled => lambda_clause = Some(n),
+                        _ => {
+                            self.pos = st;
+                            self.skip_constraint()?;
+                        }
+                    }
+                }
             } else if self.at("[") && self.at_k(1, "[") {
                 self.skip_attributes();
             } else {
@@ -2520,6 +2589,7 @@ impl P {
                 self.templ = templ0;
                 let ptys = fd.ptys.clone();
                 let noexcept = !lambda_noexcept_expr && lambda_noexcept;
+                self.lambda_clause = lambda_clause.clone();
                 if let Some(x) = self.build_closure(line, mark, cap_default, &cap_items, fdecl.clone(), QTy::new(Ty::Void), body.clone(), is_mutable, is_static, is_consteval, refs, in_fn, noexcept) {
                     if let EK::Closure(c, _, _) = &x.k {
                         let c = *c;
@@ -2568,6 +2638,7 @@ impl P {
             };
             if let Some(rt) = rt.filter(|t| !t.t.contains_unknown()) {
                 let noexcept = if lambda_noexcept_expr { None } else { Some(lambda_noexcept) };
+                self.lambda_clause = lambda_clause.clone();
                 if let Some(x) = noexcept.and_then(|ne| self.build_closure(line, mark, cap_default, &cap_items, fdecl, rt, body, is_mutable, is_static, is_consteval, refs, in_fn, ne)) {
                     return Ok(x);
                 }
@@ -2744,6 +2815,15 @@ impl P {
         };
         let conv_template = fi.clone();
         let op = self.add_decl_in(cscope, "operator()", DK::Func(fi), line);
+        let mut captureless = captureless;
+        if let Some(n) = self.lambda_clause.take() {
+            self.fn_cons.insert(op, n);
+            // CNS-18: the conversion to a pointer to function needs the
+            // constraints of the call operator.
+            if matches!(self.fn_sat(op), crate::cons::Sat::No | crate::cons::Sat::Error) {
+                captureless = false;
+            }
+        }
         if captureless {
             // LAM-10: a lambda with no captures converts to a pointer to a
             // function with the parameters and result of its call operator.
@@ -3494,6 +3574,7 @@ impl P {
                     return Ok(Expr::new(EK::Unknown("concept".into()), QTy::bool_(), Cat::PR, line));
                 };
                 let raw = self.parse_raw_targs()?;
+                self.check_expansion_to_nonpack(tid, &raw, line);
                 let args = if self.in_template() {
                     match self.pattern_targs(tid, raw) {
                         Some(a) if !a.iter().any(|x| x.is_dep()) => Some(a),
@@ -3627,7 +3708,9 @@ impl P {
                 // named in a lambda only through a capture. A read of a
                 // constant needs none.
                 if let Some(f) = self.fns.last() {
-                    let constant = v.constexpr || (v.ty.c && !v.ty.v && (v.ty.t.is_integral() || matches!(v.ty.t, Ty::Enum(_))) && v.init.is_some());
+                    // ODR-3 (Q-0130): a variable with a mutable member at
+                    // any depth is not a constant here.
+                    let constant = (v.constexpr && !self.has_mutable_part(&v.ty.t, 0)) || (v.ty.c && !v.ty.v && (v.ty.t.is_integral() || matches!(v.ty.t, Ty::Enum(_))) && v.init.is_some());
                     let named = f.lambda_named.iter().any(|&d| d == id || self.decls[d].name == self.decls[id].name);
                     if f.is_lambda && (v.local || v.param) && v.storage == Storage::Auto && f.lambda_default.is_none() && !named && self.in_unevaluated == 0 && !self.in_template() && !constant && !self.sb_place.contains_key(&id) {
                         let declared_outside = !self.stack[f.scope_base.saturating_sub(1).min(self.stack.len())..].contains(&self.decls[id].scope);
@@ -3722,6 +3805,10 @@ impl P {
                         let mut t = nonref(&f.ty);
                         if !f.ty.t.is_ref() && !f.mutable {
                             t.c |= obj_t.c;
+                        }
+                        // VOL-2: a member of a volatile object is volatile.
+                        if !f.ty.t.is_ref() {
+                            t.v |= obj_t.v;
                         }
                         let obj = self.anon_path(obj, f.class, line);
                         Expr::new(EK::Member(Box::new(obj), id), t, Cat::L, line)
@@ -3910,6 +3997,27 @@ impl P {
             }
             t => promote(t),
         }
+    }
+
+    /// The width of a bit-field that `e` reads, and whether its type is
+    /// signed.
+    pub fn bitfield_width(&self, e: &Expr) -> Option<(u32, bool)> {
+        let inner = match &e.k {
+            EK::Conv(Conv::LToR, a) => a,
+            _ => e,
+        };
+        if let EK::Member(_, f) = &inner.k {
+            if let DK::Field(fi) = &self.decls[*f].k {
+                if let Some(w) = fi.bits {
+                    let t = if let Ty::Enum(en) = &fi.ty.t { self.enum_underlying(*en) } else { fi.ty.t.clone() };
+                    if !t.is_integral() {
+                        return None;
+                    }
+                    return Some((w as u32, t.is_signed()));
+                }
+            }
+        }
+        None
     }
 
     /// BF-6: a bit-field promotes by its width.
@@ -4103,8 +4211,19 @@ impl P {
 
     /// Implicit conversion of a prvalue or glvalue to a target type.
     /// Returns Err with a reason if no implicit conversion exists.
+    /// LAM-9, ODR-3 (Q-0129): a copy of a whole class object uses the
+    /// variable, also a constant, so a lambda must capture it.
+    pub fn check_class_copy_use(&mut self, e: &Expr, ty: &QTy, line: u32) {
+        if let (Ty::Class(_), EK::Var(id)) = (&ty.t, &e.k) {
+            if e.cat == Cat::L && matches!(nonref(&e.ty).t, Ty::Class(_)) && self.uncaptured_outer(*id) {
+                self.error(line, "LAM-9", format!("the lambda copies '{}', which it does not capture", self.decls[*id].name));
+            }
+        }
+    }
+
     pub fn implicit(&mut self, e: Expr, to: &QTy, direct: bool) -> Result<Expr, String> {
         let line = e.line;
+        self.check_class_copy_use(&e, to, line);
         if !self.in_template() {
             // INST-1: a conversion between classes needs them complete; a
             // pointer conversion only when the classes differ.
@@ -4459,6 +4578,45 @@ impl P {
         }
     }
 
+    /// PACK-11 (Q-0271, Q-0272): an expansion in the argument list of an
+    /// alias template or a concept must not give an argument to a
+    /// parameter that is not a pack.
+    pub fn check_expansion_to_nonpack(&mut self, tid: usize, raw: &[crate::templ::RawArg], line: u32) {
+        if self.inst_depth > 0 {
+            return;
+        }
+        let params = &self.templs[tid].params;
+        if let Some(i) = raw.iter().position(|a| matches!(a, crate::templ::RawArg::Expand(_))) {
+            if params.get(i).is_some_and(|p| !p.pack) {
+                let name = self.templs[tid].name.clone();
+                self.error(line, "PACK-11", format!("a pack expansion gives an argument to a parameter of '{}' that is not a pack", name));
+            }
+        }
+    }
+
+    /// Whether a type has a `mutable` member at any depth (ODR-3).
+    pub fn has_mutable_part(&self, t: &Ty, depth: u32) -> bool {
+        match t {
+            Ty::Array(e, _) => self.has_mutable_part(&e.t, depth),
+            Ty::Class(c) if depth < 16 => {
+                let ci = &self.classes[*c];
+                ci.fields.iter().any(|&f| matches!(&self.decls[f].k, DK::Field(fi) if fi.mutable || self.has_mutable_part(&fi.ty.t, depth + 1))) || ci.bases.iter().any(|b| b.class.is_some_and(|bc| self.has_mutable_part(&Ty::Class(bc), depth + 1)))
+            }
+            _ => false,
+        }
+    }
+
+    /// An automatic variable of the function that encloses a local
+    /// class, named in a member function of that class (CLS-28).
+    pub fn outer_of_local_class(&self, id: DeclId) -> bool {
+        let (Some(f), Some(v)) = (self.fns.last(), self.var(id)) else { return false };
+        if f.is_lambda || !v.local || v.storage != Storage::Auto || v.param || self.in_unevaluated > 0 || self.in_template() {
+            return false;
+        }
+        let declared_outside = !self.stack[f.scope_base.saturating_sub(1).min(self.stack.len())..].contains(&self.decls[id].scope);
+        declared_outside && f.func.and_then(|fid| self.func(fid)).and_then(|fi| fi.class).is_some_and(|c| self.class_is_local(c))
+    }
+
     /// A local variable of an enclosing function, named in a lambda that
     /// does not capture it (LAM-9, LAM-17).
     pub fn uncaptured_outer(&self, id: DeclId) -> bool {
@@ -4481,6 +4639,10 @@ impl P {
                 // LAM-17: a reference bound to a local constant needs a
                 // capture.
                 self.error(line, "LAM-17", format!("the lambda binds a reference to '{}', which it does not capture", self.decls[*id].name));
+            } else if e.cat == Cat::L && !e.ty.t.is_ref() && self.outer_of_local_class(*id) {
+                // CLS-28, ODR-2 (Q-0130): binding a reference uses the
+                // variable.
+                self.error(line, "CLS-28", format!("a member function of a local class binds a reference to the automatic variable '{}' of the enclosing function", self.decls[*id].name));
             }
         }
         if e.ty.is_unknown() || inner.is_unknown() {
@@ -4652,7 +4814,18 @@ impl P {
                 }
                 return true;
             }
-            let holds_all = ft.int_min() >= to.int_min() && ft.int_max() <= to.int_max();
+            // LIST-2: an unscoped enumeration without a fixed type counts
+            // by the values of ENUM-22 (Q-0331), a bit-field by its width
+            // (Q-0042).
+            let (mut lo, mut hi) = if let Ty::Enum(en) = &from { self.enum_range(*en) } else { (ft.int_min(), ft.int_max()) };
+            if let Some((w, signed)) = self.bitfield_width(e) {
+                if w > 0 && w < 64 {
+                    let (bl, bh) = if signed { (-(1i128 << (w - 1)), (1i128 << (w - 1)) - 1) } else { (0, (1i128 << w) - 1) };
+                    lo = lo.max(bl);
+                    hi = hi.min(bh);
+                }
+            }
+            let holds_all = lo >= to.int_min() && hi <= to.int_max();
             if holds_all {
                 return false;
             }
@@ -5735,6 +5908,10 @@ impl P {
         if matches!(a2.ty.t, Ty::Class(_)) || matches!(b2.ty.t, Ty::Class(_)) {
             return None;
         }
+        // COND-11: the built-in candidates take promoted arithmetic types,
+        // so each arithmetic or unscoped enumeration operand promotes.
+        let arith = |p: &P, t: &Ty| t.is_arithmetic() || p.is_unscoped_enum(t);
+        let (a2, b2) = if arith(self, &a2.ty.t) && arith(self, &b2.ty.t) { (self.promote_expr(a2), self.promote_expr(b2)) } else { (a2, b2) };
         Some(self.build_cond(c.clone(), a2, b2, line))
     }
 

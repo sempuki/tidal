@@ -1368,6 +1368,13 @@ impl P {
                 // otherwise argument-dependent lookup finds begin and end.
                 let mb = self.lookup_member(c, "begin").is_some();
                 let me = self.lookup_member(c, "end").is_some();
+                // RFOR-7 (Q-0098): a data member counts for the member
+                // form, and one of a type that is not a class cannot be
+                // called.
+                let scalar_data = |p: &P, n: &str| p.lookup_member(c, n).is_some_and(|ids| ids.iter().any(|&d| matches!(&p.decls[d].k, DK::Field(fi) if !matches!(fi.ty.t, Ty::Class(_) | Ty::Unknown | Ty::Dep(_)) && !matches!(&fi.ty.t, Ty::Ptr(x) if matches!(x.t, Ty::Func(_))))));
+                if mb && me && (scalar_data(self, "begin") || scalar_data(self, "end")) {
+                    self.error(line, "RFOR-7", format!("the member '{}' of '{}' is a data member that cannot be called", if scalar_data(self, "begin") { "begin" } else { "end" }, self.classes[c].name));
+                }
                 if !(mb && me) {
                     let (fb, cb) = self.adl_lookup("begin", std::slice::from_ref(&range));
                     let (fe, ce) = self.adl_lookup("end", std::slice::from_ref(&range));

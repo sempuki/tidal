@@ -732,6 +732,15 @@ pub struct P {
     pub fn_cons: HashMap<DeclId, Rc<crate::cons::CNorm>>,
     pub fn_clause_toks: HashMap<DeclId, Vec<String>>,
     pub fn_sat_cache: HashMap<DeclId, crate::cons::Sat>,
+    /// The depth of braced initializers being parsed (INST-7).
+    pub braced_depth: u32,
+    /// The access of a using-declaration in a class, by class and member
+    /// (ACC-2).
+    pub using_access: HashMap<(usize, DeclId), u8>,
+    /// The trailing requires clause of the lambda being built (CNS-18).
+    pub lambda_clause: Option<Rc<crate::cons::CNorm>>,
+    /// Constrained functions whose constraints OVL-19 already applied.
+    pub cons_settled: std::collections::HashSet<DeclId>,
     /// The constraints of the head being recorded (CNS-1, parts 1 and 2),
     /// and of the type constraints of the parameters so far.
     pub head_cons: Option<Rc<crate::cons::CNorm>>,
@@ -989,6 +998,10 @@ impl P {
             fn_cons: HashMap::new(),
             fn_clause_toks: HashMap::new(),
             fn_sat_cache: HashMap::new(),
+            braced_depth: 0,
+            using_access: HashMap::new(),
+            lambda_clause: None,
+            cons_settled: Default::default(),
             head_cons: None,
             tparam_cons: None,
             abbrev: None,
@@ -1475,6 +1488,27 @@ impl P {
                 if ok { Ok(()) } else { Err("ACC-4") }
             }
         }
+    }
+    /// ACC-2, ACC-4: a member that a using-declaration in class `c` names
+    /// has the access of the using-declaration.
+    pub fn using_access_ok(&self, c: usize, id: DeclId) -> Result<(), &'static str> {
+        let Some(&a) = self.using_access.get(&(c, id)) else { return Ok(()) };
+        if a == 0 || self.class_uncertain(c) {
+            return Ok(());
+        }
+        let mut here: Vec<usize> = self.fns.iter().filter_map(|f| f.class).chain(self.check_classes.iter().copied()).collect();
+        for &s in &self.stack {
+            if let SK::Class(x) = self.scopes[s].kind {
+                here.push(x);
+            }
+        }
+        if here.contains(&c) || self.friend_classes.contains(&c) {
+            return Ok(());
+        }
+        if a == 1 && here.iter().any(|&h| self.is_base_of_p(c, h)) {
+            return Ok(());
+        }
+        Err(if a == 1 { "ACC-4" } else { "ACC-2" })
     }
     /// Whether `base` is a public base of `derived` along each step, or
     /// the parser is inside `derived` or a class that declares a friend.

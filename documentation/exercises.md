@@ -193,7 +193,7 @@ Foundations batch and the 11 templates pages.
 | Exercise | State | Report |
 |---|---|---|
 | W0 | done | `reports/clean-room/java-programmer/` |
-| Front end | round 18 done: 5987/6355 pass, 6062 pass their check (`conformance.tsv`) | `reports/clean-room/rust-frontend/` |
+| Front end | round 19 done: 6123/6416 pass, 6181 pass their check (`conformance.tsv`) | `reports/clean-room/rust-frontend/` |
 | Guides | done: one tutorial and four how-to guides, not published (decision 0046) | `guides/` |
 | R-translation, R-objects, R-values, R-names, R-conversions, R-evaluation-order, R-constant-evaluation | done, 231/231, with test names | `reports/clean-room/R-foundations/` |
 | Designer roadmap | done, findings D1 to D33 | `reports/clean-room/roadmap/designer.md` |

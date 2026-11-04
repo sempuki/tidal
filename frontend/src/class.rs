@@ -403,7 +403,11 @@ impl P {
         self.expect("{")?;
         let saved = self.stack.clone();
         if let Some(Ok(s)) = qual {
-            let _ = s;
+            // NAM-21 (Q-0377): the body of a class defined with a
+            // qualified name sees the members of the qualifier's scope.
+            if self.stack.last() != Some(&s) {
+                self.stack.push(s);
+            }
         }
         self.stack.push(class_scope);
         // injected class name
@@ -710,7 +714,16 @@ impl P {
         if self.classes[c].complete {
             self.error(line, "TYN-7", "explicit specialization defined twice");
         }
-        self.class_body(c, key, line)?;
+        // NAM-21 (Q-0377): a body after a qualified name sees the members
+        // of the template's namespace.
+        let saved = self.stack.clone();
+        let ts = self.templs[t].scope;
+        if self.stack.last() != Some(&ts) && matches!(self.scopes[ts].kind, SK::Namespace) {
+            self.stack.push(ts);
+        }
+        let r = self.class_body(c, key, line);
+        self.stack = saved;
+        r?;
         Ok((QTy::new(Ty::Class(c)), true))
     }
 
@@ -889,7 +902,13 @@ impl P {
         let line = self.line();
         self.expect("enum")?;
         let scoped = self.eat("class") || self.eat("struct");
+        let had_alignas = self.at("alignas") || (self.at("[") && self.toks[self.pos..].iter().take_while(|t| t.text != "{" && t.text != ";").any(|t| t.text == "alignas"));
         self.skip_attributes();
+        if self.at("alignas") || had_alignas {
+            // ALN-7 (Q-0073): no alignas on an enumeration.
+            self.error(line, "ALN-7", "alignas applied to an enumeration");
+            self.skip_attributes();
+        }
         let mut name = String::new();
         let mut qual = None;
         if self.is_ident() || self.at("::") {
@@ -1352,7 +1371,10 @@ impl P {
             } else if fin && !virt {
                 self.error(line, "VIRT-3", format!("'{}' is marked final but is not virtual", name));
             }
-            if over.is_empty() {
+            // VIRT-19: an explicit object member function does not
+            // override; the front end's search matched it by parameters.
+            let explicit_obj = self.func(f).is_some_and(|fi| fi.explicit_obj);
+            if over.is_empty() || explicit_obj {
                 if let Some(rule) = self.hides_virtual(c, f) {
                     let what = if rule == "VIRT-21" { "a static member function" } else { "an explicit object member function" };
                     self.error(line, rule, format!("'{}' is {} with the name and parameters of a virtual function of a base", name, what));
@@ -1450,7 +1472,9 @@ impl P {
         if fi.template || !(fi.is_static || fi.explicit_obj) {
             return None;
         }
-        let ps: &[QTy] = if fi.explicit_obj { fi.fty.params.get(1..)? } else { &fi.fty.params };
+        // The function type of an explicit object member function leaves
+        // out the object parameter when `params` has one more entry.
+        let ps: &[QTy] = if fi.explicit_obj && fi.params.len() != fi.fty.params.len() + 1 { fi.fty.params.get(1..)? } else { &fi.fty.params };
         let mut stack: Vec<usize> = self.classes[c].bases.iter().filter_map(|b| b.class).collect();
         let mut seen = std::collections::HashSet::new();
         while let Some(b) = stack.pop() {
