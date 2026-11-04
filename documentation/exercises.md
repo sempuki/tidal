@@ -128,6 +128,10 @@ when it finds a conflict.
 | X10 | P11, exceptions that stay inside a constant evaluation | yes |
 | X11 | P14, scope-exit blocks | no |
 | X12 | P19, exhaustive `switch` over a marked enumeration | no |
+| X13 | P6, named arguments | no |
+| X14 | P20, packed classes | no |
+| X15 | P21, names private to a namespace | no |
+| X16 | P4, chained comparisons | yes |
 
 ## 5. Predict and Diagnose batches
 
@@ -191,6 +195,10 @@ catalog counts as done.
 | X10 | done: 53 rule changes; findings X10-1 to X10-12 | `reports/clean-room/X10/` |
 | X11 | done: 67 rule changes; findings X11-1 to X11-9 | `reports/clean-room/X11/` |
 | X12 | done: 37 rule changes; findings X12-1 to X12-13 | `reports/clean-room/X12/` |
+| X13 | done: 59 rule changes; findings X13-1 to X13-13 | `reports/clean-room/X13/` |
+| X14 | done: 57 rule changes; findings X14-1 to X14-10 | `reports/clean-room/X14/` |
+| X15 | done: 60 rule changes; findings X15-1 to X15-9 | `reports/clean-room/X15/` |
+| X16 | done: 41 rule changes, 3 tests change outcome; findings X16-1 to X16-7 | `reports/clean-room/X16/` |
 | W4 | done: four programs build and run on GCC and Clang; findings W4-1 to W4-10 | `reports/clean-room/W4/` |
 | W8 | done: four programs build and run on GCC and Clang; findings W8-1 to W8-9 | `reports/clean-room/W8/` |
 | W1 | done: five programs build and run on GCC and Clang; findings W1-1 to W1-9 | `reports/clean-room/W1/` |
