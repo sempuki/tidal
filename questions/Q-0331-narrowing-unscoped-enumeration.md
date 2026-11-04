@@ -52,6 +52,12 @@ to a type that holds all of them loses nothing. Option 1 also makes the
 result independent of the underlying type that the implementation
 picks.
 
+Kept open on 2026-11-03 under decision 0054, because two of the newest families differ from the answer, and the rule records one differing family. Clang 22 and EDG 7.0 use the values of the underlying type.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on overloading, references, and list initialization (`reports/review/2026-11-03-gap-review-questions-overloading.md`) agrees with option 1. Narrowing asks whether the target holds all the values of the source type. An enumeration without a fixed type has the values of the smallest bit width that holds every enumerator. GCC follows this reading.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

@@ -305,6 +305,14 @@ signed char o[] = u8"x";  // rejected: wrong character type
 All eight compilers agree on 62 of 66 tests. The results are in
 `tests/RESULTS.md`.
 
+Three questions on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on overloading, references, and list initialization (`reports/review/2026-11-03-gap-review-questions-overloading.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+
+| Question | Principle | Family that still differs |
+|---|---|---|
+| {question}`Q-0042` | LIST-P1 | EDG 7.0 |
+| {question}`Q-0043` | LIST-P2 | EDG 7.0 |
+| {question}`Q-0166` | {principle}`REF-P3` | GCC 16 |
+
 - **LIST-2.** For an unscoped enumeration without a fixed type, GCC
   uses the values that {rule}`ENUM-22` gives. So GCC accepts an enumeration with
   the enumerators 0 and 100 as the value of an `unsigned char`. Clang

@@ -209,9 +209,9 @@ declares the member template ({question}`Q-0171`).
 An explicit specialization must be declared before the first use of its
 specialization that needs a definition, such as a variable of the class
 type or a call of the function, in the same {term}`translation unit`. A use of
-a class specialization creates the member enumerations that the class
-template defines. So an explicit specialization of such an enumeration
-after that use is not valid.
+a class specialization creates the unscoped member enumerations that
+the class template defines. So an explicit specialization of such an
+enumeration after that use is not valid.
 :::
 
 :::{rule} TSP-8
@@ -243,7 +243,7 @@ specialization ({question}`Q-0172`).
 
 :::{rule} TSP-3
 :kind: required
-:tests: templates/specialization/member-explicit.cpp templates/specialization/member-template-explicit.cpp templates/specialization/member-template-nested-explicit.cpp templates/specialization/explicit-member-class-member-outside.cpp templates/specialization/explicit-member-class-template-member.cpp templates/specialization/explicit-static-member-definition.cpp templates/specialization/explicit-enum-declared.cpp
+:tests: templates/specialization/member-explicit.cpp templates/specialization/member-template-explicit.cpp templates/specialization/member-template-nested-explicit.cpp templates/specialization/explicit-member-class-member-outside.cpp templates/specialization/explicit-member-class-template-member.cpp templates/specialization/explicit-static-member-definition.cpp templates/specialization/explicit-enum-declared.cpp templates/specialization/explicit-enum-scoped-defined-after-use.cpp templates/specialization/explicit-enum-unscoped-declared-after-use.cpp
 
 A member of a specialization of a class template can have an explicit
 specialization while the class does not. These members can have one:
@@ -311,12 +311,19 @@ after the name declare a function.
 
 :::{rule} TSP-30
 :kind: required
-:tests: templates/specialization/explicit-enum-declared.cpp templates/specialization/explicit-enum-after-use.cpp
+:tests: templates/specialization/explicit-enum-declared.cpp templates/specialization/explicit-enum-after-use.cpp templates/specialization/explicit-enum-scoped-defined-after-use.cpp templates/specialization/explicit-enum-unscoped-declared-after-use.cpp
 
-A member enumeration that a class template declares without enumerators
-can have an explicit specialization, also after a use of the class
-specialization ({question}`Q-0205`). An unscoped member enumeration
-that the class template defines must not have one.
+A member enumeration of a class template can have an explicit
+specialization after a use of the class specialization in these cases
+({question}`Q-0205`):
+
+- The class template declares the enumeration without enumerators.
+- The enumeration is scoped, and no use has needed its definition. A
+  use of the class makes only the declaration of a scoped member
+  enumeration ({rule}`INST-5`).
+
+An unscoped member enumeration that the class template defines must not
+have one after a use of the class specialization.
 :::
 
 ### Partial specialization
@@ -547,7 +554,16 @@ template <class T> template <> int Store<T>::Slot<int>::put();   // rejected
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 80
-of 93 tests.
+of 95 tests.
+
+Four questions on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+
+| Question | Principle | Family that still differs |
+|---|---|---|
+| {question}`Q-0171` | TSP-P3 | GCC 16 |
+| {question}`Q-0173` | TSP-P3 | none; the rule needs no diagnostic |
+| {question}`Q-0204` | TSP-P4 | GCC 16 |
+| {question}`Q-0207` | TSP-P2 | GCC 16 |
 
 Two questions on this page settled on 2026-11-03 under decision 0054:
 {question}`Q-0172`, where TSP-P1 gives the answer, and
@@ -610,7 +626,9 @@ specialization's arguments, and the result must equal the given list.
   enumeration under `-pedantic-errors`. Clang and EDG accept one for an
   enumeration that the class template only declares. All compilers
   reject one for an unscoped enumeration that the class template
-  defines, Clang and EDG for that reason ({question}`Q-0205`).
+  defines, Clang and EDG for that reason. Clang and EDG also accept one
+  after a use for a scoped enumeration that the class template defines
+  ({question}`Q-0205`).
 - TSP-28: the declaration without an initializer defines nothing, so the
   link fails on every compiler that links.
 - TSP-25: the template is `inline` and its explicit specialization is

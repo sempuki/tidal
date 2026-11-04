@@ -35,6 +35,12 @@ diagnostic is required.
 Not valid, no diagnostic required; GCC and EDG accept, Clang rejects (option 1). The implementations differ, and the gap review reads the
 rule as one that requires no diagnostic.
 
+Kept open on 2026-11-03 under decision 0054, because no principle on the page gives the answer. PACK-30 is an exception of PACK-P2, and no principle on the packs page gives the missing diagnostic.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`) agrees with option 1. A template whose meaning in a hypothetical instantiation right after its definition differs from its meaning in an actual instantiation is not valid, with no diagnostic required. Lookup at the definition finds the expanded using-declarator, and the instantiation with an empty pack finds nothing there. Both results are allowed.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

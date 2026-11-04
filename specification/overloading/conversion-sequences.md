@@ -848,6 +848,14 @@ send(s);                    // rejected: Target(Source&) and operator Target()
 The results are in `tests/RESULTS.md`. All eight compilers agree on 106
 of 133 tests.
 
+Three questions on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on overloading, references, and list initialization (`reports/review/2026-11-03-gap-review-questions-overloading.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+
+| Question | Principle | Family that still differs |
+|---|---|---|
+| {question}`Q-0135` | ICS-P5 | GCC 16 |
+| {question}`Q-0157` | {principle}`REF-P3` | GCC 16 |
+| {question}`Q-0167` | ICS-P5 | GCC 16 |
+
 ### Sources
 
 The source of each rule:

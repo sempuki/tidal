@@ -1,6 +1,6 @@
 # Q-0167: Does one braced string literal prefer a reference to a `char` array over one to an `unsigned char` array?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** ICS-38, LIST-6
 **Parent:** Q-0294, the model of braced lists for references, arrays, and conversion sequences
 
@@ -33,11 +33,17 @@ would assert that the first call is ambiguous, with a GCC override.
 2. The direct binding is better (GCC's result, though GCC reaches it by
    giving the other candidate no sequence).
 
-## Provisional answer
+## Answer
 
 No, ambiguous; Clang and EDG agree, GCC picks `char` (option 1). Two of three implementations agree, and ICS-38 gives both
 bindings the identity.
 
+Settled on 2026-11-03 under decision 0054. The source-reader gap review of the open questions on overloading, references, and list initialization (`reports/review/2026-11-03-gap-review-questions-overloading.md`) supports this answer with no doubt, and ICS-P5 gives the same answer: no step tells a direct binding from a binding to a temporary when both are the identity, so the sequences tie. GCC 16 still differs. Tidal records GCC 16's result as a deviation, as for the compiler-defect entries Q-0002 and Q-0003, and the tests keep their overrides for GCC 16.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on overloading, references, and list initialization (`reports/review/2026-11-03-gap-review-questions-overloading.md`) agrees with option 1. Both candidates have the identity. The reference tie-breakers compare rvalue against lvalue references and cv-qualifiers, and none prefers a direct binding over a binding to a temporary.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

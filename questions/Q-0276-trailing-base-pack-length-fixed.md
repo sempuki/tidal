@@ -1,6 +1,6 @@
 # Q-0276: When an earlier element fixes the length of a trailing pack of bases, does each later element still deduce?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** CTAD-27, `tests/templates/class-template-deduction/aggregate-pack-length-conflict.cpp`, `tests/templates/class-template-deduction/aggregate-pack-length-position.cpp`
 
 ## Context
@@ -34,11 +34,17 @@ gap review `reports/review/2026-10-31-gap-review-packs-and-ctad.md` predicts a d
    conflicts with `Y`, so deduction fails (Clang, EDG).
 2. The last element is matched with the fixed type and converts (GCC).
 
-## Provisional answer
+## Answer
 
 Yes; Clang and EDG agree, GCC differs (option 1). Two of three implementations agree, and the gap review
 predicts the same result.
 
+Settled on 2026-11-03 under decision 0054. The source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`) supports this answer with no doubt, and CTAD-P2 gives the same answer: the class's own parameters are deduced as a function template's parameters are, so the values from every pair must agree. GCC 16 still differs. Tidal records GCC 16's result as a deviation, as for the compiler-defect entries Q-0002 and Q-0003, and the tests keep their overrides for GCC 16.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`) agrees with option 1. The aggregate candidate matches the trailing pack of bases to the remaining elements, and ordinary deduction runs on every pair. An element of a class type deduces that type for its position in the pack, and a type that differs from the one fixed earlier makes the deductions inconsistent. No step skips deduction for a pack whose length is known.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

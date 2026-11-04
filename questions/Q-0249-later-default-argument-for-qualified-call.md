@@ -1,6 +1,6 @@
 # Q-0249: Does a qualified call in a template use a default argument that a later declaration adds?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** DEP-31, `tests/templates/dependent-names/qualified-call-later-default.cpp`
 
 ## Context
@@ -31,10 +31,16 @@ the program not valid with no diagnostic required.
 2. The call must use the default (GCC).
 3. The call must not use the default, and the implementation rejects it (Clang, EDG).
 
-## Provisional answer
+## Answer
 
 No diagnostic required; GCC uses it, Clang and EDG reject (option 1). DEP-31 needs no diagnostic, so each compiler's result lies within the rule. The gap review supports option 1.
 
+Settled on 2026-11-03 under decision 0054. The source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`) supports this answer with no doubt, and DEP-P1 gives the same answer: an independent name is bound at the definition, and a later declaration does not change the binding. DEP-P6 needs no diagnostic for a construct whose meaning changes before the instantiation. No newest family differs, because the answer is a no-diagnostic rule that every outcome fits.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`) agrees with option 1. A program is not valid, with no diagnostic required, when its meaning would change if it counted a default argument that a later declaration gives, one that the instantiation can see but that lookup for the specialization does not find. A qualified call is not dependent, so the name is bound at the definition.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

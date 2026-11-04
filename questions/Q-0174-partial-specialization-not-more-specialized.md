@@ -37,6 +37,12 @@ takes the place of the primary template, which TSP-11 already forbids
 for the plain parameter list. The check needs partial ordering, which
 roadmap item O specifies.
 
+Kept open on 2026-11-03 under decision 0054, because two of the newest families differ from the answer, and the rule records one differing family. GCC 16 and EDG 7.0 accept the declaration.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`) agrees with option 1. Every partial specialization must be more specialized than its primary template. With the two parameters swapped, deduction succeeds both ways, so neither is more specialized. The rule is not exempt from diagnosis, so GCC's and EDG's acceptance is a defect.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

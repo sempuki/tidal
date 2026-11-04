@@ -1,6 +1,6 @@
 # Q-0149: What type does a braced list give a reference to an array of unknown bound?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** REF-14, REF-11, `tests/declarations/initialization/references/braced-list-unknown-bound.cpp`, `tests/declarations/initialization/references/braced-list-unknown-bound-empty.cpp`
 **Parent:** Q-0294, the model of braced lists for references, arrays, and conversion sequences
 
@@ -35,7 +35,7 @@ reference's type has no bound.
 2. The reference takes the bound of the list, as a variable of array
    type of unknown bound does (Clang).
 
-## Provisional answer
+## Answer
 
 The reference keeps its declared type, and empty braces are rejected; Clang differs on the type, GCC on empty braces (option 1). A reference to an array of unknown bound can bind to an array
 of known bound (REF-1) without a change to the reference's type. Two of
@@ -43,6 +43,12 @@ the three compilers keep the declared type. An array of zero elements
 is not valid elsewhere, and Q-0136 gives empty braces no sequence to
 such a reference.
 
+Settled on 2026-11-03 under decision 0054. The source-reader gap review of the open questions on overloading, references, and list initialization (`reports/review/2026-11-03-gap-review-questions-overloading.md`) supports this answer with no doubt, and REF-P3 gives the same answer: several values for `E[]` make a temporary of one element for each value, which the reference binds to, and `{}` for `E[]` gives none. Clang 22 still differs on the type, and GCC 16 on empty braces. Tidal records each result as a deviation, as for the compiler-defect entries Q-0002 and Q-0003, and the tests keep their overrides.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on overloading, references, and list initialization (`reports/review/2026-11-03-gap-review-questions-overloading.md`) agrees with option 1. The temporary has the type that a variable of array type with unknown bound would get from the same list, so it has one element for each value. Nothing changes the reference's declared type. A variable of unknown bound may not be initialized from empty braces, so the temporary for empty braces is not valid either.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

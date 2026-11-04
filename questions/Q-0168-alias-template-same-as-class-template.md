@@ -29,10 +29,14 @@ have overrides.
 
 ## Provisional answer
 
-Unspecified; Clang says no, GCC and EDG say yes (option 3). The implementations split, and neither result follows from
-another Tidal rule. TARG-22 makes the result unspecified, and TARG-19
-covers the other cases.
+No, the two types differ; Clang agrees, GCC and EDG differ (option 1). An alias template is a template of its own (TPL-P1), and two template arguments are the same only when they name the same template (TARG-P4). TARG-22 states the answer, and TARG-19 covers the other cases.
+
+Changed on 2026-11-03 to option 1. The review reads option 1, Clang 22 follows it, and TARG-P4 gives the same answer: two template arguments are the same when they name the same template, and an alias template is a template of its own (TPL-P1). TARG-22 is now a `required` rule that states option 1. The two tests already expect that the types differ, with overrides for GCC and EDG. The question stays open.
 
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`) reads option 1, with doubt. Two specializations are the same when, among other conditions, their template template arguments refer to the same template. An alias template is a template of its own, and nothing makes it refer to the class template, even when it passes its parameters through. So `Use<List>` and `Use<ListAlias>` differ, as Clang finds, and the result is not unspecified. The doubt is an old open core issue about whether such an alias should count as the class template. GCC and EDG follow that idea, and no resolution of it is known to have been adopted.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

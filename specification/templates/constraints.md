@@ -188,7 +188,7 @@ constrained, the use is not valid (CNS-24).
 :::
 
 :::{principle} CNS-P5
-:rules: CNS-26 CNS-27 CNS-28 CNS-29 CNS-30 CNS-31 CNS-32
+:rules: CNS-26 CNS-27 CNS-28 CNS-29 CNS-30 CNS-31 CNS-32 CNS-40
 
 The constraints of a template are part of the template's identity.
 All declarations of one template write the same constraints in the
@@ -311,22 +311,12 @@ satisfied.
 
 :::{rule} CNS-9
 :kind: reject
-:tests: templates/constraints/atomic-not-bool.cpp templates/constraints/atomic-not-bool-class.cpp templates/constraints/atomic-not-bool-other-candidate.cpp templates/constraints/atomic-not-constant.cpp templates/constraints/atomic-not-bool-skipped.cpp templates/concepts/nested-requirement-parameter-evaluated.cpp templates/constraints/atomic-not-bool-nondependent-clause.cpp templates/constraints/atomic-not-bool-nondependent-concept.cpp
+:tests: templates/constraints/atomic-not-bool.cpp templates/constraints/atomic-not-bool-class.cpp templates/constraints/atomic-not-bool-other-candidate.cpp templates/constraints/atomic-not-constant.cpp templates/concepts/nested-requirement-parameter-evaluated.cpp
 
 After substitution, the expression of an atomic constraint must be a
 constant expression of type `bool`. Another type is not valid, even
 one that converts to `bool`. The program is not valid even if another
-candidate would be chosen ({question}`Q-0263`).
-:::
-
-:::{rule} CNS-39
-:kind: reject
-:tests: templates/constraints/atomic-not-bool-skipped.cpp templates/constraints/atomic-not-bool-nondependent-clause.cpp templates/constraints/atomic-not-bool-nondependent-concept.cpp
-
-If the type of an atomic constraint's expression does not depend on a
-template parameter, the type must be `bool`. The implementation checks
-the type at the definition, even if satisfaction never reaches the
-expression ({question}`Q-0263`).
+candidate would be chosen.
 :::
 
 :::{rule} CNS-33
@@ -556,13 +546,15 @@ declaration with other constraints declares another template
 
 :::{rule} CNS-27
 :kind: required
-:tests: templates/constraints/redeclare-equivalent.cpp templates/constraints/redeclare-concept-arguments.cpp templates/constraints/redeclare-placeholder.cpp templates/constraints/lambda-redeclaration.cpp templates/constraints/lambda-overload.cpp
+:tests: templates/constraints/redeclare-equivalent.cpp templates/constraints/redeclare-concept-arguments.cpp templates/constraints/redeclare-placeholder.cpp templates/constraints/redeclare-placeholder-unconstrained.cpp templates/constraints/lambda-redeclaration.cpp templates/constraints/lambda-overload.cpp
 
 Two constraints are equivalent if their expressions have the same
 tokens, and each name means the same entity. A template parameter
 matches the parameter at the same position. Two concept-ids that name
 the same specialization of a concept are equivalent. A placeholder
-parameter matches its invented {term}`type parameter` ({question}`Q-0269`). A
+parameter does not match a template parameter of another declaration,
+so a function with a placeholder parameter declares a template of its
+own ({question}`Q-0269`). A
 constraint that contains a lambda expression is not equivalent to any
 other constraint.
 :::
@@ -637,6 +629,30 @@ at each point where it is checked. A program in which the result
 changes is not valid, for example when a class is completed between
 two checks. An implementation need not diagnose the change
 ({question}`Q-0264`).
+:::
+
+:::{rule} CNS-39
+:kind: no-diagnostic
+:tests: templates/constraints/atomic-not-bool-skipped.cpp templates/constraints/atomic-not-bool-nondependent-clause.cpp templates/constraints/atomic-not-bool-nondependent-concept.cpp
+
+If the type of an atomic constraint's expression does not depend on a
+template parameter and is not `bool`, no check of the constraint can
+succeed. The program is not valid, also when satisfaction never reaches
+the expression. An implementation need not diagnose it, and can check
+the type at the definition ({question}`Q-0263`). CNS-9 gives the
+diagnosed case, where a check reaches the expression.
+:::
+
+:::{rule} CNS-40
+:kind: no-diagnostic
+:tests: templates/constraints/redeclare-placeholder.cpp templates/constraints/redeclare-placeholder-unconstrained.cpp
+
+A function with a placeholder parameter and a function template whose
+head writes the invented parameter are two templates (CNS-27). If they
+have the same name, the same function type, and the same constraints,
+they accept the same argument lists. A program that declares both is
+not valid, and an implementation need not diagnose it
+({question}`Q-0269`).
 :::
 
 :::{rule} CNS-38
@@ -715,7 +731,13 @@ decltype(&Box<long>::get)               // int (Box<long>::*)(): the clause is n
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 99
-of 125 tests.
+of 126 tests.
+
+One question on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+
+| Question | Principle | Family that still differs |
+|---|---|---|
+| {question}`Q-0262` | CNS-P1 | Clang 22 |
 
 Nine questions on this page settled on 2026-11-03 under decision 0054.
 For each, a source-reader gap review supports the answer with no doubt,
@@ -774,7 +796,8 @@ compiler's own words, for example "atomic constraint must be of type
   `bool`, such as `sizeof(T)`, at the definition, even if a short circuit skips it. GCC
   rejects such an atomic constraint in the requires clause of a function
   template at the definition, and accepts it in a concept until a check
-  reaches it ({question}`Q-0263`). Every compiler accepts a skipped
+  reaches it. CNS-39 needs no diagnostic, so each result conforms
+  ({question}`Q-0263`). Every compiler accepts a skipped
   atomic constraint whose type depends on the argument, such as
   `T::value` for a class whose `value` is an `int`
   (`or-short-circuit.cpp`).
@@ -815,9 +838,10 @@ compiler's own words, for example "atomic constraint must be of type
   more constrained than its parameter. Clang 22 and GCC reject it
   ({question}`Q-0265`). Every compiler accepts a constrained argument
   for a parameter with no constraints (`template-template-constrained.cpp`).
-- CNS-27: Clang treats `int f(A auto)` as a redeclaration of
+- CNS-27, CNS-40: Clang treats `int f(A auto)` as a redeclaration of
   `template <A T> int f(T)`. GCC and EDG treat the two as different
-  templates ({question}`Q-0269`). The `spellings` grid shows the same
+  templates, as CNS-27 does, and find the call ambiguous. CNS-40 needs
+  no diagnostic, so each result conforms ({question}`Q-0269`). The `spellings` grid shows the same
   split as a rejection on every compiler, for different reasons.
 - CNS-31: EDG accepts a friend template declaration whose constraint
   uses the class's template parameter ({question}`Q-0267`).

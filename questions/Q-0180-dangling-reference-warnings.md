@@ -33,6 +33,12 @@ Probes on the six Clang and GCC compilers.
 A general recommended rule, tested on the `new` case (option 1). A recommended rule allows an implementation that does not
 warn, and the `new` case is stable across the Clang versions.
 
+Kept open on 2026-11-03 under decision 0054, because the review finds the reference silent, so it does not support the answer.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on overloading, references, and list initialization (`reports/review/2026-11-03-gap-review-questions-overloading.md`) finds the reference silent. It recommends no warning for dangling references. Notes point out that a parenthesized aggregate with a reference member and a `new` expression can leave a dangling reference. The review calls the choice a matter of quality of implementation.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

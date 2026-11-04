@@ -32,6 +32,12 @@ inventory describes the behavior.
 The type of `sizeof`; Clang and EDG agree, GCC gives `int` (option 1). Two of three implementations and the inventory agree, and the
 number of elements of an array has the type of `sizeof` elsewhere.
 
+Kept open on 2026-11-03 under decision 0054, because no principle on the page gives the answer. DED-P3 gives the value of `N` and not its type.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`) agrees with option 1. The bound of an array type has the standard size type, and a constant parameter declared with a placeholder takes the type of the deduced value. GCC's result is a defect.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

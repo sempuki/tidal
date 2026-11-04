@@ -34,6 +34,12 @@ arguments of a local class are instantiated with the function.
 
 Yes; Clang and EDG agree, GCC differs (option 1). Two of three implementations and the gap review agree.
 
+Kept open on 2026-11-03 under decision 0054, because no principle on the page gives the answer. INST-P1 and INST-P2 let default arguments wait for a use and do not name local classes.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`) agrees with option 1. A local class and its members, with their default arguments, exception specifications, and member initializers, are never instantiated on their own, and their checks happen when the enclosing entity is instantiated. The statement is a note, but it describes the effect of the binding rules. GCC's acceptance is a defect.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

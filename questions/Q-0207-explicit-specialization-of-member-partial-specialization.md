@@ -1,6 +1,6 @@
 # Q-0207: Does an explicit specialization of one member partial specialization keep the others?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** TSP-21
 
 ## Context
@@ -27,11 +27,17 @@ with an override for GCC.
    EDG).
 2. The explicit specialization is not selected (GCC).
 
-## Provisional answer
+## Answer
 
 Yes, and it is selected; Clang and EDG agree, GCC ignores it (option 1). Clang and EDG agree, and the explicit specialization would
 otherwise have no use.
 
+Settled on 2026-11-03 under decision 0054. The source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`) supports this answer with no doubt, and TSP-P2 gives the same answer: an explicit specialization for the argument list is used before any partial specialization. GCC 16 still differs. Tidal records GCC 16's result as a deviation, as for the compiler-defect entries Q-0002 and Q-0003, and the tests keep their overrides for GCC 16.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`) agrees with option 1. When one partial specialization of a member template is explicitly specialized for a single class specialization, the primary member template and the other partial specializations stay in play for that class specialization, and the explicit one replaces the partial one it specializes. GCC's choice is a defect.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

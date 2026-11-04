@@ -615,6 +615,13 @@ template <class T> concept Old [[deprecated]] = true;   // the attribute apperta
 The results are in `tests/RESULTS.md`. All eight compilers agree on 105
 of 122 tests.
 
+Two questions on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+
+| Question | Principle | Family that still differs |
+|---|---|---|
+| {question}`Q-0258` | CPT-P5 | GCC 16 |
+| {question}`Q-0259` | CPT-P3 | GCC 16 |
+
 Four questions on this page settled on 2026-11-03 under decision 0054.
 For each, a source-reader gap review supports the answer with no doubt,
 and a principle gives the same answer:

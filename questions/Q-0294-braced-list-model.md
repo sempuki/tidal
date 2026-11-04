@@ -29,7 +29,7 @@ and several values for `const int&` or a function reference.
 |---|---|---|---|
 | Q-0164 | `{a}`, where `a` is an `E[N]` lvalue, for `E (&)[]` | direct | GCC makes a temporary |
 | Q-0157 | `{x}`, where `x` converts to the referenced type through a conversion function | temporary | GCC binds through the conversion function |
-| Q-0165 | `{f}` for a reference to a function | direct, as after `=` | GCC rejects an overload set, EDG a `noexcept` function |
+| Q-0165 | `{f}` for a reference to a function | direct for a function of the referenced type or an overload set; none for a `noexcept` function and a type without `noexcept` | GCC rejects an overload set; Clang and GCC bind a `noexcept` function |
 | Q-0166 | `{s}`, a string literal of another character array type | temporary | GCC rejects |
 | Q-0149 | values for `E (&&)[]` | temporary of one element for each value, and the reference keeps its type; `{}` is none | Clang gives the reference the list's bound; GCC accepts `{}` |
 | Q-0136 | `{}` and a designated list for a reference to an array | none | GCC and EDG form a sequence in part |
@@ -66,6 +66,12 @@ implementations agree with the model. Q-0136 follows the rules that
 need elements for the bound and members for the designators. A change
 to one child's answer changes the table of REF-P3.
 
+Kept open on 2026-11-03 under decision 0054, because several children stay open, and Q-0165 changed for the `noexcept` function on the same day. The table of REF-P3 already gives none for that case.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on overloading, references, and list initialization (`reports/review/2026-11-03-gap-review-questions-overloading.md`) agrees with option 1 in the model's central condition: a braced element binds directly when the referenced type is related to the element's type, which matches the model for object types. The children Q-0136, Q-0154, Q-0155, and Q-0165 carry the exceptions. The review did not read Q-0081 and Q-0188.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

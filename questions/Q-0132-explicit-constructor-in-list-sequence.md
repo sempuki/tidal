@@ -45,6 +45,12 @@ Yes; GCC agrees, Clang and EDG form no sequence (option 1). The answer follows I
 as candidates in copy list initialization, and the model of ICS-8, where
 faults of the chosen function do not stop a sequence from forming.
 
+Kept open on 2026-11-03 under decision 0054, because two of the newest families differ from the answer, and the rule records one differing family. Clang 22 and EDG 7.0 form no sequence.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on overloading, references, and list initialization (`reports/review/2026-11-03-gap-review-questions-overloading.md`) agrees with option 1. An `explicit` constructor takes part when a braced list chooses a constructor, and copy list initialization is not valid only when that constructor is chosen. The ban matters only for the function that overload resolution finally picks. GCC follows this reading.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

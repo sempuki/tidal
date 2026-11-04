@@ -1,6 +1,6 @@
 # Q-0135: Does a braced list prefer a scalar parameter to a reference to an array when both sequences are the identity?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** ICS-17, `tests/foundations/conversion-sequences/list-array-against-scalar.cpp`
 **Parent:** Q-0294, the model of braced lists for references, arrays, and conversion sequences
 
@@ -30,11 +30,17 @@ and the "one {1}" rows of the lists grid on the page.
 2. The sequence to the scalar is better (GCC). The page then needs a
    tie-breaker for this case.
 
-## Provisional answer
+## Answer
 
 No, they tie; GCC differs (option 1). Two of three implementations agree, and the page's rules give
 a tie with no further rule.
 
+Settled on 2026-11-03 under decision 0054. The source-reader gap review of the open questions on overloading, references, and list initialization (`reports/review/2026-11-03-gap-review-questions-overloading.md`) supports this answer with no doubt, and ICS-P5 gives the same answer: step 2 compares only arrays of one element type or an initializer list, and when no step decides, the sequences tie. GCC 16 still differs. Tidal records GCC 16's result as a deviation, as for the compiler-defect entries Q-0002 and Q-0003, and the tests keep their overrides for GCC 16.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on overloading, references, and list initialization (`reports/review/2026-11-03-gap-review-questions-overloading.md`) agrees with option 1. The list tie-breaker compares two array targets, or an initializer list target with another target. A scalar target is neither, and no other rule separates two identity sequences when only one side binds a reference. GCC's choice is a defect.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

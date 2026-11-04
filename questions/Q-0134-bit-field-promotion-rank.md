@@ -37,6 +37,12 @@ Yes; Clang agrees, GCC and EDG differ (option 1). ICS-2 gives the integer promot
 and CONV-1 decides a bit-field's promotion by its width. One rule for
 arithmetic and for sequences is simpler.
 
+Kept open on 2026-11-03 under decision 0054, because the review reads the answer with doubt.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on overloading, references, and list initialization (`reports/review/2026-11-03-gap-review-questions-overloading.md`) agrees with option 1, with doubt. A bit-field converts to `int` by an integral promotion when `int` holds every value of the bit-field, with no condition on the declared type, so the sequence has promotion rank. A note on conversion sequences says that a sequence ignores whether the argument is a bit-field. Read strictly, the note gives GCC's and EDG's result. The note is not binding, so the review leans to option 1.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

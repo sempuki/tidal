@@ -149,13 +149,15 @@ drop a cv-qualifier of the object.
 
 :::{rule} REF-6
 :kind: required
-:tests: declarations/initialization/references/braced-reference.cpp declarations/initialization/references/braced-list-binds-directly.cpp declarations/initialization/references/braced-list-array-binds-directly.cpp declarations/initialization/references/braced-list-array-drops-const.cpp declarations/initialization/references/braced-list-array-rvalue-ref-lvalue.cpp declarations/initialization/references/braced-list-array-unknown-bound.cpp declarations/initialization/references/braced-list-conversion-temporary.cpp declarations/initialization/references/braced-list-conversion-nonconst.cpp declarations/initialization/references/braced-function-reference.cpp declarations/initialization/references/braced-function-overload-set.cpp declarations/initialization/references/braced-function-noexcept.cpp declarations/initialization/references/braced-string-literal-rvalue-ref.cpp
+:tests: declarations/initialization/references/braced-reference.cpp declarations/initialization/references/braced-list-binds-directly.cpp declarations/initialization/references/braced-list-array-binds-directly.cpp declarations/initialization/references/braced-list-array-drops-const.cpp declarations/initialization/references/braced-list-array-rvalue-ref-lvalue.cpp declarations/initialization/references/braced-list-array-unknown-bound.cpp declarations/initialization/references/braced-list-conversion-temporary.cpp declarations/initialization/references/braced-list-conversion-nonconst.cpp declarations/initialization/references/braced-function-reference.cpp declarations/initialization/references/braced-function-overload-set.cpp declarations/initialization/references/braced-string-literal-rvalue-ref.cpp
 
 A reference can be initialized with `=`, parentheses, or braces. A
 braced list that holds one expression initializes the reference from
 that expression, as `=` does, in these cases:
 
-- The referenced type is a function type ({question}`Q-0165`).
+- The referenced type is a function type, and the expression is a
+  function of that type or an {term}`overload set` that gives one
+  ({question}`Q-0165`).
 - The expression has the referenced type, ignoring
   {term}`cv-qualifiers <cv-qualifier>`, or a class derived from that
   type ({question}`Q-0157`).
@@ -182,7 +184,7 @@ for each value, and the reference keeps its declared type
 
 :::{rule} REF-11
 :kind: reject
-:tests: declarations/initialization/references/braced-reference-narrowing.cpp declarations/initialization/references/reference-multiple-values.cpp declarations/initialization/references/parenthesized-list-aggregate.cpp declarations/initialization/references/braced-list-scalar-two-values.cpp declarations/initialization/references/braced-list-array-too-many.cpp declarations/initialization/references/braced-list-unknown-bound-empty.cpp declarations/initialization/references/braced-list-explicit-constructor.cpp
+:tests: declarations/initialization/references/braced-reference-narrowing.cpp declarations/initialization/references/reference-multiple-values.cpp declarations/initialization/references/parenthesized-list-aggregate.cpp declarations/initialization/references/braced-list-scalar-two-values.cpp declarations/initialization/references/braced-list-array-too-many.cpp declarations/initialization/references/braced-list-unknown-bound-empty.cpp declarations/initialization/references/braced-list-explicit-constructor.cpp declarations/initialization/references/braced-function-noexcept.cpp
 
 These conditions apply to the initializer of a reference:
 
@@ -195,6 +197,10 @@ These conditions apply to the initializer of a reference:
   ({question}`Q-0149`).
 - The temporary must not need an `explicit` constructor
   ({question}`Q-0150`).
+- A reference to a function type has no temporary. So a braced
+  function whose type differs from the referenced type, such as a
+  `noexcept` function for a reference to a function type without
+  `noexcept`, cannot initialize the reference ({question}`Q-0165`).
 :::
 
 :::{rule} REF-13
@@ -328,6 +334,17 @@ int& m{s};                   // rejected: a temporary needs const or &&
 All eight compilers agree on 49 of 64 tests. The results are in
 `tests/RESULTS.md`.
 
+Six questions on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on overloading, references, and list initialization (`reports/review/2026-11-03-gap-review-questions-overloading.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+
+| Question | Principle | Family that still differs |
+|---|---|---|
+| {question}`Q-0109` | REF-P2 | EDG 7.0 |
+| {question}`Q-0110` | REF-P2 | EDG 7.0 |
+| {question}`Q-0149` | REF-P3 | Clang 22 on the type, GCC 16 on empty braces |
+| {question}`Q-0150` | REF-P3 | Clang 22 |
+| {question}`Q-0151` | REF-P1 | GCC 16 |
+| {question}`Q-0164` | REF-P3 | GCC 16 |
+
 - **REF-5.** All compilers reject the dangling reads during
   {term}`constant evaluation` ("read of object outside its lifetime",
   "accessing ... outside its lifetime", "attempt to access expired
@@ -384,9 +401,11 @@ All eight compilers agree on 49 of 64 tests. The results are in
   lvalue reference to its result and rejects an rvalue reference
   ("cannot bind rvalue reference ... to lvalue").
 - **REF-6.** For a reference to a function type, GCC rejects an
-  overloaded function name in braces, and EDG rejects a `noexcept`
-  function in braces. The other compilers bind the reference as after
-  `=` ({question}`Q-0165`).
+  overloaded function name in braces. Clang and EDG bind the reference
+  as after `=` ({question}`Q-0165`).
+- **REF-11.** For a reference to a function type without `noexcept`,
+  EDG rejects a braced `noexcept` function, as REF-11 does. Clang and
+  GCC bind the reference as after `=` ({question}`Q-0165`).
 - **REF-6.** Every compiler binds a reference to a braced string literal
   of the referenced type directly, as after `=`. An rvalue reference
   then cannot bind, for a known and for an unknown bound.

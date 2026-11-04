@@ -628,6 +628,14 @@ int p = Price<shop::Item>::value;        // 3: cost is declared before the point
 The results are in `tests/RESULTS.md`. All eight compilers agree on 112
 of 134 tests.
 
+Three questions on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+
+| Question | Principle | Family that still differs |
+|---|---|---|
+| {question}`Q-0232` | INST-P2 | GCC 16 |
+| {question}`Q-0252` | INST-P1 | EDG 7.0 on the braced conditional, GCC 16 on `sizeof` |
+| {question}`Q-0310` | INST-P4 | none; the rule needs no diagnostic |
+
 Seven questions on this page settled on 2026-11-03 under decision 0054.
 For each, a source-reader gap review supports the answer with no doubt,
 and a principle gives the same answer:

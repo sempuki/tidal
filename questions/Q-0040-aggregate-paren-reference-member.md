@@ -16,4 +16,11 @@ With braces, `Holder h{Note{5}};` keeps the temporary alive as long as `h` on ev
 
 Only braces extend the lifetime; parentheses do not (option 1). Clang and GCC agree, and the review summary describes the same difference.
 
+Kept open on 2026-11-03 under decision 0054, because no principle on the page gives the answer. REF-P2 lists the bindings that extend a temporary and does not name parenthesized aggregate initialization.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on overloading, references, and list initialization (`reports/review/2026-11-03-gap-review-questions-overloading.md`) agrees with option 1. A temporary bound to a reference member of an aggregate that a parenthesized list initializes lasts only to the end of the full expression. With braces the usual extension applies, and EDG's acceptance is a defect.
+

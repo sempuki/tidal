@@ -29,6 +29,12 @@ override for Clang, and `alias-template-lambda.cpp`.
 Yes; GCC and EDG agree, Clang gives two types (option 1). GCC and EDG agree, and an alias template specialization names
 one type (TPL-28).
 
+Kept open on 2026-11-03 under decision 0054, because the review finds the question unclear.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`) finds the question unclear. A lambda in an alias template gives different closure types for different instantiations of the alias, which covers the second column, where every compiler agrees. Nothing says whether two uses of one alias specialization with the same arguments are one instantiation or two. The wording on instantiations points toward option 1, and Clang's reading of each use as a new substitution is also possible.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

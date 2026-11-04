@@ -32,6 +32,12 @@ for a function's parameter list.
 Yes; GCC and EDG agree, Clang differs (option 1). Two of three implementations agree, and every compiler
 accepts the form outside a template.
 
+Kept open on 2026-11-03 under decision 0054, because no principle on the page gives the answer. CPT-P3 does not describe the parameter list.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`) agrees with option 1. The parameter list of a requires expression uses the grammar and rules of a function's parameter list, so a lone unnamed parameter of type `void` that depends on nothing means an empty list, inside a template as outside. Clang's result is a defect.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

@@ -1,10 +1,9 @@
-// tidal-rules: CNS-27
-// tidal-expect: accept
-// tidal-expect-gcc: reject
-// tidal-expect-edg: reject
+// tidal-rules: CNS-40 CNS-27
+// tidal-expect: reject
+// tidal-expect-clang: accept
 // tidal-error-gcc: is ambiguous
 // tidal-error-edg: more than one instance of overloaded function
-// tidal-note: The invented parameter of A auto gives the head of the first declaration, so the definition redeclares it. GCC and EDG see two templates (Q-0269).
+// tidal-note: int f(A auto) declares a template of its own (CNS-27), and the two templates accept the same arguments. GCC and EDG find the call ambiguous. Clang treats the definition as a redeclaration and accepts. CNS-40 needs no diagnostic, so both results conform (Q-0269).
 template <class T> concept A = sizeof(T) > 1;
 template <A T> int f(T);
 int f(A auto) { return 1; }

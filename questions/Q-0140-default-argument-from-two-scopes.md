@@ -47,6 +47,12 @@ No, if the defaults differ; GCC agrees, Clang and EDG differ (option 1). GCC dia
 that the call is not valid, and no compiler rejects equal default
 arguments.
 
+Kept on 2026-11-03. The review reads option 2, and every compiler accepts the call with equal default arguments, which option 2 rejects. Tidal keeps option 1, which GCC follows, until the maintainer decides. The form with equal values is in row 4 of `documentation/decisions/pending.md`. The question stays open under decision 0054, because the review reads against the answer.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on overloading, references, and list initialization (`reports/review/2026-11-03-gap-review-questions-overloading.md`) reads option 2. The call is not valid whenever two declarations in different scopes each supply the default argument that the call needs, with no comparison of the two values. A diagnostic is required. GCC rejects only different values, and no compiler in the table rejects equal values.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

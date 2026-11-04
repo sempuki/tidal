@@ -1,7 +1,7 @@
 # Q-0248: Does an unqualified conversion function name find a conversion function of a dependent base?
 
 **Status:** provisional
-**Affects:** DEP-12, `tests/templates/dependent-names/dependent-base-conversion-function.cpp`
+**Affects:** DEP-11, DEP-12, `tests/templates/dependent-names/dependent-base-conversion-function.cpp`, `tests/templates/dependent-names/dependent-base-conversion-function-independent.cpp`
 
 ## Context
 
@@ -31,8 +31,14 @@ looked up at the instantiation and finds the base's function.
 
 ## Provisional answer
 
-No; GCC and EDG agree, Clang differs (option 1). Two of three implementations agree. The gap review supports option 2, and a contributor can argue for it with that review.
+Yes; Clang agrees, GCC and EDG differ (option 2). The name `operator T` is a dependent name when `T` is dependent, and the lookup of a dependent name waits for the arguments (DEP-P1), when the base is known. DEP-11 states the answer. A name whose type is not dependent stays unfound (DEP-12).
+
+Changed on 2026-11-03 to option 2. The review reads option 2, Clang 22 follows it, and DEP-P1 gives the same answer: the lookup of a dependent name waits for the arguments, when the base is known. DEP-11 now states option 2, and the table of DEP-P3 has a row for it. DEP-12 keeps the name whose type is not dependent. `dependent-base-conversion-function.cpp` expects the program to run, with overrides for GCC and EDG, and the new test `dependent-base-conversion-function-independent.cpp` checks `operator int`, which every compiler rejects. The question stays open.
 
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`) reads option 2. An unqualified conversion function name whose target type is dependent is a dependent name. It is looked up at the point of instantiation, so lookup can find a member of a dependent base. An example calls such a conversion function of a base given as a template argument without `this->` and accepts the call. GCC and EDG apply the older rule that never looks into a dependent base for an unqualified name. A name with a target type that is not dependent stays unfound, as every compiler finds.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

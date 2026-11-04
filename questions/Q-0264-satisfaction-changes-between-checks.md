@@ -30,6 +30,12 @@ The test above.
 
 No diagnostic required; GCC 16 diagnoses (option 1). Finding the change needs a record of every earlier check, which most implementations do not keep.
 
+Kept open on 2026-11-03 under decision 0054, because no principle on the page gives the answer. CNS-10 is an exception of CNS-P2, and no principle states that a result must stay the same.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`) agrees with option 1. A program is not valid when two checks of the same atomic constraint with the same arguments give different results at different points, and no diagnostic is required. GCC 16's error and the other compilers' silence both conform.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

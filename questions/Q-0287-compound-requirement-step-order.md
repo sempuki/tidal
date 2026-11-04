@@ -43,6 +43,12 @@ and constraints (item 19) gives the order: the expression, then the
 Yes, and unused extra arguments are substituted; EDG agrees, Clang and GCC each differ in one case (option 1). EDG follows it in both cases, each of Clang and GCC follows
 it in one case, and the review describes the same order.
 
+Kept open on 2026-11-03 under decision 0054, because the review reads the answer with doubt.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`) agrees with option 1, with doubt. The steps of a compound requirement run in order: substitution of the expression, the check for `noexcept`, substitution of the return-type requirement, and satisfaction of the type constraint. A failed step makes the requirement false, and checking stops. The whole return-type requirement is substituted, including an unused extra argument, which gives false. An example equates a compound requirement with a simple requirement and a nested requirement, where an argument that the concept never uses would not be substituted, which gives GCC's true (option 3).
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

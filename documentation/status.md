@@ -77,17 +77,17 @@ current state only. The history of how the project got here is in
 | [Conversion functions](../specification/classes/conversion-functions.md) | 12 | 5 required, 6 reject, 1 recommended | 65 | 0 | 1 | 29 | Q-0059 | none flagged ([2026-11-03-repairs-propose-x13-x16](../reports/similarity/2026-11-03-repairs-propose-x13-x16.txt)) |
 | [Operator overloading](../specification/classes/operators.md) | 16 | 8 required, 6 reject, 1 unspecified, 1 recommended | 103 | 0 | 1 | 62 | Q-0060 | none flagged ([2026-11-03-repairs-propose-x13-x16](../reports/similarity/2026-11-03-repairs-propose-x13-x16.txt)) |
 | [Defaulted comparisons](../specification/classes/comparisons.md) | 13 | 6 required, 5 reject, 1 no-diagnostic, 1 recommended | 79 | 0 | 6 | 59 | Q-0061, Q-0062, Q-0158, Q-0190 | none flagged ([2026-11-03-repairs-propose-x13-x16](../reports/similarity/2026-11-03-repairs-propose-x13-x16.txt)) |
-| [Implicit conversion sequences](../specification/overloading/conversion-sequences.md) | 47 | 46 required, 1 reject | 133 | 0 | 27 | 123 | Q-0081, Q-0132, Q-0133, Q-0134, Q-0135, Q-0136, Q-0137, Q-0138, Q-0152, Q-0153, Q-0154, Q-0155, Q-0156, Q-0157, Q-0188, Q-0294, Q-0321, Q-0337 | none flagged ([2026-11-03-repairs-propose-x13-x16](../reports/similarity/2026-11-03-repairs-propose-x13-x16.txt)) |
+| [Implicit conversion sequences](../specification/overloading/conversion-sequences.md) | 47 | 46 required, 1 reject | 133 | 0 | 27 | 123 | Q-0081, Q-0132, Q-0133, Q-0134, Q-0135, Q-0136, Q-0137, Q-0138, Q-0152, Q-0153, Q-0154, Q-0155, Q-0156, Q-0157, Q-0167, Q-0188, Q-0294, Q-0321, Q-0337 | none flagged ([2026-11-03-repairs-propose-x13-x16](../reports/similarity/2026-11-03-repairs-propose-x13-x16.txt)) |
 | [Overload resolution](../specification/overloading/overload-resolution.md) | 44 | 35 required, 9 reject | 176 | 0 | 27 | 231 | Q-0138, Q-0139, Q-0140, Q-0141, Q-0142, Q-0143, Q-0144, Q-0145, Q-0146, Q-0147, Q-0148, Q-0159, Q-0161, Q-0163, Q-0187, Q-0189, Q-0211 | none flagged ([2026-11-03-repairs-propose-x13-x16](../reports/similarity/2026-11-03-repairs-propose-x13-x16.txt)) |
 | [Template declarations](../specification/templates/declarations.md) | 49 | 26 required, 23 reject | 125 | 1 | 11 | 79 | Q-0195, Q-0196, Q-0197, Q-0198, Q-0199, Q-0200, Q-0296 | none flagged ([2026-11-03-repairs-propose-x13-x16](../reports/similarity/2026-11-03-repairs-propose-x13-x16.txt)) |
-| [Template arguments](../specification/templates/arguments.md) | 27 | 16 required, 10 reject, 1 unspecified | 88 | 0 | 6 | 58 | Q-0117, Q-0168, Q-0169, Q-0170, Q-0201 | none flagged ([2026-11-03-repairs-propose-x13-x16](../reports/similarity/2026-11-03-repairs-propose-x13-x16.txt)) |
-| [Explicit and partial specialization](../specification/templates/specialization.md) | 32 | 16 required, 15 reject, 1 no-diagnostic | 93 | 0 | 13 | 29 | Q-0171, Q-0172, Q-0173, Q-0174, Q-0203, Q-0204, Q-0205, Q-0206, Q-0207, Q-0292, Q-0295 | none flagged ([2026-11-03-repairs-propose-x13-x16](../reports/similarity/2026-11-03-repairs-propose-x13-x16.txt)) |
+| [Template arguments](../specification/templates/arguments.md) | 27 | 17 required, 10 reject | 88 | 0 | 6 | 58 | Q-0117, Q-0168, Q-0169, Q-0170, Q-0201 | none flagged ([2026-11-03-repairs-propose-x13-x16](../reports/similarity/2026-11-03-repairs-propose-x13-x16.txt)) |
+| [Explicit and partial specialization](../specification/templates/specialization.md) | 32 | 16 required, 15 reject, 1 no-diagnostic | 95 | 0 | 15 | 29 | Q-0171, Q-0172, Q-0173, Q-0174, Q-0203, Q-0204, Q-0205, Q-0206, Q-0207, Q-0292, Q-0295 | none flagged ([2026-11-03-repairs-propose-x13-x16](../reports/similarity/2026-11-03-repairs-propose-x13-x16.txt)) |
 | [Template argument deduction](../specification/templates/deduction.md) | 39 | 36 required, 3 reject | 121 | 0 | 9 | 100 | Q-0208, Q-0209, Q-0215, Q-0219, Q-0220, Q-0295 | none flagged ([2026-11-03-repairs-propose-x13-x16](../reports/similarity/2026-11-03-repairs-propose-x13-x16.txt)) |
 | [Partial ordering of templates](../specification/templates/ordering.md) | 16 | 15 required, 1 reject | 42 | 0 | 11 | 30 | Q-0146, Q-0211, Q-0214, Q-0216, Q-0217, Q-0218, Q-0293 | none flagged ([2026-11-03-repairs-propose-x13-x16](../reports/similarity/2026-11-03-repairs-propose-x13-x16.txt)) |
-| [Dependent names](../specification/templates/dependent-names.md) | 39 | 20 required, 13 reject, 6 no-diagnostic | 122 | 0 | 22 | 122 | Q-0223, Q-0224, Q-0225, Q-0226, Q-0227, Q-0228, Q-0229, Q-0230, Q-0243, Q-0245, Q-0246, Q-0247, Q-0248, Q-0249, Q-0250 | none flagged ([2026-11-03-repairs-propose-x13-x16](../reports/similarity/2026-11-03-repairs-propose-x13-x16.txt)) |
+| [Dependent names](../specification/templates/dependent-names.md) | 39 | 20 required, 13 reject, 6 no-diagnostic | 123 | 1 | 22 | 122 | Q-0223, Q-0224, Q-0225, Q-0226, Q-0227, Q-0228, Q-0229, Q-0230, Q-0243, Q-0245, Q-0246, Q-0247, Q-0248, Q-0249, Q-0250, Q-0354 | none flagged ([2026-11-03-repairs-propose-x13-x16](../reports/similarity/2026-11-03-repairs-propose-x13-x16.txt)) |
 | [Instantiation](../specification/templates/instantiation.md) | 36 | 16 required, 14 reject, 2 unspecified, 3 no-diagnostic | 134 | 2 | 23 | 68 | Q-0231, Q-0232, Q-0233, Q-0234, Q-0235, Q-0236, Q-0237, Q-0251, Q-0252, Q-0253, Q-0254, Q-0255, Q-0256, Q-0257, Q-0310, Q-0346 | none flagged ([2026-11-03-repairs-propose-x13-x16](../reports/similarity/2026-11-03-repairs-propose-x13-x16.txt)) |
 | [Concepts and requires expressions](../specification/templates/concepts.md) | 37 | 21 required, 16 reject | 122 | 0 | 17 | 76 | Q-0258, Q-0259, Q-0260, Q-0270, Q-0281, Q-0285, Q-0286, Q-0287, Q-0288, Q-0289, Q-0290 | none flagged ([2026-11-03-repairs-propose-x13-x16](../reports/similarity/2026-11-03-repairs-propose-x13-x16.txt)) |
-| [Constraints](../specification/templates/constraints.md) | 39 | 24 required, 13 reject, 2 no-diagnostic | 125 | 0 | 26 | 46 | Q-0260, Q-0261, Q-0262, Q-0263, Q-0264, Q-0265, Q-0266, Q-0267, Q-0268, Q-0269, Q-0281, Q-0282, Q-0283, Q-0284, Q-0285, Q-0291, Q-0292 | none flagged ([2026-11-03-repairs-propose-x13-x16](../reports/similarity/2026-11-03-repairs-propose-x13-x16.txt)) |
+| [Constraints](../specification/templates/constraints.md) | 40 | 24 required, 12 reject, 4 no-diagnostic | 126 | 0 | 27 | 46 | Q-0260, Q-0261, Q-0262, Q-0263, Q-0264, Q-0265, Q-0266, Q-0267, Q-0268, Q-0269, Q-0281, Q-0282, Q-0283, Q-0284, Q-0285, Q-0291, Q-0292 | none flagged ([2026-11-03-repairs-propose-x13-x16](../reports/similarity/2026-11-03-repairs-propose-x13-x16.txt)); 1 IDs not checked |
 | [Packs](../specification/templates/packs.md) | 31 | 19 required, 11 reject, 1 no-diagnostic | 69 | 0 | 4 | 67 | Q-0238, Q-0271, Q-0272, Q-0273, Q-0274 | none flagged ([2026-11-03-repairs-propose-x13-x16](../reports/similarity/2026-11-03-repairs-propose-x13-x16.txt)) |
 | [Class template argument deduction](../specification/templates/class-template-deduction.md) | 29 | 21 required, 8 reject | 116 | 0 | 21 | 43 | Q-0239, Q-0240, Q-0241, Q-0242, Q-0243, Q-0244, Q-0275, Q-0276, Q-0277, Q-0278, Q-0279, Q-0280, Q-0352 | none flagged ([2026-11-03-repairs-propose-x13-x16](../reports/similarity/2026-11-03-repairs-propose-x13-x16.txt)) |
 | [Throw expressions and the exception object](../specification/exceptions/throw.md) | 13 | 11 required, 1 reject | 50 | 0 | 0 | 70 |  | none flagged ([2026-11-03-repairs-propose-x13-x16](../reports/similarity/2026-11-03-repairs-propose-x13-x16.txt)) |
@@ -110,7 +110,7 @@ page, and `tools/check_specification.py` fails when one is stale.
 
 ## Test matrix
 
-The matrix has 8 baseline compilers, and 6099 of 6099 tests pass on each. The tree has 6286 test files, and 187 of them have no row in `tests/RESULTS.md`. Two
+The matrix has 8 baseline compilers, and 6099 of 6099 tests pass on each. The tree has 6290 test files, and 191 of them have no row in `tests/RESULTS.md`. Two
 report compilers build at `-O2` (decision 0043). Tests may
 span several translation units (decision 0014). CI runs the
 containerized compilers on every push and pull request (decision 0012).
@@ -122,7 +122,7 @@ containerized compilers on every push and pull request (decision 0012).
 | GCC 16.2.0 | container (official image) | skips `-m32` and type sanitizer tests |
 | Clang 18.1.3 | container | skips type sanitizer tests |
 | GCC 14.2.0 | container | skips type sanitizer tests |
-| EDG 7.0 | container | front end only; skips `-m32`, warning-flag, and sanitizer tests; per-compiler expectations on 235 tests, each with a note that names its question or the implementation choice |
+| EDG 7.0 | container | front end only; skips `-m32`, warning-flag, and sanitizer tests; per-compiler expectations on 234 tests, each with a note that names its question or the implementation choice |
 | EDG 7.0, ILP32 | container, built with EDG's i686 configuration | front end only; runs only the `-m32` tests; differs on the alignment of `long long` (Q-0120) |
 | GCC 16.2.0, `-O2` | container, report | runs the tests at `-O2`; skips `-m32` and type sanitizer tests; does not fail a run |
 | Clang 22.1.8, `-O2` | container, report | runs the tests at `-O2`; does not fail a run |
@@ -131,8 +131,8 @@ Full results are in `tests/RESULTS.md`.
 
 ## Open questions
 
-The question index has 371 questions: 280 open for opinions (280
-provisional and 0 open), 13 compiler defects, and 78 settled. Each open
+The question index has 371 questions: 244 open for opinions (244
+provisional and 0 open), 13 compiler defects, and 114 settled. Each open
 question has a provisional answer that the specification follows. A
 compiler-defect answer says that one compiler or an older version is
 wrong (Q-0002, Q-0003, Q-0013, Q-0016, Q-0044, Q-0115, Q-0212, Q-0213,
@@ -154,7 +154,7 @@ settled questions. See `questions/README.md`.
   `tools/frontend_check.py` fails when a test that it passed no longer
   passes (`reports/clean-room/rust-frontend/conformance.tsv`).
 
-- 2888 tests carry `tidal-error` patterns. A pattern checks that a
+- 2892 tests carry `tidal-error` patterns. A pattern checks that a
   compiler rejects the test, fails to link the test, or stops the test
   at run time, for the reason the test's rule gives.
   In 51 tests, some compiler family has no pattern, because that

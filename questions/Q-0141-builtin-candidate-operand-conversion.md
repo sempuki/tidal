@@ -1,6 +1,6 @@
 # Q-0141: After a built-in candidate wins, does a class operand convert past its conversion function?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** OVL-11, `tests/foundations/overload-resolution/builtin-chosen-other-operand.cpp`
 
 ## Context
@@ -32,11 +32,17 @@ resolution inventory.
 2. The class operand converts to the candidate's parameter type
    (EDG).
 
-## Provisional answer
+## Answer
 
 No; Clang and GCC agree, EDG differs (option 1). Two of three implementations agree, and the inventory
 describes the conversion the same way.
 
+Settled on 2026-11-03 under decision 0054. The source-reader gap review of the open questions on overloading, references, and list initialization (`reports/review/2026-11-03-gap-review-questions-overloading.md`) supports this answer with no doubt, and OVL-P4 gives the same answer: after a built-in candidate wins, the operator's own page decides what the expression does with the result of the conversion function. EDG 7.0 still differs. Tidal records EDG 7.0's result as a deviation, as for the compiler-defect entries Q-0002 and Q-0003, and the tests keep their overrides for EDG 7.0.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on overloading, references, and list initialization (`reports/review/2026-11-03-gap-review-questions-overloading.md`) agrees with option 1. When a built-in candidate wins, a class operand converts by the user-defined part of its sequence, without the standard conversion that would follow. The built-in operator then sees a pointer and a floating type, which is not valid. EDG's acceptance is a defect.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

@@ -1,6 +1,6 @@
 # Q-0228: Is a missing member of the current instantiation diagnosed in a template that is not used?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** DEP-17, DEP-30, `tests/templates/dependent-names/current-member-missing.cpp`, `tests/templates/dependent-names/current-member-missing-used.cpp`, `tests/templates/dependent-names/this-member-missing.cpp`, `tests/templates/dependent-names/this-member-missing-specialized.cpp`
 
 ## Context
@@ -37,13 +37,19 @@ instantiated (`current-member-missing-used.cpp`).
 2. The name is an independent error, and DEP-30 needs no diagnostic
    while no specialization is made.
 
-## Provisional answer
+## Answer
 
 No diagnostic required while unused; GCC 14 accepts, others reject (option 2). The name is not dependent, so DEP-30 covers the unused
 template, and every result lies within that rule. DEP-17 stays a
 `reject` rule for a class that is instantiated, where every compiler
 rejects.
 
+Settled on 2026-11-03 under decision 0054. The source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`) supports this answer with no doubt, and DEP-P4 gives the same answer: with no dependent base, the name is not dependent, so the implementation can report the error at the definition, and DEP-P6 needs no diagnostic while the template is unused. No newest family differs, because the answer is a no-diagnostic rule that every outcome fits.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`) agrees with option 2. A qualified name into the current instantiation is dependent only when the class has a dependent base and lookup finds nothing. With no dependent base, the failed lookup is an error in an independent construct, so the rule of Q-0223 applies. GCC 16's rejection by default is allowed and not required. Once the class is instantiated, the error needs a diagnostic, which fits DEP-17.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

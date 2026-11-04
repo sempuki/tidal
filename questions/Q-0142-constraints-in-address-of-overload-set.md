@@ -65,6 +65,12 @@ Yes, when the functions meet the conditions of ORD-13; Clang 22 and GCC 16 agree
 inventory and the gap review describe the step, and the answer matches
 the rule for calls (OVL-30, ORD-13).
 
+Kept on 2026-11-03. The review agrees for equal parameter lists. For different parameter lists without a target, Clang 22, GCC 16, and EDG 7.0 all reject the program, and only Clang 18 gives the review's result. Tidal keeps the conditions of ORD-13 in OVL-19, as for calls (OVL-30), until the maintainer decides. That form is in row 4 of `documentation/decisions/pending.md`. The question stays open under decision 0054, because the review reads against part of the answer and two newest families differ in the forms with a target.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on overloading, references, and list initialization (`reports/review/2026-11-03-gap-review-questions-overloading.md`) reads option 1 without the conditions of ORD-13. With a target and equal parameter lists, the more constrained function wins, as the answer says. The removal of a less constrained plain function has no condition on the parameter lists or the target type, so without a target and with different parameter lists the more constrained function remains alone. That is Clang 18's result, and the test that expects a rejection does not follow the review. The review has not checked whether a later change adds the conditions.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

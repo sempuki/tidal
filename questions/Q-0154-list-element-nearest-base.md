@@ -42,6 +42,12 @@ applies.
 Yes; Clang and GCC agree, EDG differs (option 1). Two of three implementations agree, and every compiler
 applies ICS-36 to the same list for an aggregate.
 
+Kept open on 2026-11-03 under decision 0054, because the review finds the question unclear.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on overloading, references, and list initialization (`reports/review/2026-11-03-gap-review-questions-overloading.md`) finds the question unclear. For a class that is not an aggregate and one element of a derived class, the sequence has conversion rank, and nothing calls it a derived-to-base conversion. The nearest-base tie-breaker is stated for standard sequences, and nothing says whether a list sequence described only by its rank counts. For an aggregate, the element's own sequence applies, and the tie-breaker applies there. The uniform answer is a reasonable reading.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

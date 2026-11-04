@@ -30,11 +30,19 @@ CNS-39 states the check at the definition.
 1. Not valid (Clang, EDG). The type does not depend on the
    arguments, so the constraint can never be satisfied.
 2. Valid until the check reaches the operand (GCC).
+3. Not valid, and no diagnostic is required. Each compiler's result
+   lies within the rule.
 
 ## Provisional answer
 
-Yes; Clang and EDG agree, GCC differs (option 1). Two of three implementations agree. A constraint that is not valid for any argument is not valid in the template, as DEP-30 treats other constructs.
+Not valid, no diagnostic required; Clang and EDG diagnose, GCC does not (option 3). A constraint that no argument can satisfy is not valid in the template, and DEP-P6 needs no diagnostic for a construct that no argument list makes valid. CNS-39 states the answer.
+
+Changed on 2026-11-03 to option 3. The review reads option 3, every compiler's result fits it, and DEP-P6 gives the same answer: a construct that no argument list makes valid need not be diagnosed. CNS-39 is now a `no-diagnostic` rule, and the three tests cite CNS-39 alone. CNS-9 keeps the case where a check reaches the expression. The question stays open.
 
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`) reads against the answer in part. Satisfaction checks the type of an atomic constraint only when it reaches the constraint. A separate rule makes the program not valid, with no diagnostic required, when an atomic constraint can never be checked successfully and no check reaches it. So the program is not valid, and GCC's acceptance conforms, as do Clang's and EDG's rejections at the definition. CNS-9 and CNS-39 need a diagnostic, which the review does not support. The same holds for the requires clause of a function template.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

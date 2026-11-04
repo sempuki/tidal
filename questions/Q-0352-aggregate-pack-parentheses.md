@@ -1,6 +1,6 @@
 # Q-0352: Does a list in parentheses form the aggregate candidate for a class with a pack of bases?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** CTAD-9, CTAD-27, `tests/templates/class-template-deduction/aggregate-pack-parentheses.cpp`, `tests/templates/class-template-deduction/aggregate-pack-length-parentheses.cpp`
 
 ## Context
@@ -33,12 +33,18 @@ for each of these classes on the baseline compilers.
 2. A list in parentheses forms no aggregate candidate for such a class
    (GCC).
 
-## Provisional answer
+## Answer
 
 Yes; the candidate is formed as for braces (option 1). Clang and EDG
 agree, and CTAD-9 forms the candidate from a list in parentheses for
 every other aggregate.
 
+Settled on 2026-11-03 under decision 0054. The source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`) supports this answer with no doubt, and CTAD-P1 gives the same answer: the same steps form the guides, the aggregate candidate among them, for every initializer. GCC 16 still differs. Tidal records GCC 16's result as a deviation, as for the compiler-defect entries Q-0002 and Q-0003, and the tests keep their overrides for GCC 16.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`) agrees with option 1. The aggregate candidate is formed from a parenthesized expression list under the same conditions as from a braced list, and the treatment of a trailing pack of bases does not depend on the kind of list. GCC's rejection is a defect.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

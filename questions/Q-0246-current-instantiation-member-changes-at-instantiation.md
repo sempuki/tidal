@@ -32,6 +32,12 @@ valid, and predicts a rejection. No compiler rejects.
 
 Yes, no diagnostic required; every compiler accepts (option 1). Every compiler accepts, and option 1 allows that result. The gap review reads the program as not valid. Option 2 would define a result that the review's reading leaves invalid.
 
+Kept on 2026-11-03. The review's first reading needs a diagnostic, and every compiler accepts the program. Its second reading gives option 1, the answer. Tidal keeps option 1 until the maintainer decides, and the form with a diagnostic is in row 4 of `documentation/decisions/pending.md`. The question stays open under decision 0054, because the review reads with doubt.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`) reads against the answer, with doubt. The second lookup of a qualified name into the current instantiation makes the lookup ambiguous whenever its result differs, also when it finds one different member. An ambiguous lookup needs a diagnostic, so this reading gives option 3, which no compiler follows. Under a second reading, the general rule for an independent construct whose meaning changes at the instantiation applies, which needs no diagnostic and gives option 1. Option 2 has no support. Clang and EDG treat only a second result with two members as ambiguous (Q-0230).
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

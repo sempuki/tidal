@@ -35,6 +35,12 @@ case, checked before the array rule.
 When the literal can initialize the array; GCC differs on UTF-8, Clang on size and bound (option 1). Two of three implementations agree on each case, and the
 answer follows the initialization rules LIST-6 and LIST-15.
 
+Kept on 2026-11-03. The review reads the literal that does not fit as a tie, with doubt, as Clang 22 does. The answer keeps option 1, which GCC 16 and EDG 7.0 follow and which the table of REF-P3 states: a string literal of another array type makes a temporary only if it can initialize the array, and has no sequence otherwise. The question stays open under decision 0054, because the review reads with doubt.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on overloading, references, and list initialization (`reports/review/2026-11-03-gap-review-questions-overloading.md`) agrees for the UTF-8 case and for the known bound, and reads the literal that does not fit against the answer, with doubt. A UTF-8 literal suits a `char` array, so the array is chosen. For two arrays of one element type, the known bound wins. The sequence rule checks only the literal's character kind, not the bound, so a literal too long for the array still has the identity, and the pointer candidate ties with it (Clang's result). The doubt is whether a literal that does not fit counts as suitable.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

@@ -37,6 +37,12 @@ valid, and the gap review finds no exemption from diagnosis. Clang
 rejects the guide. GCC and EDG accept it, and the tests record their
 results as overrides.
 
+Kept open on 2026-11-03 under decision 0054, because two of the newest families differ from the answer, and the rule records one differing family. GCC 16 and EDG 7.0 accept the guide.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`) agrees with option 2. Each template parameter of a guide that has no default must be deducible from the guide's parameter types, and the rule is not exempt from diagnosis. GCC's and EDG's acceptance is a defect.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

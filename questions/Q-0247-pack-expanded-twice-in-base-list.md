@@ -1,7 +1,7 @@
 # Q-0247: Is a base list that expands the same pack twice diagnosed before instantiation?
 
 **Status:** provisional
-**Affects:** DEP-37, `tests/templates/dependent-names/base-pack-expanded-twice.cpp`
+**Affects:** DEP-33, DEP-37, `tests/templates/dependent-names/base-pack-expanded-twice.cpp`
 
 ## Context
 
@@ -27,8 +27,14 @@ error for every size of the pack.
 
 ## Provisional answer
 
-Yes; Clang and EDG agree, GCC differs (option 1). Two of three implementations and the gap review agree.
+No diagnostic required; Clang and EDG diagnose, GCC does not (option 2). Only an empty pack makes the base list valid, and DEP-33 needs no diagnostic for such a template (DEP-P6). Each compiler's result lies within the rule.
+
+Changed on 2026-11-03 to option 2. The review reads option 2, GCC 16 follows it, and DEP-P6 gives the same answer: a pack that every valid argument list leaves empty need not be diagnosed (DEP-33). DEP-33 now names the base list, and DEP-37 keeps only the operator function. `base-pack-expanded-twice.cpp` now cites DEP-33 and keeps its override for GCC. The question stays open.
 
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`) reads option 2. A variadic template whose only valid specializations need an empty pack makes the program not valid, with no diagnostic required. A base list that expands the same pack twice is valid only for an empty pack. So an implementation may report the error at the definition, as Clang and EDG do, and need not, as GCC does. A specialization with a non-empty pack needs a diagnostic, and every compiler rejects it. The earlier gap review's reading does not match this rule.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

@@ -46,6 +46,12 @@ appear where deduction can find it, and the gap review reads the rule
 the same way. For the function type, Option 1 follows the result that
 two of three implementations give in each row.
 
+Kept on 2026-11-03. The review reads the partial specialization with doubt. TSP-P3 gives the answer: a partial specialization uses each of its parameters in a form that deduction can find. Clang 22 follows it. The question stays open under decision 0054, because the review reads against part of the answer with doubt.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`) reads against the partial specialization, with doubt, and agrees for the function type. The C++23 text has no rule that each parameter of a partial specialization appears where deduction can find it. The declaration is more specialized than the primary template, and when the class template is used, matching leaves the last parameter without a value, so the specialization never matches (option 2, GCC and EDG). The doubt is the general rule that a template with no valid specialization is not valid, with no diagnostic required, which would allow Clang's rejection. TSP-11's bullet about where each parameter appears has the same status. For the function type, the pack is empty unless explicit arguments fill it, which is Clang's result in all three rows.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

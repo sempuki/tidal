@@ -1,6 +1,6 @@
 # Q-0157: Does a braced list with one class element bind a reference through the element's conversion function?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** ICS-20, REF-6, REF-14, `tests/foundations/conversion-sequences/list-reference-class-element-scalar.cpp`, `tests/foundations/conversion-sequences/list-reference-class-element-class.cpp`, `tests/declarations/initialization/references/braced-list-conversion-temporary.cpp`, `tests/declarations/initialization/references/braced-list-conversion-nonconst.cpp`
 **Parent:** Q-0294, the model of braced lists for references, arrays, and conversion sequences
 
@@ -53,12 +53,18 @@ element's type, and makes a temporary otherwise.
 3. Always bind through the element (GCC, except for a class rvalue
    reference).
 
-## Provisional answer
+## Answer
 
 No; a temporary unless the element has the referenced type or a derived class; Clang and EDG agree, GCC differs (option 2). Clang and EDG agree on every row, and the gap review agrees.
 The condition is the one that every compiler uses for an array element,
 so REF-6 states one condition for every object type.
 
+Settled on 2026-11-03 under decision 0054. The source-reader gap review of the open questions on overloading, references, and list initialization (`reports/review/2026-11-03-gap-review-questions-overloading.md`) supports this answer with no doubt, and REF-P3 gives the same answer: a braced element binds directly only if it is already what the reference names, and one value that converts to the referenced type makes a temporary. GCC 16 still differs. Tidal records GCC 16's result as a deviation, as for the compiler-defect entries Q-0002 and Q-0003, and the tests keep their overrides for GCC 16.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on overloading, references, and list initialization (`reports/review/2026-11-03-gap-review-questions-overloading.md`) agrees with option 2. The reference binds through the one element only when the referenced type is related to the element's type: the same type up to qualifiers, a similar array type, or a base. Otherwise a temporary is made by copy list initialization, and an lvalue reference that is not `const` cannot bind to it. Clang and EDG follow this reading.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

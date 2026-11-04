@@ -801,6 +801,13 @@ template <class U> int pick(Host);                // rejected: the same template
 The results are in `tests/RESULTS.md`. All eight compilers agree on 114
 of 125 tests.
 
+Two questions on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+
+| Question | Principle | Family that still differs |
+|---|---|---|
+| {question}`Q-0199` | TPL-P5 | GCC 16 |
+| {question}`Q-0296` | TPL-P3 | GCC 16 |
+
 The questions of the cluster of EDG differences (cluster 5) on this page
 stay open under decision 0051: {question}`Q-0195`, {question}`Q-0197`,
 and {question}`Q-0198`. On 2026-11-03, EDG 7.0 follows the provisional

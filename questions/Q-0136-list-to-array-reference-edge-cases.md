@@ -45,6 +45,12 @@ No; Clang agrees, GCC and EDG differ (option 1). ICS-17 needs the elements to gi
 the named members. Clang is the only compiler with one consistent
 answer for both cases.
 
+Kept open on 2026-11-03 under decision 0054, because the review finds the empty braces unclear and leans to option 2 there.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on overloading, references, and list initialization (`reports/review/2026-11-03-gap-review-questions-overloading.md`) agrees with option 1 for the designated list: a designator names a class member, and an array has none, so no sequence exists. For empty braces and a reference to an array of unknown bound, the review finds the reference unclear. Read literally, the array rule asks for a sequence from each of no elements, so a sequence exists and beats the array of two elements by the fewer-elements tie-breaker, which is GCC's result (option 2). The temporary that would follow is not valid, but a sequence can exist for a call that later fails.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

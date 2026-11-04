@@ -1,6 +1,6 @@
 # Q-0252: When does an unevaluated operand instantiate a constexpr function template?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** INST-7, `tests/templates/instantiation/function-unevaluated-braced-untaken.cpp`, `tests/templates/instantiation/function-unevaluated-sizeof-constant.cpp`
 
 ## Context
@@ -30,10 +30,16 @@ also inside an unevaluated operand.
 2. A braced initializer instantiates a `constexpr` function only on a branch that is taken (EDG).
 3. Each unevaluated operand instantiates the `constexpr` functions that it names, except `decltype` (GCC).
 
-## Provisional answer
+## Answer
 
 In a braced initializer; EDG and GCC differ on single rows (option 1). Two of three implementations agree on each row, and the gap review supports the braced rows.
 
+Settled on 2026-11-03 under decision 0054. The source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`) supports this answer with no doubt, and INST-P1 gives the same answer: a braced initializer that names a `constexpr` function instantiates it, and `decltype` and `sizeof` otherwise do not. EDG 7.0 still differs on the braced conditional, and GCC 16 on `sizeof`. Tidal records each result as a deviation, as for the compiler-defect entries Q-0002 and Q-0003, and the tests keep their overrides.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`) agrees with option 1. A `constexpr` function is instantiated when an expression that may be constant evaluated names it. That covers potentially evaluated expressions, expressions that must be constant evaluated, and each direct element of a braced list, with their subexpressions, also on a branch that is not taken. A plain operand of `sizeof` is none of these, so GCC's instantiation there is a defect. The parenthesized cast is not a braced list. EDG's result on the braced conditional row is a defect.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

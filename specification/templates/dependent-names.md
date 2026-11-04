@@ -89,6 +89,7 @@ the name of the class, or through the name of the base:
 | `count` | no | DEP-11, DEP-12 |
 | `this->count` | yes, at the {term}`instantiation` | DEP-11 |
 | `Derived::count`, `Base<T>::count` | yes, at the instantiation | DEP-11, DEP-18 |
+| `operator T`, with `T` dependent | yes, at the instantiation | DEP-11 |
 
 An unqualified name that finds a member at the definition keeps that
 member (DEP-14). A qualified name into the current instantiation, and
@@ -163,8 +164,8 @@ definition:
 | an independent construct that is not valid | need not diagnose | DEP-30 |
 | an independent construct whose meaning changes before the instantiation | need not diagnose | DEP-31 |
 | a construct that no argument list makes valid | need not diagnose | DEP-32 |
-| a pack that every valid argument list leaves empty | need not diagnose | DEP-33 |
-| an operator or a base list that only an empty pack makes valid | rejects | DEP-37 |
+| a pack that every valid argument list leaves empty, such as a base list that expands one pack twice | need not diagnose | DEP-33 |
+| an operator function that only an empty pack makes valid | rejects | DEP-37 |
 | a dependent construct that some argument list makes valid | accepts | DEP-28 |
 
 The condition of a `static_assert` in a template is checked only at the
@@ -344,23 +345,27 @@ fundamental type add no namespace.
 
 :::{rule} DEP-11
 :kind: required
-:tests: templates/dependent-names/dependent-base-skipped.cpp templates/dependent-names/dependent-base-qualified.cpp templates/dependent-names/independent-base-searched.cpp templates/dependent-names/current-instantiation-enclosing-base.cpp
+:tests: templates/dependent-names/dependent-base-skipped.cpp templates/dependent-names/dependent-base-qualified.cpp templates/dependent-names/independent-base-searched.cpp templates/dependent-names/current-instantiation-enclosing-base.cpp templates/dependent-names/dependent-base-conversion-function.cpp
 
 Unqualified lookup in a class template does not search a base whose
 type is dependent. It searches a base whose type is not dependent, and
 a base that is the current instantiation of an enclosing class. A
 member of a dependent base is found through `this->`, or through a
 qualified name with the class or the base.
+
+A conversion function name `operator T` whose type `T` is dependent is
+a {term}`dependent name`. Its lookup waits for the instantiation, and
+then also searches the dependent bases ({question}`Q-0248`).
 :::
 
 :::{rule} DEP-12
 :kind: reject
-:tests: templates/dependent-names/dependent-base-not-found.cpp templates/dependent-names/dependent-base-type-not-found.cpp templates/dependent-names/independent-error-unused-base-member.cpp templates/dependent-names/dependent-base-conversion-function.cpp
+:tests: templates/dependent-names/dependent-base-not-found.cpp templates/dependent-names/dependent-base-type-not-found.cpp templates/dependent-names/independent-error-unused-base-member.cpp templates/dependent-names/dependent-base-conversion-function-independent.cpp
 
 An unqualified name that only a dependent base declares is not found
 (DEP-11). The program must not use such a name as a value or as a type.
-The rule covers a conversion function named as `operator T`
-({question}`Q-0248`).
+A conversion function name whose type is not dependent, such as
+`operator int`, is not found either.
 :::
 
 :::{rule} DEP-13
@@ -599,18 +604,12 @@ breaks the grammar.
 
 :::{rule} DEP-37
 :kind: reject
-:tests: templates/dependent-names/operator-pack-never-fits.cpp templates/dependent-names/base-pack-expanded-twice.cpp
+:tests: templates/dependent-names/operator-pack-never-fits.cpp
 
-A template must not have these constructs, which only an empty pack
-makes valid:
-
-- an operator function whose parameters leave no room for an element
-  of its parameter pack,
-- a base list that expands the same pack twice ({rule}`PACK-14`,
-  {question}`Q-0247`).
-
-The implementation rejects such a template also when no specialization
-is made. DEP-33 gives the general case.
+A template must not declare an operator function whose parameters
+leave no room for an element of its parameter pack, which only an
+empty pack makes valid. The implementation rejects such a template
+also when no specialization is made. DEP-33 gives the general case.
 :::
 
 ## Implementation Requirements
@@ -660,13 +659,15 @@ template that breaks the rule. A `static_assert` does not count
 
 :::{rule} DEP-33
 :kind: no-diagnostic
-:tests: templates/dependent-names/pack-always-empty.cpp templates/dependent-names/pack-always-empty-function-type.cpp
+:tests: templates/dependent-names/pack-always-empty.cpp templates/dependent-names/pack-always-empty-function-type.cpp templates/dependent-names/base-pack-expanded-twice.cpp
 
 A variadic template must have a valid specialization in which the pack
 has an element. An implementation need not diagnose a template whose
-every valid specialization has an empty pack. {rule}`PACK-9` gives the
-result of an expansion of an empty pack. DEP-37 names the cases that
-the implementation rejects.
+every valid specialization has an empty pack. A base list that expands
+the same pack twice is such a case, because one element names a base
+twice ({rule}`PACK-14`, {question}`Q-0247`). {rule}`PACK-9` gives the
+result of an expansion of an empty pack. DEP-37 names the case that the
+implementation rejects.
 :::
 
 :::{rule} DEP-35
@@ -786,8 +787,19 @@ template <class... T> int count() {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 100
-of 122 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 101
+of 123 tests.
+
+Six questions on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+
+| Question | Principle | Family that still differs |
+|---|---|---|
+| {question}`Q-0223` | DEP-P6 | none; the rule needs no diagnostic |
+| {question}`Q-0228` | DEP-P4, DEP-P6 | none; the rule needs no diagnostic |
+| {question}`Q-0230` | DEP-P3 | GCC 16 |
+| {question}`Q-0249` | DEP-P1, DEP-P6 | none; the rule needs no diagnostic |
+| {question}`Q-0250` | DEP-P6 | none; the rule needs no diagnostic |
+| {question}`Q-0354` | DEP-P2 | EDG 7.0 |
 
 The questions of the cluster of EDG differences (cluster 5) on this page
 settled on 2026-11-03 under decision 0054. For each, the source-reader
@@ -902,8 +914,10 @@ bullets below say so.
   specialization. The result holds for `const` and `constexpr` members,
   with or without parentheses. The review predicts the current
   instantiation.
-- DEP-12: Clang finds a conversion function `operator T` of a dependent
-  base without `this->`. GCC and EDG do not ({question}`Q-0248`).
+- DEP-11: Clang finds a conversion function `operator T` of a dependent
+  base without `this->`, as DEP-11 does. GCC and EDG do not
+  ({question}`Q-0248`). Every compiler rejects `operator int` without
+  `this->` when only a dependent base declares it (DEP-12).
 - DEP-31: every compiler rejects `sizeof` of a class that is
   incomplete at the definition, even if the class is complete before
   the use. An explicit specialization declared after an instantiation
@@ -921,11 +935,12 @@ bullets below say so.
   bound, the same call makes Clang and GCC reject the array, and EDG
   accepts it.
 - DEP-32 and DEP-33: every compiler accepts the templates, and no
-  compiler diagnoses them.
+  compiler diagnoses them. For a base list that expands a pack twice,
+  Clang and EDG reject the template at the definition, and GCC accepts
+  it until the class is instantiated. DEP-33 allows both
+  ({question}`Q-0247`).
 - DEP-37: every compiler rejects an operator template whose pack must
-  be empty. Clang and EDG reject a base list that expands a pack twice,
-  and GCC accepts it until the class is instantiated
-  ({question}`Q-0247`). An operator template whose pack can have one
+  be empty. An operator template whose pack can have one
   element, such as an assignment operator with only a pack, is valid,
   and every compiler accepts it.
 - DEP-38: a better function that only another translation unit

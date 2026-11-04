@@ -33,6 +33,12 @@ override for GCC, and `default-friend-declaration.cpp`.
 No; Clang and EDG reject, GCC accepts (option 1). Clang and EDG agree, and the rule then matches the rule for
 friend function template declarations, which all compilers apply.
 
+Kept open on 2026-11-03 under decision 0054, because no principle on the page gives the answer. TPL-P3 lets the defaults of several declarations add up and does not name friend declarations, and TPL-37 is an exception to it.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`) agrees with option 1. A default template argument in a friend declaration of a class template is forbidden outright. For a friend function template a default is allowed only on a definition that is the only declaration. The rule is not exempt from diagnosis, so GCC's acceptance is a defect.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

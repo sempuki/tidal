@@ -1,6 +1,6 @@
 # Q-0310: Which point of instantiation does a constexpr function specialization use outside constant evaluation?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** INST-31, INST-32, LAM-15, `tests/templates/instantiation/function-point-constexpr-later.cpp`
 
 ## Context
@@ -37,11 +37,17 @@ The test above, and probes with a generic lambda at namespace scope.
 3. A use outside constant evaluation can see the declarations up to the
    end of the unit (GCC).
 
-## Provisional answer
+## Answer
 
 Either point (INST-32); GCC takes the end of the unit, Clang and EDG the first point (option 1). INST-32 already covers points that differ, and the
 implementations differ only in which point they take.
 
+Settled on 2026-11-03 under decision 0054. The source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`) supports this answer with no doubt, and INST-P4 gives the same answer: a function specialization has a point after the use and one at the end of the unit, and all points must give the same meaning. No newest family differs, because the answer is a no-diagnostic rule that every outcome fits.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`) agrees with option 1. A function template specialization has a point right after the use and another at the end of the unit, and two points that give different meanings make the program not valid with no diagnostic required. No special point exists for a `constexpr` function used outside constant evaluation, so each result is allowed.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

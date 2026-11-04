@@ -1,6 +1,6 @@
 # Q-0043: Does parenthesized aggregate initialization allow brace elision?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** LIST-9, `tests/declarations/initialization/list/paren-no-brace-elision.cpp`
 
 ## Context
@@ -12,8 +12,15 @@
 1. No brace elision in parentheses. EDG's acceptance is a possible defect.
 2. Brace elision applies in parentheses, as EDG does.
 
-## Provisional answer
+## Answer
 
 No; parentheses allow no brace elision (option 1). Clang and GCC, in both versions, reject the initialization.
 
+Settled on 2026-11-03 under decision 0054. The source-reader gap review of the open questions on overloading, references, and list initialization (`reports/review/2026-11-03-gap-review-questions-overloading.md`) supports this answer with no doubt, and LIST-P2 gives the same answer: parentheses give one value per part and no elision. EDG 7.0 still differs. Tidal records EDG 7.0's result as a deviation, as for the compiler-defect entries Q-0002 and Q-0003, and the tests keep their overrides for EDG 7.0.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on overloading, references, and list initialization (`reports/review/2026-11-03-gap-review-questions-overloading.md`) agrees with option 1. Each element of a parenthesized aggregate initialization takes exactly one value, and braces are never left out there. An inner aggregate cannot take one integer, so the program is not valid.
+

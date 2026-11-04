@@ -1,6 +1,6 @@
 # Q-0296: Must an implementation reject a later declaration whose new default comes before a parameter that has no default in any declaration?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** TPL-14, `tests/templates/declarations/defaults-merge-gap.cpp`
 
 ## Context
@@ -30,11 +30,17 @@ whether TPL-14 counts the defaults of earlier declarations.
    the earlier declarations, and the program is rejected (Clang, EDG).
 2. TPL-14 counts only the defaults written on one declaration (GCC).
 
-## Provisional answer
+## Answer
 
 Yes, TPL-14 counts the defaults of all declarations; Clang and EDG agree, GCC differs (option 1). Clang and EDG agree, and TPL-15 already merges the defaults
 of all declarations.
 
+Settled on 2026-11-03 under decision 0054. The source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`) supports this answer with no doubt, and TPL-P3 gives the same answer: the defaults of all declarations add up, and in a class template only a trailing parameter can be left out. GCC 16 still differs. Tidal records GCC 16's result as a deviation, as for the compiler-defect entries Q-0002 and Q-0003, and the tests keep their overrides for GCC 16.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`) agrees with option 1. The defaults of all reachable earlier declarations merge, as default function arguments do, and each parameter after one with a default must have a default. With the merge, the second parameter has no default in any declaration. The rule is not exempt from diagnosis.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

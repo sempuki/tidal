@@ -447,6 +447,17 @@ Otherwise the specializations are different entities, and two class
 specializations are different types.
 :::
 
+:::{rule} TARG-22
+:kind: required
+:tests: templates/arguments/same-specialization-alias-template.cpp templates/arguments/same-specialization-alias-template-explicit.cpp
+
+An alias template is a template of its own, also when it passes its
+parameters, unchanged and in order, to a class template. As a template
+argument, such an alias template and the class template are different
+templates, so `Use<List>` and `Use<ListAlias>` are different types
+({question}`Q-0168`).
+:::
+
 ### Access in template arguments
 
 :::{rule} TARG-26
@@ -457,18 +468,6 @@ A name in a template argument must be accessible where the argument is
 written ({rule}`ACC-2`). So a class can name its own private member in
 an argument, and other code cannot. A template gets no access to the
 private members of a class that it receives as an argument.
-:::
-
-## Implementation Requirements
-
-:::{rule} TARG-22
-:kind: unspecified
-:tests: templates/arguments/same-specialization-alias-template.cpp templates/arguments/same-specialization-alias-template-explicit.cpp
-
-An alias template can pass its parameters, unchanged and in order, to a
-class template. It is unspecified whether such an alias template and
-the class template are the same template argument
-({question}`Q-0168`).
 :::
 
 ## Examples
@@ -562,9 +561,9 @@ the eight {ref}`baseline compilers <baseline-compilers>`. The gap review of the 
 probes for TARG-23 to TARG-27 and for the additions to the older rules.
 
 - TARG-22: Clang treats an alias template that passes its parameters
-  through as a template of its own. GCC and EDG treat it as the class
-  template, so `Use<List>` and `Use<ListAlias>` are one type
-  ({question}`Q-0168`).
+  through as a template of its own, as TARG-22 does. GCC and EDG treat
+  it as the class template, so `Use<List>` and `Use<ListAlias>` are one
+  type ({question}`Q-0168`).
 - TARG-17: Clang 18 rejects a template template argument with more
   parameters than the parameter, even when the extra parameters have
   defaults. Clang 22, GCC, and EDG accept it ({question}`Q-0169`).

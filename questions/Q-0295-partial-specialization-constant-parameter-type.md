@@ -37,6 +37,12 @@ every compiler fails the pair when the types differ
 Yes, as in a function template (DED-12); GCC and EDG agree, Clang differs (option 1). GCC and EDG agree, and option 1 gives partial specializations
 the matching rule of function templates (DED-12).
 
+Kept open on 2026-11-03 under decision 0054, because the review reads the answer with doubt.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`) agrees with option 1, with doubt. A partial specialization matches by deduction, which fails when a constant has a type other than that of the matching parameter. When the primary template's parameter has a placeholder type, the text does not say clearly which type the rule compares with. The natural reading takes the argument's own type, which gives option 1. For `const auto*` against an `int*`, the text does not settle whether the added `const` is a mismatch.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

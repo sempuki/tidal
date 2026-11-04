@@ -1,6 +1,6 @@
 # Q-0223: Does an implementation diagnose an independent error in a template that is never instantiated?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** DEP-30, `tests/templates/dependent-names/independent-error-unused-conversion.cpp`, `tests/templates/dependent-names/independent-error-unused-call.cpp`
 
 ## Context
@@ -33,12 +33,18 @@ no diagnostic.
 2. The implementation must diagnose the error at the definition. GCC is
    wrong.
 
-## Provisional answer
+## Answer
 
 No diagnostic required; Clang and EDG diagnose, GCC does not (option 1). DEP-30 is a `no-diagnostic` rule, so each compiler's result
 lies within the rule. A program that relies on GCC's result is not
 valid.
 
+Settled on 2026-11-03 under decision 0054. The source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`) supports this answer with no doubt, and DEP-P6 gives the same answer: an independent construct that is not valid in a template that is not instantiated need not be diagnosed. No newest family differs, because the answer is a no-diagnostic rule that every outcome fits.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`) agrees with option 1. A construct that depends on no template parameter and would make an instantiation right after the definition invalid makes the program not valid, with no diagnostic required. An implementation may also check a template before any instantiation. Both results are allowed.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

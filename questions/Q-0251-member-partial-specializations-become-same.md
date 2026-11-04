@@ -31,6 +31,12 @@ instantiation is not valid.
 
 Yes; Clang only, GCC and EDG accept (option 1). INST-6 requires each declaration that an instantiation makes to be valid, and a partial specialization declared twice in one class is not. The gap review agrees with Clang. GCC and EDG accept the class.
 
+Kept open on 2026-11-03 under decision 0054, because two of the newest families differ from the answer, and the rule records one differing family. GCC 16 and EDG 7.0 accept the class.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`) agrees with option 1. An instantiated declaration counts as a definition when the template's declaration is one. Two member partial specializations that both have a body and become one partial specialization are two definitions of one entity. GCC's and EDG's acceptance is a defect.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

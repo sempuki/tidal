@@ -1,6 +1,6 @@
 # Q-0239: Does a class template that inherits constructors get the deduction guides of its base?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** CTAD-16, CTAD-19, `tests/templates/class-template-deduction/inherited-constructors.cpp`, `inherited-user-guide.cpp`, `tie-own-constructor-types-differ.cpp`
 
 ## Context
@@ -35,13 +35,19 @@ constructor"), and the inventory items E1 to E4 of
    constructors (GCC, EDG, and the inventory).
 2. The class gets no guides from its base (Clang).
 
-## Provisional answer
+## Answer
 
 Yes; GCC and EDG agree, Clang differs (option 1). Two of three implementations agree, and the source reader's
 inventory lists the behavior as part of the language. The tie-breaker
 tests of CTAD-19 give the same results on Clang, because Clang has no
 inherited guide to compare.
 
+Settled on 2026-11-03 under decision 0054. The source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`) supports this answer with no doubt, and CTAD-P2 gives the same answer: a class template that inherits constructors gets the guides of its base. Clang 22 still differs. Tidal records Clang 22's result as a deviation, as for the compiler-defect entries Q-0002 and Q-0003, and the tests keep their overrides for Clang 22.
+
 ## Opinions
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`) agrees with option 1. A class template that inherits constructors from a direct base gets guides built from those of an alias template whose target is the base, with the results mapped back to the derived class. A user guide of the base takes part through the alias. The tie-breaker that prefers the class's own guides applies only when the parameter types match, so a pair whose types differ stays ambiguous, as GCC and EDG find. Clang does not implement this part of C++23.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
