@@ -35,6 +35,8 @@ No; GCC and EDG agree, Clang differs (option 1). Two of three implementations ag
 
 Kept on 2026-11-03. The review reads option 2, which only Clang follows. GCC 16 and EDG 7.0 accept the conversion, and DCL-P4 does not say why `const` must be added at the higher levels, so no principle on the page decides whether a dropped bound counts. Tidal keeps option 1 until the maintainer decides. The question is in row 4 of `documentation/decisions/pending.md`, and it stays open under decision 0054, because the review reads against the answer.
 
+Checked on 2026-11-04 under the principle test of the style guide (section 3, item PQ of decision 0055). DCL-P4 fails step 3, because it does not say why `const` must be added at the higher levels. Item PQ wrote no principle for this case. The model that would explain the `const` levels, that no converted pointer may let a program store an object of the wrong type, gives option 2, which the review reads and only Clang follows. A principle for option 1 would bend that model to fit the answer. The question stays open and waits on the maintainer in row 4 of `documentation/decisions/pending.md`.
+
 ## Opinions
 
 ### Gap review, 2026-11-03

@@ -37,6 +37,8 @@ three agree, treats the deallocation function as used.
 
 Kept open on 2026-11-03 under decision 0054, because no principle on the page gives the answer. NEW-P3 says which deallocation function pairs with an allocation after a throw, and no principle says that the `new` expression uses that function when nothing throws. GCC 16 is the only newest family that differs.
 
+Checked on 2026-11-04 under the principle test of the style guide (section 3, item PQ of decision 0055). NEW-P3 failed step 3, because it named the paired deallocation function only for a throw. NEW-P3 now says that the `new` expression uses that function also when the initialization cannot throw, so the function must be accessible and not deleted. The existing tests check the case. Under decision 0055, the question does not settle on a principle that phase 8 wrote. The question stays provisional until a reader or a reviewer uses NEW-P3.
+
 ## Opinions
 
 ### Gap review, 2026-11-03

@@ -929,6 +929,9 @@ bound, for the reasons in Q-0188.
   ({rule}`PRIM-22`). GCC and EDG follow the rules. No matrix target has
   three floating-point types of one rank, so no rule orders two targets
   that both have the rank of the source.
+  Only the extended floating-point types have equal ranks, and Clang has
+  none of them. So every test of ICS-35 and ICS-44 needs an override for
+  Clang.
 - ICS-2: Clang gives a `long long` bit-field of width 3 a promotion to
   `int`. GCC and EDG give it a conversion, so `int` and `long` tie
   ({question}`Q-0134`).

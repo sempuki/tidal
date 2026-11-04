@@ -38,6 +38,8 @@ results that all accept are values of type `bool`.
 
 Kept open on 2026-11-03 under decision 0054, because no principle on the page states the case. DCMP-P2 describes which rewritten and reversed candidates an expression tries, and does not give the result type that a chosen `==` must have. GCC 16 is the one newest family that differs.
 
+Checked on 2026-11-04 under the principle test of the style guide (section 3, item PQ of decision 0055). DCMP-P2 failed step 3 of the test, because the model did not give the result type of a chosen `==`. Item PQ widened DCMP-P2. The rewrite takes the result as a `bool` value, so the chosen `==` must return the type `bool`. A cv-qualifier makes no difference, and a reference to `bool` is rejected. DCMP-12 and its tests `eq-cv-bool-result.cpp`, `eq-reference-to-bool-result.cpp`, and `ne-rewrite-reference-to-bool-result.cpp` check each part. Under decision 0055, the question does not settle on a principle that phase 8 wrote. The question stays provisional until a reader or a reviewer uses DCMP-P2.
+
 ## Opinions
 
 ### Gap review, 2026-11-03

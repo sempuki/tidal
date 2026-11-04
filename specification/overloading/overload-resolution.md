@@ -68,6 +68,12 @@ never candidates:
   constructor, in a call with one argument (OVL-17),
 - a defaulted move constructor or move assignment operator that is
   deleted (OVL-42).
+
+An `explicit` conversion function serves only direct initialization
+({principle}`CVF-P2`). In a direct initialization of a class, the
+function can make the temporary for the parameter of a copy or move
+constructor (OVL-40). Copy-list-initialization is a form of copy
+initialization, so the function cannot make that temporary there.
 :::
 
 :::{principle} OVL-P3
@@ -186,6 +192,12 @@ the table, these letters stand for sets of types:
 | `%=`, `&=`, `^=`, `\|=`, `<<=`, `>>=` | `(VJ&, I)` for every `J` | the left operand | {doc}`/expressions/assignment` |
 | `?:` | {rule}`COND-11` | | {doc}`/expressions/conditional` |
 | `,`, unary `&`, `->` | none (OVL-12) | | |
+
+A non-member function that the program declares with the parameter
+types of a built-in candidate replaces that candidate, also when the
+function takes part only as a rewritten candidate (OVL-10). A reference
+parameter differs from its referred type, so `operator==(const E&, const E&)`
+for an enumeration `E` leaves the built-in `(E, E)` in place.
 
 The left operand of a built-in `=` gets no user-defined conversion
 ({rule}`ICS-10`). The operand of a built-in `++` or `--`, and the left

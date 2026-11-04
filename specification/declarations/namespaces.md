@@ -54,7 +54,7 @@ stronger of the two.
 | | Using declaration | Using directive |
 |---|---|---|
 | What the form is | A declaration in the current scope | Weaker. The directive only makes the members visible to lookup. |
-| Another declaration in the current scope | Conflicts with the other declaration, as any declaration does | Hides the members |
+| Another declaration in the current scope | Conflicts with the other declaration, as any declaration does. A second using declaration of the same member says the same thing again, so it does not conflict, in a block as in a namespace. | Hides the members |
 | Other effects | Carries the overloads that the using declaration saw | Two directives can make a name ambiguous. |
 
 Neither form belongs in a class.

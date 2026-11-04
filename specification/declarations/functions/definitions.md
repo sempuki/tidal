@@ -67,8 +67,11 @@ accepts carry the program's arguments.
 :::{principle} FN-P5
 :rules: FN-5 FN-11
 
-Inside every function body, `__func__` names a string that holds the
-function's name, in a form the implementation chooses.
+Each function body declares `__func__` at its start, as a local
+variable. In the body, `__func__` names a string that holds the
+function's name, in a form the implementation chooses. Outside a
+function body, nothing declares `__func__`, so the implementation
+rejects a use there.
 :::
 
 ## Syntax

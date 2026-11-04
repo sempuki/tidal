@@ -94,6 +94,20 @@ The branch that runs in constant evaluation is a place where a
 is already a constant evaluation. The form has no condition, because the
 mode is the condition. The branches of the form are blocks, so that the
 form is never mistaken for the ordinary one.
+
+An initializer runs in constant evaluation only where the language
+tries the initializer as a constant. These are such places:
+
+- the places of {principle}`CE-P4`,
+- a namespace-scope, `static`, or `thread_local` variable whose
+  initializer is a constant expression,
+- a local `const` integer or enumeration variable that is not
+  `volatile`.
+
+Every other initializer runs at run time. The result of a constant evaluation
+cannot refer to an automatic temporary ({principle}`CE-P2`), so the
+initializer of a local reference that binds a temporary also runs at
+run time.
 :::
 
 ## Syntax
@@ -452,11 +466,7 @@ void conditions() {
 All rules in this page are `required` or `reject`. All eight compilers
 agree on 77 of 78 tests. The results are in `tests/RESULTS.md`.
 
-One question on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on classes and statements (`reports/review/2026-11-03-gap-review-questions-classes-statements.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
-
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0329` | {principle}`CE-P2` | GCC 16 |
+{question}`Q-0329` is provisional. A gap review supports its answer with no doubt, and CE-P2 does not give the answer under the test of the style guide (section 3). The test keeps its override for GCC 16.
 
 - IF-25: Clang and GCC take the then branch of `if consteval` in the
   initializer of a local `const int` or `const` enumeration variable.

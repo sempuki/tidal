@@ -21,6 +21,8 @@ meaning of the program.
 
 Kept open on 2026-11-03 under decision 0054, because no principle on the page states the case. UNI-P4 says that an unnamed bit-field only reserves bits that no operation reads or writes, which gives a qualifier no effect, and does not say whether the qualifier is allowed. GCC 16 is the one newest family that differs.
 
+Checked on 2026-11-04 under the principle test of the style guide (section 3, item PQ of decision 0055). UNI-P4 failed step 3, because it gave the qualifier no effect and did not say whether the qualifier is allowed, so both options fit. UNI-P4 now says that an unnamed bit-field takes no cv-qualifier and that a qualifier on it is rejected. The existing test checks the case. Under decision 0055, the question does not settle on a principle that phase 8 wrote. The question stays provisional until a reader or a reviewer uses UNI-P4.
+
 ## Opinions
 
 ### Gap review, 2026-11-03

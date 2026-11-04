@@ -55,13 +55,21 @@ object.
 A non-static member function acts on an object. In the function, `this`
 has the type of that object with the function's own cv-qualifiers. The
 ref-qualifier of the function selects the function by the {term}`value category`
-of the object.
+of the object. A function with no ref-qualifier takes an object of
+either category, so the function would compete with each qualified
+overload. Overloads with the same parameters therefore all have
+ref-qualifiers, or none of them has one.
+
 A member function can instead write that object out as its first
 parameter. The object is then an ordinary argument, so the function:
 
 - has no `this`,
 - cannot be static or virtual or qualified,
 - has an ordinary function pointer as its address.
+
+The object of each call initializes that parameter, so a default
+argument for the parameter could never take effect, and the parameter
+cannot have one.
 
 The call and subscript operators need no object at all, so they can be
 static.
@@ -235,7 +243,7 @@ lvalue selects `&`, and a call on an rvalue selects `&&`.
 
 :::{rule} CLS-26
 :kind: reject
-:tests: classes/members/ref-qualified-mixed.cpp classes/members/ref-qualified-mixed-const.cpp
+:tests: classes/members/ref-qualified-mixed.cpp classes/members/ref-qualified-mixed-const.cpp classes/members/ref-qualified-mixed-call.cpp
 
 The overloads of a member function that CLS-6 describes must all have
 ref-qualifiers, or none, if they have the same parameters
@@ -607,8 +615,8 @@ struct Text {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 135
-of 146 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 136
+of 147 tests.
 
 - CLS-23: Clang rejects an in-class initializer for a `static const
   volatile` integer member. GCC and EDG accept it ({question}`Q-0080`).
@@ -617,6 +625,8 @@ of 146 tests.
   translation unit. The linker reports the missing definition.
 - CLS-26: GCC 16 accepts mixed ref-qualified overloads and reports
   ambiguity only at a call ({question}`Q-0027`).
+  Every compiler rejects a call of the two overloads
+  (`ref-qualified-mixed-call.cpp`).
 - CLS-9: Clang and GCC accept an anonymous struct member as an
   extension, and reject the member only under `-pedantic-errors`.
 - CLS-19, CLS-29, CLS-32: no core-language check gives a yes or no for

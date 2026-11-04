@@ -36,6 +36,20 @@ context decides which types of the two templates take part:
 | an {term}`explicit specialization`, {term}`explicit instantiation`, or friend declaration ({rule}`DED-32`) | the function types | ORD-9 |
 | a placement deallocation function template ({rule}`DED-39`) | the function types | ORD-9 |
 | {term}`partial specializations <partial specialization>` ({rule}`TSP-15`, {rule}`TSP-11`) | one parameter for each, of the class with its pattern | ORD-14 |
+
+The object parameter of a member stands for the way the member binds
+its object in a call ({principle}`ICS-P3`). So the parameter is a
+reference to the class, of this kind:
+
+| Member | Object parameter |
+|---|---|
+| with the ref-qualifier `&&` | an rvalue reference |
+| with no ref-qualifier, against a first parameter that is an rvalue reference | an rvalue reference |
+| every other member | an lvalue reference |
+
+A member with no ref-qualifier binds an lvalue and an rvalue alike. Its
+object parameter takes the kind of the other template's parameter, so
+the kind of reference does not decide the order for it.
 :::
 
 :::{principle} ORD-P2
@@ -178,7 +192,7 @@ ellipsis, take no part.
 
 :::{rule} ORD-6
 :kind: required
-:tests: templates/ordering/member-object.cpp templates/ordering/member-object-rvalue.cpp templates/ordering/reversed-member-object.cpp
+:tests: templates/ordering/member-object.cpp templates/ordering/member-object-rvalue.cpp templates/ordering/reversed-member-object.cpp templates/ordering/swapped-member-candidates-ordered.cpp
 
 One template can be a member with an {term}`implicit object parameter` while
 the other is not. The member then gets a first parameter of type
@@ -193,7 +207,7 @@ reference ({question}`Q-0214`):
 
 :::{rule} ORD-7
 :kind: required
-:tests: templates/ordering/reversed-candidate.cpp templates/ordering/reversed-member-object.cpp
+:tests: templates/ordering/reversed-candidate.cpp templates/ordering/reversed-member-object.cpp templates/ordering/swapped-candidates-ordered.cpp templates/ordering/swapped-member-candidates-ordered.cpp
 
 For a swapped rewritten candidate ({rule}`OVL-13`), the order of its
 two parameters is reversed before the comparison ({question}`Q-0211`).
@@ -355,8 +369,8 @@ Pair<int*, int*> c;                                   // C, more specialized tha
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 31
-of 42 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 33
+of 44 tests.
 
 Two questions on this page settled on 2026-11-03 under decision 0054.
 For each, a source-reader gap review supports the answer with no doubt,
@@ -414,6 +428,10 @@ cell of the grids below.
 - ORD-7: for a member used as a swapped candidate, Clang adds the
   object parameter before the reversal and chooses the member. GCC and
   EDG choose the non-member ({question}`Q-0218`).
+  When both candidates are swapped, the reversal keeps their order, and
+  every compiler chooses the more specialized one
+  (`swapped-candidates-ordered.cpp`,
+  `swapped-member-candidates-ordered.cpp`).
 - ORD-10, ORD-11: every compiler finds the call of
   `reference-pairs-one-way.cpp` ambiguous. The reference tie-breakers
   therefore act inside each pair, as the gap review describes (item

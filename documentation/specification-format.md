@@ -45,6 +45,13 @@ nothing about conformance. The test checks only translation and
 linking, because the rule allows any result at run time (decision
 0047).
 
+No class requires a diagnostic when the units are linked (TR-4). A
+program that fails to link breaks a `no-diagnostic` rule, such as
+LNK-7 for a used function with no definition. So a test that expects
+`link-fail` from some compiler cites such a rule, and
+`tools/check_specification.py` fails when it does not. The test can
+also cite a `required` rule that explains the break.
+
 Classifying behavior is the hardest step. Each rule in the last four classes
 needs a sentence in the section's "Evidence" notes explaining why the
 rule was put in that class.
@@ -65,6 +72,38 @@ clean-room writer read for the page. Each entry is an input ID from
 `tools/inputs.json`, such as `clang-sema-declcxx`, and
 `inputs/MANIFEST.md` gives the file and revision for each ID. A page
 written without such sources has no `Inputs:` line.
+
+## Thin evidence
+
+A rule rests on thin evidence when one of these holds:
+
+- The rule's `:tests:` line names one test.
+- Each test that the rule names has a `tidal-expect-<x>` override for a
+  newest compiler.
+
+The newest compilers are the baseline compilers of the newest version
+in each family: Clang 22 and the host Clang, GCC 16 and the host GCC,
+and EDG 7.0 for both targets. A family key, such as
+`tidal-expect-gcc`, applies to them. An override for an older version,
+such as `gcc-14` or `clang-18`, does not count, and neither does an
+override for a report compiler, such as `gcc-16-o2`. The newest
+compilers agree on such a test.
+
+`tools/check_specification.py` warns for each rule with thin evidence.
+The check fails for such a rule when the working tree adds the rule,
+or changes its class, relative to HEAD. So the change that adds or
+reclassifies a rule also adds a second test, and a test that the newest
+compilers agree on, with no override for any of them.
+
+The Evidence segment says why each rule that the check warns for keeps
+thin evidence:
+
+- For an `impl-defined`, `unspecified`, `recommended`, `no-diagnostic`,
+  or `conditionally-supported` rule, each override records a result
+  that the class allows.
+- For a `required` or `reject` rule, the probes found no program that
+  the newest compilers agree on. The note names the forms that the
+  probes tried.
 
 ## Examples
 

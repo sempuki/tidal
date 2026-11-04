@@ -108,8 +108,17 @@ the argument type at that place:
 | `Hold<TT>`, with `Hold` a class template and `TT` a template template parameter | `TT` |
 | `void (*)(A...)` and `List<H, A...>`, with `A` a pack | each element of `A`, from the remaining parameters or arguments |
 
-The forms nest, so `Box<T*>&` gives `T` from `const Box<int*>`. Some
-positions give no value, because no single argument determines them:
+The forms nest, so `Box<T*>&` gives `T` from `const Box<int*>`.
+
+A value keeps the type it has at its place. A constant parameter
+declared with `auto` takes that type:
+
+| Place of the value | Type of an `auto` parameter |
+|---|---|
+| an array bound | the type of a `sizeof` expression, because a bound counts elements |
+| a constant argument of `Box<N>` | the type of the parameter of `Box` |
+
+Some positions give no value, because no single argument determines them:
 
 | Position | Example | Why |
 |---|---|---|
@@ -285,7 +294,7 @@ DED-15 allow.
 
 :::{rule} DED-11
 :kind: required
-:tests: templates/deduction/match-constant-parameters.cpp templates/deduction/match-bound-type.cpp templates/deduction/match-noexcept.cpp
+:tests: templates/deduction/match-constant-parameters.cpp templates/deduction/match-bound-type.cpp templates/deduction/match-argument-type.cpp templates/deduction/match-noexcept.cpp
 
 A constant template parameter takes its value from these positions:
 
@@ -722,8 +731,8 @@ all<long>(1, 'c');              // Ts = long, char
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 113
-of 122 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 114
+of 123 tests.
 
 Three questions on this page settled on 2026-11-03 under decision 0054.
 For each, a source-reader gap review supports the answer with no doubt,

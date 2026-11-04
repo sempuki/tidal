@@ -48,6 +48,8 @@ stays provisional.
 
 Kept open on 2026-11-03 under decision 0054, because no principle gives the answer. UNI-P6 does not name the attribute, and only UNI-15 does.
 
+Checked on 2026-11-04 under the principle test of the style guide (section 3, item PQ of decision 0055). UNI-P6 failed step 3, because it did not name the attribute, and only UNI-15 did. UNI-P6 now lists the conditions on each pair of the common initial sequence, with both or neither member carrying `[[no_unique_address]]` among them. The grid `layout-compatible.json` checks the conditions through the builtin queries. The queries still differ, as the provisional answer says. Under decision 0055, the question does not settle on a principle that phase 8 wrote. The question stays provisional until a reader or a reviewer uses UNI-P6.
+
 ## Opinions
 
 ### Gap review, 2026-11-03

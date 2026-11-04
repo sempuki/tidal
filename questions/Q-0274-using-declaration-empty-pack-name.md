@@ -37,6 +37,8 @@ rule as one that requires no diagnostic.
 
 Kept open on 2026-11-03 under decision 0054, because no principle on the page gives the answer. PACK-30 is an exception of PACK-P2, and no principle on the packs page gives the missing diagnostic.
 
+Checked on 2026-11-04 under the principle test of the style guide (section 3, item PQ of decision 0055). PACK-P2 failed the test, because PACK-P2 named PACK-30 in its `:exceptions:` line. Item PQ widened PACK-P2. A name that finds an expanded using-declarator at the definition is bound to it ({principle}`DEP-P1`), and an empty pack leaves the name with nothing to mean. As for other changes of meaning between the definition and the instantiation ({principle}`DEP-P6`), the implementation need not diagnose the error. PACK-30 moved from the `:exceptions:` line to the `:rules:` line. Under decision 0055, the question does not settle on a principle that phase 8 wrote. The question stays provisional until a reader or a reviewer uses PACK-P2.
+
 ## Opinions
 
 ### Gap review, 2026-11-03

@@ -64,8 +64,10 @@ safety:
 
 Each reverse direction would claim something the pointer cannot promise,
 so no reverse direction is implicit. A null pointer comes only from
-`nullptr` or a literal zero, because any other value with the value zero
-is a number, and a number is not a pointer. For the same reason a
+`nullptr` or an integer literal with the value zero, such as `0`, `0L`,
+or `(0)`. Any other zero is a number, and a number is not a pointer.
+The character literal `'\0'`, the literal `false`, and an integer
+variable that holds zero are such numbers. For the same reason a
 pointer is not a number, so no pointer converts implicitly to an
 integer. A base that is virtual, ambiguous, or not accessible gives no
 single path, so a conversion through such a base is not implicit.

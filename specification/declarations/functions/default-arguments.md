@@ -37,6 +37,11 @@ exist only inside a call:
 - other parameters,
 - `this`,
 - the locals of an enclosing function.
+
+A parameter or a local also has a type, which the declaration already
+knows. So an operand that is not evaluated, such as the operand of
+`sizeof`, can name a parameter or a local. `this` is not allowed
+anywhere in a default argument, also in such an operand.
 :::
 
 :::{principle} DEFARG-P2
@@ -44,7 +49,11 @@ exist only inside a call:
 
 Default arguments belong to the declarations of a function, and the
 declarations in one scope add them up. Each later declaration can add
-defaults, and none can repeat one. A template is the exception, because
+defaults, and none can repeat one. A using declaration brings the
+function into another scope with no defaults of its own. A call through
+the using declaration uses the defaults that the function's scope has
+at the call, also those that a declaration after the using declaration
+added. A template is the exception, because
 each of its specializations has to see the defaults at once: a function
 template and a member function of a class template take their defaults
 from the first declaration only. A declaration in a block starts a
@@ -154,7 +163,7 @@ applies also if no call uses the default argument.
 
 :::{rule} DEFARG-4
 :kind: reject
-:tests: declarations/functions/default-arguments/refers-to-parameter.cpp declarations/functions/default-arguments/refers-to-local.cpp declarations/functions/default-arguments/local-unevaluated.cpp declarations/functions/default-arguments/parameter-in-sizeof.cpp declarations/functions/default-arguments/this-in-default.cpp
+:tests: declarations/functions/default-arguments/refers-to-parameter.cpp declarations/functions/default-arguments/refers-to-local.cpp declarations/functions/default-arguments/local-unevaluated.cpp declarations/functions/default-arguments/parameter-in-sizeof.cpp declarations/functions/default-arguments/this-in-default.cpp declarations/functions/default-arguments/this-in-sizeof-default.cpp
 
 A default argument must not use `this`. A default argument can use a
 parameter of the function, or a local variable of an enclosing function,
@@ -256,14 +265,10 @@ r(1);                       // rejected: a reference has no defaults
 
 ## Evidence
 
-All eight compilers agree on 37 of 45 tests. The results are in
+All eight compilers agree on 38 of 46 tests. The results are in
 `tests/RESULTS.md`.
 
-One question on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
-
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0111` | DEFARG-P2 | Clang 22 |
+{question}`Q-0111` is provisional. A gap review supports its answer with no doubt, and DEFARG-P2 does not give the answer under the test of the style guide (section 3). The test keeps its override for Clang 22.
 
 - DEFARG-2: Clang rejects a call that needs a default argument added by
   a later namespace declaration, through an earlier using declaration.
@@ -282,6 +287,9 @@ One question on this page settled on 2026-11-03 under decision 0054 after the so
   definition outside the class that adds a default argument to another
   member function of a class that is not a template is valid on every
   compiler.
+  GCC accepts each form that the probes tried, also a program that uses
+  the new default constructor. So every test of DEFARG-12 needs an
+  override for GCC.
 - DEFARG-13: every compiler rejects a default argument that a later
   declaration adds to a function template, to a member function
   template, or to a member function whose class is a class template or

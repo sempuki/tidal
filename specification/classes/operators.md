@@ -58,7 +58,9 @@ the prefix form, and `operator->` chains until a pointer appears.
 :rules: OPR-8 OPR-9 OPR-10 OPR-16
 
 A literal with a suffix is a call to the literal operator for that
-suffix, and the form of the literal picks the parameter list. Literal
+suffix, and the form of the literal picks the parameter list. The
+literal supplies every argument, so a literal operator has no default
+arguments, as for the other operator functions. Literal
 operators live at namespace scope, where lookup by suffix finds them.
 Suffixes without a leading underscore belong to the language, so an
 implementation should warn about such suffixes.

@@ -312,6 +312,8 @@ of 73 tests.
   declaration. GCC and EDG accept the late `constinit`. CINIT-3 needs no
   diagnostic, because the initializing declaration cannot see the later
   `constinit`, so all three results conform ({question}`Q-0025`).
+  Every test of CINIT-3 has an override, and each override records a
+  result that the class allows.
 - CINIT-2: Clang (pedantic) and EDG reject `constinit` that is only on
   an earlier declaration. GCC accepts the earlier `constinit`
   ({question}`Q-0025`).

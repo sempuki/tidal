@@ -269,10 +269,16 @@ The second is an array of that many strings followed by a null pointer.
 
 Each translation unit sees only its own declarations. A function with
 internal linkage is a separate function in each unit that defines it. A
-function that is declared and used but defined in no unit makes the
-program fail to link. This rule includes `main`, which the program's
-start uses, so a program with no `main` fails to link. A name that only
-another unit declares cannot be used (NAM-8).
+name that only another unit declares cannot be used (NAM-8).
+
+A function that is declared and used but defined in no unit breaks
+{rule}`LNK-7`. The program's start uses `main`, so a program with no
+`main` also breaks LNK-7. Tidal has no class of rule that requires a
+diagnostic when the units are linked. A rule whose break can show only
+when the units are linked, such as LNK-7 or {rule}`ODR-8`, is a
+`no-diagnostic` rule. An implementation can report such a break when
+it links the units, and the link then fails. The implementation can
+also accept the program. Every implementation links a valid program.
 :::
 
 :::{rule} TR-5
@@ -417,7 +423,7 @@ int helper();                 // declared here, defined in another unit
 
 int main(int argc, char** argv) {
   if (argc > 2) return 2;     // exit status 2
-  return helper();            // fails to link if no unit defines helper
+  return helper();            // not valid if no unit defines helper (LNK-7)
 }
 
 constexpr int half(int v) { return v / 2; }
@@ -432,6 +438,17 @@ of 88 tests. EDG takes no optimization flag, so the three `-O2` tests
 are skipped there. EDG runs and links no programs, so its results for
 the run and link tests say only that the programs are valid.
 
+- TR-4: 45 tests expect a link failure on at least one compiler. Each
+  of these tests cites a `no-diagnostic` rule that its program breaks:
+  LNK-6, LNK-7, ODR-8, INL-6, INL-7, VIRT-17, VIRT-20, CLS-21, or
+  INST-28. A test can also cite a `required` rule that explains why the
+  program breaks the `no-diagnostic` rule, such as a declaration that
+  is not a definition. A link failure is one result that these rules
+  allow, and the Clang and GCC linkers give it. When a configuration
+  gives another allowed result, such as a configuration at `-O2` that
+  removes the use, the test records that result with an override.
+  `tools/check_specification.py` fails for a test that expects a link
+  failure and cites no `no-diagnostic` rule.
 - TR-11: on every Clang and GCC configuration, `return 256;` gives
   status 0, `return 257;` gives status 1, and `return -1;` gives status
   255.

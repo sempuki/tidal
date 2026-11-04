@@ -319,7 +319,7 @@ is undefined.
 
 :::{rule} LNK-6
 :kind: no-diagnostic
-:tests: declarations/storage-linkage/duplicate-variable.cpp declarations/storage-linkage/duplicate-function.cpp declarations/storage-linkage/inline-different-bodies.cpp
+:tests: declarations/storage-linkage/duplicate-variable.cpp declarations/storage-linkage/duplicate-function.cpp declarations/storage-linkage/inline-different-bodies.cpp templates/specialization/explicit-not-inline.cpp
 
 An entity with external linkage that is not `inline` must have one
 definition in the program. All definitions of an `inline` entity must be
@@ -329,7 +329,7 @@ the same. An implementation need not diagnose a break of this rule.
 
 :::{rule} LNK-7
 :kind: no-diagnostic
-:tests: declarations/storage-linkage/missing-definition.cpp declarations/storage-linkage/unused-missing-definition.cpp
+:tests: declarations/storage-linkage/missing-definition.cpp declarations/storage-linkage/unused-missing-definition.cpp classes/members/static-member-not-defined.cpp declarations/inline/static-member-not-inline-needs-definition.cpp declarations/linkage-specifications/single-form-declaration-only.cpp declarations/storage-linkage/static-not-visible.cpp foundations/translation/main-no-definition.cpp foundations/translation/undefined-at-link.cpp templates/declarations/plain-function-not-from-template.cpp templates/specialization/explicit-static-member-declaration.cpp templates/specialization/explicit-static-member-template-declaration.cpp templates/specialization/partial-member-not-defined.cpp
 
 A variable or function that the program uses must have a definition. A
 declaration that the program does not use needs no definition. An
@@ -365,7 +365,7 @@ static int y;                  // rejected
 
 ## Evidence
 
-All eight compilers agree on 67 of 69 tests. The results are in
+All eight compilers agree on 77 of 79 tests. The results are in
 `tests/RESULTS.md`. 21 tests use two translation units (decision 0014).
 EDG checks each unit and does not link.
 

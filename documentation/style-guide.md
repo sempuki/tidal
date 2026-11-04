@@ -118,6 +118,41 @@ A principle is a `principle` directive:
   the syntax, then the rules.
 - Write a principle from the rules and the tests, not from memory of any
   text. The similarity check covers principles.
+- A principle that claims a case no test checks gets a test for that
+  case, and the principle's `:rules:` list names a rule that cites the
+  test.
+
+### When a principle gives the answer to a question
+
+A question settles by review only when a principle gives the same answer
+(decision 0054). A principle gives the answer when a reader can reach
+the answer from the principle alone:
+
+1. The reader takes the program of the question.
+2. The reader applies the principle's model to the program. The model
+   is the principle's prose, tables, and diagrams. The reader does not
+   read the rule text, the Evidence, or the question's answer.
+3. The reader reaches the provisional answer, and the model rules out
+   each other option of the question.
+
+A principle fails the test in these cases:
+
+| Case | Example |
+|---|---|
+| The principle states the general model, and the answer turns on a detail that only a rule states. | The principle says that a literal gets the first type in its list. The question asks which types the list holds. |
+| The principle names the question's rule in `:exceptions:`. | The exception says that the case departs from the model. |
+| The principle sends the reader to a rule for the case. | A table cell names a rule instead of a result. |
+| Each option of the question fits the model. | The model gives an order of steps, and the question asks which step a part belongs to. |
+
+A principle on another page counts when a principle or a rule of the
+affected page cites the principle with `` {principle}`ID` ``. A
+citation in the Evidence segment does not count.
+
+A principle that a phase writes or widens gives no answer in that phase
+until a reader or a reviewer has used the principle (decision 0055).
+The question records the test in a dated note. The note names the
+principle and says which step of the test the principle passes or
+fails.
 
 ## 4. Rules
 

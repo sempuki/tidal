@@ -34,6 +34,8 @@ every qualifier of the object parameter.
 
 Kept on 2026-11-03. For cv-qualifiers, every compiler disagrees with the review. For ref-qualifiers, only GCC 16 follows the review, and no principle on the page states when a `!=` corresponds to an `==`. Tidal keeps option 1 until the maintainer decides. The question is in row 4 of `documentation/decisions/pending.md`, and it stays open under decision 0054, because the review reads against the answer.
 
+Checked on 2026-11-04 under the principle test of the style guide (section 3, item PQ of decision 0055). DCMP-P2 fails step 3 of the test, because the model does not say when a `!=` corresponds to an `==`. The matrix shows a model that a principle could state: the qualifiers of the object parameter take no part. The gap review reads against that model for cv-qualifiers, and the question waits on the maintainer in row 4 of `documentation/decisions/pending.md`. A principle written now would state one side of that open choice, so item PQ left DCMP-P2 as it was. The question stays provisional.
+
 ## Opinions
 
 ### Gap review, 2026-11-03

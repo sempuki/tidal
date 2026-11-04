@@ -85,8 +85,8 @@ not ({rule}`CNS-4`).
 :::
 
 :::{principle} CPT-P3
-:rules: CPT-24 CPT-25 CPT-28 CPT-30 CPT-31 CPT-32 CPT-33 CPT-35
-:exceptions: CPT-29 CPT-34
+:rules: CPT-24 CPT-25 CPT-28 CPT-29 CPT-30 CPT-31 CPT-32 CPT-33 CPT-35
+:exceptions: CPT-34
 
 A {term}`requires expression` asks whether some code is valid for the
 template arguments. The answer is a `bool` constant. The body lists
@@ -100,9 +100,19 @@ requirements of four kinds:
 | nested | `requires sizeof(T) > 2;` | the constraint is satisfied | CPT-35 |
 
 The requirements are checked in order, and the first one that fails
-ends the check (CPT-25). No requirement is evaluated (CPT-30). The
-optional parameters are names with types, and no objects exist for
-them (CPT-28).
+ends the check (CPT-25). No requirement is evaluated (CPT-30).
+
+The optional parameters are names with types, and no objects exist for
+them (CPT-28). The list has the form of a function's parameter list,
+inside a template as well as outside one:
+
+- The parameter types adjust as in a function.
+- `(void)` means no parameters.
+- A later parameter can use an earlier one.
+
+Nothing calls a requires expression, so the list has none of the parts
+that serve a call. A parameter has no default argument and no
+placeholder type, and the list does not end with an ellipsis (CPT-29).
 :::
 
 :::{principle} CPT-P6
@@ -299,7 +309,7 @@ function template is not a templated entity.
 
 :::{rule} CPT-15
 :kind: reject
-:tests: templates/concepts/virtual.cpp templates/concepts/virtual-override.cpp
+:tests: templates/concepts/virtual.cpp templates/concepts/virtual-override.cpp templates/concepts/virtual-constraint-not-satisfied.cpp
 
 A virtual function must not have a trailing requires clause. A function
 that overrides a virtual function is virtual, and the trailing clause
@@ -616,15 +626,16 @@ template <class T> concept Old [[deprecated]] = true;   // the attribute apperta
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 105
-of 122 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 106
+of 123 tests.
 
-Two questions on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+One question on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
 
 | Question | Principle | Family that still differs |
 |---|---|---|
 | {question}`Q-0258` | CPT-P5 | GCC 16 |
-| {question}`Q-0259` | CPT-P3 | GCC 16 |
+
+{question}`Q-0259` is provisional. A gap review supports its answer with no doubt, and CPT-P3 does not give the answer under the test of the style guide (section 3). The tests keep their overrides for GCC 16.
 
 Four questions on this page settled on 2026-11-03 under decision 0054.
 For each, a source-reader gap review supports the answer with no doubt,
@@ -702,6 +713,9 @@ words, for example "concept cannot have associated constraints" and
 - CPT-15: GCC accepts a virtual function with a trailing clause, and a
   constrained function that overrides a virtual function. Clang and
   EDG reject both ({question}`Q-0258`).
+  In `virtual-constraint-not-satisfied.cpp` the constraint fails, and
+  every compiler rejects the class. GCC rejects the use of the function
+  that the class's virtual functions need.
 - CPT-29: GCC accepts a default argument and an ellipsis in the
   parameters of a requires expression. Clang and EDG reject them
   ({question}`Q-0259`).

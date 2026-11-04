@@ -60,7 +60,14 @@ enclosing lambda in turn. An implementation rejects the following:
 - a capture list that repeats the default,
 - a capture list that captures what has no automatic storage,
 - a body that reaches a member or a local object without a capture
-  that holds it.
+  that holds it,
+- a capture default on a lambda that has no enclosing function and is
+  not in a default member initializer.
+
+A capture default asks for captures from an enclosing function, or
+from the object of a default member initializer through `this`. A
+lambda at namespace scope has neither, so a capture default there is
+rejected even when the body uses nothing that needs a capture.
 :::
 
 :::{principle} LAM-P4
@@ -173,7 +180,7 @@ default uses the other mode.
 
 :::{rule} LAM-6
 :kind: reject
-:tests: expressions/lambdas/capture-abstract.cpp expressions/lambdas/capture-copy-same-as-default.cpp expressions/lambdas/capture-default-at-namespace.cpp expressions/lambdas/capture-global-rejected.cpp expressions/lambdas/capture-repeated.cpp expressions/lambdas/capture-same-as-default.cpp expressions/lambdas/reference-default-explicit-this.cpp
+:tests: expressions/lambdas/capture-abstract.cpp expressions/lambdas/capture-copy-same-as-default.cpp expressions/lambdas/capture-default-at-namespace.cpp expressions/lambdas/capture-global-rejected.cpp expressions/lambdas/capture-repeated.cpp expressions/lambdas/capture-same-as-default.cpp expressions/lambdas/reference-default-explicit-this.cpp expressions/lambdas/capture-default-in-member-initializer.cpp
 
 A capture list must obey these rules:
 
@@ -475,8 +482,8 @@ int dispatch(int base) {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 81
-of 83 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 82
+of 84 tests.
 
 - LAM-6: EDG accepts a capture default on a lambda outside a function.
   Clang and GCC reject it ({question}`Q-0037`).

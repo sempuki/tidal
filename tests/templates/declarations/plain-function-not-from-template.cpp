@@ -1,4 +1,4 @@
-// tidal-rules: TPL-45
+// tidal-rules: TPL-45 LNK-7
 // tidal-expect: link-fail
 // tidal-error-clang: undefined reference to .twice\(int\)
 // tidal-error-gcc: undefined reference to .twice\(int\)

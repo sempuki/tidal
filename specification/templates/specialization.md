@@ -598,6 +598,8 @@ specialization's arguments, and the result must equal the given list.
   and EDG reject the program. For a variable template, GCC rejects and
   Clang and EDG accept. The rule needs no diagnostic
   ({question}`Q-0173`).
+  Every test of TSP-17 has an override, and each override records a
+  result that the class allows.
 - TSP-11: Clang rejects a partial specialization that only reorders the
   parameters, as no more specialized than the primary template. GCC and
   EDG accept it ({question}`Q-0174`).

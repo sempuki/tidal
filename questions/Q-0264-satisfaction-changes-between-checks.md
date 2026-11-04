@@ -32,6 +32,8 @@ No diagnostic required; GCC 16 diagnoses (option 1). Finding the change needs a 
 
 Kept open on 2026-11-03 under decision 0054, because no principle on the page gives the answer. CNS-10 is an exception of CNS-P2, and no principle states that a result must stay the same.
 
+Checked on 2026-11-04 under the principle test of the style guide (section 3, item PQ of decision 0055). CNS-P2 failed the test, because CNS-P2 named CNS-10 in its `:exceptions:` line. Item PQ widened CNS-P2. A constraint means the same in every use, so an atomic constraint with the same arguments must give the same result at every check, and an implementation need not diagnose a change, because finding it would need a record of every earlier check. CNS-10 moved from the `:exceptions:` line to the `:rules:` line. Under decision 0055, the question does not settle on a principle that phase 8 wrote. The question stays provisional until a reader or a reviewer uses CNS-P2.
+
 ## Opinions
 
 ### Gap review, 2026-11-03

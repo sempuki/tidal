@@ -34,10 +34,19 @@ first byte
 +----+
 ```
 
-The initializer picks the first active member. A plain assignment to
-another member, or the construction of an object of the member's type at
-the member's address, makes that member active instead. The assignment can
-also reach a part of the member, as in `u.a.tag = 7`. Reading a member that
+The initializer picks the first active member. Two actions make another
+member active instead:
+
+- an assignment to the member through the built-in operator or a
+  trivial assignment operator,
+- the construction of an object of the member's type at the member's
+  address.
+
+The assignment can
+also reach a part of the member, as in `u.a.tag = 7`. A user-provided
+assignment operator is a call on the member, and the member is not an
+object yet. So such a call does not make the member active, and the
+call uses an object that is not there. Reading a member that
 is not active reads an object that is not there, so the behavior is
 undefined ({principle}`OBJ-P4`). A reference is not an object with
 storage of its own, so a union cannot hold a reference. A union and
@@ -79,10 +88,18 @@ declared type each decide part of its behavior:
 | Its signedness | The declared type |
 | Its treatment in initialization | The declared type |
 
+The width is an integer constant. The width has an integral or unscoped
+enumeration type, or a class type whose conversion function gives such
+a type. A floating-point width is rejected. A scoped enumeration
+converts to an integer only with a cast ({principle}`ENUM-P2`), so an
+enumerator of a scoped enumeration is rejected as a width.
+
 A bit-field need not start on a byte, so a bit-field has no address. A
 program cannot point to a bit-field or bind a plain reference to it. An
 unnamed bit-field only reserves bits. The bits are padding, and no
-operation on the class reads or writes them.
+operation on the class reads or writes them. So an unnamed bit-field
+takes no {term}`cv-qualifier`, and a `const` or `volatile` on it is
+rejected.
 :::
 
 :::{principle} UNI-P5
@@ -112,6 +129,18 @@ offset 0        4
  common initial
  sequence
 ```
+
+The common initial sequence pairs the members of the two structs in
+declaration order, from the first. A pair stays in the sequence while
+all of these hold:
+
+- The two types are layout-compatible.
+- Both members are bit-fields of one width, or neither is a bit-field.
+- The two members have the same alignment.
+- Both members carry `[[no_unique_address]]`, or neither does.
+
+Two structs are layout-compatible when the sequence holds all their
+members.
 
 A union of such structs can therefore read the shared start through
 either struct, so a tag at the start can say which struct is active.

@@ -65,8 +65,8 @@ atomic constraints.
 :::
 
 :::{principle} CNS-P2
-:rules: CNS-5 CNS-6 CNS-7 CNS-8
-:exceptions: CNS-9 CNS-39 CNS-10 CNS-33 CNS-35
+:rules: CNS-5 CNS-6 CNS-7 CNS-8 CNS-10
+:exceptions: CNS-9 CNS-39 CNS-33 CNS-35
 
 The implementation checks a normal form against {term}`template arguments <template argument>` in
 these steps. A form that the check finds `true` is
@@ -104,6 +104,13 @@ that the substitution instantiates makes the program not valid (CNS-33).
 An atomic constraint must be a constant of type `bool` exactly. Its
 value is never converted, so a constraint means the same in every
 use.
+
+For the same reason, an atomic constraint with the same arguments must
+give the same result at every point where the implementation checks
+it. A program whose result changes is not valid, for example when a
+class is completed between two checks. To find the change, an
+implementation would have to keep a record of every earlier check. So
+the implementation need not diagnose the change (CNS-10).
 :::
 
 :::{principle} CNS-P3
@@ -610,7 +617,7 @@ A friend declaration must be a definition in these cases
 
 :::{rule} CNS-32
 :kind: required
-:tests: templates/constraints/friend-definition-per-specialization.cpp templates/constraints/friend-distinct-from-namespace.cpp
+:tests: templates/constraints/friend-definition-per-specialization.cpp templates/constraints/friend-distinct-from-namespace.cpp templates/constraints/friend-template-per-specialization.cpp
 
 A friend definition of CNS-31 declares a different function in each
 specialization of the class. The definitions in two specializations do
@@ -739,8 +746,8 @@ decltype(&Box<long>::get)               // int (Box<long>::*)(): the clause is n
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 101
-of 128 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 102
+of 129 tests.
 
 One question on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
 
@@ -834,6 +841,9 @@ compiler's own words, for example "atomic constraint must be of type
   rule follows the compilers.
 - CNS-18: EDG rejects the trailing clause on the lambda
   ({question}`Q-0260`).
+  EDG rejects a trailing requires clause on each lambda that is not a
+  template, also after a trailing return type. CNS-18 is about such
+  lambdas only, so every test of CNS-18 needs an override for EDG.
 - CNS-21: EDG does not treat a constructor as trivial when a less
   constrained or unsatisfied constructor of the same kind is
   user-provided. Clang and GCC do ({question}`Q-0266`). Every compiler
@@ -863,6 +873,8 @@ compiler's own words, for example "atomic constraint must be of type
 - CNS-32: EDG reports two definitions of a constrained friend from two
   specializations. EDG also treats the friend and a namespace template
   of the same form as one template ({question}`Q-0268`).
+  Every compiler accepts a constrained friend template that two
+  specializations define (`friend-template-per-specialization.cpp`).
 - CNS-36: the primary template has the constraint `A` and the partial
   specialization `B`, and neither subsumes the other. EDG accepts such
   a partial specialization, and Clang and GCC reject it
@@ -875,6 +887,8 @@ compiler's own words, for example "atomic constraint must be of type
   whether they diagnose it. EDG rejects the definition. Clang and GCC
   accept it, also after an instantiation with an argument template
   that has no constraints ({question}`Q-0283`).
+  Every test of CNS-38 has an override, and each override records a
+  result that the class allows.
 - CNS-3: the inventory doubts whether newer compilers split a fold
   expression into its operands (gap E8). Every compiler in the matrix
   treats the fold as one atomic constraint.

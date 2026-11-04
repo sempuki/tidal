@@ -30,6 +30,12 @@ SEQ-2 fixes the order in these constructs:
 - a member pointer access, where the object comes first,
 - a braced list, where the elements come in the order written.
 
+In a member call, the object expression is part of the function. The
+initialization of each parameter is part of the arguments, also for an
+explicit object parameter. So the copy into an explicit object
+parameter takes its place among the arguments, in the order that
+{principle}`SEQ-P2` leaves to the implementation.
+
 An overloaded operator keeps the order of the built-in operator it
 replaces, because the program reads the same either way (SEQ-6). A
 program also calls functions that it does not name, such as
@@ -239,11 +245,7 @@ struct Flags { unsigned on : 1, dirty : 1; } f;
 All eight compilers agree on all 40 tests. The results are in
 `tests/RESULTS.md`.
 
-One question on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
-
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0319` | SEQ-P2 | none |
+{question}`Q-0319` is provisional. A gap review supports its answer with no doubt, and SEQ-P1 and SEQ-P2 do not give the answer under the test of the style guide (section 3). The test accepts every order.
 
 - SEQ-1: Clang and GCC 16 initialize an explicit object parameter
   before they evaluate the other arguments. GCC 14 evaluates another

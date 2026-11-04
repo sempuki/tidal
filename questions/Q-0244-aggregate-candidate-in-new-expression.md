@@ -36,6 +36,8 @@ cast.
 
 Settled on 2026-11-03 under decision 0054. The source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`) supports this answer with no doubt, and CTAD-P1 gives the same answer: the same steps form the guides wherever the name stands with an initializer. GCC 16 still differs. Tidal records GCC 16's result as a deviation, as for the compiler-defect entries Q-0002 and Q-0003, and the tests keep their overrides for GCC 16.
 
+Checked on 2026-11-04 under the principle test of the style guide (section 3, item PQ of decision 0055). CTAD-P1 passes. In the model, the class template has one set of guides, the aggregate candidate among them, and the place of the name only decides whether deduction runs. So the guides for `new Agg(1)` are the guides for `Agg a(1);`, and option 2 does not fit the model. The question stays settled.
+
 ## Opinions
 
 ### Gap review, 2026-11-03

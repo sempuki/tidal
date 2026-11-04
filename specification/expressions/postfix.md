@@ -47,6 +47,14 @@ even for a static member. The member keeps the object's category and
 `const` object is `const` unless the member is `mutable` or a reference.
 A member function reached this way can only be called, and a call needs
 complete types for what it passes and returns.
+
+Member access looks the name up in the class, so the class must be
+complete, with one exception. Inside the definition of the class, a
+member access sees the members known at that place, as an unqualified
+name does:
+
+- a member declaration sees the members declared before it,
+- a member function body sees every member of the class.
 :::
 
 :::{principle} PFX-P4
@@ -160,7 +168,7 @@ also follows these rules:
 
 :::{rule} PFX-11
 :kind: reject
-:tests: expressions/postfix/arrow-on-non-pointer.cpp expressions/postfix/dot-on-pointer.cpp expressions/postfix/no-such-member.cpp declarations/declarators/function-declaration-ambiguity.cpp foundations/names/member-access-no-enclosing-scope.cpp foundations/names/member-access-no-free-function.cpp foundations/names/member-access-type-member.cpp expressions/postfix/member-access-incomplete-class.cpp expressions/postfix/member-access-class-being-defined.cpp expressions/postfix/member-access-later-member-in-body.cpp
+:tests: expressions/postfix/arrow-on-non-pointer.cpp expressions/postfix/dot-on-pointer.cpp expressions/postfix/no-such-member.cpp declarations/declarators/function-declaration-ambiguity.cpp foundations/names/member-access-no-enclosing-scope.cpp foundations/names/member-access-no-free-function.cpp foundations/names/member-access-type-member.cpp expressions/postfix/member-access-incomplete-class.cpp expressions/postfix/member-access-class-being-defined.cpp expressions/postfix/member-access-later-member-in-body.cpp expressions/postfix/member-access-later-member-in-function-body.cpp
 
 The operand of `.` must be a class object, and the operand of `->` must
 be a pointer to a class. Member lookup ({rule}`NAM-37`) must find the
@@ -340,8 +348,8 @@ top++;            // undefined
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 67
-of 75 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 68
+of 76 tests.
 
 Two questions on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
 
@@ -382,6 +390,8 @@ Two questions on this page settled on 2026-11-03 under decision 0054 after the s
 - PFX-15: GCC and EDG accept a class with a non-trivial copy
   constructor as an ellipsis argument. Clang rejects it. Support is
   conditional.
+  Every test of PFX-15 has an override, and each override records a
+  result that the class allows.
 - PFX-11: GCC and EDG accept a member access in a member declaration
   of the class being defined, to a member declared earlier. Clang
   rejects it because the class is incomplete ({question}`Q-0316`).

@@ -13,6 +13,8 @@ Fails when:
   and are not withdrawn, and no rule lists it, so it never counts as a
   rule's test or as the one test that decides a rule (decision 0044),
 - a specification page, test, or document refers to a question (Q-NNNN) with no file in questions/,
+- a test that some compiler is expected to fail to link cites no no-diagnostic
+  rule (TR-4: no class requires a diagnostic at link time),
 - a tidal-expect-<x> or tidal-error-<x> names no compiler id or family, or a
   tidal-error is on a test that no compiler is expected to reject, fail to
   link, or fail to run,
@@ -29,7 +31,12 @@ Fails when:
 - a grammar nonterminal is defined in more than one production, or used
   and not defined (decision 0040),
 - a page of specification/ or guides/ refers with {rule} or {principle} to an ID
-  that no page defines, or a specification page links to a guide.
+  that no page defines, or a specification page links to a guide,
+- a rule that the working tree adds, or whose class it changes, relative to
+  HEAD rests on thin evidence (see check_thin_evidence).
+
+Warns for every rule that rests on thin evidence: one test, or only tests that
+carry an override for a newest compiler.
 
 guides/ holds the tutorials and how-to guides, which are not part of the
 specification (decision 0045). The question, marker, and reference checks
@@ -229,6 +236,93 @@ def check_records(errors: list[str], warnings: list[str]) -> None:
                             "the integrator runs tools/number_questions.py")
 
 
+def newest_overrides() -> set[str]:
+    """The override keys that apply to a newest baseline compiler.
+
+    An override names a family (clang, gcc, edg) or a compiler id. A
+    family key applies to the newest compiler of the family. An id key
+    counts unless the compiler is a report compiler or an older version
+    of its family, such as gcc-14 beside gcc-16 (decision 0055, item TE).
+    """
+    import matrix
+    compilers = matrix.load()
+    version = {}
+    for c in compilers:
+        if m := re.fullmatch(rf"{re.escape(c.family)}-(\d+)(?:\.\d+)?(?:-.+)?", c.id):
+            version[c.id] = int(m.group(1))
+    top = {}
+    for cid, v in version.items():
+        family = next(c.family for c in compilers if c.id == cid)
+        top[family] = max(top.get(family, v), v)
+    keys = {c.family for c in compilers}
+    for c in compilers:
+        if c.role != "baseline":
+            continue
+        if c.id in version and version[c.id] < top[c.family]:
+            continue
+        keys.add(c.id)
+    return keys
+
+
+def thin_evidence(rules: dict) -> dict[str, str]:
+    """{rule id: reason} for each rule that rests on one test, or only on tests
+    that carry an override for a newest compiler."""
+    newest = newest_overrides()
+    thin = {}
+    for rid, (_, cls, tests) in rules.items():
+        if cls == "withdrawn" or not tests:
+            continue
+        if len(tests) == 1:
+            thin[rid] = "rests on one test"
+            continue
+        if all((TESTS / t).exists() and newest & parse_test(TESTS / t).overrides.keys() for t in tests):
+            thin[rid] = "rests only on tests with an override for a newest compiler"
+    return thin
+
+
+def head_classes() -> dict[str, str] | None:
+    """{rule id: class} at HEAD, or None outside a git work tree."""
+    import subprocess
+    try:
+        names = subprocess.run(["git", "ls-tree", "-r", "--name-only", "HEAD", "specification"],
+                               cwd=ROOT, capture_output=True, text=True, check=True).stdout.split()
+    except (OSError, subprocess.CalledProcessError):
+        return None
+    classes = {}
+    for name in names:
+        if not name.endswith(".md"):
+            continue
+        text = subprocess.run(["git", "show", f"HEAD:{name}"], cwd=ROOT,
+                              capture_output=True, text=True, check=True).stdout
+        directive = None
+        for line in text.splitlines():
+            if m := DIRECTIVE.match(line):
+                directive = m.group(1)
+            elif directive and (m := OPTION.match(line)) and m.group(1) == "kind":
+                classes[directive] = m.group(2).strip()
+            elif line.startswith(":::"):
+                directive = None
+    return classes
+
+
+def check_thin_evidence(rules: dict, errors: list[str], warnings: list[str]) -> None:
+    """Warn for each rule with thin evidence. Fail for such a rule when the
+    working tree adds it or changes its class relative to HEAD."""
+    thin = thin_evidence(rules)
+    head = head_classes()
+    if head is None:
+        warnings.append("no git HEAD; the check of new and reclassified rules did not run")
+    for rid, reason in sorted(thin.items(), key=lambda kv: (str(rules[kv[0]][0]), kv[0])):
+        f, cls, _ = rules[rid]
+        where = f.relative_to(ROOT)
+        if head is not None and head.get(rid) != cls:
+            change = "is new" if rid not in head else f"changed class from {head[rid]} to {cls}"
+            errors.append(f"{where}: {rid} {change} and {reason}; add a test that every "
+                          "newest compiler agrees on (documentation/specification-format.md)")
+        else:
+            warnings.append(f"{where}: {rid} {reason}")
+
+
 def main() -> int:
     rules, errors = parse_spec()
     listed = {}
@@ -260,6 +354,9 @@ def main() -> int:
         if test.default == "reject" and all(rid in rules for rid in test.rules) and not (
                 {rules[rid][1] for rid in test.rules} & MAY_REJECT):
             errors.append(f"{test.name}: expects reject, but cites no rule of a class that allows it (decision 0034)")
+        if "link-fail" in {test.default, *test.overrides.values()} and all(rid in rules for rid in test.rules) and (
+                "no-diagnostic" not in {rules[rid][1] for rid in test.rules}):
+            errors.append(f"{test.name}: expects a link failure, but cites no no-diagnostic rule (TR-4)")
         program = test.name.startswith(PROGRAMS)
         for rid in test.rules:
             if rid not in rules and rid.rsplit("-", 1)[0] not in prefixes:
@@ -306,6 +403,7 @@ def main() -> int:
             errors.append(f"{f.relative_to(ROOT)}: the agreement sentence is out of date; run tools/status_table.py")
     check_grammar(errors)
     check_records(errors, warnings)
+    check_thin_evidence(rules, errors, warnings)
 
     for w in warnings:
         print("warning: " + w)

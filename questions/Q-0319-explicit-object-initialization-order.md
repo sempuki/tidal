@@ -1,6 +1,6 @@
 # Q-0319: When is an explicit object parameter initialized, relative to the other arguments?
 
-**Status:** settled
+**Status:** provisional
 **Affects:** SEQ-1, SEQ-2, `tests/expressions/sequencing/explicit-object-order-unspecified.cpp`
 
 ## Context
@@ -31,14 +31,16 @@ The test above. A first version of the test expected the copy into
 2. The copy into `self` comes first, as part of the object expression
    (SEQ-2).
 
-## Answer
+## Provisional answer
 
 In an unspecified place (SEQ-1); GCC 14 differs from GCC 16 and Clang (option 1). GCC 14 and GCC 16 differ, and option 1 allows both. The test
 accepts every order.
 
 Decision 0051 does not settle the question. Clang 22 and GCC 16 both make the copy into `self` first, which both options allow. Only GCC 14 separates the options, so the newest versions give no ground to settle the answer.
 
-Settled on 2026-11-03 under decision 0054. The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) supports this answer with no doubt, and SEQ-P2 gives the same answer: outside the constructs that SEQ-P1 lists, the order is the implementation's choice, and each argument is evaluated as a whole. The copy into `self` initializes a parameter. No newest family differs. Clang 22 and GCC 16 both make the copy into `self` first, which the answer allows, and the test accepts every order.
+Reopened as provisional on 2026-11-04 under the principle test of the style guide (section 3, item PQ of decision 0055). The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) supports this answer with no doubt. SEQ-P1 and SEQ-P2 fail step 3 of the test. The model fixes the function before the arguments and leaves the order of the arguments to the implementation. The model does not say whether the copy into an explicit object parameter belongs to the function or to the arguments, so both options fit the model. No other principle on the page gives the answer. No newest family differs. Clang 22 and GCC 16 both make the copy into `self` first, which the answer allows, and the test accepts every order.
+
+On 2026-11-04, item PQ widened SEQ-P1 to state the case. In a member call the object expression is part of the function, and the initialization of each parameter, an explicit object parameter included, is part of the arguments. So the copy into `self` takes a place among the arguments that SEQ-P2 leaves to the implementation. Under decision 0055, the question does not settle on a principle that phase 8 wrote. The question stays provisional until a reader or a reviewer uses SEQ-P1.
 
 ## Opinions
 

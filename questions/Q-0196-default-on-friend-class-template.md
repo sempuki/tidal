@@ -35,6 +35,8 @@ friend function template declarations, which all compilers apply.
 
 Kept open on 2026-11-03 under decision 0054, because no principle on the page gives the answer. TPL-P3 lets the defaults of several declarations add up and does not name friend declarations, and TPL-37 is an exception to it.
 
+Checked on 2026-11-04 under the principle test of the style guide (section 3, item PQ of decision 0055). TPL-P3 fails the test, because TPL-P3 names TPL-37 in its `:exceptions:` line. The matrix shows no model that explains why a friend declaration that is not a definition cannot give a default, beyond the rule itself. The question stays provisional.
+
 ## Opinions
 
 ### Gap review, 2026-11-03

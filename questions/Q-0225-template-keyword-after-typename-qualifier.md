@@ -47,6 +47,8 @@ Kept on 2026-11-03. The source-reader gap review of question cluster 6 (`reports
 
 Kept open on 2026-11-03 under decision 0054, because the question waits on the maintainer (`documentation/decisions/pending.md`).
 
+Checked on 2026-11-04 under the principle test of the style guide (section 3, item PQ of decision 0055). DEP-P5 passes. The program states whether a dependent name is a template, and `typename` states only that the whole name is a type, so `typename T::box<int>` needs `template`. The table of DEP-P5 gives that result for this form, and option 2 does not fit the model. The question stays provisional, because the gap review of cluster 6 reads against the answer and the question waits on the maintainer.
+
 ## Opinions
 
 ### Gap review, 2026-11-03

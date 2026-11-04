@@ -47,6 +47,8 @@ Kept on 2026-11-03. The source-reader gap review of question cluster 3 agrees wi
 
 Kept open on 2026-11-03 under decision 0054, because the gap review does not support the answer with no doubt (it reads with doubt, weakly, unclearly, or for only part of the question).
 
+Checked on 2026-11-04 under the principle test of the style guide (section 3, item PQ of decision 0055). ORD-P2 fails step 3, because step 6d of ORD-P2 sends the reader to the conditions of ORD-13. The matrix shows no model that a principle can state. ORD-5 leaves the ellipsis out of a call for templates, ORD-13 counts parameters with default arguments, which ORD-5 also leaves out, and Clang 22 alone counts the ellipsis for plain functions and not for templates. The question stays provisional.
+
 ## Opinions
 
 ### Gap review, 2026-11-03

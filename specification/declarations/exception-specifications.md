@@ -33,7 +33,9 @@ So a call through a pointer to a non-throwing function is itself
 non-throwing, and two functions that differ only in the specifier are
 the same function declared twice. The specifier is a constant, decided
 at translation time from an expression that can see the parameters and
-the whole class.
+the whole class. The operand needs an exact `bool` value, as in the
+other places of {principle}`CE-P4`, so its conversion to `bool` must not
+narrow. The implementation rejects `noexcept(2)` and `noexcept(&x)`.
 :::
 
 :::{principle} EXS-P2
@@ -260,9 +262,13 @@ Two questions on this page settled on 2026-11-03 under decision 0054 after the s
 - EXS-5 is implementation-defined because the compilers split on
   `throw()`. Clang and GCC accept the form as `noexcept`, and EDG
   rejects it ({question}`Q-0077`).
+  Every test of EXS-5 has an override, and each override records a
+  result that the class allows.
 - EXS-6 needs no diagnostic because GCC and EDG accept an operand that
   depends on the function itself, and Clang rejects it
   ({question}`Q-0079`). The test records both outcomes.
+  Every test of EXS-6 has an override, and each override records a
+  result that the class allows.
 - EXS-4: Clang, GCC, and EDG give `true` for `noexcept` of a placement
   `new` of a class whose members have `noexcept` constructors and
   potentially throwing destructors.

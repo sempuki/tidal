@@ -879,10 +879,16 @@ bullets below say so.
   static data member.
 - DEP-34: Clang and GCC reject `p->template ~T()` and
   `r.template ~T()`. EDG accepts both ({question}`Q-0245`).
+  EDG also accepts `p->template ~Item()` and `p->T::template ~T()`. So
+  every test of DEP-34 needs an override for EDG.
 - DEP-27: GCC and EDG accept `template` after the qualifier of a
   declared member function template. Clang rejects it
   ({question}`Q-0227`). For a member class template, Clang and GCC
   reject the keyword, and EDG accepts it.
+  GCC also accepts the keyword in the definition of a member variable
+  template. GCC and EDG accept the keyword after a namespace qualifier.
+  Each form that the probes tried splits, so every test of DEP-27 needs
+  an override.
 - DEP-24: GCC also accepts `typename T::box<int>` without `template`
   as an alias target and as a function parameter type. Clang and EDG
   reject both. Every compiler rejects a friend declaration that names

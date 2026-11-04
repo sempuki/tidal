@@ -58,6 +58,11 @@ a class template name with no argument list, and an initializer
                the initialization runs as for that type
 ```
 
+A user guide writes its result as the name of the class template with
+an argument list. The result only names the specialization, so the
+guide writes no {term}`cv-qualifier` on it. A declaration that uses the
+guide adds its own cv-qualifiers (CTAD-1, CTAD-12).
+
 Step 5 is a separate initialization. {term}`Deduction <deduction>` can succeed and the
 initialization can still fail, for example on access or a deleted
 constructor (CTAD-26).
@@ -363,7 +368,7 @@ A `deduction_guide` must obey these rules:
 
 :::{rule} CTAD-13
 :kind: reject
-:tests: templates/class-template-deduction/guide-not-deducible.cpp templates/class-template-deduction/guide-not-deducible-constant.cpp
+:tests: templates/class-template-deduction/guide-not-deducible.cpp templates/class-template-deduction/guide-not-deducible-constant.cpp templates/class-template-deduction/guide-not-deducible-used.cpp
 
 Each template parameter of a user guide must have a default or get a
 value from the guide's parameters ({question}`Q-0241`).
@@ -630,18 +635,19 @@ Bases c{List<X, Y, Z>{}, Y{}};    // rejected: Y stands where X is fixed
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 95
-of 116 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 96
+of 117 tests.
 
-Five questions on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+Four questions on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
 
 | Question | Principle | Family that still differs |
 |---|---|---|
 | {question}`Q-0239` | CTAD-P2 | Clang 22 |
-| {question}`Q-0242` | CTAD-P1 | GCC 16 |
 | {question}`Q-0244` | CTAD-P1 | GCC 16 |
 | {question}`Q-0276` | CTAD-P2 | GCC 16 |
 | {question}`Q-0352` | CTAD-P1 | GCC 16 |
+
+{question}`Q-0242` is provisional. A gap review supports its answer with no doubt, and CTAD-P1 does not give the answer under the test of the style guide (section 3). The tests keep their overrides for GCC 16.
 
 Two questions of the cluster of EDG differences (cluster 5) on this
 page settled on 2026-11-03 under decision 0054: {question}`Q-0240`,
@@ -681,6 +687,8 @@ The clean-room writer probed each step with Clang 22, GCC 16, and EDG
   The gap review (item 38) reads the rule as one that requires a
   diagnostic, and Clang agrees. The rule is a `reject` rule
   ({question}`Q-0241`).
+  In `guide-not-deducible-used.cpp` the program uses the guide, and
+  every compiler rejects the program. GCC and EDG reject the deduction.
 - CTAD-12: Clang and GCC reject two guides that are not templates with
   the same parameter types and different results. EDG accepts them.
   Every compiler accepts two guide templates with the same parameters

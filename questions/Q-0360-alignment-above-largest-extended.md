@@ -40,6 +40,8 @@ of the class.
 
 Kept open on 2026-11-03 under decision 0054, because no principle on the page gives the answer. ALN-P3 says that the largest alignment depends on the target, and no principle says that an implementation rejects an alignment above it. Clang 22 is the only newest family that differs.
 
+Checked on 2026-11-04 under the principle test of the style guide (section 3, item PQ of decision 0055). ALN-P3 failed step 3, because it said only that the largest alignment depends on the target. ALN-P3 now says that an implementation rejects an `alignas` above its largest alignment, which rules out option 2. The existing tests check the case. Under decision 0055, the question does not settle on a principle that phase 8 wrote. The question stays provisional until a reader or a reviewer uses ALN-P3.
+
 ## Opinions
 
 ### Gap review, 2026-11-03

@@ -53,6 +53,8 @@ Kept on 2026-11-03. The source-reader gap review of question cluster 3 agrees wi
 
 Kept open on 2026-11-03 under decision 0054, because no principle on the ordering page gives the answer. ORD-P1 does not say which kind of reference the object parameter is, and ICS-P3 on the conversion-sequences page does.
 
+Checked on 2026-11-04 under the principle test of the style guide (section 3, item PQ of decision 0055). ORD-P1 failed step 3, because ORD-P1 did not say which kind of reference the object parameter is. Item PQ widened ORD-P1. The object parameter stands for the way the member binds its object in a call ({principle}`ICS-P3`), so a member with no ref-qualifier takes the kind of the other template's first parameter. Under decision 0055, the question does not settle on a principle that phase 8 wrote. The question stays provisional until a reader or a reviewer uses ORD-P1.
+
 ## Opinions
 
 ### Gap review, 2026-11-03

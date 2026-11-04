@@ -20,6 +20,8 @@ No; the declaration is not valid (option 1). Clang and EDG agree.
 
 Kept open on 2026-11-03 under decision 0054, because no principle on the page gives the answer. TYN-P2 and TYN-P3 say how a class key restricts lookup and when a class is complete, and neither says which forms a declaration of only a class key and a name can take. GCC 16 is the only newest family that differs.
 
+Checked on 2026-11-04 under the principle test of the style guide (section 3, item PQ of decision 0055). TYN-P2 and TYN-P3 fail step 3, because neither says which forms a declaration of only a class key and a name can take, so option 2 also fits. Item PQ widened TYN-P2: a declaration of only a class key and a plain name declares the class in the current scope, and with a qualified name the declaration declares nothing and is rejected. TYN-P2 now lists TYN-7. Under decision 0055, the question does not settle on a principle that phase 8 wrote. The question stays provisional until a reader or a reviewer uses TYN-P2.
+
 ## Opinions
 
 ### Gap review, 2026-11-03

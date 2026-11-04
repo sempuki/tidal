@@ -55,7 +55,11 @@ conversions between pointers to objects.
 | Through a {term}`virtual base` | Nothing | The offset of the member is not known from the type. |
 | To an ordinary pointer, or between data members and member functions | Nothing | A pointer to member is not an address. |
 
-The qualifier rules follow those of ordinary pointers.
+The qualifier rules follow those of ordinary pointers. A converted
+pointer to member is a value like any other. The value names the same
+member wherever it goes, through a variable, an array element, or a
+function result. Constant evaluation gives the same result as a run
+({principle}`CE-P1`).
 :::
 
 :::{principle} MPTR-P4
@@ -174,7 +178,7 @@ A function qualified `const&` can be called on an rvalue.
 
 :::{rule} MPTR-4
 :kind: required
-:tests: expressions/member-pointers/base-to-derived-implicit.cpp expressions/member-pointers/derived-to-base-static-cast.cpp expressions/member-pointers/null-converts.cpp expressions/member-pointers/reinterpret-between.cpp expressions/member-pointers/to-bool.cpp expressions/member-pointers/qualification-conversion.cpp expressions/member-pointers/reinterpret-function-round-trip.cpp expressions/member-pointers/zero-literal-null.cpp classes/access/protected-member-pointer-type.cpp
+:tests: expressions/member-pointers/base-to-derived-implicit.cpp expressions/member-pointers/derived-to-base-static-cast.cpp expressions/member-pointers/null-converts.cpp expressions/member-pointers/reinterpret-between.cpp expressions/member-pointers/to-bool.cpp expressions/member-pointers/qualification-conversion.cpp expressions/member-pointers/reinterpret-function-round-trip.cpp expressions/member-pointers/zero-literal-null.cpp classes/access/protected-member-pointer-type.cpp expressions/member-pointers/converted-through-object-constant.cpp
 
 These conversions are valid:
 
@@ -278,7 +282,7 @@ const int* Node::* unsafe = link;      // rejected: no const on the level above
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 74
-of 75 tests.
+of 76 tests.
 
 - MPTR-6: Clang and GCC give a null pointer to data member the offset
   -1, so a read through it lands before the object. On Clang 22 and

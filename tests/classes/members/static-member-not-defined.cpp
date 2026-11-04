@@ -1,4 +1,4 @@
-// tidal-rules: CLS-3
+// tidal-rules: CLS-3 LNK-7
 // tidal-expect: link-fail
 // tidal-error-clang: undefined reference to .Counter::count
 // tidal-error-gcc: undefined reference to .Counter::count

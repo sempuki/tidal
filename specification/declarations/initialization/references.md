@@ -39,6 +39,13 @@ bindings through:
 - a subscript,
 - a plain cast.
 
+An aggregate initialized with braces binds its reference members as
+part of the declaration, so those temporaries also live as long as the
+variable. An aggregate initialized with parentheses gets its members as
+a function gets its arguments. A temporary bound to a reference member
+there ends with the full expression, as for a function parameter. A
+`new` expression extends no temporary, with braces or with parentheses.
+
 The extension does not reach a function parameter or a returned
 reference. A reference used after its object has ended, or bound through
 a null pointer, has no defined meaning, and an implementation should warn
@@ -375,6 +382,8 @@ Six questions on this page settled on 2026-11-03 under decision 0054 after the s
   | a reference bound to the returned reference of a call whose argument is a temporary (REF-5) | no warning | warns (`-Wdangling-reference`) |
   | a reference member of an object from `new`, bound to a temporary (REF-5) | warns (`-Wdangling-field`) | no warning |
   | a constructor that binds a reference member to a temporary ({rule}`CTOR-17`) | rejects | warns (`-Wextra`) |
+- **REF-15** is a `recommended` rule. Every test of REF-15 has an
+  override, and each override records a result that the class allows.
 - **REF-4.** EDG 7.0 rejects binding an rvalue reference to an element
   of an array member of a temporary. Clang and GCC accept the binding
   and extend the temporary ({question}`Q-0109`).

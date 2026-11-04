@@ -29,6 +29,8 @@ implementations are converging on acceptance.
 
 Kept open on 2026-11-03 under decision 0054, because no principle on the page gives the answer. NS-P3 says that a using declaration conflicts with another declaration in the current scope, and it does not say whether a repeated using declaration of one entity conflicts. EDG 7.0 rejects the repeated declaration in a block.
 
+Checked on 2026-11-04 under the principle test of the style guide (section 3, item PQ of decision 0055). NS-P3 failed step 3, because the model said only that a using declaration conflicts with another declaration in the current scope. NS-P3 now says that a second using declaration of the same member says the same thing again and does not conflict, in a block as in a namespace. The review reads with no doubt, and EDG 7.0 is the one newest family that differs. Under decision 0055, the question does not settle on a principle that phase 8 wrote. The question stays provisional until a reader or a reviewer uses NS-P3.
+
 ## Opinions
 
 ### Gap review, 2026-11-03

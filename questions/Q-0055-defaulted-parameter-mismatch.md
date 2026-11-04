@@ -24,6 +24,8 @@ GCC 14 is treated as an older implementation choice.
 
 Settled on 2026-11-03 under decision 0054. The source-reader gap review of the open questions on classes and statements (`reports/review/2026-11-03-gap-review-questions-classes-statements.md`) supports this answer with no doubt, and CPY-P3 gives the same answer: a function that the class defaults in its definition follows the deletion rule also when its signature differs from the implicit one, so the problem appears only at a use. CPY-P3 states the general model here, and CPY-14 states the case. No newest family differs. GCC 14 rejects the declaration, and the tests keep their overrides for GCC 14.
 
+Checked on 2026-11-04 under the principle test of the style guide (section 3, item PQ of decision 0055). CPY-P3 passes. CPY-P3 says that a function the class defaults in its definition is deleted when it cannot work, also when its signature differs from the implicit one. So the declaration is valid and only a use is rejected, and option 2 does not fit the model. The question stays settled.
+
 ## Opinions
 
 ### Gap review, 2026-11-03

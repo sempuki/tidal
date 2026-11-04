@@ -27,6 +27,8 @@ After; Clang differs (option 1). Two of three implementations take this order.
 
 Kept on 2026-11-03. The review reads option 2, which only Clang follows. GCC 16 and EDG 7.0 take the order of option 1, and no principle on the page states an order. Tidal keeps option 1 until the maintainer decides. The question is in row 4 of `documentation/decisions/pending.md`, and it stays open under decision 0054, because the review reads against the answer.
 
+Checked on 2026-11-04 under the principle test of the style guide (section 3, item PQ of decision 0055). ATTR-P1 fails step 3, and no principle can state the order. The matrix splits by family: GCC and EDG take one order and Clang takes the other, and the review reads the order of Clang. The order of an attribute and the cv-qualifiers after a `*` is a fact of the grammar, and no model of the page decides between the two. The question stays open and waits on the maintainer (row 4 of `documentation/decisions/pending.md`).
+
 ## Opinions
 
 ### Gap review, 2026-11-03

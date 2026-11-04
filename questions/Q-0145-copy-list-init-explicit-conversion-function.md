@@ -39,6 +39,8 @@ The question stays open under decision 0051 (2026-11-03). Clang 22 accepts, and 
 
 Kept open on 2026-11-03 under decision 0054, because no principle gives the answer. OVL-P2 and ICS-P1 do not say which initializations can use an `explicit` conversion function, and only ICS-45 and OVL-40 do.
 
+Checked on 2026-11-04 under the principle test of the style guide (section 3, item PQ of decision 0055). OVL-P2 and ICS-P1 failed step 3 of the test, because neither said which initializations can use an `explicit` conversion function. CVF-P2 says so, and the overloading page did not cite CVF-P2. Item PQ widened OVL-P2. OVL-P2 now cites CVF-P2 and says that copy-list-initialization, a form of copy initialization, cannot use the function to make the temporary for a copy or move constructor. OVL-40 and `init-copy-list-explicit-conversion.cpp` check the case. Under decision 0055, the question does not settle on a principle that phase 8 wrote. The question stays provisional until a reader or a reviewer uses OVL-P2. Clang 22 is the one newest family that differs.
+
 ## Opinions
 
 ### Gap review, 2026-11-03

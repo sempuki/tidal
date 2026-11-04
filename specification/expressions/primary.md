@@ -30,9 +30,20 @@ Depends on: value categories, standard conversions.
 A literal is a value written in the source. The spelling alone decides
 the type and the value of a literal, and no context changes either. For
 an integer literal, the base and the suffix fix a list of types, and the
-literal gets the first type in that list that can hold it. So a literal
-never loses part of its value in silence, and a literal that no type in
-its list can hold is rejected for the same reason. A spelling that fits
+literal gets the first type in that list that can hold it:
+
+| Literal | Types in the list, lowest rank first |
+|---|---|
+| decimal, no `u` | the signed types, from `int` up to `long long` |
+| octal, hexadecimal, or binary, no `u` | at each rank from `int` up, the signed type and then its unsigned partner |
+| any base, with `u` | the unsigned types, from `unsigned int` up |
+
+An `l` or `ll` suffix drops the types of lower rank. So a literal never
+loses part of its value in silence, and a literal that no type in its
+list can hold is rejected for the same reason. A decimal literal with
+no `u` never becomes unsigned, so a decimal value that only
+`unsigned long long` can hold is rejected, and the same value in
+hexadecimal is an `unsigned long long`. A spelling that fits
 none of the forms is rejected, because a literal has no other meaning to
 fall back on. `true`, `false`, and `nullptr` are literals of their own
 types.
@@ -116,6 +127,13 @@ expression that a program would write out by hand. The side of the
 (p - ... - 10)   p1 - (p2 - (p3 - 10))     right fold with a last operand
 (10 - ... - p)   ((10 - p1) - p2) - p3     left fold with a first operand
 ```
+
+Each operand of a fold is one operand that binds more tightly than any
+binary operator, such as a name, a call, or a cast. An operand that
+holds a binary operator needs its own parentheses, as in
+`((2 * p) + ...)`. So the operator next to the `...` is always the
+operator of the fold, and a reader never compares precedences to find
+it.
 
 The written-out expression follows the rules of its operator, also for
 the order of evaluation. A fold over `&&` or `||` stops as early as the
@@ -736,17 +754,15 @@ total(1, 2, 3);           // ((0 + 1) + 2) + 3
 The results are in `tests/RESULTS.md`. All eight compilers agree on 131
 of 142 tests.
 
-One question on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
-
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0064` | PRIM-P1 | EDG 7.0 |
+{question}`Q-0064` is provisional. A gap review supports its answer with no doubt, and PRIM-P1 does not give the answer under the test of the style guide (section 3). The test keeps its override for EDG 7.0.
 
 - PRIM-2: Clang and GCC reject a decimal literal that fits only an
   unsigned type under `-pedantic-errors`. EDG accepts it
   ({question}`Q-0064`).
 - PRIM-15: Clang and GCC accept `1e999f` with a warning and give
   infinity. EDG rejects it ({question}`Q-0063`).
+  PRIM-15 is `conditionally-supported`. Every test of PRIM-15 has an
+  override, and each override records a result that the class allows.
 - PRIM-22: GCC and EDG accept the extended floating suffixes. Clang
   accepts `f16` and `F16` and rejects the others. Support is
   conditional.
@@ -790,6 +806,8 @@ One question on this page settled on 2026-11-03 under decision 0054 after the so
   literals, because Clang 22 and GCC 16 reject the string form
   (`documentation/decisions/pending.md`, row 4). Every compiler rejects a backslash before a character
   outside the basic character set, such as `é` (PRIM-18).
+  Every test of PRIM-35 has an override, and each override records a
+  result that the class allows.
 - PRIM-8: the matrix targets keep string literals in memory that the
   program cannot write. So a write to a literal faults at run time, and
   `-fsanitize=address` reports the fault as SEGV.

@@ -27,11 +27,19 @@ ordinary scope ({principle}`NAM-P1`), so an alias:
 - can be declared again only to say the same thing.
 
 An alias can give a type only a name for {term}`linkage`, and only when the type
-is an unnamed class with nothing in it that needs a name of its own.
+is an unnamed class that C could also declare. Such a class has data
+members and none of these:
+
+- member functions,
+- bases,
+- default member initializers.
+
+The implementation rejects an alias that gives a name for linkage to a
+class with any of them.
 :::
 
 :::{principle} TYN-P2
-:rules: TYN-4 TYN-10
+:rules: TYN-4 TYN-10 TYN-7
 
 A class key before a name restricts lookup to classes and enumerations,
 so a function or a variable with the same spelling does not get in the
@@ -39,6 +47,11 @@ way. If the restricted lookup finds nothing, the name is a new class,
 declared in the nearest namespace or block. The key has to match the
 kind of thing that lookup finds, with `class` and `struct` counting as
 one kind.
+
+A declaration of only a class key and a plain name declares the class
+in the current scope. A qualified name refers to a class that another
+scope already declares. So a declaration of only a class key and a
+qualified name declares nothing, and the implementation rejects it.
 :::
 
 :::{principle} TYN-P3
@@ -145,7 +158,7 @@ name for linkage. TYN-9 states what such a class must be.
 
 :::{rule} TYN-9
 :kind: reject
-:tests: declarations/type-names/typedef-unnamed-class-member-function.cpp declarations/type-names/typedef-unnamed-class-base.cpp
+:tests: declarations/type-names/typedef-unnamed-class-member-function.cpp declarations/type-names/typedef-unnamed-class-base.cpp declarations/type-names/typedef-unnamed-class-default-member-initializer.cpp
 
 A class that uses a `typedef` name for linkage (TYN-3) must be C-like.
 The class has none of these ({question}`Q-0067`):
@@ -272,18 +285,21 @@ void post(Packet* p) {
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 57
-of 62 tests.
+of 63 tests.
 
-Two questions on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+One question on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
 
 | Question | Principle | Family that still differs |
 |---|---|---|
 | {question}`Q-0066` | TYN-P4 | none; the rule needs no diagnostic |
-| {question}`Q-0067` | TYN-P1 | none among the newest; GCC 14 |
+
+{question}`Q-0067` is provisional. A gap review supports its answer with no doubt, and TYN-P1 does not give the answer under the test of the style guide (section 3). The tests keep their overrides for GCC 14.
 
 - TYN-5: GCC rejects the class, for a type name and for a function name
   that a later data member changes. Clang and EDG accept the class
   ({question}`Q-0066`).
+  TYN-5 needs no diagnostic. Every test of TYN-5 has an override, and
+  each override records a result that the class allows.
 - TYN-7: GCC accepts a declaration of only a class key and a qualified
   name. Clang and EDG reject the declaration ({question}`Q-0093`).
 - TYN-3: GCC 14 accepts a typedef name for a class with a member

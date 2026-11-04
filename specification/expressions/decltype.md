@@ -313,7 +313,12 @@ Two questions on this page settled on 2026-11-03 under decision 0054 after the s
 
 - DTY-5: GCC accepts `decltype` in the qualified name of a member
   definition. Clang and EDG reject such a use ({question}`Q-0065`).
+  GCC also accepts `decltype` in the qualified name of a nested class
+  definition and of an enumeration definition. EDG accepts the
+  enumeration definition. So every test of DTY-5 needs an override.
 - UNEV-4: Clang warns by default. GCC gives no warning.
+  UNEV-4 is a `recommended` rule. Every test of UNEV-4 has an override,
+  and each override records a result that the class allows.
 - DTY-3: GCC rejects `decltype` after `~` in an explicit destructor
   call. Clang and EDG accept the call ({question}`Q-0089`).
 

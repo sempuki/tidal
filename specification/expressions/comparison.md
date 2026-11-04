@@ -48,8 +48,7 @@ compares their addresses.
 :::
 
 :::{principle} CMP-P3
-:rules: CMP-7 CMP-15 CMP-22 CMP-26
-:exceptions: CMP-8 CMP-20
+:rules: CMP-7 CMP-15 CMP-22 CMP-26 CMP-8 CMP-20
 
 Pointers have an order only inside one thing:
 
@@ -68,6 +67,18 @@ the two pointers compare equal is unspecified. The rows of an array of
 arrays have no gap between them, so the position past the end of one
 row equals the first element of the next row. Two pointers to members
 are equal when they select the same member of the same {term}`subobject`.
+
+A constant evaluation must not depend on where the implementation
+places objects ({principle}`CE-P3`). So during constant evaluation
+these comparisons are rejected:
+
+- a relational comparison of pointers to unrelated objects,
+- an equality comparison of a pointer past the end of one complete
+  object with a pointer to another complete object.
+
+Inside one complete object the layout is fixed, so the same comparisons
+are accepted there. The rows of an array of arrays and the members of
+one class are examples.
 :::
 
 :::{principle} CMP-P4
@@ -98,7 +109,12 @@ on the sizes of the integer types. These operand forms are rejected:
 - a narrowing conversion,
 - a `bool` against another type,
 - a pointer against `0`,
-- two different enumerations.
+- two different enumerations,
+- an unscoped enumeration against a floating-point value.
+
+An unscoped enumeration takes part as an integer only against an integer
+type or its own type. Against any other type the enumeration has no
+lossless common type with the other operand.
 
 Function pointers and pointers to members have no order, so `<=>` does
 not apply to them.

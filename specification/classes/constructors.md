@@ -469,7 +469,7 @@ With none of these conditions, the destructor is *trivial*.
 
 :::{rule} CTOR-17
 :kind: reject
-:tests: classes/constructors/reference-member-binds-temporary.cpp classes/constructors/reference-default-member-binds-temporary.cpp classes/constructors/reference-member-binds-converted-parameter.cpp classes/constructors/initializer-list-default-member-from-braces.cpp classes/constructors/initializer-list-member-from-braces.cpp
+:tests: classes/constructors/reference-member-binds-temporary.cpp classes/constructors/reference-default-member-binds-temporary.cpp classes/constructors/reference-member-binds-converted-parameter.cpp classes/constructors/initializer-list-default-member-from-braces.cpp classes/constructors/initializer-list-member-from-braces.cpp classes/constructors/reference-default-member-read-constant.cpp
 
 A constructor must not bind a reference member to a {term}`temporary object`,
 through a `mem_init` or a default member initializer. The temporary ends
@@ -660,8 +660,8 @@ Span g{{1}};   // Span(int): {1} gives an int directly (ICS-15). The
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 173
-of 194 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 174
+of 195 tests.
 
 Two questions on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on classes and statements (`reports/review/2026-11-03-gap-review-questions-classes-statements.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
 
@@ -678,6 +678,8 @@ Two questions on this page settled on 2026-11-03 under decision 0054 after the s
 
 - CTOR-14: Clang and EDG reject an indirect delegation cycle. GCC accepts
   it ({question}`Q-0053`).
+  CTOR-14 needs no diagnostic. Every test of CTOR-14 has an override,
+  and each override records a result that the class allows.
 - DTOR-7: EDG 7.0 accepts a second destruction during constant evaluation
   ({question}`Q-0054`). Clang and GCC reject it for a trivial destructor
   too, and for a parameter object that the called function destroyed
@@ -690,6 +692,9 @@ Two questions on this page settled on 2026-11-03 under decision 0054 after the s
   and the test records GCC and EDG as overrides.
 - CTOR-18: EDG accepts the nested default member initializer. Clang and
   GCC reject it ({question}`Q-0083`).
+  EDG also accepts the nested initializer in the initializer of a static
+  data member, in the operand of `noexcept`, and in the bound of a
+  member array. So every test of CTOR-18 needs an override for EDG.
 - CTOR-17: Clang rejects the binding. GCC accepts it with a warning, and
   EDG accepts it ({question}`Q-0084`). CTOR-17 is a `reject` rule,
   because the binding is visible where the constructor or the class is
@@ -699,6 +704,9 @@ Two questions on this page settled on 2026-11-03 under decision 0054 after the s
   the reference as treating an `std::initializer_list` member set from
   a braced list in the same way. The compilers split in the same way:
   Clang rejects both forms, and GCC and EDG accept them.
+  In `reference-default-member-read-constant.cpp` constant evaluation
+  reads the member after its temporary ends, and every compiler rejects
+  the program. GCC and EDG reject the read ({rule}`CE-9`).
 - CTOR-24: the compilers differ for unions and anonymous unions
   ({question}`Q-0126`):
 

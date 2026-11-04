@@ -41,10 +41,12 @@ fixed order of tests:
 | Test | Type of the hidden variable | Elements |
 |---|---|---|
 | 1 | An array | Its elements |
-| 2 | A type with a tuple size | The results of `get` |
+| 2 | A class for which `std::tuple_size` is complete and has a `value` member | The results of `get` |
 | 3 | Any other class | Its data members, in declaration order |
 
-The number of names must equal the number of elements. A name for an
+A class whose `std::tuple_size` is complete with no `value` member goes
+on to test 3. The number of names must equal the number of elements. A
+name for an
 array element or a data member has the declared type of its element,
 with the qualifiers of the hidden variable added, so a binding to a
 `mutable` member or a bit-field behaves as that member does. A name for
@@ -58,7 +60,8 @@ an element of the tuple protocol has the type that
 The declaration is deliberately narrow and has these limits:
 
 - `auto` as its type,
-- a few specifiers,
+- no specifiers other than `static`, `thread_local`, `const`, and
+  `volatile`,
 - one {term}`declarator` with one list of names.
 
 Each name is a new declaration in the enclosing scope, so the names must

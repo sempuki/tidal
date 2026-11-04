@@ -263,7 +263,7 @@ follows a throw, so constant evaluation never reaches such a point.
 
 :::{rule} CE-9
 :kind: reject
-:tests: expressions/constant-expressions/undefined-behavior.cpp expressions/constant-expressions/undefined-behavior-dangling.cpp expressions/postfix/member-call-null-pointer-constant.cpp templates/deduction/substitution-failure-undefined-operation.cpp
+:tests: expressions/constant-expressions/undefined-behavior.cpp expressions/constant-expressions/undefined-behavior-dangling.cpp expressions/postfix/member-call-null-pointer-constant.cpp templates/deduction/substitution-failure-undefined-operation.cpp classes/constructors/reference-default-member-read-constant.cpp
 
 Constant evaluation must not evaluate an operation that has undefined
 behavior. Each rule of class `undefined` gives such an operation. CE-26
@@ -582,8 +582,8 @@ constinit Empty empty;                // fine: Empty has no scalar part
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 129
-of 153 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 130
+of 154 tests.
 
 Of the constant-evaluation cluster, {question}`Q-0090` is settled under
 decision 0051. These questions of the cluster on this page stay open:
@@ -623,6 +623,9 @@ split on each of them.
   constant (compare {question}`Q-0020`).
 - CE-13: Clang rejects the comparison of two string literal addresses.
   GCC and EDG accept it and fold it to a value ({question}`Q-0033`).
+  EDG folds each comparison that the probes tried. GCC rejects the
+  comparison of `"abc" + 1` with `"bc"`, and folds the comparison of two
+  equal literals. So every test of CE-13 needs an override for EDG.
 - CE-11: EDG accepts `explicit(2)` and converts the condition to `bool`
   ({question}`Q-0078`).
 - CE-18: Clang 18 rejects the use of the reference. Clang 22, GCC, and
@@ -673,6 +676,9 @@ split on each of them.
 - CE-28: Clang and GCC reject `1.0 / 0.0` and `0.0 / 0.0` and note a
   division by zero, although both give an infinity or a NaN at run time
   ({question}`Q-0004`). EDG 7.0 accepts both ({question}`Q-0002`).
+  EDG also accepts the division as the initializer of a `constexpr`
+  variable, as a `float` division, and in a template argument. So every
+  test of CE-28 needs an override for EDG.
 - CE-3 and CE-14: the compilers split on temporaries that a namespace
   `constexpr` reference extends ({question}`Q-0193`).
   - EDG rejects a `constexpr` reference variable when its temporary is

@@ -30,6 +30,22 @@ standard attribute has a fixed set of arguments and a fixed set of
 places where it can go, so a standard attribute is not skippable in this
 sense. An implementation can also recognize attributes of its own, and
 such an attribute can change what a program does.
+
+The standard attributes with the narrowest places are these:
+
+| Attribute | Places | Rules |
+|---|---|---|
+| `noreturn`, `carries_dependency` | The first declaration of a function. A later declaration can repeat the attribute and cannot add it. `carries_dependency` can also go on a parameter. | ATTR-2, ATTR-11 |
+| `likely`, `unlikely` | A statement, or a label of any kind: `case`, `default`, or a name that a `goto` uses. At most one of the two on one statement or label. | ATTR-2, ATTR-8 |
+| `fallthrough` | A statement on its own in a `switch`, where the next statement that can run has a `case` or `default` label | ATTR-2 |
+| `assume` | A statement on its own | ATTR-13 |
+| `nodiscard` | A function or a type, and no variable | ATTR-2, ATTR-5 |
+| `no_unique_address` | A data member that is not a bit-field | ATTR-2, ATTR-9 |
+
+A promise about a function goes on the first declaration, because a
+call after that declaration already relies on what the declaration
+says. Two likelihood hints on one place contradict each other, so the
+implementation rejects the pair instead of choosing one.
 :::
 
 :::{principle} ATTR-P2
@@ -102,7 +118,7 @@ recognizes.
 
 :::{rule} ATTR-2
 :kind: reject
-:tests: declarations/attributes/attribute-argument-not-string.cpp declarations/attributes/attribute-too-many-arguments.cpp declarations/attributes/attribute-unexpected-argument.cpp declarations/attributes/noreturn-on-variable.cpp declarations/attributes/fallthrough-misplaced.cpp declarations/attributes/fallthrough-not-before-case.cpp declarations/attributes/fallthrough-on-declaration.cpp declarations/attributes/likely-and-unlikely.cpp declarations/attributes/nodiscard-on-variable.cpp declarations/attributes/noreturn-not-first.cpp declarations/attributes/fallthrough-end-of-loop.cpp declarations/attributes/no-unique-address-bitfield.cpp declarations/attributes/carries-dependency-redeclared.cpp declarations/attributes/fallthrough-end-of-if-branch.cpp declarations/attributes/fallthrough-end-of-else-branch.cpp declarations/attributes/likely-with-argument.cpp declarations/attributes/unlikely-with-argument.cpp declarations/attributes/maybe-unused-with-argument.cpp declarations/attributes/fallthrough-with-argument.cpp declarations/attributes/no-unique-address-with-argument.cpp
+:tests: declarations/attributes/attribute-argument-not-string.cpp declarations/attributes/attribute-too-many-arguments.cpp declarations/attributes/attribute-unexpected-argument.cpp declarations/attributes/noreturn-on-variable.cpp declarations/attributes/fallthrough-misplaced.cpp declarations/attributes/fallthrough-not-before-case.cpp declarations/attributes/fallthrough-on-declaration.cpp declarations/attributes/likely-and-unlikely.cpp declarations/attributes/nodiscard-on-variable.cpp declarations/attributes/noreturn-not-first.cpp declarations/attributes/fallthrough-end-of-loop.cpp declarations/attributes/no-unique-address-bitfield.cpp declarations/attributes/carries-dependency-redeclared.cpp declarations/attributes/fallthrough-end-of-if-branch.cpp declarations/attributes/fallthrough-end-of-else-branch.cpp declarations/attributes/likely-with-argument.cpp declarations/attributes/unlikely-with-argument.cpp declarations/attributes/maybe-unused-with-argument.cpp declarations/attributes/fallthrough-with-argument.cpp declarations/attributes/no-unique-address-with-argument.cpp declarations/attributes/noreturn-repeated.cpp
 
 A standard attribute must have the correct arguments and must apply to a
 correct entity:
@@ -179,7 +195,7 @@ specifier, so each of those attributes must not have its own namespace.
 
 :::{rule} ATTR-18
 :kind: reject
-:tests: declarations/attributes/pointer-attribute-after-cv.cpp declarations/attributes/pointer-attribute-before-cv.cpp
+:tests: declarations/attributes/pointer-attribute-after-cv.cpp declarations/attributes/pointer-attribute-before-cv.cpp declarations/attributes/pointer-attribute-no-cv.cpp
 
 In a pointer declarator, an attribute specifier comes after the
 {term}`cv-qualifiers <cv-qualifier>` of the `*` ({question}`Q-0123`).
@@ -381,8 +397,8 @@ switch (k) {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 66
-of 82 tests. EDG skips the tests that use `-Werror`.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 68
+of 84 tests. EDG skips the tests that use `-Werror`.
 
 - An implementation should warn if a `noreturn` function can return.
   Clang and GCC give this warning ("function declared 'noreturn' should
@@ -422,6 +438,8 @@ of 82 tests. EDG skips the tests that use `-Werror`.
   chooses its own attributes. Under `-pedantic-errors`, Clang and GCC
   apply `[[gnu::packed]]`, so a class of a `char` and an `int` has size
   5. EDG 7.0 with `--strict` gives the class size 8.
+  Every test of ATTR-20 has an override, and each override records a
+  result that the class allows.
 - ATTR-9 is implementation-defined because the layout of a class is the
   implementation's choice. Every compiler in the matrix gives an empty
   member with `no_unique_address` no storage of its own.
@@ -440,6 +458,8 @@ of 82 tests. EDG skips the tests that use `-Werror`.
 - ATTR-18: GCC and EDG accept an attribute after the cv-qualifiers of a
   `*` and reject one before them. Clang does the reverse
   ({question}`Q-0123`).
+  Every compiler accepts an attribute after a `*` with no cv-qualifiers
+  (`pointer-attribute-no-cv.cpp`).
 - ATTR-2 has these divergences. In each, the compilers that accept the
   program ignore the attribute with a warning, also under
   `-pedantic-errors`.

@@ -18,6 +18,8 @@ No; rejected (option 1). Clang and GCC, in both versions, reject the lambda.
 
 Kept open on 2026-11-03 under decision 0054, because no principle on the page gives the answer. LAM-P2 and LAM-P3 say what a closure captures, and they do not say where a capture default can appear. EDG 7.0 accepts the lambda.
 
+Checked on 2026-11-04 under the principle test of the style guide (section 3, item PQ of decision 0055). LAM-P3 failed step 3, because no principle said where a capture default can appear. Item PQ widened LAM-P3: a capture default asks for captures from an enclosing function or, in a default member initializer, through `this`, so a lambda at namespace scope cannot have one. The new test `tests/expressions/lambdas/capture-default-in-member-initializer.cpp` checks the default member initializer case, which no test checked. Under decision 0055, the question does not settle on a principle that phase 8 wrote. The question stays provisional until a reader or a reviewer uses LAM-P3.
+
 ## Opinions
 
 ### Gap review, 2026-11-03

@@ -36,6 +36,8 @@ Yes; Clang and EDG agree, GCC differs (option 1). Two of three implementations a
 
 Kept open on 2026-11-03 under decision 0054, because no principle on the page gives the answer. INST-P1 and INST-P2 let default arguments wait for a use and do not name local classes.
 
+Checked on 2026-11-04 under the principle test of the style guide (section 3, item PQ of decision 0055). INST-P1 and INST-P2 failed step 3, because they let default arguments wait for a use and did not name local classes. Item PQ widened INST-P1. A local class is part of its function, and the instantiation of the function is the use that needs the local class, so every part of the local class is made with the function, default arguments among them. Under decision 0055, the question does not settle on a principle that phase 8 wrote. The question stays provisional until a reader or a reviewer uses INST-P1.
+
 ## Opinions
 
 ### Gap review, 2026-11-03

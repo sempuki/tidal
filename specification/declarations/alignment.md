@@ -21,12 +21,31 @@ Depends on: declarators, class definitions and members, unary operators,
 
 Every type has an alignment, and every object of the type sits at an
 address that is a multiple of the alignment, in every kind of storage.
-`alignas` can make the alignment stricter and never weaker, because the
-natural alignment is the type's own need. Every alignment is a power of
+`alignas` can make the alignment stricter. The natural alignment is the
+type's own need, so an `alignas` that asks for a weaker alignment is
+rejected. Every alignment is a power of
 two, and the strictest requirement wins. So a program rounds an offset
 up to an alignment `a` with the mask `~(a - 1)`. A class
 is as aligned as its most demanding part, and its size is a multiple of
 its alignment so that an array of the class keeps every element aligned.
+
+`alignas` goes on a declaration that places an object or lays out a
+class:
+
+| Declaration | `alignas` |
+|---|---|
+| a variable, other than the variable of a handler | applies |
+| a non-static data member that is not a bit-field | applies |
+| a class or a union, also in a forward declaration | applies |
+| an enumeration | rejected |
+| a bit-field, a function, a parameter, the variable of a handler, or a type alias | rejected |
+
+The operand is an integer constant. The operand has an integral or
+unscoped enumeration type, or a class type whose conversion function
+gives such a type. A floating-point operand is rejected. A scoped
+enumeration converts to an integer only with a cast
+({principle}`ENUM-P2`), so an enumerator of a scoped enumeration is
+rejected.
 :::
 
 :::{principle} ALN-P2
@@ -40,7 +59,9 @@ entity agrees, within a unit and across units.
 :rules: ALN-5
 
 The alignments of the fundamental types and the largest alignment that
-can be asked for depend on the target.
+can be asked for depend on the target. An implementation cannot place an
+object at an alignment above its largest one, so the implementation
+rejects an `alignas` that asks for more.
 :::
 
 ## Syntax
@@ -223,6 +244,9 @@ Two questions on this page settled on 2026-11-03 under decision 0054 after the s
   EDG do on all three ({question}`Q-0071`).
 - ALN-7: EDG 7.0 and GCC 14 accept `alignas` on an enumeration. Clang
   and GCC 16 reject it ({question}`Q-0073`).
+  EDG accepts `alignas` on each form of enumeration that the probes
+  tried, also an opaque declaration and a scoped enumeration. So every
+  test of ALN-7 needs an override for EDG.
 - ALN-2: GCC accepts `alignas` weaker than the natural alignment, with
   no warning, and keeps the natural alignment ({question}`Q-0069`).
   The result is the same for a variable, a data member, and a class.

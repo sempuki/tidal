@@ -42,6 +42,16 @@ definition. A use needs the definition in these cases:
 A {term}`discarded statement` of `if constexpr` is not instantiated
 ({rule}`IF-13`). An exception specification is instantiated when a use
 needs the specification ({rule}`EXS-9`).
+
+A class or enumeration declared in the body of a function template is
+part of that function. The instantiation of the function is the use
+that needs the local class, so the instantiation makes every part of
+the local class at once (INST-12). The parts that wait for a use in a
+member of a class template do not wait in a local class:
+
+- member function bodies and exception specifications,
+- default member initializers,
+- default arguments.
 :::
 
 :::{principle} INST-P2
@@ -95,6 +105,12 @@ the unit can do without. The unit still instantiates an inline
 function, a `constexpr` function, a function with a deduced return
 type, a variable that a constant expression can use, and a class
 (INST-27).
+
+An explicit instantiation stands at namespace scope, in the namespace
+of its template or in a namespace that encloses it. In an enclosing
+namespace, the instantiation names the template with a qualified name,
+so the name shows which namespace holds the template. The same placement
+holds for a class, a function, and a variable template (INST-21).
 
 The names in an explicit instantiation are not checked for access
 (INST-34). A program has at most one explicit instantiation definition

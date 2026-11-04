@@ -27,7 +27,11 @@ initializer to the object's type ({principle}`VC-P2`).
 {term}`Default initialization <default initialization>` gives a value only where some code supplies one:
 a constructor, or a default member initializer. Everything else is left
 as it is. An automatic object with no initializer therefore has no value
-until the program assigns one ({principle}`OBJ-P4`).
+until the program assigns one ({principle}`OBJ-P4`), and a read of it
+before then is undefined. A copy of such a value into an object of type
+`unsigned char` or `std::byte` is not undefined, so a program can copy
+raw storage byte by byte. The target of the copy also has no value.
+Constant evaluation rejects even that copy ({rule}`CE-22`).
 :::
 
 :::{principle} INIT-P3

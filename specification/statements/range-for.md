@@ -27,8 +27,11 @@ you.
 3. The loop then advances with `++`, stops when the iterator compares
    equal to `end`, and initializes the loop variable from each element.
 
-The loop variable is not yet declared when the range expression is
-evaluated, so a name there means the outer entity (RFOR-8).
+The initializer statement is the `init_stmt` of `if`, `switch`, and the
+plain `for` loop, so the same forms are valid in each of the four
+statements. A lone `;` is one of the forms. The loop variable is not
+yet declared when the range expression is evaluated, so a name there
+means the outer entity (RFOR-8).
 :::
 
 :::{principle} RFOR-P2

@@ -37,6 +37,8 @@ acceptance and record GCC's result with an override.
 
 Kept open on 2026-11-03 under decision 0054, because no principle on the pages of ALN-8 and BF-1 says how a class operand gives an integer value. GCC 16 is the only newest family that differs.
 
+Checked on 2026-11-04 under the principle test of the style guide (section 3, item PQ of decision 0055). No principle on the two pages said how a class operand gives an integer value. ALN-P1 and UNI-P4 now say that the operand or the width can have a class type whose conversion function gives an integral or unscoped enumeration type, which rules out option 2. The existing tests check both places. Under decision 0055, the question does not settle on a principle that phase 8 wrote. The question stays provisional until a reader or a reviewer uses ALN-P1 and UNI-P4.
+
 ## Opinions
 
 ### Gap review, 2026-11-03

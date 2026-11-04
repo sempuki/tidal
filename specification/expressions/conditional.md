@@ -45,9 +45,26 @@ operand is evaluated.
 - Otherwise the result is a prvalue, and each operand is converted to
   the result type. Operands of one type keep that type. Other
   arithmetic operands convert by the
-  {term}`usual arithmetic conversions`. Class operands convert by their
-  own conversions, with overload resolution choosing when the types
-  differ.
+  {term}`usual arithmetic conversions`.
+
+A null pointer constant has no pointer type of its own. So a pointer and
+a null pointer constant give the pointer type, and `nullptr` with
+`nullptr` or with the literal `0` gives the type of `nullptr`.
+
+Operands of different types, at least one of them a class, first try to
+convert one operand to the type of the other. If neither converts, the
+operator goes to built-in candidates, as an overloaded operator does
+({principle}`OVL-P4`). Overload resolution picks the candidate, and the
+class operands reach it through their conversion functions. The
+candidates are these:
+
+- `(L, R)` for every pair of promoted arithmetic types, `float` among
+  them, with the result of the usual arithmetic conversions,
+- `(T, T)` for each pointer type, pointer-to-member type, and scoped
+  enumeration type `T`, with the result `T`.
+
+An unscoped enumeration reaches the arithmetic candidates through its
+promotion, so the enumeration has no candidate of its own.
 :::
 
 :::{principle} COND-P3
@@ -291,11 +308,7 @@ int m = larger(x, y);          // fine: x and y outlive the call
 All eight compilers agree on 60 of 65 tests. The results are in
 `tests/RESULTS.md`.
 
-One question on this page settled on 2026-11-04 under decision 0054 after the source-reader gap review of the rules that the phase 7 front-end and Propose repairs rewrote (`reports/review/2026-11-04-gap-review-phase-7-repairs.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
-
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0373` | OVL-P4 | GCC 16 and EDG 7.0, each in one form |
+{question}`Q-0373` is provisional. A gap review supports its answer with no doubt, and OVL-P4 does not give the answer under the test of the style guide (section 3). The tests keep their overrides for GCC 16 and EDG 7.0.
 
 - COND-6: Clang and GCC accept `a ?: b` as an extension, and reject the
   form under `-pedantic-errors`. EDG rejects the form in all modes.

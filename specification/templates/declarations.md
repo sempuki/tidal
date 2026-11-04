@@ -874,6 +874,9 @@ probes for TPL-32 to TPL-47 and for the additions to the older rules.
   while no specialization is made.
 - TPL-42: GCC rejects a member enumeration defined after the class body
   under `-pedantic-errors`. Clang and EDG accept it ({question}`Q-0199`).
+  GCC rejects each such definition, also in a class template with only a
+  scoped member enumeration. So every test of TPL-42 needs an override
+  for GCC.
 - TPL-46: Clang gives two closure types for two uses of one alias
   template specialization. GCC and EDG give one ({question}`Q-0200`).
 - TPL-36: a constant pack whose type is a type pack of the same head

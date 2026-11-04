@@ -20,7 +20,9 @@ resolution ({doc}`/overloading/overload-resolution`).
 A conversion function is a member whose name is a type, and the function
 says how an object of the class becomes a value of that type. The
 function takes no parameters and declares no return type, because the
-name already says both. A derived class inherits the conversion
+name already says both. The name can be `auto`, and the target type then
+comes from the `return` statements, as for any function with a deduced
+return type. A derived class inherits the conversion
 functions of its base, and a conversion function with the same target
 type hides the base's, as any member with the same name would.
 :::

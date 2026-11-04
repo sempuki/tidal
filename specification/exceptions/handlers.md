@@ -463,6 +463,8 @@ One question on this page settled on 2026-11-04 under decision 0054 after the so
   | TRY-4: a second handler for one type | `duplicate-handler-warns.cpp` | warns | warns | warns |
   | TRY-12: a handler of a function try block runs off the end of a function that returns `int` | `function-try-block-non-void-no-return.cpp`, `member-function-try-block-no-return.cpp` | warns | none | warns |
   | TRY-13: a handler of a constructor's or destructor's function try block names a member | `ctor-try-block-member-use-warns.cpp`, `dtor-try-block-member-use-warns.cpp` | warns | none | none |
+- TRY-12 and TRY-13 are `recommended` rules. Every test of each has an
+  override, and each override records a result that the class allows.
 - TRY-11: the test only shows that the program compiles.
 - TRY-2: every Clang and GCC configuration matches a thrown pointer to
   an object, and a thrown pointer to a pointer, with a handler for a

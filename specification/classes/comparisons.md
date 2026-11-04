@@ -20,7 +20,11 @@ Depends on: comparison operators, operator overloading, derived classes.
 A defaulted comparison compares part by part, bases first, in
 declaration order, and stops at the first difference. The implementation
 writes the function only when asked and only in a shape that the
-implementation can fill in. When a part cannot be compared that way, the
+implementation can fill in. The class asks in its own definition, so a
+defaulted comparison is a member of the class or a friend that the class
+declares first. A friend declared earlier outside the class is a
+function the class did not ask for, and defaulting the friend is
+rejected. When a part cannot be compared that way, the
 implementation deletes the function, so the implementation rejects only
 a use ({principle}`CPY-P3`). A comparison defaulted after the class is a
 definition that the program asks for, so the implementation rejects one
@@ -38,6 +42,12 @@ expression with `!=` or a relational operator also tries `==` or `<=>`,
 with the operands in either order, so a class need write only `==` and
 `<=>`. An expression with `<=>` also tries `<=>` with the operands
 reversed.
+The rewrite takes the result of the chosen `==` as a `bool` value, and
+`!=` negates that value. So an `==` that a rewritten `!=` or a reversed
+`==` chooses must return the type `bool`. A cv-qualifier on that return
+type makes no difference, because the call gives a plain `bool` value
+either way. A reference to `bool` and any other type are rejected.
+
 A declared operator wins over a rewritten one, and an implementation
 should warn when the rewrites make a comparison ambiguous.
 :::
@@ -224,7 +234,7 @@ access, and deletion take no part ({question}`Q-0190`).
 
 :::{rule} DCMP-8
 :kind: reject
-:tests: classes/comparisons/out-of-class-would-delete.cpp classes/comparisons/out-of-class-reference-member-would-delete.cpp
+:tests: classes/comparisons/out-of-class-would-delete.cpp classes/comparisons/out-of-class-reference-member-would-delete.cpp classes/comparisons/out-of-class-would-delete-used.cpp
 
 A comparison defaulted after the class definition must not be one that
 would be deleted. The program is not valid also when nothing uses the
@@ -306,8 +316,8 @@ bool y = l == s;   // the friend from Name<8>, with M = 2
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 73
-of 79 tests. The tests declare the comparison category types themselves.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 74
+of 80 tests. The tests declare the comparison category types themselves.
 
 - DCMP-3: GCC accepts defaulting a friend that was declared outside the
   class. Clang and EDG reject it ({question}`Q-0061`).
@@ -315,6 +325,9 @@ of 79 tests. The tests declare the comparison category types themselves.
   ({question}`Q-0062`). DCMP-8 is a `reject` rule, as {rule}`CPY-17` is
   for the copy and move functions, and the tests record GCC and EDG as
   overrides.
+  In `out-of-class-would-delete-used.cpp` the program also uses the
+  comparison, and every compiler rejects the program. GCC and EDG reject
+  the use of a deleted function.
 - DCMP-7: Clang and GCC give the warning by default, and
   `-pedantic-errors` makes the warning an error. EDG reports the
   comparison as ambiguous.

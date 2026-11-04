@@ -23,7 +23,12 @@ initializer's arguments are evaluated. `delete` reverses the two steps:
 
 The object must have a complete object type, because its size and its
 constructor are needed, and an array can have a size known only at run
-time. An object that `new` leaves without an initializer has no value,
+time. The size converts to the type of `sizeof` by an implicit
+conversion, as any value converts. So an integer, an unscoped
+enumeration, a floating-point value, or a class that converts to one of
+these gives a size. A scoped enumeration converts to an integer only
+with a cast ({principle}`ENUM-P2`), so an enumerator of a scoped
+enumeration gives no size. An object that `new` leaves without an initializer has no value,
 as any object does before its first write ({principle}`OBJ-P4`).
 :::
 
@@ -37,6 +42,11 @@ A `delete` must match its `new` in these ways:
 - Each object is deleted once.
 - Only a pointer that `new` gave can be deleted, because the
   implementation keeps its records by that pointer.
+
+The array form steps through the elements by the size of the type that
+the pointer points to. So `delete[]` through a pointer to a base class,
+for an array of a derived class, is undefined, also when the destructor
+is virtual.
 
 A null pointer has no object, so deleting it does nothing. The operand
 needs a pointer to an object type, or a class object that converts to
@@ -72,7 +82,10 @@ deallocation function that pairs with the allocation function. The
 extra parameters make the pair, so a placement form needs an
 `operator delete` with the same extra parameters. Only that function
 knows how to free storage that the placement form obtained. Without the
-function, the storage stays allocated.
+function, the storage stays allocated. The `new` expression uses that
+deallocation function also when the initialization cannot throw. So the
+function must be accessible and must not be deleted, as for any
+function that a program uses.
 
 | Allocation | Deallocation function after a throw | Rules |
 |---|---|---|
@@ -88,9 +101,11 @@ Constant evaluation can use `new`, since constant evaluation runs the
 same program ({principle}`TR-P4`). Nothing can outlive the evaluation,
 so each object made during the evaluation must be deleted before the
 evaluation ends. The evaluation manages the storage itself, so it can
-use only the global allocation functions of the implementation. A
-function that the program writes, or a placement form, has effects that
-the evaluation cannot model. The placement `new` inside
+use only the global allocation functions of the implementation. The
+nothrow forms are among these functions, so an evaluation can use
+`new (std::nothrow)`. A function that the program writes, or a
+placement form that the program defines, has effects that the
+evaluation cannot model. The placement `new` inside
 `std::construct_at` is the one exception ({rule}`LSUP-10`).
 :::
 
@@ -510,7 +525,7 @@ for no extra storage (NEW-34).
 
 :::{rule} NEW-35
 :kind: required
-:tests: expressions/new-delete/bad-bound-negative.cpp expressions/new-delete/bad-bound-too-large.cpp expressions/new-delete/bad-bound-too-few.cpp foundations/language-support/exception-classes-array-length.cpp
+:tests: expressions/new-delete/bad-bound-negative.cpp expressions/new-delete/bad-bound-too-large.cpp expressions/new-delete/bad-bound-too-few.cpp foundations/language-support/exception-classes-array-length.cpp expressions/new-delete/bad-bound-constant-negative.cpp expressions/new-delete/bad-bound-constant-too-few.cpp
 
 The first bound `n` of `new T[n]` is *erroneous* in these cases:
 
@@ -875,12 +890,22 @@ Two questions on this page settled on 2026-11-03 under decision 0054 after the s
 
   Under `-O2`, GCC 16 omits the call for the third case, as NEW-14
   allows.
+- NEW-35: the two tests of NEW-39 also cite NEW-35. Every compiler
+  rejects a negative bound and a bound too small for its initializer
+  during constant evaluation, so these tests show which bounds are
+  erroneous with no override. At run time the compilers split on each
+  case, as the table above shows, so each run test of NEW-35 has an
+  override.
 - NEW-39: constant evaluation rejects each erroneous bound on every
   compiler. Clang and EDG name the bound in a note, and GCC names the
   call that would throw.
 - NEW-36: Clang gives a null pointer for an erroneous bound with the
   nothrow form. GCC throws `std::bad_array_new_length`
   ({question}`Q-0302`).
+  GCC throws in each erroneous case that the tests check. During
+  constant evaluation, GCC 16 throws for a negative bound with the
+  nothrow form, and EDG does not evaluate the nothrow forms at all
+  (NEW-37). So every test of NEW-36 needs an override.
 - NEW-37: every compiler rejects a class's own `operator new` and a
   placement form during constant evaluation, and accepts an
   over-aligned type. Clang 18 and 22 and GCC 16 accept the nothrow

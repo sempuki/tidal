@@ -18,6 +18,17 @@ take values in sequence, each one more than the last unless the program
 gives a value, and a value can use the enumerators before it. An
 enumerator's name exists only after its value, so the value cannot name
 the enumerator ({principle}`NAM-P1`).
+
+Inside the list, an enumeration without a fixed type is not complete
+yet, so each enumerator has the type of its own value:
+
+- With an initializer, the enumerator has the type of the initializer.
+- Without one, the enumerator keeps the type of the enumerator before
+  it.
+- If that type cannot hold the new value, the enumerator gets an integer
+  type that can hold the value. The implementation chooses which.
+
+After the closing brace, every enumerator has the enumeration type.
 :::
 
 :::{principle} ENUM-P2
@@ -32,6 +43,10 @@ freely their values convert.
 | Values | Promote to an integer, as C does | Convert to or from an integer only with a cast, so they take part in no arithmetic and stand in no condition |
 
 `using enum` brings the enumerators of either kind into a scope by name.
+So the enumerators must exist at that point, and the definition with the
+list of enumerators must come first. An opaque declaration names no
+enumerator, so `using enum` cannot use it, although the opaque
+declaration makes the enumeration complete.
 :::
 
 :::{principle} ENUM-P3
@@ -41,7 +56,7 @@ The underlying type holds the values.
 
 | | Fixed by the program, or scoped | Not fixed |
 |---|---|---|
-| Underlying type | Known from the first declaration | A type wide enough, chosen by the implementation |
+| Underlying type | Known from the first declaration | A type wide enough, chosen by the implementation. If no integer type that the implementation provides is wide enough, the implementation can reject the enumeration. |
 | Values of the enumeration | Every value of the type | Only the bits the enumerators need. A value outside that range has no meaning. |
 
 When the type is known from the first declaration, the enumeration is

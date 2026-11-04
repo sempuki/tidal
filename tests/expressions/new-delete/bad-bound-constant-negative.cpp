@@ -1,4 +1,4 @@
-// tidal-rules: NEW-39 CE-8
+// tidal-rules: NEW-39 NEW-35 CE-8
 // tidal-expect: reject
 // tidal-error-clang: evaluated array bound -1 is negative
 // tidal-error-gcc: call to non-.constexpr. function .*bad_array_new_length

@@ -27,6 +27,8 @@ warning says `__func__` is only valid inside a function.
 
 Kept open on 2026-11-03 under decision 0054, because no principle on the page gives the answer. FN-P5 says what `__func__` names inside a function body, and it does not say that a use outside a body is rejected. Clang 22 accepts the use with a warning.
 
+Checked on 2026-11-04 under the principle test of the style guide (section 3, item PQ of decision 0055). FN-P5 fails step 3, because it speaks only of a use inside a function body, so option 2 also fits. Item PQ widened FN-P5: each function body declares `__func__` at its start as a local variable, and outside a body nothing declares the name, so a use there is rejected. Under decision 0055, the question does not settle on a principle that phase 8 wrote. The question stays provisional until a reader or a reviewer uses FN-P5.
+
 ## Opinions
 
 ### Gap review, 2026-11-03

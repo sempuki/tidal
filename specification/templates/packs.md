@@ -62,8 +62,8 @@ candidates (PACK-27).
 :::
 
 :::{principle} PACK-P2
-:rules: PACK-13 PACK-14 PACK-16 PACK-17 PACK-18 PACK-19 PACK-21
-:exceptions: PACK-15 PACK-20 PACK-25 PACK-29 PACK-30
+:rules: PACK-13 PACK-14 PACK-16 PACK-17 PACK-18 PACK-19 PACK-21 PACK-30
+:exceptions: PACK-15 PACK-20 PACK-25 PACK-29
 
 An expansion can stand only where the grammar has a list. Each place
 puts `...` after one item of its list, and the copies become items of
@@ -86,6 +86,16 @@ that list:
 `sizeof...(p)` counts the elements and needs no expansion (PACK-19).
 `sizeof...` and a fold use up their packs, so an outer pattern cannot
 expand the same pack through them (PACK-8).
+
+A using-declarator expanded over a pack is a declaration that the
+definition of the class template can see. A name in the class that
+finds the declarator at the definition is bound to it there
+({principle}`DEP-P1`). An instantiation with an empty pack has no
+declarator, so the bound name has nothing to mean. Such a program is
+not valid. The meaning changed between the definition and the
+instantiation, and as for other such changes
+({principle}`DEP-P6`), the implementation need not diagnose the error
+(PACK-30).
 :::
 
 :::{principle} PACK-P3
@@ -608,6 +618,8 @@ The clean-room writer probed each rule with Clang 22, GCC 16, and EDG
   valid on every compiler (`using-declaration-empty-pack.cpp`). The
   gap review (item 15) gives the program no meaning and requires no
   diagnostic, and the class allows both results.
+  Every test of PACK-30 has an override, and each override records a
+  result that the class allows.
 - PACK-18: the gap review (item 13) predicted a rejection for an init
   capture `c{p...}` with two elements. Every compiler rejects it, as a
   braced initializer of a placeholder type with two elements.

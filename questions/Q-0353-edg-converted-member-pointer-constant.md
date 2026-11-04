@@ -41,6 +41,8 @@ Clang and GCC agree at run time and in constant evaluation.
 
 Kept open on 2026-11-03 under decision 0054, because no principle on the page gives the answer. MPTR-P3 allows the conversion and does not say that the value survives a pass through an object or a function result. CE-P1, on the constant evaluation page, gives the answer. EDG 7.0 is the only newest family that differs.
 
+Checked on 2026-11-04 under the principle test of the style guide (section 3, item PQ of decision 0055). MPTR-P3 failed step 3, because MPTR-P3 did not say that a converted value survives a pass through an object or a function result. CE-P1 gives the model, and the member pointer page did not cite CE-P1. Item PQ widened MPTR-P3 to state the case and to cite CE-P1. The new test `tests/expressions/member-pointers/converted-through-object-constant.cpp` checks the case under MPTR-4 in a rule test, with an override for EDG 7.0, because only program tests checked it before. Under decision 0055, the question does not settle on a principle that phase 8 wrote. The question stays provisional until a reader or a reviewer uses MPTR-P3.
+
 ## Opinions
 
 ### Gap review, 2026-11-03

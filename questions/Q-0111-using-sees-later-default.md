@@ -1,6 +1,6 @@
 # Q-0111: Does a using declaration see a default argument that a later namespace declaration adds?
 
-**Status:** settled
+**Status:** provisional
 **Affects:** DEFARG-2, `tests/declarations/functions/default-arguments/using-sees-later-default.cpp`
 
 ## Context
@@ -13,11 +13,13 @@ A namespace declares a function with one parameter. A using declaration brings t
 
 2. The using declaration sees only the default arguments declared before it.
 
-## Answer
+## Provisional answer
 
 Yes; the default argument is usable through the using declaration (option 1). GCC and EDG agree.
 
-Settled on 2026-11-03 under decision 0054. The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) supports this answer with no doubt, and DEFARG-P2 gives the same answer: default arguments belong to the declarations of a function, and the declarations in one scope add them up. A using declaration adds none of its own. Clang 22 still differs. Tidal records Clang 22's result as a deviation, as for the compiler-defect entries Q-0002 and Q-0003, and the tests keep their overrides for Clang 22.
+Reopened as provisional on 2026-11-04 under the principle test of the style guide (section 3, item PQ of decision 0055). The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) supports this answer with no doubt. DEFARG-P2 fails step 3 of the test. The model says that the declarations in one scope add up their default arguments. The model says nothing of a using declaration in another scope, so option 2, where the using declaration sees only the defaults before it, also fits the model. No other principle on the page gives the answer. Clang 22 differs, and the tests keep their overrides for Clang 22.
+
+On 2026-11-04, item PQ widened DEFARG-P2: a using declaration brings the function into another scope with no defaults of its own, and a call through it uses the defaults that the function's scope has at the call, also those added after the using declaration. Under decision 0055, the question does not settle on a principle that phase 8 wrote. The question stays provisional until a reader or a reviewer uses DEFARG-P2.
 
 ## Opinions
 

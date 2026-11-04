@@ -19,6 +19,8 @@ No; only an integer literal with value zero is a null pointer constant (option 1
 
 Kept open on 2026-11-03 under decision 0054, because no principle on the page gives the answer. CONV-P3 says that a null pointer comes only from `nullptr` or a literal zero, and it does not say whether a character literal with the value zero counts as a literal zero. EDG 7.0 is the only newest family that differs.
 
+Checked on 2026-11-04 under the principle test of the style guide (section 3, item PQ of decision 0055). CONV-P3 failed step 3, because "a literal zero" did not say whether a character literal counts. Item PQ widened CONV-P3: a null pointer comes only from `nullptr` or an integer literal with the value zero, and the principle names `'\0'`, `false`, and an integer variable as numbers that are not null pointers. CONV-8 and its tests are already among the evidence of CONV-P3. Under decision 0055, the question does not settle on a principle that phase 8 wrote. The question stays provisional until a reader or a reviewer uses CONV-P3.
+
 ## Opinions
 
 ### Gap review, 2026-11-03

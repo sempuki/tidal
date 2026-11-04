@@ -71,7 +71,23 @@ object. Without a virtual destructor, such a `delete` is undefined.
 
 A pure virtual function declares an obligation for derived classes. A
 class with a pure virtual function is abstract and cannot be an object
-on its own, only a base of a class that meets the obligation. A pure
+on its own, only a base of a class that meets the obligation. So a
+construct that makes an object of the class is rejected, and a construct
+that only names the class is valid:
+
+| Makes an object (rejected) | Only names the class (valid) |
+|---|---|
+| a variable, an array, a member, a temporary | a pointer or a reference |
+| a `new` expression | `sizeof` |
+| a parameter or a return value in a function definition | a parameter or a return type in a declaration that is not a definition |
+| a call to a function that returns the class | |
+| a lambda capture by copy | a lambda capture by reference |
+
+A call makes its result as an object of the return type. So a call to a
+function that returns the class is rejected, also where the declaration
+of the function is valid.
+
+A pure
 function can still have a definition, and a pure virtual destructor
 needs a definition, because derived destructors call the pure virtual
 destructor.

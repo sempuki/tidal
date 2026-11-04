@@ -22,6 +22,8 @@ rejects it only as a pedantic diagnostic.
 
 Kept open on 2026-11-03 under decision 0054, because no principle on the page states the case. CVF-P1 says that a conversion function declares no return type because its name gives the type, and does not say whether the name can be a placeholder. GCC 16 differs only under `-pedantic-errors`.
 
+Checked on 2026-11-04 under the principle test of the style guide (section 3, item PQ of decision 0055). CVF-P1 failed step 3 of the test, because the model did not say whether the name of a conversion function can be a placeholder. Item PQ widened CVF-P1. The name can be `auto`, and the target type comes from the `return` statements. CVF-1 and `deduced-auto.cpp` check the case. Under decision 0055, the question does not settle on a principle that phase 8 wrote. The question stays provisional until a reader or a reviewer uses CVF-P1.
+
 ## Opinions
 
 ### Gap review, 2026-11-03

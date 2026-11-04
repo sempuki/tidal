@@ -1,4 +1,4 @@
-// tidal-rules: TSP-25
+// tidal-rules: TSP-25 LNK-6
 // tidal-expect: link-fail
 // tidal-error-clang: multiple definition of
 // tidal-error-gcc: multiple definition of

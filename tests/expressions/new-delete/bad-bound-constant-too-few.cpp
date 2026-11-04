@@ -1,4 +1,4 @@
-// tidal-rules: NEW-39 CE-8
+// tidal-rules: NEW-39 NEW-35 CE-8
 // tidal-expect: reject
 // tidal-error-clang: too small to hold 3 explicitly initialized elements
 // tidal-error-gcc: call to non-.constexpr. function .*bad_array_new_length
