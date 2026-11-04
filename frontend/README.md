@@ -94,15 +94,21 @@ tells the cases apart.
 An `unspecified` line lists the choice points that the first run
 passed, each with the rule that leaves the choice open. The first run
 takes the first option at each point. `run` then runs the program again
-with the other options at the choice points of SEQ-1 (left to right or
-right to left), SEQ-8 (left or right operand first), PRIM-9 (one object
+with the other options at the choice points of SEQ-1 (every order of
+the arguments; the second run of a call reverses the order), SEQ-8 (left or right operand first), PRIM-9 (one object
 or two), CMP-8 (either order), CMP-20 (equal or not), and MPTR-7, up to
 64 runs in all (decision 0048). A second line gives the other outcomes:
 
 ```
 explored: 4 runs; other outcomes: result 1; result 0
-explored: 64 runs (the bound of 64 runs stopped the exploration); other outcomes: result 0
+explored: 64 runs (the bound of 64 runs stopped the exploration; the set is partial); other outcomes: result 0
 ```
+
+The arguments of a multi-argument `operator[]`, and the operands of the
+other operators that OPR-7 lists, keep their order, so they are no
+choice point. A run with more than 4096 choice points settles a line
+once another option there gives the first outcome. The set is then
+partial too, and the second line says so.
 
 If one of the other runs stops at undefined behavior, the program's
 outcome is that stop. The conformance harness uses the same outcome.
@@ -134,8 +140,12 @@ slice:
 A function-like `#define` and other directives are unsupported.
 
 The harness reads the `// tidal-` directives at the top of each test. The
-harness uses the `tidal-expect-edg` override when a test has one, and treats
-`run`, `run-fail`, and `link-fail` as accept for the check. `-Werror` in `tidal-flags`
+harness judges each test by its base `tidal-expect` line, and treats
+`run`, `run-fail`, and `link-fail` as accept for the check. The
+`tidal-expect-edg` override only names a second answer. A test with no
+base line and compiler lines that differ passes with either answer. The
+kind of each rule comes from `../specification` beside the test
+directory, or from the directory that `--spec DIR` names. `-Werror` in `tidal-flags`
 passes `--werror`, `-m32` passes `--m32`, and the other `-W` flags
 pass through. A test with
 `tidal-sources` checks each translation unit on its own.
@@ -148,7 +158,12 @@ columns:
 - **Missed reject**: the front end accepted an invalid program.
 - **Unsupported**: the front end gave up on a construct and found no error.
 - **Differs from EDG only**: the answer differs from the EDG override
-  but matches the test's base `tidal-expect` line.
+  but matches the test's base `tidal-expect` line. A pass.
+- **Agrees with EDG only**: the answer matches the EDG override and not
+  the base line. A failure.
+- **EDG, allowed**: the answer matches the EDG override and not the
+  base line, and every rule the test cites is `impl-defined`,
+  `unspecified`, `no-diagnostic`, or `conditionally-supported`. A pass.
 
 The harness then runs each test whose base expectation is `run` or
 `run-fail`, if the check accepted every translation unit, and links the
@@ -159,7 +174,13 @@ behavior that names one of the test's rules, or the program ends with a
 nonzero status or terminates. A separate table counts the run
 tests:
 
-- **Pass**.
+- **Pass**: every explored run gives an outcome that the expectation
+  allows.
+- **Pass, partial**: a pass whose exploration is partial, because the
+  bound stopped it, a line was settled, or another run is unsupported.
+  These tests are in **Pass** too.
+- **Other outcome**: the first run gives an allowed outcome, and another
+  explored run does not.
 - **Wrong result**: a `run` test ended with a nonzero status or
   terminated.
 - **Missed undefined behavior**: a `run-fail` test ended with status 0.
@@ -181,6 +202,9 @@ status gives the run's outcome when the check passed:
 |---|---|
 | `pass` | the check matches the expectation, and a `run` or `run-fail` test also passed its run |
 | `EDG-ONLY` | the check differs from the EDG override and matches the base expectation |
+| `EDG-AGREES` | the check matches only the EDG override; a failure |
+| `EDG-ALLOWED` | the check matches only the EDG override, and every rule the test cites allows either answer; a pass |
+| `pass-partial` | as `pass`, but the exploration of the choice points is partial |
 | `FALSE-REJECT` | the check rejected a valid program |
 | `MISSED-REJECT` | the check accepted a program that the test expects rejected |
 | `unsupported` | the check gave up on a construct and found no error |
@@ -188,6 +212,7 @@ status gives the run's outcome when the check passed:
 | `RUN-WRONG-RESULT` | the check passed; a `run` test ended with a nonzero status or terminated, or a `run-fail` test whose rules name no undefined behavior ended with status 0 |
 | `RUN-MISSED-UB` | the check passed; a `run-fail` test ended with status 0 |
 | `RUN-UNEXPECTED-UB` | the check passed; the run stopped at undefined behavior that the test does not expect |
+| `RUN-OTHER-OUTCOME` | the check passed; the first run passed, and another explored run gives an outcome that the expectation does not allow |
 
 The run tests also have lines of their own that start with `RUN`, with
 the run status second (`run-pass`, the run statuses above, and

@@ -63,7 +63,8 @@ const SETTLE_AFTER: usize = 4096;
 /// The runs of a program over its choice points (decision 0048): each
 /// allowed choice at SEQ-1, SEQ-8, PRIM-9, CMP-8, and CMP-20, up to
 /// `RUN_BOUND` runs. Returns the outcome to report, the outcomes of the
-/// other runs, and whether the bound stopped the exploration.
+/// other runs, and, when the exploration left choices untried, the
+/// reason: the bound, or a settled line.
 ///
 /// The reported outcome is the first run's, unless another run stops at
 /// undefined behavior: an allowed choice that leads to undefined behavior
@@ -73,13 +74,13 @@ const SETTLE_AFTER: usize = 4096;
 /// with unsequenced operands) explores each line once: when the other
 /// option at the last choice point of a line gives the outcome of the
 /// first run, the other choice points of that line are not explored.
-pub fn run_explored(ps: &[&P]) -> (RunOutcome, Vec<RunOutcome>, bool) {
+pub fn run_explored(ps: &[&P]) -> (RunOutcome, Vec<RunOutcome>, Option<String>) {
     let (first, mut taken, mut lines) = run_once(ps, &[]);
     let mut others = Vec::new();
     let mut runs = 1;
     let mut bound = false;
     if matches!(first, RunOutcome::Unsupported(..)) {
-        return (first, others, false);
+        return (first, others, None);
     }
     let first_status = match &first {
         RunOutcome::Result(s, _) => Some(*s),
@@ -107,10 +108,19 @@ pub fn run_explored(ps: &[&P]) -> (RunOutcome, Vec<RunOutcome>, bool) {
         lines = l;
         others.push(o);
     }
+    // A settled line skips options, so the set is partial as well.
+    let partial = if bound {
+        Some(format!("the bound of {} runs stopped the exploration", RUN_BOUND))
+    } else if !settled.is_empty() {
+        let n = settled.len();
+        Some(format!("{} {} settled after another choice there gave the first outcome", n, if n == 1 { "line was" } else { "lines were" }))
+    } else {
+        None
+    };
     let ub = others.iter().find(|o| matches!(o, RunOutcome::Undefined(..))).cloned();
     match (ub, &first) {
-        (Some(u), RunOutcome::Result(..)) => (u, others, bound),
-        _ => (first, others, bound),
+        (Some(u), RunOutcome::Result(..)) => (u, others, partial),
+        _ => (first, others, partial),
     }
 }
 

@@ -3523,14 +3523,8 @@ impl<'a> Machine<'a> {
     pub fn bind_args(&mut self, f: &FuncInfo, args: &[Expr], defs: &FuncInfo) -> R<Frame> {
         let mut frame = Frame::new();
         let effects = args.iter().filter(|a| has_effects(a)).count();
-        let mut reverse = false;
         let fixed = std::mem::take(&mut self.fixed_order);
-        if !self.constant && effects >= 2 && !fixed {
-            // SEQ-1: the order of the arguments is unspecified. The run
-            // tries left to right and right to left.
-            reverse = self.decide(2) == 1;
-            self.choice("SEQ-1", if reverse { "arguments evaluated from right to left" } else { "arguments evaluated from left to right" });
-        }
+        let explore = !self.constant && effects >= 2 && !fixed;
         let mut all: Vec<(DeclId, Expr)> = Vec::new();
         for (i, a) in args.iter().enumerate() {
             if i >= f.params.len() {
@@ -3563,8 +3557,26 @@ impl<'a> Machine<'a> {
                 None => return unsup("missing argument"),
             }
         }
-        if reverse {
-            all.reverse();
+        if explore {
+            // SEQ-1: the order of the arguments is unspecified. Each run
+            // picks one order, one argument at a time, so that the runs
+            // together try every order up to the bound. Option 0 takes the
+            // first argument left, and option j the j-th from the end, so
+            // that the second run of a call reverses the order.
+            let mut rest = std::mem::take(&mut all);
+            let (mut forward, mut backward) = (true, true);
+            let picked = rest.len() > 1;
+            while rest.len() > 1 {
+                let j = self.decide(rest.len().min(255) as u8) as usize;
+                let k = if j == 0 { 0 } else { rest.len() - j };
+                forward &= k == 0;
+                backward &= k == rest.len() - 1;
+                all.push(rest.remove(k));
+            }
+            all.extend(rest);
+            if picked {
+                self.choice("SEQ-1", if forward { "arguments evaluated from left to right" } else if backward { "arguments evaluated from right to left" } else { "arguments evaluated in another order" });
+            }
         }
         for (pid, a) in all {
             let pty = self.p.var(pid).map(|v| v.ty.clone()).unwrap_or(QTy::unknown());
@@ -3811,9 +3823,11 @@ impl<'a> Machine<'a> {
         // SEQ-6: shifts, subscripts, the comma, the pointer-to-member
         // operators, `&&`, and `||` keep the left-to-right order.
         let fixed = f.kind == FnKind::Operator && matches!(name0.as_str(), "operator<<" | "operator>>" | "operator[]" | "operator," | "operator->*" | "operator&&" | "operator||");
-        self.fixed_order = fixed;
+        // OPR-7: the flag is set just before the arguments, so that a call
+        // in the object expression does not take it.
         let mut early_frame = None;
         if right_first {
+            self.fixed_order = fixed;
             early_frame = Some(self.bind_args(&f, args, &f)?);
         }
         let mut this = if member && from_ptr && self.p.closure_conv.values().any(|&op| op == fid) {
@@ -3998,6 +4012,7 @@ impl<'a> Machine<'a> {
         let frame = match early_frame {
             Some(fr) => rebind(fr, &static_f, &f),
             None => {
+                self.fixed_order = fixed;
                 let fr = self.bind_args(&disp_f, args, &static_f)?;
                 rebind(fr, &disp_f, &f)
             }

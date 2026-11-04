@@ -134,7 +134,7 @@ fn run_command(paths: &[String], m32: bool) -> ! {
                         set.push(d);
                     }
                 }
-                println!("explored: {} runs{}; other outcomes: {}", 1 + others.len(), if bound { format!(" (the bound of {} runs stopped the exploration)", interp::run::RUN_BOUND) } else { String::new() }, set.join("; "));
+                println!("explored: {} runs{}; other outcomes: {}", 1 + others.len(), bound.map(|r| format!(" ({}; the set is partial)", r)).unwrap_or_default(), set.join("; "));
             }
             match o {
                 interp::run::RunOutcome::Result(v, _) => (v & 0xff) as i32,

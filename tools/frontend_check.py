@@ -7,23 +7,38 @@ change disagrees with the front end's reading of the spec, or the front end
 is out of date. The baseline is reports/clean-room/rust-frontend/conformance.tsv,
 one line per test with its status.
 
-A test passes when the front end's answer matches the test's expectation.
-"Differs from EDG only" counts as a pass, so either answer is accepted on a
-test with an EDG override.
+A test passes when the front end's answer matches the test's base
+expectation (`tidal-expect`). The passing statuses:
+
+- `pass`.
+- `EDG-ONLY`: the answer matches the base expectation, and the test's EDG
+  override differs.
+- `EDG-ALLOWED`: the answer matches only the EDG override, and every rule
+  that the test cites is impl-defined, unspecified, no-diagnostic, or
+  conditionally-supported.
+- `pass-partial`: the run passes on every explored choice, but the
+  exploration is partial (the bound stopped it, or a run was unsupported).
+
+`EDG-AGREES` is a failed check: the answer matches only the EDG override,
+and some rule the test cites does not allow that answer.
 
 For a test that expects a run, `tidal-fe conform -v` gives the run's outcome
 once the check passed: `run-unsupported`, `RUN-WRONG-RESULT`, `RUN-MISSED-UB`,
-or `RUN-UNEXPECTED-UB`. Such a status counts as a passed check and a failed
-run. Each status has a rank: 2 for a full pass, 1 for a passed check with a
-failed run, 0 for a failed check.
+`RUN-UNEXPECTED-UB`, or `RUN-OTHER-OUTCOME` (one explored run gives an
+outcome that the expectation does not allow). Such a status counts as a
+passed check and a failed run. Each status has a rank: 2 for a full pass,
+1 for a passed check with a failed run, 0 for a failed check.
 
 An `accept` test with a `tidal-interpreter: run-fail` line (decision 0053)
 also runs in the interpreter, and its run must stop at undefined behavior
 that names one of the test's rules. Its status is a run status as above.
 The summary counts these tests and how many of them pass.
 
-Fails when a test's rank is lower than in the baseline. New tests and tests
-that improved are reported. --update rewrites the baseline.
+Fails when a test's status changes to a failing status: a move from a
+passing status, and a move from one failing status to another, both fail.
+New tests and tests that improved are reported. --update rewrites the
+baseline. A baseline row is a status and a test path, separated by a tab;
+later columns, if a row has any, are ignored.
 
 Usage:
     tools/frontend_check.py [--update]
@@ -40,7 +55,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 FRONTEND = ROOT / "frontend"
 BASELINE = ROOT / "reports" / "clean-room" / "rust-frontend" / "conformance.tsv"
-PASSING = {"pass", "EDG-ONLY"}
+PASSING = {"pass", "EDG-ONLY", "EDG-ALLOWED", "pass-partial"}
 INTERPRETER = re.compile(r"^// tidal-interpreter:\s*run-fail\s*$", re.M)
 
 
@@ -100,7 +115,7 @@ def read_baseline() -> dict[str, str]:
     base = {}
     for line in BASELINE.read_text().splitlines():
         if line and not line.startswith("#"):
-            status, name = line.split("\t")
+            status, name = line.split("\t")[:2]
             base[name] = status
     return base
 
@@ -126,13 +141,21 @@ def main() -> int:
         print(f"frontend: baseline written, {sum(s in PASSING for s in now.values())}/{len(now)} pass")
         return 0
     base = read_baseline()
-    worse = sorted(n for n, s in now.items() if n in base and rank(s) < rank(base[n]))
-    better = sorted(n for n, s in now.items() if n in base and rank(s) > rank(base[n]))
+    # Any move to a failing status fails, from a pass or from another
+    # failing status.
+    worse = sorted(n for n, s in now.items() if n in base and s != base[n] and s not in PASSING)
+    better = sorted(n for n, s in now.items() if n in base and s in PASSING
+                    and base[n] not in PASSING)
+    # A move between two passing statuses, for example to `pass-partial`.
+    moved = sorted(n for n, s in now.items() if n in base and s != base[n] and s in PASSING
+                   and base[n] in PASSING)
     new_failing = sorted(n for n, s in now.items() if n not in base and s not in PASSING)
     new = sum(n not in base for n in now)
     for n in worse:
         print(f"frontend: {n}: {now[n]}, {base[n]} in the baseline")
     for n in better:
+        print(f"frontend: {n}: {now[n]}, {base[n]} in the baseline")
+    for n in moved:
         print(f"frontend: {n}: {now[n]}, {base[n]} in the baseline")
     for n in new_failing:
         print(f"frontend: new test {n}: {now[n]}")
@@ -140,7 +163,7 @@ def main() -> int:
     checks = sum(rank(s) >= 1 for s in now.values())
     interp = interpreter_tests()
     print(f"frontend: {passing}/{len(now)} pass, {checks}/{len(now)} pass their check, "
-          f"{len(worse)} worse, {len(better)} better, {new} new ({len(new_failing)} not passing)")
+          f"{len(worse)} worse, {len(better)} better, {len(moved)} moved between passing statuses, {new} new ({len(new_failing)} not passing)")
     print(f"frontend: {sum(now.get(n) in PASSING for n in interp)}/{len(interp)} "
           f"interpreter-only expectations met")
     return 1 if worse else 0

@@ -2,7 +2,7 @@
 // front end's answer with the test's expectation.
 
 use crate::diag::Diag;
-use crate::interp::run::{run_units, RunOutcome};
+use crate::interp::run::{run_explored, RunOutcome};
 use crate::{outcome_of, parse_source, Outcome};
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
@@ -12,9 +12,19 @@ use std::time::Duration;
 struct Test {
     path: PathBuf,
     rel: String,
+    /// The base expectation (`tidal-expect`) is `reject`. The harness
+    /// judges by this expectation.
     expect_reject: bool,
-    /// The expectation without the EDG override, when there is one.
-    base_reject: Option<bool>,
+    /// The test has no base expectation, and the compilers' expectations
+    /// differ: either answer passes.
+    any_answer: bool,
+    /// The EDG override, when there is one and it differs from the base
+    /// expectation on reject against accept.
+    edg_reject: Option<bool>,
+    /// Every rule the test cites is `impl-defined`, `unspecified`,
+    /// `no-diagnostic`, or `conditionally-supported`, so the rules allow
+    /// EDG's answer as well as the base one.
+    edg_allowed: bool,
     rules: Vec<String>,
     m32: bool,
     /// The limit on nested instantiations that the flags set (TR-13).
@@ -43,6 +53,12 @@ enum RunExpect {
 #[derive(Clone, PartialEq, Debug)]
 enum RunRes {
     Pass,
+    /// Every explored run gives an allowed outcome, but the exploration
+    /// is partial: the bound stopped it, or another run is unsupported.
+    PassPartial,
+    /// The first run gives an allowed outcome, and another explored run
+    /// gives an outcome that the expectation does not allow.
+    OtherOutcome,
     /// A `run` test ended with a nonzero status, or a `run-fail` test whose
     /// rules name no undefined behavior ended with status 0.
     WrongResult,
@@ -61,9 +77,53 @@ enum Res {
     FalseReject,
     MissedReject,
     Unsupported,
-    /// Disagrees with the EDG override, agrees with the base expectation.
+    /// Agrees with the base expectation where the EDG override differs.
     EdgOnly,
+    /// Agrees with the EDG override against the base expectation. A
+    /// failure.
+    EdgAgrees,
+    /// Agrees with the EDG override against the base expectation, and
+    /// every rule the test cites allows either answer. A pass.
+    EdgAllowed,
 }
+
+/// The kind of each rule in the specification (`:kind:` under
+/// `:::{rule} ID`).
+fn rule_kinds(spec: &Path) -> std::collections::HashMap<String, String> {
+    let mut out = std::collections::HashMap::new();
+    let mut files = Vec::new();
+    fn walk(d: &Path, out: &mut Vec<PathBuf>) {
+        let Ok(rd) = std::fs::read_dir(d) else { return };
+        for e in rd.flatten() {
+            let p = e.path();
+            if p.is_dir() {
+                walk(&p, out);
+            } else if p.extension().is_some_and(|e| e == "md") {
+                out.push(p);
+            }
+        }
+    }
+    walk(spec, &mut files);
+    for f in files {
+        let Ok(src) = std::fs::read_to_string(&f) else { continue };
+        let mut id: Option<String> = None;
+        for line in src.lines() {
+            if let Some(r) = line.strip_prefix(":::{rule}") {
+                id = Some(r.trim().to_string());
+            } else if let (Some(i), Some(k)) = (&id, line.strip_prefix(":kind:")) {
+                out.insert(i.clone(), k.trim().to_string());
+                id = None;
+            } else {
+                id = None;
+            }
+        }
+    }
+    out
+}
+
+/// The rule kinds under which an implementation's answer can differ from
+/// the base expectation and still be allowed.
+const LENIENT: [&str; 4] = ["impl-defined", "unspecified", "no-diagnostic", "conditionally-supported"];
 
 fn collect(dir: &Path, out: &mut Vec<PathBuf>) {
     let Ok(rd) = std::fs::read_dir(dir) else { return };
@@ -78,10 +138,13 @@ fn collect(dir: &Path, out: &mut Vec<PathBuf>) {
     }
 }
 
-fn parse_test(root: &Path, path: &Path) -> Option<Test> {
+fn parse_test(root: &Path, path: &Path, kinds: &std::collections::HashMap<String, String>) -> Option<Test> {
     let src = std::fs::read_to_string(path).ok()?;
     let mut expect = None;
     let mut edg = None;
+    // The expectations for single compilers, for a test with no base
+    // expectation.
+    let mut each = Vec::new();
     let mut rules = Vec::new();
     let mut flags = String::new();
     let mut sources = Vec::new();
@@ -97,6 +160,9 @@ fn parse_test(root: &Path, path: &Path) -> Option<Test> {
             expect = Some(v.trim().to_string());
         } else if let Some(v) = rest.strip_prefix("expect-edg:") {
             edg = Some(v.trim().to_string());
+            each.push(v.trim() == "reject");
+        } else if let Some((_, v)) = rest.strip_prefix("expect-").and_then(|r| r.split_once(':')) {
+            each.push(v.trim() == "reject");
         } else if let Some(v) = rest.strip_prefix("rules:") {
             rules = v.split_whitespace().map(String::from).collect();
         } else if let Some(v) = rest.strip_prefix("interpreter:") {
@@ -110,21 +176,33 @@ fn parse_test(root: &Path, path: &Path) -> Option<Test> {
         }
     }
     // A front end only checks programs: run, run-fail, and link-fail mean
-    // accept. An EDG override takes precedence.
-    let base_reject = if edg.is_some() { expect.as_ref().map(|x| x == "reject") } else { None };
-    let run = match expect.as_deref() {
+    // accept. The base expectation decides; the EDG override only names
+    // a second answer.
+    // A test with no base expectation gives one per compiler, and the
+    // rules allow each of these answers.
+    let any_answer = expect.is_none() && each.contains(&true) && each.contains(&false);
+    let expect = match expect {
+        Some(e) => e,
+        None if each.is_empty() => return None,
+        None => if each.iter().all(|&r| r) { "reject".to_string() } else { "accept".to_string() },
+    };
+    let expect_reject = expect == "reject";
+    let edg_reject = if any_answer { None } else { edg.map(|x| x == "reject").filter(|&r| r != expect_reject) };
+    let edg_allowed = !rules.is_empty() && rules.iter().all(|r| kinds.get(r).is_some_and(|k| LENIENT.contains(&k.as_str())));
+    let run = match Some(expect.as_str()) {
         Some("run") => Some(RunExpect::Run),
         Some("run-fail") => Some(RunExpect::RunFail),
         _ if interpreter.as_deref() == Some("run-fail") => Some(RunExpect::Undefined),
         _ => None,
     };
-    let e = edg.or(expect)?;
     let rel = path.strip_prefix(root).unwrap_or(path).to_string_lossy().to_string();
     Some(Test {
         path: path.to_path_buf(),
         rel,
-        expect_reject: e == "reject",
-        base_reject,
+        expect_reject,
+        any_answer,
+        edg_reject,
+        edg_allowed,
         rules,
         m32: flags.contains("-m32"),
         depth: crate::types::depth_limit_of(&flags.split_whitespace().collect::<Vec<_>>()),
@@ -173,8 +251,8 @@ fn run_one(t: &Test) -> Outcome2 {
                     // A panic in the interpreter is unsupported, not a
                     // failed check.
                     let refs: Vec<&crate::parser::P> = ps.iter().collect();
-                    let r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| run_units(&refs)));
-                    Some(r.unwrap_or(RunOutcome::Unsupported("interpreter crashed".into(), 0)))
+                    let r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| run_explored(&refs)));
+                    Some(r.unwrap_or((RunOutcome::Unsupported("interpreter crashed".into(), 0), Vec::new(), None)))
                 } else {
                     None
                 };
@@ -183,7 +261,7 @@ fn run_one(t: &Test) -> Outcome2 {
             let _ = tx.send(r.map_err(|_| ()));
         })
         .unwrap();
-    let mut run_out: Option<RunOutcome> = None;
+    let mut run_out: Option<(RunOutcome, Vec<RunOutcome>, Option<String>)> = None;
     match rx.recv_timeout(Duration::from_secs(30)) {
         Ok(Ok((outs, ran))) => {
             run_out = ran;
@@ -202,28 +280,62 @@ fn run_one(t: &Test) -> Outcome2 {
         Ok(Err(())) => unsup.push(Diag { sev: crate::diag::Severity::Unsupported, rule: None, cause: None, msg: "front end crashed".into(), line: 0 }),
         Err(_) => unsup.push(Diag { sev: crate::diag::Severity::Unsupported, rule: None, cause: None, msg: "front end timed out".into(), line: 0 }),
     }
-    let run = t.run.map(|k| judge_run(t, k, run_out.as_ref()));
-    if let Some(d) = any_reject {
-        let res = if t.expect_reject {
-            Res::Pass
-        } else if t.base_reject == Some(true) {
-            Res::EdgOnly
-        } else {
+    let run = t.run.map(|k| judge_runs(t, k, run_out.as_ref()));
+    // The answer is judged by the base expectation. A test whose EDG
+    // override differs has a second answer that agrees with EDG.
+    let judge = |reject: bool| -> Res {
+        if reject == t.expect_reject || t.any_answer {
+            if t.edg_reject.is_some() { Res::EdgOnly } else { Res::Pass }
+        } else if t.edg_reject == Some(reject) {
+            if t.edg_allowed { Res::EdgAllowed } else { Res::EdgAgrees }
+        } else if reject {
             Res::FalseReject
-        };
-        return Outcome2 { res, diags: d, run };
+        } else {
+            Res::MissedReject
+        }
+    };
+    if let Some(d) = any_reject {
+        return Outcome2 { res: judge(true), diags: d, run };
     }
     if !unsup.is_empty() {
         return Outcome2 { res: Res::Unsupported, diags: unsup, run };
     }
-    let res = if !t.expect_reject {
-        Res::Pass
-    } else if t.base_reject == Some(false) {
-        Res::EdgOnly
-    } else {
-        Res::MissedReject
+    Outcome2 { res: judge(false), diags: vec![], run }
+}
+
+/// Compare a run and the other runs that the exploration of its choice
+/// points made with the test's expectation (decisions 0047, 0048). Every
+/// explored outcome must be one that the expectation allows. A run that
+/// stops at undefined behavior that the test expects allows any other
+/// outcome.
+fn judge_runs(t: &Test, k: RunExpect, o: Option<&(RunOutcome, Vec<RunOutcome>, Option<String>)>) -> (RunRes, String) {
+    let Some((first, others, partial)) = o else {
+        return judge_run(t, k, None);
     };
-    Outcome2 { res, diags: vec![], run }
+    let (res, line) = judge_run(t, k, Some(first));
+    let explored = others.len() + 1;
+    if res != RunRes::Pass || matches!(first, RunOutcome::Undefined(..)) {
+        return (res, line);
+    }
+    for x in others {
+        if matches!(x, RunOutcome::Unsupported(..)) {
+            continue;
+        }
+        let (r, l) = judge_run(t, k, Some(x));
+        if r != RunRes::Pass {
+            return (RunRes::OtherOutcome, format!("{}; explored: {} runs; an outcome the expectation does not allow: {}", line, explored, l));
+        }
+    }
+    if let Some(why) = partial {
+        return (RunRes::PassPartial, format!("{}; explored: {} runs, partial: {}", line, explored, why));
+    }
+    if let Some(u) = others.iter().find(|x| matches!(x, RunOutcome::Unsupported(..))) {
+        return (RunRes::PassPartial, format!("{}; explored: {} runs, one of them {}", line, explored, crate::describe_run(u)));
+    }
+    if explored > 1 {
+        return (res, format!("{}; explored: {} runs", line, explored));
+    }
+    (res, line)
 }
 
 /// Compare a run with the test's expectation (decision 0048).
@@ -263,6 +375,8 @@ fn judge_run(t: &Test, k: RunExpect, o: Option<&RunOutcome>) -> (RunRes, String)
 fn run_tag(rr: &RunRes) -> &'static str {
     match rr {
         RunRes::Pass => "pass",
+        RunRes::PassPartial => "pass-partial",
+        RunRes::OtherOutcome => "RUN-OTHER-OUTCOME",
         RunRes::WrongResult => "RUN-WRONG-RESULT",
         RunRes::MissedUndefined => "RUN-MISSED-UB",
         RunRes::UnexpectedUndefined => "RUN-UNEXPECTED-UB",
@@ -303,7 +417,14 @@ pub fn run(args: &[String]) {
     let out_file = args.iter().position(|a| a == "--out").and_then(|i| args.get(i + 1)).cloned();
     let mut paths = Vec::new();
     collect(&root, &mut paths);
-    let tests: Vec<Test> = paths.iter().filter_map(|p| parse_test(&root, p)).collect();
+    // The rule kinds come from the specification beside the tests, or from
+    // the directory that `--spec` names.
+    let spec = args.iter().position(|a| a == "--spec").and_then(|i| args.get(i + 1)).map(PathBuf::from).unwrap_or_else(|| root.join("..").join("specification"));
+    let kinds = rule_kinds(&spec);
+    if kinds.is_empty() {
+        eprintln!("conform: no rules found under {}; no test counts as allowing EDG's answer", spec.display());
+    }
+    let tests: Vec<Test> = paths.iter().filter_map(|p| parse_test(&root, p, &kinds)).collect();
     // run in parallel
     let n = std::thread::available_parallelism().map(|x| x.get()).unwrap_or(4);
     let tests = std::sync::Arc::new(tests);
@@ -332,8 +453,8 @@ pub fn run(args: &[String]) {
         let _ = h.join();
     }
     // tally
-    let mut by_dir: BTreeMap<String, [usize; 6]> = BTreeMap::new();
-    let mut by_sub: BTreeMap<String, [usize; 6]> = BTreeMap::new();
+    let mut by_dir: BTreeMap<String, [usize; 8]> = BTreeMap::new();
+    let mut by_sub: BTreeMap<String, [usize; 8]> = BTreeMap::new();
     let mut unsup_msgs: BTreeMap<String, usize> = BTreeMap::new();
     let mut rule_match = 0;
     let mut lines = Vec::new();
@@ -348,6 +469,8 @@ pub fn run(args: &[String]) {
             Res::MissedReject => 2,
             Res::Unsupported => 3,
             Res::EdgOnly => 5,
+            Res::EdgAgrees => 6,
+            Res::EdgAllowed => 7,
         };
         for k in [&mut by_dir.entry(top).or_default(), &mut by_sub.entry(sub).or_default()] {
             k[idx] += 1;
@@ -362,7 +485,7 @@ pub fn run(args: &[String]) {
                 }
             }
         }
-        if o.res == Res::Pass && t.expect_reject {
+        if matches!(o.res, Res::Pass | Res::EdgOnly) && t.expect_reject {
             if o.diags.iter().any(|d| d.rule.into_iter().chain(d.cause).any(|r| t.rules.iter().any(|x| x == r))) {
                 rule_match += 1;
             }
@@ -373,14 +496,15 @@ pub fn run(args: &[String]) {
             Res::MissedReject => "MISSED-REJECT",
             Res::Unsupported => "unsupported",
             Res::EdgOnly => "EDG-ONLY",
+            Res::EdgAgrees => "EDG-AGREES",
+            Res::EdgAllowed => "EDG-ALLOWED",
         };
         // A test that expects a run passes only if the run passes too. The
         // status column then gives the run's outcome.
         let mut first = o.diags.first().map(|d| format!("{}:{} {}", d.line, d.rule.unwrap_or("-"), d.msg)).unwrap_or_default();
-        if o.res == Res::Pass {
+        if matches!(o.res, Res::Pass | Res::EdgOnly) {
             if let Some((rr, line)) = &o.run {
                 let rt = run_tag(rr);
-                // A reject that matches an EDG override does not run.
                 if rt != "pass" && *rr != RunRes::NotRun {
                     tag = rt;
                     first = line.clone();
@@ -390,7 +514,7 @@ pub fn run(args: &[String]) {
         lines.push(format!("{}\t{}\t{}\t{}", tag, t.rel, t.rules.join(" "), first));
     }
     // The run tests: a table of their own.
-    let mut run_dir: BTreeMap<String, [usize; 7]> = BTreeMap::new();
+    let mut run_dir: BTreeMap<String, [usize; 9]> = BTreeMap::new();
     let mut run_lines = Vec::new();
     for (t, o) in tests.iter().zip(results.iter()) {
         let o = o.as_ref().unwrap();
@@ -402,14 +526,22 @@ pub fn run(args: &[String]) {
             RunRes::UnexpectedUndefined => 3,
             RunRes::Unsupported => 4,
             RunRes::NotRun => 5,
+            RunRes::OtherOutcome => 7,
+            RunRes::PassPartial => 8,
         };
         let parts: Vec<&str> = t.rel.split('/').collect();
         let top = parts.first().copied().unwrap_or("").to_string();
         let e = run_dir.entry(top).or_default();
         e[idx] += 1;
         e[6] += 1;
+        if *rr == RunRes::PassPartial {
+            // A partial pass is a pass, counted again in its own column.
+            e[0] += 1;
+        }
         let tag = match rr {
             RunRes::Pass => "run-pass",
+            RunRes::PassPartial => "run-pass-partial",
+            RunRes::OtherOutcome => "RUN-OTHER-OUTCOME",
             RunRes::WrongResult => "RUN-WRONG-RESULT",
             RunRes::MissedUndefined => "RUN-MISSED-UB",
             RunRes::UnexpectedUndefined => "RUN-UNEXPECTED-UB",
@@ -421,29 +553,39 @@ pub fn run(args: &[String]) {
         run_lines.push(format!("RUN\t{}\t{}\t{}\t{}", tag, t.rel, t.rules.join(" "), line));
     }
     let mut report = String::new();
-    report.push_str("| Directory | Tests | Pass | False reject | Missed reject | Unsupported | Differs from EDG only |\n|---|---|---|---|---|---|---|\n");
-    let mut tot = [0usize; 6];
+    // The check is judged by the base expectation. "Differs from EDG
+    // only" is a pass; "agrees with EDG only" is a failure; "EDG, allowed"
+    // is a pass on a test whose rules all allow EDG's answer.
+    const HEAD: &str = "| Directory | Tests | Pass | False reject | Missed reject | Unsupported | Differs from EDG only | Agrees with EDG only | EDG, allowed |\n|---|---|---|---|---|---|---|---|---|\n";
+    let row = |d: &str, c: &[usize; 8]| format!("| {} | {} | {} | {} | {} | {} | {} | {} | {} |\n", d, c[4], c[0], c[1], c[2], c[3], c[5], c[6], c[7]);
+    report.push_str(HEAD);
+    let mut tot = [0usize; 8];
     for (d, c) in &by_dir {
-        report.push_str(&format!("| {} | {} | {} | {} | {} | {} | {} |\n", d, c[4], c[0], c[1], c[2], c[3], c[5]));
-        for i in 0..6 {
+        report.push_str(&row(d, c));
+        for i in 0..8 {
             tot[i] += c[i];
         }
     }
-    report.push_str(&format!("| **total** | {} | {} | {} | {} | {} | {} |\n", tot[4], tot[0], tot[1], tot[2], tot[3], tot[5]));
+    report.push_str(&row("**total**", &tot));
     report.push_str(&format!("\nRejected tests where the diagnostic names one of the test's rules: {}\n", rule_match));
-    report.push_str("\nBy subdirectory:\n\n| Directory | Tests | Pass | False reject | Missed reject | Unsupported | Differs from EDG only |\n|---|---|---|---|---|---|---|\n");
+    report.push_str("\nBy subdirectory:\n\n");
+    report.push_str(HEAD);
     for (d, c) in &by_sub {
-        report.push_str(&format!("| {} | {} | {} | {} | {} | {} | {} |\n", d, c[4], c[0], c[1], c[2], c[3], c[5]));
+        report.push_str(&row(d, c));
     }
-    report.push_str("\nRun tests (`run` and `run-fail`):\n\n| Directory | Tests | Pass | Wrong result | Missed undefined behavior | Unexpected undefined behavior | Unsupported | Check did not accept |\n|---|---|---|---|---|---|---|---|\n");
-    let mut rt = [0usize; 7];
+    // "Pass, partial" counts the passes whose exploration of choice points
+    // the bound stopped or an unsupported run left partial; they are in
+    // "Pass" too. "Other outcome" counts the runs whose first outcome is
+    // allowed and another explored outcome is not.
+    report.push_str("\nRun tests (`run` and `run-fail`):\n\n| Directory | Tests | Pass | Pass, partial | Other outcome | Wrong result | Missed undefined behavior | Unexpected undefined behavior | Unsupported | Check did not accept |\n|---|---|---|---|---|---|---|---|---|---|\n");
+    let mut rt = [0usize; 9];
     for (d, c) in &run_dir {
-        report.push_str(&format!("| {} | {} | {} | {} | {} | {} | {} | {} |\n", d, c[6], c[0], c[1], c[2], c[3], c[4], c[5]));
-        for i in 0..7 {
+        report.push_str(&format!("| {} | {} | {} | {} | {} | {} | {} | {} | {} | {} |\n", d, c[6], c[0], c[8], c[7], c[1], c[2], c[3], c[4], c[5]));
+        for i in 0..9 {
             rt[i] += c[i];
         }
     }
-    report.push_str(&format!("| **total** | {} | {} | {} | {} | {} | {} | {} |\n", rt[6], rt[0], rt[1], rt[2], rt[3], rt[4], rt[5]));
+    report.push_str(&format!("| **total** | {} | {} | {} | {} | {} | {} | {} | {} | {} |\n", rt[6], rt[0], rt[8], rt[7], rt[1], rt[2], rt[3], rt[4], rt[5]));
     let mut run_unsup: BTreeMap<String, usize> = BTreeMap::new();
     for l in &run_lines {
         if let Some(i) = l.find("unsupported at line ") {
@@ -469,12 +611,12 @@ pub fn run(args: &[String]) {
     print!("{}", report);
     if verbose {
         for l in &lines {
-            if !l.starts_with("pass") {
+            if !l.starts_with("pass\t") {
                 println!("{}", l);
             }
         }
         for l in &run_lines {
-            if !l.starts_with("RUN\trun-pass") {
+            if !l.starts_with("RUN\trun-pass\t") {
                 println!("{}", l);
             }
         }
