@@ -74,3 +74,7 @@ Kept on 2026-11-03. The review agrees for equal parameter lists. For different p
 The source-reader gap review of the open questions on overloading, references, and list initialization (`reports/review/2026-11-03-gap-review-questions-overloading.md`) reads option 1 without the conditions of ORD-13. With a target and equal parameter lists, the more constrained function wins, as the answer says. The removal of a less constrained plain function has no condition on the parameter lists or the target type, so without a target and with different parameter lists the more constrained function remains alone. That is Clang 18's result, and the test that expects a rejection does not follow the review. The review has not checked whether a later change adds the conditions.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+
+### Inventory, 2026-10-31
+
+The source-reader inventory of concepts and constraints (`reports/review/2026-10-31-inventory-concepts-and-constraints.md`) names the question in its list of compiler differences that Tidal already records, and gives no reading.

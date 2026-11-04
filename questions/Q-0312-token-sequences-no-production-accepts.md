@@ -52,6 +52,8 @@ has no rule of its own, and its test cites TR-12. KW-1, JMP-17, TARG-4,
 STMT-6, and DCL-13 cite TR-12. The maintainer decides whether the
 roadmap also keeps a list of such forms (option 3).
 
+Kept open on 2026-11-03 under decision 0054, because the question waits on the maintainer (`documentation/decisions/pending.md`, row 9).
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

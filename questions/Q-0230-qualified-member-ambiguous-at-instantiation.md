@@ -41,3 +41,7 @@ Settled on 2026-11-03 under decision 0054. The source-reader gap review of the o
 The source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`) agrees with option 1. A qualified name into the current instantiation that finds a member is looked up again when a specialization is made. A different second result makes the lookup ambiguous, so the program is not valid. The unqualified form is valid. GCC's acceptance of the qualified form is a defect.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+
+### Gap review, 2026-10-31
+
+The source-reader gap review of dependent names and instantiation (`reports/review/2026-10-31-gap-review-dependent-names-and-instantiation.md`) reads the second lookup as ambiguous when the current instantiation has a fixed base and a dependent base that both declare the member, and the program is rejected at the instantiation. The review notes that its own case uses member access through `this`, and the page's test uses the qualified class name. The reading supports the answer.

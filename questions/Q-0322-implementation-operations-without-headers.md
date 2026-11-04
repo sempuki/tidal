@@ -17,14 +17,34 @@ can write:
 | class properties as named queries (trivially copyable, standard-layout) | no core construct names them |
 | the default new alignment as a value (NEW-27) | needs a predefined macro |
 
-GCC and Clang both accept builtin forms of these operations. EDG has not
-been probed.
+GCC 16 and Clang 22 accept a builtin form of each operation. EDG 7.0,
+as the matrix runs it (`--c++23 --strict`), accepts some of them:
+
+| Builtin form | EDG 7.0, `--c++23 --strict` |
+|---|---|
+| `__is_trivially_copyable`, `__is_trivially_destructible`, `__is_standard_layout` | accepts, with the same results as GCC and Clang |
+| `__STDCPP_DEFAULT_NEW_ALIGNMENT__` | accepts |
+| `__builtin_bit_cast` | rejects: the identifier is undefined |
+| `__builtin_launder` | rejects: the identifier is undefined |
+| a self-declared `std::type_info` | rejects: the declaration conflicts with a reserved class |
+
+The two rejected builtins depend on EDG's emulation mode. Without
+`--strict`, and with `--c++26`, EDG still rejects both. With `--g++`,
+EDG accepts `__builtin_launder` and rejects `__builtin_bit_cast`. With
+`--clang`, EDG accepts both. So option 2 works on the matrix for the
+class property queries and the default new alignment, and does not
+work for the bit copy, the launder operation, or `typeid`.
 
 ## Evidence
 
 The roadmap round 3 reports (`reports/clean-room/roadmap-3/`): the
 programmer view (item 3, sketches `rtti.cpp` and `bi.cpp`), the
 implementer view (item 9), and the editor view (section 4). W15-2.
+
+The EDG 7.0 results come from the round-4 programmer view
+(`reports/clean-room/roadmap-4/programmer.md`, item 8) and from a
+clean-room writer's probe on 2026-11-03 (phase 8 item R2), which gave
+the same results in strict mode and added the other modes.
 
 ## Options
 

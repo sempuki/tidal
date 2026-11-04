@@ -37,6 +37,8 @@ which Clang and EDG reject and GCC accepts.
 matches the parameter of `std::tuple_element` that SB-5 also uses with
 the index.
 
+Kept open on 2026-11-03 under decision 0054, because no review has read the provisional answer. GCC 16 is the one newest family that differs.
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

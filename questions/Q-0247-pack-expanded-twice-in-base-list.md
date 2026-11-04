@@ -29,7 +29,9 @@ error for every size of the pack.
 
 No diagnostic required; Clang and EDG diagnose, GCC does not (option 2). Only an empty pack makes the base list valid, and DEP-33 needs no diagnostic for such a template (DEP-P6). Each compiler's result lies within the rule.
 
-Changed on 2026-11-03 to option 2. The review reads option 2, GCC 16 follows it, and DEP-P6 gives the same answer: a pack that every valid argument list leaves empty need not be diagnosed (DEP-33). DEP-33 now names the base list, and DEP-37 keeps only the operator function. `base-pack-expanded-twice.cpp` now cites DEP-33 and keeps its override for GCC. The question stays open.
+Changed on 2026-11-03 to option 2. The review reads option 2, GCC 16 follows it, and DEP-P6 gives the same answer: a pack that every valid argument list leaves empty need not be diagnosed (DEP-33). DEP-33 now names the base list, and DEP-37 keeps only the operator function. `base-pack-expanded-twice.cpp` now cites DEP-33 and keeps its override for GCC.
+
+Kept open on 2026-11-03 under decision 0054, because DEP-33 and DEP-37 changed on the same day, and a question settles only after a reader or a review has used the changed rule (decision 0055). Every compiler's result fits DEP-33.
 
 ## Opinions
 

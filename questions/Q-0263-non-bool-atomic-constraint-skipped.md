@@ -37,7 +37,9 @@ CNS-39 states the check at the definition.
 
 Not valid, no diagnostic required; Clang and EDG diagnose, GCC does not (option 3). A constraint that no argument can satisfy is not valid in the template, and DEP-P6 needs no diagnostic for a construct that no argument list makes valid. CNS-39 states the answer.
 
-Changed on 2026-11-03 to option 3. The review reads option 3, every compiler's result fits it, and DEP-P6 gives the same answer: a construct that no argument list makes valid need not be diagnosed. CNS-39 is now a `no-diagnostic` rule, and the three tests cite CNS-39 alone. CNS-9 keeps the case where a check reaches the expression. The question stays open.
+Changed on 2026-11-03 to option 3. The review reads option 3, every compiler's result fits it, and DEP-P6 gives the same answer: a construct that no argument list makes valid need not be diagnosed. CNS-39 is now a `no-diagnostic` rule, and the three tests cite CNS-39 alone. CNS-9 keeps the case where a check reaches the expression.
+
+Kept open on 2026-11-03 under decision 0054, because CNS-39 changed on the same day, and a question settles only after a reader or a review has used the changed rule (decision 0055). Every compiler's result fits the rule.
 
 ## Opinions
 

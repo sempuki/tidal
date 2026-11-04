@@ -25,6 +25,8 @@ Finding X4-14 in `reports/clean-room/X4/report.md`.
 Yes, marked as outside knowledge (option 1). The judgments matter to a proposal's case, and the mark
 keeps them apart from what Tidal states.
 
+Kept open on 2026-11-03 under decision 0054, because the question waits on the maintainer (`documentation/decisions/pending.md`, row 9).
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

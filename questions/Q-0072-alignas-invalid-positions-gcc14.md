@@ -25,3 +25,7 @@ GCC 14 stay while GCC 14 is in the matrix.
 Settled on 2026-11-01 under decision 0051, because the newest version of each baseline family (Clang 22, GCC 16, EDG 7.0) agrees with this answer. GCC 14 still accepts all four, and the tests keep their overrides for GCC 14.
 
 ## Opinions
+
+### Gap review, 2026-11-01
+
+The source-reader gap review of question cluster 1 (`reports/review/2026-11-01-gap-review-question-cluster-1.md`) supports the answer. An alignment specifier applies to variables, data members, and class declarations. Bit-fields are excluded by name, and functions and aliases are outside the allowed list.

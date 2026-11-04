@@ -35,3 +35,7 @@ Settled on 2026-11-01 under decision 0051, because the newest version of each ba
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+
+### Gap review, 2026-11-01
+
+The source-reader gap review of question cluster 1 (`reports/review/2026-11-01-gap-review-question-cluster-1.md`) supports the answer, with a thin basis. A note on explicit instantiation says the instantiated entity must satisfy its constraints, and the match of the declaration to a constrained member is only implied.

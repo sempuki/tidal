@@ -296,7 +296,7 @@ the local class with these parts, also those that no use names:
 
 :::{rule} INST-36
 :kind: required
-:tests: templates/instantiation/local-entities-per-specialization.cpp
+:tests: templates/instantiation/local-entities-per-specialization.cpp templates/instantiation/local-entities-thread-local-and-nested-lambda.cpp
 
 Each specialization of a function template has its own `static` and
 `thread_local` local variables. Each lambda expression in its body has
@@ -514,7 +514,7 @@ the first point is such a case ({question}`Q-0257`).
 
 :::{rule} INST-33
 :kind: reject
-:tests: templates/instantiation/class-point-not-later.cpp
+:tests: templates/instantiation/class-point-not-later.cpp templates/instantiation/class-point-not-later-type.cpp
 
 An instantiation does not see a declaration after its point of
 instantiation. A class specialization that needs such a declaration is
@@ -625,8 +625,8 @@ int p = Price<shop::Item>::value;        // 3: cost is declared before the point
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 112
-of 134 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 114
+of 136 tests.
 
 Three questions on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
 

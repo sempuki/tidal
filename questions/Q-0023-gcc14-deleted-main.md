@@ -26,3 +26,7 @@ deleted `main`.
 Settled on 2026-11-01 under decision 0051, because the newest version of each baseline family (Clang 22, GCC 16, EDG 7.0) agrees with this answer. GCC 14 still accepts a deleted `main`, and the test keeps its override for GCC 14.
 
 ## Opinions
+
+### Gap review, 2026-11-01
+
+The source-reader gap review of question cluster 1 (`reports/review/2026-11-01-gap-review-question-cluster-1.md`) supports the answer. A program that defines `main` as deleted is ill-formed.

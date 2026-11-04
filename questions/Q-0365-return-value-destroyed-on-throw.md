@@ -49,6 +49,8 @@ The result is destroyed (option 1). UNW-P2 ends every object that was fully buil
 result is fully built before the local objects end. Option 2 leaves an
 object that no code can ever destroy.
 
+Kept open on 2026-11-03 under decision 0054, because no review has read the provisional answer. The gap review of the exceptions chapter raised the question, and GCC 16 is the one newest family that differs.
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

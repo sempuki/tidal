@@ -42,6 +42,8 @@ conversions that keep the object what it is. A reference to an array
 or a function would have to refer to an object that the exception
 object only points to.
 
+Kept open on 2026-11-03 under decision 0054, because no review has read the provisional answer. GCC 16 is the one newest family that differs.
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

@@ -44,3 +44,7 @@ Settled on 2026-11-03 under decision 0054. The review supports this answer with 
 ### Gap review, 2026-11-03
 
 The source-reader gap review of the object model (`reports/review/2026-11-03-gap-review-object-model.md`) reads the reference as supporting option 1, the provisional answer, with no doubt. Only arrays of `unsigned char` and of `std::byte` provide storage for other objects.
+
+### Gap review, 2026-11-01
+
+The source-reader gap review of question cluster 1 (`reports/review/2026-11-01-gap-review-question-cluster-1.md`) reads the reference as supporting option 1. Only arrays of `unsigned char` and `std::byte` provide storage for a nested object, and plain `char` is not in the list.

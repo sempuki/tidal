@@ -557,7 +557,7 @@ parameter (decision 0042).
 
 :::{rule} TPL-48
 :kind: required
-:tests: templates/declarations/parameter-friend-name.cpp
+:tests: templates/declarations/parameter-friend-name.cpp templates/declarations/parameter-friend-name-uninstantiated.cpp
 
 In a class template, a friend function declaration can use a name that
 the class's own parameter list declares. The friend declares no name in
@@ -798,8 +798,8 @@ template <class U> int pick(Host);                // rejected: the same template
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 114
-of 125 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 115
+of 126 tests.
 
 Two questions on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
 

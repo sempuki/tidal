@@ -47,3 +47,7 @@ Settled on 2026-11-03 under decision 0054. The source-reader gap review of the o
 The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) agrees with option 1. The implied object argument comes first in the list that matches arguments to parameters, so an explicit object parameter is initialized as any other parameter is. The postfix expression is sequenced before the arguments. The initializations of the parameters are indeterminately sequenced with each other, so they do not interleave, and either order is allowed.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+
+### Gap review, 2026-11-01
+
+The source-reader gap review of question cluster 1 (`reports/review/2026-11-01-gap-review-question-cluster-1.md`) reads the reference as supporting option 1. The implied object argument counts as the first argument, the initialization of each parameter is indeterminately sequenced with the others, and only the object expression itself must come first.

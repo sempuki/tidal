@@ -39,7 +39,9 @@ type `void (*)() noexcept` cannot be used to initialize the reference.
 
 For an overload set, yes; GCC rejects it (option 1). For a `noexcept` function and a reference to a function type without `noexcept`, no; Clang and GCC accept it (option 3). A braced function binds directly only when it already has the referenced type or is an overload set that gives a function of that type (REF-P3), and a function type has no temporary.
 
-Changed on 2026-11-03 for the `noexcept` function. The review reads option 3 there, EDG 7.0 rejects, and REF-P3 gives the same result: a braced element binds directly only if it is already what the reference names, and a function type has no temporary. REF-6 now binds a braced function only when its type is the referenced type or when it is an overload set, and REF-11 rejects the `noexcept` function. `braced-function-noexcept.cpp` expects a rejection, with overrides for Clang and GCC. The overload set keeps option 1, which Clang 22 and EDG 7.0 follow, because the review finds that case unclear. The question stays open.
+Changed on 2026-11-03 for the `noexcept` function. The review reads option 3 there, EDG 7.0 rejects, and REF-P3 gives the same result: a braced element binds directly only if it is already what the reference names, and a function type has no temporary. REF-6 now binds a braced function only when its type is the referenced type or when it is an overload set, and REF-11 rejects the `noexcept` function. `braced-function-noexcept.cpp` expects a rejection, with overrides for Clang and GCC. The overload set keeps option 1, which Clang 22 and EDG 7.0 follow, because the review finds that case unclear.
+
+Kept open on 2026-11-03 under decision 0054, because the review finds the overload set unclear. REF-6 and REF-11 also changed on the same day for the `noexcept` function, and a question settles only after a reader or a review has used the changed rule (decision 0055).
 
 ## Opinions
 

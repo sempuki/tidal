@@ -45,4 +45,6 @@ entities, and GCC's failure comes from its symbol names, after the
 source is accepted. A C name in an unnamed namespace stays one entity
 with the other C names of its spelling, as Clang and GCC link it.
 
+Kept open on 2026-11-03 under decision 0054, because no review has read the provisional answer. GCC 16 fails at assembly for the first two programs.
+
 ## Opinions

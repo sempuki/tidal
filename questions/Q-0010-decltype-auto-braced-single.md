@@ -33,3 +33,7 @@ Yes, as all implementations do (option 1). Tidal describes what implementations 
 Settled on 2026-11-01 under decision 0051, because the newest version of each baseline family (Clang 22, GCC 16, EDG 7.0) agrees with this answer. No older version differs.
 
 ## Opinions
+
+### Gap review, 2026-11-01
+
+The source-reader gap review of question cluster 1 (`reports/review/2026-11-01-gap-review-question-cluster-1.md`) supports the answer. For a braced initializer with one element and no equals sign, the deduction uses the element as the operand of `decltype`, and a list of several elements is an error.

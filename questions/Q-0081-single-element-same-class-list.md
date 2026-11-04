@@ -27,3 +27,11 @@ Settled on 2026-11-03 under decision 0054. The source-reader gap review of the o
 ### Gap review, 2026-11-03
 
 The source-reader gap review of the open questions on classes and statements (`reports/review/2026-11-03-gap-review-questions-classes-statements.md`) agrees with option 1. The special case for a braced list with one element of the same class applies only to aggregates. The class in the question is not an aggregate, so the initializer-list constructor is tried first.
+
+### Inventory, 2026-10-31
+
+The source-reader inventory of conversion sequences (`reports/review/2026-10-31-inventory-conversion-sequences.md`) names the question for a related case, a one-element list of the same class, and says only that compilers differ when the class has an initializer-list constructor that could take the element. It gives no reading.
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on overloading, references, and list initialization (`reports/review/2026-11-03-gap-review-questions-overloading.md`) names the question only to say that it did not review it, because the question belongs to another cluster.

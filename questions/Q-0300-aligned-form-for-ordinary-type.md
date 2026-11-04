@@ -44,3 +44,7 @@ Kept on 2026-11-03. Every compiler rejects the program, and Tidal keeps the matr
 The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) reads option 2, as the cluster 1 review did. When no allocation function matches, the argument list changes and overload resolution runs again. For a type with an extended alignment, the alignment is removed. For any other type, the alignment is added after the size. So the reverse step exists, and the program is valid. No compiler in the table takes the reverse step in C++23 mode.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+
+### Gap review, 2026-11-01
+
+The source-reader gap review of question cluster 1 (`reports/review/2026-11-01-gap-review-question-cluster-1.md`) finds that the answer contradicts the reference. The C++23 text has the reverse step: a type of ordinary alignment that finds no function gets an alignment argument after the size, and lookup runs again. The class in the test then gets its aligned allocation function, and the program is valid. Clang 22, GCC 16, and EDG 7.0 all reject, so they share a defect or the test has a confound. The review names one confound to rule out by probe: the test declares its own alignment tag type in `std`.

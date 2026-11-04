@@ -30,4 +30,6 @@ Plain text (option 1). Plain text needs nothing new and reads the same in every
 place. The question comes back if a diagram needs more than plain text
 can show.
 
+Kept open on 2026-11-03 under decision 0054, because the question waits on the maintainer (`documentation/decisions/pending.md`, row 9).
+
 ## Opinions

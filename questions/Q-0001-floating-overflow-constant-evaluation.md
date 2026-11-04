@@ -66,3 +66,7 @@ Kept open on 2026-11-03 under decision 0054, because the gap review does not sup
 ### Gap review, 2026-11-03
 
 The source-reader gap review of question cluster 4 (`reports/review/2026-11-03-gap-review-question-cluster-4.md`) reads the reference as supporting option 1, with doubt. An evaluation whose result lies outside the values of its type is undefined, and undefined behavior keeps an expression from being constant. So a floating overflow is not constant, as GCC and EDG find. The doubt is that the reference does not define the set of values of a floating type. A reader who counts an infinity as a value would reach Clang's result. A NaN result has no mathematical value, so Clang's rejection of an infinity minus itself fits the reference. The reference neither supports nor rules out option 3.
+
+### Gap review, 2026-10-31
+
+The source-reader gap review of the operator pages (`reports/review/2026-10-31-gap-review-3-operators.md`) reads a floating addition whose exact result is finite and too large for the type as undefined, as for multiplication. The reading supports the provisional answer. The review notes the same split as in this question: Clang accepts the constant and gives infinity, and GCC rejects it as not constant.

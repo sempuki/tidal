@@ -44,3 +44,7 @@ Kept open on 2026-11-03 under decision 0054, because two of the newest families 
 The source-reader gap review of the open questions on overloading, references, and list initialization (`reports/review/2026-11-03-gap-review-questions-overloading.md`) agrees with option 1. Overload resolution runs on the set with no implied object argument, and the program is not valid only when the chosen function is an implicit object member function. Clang 22 follows this reading.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+
+### Gap review, 2026-10-31
+
+The source-reader gap review of overload resolution (`reports/review/2026-10-31-gap-review-overload-resolution.md`) reads the address of the plain qualified name as allowed for a set that holds both a static member and members with an implicit object parameter, and the call then chooses the static member. With a parenthesized qualified name or an unqualified name, the address of such members cannot be taken, so the expression is an error. The reading supports the provisional answer for the plain qualified name, and the review points to this question for the splits.

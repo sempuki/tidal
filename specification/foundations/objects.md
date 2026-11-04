@@ -258,7 +258,7 @@ instead.
 
 :::{rule} OBJ-12
 :kind: undefined
-:tests: foundations/objects/static-local-after-destruction.cpp
+:tests: foundations/objects/static-local-after-destruction.cpp foundations/objects/static-local-used-by-earlier-static.cpp
 
 If control passes through the declaration of a static object local to a
 function after the object is destroyed (OBJ-4), the behavior is
@@ -300,8 +300,8 @@ int main() {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 52
-of 57 tests. EDG runs no programs, so its results for the run tests say
+The results are in `tests/RESULTS.md`. All eight compilers agree on 53
+of 58 tests. EDG runs no programs, so its results for the run tests say
 only that the programs are valid.
 
 - OBJ-11: the tests accept either construction point. On 2026-11-03

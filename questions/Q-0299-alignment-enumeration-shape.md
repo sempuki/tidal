@@ -32,6 +32,8 @@ No; LSUP-5 needs no diagnostic, GCC and EDG reject another shape, and Clang acce
 
 Changed on 2026-11-03. The source-reader gap review of the object model (`reports/review/2026-11-03-gap-review-object-model.md`) reads the reference as supporting option 2. The reading matches Clang 22, which accepts each shape, and every result of the matrix fits a rule that needs no diagnostic. LSUP-P2 asks the program and the library to agree on each name, which is a requirement on the program. LSUP-5 is now a `no-diagnostic` rule in the Implementation Requirements segment.
 
+Kept open on 2026-11-03 under decision 0054, because LSUP-5 changed on the same day, and a question settles only after a reader or a review has used the changed rule (decision 0055). Every compiler's result fits the rule.
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

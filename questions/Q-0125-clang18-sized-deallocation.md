@@ -30,3 +30,7 @@ declares the sized forms.
 Settled on 2026-11-01 under decision 0051, because the newest version of each baseline family (Clang 22, GCC 16, EDG 7.0) agrees with this answer. Clang 18 still rejects the calls of the sized forms, and the tests keep their overrides for Clang 18.
 
 ## Opinions
+
+### Gap review, 2026-11-01
+
+The source-reader gap review of question cluster 1 (`reports/review/2026-11-01-gap-review-question-cluster-1.md`) supports the answer. The sized deallocation functions, for arrays and single objects, are among the functions that every translation unit declares implicitly.

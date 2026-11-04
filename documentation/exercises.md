@@ -109,8 +109,12 @@ commit ID in backquotes (``Commit read: `3d98c93`.``). A reader runs
 tool checks each row of each change table against the specification. It
 prints the rows that name a withdrawn rule, with the rule it merged
 into, the rows whose old class has changed, and the "new" rows whose ID
-a page now defines. For a report that names its commit, it also prints
-how many later commits change `specification/`. The tool exits 0,
+a page now defines. It reads a change table whose header says "ID" or
+"Rule ID" and "Change" or "Kind of change", and it warns about a table
+it cannot read. For a report that names its commit, it also prints how
+many later commits change `specification/`, and each row whose rule or
+principle has other directive text now ("changed since <commit>"). The
+comparison leaves out the `:tests:` option. The tool exits 0,
 because a report is a record of its date. `--strict` makes it exit 1
 when it finds a conflict.
 
@@ -157,37 +161,48 @@ and runs it when it has `main`.
 
 ## 6. Order
 
-1. Predict batches for the Foundations pages, then the expressions
-   pages. These batches are cheap and scored without reading.
-2. W8 and W1, which target the areas where the pilot found the most
-   problems.
-3. The other Write suites in table order.
-4. Diagnose batches.
-5. Port suites.
+The Write suites W1 to W15, the Propose rounds X1 to X16, the
+Diagnose batches of D-classes, and a Predict batch for every page are
+done (section 8). Decision 0055, item E, orders the next exercises:
+
+1. A second Write wave of four larger programs.
+2. An Implement exercise that builds class layout from the rules alone
+   and is scored on the layout tests.
+3. Predict batches on the pages changed after their batch, on constant
+   evaluation and evaluation order, and on the four weakest pages whose
+   only batch showed test names.
+4. Propose X17 to X20 on P1, P2, P17, and P18.
+
+Each phase runs at least one exercise by use (Write, Port, or
+Implement). Port suites and Diagnose batches beyond D-classes wait for
+a later phase.
 
 ## 7. Coverage
 
-Each report lists the rule IDs it cites. The coverage table counts,
-for each page, the exercises that reached it and the findings against
-it. A page with no Write suite and no finding gets one before the
-catalog counts as done.
+Each report lists the rule IDs it cites. The Report mentions column of
+the specification table in `documentation/status.md` counts, for each
+page, the lines of `reports/clean-room/` that name one of the page's
+rules, leaving out the roadmap reports. Section 8 names the Predict
+batch of each page and says whether the batch hid test names. 18 pages
+have only a batch that showed test names: the seven pages of the first
+Foundations batch and the 11 templates pages.
 
 ## 8. Status
 
 | Exercise | State | Report |
 |---|---|---|
 | W0 | done | `reports/clean-room/java-programmer/` |
-| Front end | round 18 done: 5980/6337 pass, 6050 pass their check (`conformance.tsv`) | `reports/clean-room/rust-frontend/` |
+| Front end | round 18 done: 5985/6345 pass, 6055 pass their check (`conformance.tsv`) | `reports/clean-room/rust-frontend/` |
 | Guides | done: one tutorial and four how-to guides, not published (decision 0046) | `guides/` |
-| R-translation, R-objects, R-values, R-names, R-conversions, R-evaluation-order, R-constant-evaluation | done, 231/231 | `reports/clean-room/R-foundations/` |
+| R-translation, R-objects, R-values, R-names, R-conversions, R-evaluation-order, R-constant-evaluation | done, 231/231, with test names | `reports/clean-room/R-foundations/` |
 | Designer roadmap | done, findings D1 to D33 | `reports/clean-room/roadmap/designer.md` |
 | X1, X2, X3, X4 | done: 30, 20, 22, and 17 rule changes; findings X1-1 to X4-16 | `reports/clean-room/X1/` to `X4/` |
 | D-virtual, D-handlers, D-unions, D-conversion-functions | done: rules 143/143, fixes 143/143; findings DC-1 to DC-17 | `reports/clean-room/D-classes/` |
 | W15 | done: five programs build and run on GCC and Clang; findings W15-1 to W15-9 | `reports/clean-room/W15/` |
-| R-class-template-deduction, R-deduction, R-arguments | done, 305/305; findings RB-1 to RB-17 | `reports/clean-room/R-templates/` |
-| R-packs, R-concepts, R-constraints, R-ordering | done, 339/342; findings RA-1 to RA-14 | `reports/clean-room/R-templates/` |
+| R-class-template-deduction, R-deduction, R-arguments | done, 305/305, with test names; findings RB-1 to RB-17 | `reports/clean-room/R-templates/` |
+| R-packs, R-concepts, R-constraints, R-ordering | done, 339/342, with test names; findings RA-1 to RA-14 | `reports/clean-room/R-templates/` |
 | X5 | done: 41 rule changes; findings X5-1 to X5-20 | `reports/clean-room/X5/` |
-| R-declarations, R-specialization, R-dependent-names, R-instantiation | done, 445/445; findings RC-1 to RC-25 | `reports/clean-room/R-templates/` |
+| R-declarations, R-specialization, R-dependent-names, R-instantiation | done, 445/445, with test names; findings RC-1 to RC-25 | `reports/clean-room/R-templates/` |
 | X6 | done: 75 rule changes; findings X6-1 to X6-15 | `reports/clean-room/X6/` |
 | X7 | done: 69 rule changes; findings X7-1 to X7-12 | `reports/clean-room/X7/` |
 | X8 | done: 60 rule changes; findings X8-1 to X8-17 | `reports/clean-room/X8/` |

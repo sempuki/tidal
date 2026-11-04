@@ -46,4 +46,6 @@ No; the program is not valid (option 1). Two of three families reject
 it, and the kinds of a class's special member functions stay fixed after
 the class definition.
 
+Kept open on 2026-11-03 under decision 0054, because no review has read the provisional answer. GCC 16 is the one newest family that differs.
+
 ## Opinions

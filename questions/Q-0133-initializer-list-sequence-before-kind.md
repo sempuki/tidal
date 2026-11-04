@@ -59,3 +59,7 @@ Kept open on 2026-11-03 under decision 0054, because two of the newest families 
 The source-reader gap review of question cluster 2 (`reports/review/2026-11-03-gap-review-question-cluster-2.md`) reads the reference as supporting option 2. The kinds of the two sequences compare first, and the initializer-list preference acts only between sequences of the same kind. A list sequence whose worst element conversion is user-defined is a user-defined sequence, so the identity to `int` wins.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+
+### Gap review, 2026-10-31
+
+The source-reader gap review of conversion sequences (`reports/review/2026-10-31-gap-review-conversion-sequences.md`) reads the comparison of forms as coming before the initializer-list preference, so a standard sequence to a scalar beats a user-defined list sequence to an initializer-list specialization. The review calls this the Clang reading. It supports the provisional answer.

@@ -38,3 +38,7 @@ Settled on 2026-11-01 under decision 0051, because the newest version of each ba
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+
+### Gap review, 2026-11-01
+
+The source-reader gap review of question cluster 1 (`reports/review/2026-11-01-gap-review-question-cluster-1.md`) supports the answer. Forming a type whose object representation is larger than the largest `size_t` value is ill-formed, classes included, so a compiler should diagnose the class definition even when the program never takes its size.

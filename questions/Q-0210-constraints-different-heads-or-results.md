@@ -13,3 +13,7 @@ every condition and holds this question's cases in its table, with the
 context, the evidence, and the provisional answer.
 
 ## Opinions
+
+### Inventory, 2026-10-31
+
+The source-reader inventory of concepts and constraints (`reports/review/2026-10-31-inventory-concepts-and-constraints.md`) names the question in its list of compiler differences that Tidal already records, and gives no reading.

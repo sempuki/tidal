@@ -1312,6 +1312,7 @@ pass	declarations/constexpr/constexpr-parameter.cpp
 pass	declarations/constexpr/constexpr-redeclaration-mismatch.cpp
 pass	declarations/constexpr/constexpr-ref-temporary-block.cpp
 pass	declarations/constexpr/constexpr-ref-temporary-namespace.cpp
+EDG-ALLOWED	declarations/constexpr/constinit-added-late-thread-local.cpp
 EDG-ALLOWED	declarations/constexpr/constinit-added-late.cpp
 pass	declarations/constexpr/constinit-automatic.cpp
 pass	declarations/constexpr/constinit-block-static.cpp
@@ -2484,6 +2485,7 @@ pass	exceptions/unwinding/noexcept-false-destructor-can-throw.cpp
 pass	exceptions/unwinding/noexcept-function-handles-inside.cpp
 pass	exceptions/unwinding/objects-after-throw-not-created.cpp
 pass	exceptions/unwinding/placement-loop-no-automatic-cleanup.cpp
+MISSED-REJECT	exceptions/unwinding/placement-new-global-usual-delete-rejected.cpp
 pass	exceptions/unwinding/placement-new-no-matching-delete-leaks.cpp
 pass	exceptions/unwinding/placement-new-throws-placement-delete.cpp
 pass	exceptions/unwinding/placement-new-usual-delete-rejected.cpp
@@ -4401,6 +4403,7 @@ EDG-AGREES	foundations/objects/scalar-write-in-own-initializer-constant.cpp
 EDG-AGREES	foundations/objects/scalar-write-through-pointer-in-own-initializer-constant.cpp
 pass	foundations/objects/static-constant-initialized-destroyed-in-place.cpp
 pass	foundations/objects/static-local-after-destruction.cpp
+pass	foundations/objects/static-local-used-by-earlier-static.cpp
 pass	foundations/objects/static-never-reached-not-constructed.cpp
 pass	foundations/objects/static-order.cpp
 pass	foundations/objects/storage-reuse-ends-old-object-constant.cpp
@@ -4755,6 +4758,7 @@ pass	foundations/translation/constant-evaluation-same-function.cpp
 pass	foundations/translation/constant-initializer-tried.cpp
 pass	foundations/translation/exit-status-kept-optimized.cpp
 pass	foundations/translation/floating-constant-and-run-either.cpp
+pass	foundations/translation/floating-sum-constant-and-run-either.cpp
 pass	foundations/translation/grammar-else-without-if.cpp
 pass	foundations/translation/grammar-for-constexpr.cpp
 pass	foundations/translation/grammar-mismatched-bracket.cpp
@@ -5737,6 +5741,7 @@ pass	templates/declarations/pack-then-typed-pack-not-deducible.cpp
 pass	templates/declarations/pack-typed-by-enclosing-pack.cpp
 pass	templates/declarations/pack-typed-by-same-head.cpp
 pass	templates/declarations/parameter-class-template-name.cpp
+pass	templates/declarations/parameter-friend-name-uninstantiated.cpp
 EDG-ONLY	templates/declarations/parameter-friend-name.cpp
 pass	templates/declarations/parameter-hidden-by-base.cpp
 pass	templates/declarations/parameter-local-name.cpp
@@ -5889,6 +5894,7 @@ pass	templates/dependent-names/argument-lookup-other-unit.cpp
 pass	templates/dependent-names/base-member-hides-constant-parameter.cpp
 pass	templates/dependent-names/base-member-hides-parameter.cpp
 MISSED-REJECT	templates/dependent-names/base-pack-expanded-twice.cpp
+MISSED-REJECT	templates/dependent-names/binary-operator-pack-never-fits.cpp
 pass	templates/dependent-names/checked-at-instantiation.cpp
 pass	templates/dependent-names/constant-function-defined-later.cpp
 EDG-ONLY	templates/dependent-names/current-instantiation-alias.cpp
@@ -6020,6 +6026,7 @@ pass	templates/instantiation/class-object.cpp
 pass	templates/instantiation/class-overload-two-candidates.cpp
 pass	templates/instantiation/class-overload-void-pointer.cpp
 pass	templates/instantiation/class-point-in-specialization.cpp
+MISSED-REJECT	templates/instantiation/class-point-not-later-type.cpp
 unsupported	templates/instantiation/class-point-not-later.cpp
 pass	templates/instantiation/class-point-sees-earlier.cpp
 pass	templates/instantiation/class-pointer-only.cpp
@@ -6118,6 +6125,7 @@ MISSED-REJECT	templates/instantiation/local-class-exception-specification.cpp
 pass	templates/instantiation/local-class-member-initializer.cpp
 pass	templates/instantiation/local-class-member.cpp
 run-unsupported	templates/instantiation/local-entities-per-specialization.cpp
+pass	templates/instantiation/local-entities-thread-local-and-nested-lambda.cpp
 pass	templates/instantiation/local-enumeration.cpp
 pass	templates/instantiation/member-function-called.cpp
 EDG-AGREES	templates/instantiation/member-partial-specializations-collide.cpp

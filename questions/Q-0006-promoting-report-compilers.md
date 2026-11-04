@@ -21,4 +21,6 @@ divergences block changes until expectations or questions account for them.
 After one clean review of its results (option 1). All five compilers in the matrix are baseline. EDG's differing
 tests carry per-compiler expectations that reference Q-0002 and Q-0003.
 
+Kept open on 2026-11-03 under decision 0054, because the question waits on the maintainer (`documentation/decisions/pending.md`, row 9).
+
 ## Opinions

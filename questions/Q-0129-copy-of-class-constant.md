@@ -38,6 +38,8 @@ Yes; the copy is a use, and the lambda must capture the constant (option 2). Cla
 
 Changed on 2026-11-03. The source-reader gap review of program structure (`reports/review/2026-11-03-gap-review-program-structure.md`) reads the reference as supporting option 2. The reading matches Clang 22, and Tidal's own rules give the same answer. ODR-P1 counts an expression that binds a reference as a use, and the copy constructor binds its parameter to the constant. ODR-3 now exempts only a read of a scalar part of a constant with no `mutable` member, and the ODR-P1 table has a row for the copy.
 
+Kept open on 2026-11-03 under decision 0054, because ODR-3 changed on the same day, and a question settles only after a reader or a review has used the changed rule (decision 0055). GCC 16 and EDG 7.0 also differ from the answer.
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

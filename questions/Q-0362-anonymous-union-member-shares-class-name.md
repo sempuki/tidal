@@ -41,6 +41,8 @@ of the class. Two of the three newest families accept the class. The
 reading of the reference differs, and the Evidence of the names page
 says so.
 
+Kept open on 2026-11-03 under decision 0054, because no review has read the provisional answer. The gap review of names, which raised the question, reads the reference as option 2, and Clang 22 follows that reading.
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

@@ -152,29 +152,24 @@ clean-room roadmaps (`reports/clean-room/roadmap-5/`).
 
 ## Parallel lanes
 
-These lanes run beside the phases when a phase waits for review.
-
-- U: deepen multiplicative, additive, and comparison, and settle their
-  questions.
-- V: thicken thin pages (logical, static initialization, comma, blocks,
-  evaluation order).
-- X: digest the overrides on alignment, attributes, and exception
-  specifications.
-- Clean-room exercises (`documentation/exercises.md`): W8 and W1 next; Predict
-  batches for the expressions pages once the format can catch errors;
-  Diagnose batches after item C; Propose exercises X1 to X4 after item
-  Y.
-- A change notation for Propose reports: a table of rule ID, kind of
-  change, old class, new class, and the tests affected.
+Phase 5 ran three lanes beside its items, and all three are done: U
+(multiplicative, additive, and comparison), V (thin pages), and X (the
+overrides on alignment, attributes, and exception specifications). The
+exercise lanes and the change notation for Propose reports are done too
+(`documentation/exercises.md`, sections 4 and 8). From phase 6 on, work
+that runs in parallel is an item in the phase's table, and the
+Prerequisites column says which items can run together.
 
 ## Deferred
 
 - G beyond G1, lexical structure: high similarity risk for little
   value; an alternative-token and digraph note goes on the operator
   pages.
-- S beyond S1, and T, the full trivially-copyable and standard-layout
-  lists and `typeid`: they wait for a decision on how to observe
-  library-dependent properties.
+- `typeid`: the type it gives and the exception that a failed `typeid`
+  throws. Both come from the library, and they wait for a decision on
+  how to observe library-dependent properties. Phase 6 item O wrote
+  the trivially-copyable and standard-layout lists (S and T) without
+  them.
 - MSVC: the existing overrides come first.
 
 ## Method controls for phases 3 and 4

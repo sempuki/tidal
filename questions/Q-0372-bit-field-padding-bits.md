@@ -45,6 +45,8 @@ copy of a class with bit-fields go through any byte type, as the
 probes do. A front end that gives the padding bits the value 0 follows
 option 1.
 
+Kept open on 2026-11-03 under decision 0054, because no review has read the provisional answer. The answer rests on probes of the values that a byte read gives.
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

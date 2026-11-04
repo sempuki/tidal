@@ -43,6 +43,8 @@ Clang accept the definition, and option 1 gives the same result as the
 definition `int geo::v2::area()` in the same place, which every
 compiler accepts.
 
+Kept open on 2026-11-03 under decision 0054, because no review has read the provisional answer. EDG 7.0 is the one newest family that differs.
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

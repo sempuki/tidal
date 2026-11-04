@@ -54,3 +54,7 @@ Kept open on 2026-11-03 under decision 0054, because the review finds the empty 
 The source-reader gap review of the open questions on overloading, references, and list initialization (`reports/review/2026-11-03-gap-review-questions-overloading.md`) agrees with option 1 for the designated list: a designator names a class member, and an array has none, so no sequence exists. For empty braces and a reference to an array of unknown bound, the review finds the reference unclear. Read literally, the array rule asks for a sequence from each of no elements, so a sequence exists and beats the array of two elements by the fewer-elements tie-breaker, which is GCC's result (option 2). The temporary that would follow is not valid, but a sequence can exist for a call that later fails.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+
+### Gap review, 2026-10-31
+
+The source-reader gap review of conversion sequences (`reports/review/2026-10-31-gap-review-conversion-sequences.md`) reads a designated list as allowed only for a parameter of aggregate type. A reference to an aggregate is not an aggregate type, so the plain reading gives no sequence. The review puts any compiler split on this case in this question. The reading fits the provisional answer for the designated list, and the review says nothing on empty braces.

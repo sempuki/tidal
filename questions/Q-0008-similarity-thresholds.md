@@ -20,6 +20,8 @@ Short shared phrases are expected, because Tidal reuses industry terms
 
 Keep the thresholds (option 1) until reports from more sections show how many flags each setting produces.
 
+Kept open on 2026-11-03 under decision 0054, because the question waits on the maintainer (`documentation/decisions/pending.md`, row 9).
+
 ## Opinions
 
 ### @tidal-writer, 2026-10-30

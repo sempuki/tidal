@@ -228,7 +228,7 @@ This rule merged into {rule}`CX-4`.
 
 :::{rule} CINIT-3
 :kind: no-diagnostic
-:tests: declarations/constexpr/constinit-added-late.cpp
+:tests: declarations/constexpr/constinit-added-late.cpp declarations/constexpr/constinit-added-late-thread-local.cpp
 
 A declaration of a variable must not have `constinit` if it comes after
 the initializing declaration and the initializing declaration does not
@@ -292,7 +292,7 @@ Identifier bad = "2x";              // rejected
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 64
-of 72 tests.
+of 73 tests.
 
 - {rule}`CE-17`: every compiler accepts a constant evaluation that
   reaches the definition of a `static const int` with a constant

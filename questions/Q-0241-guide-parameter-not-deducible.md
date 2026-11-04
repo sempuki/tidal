@@ -46,3 +46,7 @@ Kept open on 2026-11-03 under decision 0054, because two of the newest families 
 The source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`) agrees with option 2. Each template parameter of a guide that has no default must be deducible from the guide's parameter types, and the rule is not exempt from diagnosis. GCC's and EDG's acceptance is a defect.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+
+### Gap review, 2026-10-31
+
+The source-reader gap review of packs and class template argument deduction (`reports/review/2026-10-31-gap-review-packs-and-ctad.md`) reads every template parameter of a guide template that has no default as required to be deducible from the guide's parameters, with no exemption from diagnosis. Clang's rejection matches. The reading supports the provisional answer, and the review asks the question to record that GCC and EDG accept.

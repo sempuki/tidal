@@ -56,3 +56,7 @@ Kept open on 2026-11-03 under decision 0054, because the question waits on the m
 The source-reader gap review of question cluster 2 (`reports/review/2026-11-03-gap-review-question-cluster-2.md`) reads the C++23 text as giving option 2 for plain lvalue and xvalue arguments, because no step compares two direct bindings to array types with different bounds. For the braced string literal, the list rule prefers the known bound, which is option 1. The review is unclear on a braced list that holds the array lvalue. The review reports a later change to reference binding between similar types that gives a preference of this kind, and asks the writer to confirm it by probe.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+
+### Gap review, 2026-11-03
+
+The source-reader gap review of the open questions on overloading, references, and list initialization (`reports/review/2026-11-03-gap-review-questions-overloading.md`) names the question only to say that it did not review it, because the question belongs to another cluster.

@@ -391,7 +391,7 @@ class of the matrix compilers has this size in bytes:
 
 :::{rule} TR-16
 :kind: unspecified
-:tests: foundations/translation/floating-constant-and-run-either.cpp
+:tests: foundations/translation/floating-constant-and-run-either.cpp foundations/translation/floating-sum-constant-and-run-either.cpp
 
 Whether a floating-point operation gives the same result in constant
 evaluation and at run time is unspecified. Constant evaluation on the
@@ -427,8 +427,8 @@ int at_run_time = half(9);    // the same function, at run time
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 63
-of 86 tests. EDG takes no optimization flag, so the three `-O2` tests
+The results are in `tests/RESULTS.md`. All eight compilers agree on 64
+of 87 tests. EDG takes no optimization flag, so the three `-O2` tests
 are skipped there. EDG runs and links no programs, so its results for
 the run and link tests say only that the programs are valid.
 

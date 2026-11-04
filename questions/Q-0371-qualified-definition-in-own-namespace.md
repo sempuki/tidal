@@ -31,4 +31,6 @@ The test in Affects, and probe `q1.cpp` of the Propose exercise X15.
 No; the definition is not valid (option 1). Two of three families
 reject it, and Clang's warning marks the form as one it does not expect.
 
+Kept open on 2026-11-03 under decision 0054, because no review has read the provisional answer. Clang 22 is the one newest family that differs.
+
 ## Opinions

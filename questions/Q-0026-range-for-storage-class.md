@@ -23,3 +23,7 @@ rejects both forms.
 Settled on 2026-11-01 under decision 0051, because the newest version of each baseline family (Clang 22, GCC 16, EDG 7.0) agrees with this answer. GCC 14 still accepts both forms, and the tests keep their overrides for GCC 14.
 
 ## Opinions
+
+### Gap review, 2026-11-01
+
+The source-reader gap review of question cluster 1 (`reports/review/2026-11-01-gap-review-question-cluster-1.md`) supports the answer. The declaration of a range-based `for` loop allows only type specifiers and `constexpr`, so `static` and `thread_local` are not allowed.

@@ -30,7 +30,9 @@ The test above, and the columns `A T / A auto` and `AB T / AB auto` of the spell
 
 No, two templates, and no diagnostic is required; GCC and EDG diagnose the call as ambiguous, Clang accepts (option 2). A placeholder parameter makes a function template of its own (DED-P1), and constraints in other places declare another template (CNS-P5). CNS-27 and CNS-40 state the answer.
 
-Changed on 2026-11-03 to option 2, with no diagnostic required. The review reads option 2, GCC 16 and EDG 7.0 follow it, and two principles give the same answer: DED-P1 says that a placeholder parameter makes a function template of its own, and CNS-P5 says that a declaration with constraints in other places declares another template. CNS-27 now says that a placeholder parameter does not match a template parameter of another declaration. The new `no-diagnostic` rule CNS-40 covers a program with both templates. `redeclare-placeholder.cpp` expects a rejection with an override for Clang, and the new test `redeclare-placeholder-unconstrained.cpp` covers the form without constraints. The question stays open.
+Changed on 2026-11-03 to option 2, with no diagnostic required. The review reads option 2, GCC 16 and EDG 7.0 follow it, and two principles give the same answer: DED-P1 says that a placeholder parameter makes a function template of its own, and CNS-P5 says that a declaration with constraints in other places declares another template. CNS-27 now says that a placeholder parameter does not match a template parameter of another declaration. The new `no-diagnostic` rule CNS-40 covers a program with both templates. `redeclare-placeholder.cpp` expects a rejection with an override for Clang, and the new test `redeclare-placeholder-unconstrained.cpp` covers the form without constraints.
+
+Kept open on 2026-11-03 under decision 0054, because CNS-27 changed and CNS-40 is new on the same day, and a question settles only after a reader or a review has used the changed rule (decision 0055). The review also reads with doubt.
 
 ## Opinions
 
@@ -39,3 +41,7 @@ Changed on 2026-11-03 to option 2, with no diagnostic required. The review reads
 The source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`) reads option 2, with doubt, and the program needs no diagnostic. Each placeholder parameter becomes an invented type parameter, and an example treats the declaration with placeholders and the template written out by hand as two declarations that accept the same arguments and are distinct. A program that depends on two such constructs being the same is not valid, with no diagnostic required, and so is a program with two such function templates of one name and signature. So GCC's and EDG's ambiguity and Clang's acceptance all conform. The doubt is that only an example states that the two forms differ. The unconstrained form follows the same reasoning.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+
+### Gap review, 2026-10-31
+
+The source-reader gap review of concepts and constraints (`reports/review/2026-10-31-gap-review-concepts-and-constraints.md`) raises the case as an open point. Two constant template parameters compare equal when their types match apart from a type constraint on the placeholder, and the comparison of template heads does not settle whether a constrained and an unconstrained placeholder parameter declare the same template. The review expects compilers to reject, perhaps for different reasons, and gives no answer to the question.

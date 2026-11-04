@@ -58,3 +58,7 @@ Kept open on 2026-11-03 under decision 0054, because the question waits on the m
 The source-reader gap review of question cluster 4 (`reports/review/2026-11-03-gap-review-question-cluster-4.md`) reads the reference as supporting option 1 for both cases. An old pointer reaches a new object only when the new object can transparently replace the old one, and a base class subobject never meets that condition. Creating the new object also ends the lifetime of the enclosing derived object. So the read through the old base pointer is undefined, and a constant evaluation must reject it, although no family does. In the `const` case, creating an object in the storage of a `const` complete object with automatic, static, or thread storage is undefined before any read. So a constant evaluation must reject the creation itself, as Clang 22 does. The review knows of no later change that makes a base subobject replaceable.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+
+### Gap review, 2026-11-03 (object model)
+
+The source-reader gap review of the object model (`reports/review/2026-11-03-gap-review-object-model.md`) names the question only to say that it leaves the question out, because the question already has a gap-review reading.

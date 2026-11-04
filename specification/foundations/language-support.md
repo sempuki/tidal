@@ -593,8 +593,8 @@ of 60 tests.
   LSUP-11 follows the compilers (`documentation/decisions/pending.md`,
   row 4).
 - Scope: the page covers the names that a `new` expression and
-  `dynamic_cast` use. `typeid` and its exception wait for roadmap item
-  T. The new handler and the launder operation are library facilities
+  `dynamic_cast` use. `typeid` and its exception are deferred
+  (`documentation/roadmap.md`, Deferred). The new handler and the launder operation are library facilities
   that no core rule on a Tidal page uses yet. A program that declares
   `std::launder` itself as a function template compiles on Clang and
   GCC and fails to link, because the library defines the function in

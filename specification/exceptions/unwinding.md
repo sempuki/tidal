@@ -98,7 +98,7 @@ must act only on failure keeps a flag that the success path sets.
 
 :::{rule} UNW-11
 :kind: reject
-:tests: exceptions/unwinding/placement-new-usual-delete-rejected.cpp
+:tests: exceptions/unwinding/placement-new-usual-delete-rejected.cpp exceptions/unwinding/placement-new-global-usual-delete-rejected.cpp
 
 The deallocation function that a placement `new` expression selects
 for the cleanup of UNW-3 must not be a usual deallocation function. For
@@ -384,7 +384,7 @@ void transfer(Account& from, Account& to, int amount) {
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 51
-of 58 tests. EDG runs no programs, so its results say only that the
+of 59 tests. EDG runs no programs, so its results say only that the
 programs are valid.
 
 - UNW-5 and UNW-7: the harness sees only that the program ended with a

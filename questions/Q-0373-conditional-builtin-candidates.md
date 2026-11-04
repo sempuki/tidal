@@ -37,6 +37,8 @@ each other family departs in one place only. The promoted arithmetic
 types of option 1 are the same set that the arithmetic operators use in
 the table of OVL-P4.
 
+Kept open on 2026-11-03 under decision 0054, because no review has read the provisional answer. GCC 16 and EDG 7.0 each depart from option 1 in one place.
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

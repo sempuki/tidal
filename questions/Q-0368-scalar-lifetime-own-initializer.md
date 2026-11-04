@@ -46,6 +46,8 @@ reads the reference this way, and OBJ-1 then gives one rule for class
 and scalar objects: the lifetime begins when the initialization
 completes. Clang 22 follows the answer, and GCC 16 and EDG 7.0 differ.
 
+Kept open on 2026-11-03 under decision 0054, because no review has read the provisional answer. GCC 16 and EDG 7.0 also differ from the answer.
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

@@ -46,6 +46,8 @@ model: a use is where the program needs the entity itself, and a
 capture rule asks only whether the lambda names the entity where the
 program needs it.
 
+Kept open on 2026-11-03 under decision 0054, because no review has read the provisional answer. The gap review of program structure raised the question, and in each form one newest family differs from it.
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

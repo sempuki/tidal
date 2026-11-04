@@ -41,6 +41,8 @@ Yes; the `new` expression uses the deallocation function whatever the exception 
 
 Changed on 2026-11-03. The source-reader gap review of program structure (`reports/review/2026-11-03-gap-review-program-structure.md`) reads the reference as supporting option 2. The reading matches GCC 16 at `-O0`, and Tidal's own rules give the same answer. ODR-P1 says that a `new` expression uses its allocation and deallocation functions, with no condition. ODR-5 now drops the condition on the constructor, and adds the uses by the definitions of a constructor and a destructor. The test is now `new-noexcept-constructor-uses-deallocation.cpp`.
 
+Kept open on 2026-11-03 under decision 0054, because ODR-5 changed on the same day, and a question settles only after a reader or a review has used the changed rule (decision 0055). Every compiler's result fits ODR-8.
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

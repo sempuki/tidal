@@ -29,4 +29,6 @@ No, the clean-room designer only for now (option 1). The clean-room designer fin
 Option 2 can follow if the roadmap of the clean-room designer misses
 whole areas.
 
+Kept open on 2026-11-03 under decision 0054, because the question waits on the maintainer (`documentation/decisions/pending.md`, row 9).
+
 ## Opinions

@@ -46,3 +46,7 @@ Kept open on 2026-11-03 under decision 0054, because two of the newest families 
 ### Gap review, 2026-11-03
 
 The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) agrees with option 1. A program is not valid when an attribute appears where the attribute's own rules do not allow it. `noreturn`, `nodiscard`, and `no_unique_address` each name the entities they can apply to, and a plain variable or a bit-field is not one of them. A warning counts as a diagnostic, so the warnings of GCC and Clang conform, and their acceptance after the warning is an extension. The review notes that a later change, which lets an implementation ignore standard attributes, keeps this rule on placement.
+
+### Inventory, 2026-11-03
+
+The source-reader inventory of class properties (`reports/review/2026-11-03-inventory-class-properties.md`) lists the overlap attribute on a bit-field as ill-formed and notes that this question records a compiler split. The listing fits the provisional answer for that case.

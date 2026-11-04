@@ -29,3 +29,7 @@ implementations accept the braced form.
 Settled on 2026-11-01 under decision 0051, because the newest version of each baseline family (Clang 22, GCC 16, EDG 7.0) agrees with this answer. Clang 18 still rejects the braced form, and the test keeps its override for Clang 18.
 
 ## Opinions
+
+### Gap review, 2026-11-01
+
+The source-reader gap review of question cluster 1 (`reports/review/2026-11-01-gap-review-question-cluster-1.md`) supports the answer. A structured binding with a braced initializer and an array initializes each element from the matching array element, and braces act as parentheses do.

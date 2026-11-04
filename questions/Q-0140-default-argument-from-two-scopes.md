@@ -56,3 +56,7 @@ Kept on 2026-11-03. The review reads option 2, and every compiler accepts the ca
 The source-reader gap review of the open questions on overloading, references, and list initialization (`reports/review/2026-11-03-gap-review-questions-overloading.md`) reads option 2. The call is not valid whenever two declarations in different scopes each supply the default argument that the call needs, with no comparison of the two values. A diagnostic is required. GCC rejects only different values, and no compiler in the table rejects equal values.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+
+### Gap review, 2026-10-31
+
+The source-reader gap review of overload resolution (`reports/review/2026-10-31-gap-review-overload-resolution.md`) reads default arguments from two scopes as making the call ill-formed even when the two values are equal. Only GCC matches that reading. The reading goes against the test for equal values, which expects acceptance, as the later review of the open questions on overloading also finds.

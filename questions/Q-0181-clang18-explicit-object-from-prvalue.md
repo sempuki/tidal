@@ -37,3 +37,11 @@ Kept on 2026-11-03. The answer follows the later change, which every newest comp
 The source-reader gap review of the open questions on classes and statements (`reports/review/2026-11-03-gap-review-questions-classes-statements.md`) repeats the reading of the cluster 1 review. In the C++23 text a class prvalue before a dot is materialized as a temporary, and the explicit object parameter is copied or moved from it, so the call is not valid with both constructors deleted (option 2). A later change lets the prvalue initialize the parameter directly (option 1). Every compiler in the table except Clang 18 follows that change. The choice belongs to Q-0007.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+
+### Gap review, 2026-11-01
+
+The source-reader gap review of question cluster 1 (`reports/review/2026-11-01-gap-review-question-cluster-1.md`) finds that the answer contradicts the C++23 text. Member access with a dot needs a glvalue, so the prvalue is first materialized, and the by-value parameter is then initialized from the temporary as an xvalue. That needs the move constructor, and the call is ill-formed when the move constructor is deleted (option 2). A later core defect resolution removes the materialization, and the newest compilers follow it. The review asks the question to name that dependency.
+
+### Gap review of cluster 2, 2026-11-03
+
+The source-reader gap review of question cluster 2 (`reports/review/2026-11-03-gap-review-question-cluster-2.md`) names the question only as the model for another case. It asks the writer to confirm a later defect resolution by probe before an answer depends on it, as for this question.

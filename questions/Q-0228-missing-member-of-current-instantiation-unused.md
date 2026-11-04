@@ -53,3 +53,7 @@ Settled on 2026-11-03 under decision 0054. The source-reader gap review of the o
 The source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`) agrees with option 2. A qualified name into the current instantiation is dependent only when the class has a dependent base and lookup finds nothing. With no dependent base, the failed lookup is an error in an independent construct, so the rule of Q-0223 applies. GCC 16's rejection by default is allowed and not required. Once the class is instantiated, the error needs a diagnostic, which fits DEP-17.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+
+### Gap review, 2026-10-31
+
+The source-reader gap review of dependent names and instantiation (`reports/review/2026-10-31-gap-review-dependent-names-and-instantiation.md`) reads a qualified name into the current instantiation that finds nothing, in a class with no dependent base, as a fault the implementation may report before instantiation and need not report while no specialization is made. Both outcomes conform for the unused template, so GCC 14's acceptance conforms. The reading supports the answer.

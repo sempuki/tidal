@@ -40,6 +40,8 @@ Probes with `-Wall` on the six Clang and GCC compilers. Tests:
 Those that no enclosing handler catches by static type; a rethrow needs `catch (...)` (option 1). The definition follows from TRY-2 and THR-4, and a
 recommended rule allows an implementation that does not warn.
 
+Kept open on 2026-11-03 under decision 0054, because the gap review of the exceptions chapter finds the reference silent, so the review does not support the answer.
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
@@ -47,5 +49,3 @@ recommended rule allows an implementation that does not warn.
 ### Gap review, 2026-11-03
 
 The source-reader gap review of the exceptions chapter (`reports/review/2026-11-03-gap-review-exceptions.md`) reads the reference as silent on this question. The reference recommends no warning for a throw in a non-throwing function. It says only that such a throw is valid and ends the program. Both options are Tidal's own choice.
-
-The question stays open under decision 0054 (2026-11-03). The review is silent, so it does not support the provisional answer.

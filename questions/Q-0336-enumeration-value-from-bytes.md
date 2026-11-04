@@ -44,7 +44,7 @@ ENUM-6 covers a conversion and every other means that leaves such a
 value in the object. The sanitizers of both compilers check the read
 and report the two cases in the same way.
 
-Kept open on 2026-11-03. The review reads against the undefined behavior sanitizers of Clang and GCC, which stop the read in both tests, and EDG runs no program. Tidal keeps option 1, and the question waits on the maintainer (`documentation/decisions/pending.md`, row 4).
+Kept open on 2026-11-03 under decision 0054, because the review reads against the undefined behavior sanitizers of Clang and GCC, which stop the read in both tests, and EDG runs no program. Tidal keeps option 1 until the maintainer decides (`documentation/decisions/pending.md`, row 4).
 
 ## Opinions
 

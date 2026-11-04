@@ -50,6 +50,8 @@ argument-dependent lookup is part of the non-member search. An operator
 has no form that turns off argument-dependent lookup on purpose, as
 parentheses do for a call.
 
+Kept open on 2026-11-03 under decision 0054, because no review has read the provisional answer. EDG 7.0 is the one newest family that differs.
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

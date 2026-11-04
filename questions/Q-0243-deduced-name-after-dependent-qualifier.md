@@ -60,3 +60,7 @@ Kept open on 2026-11-03 under decision 0054, because the question waits on the m
 The source-reader gap review of question cluster 1 (`reports/review/2026-11-01-gap-review-question-cluster-1.md`) reads the reference as supporting option 2. A writer weighs the change to the provisional answer with its rules and tests.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+
+### Gap review, 2026-10-31
+
+The source-reader gap review of packs and class template argument deduction (`reports/review/2026-10-31-gap-review-packs-and-ctad.md`) reads the qualifier before a deduced class template name as required to be non-dependent, so the reading rejects the program. Compilers accept the dependent form once the template is instantiated. The reading goes against the provisional answer, as the cluster 1 review does, and the review asks the question to keep both.

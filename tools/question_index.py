@@ -17,11 +17,16 @@ is unknown, or when an answer starts with an option number ("Option 1.").
 Usage:
     tools/question_index.py [--check]
 
---check writes nothing and fails when the table is out of date. It also
-warns, without failing, about each question that a file in reports/review/
-names when the question's Opinions section does not name that file. Each
-commit that acts on a review records the review's reading on every
-question the review read (decision 0054).
+The tool also writes the number of questions settled under decision 0054
+into row 1 of documentation/decisions/pending.md ("Confirms the N
+questions settled under decision 0054"). A question counts when its file
+says "Settled on DATE under decision 0054".
+
+--check writes nothing. It fails when the table is out of date, when the
+count in pending.md is wrong, and when a file in reports/review/ names a
+question whose Opinions section does not name that file. Each commit
+that acts on a review records the review's reading on every question the
+review read (decision 0054).
 """
 
 import argparse
@@ -34,6 +39,9 @@ ROOT = Path(__file__).resolve().parent.parent
 QUESTIONS = ROOT / "questions"
 README = QUESTIONS / "README.md"
 REVIEWS = ROOT / "reports" / "review"
+PENDING = ROOT / "documentation" / "decisions" / "pending.md"
+SETTLED_0054 = re.compile(r"Settled on \d{4}-\d{2}-\d{2} under decision 0054")
+PENDING_COUNT = re.compile(r"(Confirms the )(\d+)( questions settled under decision 0054)")
 QUESTION_ID = re.compile(r"\bQ-\d{4}\b")
 HEADER = "| ID | Question | Status | Provisional answer |"
 STATUSES = ["open", "provisional", "compiler defect", "settled"]
@@ -94,6 +102,17 @@ def load() -> tuple[list[Question], list[str]]:
     return questions, problems
 
 
+def settled_0054(questions: list[Question]) -> int:
+    return sum(1 for q in questions if SETTLED_0054.search(q.path.read_text()))
+
+
+def render_pending(text: str, count: int) -> str | None:
+    """Return pending.md with the count of row 1 rewritten, or None when the phrase is missing."""
+    if not PENDING_COUNT.search(text):
+        return None
+    return PENDING_COUNT.sub(lambda m: f"{m.group(1)}{count}{m.group(3)}", text, count=1)
+
+
 def review_warnings(questions: list[Question]) -> list[str]:
     """Each question that a review names and whose Opinions section does not name the review."""
     by_id = {q.id: q for q in questions}
@@ -131,14 +150,26 @@ def main() -> int:
     questions, problems = load()
     old = README.read_text()
     new = render(old, questions)
+    pending_old = PENDING.read_text()
+    pending_new = render_pending(pending_old, settled_0054(questions))
+    if pending_new is None:
+        problems.append(f"{PENDING.relative_to(ROOT)}: row 1 has no phrase "
+                        "'Confirms the N questions settled under decision 0054'")
+        pending_new = pending_old
     if args.check:
         if new != old:
             problems.append("questions/README.md: the index is out of date; run tools/question_index.py")
-        for w in review_warnings(questions):
-            print(f"warning: {w}", file=sys.stderr)
-    elif new != old:
-        README.write_text(new)
-        print("questions/README.md: index rebuilt")
+        if pending_new != pending_old:
+            problems.append(f"{PENDING.relative_to(ROOT)}: the count of questions settled under "
+                            "decision 0054 is wrong; run tools/question_index.py")
+        problems.extend(review_warnings(questions))
+    else:
+        if new != old:
+            README.write_text(new)
+            print("questions/README.md: index rebuilt")
+        if pending_new != pending_old:
+            PENDING.write_text(pending_new)
+            print(f"{PENDING.relative_to(ROOT)}: count of questions settled under decision 0054 rewritten")
     for p in problems:
         print(p)
     print(f"{len(questions)} questions, {len(problems)} problems")

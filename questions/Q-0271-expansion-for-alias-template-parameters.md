@@ -40,3 +40,7 @@ Settled on 2026-11-01 under decision 0051, because the newest version of each ba
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+
+### Gap review, 2026-11-01
+
+The source-reader gap review of question cluster 1 (`reports/review/2026-11-01-gap-review-question-cluster-1.md`) finds the reference silent. No rule forbids a pack expansion in the arguments of an alias template when the matching parameter is not a pack, and no rule allows it. The text on aliases does not settle when substitution happens. The settled answer rests on the agreement of every compiler.

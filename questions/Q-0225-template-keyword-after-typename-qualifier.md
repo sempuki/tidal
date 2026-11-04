@@ -54,3 +54,7 @@ Kept open on 2026-11-03 under decision 0054, because the question waits on the m
 The source-reader gap review of question cluster 6 (`reports/review/2026-11-03-gap-review-question-cluster-6.md`) reads the reference as supporting option 2, and as going further than GCC. A `<` after the last name in a position where only a type can appear starts an argument list without the keyword, unless the name is part of a qualifier. These positions include the name after `typename`, a base, the target of an alias declaration, and parameter types. So the alias target without `typename` is valid too, which every compiler rejects. The friend declarator falls under the case of a declared name, and the review finds the friend form unclear.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+
+### Gap review, 2026-10-31
+
+The source-reader gap review of dependent names and instantiation (`reports/review/2026-10-31-gap-review-dependent-names-and-instantiation.md`) reads a less-than sign after the last name of a type-only position as the start of an argument list with no keyword. The last name after `typename` is such a position. The review finds that GCC matches this reading and that Clang and EDG are stricter. The reading goes against the provisional answer, as the later cluster 6 review does.

@@ -18,10 +18,21 @@ prints one line for each row that conflicts with the specification now:
 A row whose first cell is not a rule or principle ID (a grammar
 production, a glossary term, "new VC rule") is not checked.
 
+The tool reads a table whose header names the ID column "ID" or "Rule
+ID", the kind column "Change" or "Kind of change", and an "Old class"
+column. When a table has both "Kind of change" and "Change", the first
+gives the kind. The tool prints a warning for each table in section 2
+that it cannot read this way, and for a report whose section 2 gives no
+row.
+
 A report can name the commit it read with a backquoted commit ID in its
 header, before the first "## " heading (for example "Commit read:
 `3d98c93`."). For such a report the tool also prints how many later
-commits change specification/.
+commits change specification/, and one "changed since <commit>" line for
+each row whose rule or principle has other directive text at HEAD than
+at that commit. The comparison leaves out the `:tests:` option. A
+changed row is a fact for the reader of the report, and the tool does
+not count it as a conflict.
 
 The tool exits 0 even when it finds conflicts, because a report is a
 record of its date and the check must not fail a commit. --strict makes
@@ -54,6 +65,9 @@ EXERCISE_ID = re.compile(r"^X\d+:new-\d+$")
 RULE_REF = re.compile(r"\{rule\}`([A-Z]+-\d+)`")
 COMMIT = re.compile(r"`([0-9a-f]{7,40})`")
 KINDS = ["withdrawn", "class", "new-id", "unknown"]
+ID_HEADERS = ["id", "rule id"]
+KIND_HEADERS = ["kind of change", "change"]
+OLD_HEADERS = ["old class"]
 
 
 def shown(path: Path) -> Path:
@@ -64,16 +78,31 @@ def cells(line: str) -> list[str]:
     return [c.strip() for c in line.strip().strip("|").split("|")]
 
 
-def change_rows(report: Path):
-    """Yield (line number, ID, change, old class) for each row of the section 2 table."""
+def column(header: list[str], names: list[str]) -> int | None:
+    """Return the index of the first of names that the header has."""
+    for name in names:
+        if name in header:
+            return header.index(name)
+    return None
+
+
+def read_tables(report: Path):
+    """Return (rows, unread) for section 2 of a report.
+
+    rows holds (line number, ID, change, old class) for each row of a
+    change table. unread holds the line number and header of each table
+    the tool cannot read.
+    """
+    rows, unread = [], []
     inside = False
     header = None
+    columns = None
     for n, line in enumerate(report.read_text().splitlines(), 1):
         if CHANGES.match(line):
             inside = True
             continue
         if inside and NEXT.match(line):
-            return
+            break
         if not inside:
             continue
         if not line.startswith("|"):
@@ -82,13 +111,21 @@ def change_rows(report: Path):
         row = cells(line)
         if header is None:
             header = [c.lower() for c in row]
+            columns = [column(header, names) for names in (ID_HEADERS, KIND_HEADERS, OLD_HEADERS)]
+            if None in columns:
+                columns = None
+                unread.append((n, line.strip()))
             continue
-        if set(line) <= set("|-: "):
+        if set(line) <= set("|-: ") or columns is None:
             continue
-        if "id" not in header or "change" not in header or "old class" not in header:
-            continue
-        get = dict(zip(header, row))
-        yield n, get["id"].strip("`"), get["change"], get["old class"]
+        get = [row[i] if i < len(row) else "" for i in columns]
+        rows.append((n, get[0].strip("`"), get[1], get[2]))
+    return rows, unread
+
+
+def change_rows(report: Path):
+    """Yield (line number, ID, change, old class) for each row of the section 2 tables."""
+    yield from read_tables(report)[0]
 
 
 def merge_targets() -> dict[str, list[str]]:
@@ -121,8 +158,8 @@ def principle_ids() -> set[str]:
     return ids
 
 
-def commit_note(report: Path) -> str:
-    """Say which commit the report read and how far specification/ has moved since."""
+def report_commit(report: Path) -> tuple[str | None, str]:
+    """Return the commit the report read and a note on how far specification/ has moved since."""
     head = []
     for line in report.read_text().splitlines()[1:]:
         if NEXT.match(line):
@@ -133,8 +170,46 @@ def commit_note(report: Path) -> str:
             ["git", "rev-list", "--count", f"{sha}..HEAD", "--", "specification"],
             cwd=ROOT, capture_output=True, text=True)
         if run.returncode == 0:
-            return f"read {sha}, {run.stdout.strip()} later commits change specification/"
-    return "names no commit"
+            return sha, f"read {sha}, {run.stdout.strip()} later commits change specification/"
+    return None, "names no commit"
+
+
+def directive_texts(pages: dict[str, str]) -> dict[str, str]:
+    """Map each rule and principle ID to its directive text without the :tests: option."""
+    texts = {}
+    for text in pages.values():
+        current, body = None, []
+        for line in text.splitlines():
+            if m := DIRECTIVE.match(line) or PRINCIPLE.match(line):
+                current, body = m.group(1), []
+            elif current and line.startswith(":::"):
+                texts[current] = "\n".join(body).strip()
+                current = None
+            elif current and not line.startswith(":tests:"):
+                body.append(line)
+    return texts
+
+
+def pages_at(sha: str) -> dict[str, str]:
+    """Return the text of each specification page at a commit."""
+    names = subprocess.run(
+        ["git", "ls-tree", "-r", "--name-only", sha, "--", "specification"],
+        cwd=ROOT, capture_output=True, text=True, check=True).stdout.split()
+    return {name: subprocess.run(["git", "show", f"{sha}:{name}"], cwd=ROOT,
+                                 capture_output=True, text=True, check=True).stdout
+            for name in names if name.endswith(".md")}
+
+
+def changed_since(report: Path, sha: str, now: dict[str, str], cache: dict) -> list[str]:
+    """Return one line for each row whose directive text differs between sha and HEAD."""
+    if sha not in cache:
+        cache[sha] = directive_texts(pages_at(sha))
+    then = cache[sha]
+    lines = []
+    for n, rid, _, _ in change_rows(report):
+        if rid in then and rid in now and then[rid] != now[rid]:
+            lines.append(f"{shown(report)}:{n}: {rid}: changed since {sha}")
+    return lines
 
 
 def check(report: Path, rules: dict, principles: set[str], targets: dict) -> list[tuple[str, str]]:
@@ -182,17 +257,32 @@ def main() -> int:
     principles = principle_ids()
     targets = merge_targets()
 
+    now = directive_texts({str(p): p.read_text() for p in SPEC.rglob("*.md")})
+    cache = {}
     totals = Counter()
+    warnings = changed = 0
     for report in reports:
         found = check(report, rules, principles, targets)
-        rows = sum(1 for _ in change_rows(report))
-        print(f"{shown(report)}: {rows} rows, {len(found)} conflicts, {commit_note(report)}")
+        rows, unread = read_tables(report)
+        sha, note = report_commit(report)
+        print(f"{shown(report)}: {len(rows)} rows, {len(found)} conflicts, {note}")
+        for n, header in unread:
+            print(f"  warning: {shown(report)}:{n}: cannot read this change table: {header}")
+            warnings += 1
+        if not rows:
+            print(f"  warning: {shown(report)}: section 2 gives no change row")
+            warnings += 1
         for kind, line in found:
             print(f"  {kind}: {line}")
         totals.update(kind for kind, _ in found)
+        if sha:
+            for line in changed_since(report, sha, now, cache):
+                print(f"  changed: {line}")
+                changed += 1
 
     summary = ", ".join(f"{totals[k]} {k}" for k in KINDS)
-    print(f"{len(reports)} reports, {sum(totals.values())} conflicts: {summary}")
+    print(f"{len(reports)} reports, {sum(totals.values())} conflicts: {summary}; "
+          f"{changed} rows changed since their report's commit; {warnings} warnings")
     return 1 if args.strict and totals else 0
 
 

@@ -31,7 +31,9 @@ have overrides.
 
 No, the two types differ; Clang agrees, GCC and EDG differ (option 1). An alias template is a template of its own (TPL-P1), and two template arguments are the same only when they name the same template (TARG-P4). TARG-22 states the answer, and TARG-19 covers the other cases.
 
-Changed on 2026-11-03 to option 1. The review reads option 1, Clang 22 follows it, and TARG-P4 gives the same answer: two template arguments are the same when they name the same template, and an alias template is a template of its own (TPL-P1). TARG-22 is now a `required` rule that states option 1. The two tests already expect that the types differ, with overrides for GCC and EDG. The question stays open.
+Changed on 2026-11-03 to option 1. The review reads option 1, Clang 22 follows it, and TARG-P4 gives the same answer: two template arguments are the same when they name the same template, and an alias template is a template of its own (TPL-P1). TARG-22 is now a `required` rule that states option 1. The two tests already expect that the types differ, with overrides for GCC and EDG.
+
+Kept open on 2026-11-03 under decision 0054, because the review reads option 1 with doubt, and two newest families differ from the answer (GCC 16 and EDG 7.0). TARG-22 also changed on the same day, and a question settles only after a reader or a review has used the changed rule (decision 0055).
 
 ## Opinions
 

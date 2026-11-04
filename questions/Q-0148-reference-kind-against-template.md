@@ -53,3 +53,7 @@ Kept open on 2026-11-03 under decision 0054, because two of the newest families 
 The source-reader gap review of question cluster 2 (`reports/review/2026-11-03-gap-review-question-cluster-2.md`) agrees with option 2. The tie-breakers for the best function come in this order: the result sequence, the kind of function reference, a plain function over a template specialization, and the more specialized template.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+
+### Gap review, 2026-10-31
+
+The source-reader gap review of overload resolution (`reports/review/2026-10-31-gap-review-overload-resolution.md`) reads the function reference kind as coming before the preference for a plain function over a template, so the template is chosen in the test's case. The reading supports the provisional answer.

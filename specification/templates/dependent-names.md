@@ -604,7 +604,7 @@ breaks the grammar.
 
 :::{rule} DEP-37
 :kind: reject
-:tests: templates/dependent-names/operator-pack-never-fits.cpp
+:tests: templates/dependent-names/operator-pack-never-fits.cpp templates/dependent-names/binary-operator-pack-never-fits.cpp
 
 A template must not declare an operator function whose parameters
 leave no room for an element of its parameter pack, which only an
@@ -787,8 +787,8 @@ template <class... T> int count() {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 101
-of 123 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 102
+of 124 tests.
 
 Six questions on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
 

@@ -33,7 +33,9 @@ looked up at the instantiation and finds the base's function.
 
 Yes; Clang agrees, GCC and EDG differ (option 2). The name `operator T` is a dependent name when `T` is dependent, and the lookup of a dependent name waits for the arguments (DEP-P1), when the base is known. DEP-11 states the answer. A name whose type is not dependent stays unfound (DEP-12).
 
-Changed on 2026-11-03 to option 2. The review reads option 2, Clang 22 follows it, and DEP-P1 gives the same answer: the lookup of a dependent name waits for the arguments, when the base is known. DEP-11 now states option 2, and the table of DEP-P3 has a row for it. DEP-12 keeps the name whose type is not dependent. `dependent-base-conversion-function.cpp` expects the program to run, with overrides for GCC and EDG, and the new test `dependent-base-conversion-function-independent.cpp` checks `operator int`, which every compiler rejects. The question stays open.
+Changed on 2026-11-03 to option 2. The review reads option 2, Clang 22 follows it, and DEP-P1 gives the same answer: the lookup of a dependent name waits for the arguments, when the base is known. DEP-11 now states option 2, and the table of DEP-P3 has a row for it. DEP-12 keeps the name whose type is not dependent. `dependent-base-conversion-function.cpp` expects the program to run, with overrides for GCC and EDG, and the new test `dependent-base-conversion-function-independent.cpp` checks `operator int`, which every compiler rejects.
+
+Kept open on 2026-11-03 under decision 0054, because two newest families differ from the answer (GCC 16 and EDG 7.0). DEP-11 also changed on the same day, and a question settles only after a reader or a review has used the changed rule (decision 0055).
 
 ## Opinions
 

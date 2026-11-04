@@ -29,6 +29,8 @@ No cost model for now; a proposal states cost in words (option 1). The test suit
 would mislead. Option 2 becomes useful once Tidal has a corpus of whole
 programs.
 
+Kept open on 2026-11-03 under decision 0054, because the question waits on the maintainer (`documentation/decisions/pending.md`, row 9).
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

@@ -29,6 +29,10 @@ The tool writes:
   test counts, the front end's pass and check-pass counts
   (reports/clean-room/rust-frontend/conformance.tsv), and the name of the
   latest similarity report that checked every page.
+- the size table of the "Size estimate" section: pages, live rules
+  (rules whose class is not withdrawn), and words for each chapter, and
+  the totals. Words are whitespace-separated tokens of the page source,
+  the directive lines included.
 
 It also writes the front-end row of the status table in
 documentation/exercises.md (section 8): the latest round, from the
@@ -233,6 +237,40 @@ def wrap(text: str, indent: str = "") -> str:
                          break_long_words=False)
 
 
+SECTION_TITLES = {s: s.capitalize() for s in SECTIONS}
+SIZE_SECTION = re.compile(r"(?<=^## Size estimate\n\n)(?:(?!## ).*\n)*", re.M)
+
+
+def size_text() -> str:
+    """The Size estimate section: a table of pages, live rules, and words for each chapter."""
+    rows, totals = [], Counter()
+    for section in SECTIONS:
+        paths = list(pages(SPEC / section / "index.md"))
+        rules = words = 0
+        for p in paths:
+            src = p.read_text()
+            rules += sum(n for k, n in Counter(re.findall(r"^:kind: (\S+)", src, flags=re.M)).items()
+                         if k in KINDS)
+            words += len(src.split())
+        totals.update(pages=len(paths), rules=rules, words=words)
+        rows.append(f"| {SECTION_TITLES[section]} | {len(paths)} | {rules} | {words} |")
+    scope = [sum(int(r.split("|")[i]) for r, s in zip(rows, SECTIONS) if s in ("statements", "expressions"))
+             for i in (2, 3, 4)]
+    lines = [
+        "| Chapter | Pages | Live rules | Words |",
+        "|---|---|---|---|",
+        *rows,
+        f"| Total | {totals['pages']} | {totals['rules']} | {totals['words']} |",
+        "",
+        wrap("Every topic in scope has a page (section \"Topics in scope with no page yet\"), "
+             "so these counts give the size of the scope. The expressions and statements chapters, "
+             f"the scope that the charter's third success criterion names, hold {scope[0]} pages, "
+             f"{scope[1]} live rules, and {scope[2]} words. "
+             "`tools/status_table.py` writes this section."),
+    ]
+    return "\n".join(lines) + "\n"
+
+
 def matrix_sentence() -> str:
     """The pass count, and the count of test files with no row in RESULTS.md when it is above zero."""
     text = RESULTS.read_text()
@@ -372,6 +410,7 @@ def render(text: str) -> tuple[str, list[str]]:
          f"The latest similarity report that checked every page is `reports/similarity/{whole}.txt`."
          if whole else "No similarity report has checked every page."),
     ]
+    replacements.append(("size estimate", SIZE_SECTION.pattern, size_text()))
     for name, pattern, new in replacements:
         text, n = re.subn(pattern, lambda _: new, text, flags=re.M)
         if n != 1:

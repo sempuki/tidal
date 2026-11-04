@@ -48,6 +48,8 @@ The class must declare `==` or `!=` against `0` (option 2). Clang and EDG accept
 
 Changed on 2026-11-03. The source-reader gap review of the object model (`reports/review/2026-11-03-gap-review-object-model.md`) reads the reference as supporting option 2. The reading matches Clang 22 and EDG 7.0. LSUP-P1 says that the implementation compares ordering values with `0`, and either operator serves that comparison, the `==` through a rewritten form (DCMP-6). LSUP-12 now accepts `==` or `!=` against `0` for a defaulted `<=>`. `ordering-defaulted-not-equal-zero-only.cpp` expects acceptance, with an override for GCC.
 
+Kept open on 2026-11-03 under decision 0054, because LSUP-12 changed on the same day, and a question settles only after a reader or a review has used the changed rule (decision 0055). GCC 16 is the one newest family that differs.
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
