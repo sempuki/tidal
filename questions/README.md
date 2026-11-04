@@ -385,6 +385,11 @@ status, and the first sentence of its answer section.
 | [Q-0369](Q-0369-c-name-internal-linkage.md) | Are C names with internal linkage in two namespaces one entity? | provisional | Two entities |
 | [Q-0370](Q-0370-default-argument-makes-special-member.md) | Can a definition outside the class add a default argument that makes a constructor a default, copy, or move constructor? | provisional | No; the program is not valid |
 | [Q-0371](Q-0371-qualified-definition-in-own-namespace.md) | Can a member of `N` be defined with the name `N::f` inside `N` itself? | provisional | No; the definition is not valid |
+| [Q-0372](Q-0372-bit-field-padding-bits.md) | What does a byte read give for the bits of a byte that no bit-field covers? | provisional | The bits are padding bits with unspecified values, and the read is defined |
+| [Q-0373](Q-0373-conditional-builtin-candidates.md) | Which built-in candidates does `?:` have for two class operands that convert to a scoped enumeration or to `float`? | provisional | The candidates of option 1 |
+| [Q-0374](Q-0374-early-call-member-subobject.md) | Is a call of a member function on a member that is not yet initialized undefined, when the function reads nothing? | provisional | The call is undefined |
+| [Q-0375](Q-0375-qualified-definition-inline-namespace.md) | For a member of an inline namespace, which namespace must a qualified definition lie outside? | provisional | `N` is the namespace that declares the member |
+| [Q-0376](Q-0376-tuple-index-type.md) | What type does the index of `get` have in the tuple protocol of a structured binding? | provisional | `std::size_t` |
 
 ## Status values
 

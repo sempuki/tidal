@@ -422,16 +422,16 @@ initializer's arguments. The function is an `operator delete`, or an
 
 :::{rule} NEW-22
 :kind: required
-:tests: expressions/new-delete/throw-class-both-usual-forms.cpp expressions/new-delete/throw-class-sized-form-only.cpp expressions/new-delete/throw-global-scope-new.cpp expressions/new-delete/aligned-global-delete.cpp
+:tests: expressions/new-delete/throw-class-both-usual-forms.cpp expressions/new-delete/aligned-class-both-forms.cpp expressions/new-delete/throw-class-sized-form-only.cpp expressions/new-delete/throw-global-scope-new.cpp expressions/new-delete/aligned-global-delete.cpp
 
 Without placement arguments, the deallocation function is a usual form.
 A usual form has a `void*` parameter, and can have a second parameter
-of the type of `sizeof 0`. The forms that the search finds decide the
-call:
+of the type of `sizeof 0`. An aligned usual form (NEW-28) adds a last
+parameter of type `std::align_val_t`. Within the plain forms or within
+the aligned forms, the forms that the search finds decide the call:
 
-- If a class declares both usual forms, the form with one parameter is
-  called.
-- If a class declares one usual form, that form is called.
+- If a class declares both forms, the form without the size is called.
+- If a class declares one form, that form is called.
 - For the global functions, either form can be called ({rule}`UNW-3`).
 :::
 
@@ -466,7 +466,7 @@ not freed, in these cases:
 
 :::{rule} NEW-28
 :kind: required
-:tests: expressions/new-delete/aligned-new-passes-alignment.cpp expressions/new-delete/aligned-delete-passes-alignment.cpp expressions/new-delete/aligned-global-delete.cpp expressions/new-delete/aligned-new-constant.cpp foundations/language-support/alignment-enumeration-self-declared.cpp foundations/language-support/alignment-enumeration-not-declared.cpp
+:tests: expressions/new-delete/aligned-new-passes-alignment.cpp expressions/new-delete/aligned-delete-passes-alignment.cpp expressions/new-delete/aligned-global-delete.cpp expressions/new-delete/aligned-new-constant.cpp foundations/language-support/alignment-enumeration-self-declared.cpp foundations/language-support/alignment-enumeration-not-declared.cpp expressions/new-delete/aligned-class-both-forms.cpp
 
 If the alignment of `T` is more than the {term}`default new
 alignment`, a `new` expression for `T` or an array of `T` passes
@@ -735,8 +735,8 @@ int* q = new (cell) int(4);     // the int is at cell (NEW-33)
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 119
-of 141 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 120
+of 142 tests.
 
 Two questions on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
 
@@ -755,6 +755,13 @@ Two questions on this page settled on 2026-11-03 under decision 0054 after the s
   `std::bad_alloc` for requests of 2^31 bytes, 3 x 2^30 bytes, and
   2^32 - 1 bytes, and returns storage for 2^31 - 4096 bytes. No test
   checks the `-m32` row.
+- NEW-22 with the aligned forms: when a class declares both aligned
+  usual forms, every compiler calls the form without the size, after
+  `delete` and after a constructor throws. When the program replaces
+  both global aligned forms, Clang 22 and GCC call the form with the
+  size after `delete`, and Clang 18 calls the form without it. After a
+  throw, both call the form without the size. NEW-22 lets either global
+  form be called.
 - NEW-18: Clang 22 and GCC 16 both evaluate the array bound before the
   placement arguments. No compiler in the matrix varies the order, so
   NEW-18 is unspecified by the provisional answer of {question}`Q-0005`.

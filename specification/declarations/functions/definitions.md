@@ -252,10 +252,19 @@ function.
 
 :::{rule} FN-7
 :kind: recommended
-:tests: declarations/functions/definitions/flow-off-end-warns.cpp declarations/functions/definitions/switch-every-enumerator-no-return.cpp
+:tests: declarations/functions/definitions/flow-off-end-warns.cpp declarations/functions/definitions/switch-every-enumerator-no-return.cpp declarations/functions/definitions/flow-off-end-constant-paths.cpp declarations/functions/definitions/flow-off-end-ending-calls.cpp declarations/functions/definitions/flow-off-end-loop-break-warns.cpp declarations/functions/definitions/flow-off-end-switch-no-default-warns.cpp declarations/functions/definitions/flow-off-end-plain-call-warns.cpp declarations/functions/definitions/flow-off-end-goto-loop.cpp
 
 An implementation should warn if control can reach the end of a function
-that returns a value.
+that returns a value. For this check, these statements and expressions
+end a path:
+
+- a `return` statement,
+- a throw-expression,
+- a call of a function declared `[[noreturn]]`,
+- a loop whose condition is a constant `true`, if no `break` leaves it.
+
+An `if` with a constant condition takes only the selected branch. A
+`switch` without a `default` label can complete, whatever its cases are.
 :::
 
 ## Examples
@@ -280,7 +289,7 @@ void name() {
 
 ## Evidence
 
-All eight compilers agree on 43 of 54 tests. The results are in
+All eight compilers agree on 48 of 60 tests. The results are in
 `tests/RESULTS.md`.
 
 - FN-3: all compilers reject a call that reaches the end of the function
@@ -304,7 +313,13 @@ All eight compilers agree on 43 of 54 tests. The results are in
   Linux pass a pointer that is not null as the third argument, the list
   of environment variables. The matrix runs no program built with
   `-m32`, so the `-m32` tests check acceptance only.
-- FN-7: Clang and GCC warn with `-Wreturn-type`.
+- FN-7: Clang and GCC warn with `-Wreturn-type`. Both give no warning
+  for the paths that FN-7 ends, and both warn after a loop with a
+  `break`, a `switch` without `default`, and a call of a function
+  without `[[noreturn]]`. For a `goto` back to its own label, Clang
+  gives no warning, and GCC warns that the function has no `return`
+  statement. For `while (k)` with a `constexpr bool k = true`, GCC 16
+  at `-O2` warns, and at `-O0` it does not.
 - FN-10: Clang 22 and GCC 16 destroy a by-value parameter at the end of
   the caller's full expression, after the next operand of a comma.
 - FN-4: GCC 14 and Clang 18 accept `main` with C language linkage in a

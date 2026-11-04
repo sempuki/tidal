@@ -1,11 +1,16 @@
 # Q-0075: Can a name with C language linkage match a global variable?
 
 **Status:** settled
-**Affects:** LSP-4, `tests/declarations/linkage-specifications/c-name-conflicts-global.cpp`
+**Affects:** LSP-4, LSP-7, `tests/declarations/linkage-specifications/c-name-conflicts-global.cpp`, `tests/declarations/linkage-specifications/c-name-before-global.cpp`, `tests/declarations/linkage-specifications/c-function-conflicts-global-variable.cpp`
 
 ## Context
 
 A namespace declares `extern "C" int clash;` and the global namespace declares a variable `clash` with C++ linkage. The two names refer to the same symbol name. Clang and EDG reject the program. GCC accepts it.
+
+Clang and EDG also reject the program when the C name comes first, and
+when the C name is a function. GCC accepts each of these programs.
+Every compiler accepts a global function with C++ linkage that has the
+spelling of a C name, in either order.
 
 ## Options
 

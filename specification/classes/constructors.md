@@ -538,13 +538,21 @@ of scalar type through a type name.
 
 :::{rule} CTOR-12
 :kind: undefined
-:tests: classes/constructors/defaulted-leaves-members.cpp classes/constructors/init-order-reads-later.cpp classes/constructors/base-init-calls-member-early-constant.cpp classes/constructors/init-order-reads-later-run.cpp classes/constructors/base-init-calls-member-early-sanitizer.cpp
+:tests: classes/constructors/defaulted-leaves-members.cpp classes/constructors/base-init-calls-member-through-pointer-sanitizer.cpp classes/constructors/base-init-calls-member-of-member-constant.cpp classes/constructors/own-member-call-in-own-constructor.cpp classes/constructors/init-order-reads-later.cpp classes/constructors/base-init-calls-member-early-constant.cpp classes/constructors/init-order-reads-later-run.cpp classes/constructors/base-init-calls-member-early-sanitizer.cpp
 
 If a member is read before it has a value, the behavior is undefined.
 This includes a member that a later `mem_init` initializes, and a member
-that {term}`default initialization` leaves without a value. A call of a member
-function from the `mem_init` of a base, before all bases are initialized,
-is also undefined.
+that {term}`default initialization` leaves without a value. These calls
+of a non-static member function are also undefined:
+
+- a call on the object under construction, through `this` or a pointer
+  or reference to it, from the `mem_init` of a base before all bases
+  are initialized,
+- a call on a member subobject before its initialization, which is a
+  use outside its lifetime ({rule}`OBJ-2`,
+  {question}`Q-0374`).
+
+A base's own constructor can call the member functions of that base.
 :::
 
 :::{rule} DTOR-7
@@ -642,8 +650,8 @@ Span g{{1}};   // Span(int): {1} gives an int directly (ICS-15). The
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 170
-of 186 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 171
+of 189 tests.
 
 Two questions on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on classes and statements (`reports/review/2026-11-03-gap-review-questions-classes-statements.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
 
@@ -711,6 +719,12 @@ Two questions on this page settled on 2026-11-03 under decision 0054 after the s
   (`init-order-reads-later-run.cpp`). The `vptr` sanitizer of GCC stops
   a call of a member function from the `mem_init` of a base, and the
   Clang sanitizer does not (`base-init-calls-member-early-sanitizer.cpp`).
+  The same holds for a call through a pointer to the object under
+  construction. In constant evaluation, no compiler rejects the early
+  call of a member function that reads no member. For a call on a
+  member subobject that is not yet initialized, Clang rejects the
+  constant evaluation, and GCC and EDG accept it
+  ({question}`Q-0374`).
 - DTOR-7: the address sanitizer of GCC and Clang stops a second
   destruction whose destructor frees storage. The `vptr` sanitizer of
   GCC stops a member call after the destructor, and the Clang

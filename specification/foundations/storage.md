@@ -320,7 +320,7 @@ These types are
 
 :::{rule} STG-8
 :kind: required
-:tests: foundations/storage/implicit-object-from-allocation-function.cpp foundations/storage/implicit-array-for-arithmetic.cpp foundations/storage/implicit-object-class-allocation-function.cpp foundations/storage/implicit-objects-follow-later-use.cpp foundations/storage/implicit-object-first-use-member.cpp foundations/storage/allocation-array-class-elements.cpp foundations/storage/arena-reset-reuses-bytes.cpp foundations/storage/byte-array-placement-reaches-object.cpp
+:tests: foundations/storage/implicit-object-from-allocation-function.cpp foundations/storage/implicit-array-for-arithmetic.cpp foundations/storage/implicit-object-class-allocation-function.cpp foundations/storage/implicit-objects-follow-later-use.cpp foundations/storage/implicit-object-first-use-member.cpp foundations/storage/allocation-array-class-elements.cpp foundations/storage/arena-reset-reuses-bytes.cpp foundations/storage/byte-array-placement-reaches-object.cpp foundations/storage/implicit-objects-fixed-counterpart.cpp
 
 These operations create objects implicitly in the storage that they
 name:
@@ -331,8 +331,9 @@ name:
 
 The implementation creates the set of objects that gives the program
 defined behavior, and the result of an allocation function points to
-one of them. If a later use decides the set, a pointer from an earlier
-use points to the matching object of the set. Each created object has an
+one of them. The set exists from the operation on, and a later use can
+only decide which set it is. A pointer from an earlier use points to
+the matching object of that set. Each created object has an
 implicit-lifetime type, and STG-28 gives the elements of other arrays.
 :::
 
@@ -418,7 +419,7 @@ pointer gives one byte of the object representation.
 
 :::{rule} STG-14
 :kind: required
-:tests: foundations/storage/access-signed-counterpart-and-cv.cpp foundations/storage/access-character-types.cpp foundations/storage/byte-round-trip-char-and-byte.cpp foundations/language-support/byte-self-declared.cpp
+:tests: foundations/storage/access-signed-counterpart-and-cv.cpp foundations/storage/access-character-types.cpp foundations/storage/byte-round-trip-char-and-byte.cpp foundations/language-support/byte-self-declared.cpp foundations/storage/implicit-objects-fixed-counterpart.cpp
 
 A program can read or write the value of an object whose dynamic type
 is `T` through a glvalue of one of these types:
@@ -504,12 +505,19 @@ the type, or not aligned for the type, the behavior is undefined.
 
 :::{rule} STG-18
 :kind: undefined
-:tests: foundations/storage/implicit-objects-no-set-sanitizer.cpp foundations/storage/allocated-storage-not-polymorphic-object-sanitizer.cpp
+:tests: foundations/storage/implicit-objects-no-set-sanitizer.cpp foundations/storage/implicit-objects-fixed-counterpart.cpp foundations/storage/allocated-storage-not-polymorphic-object-sanitizer.cpp
 
 If no set of implicitly created objects gives the program defined
-behavior (STG-8), the behavior is undefined. An example is a use of
-storage as an object of a type that is not an implicit-lifetime type,
-before a constructor creates the object.
+behavior (STG-8), the behavior is undefined. No set exists in these
+cases:
+
+- The program uses the storage as an object of a type that is not an
+  implicit-lifetime type, before a constructor creates the object.
+- The program reads or writes the storage as an object of type `T`, and
+  later as an object of type `U` that STG-14 does not list for `T`.
+  This case does not apply if one of the two objects contains the
+  other, or if an operation of STG-8 or a `new` expression creates new
+  objects in the storage between the two uses.
 :::
 
 :::{rule} STG-19
@@ -774,8 +782,8 @@ template <class T> void destroy_all(T* first, int n) {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 79
-of 85 tests. EDG runs no programs, so its results for the run tests say
+The results are in `tests/RESULTS.md`. All eight compilers agree on 80
+of 86 tests. EDG runs no programs, so its results for the run tests say
 only that the programs are valid.
 
 - Constant evaluation: in C++23 mode no compiler in the matrix accepts

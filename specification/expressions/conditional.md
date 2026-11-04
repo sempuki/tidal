@@ -30,7 +30,7 @@ parentheses.
 :::
 
 :::{principle} COND-P2
-:rules: COND-3 COND-4 COND-5 COND-11 COND-13
+:rules: COND-3 COND-4 COND-5 COND-11 COND-13 COND-16
 
 Two operands have to give one result, with one type and one value
 category, and the result type and category are decided before either
@@ -80,7 +80,7 @@ conversion`.
 
 :::{rule} COND-3
 :kind: required
-:tests: expressions/conditional/lvalue-result.cpp expressions/conditional/arithmetic-prvalue.cpp expressions/conditional/same-type-prvalue.cpp expressions/conditional/array-function-operands.cpp expressions/conditional/mixed-category-prvalue.cpp expressions/conditional/pointer-operands.cpp expressions/conditional/bitfield-or-enum.cpp expressions/conditional/class-one-way.cpp expressions/conditional/mixed-enum-types.cpp expressions/conditional/cv-lvalues-and-strings.cpp expressions/conditional/two-zeros.cpp expressions/conditional/member-pointer-nullptr.cpp expressions/conditional/xvalue-operands.cpp expressions/conditional/const-volatile-lvalues-prvalue.cpp expressions/conditional/const-and-plain-lvalue.cpp expressions/conditional/derived-base-lvalue.cpp expressions/conditional/class-converts-to-int.cpp expressions/conditional/zero-and-nullptr.cpp
+:tests: expressions/conditional/lvalue-result.cpp expressions/conditional/arithmetic-prvalue.cpp expressions/conditional/same-type-prvalue.cpp expressions/conditional/array-function-operands.cpp expressions/conditional/mixed-category-prvalue.cpp expressions/conditional/pointer-operands.cpp expressions/conditional/bitfield-or-enum.cpp expressions/conditional/class-one-way.cpp expressions/conditional/mixed-enum-types.cpp expressions/conditional/cv-lvalues-and-strings.cpp expressions/conditional/two-zeros.cpp expressions/conditional/member-pointer-nullptr.cpp expressions/conditional/xvalue-operands.cpp expressions/conditional/const-volatile-lvalues-prvalue.cpp expressions/conditional/const-and-plain-lvalue.cpp expressions/conditional/derived-base-lvalue.cpp expressions/conditional/class-converts-to-int.cpp expressions/conditional/zero-and-nullptr.cpp expressions/conditional/class-converts-best-conversion.cpp expressions/conditional/class-converts-to-reference.cpp
 
 The second and third operands give one result type and
 {term}`value category`. The first row that matches the operands gives
@@ -99,7 +99,7 @@ the function, and the cv-qualifiers of a non-class operand are removed.
 | A pointer, and a pointer or a null pointer constant | A pointer prvalue with the combined cv-qualifiers |
 | Two `nullptr`, or `nullptr` and the literal `0` | The type of `nullptr` ({question}`Q-0102`) |
 | A pointer to member and `nullptr` | A pointer to member |
-| One of class type that converts to the type of the other | The other type. A derived class lvalue and a base class lvalue give a base class lvalue. A class that converts to `int` and an `int` give an `int` prvalue. |
+| One of class type that converts to the type of the other (COND-16) | The other type. A derived class lvalue and a base class lvalue give a base class lvalue. A class that converts to `int` and an `int` give an `int` prvalue. |
 :::
 
 :::{rule} COND-4
@@ -121,7 +121,7 @@ operand is not valid.
 
 :::{rule} COND-5
 :kind: reject
-:tests: expressions/conditional/no-common-type.cpp expressions/conditional/pointer-and-int.cpp expressions/conditional/class-ambiguous.cpp
+:tests: expressions/conditional/no-common-type.cpp expressions/conditional/pointer-and-int.cpp expressions/conditional/class-ambiguous.cpp expressions/conditional/class-ambiguous-conversion.cpp expressions/conditional/two-classes-no-candidate.cpp expressions/conditional/two-classes-several-conversions.cpp
 
 The second and third operands must have a common type by COND-3 or
 COND-4. If each of two class types converts to the other, the expression
@@ -185,7 +185,7 @@ The second operand can be a comma expression without parentheses.
 
 :::{rule} COND-11
 :kind: required
-:tests: expressions/conditional/two-classes-convert-to-int.cpp expressions/conditional/two-classes-convert-to-pointer.cpp
+:tests: expressions/conditional/two-classes-convert-to-int.cpp expressions/conditional/two-classes-convert-to-pointer.cpp expressions/conditional/two-classes-promoted-types.cpp expressions/conditional/two-classes-several-conversions.cpp expressions/conditional/two-classes-no-candidate.cpp expressions/conditional/two-classes-scoped-enumeration.cpp expressions/conditional/two-classes-float.cpp
 
 Overload resolution ({rule}`OVL-9`) over the built-in
 operator candidates picks a conversion for each operand if all of these
@@ -193,9 +193,37 @@ hold:
 
 - the operands have different types,
 - at least one is a class,
-- neither converts to the other.
+- neither converts to the other (COND-16).
 
-Two unrelated classes that both convert to `int` give an `int` prvalue.
+The candidates are these, and each gives a prvalue
+({question}`Q-0373`):
+
+| Parameters | Result |
+|---|---|
+| `(L, R)` for every pair of {term}`promoted arithmetic types <promoted arithmetic type>` `L` and `R` | the type that the {term}`usual arithmetic conversions` give |
+| `(T, T)` for each pointer type, pointer-to-member type, and scoped enumeration type `T` | `T` |
+
+If no candidate is viable, or no candidate is better than all others,
+the expression is not valid ({rule}`COND-5`).
+:::
+
+:::{rule} COND-16
+:kind: required
+:tests: expressions/conditional/class-converts-to-reference.cpp expressions/conditional/class-converts-best-conversion.cpp expressions/conditional/class-ambiguous-conversion.cpp
+
+For COND-3, COND-5, and COND-11, an operand `X` of class type converts
+to the type `T` of the other operand `Y` in the first of these ways
+that succeeds:
+
+- If `Y` is an lvalue, and a `T&` {term}`binds directly <bind directly>`
+  to `X`, `X` converts to an lvalue.
+- If `Y` is an xvalue, and a `T&&` binds directly to `X`, `X` converts
+  to an xvalue.
+- If `X` has an {term}`implicit conversion sequence` to `T`, `X`
+  converts to a prvalue of type `T`.
+
+If the implicit conversion sequence is ambiguous, the expression is not
+valid.
 :::
 
 ## Runtime Behavior
@@ -239,7 +267,7 @@ int m = larger(x, y);          // fine: x and y outlive the call
 
 ## Evidence
 
-All eight compilers agree on 47 of 48 tests. The results are in
+All eight compilers agree on 53 of 56 tests. The results are in
 `tests/RESULTS.md`.
 
 - COND-6: Clang and GCC accept `a ?: b` as an extension, and reject the
@@ -251,5 +279,11 @@ All eight compilers agree on 47 of 48 tests. The results are in
   Every compiler accepts the program in strict mode.
 - COND-3: GCC rejects a conditional with the literal `0` and `nullptr`.
   Clang and EDG accept the conditional ({question}`Q-0102`).
+- COND-11: for two classes that convert to one scoped enumeration,
+  Clang and EDG give the enumeration. GCC has no candidate for a scoped
+  enumeration and rejects the expression. For two classes that convert
+  to `float`, Clang and GCC give `float`, and EDG gives `double`. Every
+  compiler gives `int` for two classes that convert to one unscoped
+  enumeration ({question}`Q-0373`).
 
 Inputs: clang-sema-expr, clang-diag-sema.

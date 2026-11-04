@@ -112,7 +112,7 @@ for the class is not valid.
 
 :::{rule} UNW-1
 :kind: required
-:tests: exceptions/unwinding/block-objects-end-before-handler.cpp exceptions/unwinding/every-block-between-throw-and-handler.cpp exceptions/unwinding/nested-blocks-ended-in-order.cpp exceptions/unwinding/objects-after-throw-not-created.cpp exceptions/unwinding/handler-block-objects-unaffected.cpp exceptions/unwinding/full-expression-temporaries-unwound.cpp exceptions/unwinding/return-local-destructor-throws-result-destroyed.cpp
+:tests: exceptions/unwinding/block-objects-end-before-handler.cpp exceptions/unwinding/every-block-between-throw-and-handler.cpp exceptions/unwinding/nested-blocks-ended-in-order.cpp exceptions/unwinding/objects-after-throw-not-created.cpp exceptions/unwinding/handler-block-objects-unaffected.cpp exceptions/unwinding/full-expression-temporaries-unwound.cpp exceptions/unwinding/return-local-destructor-throws-result-destroyed.cpp exceptions/unwinding/return-local-destructor-throws-caught-inside.cpp
 
 When an exception leaves a {term}`full expression`, these objects
 end, in this order, before the handler runs:
@@ -129,8 +129,9 @@ blocks that enclose the try block are not affected.
 A return statement can build the result of the call and then throw
 from the destructor of a local object or a temporary as it leaves the
 function. The result is then also destroyed, after the objects of the
-function that the exception leaves
-({question}`Q-0365`).
+blocks that the exception leaves, and before the handler runs
+({question}`Q-0365`). If a handler in the same function catches the
+exception, a later return statement builds a new result.
 :::
 
 :::{rule} UNW-2
@@ -383,7 +384,7 @@ void transfer(Account& from, Account& to, int amount) {
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 51
-of 57 tests. EDG runs no programs, so its results say only that the
+of 58 tests. EDG runs no programs, so its results say only that the
 programs are valid.
 
 - UNW-5 and UNW-7: the harness sees only that the program ended with a
@@ -428,7 +429,9 @@ programs are valid.
 - UNW-1: after a return statement builds the result, and the destructor
   of a local object then throws, GCC destroys the result before the
   handler runs. Clang never destroys the result
-  ({question}`Q-0365`).
+  ({question}`Q-0365`). The two compilers do the same when a handler
+  in the same function catches the exception and a second return
+  statement builds the result.
 - UNW-2: Clang and GCC destroy the initialized members of an aggregate,
   the initialized captures of a closure object, and the temporary that
   a reference member keeps alive, in reverse order. GCC 14 differs for

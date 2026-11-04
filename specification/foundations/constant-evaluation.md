@@ -148,7 +148,7 @@ Constant evaluation can contain these operations:
 
 :::{rule} CE-2
 :kind: reject
-:tests: expressions/constant-expressions/non-constexpr-call.cpp expressions/constant-expressions/implicit-constructor-calls-constexpr.cpp expressions/constant-expressions/implicit-constructor-member-not-constexpr.cpp expressions/constant-expressions/defaulted-constructor-member-not-constexpr.cpp expressions/constant-expressions/implicit-destructor-member-not-constexpr.cpp expressions/constant-expressions/implicit-assignment-constant.cpp expressions/constant-expressions/implicit-assignment-member-not-constexpr.cpp expressions/constant-expressions/implicit-constructor-virtual-base.cpp expressions/constant-expressions/defaulted-constructor-virtual-base.cpp expressions/constant-expressions/implicit-copy-virtual-base.cpp expressions/constant-expressions/virtual-base-path-not-reached.cpp expressions/constant-expressions/call-through-function-pointer-not-constexpr.cpp classes/virtual/virtual-call-override-not-constexpr.cpp declarations/constexpr/function-not-constant-call.cpp
+:tests: expressions/constant-expressions/non-constexpr-call.cpp expressions/constant-expressions/implicit-constructor-calls-constexpr.cpp expressions/constant-expressions/implicit-constructor-member-not-constexpr.cpp expressions/constant-expressions/defaulted-constructor-member-not-constexpr.cpp expressions/constant-expressions/implicit-destructor-member-not-constexpr.cpp expressions/constant-expressions/nonliteral-variable-destructor-called.cpp expressions/constant-expressions/nonliteral-temporary-destructor-called.cpp expressions/constant-expressions/implicit-assignment-constant.cpp expressions/constant-expressions/implicit-assignment-member-not-constexpr.cpp expressions/constant-expressions/implicit-constructor-virtual-base.cpp expressions/constant-expressions/defaulted-constructor-virtual-base.cpp expressions/constant-expressions/implicit-copy-virtual-base.cpp expressions/constant-expressions/virtual-base-path-not-reached.cpp expressions/constant-expressions/call-through-function-pointer-not-constexpr.cpp classes/virtual/virtual-call-override-not-constexpr.cpp declarations/constexpr/function-not-constant-call.cpp
 
 During constant evaluation, the program can call only `constexpr` and
 `consteval` functions. An implicit or defaulted constructor,
@@ -356,7 +356,7 @@ definition later in the {term}`translation unit` does not help.
 
 :::{rule} CE-17
 :kind: reject
-:tests: expressions/constant-expressions/static-local-not-reached.cpp expressions/constant-expressions/goto-not-reached.cpp expressions/constant-expressions/nonliteral-variable-not-reached.cpp expressions/constant-expressions/literal-not-reached.cpp expressions/constant-expressions/static-local-reached.cpp expressions/constant-expressions/goto-reached.cpp expressions/constant-expressions/static-local-not-usable-reached.cpp expressions/constant-expressions/static-local-usable-reached.cpp declarations/constexpr/function-static-local-evaluated.cpp expressions/constant-expressions/literal-temporary-volatile-member.cpp expressions/constant-expressions/nonliteral-variable-reached.cpp expressions/constant-expressions/nonliteral-temporary-in-function.cpp
+:tests: expressions/constant-expressions/static-local-not-reached.cpp expressions/constant-expressions/goto-not-reached.cpp expressions/constant-expressions/nonliteral-variable-not-reached.cpp expressions/constant-expressions/literal-not-reached.cpp expressions/constant-expressions/static-local-reached.cpp expressions/constant-expressions/goto-reached.cpp expressions/constant-expressions/static-local-not-usable-reached.cpp expressions/constant-expressions/static-local-usable-reached.cpp declarations/constexpr/function-static-local-evaluated.cpp expressions/constant-expressions/literal-temporary-volatile-member.cpp expressions/constant-expressions/nonliteral-variable-reached.cpp expressions/constant-expressions/nonliteral-temporary-in-function.cpp expressions/constant-expressions/nonliteral-variable-destructor-called.cpp expressions/constant-expressions/nonliteral-temporary-destructor-called.cpp
 
 Constant evaluation must not reach any of these constructs:
 
@@ -365,7 +365,9 @@ Constant evaluation must not reach any of these constructs:
   expressions (CE-3).
 
 A variable or a temporary of a type that is not a {term}`literal type`
-is not one of these constructs ({question}`Q-0335`).
+is not one of these constructs ({question}`Q-0335`). The end of such a
+variable or temporary calls its destructor, and CE-2 applies to that
+call, also for a destructor with an empty body.
 
 A `constexpr` function can contain these constructs on a path that the
 evaluation does not take.
@@ -579,8 +581,8 @@ constinit Empty empty;                // fine: Empty has no scalar part
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 127
-of 151 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 129
+of 153 tests.
 
 Of the constant-evaluation cluster, {question}`Q-0090` is settled under
 decision 0051. These questions of the cluster on this page stay open:
@@ -638,6 +640,13 @@ split on each of them.
   in the condition of a `static_assert`, Clang 22 accepts, and GCC,
   EDG, and Clang 18 reject. The tests record each differing compiler as
   an override.
+- CE-17, CE-2: every compiler rejects the evaluation when a variable or
+  a temporary of a class with a destructor that is not `constexpr`
+  ends, also when the destructor's body is empty. Clang 22 and EDG
+  name the destructor call. GCC names the call for a variable, and for
+  a temporary names the destructor as the reason that the class is not
+  a literal type. Clang 18 rejects the type that is not a literal type
+  (Q-0335).
 - CE-30: Clang and GCC reject a throw in a `constexpr` variable's
   initializer inside a try block of a `constexpr` function, and a throw
   in a `consteval` call inside a run-time try block.

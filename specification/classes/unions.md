@@ -137,7 +137,7 @@ no variable.
 
 :::{rule} UNI-1
 :kind: required
-:tests: classes/unions/alignment-strictest-not-largest.cpp classes/unions/member-addresses-equal.cpp classes/unions/shared-storage.cpp classes/unions/union-array-member.cpp classes/unions/union-member-functions.cpp classes/unions/union-static-member.cpp
+:tests: classes/unions/alignment-strictest-not-largest.cpp classes/unions/member-addresses-equal.cpp classes/unions/shared-storage.cpp classes/unions/union-array-member.cpp classes/unions/union-member-functions.cpp classes/unions/union-static-member.cpp classes/unions/bitfield-union-size.cpp
 
 Each data member of a union that is not static begins at the first byte
 of the union. A union is at least as large as its largest member, and at
@@ -191,7 +191,7 @@ union must then declare that function itself.
 
 :::{rule} UNI-4
 :kind: required
-:tests: classes/unions/aggregate-first-member.cpp classes/unions/default-member-init-active.cpp classes/unions/designated-member.cpp classes/unions/value-init-zero.cpp classes/unions/default-init-no-active-member.cpp
+:tests: classes/unions/aggregate-first-member.cpp classes/unions/default-member-init-active.cpp classes/unions/designated-member.cpp classes/unions/value-init-zero.cpp classes/unions/default-init-no-active-member.cpp classes/unions/anonymous-union-mem-init-constructor.cpp
 
 A union is initialized as one of its members:
 
@@ -226,10 +226,13 @@ A braced initializer for the first member must not narrow.
 
 :::{rule} UNI-7
 :kind: required
-:tests: classes/unions/anonymous-union-default-member-init.cpp classes/unions/anonymous-union-init.cpp classes/unions/anonymous-union-local.cpp classes/unions/anonymous-union-member.cpp classes/unions/anonymous-union-namespace-static.cpp
+:tests: classes/unions/anonymous-union-default-member-init.cpp classes/unions/anonymous-union-mem-init-constructor.cpp classes/unions/anonymous-union-member-order.cpp classes/unions/anonymous-union-init.cpp classes/unions/anonymous-union-local.cpp classes/unions/anonymous-union-member.cpp classes/unions/anonymous-union-namespace-static.cpp
 
 The members of an anonymous union are members of the enclosing scope. In
-a class, these members are variant members of the class. A braced list
+a class, the anonymous union is an unnamed data member in its place in
+declaration order, and its members are variant members of the class. A
+`mem_init` or a default member initializer of a variant member
+initializes the union with that member active (UNI-4). A braced list
 initializes an anonymous union member with its own braces. An anonymous
 union can be:
 
@@ -282,7 +285,7 @@ An unnamed bit-field must not have a {term}`cv-qualifier` ({question}`Q-0058`).
 
 :::{rule} BF-3
 :kind: required
-:tests: classes/unions/bitfield-bool-wide.cpp classes/unions/bitfield-very-wide.cpp classes/unions/bitfield-wider-than-type.cpp
+:tests: classes/unions/bitfield-bool-wide.cpp classes/unions/bitfield-very-wide.cpp classes/unions/bitfield-wider-than-type.cpp classes/unions/bitfield-wide-layout-ilp32.cpp classes/unions/bitfield-wide-layout.cpp
 
 A width can be larger than the number of bits in the type, including for
 `bool`. The extra bits are padding. The value range stays that of the
@@ -483,7 +486,7 @@ not trivial also uses an object that does not exist
 
 :::{rule} BF-9
 :kind: impl-defined
-:tests: classes/unions/bitfield-layout-lp64.cpp classes/unions/bitfield-unnamed-alignment.cpp classes/unions/bitfield-unnamed-alignment-ilp32.cpp classes/unions/bitfield-zero-width-splits.cpp classes/unions/bitfield-low-order-first.cpp classes/unions/bitfield-next-unit-lp64.cpp classes/unions/bitfield-next-unit-ilp32.cpp
+:tests: classes/unions/bitfield-layout-lp64.cpp classes/unions/bitfield-wide-layout.cpp classes/unions/bitfield-wide-layout-ilp32.cpp classes/unions/bitfield-wide-alignment-128.cpp classes/unions/bitfield-union-size.cpp classes/unions/bitfield-unnamed-alignment.cpp classes/unions/bitfield-unnamed-alignment-ilp32.cpp classes/unions/bitfield-zero-width-splits.cpp classes/unions/bitfield-low-order-first.cpp classes/unions/bitfield-next-unit-lp64.cpp classes/unions/bitfield-next-unit-ilp32.cpp
 
 The allocation of bit-fields in an object is implementation-defined. The
 matrix targets, x86-64 and `-m32`, place a bit-field of type `T` in this
@@ -495,6 +498,16 @@ way:
   `sizeof(T)` bytes that starts at a multiple of `alignof(T)`
   ({rule}`TYP-2`, {question}`Q-0120`).
 - If not, the bit-field starts at the next multiple of `alignof(T)`.
+- A bit-field whose width `N` is more than `8 * sizeof(T)` starts at
+  the next multiple of `alignof(U)`. `U` is the largest integer type
+  with at most `N` bits, and the class gets the alignment of `U`. On
+  x86-64, GCC also counts its 128-bit integer type as `U`.
+- The first `8 * sizeof(T)` bits of such a bit-field hold the value,
+  and the later bits are padding (BF-3).
+- In a union, a bit-field starts at byte 0 and takes the bytes that its
+  width needs. The union gets the alignment of `T`, or of `U`.
+- A bit that no bit-field or other member covers is a padding bit
+  ({rule}`STG-11`, {question}`Q-0372`).
 - An unnamed bit-field does not change the alignment of the class. An
   unnamed bit-field of width 0 and type `T` moves the next member to the
   next multiple of `alignof(T)`, and the class covers that position.
@@ -632,8 +645,8 @@ int y = s.span.range.second;     // 2: Point and Pair are layout-compatible
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 135
-of 146 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 139
+of 152 tests.
 
 - UNI-9: Clang accepts an anonymous union without `static` in an unnamed
   namespace. GCC and EDG reject the declaration ({question}`Q-0045`).
@@ -653,6 +666,15 @@ of 146 tests.
   of 4 bytes, so a field of 30 bits after 40 bits starts at bit 40. EDG
   in its i686 configuration aligns `long long` to 8 and starts such a
   field at bit 64 ({question}`Q-0120`).
+- BF-9, wide bit-fields: every compiler gives the same sizes for
+  bit-fields of 40, 64, 65, 128, and 1000 bits, and the same
+  alignments up to 64 bits. From 128 bits, GCC aligns the class to 16
+  on x86-64, and Clang and EDG align it to 8. In a union, every
+  compiler gives a bit-field the bytes that its width needs.
+- BF-9, padding bits: Clang and GCC at `-O0` leave the bits that no
+  bit-field covers as the stack held them, also after `{}`. A byte copy
+  shows bits there that the program did not write
+  ({question}`Q-0372`).
 - BF-12: Clang, GCC, and EDG accept a constant evaluation that copies
   and compares a class with an unnamed bit-field, and a structured
   binding that has one name for each named bit-field.

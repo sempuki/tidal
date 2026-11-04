@@ -128,7 +128,7 @@ that reference type. For the tuple protocol, the result is
 
 :::{rule} SB-5
 :kind: required
-:tests: declarations/structured-bindings/tuple-protocol.cpp declarations/structured-bindings/tuple-const-hidden-variable.cpp declarations/structured-bindings/tuple-const-specialization.cpp declarations/structured-bindings/tuple-get-order.cpp declarations/structured-bindings/tuple-size-without-value.cpp declarations/structured-bindings/tuple-free-get.cpp declarations/structured-bindings/tuple-member-get-wins.cpp declarations/structured-bindings/tuple-member-get-not-template.cpp declarations/structured-bindings/tuple-get-ordinary-lookup.cpp
+:tests: declarations/structured-bindings/tuple-protocol.cpp declarations/structured-bindings/tuple-index-size-type.cpp declarations/structured-bindings/tuple-index-int-parameter.cpp declarations/structured-bindings/tuple-const-hidden-variable.cpp declarations/structured-bindings/tuple-const-specialization.cpp declarations/structured-bindings/tuple-get-order.cpp declarations/structured-bindings/tuple-size-without-value.cpp declarations/structured-bindings/tuple-free-get.cpp declarations/structured-bindings/tuple-member-get-wins.cpp declarations/structured-bindings/tuple-member-get-not-template.cpp declarations/structured-bindings/tuple-get-ordinary-lookup.cpp
 
 If `std::tuple_size<E>` is a complete type, `E` uses the tuple protocol.
 `E` is the type of the hidden variable `e`, with its cv-qualifiers, so
@@ -142,7 +142,9 @@ from one of these calls, and its type is
 - otherwise `get<i>(e)`, where only {term}`argument-dependent lookup`
   ({rule}`NAM-5`) finds `get`.
 
-The calls to `get` occur in the order of the elements. If
+`i` is a constant of type `std::size_t` *(library referenced)*
+({question}`Q-0376`). The calls to `get` occur in the
+order of the elements. If
 `std::tuple_size<E>` is complete but has no `value` member, the names
 refer to data members, as SB-3 gives ({question}`Q-0048`). SB-14 lists
 what is not valid.
@@ -306,7 +308,7 @@ const auto& [cl, ch] = g; // rejected: E is const Range, which has no
 
 ## Evidence
 
-All eight compilers agree on 59 of 63 tests. The results are in
+All eight compilers agree on 60 of 65 tests. The results are in
 `tests/RESULTS.md`.
 
 - **SB-15.** Clang and GCC accept `constexpr` structured bindings and
@@ -325,6 +327,11 @@ All eight compilers agree on 59 of 63 tests. The results are in
   the declaration is rejected. See {question}`Q-0016`.
 - **SB-11.** EDG 7.0 and GCC 14 accept `constinit` on a structured
   binding. Clang and GCC 16 reject such a binding ({question}`Q-0107`).
+- **SB-5, type of the index.** Clang and EDG pass the index of `get`
+  as a `std::size_t`, so `template <auto I>` deduces that type. GCC
+  passes an `int`. Every compiler accepts a member `get` with an `int`
+  parameter. The provisional answer is `std::size_t`
+  ({question}`Q-0376`).
 
 Inputs: clang-sema-declcxx, edg-decls, clang-diag-sema (see
 `inputs/MANIFEST.md`).

@@ -1,7 +1,7 @@
 # Q-0365: Is the result of a return statement destroyed when a local destructor then throws?
 
 **Status:** provisional
-**Affects:** UNW-1, `tests/exceptions/unwinding/return-local-destructor-throws-result-destroyed.cpp`
+**Affects:** UNW-1, `tests/exceptions/unwinding/return-local-destructor-throws-result-destroyed.cpp`, `tests/exceptions/unwinding/return-local-destructor-throws-caught-inside.cpp`
 
 ## Context
 
@@ -22,6 +22,11 @@ R fresh() { T t; return R(); }
 | The result of `fresh()` is destroyed before the handler runs | no | yes |
 
 EDG runs no programs, so its choice is not observed.
+
+When a handler in the same function catches the exception and runs a
+second return statement, GCC destroys the first result before the
+handler runs, and Clang never destroys it. The caller receives the
+result of the second return statement on both.
 
 The source-reader gap review of the exceptions chapter
 (`reports/review/2026-11-03-gap-review-exceptions.md`) reads the

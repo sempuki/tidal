@@ -129,7 +129,7 @@ LSP-7 lists what is not valid.
 
 :::{rule} LSP-7
 :kind: reject
-:tests: declarations/linkage-specifications/c-name-conflict-types.cpp declarations/linkage-specifications/c-name-conflicts-global.cpp declarations/linkage-specifications/c-overload-rejected.cpp declarations/linkage-specifications/c-variable-and-function-conflict.cpp declarations/linkage-specifications/c-variable-named-main.cpp declarations/linkage-specifications/redeclare-linkage-mismatch.cpp
+:tests: declarations/linkage-specifications/c-name-conflict-types.cpp declarations/linkage-specifications/c-name-conflicts-global.cpp declarations/linkage-specifications/c-name-before-global.cpp declarations/linkage-specifications/c-function-conflicts-global-variable.cpp declarations/linkage-specifications/c-name-global-function-allowed.cpp declarations/linkage-specifications/c-overload-rejected.cpp declarations/linkage-specifications/c-variable-and-function-conflict.cpp declarations/linkage-specifications/c-variable-named-main.cpp declarations/linkage-specifications/redeclare-linkage-mismatch.cpp
 
 These rules also follow from LSP-4:
 
@@ -137,9 +137,11 @@ These rules also follow from LSP-4:
   type and kind.
 - Two C functions with one name are not overloads, so the second is not
   valid.
-- A C name must not have the spelling of a global variable with C++
-  linkage ({question}`Q-0075`), or the spelling `main`
-  ({question}`Q-0076`).
+- A C name of a variable or a function must not have the spelling of a
+  global variable with C++ linkage, in either order of the declarations
+  ({question}`Q-0075`). A global function with C++ linkage can have the
+  spelling of a C name.
+- A C name must not have the spelling `main` ({question}`Q-0076`).
 - A C++ declaration must not be followed by a C declaration of the same
   function.
 :::
@@ -200,8 +202,8 @@ apply(twice, 2);                 // rejected where the type records the linkage 
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 29
-of 39 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 30
+of 42 tests.
 
 One question on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
 
@@ -220,8 +222,11 @@ One question on this page settled on 2026-11-03 under decision 0054 after the so
   linkage of a function type are two overloads on EDG. On Clang and
   GCC the second declaration declares the first function again. Every
   compiler accepts the two declarations.
-- LSP-4: GCC accepts a C language linkage name that matches a global
-  variable ({question}`Q-0075`).
+- LSP-4, LSP-7: GCC accepts a C language linkage name that matches a
+  global variable ({question}`Q-0075`). Clang and EDG reject the program
+  in either order, for a C variable and for a C function. Every
+  compiler accepts a global function with C++ linkage that has the
+  spelling of a C name.
 - LSP-2, LSP-4: GCC 14 and Clang 18 accept C language linkage on `main`
   and on a variable named `main` ({question}`Q-0076`).
 

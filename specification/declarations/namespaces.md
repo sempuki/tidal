@@ -125,7 +125,7 @@ The first name in the path of a nested namespace definition must not be
 
 :::{rule} NS-3
 :kind: required
-:tests: declarations/namespaces/inline-namespace.cpp declarations/namespaces/inline-then-reopen-plain.cpp declarations/namespaces/qualified-definition-inline-namespace-member.cpp
+:tests: declarations/namespaces/inline-namespace.cpp declarations/namespaces/inline-then-reopen-plain.cpp declarations/namespaces/qualified-definition-inline-namespace-member.cpp declarations/namespaces/qualified-definition-inline-member-inside-named.cpp
 
 The members of an `inline` namespace are also members of the enclosing
 namespace. A later definition of an inline namespace can omit `inline`.
@@ -192,7 +192,7 @@ as to any later declaration. NS-15 lists what is not valid.
 
 :::{rule} NS-15
 :kind: reject
-:tests: declarations/namespaces/undeclared-qualified-definition.cpp declarations/namespaces/definition-in-unrelated-namespace.cpp declarations/namespaces/qualified-definition-inside-own-namespace.cpp declarations/namespaces/qualified-definition-inline-namespace-member.cpp declarations/namespaces/qualified-definition-through-directive.cpp declarations/namespaces/qualified-definition-unnamed-namespace-member.cpp
+:tests: declarations/namespaces/undeclared-qualified-definition.cpp declarations/namespaces/definition-in-unrelated-namespace.cpp declarations/namespaces/qualified-definition-inside-own-namespace.cpp declarations/namespaces/qualified-definition-inline-namespace-member.cpp declarations/namespaces/qualified-definition-inline-member-inside-named.cpp declarations/namespaces/qualified-definition-inline-member-inside-inline.cpp declarations/namespaces/qualified-definition-through-directive.cpp declarations/namespaces/qualified-definition-unnamed-namespace-member.cpp
 
 For a definition of a member of `N` outside `N`, these rules apply:
 
@@ -200,7 +200,9 @@ For a definition of a member of `N` outside `N`, these rules apply:
   namespace of `N` ({rule}`NS-3`). A declaration that a using directive
   or an unnamed namespace in `N` makes visible does not count.
 - The definition must be in a namespace that encloses `N`, and not in
-  `N` itself ({question}`Q-0371`).
+  `N` itself ({question}`Q-0371`). For a member of an inline namespace
+  of `N`, the check uses that inline namespace in place of `N`
+  ({question}`Q-0375`).
 :::
 
 :::{rule} NS-7
@@ -306,13 +308,16 @@ int read() {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 49
-of 51 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 50
+of 53 tests.
 
 - NS-15: GCC and EDG reject a definition with the name `N::f` inside
   `N` itself. Clang accepts it with a warning ("extra qualification")
   ({question}`Q-0371`). Every
   compiler accepts `N::f` for a member of an inline namespace of `N`.
+  Inside `N`, GCC and Clang accept that definition, and EDG rejects it
+  ({question}`Q-0375`). Inside the
+  inline namespace, every compiler rejects it.
   Every compiler rejects `N::f` for a function that only a using
   directive or an unnamed namespace in `N` declares.
 
