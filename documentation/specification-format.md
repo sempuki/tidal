@@ -127,6 +127,39 @@ behavior can be observed at compile time.
 
 Test code is written fresh. Don't adapt examples from any source.
 
+## Program tests
+
+A program test is a whole program from a Write exercise, kept under
+`tests/programs/<suite>/` (decision 0054). W0 is the pilot suite in
+`reports/clean-room/java-programmer/`. A program test is evidence from
+use. It shows that a reader wrote a working program from the
+specification, and the matrix and `tools/frontend_check.py` catch a
+later change that breaks the program.
+
+- The file is the program from the report directory, unchanged, with
+  a header added. A program in several units uses the form of
+  decision 0014: the unit with `main` is the test, the other units are
+  `*.tu.cpp` files, and each program has its own directory with its
+  headers.
+- `tidal-expect` is `run`. A compiler that differs gets an override,
+  and the override's note names the question, as for any test.
+- `tidal-rules` lists the rules that the report's notes, made before
+  writing, give for the program. When the notes cover the whole suite,
+  the list keeps the ones the program's comments name. When a report has
+  no such notes, the list takes the rules the program's comments name.
+  The rules exist and are not withdrawn.
+- A `tidal-note` names the suite, the program, and the report.
+- `tidal-flags` is absent. The reports built with `-Wall -Wextra`,
+  which change no outcome without `-Werror`, and EDG skips a test with
+  `-Wall`.
+
+No rule lists a program test on its `:tests:` line, and
+`tools/check_specification.py` fails when one does. So a program test
+never counts among a rule's tests, in the page counts of
+`tools/status_table.py`, in the agreement sentence, or as the test that
+alone decides a step or tie-breaker rule (decision 0044). A rule that
+only a program test names still needs a test of its own.
+
 Tests use only standard C++. Compiler built-ins such as `__is_same` or
 `__INT_MAX__` are not allowed, because a test must mean the same thing to
 every implementation in the matrix. Avoid standard library headers too.

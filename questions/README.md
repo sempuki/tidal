@@ -366,6 +366,10 @@ status, and the first sentence of its answer section.
 | [Q-0350](Q-0350-clang-class-size-wrap.md) | Does Clang conform when it accepts a class whose size it cannot represent? | provisional | Clang has a defect in both cases |
 | [Q-0351](Q-0351-instantiation-depth-measure.md) | How is the depth of nested instantiations counted, and must it reach a minimum? | provisional | Both are implementation-defined, with no minimum |
 | [Q-0352](Q-0352-aggregate-pack-parentheses.md) | Does a list in parentheses form the aggregate candidate for a class with a pack of bases? | provisional | Yes; the candidate is formed as for braces |
+| [Q-0353](Q-0353-edg-converted-member-pointer-constant.md) | Does EDG losing the member that a converted member pointer names during constant evaluation change MPTR-4? | provisional | No; the converted pointer names the member, and EDG differs |
+| [Q-0354](Q-0354-edg-decltype-of-placeholder-parameter.md) | Does EDG checking a call whose argument names `decltype` of a generic lambda's parameter before the call is instantiated change DEP-1? | provisional | No; the program is valid, and EDG differs |
+| [Q-0355](Q-0355-edg-virtual-call-from-intermediate-class-constant.md) | Does EDG calling a base's function for a virtual call made inside an intermediate class during constant evaluation change VIRT-1? | provisional | No; the call reaches `W::f`, and EDG differs |
+| [Q-0356](Q-0356-gcc14-member-pointer-comma-operand-order.md) | Does GCC 14 evaluating the right operand of `.*` first, when the left operand is a comma expression, change SEQ-2? | compiler defect | No; the left operand comes first, and GCC 14 is wrong |
 
 ## Status values
 

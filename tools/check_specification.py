@@ -8,7 +8,10 @@ Fails when:
 - a test names a rule that doesn't exist (only a warning while no rule with
   that prefix exists, which is the state of a section between pipeline
   steps 3 and 6),
-- a test is not listed by any of the rules it names,
+- a test is not listed by any of the rules it names. A program test under
+  tests/programs/ is the exception (decision 0054). It names rules that exist
+  and are not withdrawn, and no rule lists it, so it never counts as a
+  rule's test or as the one test that decides a rule (decision 0044),
 - a specification page, test, or document refers to a question (Q-NNNN) with no file in questions/,
 - a tidal-expect-<x> or tidal-error-<x> names no compiler id or family, or a
   tidal-error is on a test that no compiler is expected to reject, fail to
@@ -43,6 +46,9 @@ from run_tests import TESTS, parse_test, test_files  # noqa: E402
 ROOT = Path(__file__).resolve().parent.parent
 SPEC = ROOT / "specification"
 GUIDES = ROOT / "guides"
+# Program tests (decision 0054): whole programs from the Write exercises.
+# Each names the rules its report gives, and no rule lists it.
+PROGRAMS = "programs/"
 CLASSES = {
     "required", "reject", "no-diagnostic", "impl-defined",
     "unspecified", "undefined", "recommended", "conditionally-supported",
@@ -254,13 +260,20 @@ def main() -> int:
         if test.default == "reject" and all(rid in rules for rid in test.rules) and not (
                 {rules[rid][1] for rid in test.rules} & MAY_REJECT):
             errors.append(f"{test.name}: expects reject, but cites no rule of a class that allows it (decision 0034)")
+        program = test.name.startswith(PROGRAMS)
         for rid in test.rules:
             if rid not in rules and rid.rsplit("-", 1)[0] not in prefixes:
                 warnings.append(f"{test.name}: names {rid}; no {rid.rsplit('-', 1)[0]} rules are drafted yet")
             elif rid not in rules:
                 errors.append(f"{test.name}: names unknown rule {rid}")
-            elif rid not in listed.get(test.name, set()):
+            elif program and rules[rid][1] == "withdrawn":
+                errors.append(f"{test.name}: names {rid}, which is withdrawn")
+            elif not program and rid not in listed.get(test.name, set()):
                 errors.append(f"{test.name}: names {rid}, but {rid} doesn't list it")
+    for t, rids in sorted(listed.items()):
+        if t.startswith(PROGRAMS):
+            errors.append(f"{t}: a program test is listed by {', '.join(sorted(rids))}; "
+                          "rules list only the tests of their pages (decision 0054)")
 
     # The prefix table on rules.md is for readers of the Markdown sources,
     # where the rule index directive does not render.

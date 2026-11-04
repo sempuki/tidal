@@ -77,6 +77,11 @@ needs a language-support type declares the shape that its page gives
 | W14 | Program structure | Ada | storage-linkage, namespaces, inline, static initialization, names, type-names, translation | a program in three translation units; a namespace with internal helpers; a shared constant across units; a counter whose initialization order matters |
 | W15 | Generic code | Haskell | templates (declarations, arguments, deduction, packs, concepts, constraints, specialization), storage, language-support | a fixed-capacity stack; the largest of any number of arguments; a concept for shapes with a more specific overload; a compile-time type list; an optional that keeps its value in raw storage |
 
+Each finished program becomes a run test under
+`tests/programs/<suite>/`. Probes and deliberate mistakes stay in the
+report directory. `documentation/specification-format.md` (section
+"Program tests") gives the form.
+
 Port suites (P1 to P8) follow one per persona after the Write suites.
 Each suite gives three short programs in the persona's language that
 use the language's typical idioms, and asks for a C++ program with the same behavior.
@@ -168,7 +173,7 @@ catalog counts as done.
 | Exercise | State | Report |
 |---|---|---|
 | W0 | done | `reports/clean-room/java-programmer/` |
-| Front end | round 14 done: 5595/6032 pass, 5708 pass their check (`conformance.tsv`) | `reports/clean-room/rust-frontend/` |
+| Front end | round 14 done: 5646/6099 pass, 5766 pass their check (`conformance.tsv`) | `reports/clean-room/rust-frontend/` |
 | Guides | done: one tutorial and four how-to guides, not published (decision 0046) | `guides/` |
 | R-translation, R-objects, R-values, R-names, R-conversions, R-evaluation-order, R-constant-evaluation | done, 231/231 | `reports/clean-room/R-foundations/` |
 | Designer roadmap | done, findings D1 to D33 | `reports/clean-room/roadmap/designer.md` |

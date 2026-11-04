@@ -4670,6 +4670,73 @@ compilers affect the Status column.
 | `foundations/types/specifiers-equivalent.cpp` | TYP-6 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/types/unicode-characters-unsigned.cpp` | TYP-3 TYP-13 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `foundations/types/wchar-signed.cpp` | TYP-3 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
+| `programs/W0/accounts.cpp` | CLS-4 CLS-5 ACC-1 ACC-8 CTOR-5 CTOR-6 VIRT-1 VIRT-3 VIRT-7 THR-1 THR-4 TRY-1 TRY-2 NEW-1 NEW-9 TR-2 CTOR-13 CV-7 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `programs/W0/calc.cpp` | UNI-4 UNI-7 CE-6 DCL-1 PFX-7 MUL-9 MUL-10 ADD-9 THR-1 TRY-2 CE-8 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `programs/W0/owner.cpp` | NEW-2 NEW-4 NEW-5 NEW-9 CPY-1 CPY-2 CPY-3 CPY-4 CPY-5 CPY-9 CPY-11 DTOR-5 OBJ-3 VC-3 CPY-12 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `programs/W0/ring.cpp` | CLS-3 CLS-5 CLS-15 OPR-2 OPR-3 CX-1 CX-3 CE-1 CE-5 DCL-3 CV-8 CPY-12 OBJ-2 TR-5 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `programs/W0/shapes.cpp` | ENUM-2 ENUM-3 SW-1 SW-3 DCMP-1 DCMP-6 SB-1 SB-2 SB-4 RFOR-1 FN-3 FN-7 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `programs/W1/bitset.cpp` | LSUP-4 TYP-1 UN-12 SHF-4 SHF-7 ASN-5 BIT-5 BIT-4 BIT-1 ADD-5 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `programs/W1/checked.cpp` | TYP-4 TYP-1 PRIM-1 BIT-5 ADD-9 CONV-19 CONV-2 MUL-9 MUL-10 MUL-6 MUL-7 UN-4 SHF-7 SHF-5 ADD-5 MUL-8 TR-10 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `programs/W1/checksum.cpp` | LSUP-4 TYP-1 CONV-1 CONV-19 CONV-2 SHF-5 PRIM-1 UN-3 BIT-4 LIST-6 TYP-4 TYP-3 TR-5 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `programs/W1/fixed.cpp` | SHF-5 MUL-6 SHF-4 CONV-4 CONV-5 SHF-6 TYP-9 CONV-6 TYP-10 ADD-9 CONV-19 MUL-9 ASN-5 OPR-6 OPR-8 OPR-10 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `programs/W1/parse.cpp` | TYP-1 CONV-1 PRIM-7 UN-20 ADD-5 MUL-8 PRIM-3 CONV-2 UN-3 TR-9 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `programs/W10/cleanup_guard.cpp` | UNW-1 DTOR-4 CTAD-1 UNW-5 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `programs/W10/error_codes.cpp` | ATTR-5 EXS-1 UN-18 UN-13 CE-8 THR-10 UNW-6 CE-1 EXS-4 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `programs/W10/noexcept_functions.cpp` | EXS-1 UN-18 EXS-4 EXS-2 CONV-10 ICS-26 EXS-9 EXS-10 DTOR-4 EXS-3 UNW-6 THR-9 UNW-5 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `programs/W10/transaction.cpp` | LSUP-8 TRY-2 THR-1 UNW-1 DTOR-4 UNW-5 TRY-8 THR-6 TRY-3 TRY-1 TRY-4 THR-10 CE-8 CE-1 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `programs/W11/consteval_validator.cpp` | CEV-1 CEV-2 CE-8 CE-30 LAM-12 CX-1 CX-2 CX-3 CE-1 CE-5 SA-1 SA-3 TR-2 TR-11 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `programs/W11/enum_names.cpp` | CX-3 TR-5 CX-1 CX-2 CE-1 CE-5 SA-1 SA-3 SA-4 ENUM-3 ENUM-4 ENUM-16 ENUM-1 ENUM-9 ENUM-6 CE-13 TR-2 TR-11 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `programs/W11/lookup_table.cpp` | CX-3 TR-5 CX-1 CE-23 CE-21 CE-24 CE-22 CE-1 CE-5 SA-1 SA-3 SA-4 TR-2 TR-11 LSUP-4 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `programs/W11/math_tests.cpp` | CX-3 TR-5 CX-1 CE-23 CE-1 CE-5 SA-1 SA-3 SA-4 TR-2 TR-11 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `programs/W12/compose.cpp` | RET-2 LAM-1 LAM-7 LAM-15 AUTO-4 DED-8 PACK-24 AUTO-10 DTY-2 MPTR-3 | run | run | run | reject | skip | run | run | run | run | run | run | pass |
+| `programs/W12/counter.cpp` | LAM-7 LAM-3 LAM-23 LAM-4 RET-1 RET-2 LAM-2 LAM-26 LAM-12 CE-1 CE-5 LAM-18 DTY-1 DTY-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `programs/W12/dispatcher.cpp` | CE-1 NEW-6 CE-7 CE-4 MPTR-2 MPTR-3 MPTR-10 LAM-5 LAM-3 LAM-19 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `programs/W12/sort.cpp` | DED-6 PFX-17 PFX-7 LAM-10 LAM-15 DED-34 LAM-5 LAM-9 MPTR-2 MPTR-3 MPTR-10 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `programs/W13/aligned.cpp` | ALN-1 ALN-2 ALN-4 ALN-5 TYP-1 TYP-2 STG-4 STG-5 STG-6 STG-9 STG-10 STG-16 STG-17 NEW-26 NEW-27 NEW-28 NEW-33 LSUP-4 LSUP-7 CAST-6 CAST-7 CAST-16 DTOR-6 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `programs/W13/clink.cpp` | LSP-1 LSP-2 LSP-3 LSP-4 LSP-5 LSP-6 LSP-7 TR-4 PFX-19 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `programs/W13/header.cpp` | BF-1 BF-2 BF-3 BF-4 BF-5 BF-6 BF-7 BF-8 BF-9 BF-10 BF-11 TYP-1 TYP-2 STG-13 STG-14 STG-26 CAST-1 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `programs/W13/registers.cpp` | VOL-1 VOL-2 VOL-3 VOL-5 CV-9 TR-7 STG-4 STG-5 STG-13 STG-14 STG-16 STG-26 NEW-33 LSUP-4 LSUP-7 CLS-10 CLS-19 TYP-1 TYP-12 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `programs/W14/p1_three_units/main.cpp` | TR-4 INC-1 INC-4 ODR-7 ODR-8 ODR-10 LNK-1 NS-6 INL-1 LNK-4 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `programs/W14/p2_internal_helpers/main.cpp` | LNK-2 LNK-5 NS-4 NS-13 TR-4 NAM-8 ODR-9 ODR-11 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `programs/W14/p3_shared_constant/main.cpp` | LNK-3 INL-1 LNK-4 ODR-7 STO-7 ODR-3 CE-3 ODR-8 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `programs/W14/p4_init_order/main.cpp` | SINIT-1 SINIT-2 SINIT-3 SINIT-4 SINIT-5 STO-2 STO-10 CINIT-1 CINIT-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `programs/W15/largest.cpp` | LSUP-4 LSUP-7 LSUP-10 TR-2 TR-5 TR-10 CE-1 TPL-30 PACK-5 PACK-9 CPT-17 CPT-19 CONV-19 DTY-1 COND-3 RET-1 TPL-26 TSP-10 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `programs/W15/optional.cpp` | LSUP-4 LSUP-7 LSUP-10 TR-2 TR-5 TR-10 CE-1 STG-4 STG-5 STG-6 ALN-1 STG-9 STG-16 STG-19 DTOR-6 DTOR-7 STG-22 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `programs/W15/shapes.cpp` | LSUP-4 LSUP-7 LSUP-10 TR-2 TR-5 TR-10 CE-1 CPT-1 CPT-24 CPT-28 CPT-33 CPT-20 DED-34 PRIM-27 PRIM-28 PRIM-29 CNS-2 CNS-4 CNS-22 CNS-23 CNS-24 ORD-13 OVL-41 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `programs/W15/stack.cpp` | LSUP-4 LSUP-7 LSUP-10 TR-2 TR-5 TR-10 CE-1 TPL-1 TPL-6 TPL-9 CPT-8 CPT-9 CPT-10 UNI-1 UNI-3 UNI-4 UNI-11 STG-5 NEW-37 DTOR-6 DTOR-7 DTOR-8 PACK-1 PACK-22 PACK-23 CNS-13 CPT-32 CPT-27 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `programs/W15/typelist.cpp` | LSUP-4 LSUP-7 LSUP-10 TR-2 TR-5 TR-10 CE-1 TPL-30 PACK-19 TSP-9 TSP-14 TSP-15 ORD-14 TPL-12 TARG-7 TARG-17 PRIM-28 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `programs/W2/clamp_sort.cpp` | COND-3 COND-6 COND-2 CMP-1 CMP-14 CMP-3 CMP-4 CMP-5 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `programs/W2/order.cpp` | SEQ-2 SHF-8 LOG-5 COMMA-1 COND-2 SEQ-6 SEQ-1 SEQ-8 SEQ-4 COMMA-4 | run | run | run | accept | skip | reject | run | run | run | run | run | pass |
+| `programs/W2/three_way.cpp` | LSUP-2 CLS-16 CLS-3 INL-4 CMP-12 CMP-17 CMP-27 DCMP-3 DCMP-4 DCMP-1 DCMP-10 DCMP-6 OVL-13 CMP-5 MUL-11 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `programs/W2/validators.cpp` | LOG-4 LOG-5 LOG-7 LOG-14 LOG-2 LOG-3 LOG-6 LOG-8 LOG-11 LOG-13 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `programs/W3/nested.cpp` | JMP-1 JMP-8 JMP-5 JMP-6 JMP-9 JMP-4 LOOP-3 CE-2 CE-17 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `programs/W3/search.cpp` | LOOP-1 JMP-3 ADD-9 UN-12 CX-3 RFOR-1 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `programs/W3/tokenize.cpp` | PRIM-5 PRIM-7 LOOP-1 JMP-2 SW-1 ATTR-7 CX-3 RFOR-1 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `programs/W3/vending.cpp` | SW-1 SW-3 JMP-1 RFOR-1 STMT-2 FN-7 CX-3 SW-5 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `programs/W4/arena.cpp` | STG-4 STG-5 STG-6 STG-17 ALN-1 ALN-4 UN-16 UN-12 LSUP-7 NEW-10 NEW-33 DTOR-6 CAST-1 CAST-6 CAST-16 ADD-6 PFX-7 LSUP-4 NEW-11 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `programs/W4/grid.cpp` | NEW-2 NEW-9 NEW-5 PFX-1 PFX-4 ADD-6 ADD-10 DCL-5 DCL-19 DCL-1 ADD-7 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `programs/W4/list.cpp` | NEW-1 NEW-9 NEW-4 NEW-5 OBJ-5 PFX-10 DCL-1 DCL-2 OBJ-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `programs/W4/vector.cpp` | NEW-19 NEW-26 NEW-28 LSUP-5 LSUP-7 STG-5 STG-7 STG-8 DTOR-6 NEW-9 ADD-6 CPY-8 OBJ-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `programs/W5/commands.cpp` | DCL-2 PFX-7 PFX-17 AUTO-2 DEFARG-5 FN-1 CE-1 INL-3 FN-5 FN-11 FN-8 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `programs/W5/deleted.cpp` | DEL-1 OVL-37 DEL-2 OVL-27 ICS-8 CPT-24 CPT-26 CPT-27 CPT-30 CPT-31 UNEV-5 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `programs/W5/recursion.cpp` | RET-1 RET-3 RET-7 RET-4 DEFARG-1 DEFARG-3 DTY-2 CE-10 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `programs/W5/two_values.cpp` | RET-7 SB-3 SB-4 SB-5 SB-17 LSUP-3 SB-15 RET-2 AUTO-10 DTY-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `programs/W6/bindings.cpp` | SB-7 SB-11 SB-15 SB-1 SB-3 SB-4 SB-5 SB-14 SB-17 LSUP-3 SB-6 SB-12 SB-10 | run | run | run | accept | skip | run | reject | run | run | run | run | pass |
+| `programs/W6/config_table.cpp` | LSUP-4 LSUP-1 LIST-3 LIST-8 LIST-5 LIST-14 LIST-2 DCL-5 DCL-19 CX-1 CX-2 CE-23 CINIT-1 CINIT-2 SINIT-1 SINIT-2 STO-2 SA-1 SA-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `programs/W6/default_members.cpp` | CLS-9 CLS-2 LIST-8 LIST-3 LIST-9 LIST-4 INIT-9 INIT-1 CTOR-5 CTOR-4 CE-21 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `programs/W6/ref_members.cpp` | REF-1 REF-2 REF-3 REF-8 REF-9 REF-10 REF-7 REF-4 REF-5 CTOR-17 CE-23 CLS-3 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `programs/W7/date.cpp` | LSUP-2 CMP-23 DCMP-4 CLS-7 CTOR-9 CTOR-2 DCMP-3 OPR-4 CPT-24 CPT-26 CTOR-19 ILC-8 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `programs/W7/money.cpp` | OPR-15 CTOR-9 ACC-7 DCMP-3 DCMP-4 CPT-24 CPT-26 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `programs/W7/rational.cpp` | LSUP-2 OVL-13 ACC-1 CTOR-10 CTOR-6 CLS-5 OPR-6 ACC-7 DCMP-3 DCMP-1 DCMP-6 CVF-3 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `programs/W7/small_string.cpp` | LSUP-4 LSUP-1 LSUP-2 CTOR-5 CTOR-2 ILC-2 CPT-14 ILC-3 CLS-5 CLS-25 DCMP-6 CTAD-11 CPT-24 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `programs/W8/shared.cpp` | CPY-1 CPY-2 CPY-3 CPY-9 CPY-11 NEW-1 NEW-4 NEW-9 DTOR-5 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `programs/W8/tagged.cpp` | UNI-3 UNI-4 UNI-5 UNI-6 UNI-7 UNI-11 UNI-14 LSUP-4 LSUP-7 STG-5 NEW-10 NEW-20 DTOR-6 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `programs/W8/unique.cpp` | CPY-1 CPY-2 CPY-3 CPY-4 CPY-5 CPY-21 CPY-9 CPY-10 CPY-11 CPY-12 NEW-1 NEW-4 NEW-5 NEW-9 DTOR-5 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `programs/W8/vector.cpp` | NEW-19 NEW-38 STG-5 STG-8 STG-17 LSUP-4 LSUP-7 DTOR-6 UNW-1 UNW-2 UNW-3 TRY-8 CPY-9 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `programs/W9/memptr.cpp` | MPTR-1 MPTR-2 MPTR-3 MPTR-4 MPTR-5 MPTR-10 VIRT-1 | run | run | run | reject | skip | run | run | run | run | run | run | pass |
+| `programs/W9/mixin.cpp` | DER-6 DER-7 DER-12 DER-13 DER-14 DER-16 ACC-4 ACC-8 ACC-9 MPTR-2 MPTR-4 CAST-15 | run | run | run | reject | skip | run | run | run | run | run | run | pass |
+| `programs/W9/plugin.cpp` | VIRT-1 VIRT-3 VIRT-7 VIRT-8 VIRT-10 DER-5 CE-1 CE-2 CE-7 LSUP-8 TRY-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
+| `programs/W9/visitor.cpp` | VIRT-1 VIRT-3 VIRT-8 DER-3 DER-14 ACC-4 ACC-9 CE-1 | run | run | run | reject | skip | run | run | run | run | run | run | pass |
 | `statements/blocks/ambiguous-declaration.cpp` | STMT-6 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `statements/blocks/block-hides-outer.cpp` | STMT-2 | run | run | run | accept | skip | run | run | run | run | run | run | pass |
 | `statements/blocks/block-scope.cpp` | STMT-2 NAM-8 | reject | reject | reject | reject | skip | reject | reject | reject | reject | reject | reject | pass |
@@ -6050,7 +6117,7 @@ compilers affect the Status column.
 | `templates/specialization/variable-partial-two-parameters.cpp` | TSP-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 | `templates/specialization/variable-partial.cpp` | TSP-10 | accept | accept | accept | accept | skip | accept | accept | accept | accept | accept | accept | pass |
 
-6032/6032 tests pass on baseline compilers.
+6099/6099 tests pass on baseline compilers.
 
 ## Rejections
 
@@ -23505,6 +23572,12 @@ check that the rejection has the intended cause.
 - `foundations/types/specifier-unsigned-float.cpp` (gcc-16-o2): error: 'unsigned' specified with 'float'
 - `foundations/types/specifier-unsigned-float.cpp` (clang-22): error: 'float' cannot be signed or unsigned
 - `foundations/types/specifier-unsigned-float.cpp` (clang-22-o2): error: 'float' cannot be signed or unsigned
+- `programs/W12/compose.cpp` (edg-7.0): error: argument of type "auto &&" is incompatible with parameter of type "int"
+- `programs/W2/order.cpp` (gcc-14): error: static assertion failed / note: the comparison reduces to '(21 == 12)'
+- `programs/W6/bindings.cpp` (clang-18): error: cannot initialize an array element of type 'int' with an lvalue of type 'int[2]'
+- `programs/W9/memptr.cpp` (edg-7.0): error: static assertion failed / note: the final comparison was 5 == 0
+- `programs/W9/mixin.cpp` (edg-7.0): error: static assertion failed / note: the final comparison was 6 == 0
+- `programs/W9/visitor.cpp` (edg-7.0): error: expression must have a constant value / note: constexpr function "Visitor::visit(const Mul &)" (declared at line 20) is not defined / note: called from: / note: called from: / note: called from: / note: called from:
 - `statements/blocks/block-scope.cpp` (clang-host): error: use of undeclared identifier 'inner'
 - `statements/blocks/block-scope.cpp` (gcc-host): error: ‘inner’ was not declared in this scope
 - `statements/blocks/block-scope.cpp` (edg-7.0): error: identifier "inner" is undefined
