@@ -135,20 +135,22 @@ done. Open questions went from 310 to 209.
 ## Phase 8: honest counts, principles that answer, and exercises by use
 
 Decision 0055 (provisional) adopts this phase from the fifth round of
-clean-room roadmaps (`reports/clean-room/roadmap-5/`).
+clean-room roadmaps (`reports/clean-room/roadmap-5/`). All items are
+done. Open questions went from 209 to 221: item PQ reopened 8 settled
+questions, the phase opened 9 (Q-0377 to Q-0385), and 5 settled.
 
 | Item | Work | Prerequisites |
 |---|---|---|
-| R2 | Close the phase 7 record: counts in `pending.md` from a tool, review readings, `propose_check.py`, stale catalog and roadmap text, size estimate, Q-0322, single-test rules, the later-version plan | none |
-| HN | The harness judges by the base expectation and every explored outcome | none |
-| RT | Tests from the programmer's reductions, and a tool that compiles the page examples | none |
-| RV | A gap review of the text phase 7 wrote, then repairs | R2 |
-| PQ | One test for "a principle gives the answer", then principles for the unanswered questions | R2 |
-| TE | Thin evidence, check warnings for it, and a class for link-time diagnostics | R2 |
-| FE | Front-end rounds from 18 | HN, RT |
-| E | Write wave 2, an Implement exercise on class layout, Predict on repaired pages, Propose X17 to X20 | R2, PQ for Predict |
-| V | The Evidence format, and Evidence that does not repeat the questions | RV |
-| L | Test directories that match the pages | before the closing matrix run |
+| R2 | Done: close the phase 7 record: counts in `pending.md` from a tool, review readings, `propose_check.py`, stale catalog and roadmap text, size estimate, Q-0322, single-test rules, the later-version plan | none |
+| HN | Done: the harness judges by the base expectation and every explored outcome | none |
+| RT | Done: tests from the programmer's reductions, and a tool that compiles the page examples | none |
+| RV | Done: A gap review of the text phase 7 wrote, then repairs | R2 |
+| PQ | Done: one test for "a principle gives the answer", then principles for the unanswered questions | R2 |
+| TE | Done: thin evidence, check warnings for it, and a class for link-time diagnostics | R2 |
+| FE | Done: front-end rounds 18 (the harness) and 19 | HN, RT |
+| E | Done: Write wave 2, an Implement exercise on class layout, Predict on repaired pages, Propose X17 to X20 | R2, PQ for Predict |
+| V | Done: the Evidence format, and Evidence that does not repeat the questions | RV |
+| L | Done: test directories that match the pages | before the closing matrix run |
 
 ## Parallel lanes
 
