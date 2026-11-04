@@ -168,11 +168,11 @@ done (section 8). Decision 0055, item E, orders the next exercises:
 
 1. A second Write wave of four larger programs.
 2. An Implement exercise that builds class layout from the rules alone
-   and is scored on the layout tests.
+   and is scored on the layout tests (I1, done).
 3. Predict batches on the pages changed after their batch, on constant
    evaluation and evaluation order, and on the four weakest pages whose
    only batch showed test names.
-4. Propose X17 to X20 on P1, P2, P17, and P18.
+4. Propose X17 to X20 on P1, P2, P17, and P18 (done).
 
 Each phase runs at least one exercise by use (Write, Port, or
 Implement). Port suites and Diagnose batches beyond D-classes wait for
@@ -215,6 +215,10 @@ Foundations batch and the 11 templates pages.
 | X14 | done: 57 rule changes; findings X14-1 to X14-10 | `reports/clean-room/X14/` |
 | X15 | done: 60 rule changes; findings X15-1 to X15-9 | `reports/clean-room/X15/` |
 | X16 | done: 41 rule changes, 3 tests change outcome; findings X16-1 to X16-7 | `reports/clean-room/X16/` |
+| X17 | done: 61 rule changes, 74 tests change outcome; findings X17-1 to X17-11 | `reports/clean-room/X17/` |
+| X18 | done: 21 rule changes, no test changes outcome; findings X18-1 to X18-11 | `reports/clean-room/X18/` |
+| X19 | done: 34 rule changes, 1 test changes outcome; findings X19-1 to X19-11 | `reports/clean-room/X19/` |
+| X20 | done: 57 rule changes, no test changes outcome; findings X20-1 to X20-11 | `reports/clean-room/X20/` |
 | I1 | done: class layout from the rules alone, 241 of 243 `static_assert` checks, 24 of 24 run checks; findings I1-1 to I1-13 | `reports/clean-room/I1/` |
 | W4 | done: four programs build and run on GCC and Clang; findings W4-1 to W4-10 | `reports/clean-room/W4/` |
 | W8 | done: four programs build and run on GCC and Clang; findings W8-1 to W8-9 | `reports/clean-room/W8/` |
