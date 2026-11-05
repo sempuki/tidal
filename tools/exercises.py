@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""Build and score Predict and Diagnose batches for clean-room exercises (decision 0030).
+"""Build and score Predict, Diagnose, and principle-use batches for clean-room exercises (decision 0030).
 
 Usage:
     tools/exercises.py predict PAGE OUT     # e.g. expressions/additive build/exercises/R-additive
     tools/exercises.py diagnose PAGE OUT    # e.g. classes/virtual build/exercises/D-virtual
+    tools/exercises.py principles OUT       # e.g. build/exercises/PU1
     tools/exercises.py score OUT ANSWERS    # ANSWERS is JSON written by the reader
 
 `predict` takes the tests that the rules on specification/PAGE.md cite, removes
@@ -40,6 +41,24 @@ host g++ message that matches the pattern. The reader names the rule
 and writes a fixed program pNN-fix.cpp:
 
     {"p01": {"rules": ["VIRT-3"], "why": "..."}}
+
+`principles` builds a principle-use batch (decision 0056, item PU). It
+selects each provisional question whose latest dated note says that the
+question waits for a use of a principle (WAITS_FOR_USE below). The
+principles it waits on are the first of these that gives any: principle
+IDs in the note, the principles whose `:rules:` list a rule ID in the
+note, principle IDs in the Affects line, and the principles of the rules
+in the Affects line. The tool prints each question, its principles, and
+where they came from. The programs are the single tests that the
+question names above its Opinions and the tests whose tidal-note lines
+cite the question, written as in `predict`. The copy of specification/
+leaves out every rule block and every Evidence segment, so the reader
+decides by the principles alone. An answer adds `part`, the part of the
+model that decides the program, and can give the outcome `not-decided`.
+The key gives each program the questions it belongs to. `score` on such
+a batch prints, per question, whether every program has the right
+outcome and whether each answer names a principle that the question
+waits on.
 
 `score` on a D- batch counts a rule as right when it is one the test
 cites, and builds each fix with g++ (and runs it when it has a main).
@@ -165,6 +184,28 @@ def included_headers(sources: list[Path]) -> list[Path]:
     return found
 
 
+def write_program(out: Path, pid: str, name: str) -> tuple[dict, str]:
+    """Write one test to OUT as program PID; return its key entry and README row."""
+    test = run_tests.parse_test(TESTS / name)
+    files = [f"{pid}.cpp"]
+    (out / files[0]).write_text(strip(test.path.read_text()))
+    for j, extra in enumerate(test.sources, 2):
+        files.append(f"{pid}-{j}.cpp")
+        (out / files[-1]).write_text(strip(extra.read_text()))
+    for header in included_headers([test.path, *test.sources]):
+        target = out / header.relative_to(test.path.parent.resolve())
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(strip(header.read_text()))
+    has_main = any(MAIN.search(f.read_text()) for f in [test.path, *test.sources])
+    undefined = any(RULE_CLASS.get(r) == "undefined" for r in test.rules)
+    entry = {"test": name, "expect": sorted(expectations(test)), "rules": test.rules,
+             "main": has_main, "undefined": undefined}
+    build = " ".join(files)
+    if test.flags:
+        build += f", with {' '.join(test.flags)}"
+    return entry, f"| {pid} | {build} |"
+
+
 def predict(page: str, out: Path) -> int:
     names = page_tests(page)
     if not names:
@@ -175,25 +216,9 @@ def predict(page: str, out: Path) -> int:
     copy_specification(out)
     key, lines = {}, []
     for i, name in enumerate(names, 1):
-        test = run_tests.parse_test(TESTS / name)
         pid = f"p{i:02d}"
-        files = [f"{pid}.cpp"]
-        (out / files[0]).write_text(strip(test.path.read_text()))
-        for j, extra in enumerate(test.sources, 2):
-            files.append(f"{pid}-{j}.cpp")
-            (out / files[-1]).write_text(strip(extra.read_text()))
-        for header in included_headers([test.path, *test.sources]):
-            target = out / header.relative_to(test.path.parent.resolve())
-            target.parent.mkdir(parents=True, exist_ok=True)
-            target.write_text(strip(header.read_text()))
-        has_main = any(MAIN.search(f.read_text()) for f in [test.path, *test.sources])
-        undefined = any(RULE_CLASS.get(r) == "undefined" for r in test.rules)
-        key[pid] = {"test": name, "expect": sorted(expectations(test)), "rules": test.rules,
-                    "main": has_main, "undefined": undefined}
-        build = " ".join(files)
-        if test.flags:
-            build += f", with {' '.join(test.flags)}"
-        lines.append(f"| {pid} | {build} |")
+        key[pid], row = write_program(out, pid, name)
+        lines.append(row)
     readme = [
         f"# Predict batch for {page}",
         "",
@@ -247,6 +272,298 @@ def predict(page: str, out: Path) -> int:
     KEYS.mkdir(parents=True, exist_ok=True)
     (KEYS / f"{out.name}.json").write_text(json.dumps(key, indent=1) + "\n")
     print(f"{len(names)} programs in {out}; key in {KEYS / out.name}.json")
+    return 0
+
+
+QUESTIONS = ROOT / "questions"
+PRINCIPLE = re.compile(r"^:::\{principle\} (\S+)$")
+RULE_END = re.compile(r"^:::$")
+# The start of a dated note, such as "Kept open on 2026-11-04" or "Used on 2026-11-04".
+DATED = re.compile(r"(?:^|(?<=[.)] ))[A-Z][a-z]+(?: [a-z]+)? on \d{4}-\d{2}-\d{2}\b")
+# A note that keeps a question open until a reader or a reviewer uses a principle.
+WAITS_FOR_USE = re.compile(r"\bwaits? for (?:the next use|a use|a reader or a reviewer to use"
+                           r"|the next review or reader batch)")
+PRINCIPLE_ID = re.compile(r"\b[A-Z]+-P\d+\b")
+RULE_ID = re.compile(r"\b[A-Z]+-\d+\b")
+TEST_PATH = re.compile(r"\btests/([\w/.+-]+\.cpp)\b")
+NOT_DECIDED = "not-decided"
+
+
+def principle_rules() -> dict[str, list[str]]:
+    """For each rule, the principles whose `:rules:` list names it."""
+    owners: dict[str, list[str]] = {}
+    for f in sorted(SPEC.rglob("*.md")):
+        principle = None
+        for line in f.read_text().splitlines():
+            if m := PRINCIPLE.match(line):
+                principle = m.group(1)
+            elif principle and line.startswith(":rules: "):
+                for rule in line.removeprefix(":rules: ").split():
+                    owners.setdefault(rule, []).append(principle)
+            elif RULE_END.match(line):
+                principle = None
+    return owners
+
+
+def latest_note(text: str) -> str | None:
+    """The last dated note above the Opinions segment of a question."""
+    body = text.split("\n## Opinions")[0]
+    found = None
+    for para in body.split("\n\n"):
+        para = " ".join(para.split())
+        for m in DATED.finditer(para):
+            found = para[m.start():]
+    return found
+
+
+def waited_principles(note: str, affects: str, owners: dict[str, list[str]]) -> tuple[list[str], str]:
+    """The principles a waiting question waits on, and where they came from.
+
+    The first of these that gives any principle wins: principle IDs in the
+    note; the principles of the rule IDs in the note; principle IDs in the
+    Affects line; the principles of the rules in the Affects line.
+    """
+    def of_rules(text: str) -> list[str]:
+        found = []
+        for rule in RULE_ID.findall(text):
+            for p in owners.get(rule, []):
+                if p not in found:
+                    found.append(p)
+        return found
+
+    for source, ids in [("principle IDs in the note", PRINCIPLE_ID.findall(note)),
+                        ("principles of the rules in the note", of_rules(note)),
+                        ("principle IDs in the Affects line", PRINCIPLE_ID.findall(affects)),
+                        ("principles of the rules in the Affects line", of_rules(affects))]:
+        ids = list(dict.fromkeys(ids))
+        if ids:
+            return ids, source
+    return [], "no principle found"
+
+
+def note_citations() -> dict[str, set[str]]:
+    """For each question ID, the tests whose tidal-note lines cite it."""
+    cited: dict[str, set[str]] = {}
+    for f in TESTS.rglob("*.cpp"):
+        for line in f.read_text().splitlines():
+            if not line.startswith("//"):
+                break
+            if line.startswith("// tidal-note:"):
+                for q in re.findall(r"\bQ-\d{4}\b", line):
+                    cited.setdefault(q, set()).add(str(f.relative_to(TESTS)))
+    return cited
+
+
+def usable_test(name: str) -> bool:
+    """A single test that a batch can show: not an extra unit, not a whole program."""
+    return ((TESTS / name).is_file() and not name.endswith(run_tests.EXTRA_SUFFIX)
+            and not name.startswith("programs/"))
+
+
+def waiting_questions() -> list[dict]:
+    """The open questions whose latest dated note waits for a use of a principle."""
+    owners, cited, chosen = principle_rules(), note_citations(), []
+    for f in sorted(QUESTIONS.glob("Q-[0-9][0-9][0-9][0-9]*.md")):
+        text = f.read_text()
+        if "**Status:** provisional" not in text:
+            continue
+        note = latest_note(text)
+        if not note or not (m := WAITS_FOR_USE.search(note)):
+            continue
+        qid = f.name[:6]
+        affects = next((l for l in text.splitlines() if l.startswith("**Affects:**")), "")
+        principles, source = waited_principles(note, affects, owners)
+        body = text.split("\n## Opinions")[0]
+        named = list(dict.fromkeys(TEST_PATH.findall(body)))
+        tests = [t for t in named if usable_test(t)]
+        tests += sorted(t for t in cited.get(qid, set()) if usable_test(t) and t not in tests)
+        chosen.append({"question": qid, "principles": principles, "source": source,
+                       "phrase": m.group(0), "tests": tests,
+                       "skipped": [t for t in named if not usable_test(t)]})
+    return chosen
+
+
+def principles_only(text: str) -> str:
+    """A page without its rule blocks, its Evidence segment, and segments left empty."""
+    kept, in_rule = [], False
+    for line in text.splitlines(keepends=True):
+        if RULE.match(line.rstrip("\n")):
+            in_rule = True
+        elif in_rule:
+            in_rule = not RULE_END.match(line.rstrip("\n"))
+        else:
+            kept.append(line)
+    # Split at level-2 headings, drop Evidence and segments with nothing left.
+    segments, current = [], []
+    for line in kept:
+        if line.startswith("## ") and current:
+            segments.append(current)
+            current = []
+        current.append(line)
+    segments.append(current)
+    out = []
+    for seg in segments:
+        heading = seg[0].strip() if seg[0].startswith("## ") else None
+        if heading == "## Evidence":
+            continue
+        if heading and not "".join(seg[1:]).strip():
+            continue
+        out += seg
+    return re.sub(r"\n{3,}", "\n\n", "".join(out))
+
+
+def copy_principles(out: Path) -> None:
+    """Copy specification/ to OUT/specification/ with only principles, syntax, examples, and the glossary."""
+    for f in sorted(SPEC.rglob("*")):
+        if f.is_dir():
+            continue
+        target = out / "specification" / f.relative_to(SPEC)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        if f.suffix == ".md":
+            target.write_text(principles_only(f.read_text()))
+        else:
+            target.write_bytes(f.read_bytes())
+
+
+def principles(out: Path) -> int:
+    chosen = waiting_questions()
+    print("Selected: each provisional question whose latest dated note says it waits for a use")
+    print(f"(the note matches {WAITS_FOR_USE.pattern!r}).")
+    print()
+    print("| Question | Waits on | Taken from | Tests | Phrase in the note |")
+    print("|---|---|---|---|---|")
+    for q in chosen:
+        print(f"| {q['question']} | {' '.join(q['principles']) or 'none'} | {q['source']} | "
+              f"{len(q['tests'])} | {q['phrase']} |")
+    for q in chosen:
+        if q["skipped"]:
+            print(f"{q['question']}: left out {' '.join(q['skipped'])} (whole programs or extra units)")
+        if not q["tests"]:
+            print(f"{q['question']}: no test to show, so the batch leaves the question out")
+        if not q["principles"]:
+            print(f"{q['question']}: no principle found, so the batch leaves the question out")
+    chosen = [q for q in chosen if q["tests"] and q["principles"]]
+    names: dict[str, dict[str, list[str]]] = {}  # test -> question -> principles
+    for q in chosen:
+        for t in q["tests"]:
+            names.setdefault(t, {})[q["question"]] = q["principles"]
+    order = sorted(names)
+    random.Random(out.name).shuffle(order)
+    out.mkdir(parents=True, exist_ok=False)
+    copy_principles(out)
+    key, lines = {}, []
+    for i, name in enumerate(order, 1):
+        pid = f"p{i:02d}"
+        entry, row = write_program(out, pid, name)
+        entry["questions"] = names[name]
+        key[pid] = entry
+        lines.append(row)
+    waited = sorted({p for q in chosen for p in q["principles"]})
+    readme = [
+        f"# Principle-use batch {out.name}",
+        "",
+        "The copy of the specification in this directory holds only the",
+        "principles, the syntax, the examples, and the glossary. It leaves out",
+        "every rule and every Evidence segment. Read only this copy.",
+        "",
+        "For each program below, predict what happens when it is built with",
+        "`-std=c++23 -pedantic-errors` and no `-O` flag, and, if it compiles",
+        "and links, run. Do not compile the programs. The target is x86-64",
+        "Linux, unless the flags include `-m32`. The baseline compilers section",
+        "of specification/index.md says which compilers run which programs.",
+        "",
+        "Decide each outcome from the principles alone. A principle's model is",
+        "its prose, its tables, and its diagrams. Do not use what you know of",
+        "C++ from elsewhere. When no principle gives the outcome, answer",
+        f"`{NOT_DECIDED}`. That answer is a finding about the principles, and",
+        "it is as useful as a right outcome.",
+        "",
+        "The batch reads these principles, among others that a program may need:",
+        "",
+        ", ".join(f"`{p}`" for p in waited) + ".",
+        "",
+        "| Program | Files and flags |",
+        "|---|---|",
+        *lines,
+        "",
+        "Answer with one JSON object, one entry per program:",
+        "",
+        '    {"p01": {"outcome": "reject", "principles": ["ADD-P1"], "part": "the second row of the table", "why": "one sentence"}}',
+        "",
+        "`outcome` is one of:",
+        "",
+        *[f"- `{k}`: {v}" for k, v in OUTCOMES.items()],
+        f"- `{NOT_DECIDED}`: no principle gives the outcome; say in `why` what the principles leave open",
+        "",
+        "`principles` lists the IDs of the principles (`:::{principle}` blocks)",
+        "whose model gave the outcome. `part` names the part of that model that",
+        "decides the program: a sentence, a list item, a table row, or a part of",
+        f"a diagram. For `{NOT_DECIDED}`, list the principles you tried and say",
+        "in `part` what each one does not say.",
+        "",
+        "A program whose run has undefined behavior is answered `undefined`.",
+        "Such a program's test checks only that it compiles, so `compiles` is",
+        "also right for it.",
+    ]
+    (out / "README.md").write_text("\n".join(readme) + "\n")
+    KEYS.mkdir(parents=True, exist_ok=True)
+    (KEYS / f"{out.name}.json").write_text(json.dumps(key, indent=1) + "\n")
+    print()
+    print(f"{len(chosen)} questions and {len(key)} programs in {out}; key in {KEYS / out.name}.json")
+    return 0
+
+
+def score_principles(key: dict, answers: dict) -> int:
+    """Score a principle-use batch per question."""
+    right = 0
+    per_question: dict[str, dict] = {}
+    uses: dict[str, list[str]] = {}
+    rows = []
+    for pid, k in key.items():
+        a = answers.get(pid, {})
+        got = a.get("outcome")
+        ok = got != NOT_DECIDED and outcome_right(k, got)
+        right += ok
+        named = set(a.get("principles", []))
+        for principle in sorted(named):
+            uses.setdefault(principle, []).append(f"{pid} {'right' if ok else 'wrong'}")
+        for qid, waited in k["questions"].items():
+            q = per_question.setdefault(qid, {"waits": waited, "programs": [], "right": 0, "named": 0,
+                                             "undecided": 0})
+            q["programs"].append(pid)
+            q["right"] += ok
+            q["named"] += ok and bool(named & set(waited))
+            q["undecided"] += got == NOT_DECIDED
+        if not ok:
+            rows.append(f"| {pid} | {k['test']} | {' '.join(k['questions'])} | {', '.join(k['expect'])} | "
+                        f"{got} | {' '.join(a.get('principles', []))} | "
+                        f"{a.get('why', '').replace('|', '/')} |")
+    print(f"{right}/{len(key)} predictions match the tests")
+    print()
+    print("A question's answer is reached when every program of the question has the right")
+    print("outcome. A use supports the answer when, in addition, every program's answer names")
+    print("a principle that the question waits on.")
+    print()
+    print("| Question | Waits on | Programs | Right | Name a waited principle | Not decided | Answer reached | Use supports the answer |")
+    print("|---|---|---|---|---|---|---|---|")
+    for qid in sorted(per_question):
+        q = per_question[qid]
+        n = len(q["programs"])
+        reached = q["right"] == n
+        print(f"| {qid} | {' '.join(q['waits'])} | {' '.join(q['programs'])} | {q['right']}/{n} | "
+              f"{q['named']}/{n} | {q['undecided']} | {'yes' if reached else 'no'} | "
+              f"{'yes' if reached and q['named'] == n else 'no'} |")
+    if uses:
+        print()
+        print("| Principle | Answers that name it |")
+        print("|---|---|")
+        for principle in sorted(uses):
+            print(f"| {principle} | {', '.join(uses[principle])} |")
+    if rows:
+        print()
+        print("| Program | Test | Questions | Expected | Answer | Principles named | Reason given |")
+        print("|---|---|---|---|---|---|---|")
+        print("\n".join(rows))
     return 0
 
 
@@ -351,29 +668,37 @@ def score_diagnose(out: Path, key: dict, answers: dict) -> int:
     return 0
 
 
+def outcome_right(k: dict, got: str | None) -> bool:
+    """Whether a predicted outcome matches the key entry K."""
+    ok = any(got in MATCHES[e] for e in k["expect"])
+    # The runner links a program with no main only when its test
+    # expects a link failure, which the reader cannot see. So for
+    # such a program, compiling and failing to link both count.
+    if not k.get("main", True) and got in {"compiles", "link-fail"}:
+        ok = ok or bool({"accept", "link-fail"} & set(k["expect"]))
+    # "depends" is right when the baseline compilers are expected to
+    # differ. "undefined" is right when a cited rule is undefined and no
+    # compiler rejects the program, so the behavior shows only at run time.
+    if got == "depends":
+        ok = len(k["expect"]) > 1
+    if got == "undefined":
+        ok = k.get("undefined", False) and "reject" not in k["expect"]
+    return ok
+
+
 def score(out: Path, answers_path: Path) -> int:
     key = json.loads((KEYS / f"{out.name}.json").read_text())
     if out.name.startswith("D-"):
         return score_diagnose(out, key, json.loads(answers_path.read_text()))
+    if key and all("questions" in k for k in key.values()):
+        return score_principles(key, json.loads(answers_path.read_text()))
     answers = json.loads(answers_path.read_text())
     right, cited, rows = 0, 0, []
     uses: dict[str, list[str]] = {}
     for pid, k in key.items():
         a = answers.get(pid, {})
         got = a.get("outcome")
-        ok = any(got in MATCHES[e] for e in k["expect"])
-        # The runner links a program with no main only when its test
-        # expects a link failure, which the reader cannot see. So for
-        # such a program, compiling and failing to link both count.
-        if not k.get("main", True) and got in {"compiles", "link-fail"}:
-            ok = ok or bool({"accept", "link-fail"} & set(k["expect"]))
-        # "depends" is right when the baseline compilers are expected to
-        # differ. "undefined" is right when a cited rule is undefined and no
-        # compiler rejects the program, so the behavior shows only at run time.
-        if got == "depends":
-            ok = len(k["expect"]) > 1
-        if got == "undefined":
-            ok = k.get("undefined", False) and "reject" not in k["expect"]
+        ok = outcome_right(k, got)
         for principle in a.get("principles", []):
             uses.setdefault(principle, []).append(f"{pid} {'right' if ok else 'wrong'}")
         right += ok
@@ -400,6 +725,8 @@ def score(out: Path, answers_path: Path) -> int:
 
 
 def main() -> int:
+    if len(sys.argv) == 3 and sys.argv[1] == "principles":
+        return principles(Path(sys.argv[2]))
     if len(sys.argv) != 4 or sys.argv[1] not in {"predict", "diagnose", "score"}:
         print(__doc__)
         return 2

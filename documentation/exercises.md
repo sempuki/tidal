@@ -160,6 +160,24 @@ build/exercises/<batch> ANSWERS` scores either kind and lists the wrong
 answers. For a Diagnose batch the score also builds each fix with `g++`
 and runs it when it has `main`.
 
+`PU<n>` names a principle-use batch (decision 0056, item PU).
+`tools/exercises.py principles build/exercises/PU<n>` selects each
+provisional question whose latest dated note says that the question
+waits for a use of a principle. The tool takes the principles from the
+note, or else from the rules the note names, or else from the
+question's Affects line, and prints what it selected and why. The
+programs are the question's tests: the single tests that the question
+names and the tests whose notes cite the question. The batch's copy of
+the specification holds only principles, syntax, examples, and the
+glossary, because every rule block and every Evidence segment is left
+out. The reader names in `principles` the principle that decides each
+program and in `part` the part of its model, or answers `not-decided`
+when no principle gives the outcome. The key records the questions of
+each program. `score` prints, per question, whether the reader reached
+the provisional answer on every program and named a principle that the
+question waits on. A question with both is a use that supports the
+answer (style guide, section 3).
+
 ## 6. Order
 
 The Write suites W1 to W15, the Propose rounds X1 to X16, the
@@ -321,6 +339,23 @@ persona's language and ask for C++ programs with the same behavior.
 > batch's answers to its answers.json. In your final message, list specification
 > findings with batch and program ID, rule IDs, what you needed, and a
 > suggestion.
+
+### Principle use
+
+> You are a programmer new to C++. Do the batch build/exercises/PU<n>.
+> Read its README.md, and read only the copy of the specification in
+> that directory, which holds the principles without the rules. Do not
+> read the repository's specification/. Predict each program's outcome
+> from the principles' models alone, without compiling anything. For
+> each program, name the principle and the part of its model that
+> decides it, or answer `not-decided` and say what the principles leave
+> open. Write the answers to the batch's answers.json. In your final
+> message, list each principle that gave no answer or a doubtful one,
+> with the program ID, what the model did not say, and a suggestion.
+
+For this prompt, the shared rules read "the copy of the specification
+in build/exercises/PU<n>/specification/" in place of the repository's
+specification/.
 
 ### Implement
 
