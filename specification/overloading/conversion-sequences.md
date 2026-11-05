@@ -936,15 +936,16 @@ cells give the outcome of the test on each compiler.
 | `array-known-bound-direct.cpp` | ICS-46 | accept | reject | accept | accept | {question}`Q-0188` |
 | `array-pointer-tie-breaker.cpp` | ICS-33, ICS-36 | accept | accept | reject | accept | {question}`Q-0137` |
 | `bit-field-promotion.cpp` | ICS-2 | accept | accept | reject | reject | {question}`Q-0134` |
-| `chosen-explicit-copy-list.cpp` | ICS-8 | reject | accept | reject | accept | {question}`Q-0132` |
-| `conversion-choice-equal-rank-extended-target.cpp` | ICS-44 | accept | reject | accept | accept |  |
-| `conversion-choice-equal-rank-source.cpp` | ICS-44 | accept | reject | accept | accept |  |
-| `fixed-enumeration-before-rvalue-reference.cpp` | ICS-34, ICS-28 | accept | accept | reject | reject | {question}`Q-0152` |
-| `floating-before-rvalue-reference.cpp` | ICS-35, ICS-28 | accept | reject | accept | reject | {question}`Q-0152` |
-| `floating-equal-rank.cpp` | ICS-35 | accept | reject | accept | accept |  |
-| `initializer-list-over-kind.cpp` | ICS-21, ICS-22 | accept | accept | reject | reject | {question}`Q-0133` |
+| `chosen-explicit-copy-list.cpp` | ICS-8, ILC-8 | reject | accept | reject | accept | {question}`Q-0132` |
+| `conversion-choice-equal-rank-extended-target.cpp` | ICS-44 | accept | reject | accept | accept | |
+| `conversion-choice-equal-rank-source.cpp` | ICS-44 | accept | reject | accept | accept | |
+| `fixed-enumeration-before-rvalue-reference.cpp` | ICS-28, ICS-34 | accept | accept | reject | reject | {question}`Q-0152` |
+| `floating-before-rvalue-reference.cpp` | ICS-28, ICS-35 | accept | reject | accept | reject | {question}`Q-0152` |
+| `floating-equal-rank.cpp` | ICS-35 | accept | reject | accept | accept | |
+| `foundations/language-support/initializer-list-candidate-not-viable.cpp` | LSUP-1, ICS-16 | accept | accept | reject | accept | {question}`Q-0321` |
+| `initializer-list-over-kind.cpp` | ICS-22, ICS-21 | accept | accept | reject | reject | {question}`Q-0133` |
 | `list-array-against-scalar.cpp` | ICS-17 | accept | accept | reject | accept | {question}`Q-0135` |
-| `list-class-list-constructor.cpp` | ICS-19 | accept | Clang host, Clang 22: accept; Clang 18: reject | accept | accept | {question}`Q-0081` |
+| `list-class-list-constructor.cpp` | ICS-19 | accept | Clang 22: accept; Clang 18: reject | accept | accept | {question}`Q-0081` |
 | `list-class-nearest-base.cpp` | ICS-19, ICS-36 | accept | accept | accept | reject | {question}`Q-0154` |
 | `list-reference-class-element-class.cpp` | ICS-20 | accept | accept | reject | accept | {question}`Q-0157` |
 | `list-reference-class-element-scalar.cpp` | ICS-20 | accept | accept | reject | accept | {question}`Q-0157` |
@@ -954,11 +955,10 @@ cells give the outcome of the test on each compiler.
 | `qualification-array-bound.cpp` | ICS-31 | accept | accept | reject | reject | {question}`Q-0153` |
 | `qualification-reference-temporary.cpp` | ICS-31 | accept | accept | accept | reject | {question}`Q-0153` |
 | `rvalue-reference-before-qualification.cpp` | ICS-28, ICS-31 | accept | accept | reject | accept | {question}`Q-0152` |
-| `tie-breaker-before-rvalue-reference.cpp` | ICS-32, ICS-33, ICS-36, ICS-28 | accept | accept | accept | reject | {question}`Q-0152` |
+| `tie-breaker-before-rvalue-reference.cpp` | ICS-28, ICS-32, ICS-33, ICS-36 | accept | accept | accept | reject | {question}`Q-0152` |
 | `user-defined-explicit-reference-value.cpp` | ICS-45 | accept | reject | accept | accept | {question}`Q-0337` |
 | `user-defined-explicit-reference-xvalue.cpp` | ICS-45 | accept | reject | accept | reject | {question}`Q-0337` |
 | `user-defined-explicit-rvalue-reference-value.cpp` | ICS-45 | accept | accept | reject | reject | {question}`Q-0156` |
-| `foundations/language-support/initializer-list-candidate-not-viable.cpp` | ICS-16 | accept | accept | reject | accept | {question}`Q-0321` |
 
 ### Notes
 

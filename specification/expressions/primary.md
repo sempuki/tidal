@@ -795,11 +795,11 @@ EDG skips the tests that use `-Wall` or `-Werror`.
 
 | Test | Rules | Expected | Clang | GCC | EDG | Question |
 |---|---|---|---|---|---|---|
-| `expressions/comparison/chained-fold-not-chain.cpp` | CMP-14, PRIM-27 | accept | Clang 22: reject; Clang 18: accept | accept | skips | {question}`Q-0029` |
 | `char-encoding-ilp32.cpp` | PRIM-32 | accept | accept | accept | reject | |
 | `char-encoding-lp64.cpp` | PRIM-32 | accept | accept | accept | reject | |
 | `char-unknown-escape.cpp` | PRIM-35 | reject | reject | reject | accept | {question}`Q-0330` |
 | `double-overflow.cpp` | PRIM-15 | accept | accept | accept | reject | {question}`Q-0063` |
+| `expressions/comparison/chained-fold-not-chain.cpp` | CMP-14, PRIM-27 | accept | Clang 22: reject; Clang 18: accept | accept | skips | {question}`Q-0029` |
 | `float-extended-suffix.cpp` | PRIM-22 | accept | reject | accept | accept | |
 | `float-overflow.cpp` | PRIM-15 | accept | accept | accept | reject | {question}`Q-0063` |
 | `fold-operand-binary.cpp` | PRIM-29 | reject | reject | reject | accept | {question}`Q-0194` |

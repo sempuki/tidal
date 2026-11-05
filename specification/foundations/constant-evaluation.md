@@ -686,6 +686,9 @@ of 155 tests.
   forms of the reference. GCC rejects a read of a class temporary, also
   through its reference member. In `read-extended-temporary-nested.cpp`,
   EDG rejects the declaration and GCC rejects the read.
+- {question}`Q-0318` (UN-7, PFX-21; open): whether constant evaluation
+  must reject a member function call through a null pointer. It must,
+  as Clang and GCC do. EDG accepts the call.
 - {question}`Q-0335` (CE-17; open): whether a temporary that a constant
   evaluation makes needs a literal type. It does not, as Clang 22 says.
   GCC rejects such a temporary, EDG rejects one in a `static_assert`
@@ -694,6 +697,39 @@ of 155 tests.
   `std::allocator<T>` can convert the result of `::operator new` to a
   pointer to a type other than `T`. It cannot, as Clang says. GCC and
   EDG accept the conversion.
+
+### Split tests
+
+Each row is a test that carries an override for a baseline compiler. The
+Expected column gives the outcome that the rules predict, and each
+family column gives the outcome that the test expects on that family.
+
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `allocator-result-other-type.cpp` | CE-4 | reject | reject | accept | accept | {question}`Q-0349` |
+| `constant-initializer-trivial-class-array.cpp` | CE-24, CE-21, CINIT-1 | reject | reject | run | accept | {question}`Q-0192` |
+| `constant-initializer-trivial-class-block-static.cpp` | CE-24, CE-21, CINIT-1 | reject | reject | run | accept | {question}`Q-0192` |
+| `constant-initializer-zero-trivial-class.cpp` | CE-24, CE-21, CINIT-1 | reject | reject | run | accept | {question}`Q-0192` |
+| `copy-unset-array-element.cpp` | CE-22, OBJ-2 | reject | reject | accept | reject | {question}`Q-0115` |
+| `copy-unset-member.cpp` | CE-22, OBJ-2 | reject | reject | accept | reject | {question}`Q-0115` |
+| `explicit-condition-narrowing.cpp` | CE-19 | reject | reject | reject | accept | {question}`Q-0078` |
+| `expressions/multiplicative/floating-divide-by-zero.cpp` | CE-28 | reject | reject | reject | accept | {question}`Q-0002` |
+| `expressions/multiplicative/floating-zero-by-zero.cpp` | CE-28 | reject | reject | reject | accept | {question}`Q-0002` |
+| `expressions/postfix/member-call-null-pointer-constant.cpp` | PFX-21, UN-7, CE-9 | reject | reject | reject | accept | {question}`Q-0318` |
+| `extended-temporary-member.cpp` | CE-14 | accept | accept | accept | reject | {question}`Q-0193` |
+| `extended-temporary-nested.cpp` | CE-14 | accept | accept | accept | reject | {question}`Q-0193` |
+| `literal-temporary-volatile-member.cpp` | CE-17, CE-23 | accept | Clang 22: accept; Clang 18: reject | reject | reject | {question}`Q-0335` |
+| `nonliteral-temporary-in-function.cpp` | CE-17 | accept | Clang 22: accept; Clang 18: reject | reject | accept | {question}`Q-0335` |
+| `nonliteral-variable-reached.cpp` | CE-17 | accept | Clang 22: accept; Clang 18: reject | accept | accept | {question}`Q-0335` |
+| `read-extended-temporary-class.cpp` | CE-3, CE-14 | accept | accept | reject | accept | {question}`Q-0193` |
+| `read-extended-temporary-nested.cpp` | CE-3, CE-14 | accept | accept | reject | reject | {question}`Q-0193` |
+| `read-returned-local-unset-element.cpp` | CE-22, CE-21 | reject | reject | accept | reject | {question}`Q-0115` |
+| `result-returned-local-unset-element.cpp` | CE-21, CE-22 | reject | reject | accept | reject | {question}`Q-0115` |
+| `result-union-no-active-member.cpp` | CE-21 | accept | accept | reject | accept | {question}`Q-0117` |
+| `string-literal-identity-variables.cpp` | CE-13 | reject | reject | accept | accept | {question}`Q-0033` |
+| `string-literal-identity.cpp` | CE-13 | reject | reject | accept | accept | {question}`Q-0033` |
+| `unknown-reference-not-read.cpp` | CE-18 | accept | Clang 22: accept; Clang 18: reject | accept | accept | {question}`Q-0090` |
+| `unknown-reference-static-member.cpp` | CE-18 | accept | Clang 22: accept; Clang 18: reject | accept | accept | {question}`Q-0090` |
 
 ### Notes
 

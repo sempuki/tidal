@@ -69,7 +69,7 @@ page has something for it.
 |---|---|---|
 | Agreement | a paragraph with no heading | the agreement sentence, which `tools/status_table.py` keeps current, and a sentence on any compiler that does not take part in some tests, such as EDG, which does not link |
 | Divergences | `### Divergences`, a list | one line for each question that the page names, open or settled |
-| Split tests | `### Split tests`, a table | each test of the page on which the newest compilers differ: the test, its rules, the expected outcome, the outcome on each family, and the question |
+| Split tests | `### Split tests`, a generated table | each test of the page that carries an override for a baseline compiler: the test, its rules, the expected outcome, the outcome on each family, and the questions |
 | Notes | `### Notes`, a list | one bullet for each classification note, thin-evidence note, or result that every compiler agrees on, led by the rule IDs |
 | Probe grids | `### Probe grids`, a paragraph and a link | what the page's grids probe, and a link to the generated tables |
 | Undefined rules | `### Undefined rules`, a generated table | on the constant-evaluation page only, the `tidal-undefined-index` table |
@@ -109,9 +109,16 @@ that shows the split, when the question has more than one form.
 ### Split tests
 
 The table has one row for each test of the page that carries an
-override for a baseline compiler. The Expected
-column gives the outcome that the rules predict. A cell where versions
-of one family differ names each version.
+override for a baseline compiler. `tools/status_table.py` writes the
+rows from the test headers (`tools/split_tests.py`), and
+`tools/check_specification.py` fails when a table is out of date or
+missing. The writer keeps the heading and the paragraph above the
+table. The Expected column gives the outcome that the rules predict.
+A cell where versions of one family differ names each version, newest
+first, and a cell gives `skips` when every compiler of the family
+skips the test. The Question column names each question in the
+test's notes. A test from another page's directory shows its path
+under `tests/`.
 
 ```text
 | Test | Rules | Expected | Clang | GCC | EDG | Question |

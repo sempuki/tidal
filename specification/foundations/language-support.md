@@ -577,16 +577,16 @@ different exit codes.
 
 | Test | Rules | Expected | Clang | GCC | EDG | Question |
 |---|---|---|---|---|---|---|
+| `alignment-enumeration-class.cpp` | LSUP-5 | reject | accept | reject | reject | {question}`Q-0299` |
+| `alignment-enumeration-unscoped.cpp` | LSUP-5 | reject | accept | reject | reject | {question}`Q-0299` |
+| `alignment-enumeration-wrong-underlying-type.cpp` | LSUP-5 | reject | accept | reject | reject | {question}`Q-0299` |
+| `exception-classes-array-length.cpp` | LSUP-8, NEW-35 | run | run-fail | run | accept | {question}`Q-0301` |
 | `expressions/new-delete/aligned-forms-by-name.cpp` | NEW-26, LSUP-5 | run | Clang 22: run; Clang 18: reject | run | accept | {question}`Q-0125` |
 | `expressions/new-delete/bad-bound-negative.cpp` | NEW-35, LSUP-8 | run | run-fail | run | accept | {question}`Q-0301` |
 | `expressions/new-delete/bad-bound-nothrow.cpp` | NEW-36, LSUP-6 | run | run | run-fail | accept | {question}`Q-0302` |
 | `expressions/new-delete/bad-bound-too-few.cpp` | NEW-35, LSUP-8 | run | run-fail | run-fail | accept | {question}`Q-0301` |
 | `expressions/new-delete/bad-bound-too-large.cpp` | NEW-35, LSUP-8 | run | run-fail | run | accept | {question}`Q-0301` |
 | `expressions/new-delete/constant-evaluation-nothrow.cpp` | NEW-37, LSUP-6 | accept | accept | GCC 16: accept; GCC 14: reject | reject | {question}`Q-0303` |
-| `alignment-enumeration-class.cpp` | LSUP-5 | reject | accept | reject | reject | {question}`Q-0299` |
-| `alignment-enumeration-unscoped.cpp` | LSUP-5 | reject | accept | reject | reject | {question}`Q-0299` |
-| `alignment-enumeration-wrong-underlying-type.cpp` | LSUP-5 | reject | accept | reject | reject | {question}`Q-0299` |
-| `exception-classes-array-length.cpp` | LSUP-8, NEW-35 | run | run-fail | run | accept | {question}`Q-0301` |
 | `initializer-list-candidate-not-viable.cpp` | LSUP-1, ICS-16 | accept | accept | reject | accept | {question}`Q-0321` |
 | `initializer-list-parameter-not-needed.cpp` | LSUP-1 | accept | accept | reject | accept | {question}`Q-0321` |
 | `ordering-defaulted-not-equal-zero-only.cpp` | LSUP-12 | accept | accept | reject | accept | {question}`Q-0334` |

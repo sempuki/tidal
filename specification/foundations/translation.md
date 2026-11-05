@@ -487,6 +487,41 @@ the run and link tests say only that the programs are valid.
   and the gap review of the rules that phase 7 added reads the
   reference as EDG does (`documentation/decisions/pending.md`, row 4).
 
+### Split tests
+
+Each row is a test that carries an override for a baseline compiler. The
+Expected column gives the outcome that the rules predict, and each
+family column gives the outcome that the test expects on that family.
+EDG runs no programs, so its cell for a run test gives the result of the
+compile.
+
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `declarations/declarators/array-too-large.cpp` | TR-14 | accept | reject | accept | accept | {question}`Q-0012` |
+| `limit-array-exceeded-clang-lp64.cpp` | TR-14 | accept | reject | accept | accept | {question}`Q-0012` |
+| `limit-array-exceeded-gcc-ilp32.cpp` | TR-14 | accept | accept | reject | accept | {question}`Q-0012` |
+| `limit-array-exceeded-gcc-lp64.cpp` | TR-14 | reject | reject | reject | accept | {question}`Q-0012` |
+| `limit-array-largest-edg-lp64.cpp` | TR-14 | reject | reject | reject | accept | {question}`Q-0012` |
+| `limit-array-largest-gcc-lp64.cpp` | TR-14 | accept | reject | accept | accept | {question}`Q-0012` |
+| `limit-array-largest-ilp32.cpp` | TR-14 | accept | accept | reject | accept | {question}`Q-0012` |
+| `limit-class-exceeded-clang-lp64.cpp` | TR-15 | accept | Clang 22: reject; Clang 18: accept | accept | accept | {question}`Q-0012` |
+| `limit-class-exceeded-gcc-ilp32.cpp` | TR-15 | accept | accept | reject | accept | {question}`Q-0012` |
+| `limit-class-exceeded-gcc-lp64.cpp` | TR-15 | reject | Clang 22: reject; Clang 18: accept | reject | accept | {question}`Q-0012`, {question}`Q-0350` |
+| `limit-class-largest-clang-18-lp64.cpp` | TR-15 | accept | Clang 22: reject; Clang 18: accept | accept | accept | {question}`Q-0012` |
+| `limit-class-largest-edg-lp64.cpp` | TR-15 | reject | reject | reject | accept | {question}`Q-0012`, {question}`Q-0350` |
+| `limit-class-largest-gcc-lp64.cpp` | TR-15 | accept | reject | accept | accept | {question}`Q-0012`, {question}`Q-0350` |
+| `limit-class-largest-ilp32.cpp` | TR-15 | accept | accept | reject | accept | {question}`Q-0012` |
+| `limit-class-wrong-size-clang-18-lp64.cpp` | TR-15 | accept | reject | accept | accept | {question}`Q-0350` |
+| `limit-depth-one-template-100.cpp` | TR-13 | accept | accept | accept | reject | {question}`Q-0351` |
+| `limit-depth-two-templates-1000.cpp` | TR-13 | reject | accept | reject | reject | {question}`Q-0351` |
+| `main-c-linkage-in-namespace.cpp` | TR-3 | reject | Clang 22: reject; Clang 18: accept | GCC 16: reject; GCC 14: accept | reject | |
+| `main-c-linkage-variable-in-namespace.cpp` | TR-3 | reject | Clang 22: reject; Clang 18: accept | GCC 16: reject; GCC 14: accept | reject | |
+| `main-c-linkage.cpp` | TR-3 | reject | Clang 22: reject; Clang 18: accept | GCC 16: reject; GCC 14: accept | reject | |
+| `main-cpp-linkage-block.cpp` | TR-3 | run | run | run | reject | {question}`Q-0366` |
+| `main-cpp-linkage-specification.cpp` | TR-3 | run | run | run | reject | {question}`Q-0366` |
+| `main-deleted.cpp` | TR-3 | reject | reject | GCC 16: reject; GCC 14: accept | reject | |
+| `main-wrong-parameter-types.cpp` | TR-3, FN-6 | reject | reject | reject | accept | {question}`Q-0024` |
+
 ### Notes
 
 - TR-4: the gap review of the text phase 8 wrote on expressions, foundations,

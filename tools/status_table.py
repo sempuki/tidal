@@ -2,7 +2,7 @@
 """Regenerate the numbers in documentation/status.md from the files that hold them.
 
 It also rewrites the agreement sentence in each page's Evidence segment
-(tools/agreement.py).
+(tools/agreement.py) and the Split tests table (tools/split_tests.py).
 
 The tool writes:
 - the specification table. It lists every page that a section index
@@ -67,6 +67,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import agreement  # noqa: E402
+import split_tests  # noqa: E402
 import frontend_check  # noqa: E402
 import matrix  # noqa: E402
 import question_index  # noqa: E402
@@ -479,6 +480,8 @@ def main() -> int:
     for p in all_pages():
         if agreement.rewrite(p):
             print(f"agreement sentence updated: {p.relative_to(ROOT)}")
+        if split_tests.rewrite(p):
+            print(f"Split tests table updated: {p.relative_to(ROOT)}")
     old = STATUS.read_text()
     new, problems = render(old)
     if new != old:

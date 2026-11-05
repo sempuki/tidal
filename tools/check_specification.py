@@ -26,6 +26,7 @@ Fails when:
 - a *(TOPIC referenced)* marker names no topic, or a topic that is not in
   REFERENCED_TOPICS,
 - a page's agreement sentence is out of date (run tools/status_table.py),
+- a page's Split tests table is out of date or missing (run tools/status_table.py),
 - a generated number in documentation/status.md is out of date (run
   tools/status_table.py),
 - the front-end row of documentation/exercises.md, or its sentence on the
@@ -456,9 +457,12 @@ def main() -> int:
             if ref not in (rules if role == "rule" else principles):
                 errors.append(f"{f.relative_to(ROOT)}: {{{role}}} refers to {ref}, which no page defines")
     import agreement
+    import split_tests
     for f in sorted(SPEC.rglob("*.md")):
         if not agreement.current(f.read_text()):
             errors.append(f"{f.relative_to(ROOT)}: the agreement sentence is out of date; run tools/status_table.py")
+        if not split_tests.current(f):
+            errors.append(f"{f.relative_to(ROOT)}: the Split tests table is out of date; run tools/status_table.py")
     check_grammar(errors)
     check_records(errors, warnings)
     check_evidence(errors, warnings)

@@ -222,9 +222,25 @@ struct Counter {
 The results are in `tests/RESULTS.md`. All eight compilers agree on 36
 of 37 tests.
 
+### Divergences
+
+- {question}`Q-0032` (ASN-14; open): whether the right operand of a
+  compound assignment may be a braced list. It may not, as GCC and EDG
+  say. Clang 22 and 18 accept `x += {1}` for a scalar `x`.
+
+### Split tests
+
+Each row is a test that carries an override for a baseline compiler. The
+Expected column gives the outcome that the rules predict, and each
+family column gives the outcome that the test expects on that family.
+
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `braced-compound.cpp` | ASN-14 | reject | accept | reject | reject | {question}`Q-0032` |
+
+### Notes
+
 - ASN-4: `i = i++ + 1;` gives 2 on all compilers. The right operand,
   with its side effect, completes before the store.
-- ASN-6: Clang 22 and 18 accept `x += {1}` for a scalar `x`. GCC and EDG
-  reject the expression. This divergence is open.
 
 Inputs: clang-sema-expr, clang-diag-sema.

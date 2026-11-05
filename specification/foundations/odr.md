@@ -542,6 +542,39 @@ the units are valid.
   include guard and `#pragma once` skip a second inclusion, also under
   strict flags. Both do, and the guard is the form in `required` text.
   No family differs.
+- {question}`Q-0369` (LSP-4, LNK-5, FN-14; open): whether C names with
+  internal linkage in two namespaces are one entity, and whether a C
+  name in an unnamed namespace joins the other C names of its spelling.
+  The `static` names are two entities, and GCC 16 fails at assembly
+  with one symbol for the two. The name in an unnamed namespace joins
+  the others, as Clang and GCC link it, and EDG accepts a second
+  definition in another namespace. The gap review of the rules that
+  phase 7 rewrote reads the second part as EDG does, and the choice
+  waits on the maintainer (`documentation/decisions/pending.md`, row 4).
+
+### Split tests
+
+Each row is a test that carries an override for a baseline compiler. The
+Expected column gives the outcome that the rules predict, and each
+family column gives the outcome that the test expects on that family.
+EDG runs no programs, so its cell for a run test gives the result of the
+compile.
+
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `class-constant-copy-in-lambda.cpp` | ODR-2, ODR-3 | reject | reject | run | accept | {question}`Q-0129` |
+| `const-variable-template-one-object.cpp` | ODR-12 | run | run | GCC 16: run; GCC 14: run-fail | accept | {question}`Q-0297` |
+| `constant-array-element-in-lambda.cpp` | ODR-2, ODR-3 | run | run | reject | accept | {question}`Q-0367` |
+| `declarations/linkage-specifications/c-static-not-joined.cpp` | LSP-4, ODR-9 | reject | Clang 22: reject; Clang 18: accept | reject | reject | {question}`Q-0369` |
+| `discarded-branch-address-in-lambda.cpp` | ODR-2, ODR-3 | reject | accept | reject | reject | {question}`Q-0367` |
+| `discarded-value-class-constant-in-lambda.cpp` | ODR-2, ODR-3 | run | reject | run | accept | {question}`Q-0367` |
+| `discarded-value-constant-in-lambda.cpp` | ODR-2, ODR-3 | run | reject | run | accept | {question}`Q-0367` |
+| `internal-function-used-in-unused-inline.cpp` | ODR-9 | reject | Clang 22: reject; Clang 18: run | run | reject | {question}`Q-0128` |
+| `local-class-binds-constant.cpp` | ODR-2 | reject | reject | reject | accept | {question}`Q-0130` |
+| `member-read-beside-mutable-in-lambda.cpp` | ODR-2, ODR-3 | reject | reject | reject | accept | {question}`Q-0130` |
+| `mutable-member-read-in-lambda.cpp` | ODR-2 | reject | reject | reject | accept | {question}`Q-0130` |
+| `new-noexcept-constructor-uses-deallocation.cpp` | ODR-5, ODR-8 | link-fail | run | GCC 16: link-fail; GCC 14: run | accept | {question}`Q-0358` |
+| `template-argument-address-is-use.cpp` | ODR-3, ODR-9, ODR-11 | reject | reject | accept | skips | {question}`Q-0315` |
 
 ### Notes
 

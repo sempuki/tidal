@@ -820,7 +820,6 @@ the compile.
 
 | Test | Rules | Expected | Clang | GCC | EDG | Question |
 |---|---|---|---|---|---|---|
-| `exceptions/unwinding/new-single-object-sized-delete.cpp` | UNW-3, NEW-22 | run | Clang 22: run; Clang 18: run-fail | run | accept | |
 | `aligned-forms-by-name.cpp` | NEW-26, LSUP-5 | run | Clang 22: run; Clang 18: reject | run | accept | {question}`Q-0125` |
 | `array-floating-size-exact.cpp` | NEW-2 | run | run | reject | accept | {question}`Q-0036` |
 | `array-non-integral-size.cpp` | NEW-2 | accept | accept | reject | accept | {question}`Q-0036` |
@@ -838,11 +837,12 @@ the compile.
 | `default-new-alignment-ilp32.cpp` | NEW-27 | accept | reject | accept | accept | |
 | `delete-derived-array-through-base-constant.cpp` | NEW-5 | reject | reject | accept | reject | {question}`Q-0091` |
 | `delete-void-pointer.cpp` | NEW-8 | reject | reject | accept | reject | {question}`Q-0035` |
+| `exceptions/unwinding/new-single-object-sized-delete.cpp` | UNW-3, NEW-22 | run | Clang 22: run; Clang 18: run-fail | run | accept | |
+| `foundations/language-support/exception-classes-array-length.cpp` | LSUP-8, NEW-35 | run | run-fail | run | accept | {question}`Q-0301` |
 | `global-functions-by-name.cpp` | NEW-19 | run | Clang 22: run; Clang 18: reject | run | accept | {question}`Q-0125` |
 | `throw-placement-deleted-function-and-template.cpp` | NEW-24, DED-39 | accept | accept | accept | reject | {question}`Q-0220`, {question}`Q-0221` |
 | `throw-placement-function-and-template.cpp` | NEW-24, DED-39 | run | run | run-fail | accept | {question}`Q-0220` |
 | `throw-placement-templates-unordered.cpp` | NEW-24, DED-39 | run | run | run | reject | {question}`Q-0222` |
-| `foundations/language-support/exception-classes-array-length.cpp` | LSUP-8, NEW-35 | run | run-fail | run | accept | {question}`Q-0301` |
 
 ### Notes
 

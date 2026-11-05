@@ -728,11 +728,11 @@ of 123 tests.
 
 | Test | Rules | Expected | Clang | GCC | EDG | Question |
 |---|---|---|---|---|---|---|
+| `classes/unions/union-copy-two-copy-constructors.cpp` | UNI-3, CPY-27 | accept | accept | reject | reject | {question}`Q-0339` |
 | `defaulted-move-const-param.cpp` | CPY-14 | accept | accept | GCC 16: accept; GCC 14: reject | accept | {question}`Q-0055` |
 | `defaulted-volatile-param.cpp` | CPY-14 | accept | accept | GCC 16: accept; GCC 14: reject | accept | {question}`Q-0055` |
 | `trivially-copyable-member-selected.cpp` | CPY-27, CPY-19, UNI-3 | accept | accept | reject | reject | {question}`Q-0339` |
 | `trivially-copyable-member-template-selected.cpp` | CPY-27, UNI-11 | reject | reject | reject | accept | {question}`Q-0339` |
-| `classes/unions/union-copy-two-copy-constructors.cpp` | UNI-3, CPY-27 | accept | accept | reject | reject | {question}`Q-0339` |
 
 ### Notes
 

@@ -928,8 +928,8 @@ of 242 tests.
 
 | Test | Rules | Expected | Clang | GCC | EDG | Question |
 |---|---|---|---|---|---|---|
-| `expressions/postfix/member-access-class-being-defined.cpp` | PFX-11, NAM-6 | accept | reject | accept | accept | {question}`Q-0316` |
 | `adl-template-id-argument.cpp` | NAM-27 | accept | reject | accept | accept | {question}`Q-0311` |
+| `expressions/postfix/member-access-class-being-defined.cpp` | PFX-11, NAM-6 | accept | reject | accept | accept | {question}`Q-0316` |
 | `operator-lookup-block-declaration-keeps-adl.cpp` | NAM-38 | accept | accept | accept | reject | {question}`Q-0364` |
 | `shared-name-anonymous-union-member.cpp` | NAM-39 | accept | reject | accept | accept | {question}`Q-0362` |
 

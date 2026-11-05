@@ -914,11 +914,11 @@ rejection.
 | Test | Rules | Expected | Clang | GCC | EDG | Question |
 |---|---|---|---|---|---|---|
 | `class-size-exceeds-size-type-ilp32.cpp` | STG-1 | reject | accept | reject | reject | {question}`Q-0350` |
-| `class-size-exceeds-size-type.cpp` | STG-1 | reject | Clang host, Clang 22: reject; Clang 18: accept | reject | reject | {question}`Q-0308` |
-| `downcast-after-end-sanitizer.cpp` | STG-22 | run-fail | run | run-fail | accept (no run) |  |
+| `class-size-exceeds-size-type.cpp` | STG-1 | reject | Clang 22: reject; Clang 18: accept | reject | reject | {question}`Q-0308` |
+| `downcast-after-end-sanitizer.cpp` | STG-22 | run-fail | run | run-fail | skips | |
 | `replace-base-old-pointer-constant.cpp` | STG-19 | reject | accept | accept | accept | {question}`Q-0307` |
-| `reuse-const-automatic-object-constant.cpp` | STG-20 | reject | Clang host, Clang 22: reject; Clang 18: accept | accept | accept | {question}`Q-0307` |
-| `scope-end-other-type-sanitizer.cpp` | STG-21 | run-fail | run | run-fail | accept (no run) |  |
+| `reuse-const-automatic-object-constant.cpp` | STG-20 | reject | Clang 22: reject; Clang 18: accept | accept | accept | {question}`Q-0307` |
+| `scope-end-other-type-sanitizer.cpp` | STG-21 | run-fail | run | run-fail | skips | |
 
 ### Notes
 

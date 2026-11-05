@@ -331,12 +331,12 @@ of 73 tests.
 | `constinit-added-late-thread-local.cpp` | CINIT-3 | reject | reject | accept | accept | {question}`Q-0025` |
 | `constinit-added-late.cpp` | CINIT-3 | reject | reject | accept | accept | {question}`Q-0025` |
 | `constinit-on-declaration-only.cpp` | CINIT-2 | reject | reject | accept | reject | {question}`Q-0025` |
-| `function-never-constant.cpp` | CX-3 | accept | Clang 22: accept; Clang 18: reject | accept | accept | {question}`Q-0020` |
-| `function-non-literal-param.cpp` | CX-3 | accept | Clang 22: accept; Clang 18: reject | accept | accept | {question}`Q-0020` |
-| `non-literal-return.cpp` | CX-3 | accept | Clang 22: accept; Clang 18: reject | accept | accept | {question}`Q-0020` |
 | `foundations/constant-evaluation/constant-initializer-trivial-class-array.cpp` | CE-24, CE-21, CINIT-1 | reject | reject | run | accept | {question}`Q-0192` |
 | `foundations/constant-evaluation/constant-initializer-trivial-class-block-static.cpp` | CE-24, CE-21, CINIT-1 | reject | reject | run | accept | {question}`Q-0192` |
 | `foundations/constant-evaluation/constant-initializer-zero-trivial-class.cpp` | CE-24, CE-21, CINIT-1 | reject | reject | run | accept | {question}`Q-0192` |
+| `function-never-constant.cpp` | CX-3 | accept | Clang 22: accept; Clang 18: reject | accept | accept | {question}`Q-0020` |
+| `function-non-literal-param.cpp` | CX-3 | accept | Clang 22: accept; Clang 18: reject | accept | accept | {question}`Q-0020` |
+| `non-literal-return.cpp` | CX-3 | accept | Clang 22: accept; Clang 18: reject | accept | accept | {question}`Q-0020` |
 
 ### Notes
 

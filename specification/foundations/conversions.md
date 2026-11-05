@@ -456,9 +456,9 @@ The results are in `tests/RESULTS.md`.
 
 | Test | Rules | Expected | Clang | GCC | EDG | Question |
 |---|---|---|---|---|---|---|
+| `char-zero-not-null.cpp` | CONV-8 | reject | reject | reject | accept | {question}`Q-0100` |
 | `declarations/initialization/list/narrowing-bit-field-fits.cpp` | LIST-2, CONV-21 | accept | Clang 22: accept; Clang 18: reject | GCC 16: accept; GCC 14: reject | reject | {question}`Q-0042` |
 | `declarations/initialization/list/narrowing-unscoped-enum-values-fit.cpp` | LIST-2, CONV-21 | accept | reject | accept | reject | {question}`Q-0331` |
-| `char-zero-not-null.cpp` | CONV-8 | reject | reject | reject | accept | {question}`Q-0100` |
 | `floating-narrowing-infinity-ilp32.cpp` | CONV-11 | accept | accept | accept | reject | {question}`Q-0028` |
 | `floating-narrowing-infinity.cpp` | CONV-11 | accept | accept | accept | reject | {question}`Q-0028` |
 | `floating-narrowing-out-of-range.cpp` | CONV-11 | accept | accept | accept | reject | {question}`Q-0028` |

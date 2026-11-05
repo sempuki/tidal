@@ -920,16 +920,16 @@ column gives the outcome that the rules predict.
 
 | Test | Rules | Expected | Clang | GCC | EDG | Question |
 |---|---|---|---|---|---|---|
-| `address-more-constrained.cpp` | OVL-19 | accept | Clang 22, Clang host: accept; Clang 18: reject | GCC 16, GCC host: accept; GCC 14: reject | reject | {question}`Q-0142` |
-| `address-no-target-constraints-different-parameters.cpp` | OVL-20 | reject | Clang 18: accept; Clang 22, Clang host: reject | reject | reject | {question}`Q-0142` |
-| `address-no-target-constraints.cpp` | OVL-20 | accept | accept | GCC 16, GCC host: accept; GCC 14: reject | reject | {question}`Q-0142` |
-| `address-no-target-more-constrained.cpp` | OVL-20 | accept | Clang 22, Clang host: accept; Clang 18: reject | GCC 16, GCC host: accept; GCC 14: reject | reject | {question}`Q-0142` |
+| `address-more-constrained.cpp` | OVL-19 | accept | Clang 22: accept; Clang 18: reject | GCC 16: accept; GCC 14: reject | reject | {question}`Q-0142` |
+| `address-no-target-constraints-different-parameters.cpp` | OVL-20, ORD-13 | reject | Clang 22: reject; Clang 18: accept | reject | reject | {question}`Q-0142` |
+| `address-no-target-constraints.cpp` | OVL-20 | accept | accept | GCC 16: accept; GCC 14: reject | reject | {question}`Q-0142` |
+| `address-no-target-more-constrained.cpp` | OVL-20 | accept | Clang 22: accept; Clang 18: reject | GCC 16: accept; GCC 14: reject | reject | {question}`Q-0142` |
 | `builtin-chosen-other-operand.cpp` | OVL-11 | reject | reject | reject | accept | {question}`Q-0141` |
 | `builtin-removed-by-rewritten.cpp` | OVL-10 | accept | accept | reject | accept | {question}`Q-0147` |
-| `call-through-address-parenthesized-qualified.cpp` | OVL-21, OVL-44 | reject | reject | reject | accept | {question}`Q-0161` |
-| `call-through-address-static-member.cpp` | OVL-21 | accept | Clang 22, Clang host: accept; Clang 18: reject | reject | reject | {question}`Q-0143` |
+| `call-through-address-parenthesized-qualified.cpp` | OVL-44, OVL-21 | reject | reject | reject | accept | {question}`Q-0161` |
+| `call-through-address-static-member.cpp` | OVL-21 | accept | Clang 22: accept; Clang 18: reject | reject | reject | {question}`Q-0143` |
 | `call-through-address-unqualified-argument.cpp` | OVL-21 | accept | accept | reject | reject | {question}`Q-0161` |
-| `call-through-address-unqualified.cpp` | OVL-21, OVL-36 | reject | Clang 22, Clang host: accept; Clang 18: reject | reject | accept | {question}`Q-0161` |
+| `call-through-address-unqualified.cpp` | OVL-21, OVL-36 | reject | Clang 22: accept; Clang 18: reject | reject | accept | {question}`Q-0161` |
 | `current-object-other-class.cpp` | OVL-2, OVL-3 | reject | accept | reject | accept | {question}`Q-0159` |
 | `default-from-two-scopes-same-name-other-variable.cpp` | OVL-38 | reject | accept | reject | accept | {question}`Q-0140` |
 | `default-from-two-scopes-same-value.cpp` | OVL-38 | reject | accept | reject | accept | {question}`Q-0140` |
@@ -938,17 +938,17 @@ column gives the outcome that the rules predict.
 | `no-object-ref-qualified-member.cpp` | OVL-3, OVL-23 | reject | reject | accept | reject | {question}`Q-0187` |
 | `reference-function-both-kinds.cpp` | OVL-15 | accept | reject | accept | accept | {question}`Q-0138` |
 | `surrogate-qualifiers.cpp` | OVL-6 | accept | accept | reject | accept | {question}`Q-0144` |
-| `surrogate-same-parameters.cpp` | OVL-6, OVL-36 | reject | reject | accept | reject | {question}`Q-0139` |
+| `surrogate-same-parameters.cpp` | OVL-36, OVL-6 | reject | reject | accept | reject | {question}`Q-0139` |
 | `tie-constraints-default-parameter.cpp` | OVL-30, OVL-36 | reject | reject | reject | accept | {question}`Q-0146` |
-| `tie-constraints-different-parameters.cpp` | OVL-41, OVL-36 | reject | reject | reject | accept | {question}`Q-0146` |
-| `tie-constraints-ellipsis.cpp` | OVL-30, OVL-36 | reject | Clang 18: accept; Clang 22, Clang host: reject | reject | accept | {question}`Q-0146` |
+| `tie-constraints-different-parameters.cpp` | OVL-36, OVL-41 | reject | reject | reject | accept | {question}`Q-0146` |
+| `tie-constraints-ellipsis.cpp` | OVL-30, OVL-36 | reject | Clang 22: reject; Clang 18: accept | reject | accept | {question}`Q-0146` |
 | `tie-conversion-result-constructor.cpp` | OVL-26 | accept | reject | accept | accept | {question}`Q-0189` |
 | `tie-conversion-result-noexcept.cpp` | OVL-26 | accept | accept | accept | reject | {question}`Q-0163` |
 | `tie-conversion-result-templates.cpp` | OVL-26 | accept | accept | accept | reject | {question}`Q-0163` |
 | `tie-function-reference-kind.cpp` | OVL-29 | accept | reject | accept | accept | {question}`Q-0138` |
-| `tie-reference-kind-before-more-specialized.cpp` | OVL-28, OVL-29 | accept | reject | accept | reject | {question}`Q-0138`, {question}`Q-0148` |
-| `tie-reference-kind-before-template-lvalue.cpp` | OVL-27, OVL-29 | accept | accept | accept | reject | {question}`Q-0138`, {question}`Q-0148` |
-| `tie-reference-kind-before-template.cpp` | OVL-27, OVL-29 | accept | reject | accept | reject | {question}`Q-0148` |
+| `tie-reference-kind-before-more-specialized.cpp` | OVL-29, OVL-28 | accept | reject | accept | reject | {question}`Q-0138`, {question}`Q-0148` |
+| `tie-reference-kind-before-template-lvalue.cpp` | OVL-29, OVL-27 | accept | accept | accept | reject | {question}`Q-0138`, {question}`Q-0148` |
+| `tie-reference-kind-before-template.cpp` | OVL-29, OVL-27 | accept | reject | accept | reject | {question}`Q-0148` |
 
 ### Notes
 

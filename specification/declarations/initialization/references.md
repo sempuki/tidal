@@ -403,7 +403,6 @@ the compile. EDG skips the tests that use `-Werror`.
 
 | Test | Rules | Expected | Clang | GCC | EDG | Question |
 |---|---|---|---|---|---|---|
-| `declarations/initialization/list/string-literal-reference-temporary.cpp` | LIST-6, REF-14 | accept | accept | reject | accept | {question}`Q-0166` |
 | `aggregate-member-paren-not-extended.cpp` | REF-5 | reject | reject | reject | accept | {question}`Q-0040` |
 | `braced-function-noexcept.cpp` | REF-11 | reject | accept | accept | reject | {question}`Q-0165` |
 | `braced-function-overload-set.cpp` | REF-6 | accept | accept | reject | accept | {question}`Q-0165` |
@@ -415,6 +414,7 @@ the compile. EDG skips the tests that use `-Werror`.
 | `braced-list-unknown-bound.cpp` | REF-14 | accept | reject | accept | accept | {question}`Q-0149` |
 | `dangling-new-member-warns-default.cpp` | REF-15 | reject | reject | accept | skips | {question}`Q-0180` |
 | `dangling-new-member-warns.cpp` | REF-15 | reject | reject | accept | skips | {question}`Q-0180` |
+| `declarations/initialization/list/string-literal-reference-temporary.cpp` | LIST-6, REF-14 | accept | accept | reject | accept | {question}`Q-0166` |
 | `extend-through-array-member-subscript.cpp` | REF-4 | run | run | run | reject | {question}`Q-0109` |
 | `null-dereference-bind-constant.cpp` | REF-5 | reject | Clang 22: reject; Clang 18: accept | reject | accept | {question}`Q-0110` |
 | `parenthesized-list-aggregate.cpp` | REF-11 | reject | reject | accept | reject | {question}`Q-0151` |

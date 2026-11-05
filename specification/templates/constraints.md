@@ -840,6 +840,9 @@ waits on the maintainer (`documentation/decisions/pending.md`).
 - {question}`Q-0261` (CNS-11; settled under decision 0051): whether the
   constraints are checked before the return type is formed. They are.
   Clang 18 differs.
+- {question}`Q-0289` (CPT-35, CNS-9; settled): whether a nested
+  requirement that evaluates a parameter of the requires expression is
+  an error. It is. Clang 18 gives `false`.
 - {question}`Q-0291` (CNS-13; settled under decision 0051): whether a
   program can explicitly instantiate a member function whose constraints
   fail. It cannot. Clang 18 differs.
@@ -870,6 +873,47 @@ waits on the maintainer (`documentation/decisions/pending.md`).
   implementation diagnoses a use of a template template parameter that
   fails the parameter's own constraints. No diagnostic is required. No
   family differs from the answer, and EDG diagnoses the use.
+- {question}`Q-0385` (TPL-23, CNS-26; settled on CNS-P5): whether a
+  member defined after the body of a constrained class template repeats
+  the requires clause of the class's head. It does, as Clang and GCC
+  say. EDG 7.0 accepts a definition without the clause.
+
+### Split tests
+
+Each row is a test that carries an override for a baseline compiler. The
+Expected column gives the outcome that the rules predict, and each
+family column gives the outcome that the test expects on that family.
+
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `atomic-not-bool-nondependent-concept.cpp` | CNS-39 | reject | reject | accept | reject | {question}`Q-0263` |
+| `atomic-not-bool-skipped.cpp` | CNS-39 | reject | reject | accept | reject | {question}`Q-0263` |
+| `before-function-type.cpp` | CNS-11 | accept | Clang 22: accept; Clang 18: reject | accept | accept | {question}`Q-0261` |
+| `constant-placeholder-more-constrained.cpp` | CNS-1, CNS-23 | accept | Clang 22: accept; Clang 18: reject | GCC 16: accept; GCC 14: reject | reject | {question}`Q-0281` |
+| `eligible-copy.cpp` | CNS-21 | accept | accept | accept | reject | {question}`Q-0266` |
+| `eligible-default.cpp` | CNS-21 | accept | accept | accept | reject | {question}`Q-0266` |
+| `eligible-more-constrained.cpp` | CNS-21 | accept | accept | accept | reject | {question}`Q-0266` |
+| `eligible-unsatisfied-more-constrained.cpp` | CNS-21 | accept | accept | accept | reject | {question}`Q-0266` |
+| `explicit-instantiation-member-not-satisfied.cpp` | CNS-13 | reject | Clang 22: reject; Clang 18: accept | reject | reject | {question}`Q-0291` |
+| `friend-definition-per-specialization.cpp` | CNS-32 | accept | accept | accept | reject | {question}`Q-0268` |
+| `friend-distinct-from-namespace.cpp` | CNS-32, CNS-24 | reject | reject | reject | accept | {question}`Q-0268` |
+| `friend-template-declaration.cpp` | CNS-31 | reject | reject | reject | accept | {question}`Q-0267` |
+| `lambda-conversion-implicit.cpp` | CNS-18 | accept | accept | accept | reject | {question}`Q-0260` |
+| `lambda-conversion.cpp` | CNS-18 | accept | accept | accept | reject | {question}`Q-0260` |
+| `mapping-unused-parameter-not-substituted.cpp` | CNS-4, CNS-7 | accept | Clang 22: accept; Clang 18: reject | accept | reject | {question}`Q-0284` |
+| `mapping-unused-parameter.cpp` | CNS-4 | accept | accept | accept | reject | {question}`Q-0284` |
+| `order-constant-placeholder-after-type.cpp` | CNS-1, CNS-33 | reject | reject | GCC 16: reject; GCC 14: accept | accept | {question}`Q-0282` |
+| `order-placeholder.cpp` | CNS-1 | accept | reject | accept | accept | {question}`Q-0262` |
+| `partial-specialization-not-more-constrained.cpp` | CNS-36 | reject | reject | reject | accept | {question}`Q-0292` |
+| `redeclare-placeholder-unconstrained.cpp` | CNS-40, CNS-27 | reject | accept | reject | reject | {question}`Q-0269` |
+| `redeclare-placeholder.cpp` | CNS-40, CNS-27 | reject | accept | reject | reject | {question}`Q-0269` |
+| `satisfaction-changes.cpp` | CNS-10 | accept | accept | GCC 16: reject; GCC 14: accept | accept | {question}`Q-0264` |
+| `template-template-more-constrained.cpp` | CNS-25 | reject | Clang 22: reject; Clang 18: accept | reject | accept | {question}`Q-0265` |
+| `template-template-parameter-constraint-alias.cpp` | CNS-38 | accept | accept | accept | reject | {question}`Q-0283` |
+| `template-template-parameter-constraint-use.cpp` | CNS-38 | accept | accept | accept | reject | {question}`Q-0283` |
+| `templates/concepts/nested-requirement-parameter-evaluated.cpp` | CPT-35, CNS-9 | reject | Clang 22: reject; Clang 18: accept | reject | reject | {question}`Q-0289` |
+| `templates/concepts/type-constraint-pack-one-atom.cpp` | CPT-19, CNS-3, CNS-24 | reject | reject | reject | accept | {question}`Q-0285` |
+| `templates/declarations/member-outside-clause-missing.cpp` | TPL-23, CNS-26 | reject | reject | reject | accept | {question}`Q-0385` |
 
 ### Notes
 

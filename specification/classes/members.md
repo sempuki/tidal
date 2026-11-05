@@ -722,6 +722,7 @@ the compile.
 
 | Test | Rules | Expected | Clang | GCC | EDG | Question |
 |---|---|---|---|---|---|---|
+| `declarations/volatile/static-const-volatile-in-class.cpp` | CLS-23 | reject | reject | accept | accept | {question}`Q-0080` |
 | `explicit-object-default-argument.cpp` | CLS-14 | reject | reject | reject | accept | {question}`Q-0317` |
 | `explicit-object-from-prvalue.cpp` | CLS-13 | run | Clang 22: run; Clang 18: reject | run | accept | {question}`Q-0181` |
 | `layout-base-tail-padding-defaulted.cpp` | CLS-34, CLS-35 | accept | accept | GCC 16: accept; GCC 14: reject | accept | {question}`Q-0342` |
@@ -737,7 +738,6 @@ the compile.
 | `ref-qualified-mixed-different-cv.cpp` | CLS-26, CLS-6 | run | run | GCC 16: run; GCC 14: reject | accept | {question}`Q-0027` |
 | `ref-qualified-mixed.cpp` | CLS-26 | reject | reject | GCC 16: accept; GCC 14: reject | reject | {question}`Q-0027` |
 | `standard-layout-address-constant.cpp` | CLS-30 | accept | accept | accept | reject | {question}`Q-0338` |
-| `declarations/volatile/static-const-volatile-in-class.cpp` | CLS-23 | reject | reject | accept | accept | {question}`Q-0080` |
 
 ### Notes
 

@@ -327,7 +327,10 @@ EDG skips the tests that use `-Wall` or `-Werror`.
 | Test | Rules | Expected | Clang | GCC | EDG | Question |
 |---|---|---|---|---|---|---|
 | `c-linkage-main-in-namespace.cpp` | FN-4 | reject | Clang 22: reject; Clang 18: accept | GCC 16: reject; GCC 14: accept | reject | {question}`Q-0076` |
+| `declarations/linkage-specifications/c-name-unnamed-namespace-redefined.cpp` | LSP-4, FN-14 | reject | reject | reject | accept | {question}`Q-0369` |
 | `flow-off-end-goto-loop.cpp` | FN-7 | accept | accept | reject | skips | |
+| `foundations/translation/main-wrong-parameter-types-ilp32.cpp` | FN-6 | reject | reject | reject | accept | {question}`Q-0024` |
+| `foundations/translation/main-wrong-parameter-types.cpp` | TR-3, FN-6 | reject | reject | reject | accept | {question}`Q-0024` |
 | `func-outside-function.cpp` | FN-5 | reject | accept | reject | reject | {question}`Q-0022` |
 | `main-four-params-ilp32.cpp` | FN-6 | reject | reject | reject | accept | {question}`Q-0024` |
 | `main-four-params.cpp` | FN-6 | reject | reject | reject | accept | {question}`Q-0024` |
@@ -336,9 +339,6 @@ EDG skips the tests that use `-Wall` or `-Werror`.
 | `main-wrong-first-param-ilp32.cpp` | FN-6 | reject | reject | reject | accept | {question}`Q-0024` |
 | `main-wrong-first-param.cpp` | FN-6 | reject | reject | reject | accept | {question}`Q-0024` |
 | `switch-every-enumerator-no-return.cpp` | FN-7 | reject | accept | reject | skips | |
-| `declarations/linkage-specifications/c-name-unnamed-namespace-redefined.cpp` | LSP-4, FN-14 | reject | reject | reject | accept | {question}`Q-0369` |
-| `foundations/translation/main-wrong-parameter-types-ilp32.cpp` | FN-6 | reject | reject | reject | accept | {question}`Q-0024` |
-| `foundations/translation/main-wrong-parameter-types.cpp` | TR-3, FN-6 | reject | reject | reject | accept | {question}`Q-0024` |
 
 ### Notes
 

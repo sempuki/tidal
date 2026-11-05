@@ -766,8 +766,6 @@ configuration.
 
 | Test | Rules | Expected | Clang | GCC | EDG | Question |
 |---|---|---|---|---|---|---|
-| `classes/copy-move/trivially-copyable-member-selected.cpp` | CPY-27, CPY-19, UNI-3 | accept | accept | reject | reject | {question}`Q-0339` |
-| `classes/copy-move/trivially-copyable-member-template-selected.cpp` | CPY-27, UNI-11 | reject | reject | reject | accept | {question}`Q-0339` |
 | `anonymous-union-unnamed-namespace.cpp` | UNI-9 | accept | accept | reject | reject | {question}`Q-0045` |
 | `bitfield-next-unit-ilp32.cpp` | BF-9 | accept | accept | accept | reject | {question}`Q-0120` |
 | `bitfield-unnamed-cv.cpp` | BF-2 | reject | reject | accept | reject | {question}`Q-0058` |
@@ -776,6 +774,8 @@ configuration.
 | `bitfield-width-class-converts.cpp` | BF-1 | accept | accept | reject | accept | {question}`Q-0314` |
 | `bitfield-width-scoped-enumeration.cpp` | BF-2 | reject | reject | reject | accept | {question}`Q-0313` |
 | `chain-assign-nontrivial-constant.cpp` | UNI-6, UNI-13 | reject | reject | reject | accept | {question}`Q-0213` |
+| `classes/copy-move/trivially-copyable-member-selected.cpp` | CPY-27, CPY-19, UNI-3 | accept | accept | reject | reject | {question}`Q-0339` |
+| `classes/copy-move/trivially-copyable-member-template-selected.cpp` | CPY-27, UNI-11 | reject | reject | reject | accept | {question}`Q-0339` |
 | `destroyed-member-read-constant.cpp` | UNI-14, UNI-6 | reject | reject | accept | reject | {question}`Q-0309` |
 | `union-copy-two-copy-constructors.cpp` | UNI-3, CPY-27 | accept | accept | reject | reject | {question}`Q-0339` |
 | `user-assignment-not-activating-constant.cpp` | UNI-6 | reject | reject | reject | accept | {question}`Q-0088` |

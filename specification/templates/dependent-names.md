@@ -882,6 +882,40 @@ waits on the maintainer (`documentation/decisions/pending.md`).
   does, with no diagnostic required. Every compiler accepts the program
   and uses the other member.
 
+### Split tests
+
+Each row is a test that carries an override for a baseline compiler. The
+Expected column gives the outcome that the rules predict, and each
+family column gives the outcome that the test expects on that family.
+EDG runs no programs, so its cell for a run test gives the result of the
+compile.
+
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `base-pack-expanded-twice.cpp` | DEP-33 | reject | reject | accept | reject | {question}`Q-0247` |
+| `classes/virtual/override-independent-base-unused.cpp` | VIRT-3, DEP-30 | reject | reject | accept | accept | |
+| `constant-function-defined-later.cpp` | DEP-31 | run | reject | run | accept | {question}`Q-0250` |
+| `current-instantiation-alias.cpp` | DEP-15 | run | run | run | reject | {question}`Q-0229` |
+| `current-member-missing.cpp` | DEP-30, DEP-17 | reject | reject | GCC 16: reject; GCC 14: accept | reject | {question}`Q-0228` |
+| `declarations/functions/default-arguments/template-default-independent-unused.cpp` | DEFARG-10, DEP-30 | reject | reject | accept | reject | |
+| `dependent-base-conversion-function.cpp` | DEP-11 | run | run | reject | reject | {question}`Q-0248` |
+| `independent-error-unused-call.cpp` | DEP-30 | reject | reject | accept | reject | {question}`Q-0223` |
+| `independent-error-unused-conversion.cpp` | DEP-30 | reject | reject | accept | reject | {question}`Q-0223` |
+| `qualified-call-later-default.cpp` | DEP-31 | run | reject | run | reject | {question}`Q-0249` |
+| `qualified-member-found-again.cpp` | DEP-13 | reject | reject | accept | reject | {question}`Q-0230` |
+| `template-keyword-destructor-dot.cpp` | DEP-34 | reject | reject | reject | accept | {question}`Q-0245` |
+| `template-keyword-destructor.cpp` | DEP-34 | reject | reject | reject | accept | {question}`Q-0245` |
+| `template-keyword-in-declarator-class.cpp` | DEP-27 | reject | reject | reject | accept | {question}`Q-0227` |
+| `template-keyword-in-declarator-static.cpp` | DEP-27 | reject | reject | accept | accept | {question}`Q-0227` |
+| `template-keyword-in-declarator.cpp` | DEP-27 | reject | reject | accept | accept | {question}`Q-0227` |
+| `template-keyword-needed-after-typename.cpp` | DEP-24 | reject | reject | accept | reject | {question}`Q-0225` |
+| `template-keyword-needed-base.cpp` | DEP-24 | reject | reject | accept | reject | {question}`Q-0225` |
+| `template-keyword-no-list-class.cpp` | DEP-26 | accept | reject | accept | accept | {question}`Q-0226` |
+| `template-keyword-no-list.cpp` | DEP-26 | reject | reject | accept | reject | {question}`Q-0226` |
+| `this-member-missing-specialized.cpp` | DEP-30, DEP-17 | reject | Clang 22: reject; Clang 18: accept | GCC 16: reject; GCC 14: accept | reject | {question}`Q-0228` |
+| `this-member-missing.cpp` | DEP-30, DEP-17 | reject | Clang 22: reject; Clang 18: accept | GCC 16: reject; GCC 14: accept | reject | {question}`Q-0228` |
+| `typename-needed-expression.cpp` | DEP-19 | reject | reject | reject | accept | {question}`Q-0224` |
+
 ### Notes
 
 The clean-room writer probed each item of the gap review

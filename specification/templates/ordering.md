@@ -618,6 +618,10 @@ Each settled question below keeps its test's override for the family
 that still differs. Reporting the EDG difference of Q-0146 to the EDG
 project waits on the maintainer (`documentation/decisions/pending.md`).
 
+- {question}`Q-0142` (OVL-19, OVL-20; open): whether constraints reduce
+  an overload set whose address is taken. They do, when the functions
+  meet the conditions of ORD-13, as Clang 22 and GCC 16 do. EDG, and
+  the older versions of Clang and GCC, differ in some forms.
 - {question}`Q-0214` (ORD-6; settled on ORD-P1): whether the object parameter of a
   member with no ref-qualifier is an rvalue reference in ordering
   against an rvalue reference. It is, so the call is ambiguous, as
@@ -625,6 +629,10 @@ project waits on the maintainer (`documentation/decisions/pending.md`).
 - {question}`Q-0211` (ORD-7; settled on ORD-P1): whether the
   parameters of a swapped candidate are reversed for partial ordering.
   They are. GCC differs.
+- {question}`Q-0219` (DED-39; settled on {principle}`ORD-P1`): whether
+  partial ordering chooses among matching placement deallocation
+  templates. It does, as GCC and EDG say. Clang warns that two
+  functions match and calls neither.
 - {question}`Q-0398` (ORD-6; open): whether
   the object parameter of a `const` member keeps the `const`. It does,
   as Clang and GCC say. EDG finds the call ambiguous.
@@ -655,6 +663,36 @@ project waits on the maintainer (`documentation/decisions/pending.md`).
   EDG say, whichever template has the constraint
   (`constraints-ellipsis.cpp`, `constraints-ellipsis-on-second.cpp`).
   GCC finds the call ambiguous.
+
+### Split tests
+
+Each row is a test that carries an override for a baseline compiler. The
+Expected column gives the outcome that the rules predict, and each
+family column gives the outcome that the test expects on that family.
+EDG runs no programs, so its cell for a run test gives the result of the
+compile.
+
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `address-reference-against-value.cpp` | ORD-9 | accept | reject | accept | accept | {question}`Q-0396` |
+| `address-reference-kinds.cpp` | ORD-9 | accept | accept | GCC 16: accept; GCC 14: reject | accept | |
+| `address-value-against-forwarding.cpp` | ORD-9 | accept | reject | accept | accept | {question}`Q-0396` |
+| `constraints-conversion-results-differ.cpp` | ORD-13, ORD-15 | reject | reject | reject | accept | {question}`Q-0146` |
+| `constraints-default-parameter.cpp` | ORD-13, ORD-15 | reject | reject | reject | accept | {question}`Q-0146` |
+| `constraints-different-heads.cpp` | ORD-13, ORD-15 | reject | reject | reject | accept | {question}`Q-0146` |
+| `constraints-ellipsis-on-second.cpp` | ORD-13 | accept | accept | reject | accept | {question}`Q-0293` |
+| `constraints-ellipsis.cpp` | ORD-13 | accept | accept | reject | accept | {question}`Q-0293` |
+| `constraints-member-object.cpp` | ORD-13, ORD-6 | accept | Clang 22: accept; Clang 18: reject | accept | accept | |
+| `constraints-reference-against-value.cpp` | ORD-13, ORD-15 | reject | reject | reject | accept | {question}`Q-0146` |
+| `member-object-const.cpp` | ORD-6 | accept | accept | accept | reject | {question}`Q-0398` |
+| `member-object-rvalue.cpp` | ORD-6, ORD-15 | reject | Clang 22: reject; Clang 18: accept | reject | accept | {question}`Q-0214` |
+| `overloading/overload-resolution/address-no-target-constraints-different-parameters.cpp` | OVL-20, ORD-13 | reject | Clang 22: reject; Clang 18: accept | reject | reject | {question}`Q-0142` |
+| `pack-default-parameter.cpp` | ORD-12, ORD-15 | reject | reject | accept | accept | {question}`Q-0216` |
+| `partial-specializations-int-against-constrained-auto.cpp` | ORD-14, ORD-17 | accept | accept | accept | reject | {question}`Q-0397` |
+| `reference-kind-and-qualifiers.cpp` | ORD-11, ORD-15, ORD-8 | reject | reject | accept | accept | {question}`Q-0217` |
+| `reversed-candidate.cpp` | ORD-7 | accept | accept | reject | accept | {question}`Q-0211` |
+| `reversed-member-object.cpp` | ORD-7, ORD-6 | accept | accept | reject | reject | {question}`Q-0218` |
+| `templates/deduction/placement-deallocation-ordered.cpp` | DED-39, ORD-9 | run | run-fail | run | accept | {question}`Q-0219` |
 
 ### Notes
 
