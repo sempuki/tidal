@@ -49,6 +49,8 @@ Used on 2026-11-04 by the principle-use batch PU1 (`reports/clean-room/PU1/`), u
 
 Kept open on 2026-11-04 under decision 0056, because the score of batch PU1 does not count the use as support: the answers for two of the three forms name ALN-P1 and NEW-P1, and the batch key lists only UNI-P4. Each of the three answers reaches the answer. In each form only one newest family differs.
 
+Kept open on 2026-11-04 under decision 0055, because ALN-P1 changed in this commit after finding PU1-4. ALN-P1 now states the conditions of UNI-P4 for an operand of class type and points to UNI-P4. The three forms have one principle each: ALN-P1 for `alignas`, UNI-P4 for a bit-field width, and NEW-P1 for an array `new`. The question waits for the next use of ALN-P1, UNI-P4, or NEW-P1. In each form only one newest family differs.
+
 ## Opinions
 
 ### Gap review, 2026-11-03

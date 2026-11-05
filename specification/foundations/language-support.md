@@ -45,9 +45,22 @@ needs only their shape, so a program that includes no header can
 declare each type itself, as Tidal's tests do. The implementation
 checks the shape where it uses the type, because it builds objects of
 the type itself: an `std::initializer_list` for a braced list, and an
-ordering value for `<=>` on built-in operands. The implementation also
-compares ordering values with `0` and converts them, so an ordering
-class needs those operations too.
+ordering value for `<=>` on built-in operands.
+
+A use of `<=>` needs only the ordering class that it yields, and only
+the parts of that class that the implementation uses for it:
+
+| Use | Parts of the ordering class that the use needs |
+|---|---|
+| `<=>` on built-in operands | the class, with every one of its static members, such as `less` and `equal`, also those that the result does not copy |
+| a defaulted `<=>` | the static members, a comparison of a value with `0` by `==` or `!=`, and a conversion to the return type when a part gives a stronger class |
+| a relational operator rewritten from `x <=> y` | that operator with the value on the left and `0` on the right |
+| a relational operator rewritten from the swapped `y <=> x` | that operator with `0` on the left |
+| `x <=> y` rewritten from the swapped `y <=> x` | `0 <=> v` for a value `v` |
+
+So a program that uses only `<=>` on two `int` values can declare
+`std::strong_ordering` with its static members and nothing else, and
+it need not declare the other two classes.
 :::
 
 :::{principle} LSUP-P2

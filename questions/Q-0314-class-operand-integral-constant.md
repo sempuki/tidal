@@ -47,6 +47,8 @@ Used on 2026-11-04 by the principle-use batch PU1 (`reports/clean-room/PU1/`), u
 
 Kept open on 2026-11-04 under decision 0056, because the use in batch PU1 does not support the answer: three of the eight answers do not name UNI-P4, and finding PU1-4 shows that ALN-P1 does not give the `alignas` forms on its own. GCC 16 is the only newest family that differs.
 
+Kept open on 2026-11-04 under decision 0055, because ALN-P1 and ALN-8 changed in this commit after finding PU1-4. ALN-P1 now asks of an operand of class type what UNI-P4 asks of a width: a literal class with exactly one `constexpr` conversion function to an integer type. A new test, `tests/declarations/alignment/operand-class-not-literal.cpp`, checks that every compiler rejects an operand whose class is not a literal type. The question waits for the next use of ALN-P1, UNI-P4, or NEW-P1. GCC 16 is the only newest family that differs.
+
 ## Opinions
 
 ### Gap review, 2026-11-03

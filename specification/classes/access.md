@@ -46,7 +46,9 @@ to the classes derived from a friend. A class can befriend:
 - a template, which makes every specialization of the template a
   friend,
 - a member of a class template, which makes that member of every
-  specialization a friend,
+  specialization a friend, and no other member. An explicit
+  specialization counts, so the member that it declares with the same
+  name and type is a friend too,
 - one specialization of a template, and no other.
 
 The class needs access to a member function before the class can name

@@ -51,6 +51,8 @@ rejects.
 
 Kept open on 2026-11-04 under decision 0054, because CMP-P3 changed in the commit that opened the question, and no reader or reviewer has used the changed principle.
 
+Kept open on 2026-11-04 under decision 0055, because CMP-P3 changed in this commit after finding PU1-8. CMP-P3 now says that a row of an array of arrays is not a complete object, with the row case as an example. The question waits for the next use of CMP-P3.
+
 ## Opinions
 
 ### Gap review, 2026-11-04

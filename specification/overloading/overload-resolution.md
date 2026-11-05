@@ -789,7 +789,7 @@ never takes its place. Each check has its own rule (decision 0042):
 
 :::{rule} OVL-38
 :kind: reject
-:tests: overloading/overload-resolution/default-from-two-scopes.cpp overloading/overload-resolution/default-from-two-scopes-passed.cpp overloading/overload-resolution/default-from-two-scopes-same.cpp overloading/overload-resolution/default-from-two-scopes-same-value.cpp overloading/overload-resolution/default-from-two-scopes-same-literal.cpp
+:tests: overloading/overload-resolution/default-from-two-scopes.cpp overloading/overload-resolution/default-from-two-scopes-passed.cpp overloading/overload-resolution/default-from-two-scopes-same.cpp overloading/overload-resolution/default-from-two-scopes-same-value.cpp overloading/overload-resolution/default-from-two-scopes-same-literal.cpp overloading/overload-resolution/default-from-two-scopes-same-name-other-variable.cpp overloading/overload-resolution/default-from-two-scopes-same-variable.cpp
 
 The best viable function can have declarations in two scopes that give
 different default arguments for one parameter. A call that uses the
@@ -797,9 +797,16 @@ default argument is not valid ({question}`Q-0140`). A call that passes
 the argument is valid.
 
 Two default arguments are the same if they are the same expression.
-Parentheses around the whole argument do not count, and two literals
-with the same value are the same. Two expressions with one value, such
-as `5` and `2 + 3`, are different.
+Two expressions are the same when they apply the same operations to the
+same entities and literals. The spelling does not decide:
+
+- Parentheses around the whole argument do not count.
+- Two literals with the same value are the same.
+- Two names of one entity, such as `shared` and `::shared`, are the same.
+- One name that each scope declares for a different entity, such as a
+  variable `n` in each of two namespaces, gives different expressions.
+- Two expressions with one value, such as `5` and `2 + 3`, are
+  different.
 :::
 
 ## Examples
@@ -840,8 +847,8 @@ struct Self {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 151
-of 179 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 152
+of 181 tests.
 
 ### Divergences
 
@@ -923,6 +930,7 @@ column gives the outcome that the rules predict.
 | `call-through-address-unqualified-argument.cpp` | OVL-21 | accept | accept | reject | reject | {question}`Q-0161` |
 | `call-through-address-unqualified.cpp` | OVL-21, OVL-36 | reject | Clang 22, Clang host: accept; Clang 18: reject | reject | accept | {question}`Q-0161` |
 | `current-object-other-class.cpp` | OVL-2, OVL-3 | reject | accept | reject | accept | {question}`Q-0159` |
+| `default-from-two-scopes-same-name-other-variable.cpp` | OVL-38 | reject | accept | reject | accept | {question}`Q-0140` |
 | `default-from-two-scopes-same-value.cpp` | OVL-38 | reject | accept | reject | accept | {question}`Q-0140` |
 | `default-from-two-scopes.cpp` | OVL-38 | reject | accept | reject | accept | {question}`Q-0140` |
 | `init-copy-list-explicit-conversion.cpp` | OVL-40, OVL-35 | reject | accept | reject | reject | {question}`Q-0145` |
@@ -973,6 +981,11 @@ column gives the outcome that the rules predict.
   The test of when two default arguments are the same is Tidal's own,
   and it follows the compilers, which all accept equal arguments
   (`documentation/decisions/pending.md`, row 4).
+- OVL-38: GCC compares the entities that two default arguments name.
+  It rejects a call whose two default arguments `n` name the variables
+  `n` of two namespaces, and it accepts `shared` and `::shared`, which
+  name one variable. OVL-38 follows GCC. Clang and EDG accept both
+  calls.
 
 ### Probe grids
 

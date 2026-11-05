@@ -60,6 +60,13 @@ The underlying type holds the values.
 | Underlying type | Known from the first declaration | A type wide enough, chosen by the implementation. The implementation can provide wider integer types of its own. If none of its types is wide enough, the implementation rejects the enumeration. |
 | Values of the enumeration | Every value of the type | Only the bits the enumerators need. A value outside that range has no meaning. |
 
+The baseline compilers differ on an enumeration whose values need more
+than 64 bits, such as one with the values `1ULL << 63` and `-1`. On
+x86-64, GCC uses a 128-bit integer type of its own, also under
+`-pedantic-errors`, and accepts the enumeration. Clang and EDG have no
+wider type for an enumeration and reject it. With `-m32`, every
+baseline compiler rejects it.
+
 When the type is known from the first declaration, the enumeration is
 {term}`complete` from that declaration on, so the enumeration can be
 declared before its enumerators, and an integer in braces can
@@ -338,13 +345,15 @@ value. Which type is unspecified ({question}`Q-0114`).
 
 :::{rule} ENUM-5
 :kind: impl-defined
-:tests: declarations/enumerations/unscoped-underlying-holds-values.cpp declarations/enumerations/unscoped-size-lp64.cpp declarations/enumerations/implicit-value-overflow-unscoped.cpp declarations/enumerations/unscoped-value-too-large.cpp declarations/enumerations/unscoped-size-wide-lp64.cpp declarations/enumerations/unscoped-size-ilp32.cpp
+:tests: declarations/enumerations/unscoped-underlying-holds-values.cpp declarations/enumerations/unscoped-size-lp64.cpp declarations/enumerations/implicit-value-overflow-unscoped.cpp declarations/enumerations/unscoped-value-too-large.cpp declarations/enumerations/unscoped-value-too-large-ilp32.cpp declarations/enumerations/unscoped-size-wide-lp64.cpp declarations/enumerations/unscoped-size-ilp32.cpp
 
 The underlying type of an unscoped enumeration without `: type` is
 implementation-defined. The underlying type is an integer type that can
 hold all enumerator values, and it is not wider than `int` unless a
 value needs more. If no {term}`integer type` can hold all values, the
-implementation can use a wider type or reject the enumeration. The
+implementation can use a wider type or reject the enumeration. On
+x86-64, GCC uses a 128-bit type, and Clang and EDG reject the
+enumeration. With `-m32`, every matrix compiler rejects it. The
 matrix compilers take the first type that holds all values, on x86-64
 and with `-m32`, and try the types in this order:
 
@@ -399,7 +408,7 @@ static_assert(sizeof names / sizeof names[0] ==
 
 ## Evidence
 
-All eight compilers agree on 76 of 79 tests. The results are in
+All eight compilers agree on 77 of 80 tests. The results are in
 `tests/RESULTS.md`.
 
 One question on this page settled on 2026-11-04 under decision 0054 after the principle-use batch PU1 (`reports/clean-room/PU1/`). The batch's use of the principle supports the answer, the latest gap review supports it with no doubt, and the principle gives the same answer. The tests keep their overrides for the family that still differs:
@@ -414,7 +423,7 @@ One question on this page settled on 2026-11-04 under decision 0054 after the so
 |---|---|---|
 | {question}`Q-0047` | ENUM-P2 | EDG 7.0 |
 
-{question}`Q-0018` is provisional. ENUM-P3 changed on 2026-11-04, and the principle-use batch PU1 gave no answer from ENUM-P3 for the question's program.
+{question}`Q-0018` is provisional. The principle-use batch PU1 gave no answer from ENUM-P3 for the question's program, and ENUM-P3 now says what each baseline compiler does.
 
 - **ENUM-5.** With `-fshort-enums`, Clang and GCC give `enum { S = 1 }`
   an underlying type of 1 byte. By default its size is the size of
@@ -428,7 +437,8 @@ One question on this page settled on 2026-11-04 under decision 0054 after the so
   GCC, and `int` from EDG.
 - **ENUM-5, no standard underlying type.** GCC accepts an unscoped
   enumeration that needs more than 64 bits, and uses a 128-bit type.
-  Clang and EDG reject the enumeration. The provisional answer is that
+  Clang and EDG reject the enumeration. With `-m32`, GCC rejects it
+  too. The provisional answer is that
   the choice is implementation-defined. See {question}`Q-0018`.
 - **ENUM-6.** Clang rejects `static_cast<E>(8)` during constant
   evaluation ("outside the valid range of values [0, 7]"). GCC and EDG

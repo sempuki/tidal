@@ -26,7 +26,7 @@ Rules on other pages also govern default arguments:
 ## Principles
 
 :::{principle} DEFARG-P1
-:rules: DEFARG-3 DEFARG-4
+:rules: DEFARG-3 DEFARG-4 DEFARG-10
 
 A default argument is an expression that the caller leaves out and the
 call fills in. The default argument is evaluated at each call that uses
@@ -42,6 +42,17 @@ A parameter or a local also has a type, which the declaration already
 knows. So an operand that is not evaluated, such as the operand of
 `sizeof`, can name a parameter or a local. `this` is not allowed
 anywhere in a default argument, also in such an operand.
+
+The declaration checks a default argument at once, also when no call
+uses it. A default argument of a member function is checked at the end
+of the outermost class ({principle}`NAM-P4`). A call of an immediate
+function in a default argument is left to the calls: the declaration
+neither evaluates it nor checks it as a constant
+({principle}`CX-P3`). Each call that uses the default argument
+evaluates the immediate call there and rejects it when it is not a
+constant. So the immediate function needs a definition only by that
+call, and a default argument that no call uses is never checked as a
+constant.
 :::
 
 :::{principle} DEFARG-P2
@@ -183,7 +194,7 @@ through the pointer or the reference must give each argument.
 
 :::{rule} DEFARG-10
 :kind: reject
-:tests: declarations/functions/default-arguments/default-checked-unused.cpp declarations/functions/default-arguments/template-default-independent-unused.cpp declarations/functions/default-arguments/default-immediate-call-checked-at-call.cpp declarations/functions/default-arguments/default-immediate-call-unused-not-checked.cpp declarations/functions/default-arguments/member-default-sees-later-members.cpp declarations/functions/default-arguments/friend-default-sees-later-member.cpp declarations/functions/default-arguments/nested-member-default-sees-outer-later-member.cpp
+:tests: declarations/functions/default-arguments/default-checked-unused.cpp declarations/functions/default-arguments/template-default-independent-unused.cpp declarations/functions/default-arguments/default-immediate-call-checked-at-call.cpp declarations/functions/default-arguments/default-immediate-call-unused-not-checked.cpp declarations/functions/default-arguments/default-immediate-call-used-not-constant.cpp declarations/functions/default-arguments/member-default-sees-later-members.cpp declarations/functions/default-arguments/friend-default-sees-later-member.cpp declarations/functions/default-arguments/nested-member-default-sees-outer-later-member.cpp
 
 A default argument must be valid for its parameter type, also if no
 call uses it. The check happens at the declaration, with two
@@ -269,7 +280,7 @@ r(1);                       // rejected: a reference has no defaults
 
 ## Evidence
 
-All eight compilers agree on 40 of 50 tests. The results are in
+All eight compilers agree on 41 of 51 tests. The results are in
 `tests/RESULTS.md`.
 
 Two questions on this page settled on 2026-11-04 under decision 0054 after the source-reader gap review of the text phase 8 wrote on the declarations and statements chapters (`reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
@@ -279,7 +290,7 @@ Two questions on this page settled on 2026-11-04 under decision 0054 after the s
 | {question}`Q-0038` | DEFARG-P1 | EDG 7.0 |
 | {question}`Q-0111` | DEFARG-P2 | Clang 22 |
 
-{question}`Q-0379` is provisional. DEFARG-10 changed on 2026-11-04, so the question waits for a reader or a reviewer to use the changed rule.
+{question}`Q-0379` is provisional. DEFARG-P1 now says where a call of an immediate function in a default argument is checked (finding PU1-2), so the question waits for the next use of DEFARG-P1.
 
 - DEFARG-2: Clang rejects a call that needs a default argument added by
   a later namespace declaration, through an earlier using declaration.
@@ -322,7 +333,8 @@ Two questions on this page settled on 2026-11-04 under decision 0054 after the s
   checked at each call that uses the default, on Clang and GCC. EDG
   checks the call at the declaration, and rejects a call whose function
   has no definition yet or whose argument is not a constant
-  ({question}`Q-0379`). Every compiler
+  ({question}`Q-0379`). Every compiler rejects a call that uses such a
+  default argument when the argument is not a constant. Every compiler
   accepts a default argument of a member function that uses a static
   member and a nested class declared later in the class.
 - DEFARG-7 needs no diagnostic because each unit is translated alone.

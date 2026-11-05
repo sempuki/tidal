@@ -66,6 +66,8 @@ Used on 2026-11-04 by the principle-use batch PU1 (`reports/clean-room/PU1/`), u
 
 Kept open on 2026-11-04 under decisions 0054 and 0056, because the use in batch PU1 does not support the answer in form 2 (finding PU1-7). The question waits for COND-P2 to say how the cv-qualifiers of two class lvalues count, and for a later use. In each form one newest family differs.
 
+Kept open on 2026-11-04 under decision 0055, because COND-P2 changed in this commit after finding PU1-7. COND-P2 now says that two lvalues of one type apart from cv-qualifiers give an lvalue only when the cv-qualifiers of one include those of the other, and that a `const` and a `volatile` lvalue of one class type are rejected. Judged by the base expectation, the answer of batch PU1 for `class-const-and-volatile-lvalues.cpp` is wrong. The question waits for the next use of COND-P2. In each form one newest family differs.
+
 ## Opinions
 
 ### Gap review, 2026-11-04

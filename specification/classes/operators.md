@@ -65,8 +65,34 @@ operators live at namespace scope, where lookup by suffix finds them.
 Suffixes without a leading underscore belong to the language, and
 suffixes with two underscores in a row belong to the implementation. A
 program that declares a literal operator for such a suffix is not
-valid, and no diagnostic is required. Compilers warn. A suffix that the
-language already uses, such as `u` or `f`, keeps its built-in meaning.
+valid, and no diagnostic is required.
+
+The language uses these suffixes, in either case. A suffix that the
+language uses keeps its built-in meaning ({principle}`PRIM-P1`), and
+the literal calls no literal operator:
+
+| Literal | Suffixes |
+|---|---|
+| integer | `u`, `l`, `ll`, `z`, and each of `l`, `ll`, and `z` with `u` before or after it |
+| floating | `f` and `l` |
+
+The suffixes of the extended floating-point types, such as `f32`, are
+outside Tidal's scope. `u8` is not among the suffixes. It is a prefix
+of character and string literals, so `1u8` has a suffix that the
+language does not use.
+
+No baseline compiler rejects the declaration of a literal operator for
+a reserved suffix, also under
+`-pedantic-errors`. Every compiler accepts a literal whose suffix has
+two underscores in a row. For a suffix that does not start
+with `_` and that the language does not use, the compilers warn at the
+declaration and differ on a literal with the suffix:
+
+| Compiler | A literal with such a suffix, such as `1km` or `1u8` |
+|---|---|
+| GCC | calls the literal operator |
+| Clang | is rejected as a literal with an invalid suffix |
+| EDG | calls the literal operator, unless the suffix starts with a suffix that the language uses, as `u8` starts with `u`. Then EDG reads the rest as extra text and rejects the literal. |
 :::
 
 ## Syntax

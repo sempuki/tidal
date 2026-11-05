@@ -318,7 +318,7 @@ the {term}`most derived class`.
 
 :::{rule} VIRT-7
 :kind: required
-:tests: classes/virtual/virtual-dtor-delete-constant.cpp classes/virtual/virtual-dtor-delete.cpp classes/virtual/virtual-dtor-inherited.cpp classes/virtual/destructor-override.cpp classes/virtual/destructor-final-implicit-override.cpp classes/virtual/destructor-final-declared-override.cpp classes/virtual/destructor-override-nonvirtual.cpp classes/virtual/virtual-dtor-delete-through-middle.cpp classes/virtual/virtual-dtor-delete-through-middle-declared.cpp
+:tests: classes/virtual/virtual-dtor-delete-constant.cpp classes/virtual/virtual-dtor-delete.cpp classes/virtual/virtual-dtor-inherited.cpp classes/virtual/destructor-override.cpp classes/virtual/destructor-final-implicit-override.cpp classes/virtual/destructor-final-declared-override.cpp classes/virtual/destructor-override-nonvirtual.cpp classes/virtual/virtual-dtor-delete-through-middle.cpp classes/virtual/virtual-dtor-delete-through-middle-declared.cpp classes/virtual/missing-override-destructor-unmarked-no-warning.cpp classes/virtual/missing-override-marked-destructor-warns.cpp
 
 If the destructor of a base is virtual, the destructor of each derived
 class, declared or implicit, overrides it and is virtual. `delete`
@@ -393,7 +393,7 @@ before linking.
 
 :::{rule} VIRT-13
 :kind: recommended
-:tests: classes/virtual/delete-nonvirtual-warns.cpp classes/virtual/delete-nonvirtual-abstract-warns.cpp classes/virtual/delete-nonvirtual-final-no-warning.cpp classes/virtual/hidden-virtual-warns.cpp classes/virtual/missing-override-inconsistent-warns.cpp classes/virtual/missing-override-all-marked-no-warning.cpp
+:tests: classes/virtual/delete-nonvirtual-warns.cpp classes/virtual/delete-nonvirtual-abstract-warns.cpp classes/virtual/delete-nonvirtual-final-no-warning.cpp classes/virtual/hidden-virtual-warns.cpp classes/virtual/missing-override-inconsistent-warns.cpp classes/virtual/missing-override-all-marked-no-warning.cpp classes/virtual/missing-override-destructor-unmarked-no-warning.cpp classes/virtual/missing-override-marked-destructor-warns.cpp
 
 An implementation should warn about these cases:
 
@@ -403,6 +403,10 @@ An implementation should warn about these cases:
   override it,
 - an override with neither `override` nor `final`, in a class where
   another override has `override`.
+
+For the last case, a destructor that overrides ({rule}`VIRT-7`) counts
+as the other override when it has `override`. A destructor without
+`override` or `final` gets no warning.
 :::
 
 ## Examples
@@ -516,8 +520,8 @@ struct Child : Sealed { };         // rejected: the implicit ~Child overrides a 
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 138
-of 144 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 140
+of 146 tests.
 
 One question on this page settled on 2026-11-04 under decision 0054 after the principle-use batch PU1 (`reports/clean-room/PU1/`). The batch's use of the principle supports the answer, the latest gap review supports it with no doubt, and the principle gives the same answer. The tests keep their overrides for the family that still differs:
 
@@ -630,6 +634,12 @@ Two questions on this page settled on 2026-11-03 under decision 0054 after the s
   `-Wsuggest-override`, which warns about every override with no
   `override` or `final`, as Clang's `-Wsuggest-override` does. The
   tests pass `-Wsuggest-override`.
+- VIRT-13: neither Clang nor GCC warns about an overriding destructor
+  without `override`, also under `-Wsuggest-override`. Clang has
+  separate flags for destructors, `-Wsuggest-destructor-override` and
+  `-Winconsistent-missing-destructor-override`, and neither is on by
+  default or under `-Wall`. A destructor with `override` counts as the
+  other override for Clang's warning with no flag.
 
 Inputs: clang-sema-declcxx, clang-sema-expr, clang-diag-sema,
 edg-class-decl.

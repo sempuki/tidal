@@ -50,6 +50,8 @@ Changed on 2026-11-03. The source-reader gap review of the object model (`report
 
 Kept open on 2026-11-03 under decision 0054, because LSUP-12 changed on the same day, and a question settles only after a reader or a review has used the changed rule (decision 0055). GCC 16 is the one newest family that differs.
 
+Kept open on 2026-11-04 under decision 0055, because LSUP-P1 changed in this commit after finding PU1-3. LSUP-P1 now gives, in a table, the parts of an ordering class that each use of `<=>` needs, among them a comparison with `0` by `==` or `!=` for a defaulted `<=>`. The question waits for the next use of LSUP-P1. GCC 16 is the one newest family that differs.
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

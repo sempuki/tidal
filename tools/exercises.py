@@ -28,8 +28,14 @@ gave the outcome (documentation/style-guide.md, section 3):
     {"p01": {"outcome": "reject", "rules": ["ADD-3"], "principles": ["ADD-P1"], "why": "..."}}
 
 `outcome` is one of the OUTCOMES below. `score` compares the answers
-with the key and prints two numbers: the right outcomes, and how many of
-those cite at least one rule that the test cites. It prints how many
+with the key. An outcome is right when it matches the test's base
+expectation (`tidal-expect`), or when it is `depends` and some baseline
+compiler has a different expectation. For a test of a rule that needs
+no diagnostic or whose behavior is undefined, the README asks for what
+the compilers do, so the one outcome that every baseline compiler gives
+is right too. Any other outcome of a per-compiler override is wrong.
+`score` prints two numbers: the right outcomes, and how many of those
+cite at least one rule that the test cites. It prints how many
 answers name a principle, and for each principle the programs whose
 answers name it, with each answer right or wrong. Each of these answers
 is a use of the principle (decision 0056). It then prints a Markdown
@@ -184,6 +190,15 @@ def included_headers(sources: list[Path]) -> list[Path]:
     return found
 
 
+def compilers_decide(rules: list[str]) -> bool:
+    """Whether the README asks for what the compilers do on a test of RULES.
+
+    It does for a rule that needs no diagnostic and for a rule of class
+    `undefined`, whose behavior can arise during translation.
+    """
+    return any(RULE_CLASS.get(r) in {"no-diagnostic", "undefined"} for r in rules)
+
+
 def write_program(out: Path, pid: str, name: str) -> tuple[dict, str]:
     """Write one test to OUT as program PID; return its key entry and README row."""
     test = run_tests.parse_test(TESTS / name)
@@ -198,8 +213,9 @@ def write_program(out: Path, pid: str, name: str) -> tuple[dict, str]:
         target.write_text(strip(header.read_text()))
     has_main = any(MAIN.search(f.read_text()) for f in [test.path, *test.sources])
     undefined = any(RULE_CLASS.get(r) == "undefined" for r in test.rules)
-    entry = {"test": name, "expect": sorted(expectations(test)), "rules": test.rules,
-             "main": has_main, "undefined": undefined}
+    entry = {"test": name, "base": test.default, "expect": sorted(expectations(test)),
+             "rules": test.rules, "main": has_main, "undefined": undefined,
+             "compilers_decide": compilers_decide(test.rules)}
     build = " ".join(files)
     if test.flags:
         build += f", with {' '.join(test.flags)}"
@@ -245,8 +261,9 @@ def predict(page: str, out: Path) -> int:
         "`rules` lists the Tidal rule IDs that decide the outcome. When the",
         "specification does not settle a program, say so in `why` and give your best",
         "guess. Where the specification records that compilers differ on a program,",
-        "answer `depends`, or the outcome of any one of them. The compilers",
-        "are the eight baseline compilers, old versions included.",
+        "answer `depends` or the outcome that the specification's rules give. The",
+        "outcome of a compiler that differs from the rules is a wrong answer. The",
+        "compilers are the eight baseline compilers, old versions included.",
         "",
         "An answer can also list `principles`: the IDs of the principles",
         "(`:::{principle}` blocks) whose model gave you the outcome. Name a",
@@ -669,20 +686,37 @@ def score_diagnose(out: Path, key: dict, answers: dict) -> int:
 
 
 def outcome_right(k: dict, got: str | None) -> bool:
-    """Whether a predicted outcome matches the key entry K."""
-    ok = any(got in MATCHES[e] for e in k["expect"])
+    """Whether a predicted outcome matches the key entry K.
+
+    An outcome is right when it matches the test's base expectation
+    (`tidal-expect`). The outcome of a per-compiler override is wrong,
+    because an override records a compiler that differs from the rules.
+    """
+    if "base" not in k:
+        raise SystemExit(f"key entry for {k['test']} has no base expectation; "
+                         "rebuild the batch with this version of the tool")
+    base = k["base"]
+    ok = got in MATCHES.get(base, set())
     # The runner links a program with no main only when its test
     # expects a link failure, which the reader cannot see. So for
     # such a program, compiling and failing to link both count.
     if not k.get("main", True) and got in {"compiles", "link-fail"}:
-        ok = ok or bool({"accept", "link-fail"} & set(k["expect"]))
+        ok = ok or base in {"accept", "link-fail"}
+    # The README asks for what the compilers do on a program that breaks
+    # a rule that needs no diagnostic or whose behavior is undefined. So
+    # when every baseline compiler gives one outcome, that outcome is
+    # right too.
+    decide = k.get("compilers_decide", compilers_decide(k["rules"]))
+    if decide and len(k["expect"]) == 1 and got in MATCHES[k["expect"][0]]:
+        ok = True
     # "depends" is right when the baseline compilers are expected to
-    # differ. "undefined" is right when a cited rule is undefined and no
-    # compiler rejects the program, so the behavior shows only at run time.
+    # differ. "undefined" is right when a cited rule is undefined and the
+    # base expectation is not a rejection, so the behavior shows only at
+    # run time.
     if got == "depends":
         ok = len(k["expect"]) > 1
     if got == "undefined":
-        ok = k.get("undefined", False) and "reject" not in k["expect"]
+        ok = k.get("undefined", False) and base != "reject"
     return ok
 
 

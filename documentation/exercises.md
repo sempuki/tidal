@@ -143,8 +143,16 @@ when it finds a conflict.
 `R-<page>` and `D-<page>` name a batch for one specification page, for example
 `R-additive`. A batch takes the page's tests, removes every `tidal-`
 comment, and asks for one answer per program. Scoring compares the
-answer with the test's expectations. A wrong answer that cites a rule
-is a finding against that rule. The outcomes `undefined` (the program
+answer with the test's base expectation (`tidal-expect`). An outcome
+that only a per-compiler override gives is wrong, because the override
+records a compiler that differs from the rules. `depends` is right when
+the baseline compilers' expectations differ. For a program that breaks
+a rule that needs no diagnostic or a rule of class `undefined`, the
+batch asks for what the compilers do, so the one outcome that every
+baseline compiler gives is right too. The scores in section 8 follow
+this rule, except the score of the seven foundations batches with test
+names, whose keys are gone. A wrong answer that cites a rule is a finding against that
+rule. The outcomes `undefined` (the program
 compiles and its run has undefined behavior) and `depends` (the
 compilers differ, as the specification records) let a reader be right about the
 hard cases. A Diagnose batch uses only tests that carry a `tidal-error`
@@ -213,9 +221,9 @@ of section 8.
 | Exercise | State | Report |
 |---|---|---|
 | W0 | done | `reports/clean-room/java-programmer/` |
-| Front end | round 20 done: 6282/6583 pass, 6334 pass their check (`conformance.tsv`) | `reports/clean-room/rust-frontend/` |
+| Front end | round 20 done: 6288/6591 pass, 6340 pass their check (`conformance.tsv`) | `reports/clean-room/rust-frontend/` |
 | Guides | done: one tutorial and four how-to guides, not published (decision 0046) | `guides/` |
-| R-translation, R-objects, R-values, R-names, R-conversions, R-evaluation-order, R-constant-evaluation | done, 231/231, with test names | `reports/clean-room/R-foundations/` |
+| R-translation, R-objects, R-values, R-names, R-conversions, R-evaluation-order, R-constant-evaluation | done, 231/231, with test names, scored by the earlier rule that also counted an override's outcome | `reports/clean-room/R-foundations/` |
 | Designer roadmap | done, findings D1 to D33 | `reports/clean-room/roadmap/designer.md` |
 | X1, X2, X3, X4 | done: 30, 20, 22, and 17 rule changes; findings X1-1 to X4-16 | `reports/clean-room/X1/` to `X4/` |
 | D-virtual, D-handlers, D-unions, D-conversion-functions | done: rules 143/143, fixes 143/143; findings DC-1 to DC-17 | `reports/clean-room/D-classes/` |
@@ -257,7 +265,7 @@ of section 8.
 | W10 | done: four programs build and run on GCC and Clang; findings W10-1 to W10-6 | `reports/clean-room/W10/` |
 | W9 | done: four programs build and run on GCC and Clang; findings W9-1 to W9-9 | `reports/clean-room/W9/` |
 | R-additive, R-multiplicative, R-shift, R-comparison | done, 220/220 (217 cite a rule of the test), without test names; findings REA-1 to REA-13 | `reports/clean-room/R-expressions/` |
-| R-conditional, R-lambdas, R-casts, R-new-delete | done, 276/278 (272 cite a rule of the test), without test names; findings REB-1 to REB-14 | `reports/clean-room/R-expressions/` |
+| R-conditional, R-lambdas, R-casts, R-new-delete | done, 275/278 (271 cite a rule of the test), without test names; findings REB-1 to REB-14 | `reports/clean-room/R-expressions/` |
 | R-blocks, R-if, R-jumps, R-loops, R-range-for, R-switch | done, 232/234 (231 cite a rule of the test), without test names; findings RS-1 to RS-16 | `reports/clean-room/R-statements/` |
 | R-assignment, R-bitwise, R-comma, R-decltype, R-logical, R-member-pointers | done, 232/232 (225 cite a rule of the test), without test names; findings REC-1 to REC-13 | `reports/clean-room/R-expressions/` |
 | R-postfix, R-primary, R-unary | done, 250/250 (246 cite a rule of the test), without test names; findings RED-1 to RED-16 | `reports/clean-room/R-expressions/` |
@@ -272,13 +280,14 @@ of section 8.
 | R-unions, R-virtual | done, 241/241 (237 cite a rule of the test), without test names; findings RCD-1 to RCD-6 | `reports/clean-room/R-classes/` |
 | R-overload-resolution | done, 171/171 (166 cite a rule of the test), without test names; findings RPA-1 to RPA-10 | `reports/clean-room/R-overloading/` |
 | R-conversion-sequences | done, 129/129 (122 cite a rule of the test), without test names; findings RPB-1 to RPB-8 | `reports/clean-room/R-overloading/` |
-| R-storage, R-language-support | done, 141/141 (138 cite a rule of the test), without test names; findings RPC-1 to RPC-11 | `reports/clean-room/R-foundations/` |
+| R-storage, R-language-support | done, 140/141 (137 cite a rule of the test), without test names; findings RPC-1 to RPC-11 | `reports/clean-room/R-foundations/` |
 | R8-constant-evaluation, R8-evaluation-order | done, 192/194 (186 cite a rule of the test), without test names; findings R8A-1 to R8A-10 | `reports/clean-room/R8/` |
-| R8-constraints, R8-instantiation | done, 268/268 (266 cite a rule of the test), without test names; findings R8B-1 to R8B-10 | `reports/clean-room/R8/` |
+| R8-constraints, R8-instantiation | done, 267/268 (265 cite a rule of the test), without test names; findings R8B-1 to R8B-10 | `reports/clean-room/R8/` |
 | R8-dependent-names, R8-storage | done, 220/220 (214 cite a rule of the test), without test names; findings R8C-1 to R8C-11 | `reports/clean-room/R8/` |
 | R8-unwinding, R8-names | done, 299/300 (294 cite a rule of the test), without test names; findings R8D-1 to R8D-8 | `reports/clean-room/R8/` |
 | R-types, R-odr, R-keywords | done, 227/227 (224 cite a rule of the test), without test names; findings RPD-1 to RPD-11 | `reports/clean-room/R-foundations/` |
 | R-handlers, R-throw, R-unwinding | done, 171/172 (165 cite a rule of the test), without test names; findings RPE-1 to RPE-6 | `reports/clean-room/R-exceptions/` |
+| PU1 | done: 66 programs of 29 questions, 64/66, 1 not decided; findings PU1-1 to PU1-8 | `reports/clean-room/PU1/` |
 | All others | planned | |
 
 ## 9. Prompts

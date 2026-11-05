@@ -1,7 +1,7 @@
 # Q-0018: What happens when no standard integer type holds all of an unscoped enumeration's values?
 
 **Status:** provisional
-**Affects:** ENUM-5, `tests/declarations/enumerations/unscoped-value-too-large.cpp`
+**Affects:** ENUM-5, `tests/declarations/enumerations/unscoped-value-too-large.cpp`, `tests/declarations/enumerations/unscoped-value-too-large-ilp32.cpp`
 
 ## Context
 
@@ -42,6 +42,8 @@ Kept open on 2026-11-04 under decisions 0054 and 0055, because ENUM-P3 changed i
 Used on 2026-11-04 by the principle-use batch PU1 (`reports/clean-room/PU1/`), under decision 0056. A clean-room reader applied ENUM-P3, without the rule text, to the program of `unscoped-value-too-large.cpp` and gave no answer (`not-decided`). ENUM-P3 says that an implementation can provide wider integer types of its own, and it does not say whether the baseline compilers use one for these values (finding PU1-1). The use does not support the answer.
 
 Kept open on 2026-11-04 under decisions 0054 and 0056, because the use in batch PU1 gave no answer (finding PU1-1), and the gap review still reads with doubt on GCC's 128-bit type.
+
+Kept open on 2026-11-04 under decision 0055, because ENUM-P3 changed in this commit after finding PU1-1. ENUM-P3 now says what each baseline compiler does with an enumeration whose values need more than 64 bits. On x86-64, GCC accepts it with a 128-bit type, and Clang and EDG reject it. With `-m32`, every compiler rejects it (`tests/declarations/enumerations/unscoped-value-too-large-ilp32.cpp`). The question waits for the next use of ENUM-P3.
 
 ## Opinions
 

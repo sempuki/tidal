@@ -682,6 +682,7 @@ pass	classes/members/layout-base-tail-padding-ilp32.cpp
 pass	classes/members/layout-base-tail-padding.cpp
 pass	classes/members/layout-base-type-first-member.cpp
 pass	classes/members/layout-empty-base-not-standard-layout.cpp
+pass	classes/members/layout-empty-base-offset-one.cpp
 pass	classes/members/layout-empty-bases-depths.cpp
 pass	classes/members/layout-empty-member-after-empty-base.cpp
 pass	classes/members/layout-empty-member-placement-ilp32.cpp
@@ -1109,7 +1110,9 @@ pass	classes/virtual/final-on-override.cpp
 pass	classes/virtual/final-twice.cpp
 MISSED-REJECT	classes/virtual/hidden-virtual-warns.cpp
 pass	classes/virtual/missing-override-all-marked-no-warning.cpp
+FALSE-REJECT	classes/virtual/missing-override-destructor-unmarked-no-warning.cpp
 pass	classes/virtual/missing-override-inconsistent-warns.cpp
+pass	classes/virtual/missing-override-marked-destructor-warns.cpp
 MISSED-REJECT	classes/virtual/no-unique-final-overrider.cpp
 pass	classes/virtual/nonvirtual-base-two-overriders.cpp
 pass	classes/virtual/nonvirtual-dtor-delete-constant.cpp
@@ -1207,6 +1210,7 @@ pass	declarations/alignment/on-typedef.cpp
 MISSED-REJECT	declarations/alignment/operand-class-conversion-ambiguous.cpp
 pass	declarations/alignment/operand-class-conversion-not-constexpr.cpp
 pass	declarations/alignment/operand-class-converts.cpp
+pass	declarations/alignment/operand-class-not-literal.cpp
 pass	declarations/alignment/operand-floating.cpp
 EDG-ONLY	declarations/alignment/operand-scoped-enumeration.cpp
 pass	declarations/alignment/operand-unscoped-enumeration.cpp
@@ -1596,6 +1600,7 @@ pass	declarations/enumerations/unscoped-size-ilp32.cpp
 pass	declarations/enumerations/unscoped-size-lp64.cpp
 pass	declarations/enumerations/unscoped-size-wide-lp64.cpp
 pass	declarations/enumerations/unscoped-underlying-holds-values.cpp
+pass	declarations/enumerations/unscoped-value-too-large-ilp32.cpp
 pass	declarations/enumerations/unscoped-value-too-large.cpp
 pass	declarations/enumerations/using-declaration-enumerator.cpp
 pass	declarations/enumerations/using-enum-alias.cpp
@@ -1659,6 +1664,7 @@ MISSED-REJECT	declarations/functions/default-arguments/class-template-member-out
 pass	declarations/functions/default-arguments/default-checked-unused.cpp
 EDG-ONLY	declarations/functions/default-arguments/default-immediate-call-checked-at-call.cpp
 EDG-ONLY	declarations/functions/default-arguments/default-immediate-call-unused-not-checked.cpp
+MISSED-REJECT	declarations/functions/default-arguments/default-immediate-call-used-not-constant.cpp
 pass	declarations/functions/default-arguments/evaluated-each-call.cpp
 pass	declarations/functions/default-arguments/friend-default-definition.cpp
 pass	declarations/functions/default-arguments/friend-default-later-declaration.cpp
@@ -4994,7 +5000,9 @@ pass	overloading/overload-resolution/current-object-explicit-parameter.cpp
 EDG-ONLY	overloading/overload-resolution/current-object-other-class.cpp
 pass	overloading/overload-resolution/default-from-two-scopes-passed.cpp
 pass	overloading/overload-resolution/default-from-two-scopes-same-literal.cpp
+EDG-ONLY	overloading/overload-resolution/default-from-two-scopes-same-name-other-variable.cpp
 EDG-ONLY	overloading/overload-resolution/default-from-two-scopes-same-value.cpp
+pass	overloading/overload-resolution/default-from-two-scopes-same-variable.cpp
 pass	overloading/overload-resolution/default-from-two-scopes-same.cpp
 EDG-ONLY	overloading/overload-resolution/default-from-two-scopes.cpp
 pass	overloading/overload-resolution/defaults-take-no-part.cpp

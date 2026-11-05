@@ -82,8 +82,11 @@ these comparisons are rejected:
   object with a pointer to another complete object.
 
 Inside one complete object the layout is fixed, so the other
-comparisons are accepted there. The rows of an array of arrays, the
-members of one class, the members of a union, and a member that
+comparisons are accepted there. A row of an array of arrays is not a
+complete object. So for `int grid[2][3]`, `&grid[0][3] == &grid[1][0]`
+is accepted during constant evaluation and gives `true`, while
+`a + 1 == b` for two arrays `a` and `b` is rejected. The rows of an
+array of arrays, the members of one class, the members of a union, and a member that
 occupies no storage are examples. For the last two, the order is
 unspecified, and constant evaluation still gives a result.
 :::
@@ -463,6 +466,7 @@ int a, b;
 
 int grid[2][3];
 grid[0] + 3 == grid[1] // true
+static_assert(&grid[0][3] == &grid[1][0]);  // true: one complete object
 
 struct Record { int values[2]; int tail; };
 Record r;

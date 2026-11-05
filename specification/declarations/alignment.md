@@ -40,9 +40,13 @@ class:
 | an enumeration | rejected |
 | a bit-field, a function, a parameter, the variable of a handler, or a type alias | rejected |
 
-The operand is an integer constant. The operand has an integral or
-unscoped enumeration type, or a class type whose conversion function
-gives such a type. A floating-point operand is rejected. A scoped
+The operand is an integer constant, under the same conditions as the
+width of a bit-field ({principle}`UNI-P4`). The operand has an integral
+or unscoped enumeration type, or a class type whose conversion function
+gives such a type. The class must be a literal type with exactly one
+such conversion function, and the function must be `constexpr`,
+because the conversion runs during constant evaluation. A
+floating-point operand is rejected. A scoped
 enumeration converts to an integer only with a cast
 ({principle}`ENUM-P2`), so an enumerator of a scoped enumeration is
 rejected.
@@ -128,11 +132,13 @@ result must not be weaker than the {term}`natural alignment` of the entity
 
 :::{rule} ALN-8
 :kind: reject
-:tests: declarations/alignment/operand-floating.cpp declarations/alignment/operand-scoped-enumeration.cpp declarations/alignment/operand-unscoped-enumeration.cpp declarations/alignment/operand-class-converts.cpp declarations/alignment/operand-class-conversion-not-constexpr.cpp declarations/alignment/operand-class-conversion-ambiguous.cpp
+:tests: declarations/alignment/operand-floating.cpp declarations/alignment/operand-scoped-enumeration.cpp declarations/alignment/operand-unscoped-enumeration.cpp declarations/alignment/operand-class-converts.cpp declarations/alignment/operand-class-conversion-not-constexpr.cpp declarations/alignment/operand-class-conversion-ambiguous.cpp declarations/alignment/operand-class-not-literal.cpp
 
 The operand of `alignas` must have integral or unscoped enumeration
 type, or a class type that converts to such a type ({question}`Q-0313`,
-{question}`Q-0314`).
+{question}`Q-0314`). Such a class is a literal type, and exactly one of
+its conversion functions gives an integral or unscoped enumeration
+type. That function is `constexpr`.
 :::
 
 :::{rule} ALN-3
@@ -228,8 +234,8 @@ static_assert(round_up(13, 8) == 16 && round_up(16, 8) == 16);
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 28
-of 51 tests. Each divergence has a question, except the
+The results are in `tests/RESULTS.md`. All eight compilers agree on 29
+of 52 tests. Each divergence has a question, except the
 implementation-defined limits of ALN-5 and the GCC 14 result of ALN-2.
 
 Five questions on this page settled under decision 0054. Q-0070 and Q-0071 settled on 2026-11-03 after the source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`). Q-0069, Q-0073, and Q-0360 settled on 2026-11-04 after the source-reader gap review of the text phase 8 wrote on the declarations and statements chapters (`reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
@@ -263,8 +269,9 @@ Five questions on this page settled under decision 0054. Q-0070 and Q-0071 settl
   rejects it ({question}`Q-0314`). Clang and EDG reject an operand of
   class type whose conversion function is not `constexpr`, and one
   whose class has two `constexpr` conversion functions to integer
-  types, as ambiguous. GCC rejects both, as it rejects every operand of
-  class type.
+  types, as ambiguous. Every compiler rejects an operand whose class is
+  not a literal type. GCC rejects these three, as it rejects every
+  operand of class type.
 - ALN-3: GCC accepts declarations of a variable or a class with
   different `alignas` ({question}`Q-0070`).
 - ALN-5: the largest fundamental alignment is the alignment of a

@@ -36,8 +36,17 @@ Two operands have to give one result, with one type and one value
 category, and the result type and category are decided before either
 operand is evaluated.
 
-- If both are lvalues of one type, the result is an lvalue, with the
-  union of their {term}`cv-qualifiers <cv-qualifier>`.
+- If both are lvalues of one type apart from
+  {term}`cv-qualifiers <cv-qualifier>`, and the cv-qualifiers of one
+  include those of the other, the result is an lvalue with the larger
+  set. A `const Box` lvalue and a `Box` lvalue give a `const Box`
+  lvalue.
+- If neither set includes the other, as for a `const` and a `volatile`
+  lvalue, the result depends on the type. Two such lvalues of a
+  non-class type give a prvalue. Two such lvalues of one class type
+  are rejected. A class operand converts toward the other operand only
+  when the other has every cv-qualifier of its own, so neither operand
+  converts.
 - An operand that throws takes no part, because it gives no value.
 - A `void` operand can pair only with another `void`.
 - If two class types each convert to the other, there is no single

@@ -53,6 +53,8 @@ Used on 2026-11-04 by the principle-use batch PU1 (`reports/clean-room/PU1/`), u
 
 Kept open on 2026-11-04 under decisions 0055 and 0056, because the use in batch PU1 does not support the answer: one of the two answers does not name NAM-P5. The question also waits for a use of the changed NAM-21. No newest family differs.
 
+Kept open on 2026-11-04 under decision 0055, because LSUP-P1, which the answer for `tuple-protocol-page-example.cpp` named, changed in this commit after finding PU1-3. The question waits for the next use of NAM-P5 or LSUP-P1, and for a use of the changed NAM-21. No newest family differs.
+
 ## Opinions
 
 ### Gap review, 2026-11-04

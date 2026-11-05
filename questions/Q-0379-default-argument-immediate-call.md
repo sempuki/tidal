@@ -1,7 +1,7 @@
 # Q-0379: Is a `consteval` call in a default argument checked at the declaration?
 
 **Status:** provisional
-**Affects:** DEFARG-10, `tests/declarations/functions/default-arguments/default-immediate-call-checked-at-call.cpp`, `tests/declarations/functions/default-arguments/default-immediate-call-unused-not-checked.cpp`
+**Affects:** DEFARG-10, `tests/declarations/functions/default-arguments/default-immediate-call-checked-at-call.cpp`, `tests/declarations/functions/default-arguments/default-immediate-call-unused-not-checked.cpp`, `tests/declarations/functions/default-arguments/default-immediate-call-used-not-constant.cpp`
 **Source:** reports/review/2026-11-04-gap-review-phase-7-additions.md, the DEFARG-10 section
 
 ## Context
@@ -54,6 +54,8 @@ Read on 2026-11-04 by the source-reader gap review of the text phase 8 wrote on 
 Used on 2026-11-04 by the principle-use batch PU1 (`reports/clean-room/PU1/`), under decision 0056. A clean-room reader applied the principles, without the rule text, to the programs of `default-immediate-call-checked-at-call.cpp` and `default-immediate-call-unused-not-checked.cpp`. Each answer gives the outcome that the tests expect. Neither answer names DEFARG-P2, the principle that the batch key lists. Both name DEFARG-P1 and CX-P3. The reader marked the answer for `default-immediate-call-unused-not-checked.cpp` doubtful (finding PU1-2), because neither principle says where a `consteval` call in a default argument is checked. The use does not support the answer.
 
 Kept open on 2026-11-04 under decisions 0055 and 0056, because the use in batch PU1 does not support the answer: no answer names DEFARG-P2, and the reader read one form with doubt (finding PU1-2). EDG 7.0 is the one newest family that differs.
+
+Kept open on 2026-11-04 under decision 0055, because DEFARG-P1 and CX-P3 changed in this commit after finding PU1-2. DEFARG-P1 now says that the declaration checks a default argument at once, except a call of an immediate function, which each call that uses the default argument evaluates and checks. DEFARG-P1 now lists DEFARG-10. A new test, `tests/declarations/functions/default-arguments/default-immediate-call-used-not-constant.cpp`, checks that every compiler rejects a call that uses such a default argument when the argument is not a constant. The question waits for the next use of DEFARG-P1. EDG 7.0 is the one newest family that differs.
 
 ## Opinions
 

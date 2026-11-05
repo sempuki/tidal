@@ -61,6 +61,8 @@ Used on 2026-11-04 by the principle-use batch PU1 (`reports/clean-room/PU1/`), u
 
 Kept open on 2026-11-04 under decisions 0055 and 0056, because the use in batch PU1 does not support the answer: one of the six answers does not name LSUP-P1, and two read LSUP-P1 with doubt (finding PU1-3). EDG 7.0 is the one newest family that differs.
 
+Kept open on 2026-11-04 under decision 0055, because LSUP-P1 changed in this commit after finding PU1-3. LSUP-P1 now gives, in a table, the parts of an ordering class that each use of `<=>` needs, and says that a use needs only the class that it yields. The question waits for the next use of LSUP-P1. EDG 7.0 is the one newest family that differs.
+
 ## Opinions
 
 ### Gap review, 2026-11-04

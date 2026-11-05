@@ -59,6 +59,8 @@ Used on 2026-11-04 by the principle-use batch PU1 (`reports/clean-room/PU1/`), u
 
 Kept open on 2026-11-04 under decision 0054, because the use in batch PU1 reaches the answer for the explicit specialization form with doubt (finding PU1-6). ACC-P3 does not decide that form, so the use does not pass step 3 of the test of the style guide. In each form one newest family differs.
 
+Kept open on 2026-11-04 under decision 0055, because ACC-P3 changed in this commit after finding PU1-6. ACC-P3 now says that befriending a member of a class template befriends no other member, and that the member which an explicit specialization declares with the same name and type is a friend too. The question waits for the next use of ACC-P3. In each form one newest family differs.
+
 ## Opinions
 
 ### Gap review, 2026-11-04

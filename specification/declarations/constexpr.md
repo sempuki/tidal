@@ -51,7 +51,9 @@ translation time, so a call with arguments that are not constant is an
 error unless the call sits inside another function that constant
 evaluation is already running. A function that makes such a call becomes
 `consteval` itself when the language allows, and otherwise the call is
-rejected. The function has no run-time existence, so its address can be
+rejected. A call in a default argument is evaluated and checked at each
+call that uses the default argument, and not at the declaration
+({principle}`DEFARG-P1`). The function has no run-time existence, so its address can be
 taken only where constant evaluation is in progress. `consteval`
 applies to functions only, and a `consteval` function is `inline` for
 the same reason as a `constexpr` function.

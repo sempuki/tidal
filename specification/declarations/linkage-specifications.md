@@ -181,6 +181,11 @@ in different translation units, the program is not valid, and an
 implementation need not diagnose it. An example is a C variable in one
 unit and a global variable with C++ language linkage and the same
 spelling in another.
+
+Clang and GCC give such a C variable and such a global variable
+one symbol name, so the two declarations link as one variable, and a
+run reads and writes one object. The tests record this result. The
+result is the matrix's choice, and the rule does not require it.
 :::
 
 ## Examples
