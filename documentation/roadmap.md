@@ -171,6 +171,22 @@ review RV2 and the principle-use batches PU1 and PU2.
 | V3 | Done: the Evidence format on the other 68 pages | RV2, PU |
 | E | Done: Implement I2 on partial ordering, Predict on 11 of the 12 pages with only named batches (the objects page waits for a tool fix that came later), Propose X21 on P15 | FH (interpreter step) |
 
+## Phase 10: review phase 9, hold questions by a field, and test the C++23 call forms
+
+Decision 0057 (provisional) adopts this phase from the seventh round of
+clean-room roadmaps (`reports/clean-room/roadmap-7/`).
+
+| Item | Work | Prerequisites |
+|---|---|---|
+| R4 | Close the phase 9 record, with a `**Waits for:**` field on each open question and generated Split tests tables | none |
+| G | A ledger of front-end findings, and answers for G147 to G151 | none |
+| T | Tests and text for the C++23 call forms (CLS-13, LAM-15, LSUP-2), and the round 7 programs as program tests | none |
+| RV3 | A gap review of the text phase 9 wrote and of the held questions, then repairs | G, T |
+| PU3 | A principle-use batch on the questions whose field names a use, then settling | R4, RV3 |
+| PK | A decision packet for `pending.md`, and the review-held questions sorted by kind | R4 |
+| E | Implement I3 on overload ranking; Write W18 and W19; a refreshed Propose portfolio, a refresh note for X19, and Propose X22 | none (W18 and W19 after T) |
+| FE | Front-end round 22 | T, G, and the I3 and Write reports |
+
 ## Parallel lanes
 
 Phase 5 ran three lanes beside its items, and all three are done: U
