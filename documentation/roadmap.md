@@ -152,6 +152,22 @@ questions, the phase opened 9 (Q-0377 to Q-0385), and 5 settled.
 | V | Done: the Evidence format, and Evidence that does not repeat the questions | RV |
 | L | Done: test directories that match the pages | before the closing matrix run |
 
+## Phase 9: use the widened principles, review phase 8, and catch the front end up
+
+Decision 0056 (provisional) adopts this phase from the sixth round of
+clean-room roadmaps (`reports/clean-room/roadmap-6/`).
+
+| Item | Work | Prerequisites |
+|---|---|---|
+| R3 | Close the phase 8 record, with a definition of a use of a principle | none |
+| RS | Tests from the round 6 reductions and sketches, and LSUP-2 tests | none |
+| FH | Answers for G134 and G135, the front end on the page examples, per-page rule-ID scoring, the interpreter in the exercise prompts | none |
+| RV2 | A gap review of the text phase 8 wrote, then repairs | R3 |
+| PU | A principle-use batch for the questions that wait on a widened principle, then settling | R3 |
+| FE | Front-end round 20 | RS, FH |
+| V3 | The Evidence format on the other 68 pages | RV2, PU |
+| E | Implement I2 on partial ordering, Predict on the 12 pages with only named batches, Propose X21 on P15 | FH (interpreter step) |
+
 ## Parallel lanes
 
 Phase 5 ran three lanes beside its items, and all three are done: U
