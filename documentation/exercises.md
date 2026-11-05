@@ -205,18 +205,17 @@ answer (style guide, section 3).
 
 The Write suites W1 to W17, the Propose rounds X1 to X21, the Diagnose
 batches of D-classes, the Implement exercises I1 and I2, the
-principle-use batches PU1 and PU2, and a Predict batch for every page
-are done (section 8). Decision 0057 orders the next exercises:
+principle-use batches PU1 and PU2, and a Predict batch without test
+names for every page are done (section 8). Decision 0057 orders the
+next exercises:
 
-1. A Predict batch without test names on `foundations/objects`
-   (item R4).
-2. A principle-use batch PU3 on the questions whose `**Waits for:**`
+1. A principle-use batch PU3 on the questions whose `**Waits for:**`
    line names a use (item PU3).
-3. An Implement exercise I3 on the ranking of conversion sequences and
+2. An Implement exercise I3 on the ranking of conversion sequences and
    the best viable function (item E).
-4. Write suites W18 (callables) and W19 (compile-time and generic code),
+3. Write suites W18 (callables) and W19 (compile-time and generic code),
    with the interpreter step (item E).
-5. A refreshed Propose portfolio, a refresh note for X19, and Propose
+4. A refreshed Propose portfolio, a refresh note for X19, and Propose
    X22 on P23 (item E).
 
 Each phase runs at least one exercise by use that writes programs
@@ -233,7 +232,7 @@ batch of each page and says whether the batch hid test names.
 `tools/status_table.py` writes the count and list below from the Predict rows
 of section 8.
 
-1 page has only a Predict batch that showed test names: `foundations/objects`.
+No page has only a Predict batch that showed test names.
 
 ## 8. Status
 
@@ -312,6 +311,7 @@ of section 8.
 | R9-ordering, R9-packs, R9-specialization | done, 222/222 (219 cite a rule of the test), without test names; findings R9D-1 to R9D-7 | `reports/clean-room/R9/` |
 | R-types, R-odr, R-keywords | done, 227/227 (224 cite a rule of the test), without test names; findings RPD-1 to RPD-11 | `reports/clean-room/R-foundations/` |
 | R-handlers, R-throw, R-unwinding | done, 171/172 (165 cite a rule of the test), without test names; findings RPE-1 to RPE-6 | `reports/clean-room/R-exceptions/` |
+| R10-objects | done, 61/61 (60 cite a rule of the test), without test names; findings R10-1 to R10-9 | `reports/clean-room/R10/` |
 | PU1 | done: 66 programs of 29 questions, 64/66, 1 not decided; findings PU1-1 to PU1-8 | `reports/clean-room/PU1/` |
 | PU2 | done: 44 programs of 15 questions, 42/44, 1 not decided; findings PU2-1 to PU2-6 | `reports/clean-room/PU2/` |
 | All others | planned | |

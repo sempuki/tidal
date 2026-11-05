@@ -1,0 +1,2 @@
+61/61 predictions match the tests; 60 of the 61 right outcomes cite one of the test's rules
+0 of 61 answers name a principle

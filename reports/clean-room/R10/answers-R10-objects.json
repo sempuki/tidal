@@ -1,0 +1,490 @@
+{
+  "p01": {
+    "outcome": "reject",
+    "rules": [
+      "OBJ-1",
+      "OBJ-2"
+    ],
+    "why": "The write through the pointer happens during x's own initializer, which is outside x's lifetime, so constant evaluation rejects it (Q-0368: Clang rejects, GCC and EDG accept)."
+  },
+  "p02": {
+    "outcome": "reject",
+    "rules": [
+      "OBJ-1",
+      "OBJ-2"
+    ],
+    "why": "The assignment and read of x inside its own initializer are outside its lifetime, so constant evaluation rejects them (Q-0368: Clang rejects, GCC and EDG accept)."
+  },
+  "p03": {
+    "outcome": "run-fail",
+    "rules": [
+      "OBJ-2",
+      "OBJ-3"
+    ],
+    "why": "The read through p reaches a variable whose block has ended; the address sanitizer stops it as a stack use after scope (the specification states this sanitizer result only for lambda captures, LAM-19)."
+  },
+  "p04": {
+    "outcome": "run-fail",
+    "rules": [
+      "OBJ-10",
+      "STG-19"
+    ],
+    "why": "The new object reuses the storage, so the call old.value() goes through a reference to an ended object, and the vptr sanitizer of Clang and GCC stops such a member call."
+  },
+  "p05": {
+    "outcome": "runs",
+    "rules": [
+      "UNW-2",
+      "OBJ-1",
+      "OBJ-6"
+    ],
+    "why": "The target constructor completes (1), the delegating body marks 2 and throws, the object is complete so ~W runs (9) and then member a ends (1), and the handler marks 4, giving 12914."
+  },
+  "p06": {
+    "outcome": "reject",
+    "rules": [
+      "OBJ-10",
+      "STG-19",
+      "UNI-6"
+    ],
+    "why": "Assigning u.b ends u.a, so reading through the old pointer to u.a.x in constant evaluation is rejected."
+  },
+  "p07": {
+    "outcome": "reject",
+    "rules": [
+      "OBJ-2",
+      "CE-22"
+    ],
+    "why": "Reading *p after delete is an access outside the object's lifetime, which constant evaluation rejects."
+  },
+  "p08": {
+    "outcome": "reject",
+    "rules": [
+      "OBJ-2",
+      "CTOR-12",
+      "CE-22"
+    ],
+    "why": "The constructor leaves y with no value, and reading p.y in constant evaluation is rejected."
+  },
+  "p09": {
+    "outcome": "run-fail",
+    "rules": [
+      "OBJ-9",
+      "REF-5",
+      "OBJ-2"
+    ],
+    "why": "The temporary for argc + 1 ends with its full expression, so the read through kept is a use after scope, which the address sanitizer stops."
+  },
+  "p10": {
+    "outcome": "runs",
+    "rules": [
+      "OBJ-11",
+      "SINIT-6"
+    ],
+    "why": "A use of the constant-initialized thread_local depth does not start the deferred construction of log_tl, so made stays 0 and main returns 0."
+  },
+  "p11": {
+    "outcome": "runs",
+    "rules": [
+      "OBJ-11",
+      "SINIT-6"
+    ],
+    "why": "Either construction point gives tl constructed (trace 4) before the read of tl.id, and the destructor runs only after main returns."
+  },
+  "p12": {
+    "outcome": "reject",
+    "rules": [
+      "CE-22",
+      "OBJ-2",
+      "CPY-12"
+    ],
+    "why": "The return of ring copies or moves each scalar part, and the elements of data have no value, so constant evaluation rejects the read (Q-0115: GCC accepts such copies)."
+  },
+  "p13": {
+    "outcome": "runs",
+    "rules": [
+      "OBJ-6",
+      "DER-7"
+    ],
+    "why": "Virtual bases V then W come first by a depth-first walk, then A, B's member, Whole's member and body, and destruction reverses it, giving 123456754321."
+  },
+  "p14": {
+    "outcome": "reject",
+    "rules": [
+      "CTOR-12",
+      "OBJ-2",
+      "CE-22"
+    ],
+    "why": "The mem_init of first reads point.x before point is constructed, so the constant initialization that constinit requires fails."
+  },
+  "p15": {
+    "outcome": "runs",
+    "rules": [
+      "OBJ-7"
+    ],
+    "why": "The address of x does not change during its lifetime, so p == q and *p is 5."
+  },
+  "p16": {
+    "outcome": "runs",
+    "rules": [
+      "OBJ-5"
+    ],
+    "why": "The object from new is never deleted, so its destructor never runs and trace stays 1."
+  },
+  "p17": {
+    "outcome": "runs",
+    "rules": [
+      "OBJ-3"
+    ],
+    "why": "Automatic objects end in reverse order at the end of the block: 123321."
+  },
+  "p18": {
+    "outcome": "runs",
+    "rules": [
+      "OBJ-4",
+      "SINIT-1",
+      "SINIT-2"
+    ],
+    "why": "The constant-initialized b takes its place after a in the order, so b ends before a, trace is 21 when last (defined first) ends."
+  },
+  "p19": {
+    "outcome": "runs",
+    "rules": [
+      "OBJ-3"
+    ],
+    "why": "The return leaves the block, so b then a are destroyed: 1221; mark(9) never runs."
+  },
+  "p20": {
+    "outcome": "runs",
+    "rules": [
+      "OBJ-7",
+      "CLS-11"
+    ],
+    "why": "Distinct complete objects and array elements have distinct addresses, and every compiler gives an empty class size 1."
+  },
+  "p21": {
+    "outcome": "reject",
+    "rules": [
+      "OBJ-2",
+      "REF-5"
+    ],
+    "why": "The read through keep reaches x after its block has ended, which constant evaluation rejects."
+  },
+  "p22": {
+    "outcome": "runs",
+    "rules": [
+      "OBJ-9"
+    ],
+    "why": "The temporary lives until the full expression with the call ends: 1, 5, 1, then 2, giving 1512."
+  },
+  "p23": {
+    "outcome": "reject",
+    "rules": [
+      "JMP-16",
+      "OBJ-2",
+      "CE-22"
+    ],
+    "why": "The jump to case 1 skips the declaration of x, which then has no value, and constant evaluation rejects the read."
+  },
+  "p24": {
+    "outcome": "runs",
+    "rules": [
+      "OBJ-3"
+    ],
+    "why": "b ends at its inner block before c begins, then c and a end: 122331."
+  },
+  "p25": {
+    "outcome": "runs",
+    "rules": [
+      "OBJ-11",
+      "SINIT-6"
+    ],
+    "why": "On the matrix the first use of one dynamically initialized thread_local of the unit constructs all of them, so made is 2."
+  },
+  "p26": {
+    "outcome": "reject",
+    "rules": [
+      "STG-19",
+      "OBJ-10",
+      "UNI-6"
+    ],
+    "why": "Assigning u.f ends u.i, so the read through r in constant evaluation is rejected."
+  },
+  "p27": {
+    "outcome": "runs",
+    "rules": [
+      "OBJ-4",
+      "OBJ-3",
+      "SINIT-2"
+    ],
+    "why": "first and second are built before main (12), local marks 3 twice, then the statics end in reverse, so last sees 123321."
+  },
+  "p28": {
+    "outcome": "runs",
+    "rules": [
+      "OBJ-6",
+      "OBJ-1"
+    ],
+    "why": "Members a and b are built before the later mem_init and the body, so seen is 12 and trace 123."
+  },
+  "p29": {
+    "outcome": "runs",
+    "rules": [
+      "OBJ-5"
+    ],
+    "why": "The dynamic object outlives make and ends at delete: 1231."
+  },
+  "p30": {
+    "outcome": "runs",
+    "rules": [
+      "OBJ-3"
+    ],
+    "why": "The loop body object ends at the end of each iteration: 1122."
+  },
+  "p31": {
+    "outcome": "undefined",
+    "rules": [
+      "OBJ-12",
+      "OBJ-4"
+    ],
+    "why": "c is constructed after watcher, so it ends first, and watcher's destructor then passes through the declaration of the ended c; no sanitizer stops this."
+  },
+  "p32": {
+    "outcome": "undefined",
+    "rules": [
+      "CTOR-12",
+      "OBJ-2"
+    ],
+    "why": "The mem_init of a reads b before b's mem_init gives it a value; no sanitizer stops the read."
+  },
+  "p33": {
+    "outcome": "reject",
+    "rules": [
+      "CE-22",
+      "OBJ-2",
+      "CPY-8"
+    ],
+    "why": "The implicit copy reads second, which has no value, so constant evaluation rejects it (Q-0115: GCC accepts)."
+  },
+  "p34": {
+    "outcome": "reject",
+    "rules": [
+      "OBJ-2",
+      "LSUP-11",
+      "LSUP-10"
+    ],
+    "why": "Element 1 of the allocated storage never begins its lifetime, so reading items[1].value is rejected during constant evaluation."
+  },
+  "p35": {
+    "outcome": "run-fail",
+    "rules": [
+      "OBJ-2",
+      "OBJ-5"
+    ],
+    "why": "Reading c->n after delete is an access to a dynamic object after delete, which the address sanitizer stops as a heap use after free."
+  },
+  "p36": {
+    "outcome": "runs",
+    "rules": [
+      "OBJ-9"
+    ],
+    "why": "The temporary ends at the end of its full expression, before mark(9): 1, 3, 9."
+  },
+  "p37": {
+    "outcome": "undefined",
+    "rules": [
+      "OBJ-12",
+      "OBJ-4"
+    ],
+    "why": "l is constructed after f, so it ends first, and f's destructor then calls log() through the declaration of the ended l; the test checks only that the program compiles."
+  },
+  "p38": {
+    "outcome": "reject",
+    "rules": [
+      "INIT-1",
+      "OBJ-2",
+      "CE-22"
+    ],
+    "why": "x has no initializer, so the read in constant evaluation is rejected."
+  },
+  "p39": {
+    "outcome": "runs",
+    "rules": [
+      "OBJ-8",
+      "REF-4"
+    ],
+    "why": "Binding to the reference extends the temporary to the end of the block: 1, 2, 1, 3."
+  },
+  "p40": {
+    "outcome": "runs",
+    "rules": [
+      "OBJ-11",
+      "SINIT-6"
+    ],
+    "why": "Either construction point gives before as 0 or 6, and the value is constructed once before it is read."
+  },
+  "p41": {
+    "outcome": "runs",
+    "rules": [
+      "OBJ-4"
+    ],
+    "why": "Control never reaches the static's declaration, so it is never constructed."
+  },
+  "p42": {
+    "outcome": "reject",
+    "rules": [
+      "CTOR-12",
+      "OBJ-2"
+    ],
+    "why": "The call h.one() on a member before its initialization is outside its lifetime, so constant evaluation rejects it (Q-0374: Clang rejects, GCC and EDG accept)."
+  },
+  "p43": {
+    "outcome": "run-fail",
+    "rules": [
+      "RET-6",
+      "JMP-10"
+    ],
+    "why": "decltype(auto) of the parenthesized local gives int&&, the local is gone after return, and the address sanitizer stops the read on GCC and Clang."
+  },
+  "p44": {
+    "outcome": "reject",
+    "rules": [
+      "CTOR-12",
+      "OBJ-2",
+      "CE-22"
+    ],
+    "why": "The constructor leaves y with no value, and reading o.y in constant evaluation is rejected."
+  },
+  "p45": {
+    "outcome": "reject",
+    "rules": [
+      "UNI-13",
+      "OBJ-2",
+      "CE-22"
+    ],
+    "why": "The assignment to u.a.tag makes a active, and a.a, which the assignment did not write, has no value, so the read is rejected."
+  },
+  "p46": {
+    "outcome": "compiles",
+    "rules": [
+      "OBJ-3"
+    ],
+    "why": "In constant evaluation b ends before a, so tr is 21 and the assertion holds; the program has no main."
+  },
+  "p47": {
+    "outcome": "runs",
+    "rules": [
+      "OBJ-6",
+      "OBJ-3"
+    ],
+    "why": "Elements are built from the first and destroyed from the last: 123321."
+  },
+  "p48": {
+    "outcome": "reject",
+    "rules": [
+      "OBJ-2",
+      "REF-5"
+    ],
+    "why": "The read through p reaches x after its block has ended, which constant evaluation rejects."
+  },
+  "p49": {
+    "outcome": "runs",
+    "rules": [
+      "OBJ-3",
+      "IF-8",
+      "LOOP-4"
+    ],
+    "why": "A branch and a loop body without braces each count as a block, so each T ends right after it is made: aA|wWwW."
+  },
+  "p50": {
+    "outcome": "reject",
+    "rules": [
+      "OBJ-2"
+    ],
+    "why": "The read through p reaches x after its block has ended, which constant evaluation rejects."
+  },
+  "p51": {
+    "outcome": "runs",
+    "rules": [
+      "OBJ-11",
+      "SINIT-6"
+    ],
+    "why": "Either construction point leaves trace at 4 when id is read."
+  },
+  "p52": {
+    "outcome": "runs",
+    "rules": [
+      "OBJ-6"
+    ],
+    "why": "Bases in list order, then members in declaration order, then the body, and destruction in reverse: 1234564321."
+  },
+  "p53": {
+    "outcome": "reject",
+    "rules": [
+      "OBJ-2",
+      "CE-22"
+    ],
+    "why": "Default initialization leaves height with no value, so the read in constant evaluation is rejected."
+  },
+  "p54": {
+    "outcome": "runs",
+    "rules": [
+      "OBJ-6"
+    ],
+    "why": "The destructor body runs first, then members end in reverse: 12921."
+  },
+  "p55": {
+    "outcome": "runs",
+    "rules": [
+      "OBJ-4"
+    ],
+    "why": "The local static is built once, at the first call: 152."
+  },
+  "p56": {
+    "outcome": "undefined",
+    "rules": [
+      "OBJ-12",
+      "OBJ-4",
+      "SINIT-1"
+    ],
+    "why": "c is constructed in main after late, so it ends first, and late's destructor then calls count() through the declaration of the ended c; the test checks only that the program compiles."
+  },
+  "p57": {
+    "outcome": "reject",
+    "rules": [
+      "DTOR-7",
+      "OBJ-2"
+    ],
+    "why": "Reading s.v after the explicit destructor call is outside the lifetime, which constant evaluation rejects."
+  },
+  "p58": {
+    "outcome": "reject",
+    "rules": [
+      "OBJ-2"
+    ],
+    "why": "The write through p reaches x after its block has ended, which constant evaluation rejects."
+  },
+  "p59": {
+    "outcome": "runs",
+    "rules": [
+      "OBJ-1",
+      "INIT-1"
+    ],
+    "why": "x exists with no value, then gets 4 before it is read."
+  },
+  "p60": {
+    "outcome": "reject",
+    "rules": [
+      "OBJ-2"
+    ],
+    "why": "The read through p reaches x after its block has ended, which constant evaluation rejects."
+  },
+  "p61": {
+    "outcome": "runs",
+    "rules": [
+      "OBJ-4",
+      "OBJ-11"
+    ],
+    "why": "s is built before main, t at its first use, and the main thread's thread_local t ends before the static s, so s sees 1221."
+  }
+}

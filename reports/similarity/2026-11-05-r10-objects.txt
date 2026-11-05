@@ -1,0 +1,14 @@
+Similarity report: run threshold 8 words, overlap threshold 0.25
+
+ok   R10/report.md:Predict batch: objects longest=0   overlap=0.00
+ok   R10/report.md:R10-1              longest=0   overlap=0.02
+ok   R10/report.md:R10-2              longest=0   overlap=0.00
+ok   R10/report.md:R10-3              longest=0   overlap=0.02
+ok   R10/report.md:R10-4              longest=0   overlap=0.00
+ok   R10/report.md:R10-5              longest=0   overlap=0.01
+ok   R10/report.md:R10-6              longest=0   overlap=0.02
+ok   R10/report.md:R10-7              longest=0   overlap=0.01
+ok   R10/report.md:R10-8              longest=0   overlap=0.00
+ok   R10/report.md:R10-9              longest=0   overlap=0.00
+
+0 flagged
