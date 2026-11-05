@@ -174,6 +174,9 @@ pub struct FnTy {
     pub cv_c: bool,
     pub cv_v: bool,
     pub refq: u8,
+    /// DED-11: `noexcept(B)` with a constant template parameter `B`, as
+    /// (depth, index).
+    pub noexcept_param: Option<(u32, u32)>,
 }
 
 impl QTy {
@@ -206,7 +209,7 @@ impl Ty {
         match self {
             Ty::Unknown | Ty::Dep(_) => true,
             Ty::Ptr(q) | Ty::LRef(q) | Ty::RRef(q) | Ty::Array(q, _) | Ty::MemPtr(_, q) => q.t.contains_unknown(),
-            Ty::Func(f) => f.ret.t.contains_unknown() || f.params.iter().any(|p| p.t.contains_unknown()),
+            Ty::Func(f) => f.ret.t.contains_unknown() || f.params.iter().any(|p| p.t.contains_unknown()) || f.noexcept_param.is_some(),
             _ => false,
         }
     }

@@ -315,6 +315,14 @@ impl P {
         if is_final {
             self.final_classes.insert(c);
         }
+        // NAM-21: the base clause of a class defined with a qualified name
+        // sees the members of the qualifier's scope.
+        let base_stack = self.stack.clone();
+        if let Some(Ok(s)) = qual {
+            if self.at(":") && self.stack.last() != Some(&s) {
+                self.stack.push(s);
+            }
+        }
         if self.eat(":") {
             loop {
                 self.skip_attributes();
@@ -410,6 +418,7 @@ impl P {
                 }
             }
         }
+        self.stack = base_stack;
         self.expect("{")?;
         let saved = self.stack.clone();
         if let Some(Ok(s)) = qual {
@@ -1096,7 +1105,17 @@ impl P {
             }
             return Ok((QTy::new(Ty::Enum(e)), false));
         }
-        self.parse_enumerators(e, line)?;
+        // NAM-21: the enumerators of an enumeration defined with a
+        // qualified name see the members of the qualifier's scope.
+        let saved = self.stack.clone();
+        if let Some(Ok(s)) = qual {
+            if self.stack.last() != Some(&s) {
+                self.stack.push(s);
+            }
+        }
+        let r = self.parse_enumerators(e, line);
+        self.stack = saved;
+        r?;
         Ok((QTy::new(Ty::Enum(e)), true))
     }
 
@@ -1387,7 +1406,9 @@ impl P {
         if marked {
             for &f in &fns {
                 let (ov, fin) = self.virt_specs.get(&f).copied().unwrap_or((false, false));
-                if !ov && !fin && self.overridden(c, f, 0).is_some_and(|o| !o.is_empty()) {
+                // A destructor without `override` gets no warning.
+                let dtor = self.func(f).is_some_and(|fi| fi.kind == FnKind::Dtor);
+                if !ov && !fin && !dtor && self.overridden(c, f, 0).is_some_and(|o| !o.is_empty()) {
                     let line = self.decls[f].line;
                     self.warn(line, "VIRT-13", format!("'{}' overrides a virtual function and is not marked 'override', as another override of the class is", self.decls[f].name));
                 }

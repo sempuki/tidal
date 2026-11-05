@@ -717,6 +717,7 @@ impl P {
             }
         }
         let args = self.convert_args(&f.fty, args, line, Some(fid));
+        let args_n = args.len();
         let (t, cat) = ret_cat(&f.fty.ret);
         let callee = match obj {
             Some(o) if f.class.is_some() && !f.is_static => o,
@@ -725,6 +726,11 @@ impl P {
         if cat == Cat::PR && !self.in_template() && self.is_abstract(&t.t) {
             // VIRT-8: a call that returns an abstract class.
             self.error(line, "VIRT-8", "call of a function that returns an abstract class");
+        }
+        if !self.in_template() && f.fty.params.iter().any(|q| self.is_abstract(&q.t)) {
+            // VIRT-8: the argument would make an object of an abstract
+            // class.
+            self.error(line, "VIRT-8", "call of a function with a parameter of an abstract class");
         }
         let call = Expr::new(EK::Call(Box::new(callee), args, Some(fid)), t, cat, line);
         let in_lambda = self.fns.iter().any(|f| f.is_lambda);
@@ -744,6 +750,32 @@ impl P {
                 }
                 Err(crate::consteval::CeErr::NotConst(r, m)) => self.error_because(line, "CEV-1", r, format!("call of consteval function is not a constant expression ({}: {})", r, m)),
                 Err(crate::consteval::CeErr::Unsupported(m)) => self.unsupported(line, format!("consteval call: {}", m)),
+            }
+        }
+        if !self.in_immediate_context() && self.in_unevaluated == 0 && !self.in_template() && !in_lambda && self.in_default_arg == 0 && args_n < f.params.len() {
+            // DEFARG-10: each call that uses a default argument checks the
+            // calls of immediate functions in it.
+            let mut imm = Vec::new();
+            for &p in &f.params[args_n..] {
+                if let Some(init) = self.var(p).and_then(|v| v.init.clone()) {
+                    crate::ast::walk_expr(&init, &mut |x| {
+                        if let EK::Call(_, _, Some(g)) = &x.k {
+                            imm.push((*g, x.clone()));
+                        }
+                    });
+                }
+            }
+            for (g, x) in imm {
+                if !self.func(g).is_some_and(|gi| gi.consteval) {
+                    continue;
+                }
+                match self.const_check(&x) {
+                    Err(crate::consteval::CeErr::NotConst(r, m)) => {
+                        self.error_because(line, "DEFARG-10", r, format!("the default argument's call of consteval function '{}' is not a constant expression ({}: {})", self.decls[g].name, r, m));
+                    }
+                    Err(crate::consteval::CeErr::Unsupported(m)) => self.unsupported(line, format!("consteval call in a default argument: {}", m)),
+                    Ok(()) => {}
+                }
             }
         }
         call
@@ -930,6 +962,21 @@ impl P {
             Ty::RRef(i) => ((**i).clone(), if matches!(i.t, Ty::Func(_)) { Cat::L } else { Cat::X }),
             _ => (ty.unqual(), Cat::PR),
         };
+        let ptr_to_fn = match &ty.t {
+            Ty::Ptr(x) | Ty::LRef(x) | Ty::RRef(x) => matches!(x.t, Ty::Func(_)),
+            _ => false,
+        };
+        if kind == CastKind::Static && ptr_to_fn && !self.in_template() && matches!(e.k, EK::Overloads(_) | EK::TemplId(..)) {
+            // OVL-19: the target type of a cast selects from the set.
+            let mark = self.d.list.len();
+            let r = self.convert_init(e.clone(), &ty, crate::decl2::InitForm::Copy, line);
+            if self.d.list.len() == mark && !matches!(r.k, EK::Unknown(_)) && !r.ty.is_unknown() {
+                let mut r = r;
+                r.cat = cat;
+                return r;
+            }
+            self.d.list.truncate(mark);
+        }
         if e.ty.is_unknown() || matches!(e.k, EK::Overloads(_) | EK::BoundMember(..)) {
             return Expr::new(EK::Unknown("cast of unknown operand".into()), target, cat, line);
         }
@@ -1448,7 +1495,17 @@ impl P {
                             for x in v {
                                 if let EK::Unknown(s) = &x.k {
                                     let name = s.split_whitespace().nth(1).unwrap_or("");
-                                    if let Some(i) = fields.iter().position(|&f| self.decls[f].name == name) {
+                                    // UNI-7: a member of an anonymous union
+                                    // names the union's one element.
+                                    let in_anon = |p: &P, f: DeclId| match &p.decls[f].k {
+                                        DK::Field(fi) if p.decls[f].name.is_empty() => matches!(fi.ty.t, Ty::Class(u) if p.classes[u].fields.iter().any(|&g| p.decls[g].name == name)),
+                                        _ => false,
+                                    };
+                                    if let Some(i) = fields.iter().position(|&f| self.decls[f].name == name).or_else(|| fields.iter().position(|&f| in_anon(self, f))) {
+                                        if last == Some(i) && self.decls[fields[i]].name.is_empty() {
+                                            self.error(line, "LIST-14", format!("designator '{}' names a second member of an anonymous union, which is one element", name));
+                                            break;
+                                        }
                                         if last.is_some_and(|l| i <= l) {
                                             self.error(line, "LIST-14", format!("designator '{}' is out of declaration order", name));
                                             break;

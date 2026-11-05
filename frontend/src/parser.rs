@@ -448,6 +448,8 @@ pub struct P {
     /// DEP-20: the next decl-specifiers are in a type-only position, so
     /// a qualified name with a dependent qualifier names a type.
     pub implicit_tn: bool,
+    /// CVF-7: the last conversion type had a placeholder.
+    pub last_conv_auto: bool,
     /// DEP-20: the parameters of the next parameter list are in
     /// type-only positions.
     pub params_tn: bool,
@@ -761,6 +763,12 @@ pub struct P {
     /// and of the type constraints of the parameters so far.
     pub head_cons: Option<Rc<crate::cons::CNorm>>,
     pub tparam_cons: Option<Rc<crate::cons::CNorm>>,
+    /// CNS-25: the constraints of the head of a template template
+    /// parameter, by the address of its parameter list.
+    pub ttp_cons: HashMap<usize, Rc<crate::cons::CNorm>>,
+    /// ORD-9 (G146): in a whole function type, `T&&` takes an lvalue
+    /// reference type as `T`.
+    pub collapse_rref: bool,
     /// An abbreviated function template being declared (DED-34), the
     /// nesting of parameter lists, and the placeholder parameters so far
     /// in the outermost one.
@@ -869,6 +877,7 @@ impl P {
             auto_in_own_init: None,
             no_gt: 0,
             implicit_tn: false,
+            last_conv_auto: false,
             params_tn: false,
             in_params_tn: false,
             params_value: false,
@@ -1026,6 +1035,8 @@ impl P {
             cons_settled: Default::default(),
             head_cons: None,
             tparam_cons: None,
+            ttp_cons: HashMap::new(),
+            collapse_rref: false,
             abbrev: None,
             head_parts: (None, None),
             fn_head_key: HashMap::new(),

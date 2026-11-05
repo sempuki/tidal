@@ -336,6 +336,14 @@ function template (CTAD-P1). A constant parameter declared with a
 placeholder pattern, such as `auto*`, matches an argument whose type has
 that form (DED-12).
 
+Partial ordering in a call gives each member template an object
+parameter (ORD-6), but for two members only when both belong to one
+class (G147 in report 21). For the whole function types of ORD-9, a
+`T&&` in one type takes an lvalue reference `X&` of the other as
+`T = X&` (G146). A requires clause of a member of a local class in a
+specialization is parsed with its errors held back, and a clause with
+an error stays unknown until a use needs it (INST-12, G149).
+
 A lambda with a placeholder parameter is a generic lambda (LAM-15). Its
 body is parsed as a pattern, so a check that needs the parameter types
 waits for a call (SA-5). The call operator is not instantiated, so a call

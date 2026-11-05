@@ -580,28 +580,39 @@ impl P {
         // same kind.
         let mut op_more: Vec<((DeclId, CK), (DeclId, CK))> = Vec::new();
         let specs: Vec<(DeclId, CK, bool)> = cands.iter().filter_map(|c| c.fid.filter(|f| self.spec_of.contains_key(f)).map(|f| (f, c.kind, c.member))).collect();
+        // A pair of specializations that the front end does not order.
+        let mut unordered = false;
         for &(a, ka, ma) in &specs {
             for &(b, kb, mb) in &specs {
-                if a == b || ma != mb {
+                if a == b {
                     continue;
                 }
-                if (ka == CK::Swapped) == (kb == CK::Swapped) {
+                let (sa, sb) = (ka == CK::Swapped, kb == CK::Swapped);
+                if ma == mb && sa == sb {
                     if self.spec_more_specialized(a, b, ops.len() - ma as usize) {
                         op_more.push(((a, ka), (b, kb)));
                     }
-                } else if !ma && ops.len() == 2 && (ka == CK::Swapped || kb == CK::Swapped) {
-                    // ORD-7: the swapped candidate with its parameters
-                    // reversed.
-                    self.order_rev = (ka == CK::Swapped, kb == CK::Swapped);
-                    if self.spec_more_specialized(a, b, 2) {
+                } else if ma != mb || (!ma && ops.len() == 2) {
+                    // ORD-6: a member against a non-member takes part with
+                    // its object parameter. ORD-7: a swapped candidate
+                    // takes part with its two parameters reversed, after
+                    // the object parameter of a member is added.
+                    if sa != sb && ops.len() != 2 {
+                        unordered = true;
+                        continue;
+                    }
+                    self.order_rev = (sa, sb);
+                    if self.spec_more_specialized(a, b, ops.len()) {
                         op_more.push(((a, ka), (b, kb)));
                     }
                     self.order_rev = (false, false);
+                } else {
+                    unordered = true;
                 }
             }
         }
         let best = (0..cands.len()).find(|&i| (0..cands.len()).all(|j| i == j || self.op_better(&cands[i], &cands[j], &op_more)));
-        if best.is_none() && cands.iter().any(|c| c.fid.is_some_and(|f| self.spec_of.contains_key(&f))) {
+        if best.is_none() && unordered {
             // OVL-27, OVL-28, ORD-6 for operator templates: left to the
             // older selection.
             return OpRes::NotHandled;

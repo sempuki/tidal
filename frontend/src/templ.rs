@@ -743,8 +743,18 @@ impl P {
         let mut pack: Vec<TArg> = Vec::new();
         let mut in_pack = false;
         let n = raw.len();
+        // A pack takes every explicit argument after it, also those at
+        // the positions of the invented parameters of `auto` (TARG-P2).
+        let mut pack_at: Option<usize> = None;
         for (i, r) in raw.into_iter().enumerate() {
-            let pi = if i < params.len() { i } else { params.len().saturating_sub(1) };
+            let pi = match pack_at {
+                Some(k) => k,
+                None if i < params.len() => i,
+                None => params.len().saturating_sub(1),
+            };
+            if params.get(pi).is_some_and(|p| p.pack) {
+                pack_at = Some(pi);
+            }
             let Some(p) = params.get(pi) else {
                 self.error(line, "TARG-6", format!("too many template arguments for '{}'", name));
                 return Err(());
@@ -885,6 +895,20 @@ impl P {
                     self.error(line, "TARG-18", format!("the template '{}' does not accept the arguments of the parameter's head", self.templs[t].name));
                     return Err(true);
                 }
+                // CNS-25: a parameter with constraints is at least as
+                // constrained as its argument.
+                if let Some(pc) = self.ttp_cons.get(&(Rc::as_ptr(&inner) as usize)).cloned() {
+                    let ac = self.templs[t].cons.clone();
+                    if ac.is_some() && inner.len() == self.templs[t].params.len() {
+                        let d = u32::MAX - 2;
+                        let ident: Vec<TArg> = inner.iter().enumerate().map(|(i, q)| crate::cons::identity_arg(q, d, i)).collect();
+                        let ad = self.templs[t].depth;
+                        if !self.at_least_constrained(&Some(pc), d, &ident, &ac, ad, &ident) {
+                            self.error(line, "CNS-25", format!("the template template parameter is not at least as constrained as the argument '{}'", self.templs[t].name));
+                            return Err(true);
+                        }
+                    }
+                }
                 Ok(TArg::Templ(n))
             }
             (_, RawArg::Expand(_)) => Err(false),
@@ -1000,6 +1024,10 @@ impl P {
                     return Err(false);
                 }
                 return bad(self, "TARG-13", "an integer argument for a floating-point parameter");
+            }
+            if et.t != pt.t {
+                // TARG-13: no conversion between two floating-point types.
+                return bad(self, "TARG-13", "a floating argument of another floating-point type");
             }
             let Some(v) = self.const_float_quiet(&e) else {
                 return bad(self, "TARG-13", "the template argument is not a constant expression");
@@ -1793,6 +1821,10 @@ impl P {
         if a.cons.is_none() && b.cons.is_none() {
             return true;
         }
+        // ORD-13: constraints decide only between equivalent heads.
+        if !heads_equivalent(&a.params, &b.params) {
+            return true;
+        }
         // The parameters of `b` in terms of the invented ones of `a`.
         let inv: Vec<TArg> = a.pats.iter().map(|x| self.invent_targ(x, a.depth)).collect();
         let mut bb = Binds::new(b.depth, &b.params);
@@ -1829,6 +1861,13 @@ impl P {
             (Some(TArg::Val(TVal::Param(d, i))), Some(pb)) if *d == INV => match ap.get(*i as usize).and_then(|x| x.pattern.as_ref()) {
                 Some(pa) => placeholder_fits(&pb.unqual(), &pa.unqual()),
                 None => matches!(ap.get(*i as usize).map(|x| &x.kind), Some(TPK::Const(_))) && matches!(ap[*i as usize].kind, TPK::Const(ref t) if placeholder_fits(&pb.unqual(), &t.unqual())),
+            },
+            // ORD-17: the invented value of an `auto` parameter has an
+            // invented type, which no parameter of a fixed type takes.
+            (Some(TArg::Val(TVal::Param(d, i))), None) if *d == INV => match (&q.kind, ap.get(*i as usize).map(|x| (&x.kind, x.pattern.is_some()))) {
+                (TPK::Const(t), Some((TPK::Auto, _))) if !t.is_unknown() => false,
+                (TPK::Const(t), Some((TPK::Const(u), false))) if !t.is_unknown() && !u.is_unknown() => t.unqual().t == u.unqual().t,
+                _ => true,
             },
             _ => true,
         })
@@ -1944,6 +1983,17 @@ impl P {
                 let mut f2 = (**f).clone();
                 f2.ret = self.subst_gen(&f.ret, b, inv);
                 f2.params = f.params.iter().map(|p| self.subst_gen(p, b, inv)).collect();
+                // DED-11: `noexcept(B)` takes the value of `B`.
+                if let Some((d, i)) = f.noexcept_param {
+                    if d == b.depth {
+                        if inv {
+                            f2.noexcept_param = Some((INV, i));
+                        } else if let Some(Some(TArg::Val(TVal::Const(_, CVal::Int(v))))) = b.vals.get(i as usize) {
+                            f2.noexcept = *v != 0;
+                            f2.noexcept_param = None;
+                        }
+                    }
+                }
                 QTy::new(Ty::Func(Box::new(f2)))
             }
             _ => return q.clone(),
@@ -2145,13 +2195,57 @@ impl P {
             TArg::Val(TVal::Param(dd, i)) if *dd == b.depth => Some(*i),
             _ => None,
         };
-        match idx {
-            Some(i) => b.bind(i, TArg::Pack(xs.to_vec())),
-            None => {
+        if let Some(i) = idx {
+            return b.bind(i, TArg::Pack(xs.to_vec()));
+        }
+        // A pattern such as `A&...` or `List<A>...`: each element matches
+        // the pattern alone, and each pack of the pattern collects its
+        // values in order.
+        let mut ps = Vec::new();
+        self.targ_params_in(pat, b, &mut ps);
+        ps.sort();
+        ps.dedup();
+        ps.retain(|&i| b.packs.get(i as usize).copied().unwrap_or(false));
+        if ps.is_empty() || xs.iter().any(|x| matches!(x, TArg::Expand(_) | TArg::Pack(_))) {
+            b.unknown = true;
+            return true;
+        }
+        let mut cols: Vec<Vec<TArg>> = vec![Vec::new(); ps.len()];
+        for x in xs {
+            let mut t = b.clone();
+            for &i in &ps {
+                t.vals[i as usize] = None;
+            }
+            if !self.deduce_targ(pat, x, &mut t) {
+                return false;
+            }
+            if t.unknown {
                 b.unknown = true;
-                true
+                return true;
+            }
+            for (k, &i) in ps.iter().enumerate() {
+                match t.vals[i as usize].take() {
+                    Some(v) => cols[k].push(v),
+                    None => {
+                        b.unknown = true;
+                        return true;
+                    }
+                }
+            }
+            // The parameters that are not packs keep their values.
+            for (j, v) in t.vals.into_iter().enumerate() {
+                if !ps.contains(&(j as u32)) {
+                    b.vals[j] = v;
+                }
+            }
+            b.nondeduced |= t.nondeduced;
+        }
+        for (k, &i) in ps.iter().enumerate() {
+            if !b.bind(i, TArg::Pack(std::mem::take(&mut cols[k]))) {
+                return false;
             }
         }
+        true
     }
 
     /// DED-11, DED-22: the value that an array bound gives, with the type
@@ -2324,6 +2418,12 @@ impl P {
             return false;
         }
         match (&p.t, &a.t) {
+            (Ty::RRef(x), Ty::LRef(_)) if self.collapse_rref && matches!(&x.t, Ty::Dep(d) if matches!(&**d, Dep::Param(dd, _) if *dd == b.depth)) && !x.c && !x.v => {
+                // ORD-9 (G146): `T&&` with `T` an lvalue reference.
+                let Ty::Dep(d) = &x.t else { unreachable!() };
+                let Dep::Param(_, i) = &**d else { unreachable!() };
+                b.bind(*i, TArg::Type(a.clone()))
+            }
             (Ty::Ptr(x), Ty::Ptr(y)) | (Ty::LRef(x), Ty::LRef(y)) | (Ty::RRef(x), Ty::RRef(y)) => self.deduce_ty(x, y, b),
             (Ty::Array(x, n), Ty::Array(y, m)) => n == m && self.deduce_ty(x, y, b),
             (Ty::MemPtr(c, x), Ty::MemPtr(d, y)) => c == d && self.deduce_ty(x, y, b),
@@ -2338,11 +2438,23 @@ impl P {
                 f.params[..n].iter().zip(g.params.iter()).all(|(p, a)| self.deduce_ty(p, a, b)) && b.bind(k, TArg::Pack(rest)) && self.deduce_ty(&f.ret, &g.ret, b)
             }
             (Ty::Func(f), Ty::Func(g)) => {
+                // DED-11: `noexcept(B)` gives `B` the value of the
+                // argument's `noexcept`.
+                let nx = match f.noexcept_param {
+                    Some((d, i)) if d == b.depth => {
+                        let v = match g.noexcept_param {
+                            Some((e, j)) => TVal::Param(e, j),
+                            None => TVal::Const(QTy::new(Ty::Bool), CVal::Int(g.noexcept as i128)),
+                        };
+                        b.bind(i, TArg::Val(v))
+                    }
+                    _ => f.noexcept == g.noexcept && f.noexcept_param == g.noexcept_param,
+                };
                 f.variadic == g.variadic
                     && f.cv_c == g.cv_c
                     && f.cv_v == g.cv_v
                     && f.refq == g.refq
-                    && f.noexcept == g.noexcept
+                    && nx
                     && self.deduce_fn_params(&f.params, &g.params, b)
                     && self.deduce_ty(&f.ret, &g.ret, b)
             }
@@ -2454,7 +2566,7 @@ impl P {
                 Dep::Opaque => false,
             },
             Ty::Ptr(x) | Ty::LRef(x) | Ty::RRef(x) | Ty::Array(x, _) | Ty::MemPtr(_, x) => self.mentions_unbound(x, b),
-            Ty::Func(f) => self.mentions_unbound(&f.ret, b) || f.params.iter().any(|p| self.mentions_unbound(p, b)),
+            Ty::Func(f) => self.mentions_unbound(&f.ret, b) || f.params.iter().any(|p| self.mentions_unbound(p, b)) || f.noexcept_param.is_some_and(|(d, i)| d == b.depth && open(i)),
             _ => false,
         }
     }
@@ -2505,6 +2617,11 @@ impl P {
                 self.params_in(&f.ret, b, out);
                 for p in &f.params {
                     self.params_in(p, b, out);
+                }
+                if let Some((d, i)) = f.noexcept_param {
+                    if d == b.depth {
+                        out.push(i);
+                    }
                 }
             }
             _ => {}
@@ -2723,6 +2840,11 @@ impl P {
         for (i, a) in args.iter().enumerate() {
             let Some(p) = ptys.get(i) else { break };
             if p.is_unknown() || pack_i.is_some_and(|k| i >= k) {
+                continue;
+            }
+            let mut held = Vec::new();
+            self.params_in(p, &b, &mut held);
+            if !held.is_empty() {
                 continue;
             }
             if let Ok(None) = self.ics_form(a, p, false) {
@@ -3251,11 +3373,19 @@ impl P {
                         }
                     }
                 }
-                None => {
+                None if f.kind == FnKind::Conversion => {
+                    // ORD-8: the result types.
                     v.push((f.fty.ret.clone(), false));
-                    for (i, p) in f.fty.params.iter().enumerate() {
-                        v.push((p.clone(), Some(i) == k));
-                    }
+                    let _ = k;
+                }
+                None => {
+                    // ORD-9: the whole function types make one pair, and
+                    // ORD-2 removes nothing inside them.
+                    let mut ft = f.fty.clone();
+                    ft.cv_c = false;
+                    ft.cv_v = false;
+                    ft.refq = 0;
+                    v.push((QTy::new(Ty::Func(Box::new(ft))), false));
                 }
             }
             v
@@ -3267,21 +3397,27 @@ impl P {
         let obj_param = |f: &FuncInfo, other: &FuncInfo| -> QTy {
             let c = f.class.unwrap();
             let ct = QTy { t: Ty::Class(c), c: f.fty.cv_c, v: f.fty.cv_v };
-            let rref = f.fty.refq == 2 || (f.fty.refq == 0 && other.fty.params.first().is_some_and(|p| matches!(p.t, Ty::RRef(_))));
+            let other_rref = if member(other) { other.fty.refq == 2 } else { other.fty.params.first().is_some_and(|p| matches!(p.t, Ty::RRef(_))) };
+            let rref = f.fty.refq == 2 || (f.fty.refq == 0 && other_rref);
             QTy::new(if rref { Ty::RRef(Box::new(ct)) } else { Ty::LRef(Box::new(ct)) })
         };
         let shift = |f: &FuncInfo, other: &FuncInfo, k: Option<usize>| -> (FuncInfo, Option<usize>) {
             let mut g = f.clone();
-            if member(f) && !member(other) && nargs.is_some() {
+            // ORD-6: each member gets an object parameter. For two
+            // members, only members of one class (G147).
+            if member(f) && nargs.is_some() && (!member(other) || other.class == f.class) {
                 g.fty.params.insert(0, obj_param(f, other));
                 return (g, k.map(|k| k + 1));
             }
             (g, k)
         };
+        let both = member(&f1) && member(&f2) && f1.class == f2.class && nargs.is_some();
         let (g1, k1) = shift(&f1, &f2, k1);
         let (g2, k2) = shift(&f2, &f1, k2);
-        let mut ty1 = types(&g1, k1, nargs);
-        let mut ty2 = types(&g2, k2, nargs);
+        // The call's count of arguments leaves out the object argument.
+        let nargs_obj = if both { nargs.map(|n| n + 1) } else { nargs };
+        let mut ty1 = types(&g1, k1, nargs_obj);
+        let mut ty2 = types(&g2, k2, nargs_obj);
         // ORD-7: a swapped candidate takes part with its parameters in the
         // reverse order.
         let rev = std::mem::take(&mut self.order_rev);
@@ -3318,8 +3454,11 @@ impl P {
             }
             res
         };
+        let whole = nargs.is_none() && f1.kind != FnKind::Conversion;
+        self.collapse_rref = whole;
         let mut r12 = dir(self, &ty1, d1, &ty2, &p2, d2);
         let mut r21 = dir(self, &ty2, d2, &ty1, &p1, d1);
+        self.collapse_rref = false;
         // Step 5: the reference tie-breakers inside each pair.
         for i in 0..n {
             if !(r12[i] && r21[i]) {
@@ -3357,7 +3496,8 @@ impl P {
                 return (true, false);
             }
             // ORD-13: the more constrained template.
-            if let Some(x) = self.templ_cons_order(t1, t2) {
+            let ps = (nargs.is_some() && (member(&f1) || member(&f2))).then(|| (f1.fty.params.clone(), f2.fty.params.clone()));
+            if let Some(x) = self.templ_cons_order(t1, t2, ps) {
                 return x;
             }
         }

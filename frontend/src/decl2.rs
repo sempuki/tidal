@@ -27,6 +27,77 @@ pub struct PendingTemplate {
 }
 
 impl P {
+    /// Start a parse whose diagnostics are held back.
+    pub fn begin_held(&mut self) -> (u32, u32, usize) {
+        self.d.muted += 1;
+        (self.d.muted_errors, self.d.muted_unsup, self.d.list.len())
+    }
+
+    /// End a parse that `begin_held` started. True when it had an error
+    /// or an unsupported construct.
+    pub fn end_held(&mut self, h: (u32, u32, usize)) -> bool {
+        self.d.muted -= 1;
+        let bad = self.d.muted_errors != h.0 || self.d.muted_unsup != h.1 || self.d.list.len() != h.2;
+        self.d.muted_errors = h.0;
+        self.d.muted_unsup = h.1;
+        self.d.list.truncate(h.2);
+        bad
+    }
+
+    /// TYN-9: why class `c` is not C-like, beyond a base, a member
+    /// function, or a default member initializer of the class itself:
+    /// a member of another kind, a lambda expression in the class, or a
+    /// member class that is not C-like.
+    pub fn not_c_like(&self, c: usize, depth: u32) -> Option<String> {
+        if depth > 8 {
+            return None;
+        }
+        let sc = self.classes[c].scope;
+        let inside = |p: &P, mut s: usize| -> bool {
+            loop {
+                if s == sc {
+                    return true;
+                }
+                match p.scopes[s].parent {
+                    Some(q) => s = q,
+                    None => return false,
+                }
+            }
+        };
+        if self.classes.iter().any(|k| k.name == "(lambda)" && self.scopes[k.scope].parent.is_some_and(|q| inside(self, q))) {
+            return Some("it has a lambda expression".into());
+        }
+        let mut names: Vec<(&String, &Vec<DeclId>)> = self.scopes[sc].names.iter().collect();
+        names.sort_by_key(|x| x.0.clone());
+        for (n, ids) in names {
+            for &d in ids {
+                if self.decls[d].scope != sc || self.decls[d].line == 0 {
+                    continue;
+                }
+                match &self.decls[d].k {
+                    DK::Field(_) | DK::Enum(_) | DK::Enumerator(..) => {}
+                    DK::Class(k) if *k == c => {}
+                    DK::Class(k) => {
+                        {
+                            if !self.classes[*k].bases.is_empty() || self.classes[*k].fields.iter().any(|&f| matches!(&self.decls[f].k, DK::Field(fi) if fi.init.is_some())) {
+                                return Some(format!("the member class '{}' has a base or a default member initializer", n));
+                            }
+                            if let Some(why) = self.not_c_like(*k, depth + 1) {
+                                return Some(format!("the member class '{}' is not C-like: {}", n, why));
+                            }
+                        }
+                    }
+                    DK::Func(f) if f.defaulted || f.class != Some(c) => {}
+                    DK::Func(_) => return Some(format!("'{}' is a member function", n)),
+                    DK::Type(_) => return Some(format!("'{}' is a member alias", n)),
+                    DK::Var(_) => return Some(format!("'{}' is a static data member", n)),
+                    _ => return Some(format!("'{}' is not a data member, a member class, or a member enumeration", n)),
+                }
+            }
+        }
+        None
+    }
+
     pub fn parse_translation_unit(&mut self) {
         while self.tok().kind != TK::Eof {
             if self.at("}") {
@@ -471,7 +542,16 @@ impl P {
         // alias declaration: using name [attrs] = type-id ;
         if self.is_ident() && (self.at_k(1, "=") || (self.at_k(1, "[") && self.at_k(2, "["))) {
             let name = self.ident()?;
+            let a0 = self.pos;
             self.skip_attributes();
+            // ATTR-2: `nodiscard` and `noreturn` do not go on a type alias.
+            for k in a0..self.pos {
+                let t = &self.toks[k];
+                if t.kind == TK::Ident && matches!(t.text.as_str(), "nodiscard" | "noreturn") && !(k > 0 && self.toks[k - 1].text == "::") && self.toks.get(k + 1).is_some_and(|n| n.text != "::") {
+                    let msg = format!("'{}' on a type alias", t.text);
+                    self.error(line, "ATTR-2", msg);
+                }
+            }
             self.expect("=")?;
             self.implicit_tn = true;
             let q = self.parse_type_id()?;
@@ -713,6 +793,8 @@ impl P {
                 let has_init = self.classes[c].fields.iter().any(|&f| matches!(&self.decls[f].k, DK::Field(fi) if fi.init.is_some()) || self.deferred.iter().any(|d| d.field == Some(f)));
                 if !self.classes[c].bases.is_empty() || has_fn || has_init {
                     self.error(line, "TYN-9", "a class named for linkage by a typedef has a base, a member function, or a default member initializer");
+                } else if let Some(why) = self.not_c_like(c, 0) {
+                    self.error(line, "TYN-9", format!("a class named for linkage by a typedef is not C-like: {}", why));
                 }
             }
             if self.classes[c].name.is_empty() {
@@ -767,7 +849,9 @@ impl P {
                 self.pos += 1;
                 let inner_scope = self.push_scope(SK::Template);
                 let _ = inner_scope;
+                let outer_cons = self.tparam_cons.take();
                 let inner = self.parse_tparams(u32::MAX - 2);
+                let inner_cons = std::mem::replace(&mut self.tparam_cons, outer_cons);
                 // A requires clause on the parameter's head (CPT-8).
                 let inner = match inner {
                     Ok(v) if self.at("requires") => {
@@ -800,7 +884,11 @@ impl P {
                         self.error(pl, "TPL-34", "a template parameter pack has a default argument");
                     }
                 }
-                params.push(TParam { name, kind: TPK::Templ(std::rc::Rc::new(inner)), pack, default, line: pl, dauto: false, pattern: None });
+                let inner = std::rc::Rc::new(inner);
+                if let Some(n) = inner_cons {
+                    self.ttp_cons.insert(std::rc::Rc::as_ptr(&inner) as usize, n);
+                }
+                params.push(TParam { name, kind: TPK::Templ(inner), pack, default, line: pl, dauto: false, pattern: None });
             } else if let Some((ctid, nlen)) = self.concept_at() {
                 // A type constraint (CPT-17 to CPT-21).
                 self.tparam_constrained = true;
@@ -864,7 +952,7 @@ impl P {
                     TParam { name, kind: TPK::Type, pack, default, line: pl, dauto: false, pattern: None }
                 };
                 params.push(param.clone());
-                if depth != u32::MAX - 2 {
+                {
                     let n = self.type_constraint_norm(ctid, extra, &param, depth, idx as usize, &params, (cstart, cstart + nlen, lt, cend), pl);
                     self.tparam_cons = crate::cons::and(self.tparam_cons.take(), n);
                 }
@@ -2133,7 +2221,7 @@ impl P {
             // The implicit default constructor stays (CTOR-20 decides
             // whether it is deleted).
             let fi = FuncInfo {
-                fty: FnTy { ret: QTy::new(Ty::Void), params: vec![], variadic: false, noexcept: false, cv_c: false, cv_v: false, refq: 0 },
+                fty: FnTy { ret: QTy::new(Ty::Void), params: vec![], variadic: false, noexcept: false, cv_c: false, cv_v: false, refq: 0, noexcept_param: None },
                 params: vec![],
                 defaults: 0,
                 body: None,
@@ -2350,6 +2438,11 @@ impl P {
                 let pclass = self.last_partial_class.take();
                 let ck = self.cons_key(&cons);
                 if let Some(k) = self.templs[t].partials.iter().position(|p| p.pats == pats && crate::templ::heads_equivalent(&p.params, &tparams) && self.cons_key(&p.cons) == ck) {
+                    if defined && self.inst_depth > 0 && self.templs[t].partials[k].src.is_some() && self.templs[t].partials[k].line != line {
+                        // INST-6: two member partial specializations become
+                        // the same one in the specialization.
+                        self.error(line, "INST-6", format!("the instantiation makes two definitions of one partial specialization of '{}'", self.templs[t].name));
+                    }
                     if defined {
                         self.templs[t].partials[k].src = Some(src);
                         self.templs[t].partials[k].class = pclass;
@@ -2579,8 +2672,34 @@ impl P {
                     Some(Ty::Class(x)) => self.classes[*x].name.clone(),
                     _ => String::new(),
                 };
+                // ACC-20: a templated friend `C<T>::f` names the member `f`
+                // of each specialization of `C`, and no other member.
+                let mut member_name = None;
+                if templ && !ends {
+                    let (mut k, mut depth) = (self.pos, 0i32);
+                    let mut last = None;
+                    while k < self.toks.len() {
+                        let t = &self.toks[k];
+                        match t.text.as_str() {
+                            "<" if t.kind == TK::Punct => depth += 1,
+                            ">" if t.kind == TK::Punct => depth -= 1,
+                            ">>" if t.kind == TK::Punct => depth -= 2,
+                            "::" if depth == 0 => last = Some(k),
+                            "(" | ";" | "{" | "=" if depth <= 0 => break,
+                            _ => {}
+                        }
+                        k += 1;
+                    }
+                    if let Some(l) = last {
+                        if self.toks.get(l + 1).is_some_and(|t| t.kind == TK::Ident && t.text != "operator") && l + 2 == k && self.toks[k].text == "(" && l > self.pos {
+                            member_name = Some(self.toks[l + 1].text.clone());
+                        }
+                    }
+                }
                 let fs = self.friend_sets.entry(c).or_default();
-                if templ {
+                if let Some(n) = member_name {
+                    fs.names.insert(n);
+                } else if templ {
                     fs.open = true;
                 } else if ends {
                     match ds.ty.as_ref().map(|t| &t.t) {
@@ -3395,6 +3514,7 @@ impl P {
                     has_explicit_this: false,
                     trailing_auto: None,
                     noexcept_dep: false,
+                    noexcept_param: None,
                 };
                 let mut d2 = d.clone();
                 d2.ops.push(DOp::Func(Box::new(fd)));
@@ -3652,6 +3772,10 @@ impl P {
             if matches!(nonref(&e.ty).t, Ty::Enum(en) if self.enums[en].scoped) && !self.in_template() {
                 // BF-2 (Q-0313): a width of scoped enumeration type.
                 self.error(bl, "BF-2", "bit-field width has a scoped enumeration type");
+            }
+            if let Some(why) = self.int_class_operand(&e) {
+                // BF-1, BF-2: a width of class type.
+                self.error(bl, "BF-2", format!("bit-field width does not convert to an integral constant: {}", why));
             }
             match self.const_int(&e) {
                 Ok(v) => {
@@ -4644,6 +4768,11 @@ impl P {
                 }
             }
         }
+        if kind == FnKind::Conversion && self.pending_template.is_some() && self.last_conv_auto && self.inst_depth == 0 {
+            // CVF-7 (Q-0388): a conversion function template whose name has
+            // a placeholder.
+            self.error(line, "CVF-7", "a conversion function template whose name is a placeholder");
+        }
         if kind == FnKind::Conversion && !self.in_template() {
             // CVF-7: the form of a conversion function.
             let nparams = fd.params.len().saturating_sub(if fd.has_explicit_this { 1 } else { 0 });
@@ -4855,9 +4984,16 @@ impl P {
                 self.cons_head = Some((Rc::new(h.clone()), pending_depth));
             }
             let saved_unmodeled = std::mem::take(&mut self.cons_unmodeled);
+            // INST-12 (Q-0392): the clause of a member of a local class in
+            // a specialization waits for a use. The front end parses it
+            // with its errors held back, and a clause with an error is a
+            // clause it does not model.
+            let local = self.inst_depth > 0 && !self.in_template() && matches!(ctx, Ctx::Class(_)) && self.stack.iter().any(|&x| matches!(self.scopes[x].kind, SK::Block | SK::Params));
+            let held = if local { Some(self.begin_held()) } else { None };
             let r = self.cons_clause(false);
+            let failed = held.is_some_and(|h| self.end_held(h));
             self.cons_head = saved_head;
-            clause_unmodeled = std::mem::replace(&mut self.cons_unmodeled, saved_unmodeled);
+            clause_unmodeled = std::mem::replace(&mut self.cons_unmodeled, saved_unmodeled) || failed;
             let n = r?;
             clause_key = Some(self.clause_key(st, self.pos));
             clause = Some(n);
@@ -4946,7 +5082,7 @@ impl P {
                         // (A member with a trailing requires-clause can
                         // overload one with the same parameters.)
                         existing = Some(p);
-                    } else if f.fty.params == fty.params && in_class_body && f.fty.refq != fty.refq && (f.fty.refq == 0 || fty.refq == 0) {
+                    } else if f.fty.params == fty.params && in_class_body && f.fty.refq != fty.refq && (f.fty.refq == 0 || fty.refq == 0) && f.fty.cv_c == fty.cv_c && f.fty.cv_v == fty.cv_v {
                         // CLS-6: overloads must all have ref-qualifiers or none.
                         self.error(line, "CLS-26", "overloads with and without ref-qualifiers");
                     } else if f.fty.params == fty.params && f.fty.variadic == fty.variadic && !distinct_templates && in_class_body && (f.is_static || is_static) && f.fty.refq == fty.refq {

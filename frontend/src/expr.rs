@@ -2781,7 +2781,7 @@ impl P {
             Some(f) => (f.params.clone(), f.ptys.clone(), f.defaults, f.variadic),
             None => (vec![], vec![], 0, false),
         };
-        let fty = FnTy { ret, params: ptys, variadic, noexcept, cv_c: !is_mutable && !is_static, cv_v: false, refq: 0 };
+        let fty = FnTy { ret, params: ptys, variadic, noexcept, cv_c: !is_mutable && !is_static, cv_v: false, refq: 0, noexcept_param: None };
         let ptr_fty = FnTy { cv_c: false, ..fty.clone() };
         let captureless = caps.is_empty() && this_member.is_none() && self.classes[c].fields.is_empty();
         if !captureless {
@@ -2835,7 +2835,7 @@ impl P {
             // function with the parameters and result of its call operator.
             let target = QTy::new(Ty::Ptr(Box::new(QTy::new(Ty::Func(Box::new(ptr_fty))))));
             let cf = FuncInfo {
-                fty: FnTy { ret: target.clone(), params: vec![], variadic: false, noexcept: true, cv_c: true, cv_v: false, refq: 0 },
+                fty: FnTy { ret: target.clone(), params: vec![], variadic: false, noexcept: true, cv_c: true, cv_v: false, refq: 0, noexcept_param: None },
                 params: vec![],
                 defaults: 0,
                 body: None,
@@ -2947,6 +2947,20 @@ impl P {
         }
     }
 
+    /// LAM-6: the innermost class or block scope is a class scope.
+    fn class_before_block(&self) -> bool {
+        for &s in self.stack.iter().rev() {
+            match self.scopes[s].kind {
+                SK::Block => return false,
+                // The body of a member function of the class is a block.
+                SK::Class(c) => return !self.fns.last().is_some_and(|f| f.class == Some(c)),
+                SK::Namespace => return false,
+                _ => {}
+            }
+        }
+        false
+    }
+
     #[allow(clippy::type_complexity)]
     fn parse_captures(&mut self, in_fn: bool, line: u32) -> PR<(Option<bool>, Vec<String>, Vec<(u8, Option<DeclId>, bool, Option<Expr>)>)> {
         let mut default: Option<bool> = None; // Some(true) for [=], Some(false) for [&]
@@ -2964,6 +2978,10 @@ impl P {
                 if !in_fn && self.class_depth == 0 && self.dmi_depth == 0 {
                     // LAM-6: a capture default outside a function (Q-0037).
                     self.error(line, "LAM-6", "capture default in a lambda outside a function");
+                } else if self.dmi_depth == 0 && self.class_before_block() {
+                    // LAM-6: a member declaration or a default argument of
+                    // a local class is not inside a block.
+                    self.error(line, "LAM-6", "capture default in a lambda that no block encloses, in a member declaration of a class");
                 }
             } else if self.at("this") || (self.at("*") && self.at_k(1, "this")) {
                 let star = self.at("*");
@@ -5851,6 +5869,11 @@ impl P {
         if ac.is_some_and(|k| self.class_uncertain(k)) || bc.is_some_and(|k| self.class_uncertain(k)) {
             return None;
         }
+        if ac.is_some() && bc.is_some() {
+            if let Some(r) = self.cond16_classes(c, a, b, line) {
+                return Some(r);
+            }
+        }
         // A derived class lvalue and a base class lvalue give a base class
         // lvalue.
         if let (Some(x), Some(y), Cat::L, Cat::L) = (ac, bc, a.cat, b.cat) {
@@ -5907,6 +5930,22 @@ impl P {
             fns.iter().filter_map(|&f| p.func(f)).filter(|f| !f.template && !f.explicit).map(|f| nonref(&f.fty.ret).unqual()).collect()
         };
         let plain = |p: &P, k: usize| p.classes[k].ctors.is_empty() && p.classes[k].bases.is_empty() && conv_rets(p, k).iter().all(|t| !matches!(t.t, Ty::Class(_) | Ty::Unknown | Ty::Dep(_)));
+        if ac.is_some() != bc.is_some() {
+            // COND-16: an ambiguous conversion sequence of the class
+            // operand makes the expression not valid.
+            let (ce, ot) = if ac.is_some() { (a, &bt) } else { (b, &at) };
+            let target = match &ot.t {
+                Ty::Array(el, _) => QTy::new(Ty::Ptr(el.clone())),
+                Ty::Func(_) => QTy::new(Ty::Ptr(Box::new(ot.clone()))),
+                _ => ot.unqual(),
+            };
+            if let Ok(Some(s)) = self.ics_value_pub(ce, &target) {
+                if s.kind == crate::ics::IK::Ambig {
+                    self.error(line, "COND-5", format!("the conversion of the conditional operand to {} is ambiguous", self.show_ty(&target)));
+                    return Some(Expr::unknown(line, "bad conditional"));
+                }
+            }
+        }
         let (a2b, b2a) = match (ac, bc) {
             (Some(x), Some(y)) if plain(self, x) && plain(self, y) => (false, false),
             _ => (converts(self, a, &bt)?, converts(self, b, &at)?),
@@ -5951,6 +5990,210 @@ impl P {
         let arith = |p: &P, t: &Ty| t.is_arithmetic() || p.is_unscoped_enum(t);
         let (a2, b2) = if arith(self, &a2.ty.t) && arith(self, &b2.ty.t) { (self.promote_expr(a2), self.promote_expr(b2)) } else { (a2, b2) };
         Some(self.build_cond(c.clone(), a2, b2, line))
+    }
+
+    /// COND-16: how the class operand `e` converts for an operand of type
+    /// `t` and category `cat`: the type and category it converts to, and
+    /// whether the conversion sequence is ambiguous. Ok(None) when it does
+    /// not convert, Err(()) when the front end cannot tell.
+    fn cond16_dir(&mut self, e: &Expr, t: &QTy, cat: Cat) -> Result<Option<(QTy, Cat, bool)>, ()> {
+        let et = nonref(&e.ty);
+        let Ty::Class(x) = et.t else { return Err(()) };
+        let compat = |p: &P, from: &QTy, to: &QTy| -> bool {
+            let rel = match (&from.t, &to.t) {
+                (Ty::Class(f), Ty::Class(g)) => f == g || p.is_base_of(*g, *f),
+                (f, g) => f == g,
+            };
+            rel && (to.c || !from.c) && (to.v || !from.v)
+        };
+        let mut fns = Vec::new();
+        self.conv_fns(x, 0, &mut fns);
+        let mut rets = Vec::new();
+        for &f in &fns {
+            if self.is_func_templ(f) {
+                return Err(());
+            }
+            match self.func(f) {
+                Some(fi) if fi.explicit => {}
+                Some(fi) => rets.push(fi.fty.ret.clone()),
+                None => return Err(()),
+            }
+        }
+        // Steps 1 and 2: a reference to `t` that binds directly.
+        let direct = |p: &P, lref: bool| -> usize {
+            rets.iter()
+                .filter(|r| match &r.t {
+                    Ty::LRef(u) => lref && compat(p, u, t),
+                    Ty::RRef(u) => !lref && compat(p, u, t),
+                    Ty::Class(_) => !lref && compat(p, r, t),
+                    _ => false,
+                })
+                .count()
+        };
+        match cat {
+            Cat::L => {
+                if e.cat == Cat::L && compat(self, &et, t) {
+                    return Ok(Some((t.clone(), Cat::L, false)));
+                }
+                match direct(self, true) {
+                    0 => {}
+                    1 => return Ok(Some((t.clone(), Cat::L, false))),
+                    _ => return Err(()),
+                }
+            }
+            Cat::X => {
+                if e.cat != Cat::L && compat(self, &et, t) {
+                    return Ok(Some((t.clone(), Cat::X, false)));
+                }
+                match direct(self, false) {
+                    0 => {}
+                    1 => return Ok(Some((t.clone(), Cat::X, false))),
+                    _ => return Err(()),
+                }
+            }
+            Cat::PR => {}
+        }
+        // Step 3: the target of the table.
+        if let Ty::Class(y) = t.t {
+            if x == y {
+                let ok = (t.c || !et.c) && (t.v || !et.v);
+                return Ok(ok.then(|| (t.clone(), Cat::PR, false)));
+            }
+            if self.is_base_of(y, x) {
+                return Ok(Some((QTy { t: Ty::Class(y), c: et.c, v: et.v }, Cat::PR, false)));
+            }
+            if self.is_base_of(x, y) {
+                return Ok(None);
+            }
+        }
+        let target = match &t.t {
+            Ty::Class(_) => t.clone(),
+            Ty::Array(el, _) => QTy::new(Ty::Ptr(el.clone())),
+            Ty::Func(_) => QTy::new(Ty::Ptr(Box::new(t.clone()))),
+            _ => t.unqual(),
+        };
+        match self.ics_value_pub(e, &target.unqual()) {
+            Ok(Some(s)) => Ok(Some((target, Cat::PR, s.kind == crate::ics::IK::Ambig))),
+            Ok(None) => Ok(None),
+            Err(()) => Err(()),
+        }
+    }
+
+    /// COND-16, COND-3, COND-5 for two operands of class type. None when
+    /// the front end leaves the case to the older steps.
+    fn cond16_classes(&mut self, c: &Expr, a: &Expr, b: &Expr, line: u32) -> Option<Expr> {
+        let (at, bt) = (nonref(&a.ty), nonref(&b.ty));
+        if at == bt && at.c == bt.c && at.v == bt.v {
+            // The same type and different categories: a prvalue.
+            return self.cond16_finish(c, a.clone(), b.clone(), line);
+        }
+        let da = self.cond16_dir(a, &bt, b.cat).ok()?;
+        let db = self.cond16_dir(b, &at, a.cat).ok()?;
+        let conv = |p: &mut P, e: &Expr, (t, cat, amb): (QTy, Cat, bool)| -> Expr {
+            if amb {
+                p.error(line, "COND-5", format!("the conversion of the conditional operand to {} is ambiguous", p.show_ty(&t)));
+                return Expr::unknown(line, "bad conditional");
+            }
+            match cat {
+                Cat::L | Cat::X => {
+                    let r = if cat == Cat::L { Ty::LRef(Box::new(t.clone())) } else { Ty::RRef(Box::new(t.clone())) };
+                    let mut x = p.bind_ref(e.clone(), &QTy::new(r), line, "COND-16");
+                    if !matches!(x.k, EK::Unknown(_)) {
+                        x.ty = t;
+                        x.cat = cat;
+                    }
+                    x
+                }
+                Cat::PR => match p.implicit(e.clone(), &t.unqual(), false) {
+                    Ok(mut x) => {
+                        x.ty = t;
+                        x.cat = Cat::PR;
+                        x
+                    }
+                    Err(m) => {
+                        p.error(line, "COND-5", m);
+                        Expr::unknown(line, "bad conditional")
+                    }
+                },
+            }
+        };
+        match (da, db) {
+            (Some(_), Some(_)) => {
+                self.error(line, "COND-5", format!("each operand of the conditional converts to the type of the other: {} and {}", self.show_ty(&a.ty), self.show_ty(&b.ty)));
+                Some(Expr::unknown(line, "bad conditional"))
+            }
+            (None, None) => {
+                let has_conv = |p: &P, q: &QTy| match q.t {
+                    Ty::Class(k) => {
+                        let mut v = Vec::new();
+                        p.conv_fns(k, 0, &mut v);
+                        !v.is_empty()
+                    }
+                    _ => false,
+                };
+                if has_conv(self, &at) || has_conv(self, &bt) {
+                    return None;
+                }
+                self.error(line, "COND-5", format!("conditional operands have no common type: {} and {}", self.show_ty(&a.ty), self.show_ty(&b.ty)));
+                Some(Expr::unknown(line, "bad conditional"))
+            }
+            (Some(d), None) => {
+                let a2 = conv(self, a, d);
+                if matches!(a2.k, EK::Unknown(_)) {
+                    return Some(a2);
+                }
+                self.cond16_finish(c, a2, b.clone(), line)
+            }
+            (None, Some(d)) => {
+                let b2 = conv(self, b, d);
+                if matches!(b2.k, EK::Unknown(_)) {
+                    return Some(b2);
+                }
+                self.cond16_finish(c, a.clone(), b2, line)
+            }
+        }
+    }
+
+    /// COND-3 after COND-16: operands of one type keep a common category,
+    /// or give a prvalue. Operands that still differ are an error.
+    fn cond16_finish(&mut self, c: &Expr, a: Expr, b: Expr, line: u32) -> Option<Expr> {
+        let (at, bt) = (nonref(&a.ty), nonref(&b.ty));
+        if at.is_unknown() || bt.is_unknown() {
+            return None;
+        }
+        if !(at == bt && at.c == bt.c && at.v == bt.v) {
+            self.error(line, "COND-5", format!("conditional operands have no common type: {} and {}", self.show_ty(&a.ty), self.show_ty(&b.ty)));
+            return Some(Expr::unknown(line, "bad conditional"));
+        }
+        if a.cat == b.cat {
+            return Some(self.build_cond(c.clone(), a, b, line));
+        }
+        // A prvalue: each glvalue operand is copied.
+        let prv = |p: &mut P, e: Expr| -> Option<Expr> {
+            if e.cat == Cat::PR {
+                return Some(e);
+            }
+            if let Ty::Class(k) = at.t {
+                p.check_copy_from(k, &e, true, false, line);
+            }
+            let mark = p.d.list.len();
+            match p.implicit(e, &at.unqual(), false) {
+                Ok(mut x) => {
+                    x.ty = QTy { t: x.ty.t.clone(), c: at.c, v: at.v };
+                    x.cat = Cat::PR;
+                    Some(x)
+                }
+                Err(_) => {
+                    p.d.list.truncate(mark);
+                    None
+                }
+            }
+        };
+        let a2 = prv(self, a)?;
+        let b2 = prv(self, b)?;
+        let t = QTy { t: at.t.clone(), c: at.c, v: at.v };
+        let c2 = self.contextual_bool(c.clone(), "COND-1");
+        Some(Expr::new(EK::Cond(Box::new(c2), Box::new(a2), Box::new(b2)), t, Cat::PR, line))
     }
 
     pub fn build_cond(&mut self, c: Expr, a: Expr, b: Expr, line: u32) -> Expr {

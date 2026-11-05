@@ -720,7 +720,7 @@ impl P {
 
     /// A hidden function template for a guide.
     fn guide_templ(&mut self, g: &Guide, name: &str) -> (DeclId, usize) {
-        let fty = FnTy { ret: g.result.clone(), params: g.params.clone(), variadic: g.variadic, noexcept: false, cv_c: false, cv_v: false, refq: 0 };
+        let fty = FnTy { ret: g.result.clone(), params: g.params.clone(), variadic: g.variadic, noexcept: false, cv_c: false, cv_v: false, refq: 0, noexcept_param: None };
         let fi = FuncInfo {
             fty,
             params: vec![],
@@ -824,11 +824,30 @@ impl P {
                     _ => false,
                 }
             };
+            // Through an alias template, the class template it names.
+            let mut class_t = tid;
+            if self.templs[tid].kind == TKind::Alias {
+                let ident = Self::head_args(&self.templs[tid].params.clone(), self.templs[tid].depth);
+                let pat = self.class_inst(tid, ident, line);
+                match &pat.t {
+                    Ty::Dep(d) => {
+                        if let Dep::Id(TName::Templ(b), _) = &**d {
+                            class_t = *b;
+                        }
+                    }
+                    Ty::Class(c) => {
+                        if let Some(x) = self.inst_of.get(c) {
+                            class_t = x.0;
+                        }
+                    }
+                    _ => {}
+                }
+            }
             let single_spec = args.len() == 1 && match nonref(&args[0].ty).t {
                 Ty::Class(c) => {
                     let mut bases = vec![c];
                     self.all_bases(c, &mut bases, 0);
-                    bases.iter().any(|b| self.inst_of.get(b).is_some_and(|(t, _)| *t == tid))
+                    bases.iter().any(|b| self.inst_of.get(b).is_some_and(|(t, _)| *t == class_t))
                 }
                 _ => false,
             };

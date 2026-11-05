@@ -68,6 +68,9 @@ pub struct FnDecl {
     /// In a template, the operand of `noexcept` depends on a parameter
     /// (DEP-9): a function type made from this declarator is dependent.
     pub noexcept_dep: bool,
+    /// DED-11: the operand of `noexcept` is a constant template
+    /// parameter.
+    pub noexcept_param: Option<(u32, u32)>,
 }
 
 #[derive(Clone, Debug)]
@@ -542,6 +545,48 @@ impl P {
         }
     }
 
+    /// BF-1, ALN-8: a class operand that must convert to an integral or
+    /// unscoped enumeration type. The class is a literal type, and exactly
+    /// one of its conversion functions gives such a type, a `constexpr`
+    /// one. Returns the reason when the class does not meet this.
+    pub fn int_class_operand(&mut self, e: &Expr) -> Option<String> {
+        let Ty::Class(c) = nonref(&e.ty).t else { return None };
+        if self.in_template() || !self.class_ok(c) {
+            return None;
+        }
+        if self.literal_type(&QTy::new(Ty::Class(c))) == Some(false) {
+            return Some(format!("the class '{}' is not a literal type", self.classes[c].name));
+        }
+        let mut fs = Vec::new();
+        self.conv_fns(c, 0, &mut fs);
+        let mut ints = Vec::new();
+        for d in fs {
+            if self.is_func_templ(d) {
+                return None;
+            }
+            let Some(f) = self.func(d) else { return None };
+            if f.explicit {
+                continue;
+            }
+            let r = nonref(&f.fty.ret);
+            if r.t.is_integral() || matches!(r.t, Ty::Enum(en) if !self.enums[en].scoped) {
+                ints.push(d);
+            }
+        }
+        match ints.len() {
+            0 => Some(format!("the class '{}' has no conversion function to an integral type", self.classes[c].name)),
+            1 => {
+                let f = self.func(ints[0]).unwrap();
+                if f.constexpr || f.consteval {
+                    None
+                } else {
+                    Some(format!("the conversion function of '{}' is not constexpr", self.classes[c].name))
+                }
+            }
+            _ => Some(format!("the class '{}' has more than one conversion function to an integral type", self.classes[c].name)),
+        }
+    }
+
     /// The operand of `alignas`: a type or a constant (ALN-1). None when
     /// the front end cannot tell. Leaves the position after the operand.
     fn alignas_operand(&mut self, line: u32) -> PR<Option<u64>> {
@@ -560,6 +605,10 @@ impl P {
                     } else if let Ok(e) = self.parse_assignment() {
                         // ALN-8: a class operand converts to an integer by
                         // its conversion function.
+                        if let Some(why) = self.int_class_operand(&e) {
+                            self.error(line, "ALN-8", format!("the operand of alignas does not convert to an integral type: {}", why));
+                            return Ok(Some(0));
+                        }
                         let e = if matches!(nonref(&e.ty).t, Ty::Class(_)) && !self.in_template() {
                             let mark = self.d.list.len();
                             match self.user_conv(&e, &QTy::new(Ty::size_t()), line) {
@@ -1797,7 +1846,7 @@ impl P {
         let mut t = base;
         for (oi, op) in ops.iter().enumerate() {
             if let DOp::Func(f) = op {
-                if f.noexcept_dep && oi + 1 < ops.len() {
+                if f.noexcept_dep && f.noexcept_param.is_none() && oi + 1 < ops.len() {
                     // DEP-9: a function type with a dependent noexcept
                     // inside another type, as in a pointer to it.
                     t = crate::templ::dep(Dep::Opaque);
@@ -1923,6 +1972,7 @@ impl P {
                         cv_c: f.cv_c,
                         cv_v: f.cv_v,
                         refq: f.refq,
+                        noexcept_param: f.noexcept_param,
                     })))
                 }
             };
@@ -2340,6 +2390,7 @@ impl P {
         }
         // conversion function: operator type-specifiers ptr-ops
         let ds = self.parse_decl_specs(None)?;
+        self.last_conv_auto = ds.auto.is_some();
         let mut q = self.ds_base(&ds)?;
         loop {
             if self.eat("*") {
@@ -2514,6 +2565,7 @@ impl P {
             has_explicit_this: false,
             trailing_auto: None,
             noexcept_dep: false,
+            noexcept_param: None,
         };
         let r = self.parse_param_list(&mut f);
         self.pop_scope();
@@ -2577,6 +2629,11 @@ impl P {
                 }
                 if self.in_template() && self.inst_depth == 0 && (e.ty.is_unknown() || matches!(e.k, EK::Unknown(_))) {
                     f.noexcept_dep = true;
+                    if let EK::Unknown(w) = &e.k {
+                        if let Some(id) = w.strip_prefix("template parameter#").and_then(|x| x.parse::<usize>().ok()) {
+                            f.noexcept_param = self.tparam.get(&id).copied();
+                        }
+                    }
                 }
                 // EXS-7 (Q-0078): the conversion to bool must not narrow.
                 if !self.in_template() && !e.ty.is_unknown() && nonref(&e.ty).t != Ty::Bool && self.is_narrowing(&e, &Ty::Bool) {

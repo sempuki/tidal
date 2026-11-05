@@ -67,7 +67,7 @@ pub fn and(a: Option<Rc<CNorm>>, b: Option<Rc<CNorm>>) -> Option<Rc<CNorm>> {
     }
 }
 
-fn identity_arg(p: &TParam, depth: u32, i: usize) -> TArg {
+pub fn identity_arg(p: &TParam, depth: u32, i: usize) -> TArg {
     let a = match &p.kind {
         TPK::Type => TArg::Type(dep(Dep::Param(depth, i as u32))),
         TPK::Const(_) | TPK::Auto => TArg::Val(TVal::Param(depth, i as u32)),
@@ -990,7 +990,9 @@ impl P {
 
     /// ORD-13, CNS-34: the constraints of two function templates after
     /// partial ordering: (t1 at least as constrained as t2, the reverse).
-    pub fn templ_cons_order(&mut self, t1: usize, t2: usize) -> Option<(bool, bool)> {
+    /// `ps`: the parameter types that take part, when they differ from
+    /// the declared ones (the object parameter of ORD-6).
+    pub fn templ_cons_order(&mut self, t1: usize, t2: usize, ps: Option<(Vec<QTy>, Vec<QTy>)>) -> Option<(bool, bool)> {
         let (c1, c2) = (self.templs[t1].cons.clone(), self.templs[t2].cons.clone());
         if c1.is_none() && c2.is_none() {
             return None;
@@ -1007,7 +1009,11 @@ impl P {
         let to1: Vec<TArg> = p1.iter().enumerate().map(|(i, p)| identity_arg(p, d1, i)).collect();
         let f1 = self.func(self.templs[t1].decl).cloned();
         let f2 = self.func(self.templs[t2].decl).cloned();
-        if let (Some(f1), Some(f2)) = (f1, f2) {
+        if let (Some(mut f1), Some(mut f2)) = (f1, f2) {
+            if let Some((a, b)) = ps {
+                f1.fty.params = a;
+                f2.fty.params = b;
+            }
             // CNS-34: the function parameter types must agree.
             let b = Binds { depth: d2, vals: to1.iter().map(|a| Some(match a { TArg::Expand(x) => (**x).clone(), x => x.clone() })).collect(), kinds: vec![], patterns: vec![], packs: vec![], unknown: false, fixed: vec![], from_bound: false, nondeduced: false };
             if f1.fty.params.len() != f2.fty.params.len() {
@@ -1016,6 +1022,14 @@ impl P {
             for (x, y) in f1.fty.params.iter().zip(f2.fty.params.iter()) {
                 let y2 = self.subst_ty(y, &b);
                 if *x != y2 {
+                    return None;
+                }
+            }
+            // ORD-13: two conversion functions need the same result type,
+            // with its top-level qualifiers.
+            if f1.kind == FnKind::Conversion && f2.kind == FnKind::Conversion {
+                let r2 = self.subst_ty(&f2.fty.ret, &b);
+                if f1.fty.ret != r2 || f1.fty.ret.c != r2.c || f1.fty.ret.v != r2.v {
                     return None;
                 }
             }

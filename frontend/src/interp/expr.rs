@@ -2903,6 +2903,22 @@ impl<'a> Machine<'a> {
                         // CMP-26: equal pointers.
                         (vec![0], vec![0])
                     } else {
+                        if self.constant && !p.bytes && !q.bytes {
+                            // CMP-8 (Q-0387): no order for a base class
+                            // subobject against another subobject of the
+                            // same object.
+                            let k = p.path.iter().zip(q.path.iter()).take_while(|(a, b)| a == b).count();
+                            if k < p.path.len() && k < q.path.len() {
+                                let at = Ptr { obj: p.obj, path: p.path[..k].to_vec(), off: 0, array: false, bytes: false };
+                                if let Some(QTy { t: Ty::Class(c), .. }) = self.type_at(&at) {
+                                    let (nb, ns) = (self.nbases(c), self.nslots(c));
+                                    let base = |i: usize| i < nb || i >= ns;
+                                    if base(p.path[k]) || base(q.path[k]) {
+                                        return limit("CE-15", "relational comparison of pointers that involve a base class subobject");
+                                    }
+                                }
+                            }
+                        }
                         // CMP-7: subobjects of one object compare in order.
                         let mut x: Vec<i64> = p.path.iter().map(|&v| v as i64).collect();
                         x.push(if p.array { p.off } else { p.off * i64::MAX / 2 });
