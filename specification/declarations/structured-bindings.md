@@ -318,6 +318,12 @@ const auto& [cl, ch] = g; // rejected: E is const Range, which has no
 All eight compilers agree on 64 of 71 tests. The results are in
 `tests/RESULTS.md`.
 
+One question on this page settled on 2026-11-04 under decision 0054 after the principle-use batch PU1 (`reports/clean-room/PU1/`). The batch's use of the principle supports the answer, the latest gap review supports it with no doubt, and the principle gives the same answer. The tests keep their overrides for the family that still differs:
+
+| Question | Principle | Family that still differs |
+|---|---|---|
+| {question}`Q-0048` | SB-P2 | EDG 7.0 |
+
 - **SB-15.** Clang and GCC accept `constexpr` structured bindings and
   two `_` names as extensions from a later language version. The two
   compilers reject these forms only under `-pedantic-errors`. Clang
@@ -362,8 +368,6 @@ All eight compilers agree on 64 of 71 tests. The results are in
   when member lookup finds a member variable template or a member class
   template named `get`. GCC takes the member form and rejects the
   binding ({question}`Q-0395`).
-  {question}`Q-0048` waits for a reader or a reviewer to use the
-  changed SB-5.
 
 Inputs: clang-sema-declcxx, edg-decls, clang-diag-sema (see
 `inputs/MANIFEST.md`).

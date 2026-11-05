@@ -671,6 +671,13 @@ struct Pointers { char c; int& r; int Plain::* p; void (Shape::* f)(); };
 The results are in `tests/RESULTS.md`. All eight compilers agree on 146
 of 162 tests.
 
+Two questions on this page settled on 2026-11-04 under decision 0054 after the principle-use batch PU1 (`reports/clean-room/PU1/`). For each, the batch's use of the principle supports the answer, the latest gap review supports it with no doubt, and the principle gives the same answer. Each test keeps its override for the family that still differs:
+
+| Question | Principle | Family that still differs |
+|---|---|---|
+| {question}`Q-0027` | CLS-P3 | GCC 16 |
+| {question}`Q-0317` | CLS-P3 | EDG 7.0 |
+
 - CLS-23: Clang rejects an in-class initializer for a `static const
   volatile` integer member. GCC and EDG accept it ({question}`Q-0080`).
   CLS-23 follows Clang, and the test records GCC and EDG as overrides.

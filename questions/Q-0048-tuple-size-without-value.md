@@ -1,6 +1,6 @@
 # Q-0048: If `std::tuple_size<E>` is complete but has no `value`, do structured bindings use the data members?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** SB-5, `tests/declarations/structured-bindings/tuple-size-without-value.cpp`
 
 ## Context
@@ -12,7 +12,7 @@ Clang and GCC fall back to binding the data members of `E` when `std::tuple_size
 1. Fall back to the data members (SB-3).
 2. Reject the declaration.
 
-## Provisional answer
+## Answer
 
 Yes; the bindings fall back to the data members (SB-3) (option 1). Clang and GCC, in both versions, fall back.
 
@@ -23,6 +23,10 @@ Checked on 2026-11-04 under the principle test of the style guide (section 3, it
 Used on 2026-11-04 by the source-reader gap review of the text phase 8 wrote on the declarations and statements chapters (`reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md`), under decision 0056. The review applied SB-P2 to the program of `tuple-size-without-value.cpp` without the rule text and reached the provisional answer: the trait class is complete and has no `value` member, so test 3 applies and the names bind to the data members.
 
 Kept open on 2026-11-04 under decisions 0054 and 0055, because SB-5, the rule the question affects, changed in this commit: only a member function template named `get` selects the member form. The question waits for the next use of the changed text.
+
+Used on 2026-11-04 by the principle-use batch PU1 (`reports/clean-room/PU1/`), under decision 0056. A clean-room reader applied SB-P2, without the rule text, to the program of `tuple-size-without-value.cpp`. The answer names SB-P2 and gives the outcome that the test expects, so the use supports the answer.
+
+Settled on 2026-11-04 under decision 0054. The use in batch PU1 supports the answer, the gap review of 2026-11-04 supports it with no doubt, and SB-P2 gives the same answer by the test of the style guide (section 3). EDG 7.0 still differs, and the test keeps its override. The change to SB-5 in item RV2 covers a member template named `get` and does not touch the question's program.
 
 ## Opinions
 

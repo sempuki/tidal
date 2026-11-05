@@ -475,7 +475,11 @@ void conditions() {
 All rules in this page are `required` or `reject`. All eight compilers
 agree on 79 of 80 tests. The results are in `tests/RESULTS.md`.
 
-{question}`Q-0329` is provisional. IF-P4 and IF-25 changed on 2026-11-04, so the question waits for a reader or a reviewer to use the changed IF-P4. The test keeps its override for GCC 16.
+One question on this page settled on 2026-11-04 under decision 0054 after the principle-use batch PU1 (`reports/clean-room/PU1/`). The batch's use of the principle supports the answer, the latest gap review supports it with no doubt, and the principle gives the same answer. The tests keep their overrides for the family that still differs:
+
+| Question | Principle | Family that still differs |
+|---|---|---|
+| {question}`Q-0329` | IF-P4 | GCC 16 |
 
 - IF-25: Clang and GCC take the then branch of `if consteval` in the
   initializer of a local `const int` or `const` enumeration variable.

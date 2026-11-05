@@ -1,6 +1,6 @@
 # Q-0037: May a lambda outside a function have a capture default?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** LAM-6, `tests/expressions/lambdas/capture-default-at-namespace.cpp`
 
 ## Context
@@ -12,7 +12,7 @@
 1. Rejected: a capture default needs an enclosing function.
 2. Accepted, because the lambda has nothing to capture.
 
-## Provisional answer
+## Answer
 
 No; rejected (option 1). Clang and GCC, in both versions, reject the lambda.
 
@@ -23,6 +23,10 @@ Checked on 2026-11-04 under the principle test of the style guide (section 3, it
 Used on 2026-11-04 by the source-reader gap review of the text phase 8 wrote on expressions, foundations, and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`), Part B. The review applied LAM-P3 to the question's program, a capture default on a lambda at namespace scope (`capture-default-at-namespace.cpp`), without the rule text: the lambda has no enclosing function and is not in a default member initializer, so the capture default is rejected, which is the provisional answer.
 
 Kept open on 2026-11-04 under decision 0055, because LAM-P3 and LAM-6 changed in this commit. The review reads the limit as a block around the lambda, and the principle now says so. The question waits for the next use of LAM-P3. EDG 7.0 is the one newest family that differs.
+
+Used on 2026-11-04 by the principle-use batch PU1 (`reports/clean-room/PU1/`), under decision 0056. A clean-room reader applied LAM-P3, without the rule text, to the programs of `capture-default-local-class-default-argument.cpp`, `capture-default-in-member-initializer.cpp`, `capture-default-at-namespace.cpp`, and `capture-default-local-class-member.cpp`. Each answer names LAM-P3 and gives the outcome that the tests expect, so the use supports the answer.
+
+Settled on 2026-11-04 under decision 0054. The use in batch PU1 supports the answer, the gap review of 2026-11-04 supports it with no doubt, and LAM-P3 gives the same answer by the test of the style guide (section 3). EDG 7.0 still differs, and the tests keep its overrides.
 
 ## Opinions
 

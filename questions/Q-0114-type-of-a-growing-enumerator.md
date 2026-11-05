@@ -1,6 +1,6 @@
 # Q-0114: What type does an enumerator get when its value outgrows the type before it?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** ENUM-13, `tests/declarations/enumerations/enumerator-type-grows.cpp`
 
 ## Context
@@ -18,7 +18,7 @@ bytes.
 2. The type is the first type, by rank from `int` upward, that can hold
    the value, which matches Clang.
 
-## Provisional answer
+## Answer
 
 Unspecified: any integer type that holds the value (option 1). The three compilers give three types, and each type holds the
 value.
@@ -30,6 +30,10 @@ Checked on 2026-11-04 under the principle test of the style guide (section 3, it
 Used on 2026-11-04 by the source-reader gap review of the text phase 8 wrote on the declarations and statements chapters (`reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md`), under decision 0056. The review applied ENUM-P1 to the program of `enumerator-type-grows.cpp` without the rule text and reached the provisional answer: the type of the enumerator before cannot hold the value, so the implementation picks some integer type that can.
 
 Kept open on 2026-11-04 under decisions 0054 and 0055, because ENUM-P1 changed in this commit: a first enumerator without an initializer has the type `int`. The question waits for the next use of the changed text.
+
+Used on 2026-11-04 by the principle-use batch PU1 (`reports/clean-room/PU1/`), under decision 0056. A clean-room reader applied ENUM-P1, without the rule text, to the programs of `enumerator-type-grows-unsigned.cpp` and `enumerator-type-grows.cpp`. Each answer names ENUM-P1 and gives the outcome that the tests expect, so the use supports the answer.
+
+Settled on 2026-11-04 under decision 0054. The use in batch PU1 supports the answer, the gap review of 2026-11-04 supports it with no doubt, and ENUM-P1 gives the same answer by the test of the style guide (section 3). Each newest family gives a type that the answer allows.
 
 ## Opinions
 

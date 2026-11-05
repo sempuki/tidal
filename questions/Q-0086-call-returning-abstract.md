@@ -1,6 +1,6 @@
 # Q-0086: Is a call to a function that returns an abstract class valid?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** VIRT-8, `tests/classes/virtual/call-returning-abstract.cpp`
 
 ## Context
@@ -12,7 +12,7 @@ A function is declared to return an abstract class, and a program calls it. GCC 
 1. The call is not valid, because the call creates an object of the abstract class.
 2. The call is valid.
 
-## Provisional answer
+## Answer
 
 No; the call creates an object of the abstract class (option 1). GCC and EDG agree.
 
@@ -23,6 +23,10 @@ Checked on 2026-11-04 under the principle test of the style guide (section 3, it
 Used on 2026-11-04 under decision 0056 by the source-reader gap review of the text phase 8 wrote on classes and overloading (`reports/review/2026-11-04-gap-review-phase-8-classes-overloading.md`). The review applies VIRT-P4 to the program of `call-returning-abstract.cpp` without the rule text and reaches the provisional answer: a call makes its result as an object of the abstract class, so the call is rejected, and the declaration stays valid.
 
 Kept open on 2026-11-04 under decision 0055, because VIRT-P4 changed in the same commit: the review found that its table left out an argument for a parameter of abstract class type in a call. The question waits for the next use of VIRT-P4.
+
+Used on 2026-11-04 by the principle-use batch PU1 (`reports/clean-room/PU1/`), under decision 0056. A clean-room reader applied VIRT-P4, without the rule text, to the program of `call-returning-abstract.cpp`. The answer names VIRT-P4 and gives the outcome that the test expects, so the use supports the answer.
+
+Settled on 2026-11-04 under decision 0054. The use in batch PU1 supports the answer, the gap review of 2026-11-04 supports it with no doubt, and VIRT-P4 gives the same answer by the test of the style guide (section 3). Clang 22 still differs, and the test keeps its override.
 
 ## Opinions
 

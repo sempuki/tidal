@@ -1,6 +1,6 @@
 # Q-0316: Can a member access name an earlier member of the class whose definition contains the access?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** PFX-11, `tests/expressions/postfix/member-access-class-being-defined.cpp`
 
 ## Context
@@ -31,7 +31,7 @@ says that the class is incomplete.
    unqualified name in a member declaration does (NAM-6).
 2. The access needs a complete class, as any other member access does.
 
-## Provisional answer
+## Answer
 
 Yes (PFX-11), as GCC and EDG do; Clang rejects (option 1). Two of three compilers accept the access, and option 1 gives
 member access the same view of the class as unqualified lookup. The test
@@ -44,6 +44,10 @@ Checked on 2026-11-04 under the principle test of the style guide (section 3, it
 Used on 2026-11-04 by the source-reader gap review of the text phase 8 wrote on expressions, foundations, and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`), Part B. The review applied PFX-P3 to the question's program, a member access to an earlier member inside the definition of its class (`member-access-class-being-defined.cpp`), without the rule text: a member declaration sees the members declared before it, so the access is accepted, which is the provisional answer.
 
 Kept open on 2026-11-04 under decision 0055, because PFX-P3 and PFX-11 changed in this commit. The review named the other places where the class is complete, those of nested classes included, and PFX-P3 now lists them. The question waits for the next use of PFX-P3. Clang 22 is the one newest family that differs.
+
+Used on 2026-11-04 by the principle-use batch PU1 (`reports/clean-room/PU1/`), under decision 0056. A clean-room reader applied PFX-P3, without the rule text, to the programs of `member-access-later-member-in-body.cpp`, `member-access-class-being-defined.cpp`, and `member-access-later-member-in-function-body.cpp`. Each answer names PFX-P3 and gives the outcome that the tests expect, so the use supports the answer.
+
+Settled on 2026-11-04 under decision 0054. The use in batch PU1 supports the answer, the gap review of 2026-11-04 supports it with no doubt, and PFX-P3 gives the same answer by the test of the style guide (section 3). Clang 22 still differs, and the test keeps its override.
 
 ## Opinions
 

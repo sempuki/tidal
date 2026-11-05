@@ -62,6 +62,10 @@ Kept open on 2026-11-04 under decision 0054, because no review has read the prov
 
 Kept open on 2026-11-04 under decision 0055, because COND-16 changed in this commit. The gap review of the text phase 8 wrote on expressions, foundations, and templates supports option 1 in both forms. It also read the base-class row of the COND-16 table without a cv condition, and the row now follows that reading. The question waits for a reader or a reviewer to use the changed rule. In each form one newest family differs.
 
+Used on 2026-11-04 by the principle-use batch PU1 (`reports/clean-room/PU1/`), under decision 0056. A clean-room reader applied COND-P2, without the rule text, to the programs of `class-const-and-volatile-lvalues.cpp` and `class-deleted-conversion-counts.cpp`. The answer for `class-deleted-conversion-counts.cpp` names COND-P2 and reaches the answer (the expression is rejected). The answer for `class-const-and-volatile-lvalues.cpp` names COND-P2 and says the program compiles, which is EDG's result and not the answer. The reader marked that answer doubtful (finding PU1-7), because COND-P2 does not say whether "one type" ignores cv-qualifiers. The batch score counts the answer as right, because the test lists EDG's outcome as an override. So the use does not support the answer in form 2.
+
+Kept open on 2026-11-04 under decisions 0054 and 0056, because the use in batch PU1 does not support the answer in form 2 (finding PU1-7). The question waits for COND-P2 to say how the cv-qualifiers of two class lvalues count, and for a later use. In each form one newest family differs.
+
 ## Opinions
 
 ### Gap review, 2026-11-04

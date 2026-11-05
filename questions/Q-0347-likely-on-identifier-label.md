@@ -1,6 +1,6 @@
 # Q-0347: Can `[[likely]]` apply to a label that is an identifier?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** ATTR-8, `tests/declarations/attributes/likely-identifier-label.cpp`
 
 ## Context
@@ -28,7 +28,7 @@ override for Clang.
    kinds, and a program with the attribute on an identifier label is
    rejected.
 
-## Provisional answer
+## Answer
 
 Valid (option 1). Two of three implementations accept the attribute,
 and ATTR-8 makes no difference between the kinds of label.
@@ -40,6 +40,10 @@ Checked on 2026-11-04 under the principle test of the style guide (section 3, it
 Used on 2026-11-04 by the source-reader gap review of the text phase 8 wrote on the declarations and statements chapters (`reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md`), under decision 0056. The review applied ATTR-P1 to the program of `likely-identifier-label.cpp` without the rule text and reached the provisional answer: the hint can go on a label of any kind, the target of a `goto` included, so the program is valid.
 
 Kept open on 2026-11-04 under decisions 0054 and 0055, because ATTR-P1 changed in this commit for two small points of the review on `fallthrough` and `nodiscard`. The question waits for the next use of the changed text.
+
+Used on 2026-11-04 by the principle-use batch PU1 (`reports/clean-room/PU1/`), under decision 0056. A clean-room reader applied ATTR-P1, without the rule text, to the programs of `likely-identifier-label.cpp` and `likely-unlikely.cpp`. Each answer names ATTR-P1 and gives the outcome that the tests expect, so the use supports the answer.
+
+Settled on 2026-11-04 under decision 0054. The use in batch PU1 supports the answer, the gap review of 2026-11-04 supports it with no doubt, and ATTR-P1 gives the same answer by the test of the style guide (section 3). Clang 22 still differs, and the test keeps its override.
 
 ## Opinions
 

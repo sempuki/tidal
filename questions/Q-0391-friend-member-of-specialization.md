@@ -55,6 +55,10 @@ form, one newest family differs.
 Kept open on 2026-11-04 under decision 0054, because the question and
 the ACC-20 text are new in this commit and wait for a use.
 
+Used on 2026-11-04 by the principle-use batch PU1 (`reports/clean-room/PU1/`), under decision 0056. A clean-room reader applied ACC-P3, without the rule text, to the programs of `friend-member-of-explicit-specialization.cpp`, `friend-member-of-specialization-other-member.cpp`, and `friend-member-of-every-specialization.cpp`. Each answer names ACC-P3 and gives the outcome that the tests expect. The reader marked the answer for `friend-member-of-explicit-specialization.cpp` doubtful (finding PU1-6), because ACC-P3 does not say whether the member that an explicit specialization declares anew is "that member".
+
+Kept open on 2026-11-04 under decision 0054, because the use in batch PU1 reaches the answer for the explicit specialization form with doubt (finding PU1-6). ACC-P3 does not decide that form, so the use does not pass step 3 of the test of the style guide. In each form one newest family differs.
+
 ## Opinions
 
 ### Gap review, 2026-11-04

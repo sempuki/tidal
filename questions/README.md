@@ -35,12 +35,12 @@ status, and the first sentence of its answer section.
 | [Q-0019](Q-0019-repeated-using-declaration-in-block.md) | May a using declaration be repeated in a block? | settled | Yes, as the newest Clang and GCC allow |
 | [Q-0020](Q-0020-unimplemented-features.md) | How should tests record a compiler that doesn't implement a feature yet? | provisional | Per-compiler expectation naming this question |
 | [Q-0021](Q-0021-misplaced-standard-attribute.md) | Is a standard attribute applied to the wrong kind of entity rejected or ignored? | provisional | Rejected |
-| [Q-0022](Q-0022-func-outside-function.md) | Is `__func__` outside a function rejected? | provisional | Yes |
+| [Q-0022](Q-0022-func-outside-function.md) | Is `__func__` outside a function rejected? | settled | Yes |
 | [Q-0023](Q-0023-gcc14-deleted-main.md) | Is `int main() = delete;` rejected? | settled | Yes; GCC 14's acceptance is fixed in GCC 16 |
 | [Q-0024](Q-0024-main-parameter-lists.md) | Which parameter lists may `main` have? | settled | () and (int, char**) everywhere; others implementation-defined, including a first parameter of type `long` |
 | [Q-0025](Q-0025-constinit-placement.md) | Which declarations of a variable must carry `constinit`? | provisional | If any declaration of a variable has `constinit`, the initializing declaration must have it (option 1); a `constinit` that first appears after the initializing declaration needs no diagnostic (CINIT-3) |
 | [Q-0026](Q-0026-range-for-storage-class.md) | May a range-based for variable have a storage class? | settled | No; GCC 14's acceptance is fixed in GCC 16 |
-| [Q-0027](Q-0027-mixed-ref-qualifiers.md) | May a member function with a ref-qualifier be overloaded with one without? | provisional | No; the declarations are rejected |
+| [Q-0027](Q-0027-mixed-ref-qualifiers.md) | May a member function with a ref-qualifier be overloaded with one without? | settled | No; the declarations are rejected |
 | [Q-0028](Q-0028-float-narrowing-out-of-range.md) | Is converting a floating value above the target's finite range implementation-defined or undefined? | provisional | Implementation-defined |
 | [Q-0029](Q-0029-chained-comparison.md) | Is a chained comparison such as `3 > 2 > 1` valid? | settled | Valid; a warning is recommended |
 | [Q-0030](Q-0030-pointer-relational-zero.md) | May a pointer be compared with `<` or `<=>` to the literal 0? | settled | No; rejected |
@@ -50,37 +50,37 @@ status, and the first sentence of its answer section.
 | [Q-0034](Q-0034-subscript-prvalue-array.md) | Is a subscript of an array xvalue or an array member of a prvalue an xvalue? | settled | Yes, an xvalue (PFX-3); EDG gives an lvalue |
 | [Q-0035](Q-0035-delete-void-pointer.md) | Is `delete` of a `void*` rejected? | settled | Yes |
 | [Q-0036](Q-0036-new-floating-size.md) | May the size in an array `new` have floating-point type? | settled | Yes; converted to the type of `sizeof` |
-| [Q-0037](Q-0037-capture-default-outside-function.md) | May a lambda outside a function have a capture default? | provisional | No; rejected |
+| [Q-0037](Q-0037-capture-default-outside-function.md) | May a lambda outside a function have a capture default? | settled | No; rejected |
 | [Q-0038](Q-0038-parameter-in-unevaluated-default.md) | May a default argument name a parameter in an operand that is not evaluated? | settled | Valid; the ban covers only evaluated uses of a parameter |
-| [Q-0039](Q-0039-indeterminate-unsigned-char.md) | Is copying an uninitialized `unsigned char` undefined? | provisional | Not undefined at run time for `unsigned char` and `std::byte`, and rejected during constant evaluation |
+| [Q-0039](Q-0039-indeterminate-unsigned-char.md) | Is copying an uninitialized `unsigned char` undefined? | settled | Not undefined at run time for `unsigned char` and `std::byte`, and rejected during constant evaluation |
 | [Q-0040](Q-0040-aggregate-paren-reference-member.md) | Does parenthesized aggregate initialization extend the life of a temporary bound to a reference member? | settled | Only braces extend the lifetime; parentheses do not |
 | [Q-0041](Q-0041-jump-past-nontrivial-destructor.md) | May a jump skip a class object that has a non-trivial destructor and no initializer? | provisional | Yes; JMP-6 and SW-5 accept the jump; Clang and EDG reject it |
 | [Q-0042](Q-0042-bit-field-narrowing.md) | Is converting a bit-field whose values all fit the target a narrowing conversion? | settled | Not narrowing when every value of the bit-field's width fits the target |
 | [Q-0043](Q-0043-paren-brace-elision.md) | Does parenthesized aggregate initialization allow brace elision? | settled | No; parentheses allow no brace elision |
 | [Q-0044](Q-0044-for-condition-destruction.md) | Is a `for` condition variable destroyed before or after the iteration expression? | compiler defect | After; GCC 14 is fixed in GCC 16 |
 | [Q-0045](Q-0045-anonymous-union-unnamed-namespace.md) | Must an anonymous union in an unnamed namespace be declared `static`? | provisional | No; an anonymous union in an unnamed namespace needs no `static` |
-| [Q-0046](Q-0046-likely-and-unlikely.md) | Is `[[likely]] [[unlikely]]` on one statement rejected or ignored? | provisional | Rejected |
+| [Q-0046](Q-0046-likely-and-unlikely.md) | Is `[[likely]] [[unlikely]]` on one statement rejected or ignored? | settled | Rejected |
 | [Q-0047](Q-0047-using-enum-opaque.md) | May `using enum` name an enumeration that is declared but not defined? | settled | No; the enumeration must be complete, so the `using enum` is rejected |
-| [Q-0048](Q-0048-tuple-size-without-value.md) | If `std::tuple_size<E>` is complete but has no `value`, do structured bindings use the data members? | provisional | Yes; the bindings fall back to the data members (SB-3) |
+| [Q-0048](Q-0048-tuple-size-without-value.md) | If `std::tuple_size<E>` is complete but has no `value`, do structured bindings use the data members? | settled | Yes; the bindings fall back to the data members (SB-3) |
 | [Q-0049](Q-0049-base-pointer-derived-array.md) | Is arithmetic on a base class pointer into an array of a derived class undefined? | settled | The subobject acts as an array of one element, so moving the pointer outside `p` and `p + 1`, a read through `p + 1`, and a difference of pointers into different elements are undefined |
 | [Q-0050](Q-0050-three-way-enum-float.md) | May `<=>` compare an unscoped enumeration with a floating-point value? | settled | No; rejected |
-| [Q-0051](Q-0051-one-past-end-adjacent.md) | Is comparing a one-past-the-end pointer with a pointer to the next object rejected during constant evaluation? | provisional | Rejected during constant evaluation, and unspecified at run time |
+| [Q-0051](Q-0051-one-past-end-adjacent.md) | Is comparing a one-past-the-end pointer with a pointer to the next object rejected during constant evaluation? | settled | Rejected during constant evaluation, and unspecified at run time |
 | [Q-0052](Q-0052-using-declaration-reduces-access.md) | Can a using-declaration make a public base member private? | settled | Yes; the using-declaration sets the access, so the use is rejected |
 | [Q-0053](Q-0053-delegation-cycle.md) | Must an implementation diagnose an indirect delegation cycle? | settled | No; the program is not valid, and an indirect cycle is `no-diagnostic` |
 | [Q-0054](Q-0054-double-destruction-constant.md) | Is a second destruction rejected during constant evaluation? | settled | Yes; the behavior is undefined, so constant evaluation rejects it |
 | [Q-0055](Q-0055-defaulted-parameter-mismatch.md) | Is a defaulted copy or move constructor with a different parameter type deleted or invalid? | settled | Deleted; only a use is rejected |
 | [Q-0056](Q-0056-delete-without-virtual-destructor.md) | Is delete through a base pointer without a virtual destructor rejected during constant evaluation? | settled | Yes; the behavior is undefined, so constant evaluation rejects it |
 | [Q-0057](Q-0057-anonymous-union-unnamed-namespace.md) | Must an anonymous union in an unnamed namespace be static? | settled | Duplicate of Q-0045 |
-| [Q-0058](Q-0058-unnamed-bitfield-cv.md) | Can an unnamed bit-field have a cv-qualifier? | provisional | No; a program must not put a cv-qualifier on an unnamed bit-field |
-| [Q-0059](Q-0059-deduced-conversion-function.md) | Can a conversion function have a deduced return type? | provisional | Yes; a conversion function can have a deduced return type |
-| [Q-0060](Q-0060-literal-operator-default-argument.md) | Can a literal operator have a default argument? | provisional | No; a literal operator must not have a default argument |
+| [Q-0058](Q-0058-unnamed-bitfield-cv.md) | Can an unnamed bit-field have a cv-qualifier? | settled | No; a program must not put a cv-qualifier on an unnamed bit-field |
+| [Q-0059](Q-0059-deduced-conversion-function.md) | Can a conversion function have a deduced return type? | settled | Yes; a conversion function can have a deduced return type |
+| [Q-0060](Q-0060-literal-operator-default-argument.md) | Can a literal operator have a default argument? | settled | No; a literal operator must not have a default argument |
 | [Q-0061](Q-0061-comparison-declared-before-default.md) | Can a friend comparison declared outside the class be defaulted in it? | settled | No; the first declaration of a defaulted comparison must be in its class |
 | [Q-0062](Q-0062-out-of-class-default-deleted.md) | Must an implementation diagnose a comparison defaulted outside its class that would be deleted? | provisional | No; the program is not valid and must be rejected |
 | [Q-0063](Q-0063-floating-literal-out-of-range.md) | Is a floating literal outside the range of its type valid? | provisional | The value is implementation-defined, and an implementation can reject the literal |
 | [Q-0064](Q-0064-decimal-literal-too-large-for-signed.md) | Is a decimal literal that fits only an unsigned type valid? | settled | No; the program is not valid |
 | [Q-0065](Q-0065-decltype-declarative-nested-name.md) | Can decltype name the class in a member definition outside the class? | settled | No; `decltype` must not occur in the qualified name of a declaration |
 | [Q-0066](Q-0066-member-changes-meaning.md) | Must an implementation diagnose a class member that changes the meaning of a name? | settled | No; the class is not valid, and the error is `no-diagnostic` |
-| [Q-0067](Q-0067-typedef-name-non-c-class.md) | Can a typedef name an unnamed class that is not C-like? | provisional | No; a class that gets its name from a typedef must be C-like |
+| [Q-0067](Q-0067-typedef-name-non-c-class.md) | Can a typedef name an unnamed class that is not C-like? | settled | No; a class that gets its name from a typedef must be C-like |
 | [Q-0068](Q-0068-inline-after-definition.md) | Can a function be declared inline after its definition? | settled | No; a function must not be declared `inline` after its definition |
 | [Q-0069](Q-0069-alignas-weaker-than-natural.md) | Can alignas make an alignment weaker than the natural one? | settled | No; the program is not valid |
 | [Q-0070](Q-0070-alignas-redeclaration-mismatch.md) | Must all declarations of a variable agree on alignas? | settled | Yes; if a declaration has `alignas`, the definition must have the same alignment |
@@ -99,7 +99,7 @@ status, and the first sentence of its answer section.
 | [Q-0083](Q-0083-nested-default-member-init-early.md) | Can a default member initializer of a nested class be used before the enclosing class is complete? | provisional | No; the program is not valid |
 | [Q-0084](Q-0084-reference-member-temporary.md) | Must an implementation reject a constructor that binds a reference member to a temporary? | provisional | No; implementations must reject the program |
 | [Q-0085](Q-0085-constexpr-destructor-virtual-base.md) | Can a class with a virtual base have a constexpr destructor? | settled | No, as for constexpr constructors |
-| [Q-0086](Q-0086-call-returning-abstract.md) | Is a call to a function that returns an abstract class valid? | provisional | No; the call creates an object of the abstract class |
+| [Q-0086](Q-0086-call-returning-abstract.md) | Is a call to a function that returns an abstract class valid? | settled | No; the call creates an object of the abstract class |
 | [Q-0087](Q-0087-explicit-object-matches-virtual.md) | Can an explicit object member function have the name and parameters of a base virtual function? | provisional | No; the declaration is not valid |
 | [Q-0088](Q-0088-union-user-assignment-active.md) | Does assignment through a user-provided operator activate an inactive union member during constant evaluation? | settled | No; the access is undefined, so constant evaluation rejects it |
 | [Q-0089](Q-0089-decltype-in-destructor-call.md) | Can decltype name the class in an explicit destructor call? | settled | Yes; `decltype` can name the class in an explicit destructor call |
@@ -121,13 +121,13 @@ status, and the first sentence of its answer section.
 | [Q-0105](Q-0105-block-extern-hidden-internal.md) | Does a block-scope extern declaration redeclare a hidden internal-linkage variable? | settled | Yes; the declaration redeclares the namespace-scope entity and takes its internal linkage |
 | [Q-0106](Q-0106-reference-to-qualified-function-type.md) | Can a parameter have a reference to a function type with a ref-qualifier? | settled | No, as for a pointer to such a type |
 | [Q-0107](Q-0107-constinit-structured-binding.md) | Can constinit apply to a structured binding declaration? | settled | No; only static, thread_local, const, and volatile can occur |
-| [Q-0108](Q-0108-carries-dependency-first-declaration.md) | Must carries_dependency be on the first declaration of a function? | provisional | Yes, as for noreturn |
+| [Q-0108](Q-0108-carries-dependency-first-declaration.md) | Must carries_dependency be on the first declaration of a function? | settled | Yes, as for noreturn |
 | [Q-0109](Q-0109-extend-through-array-member.md) | Does a reference bound to an element of an array member of a temporary extend the temporary? | settled | Yes; the binding is valid and extends the temporary |
 | [Q-0110](Q-0110-null-dereference-reference-constant.md) | Is a reference bound through a null pointer rejected during constant evaluation? | settled | Yes; the binding is undefined, so constant evaluation rejects it |
 | [Q-0111](Q-0111-using-sees-later-default.md) | Does a using declaration see a default argument that a later namespace declaration adds? | settled | Yes; the default argument is usable through the using declaration |
 | [Q-0112](Q-0112-main-parameter-types.md) | Must the parameters of main have the types int and char**? | settled | Duplicate of Q-0024 |
 | [Q-0113](Q-0113-scope-of-overload-resolution-and-templates.md) | Should Tidal specify overload resolution and templates in full? | settled | Yes; phases 3 and 4 drafted them as normative chapters (decisions 0033, 0050) |
-| [Q-0114](Q-0114-type-of-a-growing-enumerator.md) | What type does an enumerator get when its value outgrows the type before it? | provisional | Unspecified: any integer type that holds the value |
+| [Q-0114](Q-0114-type-of-a-growing-enumerator.md) | What type does an enumerator get when its value outgrows the type before it? | settled | Unspecified: any integer type that holds the value |
 | [Q-0115](Q-0115-gcc-copy-of-object-with-unset-part.md) | Does GCC accepting a copy of an object with an unset part during constant evaluation change CE-22? | compiler defect | No; likely GCC defect |
 | [Q-0116](Q-0116-designer-persona-as-source-reader.md) | Should a designer persona that knows WG21 papers also run, as a source reader? | provisional | No, the clean-room designer only for now |
 | [Q-0117](Q-0117-constant-union-with-no-active-member.md) | Is a union with no active member a valid constant? | provisional | Yes, and also a valid template argument (CE-21, TARG-19); GCC rejects it |
@@ -266,7 +266,7 @@ status, and the first sentence of its answer section.
 | [Q-0250](Q-0250-constant-function-defined-after-template.md) | Can a template's independent constant use a constexpr function that is defined after the template? | settled | No diagnostic required; GCC and EDG accept, Clang rejects |
 | [Q-0251](Q-0251-member-partial-specializations-become-same.md) | Is a class instantiation not valid when two member partial specializations become the same? | provisional | Yes; Clang only, GCC and EDG accept |
 | [Q-0252](Q-0252-constexpr-function-in-unevaluated-operand.md) | When does an unevaluated operand instantiate a constexpr function template? | settled | In a braced initializer; EDG and GCC differ on single rows |
-| [Q-0253](Q-0253-local-class-default-argument-instantiated.md) | Is the default argument of a local class's member function instantiated with the enclosing function? | provisional | Yes; Clang and EDG agree, GCC differs |
+| [Q-0253](Q-0253-local-class-default-argument-instantiated.md) | Is the default argument of a local class's member function instantiated with the enclosing function? | settled | Yes; Clang and EDG agree, GCC differs |
 | [Q-0254](Q-0254-variable-template-defined-after-explicit-instantiation.md) | Can a variable template's definition follow its explicit instantiation definition? | settled | Yes; Clang and EDG agree, GCC differs |
 | [Q-0255](Q-0255-explicit-instantiation-exception-specification.md) | Must the exception specification of an explicit instantiation match the template? | settled | Yes; Clang and EDG agree, GCC differs |
 | [Q-0256](Q-0256-explicit-instantiation-of-placeholder-variable.md) | How does an explicit instantiation name a variable template declared with auto? | settled | With the deduced type; Clang and GCC agree, EDG differs |
@@ -329,8 +329,8 @@ status, and the first sentence of its answer section.
 | [Q-0313](Q-0313-scoped-enumeration-integral-operand.md) | Can an enumerator of a scoped enumeration give the operand of `alignas`, the width of a bit-field, or the size in an array `new`? | provisional | No (ALN-8, BF-2, NEW-2); EDG accepts it in `alignas` and a width, GCC in `new` |
 | [Q-0314](Q-0314-class-operand-integral-constant.md) | Can a constant of class type that converts to an integer give the operand of `alignas` or the width of a bit-field? | provisional | Yes (ALN-8, BF-1), as Clang and EDG do; GCC rejects |
 | [Q-0315](Q-0315-template-argument-use.md) | Does a constant template argument use the variable or function that it names? | settled | Yes (ODR-3); Clang reports an undefined internal function, GCC does not |
-| [Q-0316](Q-0316-member-access-class-being-defined.md) | Can a member access name an earlier member of the class whose definition contains the access? | provisional | Yes (PFX-11), as GCC and EDG do; Clang rejects |
-| [Q-0317](Q-0317-explicit-object-default-argument.md) | Can an explicit object parameter have a default argument? | provisional | No (CLS-14); EDG accepts |
+| [Q-0316](Q-0316-member-access-class-being-defined.md) | Can a member access name an earlier member of the class whose definition contains the access? | settled | Yes (PFX-11), as GCC and EDG do; Clang rejects |
+| [Q-0317](Q-0317-explicit-object-default-argument.md) | Can an explicit object parameter have a default argument? | settled | No (CLS-14); EDG accepts |
 | [Q-0318](Q-0318-member-call-null-pointer-constant.md) | Must constant evaluation reject a member function call through a null pointer? | provisional | Yes, undefined (PFX-21); EDG accepts |
 | [Q-0319](Q-0319-explicit-object-initialization-order.md) | When is an explicit object parameter initialized, relative to the other arguments? | settled | In an unspecified place (SEQ-1); GCC 14 differs from GCC 16 and Clang |
 | [Q-0320](Q-0320-volatile-object-read-through-plain-constant.md) | Must constant evaluation reject a read of a volatile object through a glvalue that is not volatile? | provisional | Yes, undefined (VOL-6); GCC and EDG accept |
@@ -342,7 +342,7 @@ status, and the first sentence of its answer section.
 | [Q-0326](Q-0326-volatile-access-width.md) | What size of memory access does a volatile read or write use, and can an implementation merge or split volatile accesses? | provisional | Implementation-defined |
 | [Q-0327](Q-0327-byte-pointer-from-subobject.md) | Can a byte pointer made from the address of a member move over the bytes of the whole object? | provisional | Yes; the byte pointer can move over the bytes of the complete object |
 | [Q-0328](Q-0328-padding-byte-value.md) | What does a read of a padding byte give, and can a program copy it through `char`? | provisional | A padding byte has no value until the program writes it, and a copy through `char` needs a value in each byte |
-| [Q-0329](Q-0329-consteval-local-reference.md) | Does the initializer of a local `const` reference that binds a temporary run during constant evaluation? | provisional | The initializer runs at run time and `r` is 2 |
+| [Q-0329](Q-0329-consteval-local-reference.md) | Does the initializer of a local `const` reference that binds a temporary run during constant evaluation? | settled | The initializer runs at run time and `r` is 2 |
 | [Q-0330](Q-0330-unknown-escape-warning.md) | Must an implementation reject a character literal with an unknown escape sequence? | provisional | An unknown escape of a character of the basic character set is conditionally supported, and an escape of any other character is rejected |
 | [Q-0331](Q-0331-narrowing-unscoped-enumeration.md) | Which values does an unscoped enumeration without a fixed type have for narrowing? | provisional | The values that ENUM-22 gives |
 | [Q-0332](Q-0332-gcc-shift-sanitizer-double-call.md) | Does GCC 16 calling the left operand of `<<` twice under the shift sanitizer change SHF-8? | compiler defect | No; GCC defect |
@@ -360,7 +360,7 @@ status, and the first sentence of its answer section.
 | [Q-0344](Q-0344-byte-copy-over-const-member.md) | Can a byte copy write over a live object that has a `const` member? | provisional | The copy is undefined |
 | [Q-0345](Q-0345-common-initial-sequence-base-members.md) | Do the members that a base declares count in the common initial sequence of a struct? | provisional | Yes; the members that a base declares count |
 | [Q-0346](Q-0346-explicit-instantiation-variable-type-differs.md) | Can an explicit instantiation of a variable state a type that differs from the specialization's? | provisional | No; Clang agrees, GCC and EDG each differ on some cases |
-| [Q-0347](Q-0347-likely-on-identifier-label.md) | Can `[[likely]]` apply to a label that is an identifier? | provisional | Valid |
+| [Q-0347](Q-0347-likely-on-identifier-label.md) | Can `[[likely]]` apply to a label that is an identifier? | settled | Valid |
 | [Q-0348](Q-0348-pointer-to-member-ref-qualified-alias.md) | Does a pointer to member formed from an alias of a ref-qualified function type keep the ref-qualifier? | settled | The ref-qualifier is kept |
 | [Q-0349](Q-0349-allocator-result-other-type.md) | In constant evaluation, can a member of `std::allocator<T>` convert the result of `::operator new` to a pointer to a type other than `T`? | provisional | No; only the conversion to `T*` is valid |
 | [Q-0350](Q-0350-clang-class-size-wrap.md) | Does Clang conform when it accepts a class whose size it cannot represent? | provisional | Clang has a defect in both cases |
@@ -401,7 +401,7 @@ status, and the first sentence of its answer section.
 | [Q-0385](Q-0385-edg-member-outside-clause-missing.md) | Must a member defined after the body of a class template repeat the requires clause of the class's template head? | settled | The definition repeats the whole head, requires clause included |
 | [Q-0386](Q-0386-ordering-classes-one-declared.md) | Must a program declare all three ordering classes before a use of `<=>` that yields only one of them? | provisional | No; each use needs only the ordering class that it yields |
 | [Q-0387](Q-0387-constant-compare-base-subobjects.md) | Does constant evaluation reject a relational comparison that involves a base class subobject? | provisional | Yes; constant evaluation rejects the comparison |
-| [Q-0388](Q-0388-deduced-conversion-function-template.md) | Can a conversion function template have `auto` as its name? | provisional | No; the declaration is rejected |
+| [Q-0388](Q-0388-deduced-conversion-function-template.md) | Can a conversion function template have `auto` as its name? | settled | No; the declaration is rejected |
 | [Q-0389](Q-0389-default-argument-local-constant.md) | Can a default argument read the value of a local constant of an enclosing function? | provisional | The default argument is not valid |
 | [Q-0390](Q-0390-fallthrough-label-of-other-switch.md) | Can a `fallthrough` statement lead to a label of an enclosing `switch`? | provisional | The statement is not valid |
 | [Q-0391](Q-0391-friend-member-of-specialization.md) | Does a friend template that names a member of a class template befriend only that member, in every specialization? | provisional | The named member of every specialization is a friend, and no other member is |

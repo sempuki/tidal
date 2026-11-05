@@ -1,6 +1,6 @@
 # Q-0051: Is comparing a one-past-the-end pointer with a pointer to the next object rejected during constant evaluation?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** CMP-20, `tests/expressions/comparison/one-past-end-adjacent-constant.cpp`
 
 ## Context
@@ -27,7 +27,7 @@ version in the matrix.
 1. Rejected during constant evaluation; unspecified at run time.
 2. Accepted during constant evaluation, with an unspecified value.
 
-## Provisional answer
+## Answer
 
 Rejected during constant evaluation, and unspecified at run time (option 1). Clang and GCC agree, and option 1 matches Q-0033.
 
@@ -38,6 +38,10 @@ Checked on 2026-11-04 under the principle test of the style guide (section 3, it
 Used on 2026-11-04 by the source-reader gap review of the text phase 8 wrote on expressions, foundations, and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`), Part B. The review applied CMP-P3 to the question's program, the equality of a pointer past the end of one complete object with a pointer to another complete object, in constant evaluation (`one-past-end-adjacent-constant.cpp`), without the rule text: the result depends on where the objects are placed, so constant evaluation rejects the comparison, which is the provisional answer.
 
 Kept open on 2026-11-04 under decision 0055, because CMP-P3 changed in this commit. The same review found the last paragraph of CMP-P3 too wide for relational comparisons that involve a base class subobject, and CMP-P3 now lists them (Q-0387). The question waits for the next use of CMP-P3. EDG 7.0 is the one newest family that differs.
+
+Used on 2026-11-04 by the principle-use batch PU1 (`reports/clean-room/PU1/`), under decision 0056. A clean-room reader applied CMP-P3, without the rule text, to the programs of `row-end-equals-next-row.cpp` and `one-past-end-adjacent-constant.cpp`. Each answer names CMP-P3 and gives the outcome that the tests expect, so the use supports the answer.
+
+Settled on 2026-11-04 under decision 0054. The use in batch PU1 supports the answer, the gap review of 2026-11-04 supports it with no doubt, and CMP-P3 gives the same answer by the test of the style guide (section 3). EDG 7.0 still differs, and the test keeps its override. Finding PU1-8 asks for an example of the row case in CMP-P3. The reader's answer for `row-end-equals-next-row.cpp` follows the principle as written.
 
 ## Opinions
 

@@ -1,6 +1,6 @@
 # Q-0027: May a member function with a ref-qualifier be overloaded with one without?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** CLS-6, `tests/classes/members/ref-qualified-mixed.cpp`
 
 ## Context
@@ -25,7 +25,7 @@ and `int f();`, Clang 22, GCC 16, and EDG 7.0 accept the pair, and GCC
 2. The declarations are valid, and a call that can't choose between them
    is rejected, as GCC 16 does.
 
-## Provisional answer
+## Answer
 
 No; the declarations are rejected (option 1). Three implementations, including the older GCC, reject the
 declarations. GCC 16's change is recorded here so contributors can say
@@ -38,6 +38,10 @@ Checked on 2026-11-04 under the principle test of the style guide (section 3, it
 Used on 2026-11-04 under decision 0056 by the source-reader gap review of the text phase 8 wrote on classes and overloading (`reports/review/2026-11-04-gap-review-phase-8-classes-overloading.md`). The review applies CLS-P3 to the program of `ref-qualified-mixed.cpp` without the rule text and reaches the provisional answer: the two overloads have the same parameters and one has a ref-qualifier, so the declarations are rejected.
 
 Kept open on 2026-11-04 under decision 0055, because CLS-P3 changed in the same commit: the review found that the model left out the cv-qualifiers of the object, and CLS-P3 and CLS-26 now limit the case to overloads with the same cv-qualifiers. The question waits for the next use of CLS-P3.
+
+Used on 2026-11-04 by the principle-use batch PU1 (`reports/clean-room/PU1/`), under decision 0056. A clean-room reader applied CLS-P3, without the rule text, to the programs of `ref-qualified-mixed-const.cpp`, `ref-qualified-mixed-different-cv.cpp`, `ref-qualified-mixed.cpp`, and `ref-qualified-mixed-call.cpp`. Each answer names CLS-P3 and gives the outcome that the tests expect, so the use supports the answer.
+
+Settled on 2026-11-04 under decision 0054. The use in batch PU1 supports the answer, the gap review of 2026-11-04 supports it with no doubt, and CLS-P3 gives the same answer by the test of the style guide (section 3). GCC 16 still differs, and the tests keep its overrides.
 
 ## Opinions
 

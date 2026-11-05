@@ -230,6 +230,12 @@ struct Bits {
 All eight compilers agree on 38 of 39 tests. The results are in
 `tests/RESULTS.md`.
 
+One question on this page settled on 2026-11-04 under decision 0054 after the principle-use batch PU1 (`reports/clean-room/PU1/`). The batch's use of the principle supports the answer, the latest gap review supports it with no doubt, and the principle gives the same answer. The tests keep their overrides for the family that still differs:
+
+| Question | Principle | Family that still differs |
+|---|---|---|
+| {question}`Q-0039` | INIT-P2 | none |
+
 - **INIT-1.** All compilers reject a read of an uninitialized scalar
   during {term}`constant evaluation` ("read of uninitialized object",
   "access to uninitialized object"). The rejection covers a copy of an

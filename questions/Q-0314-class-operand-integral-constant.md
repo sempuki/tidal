@@ -43,6 +43,10 @@ Used on 2026-11-04 by two source-reader gap reviews of the text phase 8 wrote. T
 
 Kept open on 2026-11-04 under decision 0055, because UNI-P4 and BF-1 changed in the same commit. They now name the conditions the review found missing: a literal class, a `constexpr` conversion function, and one candidate conversion. The question waits for the next use of UNI-P4. GCC 16 is the only newest family that differs.
 
+Used on 2026-11-04 by the principle-use batch PU1 (`reports/clean-room/PU1/`), under decision 0056. A clean-room reader applied the principles, without the rule text, to the programs of `operand-class-converts.cpp`, `bitfield-width-class-not-literal.cpp`, `bitfield-width-class-two-conversions.cpp`, `bitfield-width-class-not-constexpr.cpp`, `operand-class-conversion-ambiguous.cpp`, `bitfield-width-class-converts.cpp`, `operand-class-conversion-not-constexpr.cpp`, and `array-class-size.cpp`. Each answer gives the outcome that the tests expect. Five answers name UNI-P4. The answers for `operand-class-converts.cpp` and `operand-class-conversion-not-constexpr.cpp` name ALN-P1 with CE-P4 or CE-P1, and the answer for `array-class-size.cpp` names NEW-P1. For `operand-class-conversion-ambiguous.cpp` the reader borrowed a condition of UNI-P4, and for `operand-class-conversion-not-constexpr.cpp` the reader used CE-P1, because ALN-P1 lacks the conditions that UNI-P4 states (finding PU1-4). The use does not support the answer.
+
+Kept open on 2026-11-04 under decision 0056, because the use in batch PU1 does not support the answer: three of the eight answers do not name UNI-P4, and finding PU1-4 shows that ALN-P1 does not give the `alignas` forms on its own. GCC 16 is the only newest family that differs.
+
 ## Opinions
 
 ### Gap review, 2026-11-03

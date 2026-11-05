@@ -1,0 +1,553 @@
+{
+ "p01": {
+  "outcome": "reject",
+  "principles": [
+   "TYN-P1"
+  ],
+  "part": "the list item 'bases'",
+  "why": "The typedef gives a name for linkage to an unnamed class that has a base."
+ },
+ "p02": {
+  "outcome": "reject",
+  "principles": [
+   "VIRT-P4"
+  ],
+  "part": "table row 'a call to a function that returns the class'",
+  "why": "make() returns the abstract class A, so the call is rejected although the declaration is valid."
+ },
+ "p03": {
+  "outcome": "reject",
+  "principles": [
+   "TYN-P1"
+  ],
+  "part": "the list items 'other members, such as member functions' and 'a member class that has any of these itself'",
+  "why": "The member class Part has a member function, so the unnamed class cannot get a name for linkage."
+ },
+ "p04": {
+  "outcome": "reject",
+  "principles": [
+   "CLS-P3"
+  ],
+  "part": "'Overloads with the same parameters and the same cv-qualifiers therefore all have ref-qualifiers, or none of them has one.'",
+  "why": "Both overloads take (int) and are const, and only one has a ref-qualifier."
+ },
+ "p05": {
+  "outcome": "runs",
+  "principles": [
+   "CLS-P3",
+   "ICS-P3",
+   "ICS-P5"
+  ],
+  "part": "CLS-P3 allows the pair because the cv-qualifiers differ; ICS-P5 step 4g picks the overload with fewer cv-qualifiers on the referenced type",
+  "why": "c.f() can only call the const & overload (1); s.f() prefers the non-const overload (2), so main returns 0."
+ },
+ "p06": {
+  "outcome": "reject",
+  "principles": [
+   "ATTR-P1"
+  ],
+  "part": "table row likely/unlikely: 'At most one of the two on one statement or label', and the last sentence",
+  "why": "Two likelihood hints on one statement contradict each other."
+ },
+ "p07": {
+  "outcome": "runs",
+  "principles": [
+   "DEFARG-P1",
+   "CX-P3",
+   "CE-P2"
+  ],
+  "part": "DEFARG-P1: 'evaluated at each call that uses it, as if written at the call'",
+  "why": "The consteval call width() runs at the call in main, after width is defined, and gives 3."
+ },
+ "p08": {
+  "outcome": "reject",
+  "principles": [
+   "CLS-P3"
+  ],
+  "part": "'Overloads with the same parameters and the same cv-qualifiers therefore all have ref-qualifiers, or none of them has one.'",
+  "why": "f() & and f() have the same parameters and cv-qualifiers, and only one has a ref-qualifier."
+ },
+ "p09": {
+  "outcome": "compiles",
+  "principles": [
+   "ALN-P1",
+   "CE-P4"
+  ],
+  "part": "ALN-P1: 'or a class type whose conversion function gives such a type'; 'alignas can make the alignment stricter'",
+  "why": "The constexpr conversion gives 8, which is stricter than the alignment of int, so alignof(Block) is 8. There is no main."
+ },
+ "p10": {
+  "outcome": "reject",
+  "principles": [
+   "UNI-P4"
+  ],
+  "part": "'The class must be a literal type with exactly one such conversion function'",
+  "why": "W has a user-written destructor that is not constexpr, so by the glossary W is not a literal type."
+ },
+ "p11": {
+  "outcome": "reject",
+  "principles": [
+   "INIT-P2",
+   "CE-P3"
+  ],
+  "part": "INIT-P2: 'Constant evaluation rejects even that copy'",
+  "why": "The copy of an unsigned char with no value is allowed at run time but rejected in constant evaluation, so the static_assert fails to evaluate."
+ },
+ "p12": {
+  "outcome": "runs",
+  "principles": [
+   "DCMP-P1",
+   "LSUP-P1"
+  ],
+  "part": "DCMP-P1: 'compares part by part ... stops at the first difference' and 'the weakest ordering among the parts'; LSUP-P1: the ordering class needs comparison with 0",
+  "why": "major ties, minor gives less, the return type is strong_ordering, and the class has == and != with int, so r.v is -1."
+ },
+ "p13": {
+  "outcome": "compiles",
+  "principles": [
+   "DEFARG-P1",
+   "CX-P3"
+  ],
+  "part": "DEFARG-P1: 'evaluated at each call that uses it, as if written at the call'",
+  "why": "No call uses the default argument, so clamp(limit) is never evaluated. Doubtful: CX-P3 says a consteval call with arguments that are not constant is an error and does not say that a default argument waits for the call."
+ },
+ "p14": {
+  "outcome": "compiles",
+  "principles": [
+   "OVL-P4",
+   "CMP-P5",
+   "LSUP-P1"
+  ],
+  "part": "OVL-P4 table row '<=>': '(A, A) for every pair'; CMP-P5 table rows strong_ordering (integers) and partial_ordering (floating-point)",
+  "why": "The class operands reach the built-in candidates (int,long), (int,int) after promotion, and (int,double); int to double loses no value, so the three results are strong, strong, partial."
+ },
+ "p15": {
+  "outcome": "reject",
+  "principles": [
+   "UNI-P4"
+  ],
+  "part": "'The class must be a literal type with exactly one such conversion function'",
+  "why": "W has two conversion functions to integer types."
+ },
+ "p16": {
+  "outcome": "reject",
+  "principles": [
+   "LAM-P3"
+  ],
+  "part": "'Neither has a lambda in a default argument ... So a capture default in those places is rejected'",
+  "why": "The [=] lambda is in a default argument of a member of a local class."
+ },
+ "p17": {
+  "outcome": "reject",
+  "principles": [
+   "PFX-P3"
+  ],
+  "part": "'a member declaration sees the members declared before it'",
+  "why": "The member access names later, which is declared after the declaration of b."
+ },
+ "p18": {
+  "outcome": "runs",
+  "principles": [
+   "CVF-P1"
+  ],
+  "part": "'The name can be auto, and the target type then comes from the return statements'",
+  "why": "operator auto converts to double, so d is 2.5 and main returns 0."
+ },
+ "p19": {
+  "outcome": "compiles",
+  "principles": [
+   "CMP-P3"
+  ],
+  "part": "'the position past the end of one row equals the first element of the next row' and 'Inside one complete object the layout is fixed, so the other comparisons are accepted there. The rows of an array of arrays ...'",
+  "why": "All the comparisons are inside one array of arrays, so constant evaluation accepts them and each is true. There is no main."
+ },
+ "p20": {
+  "outcome": "reject",
+  "principles": [
+   "UNI-P4"
+  ],
+  "part": "'and the function must be constexpr, because the conversion runs during constant evaluation'",
+  "why": "W's conversion to int is not constexpr."
+ },
+ "p21": {
+  "outcome": "runs",
+  "principles": [
+   "OPR-P3"
+  ],
+  "part": "'Suffixes without a leading underscore belong to the language ... not valid, and no diagnostic is required. Compilers warn.'",
+  "why": "The compilers only warn, so 1km calls the operator and gives 101. Doubtful: the principle does not say whether -pedantic-errors turns that warning into an error."
+ },
+ "p22": {
+  "outcome": "compiles",
+  "principles": [
+   "ENUM-P1",
+   "PRIM-P1"
+  ],
+  "part": "ENUM-P1: 'If that type cannot hold the new value, the enumerator gets an integer type that can hold the value'; PRIM-P1 row 'hexadecimal, no u'",
+  "why": "first is unsigned int; second needs 2^32, so it gets a type of at least 64 bits on x86-64, and second > first holds. holds is 1. There is no main."
+ },
+ "p23": {
+  "outcome": "reject",
+  "principles": [
+   "TYN-P1"
+  ],
+  "part": "the list item 'a lambda expression anywhere in the class'",
+  "why": "The unnamed class given a name for linkage contains a lambda."
+ },
+ "p24": {
+  "outcome": "runs",
+  "principles": [
+   "OPR-P3"
+  ],
+  "part": "'A suffix that the language already uses, such as u or f, keeps its built-in meaning'",
+  "why": "u8 is a prefix and no integer suffix, so 1u8 calls the operator and gives 101; the reserved suffix only draws a warning. Doubtful: same -pedantic-errors gap as p21, and the principle does not list which suffixes the language uses."
+ },
+ "p25": {
+  "outcome": "reject",
+  "principles": [
+   "ALN-P1",
+   "UNI-P4",
+   "CE-P4"
+  ],
+  "part": "ALN-P1: 'a class type whose conversion function gives such a type' (one function), read with UNI-P4's 'exactly one such conversion function'",
+  "why": "Eight has two conversion functions to integer types, so there is no single integer operand. Doubtful: ALN-P1 does not say what happens with two conversion functions; UNI-P4 says it only for bit-fields."
+ },
+ "p26": {
+  "outcome": "compiles",
+  "principles": [
+   "PFX-P3"
+  ],
+  "part": "'a member declaration sees the members declared before it'",
+  "why": "first is declared before second, so second has type int and the size is two ints. There is no main."
+ },
+ "p27": {
+  "outcome": "reject",
+  "principles": [
+   "ATTR-P1"
+  ],
+  "part": "table row noreturn/carries_dependency: 'A later declaration can repeat the attribute and cannot add it'",
+  "why": "The first declaration of f has no carries_dependency, and the second adds it."
+ },
+ "p28": {
+  "outcome": "runs",
+  "principles": [
+   "OPR-P3",
+   "PRIM-P1"
+  ],
+  "part": "OPR-P3: 'A suffix that the language already uses ... keeps its built-in meaning'; PRIM-P1 rows 'with u' and 'decimal, with z'",
+  "why": "Each literal keeps its built-in type, 5z is the signed size type, no literal operator runs, and main returns calls, which is 0. Doubtful: same -pedantic-errors gap as p21."
+ },
+ "p29": {
+  "outcome": "compiles",
+  "principles": [
+   "UNI-P4"
+  ],
+  "part": "'or a class type whose conversion function gives such a type. The class must be a literal type with exactly one such conversion function, and the function must be constexpr'",
+  "why": "Three is literal, has one constexpr conversion to int, and gives width 3. There is no main."
+ },
+ "p30": {
+  "outcome": "runs",
+  "principles": [
+   "ACC-P3"
+  ],
+  "part": "list item 'a member of a class template, which makes that member of every specialization a friend'",
+  "why": "Box<char> is a specialization, so its peek is a friend and reads 7. Doubtful: the principle does not say whether the member of an explicit specialization, which the program writes anew, is 'that member'."
+ },
+ "p31": {
+  "outcome": "reject",
+  "principles": [
+   "ACC-P3"
+  ],
+  "part": "list item 'a member of a class template, which makes that member of every specialization a friend'",
+  "why": "Only peek is a friend; other reads the private secret, and the call in main instantiates other."
+ },
+ "p32": {
+  "outcome": "reject",
+  "principles": [
+   "TYN-P1"
+  ],
+  "part": "the list item 'other members, such as member functions'",
+  "why": "The unnamed class given a name for linkage has a member function."
+ },
+ "p33": {
+  "outcome": "compiles",
+  "principles": [
+   "PFX-P3"
+  ],
+  "part": "'the places where the class is complete see every member of the class. These places are member function bodies'",
+  "why": "The body of read sees later. There is no main."
+ },
+ "p34": {
+  "outcome": "runs",
+  "principles": [
+   "ACC-P3"
+  ],
+  "part": "list item 'a member of a class template, which makes that member of every specialization a friend'",
+  "why": "Box<T>::peek and the member class Box<T>::Inner are both befriended for every T, so each reads 7 and the sum is 14."
+ },
+ "p35": {
+  "outcome": "compiles",
+  "principles": [
+   "OVL-P4",
+   "CMP-P5"
+  ],
+  "part": "OVL-P4 row '<=>' (A, A) for every pair; CMP-P5 rows strong_ordering and partial_ordering",
+  "why": "ToInt <=> 1 is int against int (strong), and ToDouble <=> 1.0 is double against double (partial). There is no main."
+ },
+ "p36": {
+  "outcome": "runs",
+  "principles": [
+   "ATTR-P1"
+  ],
+  "part": "table row likely/unlikely: 'a label of any kind: case, default, or a name that a goto uses'",
+  "why": "The hint on the goto label is valid; the goto jumps to done and main returns 0."
+ },
+ "p37": {
+  "outcome": "runs",
+  "principles": [
+   "LSUP-P1",
+   "CMP-P5"
+  ],
+  "part": "LSUP-P1: 'an ordering value for <=> on built-in operands'; CMP-P5 row strong_ordering",
+  "why": "int <=> int builds strong_ordering::less, so v is -1. Doubtful: LSUP-P1 says an ordering class needs comparison with 0 and conversions, and this class has neither; the principle does not say whether built-in <=> needs them."
+ },
+ "p38": {
+  "outcome": "reject",
+  "principles": [
+   "FN-P5"
+  ],
+  "part": "'Outside a function body, nothing declares __func__, so the implementation rejects a use there.'",
+  "why": "__func__ is used at namespace scope."
+ },
+ "p39": {
+  "outcome": "reject",
+  "principles": [
+   "ALN-P1",
+   "CE-P1"
+  ],
+  "part": "ALN-P1: 'The operand is an integer constant'; CE-P1: an evaluation fails at 'a call of a function that is not constexpr'",
+  "why": "The conversion to int is not constexpr, so the operand is not a constant. ALN-P1 does not itself require constexpr."
+ },
+ "p40": {
+  "outcome": "reject",
+  "principles": [
+   "TYN-P1"
+  ],
+  "part": "the list item 'member aliases'",
+  "why": "The unnamed class given a name for linkage has a member alias."
+ },
+ "p41": {
+  "outcome": "compiles",
+  "principles": [
+   "LAM-P3",
+   "LAM-P1"
+  ],
+  "part": "LAM-P3: a capture default is allowed 'in a default member initializer', where it captures 'through this'; LAM-P1: 'constexpr where the body permits it'",
+  "why": "The lambda reads start through this and gives 5 in constant evaluation. There is no main."
+ },
+ "p42": {
+  "outcome": "reject",
+  "principles": [
+   "CLS-P3"
+  ],
+  "part": "'a default argument for the parameter could never take effect, and the parameter cannot have one'",
+  "why": "The explicit object parameter has a default argument."
+ },
+ "p43": {
+  "outcome": "runs",
+  "principles": [
+   "ATTR-P1"
+  ],
+  "part": "table row likely/unlikely: 'A statement, or a label of any kind: case, default'",
+  "why": "Each hint is alone in its place; classify(5) is 1, case 1 runs, classify(-5) is -1, so main returns 0."
+ },
+ "p44": {
+  "outcome": "runs",
+  "principles": [
+   "NAM-P5"
+  ],
+  "part": "'A declaration that names a member with a qualified name ... enters the scope of N at that name. The parts after the name see the members of N.'",
+  "why": "length is found in shapes, so width is an int with value 2."
+ },
+ "p45": {
+  "outcome": "reject",
+  "principles": [
+   "UNI-P4"
+  ],
+  "part": "'an enumerator of a scoped enumeration is rejected as a width'",
+  "why": "Bits::three is a scoped enumerator."
+ },
+ "p46": {
+  "outcome": "reject",
+  "principles": [
+   "LAM-P3"
+  ],
+  "part": "'A lambda at namespace scope has neither ... a capture default in those places is rejected'",
+  "why": "The [=] lambda is at namespace scope."
+ },
+ "p47": {
+  "outcome": "runs",
+  "principles": [
+   "IF-P4"
+  ],
+  "part": "'the initializer of a local reference that binds a temporary also runs at run time'",
+  "why": "where() runs at run time and returns 2 from the second branch, so main returns 0."
+ },
+ "p48": {
+  "outcome": "reject",
+  "principles": [
+   "ALN-P1"
+  ],
+  "part": "'an enumerator of a scoped enumeration is rejected'",
+  "why": "Width::eight is a scoped enumerator."
+ },
+ "p49": {
+  "outcome": "reject",
+  "principles": [
+   "LAM-P3"
+  ],
+  "part": "'Neither has ... a lambda in a member declaration of a local class outside any function body'",
+  "why": "The [=] lambda is in a member declaration of a local class."
+ },
+ "p50": {
+  "outcome": "compiles",
+  "principles": [
+   "COND-P2"
+  ],
+  "part": "'If both are lvalues of one type, the result is an lvalue, with the union of their cv-qualifiers.'",
+  "why": "fixed and shared are lvalues of Box with different cv-qualifiers, so the result is a const volatile Box lvalue and no copy is made. Doubtful: the principle does not say whether 'one type' ignores cv-qualifiers."
+ },
+ "p51": {
+  "outcome": "reject",
+  "principles": [
+   "CMP-P3"
+  ],
+  "part": "constant-evaluation list item 'an equality comparison of a pointer past the end of one complete object with a pointer to another complete object'",
+  "why": "a + 1 is past the end of a, and b is another complete object."
+ },
+ "p52": {
+  "outcome": "reject",
+  "principles": [
+   "NEW-P1"
+  ],
+  "part": "'an enumerator of a scoped enumeration gives no size'",
+  "why": "Count::two is a scoped enumerator used as the array size."
+ },
+ "p53": {
+  "outcome": "reject",
+  "principles": [
+   "COND-P2",
+   "ICS-P1"
+  ],
+  "part": "COND-P2: 'If two class types each convert to the other ... the expression is rejected'; ICS-P1: a deleted function is checked only for the chosen function",
+  "why": "Tag converts to Wrap by a constructor and Wrap converts to Tag by a deleted conversion function, which still counts, so the conversions go both ways."
+ },
+ "p54": {
+  "outcome": "compiles",
+  "principles": [
+   "SB-P2"
+  ],
+  "part": "'A class whose std::tuple_size is complete with no value member goes on to test 3'",
+  "why": "x and y bind to the data members a and b. There is no main."
+ },
+ "p55": {
+  "outcome": "reject",
+  "principles": [
+   "OPR-P3"
+  ],
+  "part": "'a literal operator has no default arguments'",
+  "why": "The second parameter has a default argument."
+ },
+ "p56": {
+  "outcome": "compiles",
+  "principles": [
+   "ENUM-P1",
+   "PRIM-P1"
+  ],
+  "part": "ENUM-P1: 'the enumerator gets an integer type that can hold the value. The implementation chooses which.'",
+  "why": "first is int; second gets some type that holds 0x80000000, so second > first and every choice (unsigned, long, or an 8-byte type) makes kind nonzero. There is no main."
+ },
+ "p57": {
+  "outcome": "reject",
+  "principles": [
+   "UNI-P4"
+  ],
+  "part": "'So an unnamed bit-field takes no cv-qualifier, and a const or volatile on it is rejected.'",
+  "why": "The unnamed bit-field is const."
+ },
+ "p58": {
+  "outcome": "reject",
+  "principles": [
+   "INST-P1"
+  ],
+  "part": "'The parts that wait for a use in a member of a class template do not wait in a local class: ... default arguments'",
+  "why": "Instantiating run<int> makes the default argument T::nothing at once, and int has no member."
+ },
+ "p59": {
+  "outcome": "runs",
+  "principles": [
+   "NEW-P1"
+  ],
+  "part": "'a class that converts to one of these gives a size'",
+  "why": "Two{} converts to 2 at run time, so the array has two elements."
+ },
+ "p60": {
+  "outcome": "reject",
+  "principles": [
+   "TYN-P1"
+  ],
+  "part": "the list item 'default member initializers'",
+  "why": "The unnamed class given a name for linkage has a default member initializer."
+ },
+ "p61": {
+  "outcome": "not-decided",
+  "principles": [
+   "ENUM-P3"
+  ],
+  "part": "ENUM-P3 table row 'Underlying type', column 'Not fixed': 'The implementation can provide wider integer types of its own. If none of its types is wide enough, the implementation rejects'",
+  "why": "The values 2^63 and -1 need a 65-bit signed type. The principle does not say whether the compilers use a wider type of their own (accept) or reject."
+ },
+ "p62": {
+  "outcome": "reject",
+  "principles": [
+   "CLS-P3"
+  ],
+  "part": "'Overloads with the same parameters and the same cv-qualifiers therefore all have ref-qualifiers, or none of them has one.'",
+  "why": "The declarations of f are already rejected, before the call."
+ },
+ "p63": {
+  "outcome": "reject",
+  "principles": [
+   "LSUP-P1",
+   "CMP-P5"
+  ],
+  "part": "LSUP-P1: 'The implementation checks the shape where it uses the type, because it builds ... an ordering value for <=> on built-in operands'; CMP-P5 row partial_ordering",
+  "why": "double <=> double gives std::partial_ordering, which the program does not declare."
+ },
+ "p64": {
+  "outcome": "runs",
+  "principles": [
+   "LSUP-P1",
+   "CMP-P5"
+  ],
+  "part": "LSUP-P1: 'an ordering value for <=> on built-in operands'",
+  "why": "4 <=> 9 is strong_ordering::less in constant evaluation, so r.v is -1. Doubtful for the same reason as p37."
+ },
+ "p65": {
+  "outcome": "reject",
+  "principles": [
+   "CVF-P1"
+  ],
+  "part": "'A conversion function template must name its target type ... so its name cannot be auto.'",
+  "why": "The conversion function template is named auto."
+ },
+ "p66": {
+  "outcome": "runs",
+  "principles": [
+   "SB-P2",
+   "LSUP-P1"
+  ],
+  "part": "SB-P2 table test 2 and 'A name for an element of the tuple protocol has the type that std::tuple_element gives, as written'",
+  "why": "The bindings come from get<0> and get<1>, giving 1, 5, 2, 7. The program is the example on the language-support page."
+ }
+}

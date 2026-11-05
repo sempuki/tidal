@@ -49,6 +49,10 @@ Kept open on 2026-11-04 under decision 0054, because no review has read the ques
 
 Kept open on 2026-11-04 under decision 0055, because NAM-21 changed in this commit. The gap reviews of the text phase 8 wrote on declarations and statements and on expressions, foundations, and templates both support option 1. NAM-21 now also names the base clause of the class and the enumerator list of an enumeration defined with a qualified name. The question waits for a reader or a reviewer to use the changed rule. No newest family differs.
 
+Used on 2026-11-04 by the principle-use batch PU1 (`reports/clean-room/PU1/`), under decision 0056. A clean-room reader applied the principles, without the rule text, to the programs of `definition-class-body-sees-namespace.cpp` and `tuple-protocol-page-example.cpp`. Each answer gives the outcome that the tests expect (the program runs). The answer for `definition-class-body-sees-namespace.cpp` names NAM-P5. The answer for `tuple-protocol-page-example.cpp` names SB-P2 and LSUP-P1 and not NAM-P5. The use does not support the answer.
+
+Kept open on 2026-11-04 under decisions 0055 and 0056, because the use in batch PU1 does not support the answer: one of the two answers does not name NAM-P5. The question also waits for a use of the changed NAM-21. No newest family differs.
+
 ## Opinions
 
 ### Gap review, 2026-11-04

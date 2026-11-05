@@ -1,6 +1,6 @@
 # Q-0039: Is copying an uninitialized `unsigned char` undefined?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** INIT-1, `tests/declarations/initialization/forms/copy-indeterminate-unsigned-char.cpp`, `copy-indeterminate-unsigned-char-run.cpp`
 
 ## Context
@@ -12,7 +12,7 @@ A gap review summary says that copying an uninitialized `unsigned char` (or `std
 1. Not undefined at run time for `unsigned char` and `std::byte`; rejected during constant evaluation, as every compiler does.
 2. Undefined for every type, as INIT-1 says now.
 
-## Provisional answer
+## Answer
 
 Not undefined at run time for `unsigned char` and `std::byte`, and rejected during constant evaluation (option 1). The constant-evaluation behavior is observed, and the run-time exception comes from the review summary. A test that can observe the run-time difference would settle the question.
 
@@ -23,6 +23,10 @@ Checked on 2026-11-04 under the principle test of the style guide (section 3, it
 Used on 2026-11-04 by the source-reader gap review of the text phase 8 wrote on the declarations and statements chapters (`reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md`), under decision 0056. The review applied INIT-P2 to the program of `copy-indeterminate-unsigned-char.cpp` and `copy-indeterminate-unsigned-char-run.cpp` without the rule text and reached the provisional answer: the copy into a byte object is defined at run time, and constant evaluation rejects it.
 
 Kept open on 2026-11-04 under decisions 0054 and 0055, because INIT-P2 and INIT-1 changed in this commit: the copied value itself must have the type `unsigned char` or `std::byte`. The question waits for the next use of the changed text.
+
+Used on 2026-11-04 by the principle-use batch PU1 (`reports/clean-room/PU1/`), under decision 0056. A clean-room reader applied INIT-P2, without the rule text, to the program of `copy-indeterminate-unsigned-char.cpp`. The answer names INIT-P2 and gives the outcome that the test expects, so the use supports the answer.
+
+Settled on 2026-11-04 under decision 0054. The use in batch PU1 supports the answer, the gap review of 2026-11-04 supports it with no doubt, and INIT-P2 gives the same answer by the test of the style guide (section 3). No family differs.
 
 ## Opinions
 

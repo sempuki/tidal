@@ -45,6 +45,10 @@ Used on 2026-11-04 by three source-reader gap reviews of the text phase 8 wrote.
 
 Kept open on 2026-11-04 under decision 0055, because UNI-P4 changed in the same commit: a width of class type now needs a literal class with exactly one `constexpr` conversion. The question waits for the next use of UNI-P4. In each form only one newest family differs.
 
+Used on 2026-11-04 by the principle-use batch PU1 (`reports/clean-room/PU1/`), under decision 0056. A clean-room reader applied the principles, without the rule text, to the programs of `bitfield-width-scoped-enumeration.cpp`, `operand-scoped-enumeration.cpp`, and `array-scoped-enumeration-size.cpp`, and each answer gives the outcome that the tests expect (a rejection). The batch key lists UNI-P4 as the principle that the question waits on. Only the answer for `bitfield-width-scoped-enumeration.cpp` names UNI-P4. The answer for `operand-scoped-enumeration.cpp` names ALN-P1, and the answer for `array-scoped-enumeration-size.cpp` names NEW-P1. The batch score counts the use as not supporting the answer.
+
+Kept open on 2026-11-04 under decision 0056, because the score of batch PU1 does not count the use as support: the answers for two of the three forms name ALN-P1 and NEW-P1, and the batch key lists only UNI-P4. Each of the three answers reaches the answer. In each form only one newest family differs.
+
 ## Opinions
 
 ### Gap review, 2026-11-03

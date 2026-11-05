@@ -299,7 +299,11 @@ void name() {
 All eight compilers agree on 50 of 63 tests. The results are in
 `tests/RESULTS.md`.
 
-{question}`Q-0022` is provisional. FN-P5 changed on 2026-11-04, so the question waits for a reader or a reviewer to use the changed FN-P5.
+One question on this page settled on 2026-11-04 under decision 0054 after the principle-use batch PU1 (`reports/clean-room/PU1/`). The batch's use of the principle supports the answer, the latest gap review supports it with no doubt, and the principle gives the same answer. The tests keep their overrides for the family that still differs:
+
+| Question | Principle | Family that still differs |
+|---|---|---|
+| {question}`Q-0022` | FN-P5 | Clang 22 |
 
 - FN-3: all compilers reject a call that reaches the end of the function
   during constant evaluation. At run time, the undefined behavior

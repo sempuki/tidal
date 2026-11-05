@@ -1,6 +1,6 @@
 # Q-0060: Can a literal operator have a default argument?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** OPR-8, `tests/classes/operators/literal-default-arg.cpp`
 
 ## Context
@@ -15,7 +15,7 @@ Clang and EDG reject the default argument. GCC accepts it.
 1. A literal operator must not have a default argument.
 2. A default argument is valid and has no effect on literals.
 
-## Provisional answer
+## Answer
 
 No; a literal operator must not have a default argument (option 1). Clang and EDG agree, and other operator functions have the
 same limit.
@@ -27,6 +27,10 @@ Checked on 2026-11-04 under the principle test of the style guide (section 3, it
 Used on 2026-11-04 under decision 0056 by the source-reader gap review of the text phase 8 wrote on classes and overloading (`reports/review/2026-11-04-gap-review-phase-8-classes-overloading.md`). The review applies OPR-P3 to the program of `literal-default-arg.cpp` without the rule text and reaches the provisional answer: the literal supplies every argument, so the literal operator has no default argument, and the declaration is rejected.
 
 Kept open on 2026-11-04 under decision 0055, because OPR-P3 changed in the same commit: its advice to warn about a reserved suffix became a no-diagnostic rule (OPR-9, Q-0383). The question waits for the next use of OPR-P3.
+
+Used on 2026-11-04 by the principle-use batch PU1 (`reports/clean-room/PU1/`), under decision 0056. A clean-room reader applied OPR-P3, without the rule text, to the program of `literal-default-arg.cpp`. The answer names OPR-P3 and gives the outcome that the test expects, so the use supports the answer.
+
+Settled on 2026-11-04 under decision 0054. The use in batch PU1 supports the answer, the gap review of 2026-11-04 supports it with no doubt, and OPR-P3 gives the same answer by the test of the style guide (section 3). GCC 16 still differs, and the test keeps its override.
 
 ## Opinions
 

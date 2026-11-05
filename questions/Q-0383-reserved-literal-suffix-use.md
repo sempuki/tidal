@@ -54,6 +54,10 @@ rule. Kept open on 2026-11-04, because OPR-9 changed class in the
 commit that adopted option 3. The question waits for the next use of
 OPR-9 or OPR-P3.
 
+Used on 2026-11-04 by the principle-use batch PU1 (`reports/clean-room/PU1/`), under decision 0056. A clean-room reader applied OPR-P3, without the rule text, to the programs of `literal-reserved-suffix-used.cpp`, `literal-reserved-suffix-u8.cpp`, and `literal-builtin-suffix-wins.cpp`. Each answer names OPR-P3 and says the program runs, an outcome that the tests allow. The reader marked the three answers doubtful (finding PU1-5): the batch offers no outcome for "not valid, no diagnostic required", and OPR-P3 does not say whether `u8` is a suffix that the language uses.
+
+Kept open on 2026-11-04 under decisions 0054 and 0055. Item RV2 changed the answer to option 3, a new option that no review read before the change, and the reader in batch PU1 answered each program with doubt (finding PU1-5). The question waits for a review or a reader batch that reads option 3 with no doubt.
+
 ## Opinions
 
 ### Gap review, 2026-11-04

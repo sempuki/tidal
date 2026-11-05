@@ -1,6 +1,6 @@
 # Q-0067: Can a typedef name an unnamed class that is not C-like?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** TYN-3, `tests/declarations/type-names/typedef-unnamed-class-member-function.cpp`
 
 ## Context
@@ -15,7 +15,7 @@ typedef. GCC 14 accepts it.
    functions, bases, or default member initializers.
 2. Any unnamed class can get its name from a typedef.
 
-## Provisional answer
+## Answer
 
 No; a class that gets its name from a typedef must be C-like (option 1). The newer GCC agrees with Clang and EDG, so the behavior of
 GCC 14 is treated as an older implementation choice.
@@ -27,6 +27,10 @@ On 2026-11-04, item PQ widened TYN-P1 to list what a class that gets its name fo
 Used on 2026-11-04 by the source-reader gap review of the text phase 8 wrote on the declarations and statements chapters (`reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md`), under decision 0056. The review applied TYN-P1 to the program of `typedef-unnamed-class-member-function.cpp` without the rule text and reached the provisional answer: the class has a member function, so it cannot get a name for linkage from the alias, and the alias is rejected.
 
 Kept open on 2026-11-04 under decisions 0054 and 0055, because TYN-P1 and TYN-9 changed in this commit: they now list the further limits that the review names. The question waits for the next use of the changed text.
+
+Used on 2026-11-04 by the principle-use batch PU1 (`reports/clean-room/PU1/`), under decision 0056. A clean-room reader applied TYN-P1, without the rule text, to the programs of `typedef-unnamed-class-base.cpp`, `typedef-unnamed-class-nested-member-function.cpp`, `typedef-unnamed-class-lambda.cpp`, `typedef-unnamed-class-member-function.cpp`, `typedef-unnamed-class-member-alias.cpp`, and `typedef-unnamed-class-default-member-initializer.cpp`. Each answer names TYN-P1 and gives the outcome that the tests expect, so the use supports the answer.
+
+Settled on 2026-11-04 under decision 0054. The use in batch PU1 supports the answer, the gap review of 2026-11-04 supports it with no doubt, and TYN-P1 gives the same answer by the test of the style guide (section 3). No newest family differs. GCC 14 accepts the classes, and the tests keep their overrides for GCC 14.
 
 ## Opinions
 

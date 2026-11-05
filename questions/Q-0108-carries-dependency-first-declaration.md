@@ -1,6 +1,6 @@
 # Q-0108: Must carries_dependency be on the first declaration of a function?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** ATTR-2, `tests/declarations/attributes/carries-dependency-redeclared.cpp`
 
 ## Context
@@ -18,7 +18,7 @@ an override for GCC.
 
 2. Valid; the attribute has no effect.
 
-## Provisional answer
+## Answer
 
 Yes, as for noreturn (option 1). Clang and EDG agree, and the rule matches noreturn.
 
@@ -29,6 +29,10 @@ Checked on 2026-11-04 under the principle test of the style guide (section 3, it
 Used on 2026-11-04 by the source-reader gap review of the text phase 8 wrote on the declarations and statements chapters (`reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md`), under decision 0056. The review applied ATTR-P1 to the program of `carries-dependency-redeclared.cpp` without the rule text and reached the provisional answer: a later declaration cannot add the attribute, so the redeclaration is rejected.
 
 Kept open on 2026-11-04 under decisions 0054 and 0055, because ATTR-P1 and ATTR-2 changed in this commit for two small points of the review on `fallthrough` and `nodiscard`. The question waits for the next use of the changed text.
+
+Used on 2026-11-04 by the principle-use batch PU1 (`reports/clean-room/PU1/`), under decision 0056. A clean-room reader applied ATTR-P1, without the rule text, to the program of `carries-dependency-redeclared.cpp`. The answer names ATTR-P1 and gives the outcome that the test expects, so the use supports the answer.
+
+Settled on 2026-11-04 under decision 0054. The use in batch PU1 supports the answer, the gap review of 2026-11-04 supports it with no doubt, and ATTR-P1 gives the same answer by the test of the style guide (section 3). GCC 16 still differs, and the test keeps its override.
 
 ## Opinions
 

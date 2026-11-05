@@ -1,6 +1,6 @@
 # Q-0059: Can a conversion function have a deduced return type?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** CVF-1, `tests/classes/conversion-functions/deduced-auto.cpp`
 
 ## Context
@@ -15,7 +15,7 @@ and accepts it otherwise.
 1. A conversion function can have a deduced return type.
 2. The target type must be written.
 
-## Provisional answer
+## Answer
 
 Yes; a conversion function can have a deduced return type (option 1). Most implementations accept `operator auto()`, and GCC 16
 rejects it only as a pedantic diagnostic.
@@ -27,6 +27,10 @@ Checked on 2026-11-04 under the principle test of the style guide (section 3, it
 Used on 2026-11-04 under decision 0056 by the source-reader gap review of the text phase 8 wrote on classes and overloading (`reports/review/2026-11-04-gap-review-phase-8-classes-overloading.md`). The review applies CVF-P1 to the program of `deduced-auto.cpp` without the rule text and reaches the provisional answer: the name of the conversion function can be `auto`, and the `return` statement gives the target type, so the program runs.
 
 Kept open on 2026-11-04 under decision 0055, because CVF-P1 changed in the same commit: the review found that the model left out the limit on conversion function templates (Q-0388). The question waits for the next use of CVF-P1.
+
+Used on 2026-11-04 by the principle-use batch PU1 (`reports/clean-room/PU1/`), under decision 0056. A clean-room reader applied CVF-P1, without the rule text, to the program of `deduced-auto.cpp`. The answer names CVF-P1 and gives the outcome that the test expects, so the use supports the answer.
+
+Settled on 2026-11-04 under decision 0054. The use in batch PU1 supports the answer, the gap review of 2026-11-04 supports it with no doubt, and CVF-P1 gives the same answer by the test of the style guide (section 3). GCC 16 still differs under `-pedantic-errors`, and the test keeps its override.
 
 ## Opinions
 

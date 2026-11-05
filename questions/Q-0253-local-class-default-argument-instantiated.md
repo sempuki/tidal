@@ -1,6 +1,6 @@
 # Q-0253: Is the default argument of a local class's member function instantiated with the enclosing function?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** INST-12, `tests/templates/instantiation/local-class-default-argument.cpp`
 
 ## Context
@@ -30,7 +30,7 @@ arguments of a local class are instantiated with the function.
 1. The default argument is instantiated with the function (Clang, EDG).
 2. The default argument waits for a call that uses it (GCC).
 
-## Provisional answer
+## Answer
 
 Yes; Clang and EDG agree, GCC differs (option 1). Two of three implementations and the gap review agree.
 
@@ -41,6 +41,10 @@ Checked on 2026-11-04 under the principle test of the style guide (section 3, it
 Used on 2026-11-04 by the source-reader gap review of the text phase 8 wrote on expressions, foundations, and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`), Part B. The review applied INST-P1 to the question's program, a default argument of a member function of a local class in a function template (`local-class-default-argument.cpp`), without the rule text: the local class is instantiated whole with its function, default arguments included, which is the provisional answer.
 
 Kept open on 2026-11-04 under decision 0055, because INST-P1 and INST-12 changed in this commit. The review reads the constraints of a local class as left out of its instantiation, and INST-P1 now says that the requires clause of a member waits (Q-0392). The question waits for the next use of INST-P1. GCC 16 is the one newest family that differs.
+
+Used on 2026-11-04 by the principle-use batch PU1 (`reports/clean-room/PU1/`), under decision 0056. A clean-room reader applied INST-P1, without the rule text, to the program of `local-class-default-argument.cpp`. The answer names INST-P1 and gives the outcome that the test expects, so the use supports the answer.
+
+Settled on 2026-11-04 under decision 0054. The use in batch PU1 supports the answer, the gap review of 2026-11-04 supports it with no doubt, and INST-P1 gives the same answer by the test of the style guide (section 3). GCC 16 still differs, and the test keeps its override.
 
 ## Opinions
 

@@ -1,6 +1,6 @@
 # Q-0058: Can an unnamed bit-field have a cv-qualifier?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** BF-2, `tests/classes/unions/bitfield-unnamed-cv.cpp`
 
 ## Context
@@ -14,7 +14,7 @@ qualifier. GCC accepts it.
 1. A program must not put a cv-qualifier on an unnamed bit-field.
 2. The qualifier is valid and has no effect.
 
-## Provisional answer
+## Answer
 
 No; a program must not put a cv-qualifier on an unnamed bit-field (option 1). Clang and EDG agree, and the qualifier cannot change the
 meaning of the program.
@@ -26,6 +26,10 @@ Checked on 2026-11-04 under the principle test of the style guide (section 3, it
 Used on 2026-11-04 under decision 0056 by the source-reader gap review of the text phase 8 wrote on classes and overloading (`reports/review/2026-11-04-gap-review-phase-8-classes-overloading.md`). The review applies UNI-P4 to the program of `bitfield-unnamed-cv.cpp` without the rule text and reaches the provisional answer: an unnamed bit-field takes no cv-qualifier, so the declaration is rejected.
 
 Kept open on 2026-11-04 under decision 0055, because UNI-P4 changed in the same commit: the review found that its sentence on a width of class type left out three conditions. The question waits for the next use of UNI-P4.
+
+Used on 2026-11-04 by the principle-use batch PU1 (`reports/clean-room/PU1/`), under decision 0056. A clean-room reader applied UNI-P4, without the rule text, to the program of `bitfield-unnamed-cv.cpp`. The answer names UNI-P4 and gives the outcome that the test expects, so the use supports the answer.
+
+Settled on 2026-11-04 under decision 0054. The use in batch PU1 supports the answer, the gap review of 2026-11-04 supports it with no doubt, and UNI-P4 gives the same answer by the test of the style guide (section 3). GCC 16 still differs, and the test keeps its override.
 
 ## Opinions
 

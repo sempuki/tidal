@@ -51,6 +51,10 @@ Kept open on 2026-11-04 (replaced by the next note) under decision 0054, because
 
 Read on 2026-11-04 by the source-reader gap review of the text phase 8 wrote on the declarations and statements chapters (`reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md`), which supports option 1 with no doubt. EDG 7.0 is the one newest family that differs. DEFARG-P1, which makes a default argument act as if written at the call, is not a principle that phase 8 widened, and its model gives the answer. Kept open on 2026-11-04 under decision 0055, because DEFARG-10, the rule the question affects, changed in this commit: a friend function defined in a class and a member function of a nested class now have their default arguments checked as if at the end of the outermost class. The question waits for the next review or reader batch that reads the changed DEFARG-10.
 
+Used on 2026-11-04 by the principle-use batch PU1 (`reports/clean-room/PU1/`), under decision 0056. A clean-room reader applied the principles, without the rule text, to the programs of `default-immediate-call-checked-at-call.cpp` and `default-immediate-call-unused-not-checked.cpp`. Each answer gives the outcome that the tests expect. Neither answer names DEFARG-P2, the principle that the batch key lists. Both name DEFARG-P1 and CX-P3. The reader marked the answer for `default-immediate-call-unused-not-checked.cpp` doubtful (finding PU1-2), because neither principle says where a `consteval` call in a default argument is checked. The use does not support the answer.
+
+Kept open on 2026-11-04 under decisions 0055 and 0056, because the use in batch PU1 does not support the answer: no answer names DEFARG-P2, and the reader read one form with doubt (finding PU1-2). EDG 7.0 is the one newest family that differs.
+
 ## Opinions
 
 ### Gap review, 2026-11-04

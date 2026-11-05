@@ -296,14 +296,18 @@ void post(Packet* p) {
 The results are in `tests/RESULTS.md`. All eight compilers agree on 59
 of 68 tests.
 
+One question on this page settled on 2026-11-04 under decision 0054 after the principle-use batch PU1 (`reports/clean-room/PU1/`). The batch's use of the principle supports the answer, the latest gap review supports it with no doubt, and the principle gives the same answer. The tests keep their overrides for the family that still differs:
+
+| Question | Principle | Family that still differs |
+|---|---|---|
+| {question}`Q-0067` | TYN-P1 | none; the tests keep their overrides for GCC 14 |
+
 Two questions on this page settled under decision 0054. Q-0066 settled on 2026-11-03 after the source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`). Q-0093 settled on 2026-11-04 after the source-reader gap review of the text phase 8 wrote on the declarations and statements chapters (`reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
 
 | Question | Principle | Family that still differs |
 |---|---|---|
 | {question}`Q-0066` | TYN-P4 | none; the rule needs no diagnostic |
 | {question}`Q-0093` | TYN-P2 | GCC 16 |
-
-{question}`Q-0067` is provisional. TYN-P1 and TYN-9 changed on 2026-11-04, so the question waits for a reader or a reviewer to use the changed TYN-P1. The tests keep their overrides for GCC 14.
 
 - TYN-5: GCC rejects the class, for a type name and for a function name
   that a later data member changes. Clang and EDG accept the class

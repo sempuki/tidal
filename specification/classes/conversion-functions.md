@@ -298,6 +298,13 @@ Reading r = live;        // valid: the constructor binds Sensor&, which
 The results are in `tests/RESULTS.md`. All eight compilers agree on 64
 of 66 tests.
 
+Two questions on this page settled on 2026-11-04 under decision 0054 after the principle-use batch PU1 (`reports/clean-room/PU1/`). For each, the batch's use of the principle supports the answer, the latest gap review supports it with no doubt, and the principle gives the same answer. Each test keeps its override for the family that still differs:
+
+| Question | Principle | Family that still differs |
+|---|---|---|
+| {question}`Q-0059` | CVF-P1 | GCC 16, under `-pedantic-errors` |
+| {question}`Q-0388` | CVF-P1 | EDG 7.0 |
+
 - CVF-1: GCC 16 rejects `operator auto()` under `-pedantic-errors`. GCC
   14, Clang, and EDG accept it ({question}`Q-0059`).
 - CVF-7: Clang and GCC reject a conversion function template named

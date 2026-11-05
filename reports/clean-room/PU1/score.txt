@@ -1,0 +1,81 @@
+65/66 predictions match the tests
+
+A question's answer is reached when every program of the question has the right
+outcome. A use supports the answer when, in addition, every program's answer names
+a principle that the question waits on.
+
+| Question | Waits on | Programs | Right | Name a waited principle | Not decided | Answer reached | Use supports the answer |
+|---|---|---|---|---|---|---|---|
+| Q-0018 | ENUM-P3 | p61 | 0/1 | 0/1 | 1 | no | no |
+| Q-0022 | FN-P5 | p38 | 1/1 | 1/1 | 0 | yes | yes |
+| Q-0027 | CLS-P3 | p04 p05 p08 p62 | 4/4 | 4/4 | 0 | yes | yes |
+| Q-0037 | LAM-P3 | p16 p41 p46 p49 | 4/4 | 4/4 | 0 | yes | yes |
+| Q-0039 | INIT-P2 | p11 | 1/1 | 1/1 | 0 | yes | yes |
+| Q-0046 | ATTR-P1 | p06 | 1/1 | 1/1 | 0 | yes | yes |
+| Q-0048 | SB-P2 | p54 | 1/1 | 1/1 | 0 | yes | yes |
+| Q-0051 | CMP-P3 | p19 p51 | 2/2 | 2/2 | 0 | yes | yes |
+| Q-0058 | UNI-P4 | p57 | 1/1 | 1/1 | 0 | yes | yes |
+| Q-0059 | CVF-P1 | p18 | 1/1 | 1/1 | 0 | yes | yes |
+| Q-0060 | OPR-P3 | p55 | 1/1 | 1/1 | 0 | yes | yes |
+| Q-0067 | TYN-P1 | p01 p03 p23 p32 p40 p60 | 6/6 | 6/6 | 0 | yes | yes |
+| Q-0086 | VIRT-P4 | p02 | 1/1 | 1/1 | 0 | yes | yes |
+| Q-0108 | ATTR-P1 | p27 | 1/1 | 1/1 | 0 | yes | yes |
+| Q-0114 | ENUM-P1 | p22 p56 | 2/2 | 2/2 | 0 | yes | yes |
+| Q-0253 | INST-P1 | p58 | 1/1 | 1/1 | 0 | yes | yes |
+| Q-0313 | UNI-P4 | p45 p48 p52 | 3/3 | 1/3 | 0 | yes | no |
+| Q-0314 | UNI-P4 | p09 p10 p15 p20 p25 p29 p39 p59 | 8/8 | 5/8 | 0 | yes | no |
+| Q-0316 | PFX-P3 | p17 p26 p33 | 3/3 | 3/3 | 0 | yes | yes |
+| Q-0317 | CLS-P3 | p42 | 1/1 | 1/1 | 0 | yes | yes |
+| Q-0329 | IF-P4 | p47 | 1/1 | 1/1 | 0 | yes | yes |
+| Q-0347 | ATTR-P1 | p36 p43 | 2/2 | 2/2 | 0 | yes | yes |
+| Q-0377 | NAM-P5 | p44 p66 | 2/2 | 1/2 | 0 | yes | no |
+| Q-0378 | COND-P2 | p50 p53 | 2/2 | 2/2 | 0 | yes | yes |
+| Q-0379 | DEFARG-P2 | p07 p13 | 2/2 | 0/2 | 0 | yes | no |
+| Q-0383 | OPR-P3 | p21 p24 p28 | 3/3 | 3/3 | 0 | yes | yes |
+| Q-0386 | LSUP-P1 | p12 p14 p35 p37 p63 p64 | 6/6 | 5/6 | 0 | yes | no |
+| Q-0388 | CVF-P1 | p65 | 1/1 | 1/1 | 0 | yes | yes |
+| Q-0391 | ACC-P3 | p30 p31 p34 | 3/3 | 3/3 | 0 | yes | yes |
+
+| Principle | Answers that name it |
+|---|---|
+| ACC-P3 | p30 right, p31 right, p34 right |
+| ALN-P1 | p09 right, p25 right, p39 right, p48 right |
+| ATTR-P1 | p06 right, p27 right, p36 right, p43 right |
+| CE-P1 | p39 right |
+| CE-P2 | p07 right |
+| CE-P3 | p11 right |
+| CE-P4 | p09 right, p25 right |
+| CLS-P3 | p04 right, p05 right, p08 right, p42 right, p62 right |
+| CMP-P3 | p19 right, p51 right |
+| CMP-P5 | p14 right, p35 right, p37 right, p63 right, p64 right |
+| COND-P2 | p50 right, p53 right |
+| CVF-P1 | p18 right, p65 right |
+| CX-P3 | p07 right, p13 right |
+| DCMP-P1 | p12 right |
+| DEFARG-P1 | p07 right, p13 right |
+| ENUM-P1 | p22 right, p56 right |
+| ENUM-P3 | p61 wrong |
+| FN-P5 | p38 right |
+| ICS-P1 | p53 right |
+| ICS-P3 | p05 right |
+| ICS-P5 | p05 right |
+| IF-P4 | p47 right |
+| INIT-P2 | p11 right |
+| INST-P1 | p58 right |
+| LAM-P1 | p41 right |
+| LAM-P3 | p16 right, p41 right, p46 right, p49 right |
+| LSUP-P1 | p12 right, p14 right, p37 right, p63 right, p64 right, p66 right |
+| NAM-P5 | p44 right |
+| NEW-P1 | p52 right, p59 right |
+| OPR-P3 | p21 right, p24 right, p28 right, p55 right |
+| OVL-P4 | p14 right, p35 right |
+| PFX-P3 | p17 right, p26 right, p33 right |
+| PRIM-P1 | p22 right, p28 right, p56 right |
+| SB-P2 | p54 right, p66 right |
+| TYN-P1 | p01 right, p03 right, p23 right, p32 right, p40 right, p60 right |
+| UNI-P4 | p10 right, p15 right, p20 right, p25 right, p29 right, p45 right, p57 right |
+| VIRT-P4 | p02 right |
+
+| Program | Test | Questions | Expected | Answer | Principles named | Reason given |
+|---|---|---|---|---|---|---|
+| p61 | declarations/enumerations/unscoped-value-too-large.cpp | Q-0018 | accept, reject | not-decided | ENUM-P3 | The values 2^63 and -1 need a 65-bit signed type. The principle does not say whether the compilers use a wider type of their own (accept) or reject. |

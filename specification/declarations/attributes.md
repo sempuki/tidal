@@ -403,7 +403,13 @@ switch (k) {
 The results are in `tests/RESULTS.md`. All eight compilers agree on 72
 of 90 tests. EDG skips the tests that use `-Werror`.
 
-{question}`Q-0046`, {question}`Q-0108`, and {question}`Q-0347` are provisional. ATTR-P1 and ATTR-2 changed on 2026-11-04, so each question waits for a reader or a reviewer to use the changed ATTR-P1.
+Three questions on this page settled on 2026-11-04 under decision 0054 after the principle-use batch PU1 (`reports/clean-room/PU1/`). For each, the batch's use of the principle supports the answer, the latest gap review supports it with no doubt, and the principle gives the same answer. Each test keeps its override for the family that still differs:
+
+| Question | Principle | Family that still differs |
+|---|---|---|
+| {question}`Q-0046` | ATTR-P1 | GCC 16 |
+| {question}`Q-0108` | ATTR-P1 | GCC 16 |
+| {question}`Q-0347` | ATTR-P1 | Clang 22 |
 
 - An implementation should warn if a `noreturn` function can return.
   Clang and GCC give this warning ("function declared 'noreturn' should

@@ -57,6 +57,10 @@ Changed on 2026-11-04 from option 1 to option 3, after the gap review of the tex
 
 Kept open on 2026-11-04 under decision 0055, because LSUP-2 changed in this commit. The question waits for a reader or a reviewer to use the changed rule. EDG 7.0 is the one newest family that differs.
 
+Used on 2026-11-04 by the principle-use batch PU1 (`reports/clean-room/PU1/`), under decision 0056. A clean-room reader applied LSUP-P1 and the comparison principles, without the rule text, to the programs of `ordering-strong-only-defaulted.cpp`, `builtin-three-way-mixed.cpp`, `builtin-three-way.cpp`, `ordering-strong-only-builtin-runtime.cpp`, `ordering-partial-not-declared.cpp`, and `ordering-strong-only-builtin.cpp`. Each answer gives the outcome that the tests expect. The answer for `builtin-three-way.cpp` names OVL-P4 and CMP-P5 and not LSUP-P1. The reader marked the answers for `ordering-strong-only-builtin-runtime.cpp` and `ordering-strong-only-builtin.cpp` doubtful (finding PU1-3), because LSUP-P1 does not say which uses need the comparison and the conversions of an ordering class. The use does not support the answer.
+
+Kept open on 2026-11-04 under decisions 0055 and 0056, because the use in batch PU1 does not support the answer: one of the six answers does not name LSUP-P1, and two read LSUP-P1 with doubt (finding PU1-3). EDG 7.0 is the one newest family that differs.
+
 ## Opinions
 
 ### Gap review, 2026-11-04

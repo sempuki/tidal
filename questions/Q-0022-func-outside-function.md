@@ -1,6 +1,6 @@
 # Q-0022: Is `__func__` outside a function rejected?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** FN-5, `tests/declarations/functions/definitions/func-outside-function.cpp`
 
 ## Context
@@ -20,7 +20,7 @@ valid inside function"), even under `-pedantic-errors`.
 1. Rejected. Clang's acceptance is an extension.
 2. Accepted, with an implementation-defined value.
 
-## Provisional answer
+## Answer
 
 Yes (option 1). Two of three implementations reject the use, and Clang's own
 warning says `__func__` is only valid inside a function.
@@ -32,6 +32,10 @@ Checked on 2026-11-04 under the principle test of the style guide (section 3, it
 Used on 2026-11-04 by the source-reader gap review of the text phase 8 wrote on the declarations and statements chapters (`reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md`), under decision 0056. The review applied FN-P5 to the program of `func-outside-function.cpp` without the rule text and reached the provisional answer: nothing declares `__func__` at namespace scope, so the use is rejected.
 
 Kept open on 2026-11-04 under decisions 0054 and 0055, because FN-P5 changed in this commit: it now says that the array has static storage duration and that the member initializers of a constructor see it. The question waits for the next use of the changed text.
+
+Used on 2026-11-04 by the principle-use batch PU1 (`reports/clean-room/PU1/`), under decision 0056. A clean-room reader applied FN-P5, without the rule text, to the program of `func-outside-function.cpp`. The answer names FN-P5 and gives the outcome that the test expects, so the use supports the answer.
+
+Settled on 2026-11-04 under decision 0054. The use in batch PU1 supports the answer, the gap review of 2026-11-04 supports it with no doubt, and FN-P5 gives the same answer by the test of the style guide (section 3). Clang 22 still differs, and the test keeps its override.
 
 ## Opinions
 

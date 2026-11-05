@@ -402,13 +402,19 @@ static_assert(sizeof names / sizeof names[0] ==
 All eight compilers agree on 76 of 79 tests. The results are in
 `tests/RESULTS.md`.
 
+One question on this page settled on 2026-11-04 under decision 0054 after the principle-use batch PU1 (`reports/clean-room/PU1/`). The batch's use of the principle supports the answer, the latest gap review supports it with no doubt, and the principle gives the same answer. The tests keep their overrides for the family that still differs:
+
+| Question | Principle | Family that still differs |
+|---|---|---|
+| {question}`Q-0114` | ENUM-P1 | none; each family gives a type that the answer allows |
+
 One question on this page settled on 2026-11-04 under decision 0054 after the source-reader gap review of the text phase 8 wrote on the declarations and statements chapters (`reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md`). The review supports the answer with no doubt, and a principle gives the same answer. The test keeps its override for the family that still differs:
 
 | Question | Principle | Family that still differs |
 |---|---|---|
 | {question}`Q-0047` | ENUM-P2 | EDG 7.0 |
 
-{question}`Q-0018` and {question}`Q-0114` are provisional. ENUM-P3 and ENUM-P1 changed on 2026-11-04, so each question waits for a reader or a reviewer to use the changed principle.
+{question}`Q-0018` is provisional. ENUM-P3 changed on 2026-11-04, and the principle-use batch PU1 gave no answer from ENUM-P3 for the question's program.
 
 - **ENUM-5.** With `-fshort-enums`, Clang and GCC give `enum { S = 1 }`
   an underlying type of 1 byte. By default its size is the size of

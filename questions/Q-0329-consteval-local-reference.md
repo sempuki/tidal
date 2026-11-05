@@ -1,6 +1,6 @@
 # Q-0329: Does the initializer of a local `const` reference that binds a temporary run during constant evaluation?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** IF-25, IF-18, `tests/statements/if/consteval-local-reference.cpp`
 
 ## Context
@@ -32,7 +32,7 @@ local `const int` and 2 for a local `const double`
 2. The implementation tries the initializer as a constant, as for a
    `const` integer variable. `r` is 1.
 
-## Provisional answer
+## Answer
 
 The initializer runs at run time and `r` is 2 (option 1).
 Option 1 follows CE-P2: a constant evaluation cannot give a reference
@@ -45,6 +45,10 @@ On 2026-11-04, item PQ widened IF-P4 to state the case and to cite CE-P2. IF-P4 
 Used on 2026-11-04 by the source-reader gap review of the text phase 8 wrote on the declarations and statements chapters (`reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md`), under decision 0056. The review applied IF-P4 to the program of `consteval-local-reference.cpp` without the rule text and reached the provisional answer: the local reference binds a temporary, so its initializer runs at run time and the result is 2.
 
 Kept open on 2026-11-04 under decisions 0054 and 0055, because IF-P4 and IF-25 changed in this commit for the two cases that the review names. The question waits for the next use of the changed text.
+
+Used on 2026-11-04 by the principle-use batch PU1 (`reports/clean-room/PU1/`), under decision 0056. A clean-room reader applied IF-P4, without the rule text, to the program of `consteval-local-reference.cpp`. The answer names IF-P4 and gives the outcome that the test expects, so the use supports the answer.
+
+Settled on 2026-11-04 under decision 0054. The use in batch PU1 supports the answer, the gap review of 2026-11-04 supports it with no doubt, and IF-P4 gives the same answer by the test of the style guide (section 3). GCC 16 still differs, and the test keeps its override. EDG does not run the program.
 
 ## Opinions
 

@@ -1,6 +1,6 @@
 # Q-0317: Can an explicit object parameter have a default argument?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** CLS-14, `tests/classes/members/explicit-object-default-argument.cpp`
 
 ## Context
@@ -27,7 +27,7 @@ have a default argument, and GCC says the same in other words.
 1. The default argument is not valid.
 2. The default argument is valid and has no effect.
 
-## Provisional answer
+## Answer
 
 No (CLS-14); EDG accepts (option 1). Clang and GCC reject the declaration, and the default
 argument could never take effect. The test expects a rejection and
@@ -40,6 +40,10 @@ Checked on 2026-11-04 under the principle test of the style guide (section 3, it
 Used on 2026-11-04 under decision 0056 by the source-reader gap review of the text phase 8 wrote on classes and overloading (`reports/review/2026-11-04-gap-review-phase-8-classes-overloading.md`). The review applies CLS-P3 to the program of `explicit-object-default-argument.cpp` without the rule text and reaches the provisional answer: the object of each call initializes the explicit object parameter, so the parameter cannot have a default argument, and the declaration is rejected.
 
 Kept open on 2026-11-04 under decision 0055, because CLS-P3 changed in the same commit for the cv-qualifier detail of Q-0027. The question waits for the next use of CLS-P3.
+
+Used on 2026-11-04 by the principle-use batch PU1 (`reports/clean-room/PU1/`), under decision 0056. A clean-room reader applied CLS-P3, without the rule text, to the program of `explicit-object-default-argument.cpp`. The answer names CLS-P3 and gives the outcome that the test expects, so the use supports the answer.
+
+Settled on 2026-11-04 under decision 0054. The use in batch PU1 supports the answer, the gap review of 2026-11-04 supports it with no doubt, and CLS-P3 gives the same answer by the test of the style guide (section 3). EDG 7.0 still differs, and the test keeps its override.
 
 ## Opinions
 

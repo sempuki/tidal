@@ -39,6 +39,10 @@ Used on 2026-11-04 by the source-reader gap review of the text phase 8 wrote on 
 
 Kept open on 2026-11-04 under decisions 0054 and 0055, because ENUM-P3 changed in this commit: the implementation now rejects the enumeration when none of its types is wide enough. The review also still reads with doubt on GCC's 128-bit type. The question waits for the next use of the changed text.
 
+Used on 2026-11-04 by the principle-use batch PU1 (`reports/clean-room/PU1/`), under decision 0056. A clean-room reader applied ENUM-P3, without the rule text, to the program of `unscoped-value-too-large.cpp` and gave no answer (`not-decided`). ENUM-P3 says that an implementation can provide wider integer types of its own, and it does not say whether the baseline compilers use one for these values (finding PU1-1). The use does not support the answer.
+
+Kept open on 2026-11-04 under decisions 0054 and 0056, because the use in batch PU1 gave no answer (finding PU1-1), and the gap review still reads with doubt on GCC's 128-bit type.
+
 ## Opinions
 
 ### Gap review, 2026-11-03

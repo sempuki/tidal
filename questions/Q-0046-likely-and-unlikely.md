@@ -1,6 +1,6 @@
 # Q-0046: Is `[[likely]] [[unlikely]]` on one statement rejected or ignored?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** ATTR-2, `tests/declarations/attributes/likely-and-unlikely.cpp`
 
 ## Context
@@ -17,7 +17,7 @@ override for GCC.
 1. Rejected.
 2. Ignored, with a recommended warning.
 
-## Provisional answer
+## Answer
 
 Rejected (option 1). Two of three implementations reject the pair.
 
@@ -28,6 +28,10 @@ Checked on 2026-11-04 under the principle test of the style guide (section 3, it
 Used on 2026-11-04 by the source-reader gap review of the text phase 8 wrote on the declarations and statements chapters (`reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md`), under decision 0056. The review applied ATTR-P1 to the program of `likely-and-unlikely.cpp` without the rule text and reached the provisional answer: the two hints on one statement contradict each other, so the implementation rejects the pair.
 
 Kept open on 2026-11-04 under decisions 0054 and 0055, because ATTR-P1 and ATTR-2 changed in this commit for the two small points of the review. The question waits for the next use of the changed text.
+
+Used on 2026-11-04 by the principle-use batch PU1 (`reports/clean-room/PU1/`), under decision 0056. A clean-room reader applied ATTR-P1, without the rule text, to the program of `likely-and-unlikely.cpp`. The answer names ATTR-P1 and gives the outcome that the test expects, so the use supports the answer.
+
+Settled on 2026-11-04 under decision 0054. The use in batch PU1 supports the answer, the gap review of 2026-11-04 supports it with no doubt, and ATTR-P1 gives the same answer by the test of the style guide (section 3). GCC 16 still differs, and the test keeps its override.
 
 ## Opinions
 
