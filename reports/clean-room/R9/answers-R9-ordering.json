@@ -1,0 +1,488 @@
+{
+ "p01": {
+  "outcome": "compiles",
+  "rules": [
+   "ORD-13",
+   "CNS-23",
+   "TPL-20"
+  ],
+  "why": "The heads are equivalent without constraints and the parameter lists match, so the more constrained Strong template wins and returns One."
+ },
+ "p02": {
+  "outcome": "reject",
+  "rules": [
+   "OVL-20",
+   "OVL-19",
+   "ORD-13"
+  ],
+  "why": "With auto there is no target type; both f satisfy their constraints for char, and the lists differ in length, so constraints do not remove either one and two functions remain."
+ },
+ "p03": {
+  "outcome": "reject",
+  "rules": [
+   "ORD-5",
+   "ORD-12",
+   "ORD-15"
+  ],
+  "why": "Only the first parameter takes part and they tie; the defaulted parameter counts at the pack's position (Q-0216), so ORD-12 does not apply and the call is ambiguous. GCC and EDG choose the template with no pack."
+ },
+ "p04": {
+  "outcome": "compiles",
+  "rules": [
+   "ORD-7",
+   "ORD-1",
+   "OVL-13"
+  ],
+  "why": "The swapped candidate's parameters are reversed, after which the T* const& template is more specialized and returns true. GCC does not reverse and fails the static_assert (Q-0211)."
+ },
+ "p05": {
+  "outcome": "compiles",
+  "rules": [
+   "ORD-14",
+   "ORD-17"
+  ],
+  "why": "auto** is more specialized than auto*, which is more specialized than the primary, so the three values are 0, 1, and 2."
+ },
+ "p06": {
+  "outcome": "compiles",
+  "rules": [
+   "ORD-6",
+   "ORD-13",
+   "CNS-23"
+  ],
+  "why": "The member's object parameter Item& makes the parameter lists the same, so the constrained template wins in both cases. Clang 18 finds both calls ambiguous."
+ },
+ "p07": {
+  "outcome": "compiles",
+  "rules": [
+   "ORD-8",
+   "ORD-13",
+   "CNS-23"
+  ],
+  "why": "Only the result types take part and they are the same T*, so the constrained conversion wins for int and p points to b."
+ },
+ "p08": {
+  "outcome": "compiles",
+  "rules": [
+   "ORD-14",
+   "CNS-23"
+  ],
+  "why": "The two partial specializations have the same pattern and equivalent heads, so the constrained one wins for int* and only the plain one matches char*."
+ },
+ "p09": {
+  "outcome": "compiles",
+  "rules": [
+   "ORD-14",
+   "ORD-17"
+  ],
+  "why": "The int V partial specialization is more specialized than the auto V primary."
+ },
+ "p10": {
+  "outcome": "compiles",
+  "rules": [
+   "ORD-4",
+   "ORD-1"
+  ],
+  "why": "List<T, A&...> is more specialized than List<T, A...>, and List<int, float> matches only the first template."
+ },
+ "p11": {
+  "outcome": "compiles",
+  "rules": [
+   "ORD-6",
+   "ORD-1"
+  ],
+  "why": "Both object parameters are lvalue references to Box, and T* is more specialized than T, so take returns Ptr."
+ },
+ "p12": {
+  "outcome": "compiles",
+  "rules": [
+   "ORD-9",
+   "DED-32",
+   "ORD-1"
+  ],
+  "why": "The explicit specialization and explicit instantiation pick which(T*); the int* call selects which(T*) whose int* specialization returns 3, and char* gives 2."
+ },
+ "p13": {
+  "outcome": "compiles",
+  "rules": [
+   "ORD-10"
+  ],
+  "why": "For an lvalue argument the lvalue reference template is more specialized, so f(n) returns One."
+ },
+ "p14": {
+  "outcome": "compiles",
+  "rules": [
+   "ORD-1",
+   "ORD-2"
+  ],
+  "why": "T* is more specialized than T, and const T* more than T*, as in the page example."
+ },
+ "p15": {
+  "outcome": "reject",
+  "rules": [
+   "ORD-6",
+   "ORD-15",
+   "OVL-36"
+  ],
+  "why": "The member's object parameter Item& matches the free function's first parameter, so the two tie and the call is ambiguous."
+ },
+ "p16": {
+  "outcome": "reject",
+  "rules": [
+   "ORD-5",
+   "ORD-15"
+  ],
+  "why": "Only the first parameter takes part, the templates tie, and no tie-breaker applies, so f(1) is ambiguous."
+ },
+ "p17": {
+  "outcome": "reject",
+  "rules": [
+   "ORD-11",
+   "ORD-15"
+  ],
+  "why": "const and volatile are not a superset of each other, so neither pair direction is removed and the call is ambiguous."
+ },
+ "p18": {
+  "outcome": "compiles",
+  "rules": [
+   "ORD-8",
+   "ORD-10",
+   "ORD-11"
+  ],
+  "why": "Each initialization chooses the template the page table names (T&, const T&, const T&, const T&&), so no static_assert in an unchosen body is instantiated."
+ },
+ "p19": {
+  "outcome": "compiles",
+  "rules": [
+   "ORD-1"
+  ],
+  "why": "pair(T, T) is more specialized than pair(T, U) for (1, 2), and only pair(T, U) is viable for (1, 'c')."
+ },
+ "p20": {
+  "outcome": "compiles",
+  "rules": [
+   "ORD-3",
+   "ORD-1"
+  ],
+  "why": "R appears in no compared type and needs no value, so f(T*) is more specialized and returns Two."
+ },
+ "p21": {
+  "outcome": "reject",
+  "rules": [
+   "ORD-2",
+   "ORD-3",
+   "ORD-10",
+   "ORD-15"
+  ],
+  "why": "T and T&& both deduce from each other after stripping, and ORD-10 needs two references, so the call is ambiguous."
+ },
+ "p22": {
+  "outcome": "reject",
+  "rules": [
+   "ORD-10",
+   "ORD-11",
+   "ORD-15"
+  ],
+  "why": "ORD-10 removes one direction and ORD-11 the other, so neither conversion is more specialized. Q-0217: GCC and EDG choose T&."
+ },
+ "p23": {
+  "outcome": "compiles",
+  "rules": [
+   "ORD-6",
+   "ORD-1"
+  ],
+  "why": "The member's object parameter (X& and Y&&) matches the free template's first parameter, and T* is more specialized than U, so both give One."
+ },
+ "p24": {
+  "outcome": "compiles",
+  "rules": [
+   "ORD-7",
+   "ORD-1"
+  ],
+  "why": "Both candidates are swapped and reversed alike, and the V<T*>, W<T*> template is more specialized, so w == v is true."
+ },
+ "p25": {
+  "outcome": "compiles",
+  "rules": [
+   "ORD-11"
+  ],
+  "why": "const T& is more qualified than T&, so f(c) returns Two."
+ },
+ "p26": {
+  "outcome": "compiles",
+  "rules": [
+   "ORD-9",
+   "OVL-19"
+  ],
+  "why": "The whole function types take part, so T* make(int) is more specialized than T make(int), and f(T*) more than f(T)."
+ },
+ "p27": {
+  "outcome": "reject",
+  "rules": [
+   "ORD-6",
+   "ORD-15"
+  ],
+  "why": "The member with no ref-qualifier gets an rvalue reference object parameter against X&&, so the two tie and the call is ambiguous. Clang 18 and EDG choose the member (Q-0214)."
+ },
+ "p28": {
+  "outcome": "compiles",
+  "rules": [
+   "ORD-9",
+   "OVL-19"
+  ],
+  "why": "The page Evidence records that every compiler but GCC 14 chooses read(T&) for this address; the rules do not show me how ORD-9 orders T& against T&&."
+ },
+ "p29": {
+  "outcome": "reject",
+  "rules": [
+   "ORD-10",
+   "ORD-1",
+   "ORD-15"
+  ],
+  "why": "The first pair prefers the T& template by ORD-10 and the second pair prefers U*, so the pairs disagree and the call is ambiguous."
+ },
+ "p30": {
+  "outcome": "reject",
+  "rules": [
+   "ORD-8",
+   "ORD-2",
+   "ORD-15"
+  ],
+  "why": "The result types T* and T* const become the same after stripping, no tie-breaker applies, and the initialization is ambiguous."
+ },
+ "p31": {
+  "outcome": "compiles",
+  "rules": [
+   "ORD-4",
+   "ORD-1"
+  ],
+  "why": "Each call picks the most specialized viable template: One for List<>, Two for List<int, float>, and Three for the other two."
+ },
+ "p32": {
+  "outcome": "compiles",
+  "rules": [
+   "ORD-6",
+   "ORD-1"
+  ],
+  "why": "Both object parameters are rvalue references, and T* is more specialized than T, so take returns Ptr."
+ },
+ "p33": {
+  "outcome": "reject",
+  "rules": [
+   "ORD-3",
+   "ORD-15"
+  ],
+  "why": "U appears only in a non-deduced position, so each direction fails and the call is ambiguous."
+ },
+ "p34": {
+  "outcome": "runs",
+  "rules": [
+   "DED-39",
+   "ORD-9",
+   "NEW-23"
+  ],
+  "why": "The placement delete template with T* is more specialized and is called when the constructor throws; the other template is never instantiated."
+ },
+ "p35": {
+  "outcome": "compiles",
+  "rules": [
+   "ORD-8",
+   "ORD-1"
+  ],
+  "why": "Only the result types take part, and T* is more specialized than T, so p points to second."
+ },
+ "p36": {
+  "outcome": "reject",
+  "rules": [
+   "ORD-3",
+   "ORD-13",
+   "ORD-15"
+  ],
+  "why": "The templates tie in ordering, and their heads differ, so the constraint does not decide and the call is ambiguous. EDG may accept (Q-0146)."
+ },
+ "p37": {
+  "outcome": "compiles",
+  "rules": [
+   "ORD-7",
+   "ORD-6",
+   "ORD-1"
+  ],
+  "why": "The swapped member gets its object parameter before the reversal, which makes it more specialized, so p == x is true. GCC and EDG choose the non-member (Q-0218)."
+ },
+ "p38": {
+  "outcome": "reject",
+  "rules": [
+   "ORD-10",
+   "ORD-15"
+  ],
+  "why": "Each pair prefers a different template by ORD-10, so the call is ambiguous."
+ },
+ "p39": {
+  "outcome": "compiles",
+  "rules": [
+   "ORD-16",
+   "ORD-1"
+  ],
+  "why": "Id<A>::type stays unresolved in one direction, so f(T*, T*) is more specialized and returns Two."
+ },
+ "p40": {
+  "outcome": "reject",
+  "rules": [
+   "ORD-8",
+   "ORD-13",
+   "ORD-15"
+  ],
+  "why": "The results tie in ordering, but T* and T* const are not the same result type, so the constraint does not decide and the initialization is ambiguous. EDG may accept (Q-0146)."
+ },
+ "p41": {
+  "outcome": "compiles",
+  "rules": [
+   "ORD-5",
+   "ORD-13",
+   "CNS-23"
+  ],
+  "why": "The ellipsis takes no part and the constraint decides for the constrained template (Q-0293). GCC finds the call ambiguous."
+ },
+ "p42": {
+  "outcome": "compiles",
+  "rules": [
+   "ORD-6",
+   "ORD-1"
+  ],
+  "why": "The const member gets the object parameter const Grid&, and T* is more specialized than T, so the result is Ptr. EDG finds the call ambiguous (Q-0398)."
+ },
+ "p43": {
+  "outcome": "compiles",
+  "rules": [
+   "ORD-4",
+   "ORD-5",
+   "ORD-12"
+  ],
+  "why": "An invented pack gives no value to T, so the templates without a leading pack win; g(T, Ts...) is more specialized than g(Ts...) for each call."
+ },
+ "p44": {
+  "outcome": "compiles",
+  "rules": [
+   "ORD-14",
+   "TSP-15"
+  ],
+  "why": "Each specialization selects the most specialized matching partial specialization, as in the page example; T* const* is more specialized than T*."
+ },
+ "p45": {
+  "outcome": "compiles",
+  "rules": [
+   "ORD-5",
+   "ORD-1"
+  ],
+  "why": "The defaulted parameter and the ellipsis take no part, so T* against T decides for One in both calls."
+ },
+ "p46": {
+  "outcome": "compiles",
+  "rules": [
+   "ORD-10",
+   "ORD-12"
+  ],
+  "why": "ORD-10 makes T& more specialized than T&& before the pack tie-breaker, so the call returns One."
+ },
+ "p47": {
+  "outcome": "compiles",
+  "rules": [
+   "ORD-9",
+   "OVL-19"
+  ],
+  "why": "The function types form one pair, so read(T&) is more specialized. Clang finds the address ambiguous (Q-0396)."
+ },
+ "p48": {
+  "outcome": "runs",
+  "rules": [
+   "DED-39",
+   "ORD-9",
+   "NEW-23"
+  ],
+  "why": "The T* placement delete is more specialized and sets called to 1, so main returns 0."
+ },
+ "p49": {
+  "outcome": "reject",
+  "rules": [
+   "ORD-14",
+   "TSP-16"
+  ],
+  "why": "The two partial specializations have different patterns, so the constraint does not decide and Pair<int, int> is ambiguous."
+ },
+ "p50": {
+  "outcome": "compiles",
+  "rules": [
+   "ORD-13",
+   "DED-34",
+   "CNS-23"
+  ],
+  "why": "The invented type parameter makes the heads equivalent, so the Strong template is more constrained and returns One."
+ },
+ "p51": {
+  "outcome": "reject",
+  "rules": [
+   "ORD-2",
+   "ORD-11",
+   "ORD-15"
+  ],
+  "why": "T and const T& tie, and ORD-11 needs two references, so the call is ambiguous."
+ },
+ "p52": {
+  "outcome": "reject",
+  "rules": [
+   "ORD-5",
+   "ORD-13",
+   "ORD-15"
+  ],
+  "why": "The lists differ in length when the defaulted parameter counts, so the constraint does not decide and the call is ambiguous."
+ },
+ "p53": {
+  "outcome": "compiles",
+  "rules": [
+   "ORD-7",
+   "ORD-6",
+   "ORD-1"
+  ],
+  "why": "Both members are swapped candidates, and the W<T*> member is more specialized, so w == x is true."
+ },
+ "p54": {
+  "outcome": "compiles",
+  "rules": [
+   "ORD-3",
+   "ORD-1"
+  ],
+  "why": "U appears in no compared type, so f(T*) is more specialized and returns Two."
+ },
+ "p55": {
+  "outcome": "reject",
+  "rules": [
+   "ORD-1",
+   "ORD-15"
+  ],
+  "why": "Each template fails one pair in the other direction, so neither is more specialized."
+ },
+ "p56": {
+  "outcome": "compiles",
+  "rules": [
+   "ORD-17",
+   "ORD-14"
+  ],
+  "why": "The int V partial specialization is more specialized than the constrained auto V one because their heads differ. EDG chooses the constrained one (Q-0397)."
+ },
+ "p57": {
+  "outcome": "compiles",
+  "rules": [
+   "ORD-5",
+   "ORD-12"
+  ],
+  "why": "For f(1) the empty pack takes no part and ORD-12 prefers f(T); f(1, 2) matches only the pack template."
+ },
+ "p58": {
+  "outcome": "compiles",
+  "rules": [
+   "ORD-16",
+   "ORD-1"
+  ],
+  "why": "Id<A>::type matches neither A nor int, so f(T, T) and g(T, int) are more specialized and both give Two."
+ }
+}

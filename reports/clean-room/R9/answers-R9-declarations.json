@@ -1,0 +1,950 @@
+{
+ "p01": {
+  "outcome": "compiles",
+  "rules": [
+   "TPL-20",
+   "TPL-19"
+  ],
+  "why": "Three declarations with equivalent heads and different parameter names; no main."
+ },
+ "p02": {
+  "outcome": "compiles",
+  "rules": [
+   "TPL-42"
+  ],
+  "why": "Enumerations with fixed underlying types get their enumerators after the class body; GCC still rejects under Q-0199, which is settled."
+ },
+ "p03": {
+  "outcome": "compiles",
+  "rules": [
+   "TPL-6"
+  ],
+  "why": "Every parameter type is structural, including double and an aggregate with public members."
+ },
+ "p04": {
+  "outcome": "runs",
+  "rules": [
+   "TPL-24"
+  ],
+  "why": "The member function template is defined with two heads; as<int> gives 2 and the pair holds 'a'."
+ },
+ "p05": {
+  "outcome": "compiles",
+  "rules": [
+   "TPL-13",
+   "TPL-12"
+  ],
+  "why": "Defaults of each kind, and N's default names T."
+ },
+ "p06": {
+  "outcome": "depends",
+  "rules": [
+   "TPL-36",
+   "TPL-35"
+  ],
+  "why": "A constant pack typed by the type pack in the same head is not deducible; EDG rejects, Clang and GCC accept (Q-0195)."
+ },
+ "p07": {
+  "outcome": "compiles",
+  "rules": [
+   "TPL-15",
+   "TPL-14"
+  ],
+  "why": "Defaults from three declarations add up from right to left, so Triple<> is valid."
+ },
+ "p08": {
+  "outcome": "reject",
+  "rules": [
+   "TPL-14"
+  ],
+  "why": "An alias template has a default before a parameter with no default."
+ },
+ "p09": {
+  "outcome": "reject",
+  "rules": [
+   "TPL-7",
+   "TPL-11"
+  ],
+  "why": "The placeholder takes type void from (void)0, and void is not structural."
+ },
+ "p10": {
+  "outcome": "compiles",
+  "rules": [
+   "TPL-9",
+   "TPL-49"
+  ],
+  "why": "Equal class arguments give one object, also across two templates, and unequal ones give different addresses."
+ },
+ "p11": {
+  "outcome": "reject",
+  "rules": [
+   "TPL-7"
+  ],
+  "why": "A constant parameter of type void."
+ },
+ "p12": {
+  "outcome": "compiles",
+  "rules": [
+   "TPL-12",
+   "TPL-5"
+  ],
+  "why": "Template template parameters declared with class and with typename."
+ },
+ "p13": {
+  "outcome": "reject",
+  "rules": [
+   "TPL-34"
+  ],
+  "why": "A template template parameter pack with a default."
+ },
+ "p14": {
+  "outcome": "reject",
+  "rules": [
+   "TPL-20"
+  ],
+  "why": "One declaration has a pack and the other does not."
+ },
+ "p15": {
+  "outcome": "reject",
+  "rules": [
+   "TPL-24"
+  ],
+  "why": "One head with the parameters of both the class and the member template."
+ },
+ "p16": {
+  "outcome": "runs",
+  "rules": [
+   "TPL-38"
+  ],
+  "why": "The friend definition gives a default, and the call finds it by its argument, with T = int."
+ },
+ "p17": {
+  "outcome": "reject",
+  "rules": [
+   "TPL-20"
+  ],
+  "why": "The two heads have different numbers of parameters."
+ },
+ "p18": {
+  "outcome": "reject",
+  "rules": [
+   "TPL-7"
+  ],
+  "why": "Owner has a destructor that is not constexpr, so it is not a literal type."
+ },
+ "p19": {
+  "outcome": "reject",
+  "rules": [
+   "TPL-30"
+  ],
+  "why": "In an alias template the pack must be last."
+ },
+ "p20": {
+  "outcome": "reject",
+  "rules": [
+   "TPL-33"
+  ],
+  "why": "The constant parameter declaration defines an enumeration."
+ },
+ "p21": {
+  "outcome": "compiles",
+  "rules": [
+   "TPL-11"
+  ],
+  "why": "auto takes the argument's type, and decltype(auto) keeps int& for (object)."
+ },
+ "p22": {
+  "outcome": "compiles",
+  "rules": [
+   "TPL-23"
+  ],
+  "why": "A member class is defined after the class body."
+ },
+ "p23": {
+  "outcome": "reject",
+  "rules": [
+   "TPL-21"
+  ],
+  "why": "A variable template has the name of a class template in the same scope."
+ },
+ "p24": {
+  "outcome": "runs",
+  "rules": [
+   "TPL-35",
+   "DED-20",
+   "DED-2"
+  ],
+  "why": "Back is deduced or defaulted after the pack, and in packs the trailing function parameter pack deduces Back; all three give 2."
+ },
+ "p25": {
+  "outcome": "compiles",
+  "rules": [
+   "TPL-42"
+  ],
+  "why": "Unscoped member enumeration with a fixed type defined after the body; GCC still rejects under Q-0199, which is settled."
+ },
+ "p26": {
+  "outcome": "reject",
+  "rules": [
+   "TPL-18"
+  ],
+  "why": "A variable in the body has the name of the template parameter."
+ },
+ "p27": {
+  "outcome": "runs",
+  "rules": [
+   "TPL-23"
+  ],
+  "why": "Member operators defined after the class body; 3+5 is 8 and a<b."
+ },
+ "p28": {
+  "outcome": "compiles",
+  "rules": [
+   "TPL-19"
+  ],
+  "why": "The parameter T hides the struct T inside the template only."
+ },
+ "p29": {
+  "outcome": "reject",
+  "rules": [
+   "TPL-7"
+  ],
+  "why": "Point has a constructor that is not constexpr and is not an aggregate."
+ },
+ "p30": {
+  "outcome": "reject",
+  "rules": [
+   "TPL-2"
+  ],
+  "why": "A member template in a local class."
+ },
+ "p31": {
+  "outcome": "reject",
+  "rules": [
+   "TPL-39"
+  ],
+  "why": "The default ends at the first >, so \"4>\" is left over."
+ },
+ "p32": {
+  "outcome": "compiles",
+  "rules": [
+   "TPL-28"
+  ],
+  "why": "Pointer<T> is T*, so T deduces from &n."
+ },
+ "p33": {
+  "outcome": "compiles",
+  "rules": [
+   "TPL-6"
+  ],
+  "why": "Pointers to void and to cv void are scalar types and so structural."
+ },
+ "p34": {
+  "outcome": "compiles",
+  "rules": [
+   "TPL-14"
+  ],
+  "why": "A function template can have a default before a parameter without one; U is deduced."
+ },
+ "p35": {
+  "outcome": "compiles",
+  "rules": [
+   "TPL-39"
+  ],
+  "why": "The > is in parentheses, and B is false."
+ },
+ "p36": {
+  "outcome": "reject",
+  "rules": [
+   "TPL-43"
+  ],
+  "why": "The pack in the argument list after the class name lacks ..."
+ },
+ "p37": {
+  "outcome": "reject",
+  "rules": [
+   "TPL-16"
+  ],
+  "why": "Two declarations both give the default for T."
+ },
+ "p38": {
+  "outcome": "runs",
+  "rules": [
+   "TPL-9"
+  ],
+  "why": "Equal class arguments refer to one object across two templates, and unequal ones to different objects."
+ },
+ "p39": {
+  "outcome": "reject",
+  "rules": [
+   "TPL-7",
+   "TPL-11"
+  ],
+  "why": "The type that auto takes, Secret, has a private data member."
+ },
+ "p40": {
+  "outcome": "runs",
+  "rules": [
+   "TPL-26"
+  ],
+  "why": "Each specialization of the variable template is its own variable; a static member variable template works too."
+ },
+ "p41": {
+  "outcome": "runs",
+  "rules": [
+   "TPL-44"
+  ],
+  "why": "A call without arguments in angle brackets prefers the plain function; use<>(0) uses the template."
+ },
+ "p42": {
+  "outcome": "reject",
+  "rules": [
+   "TPL-37"
+  ],
+  "why": "A friend function template declaration that is not a definition gives a default."
+ },
+ "p43": {
+  "outcome": "reject",
+  "rules": [
+   "TPL-25"
+  ],
+  "why": "A destructor must not be a member template."
+ },
+ "p44": {
+  "outcome": "compiles",
+  "rules": [
+   "TPL-35",
+   "DED-23"
+  ],
+  "why": "Last is deduced from the call and the pack is empty."
+ },
+ "p45": {
+  "outcome": "runs",
+  "rules": [
+   "TPL-22",
+   "DED-4"
+  ],
+  "why": "twice(3) prefers the plain function, and twice<int> has only the template as candidate."
+ },
+ "p46": {
+  "outcome": "reject",
+  "rules": [
+   "TPL-30",
+   "TPL-36"
+  ],
+  "why": "In a class template a constant pack typed by a type pack of the same head follows that pack."
+ },
+ "p47": {
+  "outcome": "runs",
+  "rules": [
+   "TPL-40"
+  ],
+  "why": "Each head uses its own inner default: int inside the class, char in the outside definition."
+ },
+ "p48": {
+  "outcome": "reject",
+  "rules": [
+   "TPL-4"
+  ],
+  "why": "Two declarators after a template head."
+ },
+ "p49": {
+  "outcome": "reject",
+  "rules": [
+   "TPL-2"
+  ],
+  "why": "A template at block scope."
+ },
+ "p50": {
+  "outcome": "runs",
+  "rules": [
+   "TPL-1"
+  ],
+  "why": "One use of each kind of template; all checks hold."
+ },
+ "p51": {
+  "outcome": "reject",
+  "rules": [
+   "TPL-4"
+  ],
+  "why": "A class template definition followed by a declarator."
+ },
+ "p52": {
+  "outcome": "depends",
+  "rules": [
+   "TPL-46"
+  ],
+  "why": "Two uses of one alias specialization give one closure type on GCC and EDG, and two on Clang (Q-0200)."
+ },
+ "p53": {
+  "outcome": "reject",
+  "rules": [
+   "TPL-29"
+  ],
+  "why": "main is a template."
+ },
+ "p54": {
+  "outcome": "reject",
+  "rules": [
+   "TPL-7"
+  ],
+  "why": "Secret has a private data member."
+ },
+ "p55": {
+  "outcome": "compiles",
+  "rules": [
+   "TPL-15",
+   "TPL-14"
+  ],
+  "why": "Defaults from two declarations add up: char and int."
+ },
+ "p56": {
+  "outcome": "depends",
+  "rules": [
+   "TPL-35"
+  ],
+  "why": "Back follows a pack, has no default, and no function parameter deduces it; EDG rejects, Clang and GCC accept (Q-0195)."
+ },
+ "p57": {
+  "outcome": "reject",
+  "rules": [
+   "TPL-25"
+  ],
+  "why": "A member function template is virtual."
+ },
+ "p58": {
+  "outcome": "reject",
+  "rules": [
+   "TPL-30"
+  ],
+  "why": "In a variable template the pack must be last."
+ },
+ "p59": {
+  "outcome": "reject",
+  "rules": [
+   "TPL-43"
+  ],
+  "why": "The argument list after the class name swaps the order of the head's parameters."
+ },
+ "p60": {
+  "outcome": "reject",
+  "rules": [
+   "TPL-20"
+  ],
+  "why": "The constant parameters have different types."
+ },
+ "p61": {
+  "outcome": "compiles",
+  "rules": [
+   "TPL-5",
+   "TPL-12"
+  ],
+  "why": "Unnamed parameters, and typename in a template template parameter."
+ },
+ "p62": {
+  "outcome": "runs",
+  "rules": [
+   "TPL-38",
+   "TPL-22"
+  ],
+  "why": "The other declarations have another function type or another head, so they are other templates; only the friend is viable."
+ },
+ "p63": {
+  "outcome": "reject",
+  "rules": [
+   "TPL-34"
+  ],
+  "why": "A constant pack with a default."
+ },
+ "p64": {
+  "outcome": "compiles",
+  "rules": [
+   "TPL-5"
+  ],
+  "why": "class and typename mean the same thing, and parameter names can be left out."
+ },
+ "p65": {
+  "outcome": "compiles",
+  "rules": [
+   "TPL-22",
+   "OVL-27"
+  ],
+  "why": "Templates and a plain function share a name; which(1.0) prefers the plain function."
+ },
+ "p66": {
+  "outcome": "reject",
+  "rules": [
+   "TPL-10"
+  ],
+  "why": "Assignment to a constant parameter of scalar type."
+ },
+ "p67": {
+  "outcome": "depends",
+  "rules": [
+   "TPL-48"
+  ],
+  "why": "A friend named after the parameter in a used class template; Clang and GCC accept, EDG rejects (Q-0198)."
+ },
+ "p68": {
+  "outcome": "compiles",
+  "rules": [
+   "TPL-8"
+  ],
+  "why": "Array and function parameter types become pointer types."
+ },
+ "p69": {
+  "outcome": "reject",
+  "rules": [
+   "TPL-14"
+  ],
+  "why": "U has no default in any declaration, yet T gets one; GCC accepts (Q-0296, settled)."
+ },
+ "p70": {
+  "outcome": "depends",
+  "rules": [
+   "TPL-38"
+  ],
+  "why": "Another declaration of the friend function template with a default; EDG rejects, Clang and GCC accept (Q-0197)."
+ },
+ "p71": {
+  "outcome": "compiles",
+  "rules": [
+   "TPL-12"
+  ],
+  "why": "Template template parameters with a constant parameter and with a pack."
+ },
+ "p72": {
+  "outcome": "compiles",
+  "rules": [
+   "TPL-46"
+  ],
+  "why": "Different arguments give different closure types."
+ },
+ "p73": {
+  "outcome": "reject",
+  "rules": [
+   "TPL-23",
+   "CNS-26"
+  ],
+  "why": "The outside definition leaves out the requires clause; EDG accepts (Q-0385, settled)."
+ },
+ "p74": {
+  "outcome": "compiles",
+  "rules": [
+   "TPL-36"
+  ],
+  "why": "The constant pack of the member template takes its type from the enclosing class's type pack."
+ },
+ "p75": {
+  "outcome": "compiles",
+  "rules": [
+   "TPL-9"
+  ],
+  "why": "An int parameter is a prvalue, a reference is an lvalue, and a class is a const lvalue."
+ },
+ "p76": {
+  "outcome": "reject",
+  "rules": [
+   "TPL-3"
+  ],
+  "why": "A template with C language linkage."
+ },
+ "p77": {
+  "outcome": "reject",
+  "rules": [
+   "TPL-18"
+  ],
+  "why": "A member has the name of the parameter."
+ },
+ "p78": {
+  "outcome": "compiles",
+  "rules": [
+   "TPL-8"
+  ],
+  "why": "const char S[] is const char*, and int F(int) is int (*)(int)."
+ },
+ "p79": {
+  "outcome": "reject",
+  "rules": [
+   "TPL-7"
+  ],
+  "why": "An rvalue reference type."
+ },
+ "p80": {
+  "outcome": "compiles",
+  "rules": [
+   "TPL-11"
+  ],
+  "why": "The class template name takes its type from each argument by class template deduction."
+ },
+ "p81": {
+  "outcome": "runs",
+  "rules": [
+   "TPL-41"
+  ],
+  "why": "A namespace name B does not hide the parameter B, so sizeof(B) is sizeof(char)."
+ },
+ "p82": {
+  "outcome": "reject",
+  "rules": [
+   "TPL-31"
+  ],
+  "why": "The alias specialization uses itself through a member of a class template."
+ },
+ "p83": {
+  "outcome": "runs",
+  "rules": [
+   "TPL-44"
+  ],
+  "why": "The member template does not override Base::use; through Base the virtual gives 1, and through Derived the template gives 2."
+ },
+ "p84": {
+  "outcome": "depends",
+  "rules": [
+   "TPL-38"
+  ],
+  "why": "A declaration of the same template before the friend definition with a default; EDG rejects, Clang and GCC accept (Q-0197)."
+ },
+ "p85": {
+  "outcome": "reject",
+  "rules": [
+   "TPL-3"
+  ],
+  "why": "An explicit specialization with C language linkage."
+ },
+ "p86": {
+  "outcome": "reject",
+  "rules": [
+   "TPL-4"
+  ],
+  "why": "A typedef after a template head."
+ },
+ "p87": {
+  "outcome": "reject",
+  "rules": [
+   "TPL-16"
+  ],
+  "why": "Both declarations give the default."
+ },
+ "p88": {
+  "outcome": "compiles",
+  "rules": [
+   "TPL-11",
+   "CTAD-1"
+  ],
+  "why": "The user guide gives Size<long> for 3, and the implicit guide gives Size<char> for 'a'."
+ },
+ "p89": {
+  "outcome": "compiles",
+  "rules": [
+   "TPL-47"
+  ],
+  "why": "Each specialization has its own static member."
+ },
+ "p90": {
+  "outcome": "reject",
+  "rules": [
+   "TPL-30"
+  ],
+  "why": "In a class template the pack must be last."
+ },
+ "p91": {
+  "outcome": "reject",
+  "rules": [
+   "TPL-7"
+  ],
+  "why": "A mutable data member."
+ },
+ "p92": {
+  "outcome": "compiles",
+  "rules": [
+   "TPL-32"
+  ],
+  "why": "Top-level volatile and const are dropped from the parameter type."
+ },
+ "p93": {
+  "outcome": "reject",
+  "rules": [
+   "TPL-27"
+  ],
+  "why": "A non-static data member template."
+ },
+ "p94": {
+  "outcome": "reject",
+  "rules": [
+   "TPL-20"
+  ],
+  "why": "The template template parameters have heads that are not equivalent."
+ },
+ "p95": {
+  "outcome": "depends",
+  "rules": [
+   "TPL-35"
+  ],
+  "why": "Back follows the pack and has no default and no deduction; EDG rejects, Clang and GCC accept (Q-0195)."
+ },
+ "p96": {
+  "outcome": "reject",
+  "rules": [
+   "TPL-14"
+  ],
+  "why": "A class template has a default before a parameter with none."
+ },
+ "p97": {
+  "outcome": "runs",
+  "rules": [
+   "TPL-23",
+   "TPL-43"
+  ],
+  "why": "Outside definitions with renamed parameters in order, and the pack with ..."
+ },
+ "p98": {
+  "outcome": "compiles",
+  "rules": [
+   "TPL-30",
+   "TSP-9"
+  ],
+  "why": "A partial specialization head can have parameters after a pack."
+ },
+ "p99": {
+  "outcome": "runs",
+  "rules": [
+   "TPL-23"
+  ],
+  "why": "The static member is defined after the body as 7, and the member initializer uses it."
+ },
+ "p100": {
+  "outcome": "reject",
+  "rules": [
+   "TPL-31"
+  ],
+  "why": "An alias template uses itself."
+ },
+ "p101": {
+  "outcome": "reject",
+  "rules": [
+   "TPL-18"
+  ],
+  "why": "A class template has the name of its own parameter."
+ },
+ "p102": {
+  "outcome": "reject",
+  "rules": [
+   "TPL-2"
+  ],
+  "why": "A local class declares a friend template."
+ },
+ "p103": {
+  "outcome": "link-fail",
+  "rules": [
+   "TPL-45",
+   "OVL-27"
+  ],
+  "why": "The call chooses the plain twice(int), which has no definition, and the template never supplies one."
+ },
+ "p104": {
+  "outcome": "runs",
+  "rules": [
+   "TPL-41"
+  ],
+  "why": "The base B and the member Size hide the parameters of the same names; 16 and 8."
+ },
+ "p105": {
+  "outcome": "runs",
+  "rules": [
+   "TPL-22",
+   "DED-5"
+  ],
+  "why": "Each explicit argument fits only one of the two templates."
+ },
+ "p106": {
+  "outcome": "reject",
+  "rules": [
+   "TPL-27"
+  ],
+  "why": "A non-static data member template in a class template."
+ },
+ "p107": {
+  "outcome": "reject",
+  "rules": [
+   "TPL-10"
+  ],
+  "why": "The address of a constant parameter of scalar type."
+ },
+ "p108": {
+  "outcome": "reject",
+  "rules": [
+   "TPL-18"
+  ],
+  "why": "Two parameters with one name in one head."
+ },
+ "p109": {
+  "outcome": "reject",
+  "rules": [
+   "TPL-14"
+  ],
+  "why": "A variable template has a default before a parameter with none."
+ },
+ "p110": {
+  "outcome": "reject",
+  "rules": [
+   "TPL-20"
+  ],
+  "why": "A type parameter and a constant parameter at one position."
+ },
+ "p111": {
+  "outcome": "reject",
+  "rules": [
+   "TPL-4"
+  ],
+  "why": "A class without a name after a template head."
+ },
+ "p112": {
+  "outcome": "reject",
+  "rules": [
+   "TPL-29"
+  ],
+  "why": "main is a template."
+ },
+ "p113": {
+  "outcome": "compiles",
+  "rules": [
+   "TPL-28",
+   "DED-13"
+  ],
+  "why": "Tag deduces from Tag*, and named gets Tag explicitly; Id<Tag> gives no value."
+ },
+ "p114": {
+  "outcome": "runs",
+  "rules": [
+   "TPL-49",
+   "TPL-6"
+  ],
+  "why": "Point has a constexpr destructor, so it is structural; the object is never destroyed, and v is 1."
+ },
+ "p115": {
+  "outcome": "compiles",
+  "rules": [
+   "TPL-32"
+  ],
+  "why": "const int N and int N declare the same parameter, and N is an int prvalue."
+ },
+ "p116": {
+  "outcome": "compiles",
+  "rules": [
+   "TPL-9",
+   "TPL-49"
+  ],
+  "why": "Equal arguments give one object whose address is constant."
+ },
+ "p117": {
+  "outcome": "reject",
+  "rules": [
+   "TPL-3"
+  ],
+  "why": "A partial specialization with C language linkage."
+ },
+ "p118": {
+  "outcome": "reject",
+  "rules": [
+   "TPL-33"
+  ],
+  "why": "A storage class specifier on a constant parameter."
+ },
+ "p119": {
+  "outcome": "reject",
+  "rules": [
+   "DED-13",
+   "DED-23",
+   "DED-35"
+  ],
+  "why": "Tag is in a non-deduced position of Id<Tag>, and no explicit argument or default gives it a value."
+ },
+ "p120": {
+  "outcome": "reject",
+  "rules": [
+   "TPL-17"
+  ],
+  "why": "A default in an outside member definition."
+ },
+ "p121": {
+  "outcome": "compiles",
+  "rules": [
+   "TPL-28"
+  ],
+  "why": "Pointer<int> is int*, so the two declarations of take are one function."
+ },
+ "p122": {
+  "outcome": "runs",
+  "rules": [
+   "TPL-23",
+   "CNS-26"
+  ],
+  "why": "The outside definitions repeat the whole head; 4 + 3 = 7."
+ },
+ "p123": {
+  "outcome": "reject",
+  "rules": [
+   "TPL-34"
+  ],
+  "why": "A type pack with a default."
+ },
+ "p124": {
+  "outcome": "runs",
+  "rules": [
+   "TPL-49"
+  ],
+  "why": "The object has its value before dynamic initialization, so reader.seen is 7."
+ },
+ "p125": {
+  "outcome": "compiles",
+  "rules": [
+   "TPL-1",
+   "TPL-24"
+  ],
+  "why": "Member templates of all four kinds in a class."
+ },
+ "p126": {
+  "outcome": "reject",
+  "rules": [
+   "TPL-17"
+  ],
+  "why": "A default in the member's own head in an outside definition."
+ },
+ "p127": {
+  "outcome": "reject",
+  "rules": [
+   "TPL-21"
+  ],
+  "why": "A variable has the name of a class template."
+ },
+ "p128": {
+  "outcome": "depends",
+  "rules": [
+   "TPL-37"
+  ],
+  "why": "A friend class template declaration with a default; Clang and EDG reject, GCC accepts (Q-0196)."
+ },
+ "p129": {
+  "outcome": "runs",
+  "rules": [
+   "TPL-47",
+   "TPL-26"
+  ],
+  "why": "Each specialization has its own static member; a static member variable template is defined after the class."
+ },
+ "p130": {
+  "outcome": "reject",
+  "rules": [
+   "TPL-40"
+  ],
+  "why": "The outside definition's head gives C no inner default, so C<> is checked and rejected at the definition."
+ },
+ "p131": {
+  "outcome": "compiles",
+  "rules": [
+   "TPL-48"
+  ],
+  "why": "A friend named after the parameter in a class template that is never used; every compiler accepts."
+ }
+}

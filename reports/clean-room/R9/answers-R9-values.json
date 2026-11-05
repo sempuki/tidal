@@ -1,0 +1,477 @@
+{
+ "p01": {
+  "outcome": "compiles",
+  "rules": [
+   "VC-3"
+  ],
+  "why": "A reference member of a prvalue gives an lvalue, so int& binds to it; there is no main."
+ },
+ "p02": {
+  "outcome": "compiles",
+  "rules": [
+   "VC-3",
+   "VC-8"
+  ],
+  "why": "A static data member gives an lvalue even through a class prvalue, so its address can be taken."
+ },
+ "p03": {
+  "outcome": "compiles",
+  "rules": [
+   "VC-1"
+  ],
+  "why": "s.m and p->m are lvalues, so decltype((...)) is int& and & is valid."
+ },
+ "p04": {
+  "outcome": "compiles",
+  "rules": [
+   "VC-3"
+  ],
+  "why": "A cast to an rvalue reference to a function type gives an lvalue, so its address can be taken."
+ },
+ "p05": {
+  "outcome": "compiles",
+  "rules": [
+   "VC-1"
+  ],
+  "why": "The name of an rvalue reference variable is an lvalue, so decltype((r)) is int&."
+ },
+ "p06": {
+  "outcome": "runs",
+  "rules": [
+   "VC-16"
+  ],
+  "why": "The throwing copy into the parameter and the throwing destructor of the parameter both happen in the caller, so both handlers run and caught is 21."
+ },
+ "p07": {
+  "outcome": "runs",
+  "rules": [
+   "VC-6",
+   "VC-9",
+   "VC-15"
+  ],
+  "why": "Both temporaries live to the end of the full expression, so use sees n == 0, and they end in reverse creation order before 9 is logged."
+ },
+ "p08": {
+  "outcome": "runs",
+  "rules": [
+   "REF-4",
+   "VC-6"
+  ],
+  "why": "The references extend the two temporaries to the end of the block, so no destructor runs inside and both run at its end."
+ },
+ "p09": {
+  "outcome": "runs",
+  "rules": [
+   "REF-4",
+   "VC-3"
+  ],
+  "why": "r binds to the temporary and m to a member of another temporary, and both lifetimes are extended."
+ },
+ "p10": {
+  "outcome": "reject",
+  "rules": [
+   "VC-12",
+   "VC-2"
+  ],
+  "why": "val() is an int prvalue, which cannot be assigned to."
+ },
+ "p11": {
+  "outcome": "runs",
+  "rules": [
+   "VC-16"
+  ],
+  "why": "The converting constructor throws while the caller initializes the parameter, so the caller catches 3 despite noexcept."
+ },
+ "p12": {
+  "outcome": "runs",
+  "rules": [
+   "VC-6",
+   "VC-9"
+  ],
+  "why": "The discarded Probe temporary lives to the end of the full expression, so count() sees 1, and it is gone afterwards."
+ },
+ "p13": {
+  "outcome": "runs",
+  "rules": [
+   "VC-9"
+  ],
+  "why": "Members initialize in declaration order and each member initializer is a full expression, so the trace is 1, 5, 2, 5."
+ },
+ "p14": {
+  "outcome": "reject",
+  "rules": [
+   "VC-12"
+  ],
+  "why": "a << 1 is a prvalue, and its address cannot be taken."
+ },
+ "p15": {
+  "outcome": "reject",
+  "rules": [
+   "VC-13",
+   "VC-3"
+  ],
+  "why": "A call that returns int&& is an xvalue, and its address cannot be taken."
+ },
+ "p16": {
+  "outcome": "reject",
+  "rules": [
+   "VC-12",
+   "VC-2"
+  ],
+  "why": "this is a prvalue, and its address cannot be taken."
+ },
+ "p17": {
+  "outcome": "compiles",
+  "rules": [
+   "VC-11",
+   "UNEV-1"
+  ],
+  "why": "In the operand of decltype a call makes no temporary, so the deleted destructor is not needed."
+ },
+ "p18": {
+  "outcome": "compiles",
+  "rules": [
+   "VC-8"
+  ],
+  "why": "Constant evaluation makes the temporaries for the member call and member access, and f() is 7."
+ },
+ "p19": {
+  "outcome": "runs",
+  "rules": [
+   "VC-6",
+   "VC-9"
+  ],
+  "why": "The temporary lives during take and ends with the assignment's full expression."
+ },
+ "p20": {
+  "outcome": "runs",
+  "rules": [
+   "VC-5",
+   "VC-4"
+  ],
+  "why": "The discarded class prvalue becomes a temporary that ends at the end of its statement, before 9 is logged; no copy is made."
+ },
+ "p21": {
+  "outcome": "reject",
+  "rules": [
+   "COND-3",
+   "VC-12"
+  ],
+  "why": "An int lvalue and an int prvalue give an int prvalue, which cannot be assigned to."
+ },
+ "p22": {
+  "outcome": "runs",
+  "rules": [
+   "VC-9"
+  ],
+  "why": "All initializers of one aggregate are one full expression, so both temporaries end after both reads: 1, 2, 9, 9."
+ },
+ "p23": {
+  "outcome": "reject",
+  "rules": [
+   "VC-12"
+  ],
+  "why": "make() is an int prvalue, which cannot be assigned to."
+ },
+ "p24": {
+  "outcome": "depends",
+  "rules": [
+   "VC-10",
+   "DTOR-7",
+   "TR-10"
+  ],
+  "why": "The caller destroys s a second time; Clang and GCC reject this in constant evaluation, and EDG accepts parameter-destroyed-by-callee-constant.cpp."
+ },
+ "p25": {
+  "outcome": "runs",
+  "rules": [
+   "VC-8",
+   "VC-3"
+  ],
+  "why": "Subscripting the array prvalue makes a temporary, and element 1 is 2."
+ },
+ "p26": {
+  "outcome": "runs",
+  "rules": [
+   "VC-5"
+  ],
+  "why": "The temporary of the expression statement ends at the end of that statement."
+ },
+ "p27": {
+  "outcome": "runs",
+  "rules": [
+   "VC-4"
+  ],
+  "why": "Each prvalue initializes its object directly, so only two S objects are made."
+ },
+ "p28": {
+  "outcome": "reject",
+  "rules": [
+   "VC-12"
+  ],
+  "why": "val() is a prvalue, and its address cannot be taken."
+ },
+ "p29": {
+  "outcome": "compiles",
+  "rules": [
+   "VC-2",
+   "ASN-6"
+  ],
+  "why": "A class prvalue can be assigned to, because the assignment is a member function call."
+ },
+ "p30": {
+  "outcome": "runs",
+  "rules": [
+   "VC-9"
+  ],
+  "why": "The init capture belongs to the enclosing full expression, so Note{3} ends after mark(4): trace 43."
+ },
+ "p31": {
+  "outcome": "reject",
+  "rules": [
+   "VC-12",
+   "VC-2"
+  ],
+  "why": "An enumerator is a prvalue, and its address cannot be taken."
+ },
+ "p32": {
+  "outcome": "runs",
+  "rules": [
+   "VC-8",
+   "VC-9"
+  ],
+  "why": "The temporary for the member call ends at the end of the declaration, before mark(3)."
+ },
+ "p33": {
+  "outcome": "runs",
+  "rules": [
+   "VC-7"
+  ],
+  "why": "Whether the parameter shares the caller's address is unspecified, and the program accepts both."
+ },
+ "p34": {
+  "outcome": "runs",
+  "rules": [
+   "VC-6"
+  ],
+  "why": "Both temporaries last to the end of the full expression and end in reverse order, 2 then 1."
+ },
+ "p35": {
+  "outcome": "compiles",
+  "rules": [
+   "VC-3"
+  ],
+  "why": "A subscript of an array xvalue or array prvalue is an xvalue, so decltype gives int&&; EDG gives an lvalue for the first (Q-0034)."
+ },
+ "p36": {
+  "outcome": "runs",
+  "rules": [
+   "VC-15",
+   "VC-10"
+  ],
+  "why": "The two parameter objects end in some order, and the program accepts both."
+ },
+ "p37": {
+  "outcome": "compiles",
+  "rules": [
+   "VC-3"
+  ],
+  "why": "Each expression is an xvalue, so decltype((...)) is int&&."
+ },
+ "p38": {
+  "outcome": "compiles",
+  "rules": [
+   "VC-2"
+  ],
+  "why": "A non-class prvalue has no cv-qualifiers, so the call has type int."
+ },
+ "p39": {
+  "outcome": "compiles",
+  "rules": [
+   "VC-2"
+  ],
+  "why": "Each expression is a prvalue, so decltype((...)) gives the plain type."
+ },
+ "p40": {
+  "outcome": "reject",
+  "rules": [
+   "VC-14"
+  ],
+  "why": "p is an lvalue, so int&& cannot bind to it."
+ },
+ "p41": {
+  "outcome": "compiles",
+  "rules": [
+   "VC-1",
+   "VC-2"
+  ],
+  "why": "this, an enumerator, a cast to non-reference, and x,0 are prvalues; a cast to int& and 0,x are lvalues."
+ },
+ "p42": {
+  "outcome": "runs",
+  "rules": [
+   "VC-9"
+  ],
+  "why": "Each for clause is its own full expression, so no Probe lives during the body."
+ },
+ "p43": {
+  "outcome": "runs",
+  "rules": [
+   "VC-8"
+  ],
+  "why": ".* on a class prvalue makes a temporary that ends with the declaration, before mark(2)."
+ },
+ "p44": {
+  "outcome": "runs",
+  "rules": [
+   "VC-8",
+   "VC-6"
+  ],
+  "why": "The array prvalue becomes a temporary that lives through the call."
+ },
+ "p45": {
+  "outcome": "runs",
+  "rules": [
+   "VC-9"
+  ],
+  "why": "With a default argument per element, each element's temporaries end before the next element: 1, 9, 1, 9."
+ },
+ "p46": {
+  "outcome": "reject",
+  "rules": [
+   "VC-11",
+   "VC-5"
+  ],
+  "why": "The discarded class prvalue makes a temporary, so its destructor must be usable, and it is deleted."
+ },
+ "p47": {
+  "outcome": "compiles",
+  "rules": [
+   "VC-3"
+  ],
+  "why": ".* applied to an xvalue for a data member gives an xvalue."
+ },
+ "p48": {
+  "outcome": "runs",
+  "rules": [
+   "VC-15"
+  ],
+  "why": "Three parameter objects end in some order, and the program accepts every order."
+ },
+ "p49": {
+  "outcome": "runs",
+  "rules": [
+   "VC-9"
+  ],
+  "why": "The default argument's temporary lives to the end of the full expression with the call: 1, 9, 2."
+ },
+ "p50": {
+  "outcome": "runs",
+  "rules": [
+   "VC-4"
+  ],
+  "why": "Prvalues initialize a and b directly, so the deleted copy and move constructors are never needed."
+ },
+ "p51": {
+  "outcome": "runs",
+  "rules": [
+   "VC-9"
+  ],
+  "why": "A condition is a full expression, so T ends before the body runs: 9, 1."
+ },
+ "p52": {
+  "outcome": "reject",
+  "rules": [
+   "VC-13"
+  ],
+  "why": "A cast to int&& gives an xvalue, and its address cannot be taken."
+ },
+ "p53": {
+  "outcome": "reject",
+  "rules": [
+   "VC-12"
+  ],
+  "why": "a + b is a prvalue, and its address cannot be taken."
+ },
+ "p54": {
+  "outcome": "compiles",
+  "rules": [
+   "VC-1"
+  ],
+  "why": "Each expression is an lvalue, a string literal included."
+ },
+ "p55": {
+  "outcome": "runs",
+  "rules": [
+   "VC-8"
+  ],
+  "why": "The array prvalue converts to a pointer through a temporary that lives through the call."
+ },
+ "p56": {
+  "outcome": "runs",
+  "rules": [
+   "VC-10"
+  ],
+  "why": "The parameter ends either at the return or at the end of the caller's full expression, and the program accepts both."
+ },
+ "p57": {
+  "outcome": "runs",
+  "rules": [
+   "VC-6",
+   "VC-9"
+  ],
+  "why": "The temporary lives until the end of the declaration, after read: 1, 9, 2."
+ },
+ "p58": {
+  "outcome": "runs",
+  "rules": [
+   "VC-9"
+  ],
+  "why": "Each declarator's initializer is its own full expression: 1, 9, 2, 9."
+ },
+ "p59": {
+  "outcome": "reject",
+  "rules": [
+   "PFX-20",
+   "VC-2"
+  ],
+  "why": "A member access that names a non-static member function can only be called."
+ },
+ "p60": {
+  "outcome": "runs",
+  "rules": [
+   "VC-7"
+  ],
+  "why": "The address comparison is unspecified, and the program accepts both results."
+ },
+ "p61": {
+  "outcome": "reject",
+  "rules": [
+   "COND-3",
+   "VC-12"
+  ],
+  "why": "A const int lvalue and a volatile int lvalue give a prvalue, whose address cannot be taken."
+ },
+ "p62": {
+  "outcome": "runs",
+  "rules": [
+   "VC-3",
+   "VC-8"
+  ],
+  "why": "A member of a class prvalue is read through a temporary, and v is 7."
+ },
+ "p63": {
+  "outcome": "runs",
+  "rules": [
+   "VC-9"
+  ],
+  "why": "The return expression's temporaries end before the local variables: 1, 2, 3."
+ },
+ "p64": {
+  "outcome": "reject",
+  "rules": [
+   "VC-14"
+  ],
+  "why": "r is an lvalue, so int&& cannot bind to it."
+ }
+}

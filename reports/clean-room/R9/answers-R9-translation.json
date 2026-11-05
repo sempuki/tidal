@@ -1,0 +1,650 @@
+{
+ "p01": {
+  "outcome": "reject",
+  "rules": [
+   "TR-12"
+  ],
+  "why": "A closing parenthesis where the array bound needs a bracket is a token sequence that the grammar does not derive."
+ },
+ "p02": {
+  "outcome": "runs",
+  "rules": [
+   "TR-3",
+   "TR-2"
+  ],
+  "why": "main with C++ language linkage is valid by Q-0366 (Clang 22 and GCC 16 accept, EDG rejects), and it returns 0."
+ },
+ "p03": {
+  "outcome": "runs",
+  "rules": [
+   "TR-7"
+  ],
+  "why": "The volatile writes are observable at -O2 as well, and the trace reaches 123."
+ },
+ "p04": {
+  "outcome": "depends",
+  "rules": [
+   "TR-15",
+   "STG-1"
+  ],
+  "why": "The class has size 2^64-1; only EDG (limit 2^64-1) accepts it, Clang 22 and GCC are over their limits, and Clang 18 gives sizeof a wrong value so the static_assert fails."
+ },
+ "p05": {
+  "outcome": "reject",
+  "rules": [
+   "TR-12"
+  ],
+  "why": "A scoped enumeration head must have a name, so the grammar does not derive enum class with no identifier."
+ },
+ "p06": {
+  "outcome": "reject",
+  "rules": [
+   "TR-10",
+   "TR-8"
+  ],
+  "why": "f(0) reads through a null pointer during constant evaluation, which is undefined and so not constant."
+ },
+ "p07": {
+  "outcome": "reject",
+  "rules": [
+   "INST-15",
+   "TR-13"
+  ],
+  "why": "depth<N> needs depth<N+1> without end, so the chain goes past every depth limit."
+ },
+ "p08": {
+  "outcome": "reject",
+  "rules": [
+   "TR-3"
+  ],
+  "why": "The declared return type of main must be int."
+ },
+ "p09": {
+  "outcome": "depends",
+  "rules": [
+   "TR-13"
+  ],
+  "why": "Count<100> nests 100 instantiations of one template; Clang (1024) and GCC (900) accept, and EDG, which limits one template to 64, rejects."
+ },
+ "p10": {
+  "outcome": "reject",
+  "rules": [
+   "TR-10",
+   "MUL-9"
+  ],
+  "why": "Division by zero in the constant evaluation of the static_assert is undefined, so the program is rejected."
+ },
+ "p11": {
+  "outcome": "depends",
+  "rules": [
+   "TR-14",
+   "STG-1"
+  ],
+  "why": "An array of 2^64-1 bytes: Clang (2^61-1) and GCC (2^63-1) reject it, and EDG (2^64-1) accepts it."
+ },
+ "p12": {
+  "outcome": "depends",
+  "rules": [
+   "TR-14"
+  ],
+  "why": "An array of 2^63-1 bytes: GCC and EDG accept it, and Clang (limit 2^61-1) rejects it."
+ },
+ "p13": {
+  "outcome": "runs",
+  "rules": [
+   "TR-7"
+  ],
+  "why": "Each of the 1000 volatile reads and writes happens at -O2, so port is 1000."
+ },
+ "p14": {
+  "outcome": "reject",
+  "rules": [
+   "TRY-5",
+   "TR-12"
+  ],
+  "why": "The exception_decl production derives no default argument or initializer."
+ },
+ "p15": {
+  "outcome": "depends",
+  "rules": [
+   "TR-13"
+  ],
+  "why": "The chain is 1000 deep: Clang (1024) accepts, GCC (900) rejects, and EDG rejects since each of Even and Odd nests 500 deep, past 64."
+ },
+ "p16": {
+  "outcome": "reject",
+  "rules": [
+   "TR-12"
+  ],
+  "why": "for constexpr is not a form that the grammar derives."
+ },
+ "p17": {
+  "outcome": "reject",
+  "rules": [
+   "TR-8",
+   "TR-10",
+   "MUL-9"
+  ],
+  "why": "The division by zero is undefined even though its result is never used, so the constant evaluation fails."
+ },
+ "p18": {
+  "outcome": "run-fail",
+  "rules": [
+   "TR-2"
+  ],
+  "why": "main returns 3, a nonzero status."
+ },
+ "p19": {
+  "outcome": "reject",
+  "rules": [
+   "TR-3"
+  ],
+  "why": "No variable with C language linkage in any namespace can be named main."
+ },
+ "p20": {
+  "outcome": "reject",
+  "rules": [
+   "TR-13"
+  ],
+  "why": "Clang and GCC reject the unknown option, and EDG's limit of 10 is below the depth of 20."
+ },
+ "p21": {
+  "outcome": "runs",
+  "rules": [
+   "TR-3",
+   "TR-2"
+  ],
+  "why": "A function named main inside a namespace is an ordinary function; global main returns 1 - 1 = 0.",
+  "principles": [
+   "TR-P3"
+  ]
+ },
+ "p22": {
+  "outcome": "depends",
+  "rules": [
+   "TR-15"
+  ],
+  "why": "A class of 2^61-1 bytes: Clang 22 (limit 2^60-1) rejects; Clang 18, GCC, and EDG accept with the right size."
+ },
+ "p23": {
+  "outcome": "depends",
+  "rules": [
+   "TR-15"
+  ],
+  "why": "With -m32 the class has 0xffffffff bytes: GCC (2^31-1) rejects; Clang (no limit) and EDG ILP32 (2^32-1) accept."
+ },
+ "p24": {
+  "outcome": "compiles",
+  "rules": [
+   "TR-14"
+  ],
+  "why": "With -m32 an array of 2^31-1 bytes is within every limit; there is no main to run."
+ },
+ "p25": {
+  "outcome": "depends",
+  "rules": [
+   "TR-15"
+  ],
+  "why": "With -m32 a class of 2^31 bytes: GCC rejects it, and Clang and EDG ILP32 accept it."
+ },
+ "p26": {
+  "outcome": "runs",
+  "rules": [
+   "TR-4"
+  ],
+  "why": "Each unit has its own internal local, so 1 + 2 == 3."
+ },
+ "p27": {
+  "outcome": "link-fail",
+  "rules": [
+   "LNK-7",
+   "TR-4"
+  ],
+  "why": "declared_only is used and defined nowhere, and the linkers report it."
+ },
+ "p28": {
+  "outcome": "compiles",
+  "rules": [
+   "TR-15"
+  ],
+  "why": "A class of 2^60-1 bytes is within every x86-64 limit."
+ },
+ "p29": {
+  "outcome": "reject",
+  "rules": [
+   "TR-13"
+  ],
+  "why": "With -m32 a depth of 2000 exceeds Clang's 1024, GCC's 900, and EDG's 64."
+ },
+ "p30": {
+  "outcome": "runs",
+  "rules": [
+   "TR-5"
+  ],
+  "why": "if consteval gives 1 in the static_assert and 2 at run time."
+ },
+ "p31": {
+  "outcome": "reject",
+  "rules": [
+   "TR-13"
+  ],
+  "why": "Clang and GCC reject a depth of 50 under -ftemplate-depth=40, and EDG rejects the unknown option."
+ },
+ "p32": {
+  "outcome": "compiles",
+  "rules": [
+   "TR-13"
+  ],
+  "why": "The chain of function templates is 50 deep, under every limit including EDG's 64."
+ },
+ "p33": {
+  "outcome": "reject",
+  "rules": [
+   "TR-10",
+   "ADD-9"
+  ],
+  "why": "INT_MAX + 1 overflows during constant evaluation."
+ },
+ "p34": {
+  "outcome": "reject",
+  "rules": [
+   "TR-1",
+   "CONV-18"
+  ],
+  "why": "The invalid initialization must be diagnosed even though never_called is never called."
+ },
+ "p35": {
+  "outcome": "reject",
+  "rules": [
+   "TRY-5",
+   "TR-12"
+  ],
+  "why": "The exception_decl production derives no storage class."
+ },
+ "p36": {
+  "outcome": "runs",
+  "rules": [
+   "TR-16",
+   "MUL-17"
+  ],
+  "why": "On x86-64 each float operation rounds to its type at translation and at run time, so the two sums match."
+ },
+ "p37": {
+  "outcome": "reject",
+  "rules": [
+   "TR-3"
+  ],
+  "why": "main must not be inline."
+ },
+ "p38": {
+  "outcome": "depends",
+  "rules": [
+   "TR-15"
+  ],
+  "why": "A class of 2^61 bytes: GCC and EDG accept; Clang 22 rejects, and Clang 18 gives a wrong sizeof so the static_assert fails."
+ },
+ "p39": {
+  "outcome": "runs",
+  "rules": [
+   "SINIT-1",
+   "TR-5"
+  ],
+  "why": "later is constant-initialized to 2 before any dynamic initializer runs, so early reads 2."
+ },
+ "p40": {
+  "outcome": "runs",
+  "rules": [
+   "TR-2",
+   "TR-9"
+  ],
+  "why": "argc is at least 1 and argv[argc] is a null pointer."
+ },
+ "p41": {
+  "outcome": "reject",
+  "rules": [
+   "TR-12"
+  ],
+  "why": "value * ; lacks a right operand."
+ },
+ "p42": {
+  "outcome": "reject",
+  "rules": [
+   "TR-12"
+  ],
+  "why": "An else with no if is not derived by the grammar."
+ },
+ "p43": {
+  "outcome": "runs",
+  "rules": [
+   "TR-2"
+  ],
+  "why": "Reaching the end of main gives status 0."
+ },
+ "p44": {
+  "outcome": "runs",
+  "rules": [
+   "TR-3"
+  ],
+  "why": "The trailing return type declares int, which is not a deduced placeholder."
+ },
+ "p45": {
+  "outcome": "compiles",
+  "rules": [
+   "TR-14"
+  ],
+  "why": "2^61-1 bytes is the largest Clang array and within GCC and EDG limits; there is no main."
+ },
+ "p46": {
+  "outcome": "link-fail",
+  "rules": [
+   "LNK-7",
+   "TR-4"
+  ],
+  "why": "A program with no main breaks LNK-7, and the linkers report it (guess: the test links the unit)."
+ },
+ "p47": {
+  "outcome": "compiles",
+  "rules": [
+   "TR-15"
+  ],
+  "why": "With -m32 a class of 2^31-1 bytes is within every limit."
+ },
+ "p48": {
+  "outcome": "reject",
+  "rules": [
+   "TR-3"
+  ],
+  "why": "No function with C language linkage in any namespace can be named main (GCC 14 and Clang 18 accept, against the rule)."
+ },
+ "p49": {
+  "outcome": "depends",
+  "rules": [
+   "FN-6",
+   "TR-3"
+  ],
+  "why": "main(long, char**) is accepted by EDG and rejected by Clang and GCC."
+ },
+ "p50": {
+  "outcome": "runs",
+  "rules": [
+   "TR-11"
+  ],
+  "why": "512 modulo 256 is status 0."
+ },
+ "p51": {
+  "outcome": "reject",
+  "rules": [
+   "TR-3"
+  ],
+  "why": "main must not be constexpr."
+ },
+ "p52": {
+  "outcome": "runs",
+  "rules": [
+   "TR-5"
+  ],
+  "why": "sq gives 9 in constant evaluation and at run time."
+ },
+ "p53": {
+  "outcome": "compiles",
+  "rules": [
+   "ATTR-6"
+  ],
+  "why": "An unused variable gives at most a warning with no -Werror; there is no main."
+ },
+ "p54": {
+  "outcome": "run-fail",
+  "rules": [
+   "TR-11"
+  ],
+  "why": "257 gives status 1."
+ },
+ "p55": {
+  "outcome": "compiles",
+  "rules": [
+   "TR-13"
+  ],
+  "why": "The chain is 100 deep in total and 50 per template, under all limits."
+ },
+ "p56": {
+  "outcome": "depends",
+  "rules": [
+   "TR-15"
+  ],
+  "why": "A class of 2^60 bytes: Clang 22 (limit 2^60-1) rejects; Clang 18, GCC, and EDG accept."
+ },
+ "p57": {
+  "outcome": "reject",
+  "rules": [
+   "TR-3"
+  ],
+  "why": "A variable at global scope must not be named main."
+ },
+ "p58": {
+  "outcome": "depends",
+  "rules": [
+   "TR-14"
+  ],
+  "why": "An array of 2^61 bytes: Clang (2^61-1) rejects, GCC and EDG accept."
+ },
+ "p59": {
+  "outcome": "reject",
+  "rules": [
+   "TR-3"
+  ],
+  "why": "main must not be consteval."
+ },
+ "p60": {
+  "outcome": "reject",
+  "rules": [
+   "TR-3"
+  ],
+  "why": "main must not be deleted (GCC 14 accepts, against the rule)."
+ },
+ "p61": {
+  "outcome": "depends",
+  "rules": [
+   "TR-15"
+  ],
+  "why": "A class of 2^63-1 bytes: GCC and EDG accept; Clang 22 rejects, and Clang 18's wrong sizeof fails the static_assert."
+ },
+ "p62": {
+  "outcome": "compiles",
+  "rules": [
+   "TR-13"
+  ],
+  "why": "With -m32 a depth of 50 is under every limit, EDG ILP32's 64 included."
+ },
+ "p63": {
+  "outcome": "runs",
+  "rules": [
+   "TR-9",
+   "FN-6"
+  ],
+  "why": "On the matrix argv[0] holds the program's name, which is not empty."
+ },
+ "p64": {
+  "outcome": "depends",
+  "rules": [
+   "TR-14"
+  ],
+  "why": "With -m32 an array of 2^32-1 bytes: GCC (2^31-1) rejects; Clang and EDG ILP32 accept."
+ },
+ "p65": {
+  "outcome": "reject",
+  "rules": [
+   "CONV-18"
+  ],
+  "why": "A string literal becomes a pointer, which does not convert to int."
+ },
+ "p66": {
+  "outcome": "run-fail",
+  "rules": [
+   "TR-11"
+  ],
+  "why": "-1 gives status 255."
+ },
+ "p67": {
+  "outcome": "depends",
+  "rules": [
+   "TR-14"
+  ],
+  "why": "An array of 2^62 bytes on x86-64: Clang rejects, GCC and EDG accept."
+ },
+ "p68": {
+  "outcome": "reject",
+  "rules": [
+   "TR-3"
+  ],
+  "why": "A placeholder return type that return deduces is not valid for main."
+ },
+ "p69": {
+  "outcome": "depends",
+  "rules": [
+   "TR-14"
+  ],
+  "why": "An array of 2^63 bytes: Clang and GCC reject, EDG (2^64-1) accepts."
+ },
+ "p70": {
+  "outcome": "reject",
+  "rules": [
+   "TR-3"
+  ],
+  "why": "main must not be static."
+ },
+ "p71": {
+  "outcome": "run-fail",
+  "rules": [
+   "ADD-9",
+   "TR-8"
+  ],
+  "why": "The taken path overflows int, and the undefined-behavior sanitizer stops the program."
+ },
+ "p72": {
+  "outcome": "depends",
+  "rules": [
+   "TR-15"
+  ],
+  "why": "A class of 2^63 bytes: GCC and Clang 22 reject; Clang 18 and EDG accept."
+ },
+ "p73": {
+  "outcome": "reject",
+  "rules": [
+   "INST-15",
+   "TR-13"
+  ],
+  "why": "Count<N> needs Count<N+1> without end."
+ },
+ "p74": {
+  "outcome": "reject",
+  "rules": [
+   "TR-3"
+  ],
+  "why": "main must not have C language linkage (GCC 14 and Clang 18 accept, against the rule)."
+ },
+ "p75": {
+  "outcome": "reject",
+  "rules": [
+   "TR-13"
+  ],
+  "why": "A depth of 2000 exceeds every limit."
+ },
+ "p76": {
+  "outcome": "runs",
+  "rules": [
+   "TR-2"
+  ],
+  "why": "main returns 0."
+ },
+ "p77": {
+  "outcome": "reject",
+  "rules": [
+   "TR-4",
+   "NAM-8"
+  ],
+  "why": "p77.cpp calls defined_elsewhere with no declaration in that unit, so the name is not found and the unit is rejected.",
+  "principles": [
+   "TR-P2"
+  ]
+ },
+ "p78": {
+  "outcome": "depends",
+  "rules": [
+   "TR-14"
+  ],
+  "why": "With -m32 an array of 2^31 bytes: GCC rejects, Clang and EDG ILP32 accept."
+ },
+ "p79": {
+  "outcome": "run-fail",
+  "rules": [
+   "TR-7",
+   "TR-2"
+  ],
+  "why": "The loop can be removed at -O2, but the status is still 7."
+ },
+ "p80": {
+  "outcome": "runs",
+  "rules": [
+   "TR-3"
+  ],
+  "why": "main in an extern \"C++\" block has C++ language linkage, which is valid (Q-0366)."
+ },
+ "p81": {
+  "outcome": "compiles",
+  "rules": [
+   "TR-13"
+  ],
+  "why": "A depth of 50 is under every limit."
+ },
+ "p82": {
+  "outcome": "compiles",
+  "rules": [
+   "TR-14"
+  ],
+  "why": "An array of 2^32 bytes is within every x86-64 limit."
+ },
+ "p83": {
+  "outcome": "reject",
+  "rules": [
+   "TR-3"
+  ],
+  "why": "A program must not take the address of main."
+ },
+ "p84": {
+  "outcome": "runs",
+  "rules": [
+   "TR-16",
+   "MUL-17"
+  ],
+  "why": "On x86-64 each operation rounds to double, and the checks accept both values."
+ },
+ "p85": {
+  "outcome": "runs",
+  "rules": [
+   "TR-5"
+  ],
+  "why": "f is never called at run time since z is 0, and no constant evaluation reaches it."
+ },
+ "p86": {
+  "outcome": "reject",
+  "rules": [
+   "ATTR-6",
+   "TR-6"
+  ],
+  "why": "-Wall turns on -Wunused-variable in Clang and GCC, and -Werror makes it an error; EDG skips the test."
+ },
+ "p87": {
+  "outcome": "reject",
+  "rules": [
+   "TR-3"
+  ],
+  "why": "main must not be a template."
+ },
+ "p88": {
+  "outcome": "reject",
+  "rules": [
+   "TR-3"
+  ],
+  "why": "A program must not call main."
+ }
+}

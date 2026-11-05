@@ -1,0 +1,695 @@
+{
+ "p01": {
+  "outcome": "reject",
+  "rules": [
+   "TSP-5"
+  ],
+  "why": "The explicit specialization is in namespace other, which does not enclose lib."
+ },
+ "p02": {
+  "outcome": "compiles",
+  "rules": [
+   "TSP-9",
+   "TSP-15"
+  ],
+  "why": "A member template's partial specialization can be declared in the class or outside after the enclosing heads, and each use selects as asserted."
+ },
+ "p03": {
+  "outcome": "reject",
+  "rules": [
+   "TSP-26"
+  ],
+  "why": "The declaration fixes two class templates, Outer and Inner, but has only one template <>."
+ },
+ "p04": {
+  "outcome": "reject",
+  "rules": [
+   "TSP-23",
+   "TSP-22"
+  ],
+  "why": "A member of an explicitly specialized class is defined with template <>."
+ },
+ "p05": {
+  "outcome": "reject",
+  "rules": [
+   "TSP-6"
+  ],
+  "why": "The explicit specialization of code<int> comes after the call that needs it."
+ },
+ "p06": {
+  "outcome": "compiles",
+  "rules": [
+   "TSP-1"
+  ],
+  "why": "Box<bool> has only its own members, so it has no value and has flip."
+ },
+ "p07": {
+  "outcome": "depends",
+  "rules": [
+   "TSP-17"
+  ],
+  "why": "The partial specialization comes after a use that would select it, an error with no diagnostic required; Clang accepts, GCC and EDG reject (Q-0173)."
+ },
+ "p08": {
+  "outcome": "compiles",
+  "rules": [
+   "TSP-29"
+  ],
+  "why": "Access to the private Owner::Hidden is not checked in the partial specialization's argument list."
+ },
+ "p09": {
+  "outcome": "reject",
+  "rules": [
+   "TSP-11"
+  ],
+  "why": "N + 1 gives no value for N, so N cannot be deduced."
+ },
+ "p10": {
+  "outcome": "reject",
+  "rules": [
+   "TSP-20"
+  ],
+  "why": "Box<int> is declared and not defined, so it is incomplete and its member cannot be accessed."
+ },
+ "p11": {
+  "outcome": "compiles",
+  "rules": [
+   "TSP-21"
+  ],
+  "why": "The primary member template is given explicitly for Outer<short>, so the member's partial specialization plays no role there. Clang 18 uses the partial specialization (Q-0206)."
+ },
+ "p12": {
+  "outcome": "compiles",
+  "rules": [
+   "TSP-19",
+   "TSP-13"
+  ],
+  "why": "The global namespace encloses lib, so the qualified explicit specialization is valid."
+ },
+ "p13": {
+  "outcome": "compiles",
+  "rules": [
+   "TSP-15",
+   "ORD-14"
+  ],
+  "why": "const T* is more specialized than T*, so the values are 1 and 2."
+ },
+ "p14": {
+  "outcome": "compiles",
+  "rules": [
+   "TSP-9"
+  ],
+  "why": "Declarations with equivalent heads and argument lists declare the same partial specialization, which is then defined."
+ },
+ "p15": {
+  "outcome": "compiles",
+  "rules": [
+   "TSP-3",
+   "TSP-26"
+  ],
+  "why": "The member template is specialized for Box<int> and char with two template <>; other uses take the template."
+ },
+ "p16": {
+  "outcome": "reject",
+  "rules": [
+   "TSP-11"
+  ],
+  "why": "The argument list repeats the primary template's parameter list."
+ },
+ "p17": {
+  "outcome": "compiles",
+  "rules": [
+   "TSP-2",
+   "TSP-13"
+  ],
+  "why": "The variable template's explicit specializations give 1 and 2, and char takes the primary."
+ },
+ "p18": {
+  "outcome": "compiles",
+  "rules": [
+   "TSP-14"
+  ],
+  "why": "The given list includes the default int, so Pair<char> matches Pair<T, int>."
+ },
+ "p19": {
+  "outcome": "runs",
+  "rules": [
+   "TSP-22",
+   "TSP-8"
+  ],
+  "why": "An explicitly given class has ordinary members that can have default arguments, so get() returns 1 and main returns 0."
+ },
+ "p20": {
+  "outcome": "reject",
+  "rules": [
+   "TSP-24"
+  ],
+  "why": "An explicit specialization has the storage class static."
+ },
+ "p21": {
+  "outcome": "compiles",
+  "rules": [
+   "TSP-9",
+   "TSP-15"
+  ],
+  "why": "A partial specialization's head can have a pack before other parameters, and the counts are 3 and 2."
+ },
+ "p22": {
+  "outcome": "runs",
+  "rules": [
+   "TSP-24"
+  ],
+  "why": "thread_local is allowed on an explicit specialization, and counter<char> is 1. EDG rejects the declaration (Q-0203)."
+ },
+ "p23": {
+  "outcome": "reject",
+  "rules": [
+   "TSP-27"
+  ],
+  "why": "The implicitly declared destructor is explicitly specialized."
+ },
+ "p24": {
+  "outcome": "reject",
+  "rules": [
+   "TSP-7"
+  ],
+  "why": "A function template cannot have a partial specialization. EDG accepts the declaration until a call (Q-0172)."
+ },
+ "p25": {
+  "outcome": "reject",
+  "rules": [
+   "TSP-4"
+  ],
+  "why": "No f has a specialization of type int(char*), because f takes two parameters."
+ },
+ "p26": {
+  "outcome": "compiles",
+  "rules": [
+   "TSP-14",
+   "TSP-10"
+  ],
+  "why": "T* matches int* and const char** (T = const char*), and not int."
+ },
+ "p27": {
+  "outcome": "runs",
+  "rules": [
+   "TSP-3",
+   "TSP-28"
+  ],
+  "why": "Box<int> gets its own kind and start, and the other members and Box<char> come from the template, so main returns 0."
+ },
+ "p28": {
+  "outcome": "compiles",
+  "rules": [
+   "TSP-13",
+   "TSP-14"
+  ],
+  "why": "Kind<int*> uses the partial specialization, which defines pointee."
+ },
+ "p29": {
+  "outcome": "compiles",
+  "rules": [
+   "TSP-32"
+  ],
+  "why": "struct and class agree with each other."
+ },
+ "p30": {
+  "outcome": "compiles",
+  "rules": [
+   "TSP-30"
+  ],
+  "why": "The class template declares Kind without enumerators, so the explicit specialization can follow the use. GCC rejects every such specialization under -pedantic-errors (Q-0205)."
+ },
+ "p31": {
+  "outcome": "reject",
+  "rules": [
+   "TSP-11"
+  ],
+  "why": "U does not appear in the argument list, so deduction cannot find it."
+ },
+ "p32": {
+  "outcome": "runs",
+  "rules": [
+   "TSP-26",
+   "TSP-3"
+  ],
+  "why": "Two template <> fix Outer<char> and Inner<int>; the specialized get returns 1 and the other 0, so main returns 0."
+ },
+ "p33": {
+  "outcome": "reject",
+  "rules": [
+   "TSP-23",
+   "TSP-22"
+  ],
+  "why": "A member of a member class template given explicitly must be defined with template <> before the template's head."
+ },
+ "p34": {
+  "outcome": "reject",
+  "rules": [
+   "TSP-8"
+  ],
+  "why": "An explicit specialization of a function template has a default argument."
+ },
+ "p35": {
+  "outcome": "reject",
+  "rules": [
+   "TSP-11"
+  ],
+  "why": "The pack T is used in the argument list without ...."
+ },
+ "p36": {
+  "outcome": "compiles",
+  "rules": [
+   "TSP-14"
+  ],
+  "why": "R(A) matches char(long) with R = char and A = long, and does not match int."
+ },
+ "p37": {
+  "outcome": "compiles",
+  "rules": [
+   "TSP-14",
+   "ORD-14"
+  ],
+  "why": "auto* P matches only pointer arguments, so kind<1> is 0 and kind<&n> is 1."
+ },
+ "p38": {
+  "outcome": "reject",
+  "rules": [
+   "TSP-31"
+  ],
+  "why": "A partial specialization comes before any declaration of its primary template."
+ },
+ "p39": {
+  "outcome": "reject",
+  "rules": [
+   "TSP-20"
+  ],
+  "why": "Box<int> is declared and not defined, so no object of it can be created."
+ },
+ "p40": {
+  "outcome": "reject",
+  "rules": [
+   "TSP-16"
+  ],
+  "why": "Both partial specializations match Pair<int, int> and neither is more specialized."
+ },
+ "p41": {
+  "outcome": "reject",
+  "rules": [
+   "TSP-12"
+  ],
+  "why": "A friend declaration declares an explicit specialization."
+ },
+ "p42": {
+  "outcome": "compiles",
+  "rules": [
+   "TSP-14"
+  ],
+  "why": "Pointer<T> is T*, so the partial specialization matches int* and not int."
+ },
+ "p43": {
+  "outcome": "reject",
+  "rules": [
+   "TSP-12"
+  ],
+  "why": "A friend declaration declares a partial specialization."
+ },
+ "p44": {
+  "outcome": "compiles",
+  "rules": [
+   "TSP-1"
+  ],
+  "why": "Traits<void> has its own members, size 0 and marker."
+ },
+ "p45": {
+  "outcome": "reject",
+  "rules": [
+   "TSP-7"
+  ],
+  "why": "An alias template cannot have a partial specialization."
+ },
+ "p46": {
+  "outcome": "link-fail",
+  "rules": [
+   "TSP-18"
+  ],
+  "why": "The partial specialization's get is declared and never defined, and main calls it."
+ },
+ "p47": {
+  "outcome": "compiles",
+  "rules": [
+   "TSP-14"
+  ],
+  "why": "The grid gives these matches: const T matches const int and int* const, T* matches const int*."
+ },
+ "p48": {
+  "outcome": "runs",
+  "rules": [
+   "TSP-2",
+   "TSP-24"
+  ],
+  "why": "A thread_local explicit specialization of a thread_local variable template gives 1, and counter<int> is 0."
+ },
+ "p49": {
+  "outcome": "runs",
+  "rules": [
+   "TSP-18"
+  ],
+  "why": "Each kind is defined for its own class, so the values are 1 and 2 and main returns 0."
+ },
+ "p50": {
+  "outcome": "compiles",
+  "rules": [
+   "TSP-13",
+   "TSP-10"
+  ],
+  "why": "The explicit specialization wins for int*, the partial one for char*, and the primary for int."
+ },
+ "p51": {
+  "outcome": "compiles",
+  "rules": [
+   "TSP-29"
+  ],
+  "why": "Access to Owner::Hidden is not checked in the explicit specialization's name."
+ },
+ "p52": {
+  "outcome": "compiles",
+  "rules": [
+   "TSP-14",
+   "DED-12"
+  ],
+  "why": "Only an argument of type int fits int V, so 1 selects the partial specialization and 1L and 'c' take the primary. Clang converts and matches (Q-0295)."
+ },
+ "p53": {
+  "outcome": "reject",
+  "rules": [
+   "TSP-8"
+  ],
+  "why": "An explicit specialization of a member function template has a default argument."
+ },
+ "p54": {
+  "outcome": "compiles",
+  "rules": [
+   "TSP-30",
+   "INST-5"
+  ],
+  "why": "The scoped enumeration is only declared in the class template, so it can be specialized after the use. GCC rejects (Q-0205)."
+ },
+ "p55": {
+  "outcome": "compiles",
+  "rules": [
+   "TSP-13"
+  ],
+  "why": "The explicit specialization wins for int*, the partial one for char*, and the primary for int."
+ },
+ "p56": {
+  "outcome": "compiles",
+  "rules": [
+   "TSP-14"
+  ],
+  "why": "A use through the using-declaration finds partial specializations declared later."
+ },
+ "p57": {
+  "outcome": "compiles",
+  "rules": [
+   "TSP-29"
+  ],
+  "why": "Access to Owner::Hidden is not checked in the explicit specialization's function type. GCC checks it and rejects (Q-0204)."
+ },
+ "p58": {
+  "outcome": "reject",
+  "rules": [
+   "TSP-31"
+  ],
+  "why": "The partial specialization has no primary template declared before it."
+ },
+ "p59": {
+  "outcome": "reject",
+  "rules": [
+   "TSP-32"
+  ],
+  "why": "union does not agree with the primary template's struct."
+ },
+ "p60": {
+  "outcome": "compiles",
+  "rules": [
+   "TSP-14"
+  ],
+  "why": "Same<T, T> needs the same type twice, and int and const int differ."
+ },
+ "p61": {
+  "outcome": "link-fail",
+  "rules": [
+   "TSP-28"
+  ],
+  "why": "The explicit specialization without an initializer is only a declaration, so count has no definition."
+ },
+ "p62": {
+  "outcome": "link-fail",
+  "rules": [
+   "TSP-28"
+  ],
+  "why": "The explicit specialization of the static member variable template without an initializer is only a declaration."
+ },
+ "p63": {
+  "outcome": "compiles",
+  "rules": [
+   "TSP-30",
+   "INST-5"
+  ],
+  "why": "The enumeration is scoped and no use needed its definition, so it can be specialized after the use. GCC rejects (Q-0205)."
+ },
+ "p64": {
+  "outcome": "reject",
+  "rules": [
+   "TSP-4"
+  ],
+  "why": "Plain is not a template, so Plain<int> is not a template-id."
+ },
+ "p65": {
+  "outcome": "reject",
+  "rules": [
+   "TSP-30",
+   "TSP-6"
+  ],
+  "why": "The unscoped enumeration is defined in the class template, and the class specialization was used before."
+ },
+ "p66": {
+  "outcome": "link-fail",
+  "rules": [
+   "TSP-25"
+  ],
+  "why": "The explicit specialization is not inline, and both translation units define it."
+ },
+ "p67": {
+  "outcome": "runs",
+  "rules": [
+   "TSP-22"
+  ],
+  "why": "A member of an explicitly specialized class is defined with no template <>, and get returns 1."
+ },
+ "p68": {
+  "outcome": "reject",
+  "rules": [
+   "TSP-11",
+   "ORD-14"
+  ],
+  "why": "The reordered list is no more specialized than the primary template. GCC and EDG accept it (Q-0174)."
+ },
+ "p69": {
+  "outcome": "compiles",
+  "rules": [
+   "TSP-14",
+   "TSP-13"
+  ],
+  "why": "Each list matches at most one partial specialization, so the values are 1, 2, and 0."
+ },
+ "p70": {
+  "outcome": "compiles",
+  "rules": [
+   "TSP-14",
+   "DED-12"
+  ],
+  "why": "&c has type const int*, which fits const auto*, and &n has type int*, which does not, so the values are 1 and 0. Clang 22 converts and matches (Q-0295)."
+ },
+ "p71": {
+  "outcome": "compiles",
+  "rules": [
+   "TSP-19"
+  ],
+  "why": "An explicit specialization of a member template can be declared in its class. GCC rejects (Q-0171)."
+ },
+ "p72": {
+  "outcome": "compiles",
+  "rules": [
+   "TSP-2",
+   "DED-32"
+  ],
+  "why": "The explicit specializations for int and char are used, and double takes the template."
+ },
+ "p73": {
+  "outcome": "depends",
+  "rules": [
+   "TSP-17"
+  ],
+  "why": "The partial specialization of the variable template comes after a use that would select it, with no diagnostic required; GCC rejects, Clang and EDG accept (Q-0173)."
+ },
+ "p74": {
+  "outcome": "reject",
+  "rules": [
+   "TSP-27"
+  ],
+  "why": "The implicitly declared copy constructor is explicitly specialized."
+ },
+ "p75": {
+  "outcome": "reject",
+  "rules": [
+   "TSP-5"
+  ],
+  "why": "An explicit specialization is declared at block scope."
+ },
+ "p76": {
+  "outcome": "runs",
+  "rules": [
+   "TSP-28"
+  ],
+  "why": "Each explicit specialization has an initializer and is a definition, so the values are 4, 0, and 1."
+ },
+ "p77": {
+  "outcome": "reject",
+  "rules": [
+   "TSP-8"
+  ],
+  "why": "A template <> declaration of one member of Box<char>, which comes from the primary template, has a default argument."
+ },
+ "p78": {
+  "outcome": "reject",
+  "rules": [
+   "TSP-6"
+  ],
+  "why": "The explicit specialization of Box<int> comes after a variable of that type."
+ },
+ "p79": {
+  "outcome": "compiles",
+  "rules": [
+   "TSP-25",
+   "CPT-26"
+  ],
+  "why": "size(char) is not constexpr, so Fixed<size(char{})> is not valid and the requirement fails only for char."
+ },
+ "p80": {
+  "outcome": "compiles",
+  "rules": [
+   "TSP-21"
+  ],
+  "why": "Giving one partial specialization for Outer<short> keeps the primary and the other partial specialization, so the values are 2, 3, and 0. GCC ignores the explicit one (Q-0207)."
+ },
+ "p81": {
+  "outcome": "runs",
+  "rules": [
+   "TSP-22"
+  ],
+  "why": "A member of an explicitly given member class is defined with no template <>, and get returns 2."
+ },
+ "p82": {
+  "outcome": "reject",
+  "rules": [
+   "TSP-11"
+  ],
+  "why": "The constant 1 has parameter type T, and T stays a parameter of the partial specialization."
+ },
+ "p83": {
+  "outcome": "reject",
+  "rules": [
+   "TSP-26"
+  ],
+  "why": "The explicit specialization does not fix the enclosing class template Outer."
+ },
+ "p84": {
+  "outcome": "compiles",
+  "rules": [
+   "TSP-15",
+   "ORD-14"
+  ],
+  "why": "Pair<T*, T*> is more specialized than the other two, and each other list matches one, as in the page example."
+ },
+ "p85": {
+  "outcome": "reject",
+  "rules": [
+   "TSP-32"
+  ],
+  "why": "union does not agree with the primary template's struct."
+ },
+ "p86": {
+  "outcome": "compiles",
+  "rules": [
+   "TSP-14"
+  ],
+  "why": "1 - 1 is 0, so it matches Array<T, 0>; Array<char, 3> matches only Array<char, N>."
+ },
+ "p87": {
+  "outcome": "reject",
+  "rules": [
+   "TSP-7"
+  ],
+  "why": "An alias template cannot have an explicit specialization."
+ },
+ "p88": {
+  "outcome": "reject",
+  "rules": [
+   "TSP-11"
+  ],
+  "why": "A partial specialization's parameter has a default template argument."
+ },
+ "p89": {
+  "outcome": "reject",
+  "rules": [
+   "TSP-7"
+  ],
+  "why": "A function template cannot have a partial specialization; EDG rejects at the call."
+ },
+ "p90": {
+  "outcome": "compiles",
+  "rules": [
+   "TSP-14"
+  ],
+  "why": "auto* P matches only pointer arguments: 1, 'c', and nullptr take the primary, and &n and &m match."
+ },
+ "p91": {
+  "outcome": "reject",
+  "rules": [
+   "TSP-4"
+  ],
+  "why": "The explicit specialization does not start with template <>."
+ },
+ "p92": {
+  "outcome": "compiles",
+  "rules": [
+   "TSP-14",
+   "TSP-9"
+  ],
+  "why": "C<T> matches each specialization of a template with one type parameter, so the depths are 0, 1, and 2."
+ },
+ "p93": {
+  "outcome": "compiles",
+  "rules": [
+   "TSP-10",
+   "TSP-14"
+  ],
+  "why": "Each list matches at most one partial specialization: 3, -1, and 104."
+ },
+ "p94": {
+  "outcome": "runs",
+  "rules": [
+   "TSP-22"
+  ],
+  "why": "A member of a member class template given explicitly is defined with template <> and the template's head, and get returns 3."
+ },
+ "p95": {
+  "outcome": "reject",
+  "rules": [
+   "TSP-11"
+  ],
+  "why": "The pack expansion is not the last argument."
+ }
+}

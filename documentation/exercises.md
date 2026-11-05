@@ -224,7 +224,7 @@ batch of each page and says whether the batch hid test names.
 `tools/status_table.py` writes the count and list below from the Predict rows
 of section 8.
 
-12 pages have only a Predict batch that showed test names: `foundations/translation`, `foundations/objects`, `foundations/values`, `foundations/conversions`, `templates/declarations`, `templates/arguments`, `templates/specialization`, `templates/deduction`, `templates/ordering`, `templates/concepts`, `templates/packs`, and `templates/class-template-deduction`.
+1 page has only a Predict batch that showed test names: `foundations/objects`.
 
 ## 8. Status
 
@@ -297,6 +297,10 @@ of section 8.
 | R8-constraints, R8-instantiation | done, 267/268 (265 cite a rule of the test), without test names; findings R8B-1 to R8B-10 | `reports/clean-room/R8/` |
 | R8-dependent-names, R8-storage | done, 220/220 (214 cite a rule of the test), without test names; findings R8C-1 to R8C-11 | `reports/clean-room/R8/` |
 | R8-unwinding, R8-names | done, 299/300 (294 cite a rule of the test), without test names; findings R8D-1 to R8D-8 | `reports/clean-room/R8/` |
+| R9-translation, R9-values, R9-conversions | done, 241/241 (236 cite a rule of the test), without test names; findings R9A-1 to R9A-9 | `reports/clean-room/R9/` |
+| R9-arguments, R9-class-template-deduction, R9-concepts | done, 334/334 (332 cite a rule of the test), without test names; findings R9B-1 to R9B-10 | `reports/clean-room/R9/` |
+| R9-declarations, R9-deduction | done, 258/258 (250 cite a rule of the test), without test names; findings R9C-1 to R9C-7 | `reports/clean-room/R9/` |
+| R9-ordering, R9-packs, R9-specialization | done, 222/222 (219 cite a rule of the test), without test names; findings R9D-1 to R9D-7 | `reports/clean-room/R9/` |
 | R-types, R-odr, R-keywords | done, 227/227 (224 cite a rule of the test), without test names; findings RPD-1 to RPD-11 | `reports/clean-room/R-foundations/` |
 | R-handlers, R-throw, R-unwinding | done, 171/172 (165 cite a rule of the test), without test names; findings RPE-1 to RPE-6 | `reports/clean-room/R-exceptions/` |
 | PU1 | done: 66 programs of 29 questions, 64/66, 1 not decided; findings PU1-1 to PU1-8 | `reports/clean-room/PU1/` |

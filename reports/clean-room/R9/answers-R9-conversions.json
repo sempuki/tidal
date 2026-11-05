@@ -1,0 +1,647 @@
+{
+ "p01": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-4",
+   "CONV-5"
+  ],
+  "why": "Copy-initialization drops the fraction: 3, -3, and 2, and each value fits."
+ },
+ "p02": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-1"
+  ],
+  "why": "A width-3 bit-field promotes to int, a width-40 one keeps long long, and unsigned:32 promotes to unsigned."
+ },
+ "p03": {
+  "outcome": "reject",
+  "rules": [
+   "CONV-10"
+  ],
+  "why": "A pointer to a member function without noexcept does not convert to one with noexcept."
+ },
+ "p04": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-21"
+  ],
+  "why": "65 and 255 are constants that fit their targets, so neither brace initialization narrows."
+ },
+ "p05": {
+  "outcome": "run-fail",
+  "rules": [
+   "CONV-5"
+  ],
+  "why": "1e10 does not fit in int, and the float-cast-overflow sanitizer stops the program."
+ },
+ "p06": {
+  "outcome": "runs",
+  "rules": [
+   "CONV-20",
+   "CONV-4",
+   "CONV-2"
+  ],
+  "why": "Every listed context converts implicitly with the fraction dropped or the value wrapped, in constant evaluation and at run time."
+ },
+ "p07": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-19",
+   "CONV-2"
+  ],
+  "why": "-1 converts to unsigned before the bitwise operator, so each static_assert holds."
+ },
+ "p08": {
+  "outcome": "reject",
+  "rules": [
+   "CONV-8"
+  ],
+  "why": "An int variable holding zero is not a null pointer constant."
+ },
+ "p09": {
+  "outcome": "reject",
+  "rules": [
+   "CONV-9"
+  ],
+  "why": "Converting const int* to void* would remove const."
+ },
+ "p10": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-19"
+  ],
+  "why": "Steps 4 and 3 give unsigned, unsigned long, and unsigned long long."
+ },
+ "p11": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-8"
+  ],
+  "why": "A zero literal in parentheses is a null pointer constant."
+ },
+ "p12": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-20",
+   "CONV-4",
+   "CONV-3"
+  ],
+  "why": "Each context converts implicitly outside braces, so 2.7 becomes 2 and the asserts hold."
+ },
+ "p13": {
+  "outcome": "reject",
+  "rules": [
+   "CONV-18"
+  ],
+  "why": "nullptr does not convert to an integer type."
+ },
+ "p14": {
+  "outcome": "reject",
+  "rules": [
+   "CONV-18"
+  ],
+  "why": "The string literal becomes a pointer, and a pointer does not convert to int."
+ },
+ "p15": {
+  "outcome": "depends",
+  "rules": [
+   "CONV-11"
+  ],
+  "why": "With -m32, Clang and GCC give infinity and accept; EDG ILP32 rejects the conversion in constant evaluation (Q-0028)."
+ },
+ "p16": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-1"
+  ],
+  "why": "bool, char8_t, char16_t, wchar_t, and unsigned short promote to int, and char32_t to unsigned int."
+ },
+ "p17": {
+  "outcome": "reject",
+  "rules": [
+   "CONV-17"
+  ],
+  "why": "B is an ambiguous base of D."
+ },
+ "p18": {
+  "outcome": "reject",
+  "rules": [
+   "CONV-21"
+  ],
+  "why": "Floating-point to bool in braces is always narrowing."
+ },
+ "p19": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-3"
+  ],
+  "why": "Outside braces, 5 gives true, zeros give false, a non-null pointer gives true, and a null pointer gives false."
+ },
+ "p20": {
+  "outcome": "runs",
+  "rules": [
+   "CONV-14"
+  ],
+  "why": "A null D* converts to a null B* even though B is at a nonzero offset."
+ },
+ "p21": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-19"
+  ],
+  "why": "With -m32 long cannot hold every unsigned value, so step 6 gives unsigned long."
+ },
+ "p22": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-15"
+  ],
+  "why": "A pointer to a member of base B converts to a pointer to member of D."
+ },
+ "p23": {
+  "outcome": "depends",
+  "rules": [
+   "CONV-11"
+  ],
+  "why": "Clang and GCC give infinity, which is above 3e38; EDG rejects the conversion in constant evaluation."
+ },
+ "p24": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-7"
+  ],
+  "why": "Both values are ties, and the nearest-even choice gives 16777216 and 16777220, which the asserts allow."
+ },
+ "p25": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-1",
+   "CONV-19"
+  ],
+  "why": "short, char, and bool promote to int."
+ },
+ "p26": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-21"
+  ],
+  "why": "A 4-bit unsigned bit-field holds only 0 to 15, which char holds, so the braces do not narrow (Q-0042; EDG differs)."
+ },
+ "p27": {
+  "outcome": "runs",
+  "rules": [
+   "CONV-11"
+  ],
+  "why": "Clang and GCC give infinity at run time, which is above 3e38."
+ },
+ "p28": {
+  "outcome": "reject",
+  "rules": [
+   "CONV-8"
+  ],
+  "why": "1 is not a null pointer constant and does not convert to a pointer."
+ },
+ "p29": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-16"
+  ],
+  "why": "A pointer to an array of known bound converts to one of unknown bound."
+ },
+ "p30": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-21"
+  ],
+  "why": "1, 0, and the constant char 1 fit in bool, so the braces do not narrow."
+ },
+ "p31": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-1"
+  ],
+  "why": "The enumerations promote to the first type that holds all their values: int, unsigned int, and long."
+ },
+ "p32": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-21"
+  ],
+  "why": "16777216 is a constant that float holds exactly."
+ },
+ "p33": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-2"
+  ],
+  "why": "Each integer conversion keeps the low bits: ~0u, 44, and 65534."
+ },
+ "p34": {
+  "outcome": "runs",
+  "rules": [
+   "CONV-3",
+   "MUL-11"
+  ],
+  "why": "0.0/0.0 is a NaN on the IEEE type, and a NaN converts to true."
+ },
+ "p35": {
+  "outcome": "reject",
+  "rules": [
+   "CONV-17",
+   "ICS-8"
+  ],
+  "why": "The sequence to Base* forms although Base is a private base, take(Base*) beats the ellipsis, and the chosen conversion is then rejected."
+ },
+ "p36": {
+  "outcome": "reject",
+  "rules": [
+   "CONV-18"
+  ],
+  "why": "A pointer to member does not convert to an integer type."
+ },
+ "p37": {
+  "outcome": "reject",
+  "rules": [
+   "CONV-5",
+   "TR-10"
+  ],
+  "why": "-1.0 to unsigned is undefined, so the constant evaluation fails."
+ },
+ "p38": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-19",
+   "CONV-1",
+   "COND-3"
+  ],
+  "why": "Each type follows from promotion and the usual arithmetic conversions; two int lvalues give an int lvalue."
+ },
+ "p39": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-10"
+  ],
+  "why": "A pointer to a noexcept member function converts to one without noexcept."
+ },
+ "p40": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-1"
+  ],
+  "why": "A fixed underlying type converts first and then promotes; char32_t promotes to unsigned int."
+ },
+ "p41": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-9"
+  ],
+  "why": "const is added at every level above the changed level."
+ },
+ "p42": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-13"
+  ],
+  "why": "An array and a function name become pointers, also under unary +."
+ },
+ "p43": {
+  "outcome": "reject",
+  "rules": [
+   "CONV-8"
+  ],
+  "why": "A character literal with value zero is not a null pointer constant (Clang and GCC reject; EDG accepts, Q-0100)."
+ },
+ "p44": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-19"
+  ],
+  "why": "Step 3 gives the type of higher rank in each case."
+ },
+ "p45": {
+  "outcome": "reject",
+  "rules": [
+   "CONV-12"
+  ],
+  "why": "nullptr converts to bool only in direct initialization."
+ },
+ "p46": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-14"
+  ],
+  "why": "D* and D& convert to the accessible unique base B."
+ },
+ "p47": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-21",
+   "TYP-1"
+  ],
+  "why": "With -m32 int holds every long value, so the braces do not narrow."
+ },
+ "p48": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-10"
+  ],
+  "why": "A noexcept function converts to both pointer types."
+ },
+ "p49": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-19"
+  ],
+  "why": "unsigned long has lower rank than long long, and long long cannot hold all its values, so step 6 gives unsigned long long."
+ },
+ "p50": {
+  "outcome": "reject",
+  "rules": [
+   "CONV-10"
+  ],
+  "why": "A function without noexcept does not convert to a noexcept function pointer."
+ },
+ "p51": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-8"
+  ],
+  "why": "nullptr, 0, and 0L are null pointer constants."
+ },
+ "p52": {
+  "outcome": "runs",
+  "rules": [
+   "CONV-1"
+  ],
+  "why": "The 3-bit unsigned bit-field promotes to int, so 1 - 2 is -1 and less than 0."
+ },
+ "p53": {
+  "outcome": "reject",
+  "rules": [
+   "CONV-21"
+  ],
+  "why": "2 does not fit in bool, so the braces narrow."
+ },
+ "p54": {
+  "outcome": "reject",
+  "rules": [
+   "CONV-9"
+  ],
+  "why": "void* does not convert implicitly to int*."
+ },
+ "p55": {
+  "outcome": "reject",
+  "rules": [
+   "CONV-8"
+  ],
+  "why": "The literal false is not a null pointer constant."
+ },
+ "p56": {
+  "outcome": "reject",
+  "rules": [
+   "CONV-18"
+  ],
+  "why": "A pointer does not convert implicitly to an integer."
+ },
+ "p57": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-5",
+   "CONV-4"
+  ],
+  "why": "-0.5 without its fraction is 0, which fits in unsigned."
+ },
+ "p58": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-9"
+  ],
+  "why": "Each conversion to void keeps or adds cv-qualifiers."
+ },
+ "p59": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-19"
+  ],
+  "why": "On x86-64 long holds every unsigned int value, so step 5 gives long."
+ },
+ "p60": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-8"
+  ],
+  "why": "0 converts to a null pointer to member of any member type."
+ },
+ "p61": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-13"
+  ],
+  "why": "Arrays become pointers to element zero, and the selected function becomes a pointer."
+ },
+ "p62": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-21"
+  ],
+  "why": "Both double values are constants in the range of float, so the braces do not narrow."
+ },
+ "p63": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-7"
+  ],
+  "why": "16777219 is a tie, and the nearest-even choice gives 16777220."
+ },
+ "p64": {
+  "outcome": "depends",
+  "rules": [
+   "CONV-11"
+  ],
+  "why": "Clang and GCC give infinity and accept; EDG rejects the conversion in constant evaluation (Q-0028)."
+ },
+ "p65": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-7"
+  ],
+  "why": "With -m32 every compiler rounds to the nearest value and to even at a tie, which each assert expects."
+ },
+ "p66": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-12"
+  ],
+  "why": "nullptr converts to bool in direct initialization with parentheses or braces."
+ },
+ "p67": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-1"
+  ],
+  "why": "Each small type promotes to int, and float stays float."
+ },
+ "p68": {
+  "outcome": "runs",
+  "rules": [
+   "CONV-2",
+   "CONV-1"
+  ],
+  "why": "260 wraps to 4 in unsigned char, and 32768 wraps to -32768 in short."
+ },
+ "p69": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-16"
+  ],
+  "why": "double (*)[4] converts to double (*)[]."
+ },
+ "p70": {
+  "outcome": "runs",
+  "rules": [
+   "CONV-4",
+   "CONV-5"
+  ],
+  "why": "Each value fits after its fraction is dropped: 0, 1000000000, and 7."
+ },
+ "p71": {
+  "outcome": "reject",
+  "rules": [
+   "CONV-17"
+  ],
+  "why": "A is an ambiguous base of D, so the member pointer does not convert."
+ },
+ "p72": {
+  "outcome": "depends",
+  "rules": [
+   "CONV-21",
+   "ENUM-22"
+  ],
+  "why": "By the rule the values 0 to 127 fit in unsigned char, so GCC accepts; Clang and EDG reject (Q-0331)."
+ },
+ "p73": {
+  "outcome": "runs",
+  "rules": [
+   "CONV-3"
+  ],
+  "why": "A null member pointer gives false and a non-null one gives true."
+ },
+ "p74": {
+  "outcome": "reject",
+  "rules": [
+   "CONV-17"
+  ],
+  "why": "A pointer to a member of the derived class does not convert to one of its base."
+ },
+ "p75": {
+  "outcome": "reject",
+  "rules": [
+   "CONV-9"
+  ],
+  "why": "Adding const at the inner level without adding it at the level above is not implicit."
+ },
+ "p76": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-19"
+  ],
+  "why": "Step 1 gives the floating-point type of higher rank, or the floating type when the other is an integer."
+ },
+ "p77": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-2"
+  ],
+  "why": "Each conversion keeps the low bits: -56, -1, and -25536."
+ },
+ "p78": {
+  "outcome": "runs",
+  "rules": [
+   "CONV-20",
+   "CONV-4",
+   "CONV-14"
+  ],
+  "why": "The default argument, the conditional, the compound assignment, and the handler each convert as the asserts expect."
+ },
+ "p79": {
+  "outcome": "runs",
+  "rules": [
+   "CONV-11"
+  ],
+  "why": "Clang and GCC give infinity at run time, and infinity times 2 is infinity."
+ },
+ "p80": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-6"
+  ],
+  "why": "Both values are exactly representable."
+ },
+ "p81": {
+  "outcome": "reject",
+  "rules": [
+   "CONV-17"
+  ],
+  "why": "The member pointer would convert through a virtual base."
+ },
+ "p82": {
+  "outcome": "reject",
+  "rules": [
+   "CONV-9"
+  ],
+  "why": "A function pointer does not convert implicitly to void*."
+ },
+ "p83": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-19",
+   "CONV-20"
+  ],
+  "why": "Bitwise operators use the common type, and each shift operand is promoted alone."
+ },
+ "p84": {
+  "outcome": "reject",
+  "rules": [
+   "CONV-5",
+   "TR-10"
+  ],
+  "why": "1e10 does not fit in int, which is undefined, so the constant evaluation fails."
+ },
+ "p85": {
+  "outcome": "reject",
+  "rules": [
+   "CONV-21"
+  ],
+  "why": "An int variable to bool in braces narrows."
+ },
+ "p86": {
+  "outcome": "reject",
+  "rules": [
+   "CONV-17",
+   "ICS-8"
+  ],
+  "why": "The ambiguous base still forms a sequence, take(Base*) is chosen over the ellipsis, and the conversion is then rejected."
+ },
+ "p87": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-7"
+  ],
+  "why": "0.1 converts to the nearest float, near 0.1."
+ },
+ "p88": {
+  "outcome": "compiles",
+  "rules": [
+   "CONV-15"
+  ],
+  "why": "A pointer to a base member function converts to a pointer to member of D, and the call gives 3."
+ },
+ "p89": {
+  "outcome": "runs",
+  "rules": [
+   "CONV-7"
+  ],
+  "why": "At run time every compiler rounds to nearest and to even at a tie, which each check expects."
+ }
+}
