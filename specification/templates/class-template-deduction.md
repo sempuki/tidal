@@ -831,26 +831,15 @@ waits on the maintainer (`documentation/decisions/pending.md`).
 
 ### Probe grids
 
+The tables are in [`tables.md`](https://github.com/sempuki/tidal/blob/main/tests/templates/class-template-deduction/grids/tables.md) beside the grid files.
+
 The grid is in `tests/templates/class-template-deduction/grids/`.
 
 Initializer forms and guide sources (CTAD-1, CTAD-5 to CTAD-17,
 CTAD-23). Each column declares a class template `C` with one kind of
 guide, and `Want`, the type that deduction should give. Each row
 initializes with the argument `1`, or with a `Want` object in the last
-three rows, and checks the type:
-
-| | constructor | constructor template | explicit constructor | initializer-list constructor | aggregate | user guide | explicit user guide | alias template | inherited constructor |
-|---|---|---|---|---|---|---|---|---|---|
-| parentheses | accept | accept | accept | reject | accept | accept | accept | accept: gcc-14, clang-host, edg-7.0-ilp32, edg-7.0, gcc-16, gcc-host, clang-22; reject: clang-18 | accept: edg-7.0-ilp32, edg-7.0, gcc-host, gcc-16, gcc-14; reject: clang-host, clang-18, clang-22 |
-| braces | accept | accept | accept | accept | accept | accept | accept | accept: edg-7.0-ilp32, edg-7.0, gcc-14, gcc-host, gcc-16, clang-host, clang-22; reject: clang-18 | accept: edg-7.0, gcc-host, edg-7.0-ilp32, gcc-14, gcc-16; reject: clang-host, clang-18, clang-22 |
-| copy | accept | accept | reject | reject | reject | accept | reject | accept: edg-7.0-ilp32, edg-7.0, gcc-host, gcc-14, gcc-16, clang-host, clang-22; reject: clang-18 | accept: edg-7.0-ilp32, edg-7.0, gcc-host, gcc-14, gcc-16; reject: clang-host, clang-18, clang-22 |
-| copy-list | accept | accept | reject | accept | accept | accept | reject | accept: edg-7.0-ilp32, edg-7.0, gcc-host, gcc-14, clang-host, gcc-16, clang-22; reject: clang-18 | accept: edg-7.0, edg-7.0-ilp32, gcc-host, gcc-14, gcc-16; reject: clang-host, clang-18, clang-22 |
-| functional cast | accept | accept | accept | reject | accept | accept | accept | accept: edg-7.0-ilp32, edg-7.0, gcc-14, gcc-host, gcc-16, clang-host, clang-22; reject: clang-18 | accept: edg-7.0-ilp32, edg-7.0, gcc-host, gcc-14, gcc-16; reject: clang-host, clang-18, clang-22 |
-| braced cast | accept | accept | accept | accept | accept | accept | accept | accept: edg-7.0, edg-7.0-ilp32, gcc-host, gcc-14, gcc-16, clang-host, clang-22; reject: clang-18 | accept: edg-7.0, edg-7.0-ilp32, gcc-14, gcc-host, gcc-16; reject: clang-host, clang-18, clang-22 |
-| new | accept | accept | accept | reject | accept: edg-7.0, edg-7.0-ilp32, clang-host, clang-18, clang-22; reject: gcc-host, gcc-14, gcc-16 | accept | accept | accept: edg-7.0, edg-7.0-ilp32, gcc-host, gcc-14, gcc-16, clang-host, clang-22; reject: clang-18 | accept: edg-7.0, edg-7.0-ilp32, gcc-host, gcc-14, gcc-16; reject: clang-host, clang-18, clang-22 |
-| copy, parentheses | accept | accept | accept | accept | accept | accept | accept | accept: edg-7.0, edg-7.0-ilp32, gcc-14, gcc-host, gcc-16, clang-host, clang-22; reject: clang-18 | accept |
-| copy, braces | accept | accept | accept | accept | accept | accept | accept | accept: edg-7.0, edg-7.0-ilp32, gcc-host, gcc-14, gcc-16, clang-host, clang-22; reject: clang-18 | accept |
-| copy, equals | accept | accept | accept | accept | accept | accept | accept | accept: edg-7.0, edg-7.0-ilp32, gcc-host, gcc-16, gcc-14, clang-host, clang-22; reject: clang-18 | accept |
+three rows, and checks the type.
 
 In the last three rows of the last column, the copy candidate of `C`
 decides on every compiler.

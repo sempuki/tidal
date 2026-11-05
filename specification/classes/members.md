@@ -798,6 +798,8 @@ the compile.
 
 ### Probe grids
 
+The tables are in [`tables.md`](https://github.com/sempuki/tidal/blob/main/tests/classes/members/grids/tables.md) beside the grid files.
+
 The probe grid `tests/classes/members/grids/standard-layout.json`
 compares the conditions of CLS-19 with each compiler's builtin query,
 which no test uses (decision 0051). Each row is a class, and each

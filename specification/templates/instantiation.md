@@ -305,7 +305,7 @@ member itself does not use the initializer.
 
 :::{rule} INST-12
 :kind: required
-:tests: templates/instantiation/local-class-member.cpp templates/instantiation/local-class-default-argument.cpp templates/instantiation/local-class-member-initializer.cpp templates/instantiation/local-class-exception-specification.cpp templates/instantiation/local-enumeration.cpp templates/instantiation/local-class-requires-clause-waits.cpp templates/instantiation/local-class-requires-clause-checked-at-use.cpp
+:tests: templates/instantiation/local-class-member.cpp templates/instantiation/local-class-default-argument.cpp templates/instantiation/local-class-member-initializer.cpp templates/instantiation/local-class-exception-specification.cpp templates/instantiation/local-enumeration.cpp templates/instantiation/local-class-requires-clause-waits.cpp templates/instantiation/local-class-requires-clause-checked-at-use.cpp templates/instantiation/local-class-requires-clause-substitution-failure.cpp templates/instantiation/local-class-requires-clause-substitution-failure-call.cpp
 
 A class or enumeration declared in the body of a function template is
 part of the function. The instantiation of the function instantiates
@@ -317,7 +317,10 @@ the local class with these parts, also those that no use names:
 
 A requires clause of a member function of the local class is not
 instantiated with the class. It is checked when a use of the member
-needs it ({question}`Q-0392`).
+needs it ({question}`Q-0392`). A substitution failure in the clause
+makes the constraint not satisfied at that use. So a requires
+expression that names the call is false, and the call itself is not
+valid.
 :::
 
 :::{rule} INST-36
@@ -739,8 +742,8 @@ extern template constexpr int size_of<long>;  // rejected: constexpr (INST-25)
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 117
-of 140 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 118
+of 142 tests.
 
 ### Divergences
 
@@ -848,6 +851,7 @@ the compile.
 | `function-unevaluated-braced-untaken.cpp` | INST-7, INST-6 | reject | reject | reject | accept | {question}`Q-0252` |
 | `function-unevaluated-sizeof-constant.cpp` | INST-7 | accept | accept | reject | accept | {question}`Q-0252` |
 | `local-class-default-argument.cpp` | INST-12, INST-6 | reject | reject | accept | reject | {question}`Q-0253` |
+| `local-class-requires-clause-substitution-failure.cpp` | INST-12, CNS-12 | run | run | run | reject | {question}`Q-0392` |
 | `local-class-requires-clause-waits.cpp` | INST-12 | run | run | run | reject | {question}`Q-0392` |
 | `member-partial-specializations-collide.cpp` | INST-6 | reject | reject | accept | accept | {question}`Q-0251` |
 | `specialization-after-explicit-declaration.cpp` | INST-19 | reject | reject | reject | accept | {question}`Q-0237` |
@@ -914,49 +918,16 @@ the compile.
 
 ### Probe grids
 
+The tables are in [`tables.md`](https://github.com/sempuki/tidal/blob/main/tests/templates/instantiation/grids/tables.md) beside the grid files.
+
 The probe grids are in `tests/templates/instantiation/grids/`.
 
 Uses of a class specialization (INST-1 to INST-3). The class has a
 `static_assert` whose condition is the column. A `reject` in the second
-column means that the use instantiates the class:
-
-| | valid body | failing body |
-|---|---|---|
-| pointer variable | accept | accept |
-| reference parameter | accept | accept |
-| function returning the class, declared | accept | accept |
-| alias | accept | accept |
-| template argument | accept | accept |
-| pointer comparison | accept | accept |
-| cast from void pointer | accept | accept |
-| object | accept | reject |
-| sizeof | accept | reject |
-| member access through a pointer | accept | reject |
-| pointer arithmetic | accept | reject |
-| delete through a pointer | accept | reject |
-| conversion to a base pointer | accept | reject |
-| call with one void pointer parameter | accept | reject |
+column means that the use instantiates the class.
 
 Uses of functions and variables (INST-5, INST-7, INST-8). The bodies
-and initializers have a `static_assert` whose condition is the column:
-
-| | valid body | failing body |
-|---|---|---|
-| no use | accept | accept |
-| decltype of a call | accept | accept |
-| sizeof of a call | accept | accept |
-| noexcept of a call | accept | accept |
-| decltype of a call, deduced return type | accept | reject |
-| call | accept | reject |
-| address | accept | reject |
-| discarded branch | accept | accept |
-| explicit instantiation declaration | accept | accept |
-| member function, class used | accept | accept |
-| member function, call | accept | reject |
-| static data member, class used | accept | accept |
-| static data member, read | accept | reject |
-| variable template, decltype | accept | accept |
-| variable template, read | accept | reject |
+and initializers have a `static_assert` whose condition is the column.
 
 ### Sources
 

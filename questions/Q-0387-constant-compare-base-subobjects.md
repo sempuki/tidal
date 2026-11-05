@@ -57,6 +57,8 @@ Used on 2026-11-04 by the principle-use batch PU2 (`reports/clean-room/PU2/`), u
 
 Settled on 2026-11-04 under decision 0054. The use in batch PU2 supports the answer, the gap review of 2026-11-04 supports it with no doubt, and CMP-P3 gives the same answer by the test of the style guide (section 3). GCC 16 still differs, and the tests keep their overrides.
 
+Clarified on 2026-11-05 after finding G150 of the front end (`reports/clean-room/rust-frontend/report-21.md`). CMP-8 now says that a pointer to a member of a base class subobject involves that subobject. The new test `tests/expressions/comparison/base-member-and-member-pointers-constant.cpp` compares `&x.b` with `&x.d`. Clang 22 and EDG 7.0 reject the comparison in constant evaluation, and GCC 16 gives a result, as for the other forms of this question. The answer stays.
+
 ## Opinions
 
 ### Gap review, 2026-11-04

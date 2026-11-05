@@ -233,7 +233,7 @@ ellipsis, take no part.
 
 :::{rule} ORD-6
 :kind: required
-:tests: templates/ordering/member-object.cpp templates/ordering/member-object-rvalue.cpp templates/ordering/reversed-member-object.cpp templates/ordering/swapped-member-candidates-ordered.cpp templates/ordering/member-object-lvalue-tie.cpp templates/ordering/member-objects-rvalue-and-none.cpp templates/ordering/member-objects-lvalue-and-none.cpp templates/ordering/member-object-const.cpp templates/ordering/constraints-member-object.cpp
+:tests: templates/ordering/member-object.cpp templates/ordering/member-object-rvalue.cpp templates/ordering/reversed-member-object.cpp templates/ordering/swapped-member-candidates-ordered.cpp templates/ordering/member-object-lvalue-tie.cpp templates/ordering/member-objects-rvalue-and-none.cpp templates/ordering/member-objects-lvalue-and-none.cpp templates/ordering/member-object-const.cpp templates/ordering/constraints-member-object.cpp templates/ordering/member-using-base-against-derived.cpp
 
 In a call, each template that is a member with an {term}`implicit object parameter`
 gets a first parameter of type reference to its class. The reference
@@ -244,6 +244,10 @@ is an rvalue reference ({question}`Q-0214`):
 - the member has the ref-qualifier `&&`,
 - the member has no ref-qualifier, and the other template's first
   parameter or object parameter is an rvalue reference.
+
+A member template that a using declaration brings into a derived class
+counts as a member of the derived class here. Its reference names the
+derived class, as the other template's does.
 :::
 
 :::{rule} ORD-7
@@ -609,8 +613,8 @@ Kind<1> k;                                                 // 1
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 43
-of 62 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 44
+of 63 tests.
 
 ### Divergences
 

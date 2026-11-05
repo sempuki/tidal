@@ -686,6 +686,8 @@ and Q-0292 to the EDG project waits on the maintainer
 
 ### Probe grids
 
+The tables are in [`tables.md`](https://github.com/sempuki/tidal/blob/main/tests/templates/specialization/grids/tables.md) beside the grid files.
+
 The probe grid is in `tests/templates/specialization/grids/`, and `tools/probe_grid.py` prints its table from the grid file. The compilers agree on every cell.
 
 Grid file `matching.json`. Rules: TSP-14.
@@ -693,26 +695,6 @@ Grid file `matching.json`. Rules: TSP-14.
 Each column declares one partial specialization of `Match`, and each
 row asks whether it matches one argument. An `accept` means that the
 partial specialization is selected.
-
-| | T* | const T | const T* | T& | T&& | T[N] | T[] | R(A) | R(*)(A) | T C::* | Box<T> | Box<T*> | C<T> | Pair<T, T> |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| int | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject |
-| const int | reject | accept | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject |
-| int* | accept | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject |
-| const int* | accept | reject | accept | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject |
-| int* const | reject | accept | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject |
-| int& | reject | reject | reject | accept | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject |
-| int&& | reject | reject | reject | reject | accept | reject | reject | reject | reject | reject | reject | reject | reject | reject |
-| int[3] | reject | reject | reject | reject | reject | accept | reject | reject | reject | reject | reject | reject | reject | reject |
-| int[] | reject | reject | reject | reject | reject | reject | accept | reject | reject | reject | reject | reject | reject | reject |
-| int() | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject |
-| int(char) | reject | reject | reject | reject | reject | reject | reject | accept | reject | reject | reject | reject | reject | reject |
-| int(*)(char) | accept | reject | reject | reject | reject | reject | reject | reject | accept | reject | reject | reject | reject | reject |
-| int Owner::* | reject | reject | reject | reject | reject | reject | reject | reject | reject | accept | reject | reject | reject | reject |
-| Box<int> | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | accept | reject | accept | reject |
-| Box<int*> | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | accept | accept | accept | reject |
-| Pair<int, int> | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | accept |
-| Pair<int, char> | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject | reject |
 
 The row `int()` matches no column because `R(A)` needs one parameter.
 `C<T>` matches every specialization of a template with one type

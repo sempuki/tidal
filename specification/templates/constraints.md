@@ -367,7 +367,7 @@ type. If the constraints are not satisfied, the result is a
 
 :::{rule} CNS-12
 :kind: reject
-:tests: templates/constraints/unsatisfied-call.cpp templates/constraints/unsatisfied-address.cpp templates/constraints/unsatisfied-decltype.cpp templates/constraints/unsatisfied-member-call.cpp templates/concepts/placeholder-constant-parameter-no-candidate.cpp templates/instantiation/local-class-requires-clause-checked-at-use.cpp
+:tests: templates/constraints/unsatisfied-call.cpp templates/constraints/unsatisfied-address.cpp templates/constraints/unsatisfied-decltype.cpp templates/constraints/unsatisfied-member-call.cpp templates/concepts/placeholder-constant-parameter-no-candidate.cpp templates/instantiation/local-class-requires-clause-checked-at-use.cpp templates/instantiation/local-class-requires-clause-substitution-failure.cpp templates/instantiation/local-class-requires-clause-substitution-failure-call.cpp
 
 A program must not use the name of a function whose constraints are
 not satisfied. A call, the operator `&`, and an operand of `decltype`
@@ -802,8 +802,8 @@ bool usable = Usable<Item>;        // rejected: the check needs itself
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 104
-of 132 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 105
+of 134 tests.
 
 ### Divergences
 
@@ -877,6 +877,10 @@ waits on the maintainer (`documentation/decisions/pending.md`).
   member defined after the body of a constrained class template repeats
   the requires clause of the class's head. It does, as Clang and GCC
   say. EDG 7.0 accepts a definition without the clause.
+- {question}`Q-0392` (INST-12, INST-P1; open): whether a member
+  function of a local class in a function template can have a requires
+  clause. It can, and the clause waits for a use of the member, as
+  Clang 22 and GCC 16 say. EDG 7.0 rejects the requires clause.
 
 ### Split tests
 
@@ -914,6 +918,7 @@ family column gives the outcome that the test expects on that family.
 | `templates/concepts/nested-requirement-parameter-evaluated.cpp` | CPT-35, CNS-9 | reject | Clang 22: reject; Clang 18: accept | reject | reject | {question}`Q-0289` |
 | `templates/concepts/type-constraint-pack-one-atom.cpp` | CPT-19, CNS-3, CNS-24 | reject | reject | reject | accept | {question}`Q-0285` |
 | `templates/declarations/member-outside-clause-missing.cpp` | TPL-23, CNS-26 | reject | reject | reject | accept | {question}`Q-0385` |
+| `templates/instantiation/local-class-requires-clause-substitution-failure.cpp` | INST-12, CNS-12 | run | run | run | reject | {question}`Q-0392` |
 
 ### Notes
 

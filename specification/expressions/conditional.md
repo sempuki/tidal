@@ -239,7 +239,7 @@ the expression is not valid ({rule}`COND-5`).
 
 :::{rule} COND-16
 :kind: required
-:tests: expressions/conditional/class-converts-to-reference.cpp expressions/conditional/class-converts-best-conversion.cpp expressions/conditional/class-ambiguous-conversion.cpp expressions/conditional/class-base-less-qualified-rejected.cpp expressions/conditional/class-base-const-derived-prvalue-rejected.cpp expressions/conditional/class-base-does-not-convert-to-derived.cpp expressions/conditional/class-base-target-keeps-cv.cpp expressions/conditional/class-const-and-volatile-lvalues.cpp expressions/conditional/class-converts-to-decayed-array.cpp expressions/conditional/class-deleted-conversion-counts.cpp expressions/conditional/class-private-conversion-counts.cpp expressions/conditional/class-same-type-toward-more-qualified.cpp expressions/conditional/nonclass-and-class-both-ways.cpp expressions/conditional/nonclass-converts-to-class.cpp
+:tests: expressions/conditional/class-converts-to-reference.cpp expressions/conditional/class-converts-best-conversion.cpp expressions/conditional/class-ambiguous-conversion.cpp expressions/conditional/class-base-less-qualified-rejected.cpp expressions/conditional/class-base-const-derived-prvalue-rejected.cpp expressions/conditional/class-base-does-not-convert-to-derived.cpp expressions/conditional/class-base-target-keeps-cv.cpp expressions/conditional/class-const-and-volatile-lvalues.cpp expressions/conditional/class-converts-to-decayed-array.cpp expressions/conditional/class-deleted-conversion-counts.cpp expressions/conditional/class-private-conversion-counts.cpp expressions/conditional/class-same-type-toward-more-qualified.cpp expressions/conditional/nonclass-and-class-both-ways.cpp expressions/conditional/nonclass-converts-to-class.cpp expressions/conditional/class-derived-prvalue-against-base-xvalue.cpp
 
 For COND-3, COND-5, and COND-11, when the two operands have different
 types and at least one has class type, each operand `X` is tried
@@ -252,6 +252,12 @@ these steps that applies decides whether `X` converts:
    to an xvalue of type `T`.
 3. Otherwise `X` converts to a prvalue of the target in this table, if
    `X` has an {term}`implicit conversion sequence` to the target.
+
+In steps 1 and 2, a reference does not bind directly to a class
+prvalue, because the prvalue first becomes a temporary object
+({question}`Q-0401`). So a `Derived`
+prvalue against a `Base` xvalue converts by step 3, to a prvalue of
+`Base`.
 
 | `X` and `Y` | Target |
 |---|---|
@@ -320,7 +326,7 @@ int m = larger(x, y);          // fine: x and y outlive the call
 
 ## Evidence
 
-All eight compilers agree on 62 of 67 tests. The results are in
+All eight compilers agree on 62 of 68 tests. The results are in
 `tests/RESULTS.md`.
 
 ### Divergences
@@ -346,6 +352,7 @@ All eight compilers agree on 62 of 67 tests. The results are in
 |---|---|---|---|---|---|---|
 | `class-const-and-volatile-lvalues.cpp` | COND-16, COND-3, COND-5 | reject | reject | reject | accept | {question}`Q-0378` |
 | `class-deleted-conversion-counts.cpp` | COND-16, COND-5 | reject | accept | reject | reject | {question}`Q-0378` |
+| `class-derived-prvalue-against-base-xvalue.cpp` | COND-16 | accept | accept | reject | accept | |
 | `two-classes-float.cpp` | COND-11 | accept | accept | accept | reject | {question}`Q-0373` |
 | `two-classes-scoped-enumeration.cpp` | COND-11 | accept | accept | reject | accept | {question}`Q-0373` |
 | `zero-and-nullptr.cpp` | COND-3 | accept | accept | reject | accept | {question}`Q-0102` |

@@ -661,6 +661,8 @@ waits on the maintainer (`documentation/decisions/pending.md`).
 
 ### Probe grids
 
+The tables are in [`tables.md`](https://github.com/sempuki/tidal/blob/main/tests/templates/packs/grids/tables.md) beside the grid files.
+
 The grid `sites.json` in `tests/templates/packs/grids/` probes the
 expansion places of PACK-P2. Each row is a function template `probe`
 over a type pack `T` that expands `T` in one place and checks the

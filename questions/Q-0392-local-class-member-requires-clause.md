@@ -52,6 +52,8 @@ of a local class as an exception to its eager instantiation.
 
 Kept open on 2026-11-04 under decision 0054, because INST-P1 and INST-12 changed in the commit that opened the question, and no review has read the question.
 
+Clarified on 2026-11-05 after finding G149 of the front end (`reports/clean-room/rust-frontend/report-21.md`). INST-12 now says that a substitution failure in the waiting requires clause makes the constraint not satisfied at the use. Clang 22 and GCC 16 give `false` for a requires expression that names the call, and reject the call. EDG 7.0 rejects the requires clause itself, as in the other tests of this question. The new tests are `tests/templates/instantiation/local-class-requires-clause-substitution-failure.cpp` and `tests/templates/instantiation/local-class-requires-clause-substitution-failure-call.cpp`.
+
 ## Opinions
 
 ### Gap review, 2026-11-04

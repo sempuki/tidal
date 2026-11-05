@@ -53,6 +53,8 @@ Used on 2026-11-04 by the principle-use batch PU2 (`reports/clean-room/PU2/`), u
 
 Settled on 2026-11-04 under decision 0054. The use in batch PU2 supports the answer, the gap reviews of 2026-11-04 support it with no doubt, and ALN-P1 and UNI-P4 give the same answer by the test of the style guide (section 3). Finding PU2-4 does not keep the question open. Its doubt concerns why a class that is not a literal type fails, a condition beside the options of the question, and both of the reader's paths give the rejection. The answers for `operand-class-converts.cpp` and `bitfield-width-class-converts.cpp`, which decide between the options, carry no doubt. GCC 16 still differs, and the tests keep their overrides.
 
+Clarified on 2026-11-05 after finding G151 of the front end (`reports/clean-room/rust-frontend/report-21.md`). BF-1 and ALN-8 now say that an `explicit` conversion function does not count toward the one conversion function. Clang 22 and EDG 7.0 accept a class with an `explicit operator int` and an `operator long` as a bit-field width and as an `alignas` operand. GCC rejects every operand of class type, as before. The new tests are `tests/classes/unions/bitfield-width-class-explicit-conversion.cpp` and `tests/declarations/alignment/operand-class-explicit-conversion.cpp`. The answer stays.
+
 ## Opinions
 
 ### Gap review, 2026-11-03

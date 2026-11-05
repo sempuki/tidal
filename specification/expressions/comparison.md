@@ -379,7 +379,7 @@ pointers to members.
 
 :::{rule} CMP-8
 :kind: unspecified
-:tests: expressions/comparison/pointer-unrelated-run.cpp expressions/comparison/pointer-unrelated-constant.cpp expressions/comparison/function-pointer-order.cpp expressions/comparison/unrelated-pointers-either.cpp expressions/comparison/union-member-pointers-relational-either.cpp expressions/comparison/three-way-unrelated-pointers-constant.cpp expressions/comparison/zero-size-member-pointers-either.cpp expressions/comparison/zero-size-member-pointers-constant.cpp expressions/comparison/union-member-pointers-constant.cpp expressions/comparison/base-subobject-pointers-constant.cpp expressions/comparison/base-and-member-pointers-constant.cpp expressions/comparison/base-subobject-pointers-either.cpp
+:tests: expressions/comparison/pointer-unrelated-run.cpp expressions/comparison/pointer-unrelated-constant.cpp expressions/comparison/function-pointer-order.cpp expressions/comparison/unrelated-pointers-either.cpp expressions/comparison/union-member-pointers-relational-either.cpp expressions/comparison/three-way-unrelated-pointers-constant.cpp expressions/comparison/zero-size-member-pointers-either.cpp expressions/comparison/zero-size-member-pointers-constant.cpp expressions/comparison/union-member-pointers-constant.cpp expressions/comparison/base-subobject-pointers-constant.cpp expressions/comparison/base-and-member-pointers-constant.cpp expressions/comparison/base-subobject-pointers-either.cpp expressions/comparison/base-member-and-member-pointers-constant.cpp
 
 If no rule orders two pointers, each relational operator and `<=>` gives
 an unspecified result. The results of `a < b` and `a > b` need not
@@ -395,7 +395,8 @@ Outside {term}`constant evaluation`, each such comparison is valid and
 gives `true` or `false`. During constant evaluation, a comparison of
 pointers to unrelated objects or functions is not a constant
 expression, and neither is a comparison that involves a base class
-subobject ({question}`Q-0387`).
+subobject ({question}`Q-0387`). A pointer to a member of a base class
+subobject involves that subobject.
 :::
 
 :::{rule} CMP-20
@@ -494,7 +495,7 @@ balance <=> count      // valid if long is wider than unsigned
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 82
-of 100 tests. The `<=>` tests declare a minimal `std::strong_ordering`,
+of 101 tests. The `<=>` tests declare a minimal `std::strong_ordering`,
 `std::weak_ordering`, and `std::partial_ordering`, because tests include
 no headers. EDG needs `std::weak_ordering` declared even for integer
 operands.
@@ -538,6 +539,7 @@ them.
 | Test | Rules | Expected | Clang | GCC | EDG | Question |
 |---|---|---|---|---|---|---|
 | `base-and-member-pointers-constant.cpp` | CMP-8 | reject | reject | accept | reject | {question}`Q-0387` |
+| `base-member-and-member-pointers-constant.cpp` | CMP-8 | reject | reject | accept | reject | {question}`Q-0387` |
 | `base-subobject-pointers-constant.cpp` | CMP-8 | reject | reject | accept | reject | {question}`Q-0387` |
 | `chained-class-bool-warns.cpp` | CMP-14 | reject | accept | reject | skips | {question}`Q-0029` |
 | `chained-comparison-warns.cpp` | CMP-14 | reject | Clang 22: reject; Clang 18: accept | reject | skips | {question}`Q-0029` |

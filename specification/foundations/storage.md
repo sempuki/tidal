@@ -398,7 +398,7 @@ pointer ({question}`Q-0328`).
 
 :::{rule} STG-12
 :kind: required
-:tests: foundations/storage/byte-round-trip.cpp foundations/storage/byte-round-trip-char-and-byte.cpp foundations/storage/padding-bytes-not-in-value.cpp classes/copy-move/trivially-copyable-types.cpp classes/copy-move/trivially-copyable-volatile-member.cpp
+:tests: foundations/storage/byte-round-trip.cpp foundations/storage/byte-round-trip-char-and-byte.cpp foundations/storage/padding-bytes-not-in-value.cpp classes/copy-move/trivially-copyable-types.cpp classes/copy-move/trivially-copyable-volatile-member.cpp classes/copy-move/trivially-copyable-scalar-kinds.cpp
 
 A program can copy the bytes of an object of a {term}`trivially
 copyable` type ({rule}`CPY-28`) into an array of `std::byte`,
@@ -854,8 +854,8 @@ static_assert(read_old() == 1);       // rejected (CE-9)
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 87
-of 93 tests. EDG runs no programs, so its results for the run tests say
+The results are in `tests/RESULTS.md`. All eight compilers agree on 88
+of 94 tests. EDG runs no programs, so its results for the run tests say
 only that the programs are valid.
 
 ### Divergences

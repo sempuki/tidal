@@ -27,6 +27,8 @@ Fails when:
   REFERENCED_TOPICS,
 - a page's agreement sentence is out of date (run tools/status_table.py),
 - a page's Split tests table is out of date or missing (run tools/status_table.py),
+- a front-end report names a finding with no row in
+  reports/clean-room/rust-frontend/ledger.md,
 - a generated number in documentation/status.md is out of date (run
   tools/status_table.py),
 - the front-end row of documentation/exercises.md, or its sentence on the
@@ -223,6 +225,27 @@ def check_grammar(errors: list[str]) -> None:
             errors.append(f"{places[1]}: nonterminal {name} is also defined at {places[0]}")
     for name in sorted(used - defined.keys()):
         errors.append(f"grammar nonterminal {name} is used and not defined")
+
+
+FRONTEND = ROOT / "reports" / "clean-room" / "rust-frontend"
+LEDGER_STATES = {"commit", "question", "text", "out of scope", "open"}
+
+
+def check_ledger(errors: list[str]) -> None:
+    """Each finding that a front-end report names has one row in the ledger (decision 0057)."""
+    ledger = FRONTEND / "ledger.md"
+    rows = {}
+    for line in ledger.read_text().splitlines():
+        if m := re.match(r"^\| (G\d+) \| [^|]+ \| ([^|]+?) \|", line):
+            if m.group(1) in rows:
+                errors.append(f"{ledger.relative_to(ROOT)}: {m.group(1)} has two rows")
+            rows[m.group(1)] = m.group(2)
+            if m.group(2) not in LEDGER_STATES:
+                errors.append(f"{ledger.relative_to(ROOT)}: {m.group(1)} has an unknown state {m.group(2)!r}")
+    for report in sorted(FRONTEND.glob("report*.md")):
+        for g in re.findall(r"^#+ (G\d+)[.:]", report.read_text(), re.M):
+            if g not in rows:
+                errors.append(f"{report.relative_to(ROOT)}: finding {g} has no row in {ledger.relative_to(ROOT)}")
 
 
 def check_records(errors: list[str], warnings: list[str]) -> None:
@@ -465,6 +488,7 @@ def main() -> int:
             errors.append(f"{f.relative_to(ROOT)}: the Split tests table is out of date; run tools/status_table.py")
     check_grammar(errors)
     check_records(errors, warnings)
+    check_ledger(errors)
     check_evidence(errors, warnings)
     check_thin_evidence(rules, errors, warnings)
 

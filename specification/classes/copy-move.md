@@ -480,7 +480,7 @@ undefined ({rule}`CV-5`, {question}`Q-0344`).
 
 :::{rule} CPY-28
 :kind: required
-:tests: classes/copy-move/trivially-copyable-types.cpp
+:tests: classes/copy-move/trivially-copyable-types.cpp classes/copy-move/trivially-copyable-scalar-kinds.cpp
 
 These types are {term}`trivially copyable` types:
 
@@ -697,8 +697,8 @@ Any c(1);                          // the template, with T = int
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 118
-of 123 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 119
+of 124 tests.
 
 ### Divergences
 
