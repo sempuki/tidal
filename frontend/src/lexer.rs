@@ -953,6 +953,14 @@ fn lex_number(text: &str, line: u32, d: &mut Diags) -> Token {
     let suffix: String = cb[k..].iter().collect();
     let (unsigned, size) = match parse_int_suffix(&suffix) {
         Some(s) => s,
+        // OPR-8, OPR-9 (Q-0383): a suffix that is not a form of the syntax
+        // names a literal operator, also without `_`.
+        None if suffix.starts_with(|c: char| c.is_ascii_alphabetic()) && suffix.chars().all(|c| c.is_ascii_alphanumeric() || c == '_') => {
+            let num = &text[..text.len() - suffix.len()];
+            let base = lex_number(num, line, d);
+            let lit = base.lit.unwrap_or(Lit::Int { value: 0, decimal: true, unsigned: false, size: ISize::None });
+            return Token { kind: TK::Int, text: text.to_string(), line, lit: Some(Lit::UserDefined { suffix: suffix.clone(), base: Box::new(lit), raw: num.to_string() }) };
+        }
         None => {
             d.error(line, Some("PRIM-16"), format!("invalid integer suffix '{}'", suffix));
             (false, ISize::None)

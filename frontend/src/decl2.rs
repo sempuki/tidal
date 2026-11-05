@@ -145,7 +145,10 @@ impl P {
             "extern" if self.at_k(1, "template") && !self.at_k(2, "<") && !self.in_template() && self.inst_depth == 0 => {
                 // An explicit instantiation declaration (INST-27).
                 self.pos += 2;
-                self.parse_explicit_inst(ctx, true, line)?;
+                self.access_free += 1;
+                let r = self.parse_explicit_inst(ctx, true, line);
+                self.access_free -= 1;
+                r?;
                 return Ok(Some(Stmt::Null));
             }
             "export" | "module" | "import" => {
@@ -372,15 +375,19 @@ impl P {
         let r = (|| {
             if self.eat("{") {
                 let save = std::mem::replace(&mut self.lang_c_single, false);
+                let save_single = std::mem::replace(&mut self.link_single, false);
                 while !self.at("}") && self.tok().kind != TK::Eof {
                     self.parse_declaration_recover(Ctx::Namespace);
                 }
                 self.lang_c_single = save;
+                self.link_single = save_single;
                 self.expect("}")?;
             } else {
                 let save = std::mem::replace(&mut self.lang_c_single, c);
+                let save_single = std::mem::replace(&mut self.link_single, true);
                 let r = self.parse_declaration(Ctx::Namespace);
                 self.lang_c_single = save;
+                self.link_single = save_single;
                 r?;
             }
             Ok(())
@@ -928,6 +935,103 @@ impl P {
     }
 
     fn parse_template(&mut self, ctx: Ctx) -> PR<()> {
+        // INST-34, TSP-29: an explicit instantiation or explicit
+        // specialization does not check access in the names it uses.
+        let free = !self.at_k(1, "<") || self.at_k(2, ">");
+        if free {
+            self.access_free += 1;
+        }
+        let r = self.parse_template_inner(ctx);
+        if free {
+            self.access_free -= 1;
+        }
+        r
+    }
+
+    /// TSP-26: after the first `template <>`, the number of `template <>`
+    /// heads and the number of class template-ids in the qualifier of the
+    /// declarator of a function. None when the declaration is not such a
+    /// function.
+    fn tsp26_counts(&self) -> Option<(usize, usize)> {
+        let mut k = self.pos;
+        let mut heads = 1;
+        while self.toks.get(k).is_some_and(|t| t.text == "template") && self.toks.get(k + 1).is_some_and(|t| t.text == "<") && self.toks.get(k + 2).is_some_and(|t| t.text == ">") {
+            heads += 1;
+            k += 3;
+        }
+        if self.toks.get(k).is_some_and(|t| t.text == "template") {
+            // A head with parameters follows; a member template stays a
+            // template.
+            return None;
+        }
+        // The first `(` at depth 0, before any `{`, `;`, or `=`.
+        let mut depth = 0i32;
+        let mut open = None;
+        let mut j = k;
+        while j < self.toks.len() {
+            let t = self.toks[j].text.as_str();
+            match t {
+                "<" | "[" => depth += 1,
+                ">" | "]" => depth -= 1,
+                ">>" => depth -= 2,
+                "(" if depth == 0 => {
+                    open = Some(j);
+                    break;
+                }
+                "(" => {}
+                "{" | ";" | "=" if depth == 0 => return None,
+                "operator" => return None,
+                _ => {}
+            }
+            j += 1;
+        }
+        let open = open?;
+        // Walk back over the declarator's qualified name.
+        let mut fixed = 0;
+        let mut j = open;
+        let skip_args_back = |j: usize| -> Option<usize> {
+            // `j` is just past a `>`; return the position of its `<`.
+            let mut d = 0i32;
+            let mut i = j;
+            while i > k {
+                i -= 1;
+                match self.toks[i].text.as_str() {
+                    ">" => d += 1,
+                    ">>" => d += 2,
+                    "<" => {
+                        d -= 1;
+                        if d == 0 {
+                            return Some(i);
+                        }
+                    }
+                    _ => {}
+                }
+            }
+            None
+        };
+        // The final name, with template arguments or not.
+        if j > k && matches!(self.toks[j - 1].text.as_str(), ">" | ">>") {
+            j = skip_args_back(j)?;
+        }
+        if j == k || self.toks[j - 1].kind != TK::Ident {
+            return None;
+        }
+        j -= 1;
+        while j >= k + 2 && self.toks[j - 1].text == "::" {
+            j -= 1;
+            if matches!(self.toks[j - 1].text.as_str(), ">" | ">>") {
+                j = skip_args_back(j)?;
+                fixed += 1;
+            }
+            if j == k || self.toks[j - 1].kind != TK::Ident {
+                return None;
+            }
+            j -= 1;
+        }
+        Some((heads, fixed))
+    }
+
+    fn parse_template_inner(&mut self, ctx: Ctx) -> PR<()> {
         let line = self.line();
         self.expect("template")?;
         if !self.at("<") {
@@ -950,6 +1054,20 @@ impl P {
                 self.error(line, "TSP-5", "explicit specialization in a block");
                 self.recover();
                 return Ok(());
+            }
+            if self.inst_depth == 0 && matches!(ctx, Ctx::Namespace) {
+                if self.templ > 0 {
+                    // TSP-26: at namespace scope, `template <>` after the
+                    // head of an enclosing template leaves that template
+                    // unspecialized.
+                    self.error(line, "TSP-26", "an explicit specialization of a member must fix every enclosing class template");
+                } else if let Some((heads, fixed)) = if self.explicit_spec { None } else { self.tsp26_counts() } {
+                    if heads < fixed {
+                        // TSP-26: one `template <>` for each class template
+                        // that the qualifier fixes.
+                        self.error(line, "TSP-26", format!("the explicit specialization fixes {} class templates and has {} 'template <>'", fixed, heads));
+                    }
+                }
             }
             if self.lang_c > 0 && self.inst_depth == 0 {
                 // TPL-3: no explicit specialization with C language linkage.
@@ -2315,6 +2433,12 @@ impl P {
                     self.error(line, "TPL-20", "the head of a member definition does not match the class template's head");
                     return;
                 }
+                if primary && self.inst_depth == 0 && self.templs[t].partials.is_empty() && self.templs[t].cons_key != self.head_key(None) {
+                    // TPL-23, CNS-26 (Q-0385): the definition repeats the
+                    // class's head with its constraints.
+                    self.error(line, "CNS-26", format!("the constraints of the head differ from those of the class template '{}'", self.templs[t].name));
+                    return;
+                }
                 let partial = if primary {
                     None
                 } else {
@@ -2462,7 +2586,11 @@ impl P {
                     match ds.ty.as_ref().map(|t| &t.t) {
                         Some(Ty::Class(x)) => {
                             fs.classes.insert(*x);
-                            fs.class_names.insert(name_of_friend.clone());
+                            // ACC-20: a specialization is a friend alone; its
+                            // name would match every specialization.
+                            if !self.inst_of.contains_key(x) {
+                                fs.class_names.insert(name_of_friend.clone());
+                            }
                         }
                         _ => fs.open = true,
                     }
@@ -3800,6 +3928,10 @@ impl P {
             Storage::Static
         } else if ds.storage.contains(&Storage::ThreadLocal) {
             Storage::ThreadLocal
+        } else if self.link_single && ctx == Ctx::Namespace && !self.at("=") && !self.at("{") && !self.at("(") {
+            // LSP rules: the one declaration of a linkage specification
+            // without braces declares a variable as `extern` does.
+            Storage::Extern
         } else {
             Storage::Auto
         };
@@ -4233,7 +4365,19 @@ impl P {
         let written_init = init.is_some();
         let mut converted = None;
         if let Some(e) = init {
+            // A static data member defined after its class initializes in
+            // the scope of the class, with the class's access (ACC-1).
+            let qual_class = d.qual.and_then(|q| match self.scopes[q].kind {
+                SK::Class(c) => Some(c),
+                _ => None,
+            });
+            if let Some(c) = qual_class {
+                self.check_classes.push(c);
+            }
             let ce = self.convert_init(e, &ty, form, init_line);
+            if qual_class.is_some() {
+                self.check_classes.pop();
+            }
             converted = Some(ce);
         } else if storage != Storage::Extern && class_member.is_none() && !self.in_template() {
             if let Some(c) = elem_class(&ty.t) {
@@ -4853,10 +4997,13 @@ impl P {
         // virt-specifiers come before the body (VIRT grammar)
         let mut virt_spec = (false, false);
         while self.at("override") || self.at("final") {
-            if self.at("override") {
-                virt_spec.0 = true;
-            } else {
-                virt_spec.1 = true;
+            let seen = if self.at("override") { &mut virt_spec.0 } else { &mut virt_spec.1 };
+            let twice = *seen;
+            *seen = true;
+            if twice {
+                // VIRT-3: each specifier at most once.
+                let t = self.tok().text.clone();
+                self.error(self.line(), "VIRT-3", format!("'{}' appears twice", t));
             }
             self.pos += 1;
         }
@@ -4962,7 +5109,9 @@ impl P {
                     let f = self.func(p).unwrap();
                     (f.constexpr, f.consteval, f.fty.noexcept, f.defined, f.fty.ret.clone())
                 };
-                if pc != ds.constexpr && !(kind == FnKind::Normal && false) && !self.in_template() {
+                // A consteval function also counts as constexpr in its
+                // record, so the comparison takes consteval apart.
+                if (pc && !pce) != (ds.constexpr && !ds.consteval) && pce == ds.consteval && !self.in_template() {
                     // CX-5: all declarations must agree on constexpr.
                     if pdef || is_def || true {
                         self.error(line, "CX-5", format!("declarations of '{}' disagree on 'constexpr'", name));
@@ -5135,6 +5284,11 @@ impl P {
                 };
                 let sc = if in_class_body && !is_friend { self.classes[class.unwrap()].scope } else { target_scope };
                 let id = self.add_decl_in(sc, &name, DK::Func(fi), line);
+                if d.qual_unknown && !is_friend {
+                    // A member of a class template defined after the class
+                    // (TPL-23): not a function of the namespace.
+                    self.qual_templ_defs.insert(id);
+                }
                 if inst_req.is_some() {
                     self.inst_out = Some(crate::templ::InstOut::Func(id));
                 }
@@ -5145,6 +5299,12 @@ impl P {
                     }
                     if !is_static && !self.in_template() && ctx != Ctx::Block {
                         self.check_c_name(id, &name, line);
+                        if is_def && !self.c_fn_defs.insert(name.clone()) {
+                            // LSP-4, FN-14: the C functions of one spelling
+                            // are one entity, also in an unnamed namespace,
+                            // so a second definition is not valid.
+                            self.error(line, "FN-14", format!("the C function '{}' is defined twice", name));
+                        }
                     }
                 }
                 if member_class.is_none() && !is_friend && ctx != Ctx::Block && !template && !self.in_template() && (is_static || self.in_unnamed_ns(sc)) {
@@ -5291,15 +5451,22 @@ impl P {
         // virt-specifiers and pure specifier
         loop {
             if self.at("override") || self.at("final") {
-                if self.at("override") {
-                    virt_spec.0 = true;
-                } else {
-                    virt_spec.1 = true;
+                let seen = if self.at("override") { &mut virt_spec.0 } else { &mut virt_spec.1 };
+                let twice = *seen;
+                *seen = true;
+                if twice {
+                    // VIRT-3: each specifier at most once.
+                    let t = self.tok().text.clone();
+                    self.error(self.line(), "VIRT-3", format!("'{}' appears twice", t));
                 }
                 self.pos += 1;
                 continue;
             }
             break;
+        }
+        if (virt_spec.0 || virt_spec.1) && self.in_template() && in_class_body && !is_friend {
+            // Kept for the check of a class template's pattern (VIRT-3).
+            self.virt_specs.insert(id, virt_spec);
         }
         if (virt_spec.0 || virt_spec.1) && !self.in_template() {
             if !in_class_body || is_friend {
@@ -5587,6 +5754,7 @@ impl P {
                 let keep = self.in_instance(df.class);
                 let mark = self.d.list.len();
                 self.dmi_depth += 1;
+                let braced = self.at("{") || (self.at("=") && self.peek(1).text == "{");
                 let r = (|| -> PR<Expr> {
                     if self.eat("=") {
                         if self.at("{") {
@@ -5606,12 +5774,16 @@ impl P {
                         };
                         let form = if matches!(e.k, EK::InitList(_)) { InitForm::DirectList } else { InitForm::Copy };
                         let ce = self.convert_init(e, &ty, form, line);
-                        if ty.t.is_ref() && !self.in_template() && Self::binds_temporary(&ce) {
+                        if !self.in_template() && self.member_binds_temporary(&ty, &ce, braced) {
                             // CTOR-17 (Q-0084): a constructor that uses the
                             // initializer binds the member to a temporary
-                            // that ends with the constructor. The front end
-                            // rejects at the initializer.
-                            self.error(line, "CTOR-17", format!("the default member initializer binds the reference member '{}' to a temporary object", self.decls[fid].name));
+                            // that ends with the constructor. The error
+                            // waits for such a constructor.
+                            self.dmi_temps.entry(df.class).or_default().push((fid, line));
+                            let ctors = self.classes[df.class].ctors.clone();
+                            for k in ctors {
+                                self.check_ctor_dmi_temps(k, df.class);
+                            }
                         }
                         if let DK::Field(f) = &mut self.decls[fid].k {
                             f.init = Some(Rc::new(ce));
@@ -5747,6 +5919,37 @@ impl P {
             }
         }
         r
+    }
+
+    /// CTOR-17: whether the initialization of a member of type `ty` binds
+    /// a temporary: a reference bound to a prvalue, or an
+    /// `std::initializer_list<E>` set from a braced list.
+    pub fn member_binds_temporary(&self, ty: &QTy, ce: &Expr, braced: bool) -> bool {
+        if ty.t.is_ref() {
+            return Self::binds_temporary(ce);
+        }
+        braced && matches!(ty.t, Ty::Class(c) if self.init_list_elem(c).is_some())
+    }
+
+    /// CTOR-17 (Q-0084): constructor `k` of class `c`, once its
+    /// mem-initializers are known, uses each default member initializer
+    /// that binds a temporary and that no mem-initializer replaces.
+    pub fn check_ctor_dmi_temps(&mut self, k: DeclId, c: usize) {
+        let Some(list) = self.dmi_temps.get(&c).cloned() else { return };
+        let Some(f) = self.func(k) else { return };
+        if f.body.is_none() || f.defaulted || f.deleted || f.template {
+            return;
+        }
+        if f.mem_inits.iter().any(|m| m.base == Some(c)) {
+            return;
+        }
+        let given: Vec<DeclId> = f.mem_inits.iter().filter_map(|m| m.field).collect();
+        for (fid, line) in list {
+            if !given.contains(&fid) {
+                self.error(line, "CTOR-17", format!("the default member initializer binds the member '{}' to a temporary object, and a constructor uses it", self.decls[fid].name));
+                return;
+            }
+        }
     }
 
     /// Whether a reference initialization binds a temporary object
@@ -5895,6 +6098,11 @@ impl P {
         if let Some(f) = self.func_mut(fid) {
             f.body = Some(Rc::new(body));
         }
+        if kind == FnKind::Ctor && !self.in_template() {
+            if let Some(c) = class {
+                self.check_ctor_dmi_temps(fid, c);
+            }
+        }
         Ok(())
     }
 
@@ -6024,10 +6232,10 @@ impl P {
                         Some(self.convert_init(e, &fty, InitForm::Paren(n), line))
                     };
                     if let Some(x) = &e {
-                        if fty.t.is_ref() && Self::binds_temporary(x) {
+                        if self.member_binds_temporary(&fty, x, braced) {
                             // CTOR-17 (Q-0084): the temporary ends with the
                             // constructor.
-                            self.error(line, "CTOR-17", format!("the mem-initializer binds the reference member '{}' to a temporary object", name));
+                            self.error(line, "CTOR-17", format!("the mem-initializer binds the member '{}' to a temporary object", name));
                         }
                     }
                     e.map(Rc::new)

@@ -160,9 +160,12 @@ impl<'a> Machine<'a> {
     /// The linkage name of a declaration: its qualified name, and for a
     /// function its parameter types, with classes and enumerations by
     /// name.
-    fn link_name(p: &P, id: DeclId) -> String {
+    fn link_name(p: &P, id: DeclId, tu: usize) -> String {
         // LSP-4: a C name is known by its spelling alone.
-        if is_c_name(p, id) {
+        // LSP-8: a variable of the global namespace and a C variable with
+        // its spelling name one entity across units.
+        let global_var = matches!(&p.decls[id].k, DK::Var(v) if v.class.is_none() && !v.local) && p.decls[id].scope == p.global;
+        if is_c_name(p, id) || global_var {
             return format!("extern C {}", p.decls[id].name);
         }
         let mut parts = vec![p.decls[id].name.clone()];
@@ -184,6 +187,20 @@ impl<'a> Machine<'a> {
         }
         if let Some(f) = p.func(id) {
             let ps: Vec<String> = f.fty.params.iter().map(|q| type_name(p, q)).collect();
+            // LNK-1, LNK-5: a class of an unnamed namespace is a different
+            // type in each unit, so a function with such a parameter is a
+            // different function in each unit.
+            fn internal(p: &P, t: &Ty, depth: u32) -> bool {
+                match t {
+                    Ty::Class(c) => p.in_unnamed_ns(p.classes[*c].scope),
+                    Ty::Enum(e) => p.in_unnamed_ns(p.enums[*e].scope),
+                    Ty::Ptr(q) | Ty::LRef(q) | Ty::RRef(q) | Ty::Array(q, _) => depth < 16 && internal(p, &q.t, depth + 1),
+                    _ => false,
+                }
+            }
+            if f.fty.params.iter().any(|q| internal(p, &q.t, 0)) {
+                n.push_str(&format!("@unit{}", tu));
+            }
             n.push_str(&format!("({}){}{}{}", ps.join(","), if f.fty.cv_c { " const" } else { "" }, if f.fty.cv_v { " volatile" } else { "" }, ["", " &", " &&"][f.fty.refq.min(2) as usize]));
         }
         n
@@ -216,14 +233,14 @@ impl<'a> Machine<'a> {
         for (t, p) in ps.iter().enumerate() {
             for id in 0..p.decls.len() {
                 if linkable(p, id) == Some(true) {
-                    defs.entry(Self::link_name(p, id)).or_insert((t, id));
+                    defs.entry(Self::link_name(p, id, t)).or_insert((t, id));
                 }
             }
         }
         for (t, p) in ps.iter().enumerate() {
             for id in 0..p.decls.len() {
                 if linkable(p, id).is_some() {
-                    if let Some(&d) = defs.get(&Self::link_name(p, id)) {
+                    if let Some(&d) = defs.get(&Self::link_name(p, id, t)) {
                         // Within one unit a declaration is its own entity.
                         if d.0 != t {
                             self.links.insert((t, id), d);
@@ -257,6 +274,24 @@ impl<'a> Machine<'a> {
             }
             r => r,
         }
+    }
+
+    /// OBJ-11: the deferred `thread_local` constructions of unit `t`, run
+    /// at the first use of one of them.
+    pub fn start_deferred_tl(&mut self, t: usize) -> R<()> {
+        let (now, rest): (Vec<(usize, DeclId)>, Vec<(usize, DeclId)>) = std::mem::take(&mut self.deferred_tl).into_iter().partition(|x| x.0 == t);
+        self.deferred_tl = rest;
+        for (t, id) in now {
+            let r = self.in_tu(t, |m| {
+                let v = m.p.var(id).unwrap().clone();
+                m.init_static(id, &v)
+            });
+            if let Err(Stop::Throw(_)) = r {
+                return Err(Stop::Terminate("UNW-5", "an exception leaves the initialization of a thread_local object".into()));
+            }
+            r?;
+        }
+        Ok(())
     }
 
     fn run_all_inner(&mut self) -> R<i128> {
@@ -310,6 +345,12 @@ impl<'a> Machine<'a> {
             self.choice("SINIT-3", "the translation units initialize their static objects in the order the units are given");
         }
         for (t, id) in dynamic {
+            if self.ps[t].var(id).is_some_and(|v| v.storage == Storage::ThreadLocal && !v.local) {
+                // OBJ-11: Clang and GCC defer the construction to the first
+                // use of such a variable of the unit.
+                self.deferred_tl.push((t, id));
+                continue;
+            }
             let r = self.in_tu(t, |m| {
                 let v = m.p.var(id).unwrap().clone();
                 m.init_static(id, &v)

@@ -2063,7 +2063,9 @@ impl P {
             ISize::L => vec![Ty::Long, Ty::LLong],
             ISize::LL => vec![Ty::LLong],
             ISize::Z => {
-                let t = if unsigned { Ty::size_t() } else { Ty::ptrdiff_t() };
+                // PRIM-1 (Q-0380): a literal that is not decimal and does
+                // not fit the signed type takes std::size_t.
+                let t = if unsigned || (!decimal && !fits(value as i128, &Ty::ptrdiff_t())) { Ty::size_t() } else { Ty::ptrdiff_t() };
                 if !fits(value as i128, &t) {
                     self.error(line, "PRIM-2", "integer literal does not fit its type");
                 }
@@ -2150,7 +2152,11 @@ impl P {
     fn literal_call(&mut self, base: Lit, raw: String, suffix: &str, line: u32) -> Expr {
         let name = format!("operator\"\"{}", suffix);
         let Some(ids) = self.lookup(&name) else {
-            if !self.lookup_uncertain() {
+            if !self.lookup_uncertain() && !suffix.starts_with('_') && matches!(base, Lit::Int { .. }) {
+                // PRIM-16: a suffix that is not a form of the syntax, and
+                // that names no literal operator.
+                self.error(line, "PRIM-16", format!("invalid integer suffix '{}'", suffix));
+            } else if !self.lookup_uncertain() {
                 self.error(line, "OPR-16", format!("no literal operator for the suffix '{}'", suffix));
             }
             return Expr::unknown(line, "user-defined literal");
@@ -3420,6 +3426,13 @@ impl P {
                     return Ok(Expr::unknown(line, "uncertain namespace"));
                 }
                 self.error(line, "NAM-9", format!("no member named '{}' in the named scope", name));
+                return Ok(Expr::unknown(line, "undeclared"));
+            }
+            if self.in_template() && !self.at("(") && self.template_lookup_complete() {
+                // DEP-11, DEP-12: unqualified lookup at the definition does
+                // not search a dependent base, so a name that no scope
+                // declares is not declared.
+                self.error_because(line, "DEP-12", "NAM-8", format!("use of undeclared name '{}': a dependent base is not searched", name));
                 return Ok(Expr::unknown(line, "undeclared"));
             }
             if self.lookup_uncertain() {
@@ -5698,6 +5711,31 @@ impl P {
                                 return Expr::new(EK::Assign(None, Box::new(l), Box::new(x)), nonref(&lt), Cat::L, line);
                             }
                         }
+                    }
+                }
+            }
+            // CPY-3, CTOR-10: a class whose declared assignment operators
+            // take the class itself. A value of another class converts by
+            // a converting constructor to a temporary, which the selected
+            // operator takes.
+            if op == "=" && !self.in_template() && !self.class_uncertain(c) && l.cat == Cat::L && !lt.c && !matches!(r.k, EK::Unknown(_) | EK::InitList(_)) {
+                let rt = nonref(&r.ty);
+                if let Ty::Class(rc) = rt.t {
+                    let own = self.lookup_member(c, "operator=").is_some_and(|ids| !ids.is_empty() && ids.iter().all(|&d| self.func(d).is_some_and(|f| !f.template && f.fty.params.len() == 1 && nonref(&f.fty.params[0]).t == Ty::Class(c))));
+                    let mut fns = Vec::new();
+                    self.conv_fns(rc, 0, &mut fns);
+                    // An explicit conversion function takes no part in a
+                    // copy-initialization.
+                    fns.retain(|&d| self.func(d).is_none_or(|f| !f.explicit));
+                    if own && rc != c && !self.is_base_of(c, rc) && !self.class_uncertain(rc) && fns.is_empty() {
+                        let mark = self.d.list.len();
+                        let x = self.ctor_call_mode(c, std::slice::from_ref(&r), &QTy::new(Ty::Class(c)), false, true, false, line);
+                        if self.d.list.len() == mark && !matches!(x.k, EK::Unknown(_)) && x.cat == Cat::PR {
+                            if let Some(y) = self.operator_select("=", &l, Some(&x), line) {
+                                return y;
+                            }
+                        }
+                        self.d.list.truncate(mark);
                     }
                 }
             }

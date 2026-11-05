@@ -1359,6 +1359,27 @@ impl P {
                     }
                 }
             }
+            if let (Some(Ok(s)), Some(ids)) = (scope, &found) {
+                if let (SK::Class(_), Some(&id)) = (&self.scopes[s].kind, ids.iter().find(|&&i| matches!(self.decls[i].k, DK::Type(_) | DK::Class(_) | DK::Enum(_)))) {
+                    // ACC-2, ACC-4: a member type named outside its class.
+                    // The declaration of a member defined after its class
+                    // (a qualified declarator next) checks access in the
+                    // class (ACC-11).
+                    let mut k = 0;
+                    while matches!(self.peek(k).text.as_str(), "*" | "&" | "&&" | "const" | "volatile") {
+                        k += 1;
+                    }
+                    let member_def = self.peek(k).kind == TK::Ident && self.peek(k + 1).text == "::";
+                    let c = match self.scopes[s].kind {
+                        SK::Class(c) => c,
+                        _ => unreachable!(),
+                    };
+                    if !member_def && self.in_base_clause == 0 && self.access_free == 0 && !self.named_by_using(c, &name, id, 0) && !self.accessible(id, false) {
+                        let rule = if self.member_access.get(&id) == Some(&1) { "ACC-4" } else { "ACC-2" };
+                        self.error(line, rule, format!("'{}' is not accessible here", name));
+                    }
+                }
+            }
             if scope.is_none() && self.private_base_name(&name) {
                 // NAM-36, ACC-14: the name is a member of a private base
                 // of another class.
@@ -1945,13 +1966,16 @@ impl P {
                     return Err(self.err("bad pointer-to-member declarator"));
                 }
                 let (c, v) = self.parse_cv();
-                if class.is_none() && dep_class.is_none() && !self.in_template() {
+                // Inside a member template of an instance (INST-6), a name
+                // that the instance binds to a type that is not a class is
+                // known too.
+                if class.is_none() && dep_class.is_none() && (!self.in_template() || self.inst_depth > 0) {
                     // MPTR-8: the class of a pointer to member is a class.
                     let named = self.toks[save..self.pos].iter().find(|t| t.kind == TK::Ident).map(|t| t.text.clone());
                     if let Some(n) = named {
                         if let Some(ids) = self.lookup(&n) {
                             if let DK::Type(q) = &self.decls[ids[0]].k {
-                                if !q.is_unknown() && !matches!(q.t, Ty::Class(_)) {
+                                if !q.is_unknown() && !matches!(q.t, Ty::Class(_) | Ty::Dep(_)) && !q.t.contains_unknown() {
                                     self.error(line, "MPTR-8", format!("'{}' is not a class, so it has no pointer to member", n));
                                 }
                             }
@@ -2800,6 +2824,9 @@ impl P {
                     let mark = self.d.list.len();
                     let (me, mu) = (self.d.muted_errors, self.d.muted_unsup);
                     let saved_muted = if keep { std::mem::take(&mut self.d.muted) } else { self.d.muted };
+                    // DEFARG-10 (Q-0379): an immediate call in a default
+                    // argument is not checked at the declaration.
+                    self.in_default_arg += 1;
                     let r = (|| -> PR<Expr> {
                         let e = if self.at("{") { self.parse_braced_init()? } else { self.parse_assignment()? };
                         // DEFARG-5: the default argument is valid for the
@@ -2816,6 +2843,7 @@ impl P {
                         self.check_default_arg(&e, dl);
                         Ok(e)
                     })();
+                    self.in_default_arg -= 1;
                     if keep {
                         self.d.muted = saved_muted;
                         let kept: Vec<crate::diag::Diag> = self.d.list.drain(mark..).collect();

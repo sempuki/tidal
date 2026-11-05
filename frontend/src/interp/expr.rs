@@ -20,6 +20,9 @@ impl<'a> Machine<'a> {
         }
         // A declaration that names a definition in another unit.
         let key = self.links.get(&(self.tu, id)).copied().unwrap_or((self.tu, id));
+        if !self.deferred_tl.is_empty() && self.deferred_tl.contains(&key) {
+            self.start_deferred_tl(key.0)?;
+        }
         if let Some(r) = self.global_refs.get(&key) {
             return Ok(r.clone());
         }
@@ -446,7 +449,7 @@ impl<'a> Machine<'a> {
             _ => return unsup("member"),
         };
         let bp = if base.cat == Cat::PR { self.materialize(base)? } else { self.lvalue(base)? };
-        if !bp.array && bp.off != 0 {
+        if !bp.array && !bp.bytes && bp.off != 0 {
             return ub("UN-7", "member access through a pointer past the end");
         }
         self.class_ok(fi.class)?;
@@ -1442,6 +1445,9 @@ impl<'a> Machine<'a> {
     /// that holds objects, or to such an object.
     pub fn byte_address(&self, p: &Ptr) -> Option<(usize, i64)> {
         if let Some(&(h, off)) = self.resident_of.get(&p.obj) {
+            // The offset in the complete object, for a host that is a
+            // member byte array.
+            let off = self.resident_abs.get(&p.obj).copied().unwrap_or(off);
             if p.path.is_empty() {
                 let el = if p.array {
                     match self.obj_ty(p.obj) {
@@ -1457,6 +1463,11 @@ impl<'a> Machine<'a> {
         }
         if self.residents.contains_key(&p.obj) && p.path.is_empty() && p.array {
             return Some((p.obj, p.off));
+        }
+        // A byte array that is a member: the offset in the complete
+        // object (STG-29).
+        if self.residents.contains_key(&p.obj) && p.array && self.type_at(p).is_some_and(|t| self.is_byte_type(&t.t)) {
+            return self.byte_pos(p).ok();
         }
         None
     }
@@ -1814,7 +1825,7 @@ impl<'a> Machine<'a> {
             // A base subobject: the destructor must be virtual (VIRT-12).
             let t = self.obj_ty(p.obj);
             let base_ok = match (&t, self.class_at(&p)) {
-                (Some(QTy { t: Ty::Class(_), .. }), Some(bc)) => self.p.classes[bc].dtor.is_some_and(|d| self.is_virtual_fn(d)),
+                (Some(QTy { t: Ty::Class(_), .. }), Some(bc)) => self.class_dtor_virtual(bc, 0),
                 _ => false,
             };
             if !base_ok {
@@ -2188,7 +2199,9 @@ impl<'a> Machine<'a> {
     fn activate_chain(&mut self, l: &Expr) -> R<()> {
         fn plain(e: &Expr) -> bool {
             match &e.k {
-                EK::Var(_) | EK::Int(_) => true,
+                EK::Var(_) | EK::Int(_) | EK::This => true,
+                // The implicit object of a member function (`*this`).
+                EK::Unary(UOp::Deref, x) => matches!(x.k, EK::This),
                 EK::Member(o, _) => plain(o),
                 EK::Index(a, i) => plain(a) && plain(i),
                 EK::Conv(Conv::ArrayDecay | Conv::LToR | Conv::NoOp | Conv::Arith, x) => plain(x),
@@ -2198,12 +2211,28 @@ impl<'a> Machine<'a> {
         if !plain(l) {
             return Ok(());
         }
+        // A chain from `*this` activates only the steps it names, and not
+        // the member that the object itself may be.
+        fn from_this(e: &Expr) -> bool {
+            match &e.k {
+                EK::Unary(UOp::Deref, x) => matches!(x.k, EK::This),
+                EK::Member(o, _) => from_this(o),
+                EK::Index(a, _) => from_this(a),
+                EK::Conv(_, x) => from_this(x),
+                _ => false,
+            }
+        }
+        let this_root = from_this(l);
         match &l.k {
             EK::Member(o, _) => {
                 self.activate_chain(o)?;
                 if matches!(o.k, EK::Member(..) | EK::Index(..)) {
                     let p = self.lvalue(o)?;
-                    self.activate(&p)?;
+                    if this_root {
+                        self.activate_last(&p, Self::chain_len(o))?;
+                    } else {
+                        self.activate(&p)?;
+                    }
                 }
             }
             EK::Index(a, _) => {
@@ -2214,7 +2243,11 @@ impl<'a> Machine<'a> {
                 if matches!(x.k, EK::Member(..)) {
                     self.activate_chain(x)?;
                     let p = self.lvalue(x)?;
-                    self.activate(&p)?;
+                    if this_root {
+                        self.activate_last(&p, Self::chain_len(x))?;
+                    } else {
+                        self.activate(&p)?;
+                    }
                 }
             }
             _ => {}
@@ -3346,7 +3379,17 @@ impl<'a> Machine<'a> {
                 r?;
             } else if let Some(init) = &fi.init {
                 let init = init.clone();
-                self.with_this(place.clone(), |m| m.init_field(&sub, &init, fi))?;
+                // CTOR-17: an aggregate initialization that leaves a
+                // reference member to its default member initializer runs
+                // no constructor, and the temporary lives as long as the
+                // aggregate.
+                let save = self.in_aggregate;
+                if fi.ty.t.is_ref() && !self.paren_aggregate {
+                    self.in_aggregate = save + 1;
+                }
+                let r = self.with_this(place.clone(), |m| m.init_field(&sub, &init, fi));
+                self.in_aggregate = save;
+                r?;
             } else if fi.ty.t.is_ref() {
                 return unsup("reference member with no initializer");
             } else {
@@ -3816,6 +3859,18 @@ impl<'a> Machine<'a> {
         let mut path = dpath;
         path.extend(self.base_path(dc, c)?);
         Some((id, self.canon(Ptr { obj: this.obj, path, off: 0, array: false, bytes: false })))
+    }
+
+    /// Whether the destructor of class `c` is virtual: declared so, or the
+    /// destructor of a base is (VIRT-7). An implicit destructor counts.
+    fn class_dtor_virtual(&self, c: usize, depth: u32) -> bool {
+        if depth > 32 {
+            return false;
+        }
+        if self.p.classes[c].dtor.is_some_and(|d| self.p.func(d).is_some_and(|f| f.is_virtual)) {
+            return true;
+        }
+        self.p.classes[c].bases.iter().filter_map(|b| b.class).any(|b| self.class_dtor_virtual(b, depth + 1))
     }
 
     /// Whether a member function is virtual: declared `virtual`, or with

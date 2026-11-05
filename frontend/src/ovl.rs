@@ -103,6 +103,9 @@ impl P {
                 others.push(d);
             }
         }
+        // A member of a class template defined after the class (TPL-23) is
+        // not a function of the namespace, so it is not a candidate.
+        others.retain(|&d| !self.qual_templ_defs.contains(&d));
         let others = self.same_entities_removed(&others);
         Some((members, others))
     }
@@ -851,7 +854,14 @@ impl P {
                 // Copy-list-initialization cannot (Q-0145).
                 let mut fns = Vec::new();
                 self.conv_fns(ac, 0, &mut fns);
-                if fns.iter().any(|&f| self.func(f).is_none_or(|f| f.explicit)) {
+                // Only a function that gives `c`, a class derived from it,
+                // or an unknown type can reach such a parameter.
+                let reaches = |p: &Self, t: &QTy| match nonref(t).t {
+                    Ty::Class(r) => r == c || p.is_base_of(c, r),
+                    Ty::Unknown | Ty::Dep(_) => true,
+                    _ => false,
+                };
+                if fns.iter().any(|&f| self.func(f).is_none_or(|fi| fi.explicit && (fi.template || reaches(self, &fi.fty.ret)))) {
                     return CtorRes::Unknown;
                 }
             }

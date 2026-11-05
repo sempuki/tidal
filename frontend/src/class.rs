@@ -109,7 +109,10 @@ impl P {
             self.pos += 1;
         }
         let is_def = self.at("{") || (self.at(":") && !self.at_k(1, ":"));
-        if spec_targs.is_some() && self.friend_spec_pos.is_some_and(|p| p + 1 == start_pos) && self.inst_depth == 0 {
+        // ACC-20: a friend without a template head names one
+        // specialization, which is valid.
+        let headed = explicit_spec || self.pending_template.is_some() || is_def;
+        if spec_targs.is_some() && headed && self.friend_spec_pos.is_some_and(|p| p + 1 == start_pos) && self.inst_depth == 0 {
             // TSP-12: no friend partial or explicit specialization.
             self.error(line, "TSP-12", "a friend declaration declares a partial or explicit specialization");
         }
@@ -136,6 +139,13 @@ impl P {
         if let Some(req) = inst_req {
             self.head_align = if is_def { class_align } else { 0 };
             return self.inst_class_body(req, key, is_def, line);
+        }
+        if let Some((t, args)) = &spec_targs {
+            // ACC-20: a friend declaration without a template head names
+            // one specialization.
+            if !headed && !is_def && self.friend_spec_pos.is_some_and(|p| p + 1 == start_pos) && !self.in_template() && self.inst_depth == 0 && !args.iter().any(|a| a.is_dep()) {
+                return Ok((self.class_inst(*t, args.clone(), line), false));
+            }
         }
         if !is_def {
             if name.is_empty() {
@@ -453,6 +463,8 @@ impl P {
             self.inherit_ctors(c, self.line());
             self.check_overrides(c);
             self.prime_eligible(c);
+        } else if self.classes[c].template {
+            self.check_pattern_overrides(c);
         }
         if self.class_depth == 0 {
             self.run_deferred();
@@ -1357,9 +1369,30 @@ impl P {
                 self.error(line, "UNI-8", "default member initializers for two members of a union");
             }
         }
+        if self.classes[c].dtor.is_none() {
+            // VIRT-3, VIRT-7: an implicit destructor overrides a virtual
+            // destructor of a base, and must not override a final one.
+            let fin = self.classes[c].bases.iter().filter_map(|b| b.class).any(|b| self.classes[b].dtor.is_some_and(|d| self.virt_specs.get(&d).is_some_and(|s| s.1)));
+            if fin {
+                let line = self.classes[c].line;
+                self.error(line, "VIRT-3", format!("the implicit destructor of '{}' overrides a final destructor", self.classes[c].name));
+            }
+        }
         let mut fns: Vec<DeclId> = self.scopes[self.classes[c].scope].names.values().flatten().copied().filter(|&f| self.func(f).is_some_and(|fi| fi.class == Some(c))).collect();
         fns.sort();
         fns.dedup();
+        // VIRT-13: an override with neither `override` nor `final`, in a
+        // class where another override has `override`.
+        let marked = fns.iter().any(|f| self.virt_specs.get(f).is_some_and(|s| s.0));
+        if marked {
+            for &f in &fns {
+                let (ov, fin) = self.virt_specs.get(&f).copied().unwrap_or((false, false));
+                if !ov && !fin && self.overridden(c, f, 0).is_some_and(|o| !o.is_empty()) {
+                    let line = self.decls[f].line;
+                    self.warn(line, "VIRT-13", format!("'{}' overrides a virtual function and is not marked 'override', as another override of the class is", self.decls[f].name));
+                }
+            }
+        }
         for f in fns {
             let line = self.decls[f].line;
             let (ov, fin) = self.virt_specs.get(&f).copied().unwrap_or((false, false));
@@ -1407,6 +1440,46 @@ impl P {
                     self.error(line, "VIRT-15", format!("the return type of '{}' {}", name, msg));
                     break;
                 }
+            }
+        }
+    }
+
+    /// VIRT-3 and DEP-30 in a class template whose bases do not depend on
+    /// a template parameter: a function marked `override` whose name no
+    /// virtual function of a base has can override nothing in any
+    /// specialization.
+    fn check_pattern_overrides(&mut self, c: usize) {
+        let bases: Vec<Option<usize>> = self.classes[c].bases.iter().map(|b| b.class).collect();
+        if bases.is_empty() || bases.iter().any(|b| b.is_none_or(|b| self.classes[b].template || !self.classes[b].complete || self.class_uncertain(b))) {
+            return;
+        }
+        let mut virtual_names: Vec<String> = Vec::new();
+        let mut stack: Vec<usize> = bases.iter().flatten().copied().collect();
+        let mut n = 0;
+        while let Some(b) = stack.pop() {
+            n += 1;
+            if n > 64 || self.class_uncertain(b) {
+                return;
+            }
+            for (name, ids) in &self.scopes[self.classes[b].scope].names {
+                if ids.iter().any(|&f| self.func(f).is_some_and(|fi| fi.is_virtual) || self.pure_fns.contains(&f)) {
+                    virtual_names.push(name.clone());
+                }
+            }
+            for x in &self.classes[b].bases {
+                match x.class {
+                    Some(y) => stack.push(y),
+                    None => return,
+                }
+            }
+        }
+        let mut fns: Vec<DeclId> = self.scopes[self.classes[c].scope].names.values().flatten().copied().filter(|&f| self.func(f).is_some_and(|fi| fi.class == Some(c) && fi.kind != FnKind::Dtor)).collect();
+        fns.sort();
+        fns.dedup();
+        for f in fns {
+            if self.virt_specs.get(&f).is_some_and(|s| s.0) && !virtual_names.contains(&self.decls[f].name) {
+                let line = self.decls[f].line;
+                self.error(line, "VIRT-3", format!("'{}' is marked override, and no base has a virtual function of that name", self.decls[f].name));
             }
         }
     }

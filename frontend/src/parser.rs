@@ -428,6 +428,13 @@ pub struct P {
     pub lang_c: u32,
     /// Inside the form of `extern "C"` without braces (LSP-2).
     pub lang_c_single: bool,
+    /// The declaration is the one declaration of a linkage specification
+    /// without braces, of either language.
+    pub link_single: bool,
+    /// Parsing a default argument at its declaration (DEFARG-10).
+    pub in_default_arg: u32,
+    /// The C function names that a definition in this unit has (LSP-4).
+    pub c_fn_defs: std::collections::HashSet<String>,
     /// The declarations of each C name (LSP-4, LSP-7).
     pub c_names: HashMap<String, Vec<DeclId>>,
     /// Functions declared with C language linkage.
@@ -674,6 +681,15 @@ pub struct P {
     pub finishing: bool,
     /// The errors of default arguments of specializations (INST-9).
     pub default_errors: HashMap<DeclId, Vec<crate::diag::Diag>>,
+    /// CTOR-17: default member initializers that bind a temporary, by
+    /// class, with their lines. A constructor that uses one is an error.
+    pub dmi_temps: HashMap<usize, Vec<(DeclId, u32)>>,
+    /// Inside an explicit instantiation or explicit specialization, where
+    /// a member type named by its qualified name needs no access.
+    pub access_free: u32,
+    /// Functions declared with a qualifier that names a class template's
+    /// pattern: members defined after the class (TPL-23).
+    pub qual_templ_defs: std::collections::HashSet<DeclId>,
     pub depth_reported: bool,
     pub last_decl_qual: Option<usize>,
     /// Static data members whose definitions a replay made and no use
@@ -842,6 +858,9 @@ impl P {
             inner_rewrite: false,
             lang_c: 0,
             lang_c_single: false,
+            link_single: false,
+            in_default_arg: 0,
+            c_fn_defs: Default::default(),
             c_names: HashMap::new(),
             c_fns: Default::default(),
             ce_depth: 0,
@@ -966,6 +985,9 @@ impl P {
             member_replay_decl: None,
             finishing: false,
             default_errors: HashMap::new(),
+            dmi_temps: HashMap::new(),
+            access_free: 0,
+            qual_templ_defs: Default::default(),
             depth_reported: false,
             last_decl_qual: None,
             lazy_static_defs: Default::default(),
@@ -2063,6 +2085,33 @@ impl P {
             }
         }
         false
+    }
+    /// In a template, whether unqualified lookup at the definition sees
+    /// every scope it searches: no scope is uncertain, and each class on
+    /// the stack has only bases that are dependent (not searched, DEP-11)
+    /// or known. Only a class template with a dependent base counts, the
+    /// case DEP-12 names.
+    pub fn template_lookup_complete(&self) -> bool {
+        let mut dependent_base = false;
+        for &s in self.stack.iter() {
+            if self.scopes[s].uncertain {
+                return false;
+            }
+            if let SK::Class(c) = self.scopes[s].kind {
+                let ci = &self.classes[c];
+                if ci.opaque {
+                    return false;
+                }
+                for b in &ci.bases {
+                    match b.class {
+                        None => dependent_base = true,
+                        Some(bc) if self.class_uncertain(bc) => return false,
+                        Some(_) => {}
+                    }
+                }
+            }
+        }
+        dependent_base
     }
     pub fn class_uncertain(&self, c: usize) -> bool {
         let ci = &self.classes[c];

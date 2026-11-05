@@ -227,7 +227,25 @@ impl<'a> Machine<'a> {
         let r = self.in_block(|m| m.exec(body, seek));
         self.catch_stack.truncate(n);
         match r {
-            Err(Stop::Throw(x)) => self.handle(x, hs, seek),
+            Err(Stop::Throw(x)) => {
+                // UNW-1 (Q-0365): a return statement in the try block built
+                // the class result, and a destructor threw as the blocks
+                // ended. The result ends before the handler runs.
+                if matches!(self.frame().ret, Some(super::Ret::InSlot)) {
+                    if let (Some(s), Some(t)) = (self.frame().slot.clone(), self.frame().func.and_then(|f| self.p.func(f)).map(|f| f.fty.ret.unqual())) {
+                        self.frame_mut().ret = None;
+                        self.unwinding += 1;
+                        let d = self.destroy(&s, &t);
+                        self.unwinding -= 1;
+                        match d {
+                            Ok(()) => {}
+                            Err(Stop::Throw(_)) => return Err(Stop::Terminate("UNW-5", "a destructor throws during the unwinding of another exception".into())),
+                            Err(o) => return Err(o),
+                        }
+                    }
+                }
+                self.handle(x, hs, seek)
+            }
             r => r,
         }
     }
@@ -596,6 +614,17 @@ impl<'a> Machine<'a> {
             // RFOR-4: every temporary of the range expression of a
             // range-based for lives until the loop ends.
             let range_var = self.p.decls[id].name == " range";
+            if !range_var {
+                if let Some((g, path, off, array)) = self.try_constant_ref(&init) {
+                    // IF-25: a constant initializer of a reference runs in
+                    // constant evaluation.
+                    let base = self.var_place(g)?;
+                    let mut full = base.path.clone();
+                    full.extend(path);
+                    self.frame_mut().refs.insert(id, Ptr { obj: base.obj, path: full, off, array, bytes: false });
+                    return Ok(());
+                }
+            }
             let pl = self.full(|m| {
                 let pl = m.bind_ref(&init)?;
                 // REF-4: a temporary bound to the reference lives as long
@@ -863,6 +892,25 @@ impl<'a> Machine<'a> {
     /// The value of a scalar initializer when it is a constant expression
     /// (IF-25), from a constant evaluation in the unit of the code that
     /// runs.
+    /// IF-25, CE-3: when the initializer of a reference is a constant
+    /// expression, the variable with static storage duration that it
+    /// refers to and the place in it.
+    pub fn try_constant_ref(&self, init: &Expr) -> Option<(DeclId, Vec<usize>, i64, bool)> {
+        if self.constant || matches!(init.k, EK::Unknown(_)) || binds_temporary_p(self.p, init) {
+            return None;
+        }
+        let mut m = Machine::new(self.p, true);
+        let p = m.full(|m| m.bind_ref(init)).ok()?;
+        if p.bytes {
+            return None;
+        }
+        let (&(t, id), _) = m.globals.iter().find(|(_, &o)| o == p.obj)?;
+        if t != self.tu {
+            return None;
+        }
+        Some((id, p.path.clone(), p.off, p.array))
+    }
+
     pub fn try_constant(&self, init: &Expr, ty: &QTy) -> Option<Val> {
         if self.constant || matches!(init.k, EK::Unknown(_)) {
             return None;

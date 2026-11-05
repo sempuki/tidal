@@ -156,6 +156,17 @@ at global scope and the usual parameters:
 
 Any other function without a definition leaves the run unsupported.
 
+### Choices of the run that follow the matrix
+
+Where a rule leaves the result to the implementation, or does not
+require a diagnostic, the run follows Clang and GCC on the matrix
+targets, as the tests do:
+
+| Rule | What the interpreter does |
+|---|---|
+| OBJ-11 | a `thread_local` object at namespace scope with dynamic initialization is constructed at the first use of such a variable of its unit; a use of a variable with constant initialization starts nothing |
+| LSP-8 | a global variable with C++ language linkage and a C variable of the same spelling in another unit are one variable |
+
 `main` can have the parameters `()`, `(int)`, `(int, char**)`, and
 `(int, char**, char**)`. These are the lists that Clang accepts on the
 matrix targets (FN-6), and the check rejects the others under TR-3. The

@@ -121,7 +121,9 @@ impl P {
             return false;
         }
         let no_fields = ci.fields.iter().all(|&f| match &self.decls[f].k {
-            DK::Field(fi) => fi.bits == Some(0) && self.decls[f].name.is_empty(),
+            DK::Field(fi) if fi.bits.is_some() => fi.bits == Some(0) && self.decls[f].name.is_empty(),
+            // An empty `[[no_unique_address]]` member keeps the class empty.
+            DK::Field(fi) => fi.nua && matches!(fi.ty.t, Ty::Class(m) if m != c && self.is_empty_d(m, depth + 1)),
             _ => true,
         });
         no_fields && ci.bases.iter().all(|b| !b.virt && b.class.is_some_and(|bc| self.is_empty_d(bc, depth + 1)))
@@ -313,6 +315,7 @@ impl P {
                 if union {
                     l.fields[fi.index] = Some(FieldPos { off: 0, bits: Some((0, w as u32)) });
                     st.size = st.size.max(w.div_ceil(8));
+                    st.dbits = st.dbits.max(8 * w.div_ceil(8) as u128);
                     if named {
                         st.align = st.align.max(ta);
                     }
@@ -340,7 +343,9 @@ impl P {
             st.align = st.align.max(a);
             if union {
                 l.fields[fi.index] = Some(FieldPos { off: 0, bits: None });
+                // CLS-35: the data size of a union is the largest `sizeof`.
                 st.size = st.size.max(s);
+                st.dbits = st.dbits.max(8 * s as u128);
                 if st.empties.len() < EMPTIES_CAP {
                     st.empties.extend(e);
                 }

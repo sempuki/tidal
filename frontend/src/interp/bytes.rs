@@ -467,7 +467,7 @@ impl<'a> Machine<'a> {
             // objects that the program needs.
             return self.storage_pointer(p, &QTy::new(to));
         }
-        if p.array && p.path.is_empty() && !self.constant && self.type_at(&p).is_some_and(|t| self.is_byte_type(&t.t)) && self.residents.contains_key(&p.obj) {
+        if p.array && !self.constant && self.type_at(&p).is_some_and(|t| self.is_byte_type(&t.t)) && self.residents.contains_key(&p.obj) {
             // STG-29 (Q-0324): a cast of a pointer into a byte array gives
             // a pointer to a byte, which does not reach an object that the
             // array hosts.
@@ -1017,6 +1017,17 @@ impl<'a> Machine<'a> {
         if let Some(QTy { t: Ty::Array(el, Some(_)), .. }) = self.obj_ty(p.obj) {
             if self.is_byte_type(&el.t) {
                 return Ok(Ptr { obj: p.obj, path: vec![], off: p.off, array: true, bytes: false });
+            }
+        }
+        // A byte of a byte array that is a member (STG-29): the element
+        // of that array.
+        if let Ok(Some(Spot::Scalar(path, t, 0))) = self.spot(p.obj, p.off) {
+            if self.is_byte_type(&t.t) && !path.is_empty() {
+                let n = path.len();
+                let arr = Ptr { obj: p.obj, path: path[..n - 1].to_vec(), off: 0, array: false, bytes: false };
+                if matches!(self.type_at(&arr), Some(QTy { t: Ty::Array(..), .. })) {
+                    return Ok(Ptr { obj: p.obj, path: path[..n - 1].to_vec(), off: path[n - 1] as i64, array: true, bytes: false });
+                }
             }
         }
         if p.off == 0 {

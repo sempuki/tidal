@@ -353,6 +353,16 @@ impl P {
                 return;
             }
         }
+        // CTOR-17 (Q-0084): the implicit or defaulted default constructor
+        // uses a default member initializer that binds a temporary.
+        if let Some(list) = self.dmi_temps.get(&c).cloned() {
+            let provided = ci.ctors.iter().any(|&i| self.func(i).is_some_and(|f| f.params.len() <= f.defaults && !f.defaulted && !f.first_defaulted));
+            if !provided {
+                if let Some(&(fid, dl)) = list.first() {
+                    self.error(dl, "CTOR-17", format!("the default member initializer binds the member '{}' to a temporary object, and the default constructor uses it", self.decls[fid].name));
+                }
+            }
+        }
         if self.default_ctor_deleted(c, 0) == Some(true) {
             self.error(line, "CTOR-20", format!("default constructor of '{}' is deleted", name));
         } else if self.uni3_deleted(c, Sm::Default) {

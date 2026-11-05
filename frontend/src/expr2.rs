@@ -479,10 +479,11 @@ impl P {
                     let da = self.var(fa.params[k]).and_then(|v| v.init.clone());
                     let db = self.var(fb.params[k]).and_then(|v| v.init.clone());
                     if let (Some(da), Some(db)) = (da, db) {
-                        let differ = match (self.const_int_quiet(&da), self.const_int_quiet(&db)) {
-                            (Ok(x), Ok(y)) => x != y,
-                            _ => format!("{:?}", da.k) != format!("{:?}", db.k),
-                        };
+                        // OVL-38 (G140): the same expression, where two
+                        // literals with one value are the same and `5` and
+                        // `2 + 3` are not. The form compares the trees,
+                        // which keep literals by value and drop parentheses.
+                        let differ = crate::ast::sexp(&da) != crate::ast::sexp(&db);
                         if differ {
                             self.error(line, "OVL-38", format!("the call of '{}' uses a default argument that two declarations in different scopes give differently", self.decls[a].name));
                             break 'pairs;
@@ -727,7 +728,7 @@ impl P {
         }
         let call = Expr::new(EK::Call(Box::new(callee), args, Some(fid)), t, cat, line);
         let in_lambda = self.fns.iter().any(|f| f.is_lambda);
-        if f.consteval && !self.in_immediate_context() && self.in_unevaluated == 0 && !self.in_template() && !in_lambda {
+        if f.consteval && !self.in_immediate_context() && self.in_unevaluated == 0 && !self.in_template() && !in_lambda && self.in_default_arg == 0 {
             // (A lambda that calls a consteval function with non-constant
             // arguments becomes consteval itself, CEV-1.)
             // CEV-1: each call of a consteval function is a constant expression.
@@ -1159,7 +1160,12 @@ impl P {
             let e = if matches!(x.k, EK::InitList(_)) {
                 self.convert_init(x.clone(), t, InitForm::CopyList, xl)
             } else if let Ty::Class(tc) = t.t {
-                if !(xt == Ty::Class(tc) || matches!(xt, Ty::Class(d) if self.is_base_of(tc, d))) {
+                // LIST-3: a member of a class with a user-declared
+                // constructor is not an aggregate, so no brace elision
+                // applies, and the element copy-initializes the member
+                // (CTOR-10).
+                let not_aggregate = !self.classes[tc].ctors.is_empty() && self.classes[tc].complete && !self.class_uncertain(tc);
+                if !(xt == Ty::Class(tc) || matches!(xt, Ty::Class(d) if self.is_base_of(tc, d)) || not_aggregate) {
                     self.d.list.truncate(mark);
                     return None;
                 }
@@ -1897,7 +1903,7 @@ impl P {
                     self.error(line, "DEL-1", format!("call of deleted constructor of '{}'", self.classes[c].name));
                     return unknown;
                 }
-                if !self.in_template() && self.inherited_from.contains_key(&cid) && !self.accessible(cid, false) {
+                if !self.in_template() && !self.accessible(cid, false) {
                     // ACC-2, DER-20: the chosen constructor is not
                     // accessible here.
                     let rule = if self.member_access.get(&cid) == Some(&1) { "ACC-4" } else { "ACC-2" };
@@ -1963,7 +1969,8 @@ impl P {
                     if self.in_unevaluated == 0 {
                         self.use_fn(cid);
                     }
-                    return Expr::new(EK::Construct(cid, conv), ty.unqual(), Cat::PR, line);
+                    let x = Expr::new(EK::Construct(cid, conv), ty.unqual(), Cat::PR, line);
+                    return self.check_consteval_ctor(x, cid, line);
                 }
                 self.d.list.truncate(mark);
             }
@@ -2013,13 +2020,28 @@ impl P {
             return unknown;
         }
         let (cid, conv) = viable.pop().unwrap();
-        if self.inherited_from.contains_key(&cid) && !self.accessible(cid, false) {
+        if !self.in_template() && !self.accessible(cid, false) {
             // ACC-2, DER-20: an inherited constructor keeps its access.
             let rule = if self.member_access.get(&cid) == Some(&1) { "ACC-4" } else { "ACC-2" };
             self.error(line, rule, format!("the chosen constructor of '{}' is not accessible here", self.classes[c].name));
             return unknown;
         }
-        Expr::new(EK::Construct(cid, conv), ty.unqual(), Cat::PR, line)
+        let x = Expr::new(EK::Construct(cid, conv), ty.unqual(), Cat::PR, line);
+        self.check_consteval_ctor(x, cid, line)
+    }
+
+    /// CEV-1, CE-8: the call of a `consteval` constructor outside an
+    /// immediate context is a constant expression.
+    fn check_consteval_ctor(&mut self, x: Expr, cid: DeclId, line: u32) -> Expr {
+        let in_lambda = self.fns.iter().any(|f| f.is_lambda);
+        if self.func(cid).is_some_and(|f| f.consteval) && !self.in_immediate_context() && self.in_unevaluated == 0 && !self.in_template() && !in_lambda && self.inst_depth == 0 {
+            match self.const_check(&x) {
+                Ok(()) => {}
+                Err(crate::consteval::CeErr::NotConst(r, m)) => self.error_because(line, "CEV-1", r, format!("call of consteval constructor is not a constant expression ({}: {})", r, m)),
+                Err(crate::consteval::CeErr::Unsupported(_)) => {}
+            }
+        }
+        x
     }
 
     /// LSUP-1, ILC-3: the call of initializer-list constructor `cid` with

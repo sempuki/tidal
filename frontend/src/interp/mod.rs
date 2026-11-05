@@ -269,6 +269,10 @@ pub struct Machine<'a> {
     pub in_aggregate: u32,
     /// The static objects end after main (OBJ-4, OBJ-12).
     pub static_dtors_running: bool,
+    /// OBJ-11: the `thread_local` variables with dynamic initialization
+    /// whose construction waits for the first use of one of them in their
+    /// unit, by unit, in the order of their definitions.
+    pub deferred_tl: Vec<(usize, DeclId)>,
     /// The handlers and non-throwing function boundaries that an exception
     /// can reach, innermost last (UNW-7).
     pub catch_stack: Vec<CatchEntry>,
@@ -385,6 +389,7 @@ impl<'a> Machine<'a> {
             extended: Vec::new(),
             in_aggregate: 0,
             static_dtors_running: false,
+            deferred_tl: Vec::new(),
             catch_stack: Vec::new(),
             resident_abs: HashMap::new(),
             in_own_init: Default::default(),
@@ -1187,7 +1192,39 @@ impl<'a> Machine<'a> {
 
     /// End the objects of a list in reverse order.
     pub fn cleanup(&mut self, list: Vec<Cleanup>) -> R<()> {
-        for c in list.into_iter().rev() {
+        let mut list = list;
+        while let Some(c) = list.pop() {
+            match self.cleanup_one(c) {
+                Err(Stop::Throw(x)) => {
+                    // UNW-1: a destructor that throws leaves the block, and
+                    // the objects of the block that remain end as the
+                    // exception passes (UNW-5 for a second throw).
+                    self.unwinding += 1;
+                    let mut r = Err(Stop::Throw(x));
+                    while let Some(c) = list.pop() {
+                        match self.cleanup_one(c) {
+                            Ok(()) => {}
+                            Err(Stop::Throw(_)) => {
+                                r = Err(Stop::Terminate("UNW-5", "a destructor throws during the unwinding of another exception".into()));
+                                break;
+                            }
+                            Err(o) => {
+                                r = Err(o);
+                                break;
+                            }
+                        }
+                    }
+                    self.unwinding -= 1;
+                    return r;
+                }
+                r => r?,
+            }
+        }
+        Ok(())
+    }
+
+    fn cleanup_one(&mut self, c: Cleanup) -> R<()> {
+        {
             let nontrivial = self.needs_dtor(&c.ty.t) || matches!(&c.ty.t, Ty::Class(k) if self.p.classes[*k].dtor.is_some_and(|d| self.p.func(d).is_some_and(|f| !f.defaulted)));
             if !self.objs[c.place.obj].alive && c.place.path.is_empty() && nontrivial {
                 if let Some(r) = self.residents.get(&c.place.obj).and_then(|v| v.iter().rev().find(|r| self.objs[r.2].alive)).map(|r| r.2) {
@@ -1205,10 +1242,11 @@ impl<'a> Machine<'a> {
                 return ub("DTOR-7", "the end of the block destroys an object whose destructor already ran");
             }
             if self.objs[c.place.obj].alive {
-                self.destroy(&c.place, &c.ty)?;
-                if c.place.path.is_empty() {
+                let r = self.destroy(&c.place, &c.ty);
+                if c.place.path.is_empty() && (r.is_ok() || matches!(r, Err(Stop::Throw(_)))) {
                     self.end_obj(c.place.obj);
                 }
+                r?;
             }
         }
         Ok(())

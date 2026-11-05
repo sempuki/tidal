@@ -1371,7 +1371,23 @@ impl P {
                 // RFOR-7 (Q-0098): a data member counts for the member
                 // form, and one of a type that is not a class cannot be
                 // called.
-                let scalar_data = |p: &P, n: &str| p.lookup_member(c, n).is_some_and(|ids| ids.iter().any(|&d| matches!(&p.decls[d].k, DK::Field(fi) if !matches!(fi.ty.t, Ty::Class(_) | Ty::Unknown | Ty::Dep(_)) && !matches!(&fi.ty.t, Ty::Ptr(x) if matches!(x.t, Ty::Func(_))))));
+                // A data member of a class type with no `operator()` and
+                // no conversion function cannot be called either.
+                let uncallable_class = |p: &P, m: usize| p.classes[m].complete && !p.class_uncertain(m) && !p.scopes[p.classes[m].scope].uncertain && p.lookup_member(m, "operator()").is_none() && !p.any_conv(m, 0);
+                let scalar_data = |p: &P, n: &str| {
+                    p.lookup_member(c, n).is_some_and(|ids| {
+                        ids.iter().any(|&d| match &p.decls[d].k {
+                            DK::Field(fi) => match &fi.ty.t {
+                                Ty::Class(m) => uncallable_class(p, *m),
+                                Ty::Unknown | Ty::Dep(_) => false,
+                                Ty::Ptr(x) => !matches!(x.t, Ty::Func(_)),
+                                Ty::LRef(x) | Ty::RRef(x) => !matches!(x.t, Ty::Func(_) | Ty::Class(_)),
+                                _ => true,
+                            },
+                            _ => false,
+                        })
+                    })
+                };
                 if mb && me && (scalar_data(self, "begin") || scalar_data(self, "end")) {
                     self.error(line, "RFOR-7", format!("the member '{}' of '{}' is a data member that cannot be called", if scalar_data(self, "begin") { "begin" } else { "end" }, self.classes[c].name));
                 }
@@ -1512,10 +1528,24 @@ impl P {
                     let mb = self.lookup_member(c, "begin");
                     let me = self.lookup_member(c, "end");
                     if mb.is_some() && me.is_some() {
-                        let fb: Vec<DeclId> = mb?.into_iter().filter(|&f| self.func(f).is_some()).collect();
-                        let fe: Vec<DeclId> = me?.into_iter().filter(|&f| self.func(f).is_some()).collect();
-                        let b = self.call_overloads_pub(Some(rv.clone()), fb, vec![], line);
-                        let e = self.call_overloads_pub(Some(rv.clone()), fe, vec![], line);
+                        // RFOR-7 (Q-0098): a data member takes the member
+                        // form too, as the call `range.begin()`.
+                        let mut call = |p: &mut P, ids: Vec<DeclId>| -> Expr {
+                            if let [id] = ids[..] {
+                                if let DK::Field(f) = p.decls[id].k.clone() {
+                                    let mut t = nonref(&f.ty);
+                                    if !f.ty.t.is_ref() && !f.mutable {
+                                        t.c |= rt.c;
+                                    }
+                                    let m = Expr::new(EK::Member(Box::new(rv.clone()), id), t, Cat::L, line);
+                                    return p.build_call(m, vec![], line);
+                                }
+                            }
+                            let fs: Vec<DeclId> = ids.into_iter().filter(|&f| p.func(f).is_some()).collect();
+                            p.call_overloads_pub(Some(rv.clone()), fs, vec![], line)
+                        };
+                        let b = call(self, mb?);
+                        let e = call(self, me?);
                         (b, e)
                     } else {
                         let (fb, _) = self.adl_lookup("begin", std::slice::from_ref(&rv));
