@@ -372,6 +372,51 @@ def frontend_text() -> str:
     return f"clean-room front end passes {passing} of {total} tests, and {checks} pass their check."
 
 
+def conformance() -> dict[str, str]:
+    """Each test's front-end status, from conformance.tsv."""
+    rows = [l.split("\t") for l in CONFORMANCE.read_text().splitlines() if l and not l.startswith("#")]
+    return {r[1]: r[0] for r in rows}
+
+
+def run_text() -> str:
+    """The interpreter's results on the tests that run a program."""
+    counts = Counter()
+    for name, status in conformance().items():
+        test = run_tests.parse_test(TESTS / name)
+        if test.default not in {"run", "run-fail"} and test.interpreter is None:
+            continue
+        rank = frontend_check.rank(status)
+        counts["all"] += 1
+        counts["pass"] += rank == 2
+        counts["partial"] += status == "pass-partial"
+        counts["unsupported"] += status == "run-unsupported"
+        counts["wrong"] += rank == 1 and status != "run-unsupported"
+        counts["not run"] += rank == 0
+    return (f"Its interpreter runs {counts['all']} tests: {counts['pass']} give the expected result "
+            f"({counts['partial']} of them with a partial exploration), {counts['wrong']} give a "
+            f"wrong result, {counts['unsupported']} stop as unsupported, and {counts['not run']} do "
+            "not run because the check fails.")
+
+
+WRITE_PROGRAMS = re.compile(r"^The front end's interpreter gives these results on the Write programs[^\n]*(?:\n[^\n]+)*", re.M)
+
+
+def write_programs_text() -> str:
+    """The front end's status of each Write suite's programs, from conformance.tsv."""
+    suites: dict[str, Counter] = {}
+    for name, status in conformance().items():
+        if m := re.match(r"programs/(W\d+)/", name):
+            if name.endswith(run_tests.EXTRA_SUFFIX):
+                continue
+            suites.setdefault(m.group(1), Counter())[status] += 1
+    parts = []
+    for suite in sorted(suites, key=lambda w: int(w[1:])):
+        counts = suites[suite]
+        parts.append(f"{suite} " + ", ".join(f"{n} {s}" for s, n in sorted(counts.items())))
+    return wrap("The front end's interpreter gives these results on the Write programs "
+                f"(`conformance.tsv`): {'; '.join(parts)}.")
+
+
 EXERCISE_ROW = re.compile(r"^\| Front end \| [^|\n]* \| `reports/clean-room/rust-frontend/` \|$", re.M)
 ROUND_REPORT = re.compile(r"^report-(\d+)[a-z]?\.md$")
 
@@ -422,6 +467,9 @@ def render_exercises(text: str) -> tuple[str, list[str]]:
     text, n = EXERCISE_ROW.subn(lambda _: new, text)
     if n != 1:
         problems.append(f"documentation/exercises.md: the front-end row matched {n} times; it must match once")
+    text, n = WRITE_PROGRAMS.subn(lambda _: write_programs_text(), text)
+    if n != 1:
+        problems.append(f"documentation/exercises.md: the sentence on the Write programs matched {n} times; it must match once")
     return text, problems
 
 
@@ -461,6 +509,7 @@ def render(text: str) -> tuple[str, list[str]]:
          f"sanitizers ({counts['sanitizer']} tests, decision 0028)"),
         ("front end", r"clean-room front end passes \d+ of \d+ tests, and \d+ pass\s+their check\.",
          frontend_text()),
+        ("interpreter", r"Its interpreter runs \d+ tests:[^.]*\.", run_text()),
         ("similarity report", r"The latest similarity report that checked every page is\s+`[^`]*`\."
          r"|No similarity report has checked every page\.",
          f"The latest similarity report that checked every page is `reports/similarity/{whole}.txt`."

@@ -41,6 +41,8 @@ Used on 2026-11-04 by the source-reader gap review of the text phase 8 wrote on 
 
 Kept open on 2026-11-04 under decision 0054, because the review agrees with a small doubt. Two newest families also differ from the answer: GCC 16 and EDG 7.0 give `true`.
 
+Corrected on 2026-11-05: the note above names the wrong families. GCC 16 and EDG 7.0 give `true` and follow the answer. Clang is the one newest family that differs: it finds the requires expression false inside a template, and `requires-parameters-void-template.cpp` has an override for Clang only. The question waits only on a review that reads the answer with no doubt.
+
 ## Opinions
 
 ### Gap review, 2026-11-03

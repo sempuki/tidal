@@ -20,7 +20,7 @@ Files are in the scratch directory `/tmp/claude-1000/-home-ryanm-Code-tidal/6f96
 - `score.py` is the scoring script.
 - `score-output.txt` is the scoring output.
 
-The tool refused to save `report.md` in that directory, so this message is the only copy of the report. The integrator needs to save it.
+The reader returned this report as a message, and the integrator saved it here.
 
 ## 1. What I built
 

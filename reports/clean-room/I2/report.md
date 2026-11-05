@@ -8,7 +8,7 @@ Kind: Implement (decision 0056, item E).
 
 Role: clean-room reader in the role of an implementer.
 
-The tool refused to save `report.md` in the scratch directory ("subagents should return findings as text"). This message is the only copy of the report, so the integrator needs to save it.
+The reader returned this report as a message, and the integrator saved it here.
 
 Inputs:
 

@@ -98,7 +98,9 @@ the tests affected. Round 1 (X1 to X4) reaches 47 of the 68 pages that
 existed then. Round 2 (X5 to X8) takes the proposals that phases 3 and
 4 unblocked. Round 3 (X9 to X12) reaches pages that no earlier exercise
 used: storage, virtual functions, types, handlers, blocks,
-enumerations, and primary expressions.
+enumerations, and primary expressions. Rounds 4 to 6 (X13 to X21) take
+the proposals that later phases made ready. X21 took P15, the last
+ready proposal.
 
 A new rule in a proposal takes an ID in the exercise's own space, such
 as `X9:new-1`. A real prefix such as `OVL-45` can later name an
@@ -201,21 +203,25 @@ answer (style guide, section 3).
 
 ## 6. Order
 
-The Write suites W1 to W15, the Propose rounds X1 to X16, the
-Diagnose batches of D-classes, and a Predict batch for every page are
-done (section 8). Decision 0055, item E, orders the next exercises:
+The Write suites W1 to W17, the Propose rounds X1 to X21, the Diagnose
+batches of D-classes, the Implement exercises I1 and I2, the
+principle-use batches PU1 and PU2, and a Predict batch for every page
+are done (section 8). Decision 0057 orders the next exercises:
 
-1. A second Write wave of four larger programs (W16 and W17, done).
-2. An Implement exercise that builds class layout from the rules alone
-   and is scored on the layout tests (I1, done).
-3. Predict batches on the pages changed after their batch, on constant
-   evaluation and evaluation order, and on the four weakest pages whose
-   only batch showed test names (R8, done).
-4. Propose X17 to X20 on P1, P2, P17, and P18 (done).
+1. A Predict batch without test names on `foundations/objects`
+   (item R4).
+2. A principle-use batch PU3 on the questions whose `**Waits for:**`
+   line names a use (item PU3).
+3. An Implement exercise I3 on the ranking of conversion sequences and
+   the best viable function (item E).
+4. Write suites W18 (callables) and W19 (compile-time and generic code),
+   with the interpreter step (item E).
+5. A refreshed Propose portfolio, a refresh note for X19, and Propose
+   X22 on P23 (item E).
 
-Each phase runs at least one exercise by use (Write, Port, or
-Implement). Port suites and Diagnose batches beyond D-classes wait for
-a later phase.
+Each phase runs at least one exercise by use that writes programs
+(Write or Port), beside any Implement exercise. Port suites and
+Diagnose batches beyond D-classes wait for a later phase.
 
 ## 7. Coverage
 
@@ -253,21 +259,21 @@ of section 8.
 | X11 | done: 67 rule changes; findings X11-1 to X11-9 | `reports/clean-room/X11/` |
 | X12 | done: 37 rule changes; findings X12-1 to X12-13 | `reports/clean-room/X12/` |
 | X13 | done: 59 rule changes; findings X13-1 to X13-13 | `reports/clean-room/X13/` |
-| X14 | done: 57 rule changes; findings X14-1 to X14-10 | `reports/clean-room/X14/` |
+| X14 | done: 56 rule changes; findings X14-1 to X14-10 | `reports/clean-room/X14/` |
 | X15 | done: 60 rule changes; findings X15-1 to X15-9 | `reports/clean-room/X15/` |
 | X16 | done: 41 rule changes, 3 tests change outcome; findings X16-1 to X16-7 | `reports/clean-room/X16/` |
 | X17 | done: 61 rule changes, 74 tests change outcome; findings X17-1 to X17-11 | `reports/clean-room/X17/` |
 | X18 | done: 21 rule changes, no test changes outcome; findings X18-1 to X18-11 | `reports/clean-room/X18/` |
 | X19 | done: 34 rule changes, 1 test changes outcome; findings X19-1 to X19-11 | `reports/clean-room/X19/` |
-| X20 | done: 57 rule changes, no test changes outcome; findings X20-1 to X20-11 | `reports/clean-room/X20/` |
+| X20 | done: 58 rule changes, no test changes outcome; findings X20-1 to X20-11 | `reports/clean-room/X20/` |
 | X21 | done: 32 rule changes, no test changes outcome; findings X21-1 to X21-11 | `reports/clean-room/X21/` |
 | I2 | done: partial ordering from the rules alone, 140 of 140 ordering checks (76 grid cells); 5 of 46 programs differ on the front end; findings I2-1 to I2-17 | `reports/clean-room/I2/` |
 | I1 | done: class layout from the rules alone, 241 of 243 `static_assert` checks, 24 of 24 run checks; findings I1-1 to I1-13 | `reports/clean-room/I1/` |
 | W4 | done: four programs build and run on GCC and Clang; findings W4-1 to W4-10 | `reports/clean-room/W4/` |
 | W8 | done: four programs build and run on GCC and Clang; findings W8-1 to W8-9 | `reports/clean-room/W8/` |
 | W1 | done: five programs build and run on GCC and Clang; findings W1-1 to W1-9 | `reports/clean-room/W1/` |
-| W16 | done: two programs (an expression evaluator and a text-statistics program) build and run on GCC and Clang; findings W16-1 to W16-7. The front end's interpreter, which the readers did not run, stops `evaluator.cpp` as unsupported at a class assignment (`run-unsupported` in `conformance.tsv`) and runs `textstats.cpp` (`pass-partial`) | `reports/clean-room/W16/` |
-| W17 | done: a hash map in raw storage and a multi-unit template library build and run on GCC and Clang; findings W17-1 to W17-7. The front end's interpreter, which the readers did not run, stops `units/main.cpp` as unsupported at an overloaded operator (`run-unsupported` in `conformance.tsv`) and runs `hashmap.cpp` (`pass-partial`) | `reports/clean-room/W17/` |
+| W16 | done: two programs (an expression evaluator and a text-statistics program) build and run on GCC and Clang; findings W16-1 to W16-7 | `reports/clean-room/W16/` |
+| W17 | done: a hash map in raw storage and a multi-unit template library build and run on GCC and Clang; findings W17-1 to W17-7 | `reports/clean-room/W17/` |
 | W14 | done: four multi-unit programs build and run on GCC and Clang; findings W14-1 to W14-8 | `reports/clean-room/W14/` |
 | W3 | done: four programs build and run on GCC and Clang; findings W3-1 to W3-6 | `reports/clean-room/W3/` |
 | W13 | done: four programs build and run on GCC, Clang, and EDG; findings W13-1 to W13-9 | `reports/clean-room/W13/` |
@@ -307,7 +313,15 @@ of section 8.
 | R-types, R-odr, R-keywords | done, 227/227 (224 cite a rule of the test), without test names; findings RPD-1 to RPD-11 | `reports/clean-room/R-foundations/` |
 | R-handlers, R-throw, R-unwinding | done, 171/172 (165 cite a rule of the test), without test names; findings RPE-1 to RPE-6 | `reports/clean-room/R-exceptions/` |
 | PU1 | done: 66 programs of 29 questions, 64/66, 1 not decided; findings PU1-1 to PU1-8 | `reports/clean-room/PU1/` |
+| PU2 | done: 44 programs of 15 questions, 42/44, 1 not decided; findings PU2-1 to PU2-6 | `reports/clean-room/PU2/` |
 | All others | planned | |
+
+The front end's interpreter gives these results on the Write programs
+(`conformance.tsv`): W0 4 pass, 1 pass-partial; W1 5 pass; W2 4 pass; W3
+3 pass, 1 pass-partial; W4 3 pass, 1 pass-partial; W5 3 pass, 1
+pass-partial; W6 4 pass; W7 4 pass; W8 4 pass; W9 3 EDG-ONLY, 1 pass;
+W10 4 pass; W11 4 pass; W12 1 EDG-ONLY, 3 pass; W13 4 pass; W14 4 pass;
+W15 5 pass; W16 2 pass-partial; W17 1 pass, 1 pass-partial.
 
 ## 9. Prompts
 
