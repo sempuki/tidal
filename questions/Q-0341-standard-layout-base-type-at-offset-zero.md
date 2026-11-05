@@ -36,7 +36,8 @@ The grid `tests/classes/members/grids/standard-layout.json`, rows
 "base type first inside first member", "first member array of base
 type", "first member union holding base type", and "overlap member of
 base type, not first". The test in **Affects** checks the two
-addresses.
+addresses. The three compilers agree with each other and with CLS-19
+on the other 34 of the grid's 38 rows.
 
 ## Options
 

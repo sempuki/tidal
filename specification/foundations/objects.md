@@ -318,6 +318,33 @@ The results are in `tests/RESULTS.md`. All eight compilers agree on 56
 of 61 tests. EDG runs no programs, so its results for the run tests say
 only that the programs are valid.
 
+### Divergences
+
+- {question}`Q-0368` (OBJ-1, OBJ-2; open): whether a write to a scalar
+  during its own initializer is outside the scalar's lifetime. It is,
+  so constant evaluation rejects the write, directly or through a
+  pointer, as Clang does. GCC and EDG accept both writes.
+- {question}`Q-0115` (OBJ-2, CE-22; compiler defect): whether an
+  implicit copy of an object with a part that has no value reads that
+  part. It does, so constant evaluation rejects the copy, as Clang and
+  EDG do. GCC accepts the copy.
+- {question}`Q-0374` (OBJ-2, CTOR-12; open): whether a call of a member
+  function on a member that is not yet initialized is undefined when the
+  function reads nothing. It is, so constant evaluation rejects the
+  call, as Clang does. GCC and EDG accept it.
+
+### Split tests
+
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `classes/constructors/base-init-calls-member-of-member-constant.cpp` | CTOR-12, OBJ-2 | reject | reject | accept | accept | {question}`Q-0374` |
+| `foundations/constant-evaluation/copy-unset-array-element.cpp` | CE-22, OBJ-2 | reject | reject | accept | reject | {question}`Q-0115` |
+| `foundations/constant-evaluation/copy-unset-member.cpp` | CE-22, OBJ-2 | reject | reject | accept | reject | {question}`Q-0115` |
+| `scalar-write-in-own-initializer-constant.cpp` | OBJ-1, OBJ-2 | reject | reject | accept | accept | {question}`Q-0368` |
+| `scalar-write-through-pointer-in-own-initializer-constant.cpp` | OBJ-1, OBJ-2 | reject | reject | accept | accept | {question}`Q-0368` |
+
+### Notes
+
 - OBJ-11: the tests accept either construction point for one object.
   Every Clang and GCC configuration defers the construction, and the
   first use of one `thread_local` variable of the unit with dynamic
@@ -330,9 +357,6 @@ only that the programs are valid.
   with constant initialization starts nothing on Clang and GCC, and
   OBJ-11 keeps that result (`documentation/decisions/pending.md`,
   row 4).
-- OBJ-1: during constant evaluation, Clang rejects a write to a scalar
-  in its own initializer, directly or through a pointer. GCC and EDG
-  accept both writes ({question}`Q-0368`).
 - OBJ-1: the lifetime of a class object ends when its destructor call
   starts. The destructor body and its parts still run, as
   {principle}`OBJ-P1` draws. No compiler of the matrix gives a result
@@ -361,9 +385,8 @@ only that the programs are valid.
   `reject` rules. Every compiler rejects a read or a write through a
   pointer to a variable whose block has ended during constant
   evaluation.
-- OBJ-2: an implicit copy of an object with a part that has no value is
-  a read of that part ({question}`Q-0115`). No sanitizer in the matrix
-  reports the copy at run time.
+- OBJ-2: no sanitizer in the matrix reports, at run time, an implicit
+  copy of an object with a part that has no value.
 - OBJ-10: the `vptr` sanitizer of GCC stops a read of a member through
   a reference to an object whose storage another object reuses. The
   Clang sanitizers do not. The `vptr` sanitizers of Clang and GCC both

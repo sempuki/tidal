@@ -525,60 +525,102 @@ int* r = new (raw) int(3);          // raw hosts the int
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 51
-of 66 tests.
+of 66 tests. EDG compiles the run tests and does not run them.
 
-One question on this page settled on 2026-11-04 under decision 0054 after the principle-use batch PU2 (`reports/clean-room/PU2/`). The batch's use of the principle supports the answer, the latest gap review supports it with no doubt, and the principle gives the same answer. The test keeps its override for the family that still differs:
+### Divergences
 
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0334` | LSUP-P1 | GCC 16 |
+- {question}`Q-0125` (NEW-19, LSUP-5; settled): whether Clang 18's
+  lack of the sized deallocation functions changes the rule. It does
+  not, since the newest version of every family declares them. Clang 18
+  rejects the calls.
+- {question}`Q-0299` (LSUP-5; open): whether an implementation must
+  reject a declaration of `std::align_val_t` with another shape. The
+  rule needs no diagnostic. GCC and EDG reject an unscoped enumeration,
+  another underlying type, and a class, and Clang accepts all three.
+- {question}`Q-0301` (NEW-35, LSUP-8; open): what a `new` expression
+  does with an erroneous run-time array bound. It throws
+  `std::bad_array_new_length` and calls no allocation function. Clang
+  throws `std::bad_alloc` in every form, and GCC calls the allocation
+  function for a bound smaller than the number of initializer elements.
+- {question}`Q-0302` (NEW-36, LSUP-6; settled on NEW-P6): whether an
+  erroneous bound gives a null pointer with a non-throwing allocation
+  function. It does, as Clang does. GCC throws.
+- {question}`Q-0303` (NEW-37, LSUP-6; settled on NEW-P4): whether
+  constant evaluation can use a `new` expression with the nothrow tag.
+  It can, as Clang and GCC 16 say. EDG and GCC 14 reject it.
+- {question}`Q-0321` (LSUP-1; open): which operations make a program
+  need the class `std::initializer_list`. A braced list that
+  initializes an object of the type, or `auto` deduction of it, as
+  Clang and EDG say. GCC checks every definition of the class, so it
+  also rejects a parameter that is never initialized and a candidate
+  with no conversion sequence.
+- {question}`Q-0323` (LSUP-11; open): whether a `T*` from an
+  allocation function points to element 0 of an array whose elements
+  are not built yet. It does. In constant evaluation, Clang rejects an
+  assignment to an `int` element before `std::construct_at` builds it,
+  and GCC and EDG accept the assignment. The test builds each element
+  with `std::construct_at`.
+- {question}`Q-0334` (LSUP-12; settled on LSUP-P1): whether an ordering
+  class with only `!=` against `0` serves a defaulted `<=>`. It does,
+  since either operator serves, as Clang and EDG say. GCC tests each
+  part with `== 0` and rejects the class.
+- {question}`Q-0386` (LSUP-2; open): whether a use of `<=>` needs all
+  three ordering classes declared. It needs only the class that it
+  yields, as Clang and GCC say. EDG needs all three for a built-in
+  `<=>` evaluated as a constant and for a defaulted `<=>`.
+
+### Split tests
+
+EDG runs no programs, so its cell for a run test gives the result of
+the compile. In `bad-bound-too-few.cpp`, Clang and GCC both fail, with
+different exit codes.
+
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `expressions/new-delete/aligned-forms-by-name.cpp` | NEW-26, LSUP-5 | run | Clang 22: run; Clang 18: reject | run | accept | {question}`Q-0125` |
+| `expressions/new-delete/bad-bound-negative.cpp` | NEW-35, LSUP-8 | run | run-fail | run | accept | {question}`Q-0301` |
+| `expressions/new-delete/bad-bound-nothrow.cpp` | NEW-36, LSUP-6 | run | run | run-fail | accept | {question}`Q-0302` |
+| `expressions/new-delete/bad-bound-too-few.cpp` | NEW-35, LSUP-8 | run | run-fail | run-fail | accept | {question}`Q-0301` |
+| `expressions/new-delete/bad-bound-too-large.cpp` | NEW-35, LSUP-8 | run | run-fail | run | accept | {question}`Q-0301` |
+| `expressions/new-delete/constant-evaluation-nothrow.cpp` | NEW-37, LSUP-6 | accept | accept | GCC 16: accept; GCC 14: reject | reject | {question}`Q-0303` |
+| `alignment-enumeration-class.cpp` | LSUP-5 | reject | accept | reject | reject | {question}`Q-0299` |
+| `alignment-enumeration-unscoped.cpp` | LSUP-5 | reject | accept | reject | reject | {question}`Q-0299` |
+| `alignment-enumeration-wrong-underlying-type.cpp` | LSUP-5 | reject | accept | reject | reject | {question}`Q-0299` |
+| `exception-classes-array-length.cpp` | LSUP-8, NEW-35 | run | run-fail | run | accept | {question}`Q-0301` |
+| `initializer-list-candidate-not-viable.cpp` | LSUP-1, ICS-16 | accept | accept | reject | accept | {question}`Q-0321` |
+| `initializer-list-parameter-not-needed.cpp` | LSUP-1 | accept | accept | reject | accept | {question}`Q-0321` |
+| `ordering-defaulted-not-equal-zero-only.cpp` | LSUP-12 | accept | accept | reject | accept | {question}`Q-0334` |
+| `ordering-strong-only-builtin.cpp` | LSUP-2 | run | run | run | reject | {question}`Q-0386` |
+| `ordering-strong-only-defaulted.cpp` | LSUP-2 | run | run | run | reject | {question}`Q-0386` |
+
+### Notes
 
 - LSUP-1: each compiler checks the shape in its own way. Clang checks
   the layout of the two members, and also accepts a second pointer in
   place of the count. GCC compares the class with the one in its own
   header and rejects the two-pointer form. EDG looks for the
   constructor. The rule gives the shape that all three accept.
-- LSUP-1: Clang and EDG check the shape where a braced list initializes
-  an `std::initializer_list` object or `auto` deduces one. GCC checks
-  the shape of every definition of `std::initializer_list`, so GCC also
-  rejects a program that only declares a parameter of that type, or
-  whose candidate with such a parameter has no conversion sequence
-  ({question}`Q-0321`).
-- LSUP-2: EDG needs all three classes declared before it evaluates a
-  built-in `<=>` as a constant and before it defines a defaulted `<=>`.
-  EDG accepts a built-in `<=>` with one class declared when the
-  comparison runs at run time or stands in an unevaluated operand.
-  Clang and GCC need only the class that the operation yields, and
-  LSUP-2 follows them. The gap review of the text phase 8 wrote on
-  foundations
+- LSUP-2: the gap review of the text phase 8 wrote on foundations
   (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`)
-  reads the reference the same way ({question}`Q-0386`).
+  reads the reference as Clang and GCC do ({question}`Q-0386`).
 - LSUP-2: every compiler rejects `1 <=> 2` when `strong_ordering` lacks
   the member `equal`, although the result is `less`
   (`strong-ordering-missing-member.cpp`). So a compiler checks a
   member that the operation does not yield.
-- LSUP-12: GCC tests the result of each part of a defaulted `<=>` with
-  `== 0`. Clang and EDG test it with `!= 0`, which an `==` against `0`
-  serves through {rule}`DCMP-6`. A class with only `!=` against `0`
-  therefore serves Clang and EDG and not GCC
-  ({question}`Q-0334`). LSUP-12 accepts either operator, as Clang and
-  EDG do. Every compiler rejects a class with neither operator.
-- LSUP-12: every compiler rejects a relational operator rewritten from
-  `<=>` when the ordering class lacks that operator against `0`, on the
-  side that {rule}`OVL-13` gives. No compiler rewrites that inner
-  comparison ({rule}`OVL-43`).
+- LSUP-12: every compiler rejects a class with neither `==` nor `!=`
+  against `0` for a defaulted `<=>`. Every compiler rejects a
+  relational operator rewritten from `<=>` when the ordering class
+  lacks that operator against `0`, on the side that {rule}`OVL-13`
+  gives. No compiler rewrites that inner comparison ({rule}`OVL-43`).
 - LSUP-13: every compiler accepts a conversion function on the
   stronger class and a converting constructor on the weaker class.
   Clang's message names a `static_cast` from the part's class to the
   return type. With no conversion, GCC 14 stops with an
   internal compiler error in a defaulted `<=>` with the return type
   `auto`, and gives an ordinary error when the return type is written.
-- LSUP-5: GCC and EDG compare a declaration of `std::align_val_t` with
-  their own and reject an unscoped enumeration, another underlying
-  type, and a class. Clang accepts all three ({question}`Q-0299`). So
-  the rule needs no diagnostic. Every compiler accepts a `new`
-  expression for an over-aligned type with no declaration of the
-  enumeration. The gap review of the rules that phase 7 added
+- LSUP-5: every compiler accepts a `new` expression for an over-aligned
+  type with no declaration of the enumeration. The gap review of the
+  rules that phase 7 added
   (`reports/review/2026-11-04-gap-review-phase-7-additions.md`) reads
   the reference as making every declaration of the type by a program
   undefined, whatever its shape. LSUP-5 follows the compilers, and its
@@ -596,17 +638,19 @@ One question on this page settled on 2026-11-04 under decision 0054 after the pr
   (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`)
   reads a program that defines these forms itself as breaking a
   reservation of the library, with undefined behavior. The doubt is the
-  one of LSUP-5: LSUP-7 follows the compilers, and the model of a
+  one of LSUP-5. LSUP-7 follows the compilers, and the model of a
   program that supplies a library declaration is Tidal's own choice
   ({principle}`LSUP-P2`).
+- LSUP-7: with only the single-object placement form declared, Clang,
+  GCC, and EDG reject an array placement `new` and name
+  `operator new[]`.
 - LSUP-8: Clang and GCC catch the objects that their libraries throw
   with handlers for classes that the program declares. Each class
   declares its destructor and does not define it, so the program uses
   the library's class data. A handler for a base catches an object of
-  a derived class. Clang throws `std::bad_alloc` for an erroneous
-  array bound ({question}`Q-0301`). The table of {rule}`NEW-35` and the
-  Evidence of {rule}`NEW-36` give what each family does for each kind of
-  erroneous bound. EDG compiles these programs and does not run them.
+  a derived class. The table of {rule}`NEW-35` and the Evidence of
+  {rule}`NEW-36` give what each family does for each kind of erroneous
+  bound.
 - LSUP-9: every compiler accepts the declaration of `std::byte`. Clang
   and GCC, at `-O0` and at `-O2`, let a write through a `std::byte`
   glvalue change an `int` and place an object in an array of
@@ -615,19 +659,12 @@ One question on this page settled on 2026-11-04 under decision 0054 after the pr
   `std::construct_at` during constant evaluation. The placement form
   need not be `constexpr`. Every compiler rejects the same template in
   another namespace, and a call whose pointer points to a variable that
-  the evaluation did not create. With no placement form declared, every compiler
-  rejects the template's placement `new` ({rule}`NEW-20`).
-- LSUP-7: with only the single-object placement form declared, Clang,
-  GCC, and EDG reject an array placement `new` and name
-  `operator new[]`.
+  the evaluation did not create. With no placement form declared, every
+  compiler rejects the template's placement `new` ({rule}`NEW-20`).
 - LSUP-11: Clang, GCC, and EDG run the calls of `::operator new` and
   `::operator delete` inside an `std::allocator` that the program
   declares, during constant evaluation. Each rejects the same class
-  template in another namespace. Clang rejects an assignment to an
-  element of the allocated array before `std::construct_at` builds the
-  element, and GCC and EDG accept the assignment
-  ({question}`Q-0323`). The test builds
-  each element with `std::construct_at`.
+  template in another namespace.
 - LSUP-11: every compiler accepts an `std::allocator` of a class that
   is not a literal type during constant evaluation. The gap review of
   the object model reads the C++23 text as asking for a literal type.
@@ -635,38 +672,11 @@ One question on this page settled on 2026-11-04 under decision 0054 after the pr
   row 4).
 - Scope: the page covers the names that a `new` expression and
   `dynamic_cast` use. `typeid` and its exception are deferred
-  (`documentation/roadmap.md`, Deferred). The new handler and the launder operation are library facilities
-  that no core rule on a Tidal page uses yet. A program that declares
-  `std::launder` itself as a function template compiles on Clang and
-  GCC and fails to link, because the library defines the function in
-  its header. The text that each
-  exception class gives through its member functions is
+  (`documentation/roadmap.md`, Deferred). The new handler and the
+  launder operation are library facilities that no core rule on a
+  Tidal page uses yet. A program that declares `std::launder` itself as
+  a function template compiles on Clang and GCC and fails to link,
+  because the library defines the function in its header. The text
+  that each exception class gives through its member functions is
   implementation-defined, and the page leaves those members to the
   library.
-
-### Split tests
-
-The table lists each test on which the compilers differ. The
-Expected column gives the outcome that the rules predict. The other
-cells give the outcome of the test on each compiler. EDG builds no
-program, so a run test is only compiled there. In
-`bad-bound-too-few.cpp`, Clang and GCC both fail, with different exit
-codes.
-
-| Test | Rules | Expected | Clang | GCC | EDG | Question |
-|---|---|---|---|---|---|---|
-| `expressions/new-delete/aligned-forms-by-name.cpp` | LSUP-5 | run | Clang host, Clang 22: run; Clang 18: reject | run | accept (no run) | {question}`Q-0125` |
-| `expressions/new-delete/bad-bound-negative.cpp` | LSUP-8 | run | run-fail | run | accept (no run) | {question}`Q-0301` |
-| `expressions/new-delete/bad-bound-nothrow.cpp` | LSUP-6 | run | run | run-fail | accept (no run) | {question}`Q-0302` |
-| `expressions/new-delete/bad-bound-too-few.cpp` | LSUP-8 | run | run-fail | run-fail | accept (no run) | {question}`Q-0301` |
-| `expressions/new-delete/bad-bound-too-large.cpp` | LSUP-8 | run | run-fail | run | accept (no run) | {question}`Q-0301` |
-| `expressions/new-delete/constant-evaluation-nothrow.cpp` | LSUP-6 | accept | accept | GCC host, GCC 16: accept; GCC 14: reject | reject | {question}`Q-0303` |
-| `alignment-enumeration-class.cpp` | LSUP-5 | reject | accept | reject | reject | {question}`Q-0299` |
-| `alignment-enumeration-unscoped.cpp` | LSUP-5 | reject | accept | reject | reject | {question}`Q-0299` |
-| `alignment-enumeration-wrong-underlying-type.cpp` | LSUP-5 | reject | accept | reject | reject | {question}`Q-0299` |
-| `exception-classes-array-length.cpp` | LSUP-8 | run | run-fail | run | accept (no run) | {question}`Q-0301` |
-| `initializer-list-candidate-not-viable.cpp` | LSUP-1 | accept | accept | reject | accept | {question}`Q-0321` |
-| `initializer-list-parameter-not-needed.cpp` | LSUP-1 | accept | accept | reject | accept | {question}`Q-0321` |
-| `ordering-defaulted-not-equal-zero-only.cpp` | LSUP-12 | reject | accept | reject | accept | {question}`Q-0334` |
-| `ordering-strong-only-builtin.cpp` | LSUP-2 | run | run | run | reject | {question}`Q-0386` |
-| `ordering-strong-only-defaulted.cpp` | LSUP-2 | run | run | run | reject | {question}`Q-0386` |

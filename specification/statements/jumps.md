@@ -355,28 +355,45 @@ int pick(int v) {
 All eight compilers agree on 58 of 61 tests. The results are in
 `tests/RESULTS.md`.
 
-- JMP-6: GCC accepts a `goto` past a variable without an initializer
-  whose class has a trivial default constructor and a destructor that
-  is not trivial. Clang and EDG reject the `goto`. JMP-6 follows GCC
-  and the class-properties inventory (item OBS-jump-vacuous), which
-  name only the default constructor ({question}`Q-0041`).
+### Divergences
+
+- {question}`Q-0041` (JMP-6, SW-5; open): whether a jump can skip a
+  variable without an initializer whose class has a trivial default
+  constructor and a destructor that is not trivial. It can, as GCC
+  says, and as the class-properties inventory (item OBS-jump-vacuous)
+  gives, since it names only the default constructor. Clang and EDG
+  reject the `goto`. The question waits on the maintainer
+  (`documentation/decisions/pending.md`).
+- {question}`Q-0121` (JMP-16; open): whether constant evaluation can
+  write a variable whose declaration a jump skipped. It can, and a read
+  after the write gives the value, as Clang says. GCC and EDG reject
+  the write.
+
+### Split tests
+
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `goto-past-nontrivial-destructor.cpp` | JMP-6 | accept | reject | accept | reject | {question}`Q-0041` |
+| `goto-skips-nontrivial-destructor.cpp` | JMP-6 | accept | reject | accept | reject | {question}`Q-0041` |
+| `statements/switch/skipped-declaration-written-then-read.cpp` | JMP-16 | accept | accept | reject | reject | {question}`Q-0121` |
+
+### Notes
 
 - JMP-17: GCC rejects `break outer;` as a missing `;`. Clang names the
   form "named break" and accepts it only in a later C mode.
-
-- JMP-16: Clang accepts a write to a skipped variable during constant
-  evaluation and a read after the write. GCC and EDG reject the write
-  ({question}`Q-0121`). Every compiler rejects a read before the write
-  during constant evaluation.
-
-- JMP-11: Clang and GCC elide the copy of a named local at `-O0`. The test
-  accepts zero or one copy. When the function has one `return` of the
-  local, a later destructor's change to the local reaches the caller on
-  both compilers. When two `return` statements name different locals,
-  both compilers copy, and the change does not reach the caller. For a
-  scalar, the value is always taken before the destructors run.
+- JMP-16: every compiler rejects a read before the write during
+  constant evaluation.
+- JMP-11: Clang and GCC elide the copy of a named local at `-O0`. The
+  test accepts zero or one copy. When the function has one `return` of
+  the local, a later destructor's change to the local reaches the
+  caller on both compilers. When two `return` statements name different
+  locals, both compilers copy, and the change does not reach the
+  caller. For a scalar, the value is always taken before the
+  destructors run.
 - JMP-2: Clang and GCC end the objects of the inner block, then those of
   the body, and then evaluate the iteration expression.
+
+### Sources
 
 Inputs: clang-parse-stmt, clang-sema-stmt, clang-diag-sema, edg-
 statements.

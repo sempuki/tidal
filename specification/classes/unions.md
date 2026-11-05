@@ -702,56 +702,109 @@ int y = s.span.range.second;     // 2: Point and Pair are layout-compatible
 The results are in `tests/RESULTS.md`. All eight compilers agree on 151
 of 164 tests.
 
-Two questions on this page settled on 2026-11-04 under decision 0054 after the principle-use batch PU2 (`reports/clean-room/PU2/`). For each, the batch's use of the principle supports the answer, the latest gap review supports it with no doubt, and the principle gives the same answer. Each test keeps its override for the family that still differs:
+### Divergences
 
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0313` | UNI-P4 | EDG 7.0 |
-| {question}`Q-0314` | UNI-P4 | GCC 16 |
+Each settled question below keeps its test's override for the family
+that still differs.
 
-One question on this page settled on 2026-11-04 under decision 0054 after the principle-use batch PU1 (`reports/clean-room/PU1/`). The batch's use of the principle supports the answer, the latest gap review supports it with no doubt, and the principle gives the same answer. The tests keep their overrides for the family that still differs:
+- {question}`Q-0339` (UNI-3, CPY-27; open): whether a member with a
+  trivial and a user-provided copy constructor makes the copy of the
+  union non-trivial when the copy selects the trivial one. The selected
+  constructor decides, so the union's copy constructor stays, as Clang
+  says. GCC and EDG delete it.
+- {question}`Q-0088` (UNI-6; settled on UNI-P1): whether an assignment
+  through a user-provided operator makes an inactive member active
+  during constant evaluation. It does not, so constant evaluation
+  rejects it, as Clang and GCC say. EDG 7.0 accepts the assignment.
+- {question}`Q-0213` (UNI-6, UNI-13; compiler defect): whether an
+  assignment through a chain makes active a member whose default
+  constructor is not trivial. It does not, as Clang and GCC say. EDG
+  accepts the assignment.
+- {question}`Q-0045` (UNI-9; open): whether an anonymous union in an
+  unnamed namespace must be declared `static`. It need not, as Clang
+  says. GCC and EDG reject the declaration.
+- {question}`Q-0309` (UNI-14; compiler defect): whether constant
+  evaluation must reject a read of a union member after an explicit
+  destructor call ends it. It must, as Clang and EDG say. GCC accepts
+  the read and gives 0.
+- {question}`Q-0340` (UNI-15, UNI-16; open): whether two structs are
+  layout-compatible when matching members both have
+  `[[no_unique_address]]`. They are, as GCC's builtin query says.
+  Clang 22's query says they are not. No test shows the property.
+- {question}`Q-0345` (UNI-15, UNI-16; open): whether the members that
+  a base declares count in the common initial sequence. They count, as
+  the builtin queries of Clang 22 and GCC say. The gap review of item O
+  (`reports/review/2026-11-03-gap-review-item-o.md`) finds the reference
+  silent. No family differs in the run test.
+- {question}`Q-0314` (BF-1; settled on UNI-P4): whether a constant of
+  class type with a `constexpr` conversion to `int` gives a bit-field
+  width. It does, as Clang and EDG say. GCC 16 rejects it.
+- {question}`Q-0313` (BF-2; settled on UNI-P4): whether an enumerator of
+  a scoped enumeration gives a bit-field width. It does not, as Clang
+  and GCC say. EDG 7.0 converts it.
+- {question}`Q-0058` (BF-2; settled on UNI-P4): whether an unnamed
+  bit-field can have a cv-qualifier. It cannot, as Clang and EDG say.
+  GCC 16 accepts it.
+- {question}`Q-0120` (BF-9; settled on {principle}`TYP-P3`): whether
+  EDG's 8-byte alignment of `long long` with `-m32` is valid. It is,
+  since the alignment is implementation-defined. EDG with `-m32` starts
+  a `long long` bit-field after 40 bits at bit 64, and Clang and GCC at
+  bit 40.
+- {question}`Q-0372` (BF-9; open): what a byte read gives for the bits
+  of a byte that no bit-field covers. The bits are padding bits with
+  unspecified values, and the read is defined. Clang and GCC at `-O0`
+  leave the bits as the stack held them. The gap review of the rules
+  that phase 7 rewrote
+  (`reports/review/2026-11-04-gap-review-phase-7-repairs.md`) reads the
+  reference as leaving the value of the byte open.
 
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0058` | UNI-P4 | GCC 16 |
+### Split tests
 
-One question on this page settled on 2026-11-04 under decision 0054 after the source-reader gap review of the text phase 8 wrote on classes and overloading (`reports/review/2026-11-04-gap-review-phase-8-classes-overloading.md`). The review used the principle on the question's program, supports the answer with no doubt, and the principle gives the same answer. The test keeps its override for the family that still differs:
+EDG runs no programs, so its cell for a run test gives the result of
+the compile. A test with `-m32` runs on EDG only in its i686
+configuration.
 
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0088` | UNI-P1 | EDG 7.0 |
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `classes/copy-move/trivially-copyable-member-selected.cpp` | CPY-27, CPY-19, UNI-3 | accept | accept | reject | reject | {question}`Q-0339` |
+| `classes/copy-move/trivially-copyable-member-template-selected.cpp` | CPY-27, UNI-11 | reject | reject | reject | accept | {question}`Q-0339` |
+| `anonymous-union-unnamed-namespace.cpp` | UNI-9 | accept | accept | reject | reject | {question}`Q-0045` |
+| `bitfield-next-unit-ilp32.cpp` | BF-9 | accept | accept | accept | reject | {question}`Q-0120` |
+| `bitfield-unnamed-cv.cpp` | BF-2 | reject | reject | accept | reject | {question}`Q-0058` |
+| `bitfield-wide-alignment-128.cpp` | BF-9 | accept | accept | reject | accept | |
+| `bitfield-wide-layout-ilp32.cpp` | BF-9, BF-3 | accept | accept | accept | reject | {question}`Q-0120` |
+| `bitfield-width-class-converts.cpp` | BF-1 | accept | accept | reject | accept | {question}`Q-0314` |
+| `bitfield-width-scoped-enumeration.cpp` | BF-2 | reject | reject | reject | accept | {question}`Q-0313` |
+| `chain-assign-nontrivial-constant.cpp` | UNI-6, UNI-13 | reject | reject | reject | accept | {question}`Q-0213` |
+| `destroyed-member-read-constant.cpp` | UNI-14, UNI-6 | reject | reject | accept | reject | {question}`Q-0309` |
+| `union-copy-two-copy-constructors.cpp` | UNI-3, CPY-27 | accept | accept | reject | reject | {question}`Q-0339` |
+| `user-assignment-not-activating-constant.cpp` | UNI-6 | reject | reject | reject | accept | {question}`Q-0088` |
 
-- UNI-9: Clang accepts an anonymous union without `static` in an unnamed
-  namespace. GCC and EDG reject the declaration ({question}`Q-0045`).
-  UNI-9 follows Clang, and the test records GCC and EDG as overrides.
-- BF-2: GCC accepts a cv-qualifier on an unnamed bit-field. Clang and
-  EDG reject the cv-qualifier ({question}`Q-0058`).
+### Notes
+
 - BF-1, BF-2: every compiler rejects a width of floating-point type.
-  Clang and GCC reject an enumerator of a scoped enumeration as a width,
-  and EDG converts it ({question}`Q-0313`). Clang and EDG convert a width
-  of a class type with a `constexpr` conversion to `int`, and GCC
-  rejects it ({question}`Q-0314`).
 - BF-8: Clang 18 and 22 and GCC 14 and 16 give both warnings by
   default, without `-Wall`, so `-Werror` alone turns them into errors.
   `-pedantic-errors` does not turn them into errors.
 - BF-9: Clang and GCC give the same layouts on x86-64 and with `-m32`.
-  On `-m32` an `unsigned long long` bit-field can start at any multiple
-  of 4 bytes, so a field of 30 bits after 40 bits starts at bit 40. EDG
-  in its i686 configuration aligns `long long` to 8 and starts such a
-  field at bit 64 ({question}`Q-0120`).
 - BF-9, wide bit-fields: every compiler gives the same sizes for
   bit-fields of 40, 64, 65, 128, and 1000 bits, and the same
   alignments up to 64 bits. From 128 bits, GCC aligns the class to 16
   on x86-64, and Clang and EDG align it to 8. In a union, every
   compiler gives a bit-field the bytes that its width needs.
-- BF-9, padding bits: Clang and GCC at `-O0` leave the bits that no
-  bit-field covers as the stack held them, also after `{}`. A byte copy
-  shows bits there that the program did not write
-  ({question}`Q-0372`). The gap review of the rules that phase 7
+- BF-9, padding bits: the gap review of the rules that phase 7
   rewrote (`reports/review/2026-11-04-gap-review-phase-7-repairs.md`)
   reads the reference as making the bits of an unnamed bit-field
-  padding bits, as BF-9 now says, and as leaving the value of a byte
-  read open.
+  padding bits, as BF-9 now says ({question}`Q-0372`).
+- BF-9: Clang, GCC, and EDG give the same sizes and alignments for
+  unnamed bit-fields on x86-64 and with `-m32`.
+- BF-9, BF-10 with `-m32`: the matrix runs no program built with
+  `-m32`, because the host compilers have no 32-bit C library. In the
+  writer's probes, the run tests of the two rules give the same
+  results with `-m32` in the GCC 14, Clang 18, and Clang 22 containers.
+- BF-12: Clang, GCC, and EDG accept a constant evaluation that copies
+  and compares a class with an unnamed bit-field, and a structured
+  binding that has one name for each named bit-field.
 - UNI-15, UNI-P6: the builtin query of Clang and GCC finds two structs
   not layout-compatible when one has an unnamed bit-field that the
   other lacks, of width 0 or not. EDG has no such query. No test checks
@@ -763,34 +816,21 @@ One question on this page settled on 2026-11-04 under decision 0054 after the so
   member of the anonymous union, with or without the union's braces. Every
   compiler rejects a list with two designators that name members of one
   anonymous union.
-- BF-12: Clang, GCC, and EDG accept a constant evaluation that copies
-  and compares a class with an unnamed bit-field, and a structured
-  binding that has one name for each named bit-field.
-- UNI-6: EDG accepts the assignment through a user-provided operator to
-  a member that is not active during constant evaluation. Clang and GCC
-  reject the assignment ({question}`Q-0088`).
 - UNI-6: for a read from a union with no active member, GCC and EDG
   call the member uninitialized. Clang says that the union has no
   active member. For an assignment through a chain that does not make
   the member active (UNI-13), GCC says that the program accesses the
   member instead of the member that is active.
+- UNI-6: the undefined sanitizer of GCC and Clang stops a read of an
+  inactive `bool` member whose bytes hold no valid `bool` value. No
+  sanitizer stops a read whose bytes give a valid value.
 - UNI-14: Clang and GCC accept the constant evaluations in which
   `std::construct_at` makes a member active, and run the placement
-  `new` form with no sanitizer report. After an explicit destructor
-  call on the member, Clang and EDG reject a read of the member during
-  constant evaluation, and GCC accepts the read and gives 0
-  ({question}`Q-0309`). Q-0309 stays open under decision 0051, because
-  on 2026-11-03 GCC 16 still differs from Clang 22 and EDG 7.0.
+  `new` form with no sanitizer report.
 - UNI-13: every compiler accepts the constant evaluations in which an
   assignment through `.` and `[]` makes members of one or two unions
   active. Every compiler rejects a later read of a part that the
-  assignment did not write. For a member whose default constructor is
-  not trivial, Clang and GCC reject the assignment, and EDG accepts it
-  ({question}`Q-0213`).
-- UNI-3: for a member whose class has a trivial copy constructor for a
-  `const` source and a user-provided one for a non-`const` source, Clang
-  keeps the union's copy constructor, and GCC and EDG delete it
-  ({question}`Q-0339`).
+  assignment did not write.
 - UNI-15, UNI-16: no core-language check shows whether two types are
   layout-compatible (inventory item OBS-no-core-layout-compatible). The
   run tests read through the other struct for each kind of match. The
@@ -801,36 +841,23 @@ One question on this page settled on 2026-11-04 under decision 0054 after the so
   unsigned member, members with different alignment, bit-fields of
   different widths, a bit-field and a plain member, an enumeration and
   its underlying type, and two arrays of different struct types do not
-  match. For two structs whose last members both have
-  `[[no_unique_address]]`, GCC's query says layout-compatible and
-  Clang's says not ({question}`Q-0340`).
-- UNI-15: the builtin queries of Clang 22 and GCC call a struct whose
-  base declares all its members layout-compatible with a struct that
-  declares the same members itself (grid row "members from a base"). The
-  run test `common-initial-sequence-inherited.cpp` reads through the
-  other struct on every compiler. The gap review of item O
-  (`reports/review/2026-11-03-gap-review-item-o.md`) finds no statement
-  on members of a base in the reference, so the reading stays
-  provisional ({question}`Q-0345`).
+  match. The one other row is {question}`Q-0340`.
+- UNI-15: the run test `common-initial-sequence-inherited.cpp` reads
+  through the other struct on every compiler, and the grid row
+  "members from a base" matches ({question}`Q-0345`).
 - UNI-10: the sentence on volatile members follows {rule}`VOL-6` and the
   gap review of item O. A `const` member matches a plain one
   (`common-initial-sequence-cv.cpp`). The grid row "cv on one member"
   matches a `volatile` member with a plain one.
-- BF-9: Clang, GCC, and EDG give the same sizes and alignments for
-  unnamed bit-fields on x86-64 and with `-m32`.
-- Sources: UNI-15 and UNI-16 come from the grid `layout-compatible.json`
-  and the inventory items LC-alignment, LC-arrays, LC-bit-fields,
-  LC-classes, LC-cv, LC-enumerations, LC-inherited-members,
-  LC-overlap-mark, LC-prefix, and LC-unions. The UNI-10 wording comes
-  from item LC-union-read. The BF-9 bullet comes from items
-  LAY-bit-field-alignment and LAY-bit-field-zero-width and the tests.
-- UNI-6: the undefined sanitizer of GCC and Clang stops a read of an
-  inactive `bool` member whose bytes hold no valid `bool` value. No
-  sanitizer stops a read whose bytes give a valid value.
-- BF-9, BF-10 with `-m32`: the matrix runs no program built with
-  `-m32`, because the host compilers have no 32-bit C library. In the
-  writer's probes, the run tests of the two rules give the same
-  results with `-m32` in the GCC 14, Clang 18, and Clang 22 containers.
+
+### Sources
+
+UNI-15 and UNI-16 come from the grid `layout-compatible.json` and the
+inventory items LC-alignment, LC-arrays, LC-bit-fields, LC-classes,
+LC-cv, LC-enumerations, LC-inherited-members, LC-overlap-mark,
+LC-prefix, and LC-unions. The UNI-10 wording comes from item
+LC-union-read. The BF-9 notes come from items LAY-bit-field-alignment
+and LAY-bit-field-zero-width and the tests.
 
 Inputs: clang-sema-decl, clang-sema-declcxx, clang-sema-init,
 clang-diag-sema, edg-class-decl.

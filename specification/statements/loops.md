@@ -165,14 +165,29 @@ do {} while (int x = 0);      // rejected: do needs an expression
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`.
+The results are in `tests/RESULTS.md`. EDG does not link, so its cell for a run test gives the result of the
+compile.
+
+### Divergences
+
+- {question}`Q-0044` (LOOP-3; compiler defect): whether a `for`
+  condition variable is destroyed before or after the iteration
+  expression. It is destroyed after, as Clang and GCC 16 do at run time.
+  GCC 14 destroys it before. During constant evaluation EDG destroys it
+  before the body.
+
+### Split tests
+
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `for-condition-destroyed-after-step.cpp` | LOOP-3 | run | run | GCC 16: run; GCC 14: run-fail | accept | {question}`Q-0044` |
+
+### Notes
 
 - LOOP-1: Clang and GCC destroy the objects of a `while` body, then
   the condition variable, in each iteration.
-- LOOP-3: GCC 14 destroys a `for` condition variable before the iteration
-  expression. GCC 16 and Clang destroy the variable after. EDG does not
-  run the test. During constant evaluation EDG destroys the variable
-  before the body ({question}`Q-0044`).
+
+### Sources
 
 Inputs: clang-parse-stmt, clang-sema-stmt, clang-diag-sema, edg-
 statements.

@@ -18,6 +18,8 @@ yields that class.
 | a built-in `<=>` on two `int` parameters, evaluated at run time | accept | accept |
 | a defaulted `<=>` whose members are `int`, called at run time | accept | reject |
 
+EDG also accepts a built-in `<=>` with one class declared when the
+comparison stands in an unevaluated operand.
 EDG's message names each class that the program does not declare. Clang
 18 and GCC 14 accept the three programs, as Clang 22 and GCC 16 do.
 

@@ -836,38 +836,62 @@ template <class U> int pick(Host);                // rejected: the same template
 The results are in `tests/RESULTS.md`. All eight compilers agree on 119
 of 131 tests.
 
-One question on this page settled on 2026-11-04 under decision 0054 after the source-reader gap review of the text phase 8 wrote on expressions, foundations, and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`) and the one on declarations and statements (`reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+### Divergences
 
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0385` | CNS-P5 | EDG 7.0 |
+Q-0195, Q-0197, and Q-0198 belong to the cluster of EDG differences
+(cluster 5), which waits on the maintainer
+(`documentation/decisions/pending.md`). Reporting the EDG difference of
+Q-0198 to the EDG project waits on the maintainer too.
 
-Two questions on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+- {question}`Q-0296` (TPL-14; settled on TPL-P3): whether a later
+  declaration whose new default comes before a parameter that no
+  declaration gives a default is rejected. It is, as Clang and EDG say.
+  GCC checks only the defaults of one declaration and accepts it.
+- {question}`Q-0385` (TPL-23, CNS-26; settled on CNS-P5): whether a
+  member defined after the body of a constrained class template repeats
+  the requires clause of the class's head. It does, as Clang and GCC
+  say. EDG 7.0 accepts a definition without the clause.
+- {question}`Q-0195` (TPL-35, TPL-36; open): whether an implementation
+  must reject a function template parameter after a pack that deduction
+  cannot find. It must, as EDG does. Clang and GCC accept the
+  declaration.
+- {question}`Q-0196` (TPL-37; open): whether a friend declaration of a
+  class template can give a default template argument. It cannot, as
+  Clang and EDG say. GCC accepts the default.
+- {question}`Q-0197` (TPL-38; open): whether an implementation must
+  reject another declaration of a friend function template that gives
+  a default, before or after the class. It must, as EDG does. Clang and
+  GCC accept the program.
+- {question}`Q-0198` (TPL-48; open): whether a friend function in a
+  class template can have the name of a template parameter. A friend
+  declaration can, as Clang and GCC say. EDG rejects it when the
+  program uses the class template.
+- {question}`Q-0199` (TPL-42; settled on TPL-P5): whether a member
+  enumeration of a class template can be defined after the class body.
+  It can, as Clang and EDG say. GCC rejects each such definition under
+  `-pedantic-errors`, so every test of TPL-42 has an override for GCC.
+- {question}`Q-0200` (TPL-46; open): whether two uses of one alias
+  template specialization with a lambda give one closure type. They do,
+  as GCC and EDG say. Clang gives two closure types.
 
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0199` | TPL-P5 | GCC 16 |
-| {question}`Q-0296` | TPL-P3 | GCC 16 |
+### Split tests
 
-The questions of the cluster of EDG differences (cluster 5) on this page
-stay open under decision 0051: {question}`Q-0195`, {question}`Q-0197`,
-and {question}`Q-0198`. On 2026-11-03, EDG 7.0 follows the provisional
-answer of Q-0195 and Q-0197, and Clang 22 and GCC 16 differ. Clang 22
-and GCC 16 follow the provisional answer of Q-0198, and EDG 7.0
-differs. The source-reader gap review of the cluster
-(`reports/review/2026-11-03-gap-review-question-cluster-5.md`) reads
-TPL-35 and TPL-38 as rules that need a diagnostic, and the two rules
-follow that reading. Reporting the EDG difference of Q-0198 to the EDG
-project waits on the maintainer.
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `alias-template-lambda-same.cpp` | TPL-46 | accept | reject | accept | accept | {question}`Q-0200` |
+| `default-friend-class.cpp` | TPL-37 | reject | reject | accept | reject | {question}`Q-0196` |
+| `default-friend-declared-before.cpp` | TPL-38 | reject | accept | accept | reject | {question}`Q-0197` |
+| `default-friend-redeclared.cpp` | TPL-38 | reject | accept | accept | reject | {question}`Q-0197` |
+| `defaults-merge-gap.cpp` | TPL-14 | reject | reject | accept | reject | {question}`Q-0296` |
+| `member-enum-outside-unscoped.cpp` | TPL-42 | accept | accept | reject | accept | {question}`Q-0199` |
+| `member-enum-outside.cpp` | TPL-42 | accept | accept | reject | accept | {question}`Q-0199` |
+| `member-outside-clause-missing.cpp` | TPL-23, CNS-26 | reject | reject | reject | accept | {question}`Q-0385` |
+| `pack-then-not-deducible.cpp` | TPL-35 | reject | accept | accept | reject | {question}`Q-0195` |
+| `pack-then-pack-not-deducible.cpp` | TPL-35 | reject | accept | accept | reject | {question}`Q-0195` |
+| `pack-then-typed-pack-not-deducible.cpp` | TPL-35, TPL-36 | reject | accept | accept | reject | {question}`Q-0195` |
+| `parameter-friend-name.cpp` | TPL-48 | accept | accept | accept | reject | {question}`Q-0198` |
 
-The clean-room writer probed each kind of template, each kind of
-parameter, the defaults, and the redeclarations with Clang 22, GCC 16,
-and EDG 7.0, and checked the tests on the eight baseline compilers. The
-compilers agree on every test on this page except the ones that the
-bullets below name. The list of reject rules follows the diagnostics in
-the sanitized Clang sources. The gap review of the chapter
-(`reports/review/2026-10-31-gap-review-templates-n1.md`) gave the
-probes for TPL-32 to TPL-47 and for the additions to the older rules.
+### Notes
 
 - TPL-2: Clang 18 gives a parse error for a template in a block, and the
   other compilers say that a template is not allowed there.
@@ -875,60 +899,43 @@ probes for TPL-32 to TPL-47 and for the additions to the older rules.
   second declarator with a parse error. Clang and EDG reject a variable
   after a class template definition with a parse error, and GCC names
   the condition.
-- TPL-14: Clang and EDG reject a later declaration whose default comes
-  before a parameter that no declaration gives a default. GCC checks
-  only the defaults on one declaration and accepts it
-  ({question}`Q-0296`). Every compiler accepts declarations that give
-  the defaults from right to left (`defaults-merge-gap-later.cpp`).
-- TPL-23, CNS-26: Clang and GCC reject a member defined after the
-  body of a constrained class template when the definition leaves out
-  the requires clause of the head. EDG 7.0 accepts it, and rejects a
-  definition that leaves out the type constraint
-  ({question}`Q-0385`).
-- TPL-35: Clang and GCC accept a function template whose parameter after
-  a pack has no default and no deduction. EDG rejects the declaration
-  ({question}`Q-0195`). The same split holds for a second type pack
-  after the first that no function parameter uses, and for a constant
-  pack whose type is the type pack before it. Every compiler accepts a
-  second type pack that a function parameter pack at the end uses
-  (`pack-then-deducible.cpp`). The rule is a `reject` rule, as TPL-30 is, because the
-  head and the function parameters alone break it. No argument list
-  takes part, so DEP-32 does not cover it.
-- TPL-37: the result depends on the form of the friend:
-
-  | Friend | Clang | GCC | EDG |
-  |---|---|---|---|
-  | class template, with a default | rejects | accepts | rejects |
-  | function template declaration, with a default | rejects | rejects | rejects |
-  | function template definition, with a default | accepts | accepts | accepts |
-
-  The split is in `default-friend-class.cpp` ({question}`Q-0196`).
-  `default-friend-declaration.cpp` and `default-friend-definition.cpp`
-  test the other two rows ({rule}`TPL-38`).
+- TPL-14: every compiler accepts declarations that give the defaults
+  from right to left (`defaults-merge-gap-later.cpp`).
+- TPL-35: every compiler accepts a second type pack that a function
+  parameter pack at the end uses (`pack-then-deducible.cpp`). The rule
+  is a `reject` rule, as TPL-30 is, because the head and the function
+  parameters alone break it. No argument list takes part, so DEP-32
+  does not cover it.
+- TPL-36: a constant pack whose type is a type pack of the same head
+  follows a pack, so in a class template all compilers report TPL-30.
+  In a function template, the pack after the type pack breaks TPL-35
+  (`pack-then-typed-pack-not-deducible.cpp`).
+- TPL-37, TPL-38: every compiler rejects a default on a friend function
+  template declaration that is not a definition
+  (`default-friend-declaration.cpp`), and accepts a default on a friend
+  function template definition (`default-friend-definition.cpp`).
+- TPL-38 is a `reject` rule, as TPL-16 and TPL-37 are, because both
+  declarations are in one translation unit.
 - TPL-40: every compiler rejects `C<>` in a member definition whose head
   gives `C` no inner default, also when the class is never
   instantiated.
-- TPL-38: EDG rejects another declaration of a friend function template
-  that gives a default, before or after the class. Clang and GCC accept
-  it ({question}`Q-0197`). The rule is a `reject` rule, as TPL-16 and
-  TPL-37 are, because both declarations are in one translation unit.
-- TPL-48: EDG rejects a friend function named after a parameter when the
-  class template is used. Clang and GCC accept the friend declaration
-  ({question}`Q-0198`). Every compiler accepts the class template
-  while no specialization is made.
-- TPL-42: GCC rejects a member enumeration defined after the class body
-  under `-pedantic-errors`. Clang and EDG accept it ({question}`Q-0199`).
-  GCC rejects each such definition, also in a class template with only a
-  scoped member enumeration. So every test of TPL-42 needs an override
-  for GCC.
-- TPL-46: Clang gives two closure types for two uses of one alias
-  template specialization. GCC and EDG give one ({question}`Q-0200`).
-- TPL-36: a constant pack whose type is a type pack of the same head
-  follows a pack, so in a class template all compilers report TPL-30.
-  In a function template, the pack after the type pack breaks TPL-35.
-  EDG rejects the head, and Clang and GCC accept it
-  (`pack-then-typed-pack-not-deducible.cpp`).
 - TPL-45: the plain function has no definition, so the link fails on
   every compiler that links. The template's body is never used for it.
+- TPL-48: every compiler accepts the class template while no
+  specialization is made.
+
+### Sources
+
+The clean-room writer probed each kind of template, each kind of
+parameter, the defaults, and the redeclarations with Clang 22, GCC 16,
+and EDG 7.0, and checked the tests on the eight baseline compilers. The
+list of reject rules follows the diagnostics in the sanitized Clang
+sources. The gap review of the chapter
+(`reports/review/2026-10-31-gap-review-templates-n1.md`) gave the
+probes for TPL-32 to TPL-47 and for the additions to the older rules.
+The source-reader gap review of question cluster 5
+(`reports/review/2026-11-03-gap-review-question-cluster-5.md`) reads
+TPL-35 and TPL-38 as rules that need a diagnostic, and the two rules
+follow that reading.
 
 Inputs: clang-diag-sema, clang-diag-parse.

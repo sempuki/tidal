@@ -298,23 +298,36 @@ Reading r = live;        // valid: the constructor binds Sensor&, which
 The results are in `tests/RESULTS.md`. All eight compilers agree on 64
 of 66 tests.
 
-Two questions on this page settled on 2026-11-04 under decision 0054 after the principle-use batch PU1 (`reports/clean-room/PU1/`). For each, the batch's use of the principle supports the answer, the latest gap review supports it with no doubt, and the principle gives the same answer. Each test keeps its override for the family that still differs:
+### Divergences
 
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0059` | CVF-P1 | GCC 16, under `-pedantic-errors` |
-| {question}`Q-0388` | CVF-P1 | EDG 7.0 |
+- {question}`Q-0059` (CVF-1; settled on CVF-P1): whether a conversion
+  function can have a deduced return type, as in `operator auto()`. It
+  can, as GCC 14, Clang, and EDG say. GCC 16 rejects it under
+  `-pedantic-errors`.
+- {question}`Q-0388` (CVF-7; settled on CVF-P1): whether a conversion
+  function template can have `auto` as its name. It cannot, as Clang
+  and GCC 16 say, and GCC gives the message of Q-0059 for it. EDG
+  accepts the template and warns that its parameter is unused, and GCC
+  14 accepts it.
 
-- CVF-1: GCC 16 rejects `operator auto()` under `-pedantic-errors`. GCC
-  14, Clang, and EDG accept it ({question}`Q-0059`).
-- CVF-7: Clang and GCC reject a conversion function template named
-  `auto`. GCC gives the message of Q-0059 for it. EDG accepts the
-  template and warns that its parameter is unused
-  ({question}`Q-0388`).
+### Split tests
+
+EDG runs no programs, so its cell for a run test gives the result of
+the compile.
+
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `deduced-auto.cpp` | CVF-1 | run | run | GCC 16: reject; GCC 14: run | accept | {question}`Q-0059` |
+| `template-deduced-auto.cpp` | CVF-7 | reject | reject | GCC 16: reject; GCC 14: accept | accept | {question}`Q-0388` |
+
+### Notes
+
 - CVF-6: Clang and GCC give these warnings by default.
 - CVF-11: Clang, GCC, and EDG report a built-in operator whose operand
   needs an `explicit` conversion function as an operator with no match
   for its operands. The messages do not name the conversion function.
+
+### Sources
 
 Inputs: clang-sema-declcxx, clang-sema-init, clang-diag-sema,
 edg-class-decl, edg-overload.

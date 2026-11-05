@@ -673,77 +673,101 @@ Span g{{1}};   // Span(int): {1} gives an int directly (ICS-15). The
 The results are in `tests/RESULTS.md`. All eight compilers agree on 179
 of 200 tests.
 
-Two questions on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on classes and statements (`reports/review/2026-11-03-gap-review-questions-classes-statements.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+### Divergences
 
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0053` | CTOR-P6 | none; CTOR-14 needs no diagnostic |
-| {question}`Q-0054` | CTOR-P4 | EDG 7.0 |
+- {question}`Q-0374` (CTOR-12, OBJ-2; open): whether a call of a member
+  function on a member subobject that is not yet initialized is
+  undefined when the function reads nothing. It is, and constant
+  evaluation rejects it, as Clang does. GCC and EDG accept the call.
+- {question}`Q-0053` (CTOR-14; settled on CTOR-P6): whether an
+  implementation must diagnose an indirect delegation cycle. It need
+  not, and CTOR-14 needs no diagnostic. GCC accepts the cycle, which
+  the rule allows, so no family differs.
+- {question}`Q-0084` (CTOR-17; open): whether an implementation must
+  reject a constructor that binds a reference member, or an
+  `std::initializer_list` member, to a temporary. It must, as Clang
+  does. GCC accepts with a warning, and EDG accepts.
+- {question}`Q-0083` (CTOR-18; open): whether a default member
+  initializer of a nested class can be used before the enclosing class
+  is complete. It cannot, as Clang and GCC say. EDG accepts the use.
+- {question}`Q-0126` (CTOR-4, CTOR-24; open): when a union or an
+  anonymous union gives its members a value for a `const` object
+  without an initializer. A union gives a value when a default member
+  initializer is on one of its variant members, as Clang 22 says.
+  Clang 18, GCC, and EDG each differ in some forms, and the question
+  gives the table.
+- {question}`Q-0082` (DTOR-3; open): whether `new` can create an array
+  of a class whose destructor is deleted. It cannot, as Clang says. GCC
+  and EDG accept the array `new`.
+- {question}`Q-0054` (DTOR-7; settled on CTOR-P4): whether constant
+  evaluation rejects a second destruction. It does, also for a trivial
+  destructor and for a parameter that the called function destroyed.
+  EDG accepts the second destruction.
+- {question}`Q-0041` (JMP-6, SW-5; open): whether a jump can skip a
+  class object with a trivial default constructor and a non-trivial
+  destructor. It can, as GCC says. Clang and EDG reject the jump. The
+  CTOR-23 and DTOR-9 tests use a union for the destructor, so the
+  question does not touch them.
+
+### Split tests
+
+EDG runs no programs, so its cell for a run test gives the result of
+the compile. EDG skips the sanitizer tests.
+
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `base-init-calls-member-early-sanitizer.cpp` | CTOR-12 | run-fail | run | run-fail | skips | |
+| `base-init-calls-member-indirectly-sanitizer.cpp` | CTOR-12 | run-fail | run | run-fail | skips | |
+| `base-init-calls-member-of-member-constant.cpp` | CTOR-12, OBJ-2 | reject | reject | accept | accept | {question}`Q-0374` |
+| `base-init-calls-member-through-pointer-sanitizer.cpp` | CTOR-12 | run-fail | run | run-fail | skips | |
+| `const-object-anonymous-union-init.cpp` | CTOR-24 | run | Clang 22: run; Clang 18: reject | run | accept | {question}`Q-0126` |
+| `const-object-anonymous-union-no-init.cpp` | CTOR-24 | reject | reject | accept | reject | {question}`Q-0126` |
+| `const-object-only-anonymous-unions.cpp` | CTOR-24 | reject | reject | accept | accept | {question}`Q-0126` |
+| `const-object-union-member-init.cpp` | CTOR-24 | run | Clang 22: run; Clang 18: reject | reject | accept | {question}`Q-0126` |
+| `delegating-cycle-three.cpp` | CTOR-14 | reject | reject | accept | reject | {question}`Q-0053` |
+| `delegating-cycle.cpp` | CTOR-14 | reject | reject | accept | reject | {question}`Q-0053` |
+| `delete-array-deleted-dtor.cpp` | DTOR-3 | reject | reject | accept | accept | {question}`Q-0082` |
+| `double-destroy-constant.cpp` | DTOR-7 | reject | reject | reject | accept | {question}`Q-0054` |
+| `double-destroy-trivial-constant.cpp` | DTOR-7 | reject | reject | reject | accept | {question}`Q-0054` |
+| `initializer-list-default-member-from-braces.cpp` | CTOR-17 | reject | reject | accept | accept | {question}`Q-0084` |
+| `initializer-list-member-from-braces.cpp` | CTOR-17 | reject | reject | accept | accept | {question}`Q-0084` |
+| `nested-default-member-init-before-complete.cpp` | CTOR-18 | reject | reject | reject | accept | {question}`Q-0083` |
+| `nested-default-member-init-read-in-default-argument.cpp` | CTOR-18 | reject | reject | reject | accept | {question}`Q-0083` |
+| `parameter-destroyed-by-callee-constant.cpp` | DTOR-7, VC-10 | reject | reject | reject | accept | {question}`Q-0054` |
+| `reference-default-member-binds-temporary.cpp` | CTOR-17 | reject | reject | accept | accept | {question}`Q-0084` |
+| `reference-member-binds-converted-parameter.cpp` | CTOR-17 | reject | reject | accept | accept | {question}`Q-0084` |
+| `reference-member-binds-temporary.cpp` | CTOR-17 | reject | reject | accept | accept | {question}`Q-0084` |
+
+### Notes
 
 - CTOR-23 and DTOR-9: the tests observe triviality through JMP-6 and
   UNI-3. A jump past a declaration is valid only for a trivial default
   constructor (JMP-6), and a union's special member is deleted when a
   member's is not trivial (UNI-3). The destructor tests use the union,
-  because JMP-6 does not look at the destructor ({question}`Q-0041`).
-
-- CTOR-14: Clang and EDG reject an indirect delegation cycle. GCC accepts
-  it ({question}`Q-0053`).
-  CTOR-14 needs no diagnostic. Every test of CTOR-14 has an override,
-  and each override records a result that the class allows.
-- DTOR-7: EDG 7.0 accepts a second destruction during constant evaluation
-  ({question}`Q-0054`). Clang and GCC reject it for a trivial destructor
-  too, and for a parameter object that the called function destroyed
-  before the caller ends it.
-- DTOR-3: Clang rejects an array `new` of a class with a deleted
-  destructor. GCC and EDG accept it ({question}`Q-0082`). The rule
-  follows Clang and the source-reader gap review of the open questions
-  on classes and statements
-  (`reports/review/2026-11-03-gap-review-questions-classes-statements.md`),
-  and the test records GCC and EDG as overrides.
-- CTOR-18: EDG accepts the nested default member initializer. Clang and
-  GCC reject it ({question}`Q-0083`).
-  EDG also accepts the nested initializer in the initializer of a static
-  data member, in the operand of `noexcept`, and in the bound of a
-  member array. So every test of CTOR-18 needs an override for EDG.
-- CTOR-17: Clang rejects the binding. GCC accepts it with a warning, and
-  EDG accepts it ({question}`Q-0084`). CTOR-17 is a `reject` rule,
-  because the binding is visible where the constructor or the class is
-  defined. The tests record GCC and EDG as overrides. The gap review of
-  the rules that phase 7 added
+  because JMP-6 does not look at the destructor.
+- CTOR-14: every test of CTOR-14 has an override, and each override
+  records a result that the class allows.
+- DTOR-3: the rule follows Clang and the source-reader gap review of
+  the open questions on classes and statements
+  (`reports/review/2026-11-03-gap-review-questions-classes-statements.md`).
+- CTOR-17: CTOR-17 is a `reject` rule, because the binding is visible
+  where the constructor or the class is defined. The gap review of the
+  rules that phase 7 added
   (`reports/review/2026-11-04-gap-review-phase-7-additions.md`) reads
   the reference as treating an `std::initializer_list` member set from
-  a braced list in the same way. The compilers split in the same way:
-  Clang rejects both forms, and GCC and EDG accept them.
-  In `reference-default-member-read-constant.cpp` constant evaluation
-  reads the member after its temporary ends, and every compiler rejects
-  the program. GCC and EDG reject the read ({rule}`CE-9`).
-  Clang rejects a default member initializer of a reference member only
-  at a constructor that uses the initializer, and the implicit default
-  constructor counts when the program uses it. Every compiler accepts a
-  class whose constructor gives the member its own `mem_init`
-  (`reference-default-member-unused.cpp`) and an aggregate whose
-  initialization gives the member a value
-  (`reference-default-member-aggregate-value.cpp`). Every compiler also
-  accepts an aggregate initialization that leaves the member to its
-  default member initializer, and Clang and GCC run it with the
-  temporary still alive. The gap review of the text phase 8 wrote
-  (`reports/review/2026-11-04-gap-review-phase-8-classes-overloading.md`)
-  finds that the reference does not name this case. In constant
-  evaluation, Clang and GCC accept a read of the member, and EDG
-  rejects it. No test checks that read.
-- CTOR-24: the compilers differ for unions and anonymous unions
-  ({question}`Q-0126`):
-
-  | Case | CTOR-24 and the test | Clang 22 | Clang 18 | GCC | EDG |
-  |---|---|---|---|---|---|
-  | Union, one variant member with a default member initializer | accepts | accepts | rejects | rejects | accepts |
-  | Anonymous union with such a member, beside another member | accepts | accepts | rejects | accepts | accepts |
-  | Anonymous union without one, beside another member | rejects | rejects | rejects | accepts | rejects |
-  | Only anonymous unions, none with a default member initializer | rejects | rejects | rejects | accepts | accepts |
-
-  The second column gives the provisional answer of {question}`Q-0126`,
-  which each test expects. Each test records the compilers that differ
-  from that answer as overrides.
+  a braced list as a reference member.
+- CTOR-17: in `reference-default-member-read-constant.cpp` constant
+  evaluation reads the member after its temporary ends, and every
+  compiler rejects the program. GCC and EDG reject the read
+  ({rule}`CE-9`). Clang rejects a default member initializer of a
+  reference member only at a constructor that uses the initializer, and
+  the implicit default constructor counts when the program uses it.
+  Every compiler accepts a class whose constructor gives the member its
+  own `mem_init` (`reference-default-member-unused.cpp`) and an
+  aggregate whose initialization gives the member a value
+  (`reference-default-member-aggregate-value.cpp`).
+- CTOR-24: each test expects the provisional answer of Q-0126 and
+  records the compilers that differ from it as overrides.
 - DTOR-3: all compilers reject each prvalue of the class, also where no
   temporary is made, as in `return S{};`. All reject the prvalue in the
   operand of `sizeof`, `noexcept`, and `typeid`, and in `decltype(S{})`.
@@ -774,15 +798,14 @@ Two questions on this page settled on 2026-11-03 under decision 0054 after the s
   also rejects the `dynamic_cast` after the base is initialized. At run
   time neither `vptr` sanitizer reports the `dynamic_cast`. The GCC
   build crashes, and the Clang build runs to the end.
-  In constant evaluation, no compiler rejects the early
-  call of a member function that reads no member. For a call on a
-  member subobject that is not yet initialized, Clang rejects the
-  constant evaluation, and GCC and EDG accept it
-  ({question}`Q-0374`).
+- CTOR-12: in constant evaluation, no compiler rejects the early call
+  of a member function that reads no member.
 - DTOR-7: the address sanitizer of GCC and Clang stops a second
   destruction whose destructor frees storage. The `vptr` sanitizer of
   GCC stops a member call after the destructor, and the Clang
   sanitizer does not.
+
+### Sources
 
 Inputs: clang-sema-declcxx, clang-sema-init, clang-diag-sema,
 edg-class-decl, edg-decl-inits.

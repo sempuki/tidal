@@ -78,10 +78,10 @@ page has something for it.
 A page with notes and no other part keeps its note bullets under the
 agreement paragraph with no heading. `tools/check_specification.py`
 fails when a page's Evidence has a `###` heading that this table does
-not name, or names two parts out of order. The check warns, in one
-line, for each page that names a question in Evidence and has no
-`### Divergences` heading. Such a page keeps the older form, with the
-divergences among the note bullets. `tools/status_table.py` gives the
+not name, or names two parts out of order. The check also fails when
+a page names a question in Evidence and has no `### Divergences`
+heading, or when Divergences has no line of its own for a question that
+Evidence names. `tools/status_table.py` gives the
 words of each page's Evidence in the status table.
 
 ### Divergences

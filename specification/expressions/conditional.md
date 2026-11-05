@@ -323,12 +323,34 @@ int m = larger(x, y);          // fine: x and y outlive the call
 All eight compilers agree on 62 of 67 tests. The results are in
 `tests/RESULTS.md`.
 
-Two questions on this page settled on 2026-11-04 under decision 0054 after the source-reader gap review of the text phase 8 wrote on expressions, foundations, and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+### Divergences
 
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0102` | COND-P2 | GCC 16 |
-| {question}`Q-0373` | COND-P2 | GCC 16 for a scoped enumeration, EDG 7.0 for `float` |
+- {question}`Q-0102` (COND-3; settled on COND-P2): whether a
+  conditional with the literal `0` and `nullptr` has the type of
+  `nullptr`. It has, as Clang and EDG say. GCC rejects the conditional.
+- {question}`Q-0373` (COND-11; settled on COND-P2): which built-in
+  candidates `?:` has for two class operands that convert to a scoped
+  enumeration or to `float`. Every pair of promoted arithmetic types,
+  `float` among them, and one candidate for each scoped enumeration, as
+  Clang says. GCC rejects the scoped enumeration, and EDG gives
+  `double` for `float`.
+- {question}`Q-0378` (COND-16, COND-3, COND-5; open): which class
+  operands of `?:` convert in two forms. A deleted conversion function
+  counts, as GCC and EDG say, and Clang leaves it out and accepts. A
+  `const` and a `volatile` lvalue of one class type do not convert, as
+  Clang and GCC say, and EDG accepts.
+
+### Split tests
+
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `class-const-and-volatile-lvalues.cpp` | COND-16, COND-3, COND-5 | reject | reject | reject | accept | {question}`Q-0378` |
+| `class-deleted-conversion-counts.cpp` | COND-16, COND-5 | reject | accept | reject | reject | {question}`Q-0378` |
+| `two-classes-float.cpp` | COND-11 | accept | accept | accept | reject | {question}`Q-0373` |
+| `two-classes-scoped-enumeration.cpp` | COND-11 | accept | accept | reject | accept | {question}`Q-0373` |
+| `zero-and-nullptr.cpp` | COND-3 | accept | accept | reject | accept | {question}`Q-0102` |
+
+### Notes
 
 - COND-6: Clang and GCC accept `a ?: b` as an extension, and reject the
   form under `-pedantic-errors`. EDG rejects the form in all modes.
@@ -337,14 +359,8 @@ Two questions on this page settled on 2026-11-04 under decision 0054 after the s
   GCC warns of an enumeration mismatch (`-Wenum-compare`). Both warnings
   are on by default, and `-pedantic-errors` does not make them errors.
   Every compiler accepts the program in strict mode.
-- COND-3: GCC rejects a conditional with the literal `0` and `nullptr`.
-  Clang and EDG accept the conditional ({question}`Q-0102`).
-- COND-11: for two classes that convert to one scoped enumeration,
-  Clang and EDG give the enumeration. GCC has no candidate for a scoped
-  enumeration and rejects the expression. For two classes that convert
-  to `float`, Clang and GCC give `float`, and EDG gives `double`. Every
-  compiler gives `int` for two classes that convert to one unscoped
-  enumeration ({question}`Q-0373`).
+- COND-11: every compiler gives `int` for two classes that convert to
+  one unscoped enumeration.
 - COND-16: the gap reviews of the text phase 7 wrote
   (`reports/review/2026-11-04-gap-review-phase-7-additions.md` and
   `reports/review/2026-11-04-gap-review-phase-7-repairs.md`) read the
@@ -352,10 +368,7 @@ Two questions on this page settled on 2026-11-04 under decision 0054 after the s
   class, and the test that ignores access and deleted functions. Every
   newest compiler gives the targets of the table, converts an `int` to
   a class through a constructor, and counts a private conversion
-  function. For a deleted conversion function, GCC and EDG count the
-  conversion and reject, and Clang leaves it out and accepts. For a
-  `const` and a `volatile` lvalue of one class type, Clang and GCC
-  reject, and EDG accepts ({question}`Q-0378`).
+  function.
 - COND-16: the gap review of the text phase 8 wrote on expressions
   (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`)
   reads the base-class row with no cv condition. The probes found no
@@ -363,5 +376,7 @@ Two questions on this page settled on 2026-11-04 under decision 0054 after the s
   operand never converts to its derived class on any newest compiler,
   not even through a converting constructor. The row follows the review,
   and the new row records the base class operand.
+
+### Sources
 
 Inputs: clang-sema-expr, clang-diag-sema.

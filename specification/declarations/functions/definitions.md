@@ -299,11 +299,48 @@ void name() {
 All eight compilers agree on 50 of 63 tests. The results are in
 `tests/RESULTS.md`.
 
-One question on this page settled on 2026-11-04 under decision 0054 after the principle-use batch PU1 (`reports/clean-room/PU1/`). The batch's use of the principle supports the answer, the latest gap review supports it with no doubt, and the principle gives the same answer. The tests keep their overrides for the family that still differs:
+### Divergences
 
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0022` | FN-P5 | Clang 22 |
+- {question}`Q-0022` (FN-5; settled on FN-P5): whether `__func__`
+  outside a function is rejected. It is, as GCC and EDG say. Clang
+  accepts the use with a warning.
+- {question}`Q-0024` (FN-6, TR-3; settled on TR-P3): which parameter
+  lists `main` can have. Every implementation accepts `()` and
+  `(int, char**)`, and the other lists are its own choice. GCC rejects
+  `(int)`, and EDG accepts every list, which the answer allows. No
+  family differs.
+- {question}`Q-0076` (FN-4; settled): whether `main` can have C
+  language linkage in a namespace. It cannot, as the newest version of
+  each family says. GCC 14 and Clang 18 accept it, and no newest family
+  differs.
+- {question}`Q-0369` (LSP-4, FN-14; open): whether C names with
+  internal linkage in two namespaces are one entity, and whether a C
+  name in an unnamed namespace joins the C names of its spelling. The
+  names are two entities, and a C name in an unnamed namespace joins
+  the others, as Clang and GCC say. EDG accepts a second definition of
+  such a name in another namespace.
+
+### Split tests
+
+EDG skips the tests that use `-Wall` or `-Werror`.
+
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `c-linkage-main-in-namespace.cpp` | FN-4 | reject | Clang 22: reject; Clang 18: accept | GCC 16: reject; GCC 14: accept | reject | {question}`Q-0076` |
+| `flow-off-end-goto-loop.cpp` | FN-7 | accept | accept | reject | skips | |
+| `func-outside-function.cpp` | FN-5 | reject | accept | reject | reject | {question}`Q-0022` |
+| `main-four-params-ilp32.cpp` | FN-6 | reject | reject | reject | accept | {question}`Q-0024` |
+| `main-four-params.cpp` | FN-6 | reject | reject | reject | accept | {question}`Q-0024` |
+| `main-one-param-ilp32.cpp` | FN-6 | accept | accept | reject | accept | {question}`Q-0024` |
+| `main-one-param.cpp` | FN-6 | accept | accept | reject | accept | {question}`Q-0024` |
+| `main-wrong-first-param-ilp32.cpp` | FN-6 | reject | reject | reject | accept | {question}`Q-0024` |
+| `main-wrong-first-param.cpp` | FN-6 | reject | reject | reject | accept | {question}`Q-0024` |
+| `switch-every-enumerator-no-return.cpp` | FN-7 | reject | accept | reject | skips | |
+| `declarations/linkage-specifications/c-name-unnamed-namespace-redefined.cpp` | LSP-4, FN-14 | reject | reject | reject | accept | {question}`Q-0369` |
+| `foundations/translation/main-wrong-parameter-types-ilp32.cpp` | FN-6 | reject | reject | reject | accept | {question}`Q-0024` |
+| `foundations/translation/main-wrong-parameter-types.cpp` | TR-3, FN-6 | reject | reject | reject | accept | {question}`Q-0024` |
+
+### Notes
 
 - FN-3: all compilers reject a call that reaches the end of the function
   during constant evaluation. At run time, the undefined behavior
@@ -318,24 +355,21 @@ One question on this page settled on 2026-11-04 under decision 0054 after the pr
   {doc}`/foundations/translation` gives the flags for the other cases.
 - FN-4: Clang and GCC reject calls to `main` and its address only as
   pedantic diagnostics. EDG rejects them in all modes.
-- FN-5: Clang accepts `__func__` outside a function with a warning. GCC
-  and EDG reject such a use ({question}`Q-0022`). Every compiler accepts
-  `__func__` in the member initializers of a constructor. The gap review
-  of the text phase 8 wrote
+- FN-5: every compiler accepts `__func__` in the member initializers of
+  a constructor. The gap review of the text phase 8 wrote
   (`reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md`)
   adds that whether the `__func__` arrays of two functions have
   distinct addresses is unspecified. No test checks the addresses.
-- FN-6: the compilers split on the parameter lists of `main` that the
-  table of FN-6 gives ({question}`Q-0024`). GCC rejects `(int)` only
-  under `-pedantic-errors`. With three parameters, Clang and GCC on
-  Linux pass a pointer that is not null as the third argument, the list
-  of environment variables. The matrix runs no program built with
-  `-m32`, so the `-m32` tests check acceptance only. The base
-  expectation of each test follows Clang's column of the table. So the
-  tests accept `()`, `(int)`, `(int, char**)`, and
-  `(int, char**, char**)`, and reject the other lists. The tests record
-  the choices of GCC and EDG as overrides, and FN-6 allows each of them.
-  A test that cites TR-3 for a parameter list follows the same column.
+- FN-6: GCC rejects `(int)` only under `-pedantic-errors`. With three
+  parameters, Clang and GCC on Linux pass a pointer that is not null as
+  the third argument, the list of environment variables. The matrix
+  runs no program built with `-m32`, so the `-m32` tests check
+  acceptance only. The base expectation of each test follows Clang's
+  column of the table of FN-6. So the tests accept `()`, `(int)`,
+  `(int, char**)`, and `(int, char**, char**)`, and reject the other
+  lists. The tests record the choices of GCC and EDG as overrides, and
+  FN-6 allows each of them. A test that cites TR-3 for a parameter list
+  follows the same column.
 - FN-7 is Tidal's own advice. The gap review of the rules that phase 7
   rewrote (`reports/review/2026-11-04-gap-review-phase-7-repairs.md`)
   finds no such recommendation in the reference, which makes reaching
@@ -351,13 +385,12 @@ One question on this page settled on 2026-11-04 under decision 0054 after the pr
   at `-O2` warns, and at `-O0` it does not.
 - FN-10: Clang 22 and GCC 16 destroy a by-value parameter at the end of
   the caller's full expression, after the next operand of a comma.
-- FN-4: GCC 14 and Clang 18 accept `main` with C language linkage in a
-  namespace. GCC 16, Clang 22, and EDG reject such a `main`
-  ({question}`Q-0076`).
 - FN-6, FN-10, FN-11 with `-m32`: the matrix runs no program built with
   `-m32`, because the host compilers have no 32-bit C library. In the
   writer's probes, the run tests of the three rules give the same
   results with `-m32` in the GCC 14, Clang 18, and Clang 22 containers.
+
+### Sources
 
 Inputs: clang-sema-decl, clang-sema-declcxx, clang-sema-stmt,
 clang-diag-sema, edg-func-def.

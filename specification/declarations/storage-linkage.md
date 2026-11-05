@@ -382,56 +382,64 @@ All eight compilers agree on 82 of 84 tests. The results are in
 `tests/RESULTS.md`. 21 tests use two translation units (decision 0014).
 EDG checks each unit and does not link.
 
-Two questions on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+### Divergences
 
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0011` | STO-P4 | none; LNK-7 needs no diagnostic |
-| {question}`Q-0105` | STO-P3 | EDG 7.0 |
+- {question}`Q-0011` (LNK-7; settled on STO-P4): whether a use of an
+  entity with no definition needs a diagnostic. It does not, since only
+  the linker can see the missing definition. No family differs.
+- {question}`Q-0105` (LNK-9; settled on STO-P3): whether a block-scope
+  `extern` declaration redeclares a namespace-scope internal-linkage
+  variable that a local variable hides. It does, as Clang and GCC say,
+  and they read the namespace-scope variable. EDG 7.0 rejects the
+  declaration.
+- {question}`Q-0045` (STO-11; open): whether an anonymous union in an
+  unnamed namespace must be declared `static`. It need not, as Clang
+  says. GCC and EDG reject the union.
 
-- **LNK-1.** An unnamed class at namespace scope without a name for
+### Split tests
+
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `anonymous-union-unnamed-namespace.cpp` | STO-11 | accept | accept | reject | reject | {question}`Q-0045` |
+| `extern-in-block-hidden.cpp` | LNK-9 | run | run | run | reject | {question}`Q-0105` |
+
+### Notes
+
+- LNK-1: an unnamed class at namespace scope without a name for
   linkage has no linkage. Clang, GCC, and EDG each reject a function
   that is declared with such a class as its return type, used, and not
   defined in the unit, because no other unit can define it. The same
   function is valid when a `typedef` gives the class a name for linkage.
   No test checks the rejection, because no rule of Tidal states it yet.
   The page leaves modules, and so module linkage, out of scope.
-- **LNK-6.** Each translation unit compiles without a diagnostic. The
+- LNK-6: each translation unit compiles without a diagnostic. The
   linker reports a second definition of a variable or function that is
   not `inline` ("multiple definition of"). Two different definitions of
   an `inline` function link without a diagnostic, and the body that
   executes changes. With Clang 22 and GCC 16 at `-O0`, both units call
   the definition that the linker sees first. At `-O2`, each unit uses
   its own definition. The test accepts each of these results.
-- **LNK-6, LNK-7.** Linkers usually report a second definition of an
+- LNK-6, LNK-7: linkers usually report a second definition of an
   entity that is not `inline`, but usually do not report different
   definitions of an `inline` entity.
-- **LNK-7.** Each translation unit compiles without a diagnostic. Only
+- LNK-7: each translation unit compiles without a diagnostic. Only
   the linker reports the missing definition ("undefined reference to").
-- **STO-6.** Clang reports a storage class on a declaration that only
+- STO-6: Clang reports a storage class on a declaration that only
   defines a class as a pedantic warning. `-pedantic-errors` makes the
   warning an error. GCC and EDG reject such a declaration in each mode.
-- **STO-11.** Clang accepts an anonymous union without `static` in an
-  unnamed namespace. GCC and EDG reject the union
-  ({question}`Q-0045`). STO-11 follows Clang, and the tests record GCC
-  and EDG as overrides.
-- **STO-9.** The C++ run-time library of Clang and GCC detects a second
+- STO-9: the C++ run-time library of Clang and GCC detects a second
   entry into the initialization of a block-scope `static` variable,
   also at `-O0` without a sanitizer. The program ends with an uncaught
   exception (`recursive_init_error`) and a nonzero status.
   Two block-scope variables in two units, whose initializers call each
   other's functions, end the program the same way
   (`recursive-static-init-across-units.cpp`).
-- **STO-10.** With two units, Clang 22 and GCC 16 destroy the objects
+- STO-10: with two units, Clang 22 and GCC 16 destroy the objects
   in the reverse of the order in which their construction completed,
   in both link orders, at `-O0` and `-O2`
   (`static-destruction-across-units.cpp`). A constant-initialized object
   is destroyed at the place of its definition
   (`static-constant-initialized-destroyed-in-place.cpp`, {rule}`OBJ-4`).
-- **LNK-9.** EDG 7.0 rejects a block-scope `extern` declaration that
-  redeclares an internal-linkage variable hidden by a local variable.
-  Clang and GCC accept the declaration and read the namespace-scope
-  variable ({question}`Q-0105`).
 
 Inputs: clang-sema-decl, edg-decls, clang-diag-sema (see
 `inputs/MANIFEST.md`).

@@ -584,20 +584,44 @@ Use<Small> m;                  // rejected: Small is a concept
 The results are in `tests/RESULTS.md`. All eight compilers agree on 87
 of 93 tests.
 
-{question}`Q-0170` settled on 2026-11-03 under decision 0054. The
-source-reader gap review of question cluster 5 supports its answer with
-no doubt, and TARG-P2 gives the same answer. EDG 7.0 still differs, and
-the test keeps its override for EDG. {question}`Q-0201` stays open,
-because the same review reads it with doubt. On 2026-11-03, Clang 22 and
-GCC 16 still agree with its provisional answer, and EDG 7.0 still
-differs. Reporting these EDG differences to the EDG project waits on the
-maintainer (`documentation/decisions/pending.md`).
+### Divergences
 
-The clean-room writer probed template-ids, argument kinds, and constant
-arguments with Clang 22, GCC 16, and EDG 7.0, and checked the tests on
-the eight {ref}`baseline compilers <baseline-compilers>`. The gap review of the chapter
-(`reports/review/2026-10-31-gap-review-templates-n1.md`) gave the
-probes for TARG-23 to TARG-27 and for the additions to the older rules.
+Reporting the EDG differences of Q-0170 and Q-0201 to the EDG project
+waits on the maintainer (`documentation/decisions/pending.md`).
+
+- {question}`Q-0170` (TARG-7, TARG-8; settled on TARG-P2): whether
+  `int()` is a type or a value for a constant parameter. It is a type,
+  so the argument is rejected, as Clang and GCC say. EDG reads the
+  value `0`.
+- {question}`Q-0169` (TARG-17; settled): whether a template template
+  argument can have more parameters than the parameter when the extra
+  ones have defaults. It can. Clang 18 rejects it.
+- {question}`Q-0201` (TARG-17, TARG-18; open): whether a template
+  template argument matches when its constant parameter has another
+  fixed type, `long` for `int`. It matches, as Clang 22 and GCC say.
+  EDG and Clang 18 reject it.
+- {question}`Q-0117` (TARG-19, CE-21; open): whether a union with no
+  active member is a valid constant and template argument. It is, and
+  two such values give one specialization, as Clang and EDG say. GCC
+  does not treat the value as a constant.
+- {question}`Q-0168` (TARG-19, TARG-22; open): whether an alias
+  template that passes its parameters through is the same template
+  argument as its class template. It is a template of its own, as
+  Clang says. GCC and EDG make `Use<List>` and `Use<ListAlias>` one
+  type.
+
+### Split tests
+
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `same-specialization-alias-template-explicit.cpp` | TARG-22 | accept | accept | reject | reject | {question}`Q-0168` |
+| `same-specialization-alias-template.cpp` | TARG-22 | accept | accept | reject | reject | {question}`Q-0168` |
+| `same-specialization-union-empty.cpp` | TARG-19 | accept | accept | reject | accept | {question}`Q-0117` |
+| `template-template-constant-type.cpp` | TARG-17 | accept | Clang 22: accept; Clang 18: reject | accept | reject | {question}`Q-0201` |
+| `template-template-defaults.cpp` | TARG-17 | accept | Clang 22: accept; Clang 18: reject | accept | accept | {question}`Q-0169` |
+| `type-or-expression-constant.cpp` | TARG-7, TARG-8 | reject | reject | reject | accept | {question}`Q-0170` |
+
+### Notes
 
 - TARG-13: the gap review of the text phase 8 wrote on expressions,
   foundations, and templates
@@ -606,29 +630,12 @@ probes for TARG-23 to TARG-27 and for the additions to the older rules.
   floating-point promotion or conversion. Clang 22, GCC 16, and EDG 7.0
   reject `1.5f` for a `double` parameter and `1.5` for a `float`
   parameter.
-- TARG-22: Clang treats an alias template that passes its parameters
-  through as a template of its own, as TARG-22 does. GCC and EDG treat
-  it as the class template, so `Use<List>` and `Use<ListAlias>` are one
-  type ({question}`Q-0168`).
-  Every compiler treats an alias template that changes its argument as a
-  template of its own (`alias-template-changes-argument.cpp`).
-- TARG-17: Clang 18 rejects a template template argument with more
-  parameters than the parameter, even when the extra parameters have
-  defaults. Clang 22, GCC, and EDG accept it ({question}`Q-0169`).
-- TARG-8: EDG reads `int()` as the value `0` when the parameter is a
-  constant parameter. Clang and GCC read the type and reject the
-  argument ({question}`Q-0170`).
+- TARG-22: every compiler treats an alias template that changes its
+  argument as a template of its own (`alias-template-changes-argument.cpp`).
+- TARG-17: all compilers accept a placeholder parameter on either side
+  of a template template argument.
 - TARG-4: all compilers end the list at the first `>`, and report the
   rest of the expression as a syntax error.
-- TARG-17: Clang 22 and GCC accept a template template argument whose
-  constant parameter is `long` for a head whose parameter is `int`.
-  Clang 18 and EDG reject it ({question}`Q-0201`). All compilers accept
-  a placeholder parameter on either side.
-- TARG-19: GCC rejects a union with no active member as a template
-  argument, because GCC does not treat the value as a constant. Clang
-  and EDG accept it, and give one specialization for two such values
-  ({question}`Q-0117`). Q-0117 stays open under decision 0051, because
-  on 2026-11-03 GCC 16 still differs from Clang 22 and EDG 7.0.
 - TARG-15: the test for `typeid` needs the `<typeinfo>` header, and the
   EDG image has no library. Clang and GCC reject the address of a
   `typeid` result. The test covers `__func__` and the class argument.
@@ -636,11 +643,15 @@ probes for TARG-23 to TARG-27 and for the additions to the older rules.
   ambiguous as a type and as a template template argument on all
   compilers. With an argument list, the name is valid on all of them.
 
-The probe grid is in `tests/templates/arguments/grids/`, and
-`tools/probe_grid.py` prints the table from it. Each column declares
-`template <type P> struct Take`, and each row gives one argument. An
-`accept` means that the argument is valid for the parameter. The
-compilers agree on every cell:
+### Probe grids
+
+The probe grid is in `tests/templates/arguments/grids/`, and `tools/probe_grid.py` prints its table from the grid file. The compilers agree on every cell.
+
+Grid file `constant-arguments.json`.
+
+Each column declares `template <type P> struct Take`, and each row
+gives one argument. An `accept` means that the argument is valid for the
+parameter.
 
 | | int | unsigned char | bool | long | double | Plain | Scoped | int* | const int* | int& | const int& | int (*)() | auto |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
@@ -666,10 +677,18 @@ compilers agree on every cell:
 
 `Plain` is an unscoped enumeration with the enumerator of value 1.
 `Scoped` and `Other` are scoped enumerations with the enumerator `one`
-of value 1.
-`object` is an `int` variable, and `const_object` is a `const int`
-variable initialized with a constant. The `auto` column follows {rule}`TPL-11`:
-the argument gives the type, so only an argument that is not a constant
+of value 1. `object` is an `int` variable, and `const_object` is a
+`const int` variable initialized with a constant. The `auto` column
+follows TPL-11. The argument gives the type, so only an argument that is not a constant
 fails.
+
+### Sources
+
+The clean-room writer probed template-ids, argument kinds, and constant
+arguments with Clang 22, GCC 16, and EDG 7.0, and checked the tests on
+the eight {ref}`baseline compilers <baseline-compilers>`. The gap
+review of the chapter
+(`reports/review/2026-10-31-gap-review-templates-n1.md`) gave the
+probes for TARG-23 to TARG-27 and for the additions to the older rules.
 
 Inputs: clang-diag-sema, clang-diag-parse.

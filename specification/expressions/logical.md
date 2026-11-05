@@ -242,13 +242,25 @@ int and moved = make();         // int&& moved: and is the token &&
 All eight compilers agree on 33 of 34 tests. The results are in
 `tests/RESULTS.md`.
 
+### Divergences
+
+- {question}`Q-0101` (LOG-12; settled): whether `nullptr` can be an
+  operand of a logical operator. It can. GCC 14 rejects it, a defect
+  that GCC 16 fixes.
+
+### Split tests
+
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `nullptr-operand.cpp` | LOG-12 | accept | accept | GCC 16: accept; GCC 14: reject | accept | {question}`Q-0101` |
+
+### Notes
+
 - LOG-8: Clang warns under `-Wlogical-op-parentheses` and GCC under
   `-Wparentheses`. The test uses `-Wparentheses`, which includes both.
 - LOG-9: Clang and GCC warn under `-Wlogical-not-parentheses`.
-- EDG doesn't take these warning flags and skips the
+- LOG-8, LOG-9: EDG doesn't take these warning flags and skips the
   recommended-practice tests.
-- LOG-12: GCC 14 rejects `nullptr` as an operand. GCC 16, Clang, and EDG
-  accept it. GCC 14 has a defect that GCC 16 fixes ({question}`Q-0101`).
 - LOG-2: Clang warns that an array or a function as an operand always
   converts to `true`, and GCC warns under `-Waddress`. Every compiler
   accepts the program.

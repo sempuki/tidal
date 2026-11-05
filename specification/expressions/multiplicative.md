@@ -391,81 +391,89 @@ bool divide_fits(long long a, long long b) {
 The results for each compiler in the matrix are in `tests/RESULTS.md`.
 All eight compilers agree on 49 of 54 tests.
 
-One question on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+### Divergences
 
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0005` | MUL-P4 | none |
+Reporting the EDG differences of Q-0002 and Q-0003 to the EDG project
+waits on the maintainer.
 
-- **MUL-2, MUL-16.** Clang and GCC warn that an enumeration with a
+- {question}`Q-0003` (MUL-10; compiler defect): whether EDG's acceptance
+  of `INT_MIN / -1` and `INT_MIN % -1` during constant evaluation
+  changes MUL-10. It does not. Constant evaluation rejects both, in
+  `int` and in `long long`, as Clang and GCC do. EDG 7.0 accepts both.
+- {question}`Q-0004` (MUL-11, MUL-20; settled): whether a floating
+  division by zero is implementation-defined on IEEE 754 targets. It
+  is at run time, where a type that follows IEEE 754 gives an infinity
+  or a NaN. Constant evaluation rejects the division (CE-28). Only EDG
+  differs, under Q-0002.
+- {question}`Q-0002` (CE-28; compiler defect): whether EDG's acceptance
+  of `1.0 / 0.0` and `0.0 / 0.0` during constant evaluation changes
+  CE-28. It does not. CE-28 rejects both, as Clang and GCC do. EDG 7.0
+  accepts both and gives an infinity and a NaN.
+- {question}`Q-0001` (MUL-12; open): whether a floating overflow during
+  constant evaluation is undefined or implementation-defined. It is
+  undefined, as GCC and EDG say. Clang accepts the overflow and gives
+  an infinity.
+- {question}`Q-0005` (MUL-13; settled on MUL-P4): whether the order of
+  the operands can be unspecified when no compiler varies it for the
+  built-in operators. It can. No family differs, and the tests accept
+  either order.
+
+### Split tests
+
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `floating-overflow-constant.cpp` | MUL-12 | reject | accept | reject | reject | {question}`Q-0001` |
+| `floating-overflow-divide-constant.cpp` | MUL-12 | reject | accept | reject | reject | {question}`Q-0001` |
+| `signed-overflow-divide-long-long.cpp` | MUL-10 | reject | reject | reject | accept | {question}`Q-0003` |
+| `signed-overflow-divide.cpp` | MUL-10 | reject | reject | reject | accept | {question}`Q-0003` |
+| `signed-overflow-remainder.cpp` | MUL-10 | reject | reject | reject | accept | {question}`Q-0003` |
+
+### Notes
+
+- MUL-2, MUL-16: Clang and GCC warn that an enumeration with a
   floating-point operand is deprecated
   (`-Wdeprecated-enum-float-conversion`). Both compilers warn about two
   different enumerations under `-Wdeprecated-enum-enum-conversion`. Each
   warning is on by default, and `-pedantic-errors` does not make it an
   error, so both compilers accept the operands in strict mode. The
   MUL-16 tests turn the warning into an error with `-Werror`.
-- **MUL-9, MUL-10.** Clang and GCC (all tested versions) reject
-  each case during constant evaluation. Their notes name the cause:
-  division by zero, a result too large for `int`, or overflow. Each case
-  is otherwise valid. EDG agrees on integer division by zero and on
-  multiply overflow. EDG differs on the cases below.
-- **MUL-10, the most negative value.** At run time, `INT_MIN / -1` and
-  `INT_MIN % -1` stop the program with a hardware exception on every
-  Clang and GCC configuration, `-O2` included. MUL-10 allows this
-  result. `-fsanitize=undefined` reports both operators with the same
-  words. Integer promotion makes the most negative `short` divided by
-  `-1` an `int` division, which every compiler evaluates to `32768`.
-- **MUL-10, EDG.** Clang and GCC reject `INT_MIN / -1` and
-  `INT_MIN % -1` during constant evaluation, in `int` and in
-  `long long`. EDG 7.0 accepts both, and its quotient lies outside the
-  range of `int`. EDG rejects `-INT_MIN` and `INT_MIN * -1`. The
-  provisional answer keeps MUL-10, and EDG's behavior is a possible
-  defect ({question}`Q-0003`). Q-0003 stays open under decision 0051,
-  because on 2026-11-03 EDG 7.0 still differs from Clang 22 and GCC 16.
-- **MUL-11, MUL-20.** At run time on x86-64, every Clang and GCC
-  configuration, `-O2` included, gives an infinity for `1.0 / 0.0` and a
-  NaN for `0.0 / 0.0` in `float`, `double`, and `long double`.
-  `-fsanitize=undefined` does not stop the division. The separate check
-  `-fsanitize=float-divide-by-zero` stops the division. Clang and GCC
-  report `__STDC_IEC_559__` and IEEE 754 types in their libraries on the
-  64-bit and 32-bit x86 targets. MUL-11 is `impl-defined` because the
-  result rests on a choice of the implementation, which these
-  implementations make and report ({question}`Q-0004`, settled). Clang
-  and GCC reject the division during constant evaluation (CE-28).
-- **CE-28, EDG.** Clang and GCC reject `1.0 / 0.0` and `0.0 / 0.0`
-  during constant evaluation. EDG 7.0 accepts both and gives an
-  infinity and a NaN. EDG rejects floating overflow. The provisional
-  answer keeps the rejection, and EDG's behavior is a possible defect
-  ({question}`Q-0002`). Q-0002 stays open under decision 0051, because
-  on 2026-11-03 EDG 7.0 still differs from Clang 22 and GCC 16.
-- **MUL-12.** These are the results for an overflow of `*` or `/` in a
-  `constexpr` initializer, in `float` or `double`:
-
-  - Clang 22.1.8 and 18.1.3 accept it and give an infinity.
-  - GCC 16.2.1, 16.2.0, and 14.2.0 reject it ("not a constant
-    expression").
-  - EDG 7.0 rejects it ("floating-point error").
-
-  Clang rejects a result that is a NaN. At run time every Clang and GCC
-  configuration gives an infinity, and `-fsanitize=undefined` lets the
-  overflow run. The provisional answer is that the behavior is
-  undefined, and that Clang's acceptance is an extension
-  ({question}`Q-0001`). Q-0001 stays open under decision 0051, because
-  on 2026-11-03 Clang 22 still differs from GCC 16 and EDG 7.0.
-- **MUL-13.** Clang and GCC evaluate the left operand of the built-in
-  operators first at `-O0` and at `-O2`, in every form probed. For an
-  overloaded `*` or `/`, GCC evaluates the right operand first. This
-  result shows that the order is not fixed. The tests accept either
-  order ({question}`Q-0005`).
-- **MUL-14.** Clang warns "unsequenced modification and access" under
+- MUL-9, MUL-10: Clang and GCC (all tested versions) reject each case
+  during constant evaluation. Their notes name the cause: division by
+  zero, a result too large for `int`, or overflow. Each case is
+  otherwise valid. EDG agrees on integer division by zero and on
+  multiply overflow.
+- MUL-10: at run time, `INT_MIN / -1` and `INT_MIN % -1` stop the
+  program with a hardware exception on every Clang and GCC
+  configuration, `-O2` included. MUL-10 allows this result.
+  `-fsanitize=undefined` reports both operators with the same words.
+  Integer promotion makes the most negative `short` divided by `-1` an
+  `int` division, which every compiler evaluates to `32768`.
+- MUL-11, MUL-20: at run time on x86-64, every Clang and GCC
+  configuration, `-O2` included, gives an infinity for `1.0 / 0.0` and
+  a NaN for `0.0 / 0.0` in `float`, `double`, and `long double`.
+  `-fsanitize=undefined` does not stop the division, and
+  `-fsanitize=float-divide-by-zero` does. MUL-11 is `impl-defined`
+  because the result rests on a choice of the implementation, which
+  these implementations make and report.
+- MUL-12: at run time every Clang and GCC configuration gives an
+  infinity for a floating overflow, and `-fsanitize=undefined` lets the
+  overflow run. No sanitizer of GCC or Clang stops a floating-point `*`
+  whose result is outside the range of its type. The front end's
+  interpreter stops the product (`floating-overflow-run.cpp`, decision
+  0053).
+- MUL-14: Clang warns "unsequenced modification and access" under
   `-Wunsequenced`, which is on by default. GCC warns "operation ... may
   be undefined" under `-Wsequence-point`, which `-Wall` turns on. GCC
   gives no warning without `-Wall` or the named flag. The tests change
   these warnings into errors. EDG does not accept these warning flags
   and skips the tests.
-- **MUL-15.** The result type on x86-64 (LP64) differs from the result
+- MUL-14: no sanitizer of GCC or Clang stops an unsequenced
+  modification. The compilers warn at translation instead
+  (`unsequenced-modification.cpp`). The front end's interpreter stops
+  the run and names SEQ-4 (`unsequenced-modification-run.cpp`).
+- MUL-15: the result type on x86-64 (LP64) differs from the result
   type with `-m32` (ILP32). The tests depend on `sizeof(long)`.
-- **MUL-17.** `0.1 * 3.0 / 3.0` gives `0.10000000000000002` when each
+- MUL-17: `0.1 * 3.0 / 3.0` gives `0.10000000000000002` when each
   operation rounds to `double`, and `0.1` with extra precision. The
   test accepts both values and stays clear of overflow, which MUL-12
   makes undefined ({question}`Q-0001`). With `-m32`, GCC keeps `float`
@@ -473,16 +481,11 @@ One question on this page settled on 2026-11-03 under decision 0054 after the so
   evaluation, so `1.0 + 0x1p-53 != 1.0` holds there. Clang and EDG give
   `1.0` for the sum. A cast, an initializer, and a return value round
   the sum to `1.0` on every compiler. MUL-17 allows both results.
-- MUL-12: no sanitizer of GCC or Clang stops a floating-point `*` whose
-  result is outside the range of its type. The front end's interpreter
-  stops the product (`floating-overflow-run.cpp`, decision 0053).
-- MUL-14: no sanitizer of GCC or Clang stops an unsequenced
-  modification. The compilers warn at translation instead
-  (`unsequenced-modification.cpp`). The front end's interpreter stops
-  the run and names SEQ-4 (`unsequenced-modification-run.cpp`).
 - MUL-11, MUL-20 with `-m32`: the matrix runs no program built with
   `-m32`, because the host compilers have no 32-bit C library. In the
   writer's probes, the run tests of the two rules give the same
   results with `-m32` in the GCC 14, Clang 18, and Clang 22 containers.
+
+### Sources
 
 Inputs: clang-sema-expr.

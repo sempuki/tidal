@@ -342,94 +342,112 @@ int& m{s};                   // rejected: a temporary needs const or &&
 All eight compilers agree on 49 of 64 tests. The results are in
 `tests/RESULTS.md`.
 
-Seven questions on this page settled under decision 0054. Six settled on 2026-11-03 after the source-reader gap review of the open questions on overloading, references, and list initialization (`reports/review/2026-11-03-gap-review-questions-overloading.md`). Q-0040 settled on 2026-11-04 after the source-reader gap review of the text phase 8 wrote on the declarations and statements chapters (`reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+### Divergences
 
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0109` | REF-P2 | EDG 7.0 |
-| {question}`Q-0110` | REF-P2 | EDG 7.0 |
-| {question}`Q-0149` | REF-P3 | Clang 22 on the type, GCC 16 on empty braces |
-| {question}`Q-0150` | REF-P3 | Clang 22 |
-| {question}`Q-0151` | REF-P1 | GCC 16 |
-| {question}`Q-0164` | REF-P3 | GCC 16 |
-| {question}`Q-0040` | REF-P2 | EDG 7.0 |
+- {question}`Q-0109` (REF-4; settled on REF-P2): whether a reference
+  bound to an element of an array member of a temporary extends the
+  temporary. It does. EDG rejects the binding.
+- {question}`Q-0040` (REF-4, REF-5; settled on REF-P2): whether
+  parenthesized aggregate initialization extends a temporary bound to a
+  reference member. It does not, and only braces extend it. EDG accepts
+  a constant evaluation that reads the member.
+- {question}`Q-0110` (REF-5; settled on REF-P2): whether constant
+  evaluation rejects a reference bound through a null pointer. It does,
+  as GCC and Clang 22 do. EDG and Clang 18 accept the reference.
+- {question}`Q-0294` (REF-P3, REF-6, REF-11, REF-14; open): how a
+  braced list binds a reference, initializes an array, and forms a
+  conversion sequence. The table of REF-P3 gives the model, and each
+  child question keeps its split. Each family differs in some
+  children.
+- {question}`Q-0164` (REF-6; settled on REF-P3): whether one braced
+  array lvalue binds a reference to an array of unknown bound directly.
+  It does, as Clang and EDG say. GCC makes a temporary array of one
+  element and rejects the list.
+- {question}`Q-0157` (REF-6, REF-14; settled on REF-P3): whether a
+  braced list with one class element binds a reference through the
+  element's conversion function. It makes a temporary unless the
+  element has the referenced type or a derived class, as Clang and EDG
+  say. GCC binds through the conversion function.
+- {question}`Q-0165` (REF-6, REF-11; open): whether one braced
+  function name binds a reference to a function as `=` does. An
+  overload set binds, and GCC rejects it. A `noexcept` function does
+  not bind a reference to a function type without `noexcept`, as EDG
+  says, and Clang and GCC bind it.
+- {question}`Q-0151` (REF-11; settled on REF-P1): whether a
+  parenthesized list of several values can initialize a reference to an
+  aggregate. It cannot. GCC accepts the list and initializes a
+  temporary from it.
+- {question}`Q-0150` (REF-11, REF-14; settled on REF-P3): whether a
+  braced list for a reference can use an `explicit` constructor to make
+  the temporary. It cannot, as GCC and EDG say. Clang accepts the list.
+- {question}`Q-0149` (REF-11, REF-14; settled on REF-P3): what type a
+  braced list gives a reference to an array of unknown bound. The
+  reference keeps its declared type, as GCC and EDG say, and empty
+  braces are rejected, as Clang and EDG say. Clang gives the reference
+  the bound of the list, and GCC accepts empty braces.
+- {question}`Q-0166` (LIST-6, REF-14; settled on REF-P3): whether one
+  braced string literal can initialize the temporary array of a
+  reference. It can, as Clang and EDG say. GCC rejects the literal when
+  the reference does not bind it directly.
+- {question}`Q-0180` (REF-15; open): which dangling references an
+  implementation should warn about. REF-15 recommends a warning in
+  general terms and tests the case of a reference member of an object
+  from `new`. Clang warns about that case, and GCC does not. Each
+  compiler warns about some other cases, and the cases differ by
+  version.
 
-- **REF-5.** All compilers reject the dangling reads during
+### Split tests
+
+EDG runs no programs, so its cell for a run test gives the result of
+the compile. EDG skips the tests that use `-Werror`.
+
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `declarations/initialization/list/string-literal-reference-temporary.cpp` | LIST-6, REF-14 | accept | accept | reject | accept | {question}`Q-0166` |
+| `aggregate-member-paren-not-extended.cpp` | REF-5 | reject | reject | reject | accept | {question}`Q-0040` |
+| `braced-function-noexcept.cpp` | REF-11 | reject | accept | accept | reject | {question}`Q-0165` |
+| `braced-function-overload-set.cpp` | REF-6 | accept | accept | reject | accept | {question}`Q-0165` |
+| `braced-list-array-unknown-bound.cpp` | REF-6 | accept | accept | reject | accept | {question}`Q-0164` |
+| `braced-list-conversion-nonconst.cpp` | REF-6, REF-9 | reject | reject | accept | reject | {question}`Q-0157` |
+| `braced-list-conversion-temporary.cpp` | REF-6, REF-14 | run | run | reject | accept | {question}`Q-0157` |
+| `braced-list-explicit-constructor.cpp` | REF-11 | reject | accept | reject | reject | {question}`Q-0150` |
+| `braced-list-unknown-bound-empty.cpp` | REF-11 | reject | reject | accept | reject | {question}`Q-0149` |
+| `braced-list-unknown-bound.cpp` | REF-14 | accept | reject | accept | accept | {question}`Q-0149` |
+| `dangling-new-member-warns-default.cpp` | REF-15 | reject | reject | accept | skips | {question}`Q-0180` |
+| `dangling-new-member-warns.cpp` | REF-15 | reject | reject | accept | skips | {question}`Q-0180` |
+| `extend-through-array-member-subscript.cpp` | REF-4 | run | run | run | reject | {question}`Q-0109` |
+| `null-dereference-bind-constant.cpp` | REF-5 | reject | Clang 22: reject; Clang 18: accept | reject | accept | {question}`Q-0110` |
+| `parenthesized-list-aggregate.cpp` | REF-11 | reject | reject | accept | reject | {question}`Q-0151` |
+
+### Notes
+
+- REF-5: all compilers reject the dangling reads during
   {term}`constant evaluation` ("read of object outside its lifetime",
   "accessing ... outside its lifetime", "attempt to access expired
   storage"). Clang, GCC, and EDG also warn when a function returns a
   reference to a local variable. All compilers accept a constant
   evaluation that casts a dangling reference to `void`.
-- **REF-5.** Clang and GCC end a temporary bound to a reference member
+- REF-5: Clang and GCC end a temporary bound to a reference member
   of an object from `new` at the end of the full expression, with braces
   and with parentheses. A class temporary whose conversion function
   returns a reference to its member also ends there.
-- **REF-5.** At run time, the address sanitizer of Clang and GCC
+- REF-5: at run time, the address sanitizer of Clang and GCC
   (`-O0 -fsanitize=address`) stops a read through a reference whose
   temporary ended at the end of a full expression, such as a temporary
   bound to a parameter and returned. The report is a stack use after
   scope.
-- **REF-15.** Clang 18 and 22 warn about a temporary bound to a
-  reference member of an object from `new`. The warning is
-  `-Wdangling-field`, which is on by default, so `-Werror` alone makes
-  it an error. GCC 14 and 16 do not warn, also under `-Wall`. Each
-  compiler warns about some other dangling cases, and the cases differ
-  by version ({question}`Q-0180`). Clang 22 and GCC 16 under `-Wall
-  -Wextra` give these results:
-
-  | Case | Clang 22 | GCC 16 |
-  |---|---|---|
-  | an aggregate initialized with parentheses, whose reference member binds a temporary (REF-5) | warns (`-Wdangling`) | no warning |
-  | a reference bound to the returned reference of a call whose argument is a temporary (REF-5) | no warning | warns (`-Wdangling-reference`) |
-  | a reference member of an object from `new`, bound to a temporary (REF-5) | warns (`-Wdangling-field`) | no warning |
-  | a constructor that binds a reference member to a temporary ({rule}`CTOR-17`) | rejects | warns (`-Wextra`) |
-- **REF-15** is a `recommended` rule. Every test of REF-15 has an
+- REF-15 is a `recommended` rule. Every test of REF-15 has an
   override, and each override records a result that the class allows.
-- **REF-4.** EDG 7.0 rejects binding an rvalue reference to an element
-  of an array member of a temporary. Clang and GCC accept the binding
-  and extend the temporary ({question}`Q-0109`).
-- **REF-5.** GCC and Clang 22 reject a reference bound through a null
-  pointer during constant evaluation. EDG 7.0 and Clang 18 accept the
-  reference ({question}`Q-0110`).
-- **REF-P3.** The compilers split on several cells of the table of
-  braced lists. {question}`Q-0294` names the model and lists each split
-  with its question.
-- **REF-14.** For a braced list and a reference to an array of unknown
-  bound, Clang gives the reference the bound of the list. GCC and EDG
-  keep the declared type. For empty braces, Clang and EDG reject the
-  array of zero elements, and GCC accepts it ({question}`Q-0149`).
-- **REF-11.** GCC and EDG reject a braced list whose temporary needs an
-  `explicit` constructor. Clang accepts the list ({question}`Q-0150`).
-- **REF-6.** Every compiler binds a reference to an array directly to
-  one braced lvalue of that array type. For a reference to an array of
-  unknown bound, Clang and EDG also bind directly. GCC makes a temporary
-  array of one element and rejects the list ({question}`Q-0164`).
-- **REF-6.** For one braced element of a class type that converts to
-  the referenced type, Clang and EDG make a temporary. GCC binds a
-  reference to a non-class type through the conversion function, and
-  makes a temporary for a class type ({question}`Q-0157`). If that
-  conversion function returns an lvalue reference, GCC binds a `const`
-  lvalue reference to its result and rejects an rvalue reference
-  ("cannot bind rvalue reference ... to lvalue").
-- **REF-6.** For a reference to a function type, GCC rejects an
-  overloaded function name in braces. Clang and EDG bind the reference
-  as after `=` ({question}`Q-0165`).
-- **REF-11.** For a reference to a function type without `noexcept`,
-  EDG rejects a braced `noexcept` function, as REF-11 does. Clang and
-  GCC bind the reference as after `=` ({question}`Q-0165`).
-- **REF-6.** Every compiler binds a reference to a braced string literal
+- REF-6: every compiler binds a reference to an array directly to
+  one braced lvalue of that array type.
+- REF-6: every compiler binds a reference to a braced string literal
   of the referenced type directly, as after `=`. An rvalue reference
   then cannot bind, for a known and for an unknown bound.
   {rule}`ICS-38` and {rule}`ICS-46` give the sequences.
-- **REF-1.** Every compiler binds a reference to an array of `const int`
+- REF-1: every compiler binds a reference to an array of `const int`
   directly to an array of `int`, with a known or an unknown bound.
-- **REF-14.** GCC rejects a braced string literal for a reference to a
-  character array when the reference does not bind the literal
-  directly. Clang and EDG make a temporary array from the literal
-  ({question}`Q-0166`).
-- **REF-11.** GCC accepts a parenthesized list of several values for a
-  reference to an aggregate, and initializes a temporary from it. Clang
-  and EDG reject the list ({question}`Q-0151`).
+
+### Sources
 
 Inputs: clang-sema-init, edg-decl-inits, clang-diag-sema (see
 `inputs/MANIFEST.md`).

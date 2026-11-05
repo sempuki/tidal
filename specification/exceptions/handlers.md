@@ -445,11 +445,28 @@ of 105 tests. EDG runs no programs, so its results for the run tests say
 only that the programs are valid, and the harness sees a terminating
 program only as a nonzero exit.
 
-One question on this page settled on 2026-11-04 under decision 0054 after the source-reader gap review of the rules that phase 7 added (`reports/review/2026-11-04-gap-review-phase-7-additions.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+### Divergences
 
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0363` | TRY-P2 | GCC 16 |
+- {question}`Q-0363` (TRY-2; settled on TRY-P2): whether a handler of a
+  reference to an array or a function matches a thrown array or
+  function. It never matches, as Clang says. GCC matches both.
+
+### Split tests
+
+EDG's cell for a run test gives the result of the compile. EDG skips
+the tests that use `-Wall` or `-fsanitize`.
+
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `ctor-try-block-member-call-sanitizer.cpp` | TRY-11 | run-fail | run | run-fail | skips | |
+| `ctor-try-block-member-use-warns.cpp` | TRY-13 | reject | reject | accept | skips | |
+| `dtor-try-block-member-use-warns.cpp` | TRY-13 | reject | reject | accept | skips | |
+| `function-try-block-non-void-no-return.cpp` | TRY-12 | reject | reject | accept | skips | |
+| `match-reference-to-array-never.cpp` | TRY-2 | run | run | run-fail | accept | {question}`Q-0363` |
+| `match-reference-to-function-never.cpp` | TRY-2 | run | run | run-fail | accept | {question}`Q-0363` |
+| `member-function-try-block-no-return.cpp` | TRY-12 | reject | reject | accept | skips | |
+
+### Notes
 
 - TRY-4, TRY-12, TRY-13: the table gives the warnings of each compiler
   with no warning flag. `-Wall` neither adds nor removes any of these
@@ -506,10 +523,6 @@ One question on this page settled on 2026-11-04 under decision 0054 after the so
   C++23 text as allowing these conversions only for a by-value handler
   or a reference to a `const` pointer. Tidal follows the compilers
   (`documentation/decisions/pending.md`, row 4).
-- TRY-2: GCC matches a thrown array with a handler of a reference to an
-  array, and a thrown function with a handler of a reference to a
-  function. Clang matches neither
-  ({question}`Q-0363`).
 - TRY-5: Clang and GCC reject a handler parameter that points to an
   array of unknown bound, and accept an attribute at the start of the
   parameter.
@@ -524,6 +537,8 @@ One question on this page settled on 2026-11-04 under decision 0054 after the so
   (`ctor-try-block-member-call-sanitizer.cpp`). The Clang sanitizers
   and the address sanitizers do not, and the front end's interpreter
   runs the program to its result.
+
+### Sources
 
 Inputs: clang-sema-stmt, clang-diag-sema, clang-diag-parse,
 edg-statements.

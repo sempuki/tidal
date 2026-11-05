@@ -760,26 +760,91 @@ int* q = new (cell) int(4);     // the int is at cell (NEW-33)
 The results are in `tests/RESULTS.md`. All eight compilers agree on 121
 of 144 tests.
 
-One question on this page settled on 2026-11-04 under decision 0054 after the principle-use batch PU2 (`reports/clean-room/PU2/`). The batch's use of the principle supports the answer, the latest gap review supports it with no doubt, and the principle gives the same answer. The test keeps its override for the family that still differs:
+### Divergences
 
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0313` | NEW-P1 | GCC 16 |
+- {question}`Q-0036` (NEW-2; settled on NEW-P1): whether the size in an
+  array `new` may have floating-point type. It may, and converts to the
+  type of `sizeof`, as Clang and EDG do. GCC rejects every floating
+  size.
+- {question}`Q-0313` (NEW-2; settled on NEW-P1): whether an enumerator
+  of a scoped enumeration may give the size in an array `new`. It may
+  not, as Clang and EDG say. GCC converts it.
+- {question}`Q-0091` (NEW-5; settled on NEW-P2): whether constant
+  evaluation rejects `delete[]` of a derived array through a base
+  pointer. It does, as Clang and EDG say. GCC accepts it.
+- {question}`Q-0035` (NEW-8; settled on NEW-P2): whether `delete` of a
+  `void*` is rejected. It is, as Clang and EDG say. GCC accepts it with
+  a warning that the deletion is undefined.
+- {question}`Q-0005` (NEW-18; settled on MUL-P4 and ADD-P4): whether
+  an order of evaluation can be unspecified when no compiler varies it.
+  It can. No family differs.
+- {question}`Q-0125` (NEW-19, NEW-26; settled): whether every program
+  has the sized forms of `operator delete` and `operator delete[]`,
+  also the aligned ones, to call by name. It has, as the newest
+  version of each family says. Clang 18 does not declare the sized
+  forms.
+- {question}`Q-0220` (NEW-24; open): whether a placement deallocation
+  function wins over a template that also matches. It does not, and no
+  deallocation function is called, as Clang does with a warning. GCC
+  calls the function, and EDG chooses it and rejects the program when
+  the function is deleted.
+- {question}`Q-0222` (NEW-24; open): whether a `new` expression is
+  valid when two placement deallocation templates match and partial
+  ordering prefers neither. It is, and no deallocation function is
+  called, as Clang and GCC do. EDG rejects the expression as ambiguous.
+- {question}`Q-0221` (NEW-25; open): whether a `new` expression is
+  valid when its matching deallocation function is deleted. It is not,
+  as Clang and EDG say. GCC accepts it.
+- {question}`Q-0300` (NEW-29, NEW-30; open): whether a `new` expression
+  for a type of ordinary alignment falls back to an aligned allocation
+  function. It does not, and every compiler rejects the program. The
+  question waits on the maintainer (`documentation/decisions/pending.md`,
+  row 4), because a gap review reads the reference as having the
+  fallback.
+- {question}`Q-0301` (NEW-35; open): what a `new` expression does with
+  an erroneous run-time bound. It calls no allocation function and
+  throws `std::bad_array_new_length`. Clang calls the allocation
+  function, which throws `std::bad_alloc`, and GCC calls it first for a
+  bound smaller than the initializer.
+- {question}`Q-0302` (NEW-36; settled on NEW-P6): whether an erroneous
+  bound gives a null pointer with a non-throwing allocation function.
+  It does, as Clang does. GCC throws `std::bad_array_new_length`.
+- {question}`Q-0303` (NEW-37; settled on NEW-P4): whether constant
+  evaluation can use a `new` expression with the nothrow tag. It can,
+  as Clang and GCC 16 say. GCC 14 and EDG reject it.
 
-Three questions on this page settled on 2026-11-04 under decision 0054 after the source-reader gap review of the text phase 8 wrote on expressions, foundations, and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+### Split tests
 
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0036` | NEW-P1 | GCC 16 |
-| {question}`Q-0091` | NEW-P2 | GCC 16 |
-| {question}`Q-0303` | NEW-P4 | EDG 7.0 |
+EDG runs no programs, so its cell for a run test gives the result of
+the compile.
 
-Two questions on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `exceptions/unwinding/new-single-object-sized-delete.cpp` | UNW-3, NEW-22 | run | Clang 22: run; Clang 18: run-fail | run | accept | |
+| `aligned-forms-by-name.cpp` | NEW-26, LSUP-5 | run | Clang 22: run; Clang 18: reject | run | accept | {question}`Q-0125` |
+| `array-floating-size-exact.cpp` | NEW-2 | run | run | reject | accept | {question}`Q-0036` |
+| `array-non-integral-size.cpp` | NEW-2 | accept | accept | reject | accept | {question}`Q-0036` |
+| `array-scoped-enumeration-size.cpp` | NEW-17, NEW-2 | reject | reject | run | reject | {question}`Q-0313` |
+| `bad-bound-negative.cpp` | NEW-35, LSUP-8 | run | run-fail | run | accept | {question}`Q-0301` |
+| `bad-bound-nothrow-class.cpp` | NEW-36 | run | run | run-fail | accept | {question}`Q-0302` |
+| `bad-bound-nothrow.cpp` | NEW-36, LSUP-6 | run | run | run-fail | accept | {question}`Q-0302` |
+| `bad-bound-too-few.cpp` | NEW-35, LSUP-8 | run | run-fail | run-fail | accept | {question}`Q-0301` |
+| `bad-bound-too-large.cpp` | NEW-35, LSUP-8 | run | run-fail | run | accept | {question}`Q-0301` |
+| `constant-evaluation-nothrow.cpp` | NEW-37, LSUP-6 | accept | accept | GCC 16: accept; GCC 14: reject | reject | {question}`Q-0303` |
+| `deallocation-deleted-no-throw.cpp` | NEW-25 | reject | reject | accept | reject | {question}`Q-0221` |
+| `deallocation-deleted.cpp` | NEW-25 | reject | reject | accept | reject | {question}`Q-0221` |
+| `deallocation-placement-deleted.cpp` | NEW-25 | reject | reject | accept | reject | {question}`Q-0221` |
+| `default-new-alignment-ilp32-clang.cpp` | NEW-27 | reject | accept | reject | reject | |
+| `default-new-alignment-ilp32.cpp` | NEW-27 | accept | reject | accept | accept | |
+| `delete-derived-array-through-base-constant.cpp` | NEW-5 | reject | reject | accept | reject | {question}`Q-0091` |
+| `delete-void-pointer.cpp` | NEW-8 | reject | reject | accept | reject | {question}`Q-0035` |
+| `global-functions-by-name.cpp` | NEW-19 | run | Clang 22: run; Clang 18: reject | run | accept | {question}`Q-0125` |
+| `throw-placement-deleted-function-and-template.cpp` | NEW-24, DED-39 | accept | accept | accept | reject | {question}`Q-0220`, {question}`Q-0221` |
+| `throw-placement-function-and-template.cpp` | NEW-24, DED-39 | run | run | run-fail | accept | {question}`Q-0220` |
+| `throw-placement-templates-unordered.cpp` | NEW-24, DED-39 | run | run | run | reject | {question}`Q-0222` |
+| `foundations/language-support/exception-classes-array-length.cpp` | LSUP-8, NEW-35 | run | run-fail | run | accept | {question}`Q-0301` |
 
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0035` | NEW-P2 | GCC 16 |
-| {question}`Q-0302` | NEW-P6 | GCC 16 |
+### Notes
 
 - NEW-42: on x86-64, the global allocation functions of Clang and GCC
   throw `std::bad_alloc` for requests of 2^47 bytes, 2^47 + 1 bytes,
@@ -806,19 +871,11 @@ Two questions on this page settled on 2026-11-03 under decision 0054 after the s
   (`new-single-object-sized-delete.cpp`).
 - NEW-18: Clang 22 and GCC 16 both evaluate the array bound before the
   placement arguments. No compiler in the matrix varies the order, so
-  NEW-18 is unspecified by the provisional answer of {question}`Q-0005`.
+  NEW-18 is unspecified by the answer of {question}`Q-0005`.
 - NEW-3, NEW-5, NEW-6: all compilers reject these cases during constant
   evaluation and name the cause.
-- NEW-2: Clang and EDG convert a floating size such as `1.5` to `1`.
-  Clang warns. Clang 22 accepts `new int[2.0]` under `-pedantic-errors`
-  with no diagnostic, and EDG accepts it too. GCC rejects every floating
-  size ({question}`Q-0036`).
-- NEW-2: Clang and EDG reject a size that is an enumerator of a scoped
-  enumeration. GCC converts it ({question}`Q-0313`). Every compiler
-  converts a size of a class type with a conversion function to `int`.
-- NEW-5: GCC accepts `delete[]` of a derived array through a base
-  pointer during constant evaluation. Clang and EDG reject it
-  ({question}`Q-0091`).
+- NEW-2: every compiler converts a size of a class type with a
+  conversion function to `int`.
 - NEW-19, NEW-20: Clang, GCC, and EDG accept calls by name to the
   global functions with no declaration in the program, also next to a
   global placement form and a class's own functions. All three reject
@@ -828,13 +885,6 @@ Two questions on this page settled on 2026-11-03 under decision 0054 after the s
   All accept an argument that converts through a constructor. All
   reject a pointer to `const` as the argument of the non-allocating
   placement form.
-- NEW-8: GCC accepts `delete` of a `void*` with a warning that the
-  deletion is undefined. Clang (pedantic) and EDG reject it
-  ({question}`Q-0035`).
-- NEW-19: Clang 18 does not declare the sized forms of
-  `operator delete` and `operator delete[]`, so a call of them by name
-  is rejected there. Clang 22, GCC, and EDG declare them
-  ({question}`Q-0125`).
 - NEW-19: all compilers give `noexcept` the value `false` for a call of
   the global `operator new` forms and `true` for the `operator delete`
   forms.
@@ -842,31 +892,13 @@ Two questions on this page settled on 2026-11-03 under decision 0054 after the s
   class and its bases, on the choice between the usual forms of a class,
   and on the placement forms with no match. EDG runs no programs, so
   its results say only that these programs are valid.
-- NEW-24: Clang warns that two functions match when a function and a
-  function template both match, and calls neither. GCC calls the
-  function. EDG chooses the function, and rejects the program when the
-  function is deleted (`throw-placement-deleted-function-and-template.cpp`).
-  The gap review of 2026-11-03
-  (`reports/review/2026-11-03-gap-review-question-cluster-3.md`) reads
-  the match as no part of overload resolution, so the preference of
-  {rule}`OVL-27` does not apply, and NEW-24 follows Clang
-  ({question}`Q-0220`). Clang, GCC, and EDG all accept a template body
-  that fails if it is instantiated, so none of them instantiates the
-  body of the template
-  (`throw-placement-function-before-template-instantiation.cpp`).
-  Q-0220 stays open under decision 0051, because on 2026-11-03 GCC 16
-  and EDG 7.0 still differ from Clang 22.
-- NEW-24: Clang and GCC call no deallocation function when two
-  templates match and partial ordering prefers neither. Clang warns.
-  EDG rejects the `new` expression as ambiguous ({question}`Q-0222`).
 - NEW-26, NEW-28: Clang, GCC, and EDG declare the aligned forms with
   no declaration in the program, once the program declares
-  `std::align_val_t`. Clang 18 does not declare the sized forms, as
-  for NEW-19 ({question}`Q-0125`). Clang and GCC pass `alignof(T)` to a
-  program's aligned `operator new` and `operator delete`, for one
-  object, an array, a placement form, and a deallocation after a throw.
-  A type whose alignment equals the default new alignment gets no
-  alignment argument.
+  `std::align_val_t`. Clang and GCC pass `alignof(T)` to a program's
+  aligned `operator new` and `operator delete`, for one object, an
+  array, a placement form, and a deallocation after a throw. A type
+  whose alignment equals the default new alignment gets no alignment
+  argument.
 - NEW-27: every compiler gives 16 on x86-64. With `-m32`, Clang 18, 22,
   and the host Clang give 8, and GCC 14, the host GCC, and EDG in its
   i686 configuration give 16. The value is the implementation's choice,
@@ -877,10 +909,6 @@ Two questions on this page settled on 2026-11-03 under decision 0054 after the s
   storage from `operator new[]` ("alloc-dealloc-mismatch").
 - NEW-41: Clang and GCC return from each call with a null pointer, and
   no sanitizer reports the call.
-- NEW-29, NEW-30: every compiler drops the alignment when a class
-  declares only the forms without alignment. Every compiler rejects
-  the reverse case, a class of ordinary alignment whose only
-  `operator new` takes an alignment ({question}`Q-0300`).
 - NEW-31: Clang and GCC test the result of a `noexcept` allocation
   function, with the nothrow tag or with another placement argument.
   On null they evaluate no initializer argument and run no
@@ -895,46 +923,33 @@ Two questions on this page settled on 2026-11-03 under decision 0054 after the s
   it, and ask for none for an array of `int`. The amount is the
   implementation's choice and need not be documented, so NEW-34 is
   `unspecified`.
-- NEW-35: Clang and GCC differ in each erroneous case
-  ({question}`Q-0301`):
-
-  | Erroneous bound | GCC 14 and 16 | Clang 18 and 22 |
-  |---|---|---|
-  | Negative | throws `std::bad_array_new_length`, with no call of the allocation function | calls the allocation function with the largest value of `std::size_t`, which throws `std::bad_alloc` |
-  | Size too large | throws `std::bad_array_new_length`, with no call of the allocation function | the same as for a negative bound |
-  | Fewer elements than the initializer | calls the allocation function, frees the storage, and throws `std::bad_array_new_length` | the same as for a negative bound |
-
-  Under `-O2`, GCC 16 omits the call for the third case, as NEW-14
-  allows.
 - NEW-35: the two tests of NEW-39 also cite NEW-35. Every compiler
   rejects a negative bound and a bound too small for its initializer
   during constant evaluation, so these tests show which bounds are
   erroneous with no override. At run time the compilers split on each
-  case, as the table above shows, so each run test of NEW-35 has an
+  case, as {question}`Q-0301` gives, so each run test of NEW-35 has an
   override.
 - NEW-39: constant evaluation rejects each erroneous bound on every
   compiler. Clang and EDG name the bound in a note, and GCC names the
   call that would throw.
-- NEW-36: Clang gives a null pointer for an erroneous bound with the
-  nothrow form. GCC throws `std::bad_array_new_length`
-  ({question}`Q-0302`).
-  GCC throws in each erroneous case that the tests check. During
-  constant evaluation, GCC 16 throws for a negative bound with the
-  nothrow form, and EDG does not evaluate the nothrow forms at all
-  (NEW-37). So every test of NEW-36 needs an override.
+- NEW-36: during constant evaluation, GCC 16 throws for a negative
+  bound with the nothrow form, and EDG does not evaluate the nothrow
+  forms at all (NEW-37). So every test of NEW-36 needs an override.
 - NEW-37: every compiler rejects a class's own `operator new` and a
   placement form during constant evaluation, and accepts an
-  over-aligned type. Clang 18 and 22 and GCC 16 accept the nothrow
-  forms. GCC 14 and EDG reject them ({question}`Q-0303`, settled). Every
-  compiler accepts the placement `new` inside `std::construct_at`, and
-  rejects the same template in another namespace ({rule}`LSUP-10`).
+  over-aligned type. Every compiler accepts the placement `new` inside
+  `std::construct_at`, and rejects the same template in another
+  namespace ({rule}`LSUP-10`).
 - NEW-38: Clang and GCC throw `std::bad_alloc` from the global
   allocation function for a request that no system can meet.
+- NEW-24: the gap review of question cluster 3
+  (`reports/review/2026-11-03-gap-review-question-cluster-3.md`) reads
+  the match of a placement deallocation function as no part of
+  overload resolution, so the preference of {rule}`OVL-27` does not
+  apply, and NEW-24 follows Clang ({question}`Q-0220`).
 - NEW-25: Clang, GCC, and EDG reject a private deallocation function,
-  also when the initialization cannot throw. Clang and EDG reject a
-  deleted one in the same cases. GCC accepts the deleted function
-  ({question}`Q-0221`). All three reject a placement form whose match
-  is a usual form.
+  also when the initialization cannot throw. All three reject a
+  placement form whose match is a usual form.
 - NEW-5: at run time, `-fsanitize=address` in Clang and GCC stops a
   double delete ("attempting double-free") and `delete` of storage from
   `new[]` ("alloc-dealloc-mismatch"). The tests are
@@ -948,5 +963,7 @@ Two questions on this page settled on 2026-11-03 under decision 0054 after the s
   `new T` left with no value, under `-fsanitize=undefined` or
   `-fsanitize=address`. The front end's interpreter stops the read
   (`uninitialized-read-run.cpp`, decision 0053).
+
+### Sources
 
 Inputs: clang-sema-expr, clang-diag-sema.

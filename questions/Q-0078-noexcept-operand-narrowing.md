@@ -7,6 +7,9 @@
 
 `noexcept(2)` and `noexcept(&x)` give the specifier an operand that is not `bool`. Clang and GCC reject both. EDG 7.0 converts the operand to `bool` and accepts both.
 
+A floating-point operand such as `1.0` narrows too. Clang and GCC reject
+it, and EDG 7.0 accepts it.
+
 GCC 14 and 16 give the same result, and so do Clang 18 and 22. The host
 GCC 16.2 and Clang 22.1 agree with them. No newer version settles the
 split.

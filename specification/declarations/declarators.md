@@ -568,34 +568,41 @@ void send(volatile int* to);   // valid
 All eight compilers agree on 96 of 99 tests. The results are in
 `tests/RESULTS.md`.
 
-Two questions on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+### Divergences
 
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0106` | DCL-P3 | EDG 7.0 |
-| {question}`Q-0348` | DCL-P3 | GCC 16 |
+- {question}`Q-0106` (DCL-16; settled on DCL-P3): whether a parameter
+  can be a reference to a function type with a ref-qualifier. It
+  cannot, as Clang and GCC say. EDG 7.0 accepts the parameter.
+- {question}`Q-0348` (DCL-15; settled on DCL-P3): whether a pointer to
+  member declared through an alias of a function type with a
+  ref-qualifier keeps the ref-qualifier. It does, as Clang and EDG say.
+  GCC drops the ref-qualifier and rejects the initialization.
+- {question}`Q-0191` (CV-10; open): whether an array bound dropped at
+  an inner pointer level needs `const` at the levels above. It does
+  not, as GCC and EDG say. Clang rejects the conversion. The choice
+  waits on the maintainer (`documentation/decisions/pending.md`, row 4).
 
-- **DCL-19.** Clang and GCC accept variable-length arrays and arrays of
+### Split tests
+
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `qualification-conversion-array-inner-bound.cpp` | CV-10 | accept | reject | accept | accept | {question}`Q-0191` |
+| `qualified-function-type-parameter.cpp` | DCL-16 | reject | reject | reject | accept | {question}`Q-0106` |
+| `ref-qualified-function-type-member.cpp` | DCL-15 | run | run | reject | accept | {question}`Q-0348` |
+
+### Notes
+
+- DCL-19: Clang and GCC accept variable-length arrays and arrays of
   size zero as extensions. Both reject these arrays only under
   `-pedantic-errors`. EDG rejects both in all modes.
-- **DCL-15.** Clang and EDG accept a pointer to member whose type is an
-  alias of a function type with a ref-qualifier. GCC drops the
-  ref-qualifier from the pointer's type and rejects the initialization
-  ({question}`Q-0348`).
-- **CV-5.** All compilers reject the change during constant evaluation.
+- CV-5: all compilers reject the change during constant evaluation.
   Their notes give the cause ("modification of object of const-qualified
   type", "modifying a const object", "attempt to modify const storage").
   A change to an object that is not `const`, through the same cast, is
   accepted and executes.
-- **CV-7.** Every compiler converts a pointer to an array of `int` to a
+- CV-7: every compiler converts a pointer to an array of `int` to a
   pointer to an array of `const int`, with or without the bound.
-- **CV-10.** GCC and EDG drop an array bound at an inner level without
-  `const` at the levels above. Clang rejects the conversion
-  ({question}`Q-0191`).
-- **DCL-16.** EDG 7.0 accepts a reference parameter to a function type
-  with a ref-qualifier. Clang and GCC reject the parameter
-  ({question}`Q-0106`).
-- **CV-5.** The address sanitizer of GCC and Clang stops a write to a
+- CV-5: the address sanitizer of GCC and Clang stops a write to a
   `const` object with static storage duration and a constant
   initializer, because the object is in storage that cannot be written.
   The rule holds for a scalar, for a class object with a braced
@@ -605,11 +612,13 @@ Two questions on this page settled on 2026-11-03 under decision 0054 after the s
   storage that can be written. A class object with a `mutable` member
   is in such storage too. No sanitizer stops a write to these objects,
   or to a `const` automatic object.
-- **CV-9.** Clang and GCC warn by default about a `volatile` parameter
+- CV-9: Clang and GCC warn by default about a `volatile` parameter
   type and a `volatile` return type, also under `-Wall` and
   `-Wdeprecated`. The flag is `-Wdeprecated-volatile` for Clang and
   `-Wvolatile` for GCC. Neither warns about a pointer to a `volatile`
   type.
+
+### Sources
 
 Inputs: clang-sema-type, clang-sema-decl, edg-decls, clang-diag-sema
 (see `inputs/MANIFEST.md`).

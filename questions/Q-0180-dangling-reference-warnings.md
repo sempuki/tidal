@@ -22,6 +22,28 @@ last two cases, where GCC 14 does.
 
 Probes on the six Clang and GCC compilers.
 
+Under `-Wall -Wextra`, Clang 22 and GCC 16 give these results:
+
+| Case | Clang 22 | GCC 16 |
+|---|---|---|
+| an aggregate initialized with parentheses, whose reference member binds a temporary (REF-5) | warns (`-Wdangling`) | no warning |
+| a reference bound to the returned reference of a call whose argument is a temporary (REF-5) | no warning | warns (`-Wdangling-reference`) |
+| a reference member of an object from `new`, bound to a temporary (REF-5) | warns (`-Wdangling-field`) | no warning |
+| a constructor that binds a reference member to a temporary (CTOR-17) | rejects | warns (`-Wextra`) |
+
+`-Wdangling-field` is on by default, so `-Werror` alone makes the
+warning an error. GCC 14 and GCC 16 give no warning for the `new` case,
+also under `-Wall`.
+
+The two tables disagree on GCC 16 for a reference bound to the result
+of a call on a temporary. A probe on 2026-11-04 with the host GCC
+16.2.1 and `-Wall` gives `-Wdangling-reference` for both
+`const int& w = pass(1);` and `const int& b = Box{2}.get();`, where
+`pass` takes and returns `const int&` and `get` returns a reference to
+a member. The second table matches that probe. The first table's rows
+for GCC 16 may come from other forms of `pass` and `Box`, and they
+need a new probe.
+
 ## Options
 
 1. A recommended rule in general terms, with a test for the case that

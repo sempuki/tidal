@@ -21,6 +21,10 @@ EDG has no code generation. Two probes show its choice. EDG rejects
 the program when the function is deleted. EDG accepts the program when
 the body of the template holds a failing `static_assert`.
 
+Clang and GCC also accept that program
+(`throw-placement-function-before-template-instantiation.cpp`), so no
+compiler instantiates the body of the template.
+
 ## Evidence
 
 `tests/expressions/new-delete/throw-placement-function-and-template.cpp`,

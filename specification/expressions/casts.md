@@ -334,8 +334,25 @@ auto* port = reinterpret_cast<volatile unsigned*>(size_t{0x4000'1000});
 All eight compilers agree on 60 of 61 tests. The results are in
 `tests/RESULTS.md`.
 
-- CAST-14: GCC and EDG accept an out-of-range enumeration value during
-  constant evaluation. Clang rejects the value ({question}`Q-0017`).
+### Divergences
+
+- {question}`Q-0017` (CAST-14, ENUM-6; open): whether converting a
+  value outside an enumeration's range is undefined. It is, so constant
+  evaluation rejects the conversion, as Clang does. GCC and EDG accept
+  the value during constant evaluation.
+- {question}`Q-0325` (CAST-16; open): whether an object exists at an
+  address that the program did not obtain from an object, such as a
+  device register. The platform decides, and Tidal sets no requirement.
+  No family differs.
+
+### Split tests
+
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `static-cast-enum-out-of-range-constant.cpp` | CAST-14 | reject | reject | accept | accept | {question}`Q-0017` |
+
+### Notes
+
 - CAST-5, CAST-8: all compilers reject these operations during constant
   evaluation.
 - CAST-5: at run time, `-fsanitize=address` in Clang and GCC stops a
@@ -363,8 +380,8 @@ All eight compilers agree on 60 of 61 tests. The results are in
   sizes.
 - CAST-16: the library names integer types for a pointer value
   *(library referenced)*. The table gives the core types of the same
-  size. Whether an object exists at an address that the program did
-  not obtain from an object is a question for the platform
-  ({question}`Q-0325`).
+  size.
+
+### Sources
 
 Inputs: clang-sema-expr, clang-diag-sema.

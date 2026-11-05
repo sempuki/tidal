@@ -10,6 +10,11 @@ A default argument of a constructor of the enclosing class value-initializes
 the nested class with empty braces. Clang and GCC reject the program. EDG
 accepts it.
 
+EDG also accepts the nested initializer in the initializer of a static
+data member, in the operand of `noexcept`, and in the bound of a member
+array, where Clang and GCC reject it. So every test of CTOR-18 needs an
+override for EDG.
+
 ## Options
 
 1. The program is not valid.

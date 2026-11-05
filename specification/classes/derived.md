@@ -504,14 +504,19 @@ static_assert(make(true) == 3);  // rejected: Left() is not constexpr
 The results are in `tests/RESULTS.md`. All eight compilers agree on 90
 of 91 tests.
 
-One question on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on classes and statements (`reports/review/2026-11-03-gap-review-questions-classes-statements.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+### Divergences
 
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0085` | DER-P4 | EDG 7.0 |
+- {question}`Q-0085` (DER-12; settled on DER-P4): whether a class with a
+  virtual base can have a `constexpr` destructor. It cannot, as Clang
+  and GCC say. EDG accepts the destructor.
 
-- DER-12: EDG accepts a `constexpr` destructor in a class with a virtual
-  base. Clang and GCC reject the destructor ({question}`Q-0085`).
+### Split tests
+
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `constexpr-dtor-virtual-base.cpp` | DER-12 | reject | reject | reject | accept | {question}`Q-0085` |
+
+### Sources
 
 Inputs: clang-sema-declcxx, clang-sema-access, clang-diag-sema,
 edg-class-decl.

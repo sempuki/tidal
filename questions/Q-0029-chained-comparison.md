@@ -30,6 +30,15 @@ The results differ by form and context:
 | A chain in a requires expression that depends on no template parameter, no flags | rejects | accepts | accepts, no warning under `-Wall` |
 | A chain in a dependent requirement or a template never instantiated, `-Werror -Wparentheses` | accepts | accepts | accepts |
 | `a == b == c` or `a < b == c`, `-Werror -Wparentheses` | accepts | accepts | rejects ("suggest parentheses around comparison in operand of `==`") |
+| `a < b < c` where the inner `<` returns a class, `-Werror -Wparentheses` | accepts | accepts | accepts |
+
+A relational chain of variables (`a < b < c`) and of constants
+(`1 < 2 < 3`) give the same result on each compiler. GCC turns on
+`-Wparentheses` under `-Wall`. The tests for the rows are
+`chained-class-bool-warns.cpp`, `chained-fold-not-chain.cpp`,
+`chained-requires-not-dependent.cpp`, `chained-in-concept-no-warning.cpp`,
+`chained-equality-gcc-warns.cpp`, `chained-relational-equality-gcc-warns.cpp`,
+and `chained-class-result-no-warning.cpp`.
 
 Each program is valid under the provisional answer. CMP-14 does not
 count a fold as a chained comparison, because each nested part of a

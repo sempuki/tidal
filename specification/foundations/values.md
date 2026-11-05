@@ -307,16 +307,30 @@ NoCopy a = NoCopy(NoCopy(5));      // fine: no copy occurs
 All eight compilers agree on 62 of 64 tests. The results are in
 `tests/RESULTS.md`.
 
+### Divergences
+
+- {question}`Q-0034` (VC-3, PFX-3; settled on PFX-P1): whether a
+  subscript of an array xvalue is an xvalue. It is, as Clang and GCC
+  say. EDG gives an lvalue.
+- {question}`Q-0054` (VC-10, DTOR-7; settled on CTOR-P4): whether
+  constant evaluation rejects a second destruction, such as of a
+  parameter that the called function destroyed. It does, as Clang and
+  GCC say. EDG accepts the second destruction.
+
+### Split tests
+
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `classes/constructors/parameter-destroyed-by-callee-constant.cpp` | DTOR-7, VC-10 | reject | reject | reject | accept | {question}`Q-0054` |
+| `xvalue-array-subscript.cpp` | VC-3 | accept | accept | accept | reject | {question}`Q-0034` |
+
+### Notes
+
 - VC-15: Clang 22 destroys the second parameter of a call first, and GCC
   16 the first.
-- VC-3: EDG gives an lvalue for a subscript of an array xvalue. Clang
-  and GCC give an xvalue ({question}`Q-0034`).
 - VC-7: the test accepts either result.
 - VC-10: the test accepts either point. Clang and GCC destroy the
-  parameter at the end of the full expression. Clang and GCC reject the
-  second destruction of a parameter that the called function destroyed
-  when it happens during constant evaluation, and EDG 7.0 accepts it
-  (`parameter-destroyed-by-callee-constant.cpp`, {question}`Q-0054`).
+  parameter at the end of the full expression.
 - VC-16: on Clang and GCC, the caller catches an exception from the copy
   into a parameter and from the parameter's destructor, also when the
   called function is non-throwing.
@@ -327,5 +341,7 @@ All eight compilers agree on 62 of 64 tests. The results are in
   `-m32`, because the host compilers have no 32-bit C library. In the
   writer's probes, the run tests of the rule give the same
   results with `-m32` in the GCC 14, Clang 18, and Clang 22 containers.
+
+### Sources
 
 Inputs: clang-sema-expr, clang-diag-sema.

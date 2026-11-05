@@ -296,26 +296,40 @@ void post(Packet* p) {
 The results are in `tests/RESULTS.md`. All eight compilers agree on 59
 of 68 tests.
 
-One question on this page settled on 2026-11-04 under decision 0054 after the principle-use batch PU1 (`reports/clean-room/PU1/`). The batch's use of the principle supports the answer, the latest gap review supports it with no doubt, and the principle gives the same answer. The tests keep their overrides for the family that still differs:
+### Divergences
 
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0067` | TYN-P1 | none; the tests keep their overrides for GCC 14 |
+- {question}`Q-0066` (TYN-5; settled on TYN-P4): whether an
+  implementation must diagnose a class member that changes the meaning
+  of a name used earlier in the class. The class is not valid, and the
+  rule needs no diagnostic. GCC rejects the class, for a type name and
+  for a function name, and Clang and EDG accept it. Both results
+  conform, so no family differs.
+- {question}`Q-0093` (TYN-7; settled on TYN-P2): whether a declaration
+  of only a class key and a qualified name is valid. It is not, as
+  Clang and EDG say. GCC accepts the declaration.
+- {question}`Q-0067` (TYN-3, TYN-9; settled on TYN-P1): whether a
+  typedef can give a name for linkage to an unnamed class that is not
+  C-like. It cannot. No newest family differs. GCC 14 accepts the
+  classes.
 
-Two questions on this page settled under decision 0054. Q-0066 settled on 2026-11-03 after the source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`). Q-0093 settled on 2026-11-04 after the source-reader gap review of the text phase 8 wrote on the declarations and statements chapters (`reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+### Split tests
 
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0066` | TYN-P4 | none; the rule needs no diagnostic |
-| {question}`Q-0093` | TYN-P2 | GCC 16 |
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `alias-shadow-changes-meaning.cpp` | TYN-5 | accept | accept | reject | accept | {question}`Q-0066` |
+| `elaborated-qualified-declaration-only.cpp` | TYN-7 | reject | reject | accept | reject | {question}`Q-0093` |
+| `function-name-changes-meaning.cpp` | TYN-5 | accept | accept | reject | accept | {question}`Q-0066` |
+| `typedef-unnamed-class-base.cpp` | TYN-9 | reject | reject | GCC 16: reject; GCC 14: accept | reject | {question}`Q-0067` |
+| `typedef-unnamed-class-default-member-initializer.cpp` | TYN-9 | reject | reject | GCC 16: reject; GCC 14: accept | reject | {question}`Q-0067` |
+| `typedef-unnamed-class-lambda.cpp` | TYN-9 | reject | reject | GCC 16: reject; GCC 14: accept | reject | {question}`Q-0067` |
+| `typedef-unnamed-class-member-alias.cpp` | TYN-9 | reject | reject | GCC 16: reject; GCC 14: accept | reject | {question}`Q-0067` |
+| `typedef-unnamed-class-member-function.cpp` | TYN-9 | reject | reject | GCC 16: reject; GCC 14: accept | reject | {question}`Q-0067` |
+| `typedef-unnamed-class-nested-member-function.cpp` | TYN-9 | reject | reject | GCC 16: reject; GCC 14: accept | reject | {question}`Q-0067` |
 
-- TYN-5: GCC rejects the class, for a type name and for a function name
-  that a later data member changes. Clang and EDG accept the class
-  ({question}`Q-0066`).
-  TYN-5 needs no diagnostic. Every test of TYN-5 has an override, and
-  each override records a result that the class allows.
-- TYN-7: GCC accepts a declaration of only a class key and a qualified
-  name. Clang and EDG reject the declaration ({question}`Q-0093`).
+### Notes
+
+- TYN-5: the rule needs no diagnostic. Every test of TYN-5 has an
+  override, and each override records a result that the class allows.
 - TYN-9: every newest compiler rejects a typedef name for linkage for
   an unnamed class with a member alias, with a lambda expression in the
   type of a member, or with a member class that has a member function.
@@ -327,9 +341,8 @@ Two questions on this page settled under decision 0054. Q-0066 settled on 2026-1
   class template can name the class with a class key and a qualified
   name. Every compiler accepts these declarations, which start with
   `template`.
-- TYN-3: GCC 14 accepts a typedef name for a class with a member
-  function. GCC 16, Clang, and EDG reject the typedef name
-  ({question}`Q-0067`).
+
+### Sources
 
 Inputs: clang-sema-decl, clang-sema-declcxx, clang-diag-sema, edg-decls,
 edg-class-decl.

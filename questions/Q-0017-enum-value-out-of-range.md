@@ -18,6 +18,10 @@ underlying type.
 `cast-fixed-any-value.cpp`. Clang 22's note: "integer value 8 is outside
 the valid range of values [0, 7] for the enumeration type 'E'".
 
+`tests/expressions/casts/static-cast-enum-out-of-range-constant.cpp`
+checks the same conversion under CAST-14. Clang rejects the value during
+constant evaluation, and GCC and EDG accept it.
+
 ## Options
 
 1. `undefined` for values outside the smallest range of bits that holds

@@ -11,6 +11,13 @@ with its i686 configuration, gives `long long` an alignment of 8, and
 the same struct takes 16 bytes. The three agree on `double` (4) and
 `long double` (4).
 
+The alignment also moves bit-fields (BF-9). With `-m32`, Clang and GCC
+let an `unsigned long long` bit-field start at any multiple of 4 bytes,
+so a field of 30 bits after one of 40 bits starts at bit 40. EDG starts
+such a field at bit 64
+(`tests/classes/unions/bitfield-next-unit-ilp32.cpp`,
+`tests/classes/unions/bitfield-wide-layout-ilp32.cpp`).
+
 ## Evidence
 
 `tests/RESULTS.md`, rows `align-ilp32.cpp` and `align-member-ilp32.cpp`

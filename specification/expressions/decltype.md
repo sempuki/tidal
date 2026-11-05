@@ -302,24 +302,35 @@ decltype(true ? i : h) t;      // int: the operands differ, so a prvalue
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 49
-of 54 tests.
+of 54 tests. The UNEV-4 tests turn the warning into an error, so EDG
+skips them.
 
-Two questions on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+### Divergences
 
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0065` | DTY-P2 | GCC 16 |
-| {question}`Q-0089` | DTY-P2 | GCC 16 |
+- {question}`Q-0065` (DTY-5; settled on DTY-P2): whether `decltype` can
+  name the class in the qualified name of a member definition. It
+  cannot, as Clang and EDG say. GCC accepts it, also for a nested class
+  and an enumeration definition.
+- {question}`Q-0089` (DTY-3; settled on DTY-P2): whether `decltype` can
+  name the class after `~` in an explicit destructor call. It can, as
+  Clang and EDG say. GCC rejects the call.
 
-- DTY-5: GCC accepts `decltype` in the qualified name of a member
-  definition. Clang and EDG reject such a use ({question}`Q-0065`).
-  GCC also accepts `decltype` in the qualified name of a nested class
-  definition and of an enumeration definition. EDG accepts the
-  enumeration definition. So every test of DTY-5 needs an override.
-- UNEV-4: Clang warns by default. GCC gives no warning.
-  UNEV-4 is a `recommended` rule. Every test of UNEV-4 has an override,
-  and each override records a result that the class allows.
-- DTY-3: GCC rejects `decltype` after `~` in an explicit destructor
-  call. Clang and EDG accept the call ({question}`Q-0089`).
+### Split tests
+
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `declarative-nested-name-static-member.cpp` | DTY-5 | reject | reject | accept | reject | {question}`Q-0065` |
+| `declarative-nested-name.cpp` | DTY-5 | reject | reject | accept | reject | {question}`Q-0065` |
+| `destructor-call.cpp` | DTY-3 | accept | accept | reject | accept | {question}`Q-0089` |
+| `side-effect-decltype-warns.cpp` | UNEV-4 | reject | reject | accept | skips | |
+| `side-effect-unevaluated-warns.cpp` | UNEV-4 | reject | reject | accept | skips | |
+
+### Notes
+
+- UNEV-4: Clang warns by default. GCC gives no warning. UNEV-4 is a
+  `recommended` rule. Every test of UNEV-4 has an override, and each
+  override records a result that the class allows.
+
+### Sources
 
 Inputs: clang-sema-expr, clang-sema-type, clang-diag-sema, edg-decls.

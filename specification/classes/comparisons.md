@@ -319,39 +319,54 @@ bool y = l == s;   // the friend from Name<8>, with M = 2
 The results are in `tests/RESULTS.md`. All eight compilers agree on 74
 of 80 tests. The tests declare the comparison category types themselves.
 
-Two questions on this page settled on 2026-11-04 under decision 0054 after the source-reader gap review of the text phase 8 wrote on classes and overloading (`reports/review/2026-11-04-gap-review-phase-8-classes-overloading.md`). For each, the review used the principle on the question's program, supports the answer with no doubt, and the principle gives the same answer. Each test keeps its override for the family that still differs:
+### Divergences
 
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0061` | DCMP-P1 | GCC 16 |
-| {question}`Q-0158` | DCMP-P2 | GCC 16 |
+- {question}`Q-0061` (DCMP-3; settled on DCMP-P1): whether a friend
+  comparison declared outside the class can be defaulted in it. It
+  cannot, as Clang and EDG say. GCC accepts the default.
+- {question}`Q-0062` (DCMP-8; open): whether an implementation must
+  diagnose a comparison defaulted outside its class that would be
+  deleted. It must, as Clang does and as {rule}`CPY-17` gives for the
+  copy and move functions. GCC and EDG accept the definition.
+- {question}`Q-0158` (DCMP-12; settled on DCMP-P2): whether an `==`
+  used for a reversed or rewritten comparison can return a reference to
+  `bool`. It cannot, as Clang and EDG say, for a reversed `==` and for
+  an `==` that rewrites `!=`. GCC accepts the reference.
+- {question}`Q-0190` (DCMP-13, DCMP-12; open): whether ref-qualifiers
+  take part in the match of `!=` and `==`. They do not, as Clang and
+  EDG say. GCC treats `const&` and `const&&` as different. The choice
+  waits on the maintainer (`documentation/decisions/pending.md`, row 4).
 
-- DCMP-3: GCC accepts defaulting a friend that was declared outside the
-  class. Clang and EDG reject it ({question}`Q-0061`).
-- DCMP-8: Clang rejects the definition. GCC and EDG accept it
-  ({question}`Q-0062`). DCMP-8 is a `reject` rule, as {rule}`CPY-17` is
-  for the copy and move functions, and the tests record GCC and EDG as
-  overrides.
-  In `out-of-class-would-delete-used.cpp` the program also uses the
-  comparison, and every compiler rejects the program. GCC and EDG reject
-  the use of a deleted function.
+### Split tests
+
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `declared-outside-then-defaulted.cpp` | DCMP-3 | reject | reject | accept | reject | {question}`Q-0061` |
+| `eq-reference-to-bool-result.cpp` | DCMP-12 | reject | reject | accept | reject | {question}`Q-0158` |
+| `ne-matching-ref-qualifier.cpp` | DCMP-13, DCMP-12 | reject | reject | accept | reject | {question}`Q-0190` |
+| `ne-rewrite-reference-to-bool-result.cpp` | DCMP-12 | reject | reject | accept | reject | {question}`Q-0158` |
+| `out-of-class-reference-member-would-delete.cpp` | DCMP-8 | reject | reject | accept | accept | {question}`Q-0062` |
+| `out-of-class-would-delete.cpp` | DCMP-8 | reject | reject | accept | accept | {question}`Q-0062` |
+
+### Notes
+
+- DCMP-8: in `out-of-class-would-delete-used.cpp` the program also uses
+  the comparison, and every compiler rejects the program. GCC and EDG
+  reject the use of a deleted function.
 - DCMP-7: Clang and GCC give the warning by default, and
   `-pedantic-errors` makes the warning an error. EDG reports the
   comparison as ambiguous.
-- DCMP-12: a reversed or rewritten `==` that returns `bool&` or
-  `bool&&` is rejected by Clang and EDG. GCC accepts it
-  ({question}`Q-0158`). Every compiler accepts a cv-qualified `bool`.
-- DCMP-12: an `==` that rewrites `!=` follows the same result rules as
-  a reversed `==`. Every compiler accepts a cv-qualified `bool`. Clang
-  and EDG reject `const bool&`, and GCC accepts it ({question}`Q-0158`).
+- DCMP-12: every compiler accepts a cv-qualified `bool` as the result
+  of a reversed `==` and of an `==` that rewrites `!=`.
 - DCMP-13: the compilers agree on what makes a `!=` match an `==`,
-  except for the ref-qualifiers `&` and `&&`. Clang and EDG ignore the
-  ref-qualifiers, and GCC treats `const&` and `const&&` as different
-  ({question}`Q-0190`). The rule comes from probes of each condition.
+  except for the ref-qualifiers. The rule comes from probes of each
+  condition.
 - DCMP-6, DCMP-12: the reversed `<=>` candidate and the `bool` result of
   a reversed `==` come from items M-1 and M-3 of the gap review
   `reports/review/2026-10-31-gap-review-overload-resolution.md`, and from
   probes.
+
+### Sources
 
 Inputs: clang-sema-declcxx, clang-sema-expr, clang-diag-sema,
 edg-class-decl, edg-overload.

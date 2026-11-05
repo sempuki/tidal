@@ -318,56 +318,64 @@ const auto& [cl, ch] = g; // rejected: E is const Range, which has no
 All eight compilers agree on 64 of 71 tests. The results are in
 `tests/RESULTS.md`.
 
-One question on this page settled on 2026-11-04 under decision 0054 after the principle-use batch PU1 (`reports/clean-room/PU1/`). The batch's use of the principle supports the answer, the latest gap review supports it with no doubt, and the principle gives the same answer. The tests keep their overrides for the family that still differs:
+### Divergences
 
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0048` | SB-P2 | EDG 7.0 |
+- {question}`Q-0015` (SB-7; settled): whether `auto [r, s]{a};` is
+  valid when `a` is an array. It is. Clang 18 rejects the declaration,
+  and Clang 22, GCC, and EDG accept it.
+- {question}`Q-0016` (SB-15; compiler defect): whether a structured
+  binding can use a constrained `auto`. It cannot, as Clang and GCC
+  say. EDG 7.0 accepts `Any auto [x, y] = a;`.
+- {question}`Q-0048` (SB-5; settled on SB-P2): whether the bindings
+  use the data members when `std::tuple_size<E>` is complete and has no
+  `value`. They do, as Clang and GCC say. EDG 7.0 rejects the
+  declaration.
+- {question}`Q-0107` (SB-11; settled on SB-P3): whether `constinit`
+  can apply to a structured binding declaration. It cannot, as Clang
+  and GCC 16 say. EDG 7.0 and GCC 14 accept it.
+- {question}`Q-0376` (SB-5; open): which type the index of `get` has.
+  It is `std::size_t`, as Clang and EDG pass it, so `template <auto I>`
+  deduces that type. GCC passes an `int`. Every compiler accepts a
+  member `get` with an `int` parameter.
+- {question}`Q-0395` (SB-5; open): whether a member `get` that is not
+  a function template selects the member form. It does not, so a member
+  variable template or member class template named `get` leads to the
+  free `get`, as Clang and EDG do. GCC takes the member form and
+  rejects the binding.
 
-- **SB-15.** Clang and GCC accept `constexpr` structured bindings and
-  two `_` names as extensions from a later language version. The two
+### Split tests
+
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `constinit-specifier.cpp` | SB-11 | reject | reject | GCC 16: reject; GCC 14: accept | accept | {question}`Q-0107` |
+| `constrained.cpp` | SB-15 | reject | reject | reject | accept | {question}`Q-0016` |
+| `initializer-braces.cpp` | SB-7 | accept | Clang 22: accept; Clang 18: reject | accept | accept | {question}`Q-0015` |
+| `tuple-index-size-type.cpp` | SB-5 | accept | accept | reject | accept | {question}`Q-0376` |
+| `tuple-member-class-template-get-uses-free.cpp` | SB-5 | accept | accept | reject | accept | {question}`Q-0395` |
+| `tuple-member-variable-template-get-uses-free.cpp` | SB-5 | accept | accept | reject | accept | {question}`Q-0395` |
+| `tuple-size-without-value.cpp` | SB-5 | accept | accept | accept | reject | {question}`Q-0048` |
+
+### Notes
+
+- SB-15: Clang and GCC accept `constexpr` structured bindings and two
+  `_` names as extensions from a later language version. The two
   compilers reject these forms only under `-pedantic-errors`. Clang
   reports an empty list of names as a pedantic diagnostic.
-- **SB-8.** EDG 7.0 rejects two `_` names in one declaration in strict
+- SB-8: EDG 7.0 rejects two `_` names in one declaration in strict
   mode ("has already been declared"). So all eight compilers reject the
   declaration in the test's mode.
-- **SB-7, braced array initializer.** Clang 18.1.3 rejects
-  `auto [r, s]{a};` when `a` is an array. Clang 22, GCC, and EDG accept
-  the declaration. The settled answer is that the declaration is
-  valid. See {question}`Q-0015`.
-- **SB-15, constrained `auto`.** EDG 7.0 accepts `Any auto [x, y] = a;`.
-  Clang and GCC reject the declaration. The provisional answer is that
-  the declaration is rejected. See {question}`Q-0016`.
-- **SB-11.** EDG 7.0 and GCC 14 accept `constinit` on a structured
-  binding. Clang and GCC 16 reject such a binding ({question}`Q-0107`).
-  The question settled on 2026-11-04 under decision 0054 after the
-  source-reader gap review of the text phase 8 wrote on the
-  declarations and statements chapters
-  (`reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md`).
-  The review supports the answer with no doubt, and SB-P3 gives the
-  same answer. The test keeps its override for EDG 7.0, the newest
-  family that still differs.
-- **SB-P3, `volatile`.** A `volatile` structured binding declaration is
+- SB-P3, `volatile`: a `volatile` structured binding declaration is
   valid and deprecated. Clang, GCC, and EDG accept it with a warning.
-- **SB-5, type of the index.** Clang and EDG pass the index of `get`
-  as a `std::size_t`, so `template <auto I>` deduces that type. GCC
-  passes an `int`. Every compiler accepts a member `get` with an `int`
-  parameter. The provisional answer is `std::size_t`
-  ({question}`Q-0376`).
-- **SB-5, member or free `get`.** The gap review of the rules that
-  phase 7 rewrote
-  (`reports/review/2026-11-04-gap-review-phase-7-repairs.md`) reads
-  the reference as using the member form only when member lookup finds
-  a `get` template whose first template parameter is a value. Every
-  compiler follows that reading. A member `get` template whose first
-  parameter is a type leads to the free `get`, and the binding is not
-  valid when argument-dependent lookup finds none.
-- **SB-5, a `get` that is not a function template.** The gap review of
-  the text phase 8 wrote reads the reference as using the member form
-  only for a member function template. Clang and EDG use the free `get`
-  when member lookup finds a member variable template or a member class
-  template named `get`. GCC takes the member form and rejects the
-  binding ({question}`Q-0395`).
+- SB-5, member or free `get`: the gap review of the rules that phase 7
+  rewrote (`reports/review/2026-11-04-gap-review-phase-7-repairs.md`)
+  reads the reference as using the member form only when member lookup
+  finds a `get` template whose first template parameter is a value.
+  Every compiler follows that reading. A member `get` template whose
+  first parameter is a type leads to the free `get`, and the binding is
+  not valid when argument-dependent lookup finds none.
+- SB-5, a `get` that is not a function template: the gap review of the
+  text phase 8 wrote reads the reference as using the member form only
+  for a member function template ({question}`Q-0395`).
 
 Inputs: clang-sema-declcxx, edg-decls, clang-diag-sema (see
 `inputs/MANIFEST.md`).

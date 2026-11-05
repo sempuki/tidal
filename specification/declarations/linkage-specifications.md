@@ -225,43 +225,64 @@ apply(twice, 2);                 // rejected where the type records the linkage 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 32
 of 45 tests.
 
-One question on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+### Divergences
 
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0075` | LSP-P2 | GCC 16 |
+- {question}`Q-0074` (LSP-1, LSP-6; open): whether the type of a
+  function carries its language linkage. Each implementation chooses. EDG makes the
+  linkage part of the type and rejects a C++ function where a C
+  function type is expected, and Clang and GCC accept. The choice waits
+  on the maintainer (`documentation/decisions/pending.md`, row 4).
+- {question}`Q-0075` (LSP-4, LSP-7; settled on LSP-P2): whether a name
+  with C language linkage can match a global variable. It cannot, as
+  Clang and EDG say, in either order and for a C variable or function.
+  GCC accepts the program.
+- {question}`Q-0076` (LSP-2, LSP-4, LSP-7; settled under decision
+  0051): whether `main`, or a variable named `main`, can have C
+  language linkage. Neither can. No newest family differs. GCC 14 and
+  Clang 18 accept both.
+- {question}`Q-0369` (LSP-4, LNK-5, FN-14; open): whether C names with
+  internal linkage in two namespaces are one entity, and whether a C
+  name in an unnamed namespace joins the other C names of its spelling.
+  The `static` names are two entities, and GCC 16 fails at assembly
+  with one symbol for the two. The name in an unnamed namespace joins
+  the others, as Clang and GCC link it, and EDG accepts a second
+  definition in another namespace. The gap review of the rules that
+  phase 7 rewrote reads the second part as EDG does, and the choice
+  waits on the maintainer (`documentation/decisions/pending.md`, row 4).
 
-- LSP-6: EDG treats C language linkage as part of the function type.
-  Clang and GCC do not ({question}`Q-0074`). EDG gives the linkage to a
-  function type in a parameter and in a type alias inside an
-  `extern "C"` block, and rejects a C++ function as the argument for
-  either. EDG also rejects a C function as the initializer of a pointer
-  to a C++ function type, such as `void (*)()`. Clang and GCC accept
-  each of these programs.
+### Split tests
+
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `c-callback-alias.cpp` | LSP-1, LSP-6 | accept | accept | accept | reject | {question}`Q-0074` |
+| `c-function-conflicts-global-variable.cpp` | LSP-7 | reject | reject | accept | reject | {question}`Q-0075` |
+| `c-function-pointer-assign-ilp32.cpp` | LSP-6 | accept | accept | accept | reject | {question}`Q-0074` |
+| `c-function-pointer-assign.cpp` | LSP-6 | accept | accept | accept | reject | {question}`Q-0074` |
+| `c-linkage-main.cpp` | LSP-2 | reject | Clang 22: reject; Clang 18: accept | GCC 16: reject; GCC 14: accept | reject | {question}`Q-0076` |
+| `c-name-before-global.cpp` | LSP-7 | reject | reject | accept | reject | {question}`Q-0075` |
+| `c-name-conflicts-global.cpp` | LSP-7 | reject | reject | accept | reject | {question}`Q-0075` |
+| `c-name-unnamed-namespace-redefined.cpp` | LSP-4, FN-14 | reject | reject | reject | accept | {question}`Q-0369` |
+| `c-parameter-type-linkage.cpp` | LSP-1, LSP-6 | accept | accept | accept | reject | {question}`Q-0074` |
+| `c-static-function-two-namespaces.cpp` | LSP-4 | run | run | reject | accept | {question}`Q-0369` |
+| `c-static-not-joined.cpp` | LSP-4, ODR-9 | reject | Clang 22: reject; Clang 18: accept | reject | reject | {question}`Q-0369` |
+| `c-static-variable-two-namespaces.cpp` | LSP-4 | run | run | GCC 16: reject; GCC 14: run | accept | {question}`Q-0369` |
+| `c-variable-named-main.cpp` | LSP-7 | reject | Clang 22: reject; Clang 18: accept | GCC 16: reject; GCC 14: accept | reject | {question}`Q-0076` |
+
+### Notes
+
 - LSP-6: two functions whose parameter types differ only in the
   linkage of a function type are two overloads on EDG. On Clang and
   GCC the second declaration declares the first function again. Every
   compiler accepts the two declarations.
-- LSP-4, LSP-7: GCC accepts a C language linkage name that matches a
-  global variable ({question}`Q-0075`). Clang and EDG reject the program
-  in either order, for a C variable and for a C function. Every
-  compiler accepts a global function with C++ linkage that has the
-  spelling of a C name.
-- LSP-2, LSP-4: GCC 14 and Clang 18 accept C language linkage on `main`
-  and on a variable named `main` ({question}`Q-0076`).
-- LSP-4, LNK-5: Clang and GCC treat a C name in an unnamed namespace as
-  one entity with the other C names of its spelling. Clang rejects a
-  second definition in another namespace, and GCC fails at assembly
-  with one symbol for the two. EDG accepts the two definitions
-  ({question}`Q-0369`). The gap review of the rules that phase 7
-  rewrote (`reports/review/2026-11-04-gap-review-phase-7-repairs.md`)
-  reads the reference as EDG does: the name has internal linkage and so
-  no language linkage. Tidal keeps the answer of Clang and GCC
-  (`documentation/decisions/pending.md`, row 4).
+- LSP-7: every compiler accepts a global function with C++ linkage that
+  has the spelling of a C name.
 - LSP-8: Clang and GCC link a C variable in one unit with a global
   variable of the same spelling in another, in either order, and give
-  no diagnostic. The gap review of the rules that phase 7 rewrote reads
+  no diagnostic. The gap review of the rules that phase 7 rewrote
+  (`reports/review/2026-11-04-gap-review-phase-7-repairs.md`) reads
   the reference as requiring no diagnostic when neither declaration is
   reachable from the other.
+
+### Sources
 
 Inputs: clang-sema-decl, clang-sema-declcxx, clang-diag-sema, edg-decls.

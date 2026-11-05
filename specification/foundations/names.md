@@ -901,24 +901,40 @@ File::File* q = nullptr;        // rejected: names the constructor
 The results are in `tests/RESULTS.md`. All eight compilers agree on 238
 of 242 tests.
 
-One question on this page settled on 2026-11-04 under decision 0054 after the principle-use batch PU2 (`reports/clean-room/PU2/`). The batch's use of the principle supports the answer, the latest gap review supports it with no doubt, and the principle gives the same answer. The table gives the principle and the family that differs:
+### Divergences
 
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0377` | NAM-P5 | none |
+- {question}`Q-0311` (NAM-27; settled on NAM-P3): whether an argument
+  that is a template-id naming a function template adds the namespaces
+  of its type arguments. It does, as GCC and EDG say. Clang adds
+  nothing for them.
+- {question}`Q-0316` (PFX-11, NAM-6; settled on PFX-P3): whether a
+  member access in a member declaration can name an earlier member of
+  the class being defined. It can, as GCC and EDG say. Clang rejects
+  the access.
+- {question}`Q-0364` (NAM-38; open): whether a block declaration of an
+  operator function that does not fit turns off argument-dependent
+  lookup for an operator. It does not, as Clang and GCC say. EDG turns
+  the lookup off.
+- {question}`Q-0362` (NAM-39; open): whether a member of an anonymous
+  union can share its name with a class. It can, as GCC and EDG say,
+  with NAM-P10. Clang rejects the class. Two gap reviews read the C++23
+  text as Clang does, and the choice waits on the maintainer
+  (`documentation/decisions/pending.md`, row 4).
+- {question}`Q-0377` (NAM-21; settled on NAM-P5): whether the body of a
+  class defined with a qualified name sees the members of the qualifier
+  without qualification. It does. No family differs.
 
-The clean-room writer probed qualified lookup, using directives,
-argument-dependent lookup, and the injected class name with Clang 22,
-GCC 16, and EDG 7.0, and checked the tests on Clang 18, GCC 14, and EDG
-7.0 for ILP32. The compilers agree on every probe except those that
-Q-0311 and the two questions below record. The
-argument-dependent lookup grid of NAM-27 and NAM-28 has one test for
-each row, and a rejected test for each kind of type that adds nothing.
+### Split tests
 
-- NAM-27: for an argument that is a template-id naming a function
-  template, GCC and EDG add the namespaces of the type arguments, and
-  Clang adds nothing for them ({question}`Q-0311`, settled). Clang 22
-  stays a recorded deviation.
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `expressions/postfix/member-access-class-being-defined.cpp` | PFX-11, NAM-6 | accept | reject | accept | accept | {question}`Q-0316` |
+| `adl-template-id-argument.cpp` | NAM-27 | accept | reject | accept | accept | {question}`Q-0311` |
+| `operator-lookup-block-declaration-keeps-adl.cpp` | NAM-38 | accept | accept | accept | reject | {question}`Q-0364` |
+| `shared-name-anonymous-union-member.cpp` | NAM-39 | accept | reject | accept | accept | {question}`Q-0362` |
+
+### Notes
+
 - NAM-21: the gap reviews of the text phase 8 wrote
   (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`
   and `reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md`)
@@ -931,7 +947,9 @@ each row, and a rejected test for each kind of type that adds nothing.
 - NAM-27, NAM-28: all compilers add the class of a member template that
   is a template argument, and the namespaces of an overload set whose
   address is the argument. A lambda in a member function body does not
-  add the class.
+  add the class. The argument-dependent lookup grid of NAM-27 and
+  NAM-28 has one test for each row, and a rejected test for each kind
+  of type that adds nothing.
 - NAM-12, NAM-13, NAM-14, NAM-16, NAM-23, NAM-37: all compilers find an
   outer class past an inner variable after a class key and in a list of
   bases, follow a using directive in an inline namespace of `N`, merge
@@ -946,21 +964,12 @@ each row, and a rejected test for each kind of type that adds nothing.
   is an alias for `int`. The source-reader gap review of names and
   lookup (`reports/review/2026-11-03-gap-review-names.md`) finds two
   readings of the C++23 text here. NAM-16 follows the compilers.
-- NAM-38: Clang 22 and GCC 16 keep argument-dependent lookup for an
-  operator when a block declares an operator function that does not
-  fit. EDG 7.0 does not
-  ({question}`Q-0364`). The gap review
-  reads the C++23 text strictly as EDG does, with doubt. The gap review
-  of the rules that phase 7 added
+- NAM-38: the gap review of names and lookup reads the C++23 text
+  strictly as EDG does, with doubt. The gap review of the rules that
+  phase 7 added
   (`reports/review/2026-11-04-gap-review-phase-7-additions.md`) finds
   the text unclear on the order of two lookup steps, and the literal
   text as EDG reads it.
-- NAM-39: GCC and EDG let a member of an anonymous union share its name
-  with a class, and Clang rejects the class. The gap review reads the
-  C++23 text as Clang does. Tidal follows GCC and EDG
-  ({question}`Q-0362`), with NAM-P10. The gap review of the rules that
-  phase 7 added reads the text in the same way as the first review
-  (`documentation/decisions/pending.md`, row 4).
 - NAM-40, NAM-41: in the type of a conversion function, all compilers
   find a variable that shares its name with a class, and reject the
   class there. The gap review reads the C++23 text as finding the class.
@@ -980,6 +989,14 @@ each row, and a rejected test for each kind of type that adds nothing.
 - NAM-8, NAM-18, NAM-24, NAM-26, NAM-34, NAM-36: each of these rules
   overlaps another `reject` rule. The rule text says which of the two
   is the specific one, and the tests cite that rule (decision 0042).
+
+### Sources
+
+The clean-room writer probed qualified lookup, using directives,
+argument-dependent lookup, and the injected class name with Clang 22,
+GCC 16, and EDG 7.0, and checked the tests on Clang 18, GCC 14, and EDG
+7.0 for ILP32. The compilers agree on every probe except those that the
+Divergences list records.
 
 Inputs: clang-sema-decl, clang-sema-declcxx, clang-diag-sema, edg-decls,
 clang-sema-lookup, clang-sema-cxxscopespec, edg-lookup, edg-scope-stk.

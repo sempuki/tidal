@@ -413,71 +413,82 @@ static_assert(sizeof names / sizeof names[0] ==
 All eight compilers agree on 78 of 81 tests. The results are in
 `tests/RESULTS.md`.
 
-One question on this page settled on 2026-11-04 under decision 0054 after the principle-use batch PU1 (`reports/clean-room/PU1/`). The batch's use of the principle supports the answer, the latest gap review supports it with no doubt, and the principle gives the same answer. The tests keep their overrides for the family that still differs:
+### Divergences
 
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0114` | ENUM-P1 | none; each family gives a type that the answer allows |
+- {question}`Q-0017` (ENUM-6; open): whether a conversion of a value
+  outside an enumeration's range is undefined. It is. Clang rejects
+  `static_cast<E>(8)` during constant evaluation, and GCC and EDG accept
+  the cast.
+- {question}`Q-0018` (ENUM-5; open): what happens when no standard
+  integer type holds every value of an unscoped enumeration. The
+  implementation can use a wider type of its own or reject the
+  enumeration. GCC uses a 128-bit type on x86-64, and Clang and EDG
+  reject the enumeration. With `-m32`, every compiler rejects it.
+- {question}`Q-0047` (ENUM-20; settled on ENUM-P2): whether `using
+  enum` can name an enumeration that is declared and not defined. It
+  cannot, as Clang and GCC say. EDG accepts the declaration.
+- {question}`Q-0114` (ENUM-13; settled on ENUM-P1): what type an
+  enumerator gets when its value outgrows the type before it. Any
+  integer type that holds the value. Each family gives a different type
+  that the answer allows, so no family differs.
+- {question}`Q-0336` (ENUM-6; open): whether a read of an enumeration
+  object is undefined when its bytes hold a value outside the
+  enumeration's values. It is, as the sanitizers of Clang and GCC
+  report. The source-reader review reads the read as defined, and the
+  choice waits on the maintainer (`documentation/decisions/pending.md`,
+  row 4).
 
-One question on this page settled on 2026-11-04 under decision 0054 after the source-reader gap review of the text phase 8 wrote on the declarations and statements chapters (`reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md`). The review supports the answer with no doubt, and a principle gives the same answer. The test keeps its override for the family that still differs:
+### Split tests
 
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0047` | ENUM-P2 | EDG 7.0 |
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `cast-out-of-range.cpp` | ENUM-6 | reject | reject | accept | accept | {question}`Q-0017` |
+| `unscoped-value-too-large.cpp` | ENUM-5 | reject | reject | accept | reject | {question}`Q-0018` |
+| `using-enum-opaque.cpp` | ENUM-20 | reject | reject | reject | accept | {question}`Q-0047` |
 
-{question}`Q-0018` is provisional. The principle-use batch PU1 gave no answer from ENUM-P3 for the question's program, and ENUM-P3 now says what each baseline compiler does.
+### Notes
 
-- **ENUM-5.** With `-fshort-enums`, Clang and GCC give `enum { S = 1 }`
-  an underlying type of 1 byte. By default its size is the size of
-  `int`.
-- **ENUM-5, the matrix types.** A test with no standard header observes
-  the size of the underlying type and the values that it holds. The
-  tests check the sizes, which agree on every compiler. The types of
-  the table come from the writer's probes with each compiler's builtin
-  query (decision 0051). The families differ only in signedness. An
+- ENUM-5: with `-fshort-enums`, Clang and GCC give `enum { S = 1 }` an
+  underlying type of 1 byte. By default its size is the size of `int`.
+- ENUM-5, the matrix types: a test with no standard header observes the
+  size of the underlying type and the values that it holds. The tests
+  check the sizes, which agree on every compiler. The types of the table
+  come from the writer's probes with each compiler's builtin query
+  (decision 0051). The families differ only in signedness. An
   enumeration with no enumerators gets `unsigned int` from Clang and
   GCC, and `int` from EDG.
-- **ENUM-5, no standard underlying type.** GCC accepts an unscoped
-  enumeration that needs more than 64 bits, and uses a 128-bit type.
-  Clang and EDG reject the enumeration. With `-m32`, GCC rejects it
-  too. The provisional answer is that
-  the choice is implementation-defined. See {question}`Q-0018`.
-- **ENUM-6.** Clang rejects `static_cast<E>(8)` during constant
-  evaluation ("outside the valid range of values [0, 7]"). GCC and EDG
-  accept the cast. The provisional answer is that the behavior is
-  undefined. See {question}`Q-0017`.
-- **ENUM-6.** At run time, the undefined behavior sanitizer of Clang
-  and GCC (`-fsanitize=undefined`) does not stop the conversion of an
+- ENUM-6: at run time, the undefined behavior sanitizer of Clang and GCC
+  (`-fsanitize=undefined`) does not stop the conversion of an
   out-of-range value. The sanitizer stops at the first read of the
   stored value ("load of value 5, which is not a valid value for type").
-  The sanitizer stops the same read when the value came from the bytes
-  of an `int` ({question}`Q-0336`).
-- **ENUM-10, ENUM-P1.** Inside the list, an enumerator whose
-  initializer has an unscoped enumeration type has that enumeration
-  type on every matrix compiler, also when the enumeration has a fixed
-  type such as `short`. The gap review of the text phase 8 wrote
+- ENUM-10, ENUM-P1: inside the list, an enumerator whose initializer has
+  an unscoped enumeration type has that enumeration type on every matrix
+  compiler, also when the enumeration has a fixed type such as `short`.
+  The gap review of the text phase 8 wrote
   (`reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md`)
-  reads the C++23 text as giving the enumeration's underlying type. Tidal
-  keeps the matrix's answer (`documentation/decisions/pending.md`,
+  reads the C++23 text as giving the enumeration's underlying type.
+  Tidal keeps the matrix's answer (`documentation/decisions/pending.md`,
   "Matrix against review"). A first enumerator without an initializer
-  has the type `int` on every matrix compiler. The review reads the
-  type as a signed integer type that the implementation chooses.
-- **ENUM-P3, ENUM-5.** The underlying type of an enumeration without a
-  fixed type can be an integer type that the implementation provides
-  beyond the standard ones. An implementation with no type wide enough
-  must reject the enumeration. Whether GCC's 128-bit type counts as such
-  a type is GCC's own statement ({question}`Q-0018`).
-- **ENUM-10.** Clang and GCC accept `sizeof` of an enumeration with a
-  fixed underlying type inside its own enumerator list, and reject it
-  for an enumeration without one.
-- **TR-12.** Clang and GCC reject `enum class` and `enum struct` with
-  no name.
-- **ENUM-2.** Clang and GCC accept arithmetic between two different
-  unscoped enumerations under `-pedantic-errors`, with a deprecation
-  warning that is on by default. EDG accepts it too.
-- **ENUM-21.** Clang, GCC, and EDG agree that `static_cast` of 300 to an
+  has the type `int` on every matrix compiler. The review reads the type
+  as a signed integer type that the implementation chooses.
+- ENUM-P3, ENUM-5: the underlying type of an enumeration without a fixed
+  type can be an integer type that the implementation provides beyond
+  the standard ones. An implementation with no type wide enough must
+  reject the enumeration. Whether GCC's 128-bit type counts as such a
+  type is GCC's own statement ({question}`Q-0018`).
+- ENUM-10: Clang and GCC accept `sizeof` of an enumeration with a fixed
+  underlying type inside its own enumerator list, and reject it for an
+  enumeration without one.
+- TR-12: Clang and GCC reject `enum class` and `enum struct` with no
+  name.
+- ENUM-2: Clang and GCC accept arithmetic between two different unscoped
+  enumerations under `-pedantic-errors`, with a deprecation warning that
+  is on by default. EDG accepts it too.
+- ENUM-21: Clang, GCC, and EDG agree that `static_cast` of 300 to an
   enumeration with underlying type `unsigned char` gives 44 during
   constant evaluation. Clang and GCC give the same value at run time.
+
+### Sources
 
 Inputs: clang-sema-decl, edg-decls, clang-diag-sema (see
 `inputs/MANIFEST.md`).

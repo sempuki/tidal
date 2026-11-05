@@ -126,9 +126,23 @@ static_assert(!requires { twice(1.5); });  // rejected
 
 The results are in `tests/RESULTS.md`.
 
-- DEL-2: GCC 14 accepts a deleted `main`. GCC 16, Clang, and EDG reject
-  a deleted `main` ({question}`Q-0023`).
+### Divergences
+
+- {question}`Q-0023` (DEL-2; settled): whether a deleted `main` is
+  rejected. It is, as the newest version of each family says. GCC 14
+  accepts it, and no newest family differs.
+
+### Split tests
+
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `deleted-main.cpp` | DEL-2 | reject | reject | GCC 16: reject; GCC 14: accept | reject | {question}`Q-0023` |
+
+### Notes
+
 - DEL-3: Clang and GCC accept a reason as a newer-standard extension,
   but reject a reason under `-pedantic-errors`.
+
+### Sources
 
 Inputs: clang-sema-declcxx, clang-diag-sema, edg-func-def.

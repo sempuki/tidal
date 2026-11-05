@@ -23,7 +23,9 @@ temporary object, so such an initializer is not a constant expression.
 Clang 18 and Clang 22 give 2. GCC 14 and GCC 16 give 1. EDG translates
 the program and does not run it. Both compiler families give 1 for a
 local `const int` and 2 for a local `const double`
-(`consteval-local-initializers.cpp`).
+(`consteval-local-initializers.cpp`). Both also give 1 for a local
+`const` enumeration variable, and 2 for a local `const volatile int` and
+for a local variable that is not `const`.
 
 ## Options
 

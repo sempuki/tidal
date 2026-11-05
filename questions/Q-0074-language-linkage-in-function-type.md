@@ -11,6 +11,13 @@ different, so a pointer to the C function does not initialize a pointer
 to a C++ function type. Clang and GCC treat the types as the same. All
 three accept two declarations that overload on the two types.
 
+EDG also gives C language linkage to a function type in a parameter and
+in a type alias inside an `extern "C"` block, and rejects a C++
+function as the argument for either
+(`tests/declarations/linkage-specifications/c-parameter-type-linkage.cpp`,
+`tests/declarations/linkage-specifications/c-callback-alias.cpp`).
+Clang and GCC accept both programs.
+
 ## Options
 
 1. Each implementation decides whether a function type includes its

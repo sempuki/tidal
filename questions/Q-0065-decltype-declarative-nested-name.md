@@ -10,6 +10,12 @@ name. A program can write the class part of that name with `decltype`,
 as in `void decltype(s)::f() {}`. Clang and EDG reject the definition.
 GCC accepts it.
 
+GCC also accepts `decltype` in the qualified name of a nested class
+definition and of an enumeration definition, and EDG accepts the
+enumeration definition. Both DTY-5 tests, `declarative-nested-name.cpp`
+and `declarative-nested-name-static-member.cpp`, have an override for
+GCC.
+
 ## Options
 
 1. `decltype` must not occur in the qualified name of a declaration.

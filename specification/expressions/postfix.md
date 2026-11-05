@@ -378,18 +378,47 @@ top++;            // undefined
 The results are in `tests/RESULTS.md`. All eight compilers agree on 73
 of 81 tests.
 
-One question on this page settled on 2026-11-04 under decision 0054 after the principle-use batch PU1 (`reports/clean-room/PU1/`). The batch's use of the principle supports the answer, the latest gap review supports it with no doubt, and the principle gives the same answer. The tests keep their overrides for the family that still differs:
+### Divergences
 
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0316` | PFX-P3 | Clang 22 |
+- {question}`Q-0034` (PFX-3; settled on PFX-P1): whether a subscript of
+  an array member of a prvalue is an xvalue. It is, as Clang and GCC
+  say. EDG gives `int&`.
+- {question}`Q-0316` (PFX-11, NAM-6; settled on PFX-P3): whether a
+  member access in a member declaration can name an earlier member of
+  the class being defined. It can, as GCC and EDG say. Clang rejects
+  the access because the class is incomplete.
+- {question}`Q-0124` (PFX-12; open): whether `++` on a signed operand
+  narrower than `int` is defined when the new value does not fit. It
+  is, and the value converts back, as Clang and GCC say. EDG rejects
+  the step during constant evaluation.
+- {question}`Q-0031` (PFX-18; settled on ADD-P6): whether a pointer
+  moved past the end of an array is undefined without a read through
+  it. It is, and constant evaluation rejects it, as Clang and EDG do.
+  GCC accepts it.
+- {question}`Q-0178` (PFX-19; settled on PFX-P2): whether a call
+  through a pointer whose type differs from the function only in
+  `noexcept` is undefined. It is. No implementation checks the
+  difference, which the undefined rule allows, so no family differs.
+- {question}`Q-0318` (PFX-21; open): whether constant evaluation must
+  reject a member call through a null pointer. It must, as Clang and
+  GCC do. EDG accepts the call.
 
-Two questions on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+### Split tests
 
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0034` | PFX-P1 | EDG 7.0 |
-| {question}`Q-0178` | PFX-P2 | none; the behavior is undefined |
+EDG skips the tests that use a sanitizer.
+
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `call-wrong-function-type-sanitizer.cpp` | PFX-19 | run-fail | run-fail | run | skips | |
+| `ellipsis-nontrivial-class.cpp` | PFX-15 | accept | reject | accept | accept | |
+| `ellipsis-nontrivial-destructor.cpp` | PFX-15 | accept | reject | accept | accept | |
+| `member-access-class-being-defined.cpp` | PFX-11, NAM-6 | accept | reject | accept | accept | {question}`Q-0316` |
+| `member-call-null-pointer-constant.cpp` | PFX-21, UN-7, CE-9 | reject | reject | reject | accept | {question}`Q-0318` |
+| `postfix-narrow-signed-wraps.cpp` | PFX-12, UN-20 | accept | accept | accept | reject | {question}`Q-0124` |
+| `postfix-pointer-past-end-constant.cpp` | PFX-18 | reject | reject | accept | reject | {question}`Q-0031` |
+| `subscript-prvalue-array.cpp` | PFX-3 | accept | accept | accept | reject | {question}`Q-0034` |
+
+### Notes
 
 - PFX-11, PFX-P3: the gap review of the text phase 8 wrote on
   expressions
@@ -407,8 +436,6 @@ Two questions on this page settled on 2026-11-03 under decision 0054 after the s
   `nullptr` as a `void*`, and a scoped enumeration argument as
   conditionally supported. Clang 22 and GCC 16 read the argument back as
   `void*`, and all three newest compilers accept a scoped enumeration.
-- PFX-3: EDG gives `int&` for a subscript of an array member of a
-  prvalue. Clang and GCC give `int&&` ({question}`Q-0034`).
 - PFX-4, PFX-8: all compilers reject these cases during constant
   evaluation.
 - PFX-4, PFX-8, PFX-18, PFX-21: Clang and GCC stop these cases at run
@@ -424,13 +451,8 @@ Two questions on this page settled on 2026-11-03 under decision 0054 after the s
 
   The matrix targets map no code at address 0, so a call through a null
   function pointer faults, and the address sanitizer reports the fault.
-- PFX-12: EDG rejects `++` on a `short` that holds its largest value
-  during constant evaluation. Clang and GCC give the converted value
-  ({question}`Q-0124`).
 - PFX-18: all compilers reject a signed overflow during constant
-  evaluation, and UBSan reports one at run time. GCC accepts a pointer
-  moved past the end of an array during constant evaluation. Clang and
-  EDG reject it ({question}`Q-0031`).
+  evaluation, and UBSan reports one at run time.
 - PFX-13: every compiler rejects `++` and `--` on `bool`, also without
   `-pedantic-errors`. Clang reports `++` under `-Wincrement-bool`, a
   warning that is an error by default. For `++` on `void*`, Clang and
@@ -442,22 +464,14 @@ Two questions on this page settled on 2026-11-03 under decision 0054 after the s
   of argument in `ellipsis-argument-kinds.cpp`.
 - PFX-15: GCC and EDG accept a class with a non-trivial copy
   constructor as an ellipsis argument. Clang rejects it. Support is
-  conditional.
-  Every test of PFX-15 has an override, and each override records a
-  result that the class allows.
-- PFX-11: GCC and EDG accept a member access in a member declaration
-  of the class being defined, to a member declared earlier. Clang
-  rejects it because the class is incomplete ({question}`Q-0316`).
-- PFX-21: UBSan reports a member call through a null pointer on Clang
-  and GCC. Clang and GCC reject the call during constant evaluation.
-  EDG accepts it ({question}`Q-0318`). Q-0318 stays open under decision
-  0051, because on 2026-11-03 EDG 7.0 still differs from Clang 22 and
-  GCC 16.
+  conditional. Every test of PFX-15 has an override, and each override
+  records a result that the class allows.
 - PFX-19: the Clang sanitizer stops a call through a pointer whose
   parameter types differ from the function's. GCC has no such check, and
-  the undefined rule allows its result. No implementation checks a
-  difference in `noexcept` alone ({question}`Q-0178`). Every
-  configuration, the Clang sanitizer included, runs a call of a
-  `noexcept` function through a pointer without `noexcept`.
+  the undefined rule allows its result. Every configuration, the Clang
+  sanitizer included, runs a call of a `noexcept` function through a
+  pointer without `noexcept`.
+
+### Sources
 
 Inputs: clang-sema-expr, clang-diag-sema.

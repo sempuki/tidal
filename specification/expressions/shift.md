@@ -163,6 +163,25 @@ c << 20;             // fine: c is promoted to int first
 The results are in `tests/RESULTS.md`. All eight compilers agree on 28
 of 30 tests.
 
+### Divergences
+
+- {question}`Q-0332` (SHF-8, SEQ-11; compiler defect): whether GCC 16
+  calling a `constexpr` function in the left operand of `<<` twice,
+  under `-fsanitize=shift` and `-Wall`, changes SHF-8. It does not, and
+  the left operand is evaluated once. GCC 16 differs, at run time and
+  during constant evaluation.
+
+### Split tests
+
+EDG does not take the sanitizer flags and skips both tests.
+
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `operand-order-shift-sanitizer-constant.cpp` | SHF-8 | accept | accept | GCC 16: reject; GCC 14: accept | skips | {question}`Q-0332` |
+| `operand-order-shift-sanitizer.cpp` | SHF-8 | run | run | GCC 16: run-fail; GCC 14: run | skips | {question}`Q-0332` |
+
+### Notes
+
 - SHF-5, SHF-6: all compilers accept left shifts of negative values and
   overflowing left shifts during {term}`constant evaluation`. The
   results match the rules.
@@ -171,12 +190,5 @@ of 30 tests.
 - SHF-9: Clang and GCC warn by default (`-Wshift-count-overflow`,
   `-Wshift-count-negative`). The tests use `-Werror`. EDG skips these
   tests.
-- SHF-8: GCC 16 with `-fsanitize=shift` and `-Wall` calls a `constexpr`
-  function in the left operand of `<<` twice, at run time and during
-  constant evaluation ({question}`Q-0332`).
-  The result of the shift is correct, and only the side effects repeat.
-  GCC 14, Clang, and GCC 16 without `-Wall` call the function once. A
-  function that is not `constexpr`, and the operator `>>`, are not
-  affected.
 
 Inputs: clang-sema-expr, clang-diag-sema.

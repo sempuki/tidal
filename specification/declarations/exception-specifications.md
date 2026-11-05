@@ -241,46 +241,67 @@ struct File : Base { void close() override; };  // rejected: throwing override
 The results are in `tests/RESULTS.md`. All eight compilers agree on 35
 of 46 tests.
 
-Three questions on this page settled under decision 0054. Q-0094 and Q-0095 settled on 2026-11-03 after the source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`). Q-0078 settled on 2026-11-04 after the source-reader gap review of the text phase 8 wrote on the declarations and statements chapters (`reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+### Divergences
 
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0094` | EXS-P3 | GCC 16 |
-| {question}`Q-0095` | EXS-P3 | EDG 7.0 |
-| {question}`Q-0078` | EXS-P1 | EDG 7.0 |
+Tidal keeps the answer of GCC and EDG for Q-0393 against the gap
+review (`documentation/decisions/pending.md`, "Matrix against review"),
+and Q-0077 waits on the maintainer (`documentation/decisions/pending.md`,
+row 4).
 
-- EXS-7: EDG accepts `noexcept(2)` and a pointer operand. Clang and GCC
-  reject them ({question}`Q-0078`).
-- EXS-7, EXS-P1: GCC and EDG accept the null pointer literal, or a
-  constant of its type, as the operand, and the function is
-  potentially throwing. Clang rejects it. The gap review of the text
-  phase 8 wrote reads the C++23 text as Clang does: the operand converts
-  to `bool` only by a short list of conversions, and a null pointer is
-  not on it, although the conversion does not narrow. Tidal keeps the
-  answer of GCC and EDG
-  ({question}`Q-0393`,
-  `documentation/decisions/pending.md`, "Matrix against review"). A
-  floating-point operand such as `1.0` narrows. Clang and GCC reject it,
-  and EDG accepts it, as for Q-0078.
-- EXS-4: GCC treats a class-specific `operator delete` without a
-  specifier as potentially throwing. Clang and EDG treat it as
-  non-throwing ({question}`Q-0094`). EDG treats a defaulted `==` as
-  non-throwing even if a member `==` is potentially throwing. Clang and
-  GCC treat it as potentially throwing ({question}`Q-0095`).
+- {question}`Q-0078` (EXS-7; settled on EXS-P1): whether the operand
+  of `noexcept` can narrow when it converts to `bool`. It cannot, so
+  `noexcept(2)`, a pointer operand, and `noexcept(1.0)` are not valid,
+  as Clang and GCC say. EDG 7.0 accepts them.
+- {question}`Q-0393` (EXS-7; open): whether the operand can be the null
+  pointer literal or a constant of its type. It can, and the function
+  is potentially throwing, as GCC and EDG say. Clang rejects the
+  operand, and the gap review of the text phase 8 wrote reads the C++23
+  text as Clang does.
+- {question}`Q-0094` (EXS-4; settled on EXS-P3): whether a
+  class-specific `operator delete` without a specifier is non-throwing.
+  It is, as Clang and EDG say. GCC treats it as potentially throwing.
+- {question}`Q-0095` (EXS-4; settled on EXS-P3): whether a defaulted
+  `==` is non-throwing when a member `==` is potentially throwing. It is
+  potentially throwing, as Clang and GCC say. EDG treats it as
+  non-throwing.
+- {question}`Q-0077` (EXS-5; open): whether `throw()` is valid. Where
+  an implementation accepts it, it means `noexcept`, and the choice is
+  implementation-defined. Clang and GCC accept the form, and EDG
+  rejects it.
+- {question}`Q-0079` (EXS-6; open): whether an implementation must
+  diagnose a `noexcept` operand that depends on the function itself. It
+  need not, so the test expects acceptance, as GCC and EDG give. Clang
+  rejects the operand.
+
+### Split tests
+
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `class-delete-operator-noexcept.cpp` | EXS-4 | accept | accept | reject | accept | {question}`Q-0094` |
+| `defaulted-comparison-member-throwing.cpp` | EXS-4 | accept | accept | accept | reject | {question}`Q-0095` |
+| `narrowing-operand.cpp` | EXS-7 | reject | reject | reject | accept | {question}`Q-0078` |
+| `null-pointer-constant-operand.cpp` | EXS-7 | accept | reject | accept | accept | {question}`Q-0393` |
+| `null-pointer-operand.cpp` | EXS-7 | accept | reject | accept | accept | {question}`Q-0393` |
+| `operand-cycle-static.cpp` | EXS-6 | accept | reject | accept | accept | {question}`Q-0079` |
+| `operand-cycle.cpp` | EXS-6 | accept | reject | accept | accept | {question}`Q-0079` |
+| `pointer-operand.cpp` | EXS-7 | reject | reject | reject | accept | {question}`Q-0078` |
+| `throw-empty-pointer.cpp` | EXS-5 | accept | accept | accept | reject | {question}`Q-0077` |
+| `throw-empty-removed-ilp32.cpp` | EXS-5 | accept | accept | accept | reject | {question}`Q-0077` |
+| `throw-empty-removed.cpp` | EXS-5 | accept | accept | accept | reject | {question}`Q-0077` |
+
+### Notes
+
 - EXS-9 and EXS-10: every compiler accepts a specialization whose
   operand is not valid while no use needs the specifier. Every compiler
   rejects a call or a `noexcept` operator that needs the specifier. {rule}`INST-7`
   says when the body of a specialization is instantiated.
 - EXS-5 is implementation-defined because the compilers split on
-  `throw()`. Clang and GCC accept the form as `noexcept`, and EDG
-  rejects it ({question}`Q-0077`).
-  Every test of EXS-5 has an override, and each override records a
-  result that the class allows.
-- EXS-6 needs no diagnostic because GCC and EDG accept an operand that
-  depends on the function itself, and Clang rejects it
-  ({question}`Q-0079`). The test records both outcomes.
-  Every test of EXS-6 has an override, and each override records a
-  result that the class allows.
+  `throw()` ({question}`Q-0077`). Every test of EXS-5 has an override,
+  and each override records a result that the class allows.
+- EXS-6 needs no diagnostic because the compilers split on an operand
+  that depends on the function itself ({question}`Q-0079`). Every test
+  of EXS-6 has an override, and each override records a result that the
+  class allows.
 - EXS-4: Clang, GCC, and EDG give `true` for `noexcept` of a placement
   `new` of a class whose members have `noexcept` constructors and
   potentially throwing destructors.

@@ -21,6 +21,21 @@ names an alias of an alias.
 
 The tests above and the grid `forms.json` (column "alias template").
 
+The tests give these aliases. "Converts" means that an argument for a
+fixed position has another type than the fixed one. Clang 18 rejects
+every row.
+
+| Alias | Initializer | Clang 22, GCC | EDG 7.0 | Test |
+|---|---|---|---|---|
+| `Pair<T, T>` | `(1, 2)` | `Pair<int, int>` | `Pair<int, int>` | `alias-template.cpp` |
+| `Box<T>` | `(&n)`, user guide `Box(T*)` | `Box<int>` | `Box<int>` | `alias-template-guides.cpp` |
+| `Box<T*>` | `(&n)` | `Box<int*>` | `Box<int*>` | `alias-template-unreachable.cpp` |
+| `Agg<int, U>`, an aggregate | `{1, 'c'}` | `Agg<int, char>` | `Agg<int, char>` | `alias-template-guides.cpp` |
+| `Pair<int, U>` | `(1, 'c')` | `Pair<int, char>` | `Pair<int, char>` | `alias-template-fixed-argument-exact.cpp` |
+| `Pair<int, U>` | `(1L, 'c')`, converts | `Pair<int, char>` | rejects | `alias-template-fixed-argument.cpp` |
+| `Both<long, U>`, an alias of an alias | `(1L, 'c')` | `Pair<long, char>` | `Pair<long, char>` | `alias-template-fixed-argument-exact.cpp` |
+| `Both<long, U>`, an alias of an alias | `(1, 'c')`, converts | `Pair<long, char>` | rejects | `alias-template-fixed-argument.cpp` |
+
 ## Options
 
 1. Deduction works through an alias template that stands for a

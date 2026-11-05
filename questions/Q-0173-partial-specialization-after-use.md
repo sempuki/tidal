@@ -14,6 +14,9 @@ specialization `Kind<T*>`, which matches `int*`.
 | GCC 14, 16, host | rejects |
 | EDG 7.0 | rejects |
 
+For a variable template, GCC rejects the program, and Clang and EDG
+accept it (`partial-after-use-variable.cpp`, with an override for GCC).
+
 For an explicit specialization after a use, all compilers reject the
 program (TSP-6).
 

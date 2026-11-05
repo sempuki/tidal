@@ -493,19 +493,33 @@ int dispatch(int base) {
 The results are in `tests/RESULTS.md`. All eight compilers agree on 82
 of 86 tests.
 
-One question on this page settled on 2026-11-04 under decision 0054 after the principle-use batch PU1 (`reports/clean-room/PU1/`). The batch's use of the principle supports the answer, the latest gap review supports it with no doubt, and the principle gives the same answer. The tests keep their overrides for the family that still differs:
+### Divergences
 
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0037` | LAM-P3 | EDG 7.0 |
+- {question}`Q-0037` (LAM-6; settled on LAM-P3): whether a lambda
+  outside a block can have a capture default. It cannot, at namespace
+  scope, in a default argument, or in a member declaration of a local
+  class, as Clang and GCC say. EDG accepts all three.
+- {question}`Q-0092` (LAM-18; open): whether a name in a lambda's
+  trailing return type finds a capture. It does, as GCC 16 and EDG say.
+  Clang and GCC 14 find the outer variable. In the parameter list,
+  every compiler finds the outer variable, so `decltype((x))` there is
+  `int&`.
 
-- LAM-6: EDG accepts a capture default on a lambda outside a function.
-  Clang and GCC reject it ({question}`Q-0037`). The gap review of the
-  text phase 8 wrote on expressions
+### Split tests
+
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `capture-default-at-namespace.cpp` | LAM-6 | reject | reject | reject | accept | {question}`Q-0037` |
+| `capture-default-local-class-default-argument.cpp` | LAM-6 | reject | reject | reject | accept | {question}`Q-0037` |
+| `capture-default-local-class-member.cpp` | LAM-6 | reject | reject | reject | accept | {question}`Q-0037` |
+| `capture-visible-in-trailing-return.cpp` | LAM-18 | accept | reject | GCC 16: accept; GCC 14: reject | accept | {question}`Q-0092` |
+
+### Notes
+
+- LAM-6: the gap review of the text phase 8 wrote on expressions
   (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`)
   reads the limit as a block around the lambda, so a lambda in a member
-  declaration or a default argument of a local class has none. Clang 22
-  and GCC 16 reject a capture default there, and EDG 7.0 accepts it.
+  declaration or a default argument of a local class has none.
 - LAM-13 and LAM-16: all seven compilers accept static lambdas and
   explicit object parameters in C++23 mode.
 - LAM-13: every compiler accepts a call of a closure object with a
@@ -550,9 +564,5 @@ One question on this page settled on 2026-11-04 under decision 0054 after the pr
   explicit capture that the body names only in unevaluated operands.
   GCC does not warn. On every compiler, the closure is at least as
   large as the captured object.
-- LAM-18: GCC 16 and EDG find the capture in the trailing return type.
-  Clang and GCC 14 find the outer variable ({question}`Q-0092`). In the
-  parameter list, every compiler finds the outer variable, so
-  `decltype((x))` there is `int&`.
 
 Inputs: clang-sema-expr, clang-diag-sema.

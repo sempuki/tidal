@@ -16,7 +16,9 @@ uses that operator reversed (`key == acct`) or rewritten
 | GCC 14, GCC 16 | accepts | accepts | accepts |
 
 Every compiler accepts a result of `const bool` or `const volatile
-bool`, and every compiler rejects a result of `int`.
+bool`, and every compiler rejects a result of `int`. For an `==` that
+rewrites `!=`, Clang and EDG also reject a result of `const bool&`, and
+GCC accepts it (`ne-rewrite-reference-to-bool-result.cpp`).
 
 ## Evidence
 

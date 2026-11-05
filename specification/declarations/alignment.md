@@ -241,49 +241,81 @@ The results are in `tests/RESULTS.md`. All eight compilers agree on 29
 of 52 tests. Each divergence has a question, except the
 implementation-defined limits of ALN-5 and the GCC 14 result of ALN-2.
 
-Two questions on this page settled on 2026-11-04 under decision 0054 after the principle-use batch PU2 (`reports/clean-room/PU2/`). For each, the batch's use of the principle supports the answer, the latest gap review supports it with no doubt, and the principle gives the same answer. Each test keeps its override for the family that still differs:
+### Divergences
 
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0313` | ALN-P1 | EDG 7.0 |
-| {question}`Q-0314` | ALN-P1 | GCC 16 |
+- {question}`Q-0071` (ALN-1; settled on ALN-P1): which `alignas`
+  applies when a class has several. The strictest applies, as Clang
+  and EDG say. GCC uses the last one on a class.
+- {question}`Q-0069` (ALN-2; settled on ALN-P1): whether `alignas` can
+  ask for an alignment weaker than the natural one. It cannot, and the
+  program is not valid. GCC accepts it with no warning and keeps the
+  natural alignment.
+- {question}`Q-0072` (ALN-2; settled): whether `alignas` can apply to a
+  function, a `typedef`, an alias declaration, or a bit-field. It
+  cannot, as the newest version of each family says. GCC 14 accepts all
+  four, and no newest family differs.
+- {question}`Q-0070` (ALN-3; settled on ALN-P2): whether all
+  declarations of a variable or a class must agree on `alignas`. They
+  must, as Clang and EDG say. GCC accepts declarations that differ.
+- {question}`Q-0360` (ALN-5; settled on ALN-P3): whether an
+  implementation rejects an `alignas` above its largest extended
+  alignment. It does, as GCC and EDG do. Clang accepts 2^29 to 2^32
+  and drops the alignment.
+- {question}`Q-0120` (ALN-5, TYP-2; settled on TYP-P3): whether EDG's
+  alignment of 8 for `long long` with `-m32` changes the rules. The
+  alignment is the implementation's choice, so EDG's value is allowed.
+  EDG with `-m32` differs from Clang and GCC, which give 4.
+- {question}`Q-0073` (ALN-7; settled on ALN-P1): whether `alignas` can
+  apply to an enumeration. It cannot, as Clang and GCC 16 say. EDG and
+  GCC 14 accept it.
+- {question}`Q-0313` (ALN-8; settled on ALN-P1): whether an enumerator
+  of a scoped enumeration can give the operand of `alignas`. It cannot,
+  as Clang and GCC say. EDG converts it.
+- {question}`Q-0314` (ALN-8; settled on ALN-P1): whether a constant of
+  class type with a `constexpr` conversion to `int` can give the
+  operand of `alignas`. It can, as Clang and EDG say. GCC rejects it.
 
-Five questions on this page settled under decision 0054. Q-0070 and Q-0071 settled on 2026-11-03 after the source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`). Q-0069, Q-0073, and Q-0360 settled on 2026-11-04 after the source-reader gap review of the text phase 8 wrote on the declarations and statements chapters (`reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+### Split tests
 
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0070` | ALN-P2 | GCC 16 |
-| {question}`Q-0071` | ALN-P1 | GCC 16 |
-| {question}`Q-0069` | ALN-P1 | GCC 16 |
-| {question}`Q-0073` | ALN-P1 | EDG 7.0 |
-| {question}`Q-0360` | ALN-P3 | Clang 22 |
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `class-definition-without-earlier-with.cpp` | ALN-3 | reject | reject | accept | reject | {question}`Q-0070` |
+| `class-redeclare-different.cpp` | ALN-3 | reject | reject | accept | reject | {question}`Q-0070` |
+| `definition-without-earlier-with.cpp` | ALN-3 | reject | reject | accept | reject | {question}`Q-0070` |
+| `enum.cpp` | ALN-7 | reject | reject | GCC 16: reject; GCC 14: accept | accept | {question}`Q-0073` |
+| `extended-beyond-largest-ilp32.cpp` | ALN-5 | reject | accept | reject | reject | {question}`Q-0360` |
+| `extended-beyond-largest.cpp` | ALN-5 | reject | accept | reject | reject | {question}`Q-0360` |
+| `extended-edg-beyond-ilp32.cpp` | ALN-5 | accept | accept | accept | reject | |
+| `extended-edg-beyond.cpp` | ALN-5 | accept | accept | accept | reject | |
+| `extended-huge-ilp32.cpp` | ALN-5 | accept | accept | accept | reject | |
+| `extended-huge.cpp` | ALN-5 | accept | accept | accept | reject | |
+| `on-alias-declaration.cpp` | ALN-2 | reject | reject | GCC 16: reject; GCC 14: accept | reject | {question}`Q-0072` |
+| `on-bitfield.cpp` | ALN-2 | reject | reject | GCC 16: reject; GCC 14: accept | reject | {question}`Q-0072` |
+| `on-function.cpp` | ALN-2 | reject | reject | GCC 16: reject; GCC 14: accept | reject | {question}`Q-0072` |
+| `on-handler-variable.cpp` | ALN-2 | reject | reject | GCC 16: reject; GCC 14: accept | reject | |
+| `on-typedef.cpp` | ALN-2 | reject | reject | GCC 16: reject; GCC 14: accept | reject | {question}`Q-0072` |
+| `operand-class-converts.cpp` | ALN-8 | accept | accept | reject | accept | {question}`Q-0314` |
+| `operand-scoped-enumeration.cpp` | ALN-8 | reject | reject | reject | accept | {question}`Q-0313` |
+| `redeclare-different.cpp` | ALN-3 | reject | reject | accept | reject | {question}`Q-0070` |
+| `scoped-enum.cpp` | ALN-7 | reject | reject | GCC 16: reject; GCC 14: accept | accept | {question}`Q-0073` |
+| `strictest-wins.cpp` | ALN-1 | accept | accept | reject | accept | {question}`Q-0071` |
+| `weaker-on-class-member.cpp` | ALN-2 | reject | reject | accept | reject | {question}`Q-0069` |
+| `weaker-on-class.cpp` | ALN-2 | reject | reject | accept | reject | {question}`Q-0069` |
+| `weaker-than-natural.cpp` | ALN-2 | reject | reject | accept | reject | {question}`Q-0069` |
 
-- ALN-1: GCC uses the last of several `alignas` on a class. On a
-  variable and on a data member, GCC uses the strictest, as Clang and
-  EDG do on all three ({question}`Q-0071`).
-- ALN-7: EDG 7.0 and GCC 14 accept `alignas` on an enumeration. Clang
-  and GCC 16 reject it ({question}`Q-0073`).
-  EDG accepts `alignas` on each form of enumeration that the probes
-  tried, also an opaque declaration and a scoped enumeration. So every
-  test of ALN-7 needs an override for EDG.
-- ALN-2: GCC accepts `alignas` weaker than the natural alignment, with
-  no warning, and keeps the natural alignment ({question}`Q-0069`).
-  The result is the same for a variable, a data member, and a class.
-  GCC 14 accepts `alignas` on a function, a `typedef`, an alias
-  declaration, and a bit-field. GCC 16, Clang, and EDG reject all four, so GCC 14 has a
-  defect that GCC 16 fixes ({question}`Q-0072`).
+### Notes
+
+- ALN-1: on a variable and on a data member, GCC uses the strictest of
+  several `alignas`, as Clang and EDG do.
+- ALN-7: EDG accepts `alignas` on each form of enumeration that the
+  probes tried, also an opaque declaration and a scoped enumeration. So
+  every test of ALN-7 needs an override for EDG.
 - ALN-8: every compiler rejects an operand of floating-point type.
-  Clang and GCC reject an enumerator of a scoped enumeration, and EDG
-  converts it ({question}`Q-0313`). Clang and EDG convert an operand
-  of a class type with a `constexpr` conversion to `int`, and GCC
-  rejects it ({question}`Q-0314`). Clang and EDG reject an operand of
-  class type whose conversion function is not `constexpr`, and one
-  whose class has two `constexpr` conversion functions to integer
-  types, as ambiguous. Every compiler rejects an operand whose class is
-  not a literal type. GCC rejects these three, as it rejects every
-  operand of class type.
-- ALN-3: GCC accepts declarations of a variable or a class with
-  different `alignas` ({question}`Q-0070`).
+  Clang and EDG reject an operand of class type whose conversion
+  function is not `constexpr`, and one whose class has two `constexpr`
+  conversion functions to integer types, as ambiguous. Every compiler
+  rejects an operand whose class is not a literal type. GCC rejects
+  these three, as it rejects every operand of class type.
 - ALN-5: the largest fundamental alignment is the alignment of a
   library type *(library referenced)*. With that type, Clang and GCC
   give 16 on x86-64. With `-m32`, GCC 14 gives 16, and Clang 18 and 22
@@ -292,17 +324,17 @@ Five questions on this page settled under decision 0054. Q-0070 and Q-0071 settl
   from the writer's probes. The x86-64 value is also the alignment of
   `long double`, which a test checks. In the matrix, EDG has no library.
   Its largest alignment of a fundamental type is 16 on x86-64 and 8
-  with `-m32` ({question}`Q-0120`).
+  with `-m32`.
 - ALN-5 is implementation-defined because the alignments come from the
   target's conventions. The tests check the largest extended alignment
   of each compiler and the next power of two, on both targets. EDG 7.0
   rejects 2^16 and larger ("invalid alignment value"). GCC rejects
-  2^29 and larger ("exceeds maximum"). Clang accepts an `alignas` of
-  2^29 to 2^32 with no diagnostic, and the class then has alignment 1.
-  Clang rejects 2^33 ({question}`Q-0360`). The gap review of the text
-  phase 8 wrote adds that an implementation can support an extended
-  alignment in some contexts of a declaration and not in others. The
-  tests check the limit on a class.
+  2^29 and larger ("exceeds maximum"). Clang rejects 2^33. The gap
+  review of the text phase 8 wrote
+  (`reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md`)
+  adds that an implementation can support an extended alignment in some
+  contexts of a declaration and not in others. The tests check the
+  limit on a class.
 - ALN-4: the undefined behavior sanitizers of Clang and GCC stop a read
   of an `int` through a pointer to an odd address ("load of misaligned
   address").
@@ -314,5 +346,7 @@ Five questions on this page settled under decision 0054. Q-0070 and Q-0071 settl
   (`reports/review/2026-11-04-gap-review-phase-7-repairs.md`) reads the
   reference as forbidding `alignas` on the variable of a handler.
   Clang 22, GCC 16, and EDG reject it, and GCC 14 accepts it.
+
+### Sources
 
 Inputs: clang-sema-declattr, clang-diag-sema, edg-attribute, edg-decls.

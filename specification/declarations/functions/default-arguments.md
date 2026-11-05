@@ -283,33 +283,48 @@ r(1);                       // rejected: a reference has no defaults
 All eight compilers agree on 41 of 51 tests. The results are in
 `tests/RESULTS.md`.
 
-One question on this page settled on 2026-11-04 under decision 0054 after the principle-use batch PU2 (`reports/clean-room/PU2/`). The batch's use of the principle supports the answer, the latest gap review supports it with no doubt, and the principle gives the same answer. The tests keep their overrides for the family that still differs:
+### Divergences
 
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0379` | DEFARG-P1 | EDG 7.0 |
+- {question}`Q-0111` (DEFARG-2; settled on DEFARG-P2): whether a call
+  through a using declaration sees a default argument that a later
+  namespace declaration adds. It does, as GCC and EDG say. Clang
+  rejects the call.
+- {question}`Q-0038` (DEFARG-4; settled on DEFARG-P1): whether a default
+  argument can name a parameter in an operand that is not evaluated,
+  such as the operand of `sizeof`. It can, as Clang and GCC say. EDG
+  rejects it.
+- {question}`Q-0389` (DEFARG-4; open): whether a default argument can
+  read the value of a local constant of an enclosing function outside an
+  operand that is not evaluated. It cannot, as GCC and EDG say. Clang
+  accepts it. The gap review of the text phase 8 wrote reads the C++23
+  text as Clang does, and Tidal keeps the matrix's answer
+  (`documentation/decisions/pending.md`, "Matrix against review").
+- {question}`Q-0370` (DEFARG-12; open): whether a definition outside the
+  class can add a default argument that makes a constructor a default,
+  copy, or move constructor. It cannot, as Clang and EDG say. GCC
+  accepts each form.
+- {question}`Q-0379` (DEFARG-10; settled on DEFARG-P1): whether a call
+  of a `consteval` function in a default argument is checked at the
+  declaration. It is checked at each call that uses the default, as
+  Clang and GCC do. EDG checks it at the declaration.
 
-Two questions on this page settled on 2026-11-04 under decision 0054 after the source-reader gap review of the text phase 8 wrote on the declarations and statements chapters (`reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+### Split tests
 
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0038` | DEFARG-P1 | EDG 7.0 |
-| {question}`Q-0111` | DEFARG-P2 | Clang 22 |
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `default-immediate-call-checked-at-call.cpp` | DEFARG-10 | run | run | run | reject | {question}`Q-0379` |
+| `default-immediate-call-unused-not-checked.cpp` | DEFARG-10 | accept | accept | accept | reject | {question}`Q-0379` |
+| `local-constant-value-read.cpp` | DEFARG-4 | reject | accept | reject | reject | {question}`Q-0389` |
+| `local-constexpr-value-read.cpp` | DEFARG-4 | reject | accept | reject | reject | {question}`Q-0389` |
+| `outside-default-makes-copy-constructor.cpp` | DEFARG-12 | reject | reject | accept | reject | {question}`Q-0370` |
+| `outside-default-makes-default-constructor.cpp` | DEFARG-12 | reject | reject | accept | reject | {question}`Q-0370` |
+| `outside-default-makes-move-constructor.cpp` | DEFARG-12 | reject | reject | accept | reject | {question}`Q-0370` |
+| `parameter-in-sizeof.cpp` | DEFARG-4 | accept | accept | accept | reject | {question}`Q-0038` |
+| `template-default-independent-unused.cpp` | DEFARG-10, DEP-30 | reject | reject | accept | reject | |
+| `using-sees-later-default.cpp` | DEFARG-2 | accept | reject | accept | accept | {question}`Q-0111` |
 
-- DEFARG-2: Clang rejects a call that needs a default argument added by
-  a later namespace declaration, through an earlier using declaration.
-  GCC and EDG accept the call ({question}`Q-0111`).
-- DEFARG-4: EDG rejects a parameter in an unevaluated default argument,
-  such as the operand of `sizeof`. Clang and GCC accept it
-  ({question}`Q-0038`).
-- DEFARG-4: a default argument that reads the value of a local
-  constant of an enclosing function, outside an operand that is not
-  evaluated, is rejected by GCC and EDG. Clang accepts it. The gap
-  review of the text phase 8 wrote reads the C++23 text as Clang does,
-  because such a read needs no storage of the local. Tidal keeps the
-  answer of GCC and EDG
-  ({question}`Q-0389`,
-  `documentation/decisions/pending.md`, "Matrix against review").
+### Notes
+
 - DEFARG-3, DEFARG-10: every compiler checks the default argument of a
   friend function defined in a class, and of a member function of a
   nested class, as if at the end of the outermost class.
@@ -317,34 +332,27 @@ Two questions on this page settled on 2026-11-04 under decision 0054 after the s
   depends on no template parameter and is not valid, if no call uses
   the default. Clang and EDG reject the template. {rule}`DEP-30` allows
   both results.
-- DEFARG-12: Clang and EDG reject a definition outside the class that
-  adds a default argument and so makes a constructor a default, copy,
-  or move constructor. GCC accepts it
-  ({question}`Q-0370`). A
-  definition outside the class that adds a default argument to another
-  member function of a class that is not a template is valid on every
-  compiler.
-  GCC accepts each form that the probes tried, also a program that uses
-  the new default constructor. So every test of DEFARG-12 needs an
-  override for GCC.
+- DEFARG-12: a definition outside the class that adds a default
+  argument to another member function of a class that is not a template
+  is valid on every compiler. GCC accepts each form that the probes
+  tried, also a program that uses the new default constructor. So every
+  test of DEFARG-12 needs an override for GCC.
 - DEFARG-13: every compiler rejects a default argument that a later
   declaration adds to a function template, to a member function
   template, or to a member function whose class is a class template or
   lies inside one. The gap review of the rules that phase 7 rewrote
   (`reports/review/2026-11-04-gap-review-phase-7-repairs.md`) found no
   rule that stated this limit.
-- DEFARG-10: a call of a `consteval` function in a default argument is
-  checked at each call that uses the default, on Clang and GCC. EDG
-  checks the call at the declaration, and rejects a call whose function
-  has no definition yet or whose argument is not a constant
-  ({question}`Q-0379`). Every compiler rejects a call that uses such a
-  default argument when the argument is not a constant. Every compiler
-  accepts a default argument of a member function that uses a static
-  member and a nested class declared later in the class.
+- DEFARG-10: every compiler rejects a call that uses a default argument
+  with a `consteval` call when the argument is not a constant. Every
+  compiler accepts a default argument of a member function that uses a
+  static member and a nested class declared later in the class.
 - DEFARG-7 needs no diagnostic because each unit is translated alone.
   Two units with different defaults compile and link without a
   diagnostic. The test accepts either value. The tests of DEFARG-7
   agree on every compiler.
+
+### Sources
 
 Inputs: clang-sema-decl, clang-sema-declcxx, clang-diag-sema,
 edg-func-def.

@@ -222,7 +222,24 @@ int code(State s) {
 ## Evidence
 
 All eight compilers agree on 41 of 42 tests. The results are in
-`tests/RESULTS.md`.
+`tests/RESULTS.md`. The SW-8 tests use `-Wall -Werror`, so EDG skips
+them ({ref}`baseline compilers <baseline-compilers>`).
+
+### Divergences
+
+- {question}`Q-0041` (SW-5, JMP-6; open): whether a `case` label can
+  skip a variable whose class has a trivial default constructor and a
+  destructor that is not trivial. It can, as GCC says. Clang and EDG
+  reject the label. The question waits on the maintainer
+  (`documentation/decisions/pending.md`).
+
+### Split tests
+
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `case-skips-nontrivial-destructor.cpp` | SW-5 | accept | reject | accept | reject | {question}`Q-0041` |
+
+### Notes
 
 - SW-7: Clang warns with no flag and GCC warns under `-Wall`
   (`-Wswitch`). Both name each enumerator without a label. Both warn
@@ -233,11 +250,9 @@ All eight compilers agree on 41 of 42 tests. The results are in
   enumeration, and neither warns for a template with no specialization.
 - SW-8: Clang warns with no flag and GCC warns under `-Wall`
   (`-Wswitch`) about a case value that no enumerator has, for a scoped
-  and an unscoped enumeration. The tests
-  use `-Wall -Werror`, so EDG skips them
-  ({ref}`baseline compilers <baseline-compilers>`). EDG gives no
-  warning, even with remarks on. The warning is recommended practice,
-  so the rule is in the recommended class.
+  and an unscoped enumeration. EDG gives no warning, even with remarks
+  on. The warning is recommended practice, so the rule is in the
+  recommended class.
 - SW-2, SW-3: Clang 18 and Clang 22 warn with no flag about a `bool`
   condition (`-Wswitch-bool`). GCC 14 and GCC 16 warn with no flag
   about a case value that the condition's type cannot hold
@@ -249,10 +264,8 @@ All eight compilers agree on 41 of 42 tests. The results are in
   `return`, GCC warns under `-Wall` (`-Wreturn-type`) and Clang gives
   no warning. A `return` after the `switch` keeps the SW-7 warning,
   which a `default` label would turn off.
-- SW-5: GCC accepts a `case` label that skips a variable whose class
-  has a trivial default constructor and a destructor that is not
-  trivial. Clang and EDG reject the label. SW-5 follows JMP-6 and GCC
-  ({question}`Q-0041`).
+
+### Sources
 
 Inputs: clang-parse-stmt, clang-sema-stmt, clang-diag-sema, edg-
 statements.

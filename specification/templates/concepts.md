@@ -653,106 +653,136 @@ template <class T> concept Old [[deprecated]] = true;   // the attribute apperta
 The results are in `tests/RESULTS.md`. All eight compilers agree on 108
 of 125 tests.
 
-One question on this page settled on 2026-11-04 under decision 0054 after the source-reader gap review of the text phase 8 wrote on expressions, foundations, and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+### Divergences
 
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0259` | CPT-P3 | GCC 16 |
-
-One question on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
-
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0258` | CPT-P5 | GCC 16 |
-
-Four questions on this page settled on 2026-11-03 under decision 0054.
-For each, a source-reader gap review supports the answer with no doubt,
-and a principle gives the same answer:
-
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0260` | CPT-P1 | EDG 7.0 |
-| {question}`Q-0281` | {principle}`CNS-P1` | EDG 7.0 |
-| {question}`Q-0285` | {principle}`CNS-P1` | EDG 7.0 |
-| {question}`Q-0286` | CPT-P1 | EDG 7.0 |
-
-Each test keeps its override for EDG. Reporting these EDG differences to
-the EDG project waits on the maintainer
+Each settled question below keeps its test's override for the family
+that still differs. Reporting the EDG differences of Q-0260, Q-0281,
+Q-0285, and Q-0286 to the EDG project waits on the maintainer
 (`documentation/decisions/pending.md`).
 
-The clean-room writer probed each rule with Clang 18 and 22, GCC 14 and
-16, the host Clang and GCC, and EDG 7.0, and checked each test on the
-same compilers, the eight {ref}`baseline compilers <baseline-compilers>`. The rejections name the reason in each compiler's own
-words, for example "concept cannot have associated constraints" and
-"non-templated function cannot have a requires clause"
-(clang-diag-sema, clang-diag-parse).
+- {question}`Q-0270` (CPT-3; settled): whether a concept definition can
+  have an attribute after the concept's name. It can. Clang 18 rejects
+  the attribute.
+- {question}`Q-0260` (CPT-11; settled on CPT-P1): whether a lambda or a
+  member of a local class inside a function template can have a
+  trailing requires clause. It can, as Clang and GCC say. EDG rejects
+  the clause on a lambda that is not generic, inside a function
+  template or in a default member initializer of a class template, and
+  on a member of a local class inside a function template.
+- {question}`Q-0258` (CPT-15; settled on CPT-P5): whether a virtual
+  function can have a trailing requires clause, or a constrained
+  function override a virtual function. Neither can, as Clang and EDG
+  say. GCC accepts both.
+- {question}`Q-0285` (CPT-19, CNS-3; settled on {principle}`CNS-P1`):
+  whether two variadic templates are ordered by the type constraints
+  `A` and `AB` on their packs. They are not, and the call is ambiguous,
+  as Clang and GCC say. EDG orders them in its C++23 mode.
+- {question}`Q-0281` (CPT-21, CNS-1, CNS-23; settled on
+  {principle}`CNS-P1`): whether a template with a constrained constant
+  parameter is more constrained than the same template with `auto`. It
+  is, as Clang 22 and GCC 16 say. EDG, Clang 18, and GCC 14 find the
+  call ambiguous.
+- {question}`Q-0288` (CPT-26; settled): whether a requires expression
+  inside a member function can use a private member of the class. It
+  can. GCC 14 gives `false`, so the `static_assert` of
+  `requirement-access-member.cpp` fails.
+- {question}`Q-0290` (CPT-28; open): whether `(void)` gives a requires
+  expression no parameters inside a template. It does, as GCC and EDG
+  say. Clang finds the expression `false`.
+- {question}`Q-0259` (CPT-29; settled on CPT-P3): whether a parameter
+  of a requires expression can have a default argument, or the list
+  end in an ellipsis. Neither can, as Clang and EDG say. GCC accepts
+  both.
+- {question}`Q-0287` (CPT-33; open): whether the extra arguments of a
+  compound requirement's type constraint are substituted only after the
+  expression and the `noexcept` test hold, and also when the concept
+  does not use them. Both, as EDG does. Clang substitutes the extra
+  arguments first, so a class whose body has an error makes the program
+  not valid ({rule}`CNS-33`), and Clang rejects programs that GCC and
+  EDG accept. GCC never substitutes an extra argument that the concept
+  does not use.
+- {question}`Q-0289` (CPT-35, CNS-9; settled): whether a nested
+  requirement that evaluates a parameter of the requires expression is
+  an error. It is. Clang 18 gives `false`.
+- {question}`Q-0400` (CPT-35; open): whether a concept is valid when
+  its requirement is satisfied for no argument. It is. No family
+  differs.
+- {question}`Q-0286` (CPT-37; settled on CPT-P1): whether a structured
+  binding declaration can have a constrained placeholder. It cannot, as
+  Clang and GCC say. EDG accepts it.
 
-- CPT-3: Clang 18 rejects an attribute after the name of a concept.
-  The other compilers accept the attribute ({question}`Q-0270`).
-- CPT-11: EDG rejects a trailing clause on a lambda that is not
-  generic, inside a function template or in a default member
-  initializer of a class template, and on a member of a local class
-  inside a function template. Clang and GCC accept all three
-  ({question}`Q-0260`). Every compiler rejects the clause on a function
-  declared at block scope inside a function template (CPT-14). The gap
-  review expected a split there (item 27).
-- CPT-19: EDG orders two variadic templates whose packs have the type
-  constraints `A` and `AB` in its C++23 mode. Clang and GCC find the
-  call ambiguous ({question}`Q-0285`). On 2026-11-03 EDG 7.0 still differs from
-  Clang 22 and GCC 16. Q-0285 is settled under decision 0054.
+### Split tests
+
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `attribute-deprecated-used.cpp` | CPT-3 | accept | Clang 22: accept; Clang 18: reject | accept | accept | {question}`Q-0270` |
+| `attribute.cpp` | CPT-3 | accept | Clang 22: accept; Clang 18: reject | accept | accept | {question}`Q-0270` |
+| `compound-requirement-extra-argument-unused.cpp` | CPT-33 | accept | accept | reject | accept | {question}`Q-0287` |
+| `compound-requirement-order-noexcept.cpp` | CPT-33 | accept | reject | accept | accept | {question}`Q-0287` |
+| `compound-requirement-order.cpp` | CPT-33 | accept | reject | accept | accept | {question}`Q-0287` |
+| `nested-requirement-parameter-evaluated.cpp` | CPT-35, CNS-9 | reject | Clang 22: reject; Clang 18: accept | reject | reject | {question}`Q-0289` |
+| `placeholder-structured-binding.cpp` | CPT-37 | reject | reject | reject | accept | {question}`Q-0286` |
+| `requirement-access-member.cpp` | CPT-26 | accept | accept | GCC 16: accept; GCC 14: reject | accept | {question}`Q-0288` |
+| `requires-parameter-default.cpp` | CPT-29 | reject | reject | accept | reject | {question}`Q-0259` |
+| `requires-parameter-ellipsis.cpp` | CPT-29 | reject | reject | accept | reject | {question}`Q-0259` |
+| `requires-parameters-void-template.cpp` | CPT-28 | accept | reject | accept | accept | {question}`Q-0290` |
+| `trailing-clause-lambda.cpp` | CPT-11 | accept | accept | accept | reject | {question}`Q-0260` |
+| `trailing-clause-local-class.cpp` | CPT-11 | accept | accept | accept | reject | {question}`Q-0260` |
+| `trailing-clause-member-initializer-lambda.cpp` | CPT-11 | accept | accept | accept | reject | {question}`Q-0260` |
+| `type-constraint-pack-one-atom.cpp` | CPT-19, CNS-3, CNS-24 | reject | reject | reject | accept | {question}`Q-0285` |
+| `virtual-override.cpp` | CPT-15 | reject | reject | accept | reject | {question}`Q-0258` |
+| `virtual.cpp` | CPT-15 | reject | reject | accept | reject | {question}`Q-0258` |
+
+### Notes
+
+- CPT-14: every compiler rejects a trailing clause on a function
+  declared at block scope inside a function template. The gap review
+  expected a split there (item 27).
+- CPT-15: in `virtual-constraint-not-satisfied.cpp` the constraint
+  fails, and every compiler rejects the class. GCC rejects the use of
+  the function that the class's virtual functions need.
 - CPT-21: every compiler drops a function template whose constant
   argument fails the placeholder's constraint, and chooses another
   candidate.
-- CPT-26: in `requirement-access-member.cpp`, a static member function
-  of the class `Box` returns a requires expression that names a private
-  member. `Box` is not a template, so the requirement depends on no
-  template parameter, and CPT-27 applies to it. The member is
-  accessible there, so the requirement is valid, and the other
-  compilers give `true`. GCC 14 gives `false` and does not reject, so
-  the `static_assert` of the test fails ({question}`Q-0288`). Every compiler judges access from the
-  place of the check, also for a concept-id first checked inside a
-  member. The gap review expected a concept to be checked in its own
-  context (item 21). No compiler does this, and the rule follows the
-  compilers. A check at another place with another result falls
-  under {rule}`CNS-10`. When a concept-id is checked first inside the
-  member and again at namespace scope, or in the other order, every
-  compiler keeps the first result and none diagnoses the change
-  (`requirement-access-concept-kept.cpp`,
+- CPT-26: in `requirement-access-member.cpp`, `Box` is not a template,
+  so the requirement depends on no template parameter, and CPT-27
+  applies to it. The member is accessible there, so the requirement is
+  valid. Every compiler judges access from the place of the check, also
+  for a concept-id first checked inside a member. The gap review
+  expected a concept to be checked in its own context (item 21). No
+  compiler does this, and the rule follows the compilers. A check at
+  another place with another result falls under {rule}`CNS-10`. When a
+  concept-id is checked first inside the member and again at namespace
+  scope, or in the other order, every compiler keeps the first result
+  and none diagnoses the change (`requirement-access-concept-kept.cpp`,
   `requirement-access-concept-kept-false.cpp`).
 - CPT-27: every compiler rejects a requirement that uses no template
   parameter inside a template that is never instantiated. The gap
   review expected the compilers to differ (item 20).
-- CPT-28: Clang finds `requires (void)` `false` inside a template. GCC
-  and EDG find it `true` ({question}`Q-0290`).
-- CPT-33: Clang substitutes the extra arguments of the type constraint
-  before it checks the expression and `noexcept`. GCC never substitutes
-  an extra argument that the concept does not use. EDG follows the
-  order of the rule in both cases ({question}`Q-0287`). If the early
-  substitution instantiates a class whose body has an error, the
-  program is not valid ({rule}`CNS-33`). Clang therefore rejects a
-  program that GCC and EDG accept, both when step 1 fails
-  (`compound-requirement-order.cpp`, an expression that is not valid)
-  and when step 2 fails (`compound-requirement-order-noexcept.cpp`, an
-  expression that can throw).
-- CPT-35: Clang 18 gives `false` for a nested requirement that reads a
-  parameter. The other compilers reject the program
-  ({question}`Q-0289`).
-- CPT-37: EDG accepts a constrained placeholder in a structured binding
-  declaration ({question}`Q-0286`).
-- CPT-15: GCC accepts a virtual function with a trailing clause, and a
-  constrained function that overrides a virtual function. Clang and
-  EDG reject both ({question}`Q-0258`).
-  In `virtual-constraint-not-satisfied.cpp` the constraint fails, and
-  every compiler rejects the class. GCC rejects the use of the function
-  that the class's virtual functions need.
-- CPT-29: GCC accepts a default argument and an ellipsis in the
-  parameters of a requires expression. Clang and EDG reject them
-  ({question}`Q-0259`).
 - CPT-27: every compiler rejects a requires expression outside a
   template whose requirement is not valid. The inventory names a doubt
   that some compilers give `false` (gap D4). None does.
 - CPT-23: every compiler checks only the type deduced for the
   placeholder, so the inventory's doubt (gap C10) does not arise.
+- CPT-35: inventory item D1 says that a requirement that fails for
+  every argument makes the program not valid, with no diagnostic
+  required. CPT-35 reads a nested requirement that is valid and false
+  for every argument as valid ({question}`Q-0400`). Every compiler
+  accepts such a concept, used or not, and gives `false`
+  (`nested-requirement.cpp`, `nested-requirement-never-satisfied.cpp`).
+  Every compiler also accepts, and gives `false` for, a concept whose
+  expression requirement is not valid for any argument, such as the sum
+  of two pointers. The page has no rule for that case.
+
+### Sources
+
+The clean-room writer probed each rule with Clang 18 and 22, GCC 14 and
+16, the host Clang and GCC, and EDG 7.0, and checked each test on the
+same compilers, the eight {ref}`baseline compilers <baseline-compilers>`.
+The rejections name the reason in each compiler's own words, for
+example "concept cannot have associated constraints" and
+"non-templated function cannot have a requires clause"
+(clang-diag-sema, clang-diag-parse).
 
 This table gives the source of each rule. Inventory items have the
 numbers of `reports/review/2026-10-31-inventory-concepts-and-constraints.md`:
@@ -792,15 +822,5 @@ led to these changes, by its own numbering:
 | CPT-35 | 22 |
 | CPT-36 | 28 |
 | CPT-37 | 16, 17 |
-
-Inventory item D1 says that a requirement that fails for every argument
-makes the program not valid, with no diagnostic required. CPT-35 reads
-a nested requirement that is valid and false for every argument as
-valid ({question}`Q-0400`). Every compiler
-accepts such a concept, used or not, and gives `false`
-(`nested-requirement.cpp`, `nested-requirement-never-satisfied.cpp`).
-Every compiler also accepts, and gives `false` for, a concept whose
-expression requirement is not valid for any argument, such as the sum
-of two pointers. The page has no rule for that case.
 
 Inputs: clang-diag-sema, clang-diag-parse.

@@ -321,23 +321,40 @@ int read() {
 The results are in `tests/RESULTS.md`. All eight compilers agree on 54
 of 57 tests.
 
-- NS-15: GCC and EDG reject a definition with the name `N::f` inside
-  `N` itself. Clang accepts it with a warning ("extra qualification")
-  ({question}`Q-0371`). Every
-  compiler accepts `N::f` for a member of an inline namespace of `N`.
-  Inside `N`, GCC and Clang accept that definition, and EDG rejects it
-  ({question}`Q-0375`). Inside the
-  inline namespace, every compiler rejects it.
-  Every compiler rejects `N::f` for a function that only a using
-  directive or an unnamed namespace in `N` declares.
-- NS-15: the gap review of the rules that phase 7 rewrote
+### Divergences
+
+- {question}`Q-0019` (NS-7; settled on NS-P3): whether a using
+  declaration can be repeated in a block. It can, as Clang and GCC 16
+  say. EDG 7.0 and GCC 14 reject the repeated declaration.
+- {question}`Q-0371` (NS-15; open): whether a member of `N` can be
+  defined with the name `N::f` inside `N` itself. It cannot, as GCC and
+  EDG say. Clang accepts it with a warning ("extra qualification"). The
+  gap review of the rules that phase 7 rewrote
   (`reports/review/2026-11-04-gap-review-phase-7-repairs.md`) reads the
-  reference as allowing a qualified definition in any namespace that
-  contains the member, `N` itself included, as Clang does. NS-15 keeps
-  the answer of GCC and EDG for `N::f` inside `N`
-  (`documentation/decisions/pending.md`, row 4). The review reads the
-  definition inside the inline namespace as valid too, with doubt, and
-  every compiler rejects it.
+  definition as valid, as Clang does, and the choice waits on the
+  maintainer (`documentation/decisions/pending.md`, row 4).
+- {question}`Q-0375` (NS-15, NS-3; open): which namespace a qualified
+  definition of a member of an inline namespace must lie outside. The
+  namespace that declares the member, so `N::f` for a member of an
+  inline namespace of `N` can be defined inside `N`, as Clang and GCC
+  say. EDG rejects that definition.
+
+### Split tests
+
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `qualified-definition-inline-member-inside-named.cpp` | NS-15, NS-3 | run | run | run | reject | {question}`Q-0375` |
+| `qualified-definition-inside-own-namespace.cpp` | NS-15 | reject | accept | reject | reject | {question}`Q-0371` |
+| `using-declaration-repeat-block.cpp` | NS-7 | accept | accept | GCC 16: accept; GCC 14: reject | reject | {question}`Q-0019` |
+
+### Notes
+
+- NS-15: every compiler accepts `N::f` for a member of an inline
+  namespace of `N` in the global namespace, and rejects it inside the
+  inline namespace. The gap review of the rules that phase 7 rewrote
+  reads the definition inside the inline namespace as valid, with
+  doubt. Every compiler rejects `N::f` for a function that only a using
+  directive or an unnamed namespace in `N` declares.
 - NS-12, NS-P2: every compiler finds a name declared in an inline
   namespace and in its enclosing namespace ambiguous for an unqualified
   use in the enclosing namespace. Two functions form one overload set,
@@ -350,16 +367,7 @@ of 57 tests.
   the variable. NS-12 keeps the matrix's answer
   (`documentation/decisions/pending.md`, "Matrix against review").
 
-Divergence NS-D1 is about a repeated using declaration in a block. Clang
-22, Clang 18, and GCC 16 accept the repeated declaration. GCC 14 and
-EDG 7.0 reject it. The repeated declaration is valid
-({question}`Q-0019`). The question settled on 2026-11-04 under decision
-0054 after the source-reader gap review of the text phase 8 wrote on
-the declarations and statements chapters
-(`reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md`).
-The review supports the answer with no doubt, and NS-P3 gives the same
-answer. The test keeps its override for EDG 7.0, the family that still
-differs.
+### Sources
 
 Inputs: clang-sema-declcxx, clang-diag-sema, edg-decls (see
 `inputs/MANIFEST.md`).

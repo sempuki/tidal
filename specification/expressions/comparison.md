@@ -499,38 +499,65 @@ of 100 tests. The `<=>` tests declare a minimal `std::strong_ordering`,
 no headers. EDG needs `std::weak_ordering` declared even for integer
 operands.
 
-One question on this page settled on 2026-11-04 under decision 0054 after the principle-use batch PU2 (`reports/clean-room/PU2/`). The batch's use of the principle supports the answer, the latest gap review supports it with no doubt, and the principle gives the same answer. The tests keep their overrides for the family that still differs:
+### Divergences
 
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0387` | CMP-P3 | GCC 16 |
+- {question}`Q-0029` (CMP-1, CMP-14; settled on CMP-P6): whether a
+  chained comparison such as `3 > 2 > 1` is valid. It is, and an
+  implementation should warn about it. Clang 22 rejects a relational
+  chain by default, through a `-Wparentheses` warning whose default
+  severity is an error, and also rejects a fold and a chain in a
+  requires expression that depends on no template parameter. GCC warns
+  about more forms under `-Wparentheses`.
+- {question}`Q-0387` (CMP-8; settled on CMP-P3): whether constant
+  evaluation rejects a relational comparison of two base class
+  subobjects of one object, or of a base class subobject and a member.
+  It does, as Clang 22 and EDG say. GCC 16 gives a result.
+- {question}`Q-0030` (CMP-9, CMP-13; settled on CMP-P2): whether a
+  pointer may be compared with `<` or `<=>` to a literal `0`. It may
+  not. EDG accepts `0`, `0L`, and `nullptr` there.
+- {question}`Q-0103` (CMP-9; settled on CMP-P2): whether two values of
+  the type of `nullptr` may be compared with a relational operator.
+  They may not. EDG accepts `<`, `<=`, and `>=`, and rejects `<=>`.
+- {question}`Q-0104` (CMP-15; settled on CMP-P3): whether a class
+  object and its first member compare equal after conversion to
+  `void*`. They do, as Clang and GCC say. EDG gives `false`.
+- {question}`Q-0050` (CMP-18; settled on CMP-P5): whether `<=>` may
+  compare an unscoped enumeration with a floating-point value. It may
+  not. EDG accepts the comparison in either order and gives
+  `std::partial_ordering`.
+- {question}`Q-0051` (CMP-20; settled on CMP-P3): whether constant
+  evaluation rejects the comparison of a pointer one past the end of a
+  complete object with a pointer to the next object. It does, as Clang
+  and GCC say. EDG accepts the comparison.
 
-One question on this page settled on 2026-11-04 under decision 0054 after the principle-use batch PU1 (`reports/clean-room/PU1/`). The batch's use of the principle supports the answer, the latest gap review supports it with no doubt, and the principle gives the same answer. The tests keep their overrides for the family that still differs:
+### Split tests
 
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0051` | CMP-P3 | EDG 7.0 |
+EDG does not take the warning flags, so it skips the tests that use
+them.
 
-One question on this page settled on 2026-11-04 under decision 0054 after the source-reader gap review of the text phase 8 wrote on expressions, foundations, and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `base-and-member-pointers-constant.cpp` | CMP-8 | reject | reject | accept | reject | {question}`Q-0387` |
+| `base-subobject-pointers-constant.cpp` | CMP-8 | reject | reject | accept | reject | {question}`Q-0387` |
+| `chained-class-bool-warns.cpp` | CMP-14 | reject | accept | reject | skips | {question}`Q-0029` |
+| `chained-comparison-warns.cpp` | CMP-14 | reject | Clang 22: reject; Clang 18: accept | reject | skips | {question}`Q-0029` |
+| `chained-comparison.cpp` | CMP-1 | accept | Clang 22: reject; Clang 18: accept | accept | accept | {question}`Q-0029` |
+| `chained-equality-gcc-warns.cpp` | CMP-1 | accept | accept | reject | skips | {question}`Q-0029` |
+| `chained-fold-not-chain.cpp` | CMP-14, PRIM-27 | accept | Clang 22: reject; Clang 18: accept | accept | skips | {question}`Q-0029` |
+| `chained-less-equal-warns.cpp` | CMP-14 | reject | Clang 22: reject; Clang 18: accept | reject | skips | {question}`Q-0029` |
+| `chained-mixed-relational-warns.cpp` | CMP-14 | reject | Clang 22: reject; Clang 18: accept | reject | skips | {question}`Q-0029` |
+| `chained-relational-equality-gcc-warns.cpp` | CMP-1 | accept | accept | reject | skips | {question}`Q-0029` |
+| `chained-requires-not-dependent.cpp` | CMP-1 | accept | Clang 22: reject; Clang 18: accept | accept | accept | {question}`Q-0029` |
+| `one-past-end-adjacent-constant.cpp` | CMP-20 | reject | reject | reject | accept | {question}`Q-0051` |
+| `pointer-relational-nullptr.cpp` | CMP-9 | reject | reject | reject | accept | {question}`Q-0030` |
+| `pointer-relational-zero.cpp` | CMP-9 | reject | reject | reject | accept | {question}`Q-0030` |
+| `relational-nullptr-values.cpp` | CMP-9 | reject | reject | reject | accept | {question}`Q-0103` |
+| `struct-and-first-member-equal.cpp` | CMP-15 | accept | accept | accept | reject | {question}`Q-0104` |
+| `three-way-enum-float.cpp` | CMP-18 | reject | reject | reject | accept | {question}`Q-0050` |
+| `three-way-pointer-zero.cpp` | CMP-13 | reject | reject | reject | accept | {question}`Q-0030` |
 
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0050` | CMP-P5 | EDG 7.0 |
+### Notes
 
-Four questions on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
-
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0029` | CMP-P6 | Clang 22 |
-| {question}`Q-0030` | CMP-P2 | EDG 7.0 |
-| {question}`Q-0103` | CMP-P2 | EDG 7.0 |
-| {question}`Q-0104` | CMP-P3 | EDG 7.0 |
-
-- CMP-1: Clang 22 rejects a chained comparison by default, through a
-  `-Wparentheses` warning whose default severity is an error. Clang 22
-  accepts the comparison with `-Wno-error=parentheses` or with the
-  warning off. Clang 18, GCC, and EDG accept a chained comparison
-  ({question}`Q-0029`).
 - CMP-14 is Tidal's own advice. The gap review of the rules that phase
   7 rewrote (`reports/review/2026-11-04-gap-review-phase-7-repairs.md`)
   finds no recommendation about chained comparisons in the reference.
@@ -538,30 +565,10 @@ Four questions on this page settled on 2026-11-03 under decision 0054 after the 
 - CMP-4, CMP-14, CMP-16: Clang and GCC give the warnings under
   `-Wsign-compare`, `-Wparentheses`, and `-Wall -Wextra`. GCC turns on
   `-Wparentheses` under `-Wall`. CMP-14 covers the four relational
-  operators only. These are the results for a chained comparison
-  ({question}`Q-0029`):
-
-  | Compiler | No flags | Relational chain, `-Werror -Wparentheses` | `a == b == c`, `-Werror -Wparentheses` | `a < b == c`, `-Werror -Wparentheses` |
-  |---|---|---|---|---|
-  | Clang 22 | rejects a relational chain, accepts an equality chain | rejects | accepts, no warning | accepts, no warning |
-  | Clang 18 | accepts | accepts, no warning | accepts, no warning | accepts, no warning |
-  | GCC 14 and 16 | accepts | rejects | rejects | rejects |
-  | EDG 7.0 | accepts | skips the test | skips the test | skips the test |
-
-  A relational chain of variables (`a < b < c`) and of constants
-  (`1 < 2 < 3`) give the same result on each compiler. For both
-  equality forms, GCC gives a warning other than its chain warning
-  ("suggest parentheses around comparison in operand of `==`"). EDG
-  does not accept the warning flags. The results also depend on the
-  form and the context of the chain:
-
-  | Form | Clang 22 | Clang 18 | GCC | Test |
-  |---|---|---|---|---|
-  | The inner `<` is an operator function that returns `bool` | no warning | no warning | warns under `-Wall` | `chained-class-bool-warns.cpp` |
-  | The inner `<` returns a class | no warning | no warning | no warning | `chained-class-result-no-warning.cpp` |
-  | A fold `(... < p)` | rejects with no flag | no warning | no warning, also under `-Wall` | `chained-fold-not-chain.cpp` |
-  | In a requires expression that depends on no template parameter | rejects with no flag | accepts | no warning, also under `-Wall` | `chained-requires-not-dependent.cpp` |
-  | In a dependent requirement, or in a template that is never instantiated | no warning | no warning | no warning | `chained-in-concept-no-warning.cpp` |
+  operators only. A chain in a dependent requirement, or in a template
+  that is never instantiated, gets no warning on any compiler
+  (`chained-in-concept-no-warning.cpp`), and neither does a chain whose
+  inner `<` returns a class (`chained-class-result-no-warning.cpp`).
 - CMP-7, CMP-26: every compiler orders pointers into two rows of one
   array of arrays, and into an array member and the member after it,
   during constant evaluation. Every compiler gives `true` for a pointer
@@ -575,11 +582,6 @@ Four questions on this page settled on 2026-11-03 under decision 0054 after the 
   reads both comparisons as having no fixed result, so constant
   evaluation would reject them. CMP-8 keeps the compilers' answer
   (`documentation/decisions/pending.md`, row 4).
-- CMP-8: for pointers to two base class subobjects of one object, or to
-  a base class subobject and a member, Clang 22 and EDG 7.0 reject the
-  comparison during constant evaluation, as the same review reads it.
-  GCC 16 gives a result
-  ({question}`Q-0387`).
 - CMP-8: at run time, every Clang and GCC configuration orders two
   unrelated global variables by address, so `&a < &b` and `&a > &b`
   disagree (`pointer-unrelated-run.cpp`). CMP-8 does not promise this
@@ -588,14 +590,6 @@ Four questions on this page settled on 2026-11-03 under decision 0054 after the 
   during constant evaluation. A function name followed by `<` starts a
   template argument list, so the function-pointer test puts each operand
   in parentheses.
-- CMP-9 and CMP-13: EDG accepts `<=>` between a pointer and `0`. EDG
-  accepts a relational comparison between a pointer and a literal zero
-  (`0` or `0L`) or `nullptr`. EDG rejects a pointer and `1`, and a
-  pointer and a named constant whose value is zero. Clang and GCC
-  reject all of these ({question}`Q-0030`).
-- CMP-9: EDG accepts a relational comparison of two values of the type
-  of `nullptr`, and rejects `<=>` on them. Clang and GCC reject both
-  ({question}`Q-0103`).
 - CMP-11 and CMP-16: Clang and GCC warn that array comparison is
   deprecated. In strict C++23 mode both accept array comparison, also
   during constant evaluation.
@@ -604,26 +598,18 @@ Four questions on this page settled on 2026-11-03 under decision 0054 after the 
   accepts `<=>` on the two types on x86-64 and rejects it with `-m32` as
   narrowing. Every compiler accepts a constant that fits the converted
   type, such as `1 <=> 2u`.
-- CMP-15: EDG evaluates the comparison of a class object and its first
-  member, after conversion to `void*`, to `false`. Clang and GCC give
-  `true`, during constant evaluation and at run time
-  ({question}`Q-0104`).
-- CMP-18: EDG accepts `<=>` between an unscoped enumeration and a
-  floating-point value, in either order, and gives
-  `std::partial_ordering`. Clang and GCC reject the comparison
-  ({question}`Q-0050`).
-- CMP-20: Clang and GCC reject the comparison during constant
-  evaluation if the first object is a complete object. EDG accepts the
-  comparison ({question}`Q-0051`). Inside one array of arrays, every
-  compiler accepts the comparison, as CMP-26 states. Inside one class
-  object, every compiler accepts `==` and `<` between the pointer one
-  past an array member and the next member, and gives `true` for both
-  (`one-past-member-adjacent-constant.cpp`).
+- CMP-20: inside one array of arrays, every compiler accepts the
+  comparison during constant evaluation, as CMP-26 states. Inside one
+  class object, every compiler accepts `==` and `<` between the pointer
+  one past an array member and the next member, and gives `true` for
+  both (`one-past-member-adjacent-constant.cpp`).
 - CMP-21: Clang warns under `-Wdeprecated-enum-compare` for two
   different enumerations, and GCC warns under `-Wenum-compare`. For an
   enumeration and a floating-point value, both compilers warn under
   `-Wdeprecated-enum-float-conversion`. Each warning is on by default,
   and `-pedantic-errors` does not make it an error. A test turns the
   warning into an error with `-Werror`.
+
+### Sources
 
 Inputs: clang-sema-expr, clang-diag-sema.

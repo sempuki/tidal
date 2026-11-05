@@ -523,46 +523,59 @@ struct Child : Sealed { };         // rejected: the implicit ~Child overrides a 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 140
 of 146 tests.
 
-One question on this page settled on 2026-11-04 under decision 0054 after the principle-use batch PU1 (`reports/clean-room/PU1/`). The batch's use of the principle supports the answer, the latest gap review supports it with no doubt, and the principle gives the same answer. The tests keep their overrides for the family that still differs:
+### Divergences
 
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0086` | VIRT-P4 | Clang 22 |
+Q-0087 and Q-0394 wait on the maintainer
+(`documentation/decisions/pending.md`, row 4, and row 7 for Q-0087).
 
-Two questions on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on classes and statements (`reports/review/2026-11-03-gap-review-questions-classes-statements.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+- {question}`Q-0394` (VIRT-1; open): whether a member function with no
+  ref-qualifier overrides a base virtual function with one. It does
+  not, as Clang 22, GCC 16, and EDG 7.0 say. Clang 18 makes the
+  derived member an override, as the gap review of the text phase 8
+  wrote reads the C++23 text.
+- {question}`Q-0355` (VIRT-1; settled on VIRT-P1): whether a virtual
+  call made inside an intermediate class during constant evaluation
+  reaches the final overrider of the complete object. It does. EDG
+  calls the function of the base.
+- {question}`Q-0086` (VIRT-8; settled on VIRT-P4): whether a call to a
+  function that returns an abstract class is valid. It is not. Clang
+  accepts the call.
+- {question}`Q-0212` (VIRT-10; compiler defect): whether a
+  `dynamic_cast` from a private base can succeed during constant
+  evaluation. It gives a null pointer, as at run time on Clang and GCC.
+  EDG lets the cast succeed, also when the private base is the second
+  base.
+- {question}`Q-0056` (VIRT-12; settled on VIRT-P3): whether constant
+  evaluation rejects `delete` through a base without a virtual
+  destructor. It does, as Clang and EDG do. GCC accepts the `delete`.
+- {question}`Q-0087` (VIRT-19; open): whether an explicit object member
+  function can have the name and parameters of a base virtual
+  function. It cannot, as Clang and GCC say. EDG accepts the function.
 
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0056` | VIRT-P3 | GCC 16 |
-| {question}`Q-0355` | VIRT-P1 | EDG 7.0 |
+### Split tests
 
-- VIRT-12: GCC accepts `delete` through a base without a virtual
-  destructor during constant evaluation. Clang and EDG reject the
-  `delete` ({question}`Q-0056`).
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `call-returning-abstract.cpp` | VIRT-8 | reject | accept | reject | reject | {question}`Q-0086` |
+| `dynamic-cast-private-base-constant.cpp` | VIRT-10 | accept | accept | accept | reject | {question}`Q-0212` |
+| `explicit-object-overrides.cpp` | VIRT-19 | reject | reject | reject | accept | {question}`Q-0087` |
+| `nonvirtual-dtor-delete-constant.cpp` | VIRT-12 | reject | reject | accept | reject | {question}`Q-0056` |
+| `override-independent-base-unused.cpp` | VIRT-3, DEP-30 | reject | reject | accept | accept | |
+| `override-ref-qualifier-missing.cpp` | VIRT-1, VIRT-3 | reject | Clang 22: reject; Clang 18: accept | reject | reject | {question}`Q-0394` |
+
+### Notes
+
 - VIRT-17: Clang and GCC report the missing destructor at link time.
   EDG translates the program and links nothing, so the test expects
   EDG to accept it ({ref}`baseline compilers <baseline-compilers>`).
-- VIRT-8: Clang accepts a call to a function that returns an abstract
-  class. GCC and EDG reject the call ({question}`Q-0086`).
-- VIRT-19: EDG accepts an explicit object member function with the name
-  and parameters of a base virtual function. Clang and GCC reject the
-  function ({question}`Q-0087`).
 - VIRT-20: Clang and GCC report the missing definition at link time.
   At `-O2` they emit no reference to the virtual table, and the program
   links. VIRT-20 allows both results, because the rule needs no
   diagnostic.
-- VIRT-1: a derived member with no ref-qualifier does not override a
-  base virtual function with a ref-qualifier. GCC and EDG say that a
-  derived member marked `override` overrides nothing, and Clang rejects
-  the pair as an overload of a function with a ref-qualifier by one
-  without. The gap review of the text phase 8 wrote reads the C++23
-  text the other way, because its test of when two declarations
-  correspond sets references aside when one function has no
-  ref-qualifier. The review knows of a later change that may restore
-  the condition. Clang 18 follows the review and makes the derived
-  member an override. VIRT-1 follows the newest compilers
-  ({question}`Q-0394`,
-  `documentation/decisions/pending.md`, row 4).
+- VIRT-1: for a derived member with no ref-qualifier against a base
+  virtual function with one, GCC and EDG say that a derived member
+  marked `override` overrides nothing, and Clang 22 rejects the pair as
+  an overload of a function with a ref-qualifier by one without.
 - VIRT-8: every compiler rejects a call that passes an argument to a
   parameter of abstract class type, where the function's declaration
   alone is valid.
@@ -607,16 +620,11 @@ Two questions on this page settled on 2026-11-03 under decision 0054 after the s
 - VIRT-10: every Clang and GCC configuration gives a null pointer for a
   cast from a private base, to the derived class or across to another
   base. A cast from the same subobject to a class that has it as a
-  public base succeeds. EDG 7.0 lets the cast from a private base
-  succeed during constant evaluation, also when the private base is the
-  second base ({question}`Q-0212`). Q-0212 stays open under decision
-  0051, because on 2026-11-03 EDG 7.0 still differs from Clang 22 and
-  GCC 16.
+  public base succeeds.
 - VIRT-10: a failed cast of a reference throws at run time on every
   Clang and GCC configuration, and a handler `catch (...)` catches the
   exception. Constant evaluation rejects the failed cast on every
   compiler.
-
 - VIRT-3: in a template whose base does not depend on the parameters,
   Clang rejects a member marked `override` that overrides nothing,
   also when no specialization is made. GCC and EDG accept the template
@@ -640,6 +648,8 @@ Two questions on this page settled on 2026-11-03 under decision 0054 after the s
   `-Winconsistent-missing-destructor-override`, and neither is on by
   default or under `-Wall`. A destructor with `override` counts as the
   other override for Clang's warning with no flag.
+
+### Sources
 
 Inputs: clang-sema-declcxx, clang-sema-expr, clang-diag-sema,
 edg-class-decl.

@@ -298,32 +298,60 @@ Identifier bad = "2x";              // rejected
 The results are in `tests/RESULTS.md`. All eight compilers agree on 64
 of 73 tests.
 
+### Divergences
+
+- {question}`Q-0020` (CX-3; open): how a test records a compiler that
+  does not implement a feature yet. A test gives the older compiler its
+  own expectation and names the question. Clang 18 rejects a
+  `constexpr` function that never gives a constant, a non-literal
+  parameter type, and a non-literal return type, and Clang 22 accepts
+  all three.
+- {question}`Q-0025` (CINIT-2, CINIT-3; open): which declarations of a
+  variable must carry `constinit`. The initializing declaration must,
+  and a `constinit` added after it needs no diagnostic (CINIT-3), so
+  every result for a late `constinit` conforms. For `constinit` only on
+  an earlier declaration (CINIT-2), Clang and EDG reject the program,
+  and GCC accepts it.
+- {question}`Q-0193` (CX-2, CE-14; open): whether a constant can refer
+  to, and read, every temporary that a namespace reference extends. It
+  can, and a read needs a `const` type. EDG rejects some of the
+  references, and GCC rejects the read of a class temporary. CE-14
+  covers that case. CX-2 covers a `constexpr` aggregate whose
+  reference member binds a temporary, which every compiler rejects in a
+  block and accepts at namespace scope.
+- {question}`Q-0192` (CE-24, CINIT-1; open): whether a `constinit`
+  variable of a class with a trivial default constructor and no
+  initializer has a constant initializer. It has none, as Clang says.
+  GCC and EDG accept the variable.
+
+### Split tests
+
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `constinit-added-late-thread-local.cpp` | CINIT-3 | reject | reject | accept | accept | {question}`Q-0025` |
+| `constinit-added-late.cpp` | CINIT-3 | reject | reject | accept | accept | {question}`Q-0025` |
+| `constinit-on-declaration-only.cpp` | CINIT-2 | reject | reject | accept | reject | {question}`Q-0025` |
+| `function-never-constant.cpp` | CX-3 | accept | Clang 22: accept; Clang 18: reject | accept | accept | {question}`Q-0020` |
+| `function-non-literal-param.cpp` | CX-3 | accept | Clang 22: accept; Clang 18: reject | accept | accept | {question}`Q-0020` |
+| `non-literal-return.cpp` | CX-3 | accept | Clang 22: accept; Clang 18: reject | accept | accept | {question}`Q-0020` |
+| `foundations/constant-evaluation/constant-initializer-trivial-class-array.cpp` | CE-24, CE-21, CINIT-1 | reject | reject | run | accept | {question}`Q-0192` |
+| `foundations/constant-evaluation/constant-initializer-trivial-class-block-static.cpp` | CE-24, CE-21, CINIT-1 | reject | reject | run | accept | {question}`Q-0192` |
+| `foundations/constant-evaluation/constant-initializer-zero-trivial-class.cpp` | CE-24, CE-21, CINIT-1 | reject | reject | run | accept | {question}`Q-0192` |
+
+### Notes
+
 - {rule}`CE-17`: every compiler accepts a constant evaluation that
   reaches the definition of a `static const int` with a constant
   initializer (`static-local-usable-reached.cpp`). Every
   compiler rejects one that reaches a `static int`
   (`function-static-local-evaluated.cpp`).
-- CX-3: Clang 18 rejects a `constexpr` function that never gives a
-  constant, a non-literal parameter type, and a non-literal return
-  type. Clang 22 accepts all three ({question}`Q-0020`).
 - CEV-1: all eight compilers, Clang 18 and GCC 14 included, make a
   lambda and a `constexpr` function from a template `consteval` when
   the body calls a `consteval` function with arguments that are not
   constant.
-- CINIT-3: Clang rejects `constinit` added after the initializing
-  declaration. GCC and EDG accept the late `constinit`. CINIT-3 needs no
-  diagnostic, because the initializing declaration cannot see the later
-  `constinit`, so all three results conform ({question}`Q-0025`).
-  Every test of CINIT-3 has an override, and each override records a
-  result that the class allows.
-- CINIT-2: Clang (pedantic) and EDG reject `constinit` that is only on
-  an earlier declaration. GCC accepts the earlier `constinit`
-  ({question}`Q-0025`).
-- CX-2: all compilers reject a `constexpr` aggregate in a block whose
-  reference member binds to a temporary, and accept the same aggregate
-  at namespace scope. A `constexpr` reference variable that binds a
-  temporary aggregate is a different case, which {rule}`CE-14` covers
-  ({question}`Q-0193`). Q-0193 stays open under decision 0051, because
-  on 2026-11-03 the newest versions still split on it.
+- CINIT-3: every test of CINIT-3 has an override, and each override
+  records a result that the class allows.
+
+### Sources
 
 Inputs: clang-sema-decl, clang-sema-declcxx, clang-diag-sema, edg-decls.

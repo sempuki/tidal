@@ -121,6 +121,21 @@ struct Tag final { };              // rejected: Tag is defined again
 The results are in `tests/RESULTS.md`. All eight compilers agree on 100
 of 101 tests.
 
+### Divergences
+
+- {question}`Q-0382` (KW-3; settled): whether `override` after the name
+  of a complete class is an identifier, so that `struct D override { 3 };`
+  declares a variable. It is, as the newest version of each family says.
+  GCC 14 reads `override` as a marker of the class and rejects it.
+
+### Split tests
+
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `override-after-complete-class-variable.cpp` | KW-3 | accept | accept | GCC 16: accept; GCC 14: reject | accept | {question}`Q-0382` |
+
+### Notes
+
 - KW-1: each probe declares a variable named by one keyword. The
   compilers give different messages, mostly that a name was expected,
   so the probes carry no error pattern.
@@ -131,6 +146,4 @@ of 101 tests.
 - KW-3: Clang, GCC, and EDG read `struct D override { }` as a
   variable named `override`. If `D` is incomplete, each rejects the
   variable ({rule}`INIT-7`). Each reads `struct D final { }` after a
-  definition of `D` as a second definition of `D`. GCC 14 reads
-  `override` there as a marker of the class and rejects it
-  ({question}`Q-0382`, settled on 2026-11-04 because every newest family agrees).
+  definition of `D` as a second definition of `D`.

@@ -8,7 +8,14 @@
 A function calls the destructor of an automatic object explicitly. The
 object is then destroyed again at the end of its block. During constant
 evaluation, Clang and GCC reject the second destruction. EDG 7.0 accepts
-it.
+it. The split is the same for a class with a trivial destructor
+(`tests/classes/constructors/double-destroy-trivial-constant.cpp`).
+
+The same split holds when the called function destroys its parameter
+and the caller then destroys the parameter again
+(`tests/foundations/values/parameter-destroyed-by-callee-constant.cpp`,
+VC-10). Clang and GCC reject the second destruction during constant
+evaluation, and EDG 7.0 accepts it.
 
 ## Options
 

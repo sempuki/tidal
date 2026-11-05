@@ -583,25 +583,50 @@ template <class... T> void keep(T... x) {
 The results are in `tests/RESULTS.md`. All eight compilers agree on 65
 of 69 tests.
 
-The question of the cluster of EDG differences (cluster 5) on this page,
-{question}`Q-0272`, stays open under decision 0051. On 2026-11-03, Clang
-22 and GCC 16 still agree with its provisional answer, and EDG 7.0 still
-differs. Reporting this EDG difference to the EDG project waits on the
-maintainer.
+### Divergences
 
-The clean-room writer probed each rule with Clang 22, GCC 16, and EDG
-7.0, and checked the tests and the grid on the eight
-{ref}`baseline compilers <baseline-compilers>`.
+Reporting the EDG difference of Q-0272 (cluster 5) to the EDG project
+waits on the maintainer (`documentation/decisions/pending.md`).
 
-- PACK-16: on a class declaration, GCC takes the alignment of the last
-  element of `alignas(T...)`. Clang and EDG take the strictest. On a
-  member, all compilers take the strictest ({question}`Q-0238`).
+- {question}`Q-0238` (PACK-16; compiler defect): whether `alignas(T...)`
+  on a class takes the strictest alignment of the elements. It does, as
+  on a member. GCC takes the alignment of the last element on a class.
+- {question}`Q-0271` (PACK-11; settled): whether a pack expansion can
+  give an argument to a parameter of an alias template that is not a
+  pack. It cannot, and every compiler rejects it. No family differs.
+- {question}`Q-0272` (PACK-11; open): whether a pack expansion can give
+  an argument to a parameter of a concept that is not a pack. It
+  cannot, as Clang and GCC say. EDG accepts the expansion.
+- {question}`Q-0273` (PACK-12; open): how a list with an expansion
+  before its end takes part in deduction outside a call. A partial
+  specialization whose parameter appears only there is rejected, as
+  Clang does, and GCC and EDG accept it. For a function type, `T` is
+  empty unless explicit arguments give it elements. EDG differs for
+  `void h(int)`, and GCC for `take<char>(f)`.
+- {question}`Q-0274` (PACK-30; open): what a name means that finds an
+  expanded using-declarator when the pack is empty. The program is not
+  valid, and no diagnostic is required, so both results are allowed.
+  GCC and EDG call the `f` of the namespace, and Clang rejects the use.
+
+### Split tests
+
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `alignment-specifier-class.cpp` | PACK-16 | accept | accept | reject | accept | {question}`Q-0238` |
+| `expansion-to-concept-parameters.cpp` | PACK-11 | reject | reject | reject | accept | {question}`Q-0272` |
+| `using-declaration-empty-pack-only.cpp` | PACK-30 | accept | reject | accept | accept | {question}`Q-0274` |
+| `using-declaration-empty-pack-outer-name.cpp` | PACK-30 | accept | reject | accept | accept | {question}`Q-0274` |
+
+### Notes
+
+- PACK-16: on a data member, every compiler takes the strictest
+  alignment of `alignas(T...)`.
 - PACK-3: every compiler reads `T...` after a parameter of a type that
   names no pack as the variable argument part. Every compiler also
   reads the `...` after a named parameter as the variable argument
-  part, for a pack type and for `auto`. Every compiler accepts a constant evaluation of a
-  call that passes extra arguments to the variable argument part
-  (`placeholder-named-before-ellipsis.cpp`,
+  part, for a pack type and for `auto`. Every compiler accepts a
+  constant evaluation of a call that passes extra arguments to the
+  variable argument part (`placeholder-named-before-ellipsis.cpp`,
   `ellipsis-after-parameter.cpp`).
 - PACK-2: the gap review (item 3) predicted that an unnamed pack can
   have its `...` inside parentheses, as in `R (*...)()`. Every
@@ -611,31 +636,18 @@ The clean-room writer probed each rule with Clang 22, GCC 16, and EDG
 - PACK-11: every compiler rejects an expansion for a parameter of an
   alias template that is not a pack. A class template accepts it
   (PACK-10). The gap review (item 7) found no explicit statement of
-  this rule in its reference ({question}`Q-0271`). For a concept, Clang
-  and GCC reject the expansion, and EDG accepts it ({question}`Q-0272`).
-- PACK-12: for a partial specialization with a parameter that appears
-  only in a list with an expansion before its end, Clang rejects the
-  declaration. GCC and EDG accept it, and the specialization never
-  matches. For the parameter `void (*)(T..., int)` and a fallback
-  `take(...)`, the compilers differ in two calls ({question}`Q-0273`).
-  For `void h(int)`, Clang and GCC deduce an empty `T` and call the
-  template, and EDG calls the fallback. For `take<char>(f)` with
-  `void f(char, int)`, Clang and EDG call the template, and GCC finds
-  no match. Every compiler calls the fallback for `take(f)`, as
+  this rule in its reference.
+- PACK-12: every compiler calls the fallback for `take(f)`, as
   `nondeduced-before-end-function-type.cpp` tests.
 - PACK-27: in each test of the rule, every compiler removes the
   template and calls the other overload.
-- PACK-30 is `no-diagnostic`. In the probe, `f` in a member function
-  finds `using B::f...;` at the definition. For an empty pack, GCC and
-  EDG call the `f` of the namespace ({question}`Q-0274`). Clang rejects
-  the use of `f` in the class, and its message names the
-  using-declaration that expands to nothing. Clang rejects only such a
-  use. A call from outside the class that finds the class's own `f` is
-  valid on every compiler (`using-declaration-empty-pack.cpp`). The
-  gap review (item 15) gives the program no meaning and requires no
-  diagnostic, and the class allows both results.
-  Every test of PACK-30 has an override, and each override records a
-  result that the class allows.
+- PACK-30 is `no-diagnostic`. Clang rejects only a use of `f` inside
+  the class. A call from outside the class that finds the class's own
+  `f` is valid on every compiler (`using-declaration-empty-pack.cpp`).
+  The gap review (item 15) gives the program no meaning and requires no
+  diagnostic, and the class allows both results. Every test of PACK-30
+  has an override, and each override records a result that the class
+  allows.
 - PACK-18: the gap review (item 13) predicted a rejection for an init
   capture `c{p...}` with two elements. Every compiler rejects it, as a
   braced initializer of a placeholder type with two elements.
@@ -647,26 +659,22 @@ The clean-room writer probed each rule with Clang 22, GCC 16, and EDG
   says the attribute cannot be a pack, and GCC and EDG say the pattern
   has no pack. The page does not specify attribute expansions.
 
-Expansion places (PACK-P2). Each row is a function template `probe`
+### Probe grids
+
+The grid `sites.json` in `tests/templates/packs/grids/` probes the
+expansion places of PACK-P2. Each row is a function template `probe`
 over a type pack `T` that expands `T` in one place and checks the
-result. Each column gives `T` a number of elements:
+result: call arguments, a braced list, template arguments, function
+parameters, a base list, member initializers, an alignment specifier,
+a capture, an init capture, a using-declaration, the pack-size
+operator, and a fold. The columns give `T` no element, one element,
+and three elements. Every compiler accepts every cell.
 
-| | no element | one element | three elements |
-|---|---|---|---|
-| call arguments | accept | accept | accept |
-| braced list | accept | accept | accept |
-| template arguments | accept | accept | accept |
-| function parameters | accept | accept | accept |
-| base list | accept | accept | accept |
-| member initializers | accept | accept | accept |
-| alignment specifier | accept | accept | accept |
-| capture | accept | accept | accept |
-| init capture | accept | accept | accept |
-| using-declaration | accept | accept | accept |
-| pack-size operator | accept | accept | accept |
-| fold | accept | accept | accept |
+### Sources
 
-The grid is in `tests/templates/packs/grids/`. This table gives the
+The clean-room writer probed each rule with Clang 22, GCC 16, and EDG
+7.0, and checked the tests and the grid on the eight
+{ref}`baseline compilers <baseline-compilers>`. This table gives the
 source of each rule. Inventory items have the numbers of
 `reports/review/2026-10-31-inventory-packs-forwarding-ctad.md`, and gap
 review items the numbers of

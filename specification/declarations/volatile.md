@@ -253,6 +253,33 @@ volatile Control* control = nullptr;           // set to the device address
 The results are in `tests/RESULTS.md`. All eight compilers agree on 41
 of 42 tests.
 
+### Divergences
+
+- {question}`Q-0320` (VOL-6, VOL-8; open): whether constant evaluation
+  must reject a read of a volatile object through a glvalue that is not
+  volatile. It must, since VOL-6 makes the read undefined, as Clang
+  does. GCC and EDG accept the read.
+- {question}`Q-0080` ({rule}`CLS-23`; open): whether a `static const
+  volatile` member can have an initializer in its class. It cannot
+  unless it is `inline`, as Clang says. GCC and EDG accept the
+  initializer.
+- {question}`Q-0176` (VOL-12; open): whether the initialization of a
+  volatile object is an observable write. It is, for an initializer
+  that runs at run time. No family differs. Clang 22 and GCC 16 keep
+  each such store at `-O2`.
+- {question}`Q-0326` (VOL-13; open): which size of access a volatile
+  read or write uses, and whether an implementation can merge or split
+  volatile accesses. The size is implementation-defined, and merging
+  stays open. No family differs.
+
+### Split tests
+
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `constant-read-through-plain.cpp` | VOL-6, VOL-8 | reject | reject | accept | accept | {question}`Q-0320` |
+
+### Notes
+
 - VOL-1: the tests check that programs with volatile accesses compile
   and run. A test cannot observe if an access was removed.
 - VOL-12: at `-O2`, Clang 22 and GCC 16 keep the store of an initializer
@@ -260,20 +287,14 @@ of 42 tests.
   dynamic initializer of a volatile namespace-scope variable is also
   kept. A constant or zero initial value is in the program's data, with
   no store. An initializer of a volatile class object can be written
-  with one wide store for several members ({question}`Q-0176`).
+  with one wide store for several members.
 - VOL-1: Clang and GCC run a program that writes a plain object through
   a pointer to volatile and reads it through its name.
 - VOL-13: at `-O2`, Clang 22 and GCC 16 write a volatile `unsigned
   short` member with one 2-byte store. For a write to a volatile
   bit-field, both load the 4-byte unit, change the bits, and store the
   4-byte unit. The harness cannot observe the size of an access, so the
-  test checks only that the other bit-fields keep their values. Whether
-  an implementation can merge or split volatile accesses is open
-  ({question}`Q-0326`).
-- {rule}`CLS-23`: Clang rejects an in-class initializer for a `static const
-  volatile` member. GCC and EDG accept the initializer
-  ({question}`Q-0080`). CLS-23 follows Clang, and the test records GCC
-  and EDG as overrides.
+  test checks only that the other bit-fields keep their values.
 - VOL-5: Clang and GCC warn by default for each listed use in C++23
   mode, and not for compound assignment. The flag is
   `-Wdeprecated-volatile` for Clang and `-Wvolatile` for GCC. `-Wall`,
@@ -284,11 +305,8 @@ of 42 tests.
   `-Wall -Werror`, so each warning is a rejection.
 - VOL-6: no sanitizer of GCC or Clang reports a read of a volatile
   object through an `int*`, so `nonvolatile-access-to-volatile-constant.cpp`
-  checks only that the program compiles. During constant evaluation Clang rejects the read,
-  and GCC and EDG accept it ({question}`Q-0320`). Q-0320 stays open
-  under decision 0051, because on 2026-11-03 Clang 22 still differs from
-  GCC 16 and EDG 7.0. Only the front end's interpreter stops VOL-6 at
-  run time. The interpreter stops the read in
+  checks only that the program compiles. Only the front end's
+  interpreter stops VOL-6 at run time. The interpreter stops the read in
   `nonvolatile-access-to-volatile-constant.cpp` and names VOL-6
   (decision 0053).
 - VOL-13 with `-m32`: the matrix runs no program built with

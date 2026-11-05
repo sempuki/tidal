@@ -23,6 +23,9 @@ The test above, and the inventory item H4. Item 38 of the gap review
 as one that gives no exemption from diagnosis, so an implementation
 must reject the guide. Clang's rejection matches that reading.
 
+In `guide-not-deducible-used.cpp` the program uses the guide, and
+every compiler rejects the program. GCC and EDG reject the deduction.
+
 ## Options
 
 1. The guide is not valid, and an implementation need not diagnose it

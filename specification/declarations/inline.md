@@ -189,14 +189,21 @@ struct Config {
 The results are in `tests/RESULTS.md`. All eight compilers agree on 35
 of 37 tests.
 
-One question on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+### Divergences
 
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0068` | INL-P2 | GCC 16 |
+- {question}`Q-0068` (INL-2; settled on INL-P2): whether a function can
+  be declared `inline` after its definition. It cannot, as Clang and
+  EDG say. GCC accepts the declaration.
 
-- INL-2: GCC accepts `inline` on a declaration after the definition.
-  Clang and EDG reject the declaration ({question}`Q-0068`).
+### Split tests
+
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `inline-after-definition.cpp` | INL-2 | reject | reject | accept | reject | {question}`Q-0068` |
+| `inline-undefined-used.cpp` | INL-6 | link-fail | link-fail | link-fail | reject | |
+
+### Notes
+
 - INL-1: all compilers accept an `inline` friend declaration that is
   not a definition.
 - INL-7: the test with two different definitions accepts either body.
@@ -207,5 +214,7 @@ One question on this page settled on 2026-11-03 under decision 0054 after the so
   translation. Clang and GCC report the missing definition when linking.
   All three report a used inline variable with no definition during
   translation.
+
+### Sources
 
 Inputs: clang-sema-decl, clang-diag-sema, edg-decls.

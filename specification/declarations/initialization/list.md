@@ -294,49 +294,63 @@ signed char o[] = u8"x";  // rejected: wrong character type
 All eight compilers agree on 69 of 73 tests. The results are in
 `tests/RESULTS.md`.
 
-Three questions on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on overloading, references, and list initialization (`reports/review/2026-11-03-gap-review-questions-overloading.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+### Divergences
 
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0042` | LIST-P1 | EDG 7.0 |
-| {question}`Q-0043` | LIST-P2 | EDG 7.0 |
-| {question}`Q-0166` | {principle}`REF-P3` | GCC 16 |
+- {question}`Q-0042` (LIST-2, CONV-21; settled on LIST-P1): whether a
+  bit-field whose values all fit the target narrows. It does not, as
+  Clang 22 and GCC 16 say. EDG 7.0, Clang 18, and GCC 14 reject the
+  initialization as narrowing.
+- {question}`Q-0331` (LIST-2, CONV-21; open): which values an unscoped
+  enumeration without a fixed type has for narrowing. It has the values
+  that {rule}`ENUM-22` gives, as GCC uses, so an enumeration with the
+  enumerators 0 and 100 initializes an `unsigned char`. Clang and EDG
+  use every value of the underlying type and reject the program.
+- {question}`Q-0043` (LIST-9; settled on LIST-P2): whether
+  parenthesized aggregate initialization allows brace elision. It does
+  not, as Clang and GCC say. EDG 7.0 accepts the initialization.
+- {question}`Q-0166` (LIST-6, REF-14; settled on {principle}`REF-P3`):
+  whether one braced string literal can initialize the temporary array
+  of a reference. It can, as Clang and EDG say. GCC rejects the literal.
+- {question}`Q-0167` (LIST-6; settled on {principle}`ICS-P5`): whether
+  one braced plain literal prefers a reference to a `char` array over
+  one to an `unsigned char` array. It does not, and the call is
+  ambiguous, as Clang and EDG say. GCC chooses `char`.
 
-- **LIST-2, CONV-21.** For an unscoped enumeration without a fixed type, GCC
-  uses the values that {rule}`ENUM-22` gives. So GCC accepts an enumeration with
-  the enumerators 0 and 100 as the value of an `unsigned char`. Clang
-  and EDG use every value of the underlying type and reject the same
-  program ({question}`Q-0331`).
-- **LIST-2, CONV-21.** The table of {rule}`CONV-21` says "integral
-  type", so `bool` is a target of the integral rows. Every compiler
-  rejects `bool b{i}` for an `int` variable `i`, `bool b{2}`, and
-  `bool b{1.0}`, and accepts `bool b{1}`.
-- **LIST-2.** With `-m32`, `long` and `int` have the same size, so a
-  `long` value that is not constant initializes an `int` in braces.
-  Without `-m32`, every compiler rejects the same initialization.
-- **LIST-14.** Clang accepts array designators, chained designators, and
-  a mix of designated and plain values as C99 extensions, and rejects
+### Split tests
+
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `narrowing-bit-field-fits.cpp` | LIST-2, CONV-21 | accept | Clang 22: accept; Clang 18: reject | GCC 16: accept; GCC 14: reject | reject | {question}`Q-0042` |
+| `narrowing-unscoped-enum-values-fit.cpp` | LIST-2, CONV-21 | accept | reject | accept | reject | {question}`Q-0331` |
+| `paren-no-brace-elision.cpp` | LIST-9 | reject | reject | reject | accept | {question}`Q-0043` |
+| `string-literal-reference-temporary.cpp` | LIST-6, REF-14 | accept | accept | reject | accept | {question}`Q-0166` |
+
+### Notes
+
+- LIST-2, CONV-21: the table of {rule}`CONV-21` says "integral type",
+  so `bool` is a target of the integral rows. Every compiler rejects
+  `bool b{i}` for an `int` variable `i`, `bool b{2}`, and `bool b{1.0}`,
+  and accepts `bool b{1}`.
+- LIST-2: with `-m32`, `long` and `int` have the same size, so a `long`
+  value that is not constant initializes an `int` in braces. Without
+  `-m32`, every compiler rejects the same initialization.
+- LIST-14: Clang accepts array designators, chained designators, and a
+  mix of designated and plain values as C99 extensions, and rejects
   them only under `-pedantic-errors`. GCC and EDG reject them.
-- **LIST-6.** Every compiler accepts each pair of literal and element
-  type in the table, for an array variable, with and without braces.
-  Every compiler rejects the other pairs of the five literal kinds and
-  the seven character types. For a reference to a character array, GCC
-  rejects a braced literal that needs a temporary array. Clang and EDG
-  make the temporary ({question}`Q-0166`).
-- **LIST-6.** For one braced plain literal, GCC prefers a parameter
-  that is a reference to a `char` array over one to an `unsigned char`
-  array. Clang and EDG find the call ambiguous ({question}`Q-0167`).
-
-- **LIST-8.** Under `-Wextra`, Clang and GCC warn about a list that
-  leaves out a member with no default member initializer
+- LIST-6: every compiler accepts each pair of literal and element type
+  in the table, for an array variable, with and without braces. Every
+  compiler rejects the other pairs of the five literal kinds and the
+  seven character types.
+- LIST-8: under `-Wextra`, Clang and GCC warn about a list that leaves
+  out a member with no default member initializer
   (`-Wmissing-field-initializers`, and in Clang
   `-Wmissing-designated-field-initializers` for a designated list).
   They warn for positional and designated lists, and for a member of
   class type whose own members all have defaults. They do not warn for
   empty braces `{}`, or for a member left out that has a default member
   initializer.
-- **LIST-4.** Under `-Wall`, Clang warns when a list omits the braces of
-  a member that is an aggregate (`-Wmissing-braces`). GCC does not warn.
+- LIST-4: under `-Wall`, Clang warns when a list omits the braces of a
+  member that is an aggregate (`-Wmissing-braces`). GCC does not warn.
 
 Inputs: clang-sema-init, edg-decl-inits, clang-diag-sema (see
 `inputs/MANIFEST.md`).

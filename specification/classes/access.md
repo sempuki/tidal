@@ -389,32 +389,42 @@ class Token {
 The results are in `tests/RESULTS.md`. All eight compilers agree on 73
 of 77 tests.
 
-One question on this page settled on 2026-11-04 under decision 0054 after the principle-use batch PU2 (`reports/clean-room/PU2/`). The batch's use of the principle supports the answer, the latest gap review supports it with no doubt, and the principle gives the same answer. Each test keeps its override for the family that still differs:
+### Divergences
 
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0391` | ACC-P3 | EDG 7.0 for an explicit specialization, Clang 22 for another member |
+- {question}`Q-0052` (ACC-2, ACC-9; settled on ACC-P4): whether a
+  using-declaration can make a public base member private. It can, as
+  Clang and GCC say. EDG 7.0 accepts a use of the member.
+- {question}`Q-0131` (ACC-7, ACC-17; open): whether a declaration
+  `int geo::make_seven();` outside `geo` can redeclare a hidden friend.
+  It cannot, as GCC and EDG say. Clang accepts it. The choice waits on
+  the maintainer (`documentation/decisions/pending.md`, row 4).
+- {question}`Q-0391` (ACC-20, ACC-2; settled on ACC-P3): whether a
+  friend declaration with a template head that names a member of a
+  class template befriends only that member, in every specialization.
+  It does, explicit specializations included, as GCC says. EDG does not
+  extend the friendship to an explicit specialization. Clang warns that
+  it does not support the form, turns off access checks for the
+  befriending class, and accepts a use from a member that is not a
+  friend.
 
-One question on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on classes and statements (`reports/review/2026-11-03-gap-review-questions-classes-statements.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+### Split tests
 
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0052` | ACC-P4 | EDG 7.0 |
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `friend-member-of-explicit-specialization.cpp` | ACC-20 | run | run | run | reject | {question}`Q-0391` |
+| `friend-member-of-specialization-other-member.cpp` | ACC-20, ACC-2 | reject | accept | reject | reject | {question}`Q-0391` |
+| `hidden-friend-qualified-redeclaration.cpp` | ACC-17 | reject | accept | reject | reject | {question}`Q-0131` |
+| `using-reduces-access.cpp` | ACC-2 | reject | reject | reject | accept | {question}`Q-0052` |
 
-- ACC-2, ACC-9: EDG 7.0 accepts a use of a member that a
-  using-declaration makes private, if the member is public in the base
-  ({question}`Q-0052`).
+### Notes
+
 - ACC-7, ACC-17: all compilers find a hidden friend with ordinary lookup
   after a declaration in the namespace, and not before it. A
   declaration in a block makes the function visible in that block only.
-- ACC-17: Clang accepts a declaration `int geo::make_seven();` outside
-  `geo` of a hidden friend. GCC and EDG reject it ({question}`Q-0131`).
 - ACC-20: Clang, GCC, and EDG make a member of every specialization of
   a class template a friend through a friend declaration with a
-  template head. Clang warns that it does not support the form and
-  turns off access checks for the befriending class, so it also accepts
-  a use from a member that is not a friend. EDG does not extend the
-  friendship to an explicit specialization
-  ({question}`Q-0391`).
+  template head.
+
+### Sources
 
 Inputs: clang-sema-access, edg-class-decl.

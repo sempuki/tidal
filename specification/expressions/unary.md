@@ -416,12 +416,30 @@ count(data);                     // 6: a reference keeps the length
 All eight compilers agree on 71 of 75 tests. The results are in
 `tests/RESULTS.md`. EDG skips the tests that use `-m32` or `-Werror`.
 
-- UN-20: Clang and GCC accept `++` and `--` on a `short` or
-  `signed char` whose new value does not fit, and convert the value
-  back to the type. EDG rejects the step during constant evaluation
-  ({question}`Q-0124`).
-- UN-21: GCC accepts a pointer moved two past the end of an array during
-  constant evaluation. Clang and EDG reject it ({question}`Q-0031`).
+### Divergences
+
+- {question}`Q-0124` (UN-20; open): whether `++` or `--` on a `short`
+  or `signed char` is defined when the new value does not fit. It is,
+  and the value converts back to the type, as Clang and GCC do. EDG
+  rejects the step during constant evaluation.
+- {question}`Q-0031` (UN-21; settled on {principle}`ADD-P6`): whether
+  forming a pointer outside an array is undefined without a read
+  through it. It is, so constant evaluation rejects a pointer moved two
+  past the end, as Clang and EDG do. GCC accepts it.
+- {question}`Q-0318` (UN-7, PFX-21; open): whether constant evaluation
+  must reject a member function call through a null pointer. It must,
+  as Clang and GCC do. EDG accepts the call.
+
+### Split tests
+
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `expressions/postfix/member-call-null-pointer-constant.cpp` | PFX-21, UN-7, CE-9 | reject | reject | reject | accept | {question}`Q-0318` |
+| `expressions/postfix/postfix-narrow-signed-wraps.cpp` | PFX-12, UN-20 | accept | accept | accept | reject | {question}`Q-0124` |
+| `increment-pointer-past-end-constant.cpp` | UN-21 | reject | reject | accept | reject | {question}`Q-0031` |
+| `prefix-narrow-signed-wraps.cpp` | UN-20 | accept | accept | accept | reject | {question}`Q-0124` |
+
+### Notes
 
 - UN-4, UN-7: all compilers reject the operation during
   {term}`constant evaluation`.

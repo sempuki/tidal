@@ -207,58 +207,54 @@ int cap = table_limit;            // 64, in any unit order
 All eight compilers agree on all 25 tests. The results are in
 `tests/RESULTS.md`.
 
-One question on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+### Divergences
 
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0014` | SINIT-P2 | none |
+- {question}`Q-0014` (SINIT-4; settled on SINIT-P2): whether an
+  implementation may do a dynamic initialization before the program
+  starts. It may, when the value is the same, so an earlier reader can
+  see either value. No family differs.
+- {question}`Q-0175` (SINIT-2, SINIT-3; open): whether a dynamic
+  initializer that reads a member of a later class-type variable gets
+  zero. The read is undefined (OBJ-2). Clang 22 and GCC 16 give 0 at run
+  time, which OBJ-2 allows, and every compiler rejects the read in
+  constant evaluation.
 
-- **SINIT-3.** With Clang 22 and GCC 16 at `-O0` and `-O2`, the order
+### Notes
+
+- SINIT-3: with Clang 22 and GCC 16 at `-O0` and `-O2`, the order
   follows the link order. The initializer in the first unit gets 0 when
   its unit is linked first, and 7 when its unit is linked second.
-- **SINIT-4.** By default, Clang 22 and GCC 16 always initialize
-  `int b = three();` at run time. `three` is an `inline` function that
-  is not `constexpr`. An earlier reader gets 0. With
-  `-fimplicit-constexpr`, GCC initializes `b` before the program starts,
-  and the earlier reader gets 3. See {question}`Q-0014`. Every compiler
-  at `-O0` and `-O2` initializes `int v = base * 2;` at run time when
-  `base` is not `const`, and an earlier reader gets 0. With a `const`
-  `base`, `v` is constant-initialized (SINIT-1), and the earlier reader
-  gets 8.
-- **SINIT-3, safe forms.** A block-scope `static` behind a function and
-  a `constinit` variable give the final value to an initializer in
+- SINIT-4: by default, Clang 22 and GCC 16 always initialize
+  `int b = three();` at run time, and an earlier reader gets 0. Every
+  compiler at `-O0` and `-O2` initializes `int v = base * 2;` at run
+  time when `base` is not `const`, and an earlier reader gets 0. With a
+  `const` `base`, `v` is constant-initialized (SINIT-1), and the earlier
+  reader gets 8.
+- SINIT-3, safe forms: a block-scope `static` behind a function and a
+  `constinit` variable give the final value to an initializer in
   another unit. Clang 22 and GCC 16 give the same result in both link
   orders, at `-O0` and `-O2` (`accessor-across-units.cpp`).
-- **SINIT-5.** Clang 22 and GCC 16 run the dynamic initializer of a
-  unit that `main` never names before `main` starts, in both link
-  orders (`unit-not-named.cpp`).
-- **SINIT-3, templates.** A class template's static data member
-  with a dynamic initializer is initialized before the variables of its
-  unit on Clang 22, 18, and the host Clang at `-O0`. GCC, and Clang 22
-  at `-O2`, initialize it after them
-  (`template-member-unordered.cpp`).
-- **SINIT-3, `inline` order.** The test accepts 8 and 1. The reviewer
+- SINIT-5: Clang 22 and GCC 16 run the dynamic initializer of a unit
+  that `main` never names before `main` starts, in both link orders
+  (`unit-not-named.cpp`).
+- SINIT-3, templates: a class template's static data member with a
+  dynamic initializer is initialized before the variables of its unit
+  on Clang 22, 18, and the host Clang at `-O0`. GCC, and Clang 22 at
+  `-O2`, initialize it after them (`template-member-unordered.cpp`).
+- SINIT-3, `inline` order: the test accepts 8 and 1. The reviewer
   summary reports that Clang gives 1 in both link orders and GCC gives 8
   or 1 with the link order.
-
-- **SINIT-2, class members.** A dynamic initializer that reads a member
-  of a later class-type variable gets 0 at run time with Clang 22 and
-  GCC 16, at `-O0` and `-O2`, and with the address and undefined
-  behavior sanitizers. OBJ-2 allows this result. In constant
-  evaluation, every compiler rejects the same read of a member before
-  its constructor runs ({question}`Q-0175`).
-- **SINIT-3, class members across units.** The test reads a member of
-  a class object of another unit only after a `bool` of that unit says
+- SINIT-3, class members across units: the test reads a member of a
+  class object of another unit only after a `bool` of that unit says
   the constructor has run. So the test has a defined result in both
   unit orders (`across-units-class-member.cpp`).
-- **SINIT-7, `inline` members.** Clang 22 and GCC 16 at `-O0` and
-  `-O2` initialize an `inline` static data member defined in its class
+- SINIT-7, `inline` members: Clang 22 and GCC 16 at `-O0` and `-O2`
+  initialize an `inline` static data member defined in its class
   between the `inline` variables before and after the class
   (`inline-member-at-class.cpp`).
-- **SINIT-5, uses.** No matrix compiler defers a dynamic
-  initialization, so no test shows when a use in a constant initializer
-  counts.
-- **SINIT-1 and `if consteval`.** The meaning of an initializer that
+- SINIT-5, uses: no matrix compiler defers a dynamic initialization, so
+  no test shows when a use in a constant initializer counts.
+- SINIT-1 and `if consteval`: the meaning of an initializer that
   contains `if consteval` depends on its constant evaluation. If the
   evaluation succeeds, the constant branch gives the value. If the
   evaluation fails, the initializer runs at run time and takes the other

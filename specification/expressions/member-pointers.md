@@ -284,6 +284,27 @@ const int* Node::* unsafe = link;      // rejected: no const on the level above
 The results are in `tests/RESULTS.md`. All eight compilers agree on 75
 of 77 tests.
 
+### Divergences
+
+- {question}`Q-0333` (MPTR-5; compiler defect): whether GCC's rejection
+  of `==` on two pointers to member functions in constant evaluation,
+  under `-fsanitize=undefined`, changes MPTR-5. It does not, and the
+  comparison is a constant. GCC 14 and 16 reject the `static_assert`
+  with the sanitizer.
+- {question}`Q-0353` (MPTR-4; settled on MPTR-P3): whether a converted
+  pointer to member still names its member in constant evaluation after
+  it passes through an object or a function result. It does, as Clang
+  and GCC say. EDG 7.0 loses the member.
+
+### Split tests
+
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `compare-equal-constant-ubsan.cpp` | MPTR-5 | accept | accept | reject | skips | {question}`Q-0333` |
+| `converted-through-object-constant.cpp` | MPTR-4 | accept | accept | accept | reject | {question}`Q-0353` |
+
+### Notes
+
 - MPTR-6: Clang and GCC give a null pointer to data member the offset
   -1, so a read through it lands before the object. On Clang 22 and
   GCC 16, `-fsanitize=address` stops the read as a buffer underflow,
@@ -292,12 +313,8 @@ of 77 tests.
   on an object that lacks the member. The `-fsanitize=undefined` of GCC
   includes `vptr`, and the one of Clang does not. EDG does not run
   programs.
-- MPTR-5: with `-fsanitize=undefined`, GCC 14 and 16 do not evaluate
-  `==` or `!=` on two pointers to member functions as a constant, and
-  reject a `static_assert` that uses it
-  ({question}`Q-0333`).
-  Pointers to data members compare in constant evaluation on every
-  configuration.
+- MPTR-5: pointers to data members compare in constant evaluation on
+  every configuration.
 - MPTR-5: under `-Wall`, GCC warns (`-Waddress`) that a comparison of a
   pointer to a named member function with `nullptr` is always false.
   The warning also appears when the pointer comes from an element of a

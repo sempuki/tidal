@@ -230,35 +230,43 @@ struct Bits {
 All eight compilers agree on 38 of 39 tests. The results are in
 `tests/RESULTS.md`.
 
-One question on this page settled on 2026-11-04 under decision 0054 after the principle-use batch PU1 (`reports/clean-room/PU1/`). The batch's use of the principle supports the answer, the latest gap review supports it with no doubt, and the principle gives the same answer. The tests keep their overrides for the family that still differs:
+### Divergences
 
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0039` | INIT-P2 | none |
+- {question}`Q-0013` (INIT-1; compiler defect): whether EDG's
+  acceptance of a read of an uninitialized array element during
+  constant evaluation changes INIT-1. It does not. INIT-1 applies to
+  array elements, as Clang and GCC reject the read. EDG 7.0 accepts it.
+- {question}`Q-0039` (INIT-1; settled on INIT-P2): whether a copy of an
+  `unsigned char` with no value is undefined. It is not at run time,
+  and constant evaluation rejects it. No family differs.
 
-- **INIT-1.** All compilers reject a read of an uninitialized scalar
+### Split tests
+
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `read-uninitialized-array.cpp` | INIT-1 | reject | reject | reject | accept | {question}`Q-0013` |
+
+### Notes
+
+- INIT-1: all compilers reject a read of an uninitialized scalar
   during {term}`constant evaluation` ("read of uninitialized object",
   "access to uninitialized object"). The rejection covers a copy of an
   `unsigned char` that has no value, though the copy is not undefined
-  at run time ({rule}`CE-22`, {question}`Q-0039`). The exception needs
-  the value itself to have the type `unsigned char` or `std::byte`, as
-  the gap review of the text phase 8 wrote
+  at run time ({rule}`CE-22`). The exception needs the value itself to
+  have the type `unsigned char` or `std::byte`, as the gap review of
+  the text phase 8 wrote
   (`reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md`)
   reads the C++23 text. No compiler of the matrix shows the difference
   at run time, so no test checks the copy of an `int` with no value.
-- **INIT-9.** In constant evaluation, the default constructor that the
+- INIT-9: in constant evaluation, the default constructor that the
   implementation writes for a class can run if each constructor that it
   calls for a base or a member can run ({rule}`CE-2`).
-- **INIT-1 divergence.** For an array element, Clang and GCC reject the
-  read during constant evaluation. EDG 7.0 accepts the read. The
-  provisional answer is that INIT-1 applies to array elements and that
-  EDG has a possible defect. See {question}`Q-0013`. Q-0013 stays open
-  under decision 0051, because on 2026-11-03 EDG 7.0 still differs from
-  Clang 22 and GCC 16.
-- **INIT-1 at run time.** No sanitizer of GCC or Clang stops a read
-  of an automatic variable with no value, under `-fsanitize=undefined`
-  or `-fsanitize=address`. The front end's interpreter stops the read
+- INIT-1: at run time, no sanitizer of GCC or Clang stops a read of an
+  automatic variable with no value, under `-fsanitize=undefined` or
+  `-fsanitize=address`. The front end's interpreter stops the read
   (`read-uninitialized-run.cpp`, decision 0053).
+
+### Sources
 
 Inputs: clang-sema-init, edg-decl-inits, clang-diag-sema (see
 `inputs/MANIFEST.md`).

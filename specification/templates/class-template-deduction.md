@@ -687,101 +687,106 @@ Bases c{List<X, Y, Z>{}, Y{}};    // rejected: Y stands where X is fixed
 The results are in `tests/RESULTS.md`. All eight compilers agree on 96
 of 117 tests.
 
-One question on this page settled on 2026-11-04 under decision 0054 after the source-reader gap review of the text phase 8 wrote on expressions, foundations, and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+### Divergences
 
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0242` | CTAD-P1 | GCC 16 |
+Each settled question below keeps its test's override for the family
+that still differs. Reporting the EDG differences to the EDG project
+waits on the maintainer (`documentation/decisions/pending.md`).
 
-Four questions on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+- {question}`Q-0243` (CTAD-1; open): whether a deduced class template
+  name can follow a dependent qualifier. It can, as every compiler
+  deduces without the keyword `template`. With the keyword, Clang
+  rejects the name. A gap review reads both forms as not valid, and the
+  question waits on the maintainer.
+- {question}`Q-0275` (CTAD-1; open): whether a template template
+  parameter, or an alias of one, can stand without arguments for
+  deduction. It can, as every compiler deduces after substitution. The
+  gap review (item 20) predicted a rejection, and the question waits on
+  the maintainer. No newest family differs.
+- {question}`Q-0244` (CTAD-9; settled on CTAD-P1): whether a list in
+  parentheses in a `new` expression forms the aggregate candidate. It
+  does, as Clang and EDG say. GCC 16 forms no candidate.
+- {question}`Q-0352` (CTAD-9, CTAD-27; settled on CTAD-P1): whether a
+  list in parentheses forms the aggregate candidate for a class with a
+  pack of bases. It does, as Clang and EDG say. GCC 16 forms no
+  candidate.
+- {question}`Q-0277` (CTAD-9, CTAD-10; open): how a string literal
+  initializes an array member in the aggregate candidate. The braces of
+  an array with a fixed bound are elided, and `{"ab"}` for `T v[3]`
+  gives `Three<const char*>`, as every compiler does. EDG forms no
+  candidate for a fixed `char` array before a dependent member. The
+  gap review reads the first form as `Three<char>`, against every
+  compiler, and that part waits on the maintainer.
+- {question}`Q-0242` (CTAD-12; settled on CTAD-P1): whether the result
+  of a deduction guide can have a cv-qualifier. It cannot, as Clang and
+  EDG say. GCC 16 accepts the guide.
+- {question}`Q-0280` (CTAD-12; open): whether two guides can have the
+  same parameters and different results. Two guides that are not
+  templates cannot, as Clang and GCC say, and two guide templates can,
+  with a use that both take ambiguous. EDG accepts the guides that are
+  not templates. The gap review reads both pairs as not valid, and that
+  part waits on the maintainer.
+- {question}`Q-0241` (CTAD-13; open): whether an implementation must
+  diagnose a guide whose template parameter cannot be deduced. It must,
+  as Clang does and as the gap review (item 38) reads. GCC and EDG
+  accept the guide.
+- {question}`Q-0240` (CTAD-14; settled on CTAD-P2): whether deduction
+  works through an alias template, also for an argument that converts
+  to a fixed type. It does, as Clang 22 and GCC say. EDG 7.0 rejects an
+  argument that converts, and Clang 18 rejects every form.
+- {question}`Q-0239` (CTAD-16, CTAD-19; settled on CTAD-P2): whether a
+  class template that inherits constructors gets the guides of its
+  base. It does, as GCC and EDG say. Clang 22 makes no guides from
+  inherited constructors.
+- {question}`Q-0279` (CTAD-18; settled on CTAD-P3): whether one
+  element of the class type skips the initializer-list phase through an
+  alias template. It does, as Clang 22 and GCC say. EDG uses the
+  initializer-list guide.
+- {question}`Q-0276` (CTAD-27; settled on CTAD-P2): whether each later
+  element still deduces when the first base fixes the length of a
+  trailing pack of bases. It does, so a last element that only converts
+  to its base fails, as Clang and EDG say. GCC 16 accepts it.
+- {question}`Q-0278` (CTAD-28; open): whether `T&&` of a class
+  parameter is a forwarding reference in a guide made through an alias
+  template. It is not, as Clang and GCC say. EDG lets it take an
+  lvalue.
 
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0239` | CTAD-P2 | Clang 22 |
-| {question}`Q-0244` | CTAD-P1 | GCC 16 |
-| {question}`Q-0276` | CTAD-P2 | GCC 16 |
-| {question}`Q-0352` | CTAD-P1 | GCC 16 |
+### Split tests
 
-Two questions of the cluster of EDG differences (cluster 5) on this
-page settled on 2026-11-03 under decision 0054: {question}`Q-0240`,
-where CTAD-P2 gives the answer, and {question}`Q-0279`, where CTAD-P3
-gives it. For each, the source-reader gap review of the cluster supports
-the answer with no doubt. EDG 7.0 still differs on both, and the tests
-keep their overrides for EDG.
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `aggregate-new-parentheses.cpp` | CTAD-9 | accept | accept | reject | accept | {question}`Q-0244` |
+| `aggregate-pack-length-conflict.cpp` | CTAD-27, CTAD-9, CTAD-24 | reject | reject | accept | reject | {question}`Q-0276` |
+| `aggregate-pack-length-parentheses.cpp` | CTAD-27, CTAD-9 | accept | accept | reject | accept | {question}`Q-0352` |
+| `aggregate-pack-parentheses.cpp` | CTAD-27, CTAD-9 | accept | accept | reject | accept | {question}`Q-0352` |
+| `aggregate-string-fixed-array.cpp` | CTAD-9 | accept | accept | accept | reject | {question}`Q-0277` |
+| `alias-template-fixed-argument-exact.cpp` | CTAD-14 | accept | Clang 22: accept; Clang 18: reject | accept | accept | {question}`Q-0240` |
+| `alias-template-fixed-argument.cpp` | CTAD-14 | accept | Clang 22: accept; Clang 18: reject | accept | reject | {question}`Q-0240` |
+| `alias-template-guides.cpp` | CTAD-14 | accept | Clang 22: accept; Clang 18: reject | accept | accept | {question}`Q-0240` |
+| `alias-template-rvalue-reference.cpp` | CTAD-28, CTAD-8, CTAD-24 | reject | reject | reject | accept | {question}`Q-0278` |
+| `alias-template-unreachable.cpp` | CTAD-14 | accept | Clang 22: accept; Clang 18: reject | accept | accept | |
+| `alias-template.cpp` | CTAD-14 | accept | Clang 22: accept; Clang 18: reject | accept | accept | {question}`Q-0240` |
+| `dependent-qualifier-template-keyword.cpp` | CTAD-1 | accept | reject | accept | accept | {question}`Q-0243` |
+| `guide-not-deducible-constant.cpp` | CTAD-13 | reject | reject | accept | accept | {question}`Q-0241` |
+| `guide-not-deducible.cpp` | CTAD-13 | reject | reject | accept | accept | {question}`Q-0241` |
+| `guide-result-qualified.cpp` | CTAD-12 | reject | reject | accept | reject | {question}`Q-0242` |
+| `guide-same-parameters.cpp` | CTAD-12 | reject | reject | reject | accept | {question}`Q-0280` |
+| `inherited-constructors.cpp` | CTAD-16 | accept | reject | accept | accept | {question}`Q-0239` |
+| `inherited-user-guide.cpp` | CTAD-16 | accept | reject | accept | accept | {question}`Q-0239` |
+| `list-single-specialization-alias.cpp` | CTAD-18 | accept | Clang 22: accept; Clang 18: reject | accept | reject | {question}`Q-0240`, {question}`Q-0279` |
+| `template-template-parameter-alias.cpp` | CTAD-1 | accept | Clang 22: accept; Clang 18: reject | accept | accept | {question}`Q-0240`, {question}`Q-0275` |
+| `tie-own-constructor-types-differ.cpp` | CTAD-19, CTAD-24 | reject | accept | reject | reject | {question}`Q-0239` |
 
-The other questions of the cluster stay open: {question}`Q-0277`,
-{question}`Q-0278`, and {question}`Q-0280`. On 2026-11-03, Clang 22
-and GCC 16 still agree with the provisional answer of each, and EDG 7.0
-still differs. Reporting these EDG differences to the EDG project waits
-on the maintainer (`documentation/decisions/pending.md`). The review
-reads Q-0278 with doubt. The source-reader gap review
-of the cluster (`reports/review/2026-11-03-gap-review-question-cluster-5.md`)
-reads two answers against every compiler. In Q-0277 it reads the first
-form as giving `Three<char>`, and in Q-0280 it reads the two guide
-templates as not valid. These two parts wait on the maintainer.
+### Notes
 
-The clean-room writer probed each step with Clang 22, GCC 16, and EDG
-7.0, and checked the tests and the grid on the eight
-{ref}`baseline compilers <baseline-compilers>`.
-
-- CTAD-14: Clang 18 does not deduce through an alias template. Clang
-  22 and GCC deduce through each alias in the table below. EDG 7.0
-  deduces when each argument for a fixed position has exactly the
-  fixed type, and rejects an argument that only converts to it
-  ({question}`Q-0240`).
-- CTAD-16 and CTAD-19: Clang makes no guides from inherited
-  constructors, also no inherited copy candidate. GCC and EDG make them
-  ({question}`Q-0239`). On Clang, the tie-breaker tests of CTAD-19 give
-  the same results with no inherited guide.
-- CTAD-12: GCC accepts a guide whose result has a cv-qualifier. Clang
-  and EDG reject it ({question}`Q-0242`).
-- CTAD-13: Clang rejects a guide with a template parameter that no
-  parameter of the guide gives a value. GCC and EDG accept the guide.
-  The gap review (item 38) reads the rule as one that requires a
-  diagnostic, and Clang agrees. The rule is a `reject` rule
-  ({question}`Q-0241`).
-  In `guide-not-deducible-used.cpp` the program uses the guide, and
-  every compiler rejects the program. GCC and EDG reject the deduction.
-- CTAD-12: Clang and GCC reject two guides that are not templates with
-  the same parameter types and different results. EDG accepts them.
-  Every compiler accepts two guide templates with the same parameters
-  and different results, and a use that both can take is ambiguous.
-  The gap review (item 37) predicted a rejection of both pairs
-  ({question}`Q-0280`).
-- CTAD-1: every compiler deduces through a template template
-  parameter, and through an alias of one, after substitution. The gap
-  review (item 20) predicted a rejection ({question}`Q-0275`). With the
-  keyword `template` after a dependent qualifier, Clang rejects the
-  deduced name, and GCC and EDG accept it ({question}`Q-0243`).
+- CTAD-14: Clang 18 does not deduce through an alias template, and
+  rejects each test that uses one ({question}`Q-0240`).
+- CTAD-28: the gap review (item 30) predicted the check of the result
+  after deduction. Without the alias, the same initializer deduces the
+  type that the check removes.
 - CTAD-10: the gap review (item 26) predicted that a string literal
   for an array with a dependent element type keeps its braces. Every
-  compiler elides them, and `{"ab"}` for `T v[3]` gives
-  `T = const char*`. CTAD-10 gives `Three<const char*>`, as the
-  compilers do. The review's reading of `Three<char>` is a doubt under
-  review in Q-0277. For a fixed `char v[3]` before a dependent member,
-  EDG forms no candidate from `{"ab", 1}`, and Clang and GCC deduce
-  ({question}`Q-0277`).
-- CTAD-27: if the first base fixes the length of the trailing pack,
-  Clang and EDG reject a last element that only converts to its base.
-  GCC accepts it ({question}`Q-0276`). Every compiler rejects an
-  element whose type is the fixed base of another position
-  (`aggregate-pack-length-position.cpp`).
-- CTAD-27: GCC forms no aggregate candidate from a list in parentheses
-  for a class with a pack of bases. GCC accepts the same list in
-  braces, and Clang and EDG accept both forms
-  ({question}`Q-0352`).
-- CTAD-28: through an alias, EDG lets `T&&` of a class parameter take
-  an lvalue. Clang and GCC reject it ({question}`Q-0278`). The gap
-  review (item 30) predicted the check of the result after deduction.
-  Without the alias, the same initializer deduces the type that the
-  check removes.
-- CTAD-18: through an alias, EDG uses the initializer-list guide for
-  one element of the class type. Clang 22 and GCC skip that phase
-  ({question}`Q-0279`).
-- CTAD-19: GCC and EDG reject a tie between a guide from
-  `Derived(const T&)` and an inherited guide from `Base(T)` as
-  ambiguous. Clang has no inherited guide and accepts
-  ({question}`Q-0239`).
+  compiler elides them ({question}`Q-0277`).
 - CTAD-16: every compiler deduces `Derived<int>` from an object of
   `Base<int>` and then rejects the initialization
   (`inherited-copy-candidate.cpp`). GCC and EDG take the type from the
@@ -790,6 +795,8 @@ The clean-room writer probed each step with Clang 22, GCC 16, and EDG
   user guide, which removes the aggregate candidate (CTAD-10), Clang
   finds no guide, and GCC and EDG still deduce `Derived<int>`
   (`inherited-copy-candidate-user-guide.cpp`).
+- CTAD-27: every compiler rejects an element whose type is the fixed
+  base of another position (`aggregate-pack-length-position.cpp`).
 - CTAD-29: every compiler skips a guide whose constructor constraint
   fails. The same class without constraints makes the call ambiguous.
 - CTAD-11: every compiler takes a guide declared after the definition
@@ -809,8 +816,6 @@ The clean-room writer probed each step with Clang 22, GCC 16, and EDG
   only the element for `List<X, Y, Z>`. The test
   `aggregate-pack-length-fewer.cpp` gives one more element, and every
   compiler accepts it.
-- CTAD-9: GCC forms no aggregate candidate for a parenthesized list in
-  a `new` expression. Clang and EDG form it ({question}`Q-0244`).
 - CTAD-1: the inventory (item G7) predicted that a dependent qualifier
   before the name is not valid. Every compiler deduces through
   `typename Outer<T>::In` after instantiation ({question}`Q-0243`).
@@ -823,6 +828,10 @@ The clean-room writer probed each step with Clang 22, GCC 16, and EDG
 - CTAD-21: without the tie-breaker, the copy candidate and the guide
   from `Copy(const Copy&)` would make `tie-copy-candidate.cpp`
   ambiguous. Every compiler accepts the test.
+
+### Probe grids
+
+The grid is in `tests/templates/class-template-deduction/grids/`.
 
 Initializer forms and guide sources (CTAD-1, CTAD-5 to CTAD-17,
 CTAD-23). Each column declares a class template `C` with one kind of
@@ -846,25 +855,12 @@ three rows, and checks the type:
 In the last three rows of the last column, the copy candidate of `C`
 decides on every compiler.
 
-The alias templates of CTAD-14 in the tests. Each row gives the type
-of the alias, the initializer, and the result. "Converts" means that
-an argument for a fixed position has another type than the fixed one:
+### Sources
 
-| Alias | Initializer | Clang 22, GCC | EDG 7.0 | Test |
-|---|---|---|---|---|
-| `Pair<T, T>` | `(1, 2)` | `Pair<int, int>` | `Pair<int, int>` | `alias-template.cpp` |
-| `Box<T>` | `(&n)`, user guide `Box(T*)` | `Box<int>` | `Box<int>` | `alias-template-guides.cpp` |
-| `Box<T*>` | `(&n)` | `Box<int*>` | `Box<int*>` | `alias-template-unreachable.cpp` |
-| `Agg<int, U>`, an aggregate | `{1, 'c'}` | `Agg<int, char>` | `Agg<int, char>` | `alias-template-guides.cpp` |
-| `Pair<int, U>` | `(1, 'c')` | `Pair<int, char>` | `Pair<int, char>` | `alias-template-fixed-argument-exact.cpp` |
-| `Pair<int, U>` | `(1L, 'c')`, converts | `Pair<int, char>` | rejects | `alias-template-fixed-argument.cpp` |
-| `Both<long, U>`, an alias of an alias | `(1L, 'c')` | `Pair<long, char>` | `Pair<long, char>` | `alias-template-fixed-argument-exact.cpp` |
-| `Both<long, U>`, an alias of an alias | `(1, 'c')`, converts | `Pair<long, char>` | rejects | `alias-template-fixed-argument.cpp` |
-
-Clang 18 rejects every row.
-
-The grid is in `tests/templates/class-template-deduction/grids/`. This
-table gives the source of each rule. Inventory items have the numbers
+The clean-room writer probed each step with Clang 22, GCC 16, and EDG
+7.0, and checked the tests and the grid on the eight
+{ref}`baseline compilers <baseline-compilers>`. This table gives the
+source of each rule. Inventory items have the numbers
 of `reports/review/2026-10-31-inventory-packs-forwarding-ctad.md`, and
 gap review items the numbers of
 `reports/review/2026-10-31-gap-review-packs-and-ctad.md`:

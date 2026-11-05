@@ -432,38 +432,57 @@ total += byte;             // 4000000200, with no signed step
 
 The results are in `tests/RESULTS.md`.
 
-One question on this page settled on 2026-11-04 under decision 0054 after the source-reader gap review of the text phase 8 wrote on expressions, foundations, and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+### Divergences
 
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0100` | CONV-P3 | EDG 7.0 |
+- {question}`Q-0100` (CONV-8; settled on CONV-P3): whether a character
+  literal with the value zero is a null pointer constant. It is not, as
+  Clang and GCC say. EDG accepts it.
+- {question}`Q-0331` (LIST-2, CONV-21; open): which values an unscoped
+  enumeration without a fixed type has for narrowing. The values that
+  {rule}`ENUM-22` gives, as GCC uses. So GCC accepts
+  `unsigned char c{e};` when the enumerators of `e`'s type are 0 and
+  100. Clang and EDG use every value of the underlying type and reject
+  the program.
+- {question}`Q-0042` (LIST-2, CONV-21; settled on LIST-P1): whether a
+  bit-field whose values all fit the target is narrowed. It is not, as
+  Clang 22 and GCC 16 say. EDG rejects the initialization, and so do
+  Clang 18 and GCC 14.
+- {question}`Q-0028` (CONV-11; open): whether a floating value above
+  the target's finite range gives an implementation-defined result. It
+  does, and Clang and GCC give infinity, during constant evaluation and
+  at run time. EDG rejects the conversion during constant evaluation.
+
+### Split tests
+
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `declarations/initialization/list/narrowing-bit-field-fits.cpp` | LIST-2, CONV-21 | accept | Clang 22: accept; Clang 18: reject | GCC 16: accept; GCC 14: reject | reject | {question}`Q-0042` |
+| `declarations/initialization/list/narrowing-unscoped-enum-values-fit.cpp` | LIST-2, CONV-21 | accept | reject | accept | reject | {question}`Q-0331` |
+| `char-zero-not-null.cpp` | CONV-8 | reject | reject | reject | accept | {question}`Q-0100` |
+| `floating-narrowing-infinity-ilp32.cpp` | CONV-11 | accept | accept | accept | reject | {question}`Q-0028` |
+| `floating-narrowing-infinity.cpp` | CONV-11 | accept | accept | accept | reject | {question}`Q-0028` |
+| `floating-narrowing-out-of-range.cpp` | CONV-11 | accept | accept | accept | reject | {question}`Q-0028` |
+
+### Notes
 
 - CONV-5: all compilers reject the conversion during constant
   evaluation. At run time, the sanitizer
   (`-fsanitize=float-cast-overflow`) stops the program with a nonzero
   status on Clang and GCC.
-- CONV-8: EDG accepts a character literal with the value zero as a null
-  pointer constant. Clang and GCC reject it ({question}`Q-0100`).
-- CONV-21: for an unscoped enumeration without a fixed type, GCC uses
-  the values that {rule}`ENUM-22` gives, as the rule does. So GCC
-  accepts `unsigned char c{e};` when the enumerators of `e`'s type are
-  0 and 100. Clang and EDG use every value of the underlying type and
-  reject the same program
-  (`narrowing-unscoped-enum-values-fit.cpp`, {question}`Q-0331`, open).
 - CONV-7: every compiler in the matrix rounds to the nearest value, and
   to the even value at a tie, during constant evaluation and at run
   time. {rule}`TYP-14` gives the same rounding for floating-point
   arithmetic. The tests convert from `int` and from `double` to
   `float`.
-- CONV-11: Clang and GCC give infinity, during constant evaluation and
-  at run time. EDG rejects the conversion during constant evaluation
-  ({question}`Q-0028`). EDG builds no program, so its run-time choice
-  is not observed. The base expectation of each test follows Clang and
-  GCC, and the tests record EDG's choice as an override.
+- CONV-11: EDG builds no program, so its run-time choice is not
+  observed. The base expectation of each test follows Clang and GCC,
+  and the tests record EDG's choice as an override.
 - CONV-7, CONV-11 with `-m32`: the matrix runs no program built with
   `-m32`, because the host compilers have no 32-bit C library. The
   `-m32` tests check the choices during constant evaluation. In the
   writer's probes, the run tests give the same results with `-m32` in
   the GCC 14, Clang 18, and Clang 22 containers.
+
+### Sources
 
 Inputs: clang-sema-expr, clang-diag-sema.

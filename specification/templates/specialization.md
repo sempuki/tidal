@@ -599,91 +599,100 @@ template <class T> template <> int Store<T>::Slot<int>::put();   // rejected
 The results are in `tests/RESULTS.md`. All eight compilers agree on 80
 of 95 tests.
 
-Four questions on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+### Divergences
 
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0171` | TSP-P3 | GCC 16 |
-| {question}`Q-0173` | TSP-P3 | none; the rule needs no diagnostic |
-| {question}`Q-0204` | TSP-P4 | GCC 16 |
-| {question}`Q-0207` | TSP-P2 | GCC 16 |
-
-Two questions on this page settled on 2026-11-03 under decision 0054:
-{question}`Q-0172`, where TSP-P1 gives the answer, and
-{question}`Q-0292`, where TSP-P3 gives it. For each, the source-reader
-gap review of question cluster 5 supports the answer with no doubt. EDG
-7.0 still differs on both, and the tests keep their overrides for EDG.
-{question}`Q-0203` stays open, because the same review reads it with
-doubt. On 2026-11-03, Clang 22 and GCC 16 still agree with its
-provisional answer, and EDG 7.0 still differs. Reporting these EDG
-differences to the EDG project waits on the maintainer
+Each settled question below keeps its test's override for the family
+that still differs. Reporting the EDG differences of Q-0172, Q-0203,
+and Q-0292 to the EDG project waits on the maintainer
 (`documentation/decisions/pending.md`).
 
-The clean-room writer probed explicit and partial specializations with
-Clang 22, GCC 16, and EDG 7.0, and checked the tests on the eight
-baseline compilers. The gap review of the chapter
-(`reports/review/2026-10-31-gap-review-templates-n1.md`) gave the
-probes for TSP-21 to TSP-32 and for the additions to the older rules.
-The matching rule follows the sanitized Clang
-deduction source: the deduced values are put into the partial
-specialization's arguments, and the result must equal the given list.
+- {question}`Q-0171` (TSP-19; settled on TSP-P3): whether an explicit
+  specialization of a member template can be declared in the class. It
+  can, as Clang and EDG say. GCC rejects it.
+- {question}`Q-0172` (TSP-7; settled on TSP-P1): whether an
+  implementation must reject a partial specialization of a function
+  template that no call uses. It must, as Clang and GCC do. EDG rejects
+  only at a call.
+- {question}`Q-0173` (TSP-17; settled on TSP-P3): whether an
+  implementation must diagnose a partial specialization after a use
+  that it would match. It need not, so no family differs. Clang accepts
+  the class template form, and GCC and EDG reject it. For a variable
+  template, GCC rejects the form, and Clang and EDG accept it.
+- {question}`Q-0174` (TSP-11; open): whether a partial specialization
+  that only reorders the parameters is valid. It is not, as Clang says.
+  GCC and EDG accept it.
+- {question}`Q-0203` (TSP-24, TSP-25; open): whether an explicit
+  specialization of a variable template can be `thread_local` when the
+  template is not. It can, as Clang and GCC say. EDG rejects it.
+- {question}`Q-0204` (TSP-29; settled on TSP-P4): whether access is
+  checked in the function type of an explicit specialization. It is
+  not, as Clang and EDG say. GCC checks it.
+- {question}`Q-0205` (TSP-30, TSP-6; open): when a member enumeration
+  of a class template can have an explicit specialization. It can when
+  the class template only declares it, and after a use when it is
+  scoped, as Clang and EDG say. GCC rejects every such specialization
+  under `-pedantic-errors`.
+- {question}`Q-0206` (TSP-21; settled): whether the partial
+  specializations of a member template are ignored when its primary is
+  explicitly specialized for one class. They are. Clang 18 uses a
+  partial specialization.
+- {question}`Q-0207` (TSP-21; settled on TSP-P2): whether an explicit
+  specialization of one member partial specialization is selected. It
+  is, as Clang and EDG say. GCC ignores it.
+- {question}`Q-0292` (TSP-11; settled on TSP-P3): whether a partial
+  specialization can repeat the primary template's parameters when it
+  is not more constrained. It cannot, as Clang and GCC say. EDG accepts
+  it.
+- {question}`Q-0295` (TSP-14; open): whether a constant argument's type
+  must fit the declared type of a partial specialization's constant
+  parameter with no conversion. It must, as GCC and EDG say. Clang
+  converts the argument, for `int V` with `1L` or `'c'`. Clang 22 also
+  matches `const auto* P` with an `int*`, and Clang 18 does not.
 
-- TSP-19: GCC rejects an explicit specialization in the class that
-  declares the member template. Clang and EDG accept it
-  ({question}`Q-0171`).
-- TSP-7: EDG accepts a partial specialization of a function template
-  until a call uses the template, and then rejects the call. Clang and
-  GCC reject the declaration ({question}`Q-0172`).
-- TSP-17: Clang accepts a partial specialization after a use that it
-  would have matched, and keeps the primary template for that use. GCC
-  and EDG reject the program. For a variable template, GCC rejects and
-  Clang and EDG accept. The rule needs no diagnostic
-  ({question}`Q-0173`).
-  Every test of TSP-17 has an override, and each override records a
-  result that the class allows.
-- TSP-11: Clang rejects a partial specialization that only reorders the
-  parameters, as no more specialized than the primary template. GCC and
-  EDG accept it ({question}`Q-0174`).
+### Split tests
+
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `explicit-class-scope.cpp` | TSP-19 | accept | accept | reject | accept | {question}`Q-0171` |
+| `explicit-enum-declared.cpp` | TSP-30, TSP-3 | accept | accept | reject | accept | {question}`Q-0205` |
+| `explicit-enum-scoped-defined-after-use.cpp` | TSP-30, TSP-3 | accept | accept | reject | accept | {question}`Q-0205` |
+| `explicit-enum-unscoped-declared-after-use.cpp` | TSP-30, TSP-3 | accept | accept | reject | accept | {question}`Q-0205` |
+| `explicit-function-private-argument.cpp` | TSP-29 | accept | accept | reject | accept | {question}`Q-0204` |
+| `explicit-thread-local-only.cpp` | TSP-24, TSP-25 | run | run | run | reject | {question}`Q-0203` |
+| `function-partial.cpp` | TSP-7 | reject | reject | reject | accept | {question}`Q-0172` |
+| `member-template-explicit-partial.cpp` | TSP-21 | accept | accept | reject | accept | {question}`Q-0207` |
+| `member-template-explicit-primary.cpp` | TSP-21 | accept | Clang 22: accept; Clang 18: reject | accept | accept | {question}`Q-0206` |
+| `partial-after-use-variable.cpp` | TSP-17 | accept | accept | reject | accept | {question}`Q-0173` |
+| `partial-after-use.cpp` | TSP-17 | reject | accept | reject | reject | {question}`Q-0173` |
+| `partial-constant-type-exact.cpp` | TSP-14, DED-12 | accept | reject | accept | accept | {question}`Q-0295` |
+| `partial-placeholder-pattern-const.cpp` | TSP-14, DED-12 | accept | Clang 22: reject; Clang 18: accept | accept | accept | {question}`Q-0295` |
+| `partial-placeholder-pattern-variable.cpp` | TSP-14, TSP-11 | accept | Clang 22: accept; Clang 18: reject | accept | accept | {question}`Q-0295` |
+| `partial-reordered.cpp` | TSP-11 | reject | reject | accept | accept | {question}`Q-0174` |
+
+### Notes
+
+- TSP-17: every test of TSP-17 has an override, and each override
+  records a result that the class allows.
 - TSP-14: a partial specialization with a constant parameter `auto* P`
-  matches only pointer arguments on every compiler. For a parameter
-  `int V` and the arguments `1L` and `'c'`, and for `const auto* P` and
-  an `int*`, GCC and EDG use the primary template. Clang converts the
-  argument and matches, for a wider type such as `long` and a narrower
-  type such as `char`. Clang 18 does not convert for `const auto*`, and it takes
-  the variable template `kind<P>` for the primary's list
-  ({question}`Q-0295`).
+  matches only pointer arguments on every compiler.
 - TSP-6: all compilers reject an explicit specialization after a use in
   the same translation unit. {rule}`ODR-14` states the rule for TSP-6
   and TSP-17 across translation units.
-- TSP-21: Clang 18 uses a member template's partial specialization for a
-  class specialization whose primary member template is given
-  explicitly. Clang 22, GCC, and EDG use the explicit specialization
-  ({question}`Q-0206`). GCC ignores an explicit specialization of one
-  member partial specialization. Clang and EDG select it
-  ({question}`Q-0207`).
-- TSP-24: EDG rejects a `thread_local` explicit specialization of a
-  variable template that is not `thread_local`. Clang and GCC accept it
-  ({question}`Q-0203`).
-- TSP-29: GCC checks access in the function type of an explicit
-  specialization of a function template. Clang and EDG do not
-  ({question}`Q-0204`).
-- TSP-30: GCC rejects every explicit specialization of a member
-  enumeration under `-pedantic-errors`. Clang and EDG accept one for an
-  enumeration that the class template only declares. All compilers
-  reject one for an unscoped enumeration that the class template
-  defines, Clang and EDG for that reason. Clang and EDG also accept one
-  after a use for a scoped enumeration that the class template defines
-  ({question}`Q-0205`).
 - TSP-28: the declaration without an initializer defines nothing, so the
   link fails on every compiler that links.
 - TSP-25: the template is `inline` and its explicit specialization is
   not, so two translation units that define the specialization fail to
   link on every compiler that links.
 
-The probe grid is in `tests/templates/specialization/grids/`. Each
-column declares one partial specialization of `Match`, and each row
-asks whether it matches one argument. An `accept` means that the
-partial specialization is selected. The compilers agree on every cell:
+### Probe grids
+
+The probe grid is in `tests/templates/specialization/grids/`, and `tools/probe_grid.py` prints its table from the grid file. The compilers agree on every cell.
+
+Grid file `matching.json`. Rules: TSP-14.
+
+Each column declares one partial specialization of `Match`, and each
+row asks whether it matches one argument. An `accept` means that the
+partial specialization is selected.
 
 | | T* | const T | const T* | T& | T&& | T[N] | T[] | R(A) | R(*)(A) | T C::* | Box<T> | Box<T*> | C<T> | Pair<T, T> |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
@@ -708,5 +717,16 @@ partial specialization is selected. The compilers agree on every cell:
 The row `int()` matches no column because `R(A)` needs one parameter.
 `C<T>` matches every specialization of a template with one type
 parameter.
+
+### Sources
+
+The clean-room writer probed explicit and partial specializations with
+Clang 22, GCC 16, and EDG 7.0, and checked the tests on the eight
+baseline compilers. The gap review of the chapter
+(`reports/review/2026-10-31-gap-review-templates-n1.md`) gave the
+probes for TSP-21 to TSP-32 and for the additions to the older rules.
+The matching rule follows the sanitized Clang deduction source. The
+deduced values are put into the partial specialization's arguments,
+and the result must equal the given list.
 
 Inputs: clang-diag-sema, clang-diag-parse, clang-sema-deduction.

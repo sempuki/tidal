@@ -18,6 +18,11 @@ one:
 - `a + 4` inside a `constexpr` function, compared with `nullptr`,
 - `a + 4` moved back by two and then read. GCC gives the value of
   `a[2]`.
+- an intermediate step that leaves the array, as in `a + 'a' - 'a'`,
+  although the final position is inside the array
+  (`tests/expressions/additive/intermediate-step-beyond-array.cpp`).
+- a pointer that `++` moves two past the end
+  (`tests/expressions/unary/increment-pointer-past-end-constant.cpp`).
 
 ## Evidence
 

@@ -759,30 +759,63 @@ total(1, 2, 3);           // ((0 + 1) + 2) + 3
 The results are in `tests/RESULTS.md`. All eight compilers agree on 131
 of 143 tests.
 
-Three questions on this page settled on 2026-11-04 under decision 0054 after the source-reader gap review of the text phase 8 wrote on expressions, foundations, and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+### Divergences
 
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0064` | PRIM-P1 | EDG 7.0 |
-| {question}`Q-0194` | PRIM-P6 | EDG 7.0 |
-| {question}`Q-0380` | PRIM-P1 | GCC 16 |
+- {question}`Q-0380` (PRIM-1; settled on PRIM-P1): what type a
+  hexadecimal literal with a `z` suffix gets when only `std::size_t`
+  can hold it. The type is `std::size_t`, as Clang and EDG say. GCC
+  gives the signed type with no diagnostic.
+- {question}`Q-0064` (PRIM-2; settled on PRIM-P1): whether a decimal
+  literal that fits only an unsigned type is valid. It is not, as Clang
+  and GCC say under `-pedantic-errors`. EDG accepts it.
+- {question}`Q-0063` (PRIM-15; open): whether a floating literal outside
+  the range of its type is valid. The value is implementation-defined,
+  and an implementation can reject the literal. Clang and GCC accept
+  `1e999f` with a warning and give infinity, and EDG rejects it. Each
+  result conforms.
+- {question}`Q-0194` (PRIM-29; settled on PRIM-P6): whether an operand
+  of a fold can hold a binary operator without parentheses. It cannot,
+  as Clang and GCC say. EDG accepts the fold.
+- {question}`Q-0029` (CMP-14, PRIM-27; settled on CMP-P6): whether a
+  chained comparison is valid. It is, and a fold is not a chain. Clang
+  22 rejects a fold `(... < p)`.
+- {question}`Q-0330` (PRIM-35; open): whether an implementation must
+  reject a literal with an unknown escape such as `'\q'`. An unknown
+  escape of a basic character is conditionally supported. Clang and GCC
+  reject it under `-pedantic-errors`, and EDG accepts it with a warning.
+  Each result conforms. The string form waits on the maintainer
+  (`documentation/decisions/pending.md`, row 4).
+- {question}`Q-0033` (PRIM-9; open): whether constant evaluation can
+  compare the addresses of two string literals. It cannot, as Clang
+  says. GCC and EDG accept the comparison and fold it.
 
-- PRIM-1: for a hexadecimal literal with a `z` suffix that only
-  `std::size_t` can hold, Clang and EDG give the type `std::size_t`.
-  GCC gives the signed type with no diagnostic
-  ({question}`Q-0380`).
-- PRIM-2: Clang and GCC reject a decimal literal that fits only an
-  unsigned type under `-pedantic-errors`. EDG accepts it
-  ({question}`Q-0064`).
-- PRIM-15: Clang and GCC accept `1e999f` with a warning and give
-  infinity. EDG rejects it ({question}`Q-0063`).
-  PRIM-15 is `conditionally-supported`. Every test of PRIM-15 has an
-  override, and each override records a result that the class allows.
+### Split tests
+
+EDG skips the tests that use `-Wall` or `-Werror`.
+
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `expressions/comparison/chained-fold-not-chain.cpp` | CMP-14, PRIM-27 | accept | Clang 22: reject; Clang 18: accept | accept | skips | {question}`Q-0029` |
+| `char-encoding-ilp32.cpp` | PRIM-32 | accept | accept | accept | reject | |
+| `char-encoding-lp64.cpp` | PRIM-32 | accept | accept | accept | reject | |
+| `char-unknown-escape.cpp` | PRIM-35 | reject | reject | reject | accept | {question}`Q-0330` |
+| `double-overflow.cpp` | PRIM-15 | accept | accept | accept | reject | {question}`Q-0063` |
+| `float-extended-suffix.cpp` | PRIM-22 | accept | reject | accept | accept | |
+| `float-overflow.cpp` | PRIM-15 | accept | accept | accept | reject | {question}`Q-0063` |
+| `fold-operand-binary.cpp` | PRIM-29 | reject | reject | reject | accept | {question}`Q-0194` |
+| `int-size-suffix-hex-unsigned.cpp` | PRIM-1 | accept | accept | reject | accept | {question}`Q-0380` |
+| `int-too-large-signed-decimal.cpp` | PRIM-2 | reject | reject | reject | accept | {question}`Q-0064` |
+| `string-compare-constant.cpp` | PRIM-9 | reject | reject | accept | accept | {question}`Q-0033` |
+| `string-unknown-escape.cpp` | PRIM-35 | reject | reject | reject | accept | {question}`Q-0330` |
+
+### Notes
+
+- PRIM-15: PRIM-15 is `conditionally-supported`. Every test of PRIM-15
+  has an override, and each override records a result that the class
+  allows.
 - PRIM-22: GCC and EDG accept the extended floating suffixes. Clang
   accepts `f16` and `F16` and rejects the others. Support is
   conditional.
-- PRIM-29: Clang and GCC reject a fold whose operand holds a binary
-  operator without parentheses. EDG accepts it ({question}`Q-0194`).
 - PRIM-32: EDG, as the matrix configures it, rejects `"é"` because one
   `char` cannot hold the character. Its ordinary encoding is not UTF-8,
   which PRIM-32 allows. EDG agrees on every ASCII value. Two tests show
@@ -809,26 +842,20 @@ Three questions on this page settled on 2026-11-04 under decision 0054 after the
   `-Woverflow`) and about a multi-character literal (`-Wmultichar`).
   So `-Werror` alone rejects both. EDG warns about a multi-character
   literal and rejects `1e999f` (PRIM-15).
-- PRIM-35: Clang and GCC give a warning for an unknown escape such as
-  `'\q'` or `"\q"`, and `-pedantic-errors` makes the warning an error.
-  EDG in strict mode gives a warning and accepts the program
-  ({question}`Q-0330`). PRIM-35 is `conditionally-supported`, so each
-  result conforms. The gap review of the rules that phase 7 added
+- PRIM-35: the gap review of the rules that phase 7 added
   (`reports/review/2026-11-04-gap-review-phase-7-additions.md`) reads
   the reference as giving the escape in a string literal an
   implementation-defined sequence of code units, with no permission to
   reject it. EDG follows that reading. PRIM-35 keeps the class for both
-  literals, because Clang 22 and GCC 16 reject the string form
-  (`documentation/decisions/pending.md`, row 4). Every compiler rejects a backslash before a character
-  outside the basic character set, such as `é` (PRIM-18).
-  Every test of PRIM-35 has an override, and each override records a
-  result that the class allows.
+  literals, because Clang 22 and GCC 16 reject the string form. Every
+  compiler rejects a backslash before a character outside the basic
+  character set, such as `é` (PRIM-18). Every test of PRIM-35 has an
+  override, and each override records a result that the class allows.
 - PRIM-8: the matrix targets keep string literals in memory that the
   program cannot write. So a write to a literal faults at run time, and
   `-fsanitize=address` reports the fault as SEGV.
-- PRIM-9: Clang rejects a comparison of the addresses of two string
-  literals during constant evaluation. GCC and EDG accept it and fold it
-  ({question}`Q-0033`).
+
+### Sources
 
 Inputs: clang-lex-literal, clang-diag-lex, clang-sema-expr,
 clang-diag-sema, edg-decls.

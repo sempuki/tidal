@@ -21,7 +21,10 @@ The call operator of a lambda is `constexpr` when it can be, so the
 call operator of a generic lambda with an explicit return type gives
 the same split. A function template that is not `constexpr` and has a
 written return type finds `probe` on every compiler
-(`function-point-end-of-unit.cpp`).
+(`function-point-end-of-unit.cpp`). The split needs a first use before
+the declaration of `probe`. When the first use follows the
+declaration, every compiler accepts
+(`templates/dependent-names/generic-lambda-argument-lookup.cpp`).
 
 ## Evidence
 

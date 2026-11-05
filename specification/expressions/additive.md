@@ -325,13 +325,53 @@ bool add_fits(int a, int b) {
 The results are in `tests/RESULTS.md`. All eight compilers agree on 51
 of 60 tests.
 
-Three questions on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+### Divergences
 
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0005` | ADD-P4 | none |
-| {question}`Q-0031` | ADD-P6 | GCC 16 |
-| {question}`Q-0049` | ADD-P6 | GCC 16 |
+- {question}`Q-0031` (ADD-10; settled on ADD-P6): whether forming a
+  pointer before or beyond an array is undefined without a read through
+  it. It is, and constant evaluation rejects the pointer, as Clang and
+  EDG do. GCC accepts the pointer, also after an intermediate step that
+  leaves the array, and rejects only a read through it.
+- {question}`Q-0049` (ADD-14; settled on ADD-P6): whether arithmetic on
+  a base class pointer into an array of a derived class is undefined
+  past the subobject. The subobject acts as an array of one element, so
+  a move of two, a read through the pointer one past, and a difference
+  of pointers into two elements are undefined, as Clang and EDG say.
+  GCC accepts all three.
+- {question}`Q-0304` (ADD-6, ADD-10, ADD-14; open): whether a pointer
+  to a character type can step through the bytes of an object that is
+  not an array of bytes. It can. No family differs, and constant
+  evaluation cannot form such a pointer ({rule}`CAST-8`).
+- {question}`Q-0005` (ADD-13; settled on ADD-P4): whether the order of
+  the operands can be unspecified when no compiler varies it for the
+  built-in `+`. It can. No family differs, and the tests accept either
+  order.
+- {question}`Q-0001` (ADD-17; open): whether a floating overflow during
+  constant evaluation is undefined or implementation-defined. It is
+  undefined, as GCC and EDG say. Clang gives an infinity.
+- {question}`Q-0298` (ADD-18; settled on ADD-P3): how implementations
+  treat a pointer difference that does not fit its type. The
+  difference is undefined. With `-m32`, Clang rejects only a difference
+  that does not fit, and GCC rejects an array of more than `INT_MAX`
+  bytes. EDG 7.0 rejects every position past `INT_MAX`.
+
+### Split tests
+
+EDG skips the tests that use `-fsanitize`.
+
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `base-pointer-beyond-subobject.cpp` | ADD-14, ADD-10 | reject | reject | accept | reject | {question}`Q-0049` |
+| `base-pointer-derived-array.cpp` | ADD-14 | reject | reject | accept | reject | {question}`Q-0049` |
+| `float-overflow-constant.cpp` | ADD-17 | reject | accept | reject | reject | {question}`Q-0001` |
+| `float-overflow-subtract-constant.cpp` | ADD-17 | reject | accept | reject | reject | {question}`Q-0001` |
+| `intermediate-step-beyond-array.cpp` | ADD-10 | reject | reject | accept | reject | {question}`Q-0031` |
+| `null-plus-nonzero-sanitizer.cpp` | ADD-10 | run-fail | run-fail | run | skips | |
+| `pointer-before-array.cpp` | ADD-10 | reject | reject | accept | reject | {question}`Q-0031` |
+| `pointer-beyond-array.cpp` | ADD-10 | reject | reject | accept | reject | {question}`Q-0031` |
+| `subtract-base-pointers-derived-array.cpp` | ADD-14 | reject | reject | accept | reject | {question}`Q-0049` |
+
+### Notes
 
 - ADD-3: GCC rejects arithmetic on `void*` and on function pointers only
   as a pedantic diagnostic (`-Wpointer-arith`). Clang and EDG reject
@@ -339,13 +379,8 @@ Three questions on this page settled on 2026-11-03 under decision 0054 after the
 - ADD-9, ADD-11: all compilers reject these operations during
   {term}`constant evaluation`. For ADD-11 this includes two local
   variables that are not arrays.
-- ADD-10: Clang and EDG reject a pointer before or beyond the array
-  during constant evaluation. GCC 14 and 16 accept the pointer, even
-  far outside the array, and reject only a read through it
-  ({question}`Q-0031`). The same split holds for an intermediate step
-  that leaves the array, as in `a + 'a' - 'a'`, although the final
-  position is inside the array. All compilers reject a nonzero offset
-  from a null pointer.
+- ADD-10: all compilers reject a nonzero offset from a null pointer
+  during constant evaluation.
 - ADD-10: during constant evaluation, every compiler rejects a read of
   the next row through a pointer into the current row of a
   two-dimensional array (`past-end-of-row.cpp`). GCC names the bound of
@@ -359,21 +394,12 @@ Three questions on this page settled on 2026-11-03 under decision 0054 after the
   run time is undefined.
 - ADD-12: `p - q` has type `long` on x86-64 (LP64) and `int` with
   `-m32` (ILP32).
-- ADD-13: Clang and GCC evaluate the left operand of the built-in `+`
-  first. For an overloaded `+`, GCC evaluates the right operand first.
-  The tests accept either order ({question}`Q-0005`).
 - ADD-14: every compiler accepts a base class pointer moved one past
   its subobject during constant evaluation, with a difference of `1`.
-  Clang and EDG reject a move of two, a read through the pointer one
-  past, and a difference of base pointers into two elements. GCC
-  accepts all three, and computes the difference from the addresses
-  ({question}`Q-0049`).
 - ADD-6, ADD-10, ADD-14: the address and undefined sanitizers of Clang
   and GCC report no step through the bytes of an object. They also
   report no read of the next element through the unsigned type that
-  matches `int`. Constant evaluation
-  cannot form either pointer ({rule}`CAST-8`). The byte rule is
-  provisional ({question}`Q-0304`).
+  matches `int`.
 - ADD-16, MUL-16: Clang and GCC warn about these operations as
   deprecated. The flag is `-Wdeprecated-enum-enum-conversion` for two
   different enumerations and `-Wdeprecated-enum-float-conversion` for an
@@ -382,16 +408,8 @@ Three questions on this page settled on 2026-11-03 under decision 0054 after the
   compilers accept the operands in strict mode. The ADD-16 tests add
   `-Werror` and the named flag. EDG does not accept `-Werror` and skips
   the tests.
-- ADD-17: Clang gives an infinity during constant evaluation. GCC and
-  EDG reject the expression ({question}`Q-0001`). Q-0001 stays open
-  under decision 0051, because on 2026-11-03 Clang 22 still differs from
-  GCC 16 and EDG 7.0.
-- ADD-18: with `-m32`, Clang rejects a difference of `2147483648`
-  during constant evaluation and accepts `INT_MIN`. EDG rejects every
-  position past `INT_MAX`. GCC rejects an array of more than `INT_MAX`
-  bytes, so no difference into one array overflows there
-  ({question}`Q-0298`). The boundary is the same on every compiler.
-  An array of `0x7fffffff` bytes, with the differences `0x7fffffff` and
+- ADD-18: the boundary is the same on every compiler. An array of
+  `0x7fffffff` bytes, with the differences `0x7fffffff` and
   `-0x7fffffff` inside it, is accepted
   (`pointer-difference-largest-ilp32.cpp`). An array of `0x80000000`
   bytes with a difference across the whole array is rejected
@@ -417,12 +435,7 @@ Three questions on this page settled on 2026-11-03 under decision 0054 after the
   reaches the difference. The front end's interpreter cannot hold an
   array of that size. No tool stops ADD-18 at run time, and no run test
   covers the rule.
-- Settled on 2026-11-03 under decision 0054. A source-reader gap
-  review supports each answer with no doubt, and a principle gives the
-  same answer:
 
-  | Question | Principle | Family that still differs |
-  |---|---|---|
-  | {question}`Q-0298` | ADD-P3 | EDG 7.0 |
+### Sources
 
 Inputs: clang-sema-expr, clang-diag-sema.

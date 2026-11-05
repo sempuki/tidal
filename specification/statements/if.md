@@ -475,19 +475,28 @@ void conditions() {
 All rules in this page are `required` or `reject`. All eight compilers
 agree on 79 of 80 tests. The results are in `tests/RESULTS.md`.
 
-One question on this page settled on 2026-11-04 under decision 0054 after the principle-use batch PU1 (`reports/clean-room/PU1/`). The batch's use of the principle supports the answer, the latest gap review supports it with no doubt, and the principle gives the same answer. The tests keep their overrides for the family that still differs:
+### Divergences
 
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0329` | IF-P4 | GCC 16 |
+- {question}`Q-0329` (IF-25; settled on IF-P4): whether the initializer
+  of a local `const int&` that binds a temporary runs during constant
+  evaluation. It runs at run time, so `if consteval` takes the else
+  branch, as Clang does. GCC takes the then branch.
+
+### Split tests
+
+EDG runs no programs, so its cell for a run test gives the result of
+the compile.
+
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `consteval-local-reference.cpp` | IF-25 | run | run | run-fail | accept | {question}`Q-0329` |
+
+### Notes
 
 - IF-25: Clang and GCC take the then branch of `if consteval` in the
   initializer of a local `const int` or `const` enumeration variable.
   Both take the else branch for a local `const double`, a local
-  `const volatile int`, and a local variable that is not `const`. For a
-  local `const int&` that binds a temporary, Clang takes the else
-  branch and GCC takes the then branch
-  ({question}`Q-0329`).
+  `const volatile int`, and a local variable that is not `const`.
 - IF-25: every compiler takes the then branch in the initializer of a
   local reference that binds a namespace-scope object, and in the
   initializer of a local `double` inside a function that a

@@ -336,6 +336,26 @@ The results are in `tests/RESULTS.md`. All eight compilers agree on 61
 of 63 tests. The x86-64 build of EDG skips the `-m32` tests, and the
 ILP32 build runs only those.
 
+### Divergences
+
+- {question}`Q-0120` (TYP-2, TYP-12; settled on TYP-P3): whether EDG's
+  alignment of 8 for `long long` on i686 changes TYP-2. It does not,
+  because the alignment is implementation-defined. Clang and GCC give
+  `long long` an alignment of 4 with `-m32`, and EDG 7.0 with `-m32`
+  gives 8.
+
+### Split tests
+
+The x86-64 build of EDG skips the `-m32` tests, so the EDG cells give
+the ILP32 build.
+
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `align-ilp32.cpp` | TYP-2 | accept | accept | accept | reject | {question}`Q-0120` |
+| `align-member-ilp32.cpp` | TYP-2, TYP-12 | accept | accept | accept | reject | {question}`Q-0120` |
+
+### Notes
+
 - TYP-1, TYP-2, TYP-10, TYP-12: the values come from probes on both
   targets. Clang's target description for x86 gives the same sizes and
   alignments, and the 96-bit `long double` with 32-bit alignment on
@@ -369,25 +389,6 @@ ILP32 build runs only those.
   `u64` alias of the Examples is `unsigned long long` on both targets,
   so on x86-64 the alias names a different type from the compilers'
   64-bit unsigned type, with the same size.
-- Settled on 2026-11-03 under decision 0054. A source-reader gap
-  review supports each answer with no doubt, and a principle gives the
-  same answer:
-
-  | Question | Principle | Family that still differs |
-  |---|---|---|
-  | {question}`Q-0120` | TYP-P3 | EDG 7.0 with `-m32` |
-
-### Split tests
-
-The table lists each test on which the compilers differ. The
-Expected column gives the outcome that the rules predict. The other
-cells give the outcome of the test on each compiler. Only EDG with
-`-m32` differs, on the alignment of `long long` ({question}`Q-0120`).
-
-| Test | Rules | Expected | Clang | GCC | EDG | Question |
-|---|---|---|---|---|---|---|
-| `align-ilp32.cpp` | TYP-2 | accept | accept | accept | reject (the x86-64 build skips the test) | {question}`Q-0120` |
-| `align-member-ilp32.cpp` | TYP-2, TYP-12 | accept | accept | accept | reject (the x86-64 build skips the test) | {question}`Q-0120` |
 
 Inputs: clang-targets-x86, clang-targetinfo, clang-ast-context,
 edg-targ-def.

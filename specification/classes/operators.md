@@ -343,23 +343,31 @@ Meters len = 2.5_m;
 The results are in `tests/RESULTS.md`. All eight compilers agree on 105
 of 108 tests.
 
-One question on this page settled on 2026-11-04 under decision 0054 after the principle-use batch PU1 (`reports/clean-room/PU1/`). The batch's use of the principle supports the answer, the latest gap review supports it with no doubt, and the principle gives the same answer. The tests keep their overrides for the family that still differs:
+### Divergences
 
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0060` | OPR-P3 | GCC 16 |
+- {question}`Q-0060` (OPR-10; settled on OPR-P3): whether a literal
+  operator can have a default argument. It cannot, as Clang and EDG
+  say. GCC accepts the default argument.
+- {question}`Q-0383` (OPR-9; open): whether a literal calls a literal
+  operator whose suffix does not start with `_`, such as `km` or `u8`.
+  The declaration makes the program not valid with no diagnostic
+  required, so each result conforms. GCC calls the operator for both
+  suffixes, EDG for `km` only, and Clang rejects every such literal.
 
-- OPR-10: GCC accepts a default argument on a literal operator. Clang
-  and EDG reject the default argument ({question}`Q-0060`).
+### Split tests
+
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `literal-default-arg.cpp` | OPR-10 | reject | reject | accept | reject | {question}`Q-0060` |
+| `literal-reserved-suffix-u8.cpp` | OPR-9 | accept | reject | accept | reject | {question}`Q-0383` |
+| `literal-reserved-suffix-used.cpp` | OPR-9 | accept | reject | accept | accept | {question}`Q-0383` |
+
+### Notes
+
 - OPR-9: Clang and GCC warn without extra flags about a suffix that
   does not start with `_`. Clang also warns about a suffix with two
   underscores in a row, and GCC and EDG accept that suffix without a
   warning. Each compiler calls the operator for it.
-- OPR-9: GCC calls a literal operator whose suffix does not start with
-  `_`, such as `km` or `u8`. EDG calls the operator for `km` and rejects
-  `1u8`. Clang rejects every literal with such a suffix and warns at the
-  declaration that no literal calls the operator. The rule needs no
-  diagnostic, so each of these results conforms ({question}`Q-0383`).
 - OPR-8: every compiler gives a literal with a suffix such as `u`, `z`,
   `ll`, `f`, or `L` its built-in type, even when the program declares a
   literal operator for that suffix. GCC warns that the implementation
@@ -369,6 +377,8 @@ One question on this page settled on 2026-11-04 under decision 0054 after the pr
   At run time, GCC 14 and GCC 16 evaluate the arguments of the call
   `a.operator[](x, y)` from right to left, and those of `a[x, y]` from
   left to right.
+
+### Sources
 
 Inputs: clang-sema-declcxx, clang-sema-expr, clang-diag-sema,
 edg-overload, edg-class-decl.

@@ -700,27 +700,51 @@ Any c(1);                          // the template, with T = int
 The results are in `tests/RESULTS.md`. All eight compilers agree on 118
 of 123 tests.
 
-One question on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on classes and statements (`reports/review/2026-11-03-gap-review-questions-classes-statements.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+### Divergences
 
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0055` | CPY-P3 | none among the newest; GCC 14 |
+- {question}`Q-0055` (CPY-14; settled on CPY-P3): whether a defaulted
+  copy or move constructor whose parameter type differs from the
+  implicit one is deleted or not valid. It is deleted, and only a use
+  is rejected. No newest family differs. GCC 14 rejects the declaration
+  of a `const volatile` copy constructor and a `const` move
+  constructor.
+- {question}`Q-0339` (CPY-27, CPY-19; open): whether a part with a
+  trivial and a non-trivial copy constructor makes the enclosing copy
+  constructor non-trivial when the copy selects the trivial one. The
+  selected function decides, as Clang says. GCC and EDG delete the copy
+  constructor of a union that holds such a class, and EDG copies a
+  union whose member's constructor template is selected.
+- {question}`Q-0343` (CPY-19; open): whether a class with a deleted
+  destructor, or with all four copy and move functions deleted, is
+  trivially copyable. It is not. The builtin query of every compiler
+  says it is, and no test can show the difference. The question waits
+  on the maintainer (`documentation/decisions/pending.md`).
+- {question}`Q-0344` (CPY-19; open): whether a byte copy can write over
+  a live object that has a `const` member. The behavior is undefined,
+  as {rule}`CV-5` gives. No test can show the difference, and the tests
+  copy into a buffer or into an object with no `const` member.
+
+### Split tests
+
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `defaulted-move-const-param.cpp` | CPY-14 | accept | accept | GCC 16: accept; GCC 14: reject | accept | {question}`Q-0055` |
+| `defaulted-volatile-param.cpp` | CPY-14 | accept | accept | GCC 16: accept; GCC 14: reject | accept | {question}`Q-0055` |
+| `trivially-copyable-member-selected.cpp` | CPY-27, CPY-19, UNI-3 | accept | accept | reject | reject | {question}`Q-0339` |
+| `trivially-copyable-member-template-selected.cpp` | CPY-27, UNI-11 | reject | reject | reject | accept | {question}`Q-0339` |
+| `classes/unions/union-copy-two-copy-constructors.cpp` | UNI-3, CPY-27 | accept | accept | reject | reject | {question}`Q-0339` |
+
+### Notes
 
 - CPY-15: Clang and GCC reject a constructor `W(W)` of a class
   template at the template's definition, with no instantiation. GCC
   reports the error under `-Wtemplate-body`, a warning group that is an
   error by default.
-- CPY-14: GCC 14 rejects some defaulted constructors whose parameter
-  type differs from the implicit one ({question}`Q-0055`):
-
-  | Defaulted in the class | Implicit parameter | GCC 14 | GCC 16, Clang, EDG |
-  |---|---|---|---|
-  | `S(const S&)` | `S&` | accepts and deletes | accepts and deletes |
-  | `S(S&)` | `const S&` | accepts | accepts |
-  | `S(const volatile S&)` | `const S&` | rejects | accepts and deletes |
-  | `S(const S&&)` | `S&&` | rejects | accepts and deletes |
-
-  Every compiler rejects a use of a deleted constructor (CPY-26).
+- CPY-14: every compiler accepts a defaulted `S(const S&)` where the
+  implicit parameter is `S&`, and deletes the function. Every compiler
+  accepts a defaulted `S(S&)` where the implicit parameter is
+  `const S&`. Every compiler rejects a use of a deleted constructor
+  (CPY-26).
 - CPY-12: Clang and GCC use the variable as the return value at `-O0`
   and `-O2`. EDG runs no programs. The test accepts a move too.
 - CPY-13: Clang and GCC give the first warning under `-Wextra` and the
@@ -760,34 +784,25 @@ One question on this page settled on 2026-11-03 under decision 0054 after the so
 
   The two rows where every query says yes and CPY-19 says no follow the
   class-properties inventory (items TCC-all-deleted and
-  TCC-deleted-destructor), and no test can show the difference
-  ({question}`Q-0343`).
+  TCC-deleted-destructor).
 - CPY-19: a class with a `const` member is trivially copyable
-  (`trivially-copyable-const-member.cpp`). The byte copy into a second
-  object then writes the bytes of a `const` member. The gap review of
-  item O (`reports/review/2026-11-03-gap-review-item-o.md`) finds that
-  the reference does not say whether the byte copy or the `const` rule
-  decides. CPY-19 follows {rule}`CV-5`, and no test can show the
-  difference ({question}`Q-0344`). The tests
-  copy into a buffer or into an object with no `const` member.
+  (`trivially-copyable-const-member.cpp`). The gap review of item O
+  (`reports/review/2026-11-03-gap-review-item-o.md`) finds that the
+  reference does not say whether the byte copy or the `const` rule
+  decides.
 - CPY-27: a member of array of class type counts as a part, as the
   gap review of item O describes. Every compiler deletes the copy
   constructor of a union that holds a class whose array member has a
   user-provided copy constructor (`trivial-copy-array-member-nontrivial.cpp`).
-- CPY-27: for a member whose class has a trivial copy constructor for a
-  `const` source and a user-provided one for a non-`const` source, Clang
-  treats the enclosing class's copy constructor as trivial. GCC and EDG
-  treat it as not trivial and delete the copy constructor of a union
-  that holds the class. When a member's constructor template is
-  selected for the copy, Clang and GCC delete the union's copy
-  constructor, and EDG copies the union
-  ({question}`Q-0339`).
-- Sources: CPY-19 and CPY-28 come from the grid `trivially-copyable.json`
-  and the inventory items TCC-at-least-one, TCC-const-member,
-  TCC-every-eligible, TCC-inaccessible-ok, TCC-reference-member,
-  TCC-volatile-member, TYPE-array, TYPE-cv, TYPE-non-object, and
-  TYPE-scalar. The CPY-27 sentence on the selected function comes from
-  item TCC-member-selected and the same grid.
+
+### Sources
+
+CPY-19 and CPY-28 come from the grid `trivially-copyable.json`
+and the inventory items TCC-at-least-one, TCC-const-member,
+TCC-every-eligible, TCC-inaccessible-ok, TCC-reference-member,
+TCC-volatile-member, TYPE-array, TYPE-cv, TYPE-non-object, and
+TYPE-scalar. The CPY-27 sentence on the selected function comes from
+item TCC-member-selected and the same grid.
 
 Inputs: clang-sema-declcxx, clang-sema-init, clang-diag-sema,
 edg-class-decl.

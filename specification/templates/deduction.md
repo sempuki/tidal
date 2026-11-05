@@ -801,37 +801,69 @@ Gadget* g = new (&arena) Gadget;  // both match, and ordering prefers neither: n
 The results are in `tests/RESULTS.md`. All eight compilers agree on 119
 of 130 tests.
 
-One question on this page settled on 2026-11-04 under decision 0054 after the source-reader gap review of the text phase 8 wrote on expressions, foundations, and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+### Divergences
 
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0209` | DED-P3 | GCC 16 |
+Reporting the EDG differences to the EDG project waits on the
+maintainer (`documentation/decisions/pending.md`).
 
-Three questions on this page settled on 2026-11-03 under decision 0054.
-For each, a source-reader gap review supports the answer with no doubt,
-and a principle gives the same answer:
+- {question}`Q-0208` (DED-11; settled on DED-P3): whether the
+  `noexcept` of a function type gives a value to a `bool` constant
+  parameter. It does, as Clang and GCC say. EDG finds no match.
+- {question}`Q-0209` (DED-11; settled on DED-P3): which type a
+  placeholder constant parameter gets from an array bound. It gets the
+  type of a `sizeof` expression, as Clang and EDG say. GCC gives `int`.
+- {question}`Q-0295` (DED-12, {rule}`TSP-14`; open): whether a constant
+  argument's type must fit the declared type of a partial
+  specialization's constant parameter with no conversion. It must, as
+  in a function template, and as GCC and EDG say. Clang converts the
+  argument.
+- {question}`Q-0399` (DED-24; open): whether a negative array bound
+  that substitution makes removes the template. It does in every form,
+  as Clang says. GCC rejects a computed negative bound such as `N - 2`,
+  and EDG rejects a negative bound in a pointer to an array when the
+  other overload has an ellipsis.
+- {question}`Q-0215` (DED-28; settled on DED-P2): whether the defaults
+  of the template parameters are substituted before the check of the
+  parameters with no template parameter. They are, as Clang and GCC
+  say. EDG checks the parameter first and removes the template with no
+  error.
+- {question}`Q-0219` (DED-39; settled on {principle}`ORD-P1`): whether
+  partial ordering chooses among matching placement deallocation
+  templates. It does, as GCC and EDG say. Clang warns that two
+  functions match and calls neither.
+- {question}`Q-0220` (DED-39, NEW-24; open): whether a placement
+  deallocation function wins over a template that also matches. It
+  does not, and no deallocation function is called, as Clang does.
+  GCC and EDG choose the function.
+- {question}`Q-0222` (DED-39, NEW-24; open): whether a `new`
+  expression is valid when two placement deallocation templates match
+  and partial ordering prefers neither. It is, as Clang and GCC say.
+  EDG rejects it as ambiguous.
+- {question}`Q-0221` (NEW-25; open): whether a `new` expression is
+  valid when its matching deallocation function is deleted. It is not,
+  as Clang and EDG say. GCC accepts it.
 
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0208` | DED-P3 | EDG 7.0 |
-| {question}`Q-0215` | DED-P2 | EDG 7.0 |
-| {question}`Q-0219` | {principle}`ORD-P1` | Clang 22 |
+### Split tests
 
-Each test keeps its override for the family that differs. Reporting the
-EDG differences to the EDG project waits on the maintainer
-(`documentation/decisions/pending.md`).
+EDG runs no programs, so its cell for a run test gives the result of
+the compile.
 
-The clean-room writer probed each step with Clang 22, GCC 16, and EDG
-7.0, and checked the tests and grids on the eight
-{ref}`baseline compilers <baseline-compilers>`. The compilers agree on every cell of the
-grids below.
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `expressions/new-delete/throw-placement-deleted-function-and-template.cpp` | NEW-24, DED-39 | accept | accept | accept | reject | {question}`Q-0220`, {question}`Q-0221` |
+| `expressions/new-delete/throw-placement-function-and-template.cpp` | NEW-24, DED-39 | run | run | run-fail | accept | {question}`Q-0220` |
+| `expressions/new-delete/throw-placement-templates-unordered.cpp` | NEW-24, DED-39 | run | run | run | reject | {question}`Q-0222` |
+| `match-bound-type.cpp` | DED-11 | accept | accept | reject | accept | {question}`Q-0209` |
+| `match-noexcept.cpp` | DED-11 | accept | accept | accept | reject | {question}`Q-0208` |
+| `placement-deallocation-ordered.cpp` | DED-39, ORD-9 | run | run-fail | run | accept | {question}`Q-0219` |
+| `substitution-default-before-check.cpp` | DED-28, DED-29 | reject | reject | reject | accept | {question}`Q-0215` |
+| `substitution-failure-negative-bound-computed.cpp` | DED-24 | accept | accept | reject | accept | {question}`Q-0399` |
+| `substitution-failure-negative-bound-ellipsis.cpp` | DED-24 | accept | accept | accept | reject | {question}`Q-0399` |
+| `templates/specialization/partial-constant-type-exact.cpp` | TSP-14, DED-12 | accept | reject | accept | accept | {question}`Q-0295` |
+| `templates/specialization/partial-placeholder-pattern-const.cpp` | TSP-14, DED-12 | accept | Clang 22: reject; Clang 18: accept | accept | accept | {question}`Q-0295` |
 
-- DED-11: EDG gives a `bool` constant parameter no value from the
-  `noexcept` of a function type, and the call has no match. Clang and
-  GCC deduce the value ({question}`Q-0208`).
-- DED-11: GCC gives a placeholder constant parameter that takes an array
-  bound the type `int`. Clang and EDG give the parameter the type of
-  a `sizeof` expression ({question}`Q-0209`).
+### Notes
+
 - DED-35 is the reject rule of the tests with a deduction failure. In
   each, Clang names the failed step in a note: conflicting values,
   a parameter with no value, or a type that does not match.
@@ -846,35 +878,20 @@ grids below.
   expression in the function type.
 - DED-27: every compiler substitutes the `noexcept` operand of the
   chosen specialization, also in an operand of `decltype`.
-- DED-28: Clang and GCC substitute the default of a template parameter
-  before they check a parameter with no template parameter. EDG checks
-  the parameter first and removes the template with no error
-  ({question}`Q-0215`).
-- DED-39: GCC calls the more specialized of two matching placement
-  deallocation templates. EDG instantiates the same template. EDG
-  accepts `placement-deallocation-ordered-instantiation.cpp`, where the
-  less specialized template holds a failing `static_assert`, and a probe
-  with the `static_assert` in the other template fails on EDG. Clang
-  warns that two functions match and calls neither
-  ({question}`Q-0219`). On 2026-11-03 Clang 22 still differs from
-  GCC 16 and EDG 7.0. Q-0219 is settled under decision 0054, and Q-0220
-  stays open, because its review reads it with doubt.
+- DED-28: when the class appears in a function parameter type instead
+  of a default template argument, every compiler checks the first
+  argument first and chooses the fallback
+  (`substitution-nondependent-first.cpp`).
 - DED-39: when a function and a template both match, no compiler
   instantiates the template. The body of the template in
   `throw-placement-function-before-template-instantiation.cpp` fails
-  if it is instantiated, and every compiler accepts the test. Clang
-  calls no deallocation function, as DED-39 gives. GCC and EDG choose
-  the function ({question}`Q-0220`).
+  if it is instantiated, and every compiler accepts the test.
 - DED-24: every compiler removes a template whose parameter type has an
   array bound of zero, also when the bound is an expression such as
   `sizeof(T) - sizeof(T)` (`substitution-failure-forms.cpp`). Every
   compiler removes a template for an explicit bound of `-1` in a
   reference to an array, and in a pointer to an array when the other
-  overload takes `int` (`substitution-failure-negative-bound.cpp`). GCC
-  rejects a computed negative bound such as `N - 2` as an error, and EDG
-  rejects a negative bound in a pointer to an array when the other
-  overload has an ellipsis
-  ({question}`Q-0399`).
+  overload takes `int` (`substitution-failure-negative-bound.cpp`).
 - DED-15: every compiler instantiates `Derived<int>` for a call with a
   `Derived<int>*` argument and a `Base<T>*` parameter, and rejects the
   failing `static_assert` in its body
@@ -895,15 +912,19 @@ grids below.
   `const int&` both give `T = int`
   (`context-conversion-reference-qualifiers.cpp`).
 - DED-12: every compiler checks the form `auto*` of a placeholder
-  parameter in a function template. For a partial specialization,
-  Clang converts the argument to the parameter's type. GCC and EDG
-  match the type with no conversion ({question}`Q-0295`).
+  parameter in a function template.
 - DED-13: with an explicit argument for `T`, the parameter
   `typename Outer<T>::template In<U>` becomes `Outer<int>::In<U>`, and
   every compiler deduces `U`. The test gives `T` its value by deduction
   instead, so the whole qualified name stays non-deduced.
 
-Call types (DED-6 to DED-8, DED-10, DED-14). Each column declares one template
+### Probe grids
+
+The probe grids are in `tests/templates/deduction/grids/`, and `tools/probe_grid.py` prints each table from the grid file. The compilers agree on every cell.
+
+Grid file `call-types.json`. Rules: DED-6, DED-7, DED-8, DED-10, DED-14.
+
+Each column declares one template
 `f` that returns `Tag<T>`. Each row calls `f` with one argument and
 checks that `T` is the type in the label. An `accept` means that `T`
 is that type. A row whose cells all reject in one column means the
@@ -933,7 +954,9 @@ call has no match there:
 In the row "int prvalue gives int", the column `T lref` rejects because
 `int&` cannot bind the prvalue, after deduction gives `T = int`.
 
-Braced lists (DED-16 to DED-18). Each column declares one template `f`,
+Grid file `braced.json`. Rules: DED-16, DED-17, DED-18.
+
+Each column declares one template `f`,
 and each row calls it with one braced list. An `accept` means that the
 call is valid:
 
@@ -952,8 +975,12 @@ last column takes an `std::initializer_list<int>` and a second
 parameter `T` with the default argument `0`, which gives `T` no value
 (DED-9).
 
-The probe grids are in `tests/templates/deduction/grids/`. This table
-gives the source of each rule. Inventory items have the numbers of
+### Sources
+
+The clean-room writer probed each step with Clang 22, GCC 16, and EDG
+7.0, and checked the tests and grids on the eight
+{ref}`baseline compilers <baseline-compilers>`. This table gives the
+source of each rule. Inventory items have the numbers of
 `reports/review/2026-10-31-inventory-deduction.md`, and gap review
 items those of
 `reports/review/2026-10-31-gap-review-deduction-and-ordering.md`:

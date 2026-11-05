@@ -215,24 +215,33 @@ void k(int x) {
 All eight compilers agree on 27 of 29 tests. The results are in
 `tests/RESULTS.md`.
 
-One question on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on classes and statements (`reports/review/2026-11-03-gap-review-questions-classes-statements.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+### Divergences
 
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0096` | STMT-P1 | GCC 16 |
+- {question}`Q-0096` (STMT-5; settled on STMT-P1): whether a `case` or
+  `default` label can be the last item of a block. It can, as Clang 18,
+  Clang 22, and EDG say. GCC 14 and GCC 16 reject it.
+
+### Split tests
+
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `case-label-ends-block.cpp` | STMT-5 | accept | accept | reject | accept | {question}`Q-0096` |
+| `default-label-ends-block.cpp` | STMT-5 | accept | accept | reject | accept | {question}`Q-0096` |
+
+### Notes
 
 - STMT-4: Clang warns "expression result unused" and GCC warns "statement
   has no effect" under `-Wunused-value`. EDG does not accept `-Werror`
   and skips these tests ({ref}`baseline compilers <baseline-compilers>`).
-- STMT-5: GCC 14 and GCC 16 reject a `case` or `default` label as the
-  last item of a block. Clang 18, Clang 22, and EDG accept it
-  ({question}`Q-0096`). Every compiler accepts a plain label as the
-  last item of a block.
+- STMT-5: every compiler accepts a plain label as the last item of a
+  block.
 - STMT-7: the test shows that the statement is valid. The test cannot
   observe the read.
 - STMT-10: Clang says that the class is hidden by a non-type
   declaration. GCC and EDG report a syntax error at the name after the
   class name.
+
+### Sources
 
 Inputs: clang-parse-stmt, clang-sema-stmt, clang-diag-sema, edg-
 statements.

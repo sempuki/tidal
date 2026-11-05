@@ -42,11 +42,12 @@ Fails when:
   HEAD rests on thin evidence (see check_thin_evidence),
 - a page's Evidence segment has a ### heading that the Evidence format does
   not name, or names two parts out of order (documentation/specification-format.md,
-  section "Evidence").
+  section "Evidence"),
+- a page's Evidence names a question and has no Divergences part (the older
+  form), or names a question that has no line of its own in Divergences.
 
 Warns for every rule that rests on thin evidence: one test, or only tests that
-carry an override for a newest compiler. Warns once for the pages whose
-Evidence names a question and has no Divergences part, the older form.
+carry an override for a newest compiler.
 
 guides/ holds the tutorials and how-to guides, which are not part of the
 specification (decision 0045). The question, marker, and reference checks
@@ -255,9 +256,9 @@ EVIDENCE_PARTS = ["Divergences", "Split tests", "Notes", "Probe grids", "Undefin
 
 
 def check_evidence(errors: list[str], warnings: list[str]) -> None:
-    """Evidence subsections come from EVIDENCE_PARTS, in that order."""
+    """Evidence subsections come from EVIDENCE_PARTS, in that order, and each
+    question that Evidence names has a line in its Divergences part."""
     import status_table
-    older = []
     for f in sorted(SPEC.rglob("*.md")):
         text = status_table.evidence(f.read_text())
         where = f.relative_to(ROOT)
@@ -270,11 +271,14 @@ def check_evidence(errors: list[str], warnings: list[str]) -> None:
         if order != sorted(set(order)) or len(order) != len(set(order)):
             errors.append(f"{where}: Evidence parts out of order: {', '.join(known)}; "
                           f"the order is {', '.join(EVIDENCE_PARTS)}")
-        if re.search(r"\bQ-\d{4}\b", text) and "Divergences" not in headings:
-            older.append(str(f.relative_to(SPEC)))
-    if older:
-        warnings.append(f"{len(older)} pages name questions in Evidence and have no Divergences part "
-                        f"(the older form): {', '.join(older)}")
+        named = set(re.findall(r"\bQ-\d{4}\b", text))
+        if named and "Divergences" not in headings:
+            errors.append(f"{where}: Evidence names a question and has no Divergences part (the older form)")
+            continue
+        if m := re.search(r"^### Divergences\n(.*?)(?=^### |\Z)", text, re.S | re.M):
+            lines = set(re.findall(r"^- \{question\}`(Q-\d{4})`", m.group(1), re.M))
+            for q in sorted(named - lines):
+                errors.append(f"{where}: Evidence names {q} and Divergences has no line for it")
 
 
 def newest_overrides() -> set[str]:

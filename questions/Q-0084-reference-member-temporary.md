@@ -17,6 +17,15 @@ implicit default constructor that the program uses. Every compiler
 accepts a class whose constructors all give the member a `mem_init`,
 and an aggregate whose initialization gives the member a value.
 
+Every compiler also accepts an aggregate initialization that leaves the
+member to its default member initializer, and Clang and GCC run it with
+the temporary still alive. The gap review of the text phase 8 wrote on
+classes and overloading
+(`reports/review/2026-11-04-gap-review-phase-8-classes-overloading.md`)
+finds that the reference does not name this case. In constant
+evaluation, Clang and GCC accept a read of the member through such an
+aggregate, and EDG rejects it. No test checks that read.
+
 ## Options
 
 1. The program is not valid, and an implementation need not diagnose it

@@ -403,20 +403,71 @@ switch (k) {
 The results are in `tests/RESULTS.md`. All eight compilers agree on 72
 of 90 tests. EDG skips the tests that use `-Werror`.
 
-Three questions on this page settled on 2026-11-04 under decision 0054 after the principle-use batch PU1 (`reports/clean-room/PU1/`). For each, the batch's use of the principle supports the answer, the latest gap review supports it with no doubt, and the principle gives the same answer. Each test keeps its override for the family that still differs:
+### Divergences
 
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0046` | ATTR-P1 | GCC 16 |
-| {question}`Q-0108` | ATTR-P1 | GCC 16 |
-| {question}`Q-0347` | ATTR-P1 | Clang 22 |
+- {question}`Q-0021` (ATTR-2; open): whether a standard attribute on
+  the wrong kind of entity is rejected or ignored, for `noreturn` on a
+  variable, `nodiscard` on a variable or a type alias, and
+  `no_unique_address` on a bit-field. The program is rejected. GCC
+  accepts all four with a warning, and Clang accepts the two
+  `nodiscard` forms.
+- {question}`Q-0390` (ATTR-2; open): whether a `fallthrough` statement
+  can lead to a label of an enclosing `switch`. It cannot, as GCC and
+  EDG say. Clang accepts the program.
+- {question}`Q-0046` (ATTR-2; settled on ATTR-P1): whether `likely` and
+  `unlikely` on one statement are rejected. They are. GCC accepts the
+  pair with a warning.
+- {question}`Q-0108` (ATTR-2; settled on ATTR-P1): whether
+  `carries_dependency` must be on the first declaration of a function.
+  It must. GCC accepts the attribute added on a redeclaration.
+- {question}`Q-0347` (ATTR-8; settled on ATTR-P1): whether `likely` can
+  apply to a label that is an identifier. It can, as GCC and EDG say.
+  Clang rejects the attribute there.
+- {question}`Q-0020` (ATTR-10, ATTR-13; open): how a test records a
+  compiler that does not implement `assume`. The test records Clang 18
+  as an override. Clang 18 ignores the attribute, and Clang 22 agrees
+  with GCC and EDG.
+- {question}`Q-0123` (ATTR-18; open): whether an attribute after a `*`
+  comes before or after the cv-qualifiers. After, as GCC and EDG say.
+  Clang takes the other order. The choice waits on the maintainer
+  (`documentation/decisions/pending.md`, row 4).
+- {question}`Q-0177` (ATTR-19; settled): whether an attribute can come
+  before a base class and after the array bound of a `new` expression.
+  It can. GCC 14 rejects both positions, and GCC 16 accepts them.
+
+### Split tests
+
+EDG skips the tests that use `-fsanitize`.
+
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `assume-comma.cpp` | ATTR-13 | reject | Clang 22: reject; Clang 18: accept | reject | reject | {question}`Q-0020` |
+| `assume-false-constant.cpp` | ATTR-10 | reject | Clang 22: reject; Clang 18: accept | reject | reject | {question}`Q-0020` |
+| `assume-false-sanitizer.cpp` | ATTR-10 | run-fail | Clang 22: run-fail; Clang 18: run | run-fail | skips | |
+| `assume-not-bool.cpp` | ATTR-13 | reject | Clang 22: reject; Clang 18: accept | reject | reject | {question}`Q-0020` |
+| `assume-on-declaration.cpp` | ATTR-13 | reject | Clang 22: reject; Clang 18: accept | reject | reject | {question}`Q-0020` |
+| `attribute-positions-base-and-new-bound.cpp` | ATTR-19 | accept | accept | GCC 16: accept; GCC 14: reject | accept | {question}`Q-0177` |
+| `carries-dependency-redeclared.cpp` | ATTR-2 | reject | reject | accept | reject | {question}`Q-0108` |
+| `fallthrough-into-outer-switch.cpp` | ATTR-2 | reject | accept | reject | reject | {question}`Q-0390` |
+| `likely-and-unlikely.cpp` | ATTR-2 | reject | reject | accept | reject | {question}`Q-0046` |
+| `likely-identifier-label.cpp` | ATTR-8 | run | reject | run | accept | {question}`Q-0347` |
+| `no-unique-address-bitfield.cpp` | ATTR-2 | reject | reject | accept | reject | {question}`Q-0021` |
+| `nodiscard-on-type-alias.cpp` | ATTR-2 | reject | accept | accept | reject | {question}`Q-0021` |
+| `nodiscard-on-variable.cpp` | ATTR-2 | reject | accept | accept | reject | {question}`Q-0021` |
+| `noreturn-on-variable.cpp` | ATTR-2 | reject | reject | accept | reject | {question}`Q-0021` |
+| `pointer-attribute-after-cv.cpp` | ATTR-18 | accept | reject | accept | accept | {question}`Q-0123` |
+| `pointer-attribute-before-cv.cpp` | ATTR-18 | reject | accept | reject | reject | {question}`Q-0123` |
+| `vendor-attribute-changes-layout.cpp` | ATTR-20 | accept | accept | accept | reject | |
+| `vendor-attribute-not-applied.cpp` | ATTR-20 | accept | reject | reject | accept | |
+
+### Notes
 
 - An implementation should warn if a `noreturn` function can return.
   Clang and GCC give this warning ("function declared 'noreturn' should
   not return").
-- For ATTR-4 to ATTR-7, Clang and GCC give the warnings ("is
-  deprecated", "ignoring return value", "unused variable", "may fall
-  through"). The tests change the warnings to errors with `-Werror`.
+- ATTR-4 to ATTR-7: Clang and GCC give the warnings ("is deprecated",
+  "ignoring return value", "unused variable", "may fall through"). The
+  tests change the warnings to errors with `-Werror`.
   {doc}`/foundations/translation` gives the flag for each warning.
 - ATTR-6: Clang, GCC, and EDG give no warning for an unused variable of
   a class type with a user-provided constructor or destructor. The three
@@ -431,14 +482,17 @@ Three questions on this page settled on 2026-11-04 under decision 0054 after the
   `-Wunused-but-set-variable`). Both also warn about an unused
   structured binding declaration. Clang reports an unused variable, and
   GCC reports a declaration that is set but not used.
-- ATTR-8: GCC and EDG accept `[[likely]]` before a label that is an
-  identifier. Clang rejects the attribute there, though Clang accepts it
-  before a `case` label ({question}`Q-0347`).
+- ATTR-6 is Tidal's own advice, as FN-7 is. The C++23 text recommends
+  only where an implementation should not warn, and for a structured
+  binding declaration it advises a warning only when none of the names
+  is used. A name that the program only assigns, or whose address it
+  takes, counts as used there. ATTR-6 allows a warning in those cases,
+  as Clang and GCC give one.
 - ATTR-7: Clang warns for a missing `[[fallthrough]];` only under
   `-Wimplicit-fallthrough`. GCC also warns under `-Wextra`. Both agree
   on the cases where control falls through.
-- ATTR-3 and ATTR-10 are undefined. Every compiler except Clang 18
-  rejects a false assumption during {term}`constant evaluation`
+- ATTR-3, ATTR-10: the behavior is undefined. Every compiler except
+  Clang 18 rejects a false assumption during {term}`constant evaluation`
   ("assumption evaluated to false", "failed 'assume' attribute
   assumption", "assumption failed"). At run time, the undefined
   behavior sanitizers of Clang and GCC 16 stop a program whose
@@ -448,57 +502,19 @@ Three questions on this page settled on 2026-11-04 under decision 0054 after the
 - ATTR-20 is implementation-defined because each implementation
   chooses its own attributes. Under `-pedantic-errors`, Clang and GCC
   apply `[[gnu::packed]]`, so a class of a `char` and an `int` has size
-  5. EDG 7.0 with `--strict` gives the class size 8.
-  Every test of ATTR-20 has an override, and each override records a
-  result that the class allows.
+  5. EDG 7.0 with `--strict` gives the class size 8. Every test of
+  ATTR-20 has an override, and each override records a result that the
+  class allows.
 - ATTR-9 is implementation-defined because the layout of a class is the
   implementation's choice. Every compiler in the matrix gives an empty
   member with `no_unique_address` no storage of its own.
-- ATTR-10 and ATTR-13: Clang 18 does not implement `assume`. Clang 18
-  ignores the attribute as unknown. So Clang 18 accepts each program
-  that the tests expect to be rejected, including a comma in an
-  assumption, and its sanitizer does not stop at a false assumption.
-  Clang 22 implements `assume` and agrees with GCC and EDG. The tests
-  record Clang 18 as a compiler without the feature
-  ({question}`Q-0020`).
 - ATTR-19: every compiler accepts an attribute with an unknown namespace
   in each position of the table, and warns that the attribute is
-  ignored. GCC 14 rejects the position before a base class and the
-  position after the array bound of a `new` expression. GCC 16 accepts
-  both, so GCC 14 has a defect that GCC 16 fixes ({question}`Q-0177`).
-- ATTR-18: GCC and EDG accept an attribute after the cv-qualifiers of a
-  `*` and reject one before them. Clang does the reverse
-  ({question}`Q-0123`).
-  Every compiler accepts an attribute after a `*` with no cv-qualifiers
-  (`pointer-attribute-no-cv.cpp`).
-- ATTR-2 has these divergences. In each, the compilers that accept the
-  program ignore the attribute with a warning, also under
-  `-pedantic-errors`.
+  ignored.
+- ATTR-18: every compiler accepts an attribute after a `*` with no
+  cv-qualifiers (`pointer-attribute-no-cv.cpp`).
 
-  | Program | Accepts | Rejects | Question |
-  |---|---|---|---|
-  | `[[noreturn]]` on a variable | GCC | Clang, EDG | {question}`Q-0021` |
-  | `[[nodiscard]]` on a variable | Clang, GCC | EDG | {question}`Q-0021` |
-  | `[[nodiscard]]` on a type alias | Clang, GCC | EDG | {question}`Q-0021` |
-  | `[[fallthrough]]` before a label of an outer `switch` | Clang | GCC, EDG | {question}`Q-0390` |
-  | `[[no_unique_address]]` on a bit-field | GCC | Clang, EDG | {question}`Q-0021` |
-  | `[[likely]]` and `[[unlikely]]` on one statement | GCC | Clang, EDG | {question}`Q-0046` |
-  | `carries_dependency` added on a redeclaration | GCC | Clang, EDG | {question}`Q-0108` |
-
-  Each row holds for GCC 14 and 16 and for Clang 18 and 22. The
-  provisional answer for each row is that the program is rejected. The
-  last two rows follow the gap review of the text phase 8 wrote
-  (`reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md`),
-  which reads the C++23 text as limiting `nodiscard` to a function, a
-  class, or an enumeration, and `fallthrough` to a label of its own
-  `switch`. For the `fallthrough` row, Clang accepts the program with
-  no warning, and GCC reports the error only when it compiles the code.
-- ATTR-6 is Tidal's own advice, as FN-7 is. The C++23 text recommends
-  only where an implementation should not warn, and for a structured
-  binding declaration it advises a warning only when none of the names
-  is used. A name that the program only assigns, or whose address it
-  takes, counts as used there. ATTR-6 allows a warning in those cases,
-  as Clang and GCC give one.
+### Sources
 
 Inputs: clang-sema-declattr, clang-sema-stmtattr, edg-attribute,
 clang-diag-sema (see `inputs/MANIFEST.md`).

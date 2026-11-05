@@ -742,114 +742,125 @@ extern template constexpr int size_of<long>;  // rejected: constexpr (INST-25)
 The results are in `tests/RESULTS.md`. All eight compilers agree on 117
 of 140 tests.
 
-One question on this page settled on 2026-11-04 under decision 0054 after the principle-use batch PU1 (`reports/clean-room/PU1/`). The batch's use of the principle supports the answer, the latest gap review supports it with no doubt, and the principle gives the same answer. The tests keep their overrides for the family that still differs:
+### Divergences
 
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0253` | INST-P1 | GCC 16 |
+Each settled question below keeps its test's override for the family
+that still differs. Reporting the EDG differences to the EDG project
+waits on the maintainer (`documentation/decisions/pending.md`).
 
-Three questions on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+- {question}`Q-0231` (INST-5; settled on INST-P2): whether the
+  initializer of an unused `inline static` data member is instantiated
+  with the class. It waits for a use, as Clang and GCC say. EDG
+  instantiates it.
+- {question}`Q-0232` (INST-5; settled on INST-P2): whether the
+  enumerators of a scoped member enumeration are instantiated with the
+  class. They wait for a use, as Clang and EDG say. GCC 16 instantiates
+  them.
+- {question}`Q-0251` (INST-6; open): whether a class whose two member
+  partial specializations become the same is valid. The instantiation
+  is not valid, as Clang says. GCC and EDG accept the class.
+- {question}`Q-0252` (INST-7; settled on INST-P1): when an unevaluated
+  operand instantiates a `constexpr` function template. A braced
+  initializer instantiates each one it names, also on a branch that is
+  not taken, and other unevaluated operands do not. EDG differs on the
+  braced conditional, and GCC 16 on `sizeof`.
+- {question}`Q-0253` (INST-12; settled on INST-P1): whether the default
+  argument of a member function of a local class is instantiated with
+  the enclosing function. It is, as Clang and EDG say. GCC 16 waits for
+  a call.
+- {question}`Q-0392` (INST-12, INST-P1; open): whether a member
+  function of a local class in a function template can have a requires
+  clause. It can, and the clause waits for a use of the member, as
+  Clang 22 and GCC 16 say. EDG 7.0 rejects the requires clause.
+- {question}`Q-0237` (INST-19; settled on INST-P3): whether an explicit
+  specialization can follow an explicit instantiation declaration. It
+  cannot, as Clang and GCC say. EDG accepts it.
+- {question}`Q-0254` (INST-20; settled on INST-P3): whether a variable
+  template's definition can follow its explicit instantiation
+  definition. It can, as Clang and EDG say. GCC 16 rejects the order.
+- {question}`Q-0235` (INST-21; open): whether an explicit instantiation
+  outside the template's namespace can use an unqualified name after a
+  using-directive. It cannot, for a class, a function, or a variable
+  template. EDG accepts the class form, and Clang 22 and EDG accept the
+  variable form. The gap reviews read the class and variable forms as
+  valid, and the choice waits on the maintainer
+  (`documentation/decisions/pending.md`, row 5).
+- {question}`Q-0236` (INST-22; settled on INST-P3): whether an explicit
+  instantiation of a variable can leave out the array bound. It can, as
+  GCC and EDG say. Clang 22 rejects it.
+- {question}`Q-0346` (INST-22; open): whether an explicit instantiation
+  of a variable can state a type that differs from the
+  specialization's. It cannot, as Clang says. GCC accepts every such
+  type, and EDG accepts a bound that differs where the template has no
+  bound.
+- {question}`Q-0255` (INST-22; settled on INST-P3): whether the
+  exception specification of an explicit instantiation must match the
+  template. A stated one must match, as Clang and EDG say. GCC 16
+  accepts one that differs.
+- {question}`Q-0256` (INST-22; settled on INST-P3): how an explicit
+  instantiation names a variable template declared with `auto`. It
+  writes the deduced type, as Clang and GCC say. EDG rejects the
+  deduced type and accepts `auto`, and GCC 16 also accepts another
+  type.
+- {question}`Q-0233` (INST-25; open): whether an explicit instantiation
+  can have a storage class or an attribute after `template`. Only
+  `thread_local` is valid, as Clang says. GCC accepts `static` and the
+  attribute, and EDG rejects `thread_local`.
+- {question}`Q-0234` (INST-29; open): whether an explicit instantiation
+  declaration can name a specialization with internal linkage. It
+  cannot, as Clang says. GCC accepts every form, and EDG accepts the
+  class and variable forms.
+- {question}`Q-0257` (INST-31, INST-32; settled on INST-P4): whether an
+  implementation must reject a constant evaluation that needs a
+  declaration after the first point of instantiation. The points
+  differ, and INST-32 needs no diagnostic. No family differs, since
+  every compiler rejects.
+- {question}`Q-0310` (INST-31, INST-32; settled on INST-P4): which
+  point of instantiation a `constexpr` function specialization uses
+  outside constant evaluation. Either point, under INST-32. GCC takes
+  the end of the unit and Clang and EDG the first point, which INST-32
+  allows, so no family differs.
 
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0232` | INST-P2 | GCC 16 |
-| {question}`Q-0252` | INST-P1 | EDG 7.0 on the braced conditional, GCC 16 on `sizeof` |
-| {question}`Q-0310` | INST-P4 | none; the rule needs no diagnostic |
+### Split tests
 
-Seven questions on this page settled on 2026-11-03 under decision 0054.
-For each, a source-reader gap review supports the answer with no doubt,
-and a principle gives the same answer:
+EDG runs no programs, so its cell for a run test gives the result of
+the compile.
 
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0231` | INST-P2 | EDG 7.0 |
-| {question}`Q-0236` | INST-P3 | Clang 22 |
-| {question}`Q-0237` | INST-P3 | EDG 7.0 |
-| {question}`Q-0254` | INST-P3 | GCC 16 |
-| {question}`Q-0255` | INST-P3 | GCC 16 |
-| {question}`Q-0256` | INST-P3 | EDG 7.0; GCC 16 for a type other than the deduced one |
-| {question}`Q-0257` | INST-P4 | none; every compiler rejects, which INST-32 allows |
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `class-inline-static-member-unused.cpp` | INST-5 | accept | accept | accept | reject | {question}`Q-0231` |
+| `class-scoped-enumeration-unused.cpp` | INST-5 | accept | accept | reject | accept | {question}`Q-0232` |
+| `explicit-array-bound-differs.cpp` | INST-22 | reject | reject | accept | accept | {question}`Q-0346` |
+| `explicit-array-bound-left-out.cpp` | INST-22 | accept | reject | accept | accept | {question}`Q-0236` |
+| `explicit-attribute-after.cpp` | INST-25 | reject | reject | accept | reject | {question}`Q-0233` |
+| `explicit-declaration-internal-class.cpp` | INST-29 | reject | reject | accept | accept | {question}`Q-0234` |
+| `explicit-declaration-internal-variable.cpp` | INST-29 | reject | reject | accept | accept | {question}`Q-0234` |
+| `explicit-declaration-internal.cpp` | INST-29 | reject | reject | accept | reject | {question}`Q-0234` |
+| `explicit-exception-specification-differs.cpp` | INST-22 | reject | reject | accept | reject | {question}`Q-0255` |
+| `explicit-placeholder-variable.cpp` | INST-22 | accept | accept | accept | reject | {question}`Q-0256` |
+| `explicit-storage-class.cpp` | INST-25 | reject | reject | accept | reject | {question}`Q-0233` |
+| `explicit-thread-local.cpp` | INST-25 | accept | accept | accept | reject | {question}`Q-0233` |
+| `explicit-unqualified-outside-namespace-variable.cpp` | INST-21 | reject | accept | reject | accept | {question}`Q-0235` |
+| `explicit-unqualified-outside-namespace.cpp` | INST-21 | reject | reject | reject | accept | {question}`Q-0235` |
+| `explicit-variable-before-definition.cpp` | INST-20 | accept | accept | reject | accept | {question}`Q-0254` |
+| `explicit-variable-wrong-type.cpp` | INST-22 | reject | reject | accept | reject | {question}`Q-0346` |
+| `function-point-constexpr-later.cpp` | INST-32, INST-31 | run | reject | run | reject | {question}`Q-0310` |
+| `function-unevaluated-braced-untaken.cpp` | INST-7, INST-6 | reject | reject | reject | accept | {question}`Q-0252` |
+| `function-unevaluated-sizeof-constant.cpp` | INST-7 | accept | accept | reject | accept | {question}`Q-0252` |
+| `local-class-default-argument.cpp` | INST-12, INST-6 | reject | reject | accept | reject | {question}`Q-0253` |
+| `local-class-requires-clause-waits.cpp` | INST-12 | run | run | run | reject | {question}`Q-0392` |
+| `member-partial-specializations-collide.cpp` | INST-6 | reject | reject | accept | accept | {question}`Q-0251` |
+| `specialization-after-explicit-declaration.cpp` | INST-19 | reject | reject | reject | accept | {question}`Q-0237` |
 
-Each test keeps its override for the family that differs. Reporting the
-EDG differences to the EDG project waits on the maintainer
-(`documentation/decisions/pending.md`).
+### Notes
 
-{question}`Q-0235` of the cluster of EDG differences (cluster 5) stays
-open. The source-reader gap review of the cluster
-(`reports/review/2026-11-03-gap-review-question-cluster-5.md`) reads
-Q-0235 as EDG does, with doubt, and that question waits on the
-maintainer.
-
-The other questions of the cluster of template syntax corners (cluster
-6) on this page stay open: {question}`Q-0233`, {question}`Q-0234`, and
-{question}`Q-0346`. On 2026-11-03, Clang 22, GCC 16, and EDG 7.0 still
-split on each of them. Q-0234 stays open under decision 0054 too,
-because GCC 16 and EDG 7.0 both differ from it for a class and a
-variable.
-{question}`Q-0235`, {question}`Q-0237`, and {question}`Q-0256` belong
-to the same cluster and keep their cluster 5 notes. For
-{question}`Q-0235`, a probe of that day found that Clang 22 joins EDG
-7.0 for a variable template. The source-reader gap review of the
-cluster (`reports/review/2026-11-03-gap-review-question-cluster-6.md`)
-agrees with Q-0233, Q-0234, Q-0236, Q-0254, and Q-0255, and with
-Q-0346 with doubt. It reads the variable form of Q-0235 as Clang 22 and
-EDG 7.0 do, with doubt. INST-21 keeps one answer for every kind of
-template, and the variable form waits on the maintainer.
-
-The clean-room writer probed each rule with the eight baseline
-compilers and the two `-O2` report compilers, and wrote the grids
-below. The rejections name the reason in each compiler's own words, for
-example "explicit instantiation of undefined function template" and
-"duplicate explicit instantiation" (clang-diag-sema).
-
-The clean-room writer probed each item of the gap review
-`reports/review/2026-10-31-gap-review-dependent-names-and-instantiation.md`
-with the same compilers. Where the compilers differ from the outcome
-that the review predicts, the rules follow the compilers, and the
-bullets below say so.
-
-- INST-5: EDG instantiates the initializer of an unused `inline static`
-  data member with the class. Clang and GCC do not
-  ({question}`Q-0231`).
-- INST-5: GCC instantiates the enumerators of a scoped enumeration with
-  the class. Clang and EDG do not ({question}`Q-0232`).
-- INST-25: GCC accepts `static` and an attribute after `template` in an
-  explicit instantiation. Clang and EDG reject both. Every compiler
-  rejects an attribute before `template`. Clang and GCC accept
-  `thread_local`, and EDG rejects it ({question}`Q-0233`). The split
-  is the same with `extern`, and for an attribute after `struct` in the
-  explicit instantiation of a class.
 - INST-5: every compiler accepts an explicit specialization of a
   deleted member function after the class is instantiated. The review
   predicts that the class makes the deleted definition, so that the
   explicit specialization is a second definition.
-- INST-6: Clang rejects a class whose two member partial
-  specializations become the same. GCC and EDG accept the class
-  ({question}`Q-0251`).
-- INST-7: every compiler instantiates a `constexpr` function that a
-  braced initializer in `decltype` names. Clang and GCC also do so on
-  the branch of a conditional that is not taken, and EDG does not. GCC
-  also instantiates a `constexpr` function in a `sizeof` operand
-  without braces, and Clang and EDG do not ({question}`Q-0252`). In a
-  `decltype` operand without braces, no compiler instantiates the
-  function, GCC included (`function-unevaluated-parentheses.cpp`).
 - INST-9: a call to an explicit specialization that leaves out an
   argument instantiates the template's default argument on every
   compiler.
-- INST-12: Clang and EDG instantiate the default argument of a local
-  class's member function with the enclosing function. GCC does not
-  ({question}`Q-0253`).
-- INST-20: Clang and EDG accept a variable template definition after
-  its explicit instantiation definition. GCC rejects it
-  ({question}`Q-0254`). Every compiler accepts the same order for a
-  function and emits the specialization. Every compiler accepts the
-  same order for a class template's static data member.
-- INST-22: Clang and EDG reject an explicit instantiation whose
-  `noexcept` differs from the template. GCC accepts it
-  ({question}`Q-0255`). The split is the same for `noexcept(false)`,
-  for a member function, and with `extern`. Clang and GCC accept `int` for a variable
-  template declared with `auto`, and EDG rejects it
-  ({question}`Q-0256`).
 - INST-27: after an explicit instantiation declaration of an `auto`
   variable template, GCC and EDG reject a use and Clang fails to link.
   The page has no rule for that case.
@@ -863,47 +874,16 @@ bullets below say so.
   INST-P4 gives for points that differ ({question}`Q-0257`).
 - INST-32, INST-35: {rule}`ODR-10` and {rule}`ODR-14` state the
   rules for template definitions across translation units.
-- INST-29: GCC accepts an explicit instantiation declaration of a
-  function template with internal linkage. Clang and EDG reject it
-  ({question}`Q-0234`). For a class template in an unnamed namespace
-  and for a `static` variable template, GCC and EDG accept it, and
-  Clang rejects it.
-- INST-21: EDG accepts an unqualified explicit instantiation outside
-  the template's namespace, after a using-directive. Clang and GCC
-  reject it ({question}`Q-0235`). For a variable template, Clang and
-  EDG accept the unqualified name, and GCC rejects it. For a function
-  template, every compiler rejects it. The gap review of the text phase
-  8 wrote on templates
+- INST-33: the gap review of the text phase 8 wrote on templates
   (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`)
-  again reads the class and variable forms as valid and the function
-  form as not valid. INST-P3 keeps one placement for all three kinds,
-  which goes beyond the reference by the review's reading, and the
-  choice waits on the maintainer (`documentation/decisions/pending.md`,
-  row 5).
-- INST-33: the same review finds no clear support in the reference for
-  instantiating the initializer of a `static constexpr` data member
-  with the class, since the reference delays the initialization of a
-  static data member until a use needs its definition. Every compiler
-  instantiates the initializer with the class, and INST-33 follows the
-  compilers.
+  finds no clear support in the reference for instantiating the
+  initializer of a `static constexpr` data member with the class, since
+  the reference delays the initialization of a static data member until
+  a use needs its definition. Every compiler instantiates the
+  initializer with the class, and INST-33 follows the compilers.
 - INST-12, INST-P1: the same review reads the constraints of a member
-  of a local class as left out of the instantiation of the class. Clang
-  22 and GCC 16 accept a requires clause on such a member that the
-  argument cannot satisfy when nothing uses the member. EDG 7.0 rejects
-  a requires clause on a member of a local class
+  of a local class as left out of the instantiation of the class
   ({question}`Q-0392`).
-- INST-22: Clang rejects an explicit instantiation that leaves out an
-  array bound. GCC and EDG accept it ({question}`Q-0236`). Every
-  compiler accepts an explicit instantiation declaration that leaves
-  out the bound.
-- INST-22: GCC accepts an explicit instantiation of a variable whose
-  stated type differs from the specialization's, and keeps the
-  specialization's type. Clang rejects every such type. EDG rejects it
-  except for a bound that differs where the template has no bound
-  ({question}`Q-0346`).
-- INST-19: EDG accepts an explicit specialization after an explicit
-  instantiation declaration. Clang and GCC reject it
-  ({question}`Q-0237`).
 - INST-3: every compiler instantiates the class when a pointer to it
   converts to `void*` in a call. The rule allows either result.
 - INST-11: every compiler instantiates an unused virtual function when
@@ -924,15 +904,6 @@ bullets below say so.
   and GCC 16 at `-O0` then call the explicit specialization from both
   units. At `-O2`, the unit with the explicit instantiation inlines the
   template's body and gets its result. The rule allows each result.
-- INST-31, INST-32: a `constexpr` function template is used in an
-  ordinary function, outside constant evaluation, and the function that
-  its call finds is declared after that function. GCC takes the
-  declarations at the end of the unit. Clang and EDG instantiate at
-  the first point and reject ({question}`Q-0310`). The call operator of
-  a lambda is `constexpr` when it can be, so a generic lambda gives the
-  same split. The split needs a first use before the declaration. When
-  the first use follows it, every compiler accepts
-  (`generic-lambda-argument-lookup.cpp`).
 - INST-36: every compiler gives one counter to each specialization of
   a function template and of a generic lambda's call operator, and a
   different closure type to each specialization.
@@ -940,6 +911,10 @@ bullets below say so.
   unit for a function. In two units, the `-O0` builds use one
   definition for both units, and the `-O2` builds inline each call.
   The rule allows each result.
+
+### Probe grids
+
+The probe grids are in `tests/templates/instantiation/grids/`.
 
 Uses of a class specialization (INST-1 to INST-3). The class has a
 `static_assert` whose condition is the column. A `reject` in the second
@@ -983,8 +958,22 @@ and initializers have a `static_assert` whose condition is the column:
 | variable template, decltype | accept | accept |
 | variable template, read | accept | reject |
 
-The probe grids are in `tests/templates/instantiation/grids/`. This
-table gives the source of each rule. Inventory items have the numbers of
+### Sources
+
+The clean-room writer probed each rule with the eight baseline
+compilers and the two `-O2` report compilers, and wrote the grids
+above. The rejections name the reason in each compiler's own words, for
+example "explicit instantiation of undefined function template" and
+"duplicate explicit instantiation" (clang-diag-sema).
+
+The clean-room writer probed each item of the gap review
+`reports/review/2026-10-31-gap-review-dependent-names-and-instantiation.md`
+with the same compilers. Where the compilers differ from the outcome
+that the review predicts, the rules follow the compilers, and the notes
+above say so.
+
+This table gives the source of each rule. Inventory items have the
+numbers of
 `reports/review/2026-10-31-inventory-dependent-names-and-instantiation.md`:
 
 | Rule | Source |

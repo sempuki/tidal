@@ -673,52 +673,88 @@ struct Pointers { char c; int& r; int Plain::* p; void (Shape::* f)(); };
 The results are in `tests/RESULTS.md`. All eight compilers agree on 147
 of 163 tests.
 
-Two questions on this page settled on 2026-11-04 under decision 0054 after the principle-use batch PU1 (`reports/clean-room/PU1/`). For each, the batch's use of the principle supports the answer, the latest gap review supports it with no doubt, and the principle gives the same answer. Each test keeps its override for the family that still differs:
+### Divergences
 
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0027` | CLS-P3 | GCC 16 |
-| {question}`Q-0317` | CLS-P3 | EDG 7.0 |
+- {question}`Q-0080` (CLS-3, CLS-23; open): whether a `static const
+  volatile` integer member can have an initializer in its class. It
+  cannot, as Clang says. GCC and EDG accept the initializer.
+- {question}`Q-0027` (CLS-6, CLS-26; settled on CLS-P3): whether a
+  member function with a ref-qualifier can be overloaded with one
+  without, when both have the same cv-qualifiers. It cannot. GCC 16
+  accepts the declarations and reports the ambiguity only at a call.
+- {question}`Q-0341` (CLS-19, CLS-32; open): whether a base whose type
+  sits at the start of the first member through a member, an array, or
+  a union, or in a later `[[no_unique_address]]` member, makes a class
+  not standard-layout. It does, as Clang's query and the
+  class-properties inventory (item SL-first-member-type) say. GCC's
+  query differs in all four forms, and EDG's in three.
+- {question}`Q-0338` (CLS-30; settled on CLS-P4): whether constant
+  evaluation finds a standard-layout object at the address of its
+  first member and of its base. It does, as at run time. EDG gives
+  `false`.
+- {question}`Q-0342` (CLS-34, CLS-35; settled): whether a base with
+  a defaulted default constructor keeps its end padding. It keeps it,
+  and CLS-35 lists the other choice for GCC 14. GCC 14 lends the
+  padding.
+- {question}`Q-0361` (CLS-34, CLS-35; open): whether a base with a
+  deleted constructor or a user-provided move assignment operator keeps
+  its end padding. It keeps it, as GCC 16 and Clang do, on x86-64 and
+  with `-m32`. EDG lends the padding in both cases, and GCC 14 for a
+  deleted constructor.
+- {question}`Q-0381` (CLS-34, CLS-35; open): whether a
+  `[[no_unique_address]]` member makes a class lend its end padding. It
+  does not, as Clang and EDG say. GCC lends the padding.
+- {question}`Q-0384` (CLS-34, CLS-35; open): whether a union follows
+  the end-padding conditions of a class. It does, as Clang and GCC say.
+  EDG keeps the end padding of every union.
+- {question}`Q-0181` (CLS-13; open): whether a class prvalue
+  initializes a by-value explicit object parameter without a copy or
+  move. It does, as every compiler but Clang 18 says. Clang 18 rejects
+  the call when the class has no usable copy or move constructor.
+- {question}`Q-0317` (CLS-14; settled on CLS-P3): whether an explicit
+  object parameter can have a default argument. It cannot. EDG accepts
+  the default argument.
 
-- CLS-23: Clang rejects an in-class initializer for a `static const
-  volatile` integer member. GCC and EDG accept it ({question}`Q-0080`).
-  CLS-23 follows Clang, and the test records GCC and EDG as overrides.
+### Split tests
+
+EDG runs no programs, so its cell for a run test gives the result of
+the compile.
+
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `explicit-object-default-argument.cpp` | CLS-14 | reject | reject | reject | accept | {question}`Q-0317` |
+| `explicit-object-from-prvalue.cpp` | CLS-13 | run | Clang 22: run; Clang 18: reject | run | accept | {question}`Q-0181` |
+| `layout-base-tail-padding-defaulted.cpp` | CLS-34, CLS-35 | accept | accept | GCC 16: accept; GCC 14: reject | accept | {question}`Q-0342` |
+| `layout-no-unique-address-end-padding-ilp32.cpp` | CLS-35, CLS-34 | accept | accept | reject | accept | {question}`Q-0381` |
+| `layout-no-unique-address-end-padding.cpp` | CLS-35, CLS-34 | accept | accept | reject | accept | {question}`Q-0381` |
+| `layout-tail-padding-deleted-constructor-ilp32.cpp` | CLS-35, CLS-34 | accept | accept | GCC 14: reject; host GCC: accept | reject | {question}`Q-0361` |
+| `layout-tail-padding-deleted-constructor.cpp` | CLS-35, CLS-34 | accept | accept | GCC 16: accept; GCC 14: reject | reject | {question}`Q-0361` |
+| `layout-tail-padding-move-assignment-ilp32.cpp` | CLS-35, CLS-34 | accept | accept | accept | reject | {question}`Q-0361` |
+| `layout-tail-padding-move-assignment.cpp` | CLS-35, CLS-34 | accept | accept | accept | reject | {question}`Q-0361` |
+| `layout-union-end-padding-ilp32.cpp` | CLS-35, CLS-34 | accept | accept | accept | reject | {question}`Q-0384` |
+| `layout-union-end-padding.cpp` | CLS-35, CLS-34 | accept | accept | accept | reject | {question}`Q-0384` |
+| `ref-qualified-mixed-const.cpp` | CLS-26 | reject | reject | GCC 16: accept; GCC 14: reject | reject | {question}`Q-0027` |
+| `ref-qualified-mixed-different-cv.cpp` | CLS-26, CLS-6 | run | run | GCC 16: run; GCC 14: reject | accept | {question}`Q-0027` |
+| `ref-qualified-mixed.cpp` | CLS-26 | reject | reject | GCC 16: accept; GCC 14: reject | reject | {question}`Q-0027` |
+| `standard-layout-address-constant.cpp` | CLS-30 | accept | accept | accept | reject | {question}`Q-0338` |
+| `declarations/volatile/static-const-volatile-in-class.cpp` | CLS-23 | reject | reject | accept | accept | {question}`Q-0080` |
+
+### Notes
+
 - CLS-3: a missing definition of a static data member compiles in each
   translation unit. The linker reports the missing definition.
-- CLS-26: GCC 16 accepts mixed ref-qualified overloads and reports
-  ambiguity only at a call ({question}`Q-0027`).
-  Every compiler rejects a call of the two overloads
-  (`ref-qualified-mixed-call.cpp`).
+- CLS-26: every compiler rejects a call of two overloads that differ
+  only in a ref-qualifier on one of them (`ref-qualified-mixed-call.cpp`).
 - CLS-9: Clang and GCC accept an anonymous struct member as an
   extension, and reject the member only under `-pedantic-errors`.
 - CLS-19, CLS-29, CLS-32: no core-language check gives a yes or no for
   standard-layout (inventory item OBS-no-core-standard-layout). The
   tests check the guarantees of CLS-30 for classes that meet the
   conditions in an unusual way, and the distinct addresses of CLS-10
-  for classes that fail a condition. The probe grid
-  `standard-layout.json` compares the conditions with each compiler's
-  builtin query, which no test uses (decision 0051). The three
-  compilers agree with each other and with CLS-19 on 34 of 38 rows. The
-  other rows are routes of CLS-32:
-
-  | Base type `E` sits at the start of the first member | Clang query | GCC query | EDG query | CLS-19 |
-  |---|---|---|---|---|
-  | as the first member of the first member | not standard-layout | standard-layout | standard-layout | not standard-layout |
-  | as the element of an array first member | not standard-layout | standard-layout | not standard-layout | not standard-layout |
-  | as a member of a union first member | not standard-layout | standard-layout | standard-layout | not standard-layout |
-  | as a `[[no_unique_address]]` member in a later position | not standard-layout | standard-layout | standard-layout | not standard-layout |
-
-  CLS-32 follows Clang and the class-properties inventory (item
-  SL-first-member-type)
-  ({question}`Q-0341`).
-- CLS-30: during constant evaluation, Clang and GCC give `true` when
-  they compare the address of a standard-layout object with the address
-  of its first member or of its base, each converted to `const void*`.
-  EDG gives `false`. All three give `true` for an array and its first
-  element ({question}`Q-0338`). Q-0338 settled on 2026-11-03 under
-  decision 0054. The source-reader gap review of item O supports its
-  answer with no doubt, and CLS-P4 gives the same answer. The test
-  keeps its override for EDG.
+  for classes that fail a condition.
+- CLS-30: every compiler gives `true` in constant evaluation when it
+  compares the address of an array with the address of its first
+  element.
 - CLS-33: an empty standard-layout base takes no bytes on every
   compiler, also in a class with a virtual function or with members in
   two accesses.
@@ -730,20 +766,8 @@ Two questions on this page settled on 2026-11-04 under decision 0054 after the p
   an implementation need not document them. CLS-35 gives the choices
   of the matrix compilers. The tests of CLS-35 check each condition of
   its list with a base whose last member leaves 3 bytes of padding.
-- CLS-35: the compilers split on three kinds of declared member. The
-  table gives the size of a derived class that adds one `char` to such
-  a base, where 12 means that the base keeps its end padding:
-
-  | Member of the base | GCC 16, Clang 22, Clang 18 | GCC 14 | EDG 7.0 |
-  |---|---|---|---|
-  | a defaulted default constructor ({question}`Q-0342`) | 12 | 8 | 12 |
-  | a deleted constructor | 12 | 8 | 8 |
-  | a user-provided move assignment operator | 12 | 12 | 8 |
-
-  The results are the same on x86-64 and with `-m32`
-  ({question}`Q-0361`). Every
-  compiler keeps the end padding for a defaulted or deleted destructor
-  or assignment operator.
+- CLS-35: every compiler keeps the end padding for a defaulted or
+  deleted destructor or assignment operator.
 - CLS-35: every compiler gives the same sizes for classes with virtual
   bases, for an empty member after an empty base of the same type, and
   for two empty bases that hold one empty type at different depths.
@@ -757,47 +781,39 @@ Two questions on this page settled on 2026-11-04 under decision 0054 after the p
   virtual base before its own virtual bases. Every compiler gives a
   reference member and a pointer to data member the size of a pointer,
   and a pointer to member function twice that size.
-- CLS-35: GCC 14 and GCC 16 lend the end padding of a class with a
-  `[[no_unique_address]]` member. Clang and EDG keep the padding if
-  the class meets the other conditions
-  ({question}`Q-0381`).
-- CLS-35: EDG keeps the end padding of every union. Clang and GCC apply
-  the conditions of a class to a union
-  ({question}`Q-0384`).
 - CLS-11, CLS-33: every compiler treats a class whose only member is an
   empty `[[no_unique_address]]` member, or an unnamed bit-field of
   width 0, as an {term}`empty class`. An unnamed bit-field of nonzero
   width makes the class take its byte as a base.
 - CLS-11: the size is 1 on every compiler in the matrix, on both
   targets.
-- Sources: CLS-19 and CLS-32 come from the grid `standard-layout.json`
-  and the inventory items SL-access, SL-base-standard-layout,
-  SL-bit-field-counts, SL-first-member-type, SL-member-standard-layout,
-  SL-one-declaring-class, SL-one-subobject-per-type, SL-struct-vs-union,
-  and SL-virtual. CLS-29 comes from items TYPE-array, TYPE-cv, and
-  TYPE-scalar. CLS-30 comes from items SLG-base-address,
-  SLG-first-member-address, and SLG-pointer-interconvertible, and from
-  the tests. CLS-33 comes from item SLG-empty-base-zero, the tests, and
-  the gap review of item O
-  (`reports/review/2026-11-03-gap-review-item-o.md`). CLS-31, CLS-34,
-  and CLS-35 come from the layout tests, the writer's probes of the
-  conditions on every matrix compiler, the same gap review, and items LAY-empty-base-non-standard-layout,
-  LAY-empty-base-same-type, LAY-overlap-attribute-empty,
-  LAY-overlap-attribute-tail, LAY-tail-padding-base, and
-  LAY-virtual-placement.
 - CLS-21: when a reference binds to the member, Clang and GCC emit a
   reference to the member at `-O0` and at `-O2`, and the link fails.
   EDG translates the program and links nothing.
 - CLS-13: every baseline compiler supports explicit object
   parameters, Clang 18 and GCC 14 included, and runs the tests that use
-  them. Clang 18 rejects a class prvalue for a by-value explicit
-  object parameter when the class has no usable copy or move
-  constructor. The other compilers initialize the parameter directly
-  ({question}`Q-0181`).
+  them.
 - CLS-14: every compiler rejects an explicit object parameter that is
-  not first and one on a non-member function. Clang and GCC reject a
-  default argument on an explicit object parameter, and EDG accepts it
-  ({question}`Q-0317`).
+  not first and one on a non-member function.
+
+### Probe grids
+
+The probe grid `tests/classes/members/grids/standard-layout.json`
+compares the conditions of CLS-19 with each compiler's builtin query,
+which no test uses (decision 0051). Each row is a class, and each
+column a compiler's query. The three compilers agree with each other
+and with CLS-19 on 34 of 38 rows. The other four rows are routes of
+CLS-32, and {question}`Q-0341` gives them.
+
+### Sources
+
+| Rule | Source |
+|---|---|
+| CLS-19, CLS-32 | grid standard-layout; inventory items SL-access, SL-base-standard-layout, SL-bit-field-counts, SL-first-member-type, SL-member-standard-layout, SL-one-declaring-class, SL-one-subobject-per-type, SL-struct-vs-union, SL-virtual |
+| CLS-29 | inventory items TYPE-array, TYPE-cv, TYPE-scalar |
+| CLS-30 | inventory items SLG-base-address, SLG-first-member-address, SLG-pointer-interconvertible; tests |
+| CLS-33 | inventory item SLG-empty-base-zero; tests; gap review of item O (`reports/review/2026-11-03-gap-review-item-o.md`) |
+| CLS-31, CLS-34, CLS-35 | layout tests; the writer's probes of the conditions on every matrix compiler; gap review of item O; inventory items LAY-empty-base-non-standard-layout, LAY-empty-base-same-type, LAY-overlap-attribute-empty, LAY-overlap-attribute-tail, LAY-tail-padding-base, LAY-virtual-placement |
 
 Inputs: clang-sema-declcxx, clang-sema-decl, clang-diag-sema, edg-class-
 decl.

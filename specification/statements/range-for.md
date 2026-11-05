@@ -187,32 +187,49 @@ for (int v : make().items()) use(v); // the result of make() lives
 
 The results are in `tests/RESULTS.md`.
 
-Two questions on this page settled under decision 0054. Q-0098 settled on 2026-11-03 after the source-reader gap review of the open questions on classes and statements (`reports/review/2026-11-03-gap-review-questions-classes-statements.md`). Q-0122 settled on 2026-11-04 after the source-reader gap review of the text phase 8 wrote on the declarations and statements chapters (`reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+### Divergences
 
-| Question | Principle | Family that still differs |
-|---|---|---|
-| {question}`Q-0098` | RFOR-P1 | EDG 7.0 |
-| {question}`Q-0122` | RFOR-P1 | GCC 16 |
+- {question}`Q-0098` (RFOR-2, RFOR-7; settled on RFOR-P1): whether data
+  members named `begin` and `end` select the member form of a
+  range-based `for`. Members of any kind do, as Clang and GCC say. EDG
+  uses the member form only for member functions, and otherwise free
+  `begin` and `end`. So EDG accepts a data member `begin` of type `int`
+  when argument-dependent lookup finds free functions, and rejects
+  callable data members with no free functions.
+- {question}`Q-0122` (RFOR-3; settled on RFOR-P1): whether a
+  range-based `for` can have an empty init statement. It can, as Clang
+  and EDG say. GCC rejects it.
+- {question}`Q-0026` (RFOR-5; settled under decision 0051): whether
+  the loop variable can be `static` or `thread_local`. It cannot. No
+  newest family differs. GCC 14 accepts both.
+- {question}`Q-0020` (RFOR-4; open): how a test records a compiler
+  that does not implement a feature yet. An override names the
+  question. GCC 14 and Clang 18 destroy the temporaries of the range
+  expression before the body executes, as before C++23.
 
-- RFOR-4: GCC 14 and Clang 18 destroy temporaries in the range expression
-  before the body executes. Newer versions keep them until the loop ends,
-  from the change in C++23 ({question}`Q-0020`).
-- RFOR-2: a data member named `begin` with no member `end` does not stop
-  the use of free `begin` and `end` on any compiler. With members of both
-  names, Clang and GCC use the member form for data members too. EDG
-  uses the member form only for member functions ({question}`Q-0098`).
-  Otherwise EDG uses free `begin` and `end`. So EDG accepts a data
-  member `begin` of type `int` if argument-dependent lookup finds free
-  functions, and EDG rejects a range with callable data members and no
-  free functions. Clang and GCC call data members that are pointers to
-  functions, and reject a data member `begin` of a class type with no
-  `operator()`. EDG does the opposite in both cases.
+### Split tests
+
+| Test | Rules | Expected | Clang | GCC | EDG | Question |
+|---|---|---|---|---|---|---|
+| `callable-data-members.cpp` | RFOR-2 | run | run | run | reject | {question}`Q-0098` |
+| `data-member-begin-counts.cpp` | RFOR-7 | reject | reject | reject | accept | {question}`Q-0098` |
+| `data-member-begin-not-callable-class.cpp` | RFOR-7 | reject | reject | reject | accept | {question}`Q-0098` |
+| `data-member-function-pointers.cpp` | RFOR-2, RFOR-7 | run | run | run | reject | {question}`Q-0098` |
+| `empty-init-statement.cpp` | RFOR-3 | accept | accept | reject | accept | {question}`Q-0122` |
+| `static-thread-local-declaration.cpp` | RFOR-5 | reject | reject | GCC 16: reject; GCC 14: accept | reject | {question}`Q-0026` |
+| `storage-class.cpp` | RFOR-5 | reject | reject | GCC 16: reject; GCC 14: accept | reject | {question}`Q-0026` |
+| `temporary-in-range-expression.cpp` | RFOR-4 | run | Clang 22: run; Clang 18: run-fail | GCC 16: run; GCC 14: run-fail | accept | {question}`Q-0020` |
+
+### Notes
+
+- RFOR-2: a data member named `begin` with no member `end` does not
+  stop the use of free `begin` and `end` on any compiler.
 - RFOR-3: every compiler accepts a prvalue range of a class with no
   move constructor and with `begin` and `end` callable only on lvalues.
-- RFOR-5: GCC 14 accepts `static` and `thread_local` on the loop
-  variable. GCC 16, Clang, and EDG reject them ({question}`Q-0026`).
-  Every compiler rejects `extern`. GCC 14 reports an `extern` variable
-  with an initializer.
+- RFOR-5: every compiler rejects `extern` on the loop variable. GCC 14
+  reports an `extern` variable with an initializer.
+
+### Sources
 
 Inputs: clang-parse-stmt, clang-sema-stmt, clang-diag-sema, edg-
 statements.

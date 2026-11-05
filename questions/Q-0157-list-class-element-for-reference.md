@@ -40,7 +40,9 @@ source object changes. GCC accepts `const Item& r{s};` with `&r` equal
 to the address of the conversion function's result. A source reader's
 gap review (item E1) reports that the source binds the reference to the
 element only when the referenced type is reference-related to the
-element's type, and makes a temporary otherwise.
+element's type, and makes a temporary otherwise. For `int&&` from
+`operator int&()`, GCC's message is "cannot bind rvalue reference ...
+to lvalue".
 
 ## Options
 

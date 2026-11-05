@@ -7,6 +7,10 @@
 
 `new int[1.5]` is accepted by Clang 22 and 18, with a `-Wliteral-conversion` warning, and by EDG 7.0. Both convert the size to 1. GCC 16 and 14 reject it ("must have integral or enumeration type").
 
+Clang 22 accepts `new int[2.0]` under `-pedantic-errors` with no
+diagnostic, and EDG 7.0 accepts it too. GCC rejects every floating
+size.
+
 ## Options
 
 1. Accepted: the size converts to the type of `sizeof`, as any value converts.
