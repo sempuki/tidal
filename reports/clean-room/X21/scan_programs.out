@@ -1,0 +1,85 @@
+programs: 85; with more than one unit: 5
+  W14/p1_three_units/main.cpp: 3 units
+  W14/p2_internal_helpers/main.cpp: 2 units
+  W14/p3_shared_constant/main.cpp: 4 units
+  W14/p4_init_order/main.cpp: 4 units
+  W17/units/main.cpp: 4 units
+counts: {'constexpr': 151, 'no-init': 24, 'maybe-dynamic': 23, 'literal': 30, 'block-static': 26, 'extern-decl': 4, 'constinit': 4}
+inline variables at namespace scope: 82
+no-init        W0/shapes.cpp: ) == 18)
+maybe-dynamic  W0/shapes.cpp: == Shape{Kind::Circle, 2, 0})
+maybe-dynamic  W0/shapes.cpp: != Shape{Kind::Square, 2, 0})
+no-init        W10/error_codes.cpp: ).value == 7)
+no-init        W10/error_codes.cpp: )))
+no-init        W10/noexcept_functions.cpp: )))
+maybe-dynamic  W12/counter.cpp: inline auto c1 = make_counter(0)
+maybe-dynamic  W12/counter.cpp: inline auto c2 = make_counter(0)
+no-init        W12/counter.cpp: )>)
+block-static   W13/clink.cpp: static int c_double(
+no-init        W13/header.cpp: .narrow) == 1)
+no-init        W13/header.cpp: .full) == 2)
+block-static   W14/p2_internal_helpers/stats.tu.cpp: static int divide_down(
+extern-decl    W14/p3_shared_constant/limits.h: extern const int build_number
+maybe-dynamic  W14/p4_init_order/a.tu.cpp: int a_ticket = counter().take()
+maybe-dynamic  W14/p4_init_order/b.tu.cpp: int b_ticket = counter().take()
+extern-decl    W14/p4_init_order/counter.h: extern constinit int first_ticket
+block-static   W14/p4_init_order/counter.tu.cpp: static Counter the_counter;
+block-static   W15/optional.cpp: static int made;
+block-static   W15/optional.cpp: static int ended;
+block-static   W15/optional.cpp: static int assigned;
+block-static   W15/optional.cpp: static int live(
+no-init        W15/shapes.cpp: )
+no-init        W15/shapes.cpp: )
+no-init        W15/shapes.cpp: )
+no-init        W15/shapes.cpp: ) == 4.0)
+maybe-dynamic  W15/shapes.cpp: , Triangle{3.0, 4.0}, Circle{1.0}) == 13.0)
+no-init        W15/shapes.cpp: ) == 1)
+no-init        W15/shapes.cpp: ) == 2)
+no-init        W15/shapes.cpp: ) == 2)
+block-static   W15/stack.cpp: static int live;
+block-static   W16/evaluator.cpp: static bool is_digit(
+block-static   W16/evaluator.cpp: static bool is_space(
+block-static   W16/evaluator.cpp: static char op_char(
+block-static   W17/hashmap.cpp: static std::size_t home(
+block-static   W17/hashmap.cpp: static std::size_t next(
+block-static   W17/hashmap.cpp: static std::size_t distance(
+extern-decl    W17/units/fixed.h: extern template class Fixed<16>
+extern-decl    W17/units/fixed.h: extern template struct Stats<Q16>
+block-static   W17/units/fixed.h: static int last =
+block-static   W17/units/fixed.h: static Fixed from_raw(
+block-static   W17/units/fixed.h: static Fixed ratio(
+block-static   W17/units/fixed.h: static int made;
+maybe-dynamic  W2/three_way.cpp: <=> d2) == std::strong_ordering::greater)
+no-init        W2/three_way.cpp: )
+maybe-dynamic  W2/three_way.cpp: <=> r1) == std::partial_ordering::less)
+no-init        W3/nested.cpp: ))
+no-init        W3/nested.cpp: ))
+no-init        W3/nested.cpp: ))
+no-init        W3/nested.cpp: ))
+no-init        W3/nested.cpp: ))
+block-static   W4/arena.cpp: static void destroy_all(
+block-static   W4/vector.cpp: static void deallocate(
+maybe-dynamic  W5/deleted.cpp: int twice(bool) = delete
+maybe-dynamic  W5/deleted.cpp: int twice(char) = delete
+maybe-dynamic  W5/deleted.cpp: int twice(double) = delete
+no-init        W5/deleted.cpp: ) == 8)
+maybe-dynamic  W6/bindings.cpp: Mixed mixed{1, 0.5, target}
+maybe-dynamic  W6/bindings.cpp: auto& [m_count, m_ratio, m_alias] = mixed
+maybe-dynamic  W6/bindings.cpp: const auto [c_count, c_ratio, c_alias] = mixed
+maybe-dynamic  W6/bindings.cpp: auto [g_lo, g_hi] = global_range
+no-init        W6/config_table.cpp: ) == 6)
+maybe-dynamic  W6/config_table.cpp: int early = read_later()
+block-static   W6/config_table.cpp: static int value =
+no-init        W6/default_members.cpp: const Counter shared
+maybe-dynamic  W7/date.cpp: constexpr Date leap_day(2024, Month::feb, 29)
+maybe-dynamic  W7/money.cpp: constexpr Usd five(500)
+maybe-dynamic  W7/money.cpp: constexpr Usd two(200)
+maybe-dynamic  W7/money.cpp: == Usd(0))
+maybe-dynamic  W7/rational.cpp: constexpr Rational half(1, 2)
+maybe-dynamic  W7/rational.cpp: constexpr Rational third(1, 3)
+block-static   W8/tagged.cpp: static int count(
+block-static   W8/vector.cpp: static void destroy_range(
+no-init        W9/memptr.cpp: Op unset
+block-static   roadmap/r6-scheduler.cpp: static int next_id(
+block-static   roadmap/r6-scheduler.cpp: static int counter =
+block-static   roadmap/r6-scheduler.cpp: static int check(

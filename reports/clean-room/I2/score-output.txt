@@ -1,0 +1,53 @@
+| File | Checked | Matched | Mismatched |
+|---|---|---|---|
+| templates/ordering/more-specialized.cpp | 3 | 3 | 0 |
+| templates/ordering/repeated-parameter.cpp | 1 | 1 | 0 |
+| templates/ordering/neither.cpp | 1 | 1 | 0 |
+| templates/ordering/reference-and-cv-removed.cpp | 1 | 1 | 0 |
+| templates/ordering/reference-removed-forwarding.cpp | 1 | 1 | 0 |
+| templates/ordering/unused-parameter.cpp | 1 | 1 | 0 |
+| templates/ordering/unused-parameter-explicit.cpp | 1 | 1 | 0 |
+| templates/ordering/pack-against-single.cpp | 3 | 3 | 0 |
+| templates/ordering/pack-class-arguments.cpp | 5 | 5 | 0 |
+| templates/ordering/nondeduced-position.cpp | 2 | 2 | 0 |
+| templates/ordering/nondeduced-position-pointer.cpp | 1 | 1 | 0 |
+| templates/ordering/call-arguments-only.cpp | 2 | 2 | 0 |
+| templates/ordering/call-defaults-tie.cpp | 1 | 1 | 0 |
+| templates/ordering/member-object.cpp | 2 | 2 | 0 |
+| templates/ordering/member-object-rvalue.cpp | 1 | 1 | 0 |
+| templates/ordering/reversed-member-object.cpp | 1 | 1 | 0 |
+| templates/ordering/swapped-member-candidates-ordered.cpp | 1 | 1 | 0 |
+| templates/ordering/reversed-candidate.cpp | 1 | 1 | 0 |
+| templates/ordering/swapped-candidates-ordered.cpp | 1 | 1 | 0 |
+| templates/ordering/conversion-result.cpp | 1 | 1 | 0 |
+| templates/ordering/reference-kinds-conversion.cpp | 4 | 4 | 0 |
+| templates/ordering/reference-kind-and-qualifiers.cpp | 1 | 1 | 0 |
+| templates/ordering/address-function-type.cpp | 2 | 2 | 0 |
+| templates/ordering/lvalue-over-rvalue-reference.cpp | 1 | 1 | 0 |
+| templates/ordering/reference-before-variadic.cpp | 1 | 1 | 0 |
+| templates/ordering/reference-pairs-disagree.cpp | 1 | 1 | 0 |
+| templates/ordering/reference-pairs-one-way.cpp | 1 | 1 | 0 |
+| templates/ordering/more-qualified-reference.cpp | 1 | 1 | 0 |
+| templates/ordering/non-variadic.cpp | 1 | 1 | 0 |
+| templates/ordering/pack-default-parameter.cpp | 1 | 1 | 0 |
+| templates/ordering/partial-specializations.cpp | 3 | 3 | 0 |
+| templates/ordering/partial-specializations-placeholder.cpp | 1 | 1 | 0 |
+| templates/ordering/constraints-conversion.cpp | 1 | 1 | 0 |
+| templates/ordering/constraints-conversion-results-differ.cpp | 1 | 1 | 0 |
+| templates/ordering/constraints-default-parameter.cpp | 1 | 1 | 0 |
+| templates/ordering/constraints-different-heads.cpp | 1 | 1 | 0 |
+| templates/ordering/constraints-ellipsis.cpp | 1 | 1 | 0 |
+| templates/ordering/constraints-partial.cpp | 1 | 1 | 0 |
+| templates/ordering/constraints-placeholder-parameter.cpp | 1 | 1 | 0 |
+| templates/ordering/constraints-type-constraint.cpp | 1 | 1 | 0 |
+| templates/deduction/declaration-specialization.cpp | 2 | 2 | 0 |
+| templates/deduction/placement-deallocation-ordered.cpp | 1 | 1 | 0 |
+| templates/deduction/placement-deallocation-ordered-instantiation.cpp | 1 | 1 | 0 |
+| programs/W15/typelist.cpp | 1 | 1 | 0 |
+| programs/W15/shapes.cpp | 1 | 1 | 0 |
+| templates/ordering/grids/tables.md (function templates) | 68 | 68 | 0 |
+| templates/ordering/grids/tables.md (partial specializations) | 8 | 8 | 0 |
+| overloading/overload-resolution/address-no-target-constraints-different-parameters.cpp | 1 | 1 | 0 |
+| total | 140 | 140 | 0 |
+
+

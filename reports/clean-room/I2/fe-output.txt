@@ -1,0 +1,46 @@
+overloading/overload-resolution/address-no-target-constraints-different-parameters.cpp | reject | overloading/overload-resolution/address-no-target-constraints-different-parameters.cpp:14: error [OVL-20]: the address of the overload set 'f' has no target type 
+programs/W15/shapes.cpp | run | 
+programs/W15/typelist.cpp | run | 
+templates/deduction/declaration-specialization.cpp | accept | 
+templates/deduction/placement-deallocation-ordered.cpp | run | 
+templates/deduction/placement-deallocation-ordered-instantiation.cpp | accept | 
+templates/ordering/address-function-type.cpp | accept | 
+templates/ordering/call-arguments-only.cpp | accept | 
+templates/ordering/call-defaults-tie.cpp | reject | templates/ordering/call-defaults-tie.cpp:9: error [OVL-36]: ambiguous call of 'f': no viable function is better than each of the others 
+templates/ordering/constraints-conversion.cpp | accept | 
+templates/ordering/constraints-conversion-results-differ.cpp | reject | 
+templates/ordering/constraints-default-parameter.cpp | reject | templates/ordering/constraints-default-parameter.cpp:9: error [OVL-36]: ambiguous call of 'f': no viable function is better than each of the others 
+templates/ordering/constraints-different-heads.cpp | reject | templates/ordering/constraints-different-heads.cpp:9: error [OVL-36]: ambiguous call of 'f': no viable function is better than each of the others 
+templates/ordering/constraints-ellipsis.cpp | accept | 
+templates/ordering/constraints-partial.cpp | accept | 
+templates/ordering/constraints-placeholder-parameter.cpp | accept | 
+templates/ordering/constraints-type-constraint.cpp | accept | 
+templates/ordering/conversion-result.cpp | accept | 
+templates/ordering/lvalue-over-rvalue-reference.cpp | accept | 
+templates/ordering/member-object.cpp | accept | 
+templates/ordering/member-object-rvalue.cpp | reject | 
+templates/ordering/more-qualified-reference.cpp | accept | 
+templates/ordering/more-specialized.cpp | accept | 
+templates/ordering/neither.cpp | reject | templates/ordering/neither.cpp:9: error [OVL-36]: ambiguous call of 'put': no viable function is better than each of the others 
+templates/ordering/nondeduced-position.cpp | accept | 
+templates/ordering/nondeduced-position-pointer.cpp | accept | 
+templates/ordering/non-variadic.cpp | accept | 
+templates/ordering/pack-against-single.cpp | accept | 
+templates/ordering/pack-class-arguments.cpp | accept | templates/ordering/pack-class-arguments.cpp:12: unsupported: static_assert: variable template with unknown arguments templates/ordering/pack-class-arguments.cpp:13: unsupported: static_assert: variabl
+templates/ordering/pack-default-parameter.cpp | reject | templates/ordering/pack-default-parameter.cpp:9: error [OVL-36]: ambiguous call of 'f': no viable function is better than each of the others 
+templates/ordering/partial-specializations.cpp | accept | 
+templates/ordering/partial-specializations-placeholder.cpp | accept | 
+templates/ordering/reference-and-cv-removed.cpp | reject | templates/ordering/reference-and-cv-removed.cpp:10: error [OVL-36]: ambiguous call of 'take': no viable function is better than each of the others 
+templates/ordering/reference-before-variadic.cpp | accept | 
+templates/ordering/reference-kind-and-qualifiers.cpp | reject | templates/ordering/reference-kind-and-qualifiers.cpp:13: error [ICS-8, CVF-12]: ambiguous conversion from class#0 to int 
+templates/ordering/reference-kinds-conversion.cpp | accept | 
+templates/ordering/reference-pairs-disagree.cpp | reject | templates/ordering/reference-pairs-disagree.cpp:10: error [OVL-36]: ambiguous call of 'f': no viable function is better than each of the others 
+templates/ordering/reference-pairs-one-way.cpp | reject | templates/ordering/reference-pairs-one-way.cpp:11: error [OVL-36]: ambiguous call of 'f': no viable function is better than each of the others 
+templates/ordering/reference-removed-forwarding.cpp | reject | templates/ordering/reference-removed-forwarding.cpp:10: error [OVL-36]: ambiguous call of 'take': no viable function is better than each of the others 
+templates/ordering/repeated-parameter.cpp | accept | 
+templates/ordering/reversed-candidate.cpp | accept | 
+templates/ordering/reversed-member-object.cpp | accept | templates/ordering/reversed-member-object.cpp:12: error [SA-1]: static assertion failed 
+templates/ordering/swapped-candidates-ordered.cpp | accept | 
+templates/ordering/swapped-member-candidates-ordered.cpp | accept | 
+templates/ordering/unused-parameter.cpp | accept | 
+templates/ordering/unused-parameter-explicit.cpp | accept | 
