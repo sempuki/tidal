@@ -355,7 +355,7 @@ status, and the first sentence of its answer section.
 | [Q-0339](Q-0339-copy-part-with-two-copy-constructors.md) | Does a part with a trivial and a non-trivial copy constructor make the enclosing copy constructor non-trivial when the copy selects the trivial one? | provisional | The selected function decides |
 | [Q-0340](Q-0340-layout-compatible-overlap-mark.md) | Are two structs layout-compatible when matching members both have `[[no_unique_address]]`? | provisional | Layout-compatible |
 | [Q-0341](Q-0341-standard-layout-base-type-at-offset-zero.md) | Does a base whose type sits deep inside the first member, or in a `[[no_unique_address]]` member, make a class not standard-layout? | provisional | Not standard-layout in all four cases |
-| [Q-0342](Q-0342-tail-padding-defaulted-functions.md) | Does a base that declares defaulted special members lend its tail padding to a derived class? | provisional | The base keeps its padding |
+| [Q-0342](Q-0342-tail-padding-defaulted-functions.md) | Does a base that declares defaulted special members lend its tail padding to a derived class? | settled | The base keeps its padding |
 | [Q-0343](Q-0343-trivially-copyable-deleted-functions.md) | Is a class trivially copyable when its destructor is deleted, or when all its copy and move functions are deleted? | provisional | No; neither class is trivially copyable |
 | [Q-0344](Q-0344-byte-copy-over-const-member.md) | Can a byte copy write over a live object that has a `const` member? | provisional | The copy is undefined |
 | [Q-0345](Q-0345-common-initial-sequence-base-members.md) | Do the members that a base declares count in the common initial sequence of a struct? | provisional | Yes; the members that a base declares count |
@@ -399,6 +399,7 @@ status, and the first sentence of its answer section.
 | [Q-0383](Q-0383-reserved-literal-suffix-use.md) | Does a literal call a literal operator whose suffix does not start with `_`? | provisional | Yes; the literal calls the literal operator |
 | [Q-0384](Q-0384-union-end-padding.md) | Does a union follow the end-padding conditions of a class? | provisional | The conditions of a class apply to a union |
 | [Q-0385](Q-0385-edg-member-outside-clause-missing.md) | Must a member defined after the body of a class template repeat the requires clause of the class's template head? | provisional | The definition repeats the whole head, requires clause included |
+| [Q-0386](Q-0386-ordering-classes-one-declared.md) | Must a program declare all three ordering classes before a use of `<=>` that yields only one of them? | provisional | Yes; every such use needs all three classes |
 
 ## Status values
 

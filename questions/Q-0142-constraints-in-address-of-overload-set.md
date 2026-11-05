@@ -67,6 +67,8 @@ the rule for calls (OVL-30, ORD-13).
 
 Kept on 2026-11-03. The review agrees for equal parameter lists. For different parameter lists without a target, Clang 22, GCC 16, and EDG 7.0 all reject the program, and only Clang 18 gives the review's result. Tidal keeps the conditions of ORD-13 in OVL-19, as for calls (OVL-30), until the maintainer decides. That form is in row 4 of `documentation/decisions/pending.md`. The question stays open under decision 0054, because the review reads against part of the answer and two newest families differ in the forms with a target.
 
+Kept open on 2026-11-04 under decision 0054, because the form without a target waits on the maintainer (`documentation/decisions/pending.md`, row 4), and two newest families differ in the forms with a target.
+
 ## Opinions
 
 ### Gap review, 2026-11-03

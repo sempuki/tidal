@@ -42,6 +42,8 @@ The definition repeats the whole head, requires clause included
 clause the same way as a type constraint, and EDG rejects a definition
 that leaves out the type constraint.
 
+Kept open on 2026-11-04 under decision 0054, because no review has read the question. Item RV2 of decision 0056 reads it.
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

@@ -21,6 +21,8 @@ No; the program is not valid (option 1). Clang and GCC agree.
 
 Kept on 2026-11-03. The review reads option 2 with doubt, and CTOR-P3 gives the answer that Clang 22 and GCC 16 follow: a nested class's default member initializer is part of the enclosing class, so it is usable only once the enclosing class is complete. The question stays open under decision 0054, because the review reads against the answer with doubt.
 
+Kept open on 2026-11-04 under decision 0054, because the gap review reads against the answer with doubt.
+
 ## Opinions
 
 ### Gap review, 2026-11-03

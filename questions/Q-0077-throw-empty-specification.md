@@ -23,6 +23,8 @@ Implementation-defined; where `throw()` is accepted, it means `noexcept` (option
 
 Kept on 2026-11-03. The review reads option 2, which only EDG 7.0 follows. Clang 22 and GCC 16 accept `throw()` under `-pedantic-errors`, and EXS-P4 gives the answer: an implementation can accept the old form as `noexcept`. Tidal keeps option 1 until the maintainer decides. The question is in row 4 of `documentation/decisions/pending.md`, and it stays open under decision 0054, because the review reads against the answer.
 
+Kept open on 2026-11-04 under decision 0054, because the question waits on the maintainer (`documentation/decisions/pending.md`, row 4).
+
 ## Opinions
 
 ### Gap review, 2026-11-03

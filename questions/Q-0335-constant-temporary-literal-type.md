@@ -41,6 +41,8 @@ No; only a `constexpr` variable needs a literal type, and a constant evaluation 
 
 Changed on 2026-11-03 to option 2. A probe on the matrix shows that the variable item of CE-17 disagrees with every newest compiler: for a local variable of a class with a `volatile` member in a `constexpr` function, Clang 22, GCC 16, and EDG 7.0 accept the evaluation, and only Clang 18 rejects it. For a temporary in a `constexpr` function, Clang 22 and EDG accept, and GCC rejects. For a temporary in the condition of a `static_assert`, Clang 22 accepts, and GCC and EDG reject. CE-P1 now says that only a `constexpr` variable needs a literal type, because its value outlives the evaluation, and that an evaluation fails only at an operation that it cannot do, which is its model for every other construct. CE-17 drops the variable and temporary items. `literal-temporary-volatile-member.cpp` expects acceptance, with overrides for GCC, EDG, and Clang 18, and the new tests `nonliteral-variable-reached.cpp` and `nonliteral-temporary-in-function.cpp` cover the other two forms. The question stays open under decision 0054, because two newest families differ for the temporary in a `static_assert`.
 
+Kept open on 2026-11-04 under decision 0054, because two newest families, GCC 16 and EDG 7.0, differ from the answer for a temporary in a `static_assert`.
+
 ## Opinions
 
 ### Gap review, 2026-11-03

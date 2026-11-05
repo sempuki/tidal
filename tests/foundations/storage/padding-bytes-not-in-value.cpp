@@ -1,4 +1,4 @@
-// tidal-rules: STG-11 STG-12
+// tidal-rules: STG-11 STG-12 STG-13
 // tidal-expect: run
 struct Gap { char tag; int count; };
 int main() {

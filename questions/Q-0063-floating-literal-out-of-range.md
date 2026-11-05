@@ -22,6 +22,8 @@ strictest mode.
 
 Kept on 2026-11-03. The review reads against the answer with doubt, and PRIM-P4 lists a floating value outside its type's range among the parts of a literal that belong to the implementation. Clang 22 and GCC 16 accept, and EDG 7.0 rejects, so PRIM-15 allows both. The question stays open under decision 0054, because the review reads with doubt.
 
+Kept open on 2026-11-04 under decision 0054, because the gap review reads against the answer with doubt.
+
 ## Opinions
 
 ### Gap review, 2026-11-03

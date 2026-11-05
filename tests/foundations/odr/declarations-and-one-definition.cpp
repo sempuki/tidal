@@ -1,4 +1,4 @@
-// tidal-rules: ODR-1
+// tidal-rules: ODR-1 ODR-15
 // tidal-expect: run
 extern int total;
 int total = 1;

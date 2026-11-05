@@ -38,6 +38,8 @@ other than decimal can take the unsigned type of its rank. Option 2
 changes the value of a literal in silence, which PRIM-P1 rules out for
 every other literal.
 
+Kept open on 2026-11-04 under decision 0054, because no review has read the question. Item RV2 of decision 0056 reads it.
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

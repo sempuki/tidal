@@ -16,7 +16,7 @@ With braces, `Holder h{Note{5}};` keeps the temporary alive as long as `h` on ev
 
 Only braces extend the lifetime; parentheses do not (option 1). Clang and GCC agree, and the review summary describes the same difference.
 
-Kept open on 2026-11-03 under decision 0054, because no principle on the page gives the answer. REF-P2 lists the bindings that extend a temporary and does not name parenthesized aggregate initialization.
+Kept open on 2026-11-03 (replaced by the note of 2026-11-04) under decision 0054, because no principle on the page gives the answer. REF-P2 lists the bindings that extend a temporary and does not name parenthesized aggregate initialization.
 
 Checked on 2026-11-04 under the principle test of the style guide (section 3, item PQ of decision 0055). REF-P2 fails step 3, because it lists a binding through a member and does not say whether the form of the aggregate's initializer matters, so option 2 also fits. Item PQ widened REF-P2: braces bind the reference members as part of the declaration and extend the temporaries, parentheses pass the members as a call passes arguments and do not, and a `new` expression extends no temporary. Under decision 0055, the question does not settle on a principle that phase 8 wrote. The question stays provisional until a reader or a reviewer uses REF-P2.
 

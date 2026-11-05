@@ -21,10 +21,18 @@ The reader answers with a JSON object, one entry per program:
 
     {"p01": {"outcome": "reject", "rules": ["ADD-3"], "why": "..."}}
 
+An answer can add a `principles` list, the principle IDs whose model
+gave the outcome (documentation/style-guide.md, section 3):
+
+    {"p01": {"outcome": "reject", "rules": ["ADD-3"], "principles": ["ADD-P1"], "why": "..."}}
+
 `outcome` is one of the OUTCOMES below. `score` compares the answers
 with the key and prints two numbers: the right outcomes, and how many of
-those cite at least one rule that the test cites. It then prints a
-Markdown table of the wrong outcomes.
+those cite at least one rule that the test cites. It prints how many
+answers name a principle, and for each principle the programs whose
+answers name it, with each answer right or wrong. Each of these answers
+is a use of the principle (decision 0056). It then prints a Markdown
+table of the wrong outcomes.
 
 `diagnose` takes the page's single-file tests that the specification and
 GCC both reject and that carry a GCC error pattern. Each program comes with the
@@ -215,6 +223,14 @@ def predict(page: str, out: Path) -> int:
         "answer `depends`, or the outcome of any one of them. The compilers",
         "are the eight baseline compilers, old versions included.",
         "",
+        "An answer can also list `principles`: the IDs of the principles",
+        "(`:::{principle}` blocks) whose model gave you the outcome. Name a",
+        "principle only when you reached the outcome from its prose, tables,",
+        "or diagrams for this program. Leave the list out when a rule decided",
+        "the outcome:",
+        "",
+        '    {"p01": {"outcome": "reject", "rules": ["ADD-3"], "principles": ["ADD-P1"], "why": "one sentence"}}',
+        "",
         "Some programs break a rule that needs no diagnostic, or a rule whose",
         "behavior is undefined during translation, such as a constant evaluation",
         "that reaches an operation of class `undefined`. For these, answer with",
@@ -341,6 +357,7 @@ def score(out: Path, answers_path: Path) -> int:
         return score_diagnose(out, key, json.loads(answers_path.read_text()))
     answers = json.loads(answers_path.read_text())
     right, cited, rows = 0, 0, []
+    uses: dict[str, list[str]] = {}
     for pid, k in key.items():
         a = answers.get(pid, {})
         got = a.get("outcome")
@@ -357,6 +374,8 @@ def score(out: Path, answers_path: Path) -> int:
             ok = len(k["expect"]) > 1
         if got == "undefined":
             ok = k.get("undefined", False) and "reject" not in k["expect"]
+        for principle in a.get("principles", []):
+            uses.setdefault(principle, []).append(f"{pid} {'right' if ok else 'wrong'}")
         right += ok
         cited += ok and bool(set(a.get("rules", [])) & set(k["rules"]))
         if not ok:
@@ -364,6 +383,14 @@ def score(out: Path, answers_path: Path) -> int:
                         f"{' '.join(a.get('rules', []))} | {a.get('why', '').replace('|', '/')} |")
     print(f"{right}/{len(key)} predictions match the tests; "
           f"{cited} of the {right} right outcomes cite one of the test's rules")
+    named = sum(1 for pid in key if answers.get(pid, {}).get("principles"))
+    print(f"{named} of {len(key)} answers name a principle")
+    if uses:
+        print()
+        print("| Principle | Answers that name it |")
+        print("|---|---|")
+        for principle in sorted(uses):
+            print(f"| {principle} | {', '.join(uses[principle])} |")
     if rows:
         print()
         print("| Program | Test | Expected | Answer | Rules cited | Reason given |")

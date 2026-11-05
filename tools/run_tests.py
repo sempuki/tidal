@@ -66,6 +66,9 @@ class Test:
     errors: dict[str, str] = field(default_factory=dict)
     # The tidal-interpreter expectation, or None. No compiler uses it.
     interpreter: str | None = None
+    # The tidal-allows-edg rule, or None. No compiler uses it; the front
+    # end's harness judges EDG's answer by this rule alone.
+    allows_edg: str | None = None
 
     @property
     def name(self) -> str:
@@ -97,6 +100,7 @@ def parse_test(path: Path) -> Test:
     overrides = {}
     errors = {}
     interpreter = None
+    allows_edg = None
     for line in path.read_text().splitlines():
         if not line.startswith("//"):
             break
@@ -125,6 +129,8 @@ def parse_test(path: Path) -> Test:
             sources += [path.parent / s for s in value.split()]
         elif key == "interpreter":
             interpreter = value
+        elif key == "allows-edg":
+            allows_edg = value
         else:
             raise ValueError(f"{path}: unknown directive tidal-{key}")
     if not rules:
@@ -142,7 +148,7 @@ def parse_test(path: Path) -> Test:
     for s in sources:
         if not s.name.endswith(EXTRA_SUFFIX) or not s.exists():
             raise ValueError(f"{path}: tidal-sources entry {s.name} must be an existing *{EXTRA_SUFFIX} file")
-    return Test(path, rules, default, overrides, flags, notes, sources, errors, interpreter)
+    return Test(path, rules, default, overrides, flags, notes, sources, errors, interpreter, allows_edg)
 
 
 def test_files(paths: list[Path]) -> list[Path]:

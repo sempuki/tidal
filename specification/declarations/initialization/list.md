@@ -96,7 +96,7 @@ In braces, a value must not go through a {term}`narrowing conversion`
 
 :::{rule} LIST-3
 :kind: required
-:tests: declarations/initialization/list/aggregate-members-in-order.cpp declarations/initialization/list/aggregate-paren-init.cpp declarations/initialization/list/aggregate-with-base.cpp
+:tests: declarations/initialization/list/aggregate-members-in-order.cpp declarations/initialization/list/aggregate-paren-init.cpp declarations/initialization/list/aggregate-with-base.cpp declarations/initialization/list/aggregate-member-converting-constructor.cpp
 
 An aggregate is initialized in the order of declaration. Its base
 classes are initialized first, then its members. The values can be in
@@ -289,7 +289,7 @@ signed char o[] = u8"x";  // rejected: wrong character type
 
 ## Evidence
 
-All eight compilers agree on 67 of 71 tests. The results are in
+All eight compilers agree on 68 of 72 tests. The results are in
 `tests/RESULTS.md`.
 
 Three questions on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on overloading, references, and list initialization (`reports/review/2026-11-03-gap-review-questions-overloading.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:

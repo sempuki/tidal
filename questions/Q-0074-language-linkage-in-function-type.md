@@ -25,6 +25,8 @@ one keeps it, and programs need to work with both.
 
 Kept on 2026-11-03. The review reads option 2, which only EDG 7.0 follows. Clang 22 and GCC 16 treat the two types as one, and LSP-P3 gives the answer: the implementation chooses whether a function's type records its language linkage, and a portable program treats a pointer to a C function as a type of its own. Tidal keeps option 1 until the maintainer decides. The question is in row 4 of `documentation/decisions/pending.md`, and it stays open under decision 0054, because the review reads against the answer.
 
+Kept open on 2026-11-04 under decision 0054, because the question waits on the maintainer (`documentation/decisions/pending.md`, row 4).
+
 ## Opinions
 
 ### Gap review, 2026-11-03

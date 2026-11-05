@@ -34,7 +34,7 @@ in the matrix. EDG 7.0 is the only EDG version in the matrix.
 
 No; rejected (option 1). Clang and GCC, in both versions, reject the comparison.
 
-Kept open on 2026-11-03 under decision 0054, because no principle on the page gives the answer. CMP-P5 lists the operand forms that `<=>` rejects, and an unscoped enumeration against a floating-point value is not in the list. EDG 7.0 is the only newest family that differs.
+Kept open on 2026-11-03 (replaced by the note of 2026-11-04) under decision 0054, because no principle on the page gives the answer. CMP-P5 lists the operand forms that `<=>` rejects, and an unscoped enumeration against a floating-point value is not in the list. EDG 7.0 is the only newest family that differs.
 
 Checked on 2026-11-04 under the principle test of the style guide (section 3, item PQ of decision 0055). CMP-P5 failed step 3, because its list of rejected forms did not name an unscoped enumeration against a floating-point value. The matrix shows a model, and item PQ widened CMP-P5 to state it: an unscoped enumeration takes part in `<=>` as an integer only against an integer type or its own type, and the list now names the floating-point case. CMP-18 and its test `three-way-enum-float.cpp` are already among the evidence of CMP-P5. Under decision 0055, the question does not settle on a principle that phase 8 wrote. The question stays provisional until a reader or a reviewer uses CMP-P5.
 

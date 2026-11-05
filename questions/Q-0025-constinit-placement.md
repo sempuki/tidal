@@ -25,6 +25,8 @@ If any declaration of a variable has `constinit`, the initializing declaration m
 
 Changed on 2026-11-03 for the first program. The review reads it as not valid with no diagnostic required, GCC 16 and EDG 7.0 accept it, and CX-P4 gives the same answer: the check happens where the initializer is, and a `constinit` that first appears later comes too late for that check. The new rule CINIT-3 needs no diagnostic, and `constinit-added-late.cpp` now cites it, so all three results conform. CINIT-2 keeps the second program, which Clang and EDG reject. The question stays open, because GCC 16 still differs for the second program and the rule changed on the same day.
 
+Kept open on 2026-11-04 under decision 0054, because GCC 16 differs from the answer for the second program, and the gap review of the rules that phase 7 added read only CINIT-3, the rule for the first program.
+
 ## Opinions
 
 ### Gap review, 2026-11-03

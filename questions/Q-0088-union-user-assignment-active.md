@@ -16,7 +16,7 @@ A union member has a class type with a user-provided assignment operator. Consta
 
 No; the access is undefined, so constant evaluation rejects it (option 1). Clang and GCC agree.
 
-Kept open on 2026-11-03 under decision 0054, because no principle on the page states the case. UNI-P1 says that a plain assignment to another member makes that member active, and does not say whether an assignment through a user-provided operator counts. EDG 7.0 is the one newest family that differs.
+Kept open on 2026-11-03 (replaced by the note of 2026-11-04) under decision 0054, because no principle on the page states the case. UNI-P1 says that a plain assignment to another member makes that member active, and does not say whether an assignment through a user-provided operator counts. EDG 7.0 is the one newest family that differs.
 
 Checked on 2026-11-04 under the principle test of the style guide (section 3, item PQ of decision 0055). UNI-P1 failed step 3, because "a plain assignment" did not say whether a user-provided operator counts. UNI-P1 now lists the two actions that make a member active, the built-in or trivial assignment among them, and says that a user-provided operator is a call on an object that is not there yet. The existing test checks the case. Under decision 0055, the question does not settle on a principle that phase 8 wrote. The question stays provisional until a reader or a reviewer uses UNI-P1.
 

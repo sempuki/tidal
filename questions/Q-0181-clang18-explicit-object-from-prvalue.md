@@ -30,6 +30,8 @@ Reopened on 2026-11-01. The source-reader gap review of question cluster 1 (`rep
 
 Kept on 2026-11-03. The answer follows the later change, which every newest compiler follows, until the maintainer decides Q-0007. The question is in rows 4 and 7 of `documentation/decisions/pending.md`, and it stays open under decision 0054, because the review reads against the answer.
 
+Kept open on 2026-11-04 under decision 0054, because the question waits on the maintainer (`documentation/decisions/pending.md`, row 4 and row 7).
+
 ## Opinions
 
 ### Gap review, 2026-11-03

@@ -29,9 +29,11 @@ that the choice of type is the implementation's.
 Impl-defined (option 1). Both behaviors exist, and the choice of underlying type is
 already the implementation's (ENUM-5).
 
-Kept open on 2026-11-03 under decision 0054, because no principle on the page gives the answer. ENUM-P3 says that the implementation chooses a type wide enough, and it does not say what happens when no type is wide enough. The review also doubts that GCC's 128-bit type counts as an extended integer type under strict options.
+Kept open on 2026-11-03 (replaced by the note of 2026-11-04) under decision 0054, because no principle on the page gives the answer. ENUM-P3 says that the implementation chooses a type wide enough, and it does not say what happens when no type is wide enough. The review also doubts that GCC's 128-bit type counts as an extended integer type under strict options.
 
 Checked on 2026-11-04 under the principle test of the style guide (section 3, item PQ of decision 0055). ENUM-P3 failed step 3, because the model did not say what happens when no type is wide enough. ENUM-P3 now says that the implementation can reject the enumeration when no integer type that it provides is wide enough, which fits the provisional answer. The review still doubts that GCC's 128-bit type counts as such a type under strict options, so the question stays open on the review as well. Under decision 0055, the question also does not settle on a principle that phase 8 wrote until a reader or a reviewer uses ENUM-P3.
+
+Kept open on 2026-11-04 under decision 0054, because the gap review reads with doubt, and under decision 0055 the question waits for a reader or a reviewer to use ENUM-P3.
 
 ## Opinions
 

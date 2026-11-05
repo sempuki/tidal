@@ -154,6 +154,21 @@ The question records the test in a dated note. The note names the
 principle and says which step of the test the principle passes or
 fails.
 
+A reader answer or a review reading *uses* a principle when its record
+meets all of these conditions (decision 0056):
+
+- The record names the principle.
+- The record names the question's program, or gives the program.
+- The record reaches its answer by the principle's model, as in steps
+  2 and 3 of the test.
+
+The question's dated note names the batch or the review that holds the
+record. A Predict answer records a use in its `principles` list
+(`documentation/exercises.md`), and `tools/exercises.py score` lists
+the answers that name each principle. An answer that names a principle
+and reaches another outcome is a use that fails the test. The miss is a
+finding against the principle.
+
 ## 4. Rules
 
 Write each rule in a `rule` directive:

@@ -1,4 +1,4 @@
-// tidal-rules: UNI-15 UNI-10
+// tidal-rules: UNI-15 UNI-10 UNI-16
 // tidal-expect: run
 // tidal-note: cv-qualifiers do not matter for the common initial sequence, so a const int member matches an int member.
 struct Reading { int sensor; int value; };

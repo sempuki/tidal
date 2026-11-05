@@ -30,6 +30,8 @@ No; implementations must reject the program (option 2). Clang rejects both forms
 
 Changed on 2026-11-03 to option 2. The review reads option 2, Clang 22 rejects both forms, and CTOR-P6 gives the same answer: such a reference member is dead before the body runs, and the binding is visible where the constructor or the class is defined, so nothing is unknown at that point (the `no-diagnostic` class of `documentation/specification-format.md` is for a fault that depends on information the implementation lacks). CTOR-17 is now a `reject` rule, and its three tests expect a rejection, with overrides for GCC and EDG. The question stays open under decision 0054, because two newest families differ from the answer.
 
+Kept open on 2026-11-04 under decision 0054, because two newest families, GCC 16 and EDG 7.0, differ from the answer.
+
 ## Opinions
 
 ### Gap review, 2026-11-03

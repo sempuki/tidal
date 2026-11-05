@@ -43,6 +43,8 @@ from the lookup rule of ACC-7 with no exception.
 
 Kept on 2026-11-03. The review reads option 2, which only Clang follows. GCC 16 and EDG 7.0 reject the declaration, and ACC-P3 gives the answer: the friend function is found only through its arguments until the namespace declares it. Tidal keeps option 1 until the maintainer decides. The question is in row 4 of `documentation/decisions/pending.md`, and it stays open under decision 0054, because the review reads against the answer.
 
+Kept open on 2026-11-04 under decision 0054, because the question waits on the maintainer (`documentation/decisions/pending.md`, row 4).
+
 ## Opinions
 
 ### Gap review, 2026-11-03

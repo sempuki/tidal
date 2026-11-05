@@ -1,4 +1,4 @@
-// tidal-rules: STG-12 STG-13
+// tidal-rules: STG-12 STG-13 STG-11
 // tidal-expect: run
 // tidal-flags: -O0 -fsanitize=address,undefined -fno-sanitize-recover=all
 struct Record { char tag; int count; double weight; };

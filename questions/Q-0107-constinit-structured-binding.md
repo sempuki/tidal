@@ -17,7 +17,7 @@ A structured binding declaration at namespace scope has `constinit`. Clang and G
 
 No; only static, thread_local, const, and volatile can occur (option 1). The newer GCC agrees with Clang.
 
-Kept open on 2026-11-03 under decision 0054, because no principle on the page gives the answer. SB-P3 allows a few specifiers and does not say which. EDG 7.0 is the only newest family that differs.
+Kept open on 2026-11-03 (replaced by the note of 2026-11-04) under decision 0054, because no principle on the page gives the answer. SB-P3 allows a few specifiers and does not say which. EDG 7.0 is the only newest family that differs.
 
 Checked on 2026-11-04 under the principle test of the style guide (section 3, item PQ of decision 0055). SB-P3 failed step 3, because the model allowed "a few specifiers" without naming them. SB-P3 now allows no specifiers other than `static`, `thread_local`, `const`, and `volatile`, so `constinit` is not valid. The review reads with no doubt for C++23, and EDG 7.0 is the one newest family that differs. Under decision 0055, the question does not settle on a principle that phase 8 wrote. The question stays provisional until a reader or a reviewer uses SB-P3.
 

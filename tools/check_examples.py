@@ -21,12 +21,34 @@ accepts, or a `diverges` block on which every compiler agrees.
 
 Results are cached in build/cache/examples/, keyed by the block text,
 the compiler's identity, and its command template. A run whose results
-are all cached starts no container. The tool does not run the front
-end. documentation/specification-format.md describes the markers.
+are all cached starts no container.
+documentation/specification-format.md describes the markers.
+
+The tool also runs the clean-room front end (`tidal-fe check`, decision
+0029) on each block with no marker and each `reject` block. The front
+end's status for a block is one of these:
+
+    pass            the front end gives the block's answer
+    FALSE-REJECT    a block with no marker, and the front end rejects it
+    MISSED-REJECT   a `reject` block, and the front end accepts it
+    unsupported     the front end stops at a construct it does not know
+    crash           the front end ended in another way
+
+A status other than `pass` does not fail the tool. The front end's
+statuses are kept in reports/clean-room/rust-frontend/examples.tsv,
+beside the baseline of tools/frontend_check.py. The tool fails when a
+block's status moves to a status other than `pass`, from `pass` or from
+another status, as tools/frontend_check.py does for tests. A block is
+known by its page, its text, and its place among the blocks of that page
+with the same text, so a block that moves on its page keeps its row,
+and a block whose text changes is a new block. --update-frontend
+rewrites the baseline; the tool also writes it when it does not exist.
 
 Usage:
     tools/check_examples.py [--compilers baseline|containers|all|ID,ID]
                             [--no-cache] [-j N]
+                            [--frontend-only | --no-frontend]
+                            [--update-frontend] [--frontend-baseline FILE]
 """
 
 import argparse
@@ -36,8 +58,10 @@ import hashlib
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
+import tempfile
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -50,6 +74,12 @@ CACHE = BUILD / "cache" / "examples"
 MARKER = re.compile(r"^%\s*tidal-example:\s*(\S+)\s*$")
 MARKS = {"fragment", "reject", "diverges"}
 DEFAULT_COMPILERS = "baseline"
+FRONTEND = ROOT / "frontend"
+FRONTEND_BASELINE = ROOT / "reports" / "clean-room" / "rust-frontend" / "examples.tsv"
+# The marks of the blocks that the front end checks, and the answer each
+# one expects: True for reject.
+FRONTEND_MARKS = {None: False, "reject": True}
+RULE = re.compile(r": error \[([A-Z]+-\d+)")
 # Bump when compile_block() changes how it computes a result.
 OUTCOME_VERSION = 1
 _names = itertools.count()
@@ -142,11 +172,136 @@ def cache_entry(block: Block, c: Compiler, ident: str) -> Path:
     return CACHE / f"{key}.json"
 
 
+def cargo() -> str | None:
+    found = shutil.which("cargo")
+    home = Path(os.environ.get("CARGO_HOME", Path.home() / ".cargo")) / "bin" / "cargo"
+    return found or (str(home) if home.exists() else None)
+
+
+def block_keys(all_blocks: list[Block]) -> dict[Block, str]:
+    """A key for each block: its page, a digest of its text, and its place
+    among the blocks of that page with the same text."""
+    seen: dict[tuple[str, str], int] = {}
+    keys = {}
+    for b in all_blocks:
+        page = b.page.relative_to(ROOT).as_posix()
+        n = seen.get((page, b.digest), 0)
+        seen[(page, b.digest)] = n + 1
+        keys[b] = f"{page}#{b.digest[:12]}" + (f"-{n + 1}" if n else "")
+    return keys
+
+
+def frontend_check(all_blocks: list[Block], jobs: int) -> dict[Block, tuple[str, str]] | None:
+    """Run `tidal-fe check` on each block with no marker and each `reject`
+    block. Return {block: (status, rule of the first error or "-")}, or
+    None when cargo is missing."""
+    cargo_bin = cargo()
+    if not cargo_bin:
+        return None
+    build = subprocess.run([cargo_bin, "build", "--release", "-q"], cwd=FRONTEND,
+                           capture_output=True, text=True)
+    if build.returncode:
+        sys.exit(f"frontend: build failed\n{build.stderr}")
+    exe = FRONTEND / "target" / "release" / "tidal-fe"
+    chosen = [b for b in all_blocks if b.mark in FRONTEND_MARKS]
+    with tempfile.TemporaryDirectory(prefix="tidal-examples-") as tmp:
+        def one(item):
+            i, b = item
+            src = Path(tmp) / f"block{i}.cpp"
+            src.write_text(b.text)
+            try:
+                proc = subprocess.run([str(exe), "check", str(src)],
+                                      capture_output=True, text=True, timeout=60)
+            except subprocess.TimeoutExpired:
+                return "crash", "-"
+            m = RULE.search(proc.stderr)
+            rule = m.group(1) if m and proc.returncode == 1 else "-"
+            if proc.returncode not in (0, 1, 2):
+                return "crash", "-"
+            if proc.returncode == 2:
+                return "unsupported", "-"
+            rejected = proc.returncode == 1
+            if rejected == FRONTEND_MARKS[b.mark]:
+                return "pass", rule
+            return ("FALSE-REJECT" if rejected else "MISSED-REJECT"), rule
+
+        with concurrent.futures.ThreadPoolExecutor(jobs) as pool:
+            out = list(pool.map(one, enumerate(chosen)))
+    return dict(zip(chosen, out))
+
+
+def read_frontend_baseline(path: Path) -> dict[str, str]:
+    base = {}
+    for line in path.read_text().splitlines():
+        if line and not line.startswith("#"):
+            status, key = line.split("\t")[:2]
+            base[key] = status
+    return base
+
+
+def write_frontend_baseline(path: Path, rows: list[tuple[str, str, str, str]]) -> None:
+    lines = ["# The clean-room front end's status for each page example with no marker",
+             "# and each `reject` example: status, key (page#digest), line, rule of the",
+             "# first error. tools/check_examples.py compares with this file and",
+             "# rewrites it with --update-frontend."]
+    lines += ["\t".join(r) for r in sorted(rows, key=lambda r: r[1])]
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("\n".join(lines) + "\n")
+
+
+def frontend_report(all_blocks: list[Block], args) -> int:
+    """Run the front end on the blocks, compare with the baseline, and
+    print the result. Return 1 when a block's status became worse."""
+    results = frontend_check(all_blocks, args.j)
+    if results is None:
+        print("frontend: skipped (cargo not found, see documentation/setup.md)")
+        return 0
+    keys = block_keys(all_blocks)
+    rows = [(s, keys[b], str(b.line), rule) for b, (s, rule) in results.items()]
+    now = {keys[b]: s for b, (s, _) in results.items()}
+    names = {keys[b]: b.name for b in results}
+    path = Path(args.frontend_baseline)
+    for b, (s, rule) in results.items():
+        if s != "pass":
+            print(f"frontend: {b.name}: {s}" + (f" (first error {rule})" if rule != "-" else ""))
+    counts = {}
+    for s in now.values():
+        counts[s] = counts.get(s, 0) + 1
+    summary = ", ".join(f"{n} {s}" for s, n in sorted(counts.items(), key=lambda x: -x[1]))
+    if args.update_frontend or not path.exists():
+        write_frontend_baseline(path, rows)
+        print(f"frontend: {len(now)} examples ({summary}); baseline written to "
+              f"{path.relative_to(ROOT) if path.is_relative_to(ROOT) else path}")
+        return 0
+    base = read_frontend_baseline(path)
+    worse = sorted(k for k, s in now.items() if k in base and s != base[k] and s != "pass")
+    better = sorted(k for k, s in now.items() if k in base and s == "pass" and base[k] != "pass")
+    new = [k for k in now if k not in base]
+    gone = [k for k in base if k not in now]
+    for k in worse:
+        print(f"FAIL frontend: {names[k]}: {now[k]}, {base[k]} in the baseline")
+    for k in better:
+        print(f"frontend: {names[k]}: {now[k]}, {base[k]} in the baseline")
+    print(f"frontend: {len(now)} examples ({summary}); {len(worse)} worse, "
+          f"{len(better)} better, {len(new)} new "
+          f"({sum(now[k] != 'pass' for k in new)} not passing), {len(gone)} gone")
+    return 1 if worse else 0
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--compilers", default=DEFAULT_COMPILERS)
     ap.add_argument("--no-cache", action="store_true")
     ap.add_argument("-j", type=int, default=os.cpu_count())
+    which = ap.add_mutually_exclusive_group()
+    which.add_argument("--frontend-only", action="store_true",
+                       help="run only the front end, not the compilers")
+    which.add_argument("--no-frontend", action="store_true",
+                       help="run only the compilers, not the front end")
+    ap.add_argument("--update-frontend", action="store_true",
+                    help="rewrite the front end's baseline")
+    ap.add_argument("--frontend-baseline", default=str(FRONTEND_BASELINE),
+                    help="the front end's baseline file")
     args = ap.parse_args()
 
     all_blocks, problems = [], []
@@ -154,6 +309,12 @@ def main() -> int:
         found, errors = blocks(page)
         all_blocks += found
         problems += errors
+
+    frontend_worse = 0 if args.no_frontend else frontend_report(all_blocks, args)
+    if args.frontend_only:
+        for p in problems:
+            print("FAIL " + p)
+        return 1 if problems or frontend_worse else 0
 
     compilers = matrix.select(args.compilers)
     idents = {c: identity(c) for c in compilers}
@@ -212,7 +373,7 @@ def main() -> int:
     print(f"examples: {len(all_blocks)} blocks ({counts[None]} standalone, "
           f"{counts['fragment']} fragment, {counts['reject']} reject, "
           f"{counts['diverges']} diverges) on {ids}: {len(problems)} problems")
-    return 1 if problems else 0
+    return 1 if problems or frontend_worse else 0
 
 
 if __name__ == "__main__":

@@ -1,4 +1,5 @@
 // tidal-rules: LSP-1 LSP-6
+// tidal-allows-edg: LSP-6
 // tidal-expect: accept
 // tidal-expect-edg: reject
 // tidal-error-edg: is incompatible with parameter of type

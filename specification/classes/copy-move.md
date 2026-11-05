@@ -222,7 +222,7 @@ parameter has a default argument.
 
 :::{rule} CPY-3
 :kind: required
-:tests: classes/copy-move/copy-assign-forms.cpp classes/copy-move/explicit-object-copy-assign.cpp classes/copy-move/move-assign-only-from-prvalue.cpp
+:tests: classes/copy-move/copy-assign-forms.cpp classes/copy-move/explicit-object-copy-assign.cpp classes/copy-move/move-assign-only-from-prvalue.cpp classes/copy-move/assign-converted-owner.cpp
 
 A *copy assignment operator* of class `T` is a non-static member
 `operator=` with one parameter of type `T` or a reference to `T` with any
@@ -480,7 +480,7 @@ undefined ({rule}`CV-5`, {question}`Q-0344`).
 
 :::{rule} CPY-28
 :kind: required
-:tests: classes/copy-move/trivially-copyable-types.cpp classes/copy-move/trivially-copyable-volatile-member.cpp
+:tests: classes/copy-move/trivially-copyable-types.cpp
 
 These types are {term}`trivially copyable` types:
 
@@ -697,8 +697,8 @@ Any c(1);                          // the template, with T = int
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 117
-of 122 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 118
+of 123 tests.
 
 One question on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on classes and statements (`reports/review/2026-11-03-gap-review-questions-classes-statements.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
 

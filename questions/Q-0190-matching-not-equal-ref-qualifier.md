@@ -36,6 +36,8 @@ Kept on 2026-11-03. For cv-qualifiers, every compiler disagrees with the review.
 
 Checked on 2026-11-04 under the principle test of the style guide (section 3, item PQ of decision 0055). DCMP-P2 fails step 3 of the test, because the model does not say when a `!=` corresponds to an `==`. The matrix shows a model that a principle could state: the qualifiers of the object parameter take no part. The gap review reads against that model for cv-qualifiers, and the question waits on the maintainer in row 4 of `documentation/decisions/pending.md`. A principle written now would state one side of that open choice, so item PQ left DCMP-P2 as it was. The question stays provisional.
 
+Kept open on 2026-11-04 under decision 0054, because the question waits on the maintainer (`documentation/decisions/pending.md`, row 4).
+
 ## Opinions
 
 ### Gap review, 2026-11-03

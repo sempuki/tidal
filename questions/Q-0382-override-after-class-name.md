@@ -33,6 +33,8 @@ The tests in **Affects**, with an override for GCC 14.
 An identifier (option 1). Every newest compiler agrees, and only `final`
 marks a class (DER-1).
 
+Kept open on 2026-11-04 under decision 0054, because no review has read the question. Item RV2 of decision 0056 reads it.
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

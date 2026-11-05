@@ -37,7 +37,7 @@ No (ALN-8, BF-2, NEW-2); EDG accepts it in `alignas` and a width, GCC in `new` (
 and option 1 gives the three places one rule. The tests expect a
 rejection and record GCC's and EDG's results with overrides.
 
-Kept open on 2026-11-03 under decision 0054, because no principle on the pages of ALN-8, BF-2, and NEW-2 gives the answer. ENUM-P2, on the enumerations page, says that a scoped enumeration converts to an integer only with a cast. In each form only one newest family differs.
+Kept open on 2026-11-03 (replaced by the note of 2026-11-04) under decision 0054, because no principle on the pages of ALN-8, BF-2, and NEW-2 gives the answer. ENUM-P2, on the enumerations page, says that a scoped enumeration converts to an integer only with a cast. In each form only one newest family differs.
 
 Checked on 2026-11-04 under the principle test of the style guide (section 3, item PQ of decision 0055). No principle on the three pages gave the answer, and ENUM-P2 is on another page that the three pages did not cite. The matrix shows one model, in which each place takes a value only by an implicit conversion, and a scoped enumeration has none. ALN-P1 (the `alignas` operand), UNI-P4 (the width), and NEW-P1 (the array size) now state the model and cite ENUM-P2. The existing tests check each place. Under decision 0055, the question does not settle on a principle that phase 8 wrote. The question stays provisional until a reader or a reviewer uses ALN-P1, UNI-P4, and NEW-P1.
 

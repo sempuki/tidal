@@ -21,7 +21,7 @@ override for GCC.
 
 Rejected (option 1). Two of three implementations reject the pair.
 
-Kept open on 2026-11-03 under decision 0054, because no principle on the page gives the answer. ATTR-P1 says that each standard attribute has a fixed set of places where it can go, and it does not say whether two attributes can share a statement. GCC 16 accepts the pair with a warning.
+Kept open on 2026-11-03 (replaced by the note of 2026-11-04) under decision 0054, because no principle on the page gives the answer. ATTR-P1 says that each standard attribute has a fixed set of places where it can go, and it does not say whether two attributes can share a statement. GCC 16 accepts the pair with a warning.
 
 Checked on 2026-11-04 under the principle test of the style guide (section 3, item PQ of decision 0055). ATTR-P1 failed step 3, because the model did not say whether two attributes can share a statement. ATTR-P1 now has a table of the places of the standard attributes, which allows at most one of `likely` and `unlikely` on one statement or label, and says that the implementation rejects the pair because the two hints contradict each other. The review reads with no doubt, and GCC 16 is the one newest family that differs. Under decision 0055, the question does not settle on a principle that phase 8 wrote. The question stays provisional until a reader or a reviewer uses ATTR-P1.
 

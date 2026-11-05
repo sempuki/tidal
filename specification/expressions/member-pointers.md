@@ -98,7 +98,7 @@ pointer-to-member type.
 
 :::{rule} MPTR-8
 :kind: reject
-:tests: expressions/member-pointers/declare-non-class.cpp expressions/member-pointers/declare-pointer-to-reference.cpp expressions/member-pointers/declare-reference-member.cpp expressions/member-pointers/declare-void-member.cpp
+:tests: expressions/member-pointers/declare-non-class.cpp expressions/member-pointers/declare-pointer-to-reference.cpp expressions/member-pointers/declare-reference-member.cpp expressions/member-pointers/declare-void-member.cpp templates/instantiation/member-template-pointer-to-member-non-class.cpp
 
 The class of a pointer to member must be a class type. The member type
 must not be a reference or `void`.
@@ -281,8 +281,8 @@ const int* Node::* unsafe = link;      // rejected: no const on the level above
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 74
-of 76 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 75
+of 77 tests.
 
 - MPTR-6: Clang and GCC give a null pointer to data member the offset
   -1, so a read through it lands before the object. On Clang 22 and

@@ -31,7 +31,7 @@ version in the matrix.
 
 Rejected during constant evaluation, and unspecified at run time (option 1). Clang and GCC agree, and option 1 matches Q-0033.
 
-Kept open on 2026-11-03 under decision 0054, because no principle on the page gives the answer. CMP-P3 makes the result unspecified and lists CMP-20 as an exception, and no principle on the page states the rejection during constant evaluation. EDG 7.0 is the only newest family that differs.
+Kept open on 2026-11-03 (replaced by the note of 2026-11-04) under decision 0054, because no principle on the page gives the answer. CMP-P3 makes the result unspecified and lists CMP-20 as an exception, and no principle on the page states the rejection during constant evaluation. EDG 7.0 is the only newest family that differs.
 
 Checked on 2026-11-04 under the principle test of the style guide (section 3, item PQ of decision 0055). CMP-P3 failed, because CMP-P3 named CMP-20 in its `:exceptions:` line. CE-P3 gives the model, and the comparison page did not cite CE-P3. Item PQ widened CMP-P3 to cite CE-P3 and to state the case: during constant evaluation a comparison that depends on the placement of complete objects is rejected, and inside one complete object it is accepted. CMP-8 and CMP-20 move from the `:exceptions:` line to the `:rules:` line of CMP-P3. Under decision 0055, the question does not settle on a principle that phase 8 wrote. The question stays provisional until a reader or a reviewer uses CMP-P3.
 

@@ -226,6 +226,7 @@ header of `//` directives at the top of the file controls the runner:
 | `tidal-rules` | rule IDs | Rules this test supports. Required. A test of a failed constant cites the rule that the evaluation broke, and can also cite the rule that needs the constant (decision 0038). A test whose program breaks a general `reject` rule and a specific one cites the specific rule, and can also cite the general one. The general rule names the specific rules (decision 0042). The same holds for `undefined` rules, and a run stop that names either rule matches (decision 0052). |
 | `tidal-expect` | `accept`, `reject`, `link-fail`, `run`, `run-fail` | `accept`: compiles. `reject`: fails to compile. `link-fail`: every translation unit compiles, but linking them fails. `run`: compiles, links, runs, and exits 0. `run-fail`: compiles and links, but the run exits nonzero, for example because a sanitizer stops it (decision 0028). |
 | `tidal-expect-<x>` | same | Override for a compiler family (`clang`, `gcc`, `edg`) or a compiler id from `tools/compilers.json`. Use only with a `tidal-note` naming the question in `questions/`, or, for a report compiler such as `gcc-16-o2`, the rule that allows both outcomes (decisions 0043 and 0047). A variant compiler uses the overrides of the compiler it is a variant of, unless the test gives its own. |
+| `tidal-allows-edg` | rule ID | For a test whose `tidal-expect-edg` gives the other answer (accept against reject): the one rule of `tidal-rules` whose class allows EDG's answer. The class is `impl-defined`, `unspecified`, `no-diagnostic`, or `conditionally-supported`. The front end's harness judges an answer that agrees with EDG by that rule alone. A test needs the line when its rules mix such a class with another class. A test whose rules all have such a class needs no line. A test where EDG's answer is a defect has no line. |
 | `tidal-error` | regular expression | For a `reject`, `link-fail`, or `run-fail` test: one of the compiler's error or note messages, the linker's message, or a line of the program's output must match it, case-insensitive. A failure for another reason fails the test. |
 | `tidal-error-<x>` | regular expression | The same, for a compiler family (`clang`, `gcc`, `edg`) or a compiler id. Overrides `tidal-error` for that compiler. |
 | `tidal-interpreter` | `run-fail` | For an `accept` test whose run has undefined behavior that no sanitizer stops. The matrix compilers only build the program, and `tools/run_tests.py` ignores the line. The front end's interpreter runs the program and must stop at undefined behavior that names one of the test's rules (decision 0053). |
@@ -258,11 +259,13 @@ If constant evaluation can reach the behavior, a separate test expects
 `reject`. The notes and the rule's Evidence describe which
 configurations stop the behavior, and give no run result.
 
-A test of an `impl-defined` or `unspecified` rule gives one choice that
-the rule allows as its base expectation. Each override records another
-allowed choice. An implementation that makes the choice of an override
-still conforms. The rule's Evidence names the compiler whose choices
-the base expectations follow, when one compiler gives all of them.
+Every test has a base `tidal-expect` line. A test of an `impl-defined`
+or `unspecified` rule gives one choice that the rule allows as its base
+expectation. Each override records another allowed choice. An implementation that
+makes the choice of an override still conforms. The rule's Evidence
+names the compiler whose choices the base expectations follow, when one
+compiler gives all of them. A test of a rule that a question holds open
+gives the answer that Tidal keeps while the question is open.
 
 A `tidal-error` pattern names the reason for the rejection in words that
 the compiler's message uses, without its quote characters. The host GCC

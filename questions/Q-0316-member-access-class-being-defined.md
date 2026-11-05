@@ -37,7 +37,7 @@ Yes (PFX-11), as GCC and EDG do; Clang rejects (option 1). Two of three compiler
 member access the same view of the class as unqualified lookup. The test
 expects an acceptance and records Clang's result with an override.
 
-Kept open on 2026-11-03 under decision 0054, because no principle on the page gives the answer. PFX-P3 says what a member access names, and no principle says whether a member access can see into a class that is being defined. Clang 22 is the only newest family that differs.
+Kept open on 2026-11-03 (replaced by the note of 2026-11-04) under decision 0054, because no principle on the page gives the answer. PFX-P3 says what a member access names, and no principle says whether a member access can see into a class that is being defined. Clang 22 is the only newest family that differs.
 
 Checked on 2026-11-04 under the principle test of the style guide (section 3, item PQ of decision 0055). PFX-P3 failed step 3, because no principle said whether a member access can see into a class that is being defined. Item PQ widened PFX-P3: inside the definition, a member access sees the members known at that place, as an unqualified name does, so a member declaration sees the earlier members and a member function body sees every member. The new test `tests/expressions/postfix/member-access-later-member-in-function-body.cpp` checks the function body case, which no PFX-11 test checked. Under decision 0055, the question does not settle on a principle that phase 8 wrote. The question stays provisional until a reader or a reviewer uses PFX-P3.
 

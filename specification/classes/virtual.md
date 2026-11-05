@@ -315,7 +315,7 @@ the {term}`most derived class`.
 
 :::{rule} VIRT-7
 :kind: required
-:tests: classes/virtual/virtual-dtor-delete-constant.cpp classes/virtual/virtual-dtor-delete.cpp classes/virtual/virtual-dtor-inherited.cpp classes/virtual/destructor-override.cpp classes/virtual/destructor-final-implicit-override.cpp classes/virtual/destructor-final-declared-override.cpp classes/virtual/destructor-override-nonvirtual.cpp
+:tests: classes/virtual/virtual-dtor-delete-constant.cpp classes/virtual/virtual-dtor-delete.cpp classes/virtual/virtual-dtor-inherited.cpp classes/virtual/destructor-override.cpp classes/virtual/destructor-final-implicit-override.cpp classes/virtual/destructor-final-declared-override.cpp classes/virtual/destructor-override-nonvirtual.cpp classes/virtual/virtual-dtor-delete-through-middle.cpp classes/virtual/virtual-dtor-delete-through-middle-declared.cpp
 
 If the destructor of a base is virtual, the destructor of each derived
 class, declared or implicit, overrides it and is virtual. `delete`
@@ -354,7 +354,7 @@ during constant evaluation.
 
 :::{rule} VIRT-12
 :kind: undefined
-:tests: classes/virtual/delete-array-through-base-constant.cpp classes/virtual/nonvirtual-dtor-delete-constant.cpp classes/virtual/pure-call-in-ctor-constant.cpp classes/virtual/pure-call-in-ctor-sanitizer.cpp classes/virtual/nonvirtual-dtor-delete-sanitizer.cpp classes/virtual/delete-array-through-base-sanitizer.cpp
+:tests: classes/virtual/delete-array-through-base-constant.cpp classes/virtual/nonvirtual-dtor-delete-constant.cpp classes/virtual/pure-call-in-ctor-constant.cpp classes/virtual/pure-call-in-ctor-sanitizer.cpp classes/virtual/nonvirtual-dtor-delete-sanitizer.cpp classes/virtual/delete-array-through-base-sanitizer.cpp classes/virtual/virtual-dtor-delete-through-middle.cpp classes/virtual/virtual-dtor-delete-through-middle-declared.cpp
 
 The behavior is undefined in these cases:
 
@@ -513,8 +513,8 @@ struct Child : Sealed { };         // rejected: the implicit ~Child overrides a 
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 135
-of 140 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 137
+of 142 tests.
 
 Two questions on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on classes and statements (`reports/review/2026-11-03-gap-review-questions-classes-statements.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
 

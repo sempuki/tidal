@@ -16,7 +16,7 @@
 
 Yes; converted to the type of `sizeof` (option 1). Two of three implementations accept the floating-point size.
 
-Kept open on 2026-11-03 under decision 0054, because no principle on the page gives the answer. NEW-P1 says that an array can have a size known only at run time, and it does not say which types the size can have. GCC 16 rejects the floating-point size.
+Kept open on 2026-11-03 (replaced by the note of 2026-11-04) under decision 0054, because no principle on the page gives the answer. NEW-P1 says that an array can have a size known only at run time, and it does not say which types the size can have. GCC 16 rejects the floating-point size.
 
 Checked on 2026-11-04 under the principle test of the style guide (section 3, item PQ of decision 0055). NEW-P1 failed step 3, because it did not say which types the size can have. NEW-P1 now says that the size converts to the type of `sizeof` by an implicit conversion, so a floating-point value gives a size, which rules out option 2. The existing tests check the case. Under decision 0055, the question does not settle on a principle that phase 8 wrote. The question stays provisional until a reader or a reviewer uses NEW-P1.
 

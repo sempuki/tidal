@@ -45,6 +45,8 @@ Yes; the class body sees the members of the qualifier (option 1).
 Every compiler agrees, and the language-support page's own example
 depends on the answer. NAM-21 now names the class body.
 
+Kept open on 2026-11-04 under decision 0054, because no review has read the question. Item RV2 of decision 0056 reads it.
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

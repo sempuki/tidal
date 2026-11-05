@@ -1,4 +1,4 @@
-// tidal-rules: CPT-22
+// tidal-rules: CPT-22 CPT-23
 // tidal-expect: reject
 // tidal-error-clang: deduced type 'int' does not satisfy 'LvalueRef'
 // tidal-error-gcc: does not satisfy placeholder constraints

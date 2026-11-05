@@ -18,6 +18,8 @@ No; the declaration is not valid (option 1). Clang and GCC agree.
 
 Kept on 2026-11-03. The review reads the C++23 text as option 2, which EDG 7.0 follows, and a later change as option 1, which Clang 22 and GCC 16 follow. Whether Tidal follows such a change is Q-0007, so the answer waits on the maintainer. The question is in rows 4 and 7 of `documentation/decisions/pending.md`, and it stays open under decision 0054, because the review reads against the answer.
 
+Kept open on 2026-11-04 under decision 0054, because the question waits on the maintainer (`documentation/decisions/pending.md`, row 4 and row 7).
+
 ## Opinions
 
 ### Gap review, 2026-11-03

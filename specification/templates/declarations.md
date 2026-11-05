@@ -593,7 +593,7 @@ entity in its scope has ({rule}`NAM-3`).
 
 :::{rule} TPL-23
 :kind: required
-:tests: templates/declarations/member-outside.cpp templates/declarations/member-class-outside.cpp templates/declarations/member-outside-names.cpp templates/declarations/member-outside-constrained.cpp templates/declarations/member-outside-clause-missing.cpp
+:tests: templates/declarations/member-outside.cpp templates/declarations/member-class-outside.cpp templates/declarations/member-outside-names.cpp templates/declarations/member-outside-constrained.cpp templates/declarations/member-outside-clause-missing.cpp templates/declarations/member-operator-outside.cpp
 
 The functions, `static` data members, and member classes of a class
 template can be defined after the class body. Such a definition starts
@@ -816,8 +816,8 @@ template <class U> int pick(Host);                // rejected: the same template
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 118
-of 130 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 119
+of 131 tests.
 
 Two questions on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
 

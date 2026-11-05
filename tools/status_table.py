@@ -40,12 +40,17 @@ The tool writes:
 It also writes the front-end row of the status table in
 documentation/exercises.md (section 8): the latest round, from the
 numbered reports in reports/clean-room/rust-frontend/, and the pass and
-check-pass counts from conformance.tsv.
+check-pass counts from conformance.tsv. It also writes the sentence of
+section 7 that counts and lists the pages whose only Predict batches
+showed test names. The sentence comes from the Predict rows of section
+8: a row names its batches (R-<page> or R8-<page>), and its state says
+"with test names" or "without test names".
 
 Each prose number sits in a fixed sentence. When a sentence is missing,
 the tool reports a problem and leaves the text alone.
 tools/check_specification.py fails when the page differs from what this
-tool would write, and when the front-end row of exercises.md differs.
+tool would write, and when the front-end row or the section 7 sentence
+of exercises.md differs.
 
 Usage:
     tools/status_table.py
@@ -370,16 +375,53 @@ EXERCISE_ROW = re.compile(r"^\| Front end \| [^|\n]* \| `reports/clean-room/rust
 ROUND_REPORT = re.compile(r"^report-(\d+)[a-z]?\.md$")
 
 
+PREDICT_ROW = re.compile(r"^\| (R\d*-[^|]*?) \| ([^|]*) \|", re.M)
+NAMED_SENTENCE = re.compile(r"(?:\d+|No) pages? (?:has|have) only a Predict batch that showed test names[^.]*\.")
+
+
+def named_only_pages(text: str) -> tuple[list[str], list[str]]:
+    """The pages whose Predict batches in section 8 all showed test names, and the problems found."""
+    by_stem = {p.stem: p for p in all_pages()}
+    hidden: dict[str, bool] = {}
+    problems = []
+    for m in PREDICT_ROW.finditer(text):
+        hid = "without test names" in m.group(2)
+        for batch in m.group(1).split(", "):
+            stem = re.sub(r"^R\d*-", "", batch)
+            if stem not in by_stem:
+                problems.append(f"documentation/exercises.md: the Predict batch {batch} names no page")
+                continue
+            hidden[stem] = hidden.get(stem, False) or hid
+    return [str(p.relative_to(SPEC).with_suffix("")) for p in all_pages()
+            if p.stem in hidden and not hidden[p.stem]], problems
+
+
+def named_sentence(names: list[str]) -> str:
+    if not names:
+        return "No page has only a Predict batch that showed test names."
+    listed = [f"`{n}`" for n in names]
+    if len(listed) > 1:
+        listed[-1] = "and " + listed[-1]
+    verb = "page has" if len(names) == 1 else "pages have"
+    return (f"{len(names)} {verb} only a Predict batch that showed test names: "
+            f"{', '.join(listed) if len(listed) > 2 else ' '.join(listed)}.")
+
+
 def render_exercises(text: str) -> tuple[str, list[str]]:
-    """Return exercises.md with the front-end row rewritten, and the problems found."""
+    """Return exercises.md with the front-end row and the section 7 sentence rewritten, and the problems found."""
+    names, problems = named_only_pages(text)
+    sentence = named_sentence(names)
+    text, n = NAMED_SENTENCE.subn(lambda _: sentence, text)
+    if n != 1:
+        problems.append(f"documentation/exercises.md: the sentence on pages with only named Predict batches matched {n} times; it must match once")
     rounds = [int(m.group(1)) for f in CONFORMANCE.parent.iterdir() if (m := ROUND_REPORT.match(f.name))]
     passing, checks, total = frontend_counts()
     new = (f"| Front end | round {max(rounds)} done: {passing}/{total} pass, {checks} pass their check "
            "(`conformance.tsv`) | `reports/clean-room/rust-frontend/` |")
     text, n = EXERCISE_ROW.subn(lambda _: new, text)
     if n != 1:
-        return text, [f"documentation/exercises.md: the front-end row matched {n} times; it must match once"]
-    return text, []
+        problems.append(f"documentation/exercises.md: the front-end row matched {n} times; it must match once")
+    return text, problems
 
 
 def render(text: str) -> tuple[str, list[str]]:

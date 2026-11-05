@@ -109,7 +109,7 @@ need, the program must declare `std::initializer_list` with this shape:
 
 :::{rule} LSUP-2
 :kind: reject
-:tests: foundations/language-support/strong-ordering-minimal.cpp foundations/language-support/strong-ordering-missing-member.cpp foundations/language-support/strong-ordering-missing.cpp expressions/comparison/three-way-result-copies-member.cpp foundations/language-support/ordering-complete-declaration.cpp
+:tests: foundations/language-support/strong-ordering-minimal.cpp foundations/language-support/strong-ordering-missing-member.cpp foundations/language-support/strong-ordering-missing.cpp expressions/comparison/three-way-result-copies-member.cpp foundations/language-support/ordering-complete-declaration.cpp foundations/language-support/ordering-strong-only-builtin.cpp foundations/language-support/ordering-strong-only-builtin-runtime.cpp foundations/language-support/ordering-strong-only-defaulted.cpp
 
 A program that uses `<=>` on built-in operands, or a defaulted `<=>`,
 must declare the three ordering classes in namespace `std` first. Each
@@ -511,7 +511,7 @@ int* r = new (raw) int(3);          // raw hosts the int
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 49
-of 62 tests.
+of 65 tests.
 
 - LSUP-1: each compiler checks the shape in its own way. Clang checks
   the layout of the two members, and also accepts a second pointer in
@@ -524,9 +524,12 @@ of 62 tests.
   rejects a program that only declares a parameter of that type, or
   whose candidate with such a parameter has no conversion sequence
   ({question}`Q-0321`).
-- LSUP-2: EDG needs all three classes declared before it accepts `<=>`
-  on any built-in operand. Clang and GCC need only the class that the
-  operation yields.
+- LSUP-2: EDG needs all three classes declared before it evaluates a
+  built-in `<=>` as a constant and before it defines a defaulted `<=>`.
+  EDG accepts a built-in `<=>` with one class declared when the
+  comparison runs at run time or stands in an unevaluated operand.
+  Clang and GCC need only the class that the operation yields
+  ({question}`Q-0386`).
 - LSUP-2: every compiler rejects `1 <=> 2` when `strong_ordering` lacks
   the member `equal`, although the result is `less`
   (`strong-ordering-missing-member.cpp`). So a compiler checks a
@@ -558,8 +561,11 @@ of 62 tests.
   undefined, whatever its shape. LSUP-5 follows the compilers, and its
   model of a program that supplies a library declaration is Tidal's own
   choice ({principle}`LSUP-P2`).
-- LSUP-2: the rule asks for all three ordering classes, as EDG does.
-  Clang and GCC need only the class that a use yields.
+- LSUP-2: the rule asks for all three ordering classes for every use,
+  as EDG does for a constant and a defaulted `<=>`. Clang and GCC need
+  only the class that a use yields, and no compiler checks the other
+  classes for a built-in `<=>` at run time
+  (`ordering-strong-only-builtin-runtime.cpp`).
 - LSUP-6: no compiler checks the shape of `std::nothrow_t`. The tag is
   an ordinary placement argument, and only the exception specification
   of the allocation function matters ({rule}`NEW-31`). The shape in the
@@ -637,3 +643,6 @@ codes.
 | `initializer-list-candidate-not-viable.cpp` | LSUP-1 | accept | accept | reject | accept | {question}`Q-0321` |
 | `initializer-list-parameter-not-needed.cpp` | LSUP-1 | accept | accept | reject | accept | {question}`Q-0321` |
 | `ordering-defaulted-not-equal-zero-only.cpp` | LSUP-12 | reject | accept | reject | accept | {question}`Q-0334` |
+| `ordering-strong-only-builtin.cpp` | LSUP-2 | reject | accept | accept | reject | {question}`Q-0386` |
+| `ordering-strong-only-builtin-runtime.cpp` | LSUP-2 | reject | accept | accept | accept | {question}`Q-0386` |
+| `ordering-strong-only-defaulted.cpp` | LSUP-2 | reject | accept | accept | reject | {question}`Q-0386` |

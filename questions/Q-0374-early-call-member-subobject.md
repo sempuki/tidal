@@ -36,7 +36,7 @@ The call is undefined (option 1). OBJ-1 starts the lifetime of a class
 object when its initialization completes, and a member function works
 on its object. Clang names this reason.
 
-Kept open on 2026-11-04 under decision 0054. The gap review of the rules that phase 7 rewrote supports the answer with no doubt, but CTOR-12 changed in the same commit (decision 0055), and two newest families, GCC 16 and EDG 7.0, differ from the answer.
+Kept open on 2026-11-04 under decision 0054, because two newest families, GCC 16 and EDG 7.0, differ from the answer, and CTOR-12 changed in the commit that read the review (decision 0055). The gap review of the rules that phase 7 rewrote supports the answer with no doubt.
 
 ## Opinions
 

@@ -1,4 +1,5 @@
 // tidal-rules: INST-32 INST-31
+// tidal-allows-edg: INST-32
 // tidal-expect: run
 // tidal-expect-clang: reject
 // tidal-expect-edg: reject

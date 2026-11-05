@@ -184,16 +184,18 @@ Each report lists the rule IDs it cites. The Report mentions column of
 the specification table in `documentation/status.md` counts, for each
 page, the lines of `reports/clean-room/` that name one of the page's
 rules, leaving out the roadmap reports. Section 8 names the Predict
-batch of each page and says whether the batch hid test names. 18 pages
-have only a batch that showed test names: the seven pages of the first
-Foundations batch and the 11 templates pages.
+batch of each page and says whether the batch hid test names.
+`tools/status_table.py` writes the count and list below from the Predict rows
+of section 8.
+
+12 pages have only a Predict batch that showed test names: `foundations/translation`, `foundations/objects`, `foundations/values`, `foundations/conversions`, `templates/declarations`, `templates/arguments`, `templates/specialization`, `templates/deduction`, `templates/ordering`, `templates/concepts`, `templates/packs`, and `templates/class-template-deduction`.
 
 ## 8. Status
 
 | Exercise | State | Report |
 |---|---|---|
 | W0 | done | `reports/clean-room/java-programmer/` |
-| Front end | round 19 done: 6183/6500 pass, 6247 pass their check (`conformance.tsv`) | `reports/clean-room/rust-frontend/` |
+| Front end | round 19 done: 6196/6525 pass, 6269 pass their check (`conformance.tsv`) | `reports/clean-room/rust-frontend/` |
 | Guides | done: one tutorial and four how-to guides, not published (decision 0046) | `guides/` |
 | R-translation, R-objects, R-values, R-names, R-conversions, R-evaluation-order, R-constant-evaluation | done, 231/231, with test names | `reports/clean-room/R-foundations/` |
 | Designer roadmap | done, findings D1 to D33 | `reports/clean-room/roadmap/designer.md` |
@@ -223,8 +225,8 @@ Foundations batch and the 11 templates pages.
 | W4 | done: four programs build and run on GCC and Clang; findings W4-1 to W4-10 | `reports/clean-room/W4/` |
 | W8 | done: four programs build and run on GCC and Clang; findings W8-1 to W8-9 | `reports/clean-room/W8/` |
 | W1 | done: five programs build and run on GCC and Clang; findings W1-1 to W1-9 | `reports/clean-room/W1/` |
-| W16 | done: two programs (an expression evaluator and a text-statistics program) build and run on GCC and Clang; findings W16-1 to W16-7 | `reports/clean-room/W16/` |
-| W17 | done: a hash map in raw storage and a multi-unit template library build and run on GCC and Clang; findings W17-1 to W17-7 | `reports/clean-room/W17/` |
+| W16 | done: two programs (an expression evaluator and a text-statistics program) build and run on GCC and Clang; findings W16-1 to W16-7. The front end's interpreter, which the readers did not run, stops `evaluator.cpp` as unsupported at a class assignment (`run-unsupported` in `conformance.tsv`) and runs `textstats.cpp` (`pass-partial`) | `reports/clean-room/W16/` |
+| W17 | done: a hash map in raw storage and a multi-unit template library build and run on GCC and Clang; findings W17-1 to W17-7. The front end's interpreter, which the readers did not run, stops `units/main.cpp` as unsupported at an overloaded operator (`run-unsupported` in `conformance.tsv`) and runs `hashmap.cpp` (`pass-partial`) | `reports/clean-room/W17/` |
 | W14 | done: four multi-unit programs build and run on GCC and Clang; findings W14-1 to W14-8 | `reports/clean-room/W14/` |
 | W3 | done: four programs build and run on GCC and Clang; findings W3-1 to W3-6 | `reports/clean-room/W3/` |
 | W13 | done: four programs build and run on GCC, Clang, and EDG; findings W13-1 to W13-9 | `reports/clean-room/W13/` |
@@ -291,7 +293,14 @@ Fill in the angle brackets.
 > principle IDs that tell you how to write each construct. Build each
 > with `g++` and `clang++` using `-std=c++23 -pedantic-errors -Wall
 > -Wextra`, run it, and check that it exits 0. Build once more with
-> `-fsanitize=undefined,address` and run it. When a compiler rejects or
+> `-fsanitize=undefined,address` and run it. Build Tidal's front end
+> into your scratch directory (`cargo build --release --manifest-path
+> frontend/Cargo.toml --target-dir <scratch directory>`, without reading
+> frontend/), and run each program with `<scratch directory>/release/tidal-fe
+> run FILE...`. When the run stops (a reject, an unsupported construct,
+> or undefined behavior), reduce the program to the smallest one that
+> stops in the same way, and report the reduction as a finding with
+> the rule IDs that the stop names. When a compiler rejects or
 > warns, or the program misbehaves, record what the specification said that led
 > you there, then fix the program. Report: a summary with the three
 > biggest problems; findings, each with pages and rule IDs, kind
@@ -323,7 +332,11 @@ In a scoring phase the reader reads the tests that cite the pages'
 rules, turns their assertions into calls of the component, and scores
 the component as written in the blind phase. Each assertion the
 component gets wrong, and each step the text did not give, is a
-finding.
+finding. The reader also builds Tidal's front end from `frontend/`
+into its scratch directory, without reading `frontend/`, runs each
+program it writes with `tidal-fe run`, and reduces each stop to the
+smallest program that stops in the same way. Each reduction is a
+finding (decision 0056).
 
 ### Front end
 

@@ -411,7 +411,7 @@ evaluation follows these rules.
 
 :::{rule} UNI-13
 :kind: required
-:tests: classes/unions/chain-assign-activates.cpp classes/unions/common-initial-sequence.cpp classes/unions/chain-assign-other-part-no-value-constant.cpp classes/unions/chain-assign-nontrivial-constant.cpp
+:tests: classes/unions/chain-assign-activates.cpp classes/unions/common-initial-sequence.cpp classes/unions/chain-assign-other-part-no-value-constant.cpp classes/unions/chain-assign-nontrivial-constant.cpp classes/unions/chain-assign-member-function.cpp classes/unions/chain-assign-member-function-constant.cpp
 
 The left operand of an assignment can name its object through a chain
 of member accesses and built-in subscripts, such as `s.u.a.tag` or
@@ -686,8 +686,8 @@ int y = s.span.range.second;     // 2: Point and Pair are layout-compatible
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 145
-of 158 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 147
+of 160 tests.
 
 - UNI-9: Clang accepts an anonymous union without `static` in an unnamed
   namespace. GCC and EDG reject the declaration ({question}`Q-0045`).

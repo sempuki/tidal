@@ -16,7 +16,7 @@ A gap review summary says that copying an uninitialized `unsigned char` (or `std
 
 Not undefined at run time for `unsigned char` and `std::byte`, and rejected during constant evaluation (option 1). The constant-evaluation behavior is observed, and the run-time exception comes from the review summary. A test that can observe the run-time difference would settle the question.
 
-Kept open on 2026-11-03 under decision 0054, because no principle on the page gives the answer. INIT-P2 says that an automatic object with no initializer has no value, and it does not state the exception for `unsigned char` and `std::byte`.
+Kept open on 2026-11-03 (replaced by the note of 2026-11-04) under decision 0054, because no principle on the page gives the answer. INIT-P2 says that an automatic object with no initializer has no value, and it does not state the exception for `unsigned char` and `std::byte`.
 
 Checked on 2026-11-04 under the principle test of the style guide (section 3, item PQ of decision 0055). INIT-P2 fails step 3, because it says only that an automatic object with no initializer has no value, so option 2 also fits. Item PQ widened INIT-P2: a read of such a value is undefined, a copy into an `unsigned char` or `std::byte` object is not, the copy also has no value, and constant evaluation rejects even that copy. The run-time half of the answer still rests on the review, because no test can observe it. Under decision 0055, the question does not settle on a principle that phase 8 wrote. The question stays provisional until a reader or a reviewer uses INIT-P2.
 

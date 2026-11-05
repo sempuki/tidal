@@ -47,6 +47,8 @@ Clang 22 and GCC 16 agree, and Tidal follows the two when EDG alone
 differs (`documentation/decisions/pending.md`, row 3). DEFARG-P1 makes a
 default argument act as if written at the call.
 
+Kept open on 2026-11-04 under decision 0054, because no review has read the provisional answer, and EDG 7.0 differs from it. Item RV2 of decision 0056 reads the question.
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

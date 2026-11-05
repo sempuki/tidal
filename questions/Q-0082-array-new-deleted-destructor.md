@@ -20,6 +20,8 @@ No; the array form needs a usable destructor, so the program is not valid (optio
 
 Changed on 2026-11-03 to option 2. The review reads option 2, Clang 22 rejects, and CTOR-P2 gives the same answer: building several parts needs the destructor of each part, because the parts already built are destroyed when a later part fails, as for a default constructor whose member has a deleted destructor. DTOR-3 now lists an array `new`, and `delete-array-deleted-dtor.cpp` expects a rejection, with overrides for GCC and EDG. The question stays open under decision 0054, because two newest families differ from the answer.
 
+Kept open on 2026-11-04 under decision 0054, because two newest families, GCC 16 and EDG 7.0, differ from the answer.
+
 ## Opinions
 
 ### Gap review, 2026-11-03

@@ -27,7 +27,7 @@ No; the declarations are rejected (option 1). Three implementations, including t
 declarations. GCC 16's change is recorded here so contributors can say
 whether it reflects a deliberate language change.
 
-Kept open on 2026-11-03 under decision 0054, because no principle on the page states the case. CLS-P3 says that a ref-qualifier selects a function by the value category of the object, and says nothing about a mix of overloads with and without one. GCC 16 is the one newest family that differs.
+Kept open on 2026-11-03 (replaced by the note of 2026-11-04) under decision 0054, because no principle on the page states the case. CLS-P3 says that a ref-qualifier selects a function by the value category of the object, and says nothing about a mix of overloads with and without one. GCC 16 is the one newest family that differs.
 
 Checked on 2026-11-04 under the principle test of the style guide (section 3, item PQ of decision 0055). CLS-P3 failed step 3 of the test, because the model said nothing of a mix of overloads with and without a ref-qualifier. Item PQ widened CLS-P3. A function with no ref-qualifier takes an object of either category and would compete with each qualified overload, so overloads with the same parameters all have ref-qualifiers or none. CLS-26 and its two tests check the case. Under decision 0055, the question does not settle on a principle that phase 8 wrote. The question stays provisional until a reader or a reviewer uses CLS-P3.
 

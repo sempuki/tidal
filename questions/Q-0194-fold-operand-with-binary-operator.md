@@ -30,7 +30,7 @@ No, it needs parentheses; EDG differs (option 1). Two of three implementations r
 keeps the grouping of a fold visible in the source. A reader need not
 compare precedences to see which operator the fold applies.
 
-Kept open on 2026-11-03 under decision 0054, because no principle on the page gives the answer. PRIM-P6 says what a fold stands for, and no principle says what an operand of a fold can be. EDG 7.0 is the only newest family that differs.
+Kept open on 2026-11-03 (replaced by the note of 2026-11-04) under decision 0054, because no principle on the page gives the answer. PRIM-P6 says what a fold stands for, and no principle says what an operand of a fold can be. EDG 7.0 is the only newest family that differs.
 
 Checked on 2026-11-04 under the principle test of the style guide (section 3, item PQ of decision 0055). PRIM-P6 failed step 3, because no principle said what an operand of a fold can be. Item PQ widened PRIM-P6: each operand binds more tightly than any binary operator, and an operand with a binary operator needs its own parentheses. PRIM-29 and its test `fold-operand-binary.cpp` are already among the evidence of PRIM-P6. Under decision 0055, the question does not settle on a principle that phase 8 wrote. The question stays provisional until a reader or a reviewer uses PRIM-P6.
 

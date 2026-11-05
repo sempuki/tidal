@@ -1,4 +1,5 @@
 // tidal-rules: VIRT-3 DEP-30
+// tidal-allows-edg: DEP-30
 // tidal-expect: reject
 // tidal-expect-gcc: accept
 // tidal-expect-edg: accept

@@ -34,6 +34,8 @@ Yes, no diagnostic required; every compiler accepts (option 1). Every compiler a
 
 Kept on 2026-11-03. The review's first reading needs a diagnostic, and every compiler accepts the program. Its second reading gives option 1, the answer. Tidal keeps option 1 until the maintainer decides, and the form with a diagnostic is in row 4 of `documentation/decisions/pending.md`. The question stays open under decision 0054, because the review reads with doubt.
 
+Kept open on 2026-11-04 under decision 0054, because the gap review reads with doubt, and the form with a diagnostic waits on the maintainer (`documentation/decisions/pending.md`, row 4).
+
 ## Opinions
 
 ### Gap review, 2026-11-03

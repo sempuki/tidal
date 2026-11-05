@@ -41,6 +41,8 @@ The conditions of a class apply to a union (option 1). Two of three
 families agree, and CLS-35 needs no separate list for unions. CLS-35
 lists the EDG choice as an extra condition of EDG.
 
+Kept open on 2026-11-04 under decision 0054, because no review has read the question. Item RV2 of decision 0056 reads it.
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

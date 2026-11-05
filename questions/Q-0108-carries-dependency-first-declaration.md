@@ -22,7 +22,7 @@ an override for GCC.
 
 Yes, as for noreturn (option 1). Clang and EDG agree, and the rule matches noreturn.
 
-Kept open on 2026-11-03 under decision 0054, because no principle on the page gives the answer. ATTR-P1 says that each standard attribute has a fixed set of places, and no principle says which declaration of a function must carry an attribute. GCC 16 is the only newest family that differs.
+Kept open on 2026-11-03 (replaced by the note of 2026-11-04) under decision 0054, because no principle on the page gives the answer. ATTR-P1 says that each standard attribute has a fixed set of places, and no principle says which declaration of a function must carry an attribute. GCC 16 is the only newest family that differs.
 
 Checked on 2026-11-04 under the principle test of the style guide (section 3, item PQ of decision 0055). ATTR-P1 failed step 3, because the model did not say which declaration of a function must carry an attribute. ATTR-P1 now says that `noreturn` and `carries_dependency` go on the first declaration of a function, and that a later declaration can repeat the attribute and cannot add it, because a call after the first declaration already relies on it. The new test `declarations/attributes/noreturn-repeated.cpp` checks the repeat. Under decision 0055, the question does not settle on a principle that phase 8 wrote. The question stays provisional until a reader or a reviewer uses ATTR-P1.
 

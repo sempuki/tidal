@@ -1,4 +1,4 @@
-// tidal-rules: SINIT-1 IF-18
+// tidal-rules: SINIT-1 IF-18 IF-25
 // tidal-expect: run
 constexpr int mode() {
   if consteval { return 1; } else { return 2; }

@@ -1,6 +1,6 @@
 # Q-0342: Does a base that declares defaulted special members lend its tail padding to a derived class?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** CLS-34, CLS-35, `tests/classes/members/layout-base-tail-padding-defaulted.cpp`
 
 ## Context
@@ -38,12 +38,14 @@ The test in **Affects**, with an override for GCC 14, and
 2. The base lends its padding, as with user-provided special members
    (GCC 14).
 
-## Provisional answer
+## Answer
 
 The base keeps its padding (option 1). The newest version of each
 compiler family gives this layout. GCC 14 made the other choice.
 
 Kept open on 2026-11-03 under decision 0054, because the review reads both options as allowed, and item TP of decision 0054 sets the matrix layout.
+
+Settled on 2026-11-04 under decision 0051, because the newest version of each baseline family (Clang 22, GCC 16, EDG 7.0) agrees with this answer, and the gap review of item O reads both options as allowed. Item TP has run, and CLS-35 lists the GCC 14 choice as an extra condition of GCC 14. The test keeps its override for GCC 14.
 
 ## Opinions
 

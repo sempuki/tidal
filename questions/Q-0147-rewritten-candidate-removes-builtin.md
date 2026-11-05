@@ -39,7 +39,7 @@ describes the removal this way.
 
 The question stays open under decision 0051 (2026-11-03). GCC 16 keeps the built-in candidate, and Clang 22 and EDG 7.0 remove it, so two families disagree. No principle on Tidal's pages separates the options. The provisional answer rests on the two families and on item BI-5 of the inventory.
 
-Kept open on 2026-11-03 under decision 0054, because no principle on the page separates the options.
+Kept open on 2026-11-03 (replaced by the note of 2026-11-04) under decision 0054, because no principle on the page separates the options.
 
 Checked on 2026-11-04 under the principle test of the style guide (section 3, item PQ of decision 0055). OVL-P4 failed step 3 of the test, because the model did not say which declared functions remove a built-in candidate. Item PQ widened OVL-P4. A non-member function with the parameter types of a built-in candidate replaces that candidate, also when the function takes part only as a rewritten candidate. OVL-10 and `builtin-removed-by-rewritten.cpp` check the case. Under decision 0055, the question does not settle on a principle that phase 8 wrote. The question stays provisional until a reader or a reviewer uses OVL-P4. GCC 16 is the one newest family that differs.
 

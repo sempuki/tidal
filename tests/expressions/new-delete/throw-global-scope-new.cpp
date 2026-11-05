@@ -1,4 +1,4 @@
-// tidal-rules: NEW-21
+// tidal-rules: NEW-21 NEW-22
 // tidal-expect: run
 // tidal-note: ::new uses the global functions, so a global usual form frees the storage. Both global forms are replaced (UNW-3).
 using size = decltype(sizeof 0);

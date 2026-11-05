@@ -37,6 +37,8 @@ answer follows the initialization rules LIST-6 and LIST-15.
 
 Kept on 2026-11-03. The review reads the literal that does not fit as a tie, with doubt, as Clang 22 does. The answer keeps option 1, which GCC 16 and EDG 7.0 follow and which the table of REF-P3 states: a string literal of another array type makes a temporary only if it can initialize the array, and has no sequence otherwise. The question stays open under decision 0054, because the review reads with doubt.
 
+Kept open on 2026-11-04 under decision 0054, because the gap review reads with doubt.
+
 ## Opinions
 
 ### Gap review, 2026-11-03

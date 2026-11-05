@@ -15,15 +15,17 @@ struct Test {
     /// The base expectation (`tidal-expect`) is `reject`. The harness
     /// judges by this expectation.
     expect_reject: bool,
-    /// The test has no base expectation, and the compilers' expectations
-    /// differ: either answer passes.
-    any_answer: bool,
+    /// The test has no base expectation (`tidal-expect`), only lines for
+    /// single compilers. The harness cannot judge its answer and gives it
+    /// the status `NO-BASE` (G135).
+    no_base: bool,
     /// The EDG override, when there is one and it differs from the base
     /// expectation on reject against accept.
     edg_reject: Option<bool>,
-    /// Every rule the test cites is `impl-defined`, `unspecified`,
-    /// `no-diagnostic`, or `conditionally-supported`, so the rules allow
-    /// EDG's answer as well as the base one.
+    /// The rules allow EDG's answer as well as the base one. With a
+    /// `tidal-allows-edg` line, the rules that line names decide; without
+    /// one, every rule the test cites must be `impl-defined`,
+    /// `unspecified`, `no-diagnostic`, or `conditionally-supported`.
     edg_allowed: bool,
     rules: Vec<String>,
     m32: bool,
@@ -83,14 +85,24 @@ enum Res {
     /// failure.
     EdgAgrees,
     /// Agrees with the EDG override against the base expectation, and
-    /// every rule the test cites allows either answer. A pass.
+    /// the rules allow either answer. A pass.
     EdgAllowed,
+    /// The test has no base expectation, so its answer cannot be judged.
+    /// A failure.
+    NoBase,
 }
 
-/// The kind of each rule in the specification (`:kind:` under
-/// `:::{rule} ID`).
-fn rule_kinds(spec: &Path) -> std::collections::HashMap<String, String> {
+/// The rules of the specification: the kind of each rule (`:kind:` under
+/// `:::{rule} ID`), and the rules that its text links to (each
+/// {rule}`ID` between the rule's fences).
+struct Rules {
+    kinds: std::collections::HashMap<String, String>,
+    links: std::collections::HashMap<String, Vec<String>>,
+}
+
+fn read_rules(spec: &Path) -> Rules {
     let mut out = std::collections::HashMap::new();
+    let mut links: std::collections::HashMap<String, Vec<String>> = std::collections::HashMap::new();
     let mut files = Vec::new();
     fn walk(d: &Path, out: &mut Vec<PathBuf>) {
         let Ok(rd) = std::fs::read_dir(d) else { return };
@@ -106,19 +118,39 @@ fn rule_kinds(spec: &Path) -> std::collections::HashMap<String, String> {
     walk(spec, &mut files);
     for f in files {
         let Ok(src) = std::fs::read_to_string(&f) else { continue };
+        // The rule whose kind line comes next, and the rule whose text
+        // the current line is in.
         let mut id: Option<String> = None;
+        let mut body: Option<String> = None;
         for line in src.lines() {
             if let Some(r) = line.strip_prefix(":::{rule}") {
                 id = Some(r.trim().to_string());
-            } else if let (Some(i), Some(k)) = (&id, line.strip_prefix(":kind:")) {
+                body = id.clone();
+                continue;
+            }
+            if let (Some(i), Some(k)) = (&id, line.strip_prefix(":kind:")) {
                 out.insert(i.clone(), k.trim().to_string());
-                id = None;
-            } else {
-                id = None;
+            }
+            id = None;
+            if line.trim() == ":::" {
+                body = None;
+            } else if let Some(b) = &body {
+                let mut rest = line;
+                while let Some(i) = rest.find("{rule}`") {
+                    rest = &rest[i + 7..];
+                    if let Some(j) = rest.find('`') {
+                        let target = rest[..j].to_string();
+                        let l = links.entry(b.clone()).or_default();
+                        if target != *b && !l.contains(&target) {
+                            l.push(target);
+                        }
+                        rest = &rest[j + 1..];
+                    }
+                }
             }
         }
     }
-    out
+    Rules { kinds: out, links }
 }
 
 /// The rule kinds under which an implementation's answer can differ from
@@ -149,6 +181,8 @@ fn parse_test(root: &Path, path: &Path, kinds: &std::collections::HashMap<String
     let mut flags = String::new();
     let mut sources = Vec::new();
     let mut interpreter = None;
+    // The rules that allow EDG's answer (G134).
+    let mut allows_edg = Vec::new();
     for line in src.lines() {
         let Some(rest) = line.strip_prefix("// tidal-") else {
             if !line.starts_with("//") {
@@ -158,6 +192,8 @@ fn parse_test(root: &Path, path: &Path, kinds: &std::collections::HashMap<String
         };
         if let Some(v) = rest.strip_prefix("expect:") {
             expect = Some(v.trim().to_string());
+        } else if let Some(v) = rest.strip_prefix("allows-edg:") {
+            allows_edg.extend(v.split_whitespace().map(String::from));
         } else if let Some(v) = rest.strip_prefix("expect-edg:") {
             edg = Some(v.trim().to_string());
             each.push(v.trim() == "reject");
@@ -178,17 +214,24 @@ fn parse_test(root: &Path, path: &Path, kinds: &std::collections::HashMap<String
     // A front end only checks programs: run, run-fail, and link-fail mean
     // accept. The base expectation decides; the EDG override only names
     // a second answer.
-    // A test with no base expectation gives one per compiler, and the
-    // rules allow each of these answers.
-    let any_answer = expect.is_none() && each.contains(&true) && each.contains(&false);
+    // A test with no base expectation gives one per compiler. The harness
+    // does not choose among them (G135).
+    let no_base = expect.is_none();
     let expect = match expect {
         Some(e) => e,
         None if each.is_empty() => return None,
         None => if each.iter().all(|&r| r) { "reject".to_string() } else { "accept".to_string() },
     };
     let expect_reject = expect == "reject";
-    let edg_reject = if any_answer { None } else { edg.map(|x| x == "reject").filter(|&r| r != expect_reject) };
-    let edg_allowed = !rules.is_empty() && rules.iter().all(|r| kinds.get(r).is_some_and(|k| LENIENT.contains(&k.as_str())));
+    let edg_reject = if no_base { None } else { edg.map(|x| x == "reject").filter(|&r| r != expect_reject) };
+    let lenient = |r: &String| kinds.get(r).is_some_and(|k| LENIENT.contains(&k.as_str()));
+    // A `tidal-allows-edg` line names the rules that allow EDG's answer
+    // (G134). Without one, every rule the test cites must allow it.
+    let edg_allowed = if allows_edg.is_empty() {
+        !rules.is_empty() && rules.iter().all(lenient)
+    } else {
+        allows_edg.iter().all(lenient)
+    };
     let run = match Some(expect.as_str()) {
         Some("run") => Some(RunExpect::Run),
         Some("run-fail") => Some(RunExpect::RunFail),
@@ -200,7 +243,7 @@ fn parse_test(root: &Path, path: &Path, kinds: &std::collections::HashMap<String
         path: path.to_path_buf(),
         rel,
         expect_reject,
-        any_answer,
+        no_base,
         edg_reject,
         edg_allowed,
         rules,
@@ -284,7 +327,9 @@ fn run_one(t: &Test) -> Outcome2 {
     // The answer is judged by the base expectation. A test whose EDG
     // override differs has a second answer that agrees with EDG.
     let judge = |reject: bool| -> Res {
-        if reject == t.expect_reject || t.any_answer {
+        if t.no_base {
+            Res::NoBase
+        } else if reject == t.expect_reject {
             if t.edg_reject.is_some() { Res::EdgOnly } else { Res::Pass }
         } else if t.edg_reject == Some(reject) {
             if t.edg_allowed { Res::EdgAllowed } else { Res::EdgAgrees }
@@ -420,11 +465,12 @@ pub fn run(args: &[String]) {
     // The rule kinds come from the specification beside the tests, or from
     // the directory that `--spec` names.
     let spec = args.iter().position(|a| a == "--spec").and_then(|i| args.get(i + 1)).map(PathBuf::from).unwrap_or_else(|| root.join("..").join("specification"));
-    let kinds = rule_kinds(&spec);
+    let spec_rules = read_rules(&spec);
+    let kinds = &spec_rules.kinds;
     if kinds.is_empty() {
         eprintln!("conform: no rules found under {}; no test counts as allowing EDG's answer", spec.display());
     }
-    let tests: Vec<Test> = paths.iter().filter_map(|p| parse_test(&root, p, &kinds)).collect();
+    let tests: Vec<Test> = paths.iter().filter_map(|p| parse_test(&root, p, kinds)).collect();
     // run in parallel
     let n = std::thread::available_parallelism().map(|x| x.get()).unwrap_or(4);
     let tests = std::sync::Arc::new(tests);
@@ -453,8 +499,13 @@ pub fn run(args: &[String]) {
         let _ = h.join();
     }
     // tally
-    let mut by_dir: BTreeMap<String, [usize; 8]> = BTreeMap::new();
-    let mut by_sub: BTreeMap<String, [usize; 8]> = BTreeMap::new();
+    let mut by_dir: BTreeMap<String, [usize; 9]> = BTreeMap::new();
+    let mut by_sub: BTreeMap<String, [usize; 9]> = BTreeMap::new();
+    // Per page: the passing rejects, those whose first error names a rule
+    // the test cites, those whose first error names a rule that the text
+    // of a cited rule links to, and those whose first error names no rule.
+    let mut by_page: BTreeMap<String, [usize; 4]> = BTreeMap::new();
+    let mut rule_lines = Vec::new();
     let mut unsup_msgs: BTreeMap<String, usize> = BTreeMap::new();
     let mut rule_match = 0;
     let mut lines = Vec::new();
@@ -471,8 +522,9 @@ pub fn run(args: &[String]) {
             Res::EdgOnly => 5,
             Res::EdgAgrees => 6,
             Res::EdgAllowed => 7,
+            Res::NoBase => 8,
         };
-        for k in [&mut by_dir.entry(top).or_default(), &mut by_sub.entry(sub).or_default()] {
+        for k in [&mut by_dir.entry(top).or_default(), &mut by_sub.entry(sub.clone()).or_default()] {
             k[idx] += 1;
             k[4] += 1;
         }
@@ -489,6 +541,23 @@ pub fn run(args: &[String]) {
             if o.diags.iter().any(|d| d.rule.into_iter().chain(d.cause).any(|r| t.rules.iter().any(|x| x == r))) {
                 rule_match += 1;
             }
+            // The first error and the rules it names: the rule, and the
+            // rule that a constant evaluation broke.
+            let e = by_page.entry(sub.clone()).or_default();
+            e[0] += 1;
+            let first = o.diags.iter().find(|d| d.sev == crate::diag::Severity::Error);
+            let named: Vec<&str> = first.map(|d| d.rule.into_iter().chain(d.cause).collect()).unwrap_or_default();
+            let linked = |r: &str| t.rules.iter().any(|x| spec_rules.links.get(x).is_some_and(|l| l.iter().any(|y| y == r)));
+            if named.iter().any(|r| t.rules.iter().any(|x| x == r)) {
+                e[1] += 1;
+            } else if named.iter().any(|r| linked(r)) {
+                e[2] += 1;
+            } else if named.is_empty() {
+                e[3] += 1;
+                rule_lines.push(format!("RULE-ID\tno-rule\t{}\t{}", t.rel, t.rules.join(" ")));
+            } else {
+                rule_lines.push(format!("RULE-ID\tother-rule\t{}\t{}\t{}", t.rel, t.rules.join(" "), named.join(" ")));
+            }
         }
         let mut tag = match o.res {
             Res::Pass => "pass",
@@ -498,6 +567,7 @@ pub fn run(args: &[String]) {
             Res::EdgOnly => "EDG-ONLY",
             Res::EdgAgrees => "EDG-AGREES",
             Res::EdgAllowed => "EDG-ALLOWED",
+            Res::NoBase => "NO-BASE",
         };
         // A test that expects a run passes only if the run passes too. The
         // status column then gives the run's outcome.
@@ -555,19 +625,33 @@ pub fn run(args: &[String]) {
     let mut report = String::new();
     // The check is judged by the base expectation. "Differs from EDG
     // only" is a pass; "agrees with EDG only" is a failure; "EDG, allowed"
-    // is a pass on a test whose rules all allow EDG's answer.
-    const HEAD: &str = "| Directory | Tests | Pass | False reject | Missed reject | Unsupported | Differs from EDG only | Agrees with EDG only | EDG, allowed |\n|---|---|---|---|---|---|---|---|---|\n";
-    let row = |d: &str, c: &[usize; 8]| format!("| {} | {} | {} | {} | {} | {} | {} | {} | {} |\n", d, c[4], c[0], c[1], c[2], c[3], c[5], c[6], c[7]);
+    // is a pass on a test whose rules allow EDG's answer. "No base
+    // expectation" is a failure: the test gives no answer to judge by.
+    const HEAD: &str = "| Directory | Tests | Pass | False reject | Missed reject | Unsupported | Differs from EDG only | Agrees with EDG only | EDG, allowed | No base expectation |\n|---|---|---|---|---|---|---|---|---|---|\n";
+    let row = |d: &str, c: &[usize; 9]| format!("| {} | {} | {} | {} | {} | {} | {} | {} | {} | {} |\n", d, c[4], c[0], c[1], c[2], c[3], c[5], c[6], c[7], c[8]);
     report.push_str(HEAD);
-    let mut tot = [0usize; 8];
+    let mut tot = [0usize; 9];
     for (d, c) in &by_dir {
         report.push_str(&row(d, c));
-        for i in 0..8 {
+        for i in 0..9 {
             tot[i] += c[i];
         }
     }
     report.push_str(&row("**total**", &tot));
     report.push_str(&format!("\nRejected tests where the diagnostic names one of the test's rules: {}\n", rule_match));
+    // The rule IDs of the first error, per page (roadmap round 6). A rule
+    // that the text of a cited rule links to also counts, as decision 0052
+    // lets a run stop match a linked rule.
+    report.push_str("\nPassing rejects whose first error names a rule, by page:\n\n| Page | Passing rejects | A cited rule | A linked rule | Another rule | No rule | Share |\n|---|---|---|---|---|---|---|\n");
+    let mut pt = [0usize; 4];
+    let share = |c: &[usize; 4]| if c[0] == 0 { "-".to_string() } else { format!("{}%", (100 * (c[1] + c[2]) + c[0] / 2) / c[0]) };
+    for (d, c) in &by_page {
+        report.push_str(&format!("| {} | {} | {} | {} | {} | {} | {} |\n", d, c[0], c[1], c[2], c[0] - c[1] - c[2] - c[3], c[3], share(c)));
+        for i in 0..4 {
+            pt[i] += c[i];
+        }
+    }
+    report.push_str(&format!("| **total** | {} | {} | {} | {} | {} | {} |\n", pt[0], pt[1], pt[2], pt[0] - pt[1] - pt[2] - pt[3], pt[3], share(&pt)));
     report.push_str("\nBy subdirectory:\n\n");
     report.push_str(HEAD);
     for (d, c) in &by_sub {
@@ -620,6 +704,11 @@ pub fn run(args: &[String]) {
                 println!("{}", l);
             }
         }
+        // The tag comes second here too, so tools/frontend_check.py skips
+        // these lines.
+        for l in &rule_lines {
+            println!("{}", l);
+        }
     }
     if let Some(f) = out_file {
         let mut s = report.clone();
@@ -629,6 +718,10 @@ pub fn run(args: &[String]) {
             s.push('\n');
         }
         for l in &run_lines {
+            s.push_str(l);
+            s.push('\n');
+        }
+        for l in &rule_lines {
             s.push_str(l);
             s.push('\n');
         }

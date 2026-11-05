@@ -13,14 +13,19 @@ expectation (`tidal-expect`). The passing statuses:
 - `pass`.
 - `EDG-ONLY`: the answer matches the base expectation, and the test's EDG
   override differs.
-- `EDG-ALLOWED`: the answer matches only the EDG override, and every rule
-  that the test cites is impl-defined, unspecified, no-diagnostic, or
-  conditionally-supported.
+- `EDG-ALLOWED`: the answer matches only the EDG override, and the rules
+  allow a second answer. A test with a `tidal-allows-edg: RULE-ID` line
+  names the rules that allow it, and each named rule is impl-defined,
+  unspecified, no-diagnostic, or conditionally-supported. A test with no
+  such line needs every rule that it cites to be of one of those kinds.
 - `pass-partial`: the run passes on every explored choice, but the
   exploration is partial (the bound stopped it, or a run was unsupported).
 
 `EDG-AGREES` is a failed check: the answer matches only the EDG override,
-and some rule the test cites does not allow that answer.
+and the rules do not allow that answer.
+
+`NO-BASE` is a failed check: the test has no base `tidal-expect` line, so
+the harness has no answer to judge by.
 
 For a test that expects a run, `tidal-fe conform -v` gives the run's outcome
 once the check passed: `run-unsupported`, `RUN-WRONG-RESULT`, `RUN-MISSED-UB`,
@@ -74,8 +79,9 @@ def cargo() -> str | None:
     return found or (str(home) if home.exists() else None)
 
 
-def results(cargo_bin: str) -> dict[str, str]:
-    """Return {test path: status} for every test, from `tidal-fe conform -v`."""
+def results(cargo_bin: str) -> tuple[dict[str, str], str]:
+    """Return {test path: status} for every test, and the report, from
+    `tidal-fe conform -v`."""
     build = subprocess.run([cargo_bin, "build", "--release", "-q"], cwd=FRONTEND,
                            capture_output=True, text=True)
     if build.returncode:
@@ -93,7 +99,7 @@ def results(cargo_bin: str) -> dict[str, str]:
         name = path.relative_to(tests).as_posix()
         if not name.endswith(".tu.cpp"):
             status.setdefault(name, "pass")
-    return status
+    return status, out
 
 
 def interpreter_tests() -> list[str]:
@@ -135,7 +141,7 @@ def main() -> int:
     if not cargo_bin:
         print("frontend: skipped (cargo not found, see documentation/setup.md)")
         return 0
-    now = results(cargo_bin)
+    now, report = results(cargo_bin)
     if args.update or not BASELINE.exists():
         write_baseline(now)
         print(f"frontend: baseline written, {sum(s in PASSING for s in now.values())}/{len(now)} pass")
@@ -166,6 +172,17 @@ def main() -> int:
           f"{len(worse)} worse, {len(better)} better, {len(moved)} moved between passing statuses, {new} new ({len(new_failing)} not passing)")
     print(f"frontend: {sum(now.get(n) in PASSING for n in interp)}/{len(interp)} "
           f"interpreter-only expectations met")
+    no_base = sorted(n for n, s in now.items() if s == "NO-BASE")
+    if no_base:
+        print(f"frontend: {len(no_base)} tests with no base expectation: {', '.join(no_base)}")
+    # The last row of `tidal-fe conform`'s table of rule IDs per page.
+    rule_rows = [ln for ln in report.splitlines()
+                 if ln.startswith("| **total** |") and ln.count("|") == 8]
+    if rule_rows:
+        cells = [c.strip() for c in rule_rows[-1].strip("|").split("|")]
+        print(f"frontend: {int(cells[2]) + int(cells[3])}/{cells[1]} passing rejects name a "
+              f"cited rule ({cells[2]}) or a linked rule ({cells[3]}) in their first error; "
+              f"`tidal-fe conform` gives the table per page")
     return 1 if worse else 0
 
 

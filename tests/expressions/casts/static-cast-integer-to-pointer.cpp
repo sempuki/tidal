@@ -1,4 +1,4 @@
-// tidal-rules: CAST-19
+// tidal-rules: CAST-19 CAST-2
 // tidal-expect: reject
 // tidal-error-clang: cannot cast from type .int. to pointer type
 // tidal-error-gcc: invalid .static_cast. from type

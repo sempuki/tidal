@@ -21,6 +21,8 @@ Captures are visible in the trailing return type (option 1), and a name in the p
 
 Changed on 2026-11-03 for the parameter list. The review reads option 2 there, and a probe on the matrix shows that every compiler agrees: `decltype((x))` as a parameter type is `int&`. LAM-P2 and LAM-18 now say that the trailing return type and the body see the captures, and that a name in the parameter list refers to the enclosing variable. The new test `capture-not-visible-in-parameter-list.cpp` accepts on every compiler. The trailing return type keeps option 1, which GCC 16 and EDG 7.0 follow and Clang 22 does not. The question stays open, because the rule changed on the same day.
 
+Kept open on 2026-11-04 under decision 0055, because LAM-P2 and LAM-18 changed on 2026-11-03, and no reader batch or review has used the changed text. Clang 22 differs for the trailing return type.
+
 ## Opinions
 
 ### Gap review, 2026-11-03

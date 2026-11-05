@@ -41,6 +41,8 @@ A union, named or anonymous, gives a value when one variant member carries a def
 
 Changed on 2026-11-03 for the fifth row, to option 2. The review reads option 2, Clang 22 rejects, and CTOR-P2 gives the same answer: a `const` object with no initializer needs a class that gives every part a value, and in the fifth row no part gets one. CTOR-24 no longer has a sentence for that row, and `const-object-only-anonymous-unions.cpp` expects a rejection, with overrides for GCC and EDG. Rows one to four keep their answers. The question stays open under decision 0054, because two newest families differ from the answer in the fifth row, and GCC differs in the second row.
 
+Kept open on 2026-11-04 under decision 0054, because two newest families, GCC 16 and EDG 7.0, differ from the answer in the fifth row.
+
 ## Opinions
 
 ### Gap review, 2026-11-03

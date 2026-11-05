@@ -173,7 +173,7 @@ end in a pointer.
 
 :::{rule} OPR-6
 :kind: required
-:tests: classes/operators/argument-dependent-lookup.cpp classes/operators/assign-not-from-other.cpp classes/operators/builtin-candidate-via-conversion.cpp classes/operators/enum-builtin-still-used.cpp classes/operators/left-operand-conversion-nonmember.cpp classes/operators/member-hides-not-nonmember.cpp foundations/names/operator-lookup-block-hides.cpp foundations/names/operator-lookup-namespace-hides.cpp
+:tests: classes/operators/argument-dependent-lookup.cpp classes/operators/assign-not-from-other.cpp classes/operators/builtin-candidate-via-conversion.cpp classes/operators/enum-builtin-still-used.cpp classes/operators/left-operand-conversion-nonmember.cpp classes/operators/member-hides-not-nonmember.cpp foundations/names/operator-lookup-block-hides.cpp foundations/names/operator-lookup-namespace-hides.cpp templates/declarations/member-operator-outside.cpp
 
 An expression with an operand of class or enumeration type selects the
 operator function from these candidates:
@@ -250,7 +250,7 @@ literals must not have two different suffixes.
 
 :::{rule} OPR-7
 :kind: required
-:tests: classes/operators/arrow-star-order.cpp classes/operators/assign-order-kept.cpp classes/operators/comma-order-kept.cpp classes/operators/compound-assign-order-kept.cpp classes/operators/logical-and-order.cpp classes/operators/no-short-circuit.cpp classes/operators/shift-order-kept.cpp classes/operators/shift-right-order-kept.cpp classes/operators/subscript-order-kept.cpp classes/operators/subscript-multi-order.cpp
+:tests: classes/operators/arrow-star-order.cpp classes/operators/assign-order-kept.cpp classes/operators/comma-order-kept.cpp classes/operators/compound-assign-order-kept.cpp classes/operators/logical-and-order.cpp classes/operators/no-short-circuit.cpp classes/operators/shift-order-kept.cpp classes/operators/shift-right-order-kept.cpp classes/operators/subscript-order-kept.cpp classes/operators/subscript-multi-order.cpp templates/declarations/member-operator-outside.cpp
 
 An expression that selects an operator function calls the operator
 function with the operands as arguments. Both operands of an overloaded
@@ -314,8 +314,8 @@ Meters len = 2.5_m;
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 103
-of 106 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 104
+of 107 tests.
 
 - OPR-10: GCC accepts a default argument on a literal operator. Clang
   and EDG reject the default argument ({question}`Q-0060`).

@@ -398,6 +398,7 @@ pass	classes/conversion-functions/two-converting-ctors.cpp
 pass	classes/conversion-functions/two-user-conversions.cpp
 pass	classes/conversion-functions/variadic.cpp
 pass	classes/conversion-functions/virtual-conversion.cpp
+run-unsupported	classes/copy-move/assign-converted-owner.cpp
 pass	classes/copy-move/assign-result-lvalue.cpp
 pass	classes/copy-move/cast-move-only-accepted.cpp
 pass	classes/copy-move/cast-on-return-no-warning.cpp
@@ -962,6 +963,8 @@ pass	classes/unions/bitfield-zero-named.cpp
 pass	classes/unions/bitfield-zero-unnamed.cpp
 pass	classes/unions/bitfield-zero-width-splits.cpp
 pass	classes/unions/chain-assign-activates.cpp
+unsupported	classes/unions/chain-assign-member-function-constant.cpp
+run-unsupported	classes/unions/chain-assign-member-function.cpp
 EDG-ONLY	classes/unions/chain-assign-nontrivial-constant.cpp
 pass	classes/unions/chain-assign-other-part-no-value-constant.cpp
 pass	classes/unions/common-initial-sequence-bit-field.cpp
@@ -1107,7 +1110,7 @@ pass	classes/virtual/override-dependent-base-pointer.cpp
 pass	classes/virtual/override-dependent-base-run.cpp
 pass	classes/virtual/override-final-order.cpp
 pass	classes/virtual/override-identifier.cpp
-EDG-AGREES	classes/virtual/override-independent-base-unused.cpp
+EDG-ALLOWED	classes/virtual/override-independent-base-unused.cpp
 pass	classes/virtual/override-nonvirtual.cpp
 pass	classes/virtual/override-nothing.cpp
 pass	classes/virtual/override-of-deleted.cpp
@@ -1142,6 +1145,8 @@ pass	classes/virtual/virtual-auto-return.cpp
 pass	classes/virtual/virtual-call-override-not-constexpr.cpp
 pass	classes/virtual/virtual-data-member.cpp
 pass	classes/virtual/virtual-dtor-delete-constant.cpp
+RUN-UNEXPECTED-UB	classes/virtual/virtual-dtor-delete-through-middle-declared.cpp
+RUN-UNEXPECTED-UB	classes/virtual/virtual-dtor-delete-through-middle.cpp
 pass	classes/virtual/virtual-dtor-delete.cpp
 pass	classes/virtual/virtual-dtor-inherited.cpp
 pass	classes/virtual/virtual-in-constexpr.cpp
@@ -1803,6 +1808,7 @@ pass	declarations/initialization/forms/value-init-forms.cpp
 pass	declarations/initialization/forms/write-before-read.cpp
 pass	declarations/initialization/forms/zero-of-other-scalars.cpp
 pass	declarations/initialization/list/aggregate-default-member-initializer.cpp
+run-unsupported	declarations/initialization/list/aggregate-member-converting-constructor.cpp
 pass	declarations/initialization/list/aggregate-members-in-order.cpp
 pass	declarations/initialization/list/aggregate-missing-members-zero.cpp
 pass	declarations/initialization/list/aggregate-paren-init.cpp
@@ -3835,7 +3841,7 @@ EDG-ONLY	foundations/conversions/floating-narrowing-infinity-ilp32.cpp
 pass	foundations/conversions/floating-narrowing-infinity-run.cpp
 EDG-ONLY	foundations/conversions/floating-narrowing-infinity.cpp
 pass	foundations/conversions/floating-narrowing-out-of-range-run.cpp
-pass	foundations/conversions/floating-narrowing-out-of-range.cpp
+EDG-ONLY	foundations/conversions/floating-narrowing-out-of-range.cpp
 pass	foundations/conversions/floating-to-integral-out-of-range.cpp
 pass	foundations/conversions/floating-to-integral-sanitizer.cpp
 pass	foundations/conversions/floating-to-integral-truncates-run.cpp
@@ -4068,6 +4074,9 @@ unsupported	foundations/language-support/ordering-defaulted-specified-needs-conv
 pass	foundations/language-support/ordering-reversed-needs-zero-on-left.cpp
 pass	foundations/language-support/ordering-reversed-three-way-needs-zero-on-left.cpp
 pass	foundations/language-support/ordering-rewritten-needs-relational-zero.cpp
+EDG-AGREES	foundations/language-support/ordering-strong-only-builtin-runtime.cpp
+MISSED-REJECT	foundations/language-support/ordering-strong-only-builtin.cpp
+MISSED-REJECT	foundations/language-support/ordering-strong-only-defaulted.cpp
 pass	foundations/language-support/placement-array-needs-array-form.cpp
 pass	foundations/language-support/placement-forms-self-declared.cpp
 pass	foundations/language-support/placement-new-form-only.cpp
@@ -5095,6 +5104,20 @@ EDG-ONLY	programs/W9/memptr.cpp
 EDG-ONLY	programs/W9/mixin.cpp
 pass	programs/W9/plugin.cpp
 EDG-ONLY	programs/W9/visitor.cpp
+pass	programs/roadmap/r4-aligned.cpp
+pass	programs/roadmap/r4-bits.cpp
+pass	programs/roadmap/r4-condtriv2.cpp
+pass	programs/roadmap/r4-hello.cpp
+pass	programs/roadmap/r4-lambda-generic.cpp
+pass	programs/roadmap/r4-smallvec-nongeneric.cpp
+pass	programs/roadmap/r4-smallvec.cpp
+pass	programs/roadmap/r4-wordcount.cpp
+run-unsupported	programs/roadmap/r5-evaluator.cpp
+pass	programs/roadmap/r5-hashmap-kept-pointer.cpp
+pass	programs/roadmap/r5-prelude.cpp
+pass	programs/roadmap/r6-inventory.cpp
+RUN-UNEXPECTED-UB	programs/roadmap/r6-scheduler.cpp
+run-unsupported	programs/roadmap/r6-text.cpp
 pass	statements/blocks/ambiguous-declaration.cpp
 pass	statements/blocks/block-hides-outer.cpp
 pass	statements/blocks/block-scope.cpp
@@ -5867,6 +5890,7 @@ pass	templates/declarations/main-template.cpp
 pass	templates/declarations/member-class-outside.cpp
 pass	templates/declarations/member-enum-outside-unscoped.cpp
 pass	templates/declarations/member-enum-outside.cpp
+run-unsupported	templates/declarations/member-operator-outside.cpp
 EDG-AGREES	templates/declarations/member-outside-clause-missing.cpp
 pass	templates/declarations/member-outside-constrained.cpp
 pass	templates/declarations/member-outside-names.cpp
@@ -6265,7 +6289,7 @@ pass	templates/instantiation/function-called.cpp
 pass	templates/instantiation/function-deduced-return.cpp
 pass	templates/instantiation/function-point-better-later.cpp
 pass	templates/instantiation/function-point-constant.cpp
-EDG-AGREES	templates/instantiation/function-point-constexpr-later.cpp
+EDG-ALLOWED	templates/instantiation/function-point-constexpr-later.cpp
 pass	templates/instantiation/function-point-end-of-unit.cpp
 pass	templates/instantiation/function-point-sees-earlier.cpp
 EDG-ONLY	templates/instantiation/function-unevaluated-braced-untaken.cpp
@@ -6282,6 +6306,7 @@ pass	templates/instantiation/local-entities-thread-local-and-nested-lambda.cpp
 pass	templates/instantiation/local-enumeration.cpp
 pass	templates/instantiation/member-function-called.cpp
 EDG-AGREES	templates/instantiation/member-partial-specializations-collide.cpp
+MISSED-REJECT	templates/instantiation/member-template-pointer-to-member-non-class.cpp
 pass	templates/instantiation/points-in-two-units.cpp
 MISSED-REJECT	templates/instantiation/recursion-endless-function.cpp
 pass	templates/instantiation/recursion-endless.cpp

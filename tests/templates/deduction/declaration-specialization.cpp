@@ -1,4 +1,4 @@
-// tidal-rules: DED-32
+// tidal-rules: DED-32 ORD-9
 // tidal-expect: accept
 // tidal-note: The declared type int(int*) matches both templates, and which(T*) is more specialized, so the explicit specialization belongs to which(T*). The explicit instantiation for long* matches in the same way.
 template <class T> constexpr int which(T) { return 1; }

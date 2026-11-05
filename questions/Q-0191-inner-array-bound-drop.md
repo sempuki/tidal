@@ -37,6 +37,8 @@ Kept on 2026-11-03. The review reads option 2, which only Clang follows. GCC 16 
 
 Checked on 2026-11-04 under the principle test of the style guide (section 3, item PQ of decision 0055). DCL-P4 fails step 3, because it does not say why `const` must be added at the higher levels. Item PQ wrote no principle for this case. The model that would explain the `const` levels, that no converted pointer may let a program store an object of the wrong type, gives option 2, which the review reads and only Clang follows. A principle for option 1 would bend that model to fit the answer. The question stays open and waits on the maintainer in row 4 of `documentation/decisions/pending.md`.
 
+Kept open on 2026-11-04 under decision 0054, because the question waits on the maintainer (`documentation/decisions/pending.md`, row 4).
+
 ## Opinions
 
 ### Gap review, 2026-11-03

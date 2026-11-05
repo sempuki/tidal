@@ -48,6 +48,8 @@ two of three implementations give in each row.
 
 Kept on 2026-11-03. The review reads the partial specialization with doubt. TSP-P3 gives the answer: a partial specialization uses each of its parameters in a form that deduction can find. Clang 22 follows it. The question stays open under decision 0054, because the review reads against part of the answer with doubt.
 
+Kept open on 2026-11-04 under decision 0054, because the gap review reads against part of the answer with doubt.
+
 ## Opinions
 
 ### Gap review, 2026-11-03

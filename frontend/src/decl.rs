@@ -1008,8 +1008,9 @@ impl P {
         let long = count("long");
         let int = count("int");
         let others: Vec<&String> = kw.iter().filter(|k| !matches!(k.as_str(), "signed" | "unsigned" | "short" | "long" | "int")).collect();
+        // TYP-7: the combinations of type specifiers that a program must not write.
         let bad = |p: &mut P| {
-            p.error_norule(line, format!("invalid combination of type specifiers: {}", kw.join(" ")));
+            p.error(line, "TYP-7", format!("invalid combination of type specifiers: {}", kw.join(" ")));
         };
         if signed + unsigned > 1 || (short > 0 && long > 0) || long > 2 || short > 1 || int > 1 || others.len() > 1 {
             bad(self);

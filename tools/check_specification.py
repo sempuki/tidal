@@ -8,6 +8,8 @@ Fails when:
 - a test names a rule that doesn't exist (only a warning while no rule with
   that prefix exists, which is the state of a section between pipeline
   steps 3 and 6),
+- a rule's Tests line lists a test whose tidal-rules header does not cite
+  the rule,
 - a test is not listed by any of the rules it names. A program test under
   tests/programs/ is the exception (decision 0054). It names rules that exist
   and are not withdrawn, and no rule lists it, so it never counts as a
@@ -15,6 +17,9 @@ Fails when:
 - a specification page, test, or document refers to a question (Q-NNNN) with no file in questions/,
 - a test that some compiler is expected to fail to link cites no no-diagnostic
   rule (TR-4: no class requires a diagnostic at link time),
+- a test has no base tidal-expect line, or a tidal-allows-edg line names a
+  rule that the test does not cite, a rule whose class allows no second
+  answer, or sits on a test whose EDG answer is the base answer,
 - a tidal-expect-<x> or tidal-error-<x> names no compiler id or family, or a
   tidal-error is on a test that no compiler is expected to reject, fail to
   link, or fail to run,
@@ -23,7 +28,8 @@ Fails when:
 - a page's agreement sentence is out of date (run tools/status_table.py),
 - a generated number in documentation/status.md is out of date (run
   tools/status_table.py),
-- the front-end row of documentation/exercises.md is out of date (run
+- the front-end row of documentation/exercises.md, or its sentence on the
+  pages whose only Predict batches showed test names, is out of date (run
   tools/status_table.py),
 - the index in questions/README.md is out of date (run
   tools/question_index.py), or a question's answer starts with an option
@@ -75,6 +81,9 @@ SEGMENT = re.compile(r"^## (.+?)\s*$")
 # Classes whose rules a reject test can cite (decision 0034).
 MAY_REJECT = {"reject", "undefined", "recommended", "impl-defined",
               "conditionally-supported", "unspecified", "no-diagnostic"}
+# Classes whose rule can allow EDG's answer where it differs from the base
+# expectation (tidal-allows-edg, documentation/specification-format.md).
+ALLOWS_EDG = {"impl-defined", "unspecified", "no-diagnostic", "conditionally-supported"}
 SEGMENT_KINDS = {
     "Constraints": {"required", "reject", "withdrawn"},
     "Runtime Behavior": {"required", "withdrawn"},
@@ -232,7 +241,8 @@ def check_records(errors: list[str], warnings: list[str]) -> None:
     new, problems = status_table.render_exercises(exercises)
     errors.extend(problems)
     if new != exercises:
-        errors.append("documentation/exercises.md: the front-end row is out of date; run tools/status_table.py")
+        errors.append("documentation/exercises.md: the front-end row or the section 7 sentence is out of date; "
+                      "run tools/status_table.py")
     for f in [*SPEC.rglob("*.md"), *GUIDES.rglob("*.md"), *TESTS.rglob("*.cpp"),
               *(ROOT / "documentation").rglob("*.md"), *(ROOT / "questions").glob("*.md")]:
         if re.search(r"\bQ-NEW-[a-z0-9]", f.read_text()):
@@ -380,6 +390,17 @@ def main() -> int:
         for key in test.errors:
             if key and key not in known:
                 errors.append(f"{test.name}: tidal-error-{key} names no compiler or family")
+        if test.default is None:
+            errors.append(f"{test.name}: no base tidal-expect line (documentation/specification-format.md)")
+        if test.allows_edg is not None:
+            edg = test.overrides.get("edg")
+            if test.allows_edg not in test.rules:
+                errors.append(f"{test.name}: tidal-allows-edg names {test.allows_edg}, which tidal-rules does not cite")
+            elif test.allows_edg in rules and rules[test.allows_edg][1] not in ALLOWS_EDG:
+                errors.append(f"{test.name}: tidal-allows-edg names {test.allows_edg}, "
+                              f"whose class {rules[test.allows_edg][1]} allows no second answer")
+            if edg is None or test.default is None or (edg == "reject") == (test.default == "reject"):
+                errors.append(f"{test.name}: tidal-allows-edg on a test whose EDG answer is the base answer")
         if test.errors and not {"reject", "link-fail", "run-fail"} & {test.default, *test.overrides.values()}:
             errors.append(f"{test.name}: tidal-error on a test that no compiler is expected to reject, fail to link, or fail to run")
         if test.default == "reject" and all(rid in rules for rid in test.rules) and not (
@@ -398,6 +419,8 @@ def main() -> int:
                 errors.append(f"{test.name}: names {rid}, which is withdrawn")
             elif not program and rid not in listed.get(test.name, set()):
                 errors.append(f"{test.name}: names {rid}, but {rid} doesn't list it")
+        for rid in sorted(listed.get(test.name, set()) - set(test.rules)):
+            errors.append(f"{test.name}: {rid} lists it, but its tidal-rules header doesn't cite {rid}")
     for t, rids in sorted(listed.items()):
         if t.startswith(PROGRAMS):
             errors.append(f"{t}: a program test is listed by {', '.join(sorted(rids))}; "

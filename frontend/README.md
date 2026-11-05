@@ -183,8 +183,10 @@ A function-like `#define` and other directives are unsupported.
 The harness reads the `// tidal-` directives at the top of each test. The
 harness judges each test by its base `tidal-expect` line, and treats
 `run`, `run-fail`, and `link-fail` as accept for the check. The
-`tidal-expect-edg` override only names a second answer. A test with no
-base line and compiler lines that differ passes with either answer. The
+`tidal-expect-edg` override only names a second answer. A
+`tidal-allows-edg: RULE-ID` line names the rules that allow that second
+answer (G134). A test with no base line gets the status `NO-BASE` and
+does not pass with either answer (G135). The
 kind of each rule comes from `../specification` beside the test
 directory, or from the directory that `--spec DIR` names. `-Werror` in `tidal-flags`
 passes `--werror`, `-m32` passes `--m32`, and the other `-W` flags
@@ -203,8 +205,22 @@ columns:
 - **Agrees with EDG only**: the answer matches the EDG override and not
   the base line. A failure.
 - **EDG, allowed**: the answer matches the EDG override and not the
-  base line, and every rule the test cites is `impl-defined`,
-  `unspecified`, `no-diagnostic`, or `conditionally-supported`. A pass.
+  base line, and the rules allow a second answer. A pass. With a
+  `tidal-allows-edg` line, each rule that the line names is
+  `impl-defined`, `unspecified`, `no-diagnostic`, or
+  `conditionally-supported`. Without one, every rule the test cites is
+  of one of these kinds.
+- **No base expectation**: the test has no base `tidal-expect` line, so
+  the harness has no answer to judge by. A failure.
+
+A table per page (test subdirectory) follows. It counts the rejects that
+pass and the rule that the first error names: a rule the test cites, a
+rule that the text of a cited rule links to with {rule}`ID` (as decision
+0052 lets a run stop match), another rule, or no rule. The share is the
+first two columns over the passing rejects. With `-v`, each passing
+reject whose first error names another rule or no rule has a line that
+starts with `RULE-ID`, then `other-rule` or `no-rule`, the test, its
+rules, and the rules that the error names.
 
 The harness then runs each test whose base expectation is `run` or
 `run-fail`, if the check accepted every translation unit, and links the
@@ -244,7 +260,8 @@ status gives the run's outcome when the check passed:
 | `pass` | the check matches the expectation, and a `run` or `run-fail` test also passed its run |
 | `EDG-ONLY` | the check differs from the EDG override and matches the base expectation |
 | `EDG-AGREES` | the check matches only the EDG override; a failure |
-| `EDG-ALLOWED` | the check matches only the EDG override, and every rule the test cites allows either answer; a pass |
+| `EDG-ALLOWED` | the check matches only the EDG override, and the rules allow either answer; a pass |
+| `NO-BASE` | the test has no base `tidal-expect` line; a failure |
 | `pass-partial` | as `pass`, but the exploration of the choice points is partial |
 | `FALSE-REJECT` | the check rejected a valid program |
 | `MISSED-REJECT` | the check accepted a program that the test expects rejected |

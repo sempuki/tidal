@@ -48,6 +48,8 @@ member that does not change.
 
 Kept on 2026-11-03. The review reads against the answer in part, with doubt, and no test can show either result. The question stays open under decision 0054, because the review reads with doubt.
 
+Kept open on 2026-11-04 under decision 0054, because the gap review reads against part of the answer with doubt.
+
 ## Opinions
 
 ### Gap review, 2026-11-03

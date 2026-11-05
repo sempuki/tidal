@@ -26,7 +26,7 @@ GCC 14.
 
 No; `alignas` must not apply to an enumeration (option 1). Clang and the newer GCC agree. The provisional answer has the weakest support of the group, and an opinion is welcome.
 
-Kept open on 2026-11-03 under decision 0054, because no principle on the page gives the answer. ALN-P1 says what `alignas` does to a type's alignment, and no principle says which declarations can carry it. EDG 7.0 is the only newest family that differs.
+Kept open on 2026-11-03 (replaced by the note of 2026-11-04) under decision 0054, because no principle on the page gives the answer. ALN-P1 says what `alignas` does to a type's alignment, and no principle says which declarations can carry it. EDG 7.0 is the only newest family that differs.
 
 Checked on 2026-11-04 under the principle test of the style guide (section 3, item PQ of decision 0055). ALN-P1 failed step 3, because no principle said which declarations can carry `alignas`. ALN-P1 now gives a table of the declarations, with an enumeration among those that reject `alignas`. The existing tests check each row. Under decision 0055, the question does not settle on a principle that phase 8 wrote. The question stays provisional until a reader or a reviewer uses ALN-P1.
 

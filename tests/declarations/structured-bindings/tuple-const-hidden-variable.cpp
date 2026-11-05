@@ -1,4 +1,4 @@
-// tidal-rules: SB-5 SB-13
+// tidal-rules: SB-5 SB-13 LSUP-3
 // tidal-expect: reject
 // tidal-error-clang: (cannot bind|cannot decompose) private member
 // tidal-error-gcc: cannot decompose inaccessible member

@@ -37,7 +37,7 @@ which Clang and EDG reject and GCC accepts.
 matches the parameter of `std::tuple_element` that SB-5 also uses with
 the index.
 
-Kept open on 2026-11-04 under decision 0054. The gap review of the rules that phase 7 rewrote supports the answer with no doubt, but SB-5 changed in the same commit, in the condition for the member form of `get` (decision 0055). GCC 16 is the one newest family that differs.
+Kept open on 2026-11-04 under decision 0055, because SB-5 changed in the commit that read the review, in the condition for the member form of `get`, and no reader or review has used the changed rule. The gap review of the rules that phase 7 rewrote supports the answer with no doubt. GCC 16 is the one newest family that differs.
 
 ## Opinions
 

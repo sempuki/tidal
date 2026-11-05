@@ -16,7 +16,7 @@ A declaration such as `alignas(1) int x;` asks for an alignment weaker than the 
 
 No; the program is not valid (option 1). Clang and EDG agree.
 
-Kept open on 2026-11-03 under decision 0054, because no principle on the page gives the answer. ALN-P1 says that `alignas` never makes an alignment weaker, and both options keep that promise: option 1 rejects the request, and option 2 ignores it. GCC 16 is the only newest family that differs.
+Kept open on 2026-11-03 (replaced by the note of 2026-11-04) under decision 0054, because no principle on the page gives the answer. ALN-P1 says that `alignas` never makes an alignment weaker, and both options keep that promise: option 1 rejects the request, and option 2 ignores it. GCC 16 is the only newest family that differs.
 
 Checked on 2026-11-04 under the principle test of the style guide (section 3, item PQ of decision 0055). ALN-P1 failed step 3, because both options kept its promise that `alignas` never weakens an alignment. ALN-P1 now says that an `alignas` that asks for a weaker alignment than the natural one is rejected, which rules out option 2. The existing tests check the case. Under decision 0055, the question does not settle on a principle that phase 8 wrote. The question stays provisional until a reader or a reviewer uses ALN-P1.
 

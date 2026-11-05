@@ -57,6 +57,8 @@ arguments.
 
 Kept on 2026-11-03. The review reads option 2, and every compiler accepts the call with equal default arguments, which option 2 rejects. Tidal keeps option 1, which GCC follows, until the maintainer decides. The form with equal values is in row 4 of `documentation/decisions/pending.md`. The question stays open under decision 0054, because the review reads against the answer.
 
+Kept open on 2026-11-04 under decision 0054, because the question waits on the maintainer (`documentation/decisions/pending.md`, row 4).
+
 ## Opinions
 
 ### Gap review, 2026-11-03

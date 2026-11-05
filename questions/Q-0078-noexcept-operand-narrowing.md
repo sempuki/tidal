@@ -23,7 +23,7 @@ EDG 7.0 also accepts `explicit(2)` and converts the condition to `bool`
 
 No; the operand must convert to `bool` without narrowing (option 1). Clang and GCC agree. `static_assert` and `if constexpr` permit narrowing, so the rule for `noexcept` differs from the rules for those two.
 
-Kept open on 2026-11-03 under decision 0054, because no principle on the page gives the answer. EXS-P1 says that the operand is a constant decided at translation time, and no principle says which conversions to `bool` it allows. EDG 7.0 is the only newest family that differs.
+Kept open on 2026-11-03 (replaced by the note of 2026-11-04) under decision 0054, because no principle on the page gives the answer. EXS-P1 says that the operand is a constant decided at translation time, and no principle says which conversions to `bool` it allows. EDG 7.0 is the only newest family that differs.
 
 Checked on 2026-11-04 under the principle test of the style guide (section 3, item PQ of decision 0055). EXS-P1 fails step 3, because it says only that the operand is a constant, so option 2 also fits. CE-P4 gives the answer in its table, and no principle or rule of the exception specifications page cites CE-P4. Item PQ widened EXS-P1: the operand needs an exact `bool` value as in the other places of CE-P4, so its conversion must not narrow, and EXS-P1 now cites CE-P4. Under decision 0055, the question does not settle on a principle that phase 8 wrote. The question stays provisional until a reader or a reviewer uses EXS-P1.
 

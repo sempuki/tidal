@@ -40,6 +40,8 @@ An unknown escape of a character of the basic character set is conditionally sup
 
 Changed on 2026-11-03 to option 3. The review reads option 3, every compiler conforms to it, and PRIM-P4 gives the same answer: the parts of a literal that depend on the character set belong to the implementation. A probe on the matrix shows that EDG accepts `'\q'`, `"\q"`, `'\@'`, `'\$'`, and a backtick escape, and that every compiler rejects a backslash before `é`. The new `conditionally-supported` rule PRIM-35 covers the escape, with the tests `char-unknown-escape.cpp` and `string-unknown-escape.cpp`. PRIM-18 keeps a backslash before a character outside the basic character set, with the new test `char-unknown-escape-outside-basic.cpp`. The question stays open, because the rule changed on the same day.
 
+Kept open on 2026-11-04 under decision 0054, because the gap review of the rules that phase 7 added reads the string literal case with doubt, and the question waits on the maintainer (`documentation/decisions/pending.md`, row 4).
+
 ## Opinions
 
 ### Gap review, 2026-11-03

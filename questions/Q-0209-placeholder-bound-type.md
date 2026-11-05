@@ -32,7 +32,7 @@ inventory describes the behavior.
 The type of `sizeof`; Clang and EDG agree, GCC gives `int` (option 1). Two of three implementations and the inventory agree, and the
 number of elements of an array has the type of `sizeof` elsewhere.
 
-Kept open on 2026-11-03 under decision 0054, because no principle on the page gives the answer. DED-P3 gives the value of `N` and not its type.
+Kept open on 2026-11-03 (replaced by the note of 2026-11-04) under decision 0054, because no principle on the page gives the answer. DED-P3 gives the value of `N` and not its type.
 
 Checked on 2026-11-04 under the principle test of the style guide (section 3, item PQ of decision 0055). DED-P3 failed step 3, because DED-P3 gave the value of `N` and not its type. Item PQ widened DED-P3. A value keeps the type it has at its place, and a bound counts elements, so a bound gives an `auto` parameter the type of a `sizeof` expression. The new test `match-argument-type.cpp` checks the same model for a class template argument. Under decision 0055, the question does not settle on a principle that phase 8 wrote. The question stays provisional until a reader or a reviewer uses DED-P3.
 

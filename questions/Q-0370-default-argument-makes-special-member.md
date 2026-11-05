@@ -46,7 +46,7 @@ No; the program is not valid (option 1). Two of three families reject
 it, and the kinds of a class's special member functions stay fixed after
 the class definition.
 
-Kept open on 2026-11-04 under decision 0054. The gap review of the rules that phase 7 rewrote supports the answer with no doubt, but DEFARG-2 changed in the same commit, to name the limit of the new rule DEFARG-13. The question settles after a reader or a review has used the changed rule (decision 0055). GCC 16 is the one newest family that differs.
+Kept open on 2026-11-04 under decision 0055, because DEFARG-2 changed in the commit that read the review, to name the limit of the new rule DEFARG-13, and no reader or review has used the changed rule. The gap review of the rules that phase 7 rewrote supports the answer with no doubt. GCC 16 is the one newest family that differs.
 
 ## Opinions
 
