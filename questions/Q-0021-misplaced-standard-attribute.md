@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** ATTR-2, `tests/declarations/attributes/noreturn-on-variable.cpp`, `nodiscard-on-variable.cpp`, `no-unique-address-bitfield.cpp`, `nodiscard-on-type-alias.cpp`
+**Waits for:** newest families that agree
 
 ## Context
 

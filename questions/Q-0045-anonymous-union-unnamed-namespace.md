@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** STO-11, UNI-9, `tests/declarations/storage-linkage/anonymous-union-unnamed-namespace.cpp`, `tests/classes/unions/anonymous-union-unnamed-namespace.cpp`
+**Waits for:** newest families that agree
 
 ## Context
 

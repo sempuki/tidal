@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** STG-25, STG-11, STG-12, `tests/foundations/storage/base-bytes-shared-with-member.cpp`
+**Waits for:** a review (doubt)
 
 ## Context
 

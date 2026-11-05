@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** STG-13, ADD-6, ADD-10, `tests/foundations/storage/byte-pointer-walks-object.cpp`, `tests/foundations/storage/byte-round-trip.cpp`, `tests/foundations/storage/object-bytes-cover-members.cpp`, `tests/foundations/storage/past-end-address.cpp`, `tests/foundations/storage/padding-bytes-not-in-value.cpp`
+**Waits for:** a review (doubt)
 
 ## Context
 

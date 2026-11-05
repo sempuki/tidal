@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** ORD-11, `tests/templates/ordering/reference-kind-and-qualifiers.cpp`
+**Waits for:** a use of ORD-P2; newest families that agree
 
 ## Context
 

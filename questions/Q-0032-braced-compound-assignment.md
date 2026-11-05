@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** ASN-6, `tests/expressions/assignment/braced-compound.cpp`
+**Waits for:** a review (doubt)
 
 ## Context
 

@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** DCMP-13, `tests/classes/comparisons/ne-matching-ref-qualifier.cpp`
+**Waits for:** the maintainer (pending.md row 4)
 
 ## Context
 

@@ -3,6 +3,7 @@
 **Status:** provisional
 **Affects:** ATTR-2, ATTR-P1, `tests/declarations/attributes/fallthrough-into-outer-switch.cpp`
 **Source:** reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md, the ATTR-P1 section
+**Waits for:** a use of ATTR-P1
 
 ## Context
 

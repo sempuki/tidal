@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** ICS-31, ICS-P2, `tests/overloading/conversion-sequences/qualification-array-bound.cpp`, `tests/overloading/conversion-sequences/qualification-reference-temporary.cpp`
+**Waits for:** newest families that agree
 
 ## Context
 

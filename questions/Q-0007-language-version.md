@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** charter, decision 0002, `tests/statements/if/condition-structured-binding.cpp`
+**Waits for:** the maintainer (pending.md row 7)
 
 ## Context
 

@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** CTOR-4, CTOR-24, `tests/classes/constructors/const-object-union-no-init.cpp`, `tests/classes/constructors/const-object-union-member-init.cpp`, `tests/classes/constructors/const-object-anonymous-union-init.cpp`, `tests/classes/constructors/const-object-anonymous-union-no-init.cpp`, `tests/classes/constructors/const-object-only-anonymous-unions.cpp`
+**Waits for:** newest families that agree
 
 ## Context
 

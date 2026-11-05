@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** DEP-27, `tests/templates/dependent-names/template-keyword-in-declarator.cpp`, `tests/templates/dependent-names/template-keyword-in-declarator-static.cpp`, `tests/templates/dependent-names/template-keyword-in-declarator-class.cpp`
+**Waits for:** newest families that agree
 
 ## Context
 

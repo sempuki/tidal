@@ -7,6 +7,29 @@ request.
 The specification never waits on a question. Each question has a **provisional
 answer**, and the specification follows it until a pull request changes it.
 
+## What holds a question open
+
+A provisional question has a `**Waits for:**` line in its header
+(decision 0057). The line names what holds the question open now. The
+dated notes below it keep the history. The line holds one or more of
+these items, joined by "; ":
+
+| Item | The question settles when |
+|---|---|
+| `the maintainer (pending.md row N)` | the maintainer decides that row of `documentation/decisions/pending.md` |
+| `a use of ID ...` | a reader batch or a review uses the named principles (style guide, section 3) |
+| `newest families that agree` | at most one newest family differs, or the maintainer widens row 1 |
+| `a review (doubt)`, `a review (silent)`, `a review (against)`, `a review (part)` | a review supports the answer with no doubt; the kind says what the last review found |
+| `a first review` | a review reads the question for the first time |
+| `a principle (ID)` | the named principle gives the answer |
+| `a rule` | a rule states the case |
+| `child questions (Q-NNNN, ...)` | the named questions settle |
+
+When the reason changes, the writer changes the line in the same commit
+as the dated note. A settled question has no `**Waits for:**` line.
+`tools/question_index.py --check` checks the line, and
+`tools/exercises.py principles` selects questions by it.
+
 ## Index
 
 `tools/question_index.py` builds this table from each file's title, its

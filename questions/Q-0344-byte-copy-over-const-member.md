@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** CPY-19, CV-5, `tests/classes/copy-move/trivially-copyable-const-member.cpp`
+**Waits for:** a review (against)
 
 ## Context
 

@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** CE-14, CE-3, `tests/foundations/constant-evaluation/extended-temporary-member.cpp`, `tests/foundations/constant-evaluation/extended-temporary-nested.cpp`, `tests/foundations/constant-evaluation/read-extended-temporary-class.cpp`, `tests/foundations/constant-evaluation/read-extended-temporary-nested.cpp`
+**Waits for:** a review (doubt)
 
 ## Context
 

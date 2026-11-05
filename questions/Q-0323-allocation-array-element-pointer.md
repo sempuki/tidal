@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** STG-8, STG-10, STG-28, LSUP-11, `tests/foundations/storage/allocation-array-class-elements.cpp`, `tests/foundations/storage/allocation-array-class-elements-constant.cpp`, `tests/foundations/storage/allocation-array-unbuilt-element-constant.cpp`
+**Waits for:** newest families that agree; a review (doubt)
 
 ## Context
 

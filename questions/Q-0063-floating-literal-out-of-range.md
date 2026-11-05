@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** PRIM-15, `tests/expressions/primary/float-overflow.cpp`
+**Waits for:** a review (against)
 
 ## Context
 

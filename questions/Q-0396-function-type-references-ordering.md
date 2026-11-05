@@ -3,6 +3,7 @@
 **Status:** provisional
 **Affects:** ORD-9, ORD-2, `tests/templates/ordering/address-reference-against-value.cpp`, `tests/templates/ordering/address-value-against-forwarding.cpp`
 **Source:** finding I2-5 of `reports/clean-room/I2/report.md`, from the probes that a clean-room writer ran for it.
+**Waits for:** a first review
 
 ## Context
 

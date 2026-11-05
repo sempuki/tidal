@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** CLS-3, CLS-23, `tests/declarations/volatile/static-const-volatile-in-class.cpp`, `tests/declarations/volatile/static-inline-const-volatile-in-class.cpp`
+**Waits for:** newest families that agree
 
 ## Context
 

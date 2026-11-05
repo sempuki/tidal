@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** CTAD-13, `tests/templates/class-template-deduction/guide-not-deducible.cpp`
+**Waits for:** newest families that agree
 
 ## Context
 

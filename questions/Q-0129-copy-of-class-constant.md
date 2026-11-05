@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** ODR-P1, ODR-2, ODR-3, `tests/foundations/odr/class-constant-copy-in-lambda.cpp`
+**Waits for:** a use of ODR-P1; newest families that agree
 
 ## Context
 

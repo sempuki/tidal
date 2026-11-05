@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** DEP-35, `tests/templates/dependent-names/qualified-member-other-at-instantiation.cpp`
+**Waits for:** the maintainer (pending.md row 4)
 
 ## Context
 

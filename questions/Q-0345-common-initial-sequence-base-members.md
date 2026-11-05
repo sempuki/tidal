@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** UNI-15, UNI-16, `tests/classes/unions/common-initial-sequence-inherited.cpp`, `tests/classes/members/grids/layout-compatible.json`
+**Waits for:** a review (doubt)
 
 ## Context
 

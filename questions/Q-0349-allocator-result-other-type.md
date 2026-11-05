@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** CE-4, LSUP-11, `tests/foundations/constant-evaluation/allocator-result-other-type.cpp`
+**Waits for:** a review (silent)
 
 ## Context
 

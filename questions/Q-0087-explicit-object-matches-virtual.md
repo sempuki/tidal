@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** VIRT-19, `tests/classes/virtual/explicit-object-overrides.cpp`
+**Waits for:** the maintainer (pending.md row 4, row 7)
 
 ## Context
 

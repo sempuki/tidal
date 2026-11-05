@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** VOL-1, VOL-12, VOL-13, BF-9, `tests/declarations/volatile/bitfield-write-keeps-neighbors.cpp`
+**Waits for:** a review (doubt)
 
 ## Context
 

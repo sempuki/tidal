@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** DEFARG-12, DEFARG-2, `tests/declarations/functions/default-arguments/outside-default-makes-default-constructor.cpp`, `tests/declarations/functions/default-arguments/outside-default-makes-copy-constructor.cpp`, `tests/declarations/functions/default-arguments/outside-default-makes-move-constructor.cpp`
+**Waits for:** a use of DEFARG-P2
 
 ## Context
 

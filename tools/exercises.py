@@ -52,15 +52,12 @@ and writes a fixed program pNN-fix.cpp:
     {"p01": {"rules": ["VIRT-3"], "why": "..."}}
 
 `principles` builds a principle-use batch (decision 0056, item PU). It
-selects each provisional question whose latest dated note says that the
-question waits for a use of a principle (WAITS_FOR_USE below). The
-principles it waits on are the first of these that gives any: principle
-IDs in the note, the principles whose `:rules:` list a rule ID in the
-note, principle IDs in the Affects line, and the principles of the rules
-in the Affects line. The tool prints each question, its principles, and
-where they came from. The programs are the single tests that the
-question names above its Opinions and the tests whose tidal-note lines
-cite the question, written as in `predict`. The copy of specification/
+selects each provisional question whose **Waits for:** line has an item
+"a use of" (decision 0057), and the principles that item names are the
+principles the question waits on. The tool prints each question and its
+principles. The programs are the single tests that the question names
+above its Opinions and the tests whose tidal-note lines cite the
+question, written as in `predict`. The copy of specification/
 leaves out every rule block and every Evidence segment, so the reader
 decides by the principles alone. An answer adds `part`, the part of the
 model that decides the program, and can give the outcome `not-decided`.
@@ -339,66 +336,9 @@ QUESTIONS = ROOT / "questions"
 PRINCIPLE = re.compile(r"^:::\{principle\} (\S+)$")
 RULE_END = re.compile(r"^:::$")
 # The start of a dated note, such as "Kept open on 2026-11-04" or "Used on 2026-11-04".
-DATED = re.compile(r"(?:^|(?<=[.)] ))[A-Z][a-z]+(?: [a-z]+)? on \d{4}-\d{2}-\d{2}\b")
-# A note that keeps a question open until a reader or a reviewer uses a principle.
-WAITS_FOR_USE = re.compile(r"\bwaits? for (?:the next use|a use|a reader or a reviewer to use"
-                           r"|the next review or reader batch)")
-PRINCIPLE_ID = re.compile(r"\b[A-Z]+-P\d+\b")
-RULE_ID = re.compile(r"\b[A-Z]+-\d+\b")
+WAITS_FOR_USE = re.compile(r"^\*\*Waits for:\*\*.*?\ba use of ((?:[A-Z]+-P\d+ ?)+)", re.M)
 TEST_PATH = re.compile(r"\btests/([\w/.+-]+\.cpp)\b")
 NOT_DECIDED = "not-decided"
-
-
-def principle_rules() -> dict[str, list[str]]:
-    """For each rule, the principles whose `:rules:` list names it."""
-    owners: dict[str, list[str]] = {}
-    for f in sorted(SPEC.rglob("*.md")):
-        principle = None
-        for line in f.read_text().splitlines():
-            if m := PRINCIPLE.match(line):
-                principle = m.group(1)
-            elif principle and line.startswith(":rules: "):
-                for rule in line.removeprefix(":rules: ").split():
-                    owners.setdefault(rule, []).append(principle)
-            elif RULE_END.match(line):
-                principle = None
-    return owners
-
-
-def latest_note(text: str) -> str | None:
-    """The last dated note above the Opinions segment of a question."""
-    body = text.split("\n## Opinions")[0]
-    found = None
-    for para in body.split("\n\n"):
-        para = " ".join(para.split())
-        for m in DATED.finditer(para):
-            found = para[m.start():]
-    return found
-
-
-def waited_principles(note: str, affects: str, owners: dict[str, list[str]]) -> tuple[list[str], str]:
-    """The principles a waiting question waits on, and where they came from.
-
-    The first of these that gives any principle wins: principle IDs in the
-    note; the principles of the rule IDs in the note; principle IDs in the
-    Affects line; the principles of the rules in the Affects line.
-    """
-    def of_rules(text: str) -> list[str]:
-        found = []
-        for rule in RULE_ID.findall(text):
-            for p in owners.get(rule, []):
-                if p not in found:
-                    found.append(p)
-        return found
-
-    for source, ids in [("principle IDs in the note", PRINCIPLE_ID.findall(note)),
-                        ("principles of the rules in the note", of_rules(note)),
-                        ("principle IDs in the Affects line", PRINCIPLE_ID.findall(affects)),
-                        ("principles of the rules in the Affects line", of_rules(affects))]:
-        ids = list(dict.fromkeys(ids))
-        if ids:
-            return ids, source
-    return [], "no principle found"
 
 
 def note_citations() -> dict[str, set[str]]:
@@ -421,24 +361,21 @@ def usable_test(name: str) -> bool:
 
 
 def waiting_questions() -> list[dict]:
-    """The open questions whose latest dated note waits for a use of a principle."""
-    owners, cited, chosen = principle_rules(), note_citations(), []
+    """The open questions whose **Waits for:** line names a use of a principle."""
+    cited, chosen = note_citations(), []
     for f in sorted(QUESTIONS.glob("Q-[0-9][0-9][0-9][0-9]*.md")):
         text = f.read_text()
         if "**Status:** provisional" not in text:
             continue
-        note = latest_note(text)
-        if not note or not (m := WAITS_FOR_USE.search(note)):
+        if not (m := WAITS_FOR_USE.search(text.split("\n## ", 1)[0])):
             continue
         qid = f.name[:6]
-        affects = next((l for l in text.splitlines() if l.startswith("**Affects:**")), "")
-        principles, source = waited_principles(note, affects, owners)
+        principles = m.group(1).split()
         body = text.split("\n## Opinions")[0]
         named = list(dict.fromkeys(TEST_PATH.findall(body)))
         tests = [t for t in named if usable_test(t)]
         tests += sorted(t for t in cited.get(qid, set()) if usable_test(t) and t not in tests)
-        chosen.append({"question": qid, "principles": principles, "source": source,
-                       "phrase": m.group(0), "tests": tests,
+        chosen.append({"question": qid, "principles": principles, "tests": tests,
                        "skipped": [t for t in named if not usable_test(t)]})
     return chosen
 
@@ -487,22 +424,18 @@ def copy_principles(out: Path) -> None:
 
 def principles(out: Path) -> int:
     chosen = waiting_questions()
-    print("Selected: each provisional question whose latest dated note says it waits for a use")
-    print(f"(the note matches {WAITS_FOR_USE.pattern!r}).")
+    print("Selected: each provisional question whose **Waits for:** line names a use of a principle.")
     print()
-    print("| Question | Waits on | Taken from | Tests | Phrase in the note |")
-    print("|---|---|---|---|---|")
+    print("| Question | Waits on | Tests |")
+    print("|---|---|---|")
     for q in chosen:
-        print(f"| {q['question']} | {' '.join(q['principles']) or 'none'} | {q['source']} | "
-              f"{len(q['tests'])} | {q['phrase']} |")
+        print(f"| {q['question']} | {' '.join(q['principles'])} | {len(q['tests'])} |")
     for q in chosen:
         if q["skipped"]:
             print(f"{q['question']}: left out {' '.join(q['skipped'])} (whole programs or extra units)")
         if not q["tests"]:
             print(f"{q['question']}: no test to show, so the batch leaves the question out")
-        if not q["principles"]:
-            print(f"{q['question']}: no principle found, so the batch leaves the question out")
-    chosen = [q for q in chosen if q["tests"] and q["principles"]]
+    chosen = [q for q in chosen if q["tests"]]
     names: dict[str, dict[str, list[str]]] = {}  # test -> question -> principles
     for q in chosen:
         for t in q["tests"]:

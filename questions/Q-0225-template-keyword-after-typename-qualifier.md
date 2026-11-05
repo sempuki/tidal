@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** DEP-24, `tests/templates/dependent-names/template-keyword-needed-after-typename.cpp`, `tests/templates/dependent-names/template-keyword-needed-base.cpp`
+**Waits for:** the maintainer (pending.md row 4)
 
 ## Context
 

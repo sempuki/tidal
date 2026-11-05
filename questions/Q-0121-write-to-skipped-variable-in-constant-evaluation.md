@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** JMP-16, `tests/statements/switch/skipped-declaration-written-then-read.cpp`
+**Waits for:** newest families that agree
 
 ## Context
 

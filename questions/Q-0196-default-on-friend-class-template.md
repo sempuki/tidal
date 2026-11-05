@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** TPL-37
+**Waits for:** a principle (TPL-P3)
 
 ## Context
 

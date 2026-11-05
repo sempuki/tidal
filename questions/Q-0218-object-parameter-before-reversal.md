@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** ORD-7, `tests/templates/ordering/reversed-member-object.cpp`
+**Waits for:** a use of ORD-P1
 
 ## Context
 

@@ -3,6 +3,7 @@
 **Status:** provisional
 **Affects:** DED-24, `tests/templates/deduction/substitution-failure-negative-bound-computed.cpp`, `tests/templates/deduction/substitution-failure-negative-bound-ellipsis.cpp`
 **Source:** finding R9C-4 of `reports/clean-room/R9/report-c.md`
+**Waits for:** a first review
 
 ## Context
 

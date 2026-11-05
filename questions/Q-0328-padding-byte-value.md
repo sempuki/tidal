@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** STG-11, STG-12, INIT-1, `tests/foundations/storage/byte-round-trip.cpp`, `tests/foundations/storage/padding-bytes-not-in-value.cpp`
+**Waits for:** a review (against)
 
 ## Context
 

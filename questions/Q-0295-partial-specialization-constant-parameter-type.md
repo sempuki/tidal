@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** DED-12, TSP-14, `tests/templates/specialization/partial-constant-type-exact.cpp`, `tests/templates/specialization/partial-placeholder-pattern-const.cpp`, `tests/templates/specialization/partial-placeholder-pattern-variable.cpp`
+**Waits for:** a review (doubt)
 
 ## Context
 

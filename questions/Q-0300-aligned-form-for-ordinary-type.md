@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** NEW-29, NEW-30, `tests/expressions/new-delete/aligned-form-only-for-ordinary-type.cpp`
+**Waits for:** the maintainer (pending.md row 4)
 
 ## Context
 

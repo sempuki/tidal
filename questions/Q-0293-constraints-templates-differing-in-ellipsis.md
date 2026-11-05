@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** ORD-13, `tests/templates/ordering/constraints-ellipsis.cpp`, `tests/templates/ordering/constraints-ellipsis-on-second.cpp`
+**Waits for:** a use of ORD-P2 ORD-P4
 
 ## Context
 

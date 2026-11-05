@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** LSUP-5, `tests/foundations/language-support/alignment-enumeration-unscoped.cpp`, `tests/foundations/language-support/alignment-enumeration-wrong-underlying-type.cpp`, `tests/foundations/language-support/alignment-enumeration-class.cpp`
+**Waits for:** a use of LSUP-P2
 
 ## Context
 

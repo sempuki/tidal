@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** CTOR-12, OBJ-2, `tests/classes/constructors/base-init-calls-member-of-member-constant.cpp`
+**Waits for:** newest families that agree
 
 ## Context
 

@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** CTAD-12, `tests/templates/class-template-deduction/guide-same-parameters.cpp`, `guide-template-same-parameters.cpp`
+**Waits for:** the maintainer (pending.md row 3, row 4)
 
 ## Context
 

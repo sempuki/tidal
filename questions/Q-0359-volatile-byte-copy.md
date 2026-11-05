@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** VOL-6, STG-12, `tests/declarations/volatile/byte-copy-through-plain-bytes.cpp`, `tests/classes/copy-move/trivially-copyable-volatile-member.cpp`
+**Waits for:** a review (doubt)
 
 ## Context
 

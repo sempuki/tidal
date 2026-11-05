@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** EXS-6, `tests/declarations/exception-specifications/operand-cycle.cpp`
+**Waits for:** a review (silent)
 
 ## Context
 

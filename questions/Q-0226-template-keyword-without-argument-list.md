@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** DEP-26, `tests/templates/dependent-names/template-keyword-no-list.cpp`, `tests/templates/dependent-names/template-keyword-no-list-class.cpp`, `tests/templates/dependent-names/template-keyword-no-list-static.cpp`
+**Waits for:** the maintainer (pending.md row 4)
 
 ## Context
 

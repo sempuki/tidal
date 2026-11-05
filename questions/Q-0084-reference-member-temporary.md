@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** CTOR-17, `tests/classes/constructors/reference-member-binds-temporary.cpp`, `tests/classes/constructors/reference-default-member-binds-temporary.cpp`, `tests/classes/constructors/reference-member-binds-converted-parameter.cpp`, `tests/classes/constructors/initializer-list-member-from-braces.cpp`, `tests/classes/constructors/initializer-list-default-member-from-braces.cpp`, `tests/classes/constructors/reference-default-member-unused.cpp`, `tests/classes/constructors/reference-default-member-aggregate-value.cpp`
+**Waits for:** newest families that agree
 
 ## Context
 

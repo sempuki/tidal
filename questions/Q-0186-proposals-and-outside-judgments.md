@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** `documentation/exercises.md` (Propose)
+**Waits for:** the maintainer (pending.md row 9)
 
 ## Context
 

@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** CPT-33, `tests/templates/concepts/compound-requirement-order.cpp`, `tests/templates/concepts/compound-requirement-order-noexcept.cpp`, `tests/templates/concepts/compound-requirement-extra-argument-unused.cpp`
+**Waits for:** a review (doubt)
 
 ## Context
 

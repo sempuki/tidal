@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** LSUP-1, `tests/foundations/language-support/initializer-list-parameter-not-needed.cpp`, `tests/foundations/language-support/initializer-list-candidate-not-viable.cpp`, `tests/foundations/language-support/initializer-list-auto-deduction.cpp`
+**Waits for:** a review (silent)
 
 ## Context
 

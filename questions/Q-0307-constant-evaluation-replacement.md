@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** STG-19, STG-20, `tests/foundations/storage/replace-base-old-pointer-constant.cpp`, `tests/foundations/storage/reuse-const-automatic-object-constant.cpp`
+**Waits for:** the maintainer (pending.md row 4)
 
 ## Context
 

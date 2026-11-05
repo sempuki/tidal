@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** INST-22, `tests/templates/instantiation/explicit-variable-wrong-type.cpp`, `tests/templates/instantiation/explicit-array-bound-differs.cpp`
+**Waits for:** a review (doubt)
 
 ## Context
 

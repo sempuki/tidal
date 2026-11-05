@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** CLS-13, `tests/classes/members/explicit-object-from-prvalue.cpp`
+**Waits for:** the maintainer (pending.md row 4, row 7)
 
 ## Context
 

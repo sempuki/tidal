@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** CTAD-28, `tests/templates/class-template-deduction/alias-template-rvalue-reference.cpp`
+**Waits for:** the maintainer (pending.md row 3)
 
 ## Context
 

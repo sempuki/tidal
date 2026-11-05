@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** `documentation/style-guide.md`, `site/conf.py`, `tools/requirements-site.txt`
+**Waits for:** the maintainer (pending.md row 9)
 
 ## Context
 

@@ -3,6 +3,7 @@
 **Status:** provisional
 **Affects:** SB-5, `tests/declarations/structured-bindings/tuple-member-variable-template-get-uses-free.cpp`, `tests/declarations/structured-bindings/tuple-member-class-template-get-uses-free.cpp`
 **Source:** reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md, the SB-5 row
+**Waits for:** a use of SB-P2
 
 ## Context
 

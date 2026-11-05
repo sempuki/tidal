@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** CLS-35, CLS-34, `tests/classes/members/layout-tail-padding-deleted-constructor.cpp`, `tests/classes/members/layout-tail-padding-deleted-constructor-ilp32.cpp`, `tests/classes/members/layout-tail-padding-move-assignment.cpp`, `tests/classes/members/layout-tail-padding-move-assignment-ilp32.cpp`
+**Waits for:** a review (silent)
 
 ## Context
 

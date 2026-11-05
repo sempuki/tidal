@@ -3,6 +3,7 @@
 **Status:** provisional
 **Affects:** ICS-19, ICS-36, `tests/overloading/conversion-sequences/list-class-nearest-base.cpp`
 **Parent:** Q-0294, the model of braced lists for references, arrays, and conversion sequences
+**Waits for:** a review (doubt)
 
 ## Context
 

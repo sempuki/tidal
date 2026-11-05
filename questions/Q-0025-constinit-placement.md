@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** CINIT-2, CINIT-3, `tests/declarations/constexpr/constinit-added-late.cpp`, `tests/declarations/constexpr/constinit-on-declaration-only.cpp`
+**Waits for:** a review (part)
 
 ## Context
 

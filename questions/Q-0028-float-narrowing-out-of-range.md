@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** CONV-11, `tests/foundations/conversions/floating-narrowing-out-of-range.cpp`
+**Waits for:** a review (doubt)
 
 ## Context
 

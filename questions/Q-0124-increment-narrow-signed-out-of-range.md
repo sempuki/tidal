@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** UN-20, UN-21, PFX-12, PFX-18, `tests/expressions/unary/prefix-narrow-signed-wraps.cpp`, `tests/expressions/postfix/postfix-narrow-signed-wraps.cpp`
+**Waits for:** a review (doubt)
 
 ## Context
 

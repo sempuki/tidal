@@ -3,6 +3,7 @@
 **Status:** provisional
 **Affects:** COND-16, COND-3, COND-5, `tests/expressions/conditional/class-deleted-conversion-counts.cpp`, `tests/expressions/conditional/class-const-and-volatile-lvalues.cpp`
 **Source:** reports/review/2026-11-04-gap-review-phase-7-additions.md and reports/review/2026-11-04-gap-review-phase-7-repairs.md, the COND-16 sections
+**Waits for:** a use of COND-P2
 
 ## Context
 

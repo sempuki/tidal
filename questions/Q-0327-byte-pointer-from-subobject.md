@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** STG-13, Q-0304, `tests/foundations/storage/byte-pointer-from-member-walks-object.cpp`, `tests/foundations/storage/padding-bytes-not-in-value.cpp`
+**Waits for:** a review (doubt)
 
 ## Context
 

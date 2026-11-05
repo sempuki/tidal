@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** NS-15, `tests/declarations/namespaces/qualified-definition-inline-member-inside-named.cpp`
+**Waits for:** a review (doubt)
 
 ## Context
 

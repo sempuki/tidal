@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** UNW-8, `tests/exceptions/unwinding/throw-unmatched-in-noexcept-warns.cpp`
+**Waits for:** a review (silent)
 
 ## Context
 

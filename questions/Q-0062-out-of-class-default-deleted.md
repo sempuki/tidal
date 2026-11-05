@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** DCMP-8, `tests/classes/comparisons/out-of-class-would-delete.cpp`
+**Waits for:** newest families that agree
 
 ## Context
 

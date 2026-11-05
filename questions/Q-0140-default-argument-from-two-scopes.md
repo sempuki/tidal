@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** OVL-38, `tests/overloading/overload-resolution/default-from-two-scopes.cpp`, `tests/overloading/overload-resolution/default-from-two-scopes-same.cpp`, `tests/overloading/overload-resolution/default-from-two-scopes-same-value.cpp`, `tests/overloading/overload-resolution/default-from-two-scopes-same-literal.cpp`, `tests/overloading/overload-resolution/default-from-two-scopes-same-variable.cpp`, `tests/overloading/overload-resolution/default-from-two-scopes-same-name-other-variable.cpp`
+**Waits for:** the maintainer (pending.md row 4)
 
 ## Context
 

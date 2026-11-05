@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** `documentation/specification-format.md` (Evidence), INIT-1 and other rules of undefined or indeterminate values
+**Waits for:** a review (silent)
 
 ## Context
 

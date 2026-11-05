@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** CE-24, CE-21, CINIT-1, `tests/foundations/constant-evaluation/constant-initializer-zero-trivial-class.cpp`, `tests/foundations/constant-evaluation/constant-initializer-trivial-class-block-static.cpp`, `tests/foundations/constant-evaluation/constant-initializer-trivial-class-array.cpp`, `tests/foundations/constant-evaluation/constant-initializer-trivial-empty-class.cpp`
+**Waits for:** a review (doubt)
 
 ## Context
 

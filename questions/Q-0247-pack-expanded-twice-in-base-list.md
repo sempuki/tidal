@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** DEP-33, DEP-37, `tests/templates/dependent-names/base-pack-expanded-twice.cpp`
+**Waits for:** a use of DEP-P6
 
 ## Context
 

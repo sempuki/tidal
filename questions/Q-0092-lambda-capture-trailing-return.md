@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** LAM-18, `tests/expressions/lambdas/capture-visible-in-trailing-return.cpp`, `tests/expressions/lambdas/capture-not-visible-in-parameter-list.cpp`
+**Waits for:** a use of LAM-P2
 
 ## Context
 

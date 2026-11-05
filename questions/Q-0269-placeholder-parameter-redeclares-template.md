@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** CNS-27, CNS-40, `tests/templates/constraints/redeclare-placeholder.cpp`, `tests/templates/constraints/redeclare-placeholder-unconstrained.cpp`, the spellings grid
+**Waits for:** a use of CNS-P5; a review (doubt)
 
 ## Context
 

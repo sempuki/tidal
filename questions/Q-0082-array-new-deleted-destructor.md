@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** DTOR-3, `tests/classes/constructors/delete-array-deleted-dtor.cpp`
+**Waits for:** newest families that agree
 
 ## Context
 

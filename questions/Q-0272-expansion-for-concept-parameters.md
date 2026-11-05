@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** PACK-11, `tests/templates/packs/expansion-to-concept-parameters.cpp`
+**Waits for:** the maintainer (pending.md row 3)
 
 ## Context
 

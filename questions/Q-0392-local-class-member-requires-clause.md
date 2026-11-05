@@ -3,6 +3,7 @@
 **Status:** provisional
 **Affects:** INST-12, INST-P1, `tests/templates/instantiation/local-class-requires-clause-waits.cpp`, `tests/templates/instantiation/local-class-requires-clause-checked-at-use.cpp`
 **Source:** reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md, the INST-P1 row
+**Waits for:** a first review
 
 ## Context
 

@@ -3,6 +3,7 @@
 **Status:** provisional
 **Affects:** CPT-35, `tests/templates/concepts/nested-requirement.cpp`, `tests/templates/concepts/nested-requirement-never-satisfied.cpp`
 **Source:** finding R9B-9 of `reports/clean-room/R9/report-b.md`
+**Waits for:** a first review
 
 ## Context
 

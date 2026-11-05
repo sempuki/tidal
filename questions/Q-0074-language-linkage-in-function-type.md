@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** LSP-6, `tests/declarations/linkage-specifications/c-function-pointer-assign.cpp`, `tests/declarations/linkage-specifications/function-type-linkage-overload.cpp`
+**Waits for:** the maintainer (pending.md row 4)
 
 ## Context
 

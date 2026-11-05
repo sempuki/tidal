@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** INST-25, `tests/templates/instantiation/explicit-storage-class.cpp`, `tests/templates/instantiation/explicit-attribute-after.cpp`, `tests/templates/instantiation/explicit-thread-local.cpp`
+**Waits for:** a review (doubt)
 
 ## Context
 

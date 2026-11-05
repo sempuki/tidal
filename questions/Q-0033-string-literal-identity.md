@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** CE-13, PRIM-9, `tests/foundations/constant-evaluation/string-literal-identity.cpp`, `tests/expressions/primary/string-compare-constant.cpp`
+**Waits for:** a review (doubt)
 
 ## Context
 

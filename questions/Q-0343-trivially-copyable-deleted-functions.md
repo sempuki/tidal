@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** CPY-19, `tests/classes/copy-move/trivially-copyable-at-least-one.cpp`, `tests/classes/copy-move/trivially-copyable-deleted-destructor.cpp`, `tests/classes/copy-move/grids/trivially-copyable.json`
+**Waits for:** the maintainer (pending.md row 6)
 
 ## Context
 

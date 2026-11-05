@@ -3,6 +3,7 @@
 **Status:** provisional
 **Affects:** ORD-17, ORD-14, `tests/templates/ordering/partial-specializations-int-against-constrained-auto.cpp`
 **Source:** finding I2-7 of `reports/clean-room/I2/report.md`, from the probes that a clean-room writer ran for it.
+**Waits for:** a first review
 
 ## Context
 

@@ -3,6 +3,7 @@
 **Status:** provisional
 **Affects:** OPR-9, OPR-P3, KW-4, `tests/classes/operators/literal-reserved-suffix-used.cpp`, `tests/classes/operators/literal-reserved-suffix-u8.cpp`
 **Source:** finding X19-1 of `reports/clean-room/X19/report.md`
+**Waits for:** a review (doubt)
 
 ## Context
 

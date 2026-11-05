@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** MUL-12, ADD-17, `tests/expressions/multiplicative/floating-overflow-constant.cpp`,
+**Waits for:** a review (doubt)
 `tests/expressions/multiplicative/floating-overflow-divide-constant.cpp`,
 `tests/expressions/additive/float-overflow-constant.cpp`,
 `tests/expressions/additive/float-overflow-subtract-constant.cpp`

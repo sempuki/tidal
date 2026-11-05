@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** OVL-19, OVL-20, `tests/overloading/overload-resolution/address-more-constrained.cpp`, `tests/overloading/overload-resolution/address-no-target-constraints.cpp`, `tests/overloading/overload-resolution/address-no-target-more-constrained.cpp`, `tests/overloading/overload-resolution/address-no-target-constraints-different-parameters.cpp`
+**Waits for:** the maintainer (pending.md row 4); newest families that agree
 
 ## Context
 

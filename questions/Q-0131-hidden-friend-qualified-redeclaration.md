@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** ACC-7, ACC-17, `tests/classes/access/hidden-friend-qualified-redeclaration.cpp`
+**Waits for:** the maintainer (pending.md row 4)
 
 ## Context
 

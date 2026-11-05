@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** REF-15, `tests/declarations/initialization/references/dangling-new-member-warns.cpp`
+**Waits for:** a review (silent)
 
 ## Context
 

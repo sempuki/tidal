@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** PRIM-18, PRIM-35, `tests/expressions/primary/char-unknown-escape.cpp`, `tests/expressions/primary/string-unknown-escape.cpp`, `tests/expressions/primary/char-unknown-escape-outside-basic.cpp`
+**Waits for:** the maintainer (pending.md row 4)
 
 ## Context
 

@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** NAM-38, `tests/foundations/names/operator-lookup-block-declaration-keeps-adl.cpp`
+**Waits for:** a review (doubt)
 
 ## Context
 

@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** `tools/compilers.json`, decision 0008
+**Waits for:** the maintainer (pending.md row 9)
 
 ## Context
 

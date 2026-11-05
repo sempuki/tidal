@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** OBJ-1, OBJ-2, `tests/foundations/objects/scalar-write-in-own-initializer-constant.cpp`, `tests/foundations/objects/scalar-write-through-pointer-in-own-initializer-constant.cpp`
+**Waits for:** newest families that agree
 
 ## Context
 

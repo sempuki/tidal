@@ -3,6 +3,7 @@
 **Status:** provisional
 **Affects:** DEFARG-4, DEFARG-P1, `tests/declarations/functions/default-arguments/local-constant-value-read.cpp`, `tests/declarations/functions/default-arguments/local-constexpr-value-read.cpp`
 **Source:** reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md, the DEFARG-P1 section
+**Waits for:** the maintainer (pending.md row 4)
 
 ## Context
 

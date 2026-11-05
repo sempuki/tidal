@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** `documentation/specification-format.md`, Q-0007, RFOR-4
+**Waits for:** a review (silent)
 
 ## Context
 

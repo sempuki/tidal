@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** ORD-12, `tests/templates/ordering/pack-default-parameter.cpp`
+**Waits for:** newest families that agree
 
 ## Context
 

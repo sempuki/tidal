@@ -3,6 +3,7 @@
 **Status:** provisional
 **Affects:** REF-6, REF-11, `tests/declarations/initialization/references/braced-function-overload-set.cpp`, `tests/declarations/initialization/references/braced-function-noexcept.cpp`
 **Parent:** Q-0294, the model of braced lists for references, arrays, and conversion sequences
+**Waits for:** a use of REF-P3; a review (doubt)
 
 ## Context
 

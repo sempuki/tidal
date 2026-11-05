@@ -163,7 +163,8 @@ meets all of these conditions (decision 0056):
   2 and 3 of the test.
 
 The question's dated note names the batch or the review that holds the
-record. A Predict answer records a use in its `principles` list
+record. A question that waits for a use says so in its `**Waits for:**`
+line (`questions/README.md`). A Predict answer records a use in its `principles` list
 (`documentation/exercises.md`), and `tools/exercises.py score` lists
 the answers that name each principle. An answer that names a principle
 and reaches another outcome is a use that fails the test. The miss is a

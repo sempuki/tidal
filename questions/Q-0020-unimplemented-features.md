@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** `documentation/specification-format.md`, ATTR-10, ATTR-13, tests that use `[[assume]]`
+**Waits for:** a review (silent)
 
 ## Context
 

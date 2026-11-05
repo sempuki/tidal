@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** `tools/similarity.py`, decision 0011
+**Waits for:** the maintainer (pending.md row 9)
 
 ## Context
 

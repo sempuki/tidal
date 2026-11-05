@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** CTAD-9, CTAD-10, `tests/templates/class-template-deduction/aggregate-dependent-element.cpp`, `aggregate-string-fixed-array.cpp`
+**Waits for:** the maintainer (pending.md row 3, row 4)
 
 ## Context
 

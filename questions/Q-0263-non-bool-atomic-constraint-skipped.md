@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** CNS-9, CNS-39, `tests/templates/constraints/atomic-not-bool-skipped.cpp`, `tests/templates/constraints/atomic-not-bool-nondependent-concept.cpp`
+**Waits for:** a use of CNS-P2
 
 ## Context
 

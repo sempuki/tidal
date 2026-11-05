@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** ICS-21, ICS-22, `tests/overloading/conversion-sequences/initializer-list-over-kind.cpp`
+**Waits for:** newest families that agree
 
 ## Context
 

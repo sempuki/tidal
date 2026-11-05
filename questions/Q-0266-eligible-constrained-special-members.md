@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** CNS-21, `tests/templates/constraints/eligible-default.cpp`, `tests/templates/constraints/eligible-copy.cpp`, `tests/templates/constraints/eligible-more-constrained.cpp`, `tests/templates/constraints/eligible-unsatisfied-more-constrained.cpp`
+**Waits for:** the maintainer (pending.md row 3)
 
 ## Context
 

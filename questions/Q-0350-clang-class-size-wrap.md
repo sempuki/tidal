@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** STG-1, TR-15, `tests/foundations/storage/class-size-exceeds-size-type-ilp32.cpp`, `tests/foundations/translation/limit-class-wrong-size-clang-18-lp64.cpp`, `tests/foundations/translation/limit-class-largest-gcc-lp64.cpp`, `tests/foundations/translation/limit-class-largest-edg-lp64.cpp`, `tests/foundations/translation/limit-class-exceeded-gcc-lp64.cpp`
+**Waits for:** a review (doubt)
 
 ## Context
 

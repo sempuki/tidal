@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** CE-17, CE-23, CE-P1, `tests/foundations/constant-evaluation/literal-temporary-volatile-member.cpp`, `tests/foundations/constant-evaluation/nonliteral-variable-reached.cpp`, `tests/foundations/constant-evaluation/nonliteral-temporary-in-function.cpp`
+**Waits for:** newest families that agree
 
 ## Context
 

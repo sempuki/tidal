@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** NS-15, `tests/declarations/namespaces/qualified-definition-inside-own-namespace.cpp`
+**Waits for:** the maintainer (pending.md row 4)
 
 ## Context
 

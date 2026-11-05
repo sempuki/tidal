@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** CNS-1, `tests/templates/constraints/order-constant-placeholder-after-type.cpp`
+**Waits for:** the maintainer (pending.md row 3)
 
 ## Context
 

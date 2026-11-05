@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** ATTR-18, the `ptr_part` production, `tests/declarations/attributes/pointer-attribute-after-cv.cpp`, `tests/declarations/attributes/pointer-attribute-before-cv.cpp`
+**Waits for:** the maintainer (pending.md row 4)
 
 ## Context
 

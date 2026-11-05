@@ -3,6 +3,7 @@
 **Status:** provisional
 **Affects:** EXS-7, EXS-P1, `tests/declarations/exception-specifications/null-pointer-operand.cpp`, `tests/declarations/exception-specifications/null-pointer-constant-operand.cpp`
 **Source:** reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md, the EXS-P1 and EXS-7 section
+**Waits for:** the maintainer (pending.md row 4)
 
 ## Context
 

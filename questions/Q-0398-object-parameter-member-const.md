@@ -3,6 +3,7 @@
 **Status:** provisional
 **Affects:** ORD-6, `tests/templates/ordering/member-object-const.cpp`
 **Source:** a reduction of finding I2-15 of `reports/clean-room/I2/report.md` (`reductions/r3b-member-not-swapped.cpp`), and the probes that a clean-room writer ran for it.
+**Waits for:** a first review
 
 ## Context
 

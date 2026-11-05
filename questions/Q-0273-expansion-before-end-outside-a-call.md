@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** PACK-12, `tests/templates/packs/nondeduced-before-end-partial.cpp`, `nondeduced-before-end-function-type.cpp`
+**Waits for:** a review (against)
 
 ## Context
 

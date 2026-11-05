@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** NEW-23, NEW-24, DED-39, `tests/expressions/new-delete/throw-placement-function-and-template.cpp`, `tests/expressions/new-delete/throw-placement-function-before-template-instantiation.cpp`, `tests/expressions/new-delete/throw-placement-deleted-function-and-template.cpp`
+**Waits for:** a review (doubt)
 
 ## Context
 

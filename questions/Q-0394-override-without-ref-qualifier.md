@@ -3,6 +3,7 @@
 **Status:** provisional
 **Affects:** VIRT-1, `tests/classes/virtual/override-ref-qualifier-missing.cpp`
 **Source:** the VIRT-1 note of `reports/review/2026-11-04-gap-review-phase-8-classes-overloading.md`
+**Waits for:** the maintainer (pending.md row 4)
 
 ## Context
 

@@ -2,6 +2,7 @@
 
 **Status:** open | provisional | compiler defect | settled
 **Affects:** rule IDs, tests, or documents
+**Waits for:** what holds a provisional question open (`questions/README.md`)
 
 ## Context
 

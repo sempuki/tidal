@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** OVL-27, OVL-28, OVL-29, `tests/overloading/overload-resolution/tie-reference-kind-before-template.cpp`, `tests/overloading/overload-resolution/tie-reference-kind-before-template-lvalue.cpp`, `tests/overloading/overload-resolution/tie-reference-kind-before-more-specialized.cpp`
+**Waits for:** newest families that agree
 
 ## Context
 

@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** OVL-21, `tests/overloading/overload-resolution/call-through-address-static-member.cpp`
+**Waits for:** newest families that agree
 
 ## Context
 

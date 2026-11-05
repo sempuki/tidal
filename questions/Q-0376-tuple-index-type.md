@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** SB-5, `tests/declarations/structured-bindings/tuple-index-size-type.cpp`
+**Waits for:** a use of SB-P2
 
 ## Context
 

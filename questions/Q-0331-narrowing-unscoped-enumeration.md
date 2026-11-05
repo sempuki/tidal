@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** LIST-2, CONV-21, `tests/declarations/initialization/list/narrowing-unscoped-enum-values-fit.cpp`
+**Waits for:** newest families that agree
 
 ## Context
 

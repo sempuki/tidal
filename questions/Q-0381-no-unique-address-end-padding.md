@@ -3,6 +3,7 @@
 **Status:** provisional
 **Affects:** CLS-35, CLS-34, `tests/classes/members/layout-no-unique-address-end-padding.cpp`, `tests/classes/members/layout-no-unique-address-end-padding-ilp32.cpp`
 **Source:** finding I1-1 of `reports/clean-room/I1/report.md`, from the probes that a clean-room writer ran for it.
+**Waits for:** a review (silent)
 
 ## Context
 

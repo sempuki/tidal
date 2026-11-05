@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** TARG-17, TARG-18
+**Waits for:** the maintainer (pending.md row 3)
 
 ## Context
 

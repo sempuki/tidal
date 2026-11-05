@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** decision 0037, `documentation/exercises.md`
+**Waits for:** the maintainer (pending.md row 7, row 9)
 
 ## Context
 

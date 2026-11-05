@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** `foundations/translation.md`, `statements/index.md`, `statements/range-for.md`, the grammar of each statements page
+**Waits for:** the maintainer (pending.md row 9)
 
 ## Context
 

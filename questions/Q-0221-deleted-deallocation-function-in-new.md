@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** NEW-25, `tests/expressions/new-delete/deallocation-deleted.cpp`, `tests/expressions/new-delete/deallocation-deleted-no-throw.cpp`, `tests/expressions/new-delete/deallocation-placement-deleted.cpp`
+**Waits for:** a review (doubt)
 
 ## Context
 

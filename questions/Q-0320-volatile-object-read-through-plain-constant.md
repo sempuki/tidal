@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** VOL-6, VOL-8, `tests/declarations/volatile/constant-read-through-plain.cpp`
+**Waits for:** newest families that agree
 
 ## Context
 

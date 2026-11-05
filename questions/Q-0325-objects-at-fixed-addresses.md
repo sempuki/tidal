@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** CAST-6, CAST-16, STG-15, VOL-1, `tests/expressions/casts/integer-to-pointer-address.cpp`, `tests/foundations/storage/integer-pointer-no-object-sanitizer.cpp`
+**Waits for:** a review (silent)
 
 ## Context
 

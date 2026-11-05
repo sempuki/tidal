@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** CPY-27, CPY-19, UNI-3, `tests/classes/copy-move/trivially-copyable-member-selected.cpp`, `tests/classes/copy-move/trivially-copyable-member-template-selected.cpp`, `tests/classes/unions/union-copy-two-copy-constructors.cpp`, `tests/classes/copy-move/grids/trivially-copyable.json`
+**Waits for:** newest families that agree
 
 ## Context
 

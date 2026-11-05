@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** CE-21, TARG-19, `tests/foundations/constant-evaluation/result-union-no-active-member.cpp`, `tests/templates/arguments/same-specialization-union-empty.cpp`
+**Waits for:** a review (doubt)
 
 ## Context
 

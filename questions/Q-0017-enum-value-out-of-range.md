@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** ENUM-6, `tests/declarations/enumerations/cast-out-of-range.cpp`
+**Waits for:** newest families that agree
 
 ## Context
 

@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** TSP-30, TSP-6, TSP-3, `tests/templates/specialization/explicit-enum-scoped-defined-after-use.cpp`, `tests/templates/specialization/explicit-enum-unscoped-declared-after-use.cpp`
+**Waits for:** the maintainer (pending.md row 4)
 
 ## Context
 

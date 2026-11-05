@@ -3,6 +3,7 @@
 **Status:** provisional
 **Affects:** ICS-45, OVL-15, `tests/overloading/conversion-sequences/user-defined-explicit-reference-value.cpp`, `tests/overloading/conversion-sequences/user-defined-explicit-reference-xvalue.cpp`
 **Parent:** Q-0156, which covers rvalue references
+**Waits for:** a review (doubt)
 
 ## Context
 

@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** SINIT-2, SINIT-3, OBJ-1, OBJ-2
+**Waits for:** a review (doubt)
 
 ## Context
 

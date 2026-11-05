@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** CTOR-18, `tests/classes/constructors/nested-default-member-init-before-complete.cpp`
+**Waits for:** a review (against)
 
 ## Context
 

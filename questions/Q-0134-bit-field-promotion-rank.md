@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** ICS-2, `tests/overloading/conversion-sequences/bit-field-promotion.cpp`
+**Waits for:** a review (doubt)
 
 ## Context
 

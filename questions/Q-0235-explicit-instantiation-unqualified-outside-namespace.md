@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** INST-21, `tests/templates/instantiation/explicit-unqualified-outside-namespace.cpp`, `tests/templates/instantiation/explicit-unqualified-outside-namespace-variable.cpp`
+**Waits for:** the maintainer (pending.md row 3, row 5)
 
 ## Context
 

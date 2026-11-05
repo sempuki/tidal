@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** OVL-23, OVL-25, OVL-3, `tests/overloading/overload-resolution/no-object-ref-qualified-member.cpp`
+**Waits for:** a review (doubt)
 
 ## Context
 

@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** CLS-19, CLS-32, `tests/classes/members/standard-layout-base-type-inside-member.cpp`, `tests/classes/members/grids/standard-layout.json`
+**Waits for:** newest families that agree
 
 ## Context
 

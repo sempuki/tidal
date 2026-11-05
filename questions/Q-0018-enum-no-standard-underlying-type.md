@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** ENUM-5, `tests/declarations/enumerations/unscoped-value-too-large.cpp`, `tests/declarations/enumerations/unscoped-value-too-large-ilp32.cpp`
+**Waits for:** a review (doubt)
 
 ## Context
 

@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** INST-6, `tests/templates/instantiation/member-partial-specializations-collide.cpp`
+**Waits for:** newest families that agree
 
 ## Context
 

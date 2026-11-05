@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** TPL-35, TPL-30, TPL-36, `tests/templates/declarations/pack-then-not-deducible.cpp`, `tests/templates/declarations/pack-then-pack-not-deducible.cpp`, `tests/templates/declarations/pack-then-typed-pack-not-deducible.cpp`
+**Waits for:** the maintainer (pending.md row 3)
 
 ## Context
 

@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** NAM-39, `tests/foundations/names/shared-name-anonymous-union-member.cpp`
+**Waits for:** the maintainer (pending.md row 4)
 
 ## Context
 

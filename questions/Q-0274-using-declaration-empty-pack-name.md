@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** PACK-30, `tests/templates/packs/using-declaration-empty-pack-outer-name.cpp`
+**Waits for:** newest families that agree; a review (doubt)
 
 ## Context
 

@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** JMP-6, SW-5, `tests/statements/jumps/goto-past-nontrivial-destructor.cpp`, `tests/statements/jumps/goto-skips-nontrivial-destructor.cpp`, `tests/statements/switch/case-skips-nontrivial-destructor.cpp`
+**Waits for:** the maintainer (pending.md row 6)
 
 ## Context
 

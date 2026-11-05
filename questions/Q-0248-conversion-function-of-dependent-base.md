@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** DEP-11, DEP-12, `tests/templates/dependent-names/dependent-base-conversion-function.cpp`, `tests/templates/dependent-names/dependent-base-conversion-function-independent.cpp`
+**Waits for:** a use of DEP-P3; newest families that agree
 
 ## Context
 

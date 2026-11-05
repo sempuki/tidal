@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** CV-10, `tests/declarations/declarators/qualification-conversion-array-inner-bound.cpp`
+**Waits for:** the maintainer (pending.md row 4)
 
 ## Context
 

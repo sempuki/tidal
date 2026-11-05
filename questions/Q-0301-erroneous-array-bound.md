@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** NEW-35, `tests/expressions/new-delete/bad-bound-negative.cpp`, `tests/expressions/new-delete/bad-bound-too-large.cpp`, `tests/expressions/new-delete/bad-bound-too-few.cpp`, `tests/foundations/language-support/exception-classes-array-length.cpp`
+**Waits for:** newest families that agree
 
 ## Context
 

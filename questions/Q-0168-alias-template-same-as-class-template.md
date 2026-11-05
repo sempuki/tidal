@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** TARG-19, TARG-22
+**Waits for:** a use of TARG-P4; newest families that agree; a review (doubt)
 
 ## Context
 

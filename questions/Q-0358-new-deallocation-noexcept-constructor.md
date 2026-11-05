@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** ODR-5, ODR-8, `tests/foundations/odr/new-noexcept-constructor-uses-deallocation.cpp`
+**Waits for:** a use of ODR-P1 ODR-P2
 
 ## Context
 

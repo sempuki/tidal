@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** CTAD-1, `tests/templates/class-template-deduction/dependent-qualifier.cpp`, `dependent-qualifier-template-keyword.cpp`
+**Waits for:** the maintainer (pending.md row 4)
 
 ## Context
 

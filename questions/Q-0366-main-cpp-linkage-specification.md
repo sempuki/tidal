@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** TR-3, `tests/foundations/translation/main-cpp-linkage-specification.cpp`, `tests/foundations/translation/main-cpp-linkage-block.cpp`
+**Waits for:** the maintainer (pending.md row 4)
 
 ## Context
 

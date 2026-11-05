@@ -3,6 +3,7 @@
 **Status:** provisional
 **Affects:** ICS-38, `tests/overloading/conversion-sequences/list-string-literal-utf8.cpp`, `tests/overloading/conversion-sequences/list-string-literal-too-short.cpp`, `tests/overloading/conversion-sequences/list-string-literal-bound.cpp`
 **Parent:** Q-0294, the model of braced lists for references, arrays, and conversion sequences
+**Waits for:** a review (doubt)
 
 ## Context
 

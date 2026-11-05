@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** NEW-24, `tests/expressions/new-delete/throw-placement-templates-unordered.cpp`
+**Waits for:** a review (doubt)
 
 ## Context
 

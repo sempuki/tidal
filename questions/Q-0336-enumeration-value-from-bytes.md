@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** ENUM-6, ENUM-22, STG-12, `tests/declarations/enumerations/bytes-out-of-range-sanitizer.cpp`
+**Waits for:** the maintainer (pending.md row 4)
 
 ## Context
 

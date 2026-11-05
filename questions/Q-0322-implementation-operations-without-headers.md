@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** `foundations/language-support.md`, `foundations/storage.md` (STG-P4, STG-19), CPY-19, CLS-19, NEW-27, decision 0041
+**Waits for:** the maintainer (pending.md row 2)
 
 ## Context
 

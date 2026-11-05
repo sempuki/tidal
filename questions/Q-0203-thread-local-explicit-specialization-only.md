@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** TSP-24, TSP-25
+**Waits for:** the maintainer (pending.md row 3)
 
 ## Context
 

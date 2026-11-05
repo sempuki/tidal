@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** TPL-48, TPL-18
+**Waits for:** the maintainer (pending.md row 3); a rule
 
 ## Context
 

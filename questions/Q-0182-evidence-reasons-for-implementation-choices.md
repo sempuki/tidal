@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** `documentation/specification-format.md` (Evidence), Evidence segments that describe orders and layouts
+**Waits for:** the maintainer (pending.md row 9)
 
 ## Context
 

@@ -3,6 +3,7 @@
 **Status:** provisional
 **Affects:** ICS-46, `tests/overloading/conversion-sequences/array-known-bound-direct.cpp`, `tests/overloading/conversion-sequences/list-string-literal-bound.cpp`, `tests/overloading/conversion-sequences/array-known-bound-direct-cv.cpp`
 **Parent:** Q-0294, the model of braced lists for references, arrays, and conversion sequences
+**Waits for:** the maintainer (pending.md row 7)
 
 ## Context
 

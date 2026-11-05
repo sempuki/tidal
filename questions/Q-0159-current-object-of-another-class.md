@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** OVL-2, OVL-3, `tests/overloading/overload-resolution/current-object-other-class.cpp`
+**Waits for:** newest families that agree
 
 ## Context
 

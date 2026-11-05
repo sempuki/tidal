@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** EXS-5, `tests/declarations/exception-specifications/throw-empty-removed.cpp`
+**Waits for:** the maintainer (pending.md row 4)
 
 ## Context
 

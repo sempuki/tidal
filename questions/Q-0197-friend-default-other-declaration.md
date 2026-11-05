@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** TPL-38, `tests/templates/declarations/default-friend-redeclared.cpp`, `tests/templates/declarations/default-friend-declared-before.cpp`
+**Waits for:** the maintainer (pending.md row 3)
 
 ## Context
 

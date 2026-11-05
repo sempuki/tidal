@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** ICS-26, ICS-33, ICS-36, `tests/overloading/conversion-sequences/array-pointer-tie-breaker.cpp`
+**Waits for:** a review (doubt)
 
 ## Context
 

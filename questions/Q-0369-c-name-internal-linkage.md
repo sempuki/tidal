@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** LSP-4, LNK-5, `tests/declarations/linkage-specifications/c-static-function-two-namespaces.cpp`, `tests/declarations/linkage-specifications/c-static-variable-two-namespaces.cpp`, `tests/declarations/linkage-specifications/c-static-not-joined.cpp`, `tests/declarations/linkage-specifications/c-name-unnamed-namespace.cpp`, `tests/declarations/linkage-specifications/c-name-unnamed-namespace-other-unit.cpp`, `tests/declarations/linkage-specifications/c-name-unnamed-namespace-redefined.cpp`
+**Waits for:** the maintainer (pending.md row 4)
 
 ## Context
 

@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** INST-29, `tests/templates/instantiation/explicit-declaration-internal.cpp`, `tests/templates/instantiation/explicit-declaration-internal-class.cpp`, `tests/templates/instantiation/explicit-declaration-internal-variable.cpp`
+**Waits for:** newest families that agree
 
 ## Context
 

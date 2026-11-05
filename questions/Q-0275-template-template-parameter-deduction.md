@@ -2,6 +2,7 @@
 
 **Status:** provisional
 **Affects:** CTAD-1, `tests/templates/class-template-deduction/template-template-parameter.cpp`, `template-template-parameter-alias.cpp`
+**Waits for:** the maintainer (pending.md row 4)
 
 ## Context
 
