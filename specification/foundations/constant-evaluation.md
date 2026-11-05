@@ -276,7 +276,8 @@ point.
 Constant evaluation must not evaluate an operation that has undefined
 behavior. Each rule of class `undefined` gives such an operation. CE-26
 gives the operations that an implementation need not detect. A read of
-an object after its lifetime ends is such an operation ({rule}`OBJ-2`),
+an object after its lifetime ends ({rule}`OBJ-2`) is not one of those
+operations, so constant evaluation rejects it. The read is rejected
 also through a pointer to a local of a function that has returned, or
 through a reference member that a default member initializer bound to a
 temporary ({rule}`CTOR-17`). The
@@ -684,6 +685,11 @@ of 155 tests.
 
 ### Notes
 
+- CE-9: the gap review of the text phase 8 wrote on expressions, foundations,
+  and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`) read the sentence on a read
+  after a lifetime ends as possibly naming an operation that need not be
+  detected. CE-9 now says that such a read is not one of the operations
+  of CE-26, so constant evaluation rejects it, as every compiler does.
 - CE-10: all three implementations reject a recursion depth of 100000
   and a loop of 100000000 steps by default. All accept a depth of 400,
   four loops of 100000 iterations in one evaluation, and 150049 calls

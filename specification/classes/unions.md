@@ -90,7 +90,10 @@ declared type each decide part of its behavior:
 
 The width is an integer constant. The width has an integral or unscoped
 enumeration type, or a class type whose conversion function gives such
-a type. A floating-point width is rejected. A scoped enumeration
+a type. The class must be a literal type with exactly one such
+conversion function, and the function must be `constexpr`, because the
+conversion runs during constant evaluation. A floating-point width is
+rejected. A scoped enumeration
 converts to an integer only with a cast ({principle}`ENUM-P2`), so an
 enumerator of a scoped enumeration is rejected as a width.
 
@@ -130,8 +133,10 @@ offset 0        4
  sequence
 ```
 
-The common initial sequence pairs the members of the two structs in
-declaration order, from the first. A pair stays in the sequence while
+The common initial sequence pairs the non-static data members and
+bit-fields of the two structs in declaration order, from the first. An
+unnamed bit-field takes part, though it is not a member, so it can end
+the sequence. A pair stays in the sequence while
 all of these hold:
 
 - The two types are layout-compatible.
@@ -257,7 +262,7 @@ A braced initializer for the first member must not narrow.
 
 :::{rule} UNI-7
 :kind: required
-:tests: classes/unions/anonymous-union-default-member-init.cpp classes/unions/anonymous-union-mem-init-constructor.cpp classes/unions/anonymous-union-member-order.cpp classes/unions/anonymous-union-init.cpp classes/unions/anonymous-union-local.cpp classes/unions/anonymous-union-member.cpp classes/unions/anonymous-union-namespace-static.cpp classes/unions/anonymous-union-brace-elision.cpp classes/unions/anonymous-union-designated-member.cpp
+:tests: classes/unions/anonymous-union-default-member-init.cpp classes/unions/anonymous-union-mem-init-constructor.cpp classes/unions/anonymous-union-member-order.cpp classes/unions/anonymous-union-init.cpp classes/unions/anonymous-union-local.cpp classes/unions/anonymous-union-member.cpp classes/unions/anonymous-union-namespace-static.cpp classes/unions/anonymous-union-brace-elision.cpp classes/unions/anonymous-union-designated-member.cpp classes/unions/anonymous-union-two-designators.cpp
 
 The members of an anonymous union are members of the enclosing scope. In
 a class, the anonymous union is an unnamed data member in its place in
@@ -268,8 +273,10 @@ list for the class, the anonymous union is one element. Its initializer
 can have its own braces, or the braces can be left out, so `{1, 2, 3}`
 gives the union the value 2 for its first member. A designator can also
 name a member of the anonymous union directly, as in `{.level = 2.0f}`,
-and the union is then initialized with that member active. An anonymous
-union can be:
+and the union is then initialized with that member active. Because the
+union is one element, one list can name only one of its members with a
+designator. A second designator for a member of the same anonymous
+union is not valid ({rule}`LIST-14`). An anonymous union can be:
 
 - local,
 - a class member,
@@ -297,14 +304,17 @@ union must not have:
 
 A bit-field has an integral or enumeration type and a width. The width
 is a constant expression of integral or unscoped enumeration type, or of
-a class type that converts to such a type ({question}`Q-0314`). A
+a class type that converts to such a type ({question}`Q-0314`). Such a
+class is a literal type, and exactly one of its conversion functions
+gives an integral or unscoped enumeration type. That function is
+`constexpr`. A
 bit-field can be unnamed. An unnamed bit-field of width 0 makes the next
 bit-field start at a new allocation unit. A union can have bit-fields.
 :::
 
 :::{rule} BF-2
 :kind: reject
-:tests: classes/unions/bitfield-float.cpp classes/unions/bitfield-negative-width.cpp classes/unions/bitfield-nonconstant-width.cpp classes/unions/bitfield-pointer.cpp classes/unions/bitfield-static.cpp classes/unions/bitfield-typedef.cpp classes/unions/bitfield-unnamed-cv.cpp classes/unions/bitfield-zero-named.cpp classes/unions/bitfield-width-floating.cpp classes/unions/bitfield-width-scoped-enumeration.cpp
+:tests: classes/unions/bitfield-float.cpp classes/unions/bitfield-negative-width.cpp classes/unions/bitfield-nonconstant-width.cpp classes/unions/bitfield-pointer.cpp classes/unions/bitfield-static.cpp classes/unions/bitfield-typedef.cpp classes/unions/bitfield-unnamed-cv.cpp classes/unions/bitfield-zero-named.cpp classes/unions/bitfield-width-floating.cpp classes/unions/bitfield-width-scoped-enumeration.cpp classes/unions/bitfield-width-class-not-constexpr.cpp classes/unions/bitfield-width-class-two-conversions.cpp classes/unions/bitfield-width-class-not-literal.cpp
 
 A bit-field must not:
 
@@ -686,8 +696,14 @@ int y = s.span.range.second;     // 2: Point and Pair are layout-compatible
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 147
-of 160 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 151
+of 164 tests.
+
+One question on this page settled on 2026-11-04 under decision 0054 after the source-reader gap review of the text phase 8 wrote on classes and overloading (`reports/review/2026-11-04-gap-review-phase-8-classes-overloading.md`). The review used the principle on the question's program, supports the answer with no doubt, and the principle gives the same answer. The test keeps its override for the family that still differs:
+
+| Question | Principle | Family that still differs |
+|---|---|---|
+| {question}`Q-0088` | UNI-P1 | EDG 7.0 |
 
 - UNI-9: Clang accepts an anonymous union without `static` in an unnamed
   namespace. GCC and EDG reject the declaration ({question}`Q-0045`).
@@ -720,9 +736,17 @@ of 160 tests.
   reads the reference as making the bits of an unnamed bit-field
   padding bits, as BF-9 now says, and as leaving the value of a byte
   read open.
+- UNI-15, UNI-P6: the builtin query of Clang and GCC finds two structs
+  not layout-compatible when one has an unnamed bit-field that the
+  other lacks, of width 0 or not. EDG has no such query. No test checks
+  the case, because tests observe class properties only through
+  behavior (decision 0051), and a read of the other struct's member
+  past the unnamed bit-field has no defined result to observe.
 - UNI-7: every compiler accepts a braced list for a class that leaves
   out the braces of its anonymous union, and a designator that names a
-  member of the anonymous union, with or without the union's braces.
+  member of the anonymous union, with or without the union's braces. Every
+  compiler rejects a list with two designators that name members of one
+  anonymous union.
 - BF-12: Clang, GCC, and EDG accept a constant evaluation that copies
   and compares a class with an unnamed bit-field, and a structured
   binding that has one name for each named bit-field.

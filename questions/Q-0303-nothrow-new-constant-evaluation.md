@@ -1,6 +1,6 @@
 # Q-0303: Can constant evaluation use a `new` expression with the nothrow tag?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** NEW-37, `tests/expressions/new-delete/constant-evaluation-nothrow.cpp`
 
 ## Context
@@ -24,7 +24,7 @@ expression as a placement `new` and rejects it.
 2. Constant evaluation rejects every `new` expression with placement
    arguments, the nothrow tag included. Clang and GCC 16 differ.
 
-## Provisional answer
+## Answer
 
 Yes (NEW-37); Clang and GCC 16 accept, GCC 14 and EDG reject (option 1). The newest Clang and GCC agree, and the nothrow forms are
 global allocation functions of the implementation, as the forms
@@ -38,10 +38,18 @@ Kept open on 2026-11-03 (replaced by the note of 2026-11-04) under decision 0054
 
 Checked on 2026-11-04 under the principle test of the style guide (section 3, item PQ of decision 0055). NEW-P4 failed step 3, because it kept every placement form out of constant evaluation and did not separate the nothrow forms. NEW-P4 now says that the nothrow forms are global allocation functions of the implementation and that an evaluation can use them, and it limits the excluded placement forms to those that the program defines. The existing test checks the case. Under decision 0055, the question does not settle on a principle that phase 8 wrote. The question stays provisional until a reader or a reviewer uses NEW-P4.
 
+Used on 2026-11-04 by the source-reader gap review of the text phase 8 wrote on expressions, foundations, and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`), Part B. The review applied NEW-P4 to the question's program, `new (std::nothrow) int(4)` in constant evaluation (`constant-evaluation-nothrow.cpp`), without the rule text: the nothrow forms are replaceable global allocation functions of the implementation, so constant evaluation accepts the call. That is the provisional answer, and the model rules out the other options.
+
+Settled on 2026-11-04 under decision 0054. The review supports the answer with no doubt, and NEW-P4 gives the same answer under the test of the style guide (section 3). EDG 7.0 still differs, and the tests keep their overrides.
+
 ## Opinions
 
 ### Gap review, 2026-11-03
 
 The source-reader gap review of question cluster 4 (`reports/review/2026-11-03-gap-review-question-cluster-4.md`) reads the reference as supporting option 1. A constant evaluation can use an allocating `new` expression that selects a replaceable global allocation function, if the storage is freed within the evaluation. The nothrow forms are among the replaceable global allocation functions, and placement arguments alone do not exclude a `new` expression. Whether a program can declare these functions itself without the header is a matter for LSUP-6. That point can explain the front end's rejection of the test, and it does not bear on the option.
+
+### Gap review, 2026-11-04
+
+The source-reader gap review of the text phase 8 wrote on expressions, foundations, and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`) agrees with option 1. The nothrow forms are replaceable global allocation functions, and constant evaluation may use those.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

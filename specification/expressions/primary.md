@@ -759,7 +759,13 @@ total(1, 2, 3);           // ((0 + 1) + 2) + 3
 The results are in `tests/RESULTS.md`. All eight compilers agree on 131
 of 143 tests.
 
-{question}`Q-0064` is provisional. A gap review supports its answer with no doubt. The Propose exercise X19 used PRIM-P1 and reached the same answer, and the question records that use. The test keeps its override for EDG 7.0.
+Three questions on this page settled on 2026-11-04 under decision 0054 after the source-reader gap review of the text phase 8 wrote on expressions, foundations, and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+
+| Question | Principle | Family that still differs |
+|---|---|---|
+| {question}`Q-0064` | PRIM-P1 | EDG 7.0 |
+| {question}`Q-0194` | PRIM-P6 | EDG 7.0 |
+| {question}`Q-0380` | PRIM-P1 | GCC 16 |
 
 - PRIM-1: for a hexadecimal literal with a `z` suffix that only
   `std::size_t` can hold, Clang and EDG give the type `std::size_t`.

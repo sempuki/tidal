@@ -378,7 +378,7 @@ Each settled question below keeps its test's override for the family
 that still differs. Reporting the EDG difference of Q-0146 to the EDG
 project waits on the maintainer (`documentation/decisions/pending.md`).
 
-- {question}`Q-0214` (ORD-6; open): whether the object parameter of a
+- {question}`Q-0214` (ORD-6; settled on ORD-P1): whether the object parameter of a
   member with no ref-qualifier is an rvalue reference in ordering
   against an rvalue reference. It is, so the call is ambiguous, as
   Clang 22 and GCC say. EDG and Clang 18 choose the member.
@@ -404,6 +404,12 @@ project waits on the maintainer (`documentation/decisions/pending.md`).
 
 ### Notes
 
+- ORD-P1, ORD-6: the gap review of the text phase 8 wrote on expressions, foundations,
+  and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`) adds two details to
+  ORD-P1: the object parameter carries the cv-qualifiers of the member,
+  and a member with no ref-qualifier against another such member gets
+  an lvalue reference. ORD-6 states the first detail, and the last row
+  of ORD-P1's table gives the second.
 - ORD-5: two templates that differ only in a parameter with a default
   argument are ambiguous for a call that uses the default, on every
   compiler.

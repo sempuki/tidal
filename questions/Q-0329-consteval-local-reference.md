@@ -42,10 +42,18 @@ Reopened as provisional on 2026-11-04 under the principle test of the style guid
 
 On 2026-11-04, item PQ widened IF-P4 to state the case and to cite CE-P2. IF-P4 now lists the places where an initializer runs in constant evaluation, and says that the initializer of a local reference that binds a temporary runs at run time, because the result of a constant evaluation cannot refer to an automatic temporary. Under decision 0055, the question does not settle on a principle that phase 8 wrote. The question stays provisional until a reader or a reviewer uses IF-P4.
 
+Used on 2026-11-04 by the source-reader gap review of the text phase 8 wrote on the declarations and statements chapters (`reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md`), under decision 0056. The review applied IF-P4 to the program of `consteval-local-reference.cpp` without the rule text and reached the provisional answer: the local reference binds a temporary, so its initializer runs at run time and the result is 2.
+
+Kept open on 2026-11-04 under decisions 0054 and 0055, because IF-P4 and IF-25 changed in this commit for the two cases that the review names. The question waits for the next use of the changed text.
+
 ## Opinions
 
 ### Gap review, 2026-11-03
 
 The source-reader gap review of the open questions on classes and statements (`reports/review/2026-11-03-gap-review-questions-classes-statements.md`) agrees with option 1. A local reference bound to a temporary refers to an object of automatic storage, which is not a valid result of a constant expression. So the reference is neither usable in constant expressions nor constant-initialized, and its initializer is not a constant evaluation. GCC's result is a defect.
+
+### Gap review, 2026-11-04
+
+The source-reader gap review of the text phase 8 wrote on the declarations and statements chapters (`reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md`) agrees with option 1. The temporary that the reference extends has automatic storage duration, so a constant expression cannot refer to it, and the initializer runs at run time. The review found that IF-P4 left out a local reference that binds an object with static storage duration, whose initializer is tried as a constant, and an initializer inside a function that a constant evaluation runs.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

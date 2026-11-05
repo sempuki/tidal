@@ -39,10 +39,18 @@ Kept open on 2026-11-03 (replaced by the note of 2026-11-04) under decision 0054
 
 Checked on 2026-11-04 under the principle test of the style guide (section 3, item PQ of decision 0055). NEW-P3 failed step 3, because it named the paired deallocation function only for a throw. NEW-P3 now says that the `new` expression uses that function also when the initialization cannot throw, so the function must be accessible and not deleted. The existing tests check the case. Under decision 0055, the question does not settle on a principle that phase 8 wrote. The question stays provisional until a reader or a reviewer uses NEW-P3.
 
+Used on 2026-11-04 by the source-reader gap review of the text phase 8 wrote on expressions, foundations, and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`), Part B. The review applied NEW-P3 to the question's program, a `new` expression whose deallocation function is deleted (`deallocation-deleted.cpp`, `deallocation-deleted-no-throw.cpp`, `deallocation-placement-deleted.cpp`), without the rule text: the expression uses the deallocation function in every case, so a deleted one makes it not valid, which is the provisional answer.
+
+Kept open on 2026-11-04 under decision 0054, because the review finds the reference unclear. The reference checks access and ambiguity of the deallocation function for every allocation of class type, and it does not say outright that the selection is a use for the rule on deleted functions. The review leans to option 1. GCC 16 is the one newest family that differs.
+
 ## Opinions
 
 ### Gap review, 2026-11-03
 
 The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) agrees with option 1. The single matching deallocation function for a class counts as named by the `new` expression, so the expression uses that function. A use of a deleted function makes the program not valid, whether or not the initialization can throw. GCC's acceptance is a defect.
+
+### Gap review, 2026-11-04
+
+The source-reader gap review of the text phase 8 wrote on expressions, foundations, and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`) finds the reference unclear and leaning to option 1. The reference checks access and ambiguity on the deallocation function of an allocation of class type whether or not the initialization can throw, and every compiler agrees on the access case. The rule on deleted functions forbids any reference to one. The reference does not say that the selection of the deallocation function is such a reference, and its rules of use do not name that function.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

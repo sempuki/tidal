@@ -75,12 +75,17 @@ places objects ({principle}`CE-P3`). So during constant evaluation
 these comparisons are rejected:
 
 - a relational comparison of pointers to unrelated objects,
+- a relational comparison of pointers to two base class subobjects of
+  one object, or to a base class subobject and a member
+  ({question}`Q-0387`),
 - an equality comparison of a pointer past the end of one complete
   object with a pointer to another complete object.
 
-Inside one complete object the layout is fixed, so the same comparisons
-are accepted there. The rows of an array of arrays and the members of
-one class are examples.
+Inside one complete object the layout is fixed, so the other
+comparisons are accepted there. The rows of an array of arrays, the
+members of one class, the members of a union, and a member that
+occupies no storage are examples. For the last two, the order is
+unspecified, and constant evaluation still gives a result.
 :::
 
 :::{principle} CMP-P4
@@ -369,7 +374,7 @@ pointers to members.
 
 :::{rule} CMP-8
 :kind: unspecified
-:tests: expressions/comparison/pointer-unrelated-run.cpp expressions/comparison/pointer-unrelated-constant.cpp expressions/comparison/function-pointer-order.cpp expressions/comparison/unrelated-pointers-either.cpp expressions/comparison/union-member-pointers-relational-either.cpp expressions/comparison/three-way-unrelated-pointers-constant.cpp expressions/comparison/zero-size-member-pointers-either.cpp expressions/comparison/zero-size-member-pointers-constant.cpp expressions/comparison/union-member-pointers-constant.cpp
+:tests: expressions/comparison/pointer-unrelated-run.cpp expressions/comparison/pointer-unrelated-constant.cpp expressions/comparison/function-pointer-order.cpp expressions/comparison/unrelated-pointers-either.cpp expressions/comparison/union-member-pointers-relational-either.cpp expressions/comparison/three-way-unrelated-pointers-constant.cpp expressions/comparison/zero-size-member-pointers-either.cpp expressions/comparison/zero-size-member-pointers-constant.cpp expressions/comparison/union-member-pointers-constant.cpp expressions/comparison/base-subobject-pointers-constant.cpp expressions/comparison/base-and-member-pointers-constant.cpp expressions/comparison/base-subobject-pointers-either.cpp
 
 If no rule orders two pointers, each relational operator and `<=>` gives
 an unspecified result. The results of `a < b` and `a > b` need not
@@ -377,11 +382,15 @@ agree. This rule applies to pointers to:
 
 - unrelated objects or functions,
 - members of a union,
-- members that occupy no storage.
+- members that occupy no storage,
+- two base class subobjects of one object, or a base class subobject
+  and a member of the object.
 
 Outside {term}`constant evaluation`, each such comparison is valid and
 gives `true` or `false`. During constant evaluation, a comparison of
-pointers to unrelated objects or functions is not a constant expression.
+pointers to unrelated objects or functions is not a constant
+expression, and neither is a comparison that involves a base class
+subobject ({question}`Q-0387`).
 :::
 
 :::{rule} CMP-20
@@ -478,11 +487,17 @@ balance <=> count      // valid if long is wider than unsigned
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 81
-of 97 tests. The `<=>` tests declare a minimal `std::strong_ordering`,
+The results are in `tests/RESULTS.md`. All eight compilers agree on 82
+of 100 tests. The `<=>` tests declare a minimal `std::strong_ordering`,
 `std::weak_ordering`, and `std::partial_ordering`, because tests include
 no headers. EDG needs `std::weak_ordering` declared even for integer
 operands.
+
+One question on this page settled on 2026-11-04 under decision 0054 after the source-reader gap review of the text phase 8 wrote on expressions, foundations, and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+
+| Question | Principle | Family that still differs |
+|---|---|---|
+| {question}`Q-0050` | CMP-P5 | EDG 7.0 |
 
 Four questions on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
 
@@ -536,7 +551,17 @@ Four questions on this page settled on 2026-11-03 under decision 0054 after the 
   row, during constant evaluation and at run time.
 - CMP-8: for pointers to two members of a union, or to an empty member
   and its neighbor, all three implementations give a result during
-  constant evaluation. Only the unrelated-object case is rejected there.
+  constant evaluation. The gap review of the text phase 8 wrote on
+  expressions
+  (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`)
+  reads both comparisons as having no fixed result, so constant
+  evaluation would reject them. CMP-8 keeps the compilers' answer
+  (`documentation/decisions/pending.md`, row 4).
+- CMP-8: for pointers to two base class subobjects of one object, or to
+  a base class subobject and a member, Clang 22 and EDG 7.0 reject the
+  comparison during constant evaluation, as the same review reads it.
+  GCC 16 gives a result
+  ({question}`Q-0387`).
 - CMP-8: at run time, every Clang and GCC configuration orders two
   unrelated global variables by address, so `&a < &b` and `&a > &b`
   disagree (`pointer-unrelated-run.cpp`). CMP-8 does not promise this

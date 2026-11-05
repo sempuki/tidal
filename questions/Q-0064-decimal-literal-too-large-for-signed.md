@@ -1,6 +1,6 @@
 # Q-0064: Is a decimal literal that fits only an unsigned type valid?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** PRIM-2, `tests/expressions/primary/int-too-large-signed-decimal.cpp`
 
 ## Context
@@ -15,7 +15,7 @@ literal an unsigned type. EDG 7.0 accepts the literal in strict mode.
 1. The program is not valid.
 2. The literal has an unsigned type.
 
-## Provisional answer
+## Answer
 
 No; the program is not valid (option 1). Clang and GCC treat the unsigned type as an extension.
 
@@ -31,8 +31,16 @@ On 2026-11-04, the Propose exercise X19 (`reports/clean-room/X19/report.md`, fin
 
 PRIM-P1 passes all three steps in that use. The question stays provisional in this change (decision 0055).
 
+Used on 2026-11-04 by the source-reader gap review of the text phase 8 wrote on expressions, foundations, and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`), Part B. The review applied PRIM-P1 to the question's program, the decimal literal `9223372036854775808` with no suffix (`int-too-large-signed-decimal.cpp`), without the rule text: a decimal literal with no `u` has only signed types in its list, and none holds the value, so the literal is rejected. That is the provisional answer, and the model rules out the other options.
+
+Settled on 2026-11-04 under decision 0054. The review supports the answer with no doubt, and PRIM-P1 gives the same answer under the test of the style guide (section 3). EDG 7.0 still differs, and the tests keep their overrides.
+
 ## Opinions
 
 ### Gap review, 2026-11-03
 
 The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) agrees with option 1. A decimal literal without a suffix has a list of signed types only. A value that none of them holds may take a signed extended integer type, and otherwise the program is not valid. An unsigned type is never allowed. EDG's acceptance in strict mode is a defect unless EDG has a signed extended type wide enough.
+
+### Gap review, 2026-11-04
+
+The source-reader gap review of the text phase 8 wrote on expressions, foundations, and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`) agrees with option 1. The lists of types match the reference. The reference also lets a literal that no listed type holds take an extended integer type of the same signedness. The matrix has no such type, so the literal is rejected there.

@@ -62,8 +62,10 @@ suffix, and the form of the literal picks the parameter list. The
 literal supplies every argument, so a literal operator has no default
 arguments, as for the other operator functions. Literal
 operators live at namespace scope, where lookup by suffix finds them.
-Suffixes without a leading underscore belong to the language, so an
-implementation should warn about such suffixes. A suffix that the
+Suffixes without a leading underscore belong to the language, and
+suffixes with two underscores in a row belong to the implementation. A
+program that declares a literal operator for such a suffix is not
+valid, and no diagnostic is required. Compilers warn. A suffix that the
 language already uses, such as `u` or `f`, keeps its built-in meaning.
 :::
 
@@ -202,7 +204,7 @@ candidate makes the expression not valid. The rule is a specific case of
 
 :::{rule} OPR-8
 :kind: required
-:tests: classes/operators/literal-block-scope.cpp classes/operators/literal-char.cpp classes/operators/literal-constexpr.cpp classes/operators/literal-float.cpp classes/operators/literal-in-namespace.cpp classes/operators/literal-integer.cpp classes/operators/literal-numeric-over-raw.cpp classes/operators/literal-raw-float.cpp classes/operators/literal-raw.cpp classes/operators/literal-string-concat-suffix.cpp classes/operators/literal-string.cpp classes/operators/literal-builtin-suffix-wins.cpp classes/operators/literal-reserved-suffix-used.cpp classes/operators/literal-reserved-suffix-u8.cpp
+:tests: classes/operators/literal-block-scope.cpp classes/operators/literal-char.cpp classes/operators/literal-constexpr.cpp classes/operators/literal-float.cpp classes/operators/literal-in-namespace.cpp classes/operators/literal-integer.cpp classes/operators/literal-numeric-over-raw.cpp classes/operators/literal-raw-float.cpp classes/operators/literal-raw.cpp classes/operators/literal-string-concat-suffix.cpp classes/operators/literal-string.cpp classes/operators/literal-builtin-suffix-wins.cpp
 
 A literal with a suffix calls a literal operator with that suffix. A
 literal whose suffix is a form in the syntax of
@@ -278,17 +280,15 @@ point, and the complete class overloads `operator&`, it is unspecified
 if the built-in operator or the operator function is used.
 :::
 
-## Recommended Practice
-
 :::{rule} OPR-9
-:kind: recommended
-:tests: classes/operators/literal-no-underscore-warns.cpp classes/operators/literal-no-underscore-floating-warns.cpp classes/operators/literal-reserved-suffix-used.cpp classes/operators/literal-reserved-suffix-u8.cpp
+:kind: no-diagnostic
+:tests: classes/operators/literal-no-underscore-warns.cpp classes/operators/literal-no-underscore-floating-warns.cpp classes/operators/literal-double-underscore-suffix.cpp classes/operators/literal-reserved-suffix-used.cpp classes/operators/literal-reserved-suffix-u8.cpp
 
-An implementation should warn about a literal operator whose suffix does
-not start with `_`. Such suffixes are reserved for later forms of
-literals. A literal with such a suffix that is not a form in the syntax
-calls the literal operator, as OPR-8 says
-({question}`Q-0383`).
+A program must not declare a literal operator whose suffix does not
+start with `_`, or whose suffix has two underscores in a row. The first
+kind is reserved for later forms of literals, and the second for the
+implementation. No diagnostic is required. A literal that uses such a suffix can call
+the literal operator or be rejected ({question}`Q-0383`).
 :::
 
 ## Examples
@@ -314,17 +314,20 @@ Meters len = 2.5_m;
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 104
-of 107 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 105
+of 108 tests.
 
 - OPR-10: GCC accepts a default argument on a literal operator. Clang
   and EDG reject the default argument ({question}`Q-0060`).
-- OPR-9: Clang and GCC warn without extra flags.
-- OPR-8, OPR-9: GCC calls a literal operator whose suffix does not
-  start with `_`, such as `km` or `u8`. EDG calls the operator for `km`
-  and rejects `1u8`. Clang rejects every literal with such a suffix and
-  warns at the declaration that no literal calls the operator
-  ({question}`Q-0383`).
+- OPR-9: Clang and GCC warn without extra flags about a suffix that
+  does not start with `_`. Clang also warns about a suffix with two
+  underscores in a row, and GCC and EDG accept that suffix without a
+  warning. Each compiler calls the operator for it.
+- OPR-9: GCC calls a literal operator whose suffix does not start with
+  `_`, such as `km` or `u8`. EDG calls the operator for `km` and rejects
+  `1u8`. Clang rejects every literal with such a suffix and warns at the
+  declaration that no literal calls the operator. The rule needs no
+  diagnostic, so each of these results conforms ({question}`Q-0383`).
 - OPR-8: every compiler gives a literal with a suffix such as `u`, `z`,
   `ll`, `f`, or `L` its built-in type, even when the program declares a
   literal operator for that suffix. GCC warns that the implementation

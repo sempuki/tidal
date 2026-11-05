@@ -40,8 +40,9 @@ through its captures.
 | `this` | A pointer |
 | `*this` | A copy of the object |
 
-The evaluation of the lambda expression initializes the captures. The
-explicit captures go in the order of the capture list. A trailing
+The evaluation of the lambda expression initializes the captures, in an
+order that the implementation chooses. Every compiler of the matrix
+initializes the explicit captures in the order of the capture list. A trailing
 return type comes after the parameters and can see the captures. The
 parameters are declared as the parameters of any function are, so a
 name in the parameter list means the enclosing variable.
@@ -61,13 +62,16 @@ enclosing lambda in turn. An implementation rejects the following:
 - a capture list that captures what has no automatic storage,
 - a body that reaches a member or a local object without a capture
   that holds it,
-- a capture default on a lambda that has no enclosing function and is
-  not in a default member initializer.
+- a capture default on a lambda that is not inside a block and is not
+  in a default member initializer.
 
-A capture default asks for captures from an enclosing function, or
-from the object of a default member initializer through `this`. A
-lambda at namespace scope has neither, so a capture default there is
-rejected even when the body uses nothing that needs a capture.
+A capture default asks for captures from the block that encloses the
+lambda, or from the object of a default member initializer through
+`this`. A lambda at namespace scope has neither. Neither has a lambda in
+a default argument, or in a member declaration of a local class outside
+any function body, even though a function encloses the class. So a
+capture default in those places is rejected even when the body uses
+nothing that needs a capture.
 :::
 
 :::{principle} LAM-P4
@@ -180,7 +184,7 @@ default uses the other mode.
 
 :::{rule} LAM-6
 :kind: reject
-:tests: expressions/lambdas/capture-abstract.cpp expressions/lambdas/capture-copy-same-as-default.cpp expressions/lambdas/capture-default-at-namespace.cpp expressions/lambdas/capture-global-rejected.cpp expressions/lambdas/capture-repeated.cpp expressions/lambdas/capture-same-as-default.cpp expressions/lambdas/reference-default-explicit-this.cpp expressions/lambdas/capture-default-in-member-initializer.cpp
+:tests: expressions/lambdas/capture-abstract.cpp expressions/lambdas/capture-copy-same-as-default.cpp expressions/lambdas/capture-default-at-namespace.cpp expressions/lambdas/capture-global-rejected.cpp expressions/lambdas/capture-repeated.cpp expressions/lambdas/capture-same-as-default.cpp expressions/lambdas/reference-default-explicit-this.cpp expressions/lambdas/capture-default-in-member-initializer.cpp expressions/lambdas/capture-default-local-class-member.cpp expressions/lambdas/capture-default-local-class-default-argument.cpp
 
 A capture list must obey these rules:
 
@@ -188,8 +192,10 @@ A capture list must obey these rules:
 - An explicit capture must not use the same mode as the default. As
   exceptions, `[&, this]`, `[=, this]`, and `[=, *this]` are valid.
 - Only a variable with {term}`automatic storage` can be captured.
-- A lambda outside a function must not have a capture default, except in
-  a default member initializer.
+- A lambda that is not inside a block must not have a capture default,
+  except in a default member initializer. A default argument, and a
+  member declaration of a local class outside a function body, are not
+  inside a block.
 - A variable of {term}`abstract class` type ({rule}`VIRT-8`) cannot be captured
   by copy.
 :::
@@ -202,8 +208,8 @@ An init capture `[x = e]` declares a new member `x` that `e`
 initializes, and `[&r = v]` declares a reference to `v`. These rules
 apply:
 
-- Init captures are initialized in order with the other explicit
-  captures (LAM-28).
+- Init captures are initialized together with the other explicit
+  captures, in the order of LAM-28.
 - The temporaries of the initializer end with the {term}`full expression` that
   contains the lambda expression ({rule}`VC-9`).
 - An init capture by reference that binds to a temporary makes the
@@ -385,15 +391,6 @@ these:
 - the object that the reference refers to, for a reference.
 :::
 
-:::{rule} LAM-28
-:kind: required
-:tests: expressions/lambdas/explicit-capture-order.cpp expressions/lambdas/init-capture-order.cpp
-
-The explicit captures by copy and the init captures are initialized in
-the order of the capture list. LAM-20 gives the order of the implicit
-captures.
-:::
-
 ## Undefined Behavior
 
 :::{rule} LAM-19
@@ -423,6 +420,17 @@ These properties of a closure type are unspecified:
 
 A capture by copy adds a member of the captured type. So the closure is
 at least as large as each such member.
+:::
+
+:::{rule} LAM-28
+:kind: unspecified
+:tests: expressions/lambdas/explicit-capture-order.cpp expressions/lambdas/init-capture-order.cpp foundations/evaluation-order/init-capture-order.cpp
+
+The order in which the explicit captures by copy and the init captures
+are initialized is unspecified, as is the order of the members that
+hold them ({rule}`LAM-20`). On the matrix, every compiler initializes
+them in the order of the capture list. LAM-20 gives the order of the
+implicit captures.
 :::
 
 ## Recommended Practice
@@ -483,15 +491,28 @@ int dispatch(int base) {
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 82
-of 84 tests.
+of 86 tests.
 
 - LAM-6: EDG accepts a capture default on a lambda outside a function.
-  Clang and GCC reject it ({question}`Q-0037`).
+  Clang and GCC reject it ({question}`Q-0037`). The gap review of the
+  text phase 8 wrote on expressions
+  (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`)
+  reads the limit as a block around the lambda, so a lambda in a member
+  declaration or a default argument of a local class has none. Clang 22
+  and GCC 16 reject a capture default there, and EDG 7.0 accepts it.
 - LAM-13 and LAM-16: all seven compilers accept static lambdas and
   explicit object parameters in C++23 mode.
 - LAM-13: every compiler accepts a call of a closure object with a
   static call operator, although the closure also converts to a pointer
   to function. OVL-25 gives the reason.
+- LAM-28: the gap review of the text phase 8 wrote on expressions,
+  foundations, and templates
+  (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`)
+  reads the order of the closure's members, and so the order of their
+  initialization, as unspecified, for explicit captures and init
+  captures alike. LAM-28 is `unspecified`, and UNW-2 no longer promises
+  the order of the capture list. Every compiler of the matrix uses that
+  order (`explicit-capture-order.cpp`, `init-capture-order.cpp`).
 - LAM-20: every compiler initializes the explicit captures first. The
   implicit captures follow, in the order of their first use in the body.
   LAM-20 allows this order.

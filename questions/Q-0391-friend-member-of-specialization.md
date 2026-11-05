@@ -1,0 +1,64 @@
+# Q-0391: Does a friend template that names a member of a class template befriend only that member, in every specialization?
+
+**Status:** provisional
+**Affects:** ACC-20, `tests/classes/access/friend-member-of-explicit-specialization.cpp`, `tests/classes/access/friend-member-of-specialization-other-member.cpp`
+**Source:** the ACC-20 note of `reports/review/2026-11-04-gap-review-phase-8-classes-overloading.md`
+
+## Context
+
+A friend declaration with a template head can name a member of a class
+template through a qualifier such as `Box<T>::`:
+
+```cpp
+template <class T> struct Box { int peek(); int other(); };
+class Safe {
+  int secret = 7;
+  template <class T> friend int Box<T>::peek();
+};
+```
+
+The member `peek` of each specialization of `Box` is then a friend of
+`Safe`. Every compiler accepts a use of `secret` from `Box<T>::peek`
+(`tests/classes/access/friend-member-of-every-specialization.cpp`). The
+compilers differ in two forms.
+
+| Form | Clang 22 | GCC 16 | EDG 7.0 |
+|---|---|---|---|
+| A use from `peek` of an explicit specialization `Box<char>` | accepts | accepts | rejects: `secret` is inaccessible |
+| A use from `Box<T>::other`, which is not a friend | accepts | rejects | rejects |
+
+Clang warns at the friend declaration that it does not support a
+dependent qualifier there, and that it turns off access checks for
+`Safe`. So Clang accepts every use of a private member of `Safe`.
+
+## Evidence
+
+The two tests in **Affects**. The first expects the program to run and
+records EDG's rejection. The second expects a rejection and records
+Clang's acceptance.
+
+## Options
+
+1. The named member of every specialization, explicit specializations
+   included, is a friend, and no other member is (GCC; Clang for the
+   first form, EDG for the second).
+2. Only the members of specializations made from the template are
+   friends, and an explicit specialization's member is not (EDG).
+
+## Provisional answer
+
+The named member of every specialization is a friend, and no other
+member is (option 1). The gap review of the text phase 8 wrote reads
+the reference this way, explicit specializations included. In each
+form, one newest family differs.
+
+Kept open on 2026-11-04 under decision 0054, because the question and
+the ACC-20 text are new in this commit and wait for a use.
+
+## Opinions
+
+### Gap review, 2026-11-04
+
+The source-reader gap review of the text phase 8 wrote on classes and overloading (`reports/review/2026-11-04-gap-review-phase-8-classes-overloading.md`) finds that ACC-20 leaves out this form. A friend declaration with a template head can name a member function or a member class of a specialization of a class template, written with a qualifier that ends in a template name with arguments, and the qualifier must let each template parameter be deduced. The matching member of every specialization, explicit specializations included, is then a friend.
+
+<!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

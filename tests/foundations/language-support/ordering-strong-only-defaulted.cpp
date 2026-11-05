@@ -1,9 +1,8 @@
 // tidal-rules: LSUP-2
-// tidal-expect: reject
-// tidal-expect-gcc: accept
-// tidal-expect-clang: accept
+// tidal-expect: run
+// tidal-expect-edg: reject
 // tidal-error-edg: no valid std::weak_ordering type found
-// tidal-note: Q-0386. The program declares std::strong_ordering and neither of the other two ordering classes. The defaulted <=> compares two int members, so its result type is std::strong_ordering. The class has == and != against 0 for the defaulted operator (LSUP-12).
+// tidal-note: Q-0386. The program declares std::strong_ordering and neither of the other two ordering classes. The defaulted <=> compares two int members, so its result type is std::strong_ordering, the only class the use needs. The class has == and != against 0 for the defaulted operator (LSUP-12). Clang and GCC accept the program. EDG asks for all three classes.
 namespace std {
 struct strong_ordering {
   signed char v;

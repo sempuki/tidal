@@ -41,10 +41,18 @@ Kept open on 2026-11-03 (replaced by the note of 2026-11-04) under decision 0054
 
 Checked on 2026-11-04 under the principle test of the style guide (section 3, item PQ of decision 0055). PFX-P3 failed step 3, because no principle said whether a member access can see into a class that is being defined. Item PQ widened PFX-P3: inside the definition, a member access sees the members known at that place, as an unqualified name does, so a member declaration sees the earlier members and a member function body sees every member. The new test `tests/expressions/postfix/member-access-later-member-in-function-body.cpp` checks the function body case, which no PFX-11 test checked. Under decision 0055, the question does not settle on a principle that phase 8 wrote. The question stays provisional until a reader or a reviewer uses PFX-P3.
 
+Used on 2026-11-04 by the source-reader gap review of the text phase 8 wrote on expressions, foundations, and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`), Part B. The review applied PFX-P3 to the question's program, a member access to an earlier member inside the definition of its class (`member-access-class-being-defined.cpp`), without the rule text: a member declaration sees the members declared before it, so the access is accepted, which is the provisional answer.
+
+Kept open on 2026-11-04 under decision 0055, because PFX-P3 and PFX-11 changed in this commit. The review named the other places where the class is complete, those of nested classes included, and PFX-P3 now lists them. The question waits for the next use of PFX-P3. Clang 22 is the one newest family that differs.
+
 ## Opinions
 
 ### Gap review, 2026-11-03
 
 The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) agrees with option 1. A member access needs a complete class, except inside the definition of that class. The program is not valid if the result would differ once the class is complete. A member declared after the access is not found there. Clang's rejection is a defect.
+
+### Gap review, 2026-11-04
+
+The source-reader gap review of the text phase 8 wrote on expressions, foundations, and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`) agrees with option 1. A member access can name a member of a class that is not yet complete when the access is in that class's definition. The program is then not valid, with no diagnostic required, if the complete class would give another lookup result. The places where the class is complete include a function body, a default argument, a default template argument, an exception specification, and a default member initializer, also in nested classes.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

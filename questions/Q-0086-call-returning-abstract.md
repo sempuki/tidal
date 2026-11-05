@@ -20,8 +20,16 @@ Kept open on 2026-11-03 (replaced by the note of 2026-11-04) under decision 0054
 
 Checked on 2026-11-04 under the principle test of the style guide (section 3, item PQ of decision 0055). VIRT-P4 failed step 3 of the test, because the model did not say whether a call makes an object. Item PQ widened VIRT-P4 with a table of the constructs that make an object of an abstract class and the constructs that only name the class. A call makes its result as an object of the return type, so the call is rejected while the declaration of the function stays valid. The tests of VIRT-8 check each row. Under decision 0055, the question does not settle on a principle that phase 8 wrote. The question stays provisional until a reader or a reviewer uses VIRT-P4.
 
+Used on 2026-11-04 under decision 0056 by the source-reader gap review of the text phase 8 wrote on classes and overloading (`reports/review/2026-11-04-gap-review-phase-8-classes-overloading.md`). The review applies VIRT-P4 to the program of `call-returning-abstract.cpp` without the rule text and reaches the provisional answer: a call makes its result as an object of the abstract class, so the call is rejected, and the declaration stays valid.
+
+Kept open on 2026-11-04 under decision 0055, because VIRT-P4 changed in the same commit: the review found that its table left out an argument for a parameter of abstract class type in a call. The question waits for the next use of VIRT-P4.
+
 ## Opinions
 
 ### Gap review, 2026-11-03
 
 The source-reader gap review of the open questions on classes and statements (`reports/review/2026-11-03-gap-review-questions-classes-statements.md`) agrees with option 1. A function can be declared with an abstract return type. A call gives a prvalue of that type, and a prvalue of abstract class type is allowed only in the operand of `decltype`. Clang's acceptance is a defect.
+
+### Gap review, 2026-11-04
+
+The source-reader gap review of the text phase 8 wrote on classes and overloading (`reports/review/2026-11-04-gap-review-phase-8-classes-overloading.md`) agrees with option 1. A prvalue of abstract class type is not allowed outside one kind of unevaluated operand, and a call that returns the class makes one. The review adds that the reference also names an abstract parameter type in a function being called, a row that VIRT-P4 and VIRT-8 did not have.

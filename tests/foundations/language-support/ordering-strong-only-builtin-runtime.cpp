@@ -1,9 +1,6 @@
 // tidal-rules: LSUP-2
-// tidal-expect: reject
-// tidal-expect-gcc: accept
-// tidal-expect-clang: accept
-// tidal-expect-edg: accept
-// tidal-note: Q-0386. The form of ordering-strong-only-builtin.cpp whose <=> is evaluated at run time. Every compiler accepts the program, and EDG 7.0 checks for the other two classes only where it evaluates a built-in <=> as a constant.
+// tidal-expect: run
+// tidal-note: Q-0386. The form of ordering-strong-only-builtin.cpp whose <=> is evaluated at run time. The use needs only the class it yields. Every compiler accepts the program.
 namespace std {
 struct strong_ordering {
   signed char v;

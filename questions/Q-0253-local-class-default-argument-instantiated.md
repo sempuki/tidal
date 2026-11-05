@@ -38,10 +38,18 @@ Kept open on 2026-11-03 (replaced by the note of 2026-11-04) under decision 0054
 
 Checked on 2026-11-04 under the principle test of the style guide (section 3, item PQ of decision 0055). INST-P1 and INST-P2 failed step 3, because they let default arguments wait for a use and did not name local classes. Item PQ widened INST-P1. A local class is part of its function, and the instantiation of the function is the use that needs the local class, so every part of the local class is made with the function, default arguments among them. Under decision 0055, the question does not settle on a principle that phase 8 wrote. The question stays provisional until a reader or a reviewer uses INST-P1.
 
+Used on 2026-11-04 by the source-reader gap review of the text phase 8 wrote on expressions, foundations, and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`), Part B. The review applied INST-P1 to the question's program, a default argument of a member function of a local class in a function template (`local-class-default-argument.cpp`), without the rule text: the local class is instantiated whole with its function, default arguments included, which is the provisional answer.
+
+Kept open on 2026-11-04 under decision 0055, because INST-P1 and INST-12 changed in this commit. The review reads the constraints of a local class as left out of its instantiation, and INST-P1 now says that the requires clause of a member waits (Q-0392). The question waits for the next use of INST-P1. GCC 16 is the one newest family that differs.
+
 ## Opinions
 
 ### Gap review, 2026-11-03
 
 The source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`) agrees with option 1. A local class and its members, with their default arguments, exception specifications, and member initializers, are never instantiated on their own, and their checks happen when the enclosing entity is instantiated. The statement is a note, but it describes the effect of the binding rules. GCC's acceptance is a defect.
+
+### Gap review, 2026-11-04
+
+The source-reader gap review of the text phase 8 wrote on expressions, foundations, and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`) agrees with option 1. A local class and its members are instantiated with the enclosing function, with their default arguments, exception specifications, and default member initializers. The review adds that the type constraints and requires clauses of the local class are left out of that.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

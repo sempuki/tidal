@@ -1,6 +1,6 @@
 # Q-0019: May a using declaration be repeated in a block?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** NS-7, `tests/declarations/namespaces/using-declaration-repeat-block.cpp`
 
 ## Context
@@ -21,7 +21,7 @@ the current scope"). GCC changed its behavior between versions 14 and 16.
    GCC.
 2. Rejected in blocks. Matches GCC 14 and EDG.
 
-## Provisional answer
+## Answer
 
 Yes, as the newest Clang and GCC allow (option 1). Both Clang versions and the newer GCC accept the repeated
 declaration. GCC's move from rejecting to accepting suggests that the
@@ -31,8 +31,16 @@ Kept open on 2026-11-03 (replaced by the note of 2026-11-04) under decision 0054
 
 Checked on 2026-11-04 under the principle test of the style guide (section 3, item PQ of decision 0055). NS-P3 failed step 3, because the model said only that a using declaration conflicts with another declaration in the current scope. NS-P3 now says that a second using declaration of the same member says the same thing again and does not conflict, in a block as in a namespace. The review reads with no doubt, and EDG 7.0 is the one newest family that differs. Under decision 0055, the question does not settle on a principle that phase 8 wrote. The question stays provisional until a reader or a reviewer uses NS-P3.
 
+Used on 2026-11-04 by the source-reader gap review of the text phase 8 wrote on the declarations and statements chapters (`reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md`), under decision 0056. The review applied NS-P3 to the program of `using-declaration-repeat-block.cpp` without the rule text and reached the provisional answer: the second using declaration of the same member says the same thing again and does not conflict, so the block is valid.
+
+Settled on 2026-11-04 under decision 0054. The review supports the answer with no doubt, and NS-P3 gives the same answer by the test of the style guide (section 3), as the review's use shows. EDG 7.0 still differs, and the tests keep its overrides.
+
 ## Opinions
 
 ### Gap review, 2026-11-03
 
 The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) agrees with option 1. Two using declarations that name one declaration conflict only when both are in the same class scope. In a block, two using declarations that name the same entity refer to one entity and do not conflict. The older rule that rejected the block form is gone in C++23.
+
+### Gap review, 2026-11-04
+
+The source-reader gap review of the text phase 8 wrote on the declarations and statements chapters (`reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md`) agrees with option 1. Only a class scope forbids a repeated using declarator of one entity. Two using declarations of one variable in a block name the same entity and do not conflict.

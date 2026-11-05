@@ -45,6 +45,8 @@ to the classes derived from a friend. A class can befriend:
 - a whole class,
 - a template, which makes every specialization of the template a
   friend,
+- a member of a class template, which makes that member of every
+  specialization a friend,
 - one specialization of a template, and no other.
 
 The class needs access to a member function before the class can name
@@ -100,7 +102,7 @@ label. A class can have any number of labels, in any order.
 
 :::{rule} ACC-2
 :kind: reject
-:tests: classes/access/private-outside.cpp classes/access/static-member-access.cpp classes/access/private-in-member.cpp classes/access/private-type-named.cpp classes/access/class-default-private.cpp classes/access/friend-member-function-only.cpp classes/access/friend-one-specialization.cpp classes/access/using-reduces-access.cpp classes/access/private-base.cpp classes/unions/union-private-members.cpp
+:tests: classes/access/private-outside.cpp classes/access/static-member-access.cpp classes/access/private-in-member.cpp classes/access/private-type-named.cpp classes/access/class-default-private.cpp classes/access/friend-member-function-only.cpp classes/access/friend-one-specialization.cpp classes/access/friend-member-of-specialization-other-member.cpp classes/access/using-reduces-access.cpp classes/access/private-base.cpp classes/unions/union-private-members.cpp
 
 Only the members and friends of a class can use the name of a private
 member. The rule applies to:
@@ -179,13 +181,21 @@ An access label has no effect on a friend declaration.
 
 :::{rule} ACC-20
 :kind: required
-:tests: classes/access/friend-class-template.cpp classes/access/friend-function-template.cpp classes/access/friend-specialization-only.cpp classes/access/friend-one-specialization.cpp
+:tests: classes/access/friend-class-template.cpp classes/access/friend-function-template.cpp classes/access/friend-specialization-only.cpp classes/access/friend-one-specialization.cpp classes/access/friend-member-of-every-specialization.cpp classes/access/friend-member-of-explicit-specialization.cpp classes/access/friend-member-of-specialization-other-member.cpp
 
 A friend declaration with a template head names a class template or a
 function template. Every specialization of that template is a friend. A
 class template can name itself in this way. Each specialization of the
 class template then has access to the private members of every other
 specialization.
+
+A friend declaration with a template head can also name a member
+function or a member class of a class template, with a qualifier such
+as `Box<T>::` whose template arguments give each parameter of the head.
+That member of every specialization of the class template is then a
+friend, explicit specializations included
+({question}`Q-0391`). The other members
+of the specializations are not friends.
 
 A friend declaration without a template head can name one
 specialization, such as `Key<int>`. Only that specialization is a
@@ -374,8 +384,8 @@ class Token {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 72
-of 74 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 73
+of 77 tests.
 
 One question on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on classes and statements (`reports/review/2026-11-03-gap-review-questions-classes-statements.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
 
@@ -391,5 +401,12 @@ One question on this page settled on 2026-11-03 under decision 0054 after the so
   declaration in a block makes the function visible in that block only.
 - ACC-17: Clang accepts a declaration `int geo::make_seven();` outside
   `geo` of a hidden friend. GCC and EDG reject it ({question}`Q-0131`).
+- ACC-20: Clang, GCC, and EDG make a member of every specialization of
+  a class template a friend through a friend declaration with a
+  template head. Clang warns that it does not support the form and
+  turns off access checks for the befriending class, so it also accepts
+  a use from a member that is not a friend. EDG does not extend the
+  friendship to an explicit specialization
+  ({question}`Q-0391`).
 
 Inputs: clang-sema-access, edg-class-decl.

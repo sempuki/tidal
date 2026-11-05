@@ -45,13 +45,16 @@ needs the specification ({rule}`EXS-9`).
 
 A class or enumeration declared in the body of a function template is
 part of that function. The instantiation of the function is the use
-that needs the local class, so the instantiation makes every part of
+that needs the local class, so the instantiation makes the parts of
 the local class at once (INST-12). The parts that wait for a use in a
 member of a class template do not wait in a local class:
 
 - member function bodies and exception specifications,
 - default member initializers,
 - default arguments.
+
+The constraints of a member of the local class still wait. They are
+checked when a use of the member needs them.
 :::
 
 :::{principle} INST-P2
@@ -302,7 +305,7 @@ member itself does not use the initializer.
 
 :::{rule} INST-12
 :kind: required
-:tests: templates/instantiation/local-class-member.cpp templates/instantiation/local-class-default-argument.cpp templates/instantiation/local-class-member-initializer.cpp templates/instantiation/local-class-exception-specification.cpp templates/instantiation/local-enumeration.cpp
+:tests: templates/instantiation/local-class-member.cpp templates/instantiation/local-class-default-argument.cpp templates/instantiation/local-class-member-initializer.cpp templates/instantiation/local-class-exception-specification.cpp templates/instantiation/local-enumeration.cpp templates/instantiation/local-class-requires-clause-waits.cpp templates/instantiation/local-class-requires-clause-checked-at-use.cpp
 
 A class or enumeration declared in the body of a function template is
 part of the function. The instantiation of the function instantiates
@@ -311,6 +314,10 @@ the local class with these parts, also those that no use names:
 - member function bodies and exception specifications,
 - default member initializers,
 - default arguments ({question}`Q-0253`).
+
+A requires clause of a member function of the local class is not
+instantiated with the class. It is checked when a use of the member
+needs it ({question}`Q-0392`).
 :::
 
 :::{rule} INST-36
@@ -732,8 +739,8 @@ extern template constexpr int size_of<long>;  // rejected: constexpr (INST-25)
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 116
-of 138 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 117
+of 140 tests.
 
 Three questions on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
 
@@ -859,7 +866,26 @@ bullets below say so.
   the template's namespace, after a using-directive. Clang and GCC
   reject it ({question}`Q-0235`). For a variable template, Clang and
   EDG accept the unqualified name, and GCC rejects it. For a function
-  template, every compiler rejects it.
+  template, every compiler rejects it. The gap review of the text phase
+  8 wrote on templates
+  (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`)
+  again reads the class and variable forms as valid and the function
+  form as not valid. INST-P3 keeps one placement for all three kinds,
+  which goes beyond the reference by the review's reading, and the
+  choice waits on the maintainer (`documentation/decisions/pending.md`,
+  row 5).
+- INST-33: the same review finds no clear support in the reference for
+  instantiating the initializer of a `static constexpr` data member
+  with the class, since the reference delays the initialization of a
+  static data member until a use needs its definition. Every compiler
+  instantiates the initializer with the class, and INST-33 follows the
+  compilers.
+- INST-12, INST-P1: the same review reads the constraints of a member
+  of a local class as left out of the instantiation of the class. Clang
+  22 and GCC 16 accept a requires clause on such a member that the
+  argument cannot satisfy when nothing uses the member. EDG 7.0 rejects
+  a requires clause on a member of a local class
+  ({question}`Q-0392`).
 - INST-22: Clang rejects an explicit instantiation that leaves out an
   array bound. GCC and EDG accept it ({question}`Q-0236`). Every
   compiler accepts an explicit instantiation declaration that leaves

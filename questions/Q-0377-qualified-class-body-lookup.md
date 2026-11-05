@@ -47,6 +47,20 @@ depends on the answer. NAM-21 now names the class body.
 
 Kept open on 2026-11-04 under decision 0054, because no review has read the question. Item RV2 of decision 0056 reads it.
 
+Kept open on 2026-11-04 under decision 0055, because NAM-21 changed in this commit. The gap reviews of the text phase 8 wrote on declarations and statements and on expressions, foundations, and templates both support option 1. NAM-21 now also names the base clause of the class and the enumerator list of an enumeration defined with a qualified name. The question waits for a reader or a reviewer to use the changed rule. No newest family differs.
+
 ## Opinions
+
+### Gap review, 2026-11-04
+
+The source-reader gap review of the text phase 8 wrote on the declarations and statements chapters (`reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md`) agrees with option 1. A declaration that redeclares or specializes a member of a namespace or class with a qualified name puts the part after that name into the scope of the qualifier. The rule names the head of a class and of an enumeration as well as a declarator, and leaves out friend declarations. So the body of a class defined with a qualified name sees the members of the qualifier, and so does a specialization of a library template defined outside namespace `std`. The same rule covers the base clause of such a class, and the base and enumerator list of such an enumeration, which NAM-21 did not name.
+
+### Gap review of expressions, foundations, and templates, 2026-11-04
+
+The source-reader gap review of the text phase 8 wrote on expressions, foundations, and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`) agrees with option 1, for the same reason, and notes that a specialization is covered, so the tuple protocol example of the language-support page is valid. It adds that the body of an enumeration defined with a qualified name is treated the same way.
+
+### Gap review of classes and overloading, 2026-11-04
+
+The source-reader gap review of the text phase 8 wrote on the classes and overloading chapters (`reports/review/2026-11-04-gap-review-phase-8-classes-overloading.md`) names the question only to say that it affects no rule on its pages, and gives no reading.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

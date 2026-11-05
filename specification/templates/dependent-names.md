@@ -890,6 +890,15 @@ with the same compilers. Where the compilers differ from the outcome
 that the review predicts, the rules follow the compilers, and the notes
 and the questions say so.
 
+- DEP-30: the gap review of the text phase 8 wrote on expressions, foundations,
+  and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`) reads the
+  override item as fitting the rule. For a default argument that does
+  not depend on the parameters, the review finds the reference unclear,
+  because a default argument is instantiated only for a call that uses
+  it. Clang 22 and EDG 7.0 diagnose such a default argument when no
+  call uses it, and GCC 16 does not, which the class of DEP-30 allows
+  (`template-default-independent-unused.cpp`).
+
 - DEP-30: the compilers split on an unused template with an
   independent error. Clang and EDG reject an invalid conversion, an
   invalid call, and a default argument that cannot convert, and GCC

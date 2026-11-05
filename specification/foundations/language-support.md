@@ -109,12 +109,13 @@ need, the program must declare `std::initializer_list` with this shape:
 
 :::{rule} LSUP-2
 :kind: reject
-:tests: foundations/language-support/strong-ordering-minimal.cpp foundations/language-support/strong-ordering-missing-member.cpp foundations/language-support/strong-ordering-missing.cpp expressions/comparison/three-way-result-copies-member.cpp foundations/language-support/ordering-complete-declaration.cpp foundations/language-support/ordering-strong-only-builtin.cpp foundations/language-support/ordering-strong-only-builtin-runtime.cpp foundations/language-support/ordering-strong-only-defaulted.cpp
+:tests: foundations/language-support/strong-ordering-minimal.cpp foundations/language-support/strong-ordering-missing-member.cpp foundations/language-support/strong-ordering-missing.cpp expressions/comparison/three-way-result-copies-member.cpp foundations/language-support/ordering-complete-declaration.cpp foundations/language-support/ordering-strong-only-builtin.cpp foundations/language-support/ordering-strong-only-builtin-runtime.cpp foundations/language-support/ordering-strong-only-defaulted.cpp foundations/language-support/ordering-partial-not-declared.cpp
 
 A program that uses `<=>` on built-in operands, or a defaulted `<=>`,
-must declare the three ordering classes in namespace `std` first. Each
-class has static data members of its own type, defined as constants
-({rule}`CLS-16`):
+must first declare in namespace `std` the ordering class that the use
+yields. The use does not need the other two classes
+({question}`Q-0386`). Each class has static data members of its own
+type, defined as constants ({rule}`CLS-16`):
 
 | Class | Members |
 |---|---|
@@ -510,8 +511,8 @@ int* r = new (raw) int(3);          // raw hosts the int
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 49
-of 65 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 51
+of 66 tests.
 
 - LSUP-1: each compiler checks the shape in its own way. Clang checks
   the layout of the two members, and also accepts a second pointer in
@@ -528,8 +529,11 @@ of 65 tests.
   built-in `<=>` as a constant and before it defines a defaulted `<=>`.
   EDG accepts a built-in `<=>` with one class declared when the
   comparison runs at run time or stands in an unevaluated operand.
-  Clang and GCC need only the class that the operation yields
-  ({question}`Q-0386`).
+  Clang and GCC need only the class that the operation yields, and
+  LSUP-2 follows them. The gap review of the text phase 8 wrote on
+  foundations
+  (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`)
+  reads the reference the same way ({question}`Q-0386`).
 - LSUP-2: every compiler rejects `1 <=> 2` when `strong_ordering` lacks
   the member `equal`, although the result is `less`
   (`strong-ordering-missing-member.cpp`). So a compiler checks a
@@ -561,11 +565,6 @@ of 65 tests.
   undefined, whatever its shape. LSUP-5 follows the compilers, and its
   model of a program that supplies a library declaration is Tidal's own
   choice ({principle}`LSUP-P2`).
-- LSUP-2: the rule asks for all three ordering classes for every use,
-  as EDG does for a constant and a defaulted `<=>`. Clang and GCC need
-  only the class that a use yields, and no compiler checks the other
-  classes for a built-in `<=>` at run time
-  (`ordering-strong-only-builtin-runtime.cpp`).
 - LSUP-6: no compiler checks the shape of `std::nothrow_t`. The tag is
   an ordinary placement argument, and only the exception specification
   of the allocation function matters ({rule}`NEW-31`). The shape in the
@@ -573,7 +572,14 @@ of 65 tests.
   library's definition.
 - LSUP-7: every compiler accepts the `inline` definitions in a program
   that includes no header, and Clang and GCC build the object at the
-  given address.
+  given address. The gap review of the text phase 8 wrote on
+  foundations
+  (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`)
+  reads a program that defines these forms itself as breaking a
+  reservation of the library, with undefined behavior. The doubt is the
+  one of LSUP-5: LSUP-7 follows the compilers, and the model of a
+  program that supplies a library declaration is Tidal's own choice
+  ({principle}`LSUP-P2`).
 - LSUP-8: Clang and GCC catch the objects that their libraries throw
   with handlers for classes that the program declares. Each class
   declares its destructor and does not define it, so the program uses
@@ -643,6 +649,5 @@ codes.
 | `initializer-list-candidate-not-viable.cpp` | LSUP-1 | accept | accept | reject | accept | {question}`Q-0321` |
 | `initializer-list-parameter-not-needed.cpp` | LSUP-1 | accept | accept | reject | accept | {question}`Q-0321` |
 | `ordering-defaulted-not-equal-zero-only.cpp` | LSUP-12 | reject | accept | reject | accept | {question}`Q-0334` |
-| `ordering-strong-only-builtin.cpp` | LSUP-2 | reject | accept | accept | reject | {question}`Q-0386` |
-| `ordering-strong-only-builtin-runtime.cpp` | LSUP-2 | reject | accept | accept | accept | {question}`Q-0386` |
-| `ordering-strong-only-defaulted.cpp` | LSUP-2 | reject | accept | accept | reject | {question}`Q-0386` |
+| `ordering-strong-only-builtin.cpp` | LSUP-2 | run | run | run | reject | {question}`Q-0386` |
+| `ordering-strong-only-defaulted.cpp` | LSUP-2 | run | run | run | reject | {question}`Q-0386` |

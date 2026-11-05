@@ -342,7 +342,7 @@ int& m{s};                   // rejected: a temporary needs const or &&
 All eight compilers agree on 49 of 64 tests. The results are in
 `tests/RESULTS.md`.
 
-Six questions on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on overloading, references, and list initialization (`reports/review/2026-11-03-gap-review-questions-overloading.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+Seven questions on this page settled under decision 0054. Six settled on 2026-11-03 after the source-reader gap review of the open questions on overloading, references, and list initialization (`reports/review/2026-11-03-gap-review-questions-overloading.md`). Q-0040 settled on 2026-11-04 after the source-reader gap review of the text phase 8 wrote on the declarations and statements chapters (`reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
 
 | Question | Principle | Family that still differs |
 |---|---|---|
@@ -352,6 +352,7 @@ Six questions on this page settled on 2026-11-03 under decision 0054 after the s
 | {question}`Q-0150` | REF-P3 | Clang 22 |
 | {question}`Q-0151` | REF-P1 | GCC 16 |
 | {question}`Q-0164` | REF-P3 | GCC 16 |
+| {question}`Q-0040` | REF-P2 | EDG 7.0 |
 
 - **REF-5.** All compilers reject the dangling reads during
   {term}`constant evaluation` ("read of object outside its lifetime",

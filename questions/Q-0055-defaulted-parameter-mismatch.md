@@ -31,3 +31,7 @@ Checked on 2026-11-04 under the principle test of the style guide (section 3, it
 ### Gap review, 2026-11-03
 
 The source-reader gap review of the open questions on classes and statements (`reports/review/2026-11-03-gap-review-questions-classes-statements.md`) agrees with option 1. A defaulted special member may differ from the implicit one only in a few listed ways, and a parameter type outside that list makes a function defaulted on its first declaration deleted. A copy constructor that takes a reference to `const volatile` class, and a move constructor that takes a `const` rvalue reference, are still copy and move constructors.
+
+### Gap review, 2026-11-04
+
+The source-reader gap review of the text phase 8 wrote on classes and overloading (`reports/review/2026-11-04-gap-review-phase-8-classes-overloading.md`) names the question as settled and gives no new reading. The question stays settled.

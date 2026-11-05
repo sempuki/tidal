@@ -42,8 +42,16 @@ The attribute does not change the end padding (option 1). Two of three
 families agree. CLS-35 lists the GCC choice as an extra condition of
 GCC.
 
-Kept open on 2026-11-04 under decision 0054, because no review has read the question. Item RV2 of decision 0056 reads it.
+Kept open on 2026-11-04 under decision 0054, because the gap review of the text phase 8 wrote on classes and overloading finds the reference silent. Both options conform, and the question records a property of the platform ABIs. GCC 16 is the one newest family that differs.
 
 ## Opinions
+
+### Gap review, 2026-11-04
+
+The source-reader gap review of the text phase 8 wrote on classes and overloading (`reports/review/2026-11-04-gap-review-phase-8-classes-overloading.md`) finds the reference silent and supports neither option. The attribute only allows a member to share storage, and the use of end padding is left to the implementation. Both options conform. The question records which choice the platform ABIs make, which CLS-35 lists.
+
+### Gap review, 2026-11-04 (expressions, foundations, and templates)
+
+The source-reader gap review of the text phase 8 wrote on expressions, foundations, exceptions, and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`) names the question and leaves it out, because its rules are on the classes pages.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

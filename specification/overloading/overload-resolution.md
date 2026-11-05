@@ -871,7 +871,7 @@ of 179 tests.
 - {question}`Q-0144` (OVL-6; settled on OVL-P2): whether a `const`
   object gets a surrogate from a conversion function that is not
   `const`. It does not. GCC gives it one.
-- {question}`Q-0145` (OVL-40; open): whether copy-list-initialization
+- {question}`Q-0145` (OVL-40; settled on {principle}`OVL-P2`): whether copy-list-initialization
   can use an `explicit` conversion function for the copy constructor's
   parameter. It cannot. Clang uses the function.
 - {question}`Q-0146` (OVL-30, OVL-41; settled on {principle}`ORD-P2`
@@ -879,7 +879,7 @@ of 179 tests.
   their constraints decide between them. They are the conditions of
   ORD-13. EDG lets a constraint decide in every case, and Clang 18 does
   for an ellipsis.
-- {question}`Q-0147` (OVL-10; open): whether a rewritten candidate
+- {question}`Q-0147` (OVL-10; settled on {principle}`OVL-P4`): whether a rewritten candidate
   removes the built-in candidate with its parameter list. It does. GCC
   keeps the built-in candidate.
 - {question}`Q-0148` (OVL-27 to OVL-29; open): whether the kind of a
@@ -968,6 +968,11 @@ column gives the outcome that the rules predict.
 - OVL-36: a written `==` that is not `const` ties with its own swapped
   form (inventory RK-16). Every compiler rejects the comparison in
   strict mode, and {rule}`DCMP-7` recommends a warning.
+- OVL-38: two gap reviews read the reference as rejecting a call that
+  uses default arguments from two scopes even when the two are equal.
+  The test of when two default arguments are the same is Tidal's own,
+  and it follows the compilers, which all accept equal arguments
+  (`documentation/decisions/pending.md`, row 4).
 
 ### Probe grids
 

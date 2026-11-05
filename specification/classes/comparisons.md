@@ -319,6 +319,13 @@ bool y = l == s;   // the friend from Name<8>, with M = 2
 The results are in `tests/RESULTS.md`. All eight compilers agree on 74
 of 80 tests. The tests declare the comparison category types themselves.
 
+Two questions on this page settled on 2026-11-04 under decision 0054 after the source-reader gap review of the text phase 8 wrote on classes and overloading (`reports/review/2026-11-04-gap-review-phase-8-classes-overloading.md`). For each, the review used the principle on the question's program, supports the answer with no doubt, and the principle gives the same answer. Each test keeps its override for the family that still differs:
+
+| Question | Principle | Family that still differs |
+|---|---|---|
+| {question}`Q-0061` | DCMP-P1 | GCC 16 |
+| {question}`Q-0158` | DCMP-P2 | GCC 16 |
+
 - DCMP-3: GCC accepts defaulting a friend that was declared outside the
   class. Clang and EDG reject it ({question}`Q-0061`).
 - DCMP-8: Clang rejects the definition. GCC and EDG accept it

@@ -97,7 +97,7 @@ conversion`.
 
 :::{rule} COND-3
 :kind: required
-:tests: expressions/conditional/lvalue-result.cpp expressions/conditional/arithmetic-prvalue.cpp expressions/conditional/same-type-prvalue.cpp expressions/conditional/array-function-operands.cpp expressions/conditional/mixed-category-prvalue.cpp expressions/conditional/pointer-operands.cpp expressions/conditional/bitfield-or-enum.cpp expressions/conditional/class-one-way.cpp expressions/conditional/mixed-enum-types.cpp expressions/conditional/cv-lvalues-and-strings.cpp expressions/conditional/two-zeros.cpp expressions/conditional/member-pointer-nullptr.cpp expressions/conditional/xvalue-operands.cpp expressions/conditional/const-volatile-lvalues-prvalue.cpp expressions/conditional/const-and-plain-lvalue.cpp expressions/conditional/derived-base-lvalue.cpp expressions/conditional/class-converts-to-int.cpp expressions/conditional/zero-and-nullptr.cpp expressions/conditional/class-converts-best-conversion.cpp expressions/conditional/class-converts-to-reference.cpp expressions/conditional/class-base-target-keeps-cv.cpp expressions/conditional/class-const-and-volatile-lvalues.cpp expressions/conditional/class-converts-to-decayed-array.cpp expressions/conditional/class-same-type-toward-more-qualified.cpp expressions/conditional/nonclass-converts-to-class.cpp
+:tests: expressions/conditional/lvalue-result.cpp expressions/conditional/arithmetic-prvalue.cpp expressions/conditional/same-type-prvalue.cpp expressions/conditional/array-function-operands.cpp expressions/conditional/mixed-category-prvalue.cpp expressions/conditional/pointer-operands.cpp expressions/conditional/bitfield-or-enum.cpp expressions/conditional/class-one-way.cpp expressions/conditional/mixed-enum-types.cpp expressions/conditional/cv-lvalues-and-strings.cpp expressions/conditional/two-zeros.cpp expressions/conditional/member-pointer-nullptr.cpp expressions/conditional/xvalue-operands.cpp expressions/conditional/const-volatile-lvalues-prvalue.cpp expressions/conditional/const-and-plain-lvalue.cpp expressions/conditional/derived-base-lvalue.cpp expressions/conditional/class-converts-to-int.cpp expressions/conditional/zero-and-nullptr.cpp expressions/conditional/class-converts-best-conversion.cpp expressions/conditional/class-converts-to-reference.cpp expressions/conditional/class-base-target-keeps-cv.cpp expressions/conditional/class-base-does-not-convert-to-derived.cpp expressions/conditional/class-const-and-volatile-lvalues.cpp expressions/conditional/class-converts-to-decayed-array.cpp expressions/conditional/class-same-type-toward-more-qualified.cpp expressions/conditional/nonclass-converts-to-class.cpp
 
 The second and third operands give one result type and
 {term}`value category`. The first row that matches the operands gives
@@ -138,7 +138,7 @@ operand is not valid.
 
 :::{rule} COND-5
 :kind: reject
-:tests: expressions/conditional/no-common-type.cpp expressions/conditional/pointer-and-int.cpp expressions/conditional/class-ambiguous.cpp expressions/conditional/class-ambiguous-conversion.cpp expressions/conditional/two-classes-no-candidate.cpp expressions/conditional/two-classes-several-conversions.cpp expressions/conditional/class-base-less-qualified-rejected.cpp expressions/conditional/class-const-and-volatile-lvalues.cpp expressions/conditional/class-deleted-conversion-counts.cpp expressions/conditional/class-private-conversion-counts.cpp expressions/conditional/nonclass-and-class-both-ways.cpp
+:tests: expressions/conditional/no-common-type.cpp expressions/conditional/pointer-and-int.cpp expressions/conditional/class-ambiguous.cpp expressions/conditional/class-ambiguous-conversion.cpp expressions/conditional/two-classes-no-candidate.cpp expressions/conditional/two-classes-several-conversions.cpp expressions/conditional/class-base-less-qualified-rejected.cpp expressions/conditional/class-base-const-derived-prvalue-rejected.cpp expressions/conditional/class-const-and-volatile-lvalues.cpp expressions/conditional/class-deleted-conversion-counts.cpp expressions/conditional/class-private-conversion-counts.cpp expressions/conditional/nonclass-and-class-both-ways.cpp
 
 The second and third operands must have a common type by COND-3 or
 COND-4. If each operand converts for the other by COND-16, the
@@ -227,7 +227,7 @@ the expression is not valid ({rule}`COND-5`).
 
 :::{rule} COND-16
 :kind: required
-:tests: expressions/conditional/class-converts-to-reference.cpp expressions/conditional/class-converts-best-conversion.cpp expressions/conditional/class-ambiguous-conversion.cpp expressions/conditional/class-base-less-qualified-rejected.cpp expressions/conditional/class-base-target-keeps-cv.cpp expressions/conditional/class-const-and-volatile-lvalues.cpp expressions/conditional/class-converts-to-decayed-array.cpp expressions/conditional/class-deleted-conversion-counts.cpp expressions/conditional/class-private-conversion-counts.cpp expressions/conditional/class-same-type-toward-more-qualified.cpp expressions/conditional/nonclass-and-class-both-ways.cpp expressions/conditional/nonclass-converts-to-class.cpp
+:tests: expressions/conditional/class-converts-to-reference.cpp expressions/conditional/class-converts-best-conversion.cpp expressions/conditional/class-ambiguous-conversion.cpp expressions/conditional/class-base-less-qualified-rejected.cpp expressions/conditional/class-base-const-derived-prvalue-rejected.cpp expressions/conditional/class-base-does-not-convert-to-derived.cpp expressions/conditional/class-base-target-keeps-cv.cpp expressions/conditional/class-const-and-volatile-lvalues.cpp expressions/conditional/class-converts-to-decayed-array.cpp expressions/conditional/class-deleted-conversion-counts.cpp expressions/conditional/class-private-conversion-counts.cpp expressions/conditional/class-same-type-toward-more-qualified.cpp expressions/conditional/nonclass-and-class-both-ways.cpp expressions/conditional/nonclass-converts-to-class.cpp
 
 For COND-3, COND-5, and COND-11, when the two operands have different
 types and at least one has class type, each operand `X` is tried
@@ -244,13 +244,16 @@ these steps that applies decides whether `X` converts:
 | `X` and `Y` | Target |
 |---|---|
 | One class type apart from cv-qualifiers | `T`, if `T` has every cv-qualifier of the type of `X`. Otherwise `X` does not convert. |
-| `T` is a base class of the class of `X` | That base class with the cv-qualifiers of `X`, if `T` has every one of them. Otherwise `X` does not convert. |
+| `T` is a base class of the class of `X` | That base class with the cv-qualifiers of `X` |
+| The class of `X` is a base class of the class of `T` | None. `X` does not convert, and a converting constructor of the derived class takes no part. |
 | Any other pair | `T` after an array becomes a pointer, a function becomes a pointer, and a non-class type drops its cv-qualifiers |
 
 So a `const Box` lvalue and a `Box` prvalue give a `const Box`
 prvalue, because only the `Box` operand converts. For a `const Derived`
-lvalue and a `Base` prvalue, neither operand converts, and a converting
-constructor of `Base` takes no part.
+lvalue and a `Base` prvalue, the `Derived` operand converts to a
+`const Base` prvalue, and the `Base` operand does not convert. The two
+operands still differ in cv-qualifiers, no row of COND-3 gives them one
+type, and the expression is not valid (COND-5).
 
 Step 3 asks only whether a conversion sequence can be formed. Access
 control, a bit-field operand, and a deleted conversion function do not
@@ -305,10 +308,15 @@ int m = larger(x, y);          // fine: x and y outlive the call
 
 ## Evidence
 
-All eight compilers agree on 60 of 65 tests. The results are in
+All eight compilers agree on 62 of 67 tests. The results are in
 `tests/RESULTS.md`.
 
-{question}`Q-0373` is provisional. A gap review supports its answer with no doubt, and OVL-P4 does not give the answer under the test of the style guide (section 3). The tests keep their overrides for GCC 16 and EDG 7.0.
+Two questions on this page settled on 2026-11-04 under decision 0054 after the source-reader gap review of the text phase 8 wrote on expressions, foundations, and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+
+| Question | Principle | Family that still differs |
+|---|---|---|
+| {question}`Q-0102` | COND-P2 | GCC 16 |
+| {question}`Q-0373` | COND-P2 | GCC 16 for a scoped enumeration, EDG 7.0 for `float` |
 
 - COND-6: Clang and GCC accept `a ?: b` as an extension, and reject the
   form under `-pedantic-errors`. EDG rejects the form in all modes.
@@ -336,5 +344,12 @@ All eight compilers agree on 60 of 65 tests. The results are in
   conversion and reject, and Clang leaves it out and accepts. For a
   `const` and a `volatile` lvalue of one class type, Clang and GCC
   reject, and EDG accepts ({question}`Q-0378`).
+- COND-16: the gap review of the text phase 8 wrote on expressions
+  (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`)
+  reads the base-class row with no cv condition. The probes found no
+  program where the condition changes the result, because a base class
+  operand never converts to its derived class on any newest compiler,
+  not even through a converting constructor. The row follows the review,
+  and the new row records the base class operand.
 
 Inputs: clang-sema-expr, clang-diag-sema.

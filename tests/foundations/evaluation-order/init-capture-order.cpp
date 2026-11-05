@@ -1,5 +1,6 @@
-// tidal-rules: LAM-7
+// tidal-rules: LAM-7 LAM-28
 // tidal-expect: run
+// tidal-note: The order of the two init captures is unspecified (LAM-28). Every compiler of the matrix runs them in the order of the capture list, and the test records that order.
 int order[4];
 int n = 0;
 int mark(int v) { order[n++] = v; return v; }

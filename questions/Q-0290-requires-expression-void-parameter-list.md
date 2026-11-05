@@ -36,10 +36,18 @@ Kept open on 2026-11-03 (replaced by the note of 2026-11-04) under decision 0054
 
 Checked on 2026-11-04 under the principle test of the style guide (section 3, item PQ of decision 0055). CPT-P3 failed step 3, because CPT-P3 did not describe the parameter list. Item PQ widened CPT-P3. The list has the form of a function's parameter list inside a template as well as outside one, so `(void)` means no parameters. Under decision 0055, the question does not settle on a principle that phase 8 wrote. The question stays provisional until a reader or a reviewer uses CPT-P3.
 
+Used on 2026-11-04 by the source-reader gap review of the text phase 8 wrote on expressions, foundations, and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`), Part B. The review applied CPT-P3 to the question's program, a requires expression whose parameter list is a lone `void` (`requires-parameters-void-template.cpp`), without the rule text: the list has the form of a function's list, so a lone `void` means no parameters, which is the provisional answer.
+
+Kept open on 2026-11-04 under decision 0054, because the review agrees with a small doubt. Two newest families also differ from the answer: GCC 16 and EDG 7.0 give `true`.
+
 ## Opinions
 
 ### Gap review, 2026-11-03
 
 The source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`) agrees with option 1. The parameter list of a requires expression uses the grammar and rules of a function's parameter list, so a lone unnamed parameter of type `void` that depends on nothing means an empty list, inside a template as outside. Clang's result is a defect.
+
+### Gap review, 2026-11-04
+
+The source-reader gap review of the text phase 8 wrote on expressions, foundations, and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`) agrees with option 1, with a small doubt. The parameters of a requires expression use the clause of a function's parameters, and the reference sends them to the function rules, where a single unnamed parameter of non-dependent `void` type means an empty list. The doubt is that the reference does not repeat that rule for requires expressions.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

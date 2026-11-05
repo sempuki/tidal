@@ -470,7 +470,7 @@ With none of these conditions, the destructor is *trivial*.
 
 :::{rule} CTOR-17
 :kind: reject
-:tests: classes/constructors/reference-member-binds-temporary.cpp classes/constructors/reference-default-member-binds-temporary.cpp classes/constructors/reference-member-binds-converted-parameter.cpp classes/constructors/initializer-list-default-member-from-braces.cpp classes/constructors/initializer-list-member-from-braces.cpp classes/constructors/reference-default-member-read-constant.cpp classes/constructors/reference-default-member-unused.cpp classes/constructors/reference-default-member-aggregate-value.cpp
+:tests: classes/constructors/reference-member-binds-temporary.cpp classes/constructors/reference-default-member-binds-temporary.cpp classes/constructors/reference-member-binds-converted-parameter.cpp classes/constructors/initializer-list-default-member-from-braces.cpp classes/constructors/initializer-list-member-from-braces.cpp classes/constructors/reference-default-member-read-constant.cpp classes/constructors/reference-default-member-unused.cpp classes/constructors/reference-default-member-aggregate-value.cpp classes/constructors/reference-default-member-aggregate-uses-default.cpp
 
 A constructor must not bind a reference member to a {term}`temporary object`,
 through a `mem_init` or a default member initializer. The temporary ends
@@ -486,6 +486,10 @@ A default member initializer breaks the rule only through a
 constructor that uses it, including an implicit constructor that the
 program uses. If each constructor gives the member a `mem_init`, or an
 aggregate initialization gives the member a value, the class is valid.
+An aggregate initialization that leaves the member to its default
+member initializer runs no constructor, so it is valid too. The
+temporary then lives as long as the aggregate, as for a reference
+member that a braced list binds.
 :::
 
 ## Runtime Behavior
@@ -666,8 +670,8 @@ Span g{{1}};   // Span(int): {1} gives an int directly (ICS-15). The
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 178
-of 199 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 179
+of 200 tests.
 
 Two questions on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on classes and statements (`reports/review/2026-11-03-gap-review-questions-classes-statements.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
 
@@ -719,7 +723,14 @@ Two questions on this page settled on 2026-11-03 under decision 0054 after the s
   class whose constructor gives the member its own `mem_init`
   (`reference-default-member-unused.cpp`) and an aggregate whose
   initialization gives the member a value
-  (`reference-default-member-aggregate-value.cpp`).
+  (`reference-default-member-aggregate-value.cpp`). Every compiler also
+  accepts an aggregate initialization that leaves the member to its
+  default member initializer, and Clang and GCC run it with the
+  temporary still alive. The gap review of the text phase 8 wrote
+  (`reports/review/2026-11-04-gap-review-phase-8-classes-overloading.md`)
+  finds that the reference does not name this case. In constant
+  evaluation, Clang and GCC accept a read of the member, and EDG
+  rejects it. No test checks that read.
 - CTOR-24: the compilers differ for unions and anonymous unions
   ({question}`Q-0126`):
 

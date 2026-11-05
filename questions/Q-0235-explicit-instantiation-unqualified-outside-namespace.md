@@ -43,6 +43,10 @@ Kept open on 2026-11-03 under decision 0054, because the question waits on the m
 
 Checked on 2026-11-04 under the principle test of the style guide (section 3, item PQ of decision 0055). INST-P3 failed step 3, because INST-P3 did not state where an explicit instantiation stands. Item PQ widened INST-P3. An explicit instantiation stands in the namespace of its template or in an enclosing one, names the template with a qualified name in an enclosing namespace, and follows the same placement for a class, a function, and a variable template. Under decision 0055, the question does not settle on a principle that phase 8 wrote. The question stays provisional until a reader or a reviewer uses INST-P3. The question also waits on the maintainer.
 
+Used on 2026-11-04 by the source-reader gap review of the text phase 8 wrote on expressions, foundations, and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`), Part B. The review applied INST-P3 to the question's program, an unqualified explicit instantiation after a using-directive, outside the template's namespace (`explicit-unqualified-outside-namespace.cpp`, `explicit-unqualified-outside-namespace-variable.cpp`), without the rule text: the name must be qualified outside the template's namespace, for a class, a function, and a variable template, which is the provisional answer.
+
+Kept open on 2026-11-04 under decision 0054, because the review reads the class and variable forms against the answer, and the question waits on the maintainer (`documentation/decisions/pending.md`, row 5). The review agrees with the function form. INST-P3 did not change.
+
 ## Opinions
 
 ### Gap review, 2026-11-03
@@ -52,5 +56,9 @@ The source-reader gap review of question cluster 5 (`reports/review/2026-11-03-g
 ### Gap review of cluster 6, 2026-11-03
 
 The source-reader gap review of question cluster 6 (`reports/review/2026-11-03-gap-review-question-cluster-6.md`) reads the reference as supporting option 2 for a variable, with doubt, and option 1 for a function. When an explicit instantiation or an explicit specialization names a function template without a qualifier, lookup considers only templates declared in the namespace where the declaration stands. A template that a using-directive makes visible is not one of them, so the function form is not valid. The reference states no such limit for a variable template, so ordinary lookup finds the template, as Clang and EDG find. The doubt is the one of the class form. The reference may have dropped the older placement rule without intent, and Clang applies the old rule to a class and not to a variable.
+
+### Gap review, 2026-11-04
+
+The source-reader gap review of the text phase 8 wrote on expressions, foundations, and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`) reads option 2 for the class and variable forms and option 1 for the function form. The C++23 text has no rule that puts an explicit instantiation with an unqualified name in the namespace of its template, though older texts had one. A declarator that names a function template specialization considers only results that can be named in its own scope, and a template found through a using-directive is not one, so the function form fails. Nothing limits the lookup of a class name or of a variable template that way. So the last sentence of INST-P3, one placement for all three kinds, goes beyond the reference by this reading.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

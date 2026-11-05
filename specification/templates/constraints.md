@@ -367,7 +367,7 @@ type. If the constraints are not satisfied, the result is a
 
 :::{rule} CNS-12
 :kind: reject
-:tests: templates/constraints/unsatisfied-call.cpp templates/constraints/unsatisfied-address.cpp templates/constraints/unsatisfied-decltype.cpp templates/constraints/unsatisfied-member-call.cpp templates/concepts/placeholder-constant-parameter-no-candidate.cpp
+:tests: templates/constraints/unsatisfied-call.cpp templates/constraints/unsatisfied-address.cpp templates/constraints/unsatisfied-decltype.cpp templates/constraints/unsatisfied-member-call.cpp templates/concepts/placeholder-constant-parameter-no-candidate.cpp templates/instantiation/local-class-requires-clause-checked-at-use.cpp
 
 A program must not use the name of a function whose constraints are
 not satisfied. A call, the operator `&`, and an operand of `decltype`
@@ -802,8 +802,8 @@ bool usable = Usable<Item>;        // rejected: the check needs itself
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 103
-of 131 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 104
+of 132 tests.
 
 ### Divergences
 
@@ -834,7 +834,7 @@ waits on the maintainer (`documentation/decisions/pending.md`).
   circuit skips it. The program is not valid, and no diagnostic is
   required. Clang and EDG diagnose it at the definition, and GCC does
   only in the requires clause of a function template.
-- {question}`Q-0264` (CNS-10; open): whether an implementation
+- {question}`Q-0264` (CNS-10; settled on CNS-P2): whether an implementation
   diagnoses an atomic constraint whose result changes between two
   checks. No diagnostic is required. GCC 16 diagnoses it.
 - {question}`Q-0261` (CNS-11; settled under decision 0051): whether the
@@ -873,6 +873,13 @@ waits on the maintainer (`documentation/decisions/pending.md`).
 
 ### Notes
 
+- CNS-7, CNS-10, CNS-35: the gap review of the text phase 8 wrote on expressions, foundations,
+  and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`) finds the
+  reference silent on the context in which access is checked during
+  satisfaction, and on a check that needs its own result. CNS-7 and
+  CNS-35 follow the compilers. CNS-10 agrees with the reference, and
+  whether a change of access counts as a change of result depends on
+  CNS-7.
 - CNS-10: the rule is `no-diagnostic` because the change shows only
   against an earlier check, which an implementation need not keep.
 - CNS-13: every compiler rejects a template-id with arguments that do

@@ -29,8 +29,16 @@ Kept open on 2026-11-03 (replaced by the note of 2026-11-04) under decision 0054
 
 Checked on 2026-11-04 under the principle test of the style guide (section 3, item PQ of decision 0055). FN-P5 fails step 3, because it speaks only of a use inside a function body, so option 2 also fits. Item PQ widened FN-P5: each function body declares `__func__` at its start as a local variable, and outside a body nothing declares the name, so a use there is rejected. Under decision 0055, the question does not settle on a principle that phase 8 wrote. The question stays provisional until a reader or a reviewer uses FN-P5.
 
+Used on 2026-11-04 by the source-reader gap review of the text phase 8 wrote on the declarations and statements chapters (`reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md`), under decision 0056. The review applied FN-P5 to the program of `func-outside-function.cpp` without the rule text and reached the provisional answer: nothing declares `__func__` at namespace scope, so the use is rejected.
+
+Kept open on 2026-11-04 under decisions 0054 and 0055, because FN-P5 changed in this commit: it now says that the array has static storage duration and that the member initializers of a constructor see it. The question waits for the next use of the changed text.
+
 ## Opinions
 
 ### Gap review, 2026-11-03
 
 The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) agrees with option 1. `__func__` exists only in a function body, as if a local variable were declared there. Outside a function the name is not declared, so the use is not valid and needs a diagnostic. Clang's warning is a diagnostic, and its acceptance after the warning is an extension.
+
+### Gap review, 2026-11-04
+
+The source-reader gap review of the text phase 8 wrote on the declarations and statements chapters (`reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md`) agrees with option 1. The reference declares the variable only in a function's parameter scope, so a use at namespace scope names nothing. The review adds that the variable has static storage duration, that the member initializers of a constructor can use it, and that the addresses of two such variables are unspecified. FN-P5 called it a local variable and said neither point.

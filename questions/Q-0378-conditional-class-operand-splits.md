@@ -60,6 +60,12 @@ condition of the COND-16 table.
 
 Kept open on 2026-11-04 under decision 0054, because no review has read the provisional answer, and in each form one newest family differs from it. Item RV2 of decision 0056 reads the question.
 
+Kept open on 2026-11-04 under decision 0055, because COND-16 changed in this commit. The gap review of the text phase 8 wrote on expressions, foundations, and templates supports option 1 in both forms. It also read the base-class row of the COND-16 table without a cv condition, and the row now follows that reading. The question waits for a reader or a reviewer to use the changed rule. In each form one newest family differs.
+
 ## Opinions
+
+### Gap review, 2026-11-04
+
+The source-reader gap review of the text phase 8 wrote on expressions, foundations, and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`) agrees with option 1. The reference sets access, bit-fields, and deleted functions aside when it asks whether a conversion sequence can be formed, so both operands of form 1 convert, and the expression is not valid. In form 2 neither reference binding works, and the row for one class type needs the target to carry every cv-qualifier of the source, which fails in both directions. The overload step then finds no candidate.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

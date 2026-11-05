@@ -345,14 +345,16 @@ overloaded function name selects the overload of that type.
 
 :::{rule} TARG-13
 :kind: reject
-:tests: templates/arguments/constant-not-constant.cpp templates/arguments/constant-narrowing.cpp templates/arguments/constant-floating-to-integer.cpp templates/arguments/constant-integer-to-floating.cpp templates/arguments/constant-int-to-bool.cpp templates/arguments/constant-scoped-enum.cpp templates/arguments/constant-pointer-to-void.cpp templates/arguments/constant-pointer-to-base.cpp templates/arguments/constant-integer-to-scoped-enum.cpp templates/arguments/constant-other-enumeration.cpp
+:tests: templates/arguments/constant-not-constant.cpp templates/arguments/constant-narrowing.cpp templates/arguments/constant-floating-to-integer.cpp templates/arguments/constant-integer-to-floating.cpp templates/arguments/constant-int-to-bool.cpp templates/arguments/constant-scoped-enum.cpp templates/arguments/constant-pointer-to-void.cpp templates/arguments/constant-pointer-to-base.cpp templates/arguments/constant-integer-to-scoped-enum.cpp templates/arguments/constant-other-enumeration.cpp templates/arguments/constant-float-to-double.cpp templates/arguments/constant-double-to-float-exact.cpp
 
 The argument for a constant parameter must be a constant expression. Its
 conversion to the parameter's type must not:
 
 - be a {term}`narrowing conversion`, as `300` to `unsigned char` or `2`
   to `bool` is,
-- convert between an integer type and a floating-point type,
+- convert between an integer type and a floating-point type, or
+  between two floating-point types, as `1.5f` to `double` does, even
+  when the value is exact,
 - need an explicit conversion, as a scoped enumeration to `int` does,
   and an integer or another enumeration to a scoped enumeration,
 - convert a pointer to a pointer to `void` or to a base class.
@@ -395,8 +397,8 @@ of class type, at any depth.
 :kind: required
 :tests: templates/arguments/floating-arguments.cpp templates/arguments/class-arguments.cpp templates/arguments/class-argument-string-literal.cpp
 
-The argument for a floating-point parameter is a constant of a
-floating-point type. The argument for a parameter of class type
+The argument for a floating-point parameter is a constant of the
+parameter's own floating-point type ({rule}`TARG-13`). The argument for a parameter of class type
 initializes the parameter's object by {term}`copy-initialization`,
 also from a braced list or a value of another type. So a string literal
 is a valid argument for a class with a constructor that takes a pointer
@@ -549,8 +551,8 @@ Use<Small> m;                  // rejected: Small is a concept
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 85
-of 91 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 87
+of 93 tests.
 
 {question}`Q-0170` settled on 2026-11-03 under decision 0054. The
 source-reader gap review of question cluster 5 supports its answer with
@@ -567,6 +569,13 @@ the eight {ref}`baseline compilers <baseline-compilers>`. The gap review of the 
 (`reports/review/2026-10-31-gap-review-templates-n1.md`) gave the
 probes for TARG-23 to TARG-27 and for the additions to the older rules.
 
+- TARG-13: the gap review of the text phase 8 wrote on expressions,
+  foundations, and templates
+  (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`)
+  reads the list of conversions for a constant argument as having no
+  floating-point promotion or conversion. Clang 22, GCC 16, and EDG 7.0
+  reject `1.5f` for a `double` parameter and `1.5` for a `float`
+  parameter.
 - TARG-22: Clang treats an alias template that passes its parameters
   through as a template of its own, as TARG-22 does. GCC and EDG treat
   it as the class template, so `Use<List>` and `Use<ListAlias>` are one

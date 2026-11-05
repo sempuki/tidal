@@ -39,10 +39,22 @@ Kept open on 2026-11-03 (replaced by the note of 2026-11-04) under decision 0054
 
 Checked on 2026-11-04 under the principle test of the style guide (section 3, item PQ of decision 0055). No principle on the two pages said how a class operand gives an integer value. ALN-P1 and UNI-P4 now say that the operand or the width can have a class type whose conversion function gives an integral or unscoped enumeration type, which rules out option 2. The existing tests check both places. Under decision 0055, the question does not settle on a principle that phase 8 wrote. The question stays provisional until a reader or a reviewer uses ALN-P1 and UNI-P4.
 
+Used on 2026-11-04 by two source-reader gap reviews of the text phase 8 wrote. The classes and overloading review (`reports/review/2026-11-04-gap-review-phase-8-classes-overloading.md`) applies UNI-P4 to `bitfield-width-class-converts.cpp`, and the declarations and statements review (`reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md`) applies ALN-P1 to `operand-class-converts.cpp`. Each model accepts the operand by its conversion function (option 1), and each review agrees.
+
+Kept open on 2026-11-04 under decision 0055, because UNI-P4 and BF-1 changed in the same commit. They now name the conditions the review found missing: a literal class, a `constexpr` conversion function, and one candidate conversion. The question waits for the next use of UNI-P4. GCC 16 is the only newest family that differs.
+
 ## Opinions
 
 ### Gap review, 2026-11-03
 
 The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) agrees with option 1. Where an integral constant expression is required, an expression of literal class type converts contextually to an integer or unscoped enumeration type, and the chosen conversion function must be `constexpr`. The `alignas` operand and the bit-field width are such places. GCC's rejection is a defect.
+
+### Gap review, 2026-11-04 (classes and overloading)
+
+The source-reader gap review of the text phase 8 wrote on the classes and overloading chapters (`reports/review/2026-11-04-gap-review-phase-8-classes-overloading.md`) applies UNI-P4 to the width test and agrees with option 1. A value of literal class type converts contextually to an integral or unscoped enumeration type where an integral constant expression is needed. The review finds that UNI-P4 leaves out three conditions: the class must be a literal type, the chosen conversion function must be `constexpr`, and two candidate conversion functions make the width ambiguous. The test meets all three, so the answer stands.
+
+### Gap review, 2026-11-04 (declarations and statements)
+
+The source-reader gap review of the text phase 8 wrote on the declarations and statements chapters (`reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md`) applies ALN-P1 to the `alignas` test and agrees with option 1. The class converts to an integer by its conversion function. The review notes the same two conditions for ALN-P1 that it notes for the width: the chosen conversion function must be `constexpr`, and the conversion must be unambiguous.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

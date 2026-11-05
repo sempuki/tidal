@@ -922,6 +922,12 @@ rejection.
 
 ### Notes
 
+- STG-12: the gap review of the text phase 8 wrote on expressions, foundations,
+  and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`) notes that the reference
+  names an unsigned ordinary character type and `std::byte` for a copy
+  of a byte with no value, without defining the first phrase. Plain
+  `char` might count where it is unsigned. On every matrix target
+  `char` is signed, so STG-12 treats plain `char` as signed.
 - Constant evaluation: in C++23 mode no compiler in the matrix accepts
   placement `new`, or a cast from `void*` to an object pointer, during
   constant evaluation. Each compiler accepts a placement `new` inside a

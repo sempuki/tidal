@@ -67,9 +67,11 @@ accepts carry the program's arguments.
 :::{principle} FN-P5
 :rules: FN-5 FN-11
 
-Each function body declares `__func__` at its start, as a local
-variable. In the body, `__func__` names a string that holds the
-function's name, in a form the implementation chooses. Outside a
+Each function body declares `__func__` at its start, before the
+member initializers of a constructor. The name is local to the body,
+and the array it names has static storage duration, so a pointer to it
+stays valid after the call. In the body, `__func__` names a string that
+holds the function's name, in a form the implementation chooses. Outside a
 function body, nothing declares `__func__`, so the implementation
 rejects a use there.
 :::
@@ -161,7 +163,7 @@ have C language linkage ({question}`Q-0076`).
 
 :::{rule} FN-5
 :kind: reject
-:tests: declarations/functions/definitions/func-predefined.cpp declarations/functions/definitions/func-outside-function.cpp
+:tests: declarations/functions/definitions/func-predefined.cpp declarations/functions/definitions/func-outside-function.cpp declarations/functions/definitions/func-in-member-initializer.cpp
 
 In a function body, `__func__` is a static array of `const char`. FN-11
 gives the contents of the array. `__func__` must not occur outside a
@@ -294,8 +296,10 @@ void name() {
 
 ## Evidence
 
-All eight compilers agree on 49 of 62 tests. The results are in
+All eight compilers agree on 50 of 63 tests. The results are in
 `tests/RESULTS.md`.
+
+{question}`Q-0022` is provisional. FN-P5 changed on 2026-11-04, so the question waits for a reader or a reviewer to use the changed FN-P5.
 
 - FN-3: all compilers reject a call that reaches the end of the function
   during constant evaluation. At run time, the undefined behavior
@@ -311,7 +315,12 @@ All eight compilers agree on 49 of 62 tests. The results are in
 - FN-4: Clang and GCC reject calls to `main` and its address only as
   pedantic diagnostics. EDG rejects them in all modes.
 - FN-5: Clang accepts `__func__` outside a function with a warning. GCC
-  and EDG reject such a use ({question}`Q-0022`).
+  and EDG reject such a use ({question}`Q-0022`). Every compiler accepts
+  `__func__` in the member initializers of a constructor. The gap review
+  of the text phase 8 wrote
+  (`reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md`)
+  adds that whether the `__func__` arrays of two functions have
+  distinct addresses is unspecified. No test checks the addresses.
 - FN-6: the compilers split on the parameter lists of `main` that the
   table of FN-6 gives ({question}`Q-0024`). GCC rejects `(int)` only
   under `-pedantic-errors`. With three parameters, Clang and GCC on

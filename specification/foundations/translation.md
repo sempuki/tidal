@@ -468,6 +468,14 @@ the run and link tests say only that the programs are valid.
 
 ### Notes
 
+- TR-4: the gap review of the text phase 8 wrote on expressions, foundations,
+  and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`) doubts the class of a
+  program with no `main`. The reference waives the diagnostic for a
+  used function with no definition, and it states no waiver for the
+  rule that a program has one `main`. Tidal has no class that requires
+  a diagnostic at link time, so TR-4 sends both cases to LNK-7. Every
+  compiler of the matrix that links reports both at link time
+  (`main-no-definition.cpp`).
 - TR-4: 45 tests expect a link failure on at least one compiler. Each
   of these tests cites a `no-diagnostic` rule that its program breaks:
   LNK-6, LNK-7, ODR-8, INL-6, INL-7, VIRT-17, VIRT-20, CLS-21, or

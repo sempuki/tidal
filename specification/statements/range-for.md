@@ -187,11 +187,12 @@ for (int v : make().items()) use(v); // the result of make() lives
 
 The results are in `tests/RESULTS.md`.
 
-One question on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on classes and statements (`reports/review/2026-11-03-gap-review-questions-classes-statements.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+Two questions on this page settled under decision 0054. Q-0098 settled on 2026-11-03 after the source-reader gap review of the open questions on classes and statements (`reports/review/2026-11-03-gap-review-questions-classes-statements.md`). Q-0122 settled on 2026-11-04 after the source-reader gap review of the text phase 8 wrote on the declarations and statements chapters (`reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
 
 | Question | Principle | Family that still differs |
 |---|---|---|
 | {question}`Q-0098` | RFOR-P1 | EDG 7.0 |
+| {question}`Q-0122` | RFOR-P1 | GCC 16 |
 
 - RFOR-4: GCC 14 and Clang 18 destroy temporaries in the range expression
   before the body executes. Newer versions keep them until the loop ends,

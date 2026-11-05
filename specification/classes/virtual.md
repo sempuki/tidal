@@ -81,11 +81,13 @@ that only names the class is valid:
 | a `new` expression | `sizeof` |
 | a parameter or a return value in a function definition | a parameter or a return type in a declaration that is not a definition |
 | a call to a function that returns the class | |
+| a call to a function with a parameter of the class | |
 | a lambda capture by copy | a lambda capture by reference |
 
-A call makes its result as an object of the return type. So a call to a
-function that returns the class is rejected, also where the declaration
-of the function is valid.
+A call makes its result as an object of the return type, and it makes
+each argument as an object of its parameter's type. So a call to a
+function that returns the class or takes it by value is rejected, also
+where the declaration of the function is valid.
 
 A pure
 function can still have a definition, and a pure virtual destructor
@@ -148,7 +150,7 @@ function does not use the keyword `virtual`.
 
 :::{rule} VIRT-3
 :kind: reject
-:tests: classes/virtual/final-different-params-ok.cpp classes/virtual/final-function.cpp classes/virtual/final-nonvirtual.cpp classes/virtual/final-on-override.cpp classes/virtual/override-final-order.cpp classes/virtual/override-identifier.cpp classes/virtual/override-nothing.cpp classes/virtual/override-nonvirtual.cpp classes/virtual/override-out-of-class.cpp classes/virtual/ref-qualifier-must-match.cpp classes/virtual/override-twice.cpp classes/virtual/final-twice.cpp classes/virtual/destructor-override.cpp classes/virtual/destructor-override-nonvirtual.cpp classes/virtual/destructor-final-implicit-override.cpp classes/virtual/destructor-final-declared-override.cpp classes/virtual/override-dependent-base-missing.cpp classes/virtual/override-dependent-base-run.cpp classes/virtual/override-dependent-base-pointer.cpp classes/virtual/override-independent-base-unused.cpp
+:tests: classes/virtual/final-different-params-ok.cpp classes/virtual/final-function.cpp classes/virtual/final-nonvirtual.cpp classes/virtual/final-on-override.cpp classes/virtual/override-final-order.cpp classes/virtual/override-identifier.cpp classes/virtual/override-nothing.cpp classes/virtual/override-nonvirtual.cpp classes/virtual/override-out-of-class.cpp classes/virtual/ref-qualifier-must-match.cpp classes/virtual/override-twice.cpp classes/virtual/final-twice.cpp classes/virtual/destructor-override.cpp classes/virtual/destructor-override-nonvirtual.cpp classes/virtual/destructor-final-implicit-override.cpp classes/virtual/destructor-final-declared-override.cpp classes/virtual/override-dependent-base-missing.cpp classes/virtual/override-dependent-base-run.cpp classes/virtual/override-dependent-base-pointer.cpp classes/virtual/override-independent-base-unused.cpp classes/virtual/override-ref-qualifier-missing.cpp
 
 A function marked `override` must override a virtual function of a base.
 A function marked `final` must be virtual, and a derived class must not
@@ -205,7 +207,7 @@ overrider.
 
 :::{rule} VIRT-8
 :kind: reject
-:tests: classes/virtual/abstract-array.cpp classes/virtual/abstract-capture-by-reference.cpp classes/virtual/abstract-capture-by-value.cpp classes/virtual/abstract-cast-temporary.cpp classes/virtual/abstract-function-declaration-ok.cpp classes/virtual/abstract-member.cpp classes/virtual/abstract-new.cpp classes/virtual/abstract-param-definition.cpp classes/virtual/abstract-pointer-ref-ok.cpp classes/virtual/abstract-return-definition.cpp classes/virtual/abstract-sizeof.cpp classes/virtual/abstract-variable.cpp classes/virtual/call-returning-abstract.cpp classes/virtual/derived-concrete.cpp classes/virtual/derived-still-abstract.cpp classes/virtual/pure-override-makes-abstract.cpp
+:tests: classes/virtual/abstract-array.cpp classes/virtual/abstract-capture-by-reference.cpp classes/virtual/abstract-capture-by-value.cpp classes/virtual/abstract-cast-temporary.cpp classes/virtual/abstract-function-declaration-ok.cpp classes/virtual/abstract-member.cpp classes/virtual/abstract-new.cpp classes/virtual/abstract-param-definition.cpp classes/virtual/abstract-pointer-ref-ok.cpp classes/virtual/abstract-return-definition.cpp classes/virtual/abstract-sizeof.cpp classes/virtual/abstract-variable.cpp classes/virtual/call-returning-abstract.cpp classes/virtual/abstract-call-argument.cpp classes/virtual/derived-concrete.cpp classes/virtual/derived-still-abstract.cpp classes/virtual/pure-override-makes-abstract.cpp
 
 A class with at least one pure virtual function, declared or inherited
 without a final overrider, is *abstract*. A program must not create an
@@ -215,6 +217,7 @@ object of an {term}`abstract class`. This rule covers:
 - a `new` expression,
 - a parameter or a return value in a function definition,
 - a call to a function that returns the class ({question}`Q-0086`),
+- a call to a function with a parameter of the class,
 - a lambda capture by copy.
 
 Pointers and references to an abstract class are valid. A function
@@ -274,7 +277,7 @@ must not have the name and parameters of a virtual function of a base
 
 :::{rule} VIRT-1
 :kind: required
-:tests: classes/virtual/override-two-bases.cpp classes/virtual/override-two-bases-constant.cpp classes/virtual/const-qualifier-must-match.cpp classes/virtual/default-args-static-type.cpp classes/virtual/different-params-no-override.cpp classes/virtual/dispatch.cpp classes/virtual/object-call-no-dispatch.cpp classes/virtual/override-through-intermediate.cpp classes/virtual/override-without-virtual-keyword.cpp classes/virtual/private-override.cpp classes/virtual/qualified-call-no-dispatch.cpp classes/virtual/virtual-in-constexpr.cpp classes/virtual/virtual-call-override-not-constexpr.cpp classes/virtual/pure-virtual-constexpr-order.cpp classes/virtual/call-on-other-object-during-construction.cpp
+:tests: classes/virtual/override-two-bases.cpp classes/virtual/override-two-bases-constant.cpp classes/virtual/const-qualifier-must-match.cpp classes/virtual/default-args-static-type.cpp classes/virtual/different-params-no-override.cpp classes/virtual/dispatch.cpp classes/virtual/object-call-no-dispatch.cpp classes/virtual/override-through-intermediate.cpp classes/virtual/override-without-virtual-keyword.cpp classes/virtual/private-override.cpp classes/virtual/qualified-call-no-dispatch.cpp classes/virtual/virtual-in-constexpr.cpp classes/virtual/virtual-call-override-not-constexpr.cpp classes/virtual/pure-virtual-constexpr-order.cpp classes/virtual/call-on-other-object-during-construction.cpp classes/virtual/override-ref-qualifier-missing.cpp
 
 A member function overrides each virtual function of each base that has
 the same:
@@ -282,7 +285,7 @@ the same:
 - name,
 - parameter types,
 - cv-qualifiers,
-- ref-qualifier.
+- ref-qualifier ({question}`Q-0394`).
 
 The member function is then virtual, with or without the keyword. A call
 through a pointer or reference calls the final overrider for the class
@@ -513,8 +516,8 @@ struct Child : Sealed { };         // rejected: the implicit ~Child overrides a 
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 137
-of 142 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 138
+of 144 tests.
 
 Two questions on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on classes and statements (`reports/review/2026-11-03-gap-review-questions-classes-statements.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
 
@@ -538,6 +541,24 @@ Two questions on this page settled on 2026-11-03 under decision 0054 after the s
   At `-O2` they emit no reference to the virtual table, and the program
   links. VIRT-20 allows both results, because the rule needs no
   diagnostic.
+- VIRT-1: a derived member with no ref-qualifier does not override a
+  base virtual function with a ref-qualifier. GCC and EDG say that a
+  derived member marked `override` overrides nothing, and Clang rejects
+  the pair as an overload of a function with a ref-qualifier by one
+  without. The gap review of the text phase 8 wrote reads the C++23
+  text the other way, because its test of when two declarations
+  correspond sets references aside when one function has no
+  ref-qualifier. The review knows of a later change that may restore
+  the condition. Clang 18 follows the review and makes the derived
+  member an override. VIRT-1 follows the newest compilers
+  ({question}`Q-0394`,
+  `documentation/decisions/pending.md`, row 4).
+- VIRT-8: every compiler rejects a call that passes an argument to a
+  parameter of abstract class type, where the function's declaration
+  alone is valid.
+- VIRT-13: the reference gives no advice for any of these warnings.
+  The rule is Tidal's own advice, as {rule}`FN-7` is, and a warning
+  does not change whether a program is valid.
 - VIRT-13: Clang 18 and 22 and GCC 14 and 16 give both warnings under
   `-Wall`, also for an abstract class. Neither warns for a `final`
   class.

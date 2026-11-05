@@ -59,11 +59,17 @@ Kept on 2026-11-03. The review reads option 2, and every compiler accepts the ca
 
 Kept open on 2026-11-04 under decision 0054, because the question waits on the maintainer (`documentation/decisions/pending.md`, row 4).
 
+Read again on 2026-11-04 by the gap review of the text phase 8 wrote on classes and overloading (`reports/review/2026-11-04-gap-review-phase-8-classes-overloading.md`). The review reads option 2 again, and adds that the test of sameness in OVL-38, which phase 8 wrote, has no basis in the reference and widens the distance between OVL-38 and the reference. Tidal keeps the matrix's answer until the maintainer decides row 4. The question stays open.
+
 ## Opinions
 
 ### Gap review, 2026-11-03
 
 The source-reader gap review of the open questions on overloading, references, and list initialization (`reports/review/2026-11-03-gap-review-questions-overloading.md`) reads option 2. The call is not valid whenever two declarations in different scopes each supply the default argument that the call needs, with no comparison of the two values. A diagnostic is required. GCC rejects only different values, and no compiler in the table rejects equal values.
+
+### Gap review, 2026-11-04
+
+The source-reader gap review of the text phase 8 wrote on classes and overloading (`reports/review/2026-11-04-gap-review-phase-8-classes-overloading.md`) reads OVL-38 against the reference. The call is not valid when the chosen function was found through declarations in two scopes and each gives a default argument that the call needs, equal or not. Under that reading, `default-from-two-scopes-same.cpp` and `default-from-two-scopes-same-literal.cpp` are not valid, and their tests expect acceptance. The test of when two default arguments are the same is a notion the reference does not have. This is the known split of this question.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
 

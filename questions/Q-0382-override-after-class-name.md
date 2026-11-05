@@ -1,6 +1,6 @@
 # Q-0382: Is `override` after the name of a class an identifier?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** KW-3, `tests/foundations/keywords/override-after-class-name.cpp`, `tests/foundations/keywords/override-after-complete-class-variable.cpp`
 **Source:** finding X18-3 of `reports/clean-room/X18/report.md`, from the matrix run of the tests that a clean-room writer added for it.
 
@@ -28,13 +28,21 @@ The tests in **Affects**, with an override for GCC 14.
 2. `override` after a class name begins a class head and is not valid
    there (GCC 14).
 
-## Provisional answer
+## Answer
 
 An identifier (option 1). Every newest compiler agrees, and only `final`
 marks a class (DER-1).
 
-Kept open on 2026-11-04 under decision 0054, because no review has read the question. Item RV2 of decision 0056 reads it.
+Settled on 2026-11-04 under decision 0051, because the newest version of each baseline family (Clang 22, GCC 16, EDG 7.0) agrees with this answer, and the two gap reviews that read the question support it with no doubt. GCC 14 still rejects the variable, and the tests keep their overrides for GCC 14.
 
 ## Opinions
+
+### Gap review, 2026-11-04
+
+The source-reader gap review of the text phase 8 wrote on classes and overloading (`reports/review/2026-11-04-gap-review-phase-8-classes-overloading.md`) agrees with option 1. A class head takes only the `final` marker after the class name, and a word with a special meaning is read as a plain identifier wherever the special meaning does not fit. So the declaration names a variable of the complete class with a braced initializer, and GCC 14 is wrong.
+
+### Gap review, 2026-11-04 (expressions, foundations, and templates)
+
+The source-reader gap review of the text phase 8 wrote on expressions, foundations, exceptions, and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`) agrees with option 1. The only class marker in the grammar is `final`, so `override` after a class name is an identifier.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

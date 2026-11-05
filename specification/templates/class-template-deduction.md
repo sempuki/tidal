@@ -638,6 +638,12 @@ Bases c{List<X, Y, Z>{}, Y{}};    // rejected: Y stands where X is fixed
 The results are in `tests/RESULTS.md`. All eight compilers agree on 96
 of 117 tests.
 
+One question on this page settled on 2026-11-04 under decision 0054 after the source-reader gap review of the text phase 8 wrote on expressions, foundations, and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+
+| Question | Principle | Family that still differs |
+|---|---|---|
+| {question}`Q-0242` | CTAD-P1 | GCC 16 |
+
 Four questions on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
 
 | Question | Principle | Family that still differs |
@@ -646,8 +652,6 @@ Four questions on this page settled on 2026-11-03 under decision 0054 after the 
 | {question}`Q-0244` | CTAD-P1 | GCC 16 |
 | {question}`Q-0276` | CTAD-P2 | GCC 16 |
 | {question}`Q-0352` | CTAD-P1 | GCC 16 |
-
-{question}`Q-0242` is provisional. A gap review supports its answer with no doubt, and CTAD-P1 does not give the answer under the test of the style guide (section 3). The tests keep their overrides for GCC 16.
 
 Two questions of the cluster of EDG differences (cluster 5) on this
 page settled on 2026-11-03 under decision 0054: {question}`Q-0240`,

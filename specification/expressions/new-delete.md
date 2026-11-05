@@ -758,6 +758,14 @@ int* q = new (cell) int(4);     // the int is at cell (NEW-33)
 The results are in `tests/RESULTS.md`. All eight compilers agree on 121
 of 144 tests.
 
+Three questions on this page settled on 2026-11-04 under decision 0054 after the source-reader gap review of the text phase 8 wrote on expressions, foundations, and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+
+| Question | Principle | Family that still differs |
+|---|---|---|
+| {question}`Q-0036` | NEW-P1 | GCC 16 |
+| {question}`Q-0091` | NEW-P2 | GCC 16 |
+| {question}`Q-0303` | NEW-P4 | EDG 7.0 |
+
 Two questions on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
 
 | Question | Principle | Family that still differs |
@@ -909,9 +917,7 @@ Two questions on this page settled on 2026-11-03 under decision 0054 after the s
 - NEW-37: every compiler rejects a class's own `operator new` and a
   placement form during constant evaluation, and accepts an
   over-aligned type. Clang 18 and 22 and GCC 16 accept the nothrow
-  forms. GCC 14 and EDG reject them ({question}`Q-0303`). Q-0303 stays
-  open under decision 0051, because on 2026-11-03 EDG 7.0 still differs
-  from Clang 22 and GCC 16. Every
+  forms. GCC 14 and EDG reject them ({question}`Q-0303`, settled). Every
   compiler accepts the placement `new` inside `std::construct_at`, and
   rejects the same template in another namespace ({rule}`LSUP-10`).
 - NEW-38: Clang and GCC throw `std::bad_alloc` from the global

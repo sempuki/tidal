@@ -163,7 +163,7 @@ applies also if no call uses the default argument.
 
 :::{rule} DEFARG-4
 :kind: reject
-:tests: declarations/functions/default-arguments/refers-to-parameter.cpp declarations/functions/default-arguments/refers-to-local.cpp declarations/functions/default-arguments/local-unevaluated.cpp declarations/functions/default-arguments/parameter-in-sizeof.cpp declarations/functions/default-arguments/this-in-default.cpp declarations/functions/default-arguments/this-in-sizeof-default.cpp
+:tests: declarations/functions/default-arguments/refers-to-parameter.cpp declarations/functions/default-arguments/refers-to-local.cpp declarations/functions/default-arguments/local-unevaluated.cpp declarations/functions/default-arguments/parameter-in-sizeof.cpp declarations/functions/default-arguments/this-in-default.cpp declarations/functions/default-arguments/this-in-sizeof-default.cpp declarations/functions/default-arguments/local-constant-value-read.cpp declarations/functions/default-arguments/local-constexpr-value-read.cpp
 
 A default argument must not use `this`. A default argument can use a
 parameter of the function, or a local variable of an enclosing function,
@@ -183,15 +183,17 @@ through the pointer or the reference must give each argument.
 
 :::{rule} DEFARG-10
 :kind: reject
-:tests: declarations/functions/default-arguments/default-checked-unused.cpp declarations/functions/default-arguments/template-default-independent-unused.cpp declarations/functions/default-arguments/default-immediate-call-checked-at-call.cpp declarations/functions/default-arguments/default-immediate-call-unused-not-checked.cpp declarations/functions/default-arguments/member-default-sees-later-members.cpp
+:tests: declarations/functions/default-arguments/default-checked-unused.cpp declarations/functions/default-arguments/template-default-independent-unused.cpp declarations/functions/default-arguments/default-immediate-call-checked-at-call.cpp declarations/functions/default-arguments/default-immediate-call-unused-not-checked.cpp declarations/functions/default-arguments/member-default-sees-later-members.cpp declarations/functions/default-arguments/friend-default-sees-later-member.cpp declarations/functions/default-arguments/nested-member-default-sees-outer-later-member.cpp
 
 A default argument must be valid for its parameter type, also if no
 call uses it. The check happens at the declaration, with two
 exceptions:
 
-- A default argument of a member function is checked as if at the end
-  of the class, so it can use members and nested classes that the class
-  declares later (DEFARG-3).
+- A default argument of a member function, of a friend function
+  defined in the class, or of a member function of a nested class is
+  checked as if at the end of the outermost enclosing class. So it can
+  use members and nested classes that the classes declare later
+  (DEFARG-3).
 - A call of an immediate function in a default argument is neither
   evaluated nor checked as a constant at the declaration. Each call
   that uses the default argument checks it
@@ -215,13 +217,15 @@ have default arguments ({rule}`OPR-2`, {rule}`OPR-3`).
 
 :::{rule} DEFARG-3
 :kind: required
-:tests: declarations/functions/default-arguments/evaluated-each-call.cpp declarations/functions/default-arguments/uses-global-at-call.cpp declarations/functions/default-arguments/name-bound-at-declaration.cpp declarations/functions/default-arguments/member-default-sees-later-member.cpp
+:tests: declarations/functions/default-arguments/evaluated-each-call.cpp declarations/functions/default-arguments/uses-global-at-call.cpp declarations/functions/default-arguments/name-bound-at-declaration.cpp declarations/functions/default-arguments/member-default-sees-later-member.cpp declarations/functions/default-arguments/friend-default-sees-later-member.cpp declarations/functions/default-arguments/nested-member-default-sees-outer-later-member.cpp
 
 A default argument is evaluated at each call that uses it, and reads the
 current values of the variables that it names. The names in a default
 argument refer to the entities that are visible at the function
-declaration, not at the call. A default argument of a member function
-also sees the members declared after the function ({rule}`CLS-2`).
+declaration, not at the call. A default argument of a member function,
+of a friend function defined in the class, or of a member function of a
+class nested in it also sees the members declared after the function,
+up to the end of the outermost enclosing class ({rule}`CLS-2`).
 :::
 
 ## Implementation Requirements
@@ -265,10 +269,17 @@ r(1);                       // rejected: a reference has no defaults
 
 ## Evidence
 
-All eight compilers agree on 38 of 46 tests. The results are in
+All eight compilers agree on 40 of 50 tests. The results are in
 `tests/RESULTS.md`.
 
-{question}`Q-0111` is provisional. A gap review supports its answer with no doubt, and DEFARG-P2 does not give the answer under the test of the style guide (section 3). The test keeps its override for Clang 22.
+Two questions on this page settled on 2026-11-04 under decision 0054 after the source-reader gap review of the text phase 8 wrote on the declarations and statements chapters (`reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+
+| Question | Principle | Family that still differs |
+|---|---|---|
+| {question}`Q-0038` | DEFARG-P1 | EDG 7.0 |
+| {question}`Q-0111` | DEFARG-P2 | Clang 22 |
+
+{question}`Q-0379` is provisional. DEFARG-10 changed on 2026-11-04, so the question waits for a reader or a reviewer to use the changed rule.
 
 - DEFARG-2: Clang rejects a call that needs a default argument added by
   a later namespace declaration, through an earlier using declaration.
@@ -276,6 +287,17 @@ All eight compilers agree on 38 of 46 tests. The results are in
 - DEFARG-4: EDG rejects a parameter in an unevaluated default argument,
   such as the operand of `sizeof`. Clang and GCC accept it
   ({question}`Q-0038`).
+- DEFARG-4: a default argument that reads the value of a local
+  constant of an enclosing function, outside an operand that is not
+  evaluated, is rejected by GCC and EDG. Clang accepts it. The gap
+  review of the text phase 8 wrote reads the C++23 text as Clang does,
+  because such a read needs no storage of the local. Tidal keeps the
+  answer of GCC and EDG
+  ({question}`Q-0389`,
+  `documentation/decisions/pending.md`, "Matrix against review").
+- DEFARG-3, DEFARG-10: every compiler checks the default argument of a
+  friend function defined in a class, and of a member function of a
+  nested class, as if at the end of the outermost class.
 - DEFARG-10: GCC accepts a function template whose default argument
   depends on no template parameter and is not valid, if no call uses
   the default. Clang and EDG reject the template. {rule}`DEP-30` allows

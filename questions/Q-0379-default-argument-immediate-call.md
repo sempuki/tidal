@@ -47,8 +47,18 @@ Clang 22 and GCC 16 agree, and Tidal follows the two when EDG alone
 differs (`documentation/decisions/pending.md`, row 3). DEFARG-P1 makes a
 default argument act as if written at the call.
 
-Kept open on 2026-11-04 under decision 0054, because no review has read the provisional answer, and EDG 7.0 differs from it. Item RV2 of decision 0056 reads the question.
+Kept open on 2026-11-04 (replaced by the next note) under decision 0054, because no review has read the provisional answer, and EDG 7.0 differs from it. Item RV2 of decision 0056 reads the question.
+
+Read on 2026-11-04 by the source-reader gap review of the text phase 8 wrote on the declarations and statements chapters (`reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md`), which supports option 1 with no doubt. EDG 7.0 is the one newest family that differs. DEFARG-P1, which makes a default argument act as if written at the call, is not a principle that phase 8 widened, and its model gives the answer. Kept open on 2026-11-04 under decision 0055, because DEFARG-10, the rule the question affects, changed in this commit: a friend function defined in a class and a member function of a nested class now have their default arguments checked as if at the end of the outermost class. The question waits for the next review or reader batch that reads the changed DEFARG-10.
 
 ## Opinions
+
+### Gap review, 2026-11-04
+
+The source-reader gap review of the text phase 8 wrote on the declarations and statements chapters (`reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md`) agrees with option 1. The reference makes this exception in its rule on checking default arguments: a call of an immediate function there is neither evaluated nor checked as a constant at the declaration. The exception came with the C++23 change that lets immediate calls escalate, and was also applied to C++20 as a defect resolution. The review reads EDG 7.0 as not implementing it.
+
+### Gap review of the expressions, foundations, and templates text, 2026-11-04
+
+The source-reader gap review of the text phase 8 wrote on the expressions, foundations, exceptions, and templates chapters (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`) names this question only to leave it out, because the question affects a rule on another page. The review gives no reading.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

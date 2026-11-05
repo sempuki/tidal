@@ -525,7 +525,7 @@ In `E::x`, `x` must be an enumerator of `E` (NAM-19).
 
 :::{rule} NAM-21
 :kind: required
-:tests: foundations/names/definition-body-sees-namespace.cpp foundations/names/definition-initializer-sees-namespace.cpp foundations/names/definition-parameter-sees-class.cpp foundations/names/definition-trailing-return-sees-class.cpp foundations/names/definition-bound-default-noexcept-see-scope.cpp foundations/names/definition-template-member-alias.cpp foundations/names/definition-class-body-sees-namespace.cpp foundations/language-support/tuple-protocol-page-example.cpp
+:tests: foundations/names/definition-body-sees-namespace.cpp foundations/names/definition-initializer-sees-namespace.cpp foundations/names/definition-parameter-sees-class.cpp foundations/names/definition-trailing-return-sees-class.cpp foundations/names/definition-bound-default-noexcept-see-scope.cpp foundations/names/definition-template-member-alias.cpp foundations/names/definition-class-body-sees-namespace.cpp foundations/names/definition-class-base-sees-namespace.cpp foundations/names/definition-enumeration-body-sees-namespace.cpp foundations/language-support/tuple-protocol-page-example.cpp
 
 A declaration can name a member with a qualified name, such as `N::f`
 or `C::f`. After that name, the declaration sees the members of `N` or
@@ -537,8 +537,9 @@ or `C::f`. After that name, the declaration sees the members of `N` or
 - a trailing return type,
 - the function body,
 - the initializer,
-- the body of a class that the declaration defines
-  ({question}`Q-0377`).
+- the base clause and the body of a class that the declaration defines
+  ({question}`Q-0377`),
+- the enumerator list of an enumeration that the declaration defines.
 :::
 
 :::{rule} NAM-22
@@ -897,8 +898,8 @@ File::File* q = nullptr;        // rejected: names the constructor
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 236
-of 240 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 238
+of 242 tests.
 
 The clean-room writer probed qualified lookup, using directives,
 argument-dependent lookup, and the injected class name with Clang 22,
@@ -912,6 +913,15 @@ each row, and a rejected test for each kind of type that adds nothing.
   template, GCC and EDG add the namespaces of the type arguments, and
   Clang adds nothing for them ({question}`Q-0311`, settled). Clang 22
   stays a recorded deviation.
+- NAM-21: the gap reviews of the text phase 8 wrote
+  (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`
+  and `reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md`)
+  read the base clause of a class, and the enumerator list of an
+  enumeration, defined with a qualified name as seeing the members of
+  the qualifier. Clang 22, GCC 16, and EDG 7.0 accept both. In the
+  underlying type of such an enumeration, Clang 22 and GCC 16 do not
+  find a member of the qualifier, and EDG 7.0 does, so NAM-21 does not
+  list the underlying type.
 - NAM-27, NAM-28: all compilers add the class of a member template that
   is a template argument, and the namespaces of an overload set whose
   address is the argument. A lambda in a member function body does not

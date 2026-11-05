@@ -50,10 +50,18 @@ Kept open on 2026-11-03 under decision 0054, because no principle gives the answ
 
 Checked on 2026-11-04 under the principle test of the style guide (section 3, item PQ of decision 0055). UNI-P6 failed step 3, because it did not name the attribute, and only UNI-15 did. UNI-P6 now lists the conditions on each pair of the common initial sequence, with both or neither member carrying `[[no_unique_address]]` among them. The grid `layout-compatible.json` checks the conditions through the builtin queries. The queries still differ, as the provisional answer says. Under decision 0055, the question does not settle on a principle that phase 8 wrote. The question stays provisional until a reader or a reviewer uses UNI-P6.
 
+Used on 2026-11-04 under decision 0056 by the source-reader gap review of the text phase 8 wrote on classes and overloading (`reports/review/2026-11-04-gap-review-phase-8-classes-overloading.md`). The review applies UNI-P6 to the program of the row "overlap mark on both" of `layout-compatible.json` without the rule text and reaches the provisional answer: each pair of members has the same type and both last members carry the attribute, so the sequence holds every member and the structs are layout-compatible.
+
+Kept open on 2026-11-04 under decision 0055, because UNI-P6 changed in the same commit: the review found that it paired only the members, and an unnamed bit-field also takes part in the sequence. The question waits for the next use of UNI-P6.
+
 ## Opinions
 
 ### Gap review, 2026-11-03
 
 The source-reader gap review of item O (`reports/review/2026-11-03-gap-review-item-o.md`) reads the reference as supporting option 1, the provisional answer. Matching members must both carry the attribute or both lack it, and a marked member does not end the sequence. Clang 22's query conflicts with that reading.
+
+### Gap review, 2026-11-04
+
+The source-reader gap review of the text phase 8 wrote on classes and overloading (`reports/review/2026-11-04-gap-review-phase-8-classes-overloading.md`) agrees with option 1. The common initial sequence runs over the non-static data members and bit-fields, unnamed bit-fields included, and the reference's own example shows an unnamed bit-field of width 0 ending it. For this question the attribute condition is the one that matters.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

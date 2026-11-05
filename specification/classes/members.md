@@ -57,7 +57,8 @@ has the type of that object with the function's own cv-qualifiers. The
 ref-qualifier of the function selects the function by the {term}`value category`
 of the object. A function with no ref-qualifier takes an object of
 either category, so the function would compete with each qualified
-overload. Overloads with the same parameters therefore all have
+overload that has the same cv-qualifiers. Overloads with the same
+parameters and the same cv-qualifiers therefore all have
 ref-qualifiers, or none of them has one.
 
 A member function can instead write that object out as its first
@@ -235,7 +236,7 @@ not `const` on a `const` object, or a member function that is not
 
 :::{rule} CLS-6
 :kind: required
-:tests: classes/members/ref-qualified.cpp classes/members/ref-qualified-const-and-xvalue.cpp
+:tests: classes/members/ref-qualified.cpp classes/members/ref-qualified-const-and-xvalue.cpp classes/members/ref-qualified-mixed-different-cv.cpp
 
 A member function can have the ref-qualifier `&` or `&&`. A call on an
 lvalue selects `&`, and a call on an rvalue selects `&&`.
@@ -243,11 +244,12 @@ lvalue selects `&`, and a call on an rvalue selects `&&`.
 
 :::{rule} CLS-26
 :kind: reject
-:tests: classes/members/ref-qualified-mixed.cpp classes/members/ref-qualified-mixed-const.cpp classes/members/ref-qualified-mixed-call.cpp
+:tests: classes/members/ref-qualified-mixed.cpp classes/members/ref-qualified-mixed-const.cpp classes/members/ref-qualified-mixed-call.cpp classes/members/ref-qualified-mixed-different-cv.cpp
 
 The overloads of a member function that CLS-6 describes must all have
-ref-qualifiers, or none, if they have the same parameters
-({question}`Q-0027`).
+ref-qualifiers, or none, if they have the same parameters and the same
+cv-qualifiers ({question}`Q-0027`). Overloads whose cv-qualifiers
+differ can mix a function with a ref-qualifier and one without.
 :::
 
 :::{rule} CLS-7
@@ -667,7 +669,7 @@ struct Pointers { char c; int& r; int Plain::* p; void (Shape::* f)(); };
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 146
-of 161 tests.
+of 162 tests.
 
 - CLS-23: Clang rejects an in-class initializer for a `static const
   volatile` integer member. GCC and EDG accept it ({question}`Q-0080`).

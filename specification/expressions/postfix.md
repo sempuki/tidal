@@ -56,7 +56,10 @@ member access sees the members known at that place, as an unqualified
 name does:
 
 - a member declaration sees the members declared before it,
-- a member function body sees every member of the class.
+- the places where the class is complete ({rule}`CLS-2`) see every
+  member of the class. These places are member function bodies,
+  default arguments, default member initializers, and `noexcept`
+  operands, also those of a class nested inside the class.
 :::
 
 :::{principle} PFX-P4
@@ -134,7 +137,7 @@ Each parameter is copy-initialized from its argument.
 
 :::{rule} PFX-22
 :kind: required
-:tests: expressions/postfix/ellipsis-argument-conversions.cpp expressions/postfix/ellipsis-argument-kinds.cpp
+:tests: expressions/postfix/ellipsis-argument-conversions.cpp expressions/postfix/ellipsis-argument-kinds.cpp expressions/postfix/ellipsis-nullptr-becomes-void-pointer.cpp expressions/postfix/ellipsis-scoped-enumeration.cpp
 
 An argument that matches an ellipsis parameter has these conversions,
 and the parameter has the type of the result:
@@ -145,8 +148,10 @@ and the parameter has the type of the result:
   type ({rule}`CONV-1`). This item includes a bit-field and an unscoped
   enumeration.
 - A `float` becomes a `double`.
+- An argument of the type of `nullptr` becomes a `void*` null pointer.
 
-A scoped enumeration keeps its type, as does every other type.
+Every other type keeps its type. For a scoped enumeration, the argument
+is conditionally supported ({rule}`PFX-15`).
 :::
 
 :::{rule} PFX-16
@@ -187,15 +192,16 @@ also follows these rules:
 
 :::{rule} PFX-11
 :kind: reject
-:tests: expressions/postfix/arrow-on-non-pointer.cpp expressions/postfix/dot-on-pointer.cpp expressions/postfix/no-such-member.cpp declarations/declarators/function-declaration-ambiguity.cpp foundations/names/member-access-no-enclosing-scope.cpp foundations/names/member-access-no-free-function.cpp foundations/names/member-access-type-member.cpp expressions/postfix/member-access-incomplete-class.cpp expressions/postfix/member-access-class-being-defined.cpp expressions/postfix/member-access-later-member-in-body.cpp expressions/postfix/member-access-later-member-in-function-body.cpp
+:tests: expressions/postfix/arrow-on-non-pointer.cpp expressions/postfix/dot-on-pointer.cpp expressions/postfix/no-such-member.cpp declarations/declarators/function-declaration-ambiguity.cpp foundations/names/member-access-no-enclosing-scope.cpp foundations/names/member-access-no-free-function.cpp foundations/names/member-access-type-member.cpp expressions/postfix/member-access-incomplete-class.cpp expressions/postfix/member-access-class-being-defined.cpp expressions/postfix/member-access-later-member-in-body.cpp expressions/postfix/member-access-later-member-in-function-body.cpp expressions/postfix/member-access-later-member-complete-class-contexts.cpp
 
 The operand of `.` must be a class object, and the operand of `->` must
 be a pointer to a class. Member lookup ({rule}`NAM-37`) must find the
 named member, and the member must not be a type. The class must be
 complete, or be the class whose definition contains the access. There a
 member declaration, such as the type of a data member, sees only the
-earlier members, and a member function body sees all members
-({rule}`NAM-6`, {question}`Q-0316`).
+earlier members, and a place where the class is complete
+({rule}`CLS-2`), such as a member function body or a default member
+initializer, sees all members ({rule}`NAM-6`, {question}`Q-0316`).
 :::
 
 :::{rule} PFX-20
@@ -316,16 +322,18 @@ The behavior of postfix `++` and `--` is undefined in these cases:
 
 :::{rule} PFX-15
 :kind: conditionally-supported
-:tests: expressions/postfix/ellipsis-nontrivial-class.cpp expressions/postfix/ellipsis-nontrivial-destructor.cpp
+:tests: expressions/postfix/ellipsis-nontrivial-class.cpp expressions/postfix/ellipsis-nontrivial-destructor.cpp expressions/postfix/ellipsis-scoped-enumeration.cpp
 
-Passing an object to an ellipsis parameter is conditionally supported if
-the class of the object has one of these that is non-trivial:
+Passing an argument to an ellipsis parameter is conditionally supported
+if the argument has a scoped enumeration type, or if its class has one
+of these that is non-trivial:
 
 - a copy constructor,
 - a move constructor,
 - a destructor.
 
-GCC and EDG accept such an argument, and Clang rejects it.
+GCC and EDG accept a class argument of this kind, and Clang rejects it.
+All three accept a scoped enumeration.
 :::
 
 ## Examples
@@ -367,8 +375,8 @@ top++;            // undefined
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 70
-of 78 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 73
+of 81 tests.
 
 Two questions on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
 
@@ -377,6 +385,22 @@ Two questions on this page settled on 2026-11-03 under decision 0054 after the s
 | {question}`Q-0034` | PFX-P1 | EDG 7.0 |
 | {question}`Q-0178` | PFX-P2 | none; the behavior is undefined |
 
+- PFX-11, PFX-P3: the gap review of the text phase 8 wrote on
+  expressions
+  (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`)
+  names all the places where the class is complete, those of nested
+  classes included, and every newest compiler accepts a member access to
+  a later member in each of them. The review also reads a member access
+  in a member declaration as not valid, with no diagnostic required,
+  when the complete class would give a different result. No Tidal rule
+  states that condition yet. For a base member that a later member of
+  the same name hides, Clang 22 rejects the access as one into an
+  incomplete class ({question}`Q-0316`), EDG 7.0 reports the later
+  declaration, and GCC 16 accepts.
+- PFX-15, PFX-22: the same review reads an argument of the type of
+  `nullptr` as a `void*`, and a scoped enumeration argument as
+  conditionally supported. Clang 22 and GCC 16 read the argument back as
+  `void*`, and all three newest compilers accept a scoped enumeration.
 - PFX-3: EDG gives `int&` for a subscript of an array member of a
   prvalue. Clang and GCC give `int&&` ({question}`Q-0034`).
 - PFX-4, PFX-8: all compilers reject these cases during constant

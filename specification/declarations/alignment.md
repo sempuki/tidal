@@ -128,7 +128,7 @@ result must not be weaker than the {term}`natural alignment` of the entity
 
 :::{rule} ALN-8
 :kind: reject
-:tests: declarations/alignment/operand-floating.cpp declarations/alignment/operand-scoped-enumeration.cpp declarations/alignment/operand-unscoped-enumeration.cpp declarations/alignment/operand-class-converts.cpp
+:tests: declarations/alignment/operand-floating.cpp declarations/alignment/operand-scoped-enumeration.cpp declarations/alignment/operand-unscoped-enumeration.cpp declarations/alignment/operand-class-converts.cpp declarations/alignment/operand-class-conversion-not-constexpr.cpp declarations/alignment/operand-class-conversion-ambiguous.cpp
 
 The operand of `alignas` must have integral or unscoped enumeration
 type, or a class type that converts to such a type ({question}`Q-0313`,
@@ -228,16 +228,19 @@ static_assert(round_up(13, 8) == 16 && round_up(16, 8) == 16);
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 26
-of 49 tests. Each divergence has a question, except the
+The results are in `tests/RESULTS.md`. All eight compilers agree on 28
+of 51 tests. Each divergence has a question, except the
 implementation-defined limits of ALN-5 and the GCC 14 result of ALN-2.
 
-Two questions on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+Five questions on this page settled under decision 0054. Q-0070 and Q-0071 settled on 2026-11-03 after the source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`). Q-0069, Q-0073, and Q-0360 settled on 2026-11-04 after the source-reader gap review of the text phase 8 wrote on the declarations and statements chapters (`reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
 
 | Question | Principle | Family that still differs |
 |---|---|---|
 | {question}`Q-0070` | ALN-P2 | GCC 16 |
 | {question}`Q-0071` | ALN-P1 | GCC 16 |
+| {question}`Q-0069` | ALN-P1 | GCC 16 |
+| {question}`Q-0073` | ALN-P1 | EDG 7.0 |
+| {question}`Q-0360` | ALN-P3 | Clang 22 |
 
 - ALN-1: GCC uses the last of several `alignas` on a class. On a
   variable and on a data member, GCC uses the strictest, as Clang and
@@ -257,7 +260,11 @@ Two questions on this page settled on 2026-11-03 under decision 0054 after the s
   Clang and GCC reject an enumerator of a scoped enumeration, and EDG
   converts it ({question}`Q-0313`). Clang and EDG convert an operand
   of a class type with a `constexpr` conversion to `int`, and GCC
-  rejects it ({question}`Q-0314`).
+  rejects it ({question}`Q-0314`). Clang and EDG reject an operand of
+  class type whose conversion function is not `constexpr`, and one
+  whose class has two `constexpr` conversion functions to integer
+  types, as ambiguous. GCC rejects both, as it rejects every operand of
+  class type.
 - ALN-3: GCC accepts declarations of a variable or a class with
   different `alignas` ({question}`Q-0070`).
 - ALN-5: the largest fundamental alignment is the alignment of a
@@ -275,7 +282,10 @@ Two questions on this page settled on 2026-11-03 under decision 0054 after the s
   rejects 2^16 and larger ("invalid alignment value"). GCC rejects
   2^29 and larger ("exceeds maximum"). Clang accepts an `alignas` of
   2^29 to 2^32 with no diagnostic, and the class then has alignment 1.
-  Clang rejects 2^33 ({question}`Q-0360`).
+  Clang rejects 2^33 ({question}`Q-0360`). The gap review of the text
+  phase 8 wrote adds that an implementation can support an extended
+  alignment in some contexts of a declaration and not in others. The
+  tests check the limit on a class.
 - ALN-4: the undefined behavior sanitizers of Clang and GCC stop a read
   of an `int` through a pointer to an odd address ("load of misaligned
   address").

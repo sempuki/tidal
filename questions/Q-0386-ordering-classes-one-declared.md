@@ -1,7 +1,7 @@
 # Q-0386: Must a program declare all three ordering classes before a use of `<=>` that yields only one of them?
 
 **Status:** provisional
-**Affects:** LSUP-2, `tests/foundations/language-support/ordering-strong-only-builtin.cpp`, `tests/foundations/language-support/ordering-strong-only-builtin-runtime.cpp`, `tests/foundations/language-support/ordering-strong-only-defaulted.cpp`, `tests/overloading/overload-resolution/builtin-three-way.cpp`, `tests/overloading/overload-resolution/builtin-three-way-mixed.cpp`
+**Affects:** LSUP-2, `tests/foundations/language-support/ordering-strong-only-builtin.cpp`, `tests/foundations/language-support/ordering-strong-only-builtin-runtime.cpp`, `tests/foundations/language-support/ordering-strong-only-defaulted.cpp`, `tests/foundations/language-support/ordering-partial-not-declared.cpp`, `tests/overloading/overload-resolution/builtin-three-way.cpp`, `tests/overloading/overload-resolution/builtin-three-way-mixed.cpp`
 **Source:** section 1.4, item 7, and section 6 of `reports/clean-room/roadmap-6/programmer.md`, from the probes that a clean-room writer ran for them.
 
 ## Context
@@ -30,8 +30,7 @@ and still test OVL-9.
 ## Evidence
 
 The three LSUP-2 tests in **Affects**. The first and the third carry
-overrides for Clang and GCC. The run-time test carries overrides for
-all three families. Before the change, the two OVL-9 tests declared
+overrides for EDG. The run-time test carries none. Before the change, the two OVL-9 tests declared
 `std::strong_ordering` and `std::partial_ordering` only, and EDG
 accepted them.
 
@@ -47,12 +46,25 @@ accepted them.
 
 ## Provisional answer
 
-Yes; every such use needs all three classes (option 1). A program that
-declares all three classes works on every compiler for every use. A
-rule that depends on whether a comparison is evaluated as a constant is
-harder for a programmer to follow, and a later change of either
-program shape would move the program across the line.
+No; each use needs only the ordering class that it yields (option 3).
+Clang and GCC accept each program, and the gap review of the text
+phase 8 wrote on foundations reads the reference the same way. EDG
+alone asks for the other classes, and only in two of the three forms.
+The earlier answer, option 1, asked a program for declarations that no
+use needs, and two of the three newest families do not check them.
+
+Changed on 2026-11-04 from option 1 to option 3, after the gap review of the text phase 8 wrote on expressions, foundations, and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`). LSUP-2 now asks for the class that a use yields. The three LSUP-2 tests expect the programs to run, and the constant and defaulted forms record EDG's rejection as an override. A new test, `ordering-partial-not-declared.cpp`, checks that a use of a class that the program does not declare is rejected on every compiler.
+
+Kept open on 2026-11-04 under decision 0055, because LSUP-2 changed in this commit. The question waits for a reader or a reviewer to use the changed rule. EDG 7.0 is the one newest family that differs.
 
 ## Opinions
+
+### Gap review, 2026-11-04
+
+The source-reader gap review of the text phase 8 wrote on expressions, foundations, and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`) supports option 3. The reference says that the three classes are not predefined, and it asks for a library declaration of a class before each use of that class, an implicit use by a built-in or defaulted `<=>` included. The condition names the class that the use needs, and nothing asks for the classes that the use does not yield. A defaulted `<=>` over integer members yields the strong class, and the choice of a common comparison type among the classes is not a use of the other two. A program that declares the classes itself is outside the reference, as the earlier review of LSUP-5 noted.
+
+### Gap reviews of classes and of declarations, 2026-11-04
+
+The source-reader gap reviews of the text phase 8 wrote on classes and overloading (`reports/review/2026-11-04-gap-review-phase-8-classes-overloading.md`) and on declarations and statements (`reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md`) name the question only to say that it affects no rule on their pages. Neither gives a reading.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

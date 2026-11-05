@@ -39,10 +39,18 @@ Kept open on 2026-11-03 (replaced by the note of 2026-11-04) under decision 0054
 
 Checked on 2026-11-04 under the principle test of the style guide (section 3, item PQ of decision 0055). PACK-P2 failed the test, because PACK-P2 named PACK-30 in its `:exceptions:` line. Item PQ widened PACK-P2. A name that finds an expanded using-declarator at the definition is bound to it ({principle}`DEP-P1`), and an empty pack leaves the name with nothing to mean. As for other changes of meaning between the definition and the instantiation ({principle}`DEP-P6`), the implementation need not diagnose the error. PACK-30 moved from the `:exceptions:` line to the `:rules:` line. Under decision 0055, the question does not settle on a principle that phase 8 wrote. The question stays provisional until a reader or a reviewer uses PACK-P2.
 
+Used on 2026-11-04 by the source-reader gap review of the text phase 8 wrote on expressions, foundations, and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`), Part B. The review applied PACK-P2 to the question's program, a using-declaration from an empty pack, and a call of a name that the namespace also declares (`using-declaration-empty-pack-outer-name.cpp`), without the rule text: the name was bound at the definition and means nothing in the empty instantiation, so the program is not valid with no diagnostic required, which is the provisional answer.
+
+Kept open on 2026-11-04 under decision 0054, because the review finds the reference unclear, and it leans to option 2. GCC 16 and EDG 7.0 follow option 2, so two newest families differ from the answer.
+
 ## Opinions
 
 ### Gap review, 2026-11-03
 
 The source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`) agrees with option 1. A template whose meaning in a hypothetical instantiation right after its definition differs from its meaning in an actual instantiation is not valid, with no diagnostic required. Lookup at the definition finds the expanded using-declarator, and the instantiation with an empty pack finds nothing there. Both results are allowed.
+
+### Gap review, 2026-11-04
+
+The source-reader gap review of the text phase 8 wrote on expressions, foundations, and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`) finds the reference unclear, leaning to option 2. A name that finds a using-declarator with a dependent final name refers to a member of the class being defined whose meaning waits for the arguments, so the call is dependent, and the rule on hypothetical instantiations does not reach it. A note says that a using-declarator is replaced during the lookup for a specialization. With an empty pack the replacement is nothing, and the lookup goes on to the namespace function, as GCC and EDG do. The reference does not say how that interacts with the rewrite of a member name into a member access.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

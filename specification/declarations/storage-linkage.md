@@ -165,9 +165,19 @@ or follow a local variable of the same name in the same block.
 :kind: required
 :tests: declarations/storage-linkage/external-default.cpp declarations/storage-linkage/external-namespace-member.cpp declarations/storage-linkage/class-external-linkage.cpp declarations/storage-linkage/class-unnamed-namespace-internal.cpp
 
-A variable, function, class, or enumeration at namespace scope has
-external linkage, unless a rule on this page gives it another linkage. A name with external linkage
-refers to one entity in all translation units.
+These names at namespace scope have external linkage, unless a rule on
+this page gives them another linkage:
+
+- a variable or a function,
+- a template,
+- a named namespace,
+- a named class or enumeration,
+- an unnamed class or enumeration with a name for linkage, which a
+  `typedef` gives ({rule}`TYN-3`) or, for an enumeration, an
+  enumerator gives.
+
+Any other unnamed class or enumeration has no linkage. A name with
+external linkage refers to one entity in all translation units.
 :::
 
 :::{rule} LNK-2
@@ -376,6 +386,13 @@ Two questions on this page settled on 2026-11-03 under decision 0054 after the s
 | {question}`Q-0011` | STO-P4 | none; LNK-7 needs no diagnostic |
 | {question}`Q-0105` | STO-P3 | EDG 7.0 |
 
+- **LNK-1.** An unnamed class at namespace scope without a name for
+  linkage has no linkage. Clang, GCC, and EDG each reject a function
+  that is declared with such a class as its return type, used, and not
+  defined in the unit, because no other unit can define it. The same
+  function is valid when a `typedef` gives the class a name for linkage.
+  No test checks the rejection, because no rule of Tidal states it yet.
+  The page leaves modules, and so module linkage, out of scope.
 - **LNK-6.** Each translation unit compiles without a diagnostic. The
   linker reports a second definition of a variable or function that is
   not `inline` ("multiple definition of"). Two different definitions of

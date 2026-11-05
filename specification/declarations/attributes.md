@@ -37,9 +37,9 @@ The standard attributes with the narrowest places are these:
 |---|---|---|
 | `noreturn`, `carries_dependency` | The first declaration of a function. A later declaration can repeat the attribute and cannot add it. `carries_dependency` can also go on a parameter. | ATTR-2, ATTR-11 |
 | `likely`, `unlikely` | A statement, or a label of any kind: `case`, `default`, or a name that a `goto` uses. At most one of the two on one statement or label. | ATTR-2, ATTR-8 |
-| `fallthrough` | A statement on its own in a `switch`, where the next statement that can run has a `case` or `default` label | ATTR-2 |
+| `fallthrough` | A statement on its own in a `switch`, where the next statement that can run has a `case` or `default` label of the same `switch` | ATTR-2 |
 | `assume` | A statement on its own | ATTR-13 |
-| `nodiscard` | A function or a type, and no variable | ATTR-2, ATTR-5 |
+| `nodiscard` | A function, a class, or an enumeration, and no variable or type alias | ATTR-2, ATTR-5 |
 | `no_unique_address` | A data member that is not a bit-field | ATTR-2, ATTR-9 |
 
 A promise about a function goes on the first declaration, because a
@@ -118,7 +118,7 @@ recognizes.
 
 :::{rule} ATTR-2
 :kind: reject
-:tests: declarations/attributes/attribute-argument-not-string.cpp declarations/attributes/attribute-too-many-arguments.cpp declarations/attributes/attribute-unexpected-argument.cpp declarations/attributes/noreturn-on-variable.cpp declarations/attributes/fallthrough-misplaced.cpp declarations/attributes/fallthrough-not-before-case.cpp declarations/attributes/fallthrough-on-declaration.cpp declarations/attributes/likely-and-unlikely.cpp declarations/attributes/nodiscard-on-variable.cpp declarations/attributes/noreturn-not-first.cpp declarations/attributes/fallthrough-end-of-loop.cpp declarations/attributes/no-unique-address-bitfield.cpp declarations/attributes/carries-dependency-redeclared.cpp declarations/attributes/fallthrough-end-of-if-branch.cpp declarations/attributes/fallthrough-end-of-else-branch.cpp declarations/attributes/likely-with-argument.cpp declarations/attributes/unlikely-with-argument.cpp declarations/attributes/maybe-unused-with-argument.cpp declarations/attributes/fallthrough-with-argument.cpp declarations/attributes/no-unique-address-with-argument.cpp declarations/attributes/noreturn-repeated.cpp
+:tests: declarations/attributes/attribute-argument-not-string.cpp declarations/attributes/attribute-too-many-arguments.cpp declarations/attributes/attribute-unexpected-argument.cpp declarations/attributes/noreturn-on-variable.cpp declarations/attributes/fallthrough-misplaced.cpp declarations/attributes/fallthrough-not-before-case.cpp declarations/attributes/fallthrough-on-declaration.cpp declarations/attributes/likely-and-unlikely.cpp declarations/attributes/nodiscard-on-variable.cpp declarations/attributes/noreturn-not-first.cpp declarations/attributes/fallthrough-end-of-loop.cpp declarations/attributes/no-unique-address-bitfield.cpp declarations/attributes/carries-dependency-redeclared.cpp declarations/attributes/fallthrough-end-of-if-branch.cpp declarations/attributes/fallthrough-end-of-else-branch.cpp declarations/attributes/likely-with-argument.cpp declarations/attributes/unlikely-with-argument.cpp declarations/attributes/maybe-unused-with-argument.cpp declarations/attributes/fallthrough-with-argument.cpp declarations/attributes/no-unique-address-with-argument.cpp declarations/attributes/noreturn-repeated.cpp declarations/attributes/fallthrough-into-outer-switch.cpp declarations/attributes/fallthrough-same-switch-after-inner.cpp declarations/attributes/nodiscard-on-type-alias.cpp declarations/attributes/nodiscard-on-enumeration.cpp
 
 A standard attribute must have the correct arguments and must apply to a
 correct entity:
@@ -129,7 +129,9 @@ correct entity:
 - `fallthrough`, `likely`, `unlikely`, `maybe_unused`, and
   `no_unique_address` have no argument.
 - `fallthrough` is a statement on its own in a `switch`. The next
-  statement that can run after it must have a `case` or `default` label,
+  statement that can run after it must have a `case` or `default` label
+  of the same `switch`
+  ({question}`Q-0390`),
   so a `fallthrough` can end a branch of an `if` before such a label. A
   `fallthrough` at the end of a loop body inside the `switch` is not
   valid.
@@ -140,8 +142,8 @@ These uses are also not valid:
   ({question}`Q-0046`),
 - `noreturn` on a declaration of a function that was first declared
   without it,
-- `nodiscard` on a variable, and `no_unique_address` on a bit-field
-  ({question}`Q-0021`),
+- `nodiscard` on a variable or a type alias, and `no_unique_address`
+  on a bit-field ({question}`Q-0021`),
 - `carries_dependency` on a declaration of a function that was first
   declared without it ({question}`Q-0108`).
 :::
@@ -398,8 +400,10 @@ switch (k) {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 70
-of 86 tests. EDG skips the tests that use `-Werror`.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 72
+of 90 tests. EDG skips the tests that use `-Werror`.
+
+{question}`Q-0046`, {question}`Q-0108`, and {question}`Q-0347` are provisional. ATTR-P1 and ATTR-2 changed on 2026-11-04, so each question waits for a reader or a reviewer to use the changed ATTR-P1.
 
 - An implementation should warn if a `noreturn` function can return.
   Clang and GCC give this warning ("function declared 'noreturn' should
@@ -469,12 +473,26 @@ of 86 tests. EDG skips the tests that use `-Werror`.
   |---|---|---|---|
   | `[[noreturn]]` on a variable | GCC | Clang, EDG | {question}`Q-0021` |
   | `[[nodiscard]]` on a variable | Clang, GCC | EDG | {question}`Q-0021` |
+  | `[[nodiscard]]` on a type alias | Clang, GCC | EDG | {question}`Q-0021` |
+  | `[[fallthrough]]` before a label of an outer `switch` | Clang | GCC, EDG | {question}`Q-0390` |
   | `[[no_unique_address]]` on a bit-field | GCC | Clang, EDG | {question}`Q-0021` |
   | `[[likely]]` and `[[unlikely]]` on one statement | GCC | Clang, EDG | {question}`Q-0046` |
   | `carries_dependency` added on a redeclaration | GCC | Clang, EDG | {question}`Q-0108` |
 
   Each row holds for GCC 14 and 16 and for Clang 18 and 22. The
-  provisional answer for each row is that the program is rejected.
+  provisional answer for each row is that the program is rejected. The
+  last two rows follow the gap review of the text phase 8 wrote
+  (`reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md`),
+  which reads the C++23 text as limiting `nodiscard` to a function, a
+  class, or an enumeration, and `fallthrough` to a label of its own
+  `switch`. For the `fallthrough` row, Clang accepts the program with
+  no warning, and GCC reports the error only when it compiles the code.
+- ATTR-6 is Tidal's own advice, as FN-7 is. The C++23 text recommends
+  only where an implementation should not warn, and for a structured
+  binding declaration it advises a warning only when none of the names
+  is used. A name that the program only assigns, or whose address it
+  takes, counts as used there. ATTR-6 allows a warning in those cases,
+  as Clang and GCC give one.
 
 Inputs: clang-sema-declattr, clang-sema-stmtattr, edg-attribute,
 clang-diag-sema (see `inputs/MANIFEST.md`).

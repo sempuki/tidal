@@ -89,8 +89,9 @@ declare them:
 - in the global namespace, a name that starts with an underscore.
 
 An implementation need not diagnose a use of a reserved name. A
-literal suffix that does not start with `_` is also reserved, and
-{rule}`OPR-9` gives its rule.
+literal suffix that does not start with `_`, or that has two
+underscores in a row, is also reserved, and {rule}`OPR-9` gives its
+rule in the same class.
 :::
 
 ## Examples
@@ -132,4 +133,4 @@ of 101 tests.
   variable ({rule}`INIT-7`). Each reads `struct D final { }` after a
   definition of `D` as a second definition of `D`. GCC 14 reads
   `override` there as a marker of the class and rejects it
-  ({question}`Q-0382`).
+  ({question}`Q-0382`, settled on 2026-11-04 because every newest family agrees).

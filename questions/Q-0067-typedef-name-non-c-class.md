@@ -24,8 +24,16 @@ Reopened as provisional on 2026-11-04 under the principle test of the style guid
 
 On 2026-11-04, item PQ widened TYN-P1 to list what a class that gets its name for linkage from an alias must not have: member functions, bases, and default member initializers. The new test `tests/declarations/type-names/typedef-unnamed-class-default-member-initializer.cpp` checks the third item. Clang 22, GCC 16, and EDG 7.0 reject that class in a probe, and GCC 14 accepts it. Under decision 0055, the question does not settle on a principle that phase 8 wrote. The question stays provisional until a reader or a reviewer uses TYN-P1.
 
+Used on 2026-11-04 by the source-reader gap review of the text phase 8 wrote on the declarations and statements chapters (`reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md`), under decision 0056. The review applied TYN-P1 to the program of `typedef-unnamed-class-member-function.cpp` without the rule text and reached the provisional answer: the class has a member function, so it cannot get a name for linkage from the alias, and the alias is rejected.
+
+Kept open on 2026-11-04 under decisions 0054 and 0055, because TYN-P1 and TYN-9 changed in this commit: they now list the further limits that the review names. The question waits for the next use of the changed text.
+
 ## Opinions
 
 ### Gap review, 2026-11-03
 
 The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) agrees with option 1. An unnamed class that gets a typedef name for linkage may have only data members, member classes, and member enumerations. It may have no base and no default member initializer, and nested classes have the same limits. The rule entered with C++20, so GCC 14's acceptance is a defect.
+
+### Gap review, 2026-11-04
+
+The source-reader gap review of the text phase 8 wrote on the declarations and statements chapters (`reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md`) agrees with option 1. The review found that the reference forbids more than TYN-P1 listed: any member other than a non-static data member, a member class, or a member enumeration; a lambda expression anywhere in the class; and a member class that breaks the limits itself.

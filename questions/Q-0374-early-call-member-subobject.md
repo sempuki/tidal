@@ -38,10 +38,16 @@ on its object. Clang names this reason.
 
 Kept open on 2026-11-04 under decision 0054, because two newest families, GCC 16 and EDG 7.0, differ from the answer, and CTOR-12 changed in the commit that read the review (decision 0055). The gap review of the rules that phase 7 rewrote supports the answer with no doubt.
 
+Read on 2026-11-04 by the source-reader gap review of the text phase 8 wrote on classes and overloading (`reports/review/2026-11-04-gap-review-phase-8-classes-overloading.md`). The review confirms CTOR-12 without reading the question's program. The question stays open, because two newest families differ.
+
 ## Opinions
 
 ### Gap review, 2026-11-04
 
 The source-reader gap review of the rules that the phase 7 front-end and Propose repairs rewrote (`reports/review/2026-11-04-gap-review-phase-7-repairs.md`) agrees with option 1. The member's lifetime has not begun, because its initialization, even one that does nothing, has not happened yet. The reference lists a call of a non-static member function through a glvalue to such an object as undefined, and the member is not an object under construction. Undefined behavior ends constant evaluation, as Clang finds.
+
+### Gap review, 2026-11-04
+
+The source-reader gap review of the text phase 8 wrote on classes and overloading (`reports/review/2026-11-04-gap-review-phase-8-classes-overloading.md`) reads CTOR-12 as the reference reads it: a call of a member function, or a use of the object in `typeid` or `dynamic_cast`, from a constructor's initializers or from any function they call, before every base is initialized, is undefined. The review does not use a principle for this question, because it waits on newest families that differ.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

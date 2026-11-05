@@ -149,8 +149,10 @@ These rules apply:
   constructor can be written, defaulted, or inherited.
 - If the initialization of an aggregate throws, the members that were
   initialized before the throw are destroyed in reverse order. The
-  same holds for the captures of a lambda's closure object, which are
-  initialized in the order of the capture list ({rule}`LAM-28`).
+  same holds for the captures of a lambda's closure object, in the
+  order in which they were initialized. That order is unspecified, and
+  every compiler of the matrix uses the order of the capture list
+  ({rule}`LAM-28`).
 - If a reference member of the object keeps a temporary alive, the
   temporary ends when the member would be destroyed in that order.
 - If an element of an array throws during construction, the elements

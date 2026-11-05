@@ -131,7 +131,7 @@ that reference type. For the tuple protocol, the result is
 
 :::{rule} SB-5
 :kind: required
-:tests: declarations/structured-bindings/tuple-protocol.cpp declarations/structured-bindings/tuple-index-size-type.cpp declarations/structured-bindings/tuple-index-int-parameter.cpp declarations/structured-bindings/tuple-const-hidden-variable.cpp declarations/structured-bindings/tuple-const-specialization.cpp declarations/structured-bindings/tuple-get-order.cpp declarations/structured-bindings/tuple-size-without-value.cpp declarations/structured-bindings/tuple-free-get.cpp declarations/structured-bindings/tuple-member-get-wins.cpp declarations/structured-bindings/tuple-member-get-not-template.cpp declarations/structured-bindings/tuple-get-ordinary-lookup.cpp foundations/language-support/tuple-protocol-page-example.cpp declarations/structured-bindings/tuple-member-get-type-parameter-no-free.cpp declarations/structured-bindings/tuple-member-get-type-parameter-uses-free.cpp declarations/structured-bindings/tuple-member-get-value-parameter-among-others.cpp
+:tests: declarations/structured-bindings/tuple-protocol.cpp declarations/structured-bindings/tuple-index-size-type.cpp declarations/structured-bindings/tuple-index-int-parameter.cpp declarations/structured-bindings/tuple-const-hidden-variable.cpp declarations/structured-bindings/tuple-const-specialization.cpp declarations/structured-bindings/tuple-get-order.cpp declarations/structured-bindings/tuple-size-without-value.cpp declarations/structured-bindings/tuple-free-get.cpp declarations/structured-bindings/tuple-member-get-wins.cpp declarations/structured-bindings/tuple-member-get-not-template.cpp declarations/structured-bindings/tuple-get-ordinary-lookup.cpp foundations/language-support/tuple-protocol-page-example.cpp declarations/structured-bindings/tuple-member-get-type-parameter-no-free.cpp declarations/structured-bindings/tuple-member-get-type-parameter-uses-free.cpp declarations/structured-bindings/tuple-member-get-value-parameter-among-others.cpp declarations/structured-bindings/tuple-member-variable-template-get-uses-free.cpp declarations/structured-bindings/tuple-member-class-template-get-uses-free.cpp
 
 If `std::tuple_size<E>` is a complete type, `E` uses the tuple protocol.
 `E` is the type of the hidden variable `e`, with its cv-qualifiers, so
@@ -141,8 +141,10 @@ from one of these calls, and its type is
 `std::tuple_element<i, E>::type` ({rule}`LSUP-3`):
 
 - `e.get<i>()`, if member lookup of `get` in `E` finds at least one
-  member template whose template head starts with a value, such as
-  `template <std::size_t I>`,
+  member function template whose template head starts with a value,
+  such as `template <std::size_t I>`. A member class template or
+  variable template named `get` does not count
+  ({question}`Q-0395`),
 - otherwise `get<i>(e)`, where only {term}`argument-dependent lookup`
   ({rule}`NAM-5`) finds `get`.
 
@@ -313,7 +315,7 @@ const auto& [cl, ch] = g; // rejected: E is const Range, which has no
 
 ## Evidence
 
-All eight compilers agree on 64 of 69 tests. The results are in
+All eight compilers agree on 64 of 71 tests. The results are in
 `tests/RESULTS.md`.
 
 - **SB-15.** Clang and GCC accept `constexpr` structured bindings and
@@ -332,6 +334,15 @@ All eight compilers agree on 64 of 69 tests. The results are in
   the declaration is rejected. See {question}`Q-0016`.
 - **SB-11.** EDG 7.0 and GCC 14 accept `constinit` on a structured
   binding. Clang and GCC 16 reject such a binding ({question}`Q-0107`).
+  The question settled on 2026-11-04 under decision 0054 after the
+  source-reader gap review of the text phase 8 wrote on the
+  declarations and statements chapters
+  (`reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md`).
+  The review supports the answer with no doubt, and SB-P3 gives the
+  same answer. The test keeps its override for EDG 7.0, the newest
+  family that still differs.
+- **SB-P3, `volatile`.** A `volatile` structured binding declaration is
+  valid and deprecated. Clang, GCC, and EDG accept it with a warning.
 - **SB-5, type of the index.** Clang and EDG pass the index of `get`
   as a `std::size_t`, so `template <auto I>` deduces that type. GCC
   passes an `int`. Every compiler accepts a member `get` with an `int`
@@ -345,6 +356,14 @@ All eight compilers agree on 64 of 69 tests. The results are in
   compiler follows that reading. A member `get` template whose first
   parameter is a type leads to the free `get`, and the binding is not
   valid when argument-dependent lookup finds none.
+- **SB-5, a `get` that is not a function template.** The gap review of
+  the text phase 8 wrote reads the reference as using the member form
+  only for a member function template. Clang and EDG use the free `get`
+  when member lookup finds a member variable template or a member class
+  template named `get`. GCC takes the member form and rejects the
+  binding ({question}`Q-0395`).
+  {question}`Q-0048` waits for a reader or a reviewer to use the
+  changed SB-5.
 
 Inputs: clang-sema-declcxx, edg-decls, clang-diag-sema (see
 `inputs/MANIFEST.md`).

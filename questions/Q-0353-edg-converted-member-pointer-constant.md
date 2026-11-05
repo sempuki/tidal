@@ -1,6 +1,6 @@
 # Q-0353: Does EDG losing the member that a converted member pointer names during constant evaluation change MPTR-4?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** MPTR-3, MPTR-4, `tests/programs/W9/memptr.cpp`, `tests/programs/W9/mixin.cpp`
 
 ## Context
@@ -33,7 +33,7 @@ writer on the matrix containers gave the table above.
 2. A converted member pointer that passes through an object or a
    function result has no reliable value during constant evaluation.
 
-## Provisional answer
+## Answer
 
 No; the converted pointer names the member, and EDG differs (option 1).
 MPTR-4 states no condition on where the pointer's value comes from, and
@@ -43,10 +43,18 @@ Kept open on 2026-11-03 (replaced by the note of 2026-11-04) under decision 0054
 
 Checked on 2026-11-04 under the principle test of the style guide (section 3, item PQ of decision 0055). MPTR-P3 failed step 3, because MPTR-P3 did not say that a converted value survives a pass through an object or a function result. CE-P1 gives the model, and the member pointer page did not cite CE-P1. Item PQ widened MPTR-P3 to state the case and to cite CE-P1. The new test `tests/expressions/member-pointers/converted-through-object-constant.cpp` checks the case under MPTR-4 in a rule test, with an override for EDG 7.0, because only program tests checked it before. Under decision 0055, the question does not settle on a principle that phase 8 wrote. The question stays provisional until a reader or a reviewer uses MPTR-P3.
 
+Used on 2026-11-04 by the source-reader gap review of the text phase 8 wrote on expressions, foundations, and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`), Part B. The review applied MPTR-P3 to the question's program, a converted pointer to member that passes through an array or a function result in constant evaluation (`memptr.cpp`, `mixin.cpp`), without the rule text: the converted value names the same member wherever it goes. That is the provisional answer, and the model rules out the other options.
+
+Settled on 2026-11-04 under decision 0054. The review supports the answer with no doubt, and MPTR-P3 gives the same answer under the test of the style guide (section 3). EDG 7.0 still differs, and the tests keep their overrides.
+
 ## Opinions
 
 ### Gap review, 2026-11-03
 
 The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) agrees with option 1. Converting a pointer to a member of a base to a pointer to a member of a derived class keeps the member that the pointer refers to. A `constexpr` function gives the same result as an equivalent ordinary function, apart from copy elision, and nothing lets the value change when it passes through an object or a return. EDG's results are a defect.
+
+### Gap review, 2026-11-04
+
+The source-reader gap review of the text phase 8 wrote on expressions, foundations, and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`) agrees with option 1. The reference has no rule that changes a converted member pointer that passes through an object or a function result.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

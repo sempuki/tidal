@@ -27,12 +27,16 @@ ordinary scope ({principle}`NAM-P1`), so an alias:
 - can be declared again only to say the same thing.
 
 An alias can give a type only a name for {term}`linkage`, and only when the type
-is an unnamed class that C could also declare. Such a class has data
-members and none of these:
+is an unnamed class that C could also declare. Such a class has only
+data members, member classes, and member enumerations, and none of
+these:
 
-- member functions,
+- other members, such as member functions, static data members, and
+  member aliases,
 - bases,
-- default member initializers.
+- default member initializers,
+- a lambda expression anywhere in the class,
+- a member class that has any of these itself.
 
 The implementation rejects an alias that gives a name for linkage to a
 class with any of them.
@@ -158,14 +162,19 @@ name for linkage. TYN-9 states what such a class must be.
 
 :::{rule} TYN-9
 :kind: reject
-:tests: declarations/type-names/typedef-unnamed-class-member-function.cpp declarations/type-names/typedef-unnamed-class-base.cpp declarations/type-names/typedef-unnamed-class-default-member-initializer.cpp
+:tests: declarations/type-names/typedef-unnamed-class-member-function.cpp declarations/type-names/typedef-unnamed-class-base.cpp declarations/type-names/typedef-unnamed-class-default-member-initializer.cpp declarations/type-names/typedef-unnamed-class-member-alias.cpp declarations/type-names/typedef-unnamed-class-lambda.cpp declarations/type-names/typedef-unnamed-class-nested-member-function.cpp declarations/type-names/typedef-unnamed-class-nested-c-like.cpp
 
 A class that uses a `typedef` name for linkage (TYN-3) must be C-like.
-The class has none of these ({question}`Q-0067`):
+Its members are non-static data members, member classes, and member
+enumerations only, and the class has none of these
+({question}`Q-0067`):
 
-- member functions,
+- member functions, or any other kind of member, such as a static data
+  member or a member alias,
 - bases,
-- default member initializers.
+- default member initializers,
+- a lambda expression anywhere in the class,
+- a member class that breaks any of these limits itself.
 :::
 
 :::{rule} TYN-4
@@ -220,7 +229,7 @@ These rules apply to forward declarations and complete types:
 
 :::{rule} TYN-7
 :kind: reject
-:tests: declarations/type-names/class-redefinition.cpp declarations/type-names/forward-class-function-definition-param.cpp declarations/type-names/forward-class-incomplete-use.cpp declarations/type-names/forward-class-object.cpp declarations/type-names/forward-nested-wrong-scope.cpp declarations/type-names/elaborated-qualified-declaration-only.cpp declarations/type-names/definition-incomplete-return.cpp
+:tests: declarations/type-names/class-redefinition.cpp declarations/type-names/forward-class-function-definition-param.cpp declarations/type-names/forward-class-incomplete-use.cpp declarations/type-names/forward-class-object.cpp declarations/type-names/forward-nested-wrong-scope.cpp declarations/type-names/elaborated-qualified-declaration-only.cpp declarations/type-names/definition-incomplete-return.cpp declarations/type-names/elaborated-qualified-explicit-specialization.cpp
 
 A program must not:
 
@@ -284,16 +293,17 @@ void post(Packet* p) {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 57
-of 63 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 59
+of 68 tests.
 
-One question on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+Two questions on this page settled under decision 0054. Q-0066 settled on 2026-11-03 after the source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`). Q-0093 settled on 2026-11-04 after the source-reader gap review of the text phase 8 wrote on the declarations and statements chapters (`reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
 
 | Question | Principle | Family that still differs |
 |---|---|---|
 | {question}`Q-0066` | TYN-P4 | none; the rule needs no diagnostic |
+| {question}`Q-0093` | TYN-P2 | GCC 16 |
 
-{question}`Q-0067` is provisional. A gap review supports its answer with no doubt, and TYN-P1 does not give the answer under the test of the style guide (section 3). The tests keep their overrides for GCC 14.
+{question}`Q-0067` is provisional. TYN-P1 and TYN-9 changed on 2026-11-04, so the question waits for a reader or a reviewer to use the changed TYN-P1. The tests keep their overrides for GCC 14.
 
 - TYN-5: GCC rejects the class, for a type name and for a function name
   that a later data member changes. Clang and EDG accept the class
@@ -302,6 +312,17 @@ One question on this page settled on 2026-11-03 under decision 0054 after the so
   each override records a result that the class allows.
 - TYN-7: GCC accepts a declaration of only a class key and a qualified
   name. Clang and EDG reject the declaration ({question}`Q-0093`).
+- TYN-9: every newest compiler rejects a typedef name for linkage for
+  an unnamed class with a member alias, with a lambda expression in the
+  type of a member, or with a member class that has a member function.
+  A static data member in an unnamed class is rejected by another rule
+  first. Clang and EDG also reject a friend declaration in such a class,
+  and GCC accepts it. The gap review of the text phase 8 wrote does not
+  name friend declarations, and no test checks them.
+- TYN-7: an explicit specialization or an explicit instantiation of a
+  class template can name the class with a class key and a qualified
+  name. Every compiler accepts these declarations, which start with
+  `template`.
 - TYN-3: GCC 14 accepts a typedef name for a class with a member
   function. GCC 16, Clang, and EDG reject the typedef name
   ({question}`Q-0067`).

@@ -23,8 +23,9 @@ Inside the list, an enumeration without a fixed type is not complete
 yet, so each enumerator has the type of its own value:
 
 - With an initializer, the enumerator has the type of the initializer.
-- Without one, the enumerator keeps the type of the enumerator before
-  it.
+- The first enumerator without an initializer has the type `int`.
+- A later enumerator without an initializer keeps the type of the
+  enumerator before it.
 - If that type cannot hold the new value, the enumerator gets an integer
   type that can hold the value. The implementation chooses which.
 
@@ -56,7 +57,7 @@ The underlying type holds the values.
 
 | | Fixed by the program, or scoped | Not fixed |
 |---|---|---|
-| Underlying type | Known from the first declaration | A type wide enough, chosen by the implementation. If no integer type that the implementation provides is wide enough, the implementation can reject the enumeration. |
+| Underlying type | Known from the first declaration | A type wide enough, chosen by the implementation. The implementation can provide wider integer types of its own. If none of its types is wide enough, the implementation rejects the enumeration. |
 | Values of the enumeration | Every value of the type | Only the bits the enumerators need. A value outside that range has no meaning. |
 
 When the type is known from the first declaration, the enumeration is
@@ -248,7 +249,7 @@ declaration makes `E` {term}`complete` and declares no enumerator
 
 :::{rule} ENUM-10
 :kind: required
-:tests: declarations/enumerations/fixed-complete-inside-list.cpp declarations/enumerations/distinct-types.cpp declarations/enumerations/enumerator-type-inside-list.cpp declarations/enumerations/enumerator-type-char-initializer.cpp declarations/enumerations/enumerator-type-enum-initializer.cpp declarations/enumerations/enumerator-type-short-initializer.cpp
+:tests: declarations/enumerations/fixed-complete-inside-list.cpp declarations/enumerations/distinct-types.cpp declarations/enumerations/enumerator-type-inside-list.cpp declarations/enumerations/enumerator-type-char-initializer.cpp declarations/enumerations/enumerator-type-enum-initializer.cpp declarations/enumerations/enumerator-type-short-initializer.cpp declarations/enumerations/enumerator-type-first-without-initializer.cpp declarations/enumerations/enumerator-type-first-fixed-short.cpp declarations/enumerations/enumerator-type-enum-initializer-fixed.cpp
 
 Each enumeration is a distinct type. The enumeration is different from
 its underlying type and from all other enumerations. After the closing
@@ -264,7 +265,8 @@ Every scoped enumeration has a fixed underlying type.
 |---|---|---|
 | Fixed | Any | The underlying type |
 | Not fixed | With an initializer | The type of the initializer, without promotion and without cv-qualifiers. An initializer of enumeration type gives that enumeration type. |
-| Not fixed | Without an initializer | The type of the enumerator before it, if that type can hold its value (ENUM-13) |
+| Not fixed | The first enumerator, without an initializer | `int` |
+| Not fixed | A later enumerator without an initializer | The type of the enumerator before it, if that type can hold its value (ENUM-13) |
 
 :::
 
@@ -397,8 +399,16 @@ static_assert(sizeof names / sizeof names[0] ==
 
 ## Evidence
 
-All eight compilers agree on 73 of 76 tests. The results are in
+All eight compilers agree on 76 of 79 tests. The results are in
 `tests/RESULTS.md`.
+
+One question on this page settled on 2026-11-04 under decision 0054 after the source-reader gap review of the text phase 8 wrote on the declarations and statements chapters (`reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md`). The review supports the answer with no doubt, and a principle gives the same answer. The test keeps its override for the family that still differs:
+
+| Question | Principle | Family that still differs |
+|---|---|---|
+| {question}`Q-0047` | ENUM-P2 | EDG 7.0 |
+
+{question}`Q-0018` and {question}`Q-0114` are provisional. ENUM-P3 and ENUM-P1 changed on 2026-11-04, so each question waits for a reader or a reviewer to use the changed principle.
 
 - **ENUM-5.** With `-fshort-enums`, Clang and GCC give `enum { S = 1 }`
   an underlying type of 1 byte. By default its size is the size of
@@ -424,6 +434,21 @@ All eight compilers agree on 73 of 76 tests. The results are in
   stored value ("load of value 5, which is not a valid value for type").
   The sanitizer stops the same read when the value came from the bytes
   of an `int` ({question}`Q-0336`).
+- **ENUM-10, ENUM-P1.** Inside the list, an enumerator whose
+  initializer has an unscoped enumeration type has that enumeration
+  type on every matrix compiler, also when the enumeration has a fixed
+  type such as `short`. The gap review of the text phase 8 wrote
+  (`reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md`)
+  reads the C++23 text as giving the enumeration's underlying type. Tidal
+  keeps the matrix's answer (`documentation/decisions/pending.md`,
+  "Matrix against review"). A first enumerator without an initializer
+  has the type `int` on every matrix compiler. The review reads the
+  type as a signed integer type that the implementation chooses.
+- **ENUM-P3, ENUM-5.** The underlying type of an enumeration without a
+  fixed type can be an integer type that the implementation provides
+  beyond the standard ones. An implementation with no type wide enough
+  must reject the enumeration. Whether GCC's 128-bit type counts as such
+  a type is GCC's own statement ({question}`Q-0018`).
 - **ENUM-10.** Clang and GCC accept `sizeof` of an enumeration with a
   fixed underlying type inside its own enumerator list, and reject it
   for an enumeration without one.

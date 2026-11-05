@@ -1,6 +1,6 @@
 # Q-0214: Is the object parameter of a member with no ref-qualifier an rvalue reference in partial ordering against an rvalue reference?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** ORD-6, `tests/templates/ordering/member-object-rvalue.cpp`
 
 ## Context
@@ -43,7 +43,7 @@ Every compiler agrees on a member with the ref-qualifier `&&`, and on a member w
 2. The object parameter is always an lvalue reference for a member with
    no ref-qualifier (Clang 18, EDG).
 
-## Provisional answer
+## Answer
 
 Yes; Clang 22 and GCC agree, Clang 18 and EDG differ (option 1). The current Clang and GCC agree, and the gap review describes
 the same behavior. Clang changed from option 2 to option 1 between
@@ -57,10 +57,18 @@ Kept open on 2026-11-03 under decision 0054, because no principle on the orderin
 
 Checked on 2026-11-04 under the principle test of the style guide (section 3, item PQ of decision 0055). ORD-P1 failed step 3, because ORD-P1 did not say which kind of reference the object parameter is. Item PQ widened ORD-P1. The object parameter stands for the way the member binds its object in a call ({principle}`ICS-P3`), so a member with no ref-qualifier takes the kind of the other template's first parameter. Under decision 0055, the question does not settle on a principle that phase 8 wrote. The question stays provisional until a reader or a reviewer uses ORD-P1.
 
+Used on 2026-11-04 by the source-reader gap review of the text phase 8 wrote on expressions, foundations, and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`), Part B. The review applied ORD-P1 to the question's program, ordering of a member with no ref-qualifier against a template whose first parameter is an rvalue reference (`member-object-rvalue.cpp`), without the rule text: against an rvalue reference, the object parameter of the member is an rvalue reference, so neither template is more specialized and the call is ambiguous. That is the provisional answer, and the model rules out the other options.
+
+Settled on 2026-11-04 under decision 0054. The review supports the answer with no doubt, and ORD-P1 gives the same answer under the test of the style guide (section 3). EDG 7.0 still differs, and the tests keep their overrides.
+
 ## Opinions
 
 ### Gap review, 2026-11-03
 
 The source-reader gap review of question cluster 3 (`reports/review/2026-11-03-gap-review-question-cluster-3.md`) reads the reference as supporting option 1. For a member with no ref-qualifier, the object parameter is an rvalue reference when the parameter at the same position in the other template is an rvalue reference, and an lvalue reference otherwise. A guard handles the case where the choice depends on itself.
+
+### Gap review, 2026-11-04
+
+The source-reader gap review of the text phase 8 wrote on expressions, foundations, and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`) agrees with option 1. The review adds two details that ORD-P1 leaves to ORD-6: the object parameter carries the cv-qualifiers of the member, and it is not taken as an rvalue reference when its kind would depend on itself. Neither detail changes the answer.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

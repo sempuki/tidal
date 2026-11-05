@@ -102,9 +102,13 @@ tries the initializer as a constant. These are such places:
 - a namespace-scope, `static`, or `thread_local` variable whose
   initializer is a constant expression,
 - a local `const` integer or enumeration variable that is not
-  `volatile`.
+  `volatile`,
+- a local reference whose initializer is a constant expression, such as
+  a reference to a namespace-scope object.
 
-Every other initializer runs at run time. The result of a constant evaluation
+An initializer inside a call that a constant evaluation runs is part of
+that evaluation, so it runs in constant evaluation too. Every other
+initializer runs at run time. The result of a constant evaluation
 cannot refer to an automatic temporary ({principle}`CE-P2`), so the
 initializer of a local reference that binds a temporary also runs at
 run time.
@@ -388,7 +392,7 @@ does the opposite. In a `consteval` function, the then branch of
 
 :::{rule} IF-25
 :kind: required
-:tests: statements/if/consteval-local-initializers.cpp declarations/initialization/static/consteval-branch-in-initializer.cpp statements/if/consteval-local-reference.cpp statements/if/consteval-static-fallback.cpp
+:tests: statements/if/consteval-local-initializers.cpp declarations/initialization/static/consteval-branch-in-initializer.cpp statements/if/consteval-local-reference.cpp statements/if/consteval-static-fallback.cpp statements/if/consteval-local-reference-static-object.cpp statements/if/consteval-enclosing-evaluation.cpp
 
 An evaluation is a constant evaluation only if it starts in one of
 these places:
@@ -398,12 +402,17 @@ these places:
   `static`, or `thread_local` variable of any type, a class type
   included ({rule}`SINIT-1`),
 - an initializer that is a constant expression, of a `const` variable
-  of integer or enumeration type that is not `volatile` ({rule}`CE-3`).
+  of integer or enumeration type that is not `volatile` ({rule}`CE-3`),
+- an initializer that is a constant expression, of a reference
+  ({rule}`CE-3`).
 
 If such an initializer is not a constant expression, the whole
-initializer runs at run time. Every other evaluation happens at run
-time, such as the initializer of a local variable that is not `const`
-or of a local reference that binds a temporary ({question}`Q-0329`).
+initializer runs at run time. An evaluation inside a constant
+evaluation, such as the initializer of a local variable of a function
+that a constant evaluation calls, is part of the constant evaluation.
+Every other evaluation happens at run time, such as the initializer of
+a local variable that is not `const` or of a local reference that binds
+a temporary ({question}`Q-0329`).
 :::
 
 ## Examples
@@ -464,9 +473,9 @@ void conditions() {
 ## Evidence
 
 All rules in this page are `required` or `reject`. All eight compilers
-agree on 77 of 78 tests. The results are in `tests/RESULTS.md`.
+agree on 79 of 80 tests. The results are in `tests/RESULTS.md`.
 
-{question}`Q-0329` is provisional. A gap review supports its answer with no doubt, and CE-P2 does not give the answer under the test of the style guide (section 3). The test keeps its override for GCC 16.
+{question}`Q-0329` is provisional. IF-P4 and IF-25 changed on 2026-11-04, so the question waits for a reader or a reviewer to use the changed IF-P4. The test keeps its override for GCC 16.
 
 - IF-25: Clang and GCC take the then branch of `if consteval` in the
   initializer of a local `const int` or `const` enumeration variable.
@@ -475,3 +484,7 @@ agree on 77 of 78 tests. The results are in `tests/RESULTS.md`.
   local `const int&` that binds a temporary, Clang takes the else
   branch and GCC takes the then branch
   ({question}`Q-0329`).
+- IF-25: every compiler takes the then branch in the initializer of a
+  local reference that binds a namespace-scope object, and in the
+  initializer of a local `double` inside a function that a
+  `static_assert` evaluates.

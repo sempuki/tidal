@@ -28,9 +28,11 @@ initializer to the object's type ({principle}`VC-P2`).
 a constructor, or a default member initializer. Everything else is left
 as it is. An automatic object with no initializer therefore has no value
 until the program assigns one ({principle}`OBJ-P4`), and a read of it
-before then is undefined. A copy of such a value into an object of type
-`unsigned char` or `std::byte` is not undefined, so a program can copy
-raw storage byte by byte. The target of the copy also has no value.
+before then is undefined. A copy is not undefined when the value has
+the type `unsigned char` or `std::byte` and the target has one of these
+types, so a program can copy raw storage byte by byte. The target of the
+copy also has no value. A copy of an `int` with no value into an
+`unsigned char` is still undefined.
 Constant evaluation rejects even that copy ({rule}`CE-22`).
 :::
 
@@ -185,9 +187,11 @@ time is undefined. These rules also apply:
 - A variable that its own initializer reads has no value at that read.
 - Each element of an array with no initializer has no value in the same
   way.
-- A copy of such a value into an object of type `unsigned char` or
-  `std::byte` is not undefined, and the copy also has no value
-  ({question}`Q-0039`). Constant evaluation rejects such a copy
+- A copy of such a value is not undefined when the value has the type
+  `unsigned char` or `std::byte` and the copy goes into an object of one
+  of these types. The value can pass on the way through a cast to one of
+  these types, either branch of `?:`, or the right operand of a comma.
+  The copy also has no value ({question}`Q-0039`). Constant evaluation rejects such a copy
   ({rule}`CE-22`).
 :::
 
@@ -230,7 +234,12 @@ All eight compilers agree on 38 of 39 tests. The results are in
   during {term}`constant evaluation` ("read of uninitialized object",
   "access to uninitialized object"). The rejection covers a copy of an
   `unsigned char` that has no value, though the copy is not undefined
-  at run time ({rule}`CE-22`, {question}`Q-0039`).
+  at run time ({rule}`CE-22`, {question}`Q-0039`). The exception needs
+  the value itself to have the type `unsigned char` or `std::byte`, as
+  the gap review of the text phase 8 wrote
+  (`reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md`)
+  reads the C++23 text. No compiler of the matrix shows the difference
+  at run time, so no test checks the copy of an `int` with no value.
 - **INIT-9.** In constant evaluation, the default constructor that the
   implementation writes for a class can run if each constructor that it
   calls for a base or a member can run ({rule}`CE-2`).

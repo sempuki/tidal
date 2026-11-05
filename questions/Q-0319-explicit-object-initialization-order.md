@@ -1,6 +1,6 @@
 # Q-0319: When is an explicit object parameter initialized, relative to the other arguments?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** SEQ-1, SEQ-2, `tests/foundations/evaluation-order/explicit-object-order-unspecified.cpp`
 
 ## Context
@@ -31,7 +31,7 @@ The test above. A first version of the test expected the copy into
 2. The copy into `self` comes first, as part of the object expression
    (SEQ-2).
 
-## Provisional answer
+## Answer
 
 In an unspecified place (SEQ-1); GCC 14 differs from GCC 16 and Clang (option 1). GCC 14 and GCC 16 differ, and option 1 allows both. The test
 accepts every order.
@@ -42,11 +42,19 @@ Reopened as provisional on 2026-11-04 under the principle test of the style guid
 
 On 2026-11-04, item PQ widened SEQ-P1 to state the case. In a member call the object expression is part of the function, and the initialization of each parameter, an explicit object parameter included, is part of the arguments. So the copy into `self` takes a place among the arguments that SEQ-P2 leaves to the implementation. Under decision 0055, the question does not settle on a principle that phase 8 wrote. The question stays provisional until a reader or a reviewer uses SEQ-P1.
 
+Used on 2026-11-04 by the source-reader gap review of the text phase 8 wrote on expressions, foundations, and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`), Part B. The review applied SEQ-P1 to the question's program, a member call whose explicit object parameter is a copy (`explicit-object-order-unspecified.cpp`), without the rule text: the copy into the explicit object parameter is part of the arguments, so its place among them is unspecified. That is the provisional answer, and the model rules out the other options.
+
+Settled on 2026-11-04 under decision 0054. The review supports the answer with no doubt, and SEQ-P1 gives the same answer under the test of the style guide (section 3). No newest family differs. GCC 14 makes the copy at another place, which the answer allows.
+
 ## Opinions
 
 ### Gap review, 2026-11-03
 
 The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) agrees with option 1. The implied object argument comes first in the list that matches arguments to parameters, so an explicit object parameter is initialized as any other parameter is. The postfix expression is sequenced before the arguments. The initializations of the parameters are indeterminately sequenced with each other, so they do not interleave, and either order is allowed.
+
+### Gap review, 2026-11-04
+
+The source-reader gap review of the text phase 8 wrote on expressions, foundations, and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`) agrees with option 1. The function part is sequenced before the arguments, the parameters are initialized in an indeterminate order, and the reference counts the object argument among the arguments for an explicit object parameter.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
 

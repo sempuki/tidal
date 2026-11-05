@@ -109,7 +109,7 @@ function. EXS-7 lists what is not valid.
 
 :::{rule} EXS-7
 :kind: reject
-:tests: declarations/exception-specifications/narrowing-operand.cpp declarations/exception-specifications/non-constant.cpp declarations/exception-specifications/pointer-operand.cpp declarations/exception-specifications/throw-type-removed.cpp
+:tests: declarations/exception-specifications/narrowing-operand.cpp declarations/exception-specifications/non-constant.cpp declarations/exception-specifications/pointer-operand.cpp declarations/exception-specifications/throw-type-removed.cpp declarations/exception-specifications/null-pointer-operand.cpp declarations/exception-specifications/null-pointer-constant-operand.cpp
 
 The operand of `noexcept` (EXS-1) must be a constant expression. The
 conversion of the operand to `bool` must not be a
@@ -239,17 +239,29 @@ struct File : Base { void close() override; };  // rejected: throwing override
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 35
-of 44 tests.
+of 46 tests.
 
-Two questions on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+Three questions on this page settled under decision 0054. Q-0094 and Q-0095 settled on 2026-11-03 after the source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`). Q-0078 settled on 2026-11-04 after the source-reader gap review of the text phase 8 wrote on the declarations and statements chapters (`reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
 
 | Question | Principle | Family that still differs |
 |---|---|---|
 | {question}`Q-0094` | EXS-P3 | GCC 16 |
 | {question}`Q-0095` | EXS-P3 | EDG 7.0 |
+| {question}`Q-0078` | EXS-P1 | EDG 7.0 |
 
 - EXS-7: EDG accepts `noexcept(2)` and a pointer operand. Clang and GCC
   reject them ({question}`Q-0078`).
+- EXS-7, EXS-P1: GCC and EDG accept the null pointer literal, or a
+  constant of its type, as the operand, and the function is
+  potentially throwing. Clang rejects it. The gap review of the text
+  phase 8 wrote reads the C++23 text as Clang does: the operand converts
+  to `bool` only by a short list of conversions, and a null pointer is
+  not on it, although the conversion does not narrow. Tidal keeps the
+  answer of GCC and EDG
+  ({question}`Q-0393`,
+  `documentation/decisions/pending.md`, "Matrix against review"). A
+  floating-point operand such as `1.0` narrows. Clang and GCC reject it,
+  and EDG accepts it, as for Q-0078.
 - EXS-4: GCC treats a class-specific `operator delete` without a
   specifier as potentially throwing. Clang and EDG treat it as
   non-throwing ({question}`Q-0094`). EDG treats a defaulted `==` as

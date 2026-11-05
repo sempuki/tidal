@@ -245,7 +245,11 @@ struct Flags { unsigned on : 1, dirty : 1; } f;
 All eight compilers agree on all 40 tests. The results are in
 `tests/RESULTS.md`.
 
-{question}`Q-0319` is provisional. A gap review supports its answer with no doubt, and SEQ-P1 and SEQ-P2 do not give the answer under the test of the style guide (section 3). The test accepts every order.
+One question on this page settled on 2026-11-04 under decision 0054 after the source-reader gap review of the text phase 8 wrote on expressions, foundations, and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
+
+| Question | Principle | Family that still differs |
+|---|---|---|
+| {question}`Q-0319` | SEQ-P1 | none; GCC 14 makes the copy at another place, which the answer allows |
 
 - SEQ-1: Clang and GCC 16 initialize an explicit object parameter
   before they evaluate the other arguments. GCC 14 evaluates another

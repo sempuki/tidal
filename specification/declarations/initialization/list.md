@@ -144,12 +144,14 @@ LIST-14 lists what is not valid.
 
 :::{rule} LIST-14
 :kind: reject
-:tests: declarations/initialization/list/designated-out-of-order.cpp declarations/initialization/list/designated-mixed.cpp declarations/initialization/list/designated-nested.cpp declarations/initialization/list/designated-array.cpp declarations/initialization/list/designated-repeated.cpp declarations/initialization/list/designator-on-scalar.cpp overloading/conversion-sequences/chosen-designator-order.cpp
+:tests: declarations/initialization/list/designated-out-of-order.cpp declarations/initialization/list/designated-mixed.cpp declarations/initialization/list/designated-nested.cpp declarations/initialization/list/designated-array.cpp declarations/initialization/list/designated-repeated.cpp declarations/initialization/list/designator-on-scalar.cpp overloading/conversion-sequences/chosen-designator-order.cpp classes/unions/anonymous-union-two-designators.cpp
 
 The designators in a braced list must obey these conditions:
 
 - They must be in the order of member declaration.
 - Each member must occur one time only.
+- At most one designator can name a member of one anonymous union
+  ({rule}`UNI-7`).
 - All values in the list must have a designator, or none.
 - A designator must name one member, without a chain such as `.a.b`.
 - A designator must not name an array element, such as `[1] =`.
@@ -289,7 +291,7 @@ signed char o[] = u8"x";  // rejected: wrong character type
 
 ## Evidence
 
-All eight compilers agree on 68 of 72 tests. The results are in
+All eight compilers agree on 69 of 73 tests. The results are in
 `tests/RESULTS.md`.
 
 Three questions on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on overloading, references, and list initialization (`reports/review/2026-11-03-gap-review-questions-overloading.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:

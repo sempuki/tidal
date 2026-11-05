@@ -1,7 +1,7 @@
 # Q-0021: Is a standard attribute applied to the wrong kind of entity rejected or ignored?
 
 **Status:** provisional
-**Affects:** ATTR-2, `tests/declarations/attributes/noreturn-on-variable.cpp`, `nodiscard-on-variable.cpp`, `no-unique-address-bitfield.cpp`
+**Affects:** ATTR-2, `tests/declarations/attributes/noreturn-on-variable.cpp`, `nodiscard-on-variable.cpp`, `no-unique-address-bitfield.cpp`, `nodiscard-on-type-alias.cpp`
 
 ## Context
 
@@ -14,6 +14,7 @@ warning, even under `-pedantic-errors`.
 |---|---|---|---|
 | `[[noreturn]]` on a variable | rejects | accepts, "'noreturn' attribute ignored" | rejects |
 | `[[nodiscard]]` on a variable | accepts, "only applies to ... functions" | accepts, "can only be applied to functions" | rejects |
+| `[[nodiscard]]` on a type alias | accepts, "ignored when applied to a typedef" | accepts, "can only be applied to functions or to class or enumeration types" | rejects |
 | `[[no_unique_address]]` on a bit-field | rejects | accepts, "cannot be applied to a bit-field" | rejects |
 
 The host GCC 16.2 and Clang 22.1 give the same results. No newer
@@ -23,6 +24,13 @@ version of any compiler settles a row.
 
 The three tests above. Each has an override for the compilers that
 accept the program.
+
+The type alias row was added on 2026-11-04 from the source-reader gap
+review of the text phase 8 wrote on the declarations and statements
+chapters (`reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md`),
+which reads the C++23 text as allowing `nodiscard` only on a function,
+a class, or an enumeration. The test is
+`tests/declarations/attributes/nodiscard-on-type-alias.cpp`.
 
 ## Options
 

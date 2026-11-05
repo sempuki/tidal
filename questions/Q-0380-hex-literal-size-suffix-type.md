@@ -1,6 +1,6 @@
 # Q-0380: What type does a hexadecimal literal with a `z` suffix get when only `std::size_t` can hold it?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** PRIM-1, PRIM-P1, `tests/expressions/primary/int-size-suffix-hex-unsigned.cpp`
 **Source:** finding X19-4 of `reports/clean-room/X19/report.md`
 
@@ -30,7 +30,7 @@ assertion.
 2. The literal has the signed type, and its value changes (GCC).
 3. The literal is not valid, as for a decimal literal.
 
-## Provisional answer
+## Answer
 
 `std::size_t` (option 1). Two of three families agree, and the answer
 keeps the pattern of the PRIM-P1 table, where a literal in a base
@@ -40,6 +40,12 @@ every other literal.
 
 Kept open on 2026-11-04 under decision 0054, because no review has read the question. Item RV2 of decision 0056 reads it.
 
+Settled on 2026-11-04 under decision 0054. The gap review of the text phase 8 wrote on expressions, foundations, and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`) supports the answer with no doubt, and PRIM-P1 gives the same answer under the test of the style guide (section 3). The table of PRIM-P1 lists, for a literal in a base other than decimal with `z`, the signed type that matches `std::size_t` and then `std::size_t`. `0xFFFF'FFFF'FFFF'FFFFz` does not fit the signed type, so it takes `std::size_t`, and the model rules out option 2. The same review used PRIM-P1 in its Part B (Q-0064). GCC 16 still differs, and the test keeps its override.
+
 ## Opinions
+
+### Gap review, 2026-11-04
+
+The source-reader gap review of the text phase 8 wrote on expressions, foundations, and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`) agrees with option 1. The reference's list for the size suffix in a base other than decimal is the signed type and then the size type.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

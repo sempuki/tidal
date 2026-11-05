@@ -2,7 +2,7 @@
 // tidal-expect: run
 // tidal-note: Write suite W7, program money.cpp (reports/clean-room/W7/report.md). The rules are the ones in the report's construct-to-rule notes that the program's comments name.
 // tidal-note: A program test is evidence from use and decides no rule alone (decision 0054).
-// tidal-note: The program text adds weak_ordering and partial_ordering in namespace std. LSUP-2 needs all three ordering classes, and EDG 7.0 rejects the program without them.
+// tidal-note: The program text adds weak_ordering and partial_ordering in namespace std. LSUP-2 needs only the class a use yields (Q-0386), and EDG 7.0 rejects the program without all three.
 // W7: a money type that refuses mixed currencies, written from the
 // Tidal specification. The currency is part of the type, so a mix
 // has no operator to call (OPR-15).
@@ -28,8 +28,8 @@ inline constexpr strong_ordering strong_ordering::less{-1};
 inline constexpr strong_ordering strong_ordering::equal{0};
 inline constexpr strong_ordering strong_ordering::equivalent{0};
 inline constexpr strong_ordering strong_ordering::greater{1};
-// Added for the program test: LSUP-2 needs all three ordering classes,
-// and EDG 7.0 rejects a program that declares only strong_ordering.
+// Added for the program test: LSUP-2 needs only strong_ordering here,
+// but EDG 7.0 rejects a program that declares only strong_ordering.
 struct weak_ordering {
   signed char value;
   static const weak_ordering less;

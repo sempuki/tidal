@@ -22,7 +22,9 @@ says how an object of the class becomes a value of that type. The
 function takes no parameters and declares no return type, because the
 name already says both. The name can be `auto`, and the target type then
 comes from the `return` statements, as for any function with a deduced
-return type. A derived class inherits the conversion
+return type. A conversion function template must name its target type,
+because a conversion finds the template by that type before any body
+runs, so its name cannot be `auto`. A derived class inherits the conversion
 functions of its base, and a conversion function with the same target
 type hides the base's, as any member with the same name would.
 :::
@@ -91,7 +93,7 @@ object.
 
 :::{rule} CVF-7
 :kind: reject
-:tests: classes/conversion-functions/function-pointer-without-alias.cpp classes/conversion-functions/nonmember.cpp classes/conversion-functions/parameters.cpp classes/conversion-functions/redeclared.cpp classes/conversion-functions/return-type.cpp classes/conversion-functions/static.cpp classes/conversion-functions/to-array.cpp classes/conversion-functions/to-function.cpp classes/conversion-functions/variadic.cpp
+:tests: classes/conversion-functions/function-pointer-without-alias.cpp classes/conversion-functions/nonmember.cpp classes/conversion-functions/parameters.cpp classes/conversion-functions/redeclared.cpp classes/conversion-functions/return-type.cpp classes/conversion-functions/static.cpp classes/conversion-functions/to-array.cpp classes/conversion-functions/to-function.cpp classes/conversion-functions/variadic.cpp classes/conversion-functions/template-deduced-auto.cpp
 
 A conversion function must not:
 
@@ -99,7 +101,9 @@ A conversion function must not:
 - have parameters or `...`,
 - be `static` or a non-member,
 - convert to an array or a function type,
-- be declared two times in its class.
+- be declared two times in its class,
+- be a template whose name is `auto` or another placeholder
+  ({question}`Q-0388`).
 
 The target type is a type name with `*` and `&` only. A pointer to a
 function needs a type alias.
@@ -292,10 +296,14 @@ Reading r = live;        // valid: the constructor binds Sensor&, which
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 64
-of 65 tests.
+of 66 tests.
 
 - CVF-1: GCC 16 rejects `operator auto()` under `-pedantic-errors`. GCC
   14, Clang, and EDG accept it ({question}`Q-0059`).
+- CVF-7: Clang and GCC reject a conversion function template named
+  `auto`. GCC gives the message of Q-0059 for it. EDG accepts the
+  template and warns that its parameter is unused
+  ({question}`Q-0388`).
 - CVF-6: Clang and GCC give these warnings by default.
 - CVF-11: Clang, GCC, and EDG report a built-in operator whose operand
   needs an `explicit` conversion function as an operator with no match
