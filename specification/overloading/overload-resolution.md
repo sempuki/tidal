@@ -684,10 +684,11 @@ Of two specializations, the one from the more specialized template wins
 :kind: required
 :tests: overloading/overload-resolution/tie-more-specialized-constraints.cpp overloading/overload-resolution/tie-constraints-different-parameters.cpp
 
-Of two specializations, the one from the {term}`more constrained` template
-({rule}`CNS-23`) wins if the two templates meet the conditions of
-{rule}`ORD-13`. Otherwise the constraints do not decide
-({question}`Q-0146`).
+The rule applies only if each of two templates is at least as
+specialized as the other ({rule}`ORD-1`). Then the specialization from
+the {term}`more constrained` template ({rule}`CNS-23`) wins if the two
+templates meet the conditions of {rule}`ORD-13`. Otherwise the
+constraints do not decide ({question}`Q-0146`).
 :::
 
 :::{rule} OVL-29

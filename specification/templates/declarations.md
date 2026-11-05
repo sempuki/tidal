@@ -343,7 +343,7 @@ program, also for parameters of two different templates.
 :tests: templates/declarations/parameter-object-not-destroyed.cpp templates/declarations/parameter-object-before-dynamic-init.cpp templates/declarations/parameter-object-address-constant.cpp
 
 The object of TPL-9 for a parameter of class type has its value from
-the start of the program, before any dynamic initialization. The
+the start of the program, before any {term}`dynamic initialization`. The
 program never destroys the object. The address of the object is a
 constant expression, and objects for arguments that are not equal have
 different addresses.

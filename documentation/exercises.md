@@ -119,6 +119,11 @@ comparison leaves out the `:tests:` option. The tool exits 0,
 because a report is a record of its date. `--strict` makes it exit 1
 when it finds a conflict.
 
+The impact section counts the programs under `tests/programs/` that the
+proposal changes. A brief that gives the size of that corpus takes the
+numbers from `tools/propose_check.py --corpus`, which counts the
+programs, the programs with more than one unit, and the lines.
+
 | ID | Proposal | Changes existing behavior |
 |---|---|---|
 | X1 | P3, left-to-right evaluation everywhere | yes |
@@ -137,6 +142,11 @@ when it finds a conflict.
 | X14 | P20, packed classes | no |
 | X15 | P21, names private to a namespace | no |
 | X16 | P4, chained comparisons | yes |
+| X17 | P2, narrowing is an error everywhere | yes |
+| X18 | P18, required `override` | no |
+| X19 | P1, width-named literal suffixes | yes |
+| X20 | P17, opaque type aliases | no |
+| X21 | P15, declared initialization order across translation units | no |
 
 ## 5. Predict and Diagnose batches
 

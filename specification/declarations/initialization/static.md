@@ -35,11 +35,14 @@ get its final value.
 :rules: SINIT-3 SINIT-4 SINIT-5 SINIT-6
 
 Across translation units there is no order, so an initializer that reads
-a variable from another unit can get its final value or zero. An
+a variable of scalar type from another unit can get its final value or
+zero. A read of a member of another unit's class object, before the
+object's initialization gives the member a value, is undefined
+(SINIT-2, {question}`Q-0175`). An
 `inline` variable is defined in several units, so its place in any one
 unit's order is only partly known. An implementation can do a dynamic
 initialization early, when the value is the same, or late, up to the
-first use of something in that unit. A `thread_local` variable can wait
+first {term}`use` of something in that unit. A `thread_local` variable can wait
 for its first use.
 
 Two forms make a variable safe to read from another unit's initializer:
@@ -49,8 +52,9 @@ Two forms make a variable safe to read from another unit's initializer:
 | a {term}`constant initializer`, checked with `constinit` | The variable has its value before any code runs (SINIT-1, {rule}`CINIT-1`). |
 | a block-scope `static` variable in a function that returns a reference to it | The first call initializes the variable ({rule}`STO-2`), so every caller gets a finished object. |
 
-The initializer of such a block-scope variable must not call its own
-function again ({rule}`STO-9`).
+The initializer of such a block-scope variable must not reach its own
+declaration again, directly or through other functions, also in other
+units ({rule}`STO-9`).
 :::
 
 ## Runtime Behavior
@@ -69,7 +73,7 @@ variable with static storage.
 
 :::{rule} SINIT-2
 :kind: required
-:tests: declarations/initialization/static/dynamic-in-order.cpp declarations/initialization/static/dynamic-reads-zero.cpp declarations/initialization/static/inline-variables-ordered.cpp declarations/initialization/static/dynamic-reads-zero-other-scalars.cpp
+:tests: declarations/initialization/static/dynamic-in-order.cpp declarations/initialization/static/dynamic-reads-zero.cpp declarations/initialization/static/inline-variables-ordered.cpp declarations/initialization/static/dynamic-reads-zero-other-scalars.cpp declarations/initialization/static/across-units-class-member.cpp declarations/initialization/static/inline-member-at-class.cpp
 
 Other namespace-scope variables are *dynamically initialized*. In one
 {term}`translation unit`, they are initialized in the order of their
@@ -85,22 +89,24 @@ until the initialization of the object gives the member one
 
 :::{rule} SINIT-7
 :kind: required
-:tests: declarations/initialization/static/static-member-in-order.cpp declarations/initialization/static/static-member-order-not-class-order.cpp
+:tests: declarations/initialization/static/static-member-in-order.cpp declarations/initialization/static/static-member-order-not-class-order.cpp declarations/initialization/static/inline-member-at-class.cpp
 
 A static data member that is defined outside its class takes its place
 in the order of SINIT-2 at its definition. The place of the class
-definition does not matter.
+definition does not matter. An `inline` static data member defined in
+its class takes its place at the class definition.
 :::
 
 ## Implementation Requirements
 
 :::{rule} SINIT-3
 :kind: unspecified
-:tests: declarations/initialization/static/across-units-order.cpp declarations/initialization/static/inline-order-unspecified.cpp declarations/initialization/static/accessor-across-units.cpp declarations/initialization/static/template-member-unordered.cpp
+:tests: declarations/initialization/static/across-units-order.cpp declarations/initialization/static/inline-order-unspecified.cpp declarations/initialization/static/accessor-across-units.cpp declarations/initialization/static/template-member-unordered.cpp declarations/initialization/static/across-units-class-member.cpp
 
-The order of dynamic initialization between translation units is
-unspecified. An initializer that reads a variable from another unit gets
-its final value or zero. The same holds in one translation unit in
+The order of {term}`dynamic initialization` between translation units is
+unspecified. An initializer that reads a variable of {term}`scalar type` from another
+unit gets its final value or zero. For a member of a class object,
+SINIT-2 applies ({question}`Q-0175`). The same holds in one translation unit in
 these cases:
 
 - between an `inline` variable and a variable that is not `inline`,
@@ -113,7 +119,7 @@ these cases:
 :kind: unspecified
 :tests: declarations/initialization/static/maybe-static.cpp declarations/initialization/static/maybe-static-non-const-read.cpp
 
-An implementation can do a dynamic initialization before the program
+An implementation can do a {term}`dynamic initialization` before the program
 starts, if the variable gets the same value. Whether the early
 initialization occurs is unspecified. An earlier initializer that reads
 the variable gets zero or that value.
@@ -123,10 +129,12 @@ the variable gets zero or that value.
 :kind: impl-defined
 :tests: declarations/initialization/static/before-main-observed.cpp declarations/initialization/static/deferred-initialization.cpp declarations/initialization/static/unit-not-named.cpp
 
-Whether the dynamic initialization of a namespace-scope variable is
+Whether the {term}`dynamic initialization` of a namespace-scope variable is
 complete before the first statement of `main` is implementation-defined.
-An implementation can defer the initialization until the first use of a
-function or variable of the same translation unit. Clang and GCC finish
+An implementation can defer the initialization until the first {term}`use`
+({rule}`ODR-3`) of a function or variable of the same translation unit.
+A use in a {term}`constant initializer` counts as a use before any
+dynamic initialization. Clang and GCC finish
 every such initialization before `main` starts, also in a unit that no
 other unit names.
 :::
@@ -135,7 +143,7 @@ other unit names.
 :kind: impl-defined
 :tests: declarations/initialization/static/thread-local-init-deferred.cpp declarations/initialization/static/thread-local-unused.cpp
 
-A `thread_local` variable at namespace scope with dynamic initialization
+A `thread_local` variable at namespace scope with {term}`dynamic initialization`
 is initialized before the first statement of the thread, or when the
 thread first uses the variable. The choice is implementation-defined.
 Clang and GCC initialize the variable at the first use, also when the
@@ -196,7 +204,7 @@ int cap = table_limit;            // 64, in any unit order
 
 ## Evidence
 
-All eight compilers agree on all 23 tests. The results are in
+All eight compilers agree on all 25 tests. The results are in
 `tests/RESULTS.md`.
 
 One question on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
@@ -239,6 +247,17 @@ One question on this page settled on 2026-11-03 under decision 0054 after the so
   behavior sanitizers. OBJ-2 allows this result. In constant
   evaluation, every compiler rejects the same read of a member before
   its constructor runs ({question}`Q-0175`).
+- **SINIT-3, class members across units.** The test reads a member of
+  a class object of another unit only after a `bool` of that unit says
+  the constructor has run. So the test has a defined result in both
+  unit orders (`across-units-class-member.cpp`).
+- **SINIT-7, `inline` members.** Clang 22 and GCC 16 at `-O0` and
+  `-O2` initialize an `inline` static data member defined in its class
+  between the `inline` variables before and after the class
+  (`inline-member-at-class.cpp`).
+- **SINIT-5, uses.** No matrix compiler defers a dynamic
+  initialization, so no test shows when a use in a constant initializer
+  counts.
 - **SINIT-1 and `if consteval`.** The meaning of an initializer that
   contains `if consteval` depends on its constant evaluation. If the
   evaluation succeeds, the constant branch gives the value. If the

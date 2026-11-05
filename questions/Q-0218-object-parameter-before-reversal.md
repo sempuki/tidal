@@ -58,6 +58,8 @@ Kept on 2026-11-03. The source-reader gap review of question cluster 3 agrees wi
 
 Kept open on 2026-11-03 under decision 0054, because the gap review does not support the answer with no doubt (it reads with doubt, weakly, unclearly, or for only part of the question).
 
+Kept open on 2026-11-04 under decision 0055, because ORD-P1 changed in this commit: the object parameter now has the member's `const` and `volatile`, and a member with no ref-qualifier takes an rvalue reference also against another member's object parameter. The question waits for the next use of ORD-P1.
+
 ## Opinions
 
 ### Gap review, 2026-11-03

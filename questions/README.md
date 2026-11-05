@@ -409,6 +409,9 @@ status, and the first sentence of its answer section.
 | [Q-0393](Q-0393-noexcept-operand-null-pointer.md) | Can the operand of a `noexcept` specifier be a null pointer constant of the null pointer type? | provisional | The operand is valid and gives a potentially throwing function |
 | [Q-0394](Q-0394-override-without-ref-qualifier.md) | Does a member function with no ref-qualifier override a base virtual function with one? | provisional | No; the ref-qualifiers must match |
 | [Q-0395](Q-0395-tuple-member-get-not-function-template.md) | Does a member `get` that is not a function template select the member form of the tuple protocol? | provisional | Only a member function template selects the member form |
+| [Q-0396](Q-0396-function-type-references-ordering.md) | Does partial ordering remove the references inside the function types of ORD-9? | provisional | One pair of whole function types |
+| [Q-0397](Q-0397-invented-value-placeholder-type.md) | Is a partial specialization with `int V` more specialized than one with a constrained `auto V`? | provisional | The one with `int V` |
+| [Q-0398](Q-0398-object-parameter-member-const.md) | Does the object parameter of a `const` member keep the `const` in partial ordering? | provisional | The object parameter keeps the member's `const` |
 
 ## Status values
 

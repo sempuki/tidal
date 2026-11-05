@@ -354,7 +354,7 @@ Three questions on this page settled on 2026-11-03 under decision 0054 after the
   offset from a null pointer. The GCC sanitizer does not check the
   offset and lets the program run (`null-plus-nonzero-sanitizer.cpp`).
 - ADD-10: a namespace-scope variable whose initializer is not a
-  constant expression is dynamically initialized ({rule}`SINIT-2`). If
+  constant expression is {term}`dynamically initialized <dynamic initialization>` ({rule}`SINIT-2`). If
   that initializer forms a pointer outside the array, the behavior at
   run time is undefined.
 - ADD-12: `p - q` has type `long` on x86-64 (LP64) and `int` with

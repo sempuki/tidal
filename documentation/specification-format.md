@@ -45,7 +45,7 @@ nothing about conformance. The test checks only translation and
 linking, because the rule allows any result at run time (decision
 0047).
 
-No class requires a diagnostic when the units are linked (TR-4). A
+No class requires a diagnostic when the units are linked (TR-P1). A
 program that fails to link breaks a `no-diagnostic` rule, such as
 LNK-7 for a used function with no definition. So a test that expects
 `link-fail` from some compiler cites such a rule, and

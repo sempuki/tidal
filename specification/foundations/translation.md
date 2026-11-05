@@ -74,6 +74,11 @@ which kind it is and how strong it is:
 | `conditionally-supported` | fact | An implementation can reject the construct. If the implementation accepts the construct, it documents the behavior. |
 | `recommended` | advice | An implementation should follow the rule, usually by warning. |
 
+Tidal has no class of rule that requires a diagnostic when the units
+are linked. A rule whose break can show only when the units are linked,
+such as {rule}`LNK-7` or {rule}`ODR-8`, is a `no-diagnostic` rule
+({rule}`TR-4`).
+
 A diagnostic for a `recommended` rule is a warning. The warning
 leaves the program valid, and a program can ask the implementation
 to treat the warning as an error.
@@ -273,11 +278,9 @@ name that only another unit declares cannot be used (NAM-8).
 
 A function that is declared and used but defined in no unit breaks
 {rule}`LNK-7`. The program's start uses `main`, so a program with no
-`main` also breaks LNK-7. Tidal has no class of rule that requires a
-diagnostic when the units are linked. A rule whose break can show only
-when the units are linked, such as LNK-7 or {rule}`ODR-8`, is a
-`no-diagnostic` rule. An implementation can report such a break when
-it links the units, and the link then fails. The implementation can
+`main` also breaks LNK-7. LNK-7 is a `no-diagnostic` rule
+({principle}`TR-P1`). An implementation can report its break when it
+links the units, and the link then fails. The implementation can
 also accept the program. Every implementation links a valid program.
 :::
 
@@ -473,7 +476,7 @@ the run and link tests say only that the programs are valid.
   program with no `main`. The reference waives the diagnostic for a
   used function with no definition, and it states no waiver for the
   rule that a program has one `main`. Tidal has no class that requires
-  a diagnostic at link time, so TR-4 sends both cases to LNK-7. Every
+  a diagnostic at link time, so TR-P1 and TR-4 send both cases to LNK-7. Every
   compiler of the matrix that links reports both at link time
   (`main-no-definition.cpp`).
 - TR-4: 45 tests expect a link failure on at least one compiler. Each

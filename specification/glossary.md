@@ -142,6 +142,12 @@ constant initializer
   constant expression. Such a variable's value is known during
   translation (CE-24).
 
+constant-initialized
+  Said of a namespace-scope, `static`, or `thread_local` variable whose
+  initializer is a constant expression. The variable has its value
+  before any code runs, including the initializers of other variables
+  ({rule}`SINIT-1`).
+
 constant parameter
   A template parameter that takes a value, such as `N` in
   `template <int N>`. Its type is a {term}`structural type`
@@ -251,6 +257,13 @@ discarded statement
   - A function or variable that only a discarded statement uses needs no
     definition.
   - In a template, a discarded statement is not instantiated.
+
+dynamic initialization
+  The initialization at run time of a namespace-scope variable that is
+  not {term}`constant-initialized`. Such a variable is *dynamically
+  initialized*. In one translation unit, the variables are initialized
+  in the order of their definitions ({rule}`SINIT-2`), and across units
+  the order is unspecified ({rule}`SINIT-3`).
 
 dynamic type
   The type of the {term}`most derived class` object that a glvalue refers

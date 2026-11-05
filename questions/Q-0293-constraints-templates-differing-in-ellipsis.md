@@ -49,6 +49,8 @@ Kept open on 2026-11-03 under decision 0054, because the gap review does not sup
 
 Checked on 2026-11-04 under the principle test of the style guide (section 3, item PQ of decision 0055). ORD-P2 fails step 3, because step 6d of ORD-P2 sends the reader to the conditions of ORD-13. The matrix shows no model that a principle can state. ORD-5 leaves the ellipsis out of a call for templates, ORD-13 counts parameters with default arguments, which ORD-5 also leaves out, and Clang 22 alone counts the ellipsis for plain functions and not for templates. The question stays provisional.
 
+Kept open on 2026-11-04 under decision 0055, because ORD-P2 changed in this commit: steps 1, 3, and 6 now give the type of an invented value, the pairing of packs, and the agreement of the values from all pairs. Step 6d did not change. The question waits for the next use of ORD-P2.
+
 ## Opinions
 
 ### Gap review, 2026-11-03

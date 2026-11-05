@@ -41,8 +41,16 @@ it exit 1 when it finds a conflict.
 The rule IDs and classes come from parse_spec() in
 tools/check_specification.py.
 
+--corpus prints the size of the program corpus under tests/programs/
+and exits. A program is a .cpp file that is not an extra unit
+(.tu.cpp). The count splits the programs of the Write suites from the
+programmer sketches under roadmap/, and counts the lines of every .cpp
+and .h file, extra units and headers included. A Propose brief quotes
+these numbers.
+
 Usage:
     tools/propose_check.py [--strict] [REPORT ...]
+    tools/propose_check.py --corpus
 """
 
 import argparse
@@ -243,13 +251,32 @@ def check(report: Path, rules: dict, principles: set[str], targets: dict) -> lis
     return found
 
 
+def corpus() -> None:
+    """Print the size of the program corpus under tests/programs/."""
+    base = ROOT / "tests" / "programs"
+    files = sorted(p for p in base.rglob("*") if p.suffix in (".cpp", ".h"))
+    programs = [p for p in files if p.suffix == ".cpp" and not p.name.endswith(".tu.cpp")]
+    sketches = [p for p in programs if p.relative_to(base).parts[0] == "roadmap"]
+    several = [p for p in programs if "tidal-sources:" in p.read_text()]
+    lines = sum(len(p.read_text().splitlines()) for p in files)
+    print(f"{len(programs)} programs: {len(programs) - len(sketches)} from the Write suites, "
+          f"{len(sketches)} programmer sketches under roadmap/")
+    print(f"{len(several)} programs have more than one unit")
+    print(f"{lines} lines in {len(files)} files, with extra units and headers")
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("reports", nargs="*", type=Path,
                     help="reports to check (default: reports/clean-room/X*/report.md)")
     ap.add_argument("--strict", action="store_true",
                     help="exit 1 when a row conflicts with the specification")
+    ap.add_argument("--corpus", action="store_true",
+                    help="print the size of the program corpus and exit")
     args = ap.parse_args()
+    if args.corpus:
+        corpus()
+        return 0
 
     reports = [p.resolve() for p in args.reports] or sorted(
         REPORTS.glob("X*/report.md"), key=lambda p: int(p.parent.name[1:]))

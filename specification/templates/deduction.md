@@ -431,7 +431,7 @@ elements, even when a later parameter type names the same pack.
 
 :::{rule} DED-37
 :kind: required
-:tests: templates/deduction/pack-function-type.cpp templates/deduction/pack-class-arguments.cpp
+:tests: templates/deduction/pack-function-type.cpp templates/deduction/pack-class-arguments.cpp templates/deduction/pack-class-arguments-reference-pattern.cpp templates/deduction/pack-class-arguments-pointer-pattern.cpp
 
 A {term}`pack expansion` at the end of a list in a parameter type takes the
 remaining elements of the matching list in the argument type, one by
@@ -732,8 +732,8 @@ all<long>(1, 'c');              // Ts = long, char
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 116
-of 125 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 118
+of 127 tests.
 
 One question on this page settled on 2026-11-04 under decision 0054 after the source-reader gap review of the text phase 8 wrote on expressions, foundations, and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
 

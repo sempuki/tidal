@@ -1,7 +1,7 @@
 # Q-0175: Can a dynamic initializer read the zero in a member of a later class-type variable?
 
 **Status:** provisional
-**Affects:** SINIT-2, OBJ-1, OBJ-2
+**Affects:** SINIT-2, SINIT-3, OBJ-1, OBJ-2
 
 ## Context
 
@@ -55,6 +55,8 @@ evaluation in every compiler treats the member as having no value. The
 run-time results of option 2 lie within what OBJ-2 allows.
 
 Kept open on 2026-11-03 under decision 0054, because the review reads the reference as unclear. OBJ-1 now starts the lifetime of a class object when its initialization completes, which is the model of option 1.
+
+Kept open on 2026-11-04 under decision 0055, because SINIT-P2 changed in this commit: it now says that a read of a member of another unit's class object, before the object's initialization gives the member a value, is undefined, and SINIT-3 cites the question. The question waits for the next use of SINIT-P2.
 
 ## Opinions
 

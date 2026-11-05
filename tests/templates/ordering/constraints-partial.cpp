@@ -1,4 +1,4 @@
-// tidal-rules: ORD-13
+// tidal-rules: ORD-13 ORD-14
 // tidal-expect: accept
 // tidal-note: The two partial specializations have the same pattern, so ordering ties, and the constraint decides for int*.
 template <class T> struct Kind { static constexpr int value = 0; };

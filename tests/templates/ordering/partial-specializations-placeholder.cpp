@@ -1,4 +1,4 @@
-// tidal-rules: ORD-14
+// tidal-rules: ORD-14 ORD-17
 // tidal-expect: accept
 // tidal-note: The constant parameter auto** is more specialized than auto*, as for function templates with those parameter types.
 template <auto V> struct Kind { static constexpr int value = 0; };

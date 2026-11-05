@@ -1,4 +1,4 @@
-// tidal-rules: OBJ-4
+// tidal-rules: OBJ-4 STO-10
 // tidal-expect: run
 // tidal-note: b is constant-initialized, so its construction completes before a's. b still takes the place of its definition, after a, and is destroyed first. Last is destroyed last and checks the order. The write through a null pointer runs only when the order is wrong.
 int trace = 0;

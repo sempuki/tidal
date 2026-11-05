@@ -1,4 +1,4 @@
-// tidal-rules: ORD-2 ORD-15
+// tidal-rules: ORD-2 ORD-3 ORD-15
 // tidal-expect: reject
 // tidal-error-clang: call to .* is ambiguous
 // tidal-error-gcc: is ambiguous

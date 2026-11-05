@@ -149,7 +149,7 @@ points:
 - A static object local to a function is constructed when control first
   reaches its declaration, and not at all if control never does.
 - Static objects are destroyed after `main` returns, in the reverse of
-  the order in which their construction completed. A constant-initialized
+  the order in which their construction completed. A {term}`constant-initialized`
   object ({rule}`SINIT-1`) takes the place that a dynamic initialization at
   its definition would give it.
 - A `thread_local` object exists for the life of its thread
@@ -284,7 +284,7 @@ thread runs its first statement, or later. The choice is
 implementation-defined, as {rule}`SINIT-6` gives. A later construction
 happens before the thread first uses the object, or another
 `thread_local` variable of the same translation unit that is not
-`inline` and has dynamic initialization. A use of a variable with
+`inline` and has {term}`dynamic initialization`. A use of a variable with
 constant initialization does not start it. At which point before that
 use, and in which threads, the construction runs is also
 implementation-defined.

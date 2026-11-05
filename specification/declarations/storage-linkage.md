@@ -37,7 +37,9 @@ defined meaning.
 
 Static storage starts at zero before any initializer runs, and the
 program ends static objects in the reverse of the order in which their
-initialization completed.
+initialization completed. A constant-initialized object counts at the
+place of its definition, as if its initialization ran there
+({rule}`OBJ-4`).
 :::
 
 :::{principle} STO-P2
@@ -306,11 +308,12 @@ the first time control reaches its declaration.
 
 :::{rule} STO-10
 :kind: required
-:tests: declarations/storage-linkage/static-destruction-order.cpp declarations/storage-linkage/static-destruction-block-order.cpp
+:tests: declarations/storage-linkage/static-destruction-order.cpp declarations/storage-linkage/static-destruction-block-order.cpp declarations/storage-linkage/static-destruction-across-units.cpp foundations/objects/static-constant-initialized-destroyed-in-place.cpp
 
 When the program ends, objects with static storage duration are
 destroyed. The object whose initialization completed last is destroyed
-first. The rule includes block-scope `static` variables that the program
+first. A {term}`constant-initialized` object takes the place that a dynamic
+initialization at its definition would give it ({rule}`OBJ-4`). The rule includes block-scope `static` variables that the program
 reached.
 :::
 
@@ -318,7 +321,7 @@ reached.
 
 :::{rule} STO-9
 :kind: undefined
-:tests: declarations/storage-linkage/recursive-static-init.cpp declarations/storage-linkage/recursive-static-init-constructor.cpp
+:tests: declarations/storage-linkage/recursive-static-init.cpp declarations/storage-linkage/recursive-static-init-constructor.cpp declarations/storage-linkage/recursive-static-init-across-units.cpp
 
 If control reaches the declaration of a block-scope `static` variable
 again while the variable's initialization is still running, the behavior
@@ -375,7 +378,7 @@ static int y;                  // rejected
 
 ## Evidence
 
-All eight compilers agree on 79 of 81 tests. The results are in
+All eight compilers agree on 82 of 84 tests. The results are in
 `tests/RESULTS.md`. 21 tests use two translation units (decision 0014).
 EDG checks each unit and does not link.
 
@@ -416,6 +419,15 @@ Two questions on this page settled on 2026-11-03 under decision 0054 after the s
   entry into the initialization of a block-scope `static` variable,
   also at `-O0` without a sanitizer. The program ends with an uncaught
   exception (`recursive_init_error`) and a nonzero status.
+  Two block-scope variables in two units, whose initializers call each
+  other's functions, end the program the same way
+  (`recursive-static-init-across-units.cpp`).
+- **STO-10.** With two units, Clang 22 and GCC 16 destroy the objects
+  in the reverse of the order in which their construction completed,
+  in both link orders, at `-O0` and `-O2`
+  (`static-destruction-across-units.cpp`). A constant-initialized object
+  is destroyed at the place of its definition
+  (`static-constant-initialized-destroyed-in-place.cpp`, {rule}`OBJ-4`).
 - **LNK-9.** EDG 7.0 rejects a block-scope `extern` declaration that
   redeclares an internal-linkage variable hidden by a local variable.
   Clang and GCC accept the declaration and read the namespace-scope

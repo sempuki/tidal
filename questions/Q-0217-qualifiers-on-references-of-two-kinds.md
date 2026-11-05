@@ -51,6 +51,8 @@ Kept on 2026-11-03. The source-reader gap review of question cluster 3 agrees wi
 
 Kept open on 2026-11-03 under decision 0054, because two of the newest families differ from the answer in at least one form, and the rule records one differing family.
 
+Kept open on 2026-11-04 under decision 0055, because ORD-P2 changed in this commit: steps 1, 3, and 6 now give the type of an invented value, the pairing of packs, and the agreement of the values from all pairs. Steps 5a and 5b did not change. The question waits for the next use of ORD-P2.
+
 ## Opinions
 
 ### Gap review, 2026-11-03
