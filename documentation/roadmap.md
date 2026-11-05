@@ -155,18 +155,21 @@ questions, the phase opened 9 (Q-0377 to Q-0385), and 5 settled.
 ## Phase 9: use the widened principles, review phase 8, and catch the front end up
 
 Decision 0056 (provisional) adopts this phase from the sixth round of
-clean-room roadmaps (`reports/clean-room/roadmap-6/`).
+clean-room roadmaps (`reports/clean-room/roadmap-6/`). All items are
+done. Open questions went from 221 to 172: the phase opened 15
+(Q-0386 to Q-0400) and settled 64, of which 63 settled through the
+review RV2 and the principle-use batches PU1 and PU2.
 
 | Item | Work | Prerequisites |
 |---|---|---|
-| R3 | Close the phase 8 record, with a definition of a use of a principle | none |
-| RS | Tests from the round 6 reductions and sketches, and LSUP-2 tests | none |
-| FH | Answers for G134 and G135, the front end on the page examples, per-page rule-ID scoring, the interpreter in the exercise prompts | none |
-| RV2 | A gap review of the text phase 8 wrote, then repairs | R3 |
-| PU | A principle-use batch for the questions that wait on a widened principle, then settling | R3 |
-| FE | Front-end round 20 | RS, FH |
-| V3 | The Evidence format on the other 68 pages | RV2, PU |
-| E | Implement I2 on partial ordering, Predict on the 12 pages with only named batches, Propose X21 on P15 | FH (interpreter step) |
+| R3 | Done: close the phase 8 record, with a definition of a use of a principle | none |
+| RS | Done: tests from the round 6 reductions and sketches, and LSUP-2 tests | none |
+| FH | Done: answers for G134 and G135, the front end on the page examples, per-page rule-ID scoring, the interpreter in the exercise prompts | none |
+| RV2 | Done: a gap review of the text phase 8 wrote, then repairs | R3 |
+| PU | Done: a principle-use batch for the questions that wait on a widened principle, then settling | R3 |
+| FE | Done: front-end rounds 20 and 21 | RS, FH |
+| V3 | Done: the Evidence format on the other 68 pages | RV2, PU |
+| E | Done: Implement I2 on partial ordering, Predict on 11 of the 12 pages with only named batches (the objects page waits for a tool fix that came later), Propose X21 on P15 | FH (interpreter step) |
 
 ## Parallel lanes
 
