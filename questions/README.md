@@ -412,6 +412,8 @@ status, and the first sentence of its answer section.
 | [Q-0396](Q-0396-function-type-references-ordering.md) | Does partial ordering remove the references inside the function types of ORD-9? | provisional | One pair of whole function types |
 | [Q-0397](Q-0397-invented-value-placeholder-type.md) | Is a partial specialization with `int V` more specialized than one with a constrained `auto V`? | provisional | The one with `int V` |
 | [Q-0398](Q-0398-object-parameter-member-const.md) | Does the object parameter of a `const` member keep the `const` in partial ordering? | provisional | The object parameter keeps the member's `const` |
+| [Q-0399](Q-0399-negative-array-bound-in-substitution.md) | Is a negative array bound that substitution makes a substitution failure? | provisional | Yes; the template is removed in every form |
+| [Q-0400](Q-0400-requirement-never-satisfied.md) | Is a concept valid when its requirement is satisfied for no argument? | provisional | The concept is valid (option 1), as CPT-35 says |
 
 ## Status values
 

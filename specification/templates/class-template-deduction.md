@@ -226,7 +226,9 @@ If the class template declares no constructor, or is declared and not
 defined, the class template has one guide with no parameters. Its
 template parameters are those of the class, and its result is as in
 CTAD-5. The user guides apply also to a class template that is not
-defined (CTAD-11).
+defined (CTAD-11). A using-declaration that inherits constructors
+({rule}`DER-8`) declares no constructor of the class, so a class
+template that only inherits constructors has this guide too.
 :::
 
 :::{rule} CTAD-7
@@ -347,7 +349,11 @@ use. A use in a template takes the user guides declared before the
 {term}`point of instantiation`, also if the use depends on no template
 parameter. A user guide between two points of {term}`instantiation` of one
 specialization ({rule}`INST-31`) gives the points different meanings,
-and {rule}`INST-32` applies.
+and {rule}`INST-32` applies. A function template that deduces in its
+body has a point of instantiation at the end of the translation unit,
+so a user guide declared after the first point and before that end
+breaks INST-32. Such a program is not valid, and no diagnostic is
+required.
 :::
 
 :::{rule} CTAD-12
@@ -431,8 +437,10 @@ A class template that inherits the constructors of a base
 the copy candidate. The
 base type acts as an alias of the derived parameters (CTAD-14), and the
 result is mapped back to the derived class template
-({question}`Q-0239`). A class template that inherits no constructors
-gets no guides from its bases.
+({question}`Q-0239`). A derived parameter that the base type does not
+use gets no value from an inherited guide. The parameter then takes its
+default, and without a default the guide fails. A class template that
+inherits no constructors gets no guides from its bases.
 :::
 
 ### Choosing a guide
@@ -555,6 +563,47 @@ Box e(n);                         // Box<short>: an exact match beats the user g
 
 template <class... B> struct Mix : B... { int x; };
 Mix m{5};                         // Mix<>: the pack before x takes no element
+```
+
+A string literal for an array member gives a reference to a `const`
+array of the literal's element type. The member's element type must be
+the same (CTAD-9):
+
+% tidal-example: reject
+```cpp
+template <int N> struct Chars { char s[N]; };
+template <int N> struct Bytes { unsigned char s[N]; };
+Chars c{"abc"};                       // Chars<4>: const char[4] gives N
+Bytes u{"abc"};                       // rejected: const char is not unsigned char
+```
+
+An inherited guide gives no value to a parameter that the base does not
+use (CTAD-16):
+
+% tidal-example: reject
+```cpp
+template <class T> struct Base { Base(T) {} };
+template <class T> struct Derived : Base<int> { using Base<int>::Base; };
+Derived d(1);                         // rejected: no guide gives T
+```
+
+A guide from a constructor of the class wins over an inherited guide
+only when both have the same parameter types (CTAD-19). Clang makes no
+inherited guides ({question}`Q-0239`) and accepts both declarations:
+
+% tidal-example: diverges
+```cpp
+template <class T> struct Base { constexpr Base(T) {} };
+template <class T> struct Own : Base<T> {
+  using Base<T>::Base;
+  constexpr Own(T v) : Base<T>(v) {}
+};
+Own a(1);                             // Own<int>: the guide from Own(T) wins
+template <class T> struct Ref : Base<T> {
+  using Base<T>::Base;
+  constexpr Ref(const T& v) : Base<T>(v) {}
+};
+Ref b(1);                             // ambiguous: const T& and T differ
 ```
 
 % tidal-example: reject
@@ -707,7 +756,9 @@ The clean-room writer probed each step with Clang 22, GCC 16, and EDG
 - CTAD-10: the gap review (item 26) predicted that a string literal
   for an array with a dependent element type keeps its braces. Every
   compiler elides them, and `{"ab"}` for `T v[3]` gives
-  `T = const char*`. For a fixed `char v[3]` before a dependent member,
+  `T = const char*`. CTAD-10 gives `Three<const char*>`, as the
+  compilers do. The review's reading of `Three<char>` is a doubt under
+  review in Q-0277. For a fixed `char v[3]` before a dependent member,
   EDG forms no candidate from `{"ab", 1}`, and Clang and GCC deduce
   ({question}`Q-0277`).
 - CTAD-27: if the first base fixes the length of the trailing pack,
@@ -746,9 +797,14 @@ The clean-room writer probed each step with Clang 22, GCC 16, and EDG
   rule holds also for a deduction that depends on no template
   parameter. The gap review (item 39) asked for the record. In
   `guide-before-instantiation.cpp`, `later<int>` is used before the
-  guide for `Cell` and again after it. Every compiler uses the guides
-  before the first point of instantiation and deduces `Cell<int>` in
-  both uses.
+  guide for `Cell` and again after it. The end of the unit is a second
+  point of `later<int>`, so the program breaks INST-32, which needs no
+  diagnostic. Every compiler accepts it, uses the guides before the
+  first point of instantiation, and deduces `Cell<int>` in both uses.
+- CTAD-6: every compiler gives the guide with no parameters to a class
+  template that only inherits constructors. `Derived d;` deduces the
+  default of `T` and then fails, because `Derived` has no usable
+  default constructor.
 - CTAD-27: Clang 18 stops with an internal error when the list has
   only the element for `List<X, Y, Z>`. The test
   `aggregate-pack-length-fewer.cpp` gives one more element, and every

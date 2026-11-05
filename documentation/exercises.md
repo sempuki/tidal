@@ -176,7 +176,10 @@ single-file tests that carry a GCC error pattern, with the host `g++`
 message that matches the pattern. `tools/exercises.py score
 build/exercises/<batch> ANSWERS` scores either kind and lists the wrong
 answers. For a Diagnose batch the score also builds each fix with `g++`
-and runs it when it has `main`.
+and runs it when it has `main`. The README of a Predict batch and of a
+principle-use batch says what a test expects for a program that breaks
+a rule that needs no diagnostic, for a question settled with an
+override, and for a program with no `main`.
 
 `PU<n>` names a principle-use batch (decision 0056, item PU).
 `tools/exercises.py principles build/exercises/PU<n>` selects each
@@ -231,7 +234,7 @@ of section 8.
 | Exercise | State | Report |
 |---|---|---|
 | W0 | done | `reports/clean-room/java-programmer/` |
-| Front end | round 21 done: 6354/6611 pass, 6406 pass their check (`conformance.tsv`) | `reports/clean-room/rust-frontend/` |
+| Front end | round 21 done: 6362/6619 pass, 6414 pass their check (`conformance.tsv`) | `reports/clean-room/rust-frontend/` |
 | Guides | done: one tutorial and four how-to guides, not published (decision 0046) | `guides/` |
 | R-translation, R-objects, R-values, R-names, R-conversions, R-evaluation-order, R-constant-evaluation | done, 231/231, with test names, scored by the earlier rule that also counted an override's outcome | `reports/clean-room/R-foundations/` |
 | Designer roadmap | done, findings D1 to D33 | `reports/clean-room/roadmap/designer.md` |

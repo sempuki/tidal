@@ -72,6 +72,8 @@ Used on 2026-11-04 by the principle-use batch PU2 (`reports/clean-room/PU2/`), u
 
 Kept open on 2026-11-04 under decisions 0054 and 0056, because the reader answered form 1 with doubt (finding PU2-3). COND-P2 does not rule out the reading in which a deleted conversion function gives no conversion, so the use does not pass step 3 of the test of the style guide in that form. In each form one newest family differs.
 
+Kept open on 2026-11-04 under decision 0055, because COND-P2 changed in this commit after finding PU2-3: the bullet on two class types that each convert to the other now says that a conversion counts when it can be formed, even if its function is deleted or not accessible. The question waits for the next use of COND-P2. In each form one newest family differs.
+
 ## Opinions
 
 ### Gap review, 2026-11-04

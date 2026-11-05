@@ -32,7 +32,8 @@ context decides which types of the two templates take part:
 | a call with a {term}`member template` | as for a call, and an object parameter for each member | ORD-6 |
 | a call with a swapped {term}`rewritten candidate` | as for a call, with the swapped parameters reversed | ORD-7 |
 | an initialization by conversion {term}`function templates <function template>` | the result types | ORD-8 |
-| the address of an {term}`overload set` ({rule}`OVL-19`) | the function types, as one pair | ORD-9 |
+| the address of an {term}`overload set` with a target type ({rule}`OVL-19`) | the function types, as one pair | ORD-9 |
+| the address of an overload set with no target type, such as the initializer of a variable declared with `auto` ({rule}`OVL-20`) | none; constraints remove a function only under the conditions of ORD-13 | ORD-13 |
 | an {term}`explicit specialization`, {term}`explicit instantiation`, or friend declaration ({rule}`DED-32`) | the function types, as one pair | ORD-9 |
 | a placement deallocation function template ({rule}`DED-39`) | the function types, as one pair | ORD-9 |
 | {term}`partial specializations <partial specialization>` ({rule}`TSP-15`, {rule}`TSP-11`) | one parameter for each, of the class with its pattern | ORD-14 |
@@ -94,10 +95,12 @@ F1, F2, and the types that take part (ORD-P1)
    |           neither: no order (ORD-15 if the use needs one)
    |           both: the tie-breakers, the first one that applies:
    v
-   c. pack        no trailing pack beats a trailing pack              ORD-12
+   c. pack        no trailing pack beats a trailing pack; an          ORD-12
+                  ellipsis is not a pack
    d. constraints the more constrained wins, if the heads and the     ORD-13
-                  parameter lists are the same (the conditions of
-                  ORD-13)
+                  parameter lists are the same as declared, before
+                  step 2 (the conditions of ORD-13); for two
+                  templates, an ellipsis does not count
 ```
 
 An invented type stands for any argument that `F1` accepts. If `F2`
@@ -128,6 +131,13 @@ they come before 6c and 6d. A test observes 5a before 6c
 (`reference-before-variadic.cpp`). Steps 6c and 6d never decide the
 same case, because 6c needs a trailing pack in only one template, and
 6d needs parameter lists of the same length.
+
+An ellipsis takes no part in either step for two templates. `f(T)` and
+`f(T, ...)` tie in 6c, because an ellipsis is not a pack, and their
+parameter lists count as the same in 6d, so a constraint on either one
+decides ({question}`Q-0293`). Step 6d compares the types as the
+templates declare them. Step 2 does not apply there, so `const T&` and
+`T` differ, and so do the results `T*` and `T* const`.
 :::
 
 ## Constraints
@@ -256,7 +266,7 @@ part.
 
 :::{rule} ORD-9
 :kind: required
-:tests: templates/ordering/address-function-type.cpp templates/deduction/declaration-specialization.cpp templates/deduction/placement-deallocation-ordered.cpp templates/deduction/placement-deallocation-ordered-instantiation.cpp templates/ordering/address-reference-kinds.cpp templates/ordering/address-reference-against-value.cpp
+:tests: templates/ordering/address-function-type.cpp templates/deduction/declaration-specialization.cpp templates/deduction/placement-deallocation-ordered.cpp templates/deduction/placement-deallocation-ordered-instantiation.cpp templates/ordering/address-reference-kinds.cpp templates/ordering/address-reference-against-value.cpp templates/ordering/address-value-against-forwarding.cpp
 
 In these contexts, the whole function types take part, with the result
 types and every parameter:
@@ -267,6 +277,10 @@ types and every parameter:
 
 The two function types form one pair, so ORD-2, ORD-10, and ORD-11 do
 not act on the types inside them ({question}`Q-0396`).
+Inside the pair, a parameter `T&&` of `F2`, where `T` is a template
+parameter, is deduced from an lvalue reference `A&` of `F1` with
+`T = A&`, because `A& &&` is `A&` ({rule}`DCL-4`). `T&&` is not
+deduced from a type that is not a reference.
 A member gets no object parameter in these contexts.
 :::
 
@@ -298,19 +312,20 @@ applies whatever the kinds of the two references, together with ORD-10
 
 :::{rule} ORD-12
 :kind: required
-:tests: templates/ordering/non-variadic.cpp templates/ordering/reference-before-variadic.cpp templates/ordering/pack-default-parameter.cpp
+:tests: templates/ordering/non-variadic.cpp templates/ordering/reference-before-variadic.cpp templates/ordering/pack-default-parameter.cpp templates/ordering/ellipsis-not-trailing-pack.cpp
 
 Each template can be at least as specialized as the other after ORD-10
 and ORD-11. If only one of them ends in a {term}`function parameter pack`, and
 the other has no parameter at the pack's position, the other one is
 more specialized. Positions count in the declared parameter lists, with
 each parameter that has a default argument ({question}`Q-0216`) and
-without the object parameter of ORD-6.
+without the object parameter of ORD-6. An ellipsis is not a function
+parameter pack, so `f(T)` and `f(T, ...)` stay tied.
 :::
 
 :::{rule} ORD-13
 :kind: required
-:tests: templates/ordering/constraints-partial.cpp templates/ordering/constraints-conversion.cpp templates/ordering/constraints-different-heads.cpp templates/ordering/constraints-conversion-results-differ.cpp templates/ordering/constraints-default-parameter.cpp templates/ordering/constraints-placeholder-parameter.cpp templates/ordering/constraints-type-constraint.cpp templates/ordering/constraints-ellipsis.cpp overloading/overload-resolution/address-no-target-constraints-different-parameters.cpp templates/ordering/constraints-member-object.cpp
+:tests: templates/ordering/constraints-partial.cpp templates/ordering/constraints-conversion.cpp templates/ordering/constraints-different-heads.cpp templates/ordering/constraints-conversion-results-differ.cpp templates/ordering/constraints-default-parameter.cpp templates/ordering/constraints-placeholder-parameter.cpp templates/ordering/constraints-type-constraint.cpp templates/ordering/constraints-ellipsis.cpp overloading/overload-resolution/address-no-target-constraints-different-parameters.cpp templates/ordering/constraints-member-object.cpp templates/ordering/constraints-ellipsis-on-second.cpp templates/ordering/constraints-reference-against-value.cpp
 
 If no earlier step decides, the {term}`more constrained` template
 ({rule}`CNS-23`) is more specialized. {term}`Constraints <constraint>` decide between two
@@ -322,11 +337,16 @@ functions, templates or not, only if all these conditions hold
   {rule}`ORD-6`.
 - The function parameter types are the same, position by position.
 - For conversion functions, the result types are the same.
+- The types compare as the functions declare them. ORD-2 does not
+  apply, so `const T&` and `T` differ, and so do the results `T*` and
+  `T* const`.
 - For two templates, the {term}`template heads <template head>` are equivalent by
   {rule}`TPL-20`, which leaves out constraints. The invented type
   parameters of {rule}`DED-34` are part of the head.
 - For two functions that are not templates, both parameter lists end
-  in an ellipsis or neither does ({question}`Q-0293`).
+  in an ellipsis or neither does. For two templates, the ellipsis does
+  not count, so `f(T)` and `f(T, ...)` meet the first condition
+  ({question}`Q-0293`).
 
 {rule}`OVL-19`, {rule}`OVL-30`, and {rule}`OVL-41` use these conditions.
 :::
@@ -351,7 +371,7 @@ same.
 
 :::{rule} ORD-15
 :kind: reject
-:tests: templates/ordering/neither.cpp templates/ordering/reference-and-cv-removed.cpp templates/ordering/call-defaults-tie.cpp templates/ordering/reference-pairs-disagree.cpp templates/ordering/constraints-different-heads.cpp templates/ordering/constraints-conversion-results-differ.cpp templates/ordering/member-object-rvalue.cpp templates/ordering/reference-pairs-one-way.cpp templates/ordering/reference-kind-and-qualifiers.cpp templates/ordering/pack-default-parameter.cpp templates/ordering/constraints-default-parameter.cpp templates/ordering/reference-removed-forwarding.cpp templates/ordering/member-object-lvalue-tie.cpp templates/ordering/conversion-results-top-level-const.cpp templates/ordering/nondeduced-only-parameter.cpp templates/ordering/constraints-partial-different-patterns.cpp templates/ordering/qualifiers-incomparable.cpp
+:tests: templates/ordering/neither.cpp templates/ordering/reference-and-cv-removed.cpp templates/ordering/call-defaults-tie.cpp templates/ordering/reference-pairs-disagree.cpp templates/ordering/constraints-different-heads.cpp templates/ordering/constraints-conversion-results-differ.cpp templates/ordering/member-object-rvalue.cpp templates/ordering/reference-pairs-one-way.cpp templates/ordering/reference-kind-and-qualifiers.cpp templates/ordering/pack-default-parameter.cpp templates/ordering/constraints-default-parameter.cpp templates/ordering/reference-removed-forwarding.cpp templates/ordering/member-object-lvalue-tie.cpp templates/ordering/conversion-results-top-level-const.cpp templates/ordering/nondeduced-only-parameter.cpp templates/ordering/constraints-partial-different-patterns.cpp templates/ordering/qualifiers-incomparable.cpp templates/ordering/ellipsis-not-trailing-pack.cpp templates/ordering/constraints-reference-against-value.cpp
 
 A use can need partial ordering to choose one template. If no template
 is more specialized than each other one, the use is not valid. The rule
@@ -470,7 +490,28 @@ to `const Key&` and `T* const&` before the comparison.
 | 1 | `Key`, `A` | 2 | `Key` against `Key`; `T*` from `A` | fails |
 
 2 is more specialized. GCC does not reverse the parameters and chooses 1
-({question}`Q-0211`).
+({question}`Q-0211`). Without the reversal, the two templates have no
+order, and the written candidate wins ({rule}`OVL-32`).
+
+For a swapped member template, the object parameter of ORD-6 is added
+first, and then the two parameters are reversed:
+
+```cpp
+struct Key {
+  template <class T> bool operator==(T* const&) const;     // 1
+};
+template <class T> bool operator==(const T&, const Key&);  // 2
+const Key k;
+int* p = nullptr;
+bool equal = p == k;                                       // 1, swapped
+```
+
+Template 1 is a swapped candidate for `p == k`. Its parameters
+`(const Key&, T* const&)` become `(T* const&, const Key&)`, which is
+more specialized than `(const T&, const Key&)`. GCC does not reverse
+the parameters here either, so neither template is more specialized,
+and GCC chooses the written candidate 2. EDG also chooses 2
+({question}`Q-0218`).
 
 A {term}`non-deduced position` (ORD-16):
 
@@ -507,6 +548,51 @@ The function types form one pair, and step 2 removes nothing inside
 them. 2 is more specialized. Clang finds the address ambiguous
 ({question}`Q-0396`).
 
+A parameter `T&&` inside the pair (ORD-9). The target is again
+`int(int&)`. `read(T&)` gives it with `T = int`, and `read(T&&)` with
+`T = int&`:
+
+% tidal-example: diverges
+```cpp
+template <class T> int read(T&);                           // 1
+template <class T> int read(T&&);                          // 2
+int (*pick)(int&) = read;                                  // 1
+```
+
+| Invented from | Types | Deduced | Pairs | Result |
+|---|---|---|---|---|
+| 1 | `int(A&)` | 2 | `int(T&&)` from `int(A&)` | succeeds: `T = A&` |
+| 2 | `int(A&&)` | 1 | `int(T&)` from `int(A&&)` | fails |
+
+1 is more specialized. GCC 14 finds the address ambiguous. With
+`read(T)` in place of `read(T&)`, the result is the other way round:
+`int(T&&)` is not deduced from `int(A)`, so `read(T&&)` is more
+specialized (`address-value-against-forwarding.cpp`), and Clang finds
+that address ambiguous ({question}`Q-0396`).
+
+The conditions of ORD-13 compare the declared types, and for two
+templates they leave out the ellipsis:
+
+% tidal-example: diverges
+```cpp
+struct Source {
+  template <class T> operator T*() const;
+  template <class T> requires (sizeof(T) > 1) operator T* const() const;
+};
+int* p = Source{};                       // rejected: T* and T* const differ
+
+template <class T> int pick(T) requires (sizeof(T) > 1);
+template <class T> int pick(T, ...);
+int r = pick(1);                         // pick(T): the constraint decides
+```
+
+Ordering ties in both cases. In the first, the results `T*` and
+`T* const` are not the same as declared, so the constraint does not
+decide. EDG lets it decide ({question}`Q-0146`). In the second, the
+parameter lists are `(T)` and `(T)` once the ellipsis is left out, so
+the constraint decides. GCC finds the call ambiguous
+({question}`Q-0293`).
+
 An invented value (ORD-17). The value for `int V` has type `int`, and
 the value for `auto V` has an invented type `A`:
 
@@ -523,8 +609,8 @@ Kind<1> k;                                                 // 1
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 42
-of 58 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 43
+of 62 tests.
 
 ### Divergences
 
@@ -548,7 +634,8 @@ project waits on the maintainer (`documentation/decisions/pending.md`).
 - {question}`Q-0396` (ORD-9; open):
   whether the function types of ORD-9 form one pair, with no reference
   removed inside them. They do, as GCC and EDG say. Clang removes the
-  reference and finds the address ambiguous.
+  reference and finds the address ambiguous, against `read(T&)` and
+  against `read(T&&)` (`address-value-against-forwarding.cpp`).
 - {question}`Q-0217` (ORD-11; open): whether the qualifier tie-breaker
   applies to an lvalue reference against an rvalue reference. It does,
   and Clang finds no order. GCC and EDG choose `T&`.
@@ -565,7 +652,9 @@ project waits on the maintainer (`documentation/decisions/pending.md`).
   same. EDG lets a constraint decide in more cases.
 - {question}`Q-0293` (ORD-13; open): whether constraints decide between
   two templates that differ only in an ellipsis. They do, as Clang and
-  EDG say. GCC finds the call ambiguous.
+  EDG say, whichever template has the constraint
+  (`constraints-ellipsis.cpp`, `constraints-ellipsis-on-second.cpp`).
+  GCC finds the call ambiguous.
 
 ### Notes
 
@@ -619,7 +708,19 @@ project waits on the maintainer (`documentation/decisions/pending.md`).
   so a constraint does not decide between partial specializations with
   different patterns.
 - ORD-9: GCC 14 finds the address in `address-reference-kinds.cpp`
-  ambiguous. GCC 16 and every other compiler choose `read(T&)`.
+  ambiguous. GCC 16 and every other compiler choose `read(T&)`. So
+  `T&&` inside the pair is deduced from `A&` with `T = A&`. Outside
+  partial ordering, every compiler fails to deduce a parameter of type
+  `void (*)(T&&)` from a function of type `void(int&)`.
+- ORD-12: every compiler finds `pick(1)` ambiguous between `pick(T)` and
+  `pick(T, ...)` (`ellipsis-not-trailing-pack.cpp`), so an ellipsis is
+  not a trailing pack.
+- ORD-13: Clang and GCC find a call ambiguous between a constrained
+  `f(const T&)` and `f(T)` (`constraints-reference-against-value.cpp`),
+  and between the results `T*` and a constrained `T* const`
+  (`constraints-conversion-results-differ.cpp`). So the conditions
+  compare the declared types. EDG lets the constraint decide in both
+  ({question}`Q-0146`).
 - {rule}`OVL-41`: constraints decide only after a tie of ORD-1. When
   the conditions of ORD-13 hold, the parameter types are the same, so
   partial ordering always ties, and no program separates the two

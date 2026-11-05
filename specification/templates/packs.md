@@ -493,6 +493,19 @@ template <class... T> void call(T...);
 call<void>();                              // rejected: a parameter of type void
 ```
 
+A call can pass extra arguments to the variable argument part of a
+`constexpr` function and still be a constant expression (PACK-3).
+Passing an argument is not among the operations that constant
+evaluation rejects ({principle}`CE-P1`), and these functions never read
+the extra arguments:
+
+```cpp
+constexpr int first_size(auto x...) { return sizeof(x); }
+static_assert(first_size('a', 1, 2.0, "text") == 1);
+template <class T> constexpr int count_one(T...) { return 1; }
+static_assert(count_one(1, 2.0, "text") == 1);
+```
+
 % tidal-example: reject
 ```cpp
 template <class... T> struct List {};
@@ -586,7 +599,10 @@ The clean-room writer probed each rule with Clang 22, GCC 16, and EDG
 - PACK-3: every compiler reads `T...` after a parameter of a type that
   names no pack as the variable argument part. Every compiler also
   reads the `...` after a named parameter as the variable argument
-  part, for a pack type and for `auto`.
+  part, for a pack type and for `auto`. Every compiler accepts a constant evaluation of a
+  call that passes extra arguments to the variable argument part
+  (`placeholder-named-before-ellipsis.cpp`,
+  `ellipsis-after-parameter.cpp`).
 - PACK-2: the gap review (item 3) predicted that an unnamed pack can
   have its `...` inside parentheses, as in `R (*...)()`. Every
   compiler rejects the form. Clang asks for a name, GCC reports a

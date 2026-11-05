@@ -38,6 +38,12 @@ A conversion that can change the value in this way, or drop a fraction,
 is a {term}`narrowing conversion`. Braces and the constants of
 {rule}`CE-19` reject it. A constant whose value the target holds is
 exempt, because its value does not change.
+
+A conversion from an integer type to a floating-point type counts as
+narrowing by its types alone. `int` to `double` narrows, although
+`double` holds every `int` value on the matrix targets. Only a constant
+is exempt. The operator `<=>` also rejects narrowing, but it lets
+this conversion through ({rule}`CMP-13`).
 :::
 
 :::{principle} CONV-P4
@@ -75,7 +81,10 @@ The character literal `'\0'`, the literal `false`, and an integer
 variable that holds zero are such numbers. For the same reason a
 pointer is not a number, so no pointer converts implicitly to an
 integer. A base that is virtual, ambiguous, or not accessible gives no
-single path, so a conversion through such a base is not implicit.
+single path, so a conversion through such a base is not implicit. Such
+a conversion still takes part in overload resolution. A call that
+chooses it is rejected, and an overload with an ellipsis does not win
+in its place ({rule}`ICS-8`).
 :::
 
 ## Constraints
@@ -277,6 +286,11 @@ These conversions must not occur implicitly:
   base, or to a base that is not accessible (MPTR-11),
 - a pointer to a member of a derived class to a pointer to a member of
   its base.
+
+A conversion that this rule forbids still forms a conversion sequence
+in overload resolution ({rule}`ICS-8`). With `take(Base*)` and
+`take(...)`, a call `take(&derived)` through a private or ambiguous
+base chooses `take(Base*)` and is rejected.
 :::
 
 :::{rule} CONV-18
@@ -430,6 +444,12 @@ One question on this page settled on 2026-11-04 under decision 0054 after the so
   status on Clang and GCC.
 - CONV-8: EDG accepts a character literal with the value zero as a null
   pointer constant. Clang and GCC reject it ({question}`Q-0100`).
+- CONV-21: for an unscoped enumeration without a fixed type, GCC uses
+  the values that {rule}`ENUM-22` gives, as the rule does. So GCC
+  accepts `unsigned char c{e};` when the enumerators of `e`'s type are
+  0 and 100. Clang and EDG use every value of the underlying type and
+  reject the same program
+  (`narrowing-unscoped-enum-values-fit.cpp`, {question}`Q-0331`, open).
 - CONV-7: every compiler in the matrix rounds to the nearest value, and
   to the even value at a tie, during constant evaluation and at run
   time. {rule}`TYP-14` gives the same rounding for floating-point

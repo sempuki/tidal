@@ -64,6 +64,8 @@ Used on 2026-11-04 by the principle-use batch PU2 (`reports/clean-room/PU2/`), u
 
 Kept open on 2026-11-04 under decision 0054, because two newest families, GCC 16 and EDG 7.0, differ from the answer, and the reader answered `reversed-member-object.cpp` with doubt (finding PU2-6). The latest gap review (2026-11-03) also reads with a small doubt.
 
+Kept open on 2026-11-04 under decision 0055, because ORD-P1 changed in this commit: its table gives the address of an overload set with no target type its own row, which cites OVL-20 (finding R9D-4). The ORD-7 example on the ordering page now shows a swapped member template and says that GCC and EDG choose the written non-member (finding PU2-6). The question waits for the next use of ORD-P1.
+
 ## Opinions
 
 ### Gap review, 2026-11-03

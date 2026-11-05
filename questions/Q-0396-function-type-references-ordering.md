@@ -1,7 +1,7 @@
 # Q-0396: Does partial ordering remove the references inside the function types of ORD-9?
 
 **Status:** provisional
-**Affects:** ORD-9, ORD-2, `tests/templates/ordering/address-reference-against-value.cpp`
+**Affects:** ORD-9, ORD-2, `tests/templates/ordering/address-reference-against-value.cpp`, `tests/templates/ordering/address-value-against-forwarding.cpp`
 **Source:** finding I2-5 of `reports/clean-room/I2/report.md`, from the probes that a clean-room writer ran for it.
 
 ## Context
@@ -29,12 +29,21 @@ the reference, both directions succeed, and neither ORD-10 nor ORD-11
 applies, because only one of the two types was a reference.
 
 `address-reference-kinds.cpp` compares `read(T&)` and `read(T&&)` for
-the target `int(int&)`. Every compiler chooses `read(T&)`, so that pair
-does not separate the options.
+the target `int(int&)`. Every compiler but GCC 14 chooses `read(T&)`.
+Under option 1, that result needs `T&&` inside the pair to be deduced
+from the invented `A&` with `T = A&`. Under option 2, ORD-10 gives it.
+
+`address-value-against-forwarding.cpp` compares `read(T)` and
+`read(T&&)` for the same target. With one pair, `read(T&&)` is not
+deduced from the invented `int(X)`, and `read(T)` is deduced from
+`int(Y&&)`, so `read(T&&)` is more specialized. GCC 14, GCC 16, and EDG
+7.0 choose `read(T&&)`. Clang 18 and Clang 22 find the address
+ambiguous, as option 2 gives. The probe for finding R9D-1 of
+`reports/clean-room/R9/report-d.md` found this form.
 
 ## Evidence
 
-The test in **Affects**, with an override for Clang.
+The tests in **Affects**, each with an override for Clang.
 
 ## Options
 

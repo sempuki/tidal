@@ -1,4 +1,4 @@
-// tidal-rules: DED-34 TARG-21
+// tidal-rules: DED-34 TARG-20 TARG-21
 // tidal-expect: accept
 // tidal-note: The pack in the head takes every explicit argument, so none reaches the invented parameter of auto. Without a pack, the explicit arguments after the head reach the invented parameters.
 template <class A, class B> constexpr bool same = false;

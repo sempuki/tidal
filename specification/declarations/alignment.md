@@ -45,7 +45,10 @@ width of a bit-field ({principle}`UNI-P4`). The operand has an integral
 or unscoped enumeration type, or a class type whose conversion function
 gives such a type. The class must be a literal type with exactly one
 such conversion function, and the function must be `constexpr`,
-because the conversion runs during constant evaluation. A
+because the conversion runs during constant evaluation.
+A class whose destructor is user-provided and not `constexpr`, such as
+`~W() {}`, is not a literal type, so it fails here even when its
+conversion function is `constexpr`. A
 floating-point operand is rejected. A scoped
 enumeration converts to an integer only with a cast
 ({principle}`ENUM-P2`), so an enumerator of a scoped enumeration is

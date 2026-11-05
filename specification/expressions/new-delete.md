@@ -380,7 +380,9 @@ The deallocation function that NEW-21 to NEW-23 choose must be
 accessible and must not be deleted ({question}`Q-0221`). The
 requirement holds also when the initialization cannot throw. With
 placement arguments, the chosen function must not be a usual form
-(NEW-22).
+(NEW-22). A deleted function that matches beside a matching template is
+not chosen ({rule}`NEW-24`), so the requirement does not reach it
+({question}`Q-0220`).
 :::
 
 :::{rule} NEW-15

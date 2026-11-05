@@ -110,13 +110,15 @@ runs.
 | Result | Used where | Examples |
 |---|---|---|
 | `strong_ordering` | Equal values are the same | Integers, object pointers |
-| `partial_ordering` | Some pairs of values have no order, or equal values can differ | Floating-point types, where NaN has no order with any value |
+| `partial_ordering` | Some pairs of values have no order, or equal values can differ | Floating-point types, where NaN has no order with any value; an integer against a floating-point value, such as `int` against `double` |
 
 Because `<=>` stands in for all six comparisons, its operands must be
 comparable without loss. Whether a conversion loses a value can depend
 on the sizes of the integer types. These operand forms are rejected:
 
-- a narrowing conversion,
+- a narrowing conversion, apart from an integer to a floating-point
+  type. `int <=> double` and `long long <=> float` are valid and give
+  `partial_ordering`,
 - a `bool` against another type,
 - a pointer against `0`,
 - two different enumerations,

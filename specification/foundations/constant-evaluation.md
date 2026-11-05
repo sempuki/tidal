@@ -621,6 +621,18 @@ int local() {
   return second;
 }
 
+constexpr const int* kept() {
+  static const int value = 3;         // usable: a const int with a
+  return &value;                      // constant initializer (CE-3)
+}
+template <const int* P> struct Ptr {};
+Ptr<kept()> ptr;                      // fine
+constexpr int count() {
+  static int calls = 0;               // not usable: not const
+  return ++calls;
+}
+static_assert(count() == 1);          // rejected: the evaluation reaches calls (CE-17)
+
 union Some { volatile int a; int b; };          // literal: b is not volatile
 union All { volatile int a; volatile long b; }; // not a literal type
 constexpr Some some{.b = 1};          // fine

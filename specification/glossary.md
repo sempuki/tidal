@@ -497,7 +497,9 @@ most derived class
 narrowing conversion
   An implicit conversion that can change a value or drop a fraction,
   such as `double` to `int` or `int` to `bool`. The table of
-  {rule}`CONV-21` lists these conversions. A constant whose value the
+  {rule}`CONV-21` lists these conversions. An integer to a
+  floating-point type narrows even when the target holds every value of
+  the source, as `int` to `double` does. A constant whose value the
   target holds is exempt. Braces reject a narrowing conversion
   ({rule}`LIST-2`), and so do several places that need a constant
   ({rule}`CE-19`).

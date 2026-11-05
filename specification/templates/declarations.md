@@ -413,8 +413,11 @@ of a partial specialization can too ({rule}`TSP-9`).
 
 In a function template, each parameter after a pack must have a default
 or be found by deduction from the function parameters
-({rule}`DED-20`). The rule applies to the declaration, also if no call
-uses the template ({question}`Q-0195`).
+({rule}`DED-20`). A pack after a pack needs deduction too. A function
+parameter pack at the end can give it its elements, as in
+`packs(Back...)`. A pack that no function parameter uses breaks the
+rule, although {rule}`DED-23` would leave it empty. The rule applies to
+the declaration, also if no call uses the template ({question}`Q-0195`).
 :::
 
 :::{rule} TPL-36
@@ -753,6 +756,20 @@ int tail(Back) { return sizeof...(Front); }       // Back comes from the call
 int n = tail<char, long>(1);                      // Front is char, long
 ```
 
+A second type pack after the first is valid when a function parameter
+pack uses it. Clang and GCC accept the second declaration below, and
+EDG rejects it, as TPL-35 does ({question}`Q-0195`):
+
+% tidal-example: diverges
+```cpp
+template <class... Front, class... Back>
+int packs(Back...) { return sizeof...(Back); }    // Back comes from the call
+int n = packs<char, long>(1, 2);                  // Front is char, long; Back is int, int
+
+template <class... Front, class... Back>
+int count() { return sizeof...(Back); }           // rejected: nothing gives Back
+```
+
 A constant parameter whose type is a class template name takes its
 type from the argument, through the guides of {rule}`CTAD-1`:
 
@@ -871,8 +888,10 @@ probes for TPL-32 to TPL-47 and for the additions to the older rules.
 - TPL-35: Clang and GCC accept a function template whose parameter after
   a pack has no default and no deduction. EDG rejects the declaration
   ({question}`Q-0195`). The same split holds for a second type pack
-  after the first, and for a constant pack whose type is the type pack
-  before it. The rule is a `reject` rule, as TPL-30 is, because the
+  after the first that no function parameter uses, and for a constant
+  pack whose type is the type pack before it. Every compiler accepts a
+  second type pack that a function parameter pack at the end uses
+  (`pack-then-deducible.cpp`). The rule is a `reject` rule, as TPL-30 is, because the
   head and the function parameters alone break it. No argument list
   takes part, so DEP-32 does not cover it.
 - TPL-37: the result depends on the form of the friend:

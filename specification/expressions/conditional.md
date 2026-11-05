@@ -50,7 +50,10 @@ operand is evaluated.
 - An operand that throws takes no part, because it gives no value.
 - A `void` operand can pair only with another `void`.
 - If two class types each convert to the other, there is no single
-  answer, and the expression is rejected.
+  answer, and the expression is rejected. A conversion counts in this
+  check when it can be formed, even if its function is deleted or not
+  accessible ({question}`Q-0378`). So a `Wrap` with a deleted
+  `operator Tag()` still converts to `Tag`.
 - Otherwise the result is a prvalue, and each operand is converted to
   the result type. Operands of one type keep that type. Other
   arithmetic operands convert by the

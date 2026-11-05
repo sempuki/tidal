@@ -373,6 +373,11 @@ specialization matches, also with the qualifiers that DED-14 lets a
 parameter add. If two bases match with different values, the pair
 fails, and a base derived from another matching base wins over that
 base.
+
+The search needs the bases of the argument's class. If that class is a
+specialization of a class template, the search instantiates it
+({rule}`INST-1`), and an error in its body makes the program not valid
+(DED-29).
 :::
 
 ### Braced lists, overload sets, and packs
@@ -475,7 +480,7 @@ a {term}`deduction failure`.
 
 :::{rule} DED-24
 :kind: required
-:tests: templates/deduction/substitution-failure-removes.cpp templates/deduction/substitution-failure-forms.cpp templates/deduction/substitution-adjusted-type.cpp templates/deduction/substitution-explicit-specifier.cpp templates/deduction/substitution-lambda-call-fails.cpp templates/deduction/specialization-distinct-functions.cpp templates/deduction/substitution-failure-undefined-operation.cpp templates/deduction/substitution-failure-evaluation-limit.cpp
+:tests: templates/deduction/substitution-failure-removes.cpp templates/deduction/substitution-failure-forms.cpp templates/deduction/substitution-adjusted-type.cpp templates/deduction/substitution-explicit-specifier.cpp templates/deduction/substitution-lambda-call-fails.cpp templates/deduction/specialization-distinct-functions.cpp templates/deduction/substitution-failure-undefined-operation.cpp templates/deduction/substitution-failure-evaluation-limit.cpp templates/deduction/substitution-failure-negative-bound.cpp templates/deduction/substitution-failure-negative-bound-computed.cpp templates/deduction/substitution-failure-negative-bound-ellipsis.cpp
 
 The values replace the template parameters in these places, and the
 function type is then adjusted as a declared one is ({rule}`DCL-8`):
@@ -486,8 +491,19 @@ function type is then adjusted as a declared one is ({rule}`DCL-8`):
   conversion function.
 
 A type or expression that substitution makes and that is not valid is
-a {term}`substitution failure`. The template then adds no candidate. A
-template argument whose {term}`constant evaluation` fails, by {rule}`CE-9` or
+a {term}`substitution failure`. The template then adds no candidate.
+These types are among those that are not valid:
+
+- a pointer to a reference, an array of references, or a reference to
+  `void`,
+- a pointer to a member of a type that is not a class,
+- a qualified name such as `T::type`, when `T` is not a class or has no
+  such member,
+- a function that returns an array or a function,
+- an array whose bound is zero or less ({rule}`DCL-19`,
+  {question}`Q-0399`).
+
+A template argument whose {term}`constant evaluation` fails, by {rule}`CE-9` or
 by a limit of {rule}`CE-10`, is such an expression. {rule}`PACK-27` gives the pack cases.
 :::
 
@@ -633,12 +649,17 @@ before `auto` constrains the invented parameter ({rule}`CPT-20`).
 A `new` expression with placement arguments can need a placement
 deallocation function ({doc}`/expressions/new-delete`, {rule}`NEW-23`). A deallocation
 function template matches if deduction makes its parameter types after
-the first the same as those of the allocation function. If several
-templates match, partial ordering ({rule}`ORD-9`) chooses one
-({question}`Q-0219`). Partial ordering compares only templates. If a
-function that is not a template also matches, the function and the
-template are two matches, and {rule}`NEW-24` calls neither
-({question}`Q-0220`). The body of the template is not instantiated.
+the first the same as those of the allocation function. The
+differences of DED-14 and DED-15 do not apply, so a template that
+takes `const T*` does not match an allocation parameter `Arena*`. If
+several templates match, partial ordering ({rule}`ORD-9`) chooses one
+({question}`Q-0219`). If ordering prefers none of them, no deallocation
+function is called ({rule}`NEW-24`, {question}`Q-0222`). Partial
+ordering compares only templates. If a function that is not a template
+also matches, the function and the template are two matches, and
+NEW-24 calls neither ({question}`Q-0220`). Such a function is not
+chosen, so the check of {rule}`NEW-25` does not reach it when it is
+deleted. The body of the template is not instantiated.
 :::
 
 ### No candidate
@@ -688,6 +709,15 @@ int size(...);
 size(1);                        // int::size_type is not valid; size(...)
 ```
 
+An array bound of zero or less is not a valid type, so such a bound
+also removes the template (DED-24):
+
+```cpp
+template <class T> int empty(char (*)[sizeof(T) - sizeof(T)]);
+template <class T> long empty(...);
+static_assert(sizeof(empty<int>(0)) == sizeof(long));   // the bound is 0, so empty(...)
+```
+
 An error in the function type removes the template, also a call of a
 lambda with no viable function there (DED-24). An error in the body of
 a lambda makes the program not valid (DED-29):
@@ -730,10 +760,46 @@ template <class... Ts> void all(Ts...);
 all<long>(1, 'c');              // Ts = long, char
 ```
 
+A placement deallocation template matches only when deduction gives
+the same parameter types, with none of the differences of DED-14
+(DED-39). Two templates that differ only in a template parameter that
+no parameter type uses are not ordered, and no deallocation function is
+called after a throw ({rule}`NEW-24`). EDG rejects the second `new`
+expression as ambiguous ({question}`Q-0222`):
+
+```cpp
+using size = decltype(sizeof 0);
+struct Arena {};
+struct Widget {
+  static void* operator new(size, Arena*);
+  template <class T> static void operator delete(void*, T*);        // matches, T = Arena
+  template <class T> static void operator delete(void*, const T*);  // const T* is never Arena*
+  static void operator delete(void*);
+  Widget();
+};
+Arena arena;
+Widget* w = new (&arena) Widget;  // after a throw, the template with T*
+```
+
+% tidal-example: diverges
+```cpp
+using size = decltype(sizeof 0);
+struct Arena {};
+struct Gadget {
+  static void* operator new(size, Arena*);
+  template <class T> static void operator delete(void*, T*);
+  template <class T, class U = int> static void operator delete(void*, T*);  // U takes no part
+  static void operator delete(void*);
+  Gadget();
+};
+Arena arena;
+Gadget* g = new (&arena) Gadget;  // both match, and ordering prefers neither: no call (NEW-24)
+```
+
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 118
-of 127 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 119
+of 130 tests.
 
 One question on this page settled on 2026-11-04 under decision 0054 after the source-reader gap review of the text phase 8 wrote on expressions, foundations, and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
 
@@ -799,6 +865,22 @@ grids below.
   if it is instantiated, and every compiler accepts the test. Clang
   calls no deallocation function, as DED-39 gives. GCC and EDG choose
   the function ({question}`Q-0220`).
+- DED-24: every compiler removes a template whose parameter type has an
+  array bound of zero, also when the bound is an expression such as
+  `sizeof(T) - sizeof(T)` (`substitution-failure-forms.cpp`). Every
+  compiler removes a template for an explicit bound of `-1` in a
+  reference to an array, and in a pointer to an array when the other
+  overload takes `int` (`substitution-failure-negative-bound.cpp`). GCC
+  rejects a computed negative bound such as `N - 2` as an error, and EDG
+  rejects a negative bound in a pointer to an array when the other
+  overload has an ellipsis
+  ({question}`Q-0399`).
+- DED-15: every compiler instantiates `Derived<int>` for a call with a
+  `Derived<int>*` argument and a `Base<T>*` parameter, and rejects the
+  failing `static_assert` in its body
+  (`class-deduction-from-derived-error.cpp`). The compilers also
+  instantiate the class for a parameter `T*` or `Derived<T>*`, which the
+  argument matches with no search of the bases.
 - DED-20: the gap review (item E3) predicted that a later parameter
   `List<A...>` gives elements to a pack before the end. Every compiler
   keeps the pack empty and rejects the call

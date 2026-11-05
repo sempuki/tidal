@@ -10,7 +10,10 @@ Usage:
 `predict` takes the tests that the rules on specification/PAGE.md cite, removes
 their tidal- directives, and writes them to OUT as p01.cpp, p02.cpp, and
 so on, in a shuffled order, with a README.md that tells the reader what
-to answer. It also writes a copy of specification/ to OUT/specification/
+to answer. A header that a test includes goes beside the programs when
+it sits under the test's directory, and under OUT/include/ by its path
+below tests/ when it does not. The copied #include lines name the new
+place. It also writes a copy of specification/ to OUT/specification/
 with every `:tests:` line removed, so test names do not show the
 outcomes. The copy has no directive processing, so the generated table
 of `undefined` rules is written into it as a Markdown table. The README
@@ -71,6 +74,7 @@ cites, and builds each fix with g++ (and runs it when it has a main).
 """
 
 import json
+import os
 import random
 import re
 import subprocess
@@ -104,6 +108,33 @@ MATCHES = {
     "run": {"runs"},
     "run-fail": {"run-fail"},
 }
+
+# README paragraphs that Predict and principle-use batches share. They say
+# what a test expects in the cases that the outcome list leaves open.
+ANSWER_NOTES = [
+    "Some programs break a rule that needs no diagnostic, or a rule whose",
+    "behavior is undefined during translation, such as a constant evaluation",
+    "that reaches an operation of class `undefined`. The test of such a",
+    "program expects what the compilers do. Answer `compiles` or `runs` when",
+    "every compiler accepts the program, `reject` when every compiler rejects",
+    "it, and `depends` when they differ, and cite the rule.",
+    "",
+    "Some questions are settled with an override for a compiler family that",
+    "still differs from the answer (decision 0054). The test of such a",
+    "question expects the outcome that the rules give. `depends` is also",
+    "right for it, because a compiler's override differs.",
+    "",
+    "A program with no `main` cannot run. Answer `compiles` when it compiles.",
+    "The test of a single-file program with no `main` usually only compiles",
+    "it, and a few tests link it to show a missing definition. So",
+    "`link-fail` is also right for a program with no `main` that compiles.",
+    "A program of several files is always linked.",
+    "",
+    "A program whose run has undefined behavior is answered `undefined`.",
+    "Such a program's test checks only that it compiles, so `compiles` is",
+    "also right for it. The specification's notes say this as \"checks only",
+    "that the program compiles\".",
+]
 
 RULE = re.compile(r"^:::\{rule\} (\S+)$")
 TESTS_LINE = re.compile(r"^:tests: (.*)$")
@@ -199,18 +230,40 @@ def compilers_decide(rules: list[str]) -> bool:
     return any(RULE_CLASS.get(r) in {"no-diagnostic", "undefined"} for r in rules)
 
 
+def header_target(out: Path, test_dir: Path, header: Path) -> Path:
+    """Where a header goes in OUT: beside the programs when it sits under the
+    test's directory, else under OUT/include/ by its path below tests/."""
+    if header.is_relative_to(test_dir):
+        return out / header.relative_to(test_dir)
+    return out / "include" / header.relative_to(TESTS.resolve())
+
+
+def write_source(source: Path, target: Path, targets: dict[Path, Path]) -> None:
+    """Write SOURCE to TARGET without directives, with each quoted #include
+    pointing at the header's place in the batch."""
+    def point(m: re.Match) -> str:
+        header = (source.parent / m.group(1)).resolve()
+        if header not in targets:
+            return m.group(0)
+        name = os.path.relpath(targets[header], target.parent)
+        return m.group(0).replace(f'"{m.group(1)}"', f'"{name}"')
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(INCLUDE.sub(point, strip(source.read_text())))
+
+
 def write_program(out: Path, pid: str, name: str) -> tuple[dict, str]:
     """Write one test to OUT as program PID; return its key entry and README row."""
     test = run_tests.parse_test(TESTS / name)
+    test_dir = test.path.parent.resolve()
+    headers = included_headers([test.path, *test.sources])
+    targets = {h: header_target(out, test_dir, h) for h in headers}
     files = [f"{pid}.cpp"]
-    (out / files[0]).write_text(strip(test.path.read_text()))
+    write_source(test.path, out / files[0], targets)
     for j, extra in enumerate(test.sources, 2):
         files.append(f"{pid}-{j}.cpp")
-        (out / files[-1]).write_text(strip(extra.read_text()))
-    for header in included_headers([test.path, *test.sources]):
-        target = out / header.relative_to(test.path.parent.resolve())
-        target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_text(strip(header.read_text()))
+        write_source(extra, out / files[-1], targets)
+    for header in headers:
+        write_source(header, targets[header], targets)
     has_main = any(MAIN.search(f.read_text()) for f in [test.path, *test.sources])
     undefined = any(RULE_CLASS.get(r) == "undefined" for r in test.rules)
     entry = {"test": name, "base": test.default, "expect": sorted(expectations(test)),
@@ -273,17 +326,7 @@ def predict(page: str, out: Path) -> int:
         "",
         '    {"p01": {"outcome": "reject", "rules": ["ADD-3"], "principles": ["ADD-P1"], "why": "one sentence"}}',
         "",
-        "Some programs break a rule that needs no diagnostic, or a rule whose",
-        "behavior is undefined during translation, such as a constant evaluation",
-        "that reaches an operation of class `undefined`. For these, answer with",
-        "what the compilers do, and cite the rule: `compiles` or `runs` when",
-        "the specification records that every compiler accepts the program,",
-        "`reject` when every compiler rejects it, and `depends` when they differ.",
-        "",
-        "A program whose run has undefined behavior is answered `undefined`.",
-        "Such a program's test checks only that it compiles, so `compiles` is",
-        "also right for it. The specification's notes say this as \"checks only",
-        "that the program compiles\".",
+        *ANSWER_NOTES,
     ]
     (out / "README.md").write_text("\n".join(readme) + "\n")
     KEYS.mkdir(parents=True, exist_ok=True)
@@ -518,9 +561,8 @@ def principles(out: Path) -> int:
         f"a diagram. For `{NOT_DECIDED}`, list the principles you tried and say",
         "in `part` what each one does not say.",
         "",
-        "A program whose run has undefined behavior is answered `undefined`.",
-        "Such a program's test checks only that it compiles, so `compiles` is",
-        "also right for it.",
+        "",
+        *ANSWER_NOTES,
     ]
     (out / "README.md").write_text("\n".join(readme) + "\n")
     KEYS.mkdir(parents=True, exist_ok=True)

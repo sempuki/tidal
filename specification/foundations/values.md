@@ -55,10 +55,13 @@ separate full expression:
 - the initializer of a member,
 - a condition,
 - a `return` expression,
-- the initialization of each array element.
+- the initialization of each array element by a constructor with a
+  default argument.
 
-A function call, with its default arguments, belongs to the full
-expression that contains the call. A reference can keep a temporary
+All the initializers of one aggregate in braces are one full
+expression, so `int a[2] = {f(T{1}), f(T{2})};` ends both temporaries
+after both elements are initialized. A function call, with its default
+arguments, belongs to the full expression that contains the call. A reference can keep a temporary
 alive longer (REF-4).
 :::
 
@@ -310,7 +313,10 @@ All eight compilers agree on 62 of 64 tests. The results are in
   and GCC give an xvalue ({question}`Q-0034`).
 - VC-7: the test accepts either result.
 - VC-10: the test accepts either point. Clang and GCC destroy the
-  parameter at the end of the full expression.
+  parameter at the end of the full expression. Clang and GCC reject the
+  second destruction of a parameter that the called function destroyed
+  when it happens during constant evaluation, and EDG 7.0 accepts it
+  (`parameter-destroyed-by-callee-constant.cpp`, {question}`Q-0054`).
 - VC-16: on Clang and GCC, the caller catches an exception from the copy
   into a parameter and from the parameter's destructor, also when the
   called function is non-throwing.

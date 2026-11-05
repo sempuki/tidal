@@ -67,6 +67,8 @@ Used on 2026-11-04 by the principle-use batch PU2 (`reports/clean-room/PU2/`), u
 
 Kept open on 2026-11-04 under decisions 0055 and 0056, because the use in batch PU2 does not support the answer: one of the six answers gives no outcome (finding PU2-1). EDG 7.0 is the one newest family that differs.
 
+Kept open on 2026-11-04 under decision 0055, because CMP-P5 and CONV-P2 changed in this commit after finding PU2-1. CMP-P5 now says that `<=>` lets an integer to floating-point conversion through and that `int <=> double` gives `partial_ordering`, and CONV-P2 says that such a conversion narrows by its types alone. The question waits for the next use of LSUP-P1 and CMP-P5. EDG 7.0 is the one newest family that differs.
+
 ## Opinions
 
 ### Gap review, 2026-11-04

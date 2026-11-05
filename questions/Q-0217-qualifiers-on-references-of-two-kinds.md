@@ -57,6 +57,8 @@ Used on 2026-11-04 by the principle-use batch PU2 (`reports/clean-room/PU2/`), u
 
 Kept open on 2026-11-04 under decision 0054, because two newest families, GCC 16 and EDG 7.0, differ from the answer (`documentation/decisions/pending.md`, row 1). The answer in batch PU2 also does not choose between the options.
 
+Kept open on 2026-11-04 under decision 0055, because ORD-P2 changed in this commit: steps 6c and 6d now say how an ellipsis counts and that 6d compares the declared types. Steps 5a and 5b did not change. The question waits for the next use of ORD-P2.
+
 ## Opinions
 
 ### Gap review, 2026-11-03

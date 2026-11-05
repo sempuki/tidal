@@ -302,16 +302,21 @@ an argument list follows, the injected class name names the template.
 A class can inherit the injected class names of two specializations of
 one template from two bases. Such a name without an argument list is
 ambiguous. The program must not use the name as a type or as a template
-template argument.
+template argument. With an argument list, the name names the template
+({rule}`TARG-11`), and the program can use it.
 :::
 
 :::{rule} TARG-20
 :kind: required
-:tests: templates/arguments/function-explicit-arguments.cpp templates/arguments/function-explicit-too-many.cpp
+:tests: templates/arguments/function-explicit-arguments.cpp templates/arguments/function-explicit-too-many.cpp templates/deduction/placeholder-parameter-after-pack.cpp
 
 A template-id of a function template can give arguments for the leading
 parameters only. Each later parameter gets its argument from deduction
-({rule}`DED-2`) or from its default.
+({rule}`DED-2`) or from its default. A function with `auto` parameters
+has an invented type parameter for each `auto`, after the parameters of
+its head ({rule}`DED-34`). These invented parameters count for TARG-6
+and can take explicit arguments, unless a pack at the end of the head
+takes them all.
 :::
 
 :::{rule} TARG-21
@@ -536,6 +541,31 @@ class Owner {
   Box<Secret> mine;            // valid inside Owner
 };
 Box<Owner::Secret> theirs;     // rejected: Secret is private
+```
+
+The invented parameter of an `auto` parameter comes after the head and
+can take an explicit argument. A pack at the end of the head takes
+every explicit argument:
+
+```cpp
+template <class A, class B> constexpr bool same = false;
+template <class A> constexpr bool same<A, A> = true;
+template <class T> constexpr bool second(T, auto y) { return same<decltype(y), long>; }
+static_assert(second<int, long>(1, 2));   // T = int, and the invented parameter is long
+template <class... T> constexpr int count(auto) { return sizeof...(T); }
+static_assert(count<int, long>(1) == 2);  // the pack takes both arguments
+```
+
+A class with two bases of one template can name the template with an
+argument list, and not without one:
+
+% tidal-example: reject
+```cpp
+template <class T> struct Base {};
+struct Both : Base<int>, Base<char> {
+  Base<long>* other;                  // fine: the argument list names the template
+  Base* either;                       // rejected: Base<int> or Base<char>
+};
 ```
 
 A template template parameter takes a class template or an alias

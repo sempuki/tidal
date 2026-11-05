@@ -360,6 +360,13 @@ count and limit the depth as follows, on both targets:
 | GCC 16, 14 | the nested instantiations of all templates | 900 | `-ftemplate-depth=N` |
 | EDG 7.0 | the nested instantiations of one template | 64 | `--pending_instantiations=N` |
 
+A chain that alternates between two templates counts its whole length
+on Clang and GCC, and the length of each template's part on EDG. A
+chain of 100 through `Even` and `Odd` has depth 100 on Clang and GCC
+and depth 50 on EDG, so every matrix compiler accepts it. A chain of
+1000 has depth 500 on EDG and 1000 on GCC, so both reject it, and
+Clang accepts it.
+
 An implementation that does not have an option of the table rejects a
 command line that gives the option.
 :::
@@ -434,6 +441,16 @@ static_assert(half(8) == 4);  // constant evaluation
 int at_run_time = half(9);    // the same function, at run time
 ```
 
+```cpp
+template <int N> struct Odd;
+template <int N> struct Even { static constexpr int value = Odd<N - 1>::value + 1; };
+template <int N> struct Odd { static constexpr int value = Even<N - 1>::value + 1; };
+template <> struct Even<0> { static constexpr int value = 0; };
+
+// Depth 100 on Clang and GCC, 50 of each template on EDG: accepted (TR-13).
+static_assert(Even<100>::value == 100);
+```
+
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 64
@@ -465,7 +482,8 @@ the run and link tests say only that the programs are valid.
   instantiations is counted, and whether it must reach a minimum. Both
   are implementation-defined, with no minimum. No family differs.
 - {question}`Q-0366` (TR-3; open): whether `main` can be declared with
-  `extern "C++"`. It can, as Clang 22 and GCC 16 say. EDG rejects it,
+  `extern "C++"`. It can, as Clang 22 and 18 and GCC 16 and 14 say.
+  EDG rejects it,
   and the gap review of the rules that phase 7 added reads the
   reference as EDG does (`documentation/decisions/pending.md`, row 4).
 
@@ -478,7 +496,11 @@ the run and link tests say only that the programs are valid.
   rule that a program has one `main`. Tidal has no class that requires
   a diagnostic at link time, so TR-P1 and TR-4 send both cases to LNK-7. Every
   compiler of the matrix that links reports both at link time
-  (`main-no-definition.cpp`).
+  (`main-no-definition.cpp`). `main-no-definition.cpp` is the one test with no `main`
+  that the matrix links. `tools/run_tests.py` links a test of one file
+  only when the test expects `run`, `run-fail`, or `link-fail`, and
+  always links a test with `tidal-sources`. So every other test of one
+  file with no `main` is only compiled.
 - TR-4: 45 tests expect a link failure on at least one compiler. Each
   of these tests cites a `no-diagnostic` rule that its program breaks:
   LNK-6, LNK-7, ODR-8, INL-6, INL-7, VIRT-17, VIRT-20, CLS-21, or
@@ -519,6 +541,14 @@ the run and link tests say only that the programs are valid.
 - TR-12: every compiler rejects each token sequence of the tests. Each
   message names the token that the parser expected, or says that an
   expression or a statement was expected.
+- TR-15: Clang 18 on x86-64 gives the right `sizeof` for a class of up
+  to 2<sup>61</sup> - 1 bytes (`limit-class-largest-clang-18-lp64.cpp`).
+  From 2<sup>61</sup> bytes on, Clang 18 accepts the class and gives
+  `sizeof` a wrong value (`limit-class-wrong-size-clang-18-lp64.cpp`).
+  With `-m32`, Clang 22 and 18 give the right `sizeof` for a class of up
+  to 2<sup>32</sup> - 1 bytes, the largest value of `std::size_t`
+  (`limit-class-largest-ilp32.cpp`). A larger class gets its size
+  modulo 2<sup>32</sup> ({question}`Q-0350`).
 - TR-13: the flag tests lower each limit with the option of the table.
   The other compilers reject the unknown option. So each flag test
   expects a reject from every implementation, also from an

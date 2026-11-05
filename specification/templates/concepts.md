@@ -535,13 +535,16 @@ type requirement must not name a keyword type such as `int`.
 
 :::{rule} CPT-35
 :kind: required
-:tests: templates/concepts/nested-requirement.cpp templates/concepts/nested-requirement-parameter-unevaluated.cpp templates/concepts/nested-requirement-parameter-evaluated.cpp templates/concepts/requirement-false-outside-template.cpp
+:tests: templates/concepts/nested-requirement.cpp templates/concepts/nested-requirement-parameter-unevaluated.cpp templates/concepts/nested-requirement-parameter-evaluated.cpp templates/concepts/requirement-false-outside-template.cpp templates/concepts/nested-requirement-never-satisfied.cpp
 
 A nested requirement holds if its constraint expression is satisfied
 ({rule}`CNS-5` to {rule}`CNS-7`). The parameters of the requires
 expression have no values, so the expression can use them only in an
 unevaluated operand ({rule}`CNS-9`, {question}`Q-0289`). A requirement
-that starts with `requires` is always a nested requirement.
+that starts with `requires` is always a nested requirement. A nested
+requirement that is valid and false for every argument, such as
+`requires false;`, is valid. The requires expression is then false for
+every argument ({question}`Q-0400`).
 :::
 
 ## Examples
@@ -647,8 +650,8 @@ template <class T> concept Old [[deprecated]] = true;   // the attribute apperta
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 107
-of 124 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 108
+of 125 tests.
 
 One question on this page settled on 2026-11-04 under decision 0054 after the source-reader gap review of the text phase 8 wrote on expressions, foundations, and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
 
@@ -726,10 +729,11 @@ words, for example "concept cannot have associated constraints" and
   an extra argument that the concept does not use. EDG follows the
   order of the rule in both cases ({question}`Q-0287`). If the early
   substitution instantiates a class whose body has an error, the
-  program is not valid ({rule}`CNS-33`). In
-  `compound-requirement-order.cpp` and
-  `compound-requirement-order-noexcept.cpp`, Clang therefore rejects a
-  program that GCC and EDG accept.
+  program is not valid ({rule}`CNS-33`). Clang therefore rejects a
+  program that GCC and EDG accept, both when step 1 fails
+  (`compound-requirement-order.cpp`, an expression that is not valid)
+  and when step 2 fails (`compound-requirement-order-noexcept.cpp`, an
+  expression that can throw).
 - CPT-35: Clang 18 gives `false` for a nested requirement that reads a
   parameter. The other compilers reject the program
   ({question}`Q-0289`).
@@ -789,9 +793,14 @@ led to these changes, by its own numbering:
 | CPT-36 | 28 |
 | CPT-37 | 16, 17 |
 
-Inventory item D1, a requirement that fails for every argument, is
-left out. The program needs no diagnostic, and the compilers differ
-only in whether they diagnose a template that is never used, as
-{rule}`DEP-30` allows.
+Inventory item D1 says that a requirement that fails for every argument
+makes the program not valid, with no diagnostic required. CPT-35 reads
+a nested requirement that is valid and false for every argument as
+valid ({question}`Q-0400`). Every compiler
+accepts such a concept, used or not, and gives `false`
+(`nested-requirement.cpp`, `nested-requirement-never-satisfied.cpp`).
+Every compiler also accepts, and gives `false` for, a concept whose
+expression requirement is not valid for any argument, such as the sum
+of two pointers. The page has no rule for that case.
 
 Inputs: clang-diag-sema, clang-diag-parse.

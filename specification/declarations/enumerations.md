@@ -152,11 +152,13 @@ lists what is not valid.
 
 :::{rule} ENUM-16
 :kind: reject
-:tests: declarations/enumerations/scoped-names-scoped.cpp declarations/enumerations/scoped-no-conversion.cpp declarations/enumerations/scoped-no-arithmetic.cpp declarations/enumerations/scoped-compare-int.cpp declarations/enumerations/increment-enum.cpp declarations/enumerations/scoped-parentheses-from-integer.cpp
+:tests: declarations/enumerations/scoped-names-scoped.cpp declarations/enumerations/scoped-no-conversion.cpp declarations/enumerations/scoped-no-arithmetic.cpp declarations/enumerations/scoped-compare-int.cpp declarations/enumerations/increment-enum.cpp declarations/enumerations/scoped-parentheses-from-integer.cpp declarations/enumerations/scoped-unnamed.cpp
 
 The forms that ENUM-3 allows are the only valid forms. A program must
 not:
 
+- declare a scoped enumeration with no name, as in
+  `enum class { a, b } v;` (the `enum_head` production),
 - name an enumerator of a scoped enumeration without the enumeration,
 - convert a scoped value to or from an integer without an explicit cast,
 - use a scoped value in arithmetic,
@@ -408,7 +410,7 @@ static_assert(sizeof names / sizeof names[0] ==
 
 ## Evidence
 
-All eight compilers agree on 77 of 80 tests. The results are in
+All eight compilers agree on 78 of 81 tests. The results are in
 `tests/RESULTS.md`.
 
 One question on this page settled on 2026-11-04 under decision 0054 after the principle-use batch PU1 (`reports/clean-room/PU1/`). The batch's use of the principle supports the answer, the latest gap review supports it with no doubt, and the principle gives the same answer. The tests keep their overrides for the family that still differs:

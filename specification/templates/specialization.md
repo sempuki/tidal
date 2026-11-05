@@ -385,13 +385,16 @@ these conditions:
 - The argument list is not the primary template's parameter list
   again, unless the partial specialization is {term}`more constrained` than the
   primary template ({rule}`CNS-36`). A {term}`constant parameter` whose type
-  fits fewer arguments, such as `auto*` or `int` for `auto`, makes the
+  accepts fewer arguments, such as `auto*` or `int` for `auto`, makes the
   list differ.
 - Each parameter appears in the argument list where deduction can find
   it. A constant argument that is an expression of a parameter, such as
   `N + 1`, gives no value for `N`.
 - The partial specialization is {term}`more specialized` than the primary
-  template ({rule}`ORD-14`, {question}`Q-0174`).
+  template ({rule}`ORD-14`, {question}`Q-0174`). A list that only
+  reorders the primary template's parameters, such as `Pair<U, T>` for
+  `Pair<T, U>`, accepts every argument list, so it is not more
+  specialized.
 - A constant argument whose parameter type in the primary template uses
   another parameter is not a fixed value, while that other parameter
   stays a parameter of the partial specialization.
@@ -447,8 +450,11 @@ arguments for its parameters that make its own argument list the same
 as the given list ({rule}`TARG-19`). The given list includes the
 primary template's defaults. A parameter that appears twice gets the
 same argument in both places. A constant argument matches a constant
-parameter only if the argument's type fits the parameter's declared
-type ({rule}`DED-12`). A use finds the partial specializations
+parameter only if the argument's type is the parameter's declared type,
+with no conversion ({rule}`DED-12`). A placeholder in the declared type
+stands for any type, so `const auto*` matches `const int*` and does not
+match `int*`, and `int` does not match `long` or `char`
+({question}`Q-0295`). A use finds the partial specializations
 through the primary template, so a use through a using-declaration
 also finds partial specializations declared after it.
 :::
@@ -535,6 +541,41 @@ template <int> struct Fixed { };
 template <class T> concept Constant = requires { typename Fixed<width(T{})>; };
 static_assert(Constant<int> && !Constant<char>);
 ```
+
+A constant argument matches only a parameter of its own type (TSP-14):
+
+% tidal-example: diverges
+```cpp
+template <auto V> struct Kind { static constexpr int value = 0; };
+template <int V> struct Kind<V> { static constexpr int value = 1; };
+static_assert(Kind<1>::value == 1);
+static_assert(Kind<1L>::value == 0);     // long is not int
+static_assert(Kind<'c'>::value == 0);    // char is not int
+
+template <auto P> struct Ptr { static constexpr int value = 0; };
+template <const auto* P> struct Ptr<P> { static constexpr int value = 1; };
+int n = 0;
+const int c = 0;
+static_assert(Ptr<&c>::value == 1);      // const int* has the form const auto*
+static_assert(Ptr<&n>::value == 0);      // int* does not
+```
+
+Clang converts the argument and matches in each case where the
+comment says the primary template is used, except Clang 18 for `int*`
+({question}`Q-0295`).
+
+A partial specialization that only reorders the parameters is not more
+specialized than the primary template (TSP-11):
+
+% tidal-example: diverges
+```cpp
+template <class T, class U> struct Pair { };
+template <class T, class U> struct Pair<U, T> { };   // rejected
+```
+
+`Pair<U, T>` matches every argument list that `Pair<T, U>` matches,
+with `T` and `U` swapped. GCC and EDG accept the declaration
+({question}`Q-0174`).
 
 Members of class specializations:
 

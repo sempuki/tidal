@@ -39,7 +39,9 @@ that breaks the rule or to accept it. A test whose program breaks such
 a rule accepts every outcome that the rule allows. The test's
 `tidal-expect` gives one outcome, and a `tidal-expect-<x>` override
 records each compiler that gives the other. The override's `tidal-note`
-names the rule or the question that allows the outcome. A failing test
+names the rule or the question that allows the outcome. When every
+compiler accepts the program, the test expects `accept` and has no
+override. A failing test
 then means that a compiler changed its behavior, and the failure says
 nothing about conformance. The test checks only translation and
 linking, because the rule allows any result at run time (decision
@@ -265,7 +267,17 @@ expectation. Each override records another allowed choice. An implementation tha
 makes the choice of an override still conforms. The rule's Evidence
 names the compiler whose choices the base expectations follow, when one
 compiler gives all of them. A test of a rule that a question holds open
-gives the answer that Tidal keeps while the question is open.
+gives the answer that Tidal keeps while the question is open. A
+question that settles with an override for a family that still differs
+(decision 0054) keeps its answer as the test's base expectation, and
+the override records that family.
+
+`tools/run_tests.py` links a single-file test only when the test
+expects `run`, `run-fail`, or `link-fail`. A test with `tidal-sources`
+is always linked. So a single-file test with no `main` that expects
+`accept` is only compiled, and a used function with no definition does
+not fail it. `main-no-definition.cpp` is the one single-file test with
+no `main` that links, because it shows the link failure of TR-4.
 
 A `tidal-error` pattern names the reason for the rejection in words that
 the compiler's message uses, without its quote characters. The host GCC
