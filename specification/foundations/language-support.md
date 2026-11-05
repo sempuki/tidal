@@ -527,6 +527,12 @@ int* r = new (raw) int(3);          // raw hosts the int
 The results are in `tests/RESULTS.md`. All eight compilers agree on 51
 of 66 tests.
 
+One question on this page settled on 2026-11-04 under decision 0054 after the principle-use batch PU2 (`reports/clean-room/PU2/`). The batch's use of the principle supports the answer, the latest gap review supports it with no doubt, and the principle gives the same answer. The test keeps its override for the family that still differs:
+
+| Question | Principle | Family that still differs |
+|---|---|---|
+| {question}`Q-0334` | LSUP-P1 | GCC 16 |
+
 - LSUP-1: each compiler checks the shape in its own way. Clang checks
   the layout of the two members, and also accepts a second pointer in
   place of the count. GCC compares the class with the one in its own

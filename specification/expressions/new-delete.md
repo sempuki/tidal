@@ -758,6 +758,12 @@ int* q = new (cell) int(4);     // the int is at cell (NEW-33)
 The results are in `tests/RESULTS.md`. All eight compilers agree on 121
 of 144 tests.
 
+One question on this page settled on 2026-11-04 under decision 0054 after the principle-use batch PU2 (`reports/clean-room/PU2/`). The batch's use of the principle supports the answer, the latest gap review supports it with no doubt, and the principle gives the same answer. The test keeps its override for the family that still differs:
+
+| Question | Principle | Family that still differs |
+|---|---|---|
+| {question}`Q-0313` | NEW-P1 | GCC 16 |
+
 Three questions on this page settled on 2026-11-04 under decision 0054 after the source-reader gap review of the text phase 8 wrote on expressions, foundations, and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
 
 | Question | Principle | Family that still differs |

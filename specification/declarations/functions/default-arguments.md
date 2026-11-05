@@ -283,14 +283,18 @@ r(1);                       // rejected: a reference has no defaults
 All eight compilers agree on 41 of 51 tests. The results are in
 `tests/RESULTS.md`.
 
+One question on this page settled on 2026-11-04 under decision 0054 after the principle-use batch PU2 (`reports/clean-room/PU2/`). The batch's use of the principle supports the answer, the latest gap review supports it with no doubt, and the principle gives the same answer. The tests keep their overrides for the family that still differs:
+
+| Question | Principle | Family that still differs |
+|---|---|---|
+| {question}`Q-0379` | DEFARG-P1 | EDG 7.0 |
+
 Two questions on this page settled on 2026-11-04 under decision 0054 after the source-reader gap review of the text phase 8 wrote on the declarations and statements chapters (`reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
 
 | Question | Principle | Family that still differs |
 |---|---|---|
 | {question}`Q-0038` | DEFARG-P1 | EDG 7.0 |
 | {question}`Q-0111` | DEFARG-P2 | Clang 22 |
-
-{question}`Q-0379` is provisional. DEFARG-P1 now says where a call of an immediate function in a default argument is checked (finding PU1-2), so the question waits for the next use of DEFARG-P1.
 
 - DEFARG-2: Clang rejects a call that needs a default argument added by
   a later namespace declaration, through an earlier using declaration.

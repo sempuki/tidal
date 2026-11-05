@@ -60,6 +60,10 @@ Kept open on 2026-11-03 under decision 0054, because the gap review does not sup
 
 Kept open on 2026-11-04 under decision 0055, because ORD-P1 changed in this commit: the object parameter now has the member's `const` and `volatile`, and a member with no ref-qualifier takes an rvalue reference also against another member's object parameter. The question waits for the next use of ORD-P1.
 
+Used on 2026-11-04 by the principle-use batch PU2 (`reports/clean-room/PU2/`), under decision 0056. A clean-room reader applied ORD-P1, without the rule text, to the programs of `swapped-member-candidates-ordered.cpp` and `reversed-member-object.cpp`. Each answer names ORD-P1 and gives an outcome that the tests allow, and the batch score counts the use as support. For `reversed-member-object.cpp` the answer says that the outcome depends on the compiler. The reader marked that answer doubtful (finding PU2-6), because the ORD-P1 example records GCC's lack of reversal only for two non-member templates. The answer's reason also says that EDG chooses the swapped member, and EDG 7.0 chooses the non-member.
+
+Kept open on 2026-11-04 under decision 0054, because two newest families, GCC 16 and EDG 7.0, differ from the answer, and the reader answered `reversed-member-object.cpp` with doubt (finding PU2-6). The latest gap review (2026-11-03) also reads with a small doubt.
+
 ## Opinions
 
 ### Gap review, 2026-11-03

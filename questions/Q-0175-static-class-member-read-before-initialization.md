@@ -58,6 +58,10 @@ Kept open on 2026-11-03 under decision 0054, because the review reads the refere
 
 Kept open on 2026-11-04 under decision 0055, because SINIT-P2 changed in this commit: it now says that a read of a member of another unit's class object, before the object's initialization gives the member a value, is undefined, and SINIT-3 cites the question. The question waits for the next use of SINIT-P2.
 
+Used on 2026-11-04 by the principle-use batch PU2 (`reports/clean-room/PU2/`), under decision 0056. A clean-room reader applied SINIT-P2, without the rule text, to the programs of `member-read-before-constructor-constant.cpp` and `across-units-class-member.cpp`. Each answer names SINIT-P2 and gives the outcome that the tests expect. `constinit` rejects a constructor that reads a member with no value, and the program of two units runs. The use supports the answer.
+
+Kept open on 2026-11-04 under decision 0054, because the latest gap review (2026-11-03) reads the reference as unclear. The question waits for a review that reads option 1 with no doubt.
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

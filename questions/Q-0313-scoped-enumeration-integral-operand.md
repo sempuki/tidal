@@ -1,6 +1,6 @@
 # Q-0313: Can an enumerator of a scoped enumeration give the operand of `alignas`, the width of a bit-field, or the size in an array `new`?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** ALN-8, BF-2, NEW-2, `tests/declarations/alignment/operand-scoped-enumeration.cpp`, `tests/classes/unions/bitfield-width-scoped-enumeration.cpp`, `tests/expressions/new-delete/array-scoped-enumeration-size.cpp`
 
 ## Context
@@ -31,7 +31,7 @@ have integral or unscoped enumeration type.
    Clang does everywhere.
 2. Each place converts a scoped enumerator to its integer value.
 
-## Provisional answer
+## Answer
 
 No (ALN-8, BF-2, NEW-2); EDG accepts it in `alignas` and a width, GCC in `new` (option 1). Two of three compilers reject the enumerator in each place,
 and option 1 gives the three places one rule. The tests expect a
@@ -50,6 +50,10 @@ Used on 2026-11-04 by the principle-use batch PU1 (`reports/clean-room/PU1/`), u
 Kept open on 2026-11-04 under decision 0056, because the score of batch PU1 does not count the use as support: the answers for two of the three forms name ALN-P1 and NEW-P1, and the batch key lists only UNI-P4. Each of the three answers reaches the answer. In each form only one newest family differs.
 
 Kept open on 2026-11-04 under decision 0055, because ALN-P1 changed in this commit after finding PU1-4. ALN-P1 now states the conditions of UNI-P4 for an operand of class type and points to UNI-P4. The three forms have one principle each: ALN-P1 for `alignas`, UNI-P4 for a bit-field width, and NEW-P1 for an array `new`. The question waits for the next use of ALN-P1, UNI-P4, or NEW-P1. In each form only one newest family differs.
+
+Used on 2026-11-04 by the principle-use batch PU2 (`reports/clean-room/PU2/`), under decision 0056. A clean-room reader applied ALN-P1, UNI-P4, and NEW-P1, without the rule text, to the programs of `operand-scoped-enumeration.cpp`, `bitfield-width-scoped-enumeration.cpp`, and `array-scoped-enumeration-size.cpp`. The batch key lists the three principles. Each answer names the principle of its place (ALN-P1, UNI-P4, or NEW-P1) and gives the outcome that the tests expect (a rejection). The use supports the answer.
+
+Settled on 2026-11-04 under decision 0054. The use in batch PU2 supports the answer, the three gap reviews of 2026-11-04 support it with no doubt, and ALN-P1, UNI-P4, and NEW-P1 give the same answer by the test of the style guide (section 3). In each form one newest family still differs (EDG 7.0 for `alignas` and the width, GCC 16 for `new`), and each test keeps its override.
 
 ## Opinions
 

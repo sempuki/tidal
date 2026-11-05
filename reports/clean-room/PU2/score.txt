@@ -1,0 +1,56 @@
+42/44 predictions match the tests
+
+A question's answer is reached when every program of the question has the right
+outcome. A use supports the answer when, in addition, every program's answer names
+a principle that the question waits on.
+
+| Question | Waits on | Programs | Right | Name a waited principle | Not decided | Answer reached | Use supports the answer |
+|---|---|---|---|---|---|---|---|
+| Q-0018 | ENUM-P3 | p16 p30 | 2/2 | 2/2 | 0 | yes | yes |
+| Q-0175 | SINIT-P2 | p05 p11 | 2/2 | 2/2 | 0 | yes | yes |
+| Q-0217 | ORD-P2 | p14 | 1/1 | 1/1 | 0 | yes | yes |
+| Q-0218 | ORD-P1 | p08 p12 | 2/2 | 2/2 | 0 | yes | yes |
+| Q-0293 | ORD-P2 | p03 | 0/1 | 0/1 | 0 | no | no |
+| Q-0313 | ALN-P1 UNI-P4 NEW-P1 | p02 p33 p38 | 3/3 | 3/3 | 0 | yes | yes |
+| Q-0314 | ALN-P1 UNI-P4 NEW-P1 | p01 p13 p15 p25 p26 p29 p32 p39 p44 | 9/9 | 9/9 | 0 | yes | yes |
+| Q-0334 | LSUP-P1 | p23 p31 p36 | 3/3 | 3/3 | 0 | yes | yes |
+| Q-0377 | LSUP-P1 NAM-P5 | p24 p41 | 2/2 | 2/2 | 0 | yes | yes |
+| Q-0378 | COND-P2 | p18 p22 | 2/2 | 2/2 | 0 | yes | yes |
+| Q-0379 | DEFARG-P1 CX-P3 | p06 p09 p21 | 3/3 | 3/3 | 0 | yes | yes |
+| Q-0383 | OPR-P3 | p17 p20 p34 | 3/3 | 3/3 | 0 | yes | yes |
+| Q-0386 | LSUP-P1 | p04 p10 p19 p35 p37 p40 | 5/6 | 5/6 | 1 | no | no |
+| Q-0387 | CMP-P3 | p27 p28 | 2/2 | 2/2 | 0 | yes | yes |
+| Q-0391 | ACC-P3 | p07 p42 p43 | 3/3 | 3/3 | 0 | yes | yes |
+
+| Principle | Answers that name it |
+|---|---|
+| ACC-P3 | p07 right, p42 right, p43 right |
+| ALN-P1 | p01 right, p02 right, p15 right, p25 right, p32 right |
+| CE-P3 | p05 right |
+| CMP-P1 | p35 wrong |
+| CMP-P3 | p27 right, p28 right |
+| CMP-P5 | p04 right, p10 right, p19 right, p23 right, p35 wrong, p37 right |
+| COND-P2 | p18 right, p22 right |
+| CONV-P2 | p35 wrong |
+| CX-P3 | p06 right, p09 right, p21 right |
+| CX-P4 | p05 right |
+| DEFARG-P1 | p06 right, p09 right, p21 right |
+| ENUM-P2 | p02 right, p33 right |
+| ENUM-P3 | p16 right, p30 right |
+| LSUP-P1 | p04 right, p10 right, p19 right, p23 right, p24 right, p31 right, p36 right, p37 right, p40 right |
+| NAM-P5 | p41 right |
+| NEW-P1 | p26 right, p38 right |
+| OPR-P3 | p17 right, p20 right, p34 right |
+| ORD-P1 | p03 wrong, p08 right, p12 right, p14 right |
+| ORD-P2 | p03 wrong, p08 right, p12 right, p14 right |
+| ORD-P4 | p03 wrong |
+| OVL-P1 | p22 right |
+| OVL-P3 | p03 wrong, p08 right, p12 right |
+| OVL-P4 | p04 right, p35 wrong |
+| SINIT-P2 | p05 right, p11 right |
+| UNI-P4 | p13 right, p29 right, p33 right, p39 right, p44 right |
+
+| Program | Test | Questions | Expected | Answer | Principles named | Reason given |
+|---|---|---|---|---|---|---|
+| p03 | templates/ordering/constraints-ellipsis.cpp | Q-0293 | accept, reject | reject | ORD-P1 ORD-P2 ORD-P4 OVL-P3 | Both templates compare as T against T, so each is at least as specialized; the ellipsis is not a pack for 6c, and 6d needs parameter lists of the same length, so neither wins and the call is ambiguous (doubtful: the model does not say how an ellipsis counts). |
+| p35 | overloading/overload-resolution/builtin-three-way-mixed.cpp | Q-0386 | accept | not-decided | CMP-P5 CMP-P1 OVL-P4 CONV-P2 | The first two assertions hold through the built-in (int, long) and (int, int) candidates, but the principles leave open whether int <=> double is rejected as narrowing or gives partial_ordering. |

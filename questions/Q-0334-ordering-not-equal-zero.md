@@ -1,6 +1,6 @@
 # Q-0334: Does an ordering class with `!=` against a literal 0, and no `==`, serve a defaulted `<=>`?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** LSUP-12, DCMP-4, `tests/foundations/language-support/ordering-defaulted-not-equal-zero-only.cpp`
 
 ## Context
@@ -42,7 +42,7 @@ with only `!=` serves Clang and EDG.
 2. The class must declare `==` or `!=` against `0`. Clang and EDG
    conform, and GCC rejects a valid program that declares only `!=`.
 
-## Provisional answer
+## Answer
 
 The class must declare `==` or `!=` against `0` (option 2). Clang and EDG accept either operator. GCC rejects a class with only `!=`, and the test records GCC with an override.
 
@@ -51,6 +51,10 @@ Changed on 2026-11-03. The source-reader gap review of the object model (`report
 Kept open on 2026-11-03 under decision 0054, because LSUP-12 changed on the same day, and a question settles only after a reader or a review has used the changed rule (decision 0055). GCC 16 is the one newest family that differs.
 
 Kept open on 2026-11-04 under decision 0055, because LSUP-P1 changed in this commit after finding PU1-3. LSUP-P1 now gives, in a table, the parts of an ordering class that each use of `<=>` needs, among them a comparison with `0` by `==` or `!=` for a defaulted `<=>`. The question waits for the next use of LSUP-P1. GCC 16 is the one newest family that differs.
+
+Used on 2026-11-04 by the principle-use batch PU2 (`reports/clean-room/PU2/`), under decision 0056. A clean-room reader applied LSUP-P1, without the rule text, to the programs of `ordering-complete-declaration.cpp`, `ordering-defaulted-not-equal-zero-only.cpp`, and `ordering-defaulted-needs-equal-zero.cpp`. Each answer names LSUP-P1 and gives the outcome that the tests expect. The answer for `ordering-defaulted-not-equal-zero-only.cpp` takes the row of the LSUP-P1 table for a defaulted `<=>`, which asks for a comparison with `0` by `==` or `!=`. The use supports the answer.
+
+Settled on 2026-11-04 under decision 0054. The use in batch PU2 supports the answer, the gap review of 2026-11-03 supports it with no doubt, and LSUP-P1 gives the same answer by the test of the style guide (section 3). GCC 16 still differs, and the test keeps its override.
 
 ## Opinions
 

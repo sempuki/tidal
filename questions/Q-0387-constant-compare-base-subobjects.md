@@ -1,6 +1,6 @@
 # Q-0387: Does constant evaluation reject a relational comparison that involves a base class subobject?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** CMP-8, CMP-P3, `tests/expressions/comparison/base-subobject-pointers-constant.cpp`, `tests/expressions/comparison/base-and-member-pointers-constant.cpp`
 **Source:** reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md, the CMP-P3 section
 
@@ -42,7 +42,7 @@ GCC's acceptance as an override.
    review's reading).
 2. Constant evaluation gives the result of the layout (GCC).
 
-## Provisional answer
+## Answer
 
 Yes; constant evaluation rejects the comparison (option 1). Two of the
 three newest families reject it, and the review reads it the same way.
@@ -52,6 +52,10 @@ rejects.
 Kept open on 2026-11-04 under decision 0054, because CMP-P3 changed in the commit that opened the question, and no reader or reviewer has used the changed principle.
 
 Kept open on 2026-11-04 under decision 0055, because CMP-P3 changed in this commit after finding PU1-8. CMP-P3 now says that a row of an array of arrays is not a complete object, with the row case as an example. The question waits for the next use of CMP-P3.
+
+Used on 2026-11-04 by the principle-use batch PU2 (`reports/clean-room/PU2/`), under decision 0056. A clean-room reader applied CMP-P3, without the rule text, to the programs of `base-and-member-pointers-constant.cpp` and `base-subobject-pointers-constant.cpp`. Each answer names CMP-P3 and gives the outcome that the tests expect (constant evaluation rejects the comparison). The use supports the answer.
+
+Settled on 2026-11-04 under decision 0054. The use in batch PU2 supports the answer, the gap review of 2026-11-04 supports it with no doubt, and CMP-P3 gives the same answer by the test of the style guide (section 3). GCC 16 still differs, and the tests keep their overrides.
 
 ## Opinions
 

@@ -45,6 +45,10 @@ Kept open on 2026-11-04 under decisions 0054 and 0056, because the use in batch 
 
 Kept open on 2026-11-04 under decision 0055, because ENUM-P3 changed in this commit after finding PU1-1. ENUM-P3 now says what each baseline compiler does with an enumeration whose values need more than 64 bits. On x86-64, GCC accepts it with a 128-bit type, and Clang and EDG reject it. With `-m32`, every compiler rejects it (`tests/declarations/enumerations/unscoped-value-too-large-ilp32.cpp`). The question waits for the next use of ENUM-P3.
 
+Used on 2026-11-04 by the principle-use batch PU2 (`reports/clean-room/PU2/`), under decision 0056. A clean-room reader applied ENUM-P3, without the rule text, to the programs of `unscoped-value-too-large.cpp` and `unscoped-value-too-large-ilp32.cpp`. Each answer names ENUM-P3 and gives an outcome that the tests allow. On x86-64 the outcome depends on the compiler, and with `-m32` every compiler rejects the enumeration. The use supports the answer.
+
+Kept open on 2026-11-04 under decision 0054, because the latest gap review (2026-11-04) still reads with doubt on GCC's 128-bit type. The use in batch PU2 meets the other conditions.
+
 ## Opinions
 
 ### Gap review, 2026-11-03

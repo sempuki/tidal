@@ -51,6 +51,10 @@ Checked on 2026-11-04 under the principle test of the style guide (section 3, it
 
 Kept open on 2026-11-04 under decision 0055, because ORD-P2 changed in this commit: steps 1, 3, and 6 now give the type of an invented value, the pairing of packs, and the agreement of the values from all pairs. Step 6d did not change. The question waits for the next use of ORD-P2.
 
+Used on 2026-11-04 by the principle-use batch PU2 (`reports/clean-room/PU2/`), under decision 0056. A clean-room reader applied ORD-P2, without the rule text, to the program of `constraints-ellipsis.cpp`. The answer names ORD-P1, ORD-P2, ORD-P4, and OVL-P3 and says that the call is ambiguous, which is option 2 and GCC's result. The base expectation is option 1, in which the constrained template wins. The reader marked the answer doubtful (finding PU2-2), because the model does not say how an ellipsis counts in steps 6c and 6d of ORD-P2. The use does not support the answer.
+
+Kept open on 2026-11-04 under decisions 0054 and 0056, because the use in batch PU2 reaches option 2 with doubt (finding PU2-2). ORD-P2 does not rule out option 2. GCC 16 is the one newest family that differs.
+
 ## Opinions
 
 ### Gap review, 2026-11-03

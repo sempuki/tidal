@@ -60,6 +60,10 @@ Kept open on 2026-11-04 under decisions 0054 and 0055. Item RV2 changed the answ
 
 Kept open on 2026-11-04 under decision 0055, because OPR-P3 changed in this commit after finding PU1-5. OPR-P3 now lists the suffixes that the language uses, says that `u8` is not one of them, says that no baseline compiler rejects the declaration under `-pedantic-errors`, and gives what each compiler does with a literal that uses such a suffix. The question waits for the next use of OPR-P3.
 
+Used on 2026-11-04 by the principle-use batch PU2 (`reports/clean-room/PU2/`), under decision 0056. A clean-room reader applied OPR-P3, without the rule text, to the programs of `literal-reserved-suffix-u8.cpp`, `literal-reserved-suffix-used.cpp`, and `literal-builtin-suffix-wins.cpp`. Each answer names OPR-P3 and gives an outcome that the tests allow, and the batch score counts the use as support. The answers for the two reserved suffixes say that the outcome depends on the compiler, from the compiler table of OPR-P3. The answer for `literal-builtin-suffix-wins.cpp` says that the program runs. The reader marked the three answers doubtful (finding PU2-5), because the batch has no outcome for a program that is not valid and needs no diagnostic.
+
+Kept open on 2026-11-04 under decisions 0054 and 0055, because the reader in batch PU2 answered each program with doubt (finding PU2-5), as in batch PU1. No answer gives option 3 as its outcome. The question waits for a review or a reader batch that reads option 3 with no doubt.
+
 ## Opinions
 
 ### Gap review, 2026-11-04

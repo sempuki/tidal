@@ -238,6 +238,13 @@ The results are in `tests/RESULTS.md`. All eight compilers agree on 29
 of 52 tests. Each divergence has a question, except the
 implementation-defined limits of ALN-5 and the GCC 14 result of ALN-2.
 
+Two questions on this page settled on 2026-11-04 under decision 0054 after the principle-use batch PU2 (`reports/clean-room/PU2/`). For each, the batch's use of the principle supports the answer, the latest gap review supports it with no doubt, and the principle gives the same answer. Each test keeps its override for the family that still differs:
+
+| Question | Principle | Family that still differs |
+|---|---|---|
+| {question}`Q-0313` | ALN-P1 | EDG 7.0 |
+| {question}`Q-0314` | ALN-P1 | GCC 16 |
+
 Five questions on this page settled under decision 0054. Q-0070 and Q-0071 settled on 2026-11-03 after the source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`). Q-0069, Q-0073, and Q-0360 settled on 2026-11-04 after the source-reader gap review of the text phase 8 wrote on the declarations and statements chapters (`reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
 
 | Question | Principle | Family that still differs |

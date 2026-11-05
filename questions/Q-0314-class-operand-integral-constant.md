@@ -1,6 +1,6 @@
 # Q-0314: Can a constant of class type that converts to an integer give the operand of `alignas` or the width of a bit-field?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** ALN-8, BF-1, `tests/declarations/alignment/operand-class-converts.cpp`, `tests/classes/unions/bitfield-width-class-converts.cpp`
 
 ## Context
@@ -29,7 +29,7 @@ The two tests above, and
 2. Only a value of integral or unscoped enumeration type is valid. GCC
    does this.
 
-## Provisional answer
+## Answer
 
 Yes (ALN-8, BF-1), as Clang and EDG do; GCC rejects (option 1). Two of three compilers accept the operand, and the array
 `new` size converts a class on every compiler. The tests expect an
@@ -48,6 +48,10 @@ Used on 2026-11-04 by the principle-use batch PU1 (`reports/clean-room/PU1/`), u
 Kept open on 2026-11-04 under decision 0056, because the use in batch PU1 does not support the answer: three of the eight answers do not name UNI-P4, and finding PU1-4 shows that ALN-P1 does not give the `alignas` forms on its own. GCC 16 is the only newest family that differs.
 
 Kept open on 2026-11-04 under decision 0055, because ALN-P1 and ALN-8 changed in this commit after finding PU1-4. ALN-P1 now asks of an operand of class type what UNI-P4 asks of a width: a literal class with exactly one `constexpr` conversion function to an integer type. A new test, `tests/declarations/alignment/operand-class-not-literal.cpp`, checks that every compiler rejects an operand whose class is not a literal type. The question waits for the next use of ALN-P1, UNI-P4, or NEW-P1. GCC 16 is the only newest family that differs.
+
+Used on 2026-11-04 by the principle-use batch PU2 (`reports/clean-room/PU2/`), under decision 0056. A clean-room reader applied ALN-P1, UNI-P4, and NEW-P1, without the rule text, to the programs of `operand-class-converts.cpp`, `operand-class-conversion-ambiguous.cpp`, `operand-class-conversion-not-constexpr.cpp`, `operand-class-not-literal.cpp`, `bitfield-width-class-converts.cpp`, `bitfield-width-class-two-conversions.cpp`, `bitfield-width-class-not-constexpr.cpp`, `bitfield-width-class-not-literal.cpp`, and `array-class-size.cpp`. Each answer names the principle of its place and gives the outcome that the tests expect. The reader marked the reason for `bitfield-width-class-not-literal.cpp` and `operand-class-not-literal.cpp` doubtful, and not the outcome (finding PU2-4). The reader needed the glossary entry for a literal type, and CE-P1 seemed to allow a temporary of any type. The use supports the answer.
+
+Settled on 2026-11-04 under decision 0054. The use in batch PU2 supports the answer, the gap reviews of 2026-11-04 support it with no doubt, and ALN-P1 and UNI-P4 give the same answer by the test of the style guide (section 3). Finding PU2-4 does not keep the question open. Its doubt concerns why a class that is not a literal type fails, a condition beside the options of the question, and both of the reader's paths give the rejection. The answers for `operand-class-converts.cpp` and `bitfield-width-class-converts.cpp`, which decide between the options, carry no doubt. GCC 16 still differs, and the tests keep their overrides.
 
 ## Opinions
 

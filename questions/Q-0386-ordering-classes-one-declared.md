@@ -63,6 +63,10 @@ Kept open on 2026-11-04 under decisions 0055 and 0056, because the use in batch 
 
 Kept open on 2026-11-04 under decision 0055, because LSUP-P1 changed in this commit after finding PU1-3. LSUP-P1 now gives, in a table, the parts of an ordering class that each use of `<=>` needs, and says that a use needs only the class that it yields. The question waits for the next use of LSUP-P1. EDG 7.0 is the one newest family that differs.
 
+Used on 2026-11-04 by the principle-use batch PU2 (`reports/clean-room/PU2/`), under decision 0056. A clean-room reader applied LSUP-P1 and the comparison principles, without the rule text, to the programs of `builtin-three-way.cpp`, `ordering-strong-only-builtin.cpp`, `ordering-strong-only-builtin-runtime.cpp`, `builtin-three-way-mixed.cpp`, `ordering-partial-not-declared.cpp`, and `ordering-strong-only-defaulted.cpp`. Five answers name LSUP-P1 and give the outcome that the tests expect. The answer for `builtin-three-way-mixed.cpp` names CMP-P5, CMP-P1, OVL-P4, and CONV-P2 and gives no outcome (`not-decided`, finding PU2-1). The principles do not say whether `int <=> double` is rejected as narrowing or gives `partial_ordering`. The use does not support the answer.
+
+Kept open on 2026-11-04 under decisions 0055 and 0056, because the use in batch PU2 does not support the answer: one of the six answers gives no outcome (finding PU2-1). EDG 7.0 is the one newest family that differs.
+
 ## Opinions
 
 ### Gap review, 2026-11-04

@@ -1,6 +1,6 @@
 # Q-0391: Does a friend template that names a member of a class template befriend only that member, in every specialization?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** ACC-20, `tests/classes/access/friend-member-of-explicit-specialization.cpp`, `tests/classes/access/friend-member-of-specialization-other-member.cpp`
 **Source:** the ACC-20 note of `reports/review/2026-11-04-gap-review-phase-8-classes-overloading.md`
 
@@ -45,7 +45,7 @@ Clang's acceptance.
 2. Only the members of specializations made from the template are
    friends, and an explicit specialization's member is not (EDG).
 
-## Provisional answer
+## Answer
 
 The named member of every specialization is a friend, and no other
 member is (option 1). The gap review of the text phase 8 wrote reads
@@ -60,6 +60,10 @@ Used on 2026-11-04 by the principle-use batch PU1 (`reports/clean-room/PU1/`), u
 Kept open on 2026-11-04 under decision 0054, because the use in batch PU1 reaches the answer for the explicit specialization form with doubt (finding PU1-6). ACC-P3 does not decide that form, so the use does not pass step 3 of the test of the style guide. In each form one newest family differs.
 
 Kept open on 2026-11-04 under decision 0055, because ACC-P3 changed in this commit after finding PU1-6. ACC-P3 now says that befriending a member of a class template befriends no other member, and that the member which an explicit specialization declares with the same name and type is a friend too. The question waits for the next use of ACC-P3. In each form one newest family differs.
+
+Used on 2026-11-04 by the principle-use batch PU2 (`reports/clean-room/PU2/`), under decision 0056. A clean-room reader applied ACC-P3, without the rule text, to the programs of `friend-member-of-specialization-other-member.cpp`, `friend-member-of-every-specialization.cpp`, and `friend-member-of-explicit-specialization.cpp`. Each answer names ACC-P3 and gives the outcome that the tests expect, with no doubt. The answer for `friend-member-of-explicit-specialization.cpp` takes the sentence of ACC-P3 on the member that an explicit specialization declares with the same name and type. The use supports the answer.
+
+Settled on 2026-11-04 under decision 0054. The use in batch PU2 supports the answer, the gap review of 2026-11-04 supports it with no doubt, and ACC-P3 gives the same answer by the test of the style guide (section 3). In each form one newest family still differs (EDG 7.0 for the explicit specialization, Clang 22 for the other member), and each test keeps its override.
 
 ## Opinions
 

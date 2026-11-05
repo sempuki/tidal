@@ -901,6 +901,12 @@ File::File* q = nullptr;        // rejected: names the constructor
 The results are in `tests/RESULTS.md`. All eight compilers agree on 238
 of 242 tests.
 
+One question on this page settled on 2026-11-04 under decision 0054 after the principle-use batch PU2 (`reports/clean-room/PU2/`). The batch's use of the principle supports the answer, the latest gap review supports it with no doubt, and the principle gives the same answer. The table gives the principle and the family that differs:
+
+| Question | Principle | Family that still differs |
+|---|---|---|
+| {question}`Q-0377` | NAM-P5 | none |
+
 The clean-room writer probed qualified lookup, using directives,
 argument-dependent lookup, and the injected class name with Clang 22,
 GCC 16, and EDG 7.0, and checked the tests on Clang 18, GCC 14, and EDG

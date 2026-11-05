@@ -389,6 +389,12 @@ class Token {
 The results are in `tests/RESULTS.md`. All eight compilers agree on 73
 of 77 tests.
 
+One question on this page settled on 2026-11-04 under decision 0054 after the principle-use batch PU2 (`reports/clean-room/PU2/`). The batch's use of the principle supports the answer, the latest gap review supports it with no doubt, and the principle gives the same answer. Each test keeps its override for the family that still differs:
+
+| Question | Principle | Family that still differs |
+|---|---|---|
+| {question}`Q-0391` | ACC-P3 | EDG 7.0 for an explicit specialization, Clang 22 for another member |
+
 One question on this page settled on 2026-11-03 under decision 0054 after the source-reader gap review of the open questions on classes and statements (`reports/review/2026-11-03-gap-review-questions-classes-statements.md`). For each, the review supports the answer with no doubt, and a principle gives the same answer. Each test keeps its override for the family that still differs:
 
 | Question | Principle | Family that still differs |

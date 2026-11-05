@@ -699,6 +699,13 @@ int y = s.span.range.second;     // 2: Point and Pair are layout-compatible
 The results are in `tests/RESULTS.md`. All eight compilers agree on 151
 of 164 tests.
 
+Two questions on this page settled on 2026-11-04 under decision 0054 after the principle-use batch PU2 (`reports/clean-room/PU2/`). For each, the batch's use of the principle supports the answer, the latest gap review supports it with no doubt, and the principle gives the same answer. Each test keeps its override for the family that still differs:
+
+| Question | Principle | Family that still differs |
+|---|---|---|
+| {question}`Q-0313` | UNI-P4 | EDG 7.0 |
+| {question}`Q-0314` | UNI-P4 | GCC 16 |
+
 One question on this page settled on 2026-11-04 under decision 0054 after the principle-use batch PU1 (`reports/clean-room/PU1/`). The batch's use of the principle supports the answer, the latest gap review supports it with no doubt, and the principle gives the same answer. The tests keep their overrides for the family that still differs:
 
 | Question | Principle | Family that still differs |

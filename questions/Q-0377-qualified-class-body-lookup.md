@@ -1,6 +1,6 @@
 # Q-0377: Does the body of a class defined with a qualified name see the members of the qualifier without qualification?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** NAM-21, LSUP-3, `tests/foundations/names/definition-class-body-sees-namespace.cpp`, `tests/foundations/language-support/tuple-protocol-page-example.cpp`
 **Source:** reports/clean-room/roadmap-5/programmer.md, section 1.4 (the `prelude.cpp` row) and section 1.5
 
@@ -39,7 +39,7 @@ compilers.
    qualification. No compiler behaves this way, and the page example
    would be invalid.
 
-## Provisional answer
+## Answer
 
 Yes; the class body sees the members of the qualifier (option 1).
 Every compiler agrees, and the language-support page's own example
@@ -54,6 +54,10 @@ Used on 2026-11-04 by the principle-use batch PU1 (`reports/clean-room/PU1/`), u
 Kept open on 2026-11-04 under decisions 0055 and 0056, because the use in batch PU1 does not support the answer: one of the two answers does not name NAM-P5. The question also waits for a use of the changed NAM-21. No newest family differs.
 
 Kept open on 2026-11-04 under decision 0055, because LSUP-P1, which the answer for `tuple-protocol-page-example.cpp` named, changed in this commit after finding PU1-3. The question waits for the next use of NAM-P5 or LSUP-P1, and for a use of the changed NAM-21. No newest family differs.
+
+Used on 2026-11-04 by the principle-use batch PU2 (`reports/clean-room/PU2/`), under decision 0056. A clean-room reader applied LSUP-P1 and NAM-P5, without the rule text, to the programs of `definition-class-body-sees-namespace.cpp` and `tuple-protocol-page-example.cpp`. The batch key lists both principles. The answer for `definition-class-body-sees-namespace.cpp` names NAM-P5, and the answer for `tuple-protocol-page-example.cpp` names LSUP-P1. Each answer gives the outcome that the tests expect (the program runs). The use supports the answer.
+
+Settled on 2026-11-04 under decision 0054. The use in batch PU2 supports the answer, the two gap reviews of 2026-11-04 that read the question support it with no doubt, and NAM-P5 gives the same answer by the test of the style guide (section 3). The answer for `definition-class-body-sees-namespace.cpp` applies NAM-P5 to the body of a class defined with a qualified name, the case that the changed NAM-21 adds. No newest family differs.
 
 ## Opinions
 

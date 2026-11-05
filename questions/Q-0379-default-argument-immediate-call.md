@@ -1,6 +1,6 @@
 # Q-0379: Is a `consteval` call in a default argument checked at the declaration?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** DEFARG-10, `tests/declarations/functions/default-arguments/default-immediate-call-checked-at-call.cpp`, `tests/declarations/functions/default-arguments/default-immediate-call-unused-not-checked.cpp`, `tests/declarations/functions/default-arguments/default-immediate-call-used-not-constant.cpp`
 **Source:** reports/review/2026-11-04-gap-review-phase-7-additions.md, the DEFARG-10 section
 
@@ -40,7 +40,7 @@ and records EDG's rejection as an override.
 2. The call is checked at the declaration, as the rest of the default
    argument is (EDG).
 
-## Provisional answer
+## Answer
 
 The call is checked where a call uses the default argument (option 1).
 Clang 22 and GCC 16 agree, and Tidal follows the two when EDG alone
@@ -56,6 +56,10 @@ Used on 2026-11-04 by the principle-use batch PU1 (`reports/clean-room/PU1/`), u
 Kept open on 2026-11-04 under decisions 0055 and 0056, because the use in batch PU1 does not support the answer: no answer names DEFARG-P2, and the reader read one form with doubt (finding PU1-2). EDG 7.0 is the one newest family that differs.
 
 Kept open on 2026-11-04 under decision 0055, because DEFARG-P1 and CX-P3 changed in this commit after finding PU1-2. DEFARG-P1 now says that the declaration checks a default argument at once, except a call of an immediate function, which each call that uses the default argument evaluates and checks. DEFARG-P1 now lists DEFARG-10. A new test, `tests/declarations/functions/default-arguments/default-immediate-call-used-not-constant.cpp`, checks that every compiler rejects a call that uses such a default argument when the argument is not a constant. The question waits for the next use of DEFARG-P1. EDG 7.0 is the one newest family that differs.
+
+Used on 2026-11-04 by the principle-use batch PU2 (`reports/clean-room/PU2/`), under decision 0056. A clean-room reader applied DEFARG-P1 and CX-P3, without the rule text, to the programs of `default-immediate-call-unused-not-checked.cpp`, `default-immediate-call-used-not-constant.cpp`, and `default-immediate-call-checked-at-call.cpp`. The batch key lists both principles. Each answer names both and gives the outcome that the tests expect, with no doubt. The use supports the answer.
+
+Settled on 2026-11-04 under decision 0054. The use in batch PU2 supports the answer, the gap review of 2026-11-04 on the declarations and statements chapters supports it with no doubt, and DEFARG-P1 gives the same answer by the test of the style guide (section 3). EDG 7.0 still differs, and the tests keep their overrides.
 
 ## Opinions
 

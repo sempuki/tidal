@@ -53,6 +53,10 @@ Kept open on 2026-11-03 under decision 0054, because two of the newest families 
 
 Kept open on 2026-11-04 under decision 0055, because ORD-P2 changed in this commit: steps 1, 3, and 6 now give the type of an invented value, the pairing of packs, and the agreement of the values from all pairs. Steps 5a and 5b did not change. The question waits for the next use of ORD-P2.
 
+Used on 2026-11-04 by the principle-use batch PU2 (`reports/clean-room/PU2/`), under decision 0056. A clean-room reader applied ORD-P1 and ORD-P2, without the rule text, to the program of `reference-kind-and-qualifiers.cpp`. The answer names both principles and says that the outcome depends on the compiler: Clang finds no order and rejects, and GCC and EDG choose `operator T&()`. The test allows both outcomes, and the batch score counts the use as support. The answer takes the split from the example table of ORD-P1 and does not say which option the model gives.
+
+Kept open on 2026-11-04 under decision 0054, because two newest families, GCC 16 and EDG 7.0, differ from the answer (`documentation/decisions/pending.md`, row 1). The answer in batch PU2 also does not choose between the options.
+
 ## Opinions
 
 ### Gap review, 2026-11-03
