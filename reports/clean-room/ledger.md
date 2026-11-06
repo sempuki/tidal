@@ -865,8 +865,8 @@ own IDs (RV5-A-n and RV5-B-n).
 | X9-13 | `X9/report.md` | commit | bddd2a08 |
 | X9-14 | `X9/report.md` | commit | bddd2a08 |
 | X9-15 | `X9/report.md` | commit | bddd2a08 |
-| P1-1 | `P1/report.md` | planned | decision 0059, item FE: front-end round 23; test declarations/declarators/unknown-bound-converted-class-elements.cpp (item T) |
-| P1-2 | `P1/report.md` | planned | decision 0059, item FE: front-end round 23; test declarations/initialization/references/const-ref-through-converting-constructor.cpp and overloading/overload-resolution/const-ref-parameter-through-converting-constructor.cpp (item T) |
+| P1-1 | `P1/report.md` | commit | 1017b19c (front-end round 23); test declarations/declarators/unknown-bound-converted-class-elements.cpp |
+| P1-2 | `P1/report.md` | commit | 1017b19c (front-end round 23); test declarations/initialization/references/const-ref-through-converting-constructor.cpp and overloading/overload-resolution/const-ref-parameter-through-converting-constructor.cpp |
 | P1-3 | `P1/report.md` | commit | 0f3f522f |
 | P1-4 | `P1/report.md` | out of scope | the specification does not list what the language lacks |
 | P1-5 | `P1/report.md` | commit | 0f3f522f |
@@ -877,10 +877,10 @@ own IDs (RV5-A-n and RV5-B-n).
 | I4-1 | `I4/report.md` | commit | ee6085aa: COND-16 base row |
 | I4-2 | `I4/report.md` | commit | ee6085aa: COND-16 step 1, Q-0418 |
 | I4-3 | `I4/report.md` | commit | ee6085aa: COND-P2 and COND-11 |
-| I4-4 | `I4/report.md` | planned | decision 0059, item FE: front-end round 23; test expressions/conditional/class-converts-to-int-reference-lvalue.cpp (item T) |
-| I4-5 | `I4/report.md` | planned | decision 0059, item FE: front-end round 23; test expressions/conditional/class-explicit-conversion-only.cpp (item T) |
-| I4-6 | `I4/report.md` | planned | decision 0059, item FE: front-end round 23; test expressions/conditional/class-ambiguous-base-operand.cpp (item T) |
-| I4-7 | `I4/report.md` | planned | decision 0059, item FE: front-end round 23; test expressions/conditional/class-private-base-operand.cpp (item T) |
+| I4-4 | `I4/report.md` | commit | 1017b19c (front-end round 23); test expressions/conditional/class-converts-to-int-reference-lvalue.cpp |
+| I4-5 | `I4/report.md` | commit | 1017b19c (front-end round 23); test expressions/conditional/class-explicit-conversion-only.cpp |
+| I4-6 | `I4/report.md` | commit | 1017b19c (front-end round 23); test expressions/conditional/class-ambiguous-base-operand.cpp |
+| I4-7 | `I4/report.md` | commit | 1017b19c (front-end round 23); test expressions/conditional/class-private-base-operand.cpp |
 | I4-8 | `I4/report.md` | commit | 03e578c4 |
 | I4-9 | `I4/report.md` | commit | 03e578c4 |
 | I4-10 | `I4/report.md` | commit | 03e578c4 |
