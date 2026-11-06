@@ -190,11 +190,11 @@ forward-progress rule belongs with threads, which are out of scope.
 ## Next steps
 
 `documentation/roadmap.md` orders the work (decisions 0033, 0039, 0050,
-0051, 0054, 0055, 0056, and 0057). Phases 1 to 10 are done. Next:
+0051, 0054, 0055, 0056, 0057, and 0058). Phases 1 to 10 are done, and
+phase 11 is provisional. Next:
 
-1. An eighth round of clean-room roadmaps under
-   `reports/clean-room/roadmap-8/`, from the same five views, then a
-   decision that adopts phase 11.
+1. Phase 11, items F, L, R5, and P (decision 0058). Then RV4 and PK2,
+   then E and FE.
 
 The items that wait on the maintainer are in
 `documentation/decisions/pending.md`, one row each, with the options,
