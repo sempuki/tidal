@@ -33,7 +33,7 @@ context decides which types of the two templates take part:
 | a call with a swapped {term}`rewritten candidate` | as for a call, with the swapped parameters reversed | ORD-7 |
 | an initialization by conversion {term}`function templates <function template>` | the result types | ORD-8 |
 | the address of an {term}`overload set` with a target type ({rule}`OVL-19`) | the function types, as one pair | ORD-9 |
-| the address of an overload set with no target type, such as the initializer of a variable declared with `auto` ({rule}`OVL-20`) | none; constraints remove a function only under the conditions of ORD-13 | ORD-13 |
+| the address of an overload set with no target type, such as the initializer of a variable declared with `auto` ({rule}`OVL-20`) | none; constraints remove a function only under the conditions of ORD-13. Two specializations that explicit template arguments give are not ordered, and the address is ambiguous ({question}`Q-0405`) | ORD-13 |
 | an {term}`explicit specialization`, {term}`explicit instantiation`, or friend declaration ({rule}`DED-32`) | the function types, as one pair | ORD-9 |
 | a placement deallocation function template ({rule}`DED-39`) | the function types, as one pair | ORD-9 |
 | {term}`partial specializations <partial specialization>` ({rule}`TSP-15`, {rule}`TSP-11`) | one parameter for each, of the class with its pattern | ORD-14 |
@@ -205,6 +205,9 @@ in function parameter lists and in the {term}`template arguments <template argum
   its position and after it.
 - A function parameter pack counts once, whatever the number of its
   call arguments. A pack with no call arguments takes no part (ORD-5).
+- In the template arguments of a class template specialization, an
+  invented pack expansion with no argument of the other list at its
+  position takes no part.
 - An invented pack cannot give a value to a parameter that is not a
   pack, so such a pair fails.
 :::
@@ -351,6 +354,11 @@ functions, templates or not, only if all these conditions hold
   in an ellipsis or neither does. For two templates, the ellipsis does
   not count, so `f(T)` and `f(T, ...)` meet the first condition
   ({question}`Q-0293`).
+- If exactly one of two templates is a swapped rewritten candidate
+  ({rule}`ORD-7`), every template parameter of both is deducible from
+  the function parameters, and exactly one reordering of the template
+  parameters makes the two heads equivalent and the parameter types
+  the same.
 
 {rule}`OVL-19`, {rule}`OVL-30`, and {rule}`OVL-41` use these conditions.
 :::
@@ -359,7 +367,7 @@ functions, templates or not, only if all these conditions hold
 
 :::{rule} ORD-14
 :kind: required
-:tests: templates/ordering/partial-specializations.cpp templates/ordering/partial-specializations-placeholder.cpp templates/ordering/constraints-partial.cpp templates/ordering/constraints-partial-different-patterns.cpp templates/ordering/partial-specializations-int-against-auto.cpp templates/ordering/partial-specializations-int-against-constrained-auto.cpp
+:tests: templates/ordering/partial-specializations.cpp templates/ordering/partial-specializations-placeholder.cpp templates/ordering/constraints-partial.cpp templates/ordering/constraints-partial-different-patterns.cpp templates/ordering/partial-specializations-int-against-auto.cpp templates/ordering/partial-specializations-int-against-constrained-auto.cpp templates/ordering/address-explicit-arguments-no-target.cpp
 
 Two partial specializations of one template compare as two function
 templates. Each has the template head and constraints of its partial
@@ -613,8 +621,8 @@ Kind<1> k;                                                 // 1
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 44
-of 63 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 45
+of 64 tests.
 
 ### Divergences
 

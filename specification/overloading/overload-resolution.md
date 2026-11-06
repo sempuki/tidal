@@ -532,7 +532,7 @@ The matching functions of OVL-18 are reduced in these steps:
 
 :::{rule} OVL-20
 :kind: reject
-:tests: overloading/overload-resolution/address-ambiguous.cpp overloading/overload-resolution/address-no-target-return.cpp overloading/overload-resolution/address-no-target-init-capture.cpp overloading/overload-resolution/address-no-target-auto-template-parameter.cpp overloading/overload-resolution/address-no-target-cast-void.cpp overloading/overload-resolution/address-no-target-expression-statement.cpp overloading/overload-resolution/address-no-target-single-positions.cpp overloading/overload-resolution/address-no-target-template.cpp overloading/overload-resolution/address-no-target-single.cpp overloading/overload-resolution/address-no-conversion.cpp overloading/overload-resolution/address-noexcept-target.cpp overloading/overload-resolution/address-no-target-explicit-arguments.cpp overloading/overload-resolution/address-no-target-explicit-partial.cpp overloading/overload-resolution/address-no-target-constraints.cpp overloading/overload-resolution/address-no-target-more-constrained.cpp overloading/overload-resolution/address-no-target-constraints-different-parameters.cpp declarations/auto/overload-set-template.cpp
+:tests: overloading/overload-resolution/address-ambiguous.cpp overloading/overload-resolution/address-no-target-return.cpp overloading/overload-resolution/address-no-target-init-capture.cpp overloading/overload-resolution/address-no-target-auto-template-parameter.cpp overloading/overload-resolution/address-no-target-cast-void.cpp overloading/overload-resolution/address-no-target-expression-statement.cpp overloading/overload-resolution/address-no-target-single-positions.cpp overloading/overload-resolution/address-no-target-template.cpp overloading/overload-resolution/address-no-target-single.cpp overloading/overload-resolution/address-no-conversion.cpp overloading/overload-resolution/address-noexcept-target.cpp overloading/overload-resolution/address-no-target-explicit-arguments.cpp overloading/overload-resolution/address-no-target-explicit-partial.cpp overloading/overload-resolution/address-no-target-constraints.cpp overloading/overload-resolution/address-no-target-more-constrained.cpp overloading/overload-resolution/address-no-target-constraints-different-parameters.cpp declarations/auto/overload-set-template.cpp templates/ordering/address-explicit-arguments-no-target.cpp
 
 After OVL-19, exactly one function must remain. Without a target type,
 these steps apply:
@@ -848,8 +848,8 @@ struct Self {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 153
-of 182 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 154
+of 183 tests.
 
 ### Divergences
 

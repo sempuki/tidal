@@ -46,14 +46,14 @@ changes their answers and the expectations of those tests.
 | 1 | 39: Q-0017, Q-0021, Q-0045, Q-0062, Q-0080, Q-0082, Q-0084, Q-0121, Q-0126, Q-0129, Q-0132, Q-0133, Q-0142, Q-0143, Q-0148, Q-0153, Q-0159, Q-0165, Q-0168, Q-0174, Q-0216, Q-0217, Q-0218, Q-0227, Q-0234, Q-0241, Q-0248, Q-0251, Q-0274, Q-0301, Q-0320, Q-0323, Q-0331, Q-0335, Q-0339, Q-0341, Q-0368, Q-0374, Q-0403 | 84 |
 | 2 | 1: Q-0322 | 0 |
 | 3 | 12: Q-0195, Q-0197, Q-0198, Q-0201, Q-0203, Q-0235, Q-0266, Q-0272, Q-0277, Q-0278, Q-0280, Q-0282 | 23 |
-| 4 | 31: Q-0074, Q-0077, Q-0087, Q-0123, Q-0131, Q-0140, Q-0142, Q-0181, Q-0190, Q-0191, Q-0205, Q-0225, Q-0226, Q-0243, Q-0246, Q-0275, Q-0277, Q-0280, Q-0300, Q-0307, Q-0330, Q-0336, Q-0362, Q-0366, Q-0369, Q-0371, Q-0389, Q-0393, Q-0394, Q-0401, Q-0404 | 69 |
+| 4 | 37: Q-0074, Q-0077, Q-0087, Q-0123, Q-0131, Q-0140, Q-0142, Q-0181, Q-0190, Q-0191, Q-0205, Q-0225, Q-0226, Q-0243, Q-0246, Q-0275, Q-0277, Q-0280, Q-0300, Q-0307, Q-0330, Q-0336, Q-0362, Q-0366, Q-0369, Q-0371, Q-0389, Q-0393, Q-0394, Q-0401, Q-0404, Q-0405, Q-0406, Q-0407, Q-0408, Q-0409, Q-0410 | 74 |
 | 5 | 1: Q-0235 | 3 |
 | 6 | 2: Q-0041, Q-0343 | 5 |
 | 7 | 5: Q-0007, Q-0087, Q-0116, Q-0181, Q-0188 | 5 |
 | 8 | none | 0 |
 | 9 | 8: Q-0006, Q-0008, Q-0116, Q-0119, Q-0182, Q-0183, Q-0186, Q-0312 | 1 |
 
-The rows hold 92 of the open questions.
+The rows hold 98 of the open questions.
 
 ## Matrix against review
 
@@ -107,6 +107,12 @@ each item, except Q-0307, where Tidal follows the review.
 | VIRT-1, Q-0394 | a derived member function with no ref-qualifier against a base virtual function with one; VIRT-1 says it does not override, and Clang 18 follows the review | matrix | matrix | matrix | `2026-11-04-gap-review-phase-8-classes-overloading` |
 | ACC-20, Q-0404 | a friend declaration that names a member through a qualifier such as `A<T*>::`, used by the member of a specialization that does not match; ACC-20 gives access | matrix | matrix | review | `2026-11-05-gap-review-phase-9-classes-overloading-exceptions` |
 | COND-16, Q-0401 | a `Derived` prvalue against a `Base` xvalue in a conditional expression; COND-16 says the reference does not bind directly, so the result is a prvalue | matrix | review | matrix | `2026-11-05-gap-review-phase-9-expressions-templates` |
+| ENUM-10, Q-0407 | an enumerator whose initializer is an enumerator of another unscoped enumeration; ENUM-10 gives the enumeration type | matrix | matrix | matrix | `2026-11-05-gap-review-phase-9-declarations-statements-foundations` |
+| NAM-21, Q-0410 | the underlying type in the definition of an enumeration with a qualified name; NAM-21 does not look it up in the named scope | matrix | matrix | matrix | `2026-11-05-gap-review-phase-9-declarations-statements-foundations` |
+| PFX-P3, CLS-2, Q-0406 | a default template argument of a member template; the class is not complete there | matrix | matrix | matrix | `2026-11-05-gap-review-phase-9-expressions-templates` |
+| TARG-27, Q-0409 | an injected class name from two bases as a template template argument; TARG-27 rejects it as ambiguous | matrix | matrix | matrix | `2026-11-05-gap-review-phase-9-expressions-templates` |
+| ORD-P1, Q-0405 | the address of an overload set with explicit template arguments and no target type; the address is ambiguous | matrix | matrix | matrix | `2026-11-05-gap-review-phase-9-expressions-templates` |
+| CTAD-16, Q-0408 | an inherited guide with a derived parameter that the base does not use and that has a default; the default rescues the guide | review | matrix | matrix | `2026-11-05-gap-review-phase-9-expressions-templates` |
 | ENUM-10, ENUM-P1 | inside the list, an enumerator whose initializer has an unscoped enumeration type keeps that enumeration type; the review reads the underlying type | matrix | matrix | matrix | `2026-11-04-gap-review-phase-8-declarations-statements` |
 | NS-12 | a class in an inline namespace and a variable of the same name in the enclosing namespace are ambiguous; the review sets the class aside | matrix | matrix | matrix | `2026-11-04-gap-review-phase-8-declarations-statements` |
 | Q-0393 | the null pointer literal as the operand of `noexcept` | review | matrix | matrix | `2026-11-04-gap-review-phase-8-declarations-statements` |

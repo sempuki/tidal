@@ -153,7 +153,7 @@ of its own type. A pointer to the class type is valid.
 
 :::{rule} CLS-2
 :kind: required
-:tests: classes/members/complete-in-member-bodies.cpp classes/members/complete-in-default-member-init.cpp classes/members/complete-in-default-argument.cpp classes/members/noexcept-complete-class.cpp
+:tests: classes/members/complete-in-member-bodies.cpp classes/members/complete-in-default-member-init.cpp classes/members/complete-in-default-argument.cpp classes/members/noexcept-complete-class.cpp expressions/postfix/default-template-argument-incomplete-class.cpp
 
 The class is complete inside:
 
@@ -161,6 +161,9 @@ The class is complete inside:
 - default arguments,
 - default member initializers,
 - the operands of `noexcept` specifiers.
+
+A default template argument of a member template is not among these
+places ({question}`Q-0406`).
 
 These places can use members that are declared later. At other places
 inside the definition, the class is not complete.
@@ -703,8 +706,8 @@ struct Pointers { char c; int& r; int Plain::* p; void (Shape::* f)(); };
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 154
-of 170 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 155
+of 171 tests.
 
 ### Divergences
 

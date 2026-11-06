@@ -297,12 +297,12 @@ an argument list follows, the injected class name names the template.
 
 :::{rule} TARG-27
 :kind: reject
-:tests: templates/arguments/injected-name-two-bases.cpp templates/arguments/injected-name-two-bases-template.cpp
+:tests: templates/arguments/injected-name-two-bases.cpp templates/arguments/injected-name-two-bases-template.cpp templates/arguments/injected-name-two-bases-template-argument.cpp
 
 A class can inherit the injected class names of two specializations of
 one template from two bases. Such a name without an argument list is
 ambiguous. The program must not use the name as a type or as a template
-template argument. With an argument list, the name names the template
+template argument ({question}`Q-0409`). With an argument list, the name names the template
 ({rule}`TARG-11`), and the program can use it.
 :::
 
@@ -581,8 +581,8 @@ Use<Small> m;                  // rejected: Small is a concept
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 87
-of 93 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 88
+of 94 tests.
 
 ### Divergences
 

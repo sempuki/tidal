@@ -430,7 +430,7 @@ qualifier.
 
 :::{rule} CTAD-16
 :kind: required
-:tests: templates/class-template-deduction/inherited-constructors.cpp templates/class-template-deduction/inherited-user-guide.cpp templates/class-template-deduction/inherited-without-using.cpp templates/class-template-deduction/inherited-not-deducible.cpp templates/class-template-deduction/inherited-copy-candidate.cpp templates/class-template-deduction/inherited-copy-candidate-user-guide.cpp
+:tests: templates/class-template-deduction/inherited-constructors.cpp templates/class-template-deduction/inherited-user-guide.cpp templates/class-template-deduction/inherited-without-using.cpp templates/class-template-deduction/inherited-not-deducible.cpp templates/class-template-deduction/inherited-copy-candidate.cpp templates/class-template-deduction/inherited-copy-candidate-user-guide.cpp templates/class-template-deduction/inherited-guide-unused-parameter-default.cpp
 
 A class template that inherits the constructors of a base
 ({rule}`DER-8`) gets the guides of that base, with the user guides and
@@ -439,7 +439,8 @@ base type acts as an alias of the derived parameters (CTAD-14), and the
 result is mapped back to the derived class template
 ({question}`Q-0239`). A derived parameter that the base type does not
 use gets no value from an inherited guide. The parameter then takes its
-default, and without a default the guide fails. A class template that
+default, and without a default the guide fails
+({question}`Q-0408`). A class template that
 inherits no constructors gets no guides from its bases.
 :::
 
@@ -685,7 +686,7 @@ Bases c{List<X, Y, Z>{}, Y{}};    // rejected: Y stands where X is fixed
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 96
-of 117 tests.
+of 118 tests.
 
 ### Divergences
 
@@ -750,6 +751,10 @@ waits on the maintainer (`documentation/decisions/pending.md`).
   parameter is a forwarding reference in a guide made through an alias
   template. It is not, as Clang and GCC say. EDG lets it take an
   lvalue.
+- {question}`Q-0408` (CTAD-16; open): whether a default of a derived
+  parameter that the base does not use lets an inherited guide succeed.
+  It does, as GCC and EDG say. Clang finds no viable guide, as the gap
+  review of 2026-11-05 reads.
 
 ### Split tests
 
@@ -772,6 +777,7 @@ waits on the maintainer (`documentation/decisions/pending.md`).
 | `guide-result-qualified.cpp` | CTAD-12 | reject | reject | accept | reject | {question}`Q-0242` |
 | `guide-same-parameters.cpp` | CTAD-12 | reject | reject | reject | accept | {question}`Q-0280` |
 | `inherited-constructors.cpp` | CTAD-16 | accept | reject | accept | accept | {question}`Q-0239` |
+| `inherited-guide-unused-parameter-default.cpp` | CTAD-16 | accept | reject | accept | accept | {question}`Q-0408` |
 | `inherited-user-guide.cpp` | CTAD-16 | accept | reject | accept | accept | {question}`Q-0239` |
 | `list-single-specialization-alias.cpp` | CTAD-18 | accept | Clang 22: accept; Clang 18: reject | accept | reject | {question}`Q-0240`, {question}`Q-0279` |
 | `template-template-parameter-alias.cpp` | CTAD-1 | accept | Clang 22: accept; Clang 18: reject | accept | accept | {question}`Q-0240`, {question}`Q-0275` |

@@ -277,11 +277,13 @@ internal linkage is a separate function in each unit that defines it. A
 name that only another unit declares cannot be used (NAM-8).
 
 A function that is declared and used but defined in no unit breaks
-{rule}`LNK-7`. The program's start uses `main`, so a program with no
-`main` also breaks LNK-7. LNK-7 is a `no-diagnostic` rule
-({principle}`TR-P1`). An implementation can report its break when it
-links the units, and the link then fails. The implementation can
-also accept the program. Every implementation links a valid program.
+{rule}`LNK-7`. LNK-7 is a `no-diagnostic` rule ({principle}`TR-P1`).
+An implementation can report its break when it links the units, and the
+link then fails. The implementation can also accept the program. A
+program must define exactly one `main` at global scope, and a program
+with no `main` is not valid with a diagnostic. Every baseline compiler
+reports it when it links the units. Every implementation links a valid
+program.
 :::
 
 :::{rule} TR-5

@@ -441,6 +441,12 @@ status, and the first sentence of its answer section.
 | [Q-0402](Q-0402-ordering-class-before-defaulted-declaration.md) | Must the ordering class be declared before a defaulted `<=>` is declared, or only before it is used? | provisional | Before the defaulted declaration |
 | [Q-0403](Q-0403-defaulted-eq-nested-array-constant.md) | In constant evaluation, does a defaulted `==` compare every element of a member that is an array of arrays? | provisional | Every element, also in constant evaluation |
 | [Q-0404](Q-0404-friend-member-pattern.md) | Does a friend declaration that names a member through a pattern such as `A<T*>::f` befriend that member of a specialization that does not match the pattern? | provisional | Every specialization |
+| [Q-0405](Q-0405-address-explicit-arguments-no-target.md) | With no target type, does partial ordering choose among the specializations that `&f<int>` names? | provisional | Ambiguous |
+| [Q-0406](Q-0406-default-template-argument-complete-class.md) | Is a class complete in a default template argument of its member template? | provisional | Not complete |
+| [Q-0407](Q-0407-enumerator-type-from-enumeration.md) | Inside the enumerator list, does an enumerator whose initializer has an unscoped enumeration type have that enumeration type, or its underlying type? | provisional | The enumeration type, and `int` |
+| [Q-0408](Q-0408-inherited-guide-unused-default.md) | Does a default of a derived class template parameter that the base does not use let an inherited deduction guide succeed? | provisional | The guide succeeds with the default |
+| [Q-0409](Q-0409-injected-name-template-template-argument.md) | Is an injected class name that two base classes give ambiguous as a template template argument? | provisional | Ambiguous |
+| [Q-0410](Q-0410-qualified-enum-underlying-type.md) | In the definition of an enumeration with a qualified name, is the underlying type looked up in the scope that the qualifier names? | provisional | Rejected |
 
 ## Status values
 

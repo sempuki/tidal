@@ -80,9 +80,11 @@ or `(0)`. Any other zero is a number, and a number is not a pointer.
 The character literal `'\0'`, the literal `false`, and an integer
 variable that holds zero are such numbers. For the same reason a
 pointer is not a number, so no pointer converts implicitly to an
-integer. A base that is virtual, ambiguous, or not accessible gives no
-single path, so a conversion through such a base is not implicit. Such
-a conversion still takes part in overload resolution. A call that
+integer. A base that is ambiguous or not accessible gives no single
+path, so a conversion through such a base is not implicit. A pointer to
+an object converts implicitly to a pointer to a virtual base, and a
+pointer to member does not convert through a virtual base
+({rule}`CONV-17`). Such a conversion still takes part in overload resolution. A call that
 chooses it is rejected, and an overload with an ellipsis does not win
 in its place ({rule}`ICS-8`).
 :::

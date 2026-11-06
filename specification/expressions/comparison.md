@@ -316,7 +316,7 @@ If an operand is a NaN, `<`, `>`, `<=`, `>=`, and `==` give `false`.
 
 :::{rule} CMP-7
 :kind: required
-:tests: expressions/comparison/pointer-array-order.cpp expressions/comparison/pointer-member-order.cpp expressions/comparison/subobject-order.cpp expressions/comparison/subobject-order-constant.cpp expressions/comparison/pointer-array-member-order.cpp expressions/comparison/row-end-equals-next-row.cpp
+:tests: expressions/comparison/pointer-array-order.cpp expressions/comparison/pointer-member-order.cpp expressions/comparison/subobject-order.cpp expressions/comparison/subobject-order-constant.cpp expressions/comparison/pointer-array-member-order.cpp expressions/comparison/row-end-equals-next-row.cpp expressions/comparison/same-base-members-constant.cpp
 
 Pointers to elements of the same array compare in the order of their
 indexes. A pointer one past the last element is greater than all element
@@ -379,7 +379,7 @@ pointers to members.
 
 :::{rule} CMP-8
 :kind: unspecified
-:tests: expressions/comparison/pointer-unrelated-run.cpp expressions/comparison/pointer-unrelated-constant.cpp expressions/comparison/function-pointer-order.cpp expressions/comparison/unrelated-pointers-either.cpp expressions/comparison/union-member-pointers-relational-either.cpp expressions/comparison/three-way-unrelated-pointers-constant.cpp expressions/comparison/zero-size-member-pointers-either.cpp expressions/comparison/zero-size-member-pointers-constant.cpp expressions/comparison/union-member-pointers-constant.cpp expressions/comparison/base-subobject-pointers-constant.cpp expressions/comparison/base-and-member-pointers-constant.cpp expressions/comparison/base-subobject-pointers-either.cpp expressions/comparison/base-member-and-member-pointers-constant.cpp
+:tests: expressions/comparison/pointer-unrelated-run.cpp expressions/comparison/pointer-unrelated-constant.cpp expressions/comparison/function-pointer-order.cpp expressions/comparison/unrelated-pointers-either.cpp expressions/comparison/union-member-pointers-relational-either.cpp expressions/comparison/three-way-unrelated-pointers-constant.cpp expressions/comparison/zero-size-member-pointers-either.cpp expressions/comparison/zero-size-member-pointers-constant.cpp expressions/comparison/union-member-pointers-constant.cpp expressions/comparison/base-subobject-pointers-constant.cpp expressions/comparison/base-and-member-pointers-constant.cpp expressions/comparison/base-subobject-pointers-either.cpp expressions/comparison/base-member-and-member-pointers-constant.cpp expressions/comparison/same-base-members-constant.cpp
 
 If no rule orders two pointers, each relational operator and `<=>` gives
 an unspecified result. The results of `a < b` and `a > b` need not
@@ -395,8 +395,10 @@ Outside {term}`constant evaluation`, each such comparison is valid and
 gives `true` or `false`. During constant evaluation, a comparison of
 pointers to unrelated objects or functions is not a constant
 expression, and neither is a comparison that involves a base class
-subobject ({question}`Q-0387`). A pointer to a member of a base class
-subobject involves that subobject.
+subobject ({question}`Q-0387`). That covers two different base class
+subobjects, and a base class subobject or a member of it against a
+member of the derived object. Two members of one base class subobject
+are members of one object, so their order is fixed.
 :::
 
 :::{rule} CMP-20
@@ -494,8 +496,8 @@ balance <=> count      // valid if long is wider than unsigned
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 82
-of 101 tests. The `<=>` tests declare a minimal `std::strong_ordering`,
+The results are in `tests/RESULTS.md`. All eight compilers agree on 83
+of 102 tests. The `<=>` tests declare a minimal `std::strong_ordering`,
 `std::weak_ordering`, and `std::partial_ordering`, because tests include
 no headers. EDG needs `std::weak_ordering` declared even for integer
 operands.

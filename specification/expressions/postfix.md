@@ -192,7 +192,7 @@ also follows these rules:
 
 :::{rule} PFX-11
 :kind: reject
-:tests: expressions/postfix/arrow-on-non-pointer.cpp expressions/postfix/dot-on-pointer.cpp expressions/postfix/no-such-member.cpp declarations/declarators/function-declaration-ambiguity.cpp foundations/names/member-access-no-enclosing-scope.cpp foundations/names/member-access-no-free-function.cpp foundations/names/member-access-type-member.cpp expressions/postfix/member-access-incomplete-class.cpp expressions/postfix/member-access-class-being-defined.cpp expressions/postfix/member-access-later-member-in-body.cpp expressions/postfix/member-access-later-member-in-function-body.cpp expressions/postfix/member-access-later-member-complete-class-contexts.cpp
+:tests: expressions/postfix/arrow-on-non-pointer.cpp expressions/postfix/dot-on-pointer.cpp expressions/postfix/no-such-member.cpp declarations/declarators/function-declaration-ambiguity.cpp foundations/names/member-access-no-enclosing-scope.cpp foundations/names/member-access-no-free-function.cpp foundations/names/member-access-type-member.cpp expressions/postfix/member-access-incomplete-class.cpp expressions/postfix/member-access-class-being-defined.cpp expressions/postfix/member-access-later-member-in-body.cpp expressions/postfix/member-access-later-member-in-function-body.cpp expressions/postfix/member-access-later-member-complete-class-contexts.cpp expressions/postfix/default-template-argument-incomplete-class.cpp
 
 The operand of `.` must be a class object, and the operand of `->` must
 be a pointer to a class. Member lookup ({rule}`NAM-37`) must find the
@@ -375,8 +375,8 @@ top++;            // undefined
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 73
-of 81 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 74
+of 82 tests.
 
 ### Divergences
 

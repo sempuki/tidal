@@ -248,7 +248,7 @@ before the function in its translation unit.
 
 :::{rule} NAM-8
 :kind: reject
-:tests: foundations/names/use-before-declaration.cpp foundations/names/scope-ends-with-block.cpp foundations/names/function-not-later-global.cpp foundations/translation/unit-sees-own-declarations-only.cpp expressions/primary/name-undeclared.cpp foundations/names/adl-not-for-fundamental.cpp statements/blocks/block-scope.cpp statements/if/init-scope-ends.cpp statements/loops/for-init-scope.cpp statements/loops/body-own-scope.cpp foundations/names/adl-null-pointer.cpp foundations/names/adl-alias-namespace.cpp foundations/names/adl-lambda-parameter-type.cpp foundations/names/adl-template-value-argument.cpp foundations/names/adl-not-derived.cpp foundations/names/adl-braced-list.cpp foundations/names/adl-function-pointer-fundamental.cpp foundations/names/adl-local-class-member-function.cpp foundations/names/adl-not-static-member.cpp foundations/names/adl-not-through-directive.cpp foundations/names/adl-friend-of-other-class.cpp foundations/names/adl-friend-not-through-conversion.cpp foundations/names/adl-not-later-declaration.cpp foundations/names/adl-not-block-declaration.cpp foundations/names/adl-function-template-parameter-adds-nothing.cpp declarations/functions/definitions/parameter-name-from-definition.cpp
+:tests: foundations/names/use-before-declaration.cpp foundations/names/scope-ends-with-block.cpp foundations/names/function-not-later-global.cpp foundations/translation/unit-sees-own-declarations-only.cpp expressions/primary/name-undeclared.cpp foundations/names/adl-not-for-fundamental.cpp statements/blocks/block-scope.cpp statements/if/init-scope-ends.cpp statements/loops/for-init-scope.cpp statements/loops/body-own-scope.cpp foundations/names/adl-null-pointer.cpp foundations/names/adl-alias-namespace.cpp foundations/names/adl-lambda-parameter-type.cpp foundations/names/adl-template-value-argument.cpp foundations/names/adl-not-derived.cpp foundations/names/adl-braced-list.cpp foundations/names/adl-function-pointer-fundamental.cpp foundations/names/adl-local-class-member-function.cpp foundations/names/adl-not-static-member.cpp foundations/names/adl-not-through-directive.cpp foundations/names/adl-friend-of-other-class.cpp foundations/names/adl-friend-not-through-conversion.cpp foundations/names/adl-not-later-declaration.cpp foundations/names/adl-not-block-declaration.cpp foundations/names/adl-function-template-parameter-adds-nothing.cpp declarations/functions/definitions/parameter-name-from-definition.cpp foundations/names/qualified-enum-underlying-type-lookup.cpp
 
 A use of a name must find a declaration that is visible at that point
 (NAM-1). These uses are rejected:
@@ -525,7 +525,7 @@ In `E::x`, `x` must be an enumerator of `E` (NAM-19).
 
 :::{rule} NAM-21
 :kind: required
-:tests: foundations/names/definition-body-sees-namespace.cpp foundations/names/definition-initializer-sees-namespace.cpp foundations/names/definition-parameter-sees-class.cpp foundations/names/definition-trailing-return-sees-class.cpp foundations/names/definition-bound-default-noexcept-see-scope.cpp foundations/names/definition-template-member-alias.cpp foundations/names/definition-class-body-sees-namespace.cpp foundations/names/definition-class-base-sees-namespace.cpp foundations/names/definition-enumeration-body-sees-namespace.cpp foundations/language-support/tuple-protocol-page-example.cpp
+:tests: foundations/names/definition-body-sees-namespace.cpp foundations/names/definition-initializer-sees-namespace.cpp foundations/names/definition-parameter-sees-class.cpp foundations/names/definition-trailing-return-sees-class.cpp foundations/names/definition-bound-default-noexcept-see-scope.cpp foundations/names/definition-template-member-alias.cpp foundations/names/definition-class-body-sees-namespace.cpp foundations/names/definition-class-base-sees-namespace.cpp foundations/names/definition-enumeration-body-sees-namespace.cpp foundations/language-support/tuple-protocol-page-example.cpp foundations/names/qualified-enum-underlying-type-lookup.cpp
 
 A declaration can name a member with a qualified name, such as `N::f`
 or `C::f`. After that name, the declaration sees the members of `N` or
@@ -540,6 +540,10 @@ or `C::f`. After that name, the declaration sees the members of `N` or
 - the base clause and the body of a class that the declaration defines
   ({question}`Q-0377`),
 - the enumerator list of an enumeration that the declaration defines.
+  The underlying type that comes before the list is not one of these
+  parts ({question}`Q-0410`).
+
+A friend declaration with a qualified name gets no such lookup.
 :::
 
 :::{rule} NAM-22
@@ -898,8 +902,8 @@ File::File* q = nullptr;        // rejected: names the constructor
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 238
-of 242 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 239
+of 243 tests.
 
 ### Divergences
 

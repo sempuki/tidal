@@ -265,7 +265,8 @@ its underlying type and from all other enumerations. After the closing
 brace, an enumerator has the type of its enumeration. Unary `+` on an
 unscoped value gives its promoted integer type.
 
-Inside the enumerator list, an enumerator has another type. An
+Inside the enumerator list, an enumerator has another type
+({question}`Q-0407`). An
 enumeration without a fixed underlying type is not {term}`complete`
 there. An enumeration with a fixed underlying type is complete there.
 Every scoped enumeration has a fixed underlying type.

@@ -60,7 +60,10 @@ constant.
 
 Default arguments belong to the declarations of a function, and the
 declarations in one scope add them up. Each later declaration can add
-defaults, and none can repeat one. A using declaration brings the
+defaults, and none can repeat one. A default that a declaration
+outside the class adds must not turn a constructor into a default,
+copy, or move constructor ({rule}`DEFARG-12`), because the class's
+special members are fixed when the class is complete. A using declaration brings the
 function into another scope with no defaults of its own. A call through
 the using declaration uses the defaults that the function's scope has
 at the call, also those that a declaration after the using declaration

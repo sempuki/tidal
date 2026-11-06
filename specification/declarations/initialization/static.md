@@ -120,7 +120,9 @@ these cases:
 :tests: declarations/initialization/static/maybe-static.cpp declarations/initialization/static/maybe-static-non-const-read.cpp
 
 An implementation can do a {term}`dynamic initialization` before the program
-starts, if the variable gets the same value. Whether the early
+starts, if the variable gets the same value, and if the dynamic form
+would not change any other static object before that object's own
+initialization. Whether the early
 initialization occurs is unspecified. An earlier initializer that reads
 the variable gets zero or that value.
 :::
@@ -131,10 +133,12 @@ the variable gets zero or that value.
 
 Whether the {term}`dynamic initialization` of a namespace-scope variable is
 complete before the first statement of `main` is implementation-defined.
-An implementation can defer the initialization until the first {term}`use`
-({rule}`ODR-3`) of a function or variable of the same translation unit.
-A use in a {term}`constant initializer` counts as a use before any
-dynamic initialization. Clang and GCC finish
+An implementation can defer the initialization of a variable that is
+not `inline` until the first {term}`use` ({rule}`ODR-3`) of a function
+or variable of the same translation unit that is not `inline`. A use
+that the initialization of a static or `thread_local` variable makes
+does not count. A deferred `inline` variable is initialized before the
+first use of that variable. Clang and GCC finish
 every such initialization before `main` starts, also in a unit that no
 other unit names.
 :::
@@ -143,8 +147,8 @@ other unit names.
 :kind: impl-defined
 :tests: declarations/initialization/static/thread-local-init-deferred.cpp declarations/initialization/static/thread-local-unused.cpp
 
-A `thread_local` variable at namespace scope with {term}`dynamic initialization`
-is initialized before the first statement of the thread, or when the
+A `thread_local` variable at namespace scope that is not `inline`, with
+{term}`dynamic initialization`, is initialized before the first statement of the thread, or when the
 thread first uses the variable. The choice is implementation-defined.
 Clang and GCC initialize the variable at the first use, also when the
 variable has a class type with a constructor ({rule}`OBJ-11`).

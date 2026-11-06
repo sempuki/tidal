@@ -184,7 +184,7 @@ default uses the other mode.
 
 :::{rule} LAM-6
 :kind: reject
-:tests: expressions/lambdas/capture-abstract.cpp expressions/lambdas/capture-copy-same-as-default.cpp expressions/lambdas/capture-default-at-namespace.cpp expressions/lambdas/capture-global-rejected.cpp expressions/lambdas/capture-repeated.cpp expressions/lambdas/capture-same-as-default.cpp expressions/lambdas/reference-default-explicit-this.cpp expressions/lambdas/capture-default-in-member-initializer.cpp expressions/lambdas/capture-default-local-class-member.cpp expressions/lambdas/capture-default-local-class-default-argument.cpp
+:tests: expressions/lambdas/capture-abstract.cpp expressions/lambdas/capture-copy-same-as-default.cpp expressions/lambdas/capture-default-at-namespace.cpp expressions/lambdas/capture-global-rejected.cpp expressions/lambdas/capture-repeated.cpp expressions/lambdas/capture-same-as-default.cpp expressions/lambdas/reference-default-explicit-this.cpp expressions/lambdas/capture-default-in-member-initializer.cpp expressions/lambdas/capture-default-local-class-member.cpp expressions/lambdas/capture-default-local-class-default-argument.cpp expressions/lambdas/named-capture-in-block-function-default-argument.cpp
 
 A capture list must obey these rules:
 
@@ -192,8 +192,9 @@ A capture list must obey these rules:
 - An explicit capture must not use the same mode as the default. As
   exceptions, `[&, this]`, `[=, this]`, and `[=, *this]` are valid.
 - Only a variable with {term}`automatic storage` can be captured.
-- A lambda that is not inside a block must not have a capture default,
-  except in a default member initializer. A default argument, and a
+- A lambda that is not inside a block must not have a capture default
+  or a named capture, `this` included, except in a default member
+  initializer. A default argument, and a
   member declaration of a local class outside a function body, are not
   inside a block.
 - A variable of {term}`abstract class` type ({rule}`VIRT-8`) cannot be captured
@@ -497,8 +498,8 @@ int dispatch(int base) {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 86
-of 90 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 87
+of 91 tests.
 
 ### Divergences
 
