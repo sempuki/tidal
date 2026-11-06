@@ -28,7 +28,9 @@ Fails when:
 - a page's agreement sentence is out of date (run tools/status_table.py),
 - a page's Split tests table is out of date or missing (run tools/status_table.py),
 - a front-end report names a finding with no row in
-  reports/clean-room/rust-frontend/ledger.md,
+  reports/clean-room/rust-frontend/ledger.md, or another report under
+  reports/clean-room/ names a finding with no row in
+  reports/clean-room/ledger.md,
 - a generated number in documentation/status.md is out of date (run
   tools/status_table.py),
 - the front-end row of documentation/exercises.md, or its sentence on the
@@ -228,7 +230,9 @@ def check_grammar(errors: list[str]) -> None:
 
 
 FRONTEND = ROOT / "reports" / "clean-room" / "rust-frontend"
-LEDGER_STATES = {"commit", "question", "text", "out of scope", "open"}
+LEDGER_STATES = {"commit", "question", "text", "out of scope", "open", "planned"}
+EXERCISE_LEDGER = ROOT / "reports" / "clean-room" / "ledger.md"
+FINDING_HEAD = re.compile(r"^(?:#{2,4} |\*\*)((?:[A-Z][A-Z0-9]*)-\d+)\b", re.M)
 
 
 def check_ledger(errors: list[str]) -> None:
@@ -246,6 +250,20 @@ def check_ledger(errors: list[str]) -> None:
         for g in re.findall(r"^#+ (G\d+)[.:]", report.read_text(), re.M):
             if g not in rows:
                 errors.append(f"{report.relative_to(ROOT)}: finding {g} has no row in {ledger.relative_to(ROOT)}")
+    # Every other exercise finding has a row in the exercise ledger (decision 0058).
+    exercise_rows = {}
+    for line in EXERCISE_LEDGER.read_text().splitlines():
+        if m := re.match(r"^\| ([A-Z][A-Z0-9]*-\d+) \| [^|]+ \| ([^|]+?) \|", line):
+            exercise_rows[m.group(1)] = m.group(2)
+            if m.group(2) not in LEDGER_STATES:
+                errors.append(f"{EXERCISE_LEDGER.relative_to(ROOT)}: {m.group(1)} has an unknown state {m.group(2)!r}")
+    for report in sorted((ROOT / "reports" / "clean-room").rglob("*.md")):
+        rel = report.relative_to(ROOT)
+        if report == EXERCISE_LEDGER or "roadmap" in str(rel) or "rust-frontend" in str(rel):
+            continue
+        for fid in sorted(set(FINDING_HEAD.findall(report.read_text()))):
+            if fid not in exercise_rows:
+                errors.append(f"{rel}: finding {fid} has no row in {EXERCISE_LEDGER.relative_to(ROOT)}")
 
 
 def check_records(errors: list[str], warnings: list[str]) -> None:
