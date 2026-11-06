@@ -3,7 +3,7 @@
 **Status:** provisional
 **Affects:** DED-29, `tests/templates/deduction/address-deduced-result-body-instantiated.cpp`, `tests/templates/deduction/address-deduced-result-body-static-cast.cpp`
 **Source:** the RV4 gap review of the text phase 10 wrote on expressions and templates (`reports/review/2026-11-05-gap-review-phase-10-expressions-templates.md`, the DED-29 section), from the probe grid `reports/clean-room/roadmap-9/writer-probes/ded29-address-target.json` that a clean-room writer ran for it.
-**Waits for:** a first review
+**Waits for:** newest families that agree; a first review
 
 ## Context
 

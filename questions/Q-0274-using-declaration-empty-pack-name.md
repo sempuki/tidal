@@ -2,7 +2,7 @@
 
 **Status:** provisional
 **Affects:** PACK-30, `tests/templates/packs/using-declaration-empty-pack-outer-name.cpp`
-**Waits for:** newest families that agree; a review (doubt)
+**Waits for:** a review (doubt)
 
 ## Context
 
@@ -43,6 +43,8 @@ Checked on 2026-11-04 under the principle test of the style guide (section 3, it
 Used on 2026-11-04 by the source-reader gap review of the text phase 8 wrote on expressions, foundations, and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`), Part B. The review applied PACK-P2 to the question's program, a using-declaration from an empty pack, and a call of a name that the namespace also declares (`using-declaration-empty-pack-outer-name.cpp`), without the rule text: the name was bound at the definition and means nothing in the empty instantiation, so the program is not valid with no diagnostic required, which is the provisional answer.
 
 Kept open on 2026-11-04 under decision 0054, because the review finds the reference unclear, and it leans to option 2. GCC 16 and EDG 7.0 follow option 2, so two newest families differ from the answer.
+
+Noted on 2026-11-05 under decision 0059, item QR. The answer needs no diagnostic, so both results conform, and only Clang overrides `using-declaration-empty-pack-outer-name.cpp`. The question no longer waits for newest families that agree. It waits for a review that reads the answer with no doubt.
 
 ## Opinions
 

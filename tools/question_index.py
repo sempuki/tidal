@@ -297,18 +297,36 @@ def render_packet(text: str, questions: list[Question]) -> str | None:
 NEWEST = ("clang-22", "gcc-16", "edg-7.0")
 
 
+def rule_kinds() -> dict[str, str]:
+    """The class of each rule, from the :kind: line under its rule directive."""
+    kinds = {}
+    for f in (ROOT / "specification").rglob("*.md"):
+        for m in re.finditer(r"^:::\{rule\} (\S+)\n:kind: (\S+)", f.read_text(), re.M):
+            kinds[m.group(1)] = m.group(2)
+    return kinds
+
+
 def family_warnings(questions: list[Question]) -> list[str]:
     """Questions whose "newest families that agree" item disagrees with their tests' overrides.
 
     For each open question, the tests whose notes name it give the most
     newest families that differ from the base expectation in one test.
     The item belongs on the line when that count is two or more.
+
+    A test whose rules all have a class that allows either answer
+    (no-diagnostic, unspecified, impl-defined, conditionally-supported)
+    does not count, because no answer of a family breaks its rules. A
+    question whose Affects line names a probe grid (tests/**/grids/*.json)
+    gets no warning for a missing split, because the grid can hold the
+    split and the tool does not run grids.
     """
     sys.path.insert(0, str(ROOT / "tools"))
     import matrix
     import run_tests
     comps = {c.id: c for c in matrix.load()}
     cited = note_citations()
+    kinds = rule_kinds()
+    either = {"no-diagnostic", "unspecified", "impl-defined", "conditionally-supported"}
     out = []
     for q in questions:
         if q.status != "provisional":
@@ -316,6 +334,8 @@ def family_warnings(questions: list[Question]) -> list[str]:
         most = 0
         for name in cited.get(q.id, ()):
             test = run_tests.parse_test(TESTS / name)
+            if test.rules and all(kinds.get(r) in either for r in test.rules):
+                continue
             base = test.default
             differ = 0
             for cid in NEWEST:
@@ -325,7 +345,8 @@ def family_warnings(questions: list[Question]) -> list[str]:
                 differ += expect is not None and expect != own
             most = max(most, differ)
         has = "newest families that agree" in q.waits_for
-        if has and most < 2:
+        grid = "/grids/" in q.path.read_text().split("**Affects:**", 1)[-1].split("\n", 1)[0]
+        if has and most < 2 and not grid:
             out.append(f"{q.path.relative_to(ROOT)}: names newest families that agree, and no test "
                        "that names it has two newest families that differ")
         elif not has and most >= 2:

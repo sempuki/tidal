@@ -302,7 +302,7 @@ The same placement `new` in any other function is not valid there
 
 :::{rule} LSUP-11
 :kind: required
-:tests: foundations/language-support/allocator-self-declared-constant.cpp foundations/language-support/allocator-other-namespace-constant.cpp foundations/storage/allocation-array-class-elements-constant.cpp foundations/language-support/allocator-element-not-literal-constant.cpp
+:tests: foundations/language-support/allocator-self-declared-constant.cpp foundations/language-support/allocator-other-namespace-constant.cpp foundations/storage/allocation-array-class-elements-constant.cpp foundations/language-support/allocator-element-not-literal-constant.cpp foundations/storage/allocation-assign-before-construction-int-element.cpp foundations/storage/allocation-assign-before-construction-pod-member.cpp
 
 A program that includes no header can declare `std::allocator` as a
 class template with the member functions `allocate` and `deallocate`.
@@ -311,8 +311,11 @@ These members call `::operator new` and `::operator delete` by name. During
 members ({rule}`NEW-37`, {rule}`STG-28`). A read of an element of
 storage from `allocate` where no object has begun its lifetime is a
 read outside a lifetime ({rule}`OBJ-2`), and constant evaluation
-rejects it ({rule}`CE-22`). The element type need not be
-a literal type.
+rejects it ({rule}`CE-22`). Constant evaluation also rejects an
+assignment to such an element before `std::construct_at` builds it,
+for an element of type `int` or a member of an element of a simple
+class ({question}`Q-0421`). The
+element type need not be a literal type.
 :::
 
 ## Implementation Requirements
@@ -536,7 +539,7 @@ int* r = new (raw) int(3);          // raw hosts the int
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 52
-of 69 tests. EDG compiles the run tests and does not run them.
+of 71 tests. EDG compiles the run tests and does not run them.
 
 ### Divergences
 
@@ -565,12 +568,10 @@ of 69 tests. EDG compiles the run tests and does not run them.
   Clang and EDG say. GCC checks every definition of the class, so it
   also rejects a parameter that is never initialized and a candidate
   with no conversion sequence.
-- {question}`Q-0323` (LSUP-11; open): whether a `T*` from an
+- {question}`Q-0323` (LSUP-11; settled): whether a `T*` from an
   allocation function points to element 0 of an array whose elements
-  are not built yet. It does. In constant evaluation, Clang rejects an
-  assignment to an `int` element before `std::construct_at` builds it,
-  and GCC and EDG accept the assignment. The test builds each element
-  with `std::construct_at`.
+  are not built yet. It does. The test builds each element with
+  `std::construct_at`.
 - {question}`Q-0334` (LSUP-12; settled on LSUP-P1): whether an ordering
   class with only `!=` against `0` serves a defaulted `<=>`. It does,
   since either operator serves, as Clang and EDG say. GCC tests each
@@ -583,6 +584,10 @@ of 69 tests. EDG compiles the run tests and does not run them.
   declared before a defaulted `<=>` is declared, or only before it is
   used. Before the declaration, as Clang and EDG say. GCC accepts a
   class declared after the defaulted `<=>` and before its use.
+- {question}`Q-0421` (LSUP-11, CE-9; open): whether constant evaluation
+  accepts an assignment to an element of storage from `std::allocator`
+  before `std::construct_at` builds it. It rejects the assignment, as
+  Clang does. GCC and EDG accept it.
 
 ### Split tests
 
@@ -602,6 +607,8 @@ different exit codes.
 | `expressions/new-delete/bad-bound-too-few.cpp` | NEW-35, LSUP-8 | run | run-fail | run-fail | accept | {question}`Q-0301` |
 | `expressions/new-delete/bad-bound-too-large.cpp` | NEW-35, LSUP-8 | run | run-fail | run | accept | {question}`Q-0301` |
 | `expressions/new-delete/constant-evaluation-nothrow.cpp` | NEW-37, LSUP-6 | accept | accept | GCC 16: accept; GCC 14: reject | reject | {question}`Q-0303` |
+| `foundations/storage/allocation-assign-before-construction-int-element.cpp` | LSUP-11, CE-9 | reject | reject | accept | accept | {question}`Q-0421` |
+| `foundations/storage/allocation-assign-before-construction-pod-member.cpp` | LSUP-11, CE-9 | reject | reject | accept | accept | {question}`Q-0421` |
 | `initializer-list-candidate-not-viable.cpp` | LSUP-1, ICS-16 | accept | accept | reject | accept | {question}`Q-0321` |
 | `initializer-list-parameter-not-needed.cpp` | LSUP-1 | accept | accept | reject | accept | {question}`Q-0321` |
 | `ordering-declared-after-class.cpp` | LSUP-2 | reject | reject | run | reject | {question}`Q-0402` |

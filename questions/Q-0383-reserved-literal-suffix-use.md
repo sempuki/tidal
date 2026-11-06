@@ -1,9 +1,8 @@
 # Q-0383: Does a literal call a literal operator whose suffix does not start with `_`?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** OPR-9, OPR-P3, KW-4, `tests/classes/operators/literal-reserved-suffix-used.cpp`, `tests/classes/operators/literal-reserved-suffix-u8.cpp`
 **Source:** finding X19-1 of `reports/clean-room/X19/report.md`
-**Waits for:** newest families that agree
 
 ## Context
 
@@ -42,7 +41,7 @@ only translation, because OPR-9 now needs no diagnostic.
    diagnostic is required. Each result in the table conforms: a call, a
    rejected literal, or a rejected declaration.
 
-## Provisional answer
+## Answer
 
 The declaration is not valid, and no diagnostic is required (option 3).
 OPR-9 is a `no-diagnostic` rule. A compiler can call the operator, as
@@ -70,6 +69,8 @@ Noted on 2026-11-05 after the X19 refresh note (`reports/clean-room/X22/X19-refr
 Noted on 2026-11-05 under decision 0058, item PK2. A test whose notes name the question has two newest families that differ from the answer, so the question also waits for newest families that agree (`pending.md` row 1). The check of `tools/question_index.py` found the case.
 
 Kept open on 2026-11-05 under decision 0054, because the question also waits on newest families that agree (gap review of the text phase 10 wrote, item RV4).
+
+Settled on 2026-11-05 under decision 0054. The gap review of the text phase 10 wrote (item RV4) supports the answer with no doubt. The answer allows every result of the newest compilers, so no family differs from it. The family item of decision 0058, item PK2 came from a check that counted the tests of a `no-diagnostic` rule. Decision 0059, item QR changed `tools/question_index.py` so that such a test does not count.
 
 ## Opinions
 

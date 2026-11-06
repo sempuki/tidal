@@ -170,7 +170,13 @@ such as `gcc-14` or `clang-18`, does not count, and neither does an
 override for a report compiler, such as `gcc-16-o2`. The newest
 compilers agree on such a test.
 
-`tools/check_specification.py` warns for each rule with thin evidence.
+`tools/check_specification.py` warns for each rule with thin evidence,
+except a rule that rests only on overridden tests and has a recorded
+reason (decision 0059). The reason is recorded when the rule's class
+allows each result, or when the `tidal-note` of each of its tests names
+the question that holds the split, or a rule whose class allows the
+compiler's result, such as a `conditionally-supported` construct that
+the compiler lacks.
 The check fails for such a rule when the working tree adds the rule,
 or changes its class, relative to HEAD. So the change that adds or
 reclassifies a rule also adds a second test, and a test that the newest

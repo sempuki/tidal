@@ -906,10 +906,9 @@ only that the programs are valid.
 - {question}`Q-0357` (STG-25; open): what value a derived member has
   after a byte copy into the base subobject writes over it. The member
   takes the value of its new bytes. No family differs.
-- {question}`Q-0323` (STG-28; open): whether a `T*` from an allocation
+- {question}`Q-0323` (STG-28; settled): whether a `T*` from an allocation
   points to element 0 of an array of `T` whose elements are not built.
-  It does. In constant evaluation, GCC and EDG accept an assignment to
-  an `int` element before it is built, and Clang rejects it.
+  It does.
 - {question}`Q-0324` (STG-29; settled on STG-P2): whether a cast of a
   byte array's address reaches an object that the array created. The
   cast still points to a byte. No family differs.

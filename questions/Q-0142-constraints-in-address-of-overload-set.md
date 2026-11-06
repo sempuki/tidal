@@ -2,7 +2,7 @@
 
 **Status:** provisional
 **Affects:** OVL-19, OVL-20, `tests/overloading/overload-resolution/address-more-constrained.cpp`, `tests/overloading/overload-resolution/address-no-target-constraints.cpp`, `tests/overloading/overload-resolution/address-no-target-more-constrained.cpp`, `tests/overloading/overload-resolution/address-no-target-constraints-different-parameters.cpp`
-**Waits for:** the maintainer (pending.md row 4); newest families that agree
+**Waits for:** the maintainer (pending.md row 4)
 
 ## Context
 
@@ -69,6 +69,8 @@ the rule for calls (OVL-30, ORD-13).
 Kept on 2026-11-03. The review agrees for equal parameter lists. For different parameter lists without a target, Clang 22, GCC 16, and EDG 7.0 all reject the program, and only Clang 18 gives the review's result. Tidal keeps the conditions of ORD-13 in OVL-19, as for calls (OVL-30), until the maintainer decides. That form is in row 4 of `documentation/decisions/pending.md`. The question stays open under decision 0054, because the review reads against part of the answer and two newest families differ in the forms with a target.
 
 Kept open on 2026-11-04 under decision 0054, because the form without a target waits on the maintainer (`documentation/decisions/pending.md`, row 4), and two newest families differ in the forms with a target.
+
+Noted on 2026-11-05 under decision 0059, item QR. In the tests whose notes name the question, at most one newest family (EDG) differs from the base expectation, so the question no longer waits for newest families that agree. It waits for `pending.md` row 4.
 
 ## Opinions
 

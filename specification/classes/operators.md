@@ -353,7 +353,7 @@ of 113 tests.
 - {question}`Q-0060` (OPR-10; settled on OPR-P3): whether a literal
   operator can have a default argument. It cannot, as Clang and EDG
   say. GCC accepts the default argument.
-- {question}`Q-0383` (OPR-9; open): whether a literal calls a literal
+- {question}`Q-0383` (OPR-9; settled): whether a literal calls a literal
   operator whose suffix does not start with `_`, such as `km` or `u8`.
   The declaration makes the program not valid with no diagnostic
   required, so each result conforms. GCC calls the operator for both

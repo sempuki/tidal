@@ -359,7 +359,7 @@ status, and the first sentence of its answer section.
 | [Q-0320](Q-0320-volatile-object-read-through-plain-constant.md) | Must constant evaluation reject a read of a volatile object through a glvalue that is not volatile? | provisional | Yes, undefined (VOL-6); GCC and EDG accept |
 | [Q-0321](Q-0321-initializer-list-when-needed.md) | When does a program need the class `std::initializer_list`? | provisional | Where a braced list initializes an object of that type or `auto` deduces it (LSUP-1); GCC checks every definition |
 | [Q-0322](Q-0322-implementation-operations-without-headers.md) | How do tests reach the operations that only the implementation can provide? | provisional | Keep them referenced; tests use no standard header (decision 0051) |
-| [Q-0323](Q-0323-allocation-array-element-pointer.md) | Does a `T*` from an allocation function's result point to element 0 of an array of `T` whose elements are not built yet? | provisional | Yes; `p + i` is valid before element `i` exists |
+| [Q-0323](Q-0323-allocation-array-element-pointer.md) | Does a `T*` from an allocation function's result point to element 0 of an array of `T` whose elements are not built yet? | settled | Yes; `p + i` is valid before element `i` exists |
 | [Q-0324](Q-0324-byte-array-cast-implicit-object.md) | Does a cast of a byte array's address reach an object that the array created implicitly? | settled | No; the cast points to a byte |
 | [Q-0325](Q-0325-objects-at-fixed-addresses.md) | Does an object exist at an address that a program gets from an integer, such as a device register? | provisional | The platform decides |
 | [Q-0326](Q-0326-volatile-access-width.md) | What size of memory access does a volatile read or write use, and can an implementation merge or split volatile accesses? | provisional | Implementation-defined |
@@ -419,7 +419,7 @@ status, and the first sentence of its answer section.
 | [Q-0380](Q-0380-hex-literal-size-suffix-type.md) | What type does a hexadecimal literal with a `z` suffix get when only `std::size_t` can hold it? | settled | `std::size_t` |
 | [Q-0381](Q-0381-no-unique-address-end-padding.md) | Does a `[[no_unique_address]]` member make a class lend its end padding? | provisional | The attribute does not change the end padding |
 | [Q-0382](Q-0382-override-after-class-name.md) | Is `override` after the name of a class an identifier? | settled | An identifier |
-| [Q-0383](Q-0383-reserved-literal-suffix-use.md) | Does a literal call a literal operator whose suffix does not start with `_`? | provisional | The declaration is not valid, and no diagnostic is required |
+| [Q-0383](Q-0383-reserved-literal-suffix-use.md) | Does a literal call a literal operator whose suffix does not start with `_`? | settled | The declaration is not valid, and no diagnostic is required |
 | [Q-0384](Q-0384-union-end-padding.md) | Does a union follow the end-padding conditions of a class? | provisional | The conditions of a class apply to a union |
 | [Q-0385](Q-0385-edg-member-outside-clause-missing.md) | Must a member defined after the body of a class template repeat the requires clause of the class's template head? | settled | The definition repeats the whole head, requires clause included |
 | [Q-0386](Q-0386-ordering-classes-one-declared.md) | Must a program declare all three ordering classes before a use of `<=>` that yields only one of them? | settled | No; each use needs only the ordering class that it yields |
@@ -457,6 +457,7 @@ status, and the first sentence of its answer section.
 | [Q-0418](Q-0418-cond-derived-xvalue-step-one.md) | In step 1 of COND-16, can an xvalue operand bind the lvalue reference to the other operand's type? | provisional | Step 1 needs an lvalue |
 | [Q-0419](Q-0419-list-user-defined-element.md) | Which element's conversion does a list sequence hold when the worst element conversion is user-defined? | provisional | The list sequence holds the user-defined sequence of the first element that has one |
 | [Q-0420](Q-0420-address-deduced-result-body.md) | Does taking the address of an overload set instantiate a template whose result type comes from its body, when a plain function matches the target? | provisional | The specialization is instantiated and the program is not valid |
+| [Q-0421](Q-0421-constant-assign-before-construction.md) | In constant evaluation, can a program assign to an element of storage from `std::allocator` before `std::construct_at` builds it? | provisional | The assignment is rejected |
 
 ## Status values
 

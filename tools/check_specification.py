@@ -355,6 +355,9 @@ def newest_overrides() -> set[str]:
     return keys
 
 
+OVERRIDE_REASON = "rests only on tests with an override for a newest compiler"
+
+
 def thin_evidence(rules: dict) -> dict[str, str]:
     """{rule id: reason} for each rule that rests on one test, or only on tests
     that carry an override for a newest compiler."""
@@ -367,7 +370,7 @@ def thin_evidence(rules: dict) -> dict[str, str]:
             thin[rid] = "rests on one test"
             continue
         if all((TESTS / t).exists() and newest & parse_test(TESTS / t).overrides.keys() for t in tests):
-            thin[rid] = "rests only on tests with an override for a newest compiler"
+            thin[rid] = OVERRIDE_REASON
     return thin
 
 
@@ -410,8 +413,30 @@ def check_thin_evidence(rules: dict, errors: list[str], warnings: list[str]) -> 
             change = "is new" if rid not in head else f"changed class from {head[rid]} to {cls}"
             errors.append(f"{where}: {rid} {change} and {reason}; add a test that every "
                           "newest compiler agrees on (documentation/specification-format.md)")
+        elif reason == OVERRIDE_REASON and explained(rules, cls, rules[rid][2]):
+            continue
         else:
             warnings.append(f"{where}: {rid} {reason}")
+
+
+EITHER = {"impl-defined", "unspecified", "recommended", "no-diagnostic", "conditionally-supported"}
+
+
+def explained(rules: dict, cls: str, tests: list[str]) -> bool:
+    """A rule that rests only on overridden tests has a recorded reason when
+    its class allows each overridden result, or when the note of each of
+    its tests names the question that holds the split, or a rule whose
+    class allows the compiler's result, such as a conditionally-supported
+    construct that the compiler lacks (decision 0059)."""
+    if cls in EITHER:
+        return True
+    def reason(test: str) -> bool:
+        note = " ".join(parse_test(TESTS / test).notes)
+        if re.search(r"\bQ-\d{4}\b", note):
+            return True
+        return any(rules.get(r, (None, None))[1] in EITHER
+                   for r in re.findall(r"\b[A-Z]{2,5}-\d+\b", note))
+    return all(reason(t) for t in tests)
 
 
 def main() -> int:

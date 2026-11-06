@@ -271,7 +271,7 @@ point.
 
 :::{rule} CE-9
 :kind: reject
-:tests: foundations/constant-evaluation/undefined-behavior.cpp foundations/constant-evaluation/undefined-behavior-dangling.cpp expressions/postfix/member-call-null-pointer-constant.cpp templates/deduction/substitution-failure-undefined-operation.cpp classes/constructors/reference-default-member-read-constant.cpp
+:tests: foundations/constant-evaluation/undefined-behavior.cpp foundations/constant-evaluation/undefined-behavior-dangling.cpp expressions/postfix/member-call-null-pointer-constant.cpp templates/deduction/substitution-failure-undefined-operation.cpp classes/constructors/reference-default-member-read-constant.cpp foundations/storage/allocation-assign-before-construction-int-element.cpp foundations/storage/allocation-assign-before-construction-pod-member.cpp
 
 Constant evaluation must not evaluate an operation that has undefined
 behavior. Each rule of class `undefined` gives such an operation. CE-26
@@ -642,7 +642,7 @@ constexpr All all{.a = 1};            // rejected: All is not literal (CE-23)
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 132
-of 157 tests.
+of 159 tests.
 
 ### Divergences
 
@@ -697,6 +697,10 @@ of 157 tests.
   `std::allocator<T>` can convert the result of `::operator new` to a
   pointer to a type other than `T`. It cannot, as Clang says. GCC and
   EDG accept the conversion.
+- {question}`Q-0421` (LSUP-11, CE-9; open): whether constant evaluation
+  accepts an assignment to an element of storage from `std::allocator`
+  before `std::construct_at` builds it. It rejects the assignment, as
+  Clang does. GCC and EDG accept it.
 
 ### Split tests
 
@@ -718,6 +722,8 @@ family column gives the outcome that the test expects on that family.
 | `expressions/postfix/member-call-null-pointer-constant.cpp` | PFX-21, UN-7, CE-9 | reject | reject | reject | accept | {question}`Q-0318` |
 | `extended-temporary-member.cpp` | CE-14 | accept | accept | accept | reject | {question}`Q-0193` |
 | `extended-temporary-nested.cpp` | CE-14 | accept | accept | accept | reject | {question}`Q-0193` |
+| `foundations/storage/allocation-assign-before-construction-int-element.cpp` | LSUP-11, CE-9 | reject | reject | accept | accept | {question}`Q-0421` |
+| `foundations/storage/allocation-assign-before-construction-pod-member.cpp` | LSUP-11, CE-9 | reject | reject | accept | accept | {question}`Q-0421` |
 | `literal-temporary-volatile-member.cpp` | CE-17, CE-23 | accept | Clang 22: accept; Clang 18: reject | reject | reject | {question}`Q-0335` |
 | `nonliteral-temporary-in-function.cpp` | CE-17 | accept | Clang 22: accept; Clang 18: reject | reject | accept | {question}`Q-0335` |
 | `nonliteral-variable-reached.cpp` | CE-17 | accept | Clang 22: accept; Clang 18: reject | accept | accept | {question}`Q-0335` |

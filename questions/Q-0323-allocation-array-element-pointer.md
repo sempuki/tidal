@@ -1,8 +1,7 @@
 # Q-0323: Does a `T*` from an allocation function's result point to element 0 of an array of `T` whose elements are not built yet?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** STG-8, STG-10, STG-28, LSUP-11, `tests/foundations/storage/allocation-array-class-elements.cpp`, `tests/foundations/storage/allocation-array-class-elements-constant.cpp`, `tests/foundations/storage/allocation-array-unbuilt-element-constant.cpp`
-**Waits for:** newest families that agree; a review (doubt)
 
 ## Context
 
@@ -22,8 +21,6 @@ object.
 | Clang and GCC, `-O0`, `-O2`, address and undefined sanitizers | the program runs, with no report |
 | Clang, GCC, EDG, constant evaluation with a declared `std::allocator` | accept `p + 3` and placement `new` there before any element exists |
 | Clang, GCC, EDG, constant evaluation | reject a read of an element that the program has not built |
-| Clang, constant evaluation | rejects an assignment to an `int` element before `std::construct_at` builds it |
-| GCC, EDG, constant evaluation | accept that assignment |
 
 ## Evidence
 
@@ -42,16 +39,18 @@ pointer.
    `p` is undefined until the elements exist, and a program needs
    another way to build a growable array.
 
-## Provisional answer
+## Answer
 
 Yes; `p + i` is valid before element `i` exists (option 1). Every
 configuration in the matrix behaves this way, and constant evaluation,
 which rejects undefined behavior, accepts the arithmetic and rejects a
 read of an element that is not built. Option 2 would make every
-growable container that the program writes undefined. The divergence
-on an assignment to an `int` element in constant evaluation stays open
-under this question. The tests build each element with
-`std::construct_at`.
+growable container that the program writes undefined. The tests build
+each element with `std::construct_at`. An assignment to an element
+before its construction in constant evaluation is a separate question,
+Q-0421.
+
+Settled on 2026-11-05 under decision 0054. The one form where two newest families differed, an assignment to an element before its construction in constant evaluation, moved to Q-0421 (decision 0059, item QR). In every form that stays, the newest families agree, and the review of 2026-11-03 supports the answer for the element pointer and the arithmetic.
 
 Kept open on 2026-11-03 under decision 0054, because two newest families differ in one form. The review supports the answer for the element pointer and the arithmetic. In the form that assigns to an `int` element before its construction during constant evaluation, the review reads the reference as Clang 22 does, and GCC 16 and EDG 7.0 accept the assignment.
 
