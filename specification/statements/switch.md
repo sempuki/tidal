@@ -28,9 +28,11 @@ outside.
 
 A `switch` over an enumeration usually means to handle each enumerator. An
 enumeration can hold values that no enumerator has, so a `switch` with a
-`case` for every enumerator and no `default` can still complete. A
-function that returns a value needs a statement after such a `switch`
-({principle}`FN-P3`, {rule}`FN-7`).
+`case` for every enumerator and no `default` can still complete. In a
+function that returns a value, a value that reaches the end of the
+function has undefined behavior, so such a function should have a
+statement after the `switch` ({principle}`FN-P3`, {rule}`FN-7`). The
+program is valid without one.
 So an implementation should warn when an enumerator has no `case` label
 and the `switch` has no `default`. A case value that no enumerator has
 is likely a mistake, so an implementation should warn about it too.

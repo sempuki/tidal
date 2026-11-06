@@ -56,10 +56,13 @@ informative.
 
 A rule in this specification is a *rule on the program* or a *fact about
 the implementation*. A rule on the program says what a valid program
-must or must not do. If a program breaks such a rule, the program is not
-valid, and an implementation that translates the program must say so
-with a diagnostic, whether or not the program would ever reach the
-broken part. A fact about the implementation says what every
+must or must not do. If a program breaks a `reject` rule, the program
+is not valid, and an implementation that translates the program must
+say so with a diagnostic, whether or not the program would ever reach
+the broken part. A `no-diagnostic` rule makes the program not valid
+with no diagnostic needed. An `undefined` rule constrains only a run
+that reaches the operation, so a program whose undefined operation
+never runs is valid. A fact about the implementation says what every
 implementation does with a valid program. The class of each rule says
 which kind it is and how strong it is:
 
@@ -71,7 +74,7 @@ which kind it is and how strong it is:
 | `undefined` | rule on the program | This specification sets no requirement on what happens. |
 | `impl-defined` | fact | Each implementation chooses and documents its behavior. |
 | `unspecified` | fact | Each implementation chooses from the given set, and need not document or be consistent. |
-| `conditionally-supported` | fact | An implementation can reject the construct. If the implementation accepts the construct, it documents the behavior. |
+| `conditionally-supported` | fact | An implementation can reject the construct with a diagnostic, and it documents the constructs that it does not support. |
 | `recommended` | advice | An implementation should follow the rule, usually by warning. |
 
 One requirement needs a diagnostic when the units are linked: a program
@@ -698,3 +701,10 @@ and Clang warns with no flag.
 | {rule}`VOL-5` | on: `-Wdeprecated-volatile` | on: `-Wvolatile` |
 
 Inputs: clang-sema-decl, clang-diag-sema, edg-decls.
+- TR-17: the gap review of the text phase 12 wrote on classes,
+  declarations, and foundations (`reports/review/2026-11-05-gap-review-phase-12-classes-declarations-foundations.md`, RV5-A-14) reads the case of two
+  definitions of `main` as open in the C++23 text. With external
+  linkage, the second definition can fall under the rule for one
+  definition of a function instead, which needs no diagnostic. Both
+  readings give a failed link on every baseline compiler. TR-17 takes
+  the reading with a diagnostic.

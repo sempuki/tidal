@@ -112,8 +112,9 @@ no choice works, the behavior is undefined. If several choices work,
 the program cannot observe which one the implementation made.
 
 An allocation for a growable array creates an array of the element
-type. The elements of the array exist at once, and each element begins
-its lifetime when the program constructs it. So the program can step
+type. The elements of the array exist at once. An element whose type is
+not an implicit-lifetime type begins its lifetime when the program
+constructs it. So the program can step
 through the positions of the elements before it builds them:
 
 ```text
@@ -128,7 +129,9 @@ A call without an alignment argument gives storage aligned only to the
 {term}`default new alignment` ({principle}`NEW-P5`). For a `T` with a
 larger alignment, the call passes the alignment, as
 `::operator new(4 * sizeof(T), std::align_val_t(alignof(T)))` does
-({rule}`NEW-26`). Otherwise the storage holds no array of `T`.
+({rule}`NEW-26`). Otherwise the storage is aligned for `T` only by
+chance, and STG-8 holds an array of `T` there only at a suitable
+address.
 :::
 
 :::{principle} STG-P4
@@ -297,11 +300,14 @@ An array of `char` or `signed char` hosts no object
 
 :::{rule} STG-5
 :kind: required
-:tests: foundations/storage/placement-new-result-is-address.cpp foundations/storage/keep-placement-new-pointer.cpp foundations/storage/cast-to-target-then-construct.cpp foundations/storage/placement-new-array.cpp foundations/storage/byte-array-hosts-objects.cpp foundations/storage/std-byte-array-hosts-objects.cpp foundations/language-support/construct-at-self-declared.cpp foundations/storage/allocation-array-class-elements.cpp foundations/storage/arena-reset-reuses-bytes.cpp foundations/storage/byte-array-placement-reaches-object.cpp foundations/storage/byte-array-rows-host-objects.cpp foundations/storage/byte-array-member-of-array-hosts.cpp foundations/storage/placement-then-cast-read.cpp expressions/new-delete/non-allocating-placement-over-aligned.cpp
+:tests: foundations/storage/placement-new-result-is-address.cpp foundations/storage/keep-placement-new-pointer.cpp foundations/storage/cast-to-target-then-construct.cpp foundations/storage/placement-new-array.cpp foundations/storage/byte-array-hosts-objects.cpp foundations/storage/std-byte-array-hosts-objects.cpp foundations/language-support/construct-at-self-declared.cpp foundations/storage/allocation-array-class-elements.cpp foundations/storage/arena-reset-reuses-bytes.cpp foundations/storage/byte-array-placement-reaches-object.cpp foundations/storage/byte-array-rows-host-objects.cpp foundations/storage/byte-array-member-of-array-hosts.cpp foundations/storage/placement-then-cast-read.cpp expressions/new-delete/non-allocating-placement-over-aligned.cpp foundations/storage/class-allocation-function-global-placement.cpp foundations/storage/class-allocation-function-hides-placement.cpp
 
 `new (p) T(args)` creates an object of type `T` at the address `p`, with
 a {term}`non-allocating placement form` ({rule}`LSUP-7`). The result
-points to the new object. For a type with more than the default new
+points to the new object. For a class that declares an allocation
+function of its own, the search stops in the class ({rule}`NEW-13`),
+so `new (p) T` finds no non-allocating form unless the class declares
+one, and `::new (p) T` finds the global one. For a type with more than the default new
 alignment, the expression calls the non-allocating form without the
 alignment ({rule}`NEW-29`), and `p` must be aligned for `T`. The array form `new (p) T[n]` calls the
 `operator new[]` form and creates an array at `p` ({rule}`NEW-11`).
@@ -867,8 +873,8 @@ static_assert(read_old() == 1);       // rejected (CE-9)
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 90
-of 96 tests. EDG runs no programs, so its results for the run tests say
+The results are in `tests/RESULTS.md`. All eight compilers agree on 92
+of 98 tests. EDG runs no programs, so its results for the run tests say
 only that the programs are valid.
 
 ### Divergences

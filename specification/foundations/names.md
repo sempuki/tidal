@@ -543,10 +543,10 @@ or `C::f`. After that name, the declaration sees the members of `N` or
   The underlying type that comes before the list is not one of these
   parts ({question}`Q-0410`).
 
-In a friend declaration with a qualified name, a name after the
-declarator is searched first in the scope that the qualifier names,
-and then by ordinary lookup
-({question}`Q-0415`).
+In a friend declaration with a qualified name, a name that comes after
+the qualified name, also inside the declarator, such as a parameter
+type, is searched first in the scope that the qualifier names, and
+then by ordinary lookup ({question}`Q-0415`).
 :::
 
 :::{rule} NAM-22

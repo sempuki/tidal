@@ -247,7 +247,7 @@ lvalue selects `&`, and a call on an rvalue selects `&&`.
 
 :::{rule} CLS-26
 :kind: reject
-:tests: classes/members/ref-qualified-mixed.cpp classes/members/ref-qualified-mixed-const.cpp classes/members/ref-qualified-mixed-call.cpp classes/members/ref-qualified-mixed-different-cv.cpp classes/members/explicit-object-and-unqualified-clash.cpp classes/members/explicit-object-by-value-and-unqualified-clash.cpp
+:tests: classes/members/ref-qualified-mixed.cpp classes/members/ref-qualified-mixed-const.cpp classes/members/ref-qualified-mixed-call.cpp classes/members/ref-qualified-mixed-different-cv.cpp classes/members/explicit-object-and-unqualified-clash.cpp classes/members/explicit-object-by-value-and-unqualified-clash.cpp classes/members/ref-qualifier-mix-different-constraints.cpp
 
 The overloads of a member function that CLS-6 describes must all have
 ref-qualifiers, or none, if they have the same parameters and the same
@@ -255,7 +255,11 @@ cv-qualifiers ({question}`Q-0027`). Overloads whose cv-qualifiers
 differ can mix a function with a ref-qualifier and one without. A
 member function without a ref-qualifier and one with an explicit object
 parameter of the same class type, by reference or by value, with the
-same cv-qualifiers and the same other parameters, also clash.
+same cv-qualifiers and the same other parameters, also clash. Two
+overloads clash this way only when their trailing `requires` clauses
+are equivalent or both absent. So in a class template, a function
+with a ref-qualifier and one without, with different constraints, are
+two functions.
 :::
 
 :::{rule} CLS-7
@@ -708,8 +712,8 @@ struct Pointers { char c; int& r; int Plain::* p; void (Shape::* f)(); };
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 157
-of 173 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 158
+of 174 tests.
 
 ### Divergences
 

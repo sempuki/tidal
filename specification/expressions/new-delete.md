@@ -312,7 +312,7 @@ A `new` expression must not:
 
 :::{rule} NEW-13
 :kind: required
-:tests: expressions/new-delete/class-allocation-function.cpp expressions/new-delete/class-array-allocation-function.cpp
+:tests: expressions/new-delete/class-allocation-function.cpp expressions/new-delete/class-array-allocation-function.cpp foundations/storage/class-allocation-function-global-placement.cpp foundations/storage/class-allocation-function-hides-placement.cpp
 
 A class can declare its own `operator new` and `operator delete`. A
 `new` or `delete` for that class uses those functions. `::new` and
@@ -489,7 +489,7 @@ not freed, in these cases:
 
 :::{rule} NEW-28
 :kind: required
-:tests: expressions/new-delete/aligned-new-passes-alignment.cpp expressions/new-delete/aligned-delete-passes-alignment.cpp expressions/new-delete/aligned-global-delete.cpp expressions/new-delete/aligned-new-constant.cpp foundations/language-support/alignment-enumeration-self-declared.cpp foundations/language-support/alignment-enumeration-not-declared.cpp expressions/new-delete/aligned-class-both-forms.cpp
+:tests: expressions/new-delete/aligned-new-passes-alignment.cpp expressions/new-delete/aligned-delete-passes-alignment.cpp expressions/new-delete/aligned-global-delete.cpp expressions/new-delete/aligned-new-constant.cpp foundations/language-support/alignment-enumeration-self-declared.cpp foundations/language-support/alignment-enumeration-not-declared.cpp expressions/new-delete/aligned-class-both-forms.cpp expressions/new-delete/only-aligned-class-form-ordinary-type.cpp
 
 If the alignment of `T` is more than the {term}`default new
 alignment`, a `new` expression for `T` or an array of `T` passes
@@ -773,8 +773,8 @@ int* q = new (cell) int(4);     // the int is at cell (NEW-33)
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 123
-of 148 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 126
+of 151 tests.
 
 ### Divergences
 
@@ -985,6 +985,17 @@ the compile.
   `new T` left with no value, under `-fsanitize=undefined` or
   `-fsanitize=address`. The front end's interpreter stops the read
   (`uninitialized-read-run.cpp`, decision 0053).
+- NEW-P5: the gap review of the text phase 12 wrote (`reports/review/2026-11-05-gap-review-phase-12-expressions-overloading-templates.md`, RV5-B-4)
+  reads the C++23 text as adding the alignment on a second search, when
+  a type that is not over-aligned finds no allocation function without
+  it. Every baseline compiler rejects `new T` for a class that declares
+  only an aligned form, and NEW-P5 keeps the compilers' answer
+  (`documentation/decisions/pending.md`, row 4).
+- NEW-22: the same review (RV5-B-5) reads the C++23 text as choosing
+  the sized global form for every single object of complete type,
+  aligned forms included. NEW-22 and UNW-3 give the sized form only
+  below the threshold, and leave the over-aligned case to the
+  implementation.
 
 ### Sources
 

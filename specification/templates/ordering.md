@@ -355,8 +355,8 @@ functions, templates or not, only if all these conditions hold
   not count, so `f(T)` and `f(T, ...)` meet the first condition
   ({question}`Q-0293`).
 - If exactly one of two templates is a swapped rewritten candidate
-  ({rule}`ORD-7`), this condition takes the place of the two before it
-  on the parameter types and the heads: every template parameter of
+  ({rule}`ORD-7`), this condition takes the place of the conditions on
+  the parameter types and on the heads above: every template parameter of
   both is deducible from the function parameters, and exactly one
   reordering of the template parameters makes the two heads equivalent
   and the parameter types the same.

@@ -458,6 +458,7 @@ status, and the first sentence of its answer section.
 | [Q-0419](Q-0419-list-user-defined-element.md) | Which element's conversion does a list sequence hold when the worst element conversion is user-defined? | provisional | The list sequence holds the user-defined sequence of the first element that has one |
 | [Q-0420](Q-0420-address-deduced-result-body.md) | Does taking the address of an overload set instantiate a template whose result type comes from its body, when a plain function matches the target? | provisional | The specialization is instantiated and the program is not valid |
 | [Q-0421](Q-0421-constant-assign-before-construction.md) | In constant evaluation, can a program assign to an element of storage from `std::allocator` before `std::construct_at` builds it? | provisional | The assignment is rejected |
+| [Q-0422](Q-0422-return-structured-binding.md) | Is a structured binding named in a return statement an xvalue? | provisional | The name stays an lvalue |
 
 ## Status values
 

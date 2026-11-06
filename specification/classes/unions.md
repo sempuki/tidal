@@ -361,9 +361,11 @@ does not bind to a bit-field ({rule}`VOL-10`).
 
 :::{rule} BF-6
 :kind: required
-:tests: classes/unions/bitfield-auto-type.cpp classes/unions/bitfield-promotes-to-int.cpp classes/unions/bitfield-promotes-unsigned-int.cpp classes/unions/bitfield-wide-unsigned-promotion.cpp
+:tests: classes/unions/bitfield-auto-type.cpp classes/unions/bitfield-promotes-to-int.cpp classes/unions/bitfield-promotes-unsigned-int.cpp classes/unions/bitfield-wide-unsigned-promotion.cpp foundations/conversions/bit-field-enumeration-promotes-as-enumeration.cpp
 
-A bit-field promotes as follows:
+A bit-field of integer type promotes as follows. A bit-field of an
+unscoped enumeration type promotes as its enumeration does
+({rule}`CONV-1`).
 
 1. If `int` can hold all values of the bit-field's width, the bit-field
    promotes to `int`.
@@ -731,8 +733,8 @@ active member.
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 151
-of 166 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 152
+of 167 tests.
 
 ### Divergences
 

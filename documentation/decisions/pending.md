@@ -71,7 +71,7 @@ review finds the reference silent.
 | 9 | Decide the row; answers may change | 9: Q-0006, Q-0008, Q-0116, Q-0119, Q-0182, Q-0183, Q-0186, Q-0312, Q-0412 | 1 | at most 1 |
 | 10 | Record each answer as Tidal's own choice; answers stay | 15: Q-0020, Q-0079, Q-0165, Q-0176, Q-0179, Q-0180, Q-0184, Q-0185, Q-0321, Q-0325, Q-0349, Q-0361, Q-0372, Q-0381, Q-0384 | 27 | 0 |
 
-Rows 1 to 9 hold 111 of the 175 open questions (63%). With row 10, the rows hold 124 (71%).
+Rows 1 to 9 hold 111 of the 176 open questions (63%). With row 10, the rows hold 124 (70%).
 
 75 open questions wait for a review that supports the answer with no doubt. By what the last review found: 50 doubt, 15 silent, 9 against, 1 part.
 
@@ -140,6 +140,8 @@ each item, except Q-0307, where Tidal follows the review.
 | Q-0389 | a default argument that reads the value of a local constant | review | matrix | matrix | `2026-11-04-gap-review-phase-8-declarations-statements` |
 | COND-16, Q-0418 | step 1 for a `Derived` xvalue against a `const Base` lvalue; COND-16 needs an lvalue, the review lets a reference to `const` bind the xvalue | review | matrix | matrix | `2026-11-05-gap-review-phase-12-expressions-overloading-templates` |
 | COND-16, Q-0418 | step 1 for an `A` xvalue against a `const A` lvalue | matrix | matrix | matrix | `2026-11-05-gap-review-phase-12-expressions-overloading-templates` |
+| NEW-P5 | `new T` for a class that declares only an aligned allocation form and a `T` that is not over-aligned; the matrix rejects, the review adds the alignment on a second search | matrix | matrix | matrix | `2026-11-05-gap-review-phase-12-expressions-overloading-templates` |
+| ICS-45 | an `explicit` conversion function whose result is a class derived from `C`, for the copy or move constructor of `C` in direct initialization | matrix | matrix | matrix | `2026-11-05-gap-review-phase-12-expressions-overloading-templates` |
 | CMP-8 | a relational comparison of pointers to two members of a union, or to a member that occupies no storage, during constant evaluation; Tidal keeps a result | matrix | matrix | matrix | `2026-11-04-gap-review-phase-8-expressions-foundations-templates` |
 
 ## EDG report

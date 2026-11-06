@@ -270,7 +270,7 @@ and for the operands of the built-in `!`, `&&`, and `||` ({rule}`OVL-9`).
 
 :::{rule} ICS-45
 :kind: required
-:tests: overloading/conversion-sequences/user-defined-explicit.cpp overloading/conversion-sequences/user-defined-explicit-reference-value.cpp overloading/conversion-sequences/user-defined-explicit-rvalue-reference-value.cpp overloading/conversion-sequences/user-defined-explicit-reference-xvalue.cpp overloading/conversion-sequences/user-defined-candidates.cpp overloading/conversion-sequences/user-defined-explicit-reference-other-type.cpp
+:tests: overloading/conversion-sequences/user-defined-explicit.cpp overloading/conversion-sequences/user-defined-explicit-reference-value.cpp overloading/conversion-sequences/user-defined-explicit-rvalue-reference-value.cpp overloading/conversion-sequences/user-defined-explicit-reference-xvalue.cpp overloading/conversion-sequences/user-defined-candidates.cpp overloading/conversion-sequences/user-defined-explicit-reference-other-type.cpp overloading/conversion-sequences/explicit-conversion-to-derived-direct-init.cpp
 
 Direct initialization can also use an `explicit` conversion function
 ({rule}`CVF-3`) for these targets:
@@ -404,7 +404,7 @@ Only a standard sequence can reach these parameters:
 
 :::{rule} ICS-11
 :kind: required
-:tests: overloading/conversion-sequences/reference-direct-derived.cpp overloading/conversion-sequences/reference-temporary.cpp overloading/conversion-sequences/reference-conversion-result.cpp overloading/conversion-sequences/reference-conversion-value-result.cpp expressions/conditional/class-converts-to-int-reference-lvalue.cpp declarations/initialization/references/pointer-lvalue-binds-more-qualified-pointer.cpp
+:tests: overloading/conversion-sequences/reference-direct-derived.cpp overloading/conversion-sequences/reference-temporary.cpp overloading/conversion-sequences/reference-conversion-result.cpp overloading/conversion-sequences/reference-conversion-value-result.cpp expressions/conditional/class-converts-to-int-reference-lvalue.cpp declarations/initialization/references/pointer-lvalue-binds-more-qualified-pointer.cpp overloading/conversion-sequences/pointer-prvalue-less-qualified-reference.cpp
 
 The sequence of a reference parameter depends on how the reference binds
 ({rule}`REF-1`, {rule}`REF-2`, {rule}`REF-3`):
@@ -418,11 +418,12 @@ The sequence of a reference parameter depends on how the reference binds
 - to a temporary: the sequence that converts the argument to the
   referenced type, without its top-level cv-qualifiers.
 
-A prvalue that is not of class type always binds a temporary
-({rule}`REF-2`). So an `int*` prvalue for a `const int* const&`
-parameter has the qualification adjustment to `const int*` as its
-sequence, and an `int*` lvalue binds the same parameter directly with
-the identity (REF-1).
+A prvalue that is not of class type is materialized as a temporary
+({rule}`REF-2`). A reference to `const`, or an rvalue reference, of a
+type that REF-1 lets bind the prvalue's type counts as binding
+directly to that temporary, so {rule}`ICS-46` ranks two such
+references. For an `int*` prvalue, `int* const&` is better than
+`const int* const&`, as for an `int*` lvalue.
 :::
 
 :::{rule} ICS-12
@@ -518,7 +519,7 @@ and third part ({question}`Q-0419`).
 
 :::{rule} ICS-17
 :kind: required
-:tests: overloading/conversion-sequences/list-array.cpp overloading/conversion-sequences/list-array-against-scalar.cpp overloading/conversion-sequences/array-list-user-defined-first-element.cpp
+:tests: overloading/conversion-sequences/list-array.cpp overloading/conversion-sequences/list-array-against-scalar.cpp overloading/conversion-sequences/array-list-user-defined-first-element.cpp overloading/conversion-sequences/array-list-longer-than-bound.cpp
 
 For a reference to an array of `E` that binds a temporary (ICS-20,
 {principle}`REF-P3`), a braced list has a sequence if each element converts to `E` and these
@@ -627,7 +628,7 @@ of known bound is better than the array of unknown bound.
 
 :::{rule} ICS-46
 :kind: required
-:tests: overloading/conversion-sequences/array-known-bound-direct.cpp overloading/conversion-sequences/list-string-literal-bound.cpp overloading/conversion-sequences/reference-direct-fewer-qualifiers.cpp overloading/conversion-sequences/array-known-bound-direct-cv.cpp
+:tests: overloading/conversion-sequences/array-known-bound-direct.cpp overloading/conversion-sequences/list-string-literal-bound.cpp overloading/conversion-sequences/reference-direct-fewer-qualifiers.cpp overloading/conversion-sequences/array-known-bound-direct-cv.cpp overloading/conversion-sequences/pointer-prvalue-less-qualified-reference.cpp
 
 Two references can bind directly to one object. If the referenced type
 of one converts to the other's by a qualification adjustment, that
@@ -875,8 +876,8 @@ send(s);                    // rejected: Target(Source&) and operator Target()
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 110
-of 141 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 113
+of 144 tests.
 
 ### Divergences
 
@@ -1015,6 +1016,16 @@ cells give the outcome of the test on each compiler.
   chooses another viable function when one exists.
 - ICS-10, ICS-41: every compiler accepts a user-defined sequence to the
   explicit object parameter of an assignment operator.
+- ICS-17: the condition that a known bound is not less than the number
+  of elements follows the compilers. The gap review of the text phase
+  12 wrote (`reports/review/2026-11-05-gap-review-phase-12-expressions-overloading-templates.md`, RV5-B-7) finds no such condition in the C++23 text.
+  The probe of a three-element list against `const int (&)[2]` and
+  `const int (&)[3]` selects the bound 3 on every baseline compiler.
+- ICS-45: the same review (RV5-B-9) reads the C++23 text as also
+  letting an `explicit` conversion function whose result is a class
+  derived from `C` serve the copy or move constructor of `C`. Every
+  baseline compiler rejects that form, and ICS-45 keeps the compilers'
+  answer (`documentation/decisions/pending.md`, row 4).
 
 ### Probe grids
 

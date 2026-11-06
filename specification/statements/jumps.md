@@ -179,7 +179,7 @@ constant evaluation rejects the read.
 
 :::{rule} JMP-10
 :kind: required
-:tests: statements/jumps/return-move-only-parameter.cpp statements/jumps/return-rvalue-ref-param-as-rvalue-ref.cpp statements/jumps/return-parenthesized-move-only.cpp declarations/functions/return-deduction/decltype-auto-paren-local-lvalue-kinds.cpp
+:tests: statements/jumps/return-move-only-parameter.cpp statements/jumps/return-rvalue-ref-param-as-rvalue-ref.cpp statements/jumps/return-parenthesized-move-only.cpp declarations/functions/return-deduction/decltype-auto-paren-local-lvalue-kinds.cpp statements/jumps/return-name-limits.cpp statements/jumps/return-structured-binding-lvalue.cpp
 
 If the expression of a `return` statement is the name of a local
 variable or a parameter of the function, the name is an xvalue (see
@@ -189,8 +189,14 @@ These details apply:
 - A variable or parameter of rvalue reference type counts.
 - Parentheses around the name do not change the result.
 - A `static` local variable does not count.
-- A `volatile` local object and a local variable of lvalue reference
-  type do not count. Each name stays an lvalue.
+- A `volatile` local object, a local variable of lvalue reference
+  type, and a variable of rvalue reference type to a `volatile` object
+  do not count. Each name stays an lvalue.
+- The variable must belong to the body or the parameter list of the
+  innermost function or lambda. A lambda that names a variable of an
+  enclosing function gets an lvalue.
+- A structured binding is not such a variable, so its name stays an
+  lvalue ({question}`Q-0422`).
 :::
 
 :::{rule} JMP-15
@@ -354,7 +360,7 @@ int pick(int v) {
 
 ## Evidence
 
-All eight compilers agree on 59 of 62 tests. The results are in
+All eight compilers agree on 60 of 64 tests. The results are in
 `tests/RESULTS.md`.
 
 ### Divergences
@@ -370,6 +376,9 @@ All eight compilers agree on 59 of 62 tests. The results are in
   write a variable whose declaration a jump skipped. It can, and a read
   after the write gives the value, as Clang says. GCC and EDG reject
   the write.
+- {question}`Q-0422` (JMP-10; open): whether a structured binding named
+  in a `return` statement is an xvalue. It is not, and the name stays an
+  lvalue, as Clang and GCC give. EDG gives another type.
 
 ### Split tests
 
@@ -377,6 +386,7 @@ All eight compilers agree on 59 of 62 tests. The results are in
 |---|---|---|---|---|---|---|
 | `goto-past-nontrivial-destructor.cpp` | JMP-6 | accept | reject | accept | reject | {question}`Q-0041` |
 | `goto-skips-nontrivial-destructor.cpp` | JMP-6 | accept | reject | accept | reject | {question}`Q-0041` |
+| `return-structured-binding-lvalue.cpp` | JMP-10 | accept | accept | accept | reject | {question}`Q-0422` |
 | `statements/switch/skipped-declaration-written-then-read.cpp` | JMP-16 | accept | accept | reject | reject | {question}`Q-0121` |
 
 ### Notes

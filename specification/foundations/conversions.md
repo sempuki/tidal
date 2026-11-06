@@ -93,7 +93,7 @@ in its place ({rule}`ICS-8`).
 
 :::{rule} CONV-1
 :kind: required
-:tests: foundations/conversions/integral-promotion.cpp foundations/conversions/bitfield-promotes.cpp foundations/conversions/enum-promotion.cpp foundations/conversions/bitfield-promotion-by-width.cpp foundations/conversions/enum-promotion-no-fixed-type.cpp foundations/types/rank-promotions.cpp
+:tests: foundations/conversions/integral-promotion.cpp foundations/conversions/bitfield-promotes.cpp foundations/conversions/enum-promotion.cpp foundations/conversions/bitfield-promotion-by-width.cpp foundations/conversions/enum-promotion-no-fixed-type.cpp foundations/types/rank-promotions.cpp foundations/conversions/bit-field-enumeration-promotes-as-enumeration.cpp
 
 The following operands go through {term}`integer promotion` in
 arithmetic:
@@ -103,9 +103,12 @@ arithmetic:
   otherwise to `unsigned int`. {rule}`TYP-3` gives the underlying type
   of each character type, which decides its values. On both matrix targets, `char32_t`
   promotes to `unsigned int`, and the other types promote to `int`.
-- a bit-field, by its width and not by its declared type (BF-6). A
-  bit-field of width 3 declared `long long` promotes to `int`; a
-  bit-field of width 40 keeps `long long`,
+- a bit-field of integer type, by its width and not by its declared
+  type (BF-6). A bit-field of width 3 declared `long long` promotes to
+  `int`; a bit-field of width 40 keeps `long long`. A bit-field of an
+  unscoped enumeration type promotes as its enumeration does, so a
+  bit-field of width 3 of an enumeration with the underlying type
+  `unsigned int` promotes to `unsigned int`,
 - an unscoped enumeration. With a fixed underlying type, the value
   converts to that type first and then promotes as that type does.
   Without a fixed underlying type, the candidates are tried by rank from

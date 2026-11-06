@@ -173,8 +173,9 @@ applies to objects in:
   ({rule}`NEW-26`).
   A class's own allocation function that NEW-29 calls without the
   alignment gets no such promise from the implementation. If it returns
-  storage that is not aligned for the type, no object of the type
-  exists there (STG-8), and a use is undefined ({rule}`STG-23`).
+  storage that is not aligned for the type, the object that the `new`
+  expression builds sits at an address that is not a multiple of the
+  type's alignment, and a use of it is undefined ({rule}`STG-23`).
 
 So no object of a type sits at an address that is not a multiple of the
 type's alignment. A read or write through a glvalue at such an address

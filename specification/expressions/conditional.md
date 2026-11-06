@@ -423,6 +423,12 @@ All eight compilers agree on 85 of 93 tests. The results are in
   operand never converts to its derived class on any newest compiler,
   not even through a converting constructor. The row follows the review,
   and the new row records the base class operand.
+- COND-16 and COND-3: the gap review of the text phase 12 wrote on
+  expressions, overloading, and templates (`reports/review/2026-11-05-gap-review-phase-12-expressions-overloading-templates.md`, RV5-B-2 and RV5-B-3)
+  reads the C++23 text as letting more class operands convert than the
+  table allows, when the two operands differ in cv-qualifiers or one
+  class is a base of the other. The table follows every newest compiler
+  and the later reading of the text that the review names.
 
 ### Sources
 

@@ -187,6 +187,7 @@ function:
   parameters match the extra parameters of the allocation function. If
   no such function exists, the storage is not released.
 
+For a class's own deallocation functions, {rule}`NEW-22` gives the form.
 For the global deallocation function of a type that is not a placement
 form:
 

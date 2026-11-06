@@ -179,22 +179,25 @@ Without `mutable`, the body must not change a variable captured by copy
 
 `[=]` captures by copy each local variable that the body uses. `[&]`
 captures the same variables by reference. An explicit capture after a
-default uses the other mode.
+default uses the other mode. An explicit capture here is a simple
+capture: a name, `&` and a name, `this`, or `*this`. An init capture can
+use either mode after a default (LAM-7).
 :::
 
 :::{rule} LAM-6
 :kind: reject
-:tests: expressions/lambdas/capture-abstract.cpp expressions/lambdas/capture-copy-same-as-default.cpp expressions/lambdas/capture-default-at-namespace.cpp expressions/lambdas/capture-global-rejected.cpp expressions/lambdas/capture-repeated.cpp expressions/lambdas/capture-same-as-default.cpp expressions/lambdas/reference-default-explicit-this.cpp expressions/lambdas/capture-default-in-member-initializer.cpp expressions/lambdas/capture-default-local-class-member.cpp expressions/lambdas/capture-default-local-class-default-argument.cpp expressions/lambdas/named-capture-in-block-function-default-argument.cpp
+:tests: expressions/lambdas/capture-abstract.cpp expressions/lambdas/capture-copy-same-as-default.cpp expressions/lambdas/capture-default-at-namespace.cpp expressions/lambdas/capture-global-rejected.cpp expressions/lambdas/capture-repeated.cpp expressions/lambdas/capture-same-as-default.cpp expressions/lambdas/reference-default-explicit-this.cpp expressions/lambdas/capture-default-in-member-initializer.cpp expressions/lambdas/capture-default-local-class-member.cpp expressions/lambdas/capture-default-local-class-default-argument.cpp expressions/lambdas/named-capture-in-block-function-default-argument.cpp expressions/lambdas/init-capture-same-mode-as-default.cpp
 
 A capture list must obey these rules:
 
 - Each name occurs at most once.
-- An explicit capture must not use the same mode as the default. As
-  exceptions, `[&, this]`, `[=, this]`, and `[=, *this]` are valid.
+- A simple capture (LAM-5) must not use the same mode as the default.
+  As exceptions, `[&, this]`, `[=, this]`, and `[=, *this]` are valid.
+  An init capture is not a simple capture, so `[=, x = 1]` is valid.
 - Only a variable with {term}`automatic storage` can be captured.
 - A lambda that is not inside a block must not have a capture default
-  or a named capture, `this` included, except in a default member
-  initializer. A default argument, and a
+  or a simple capture, `this` included, except in a default member
+  initializer. An init capture is allowed there (LAM-7). A default argument, and a
   member declaration of a local class outside a function body, are not
   inside a block.
 - A variable of {term}`abstract class` type ({rule}`VIRT-8`) cannot be captured
@@ -203,13 +206,13 @@ A capture list must obey these rules:
 
 :::{rule} LAM-7
 :kind: required
-:tests: expressions/lambdas/capture-structured-binding.cpp expressions/lambdas/init-capture.cpp expressions/lambdas/explicit-capture-order.cpp expressions/lambdas/namespace-init-capture.cpp expressions/lambdas/init-capture-outer-lookup.cpp foundations/evaluation-order/init-capture-order.cpp expressions/lambdas/init-capture-extends-temporary.cpp
+:tests: expressions/lambdas/capture-structured-binding.cpp expressions/lambdas/init-capture.cpp expressions/lambdas/explicit-capture-order.cpp expressions/lambdas/namespace-init-capture.cpp expressions/lambdas/init-capture-outer-lookup.cpp foundations/evaluation-order/init-capture-order.cpp expressions/lambdas/init-capture-extends-temporary.cpp expressions/lambdas/init-capture-same-mode-as-default.cpp
 
 An init capture `[x = e]` declares a new member `x` that `e`
 initializes, and `[&r = v]` declares a reference to `v`. These rules
 apply:
 
-- Init captures are initialized together with the other explicit
+- Init captures are initialized together with the simple
   captures, in the order of LAM-28.
 - The temporaries of the initializer end with the {term}`full expression` that
   contains the lambda expression ({rule}`VC-9`).
@@ -502,8 +505,8 @@ int dispatch(int base) {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 90
-of 94 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 91
+of 95 tests.
 
 ### Divergences
 

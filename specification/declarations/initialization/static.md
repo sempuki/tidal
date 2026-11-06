@@ -148,8 +148,9 @@ other unit names.
 :tests: declarations/initialization/static/thread-local-init-deferred.cpp declarations/initialization/static/thread-local-unused.cpp foundations/objects/thread-local-member-starts-unit.cpp
 
 A `thread_local` variable at namespace scope that is not `inline`, with
-{term}`dynamic initialization`, is initialized before the first statement of the thread, or when the
-thread first uses the variable. The choice is implementation-defined.
+{term}`dynamic initialization`, is initialized before the first statement of the thread, or at a
+later point before the thread first uses the variable or another
+`thread_local` variable of the unit. The choice is implementation-defined.
 Clang and GCC initialize the variable at the first use, also when the
 variable has a class type with a constructor. {rule}`OBJ-11` gives the
 uses that start the initialization, including the use of another
