@@ -290,11 +290,13 @@ Direct initialization can also use an `explicit` conversion function
 A function parameter is copy-initialized, so these functions never
 serve it. The temporary that a reference binds is copy-initialized
 too, also in direct initialization, so an `explicit` conversion
-function cannot make it. These are direct-initialized: the operand of
+function cannot make it. These are among the direct-initialized
+operands: the operand of
 a cast, the variable of a direct initialization, the parameter of a
 copy or move constructor in the direct initialization of a class
-({rule}`OVL-40`), and the operands of the built-in `!`, `&&`, and `||`
-({rule}`OVL-9`).
+({rule}`OVL-40`), the operands of the built-in `!`, `&&`, and `||`
+({rule}`OVL-9`), a member initializer, a parenthesized `new`
+initializer, and a condition that converts to `bool`.
 :::
 
 :::{rule} ICS-5

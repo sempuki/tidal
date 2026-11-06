@@ -525,7 +525,7 @@ In `E::x`, `x` must be an enumerator of `E` (NAM-19).
 
 :::{rule} NAM-21
 :kind: required
-:tests: foundations/names/definition-body-sees-namespace.cpp foundations/names/definition-initializer-sees-namespace.cpp foundations/names/definition-parameter-sees-class.cpp foundations/names/definition-trailing-return-sees-class.cpp foundations/names/definition-bound-default-noexcept-see-scope.cpp foundations/names/definition-template-member-alias.cpp foundations/names/definition-class-body-sees-namespace.cpp foundations/names/definition-class-base-sees-namespace.cpp foundations/names/definition-enumeration-body-sees-namespace.cpp foundations/language-support/tuple-protocol-page-example.cpp foundations/names/qualified-enum-underlying-type-lookup.cpp
+:tests: foundations/names/definition-body-sees-namespace.cpp foundations/names/definition-initializer-sees-namespace.cpp foundations/names/definition-parameter-sees-class.cpp foundations/names/definition-trailing-return-sees-class.cpp foundations/names/definition-bound-default-noexcept-see-scope.cpp foundations/names/definition-template-member-alias.cpp foundations/names/definition-class-body-sees-namespace.cpp foundations/names/definition-class-base-sees-namespace.cpp foundations/names/definition-enumeration-body-sees-namespace.cpp foundations/language-support/tuple-protocol-page-example.cpp foundations/names/qualified-enum-underlying-type-lookup.cpp foundations/names/friend-qualified-declarator-lookup.cpp
 
 A declaration can name a member with a qualified name, such as `N::f`
 or `C::f`. After that name, the declaration sees the members of `N` or
@@ -543,7 +543,10 @@ or `C::f`. After that name, the declaration sees the members of `N` or
   The underlying type that comes before the list is not one of these
   parts ({question}`Q-0410`).
 
-A friend declaration with a qualified name gets no such lookup.
+In a friend declaration with a qualified name, a name after the
+declarator is searched first in the scope that the qualifier names,
+and then by ordinary lookup
+({question}`Q-0415`).
 :::
 
 :::{rule} NAM-22
@@ -903,7 +906,7 @@ File::File* q = nullptr;        // rejected: names the constructor
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 239
-of 243 tests.
+of 244 tests.
 
 ### Divergences
 
@@ -927,6 +930,10 @@ of 243 tests.
 - {question}`Q-0377` (NAM-21; settled on NAM-P5): whether the body of a
   class defined with a qualified name sees the members of the qualifier
   without qualification. It does. No family differs.
+- {question}`Q-0415` (NAM-21; open): whether a name after the declarator
+  of a friend declaration with a qualified name is searched first in the
+  scope that the qualifier names. It is, as GCC and EDG say. Clang uses
+  ordinary lookup only.
 
 ### Split tests
 
@@ -934,6 +941,7 @@ of 243 tests.
 |---|---|---|---|---|---|---|
 | `adl-template-id-argument.cpp` | NAM-27 | accept | reject | accept | accept | {question}`Q-0311` |
 | `expressions/postfix/member-access-class-being-defined.cpp` | PFX-11, NAM-6 | accept | reject | accept | accept | {question}`Q-0316` |
+| `friend-qualified-declarator-lookup.cpp` | NAM-21 | accept | reject | accept | accept | {question}`Q-0415` |
 | `operator-lookup-block-declaration-keeps-adl.cpp` | NAM-38 | accept | accept | accept | reject | {question}`Q-0364` |
 | `shared-name-anonymous-union-member.cpp` | NAM-39 | accept | reject | accept | accept | {question}`Q-0362` |
 

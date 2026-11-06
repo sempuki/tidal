@@ -32,7 +32,7 @@ last column lists the questions that the decision closes or changes.
 | 7 | the principle-use batch PU2 | f2ac11c |
 | 10 | phase 10 item RV3, the gap reviews of the text phase 9 wrote: Q-0092, Q-0247, Q-0340, Q-0358, Q-0390, Q-0392, Q-0397, Q-0398, Q-0399, Q-0400 | b1d89e7 |
 | 2 | phase 10 item PU3, the principle-use batch PU3: Q-0370, Q-0376 | 75e4fab |
-| 4 | phase 11 item RV4, the gap reviews of the text phase 10 wrote: Q-0263, Q-0386, Q-0395, Q-0413 | |
+| 4 | phase 11 item RV4, the gap reviews of the text phase 10 wrote: Q-0263, Q-0386, Q-0395, Q-0413 | 1e51073 |
 | -8 | phase 8 item PQ reopened these under the principle test of the style guide: Q-0064, Q-0067, Q-0111, Q-0242, Q-0259, Q-0319, Q-0329, Q-0373. Item PU settled Q-0067 and Q-0329 again | |
 
 ## Decision packet
@@ -52,8 +52,8 @@ review finds the reference silent.
 | 1 | Widen decision 0054 to settle while two newest families differ; answers stay | 56: Q-0017, Q-0021, Q-0033, Q-0041, Q-0045, Q-0062, Q-0080, Q-0082, Q-0084, Q-0121, Q-0126, Q-0129, Q-0132, Q-0133, Q-0134, Q-0140, Q-0142, Q-0143, Q-0148, Q-0152, Q-0153, Q-0156, Q-0159, Q-0161, Q-0165, Q-0168, Q-0174, Q-0192, Q-0193, Q-0195, Q-0197, Q-0216, Q-0217, Q-0218, Q-0227, Q-0234, Q-0235, Q-0241, Q-0248, Q-0251, Q-0274, Q-0301, Q-0307, Q-0320, Q-0323, Q-0331, Q-0335, Q-0337, Q-0339, Q-0341, Q-0346, Q-0349, Q-0368, Q-0374, Q-0383, Q-0403 | 132 |
 | 2 | Decide the row; answers may change | 1: Q-0322 | 0 |
 | 3 | Decide the row; answers may change | 12: Q-0195, Q-0197, Q-0198, Q-0201, Q-0203, Q-0235, Q-0266, Q-0272, Q-0277, Q-0278, Q-0280, Q-0282 | 23 |
-| 4a | Follow the compilers; answers stay | 17: Q-0140, Q-0142, Q-0181, Q-0225, Q-0243, Q-0246, Q-0275, Q-0277, Q-0280, Q-0300, Q-0336, Q-0394, Q-0405, Q-0406, Q-0407, Q-0409, Q-0410 | 31 |
-| 4a | Follow the review; answers change | 17: Q-0140, Q-0142, Q-0181, Q-0225, Q-0243, Q-0246, Q-0275, Q-0277, Q-0280, Q-0300, Q-0336, Q-0394, Q-0405, Q-0406, Q-0407, Q-0409, Q-0410 | 31 |
+| 4a | Follow the compilers; answers stay | 18: Q-0140, Q-0142, Q-0181, Q-0225, Q-0243, Q-0246, Q-0275, Q-0277, Q-0280, Q-0300, Q-0336, Q-0394, Q-0405, Q-0406, Q-0407, Q-0409, Q-0410, Q-0416 | 32 |
+| 4a | Follow the review; answers change | 18: Q-0140, Q-0142, Q-0181, Q-0225, Q-0243, Q-0246, Q-0275, Q-0277, Q-0280, Q-0300, Q-0336, Q-0394, Q-0405, Q-0406, Q-0407, Q-0409, Q-0410, Q-0416 | 32 |
 | 4b | Follow the compilers; answers stay | 20: Q-0074, Q-0077, Q-0087, Q-0123, Q-0131, Q-0190, Q-0191, Q-0205, Q-0226, Q-0307, Q-0330, Q-0362, Q-0366, Q-0369, Q-0371, Q-0389, Q-0393, Q-0401, Q-0404, Q-0408 | 43 |
 | 4b | Follow the review; answers change | 20: Q-0074, Q-0077, Q-0087, Q-0123, Q-0131, Q-0190, Q-0191, Q-0205, Q-0226, Q-0307, Q-0330, Q-0362, Q-0366, Q-0369, Q-0371, Q-0389, Q-0393, Q-0401, Q-0404, Q-0408 | 43 |
 | 5 | Decide the row; answers may change | 1: Q-0235 | 3 |
@@ -63,9 +63,9 @@ review finds the reference silent.
 | 9 | Decide the row; answers may change | 9: Q-0006, Q-0008, Q-0116, Q-0119, Q-0182, Q-0183, Q-0186, Q-0312, Q-0412 | 1 |
 | 10 | Record each answer as Tidal's own choice; answers stay | 15: Q-0020, Q-0079, Q-0165, Q-0176, Q-0179, Q-0180, Q-0184, Q-0185, Q-0321, Q-0325, Q-0349, Q-0361, Q-0372, Q-0381, Q-0384 | 27 |
 
-The rows 1 to 9 hold 110 of the open questions.
+The rows 1 to 9 hold 111 of the open questions.
 
-72 open questions wait for a review that supports the answer with no doubt. By what the last review found: 47 doubt, 15 silent, 9 against, 1 part.
+73 open questions wait for a review that supports the answer with no doubt. By what the last review found: 48 doubt, 15 silent, 9 against, 1 part.
 
 ## Matrix against review
 
@@ -125,6 +125,7 @@ each item, except Q-0307, where Tidal follows the review.
 | TARG-27, Q-0409 | an injected class name from two bases as a template template argument; TARG-27 rejects it as ambiguous | matrix | matrix | matrix | `2026-11-05-gap-review-phase-9-expressions-templates` |
 | ORD-P1, Q-0405 | the address of an overload set with explicit template arguments and no target type; the address is ambiguous | matrix | matrix | matrix | `2026-11-05-gap-review-phase-9-expressions-templates` |
 | CTAD-16, Q-0408 | an inherited guide with a derived parameter that the base does not use and that has a default; the default rescues the guide | review | matrix | matrix | `2026-11-05-gap-review-phase-9-expressions-templates` |
+| OBJ-11, Q-0416 | a use of a constant-initialized `thread_local` and the deferred construction of the other `thread_local` variables of the unit; OBJ-11 says the use does not start it | matrix | matrix | runs no program | `2026-11-05-gap-review-phase-10-classes-declarations-foundations` |
 | ENUM-10, ENUM-P1 | inside the list, an enumerator whose initializer has an unscoped enumeration type keeps that enumeration type; the review reads the underlying type | matrix | matrix | matrix | `2026-11-04-gap-review-phase-8-declarations-statements` |
 | NS-12 | a class in an inline namespace and a variable of the same name in the enclosing namespace are ambiguous; the review sets the class aside | matrix | matrix | matrix | `2026-11-04-gap-review-phase-8-declarations-statements` |
 | Q-0393 | the null pointer literal as the operand of `noexcept` | review | matrix | matrix | `2026-11-04-gap-review-phase-8-declarations-statements` |

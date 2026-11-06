@@ -67,8 +67,9 @@ suffixes with two underscores in a row belong to the implementation. A
 program that declares a literal operator for such a suffix is not
 valid, and no diagnostic is required.
 
-The language uses these suffixes, each in all lowercase or all
-uppercase letters. A suffix that the
+The language uses these suffixes. The `u` part and the `l`, `ll`, or
+`z` part each take either case, so `Ul` and `uL` are such suffixes;
+the two letters of `ll` keep one case. A suffix that the
 language uses keeps its built-in meaning ({principle}`PRIM-P1`), and
 the literal calls no literal operator:
 
@@ -231,7 +232,7 @@ candidate makes the expression not valid. The rule is a specific case of
 
 :::{rule} OPR-8
 :kind: required
-:tests: classes/operators/literal-block-scope.cpp classes/operators/literal-char.cpp classes/operators/literal-constexpr.cpp classes/operators/literal-float.cpp classes/operators/literal-in-namespace.cpp classes/operators/literal-integer.cpp classes/operators/literal-numeric-over-raw.cpp classes/operators/literal-raw-float.cpp classes/operators/literal-raw.cpp classes/operators/literal-string-concat-suffix.cpp classes/operators/literal-string.cpp classes/operators/literal-builtin-suffix-wins.cpp
+:tests: classes/operators/literal-block-scope.cpp classes/operators/literal-char.cpp classes/operators/literal-constexpr.cpp classes/operators/literal-float.cpp classes/operators/literal-in-namespace.cpp classes/operators/literal-integer.cpp classes/operators/literal-numeric-over-raw.cpp classes/operators/literal-raw-float.cpp classes/operators/literal-raw.cpp classes/operators/literal-string-concat-suffix.cpp classes/operators/literal-string.cpp classes/operators/literal-builtin-suffix-wins.cpp classes/operators/integer-suffix-mixed-case.cpp
 
 A literal with a suffix calls a literal operator with that suffix. A
 literal whose suffix is a form in the syntax of
@@ -344,8 +345,8 @@ Meters len = 2.5_m;
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 109
-of 112 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 110
+of 113 tests.
 
 ### Divergences
 

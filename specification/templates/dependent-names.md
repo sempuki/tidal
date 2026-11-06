@@ -166,7 +166,7 @@ definition:
 | a construct that no argument list makes valid | need not diagnose | DEP-32 |
 | a pack that every valid argument list leaves empty, such as a base list that expands one pack twice | need not diagnose | DEP-33 |
 | an operator function that only an empty pack makes valid | rejects | DEP-37 |
-| a template-id with independent arguments that fail its template's constraints | rejects | {rule}`CNS-13` |
+| a template-id with independent arguments that fail its template's constraints | need not diagnose; every baseline compiler rejects | {rule}`CNS-13` |
 | a dependent construct that some argument list makes valid | accepts | DEP-28 |
 
 The condition of a `static_assert` in a template is checked only at the

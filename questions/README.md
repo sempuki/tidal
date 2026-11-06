@@ -451,6 +451,8 @@ status, and the first sentence of its answer section.
 | [Q-0412](Q-0412-standard-attribute-effects.md) | Which effects can a standard attribute have, and can a new one add a required rejection? | provisional | Placement rules, warnings, promises, and layout changes only |
 | [Q-0413](Q-0413-consteval-conversion-for-parameter.md) | Is a call rejected when the implicit conversion of an argument to a parameter calls a consteval constructor that is not a constant expression? | settled | Rejected |
 | [Q-0414](Q-0414-nested-class-friend-access.md) | Does a friend function that a nested class declares have access to the private members of the enclosing class? | provisional | The friend has the nested class's access |
+| [Q-0415](Q-0415-friend-qualified-declarator-lookup.md) | In a friend declaration with a qualified name, is a name after the declarator searched in the scope that the qualifier names? | provisional | Searched first in `N` |
+| [Q-0416](Q-0416-thread-local-constant-use.md) | Does a use of a constant-initialized thread_local variable start the deferred construction of the other thread_local variables of its unit? | provisional | It does not start it |
 
 ## Status values
 

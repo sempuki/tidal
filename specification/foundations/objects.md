@@ -279,7 +279,7 @@ object.
 
 :::{rule} OBJ-11
 :kind: impl-defined
-:tests: foundations/objects/thread-local-init-point.cpp foundations/objects/thread-local-member-init-point.cpp foundations/objects/thread-local-constant-variable-starts-nothing.cpp foundations/objects/thread-local-started-by-other-variable.cpp
+:tests: foundations/objects/thread-local-init-point.cpp foundations/objects/thread-local-member-init-point.cpp foundations/objects/thread-local-constant-variable-starts-nothing.cpp foundations/objects/thread-local-started-by-other-variable.cpp foundations/objects/thread-local-constant-use-no-construction.cpp
 
 The implementation constructs a `thread_local` object at namespace
 scope that is not `inline` and has a constructor either before the
@@ -289,7 +289,8 @@ happens before the thread first uses the object, and taking the
 object's address is such a use ({rule}`ODR-3`), or another
 `thread_local` variable of the same translation unit that is not
 `inline` and has {term}`dynamic initialization`. A use of a variable with
-constant initialization does not start it. At which point before that
+constant initialization does not start it
+({question}`Q-0416`). At which point before that
 use, and in which threads, the construction runs is also
 implementation-defined.
 
@@ -318,8 +319,8 @@ int main() {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 56
-of 61 tests. EDG runs no programs, so its results for the run tests say
+The results are in `tests/RESULTS.md`. All eight compilers agree on 57
+of 62 tests. EDG runs no programs, so its results for the run tests say
 only that the programs are valid.
 
 ### Divergences

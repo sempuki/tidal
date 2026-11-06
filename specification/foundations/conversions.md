@@ -219,7 +219,7 @@ zero and to the literal `false`.
 
 :::{rule} CONV-9
 :kind: reject
-:tests: foundations/conversions/pointer-to-void-pointer.cpp foundations/conversions/void-pointer-to-pointer.cpp foundations/conversions/const-pointer-to-void-pointer.cpp foundations/conversions/function-pointer-to-void-pointer.cpp foundations/conversions/deep-const-every-level.cpp foundations/conversions/deep-const-not-at-every-level.cpp
+:tests: foundations/conversions/pointer-to-void-pointer.cpp foundations/conversions/void-pointer-to-pointer.cpp foundations/conversions/const-pointer-to-void-pointer.cpp foundations/conversions/function-pointer-to-void-pointer.cpp foundations/conversions/deep-const-every-level.cpp foundations/conversions/deep-const-not-at-every-level.cpp foundations/conversions/qualification-volatile-inner-needs-const.cpp foundations/conversions/qualification-volatile-inner-without-const.cpp
 
 A pointer to an object type converts implicitly to a pointer to `void`
 with the same or more {term}`cv-qualifiers <cv-qualifier>`. These
@@ -228,9 +228,9 @@ conversions must not occur implicitly:
 - a pointer to `void` to another pointer type,
 - a conversion that removes a cv-qualifier,
 - a pointer to a function to a pointer to `void`,
-- across several levels of pointers, a conversion that adds `const` at
-  one level without `const` at every level above that level in the
-  target.
+- across several levels of pointers, a conversion that adds `const` or
+  `volatile` at one level without `const` at every level above that
+  level in the target.
 :::
 
 :::{rule} CONV-10
