@@ -149,8 +149,10 @@ arguments of the template parameters are formed before the check
 :exceptions: CNS-24
 
 Overload resolution and {term}`partial ordering` prefer the declaration with
-more constraints. The comparison runs in these steps, on the normal
-forms of CNS-P1:
+more constraints. If one set of constraints subsumes another, every
+argument list that satisfies the first satisfies the second, as long as
+each atom keeps its result (CNS-10). The comparison runs in these
+steps, on the normal forms of CNS-P1:
 
 ```text
 D1 with associated constraints P1, D2 with P2
@@ -259,7 +261,7 @@ each one atomic constraint, even if they contain `&&` or `||`.
 
 :::{rule} CNS-4
 :kind: required
-:tests: templates/constraints/same-text.cpp templates/constraints/equal-bodies.cpp templates/constraints/named-negation.cpp templates/constraints/concept-expansion.cpp templates/constraints/inline-negation.cpp templates/constraints/mapping-unused-parameter.cpp templates/constraints/mapping-unused-parameter-not-substituted.cpp templates/constraints/mapping-same-arguments.cpp templates/constraints/mapping-different-argument-tokens.cpp
+:tests: templates/constraints/same-text.cpp templates/constraints/equal-bodies.cpp templates/constraints/named-negation.cpp templates/constraints/concept-expansion.cpp templates/constraints/inline-negation.cpp templates/constraints/mapping-unused-parameter.cpp templates/constraints/mapping-unused-parameter-not-substituted.cpp templates/constraints/mapping-same-arguments.cpp templates/constraints/mapping-different-argument-tokens.cpp templates/concepts/type-constraint-pack-same-concept-two-declarations.cpp
 
 An atomic constraint has an expression and a {term}`parameter mapping`,
 which maps each template parameter that the expression uses to an
@@ -377,7 +379,7 @@ function from a set of several.
 
 :::{rule} CNS-13
 :kind: reject
-:tests: templates/constraints/class-not-satisfied.cpp templates/constraints/variable-not-satisfied.cpp templates/constraints/alias-not-satisfied.cpp templates/constraints/dependent-checked-at-instantiation.cpp templates/constraints/explicit-instantiation-class.cpp templates/constraints/explicit-specialization-class.cpp templates/constraints/explicit-specialization-variable.cpp templates/constraints/explicit-instantiation-function.cpp templates/constraints/explicit-specialization-function.cpp templates/constraints/independent-template-id.cpp templates/constraints/independent-alias-template-id.cpp templates/constraints/template-template-argument-constraint-use.cpp templates/constraints/explicit-instantiation-member.cpp templates/constraints/explicit-instantiation-member-not-satisfied.cpp templates/concepts/placeholder-constant-parameter-not-satisfied.cpp templates/concepts/type-constraint-default-not-satisfied.cpp
+:tests: templates/constraints/class-not-satisfied.cpp templates/constraints/variable-not-satisfied.cpp templates/constraints/alias-not-satisfied.cpp templates/constraints/dependent-checked-at-instantiation.cpp templates/constraints/explicit-instantiation-class.cpp templates/constraints/explicit-specialization-class.cpp templates/constraints/explicit-specialization-variable.cpp templates/constraints/explicit-instantiation-function.cpp templates/constraints/explicit-specialization-function.cpp templates/constraints/independent-template-id.cpp templates/constraints/independent-alias-template-id.cpp templates/constraints/template-template-argument-constraint-use.cpp templates/constraints/explicit-instantiation-member.cpp templates/constraints/explicit-instantiation-member-not-satisfied.cpp templates/concepts/placeholder-constant-parameter-not-satisfied.cpp templates/concepts/type-constraint-default-not-satisfied.cpp templates/constraints/template-id-in-called-member-body.cpp templates/deduction/constraint-failure-in-return-type.cpp templates/deduction/constraint-failure-in-default-template-argument.cpp
 
 The template arguments of these must satisfy the template's
 constraints:
@@ -395,12 +397,16 @@ template whose constraints fail ({rule}`DED-32`).
 
 :::{rule} CNS-14
 :kind: required
-:tests: templates/constraints/dependent-postponed.cpp templates/constraints/dependent-checked-at-instantiation.cpp templates/constraints/template-template-argument-constraint-use.cpp
+:tests: templates/constraints/dependent-postponed.cpp templates/constraints/dependent-checked-at-instantiation.cpp templates/constraints/template-template-argument-constraint-use.cpp templates/constraints/template-id-in-uncalled-member-body.cpp templates/constraints/template-id-in-called-member-body.cpp templates/constraints/template-template-parameter-own-constraint-dependent.cpp
 
 Inside a template, a template-id whose arguments depend on template
-parameters is checked when the enclosing template is instantiated. A
-template-id that names a template template parameter is checked then
-against the constraints of the template argument.
+parameters is checked when the definition that holds it is
+instantiated. For a member of a class template, that is the member's
+body, default argument, or default member initializer, which a use
+instantiates ({principle}`INST-P2`), and not the class. A template-id
+that names a template template parameter is checked then against the
+constraints of the template argument. The constraints of the template
+template parameter itself are not checked for such a template-id.
 :::
 
 :::{rule} CNS-15
@@ -802,8 +808,8 @@ bool usable = Usable<Item>;        // rejected: the check needs itself
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 105
-of 134 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 110
+of 140 tests.
 
 ### Divergences
 
@@ -881,6 +887,10 @@ waits on the maintainer (`documentation/decisions/pending.md`).
   function of a local class in a function template can have a requires
   clause. It can, and the clause waits for a use of the member, as
   Clang 22 and GCC 16 say. EDG 7.0 rejects the requires clause.
+- {question}`Q-0411` (CPT-19, CNS-4; open): whether the folds that one
+  concept makes on a type parameter pack in two declarations are one
+  atom or two. Two atoms, so neither declaration is more constrained,
+  as Clang and GCC say. EDG treats them as one atom.
 
 ### Split tests
 
@@ -917,6 +927,7 @@ family column gives the outcome that the test expects on that family.
 | `template-template-parameter-constraint-use.cpp` | CNS-38 | accept | accept | accept | reject | {question}`Q-0283` |
 | `templates/concepts/nested-requirement-parameter-evaluated.cpp` | CPT-35, CNS-9 | reject | Clang 22: reject; Clang 18: accept | reject | reject | {question}`Q-0289` |
 | `templates/concepts/type-constraint-pack-one-atom.cpp` | CPT-19, CNS-3, CNS-24 | reject | reject | reject | accept | {question}`Q-0285` |
+| `templates/concepts/type-constraint-pack-same-concept-two-declarations.cpp` | CPT-19, CNS-4, OVL-36 | reject | reject | reject | accept | {question}`Q-0411` |
 | `templates/declarations/member-outside-clause-missing.cpp` | TPL-23, CNS-26 | reject | reject | reject | accept | {question}`Q-0385` |
 | `templates/instantiation/local-class-requires-clause-substitution-failure.cpp` | INST-12, CNS-12 | run | run | run | reject | {question}`Q-0392` |
 

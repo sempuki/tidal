@@ -351,11 +351,13 @@ list. A concept name before a declarator needs `auto` or
 
 :::{rule} CPT-19
 :kind: required
-:tests: templates/concepts/type-constraint-pack.cpp templates/concepts/type-constraint-pack-one-atom.cpp templates/concepts/type-constraint-variadic-concept.cpp
+:tests: templates/concepts/type-constraint-pack.cpp templates/concepts/type-constraint-pack-one-atom.cpp templates/concepts/type-constraint-variadic-concept.cpp templates/concepts/type-constraint-pack-same-concept-two-declarations.cpp
 
 A type constraint `C` before a type parameter pack `T` gives the
 constraint `(C<T> && ...)`, which is one atomic constraint
-({rule}`CNS-3`, {question}`Q-0285`). An empty pack satisfies it. If
+({rule}`CNS-3`, {question}`Q-0285`). The atom comes from the type
+constraint where it is written, so the folds of two declarations are
+two atoms ({rule}`CNS-4`, {question}`Q-0411`). An empty pack satisfies it. If
 the first parameter of `C` is a pack, each check gives it one element.
 :::
 
@@ -651,7 +653,7 @@ template <class T> concept Old [[deprecated]] = true;   // the attribute apperta
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 108
-of 125 tests.
+of 126 tests.
 
 ### Divergences
 
@@ -710,6 +712,10 @@ Q-0285, and Q-0286 to the EDG project waits on the maintainer
 - {question}`Q-0286` (CPT-37; settled on CPT-P1): whether a structured
   binding declaration can have a constrained placeholder. It cannot, as
   Clang and GCC say. EDG accepts it.
+- {question}`Q-0411` (CPT-19, CNS-4; open): whether the folds that one
+  concept makes on a type parameter pack in two declarations are one
+  atom or two. Two atoms, so neither declaration is more constrained,
+  as Clang and GCC say. EDG treats them as one atom.
 
 ### Split tests
 
@@ -730,6 +736,7 @@ Q-0285, and Q-0286 to the EDG project waits on the maintainer
 | `trailing-clause-local-class.cpp` | CPT-11 | accept | accept | accept | reject | {question}`Q-0260` |
 | `trailing-clause-member-initializer-lambda.cpp` | CPT-11 | accept | accept | accept | reject | {question}`Q-0260` |
 | `type-constraint-pack-one-atom.cpp` | CPT-19, CNS-3, CNS-24 | reject | reject | reject | accept | {question}`Q-0285` |
+| `type-constraint-pack-same-concept-two-declarations.cpp` | CPT-19, CNS-4, OVL-36 | reject | reject | reject | accept | {question}`Q-0411` |
 | `virtual-override.cpp` | CPT-15 | reject | reject | accept | reject | {question}`Q-0258` |
 | `virtual.cpp` | CPT-15 | reject | reject | accept | reject | {question}`Q-0258` |
 

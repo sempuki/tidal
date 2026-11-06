@@ -480,7 +480,7 @@ a {term}`deduction failure`.
 
 :::{rule} DED-24
 :kind: required
-:tests: templates/deduction/substitution-failure-removes.cpp templates/deduction/substitution-failure-forms.cpp templates/deduction/substitution-adjusted-type.cpp templates/deduction/substitution-explicit-specifier.cpp templates/deduction/substitution-lambda-call-fails.cpp templates/deduction/specialization-distinct-functions.cpp templates/deduction/substitution-failure-undefined-operation.cpp templates/deduction/substitution-failure-evaluation-limit.cpp templates/deduction/substitution-failure-negative-bound.cpp templates/deduction/substitution-failure-negative-bound-computed.cpp templates/deduction/substitution-failure-negative-bound-ellipsis.cpp
+:tests: templates/deduction/substitution-failure-removes.cpp templates/deduction/substitution-failure-forms.cpp templates/deduction/substitution-adjusted-type.cpp templates/deduction/substitution-explicit-specifier.cpp templates/deduction/substitution-lambda-call-fails.cpp templates/deduction/specialization-distinct-functions.cpp templates/deduction/substitution-failure-undefined-operation.cpp templates/deduction/substitution-failure-evaluation-limit.cpp templates/deduction/substitution-failure-negative-bound.cpp templates/deduction/substitution-failure-negative-bound-computed.cpp templates/deduction/substitution-failure-negative-bound-ellipsis.cpp templates/deduction/constraint-failure-in-return-type.cpp templates/deduction/constraint-failure-in-default-template-argument.cpp
 
 The values replace the template parameters in these places, and the
 function type is then adjusted as a declared one is ({rule}`DCL-8`):
@@ -501,7 +501,9 @@ These types are among those that are not valid:
   such member,
 - a function that returns an array or a function,
 - an array whose bound is zero or less ({rule}`DCL-19`,
-  {question}`Q-0399`).
+  {question}`Q-0399`),
+- a template-id whose arguments do not satisfy the constraints of its
+  template ({rule}`CNS-13`).
 
 A template argument whose {term}`constant evaluation` fails, by {rule}`CE-9` or
 by a limit of {rule}`CE-10`, is such an expression. {rule}`PACK-27` gives the pack cases.
@@ -798,8 +800,8 @@ Gadget* g = new (&arena) Gadget;  // both match, and ordering prefers neither: n
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 123
-of 134 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 125
+of 136 tests.
 
 ### Divergences
 

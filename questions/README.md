@@ -447,6 +447,7 @@ status, and the first sentence of its answer section.
 | [Q-0408](Q-0408-inherited-guide-unused-default.md) | Does a default of a derived class template parameter that the base does not use let an inherited deduction guide succeed? | provisional | The guide succeeds with the default |
 | [Q-0409](Q-0409-injected-name-template-template-argument.md) | Is an injected class name that two base classes give ambiguous as a template template argument? | provisional | Ambiguous |
 | [Q-0410](Q-0410-qualified-enum-underlying-type.md) | In the definition of an enumeration with a qualified name, is the underlying type looked up in the scope that the qualifier names? | provisional | Rejected |
+| [Q-0411](Q-0411-type-constraint-pack-fold-atom.md) | Are the folds that one concept makes on a type parameter pack in two declarations one atom or two? | provisional | Two atoms |
 
 ## Status values
 

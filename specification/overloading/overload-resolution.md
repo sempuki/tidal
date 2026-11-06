@@ -761,7 +761,7 @@ name specific cases (decision 0042): {rule}`PFX-5`, {rule}`OPR-15`,
 
 :::{rule} OVL-36
 :kind: reject
-:tests: overloading/overload-resolution/best-no-single-winner.cpp overloading/overload-resolution/better-crossing-arguments.cpp overloading/overload-resolution/defaults-take-no-part.cpp overloading/overload-resolution/no-object-static-default-ambiguous.cpp overloading/overload-resolution/surrogate-same-parameters.cpp overloading/overload-resolution/builtin-other-shape-kept.cpp overloading/overload-resolution/init-constructor-conversion-tie.cpp overloading/overload-resolution/overload-set-argument-ambiguous.cpp overloading/overload-resolution/tie-swapped-same-function.cpp overloading/overload-resolution/tie-constraints-different-parameters.cpp overloading/overload-resolution/tie-constraints-default-parameter.cpp overloading/overload-resolution/tie-constraints-ellipsis.cpp overloading/overload-resolution/builtin-logical-explicit-competes.cpp overloading/overload-resolution/builtin-logical-explicit-competes-and.cpp overloading/overload-resolution/static-call-operator-surrogate-ambiguous.cpp overloading/overload-resolution/call-through-address-unqualified.cpp overloading/conversion-sequences/overload-set-reference-or-pointer.cpp overloading/conversion-sequences/overload-set-to-ellipsis.cpp
+:tests: overloading/overload-resolution/best-no-single-winner.cpp overloading/overload-resolution/better-crossing-arguments.cpp overloading/overload-resolution/defaults-take-no-part.cpp overloading/overload-resolution/no-object-static-default-ambiguous.cpp overloading/overload-resolution/surrogate-same-parameters.cpp overloading/overload-resolution/builtin-other-shape-kept.cpp overloading/overload-resolution/init-constructor-conversion-tie.cpp overloading/overload-resolution/overload-set-argument-ambiguous.cpp overloading/overload-resolution/tie-swapped-same-function.cpp overloading/overload-resolution/tie-constraints-different-parameters.cpp overloading/overload-resolution/tie-constraints-default-parameter.cpp overloading/overload-resolution/tie-constraints-ellipsis.cpp overloading/overload-resolution/builtin-logical-explicit-competes.cpp overloading/overload-resolution/builtin-logical-explicit-competes-and.cpp overloading/overload-resolution/static-call-operator-surrogate-ambiguous.cpp overloading/overload-resolution/call-through-address-unqualified.cpp overloading/conversion-sequences/overload-set-reference-or-pointer.cpp overloading/conversion-sequences/overload-set-to-ellipsis.cpp templates/concepts/type-constraint-pack-same-concept-two-declarations.cpp
 
 If no viable function is better than each of the others, the program
 is not valid. Such a use is ambiguous. These rules name specific cases
@@ -849,7 +849,7 @@ struct Self {
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 155
-of 184 tests.
+of 185 tests.
 
 ### Divergences
 
@@ -912,6 +912,10 @@ of 184 tests.
 - {question}`Q-0189` (OVL-26; open): whether the result tie-breaker
   compares a constructor with a conversion function. It does, and the
   constructor's result is the identity. Clang finds the two ambiguous.
+- {question}`Q-0411` (CPT-19, CNS-4; open): whether the folds that one
+  concept makes on a type parameter pack in two declarations are one
+  atom or two. Two atoms, so neither declaration is more constrained,
+  as Clang and GCC say. EDG treats them as one atom.
 
 ### Split tests
 
@@ -939,6 +943,7 @@ column gives the outcome that the rules predict.
 | `reference-function-both-kinds.cpp` | OVL-15 | accept | reject | accept | accept | {question}`Q-0138` |
 | `surrogate-qualifiers.cpp` | OVL-6 | accept | accept | reject | accept | {question}`Q-0144` |
 | `surrogate-same-parameters.cpp` | OVL-36, OVL-6 | reject | reject | accept | reject | {question}`Q-0139` |
+| `templates/concepts/type-constraint-pack-same-concept-two-declarations.cpp` | CPT-19, CNS-4, OVL-36 | reject | reject | reject | accept | {question}`Q-0411` |
 | `tie-constraints-default-parameter.cpp` | OVL-30, OVL-36 | reject | reject | reject | accept | {question}`Q-0146` |
 | `tie-constraints-different-parameters.cpp` | OVL-36, OVL-41 | reject | reject | reject | accept | {question}`Q-0146` |
 | `tie-constraints-ellipsis.cpp` | OVL-30, OVL-36 | reject | Clang 22: reject; Clang 18: accept | reject | accept | {question}`Q-0146` |
