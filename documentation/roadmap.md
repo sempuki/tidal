@@ -174,18 +174,21 @@ review RV2 and the principle-use batches PU1 and PU2.
 ## Phase 10: review phase 9, hold questions by a field, and test the C++23 call forms
 
 Decision 0057 (provisional) adopts this phase from the seventh round of
-clean-room roadmaps (`reports/clean-room/roadmap-7/`).
+clean-room roadmaps (`reports/clean-room/roadmap-7/`). All items are
+done. Open questions went from 172 to 171: the phase opened 11
+(Q-0401 to Q-0411) and settled 12, 10 through the review RV3 and 2
+through the principle-use batch PU3.
 
 | Item | Work | Prerequisites |
 |---|---|---|
-| R4 | Close the phase 9 record, with a `**Waits for:**` field on each open question and generated Split tests tables | none |
-| G | A ledger of front-end findings, and answers for G147 to G151 | none |
-| T | Tests and text for the C++23 call forms (CLS-13, LAM-15, LSUP-2), and the round 7 programs as program tests | none |
-| RV3 | A gap review of the text phase 9 wrote and of the held questions, then repairs | G, T |
-| PU3 | A principle-use batch on the questions whose field names a use, then settling | R4, RV3 |
-| PK | A decision packet for `pending.md`, and the review-held questions sorted by kind | R4 |
-| E | Implement I3 on overload ranking; Write W18 and W19; a refreshed Propose portfolio, a refresh note for X19, and Propose X22 | none (W18 and W19 after T) |
-| FE | Front-end round 22 | T, G, and the I3 and Write reports |
+| R4 | Done: close the phase 9 record, with a `**Waits for:**` field on each open question and generated Split tests tables | none |
+| G | Done: a ledger of front-end findings, and answers for G147 to G151 | none |
+| T | Done: tests and text for the C++23 call forms (CLS-13, LAM-15, LSUP-2), and the round 7 programs as program tests | none |
+| RV3 | Done: a gap review of the text phase 9 wrote and of the held questions, then repairs | G, T |
+| PU3 | Done: a principle-use batch on the questions whose field names a use, then settling | R4, RV3 |
+| PK | Done: a decision packet for `pending.md`, and the review-held questions sorted by kind | R4 |
+| E | Done: Implement I3 on overload ranking; Write W18 and W19; a refreshed Propose portfolio, a refresh note for X19, and Propose X22 | none (W18 and W19 after T) |
+| FE | Done: front-end round 22 | T, G, and the I3 and Write reports |
 
 ## Parallel lanes
 
