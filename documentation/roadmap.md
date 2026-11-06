@@ -214,20 +214,22 @@ by its principle uses.
 ## Phase 12: run the front end again, answer the ended rows, and review phase 11
 
 Decision 0059 (provisional) adopts this phase from the ninth round of
-clean-room roadmaps (`reports/clean-room/roadmap-9/`).
+clean-room roadmaps (`reports/clean-room/roadmap-9/`). Every item is
+done. Open questions went from 174 to 176: the phase opened 4 (Q-0419
+to Q-0422) and settled 2 through item QR (Q-0323, Q-0383).
 
 | Item | Work | Prerequisites |
 |---|---|---|
-| T | Tests for every front-end target that has none, and the round 9 and P1 programs as program tests | none |
-| FE | Front-end round 23: the two wrong verdicts, the phase 11 and T tests, the conditional operator, the template missed rejects, then the backlog groups | T; F2's COND rows before the conditional operator |
-| F2 | Answer the 20 `planned` rows of ended items, COND rows first | none |
-| RD | The RV4 points that a probe decides, and a class for the program's duty in ALN-4 and TR-4 | none |
-| QR | Question records, the family check, and a reason for each rule that rests only on overridden tests | none |
-| L2 | Read the `open` ledger rows, fill the `commit` rows with no commit, and check `planned` rows against their items | none |
-| R6 | Repair the records that drift; a Propose prompt; Port programs as program tests | none (Q-0415's line after RV5) |
-| PK3 | The packet with each option's changed tests and the share line, then the request to the maintainer | none |
-| RV5 | A gap review of the text phase 11 wrote after RV4 and the text F2 and RD write, then repairs | F2, RD |
-| E | Write suite W20 on library-shaped code; Implement I5 on deduction from a call | W20 after FE; I5 after RD |
+| T | Done: tests for every front-end target that has none, and the round 9 and P1 programs as program tests | none |
+| FE | Done: front-end round 23: the two wrong verdicts, the phase 11 and T tests, the conditional operator, the template missed rejects, then the backlog groups | T; F2's COND rows before the conditional operator |
+| F2 | Done: answer the 20 `planned` rows of ended items, COND rows first | none |
+| RD | Done: the RV4 points that a probe decides, and a class for the program's duty in ALN-4 and TR-4 | none |
+| QR | Done: question records, the family check, and a reason for each rule that rests only on overridden tests | none |
+| L2 | Done: read the `open` ledger rows, fill the `commit` rows with no commit, and check `planned` rows against their items | none |
+| R6 | Done: repair the records that drift; a Propose prompt; Port programs as program tests | none (Q-0415's line after RV5) |
+| PK3 | Done: the packet with each option's changed tests and the share line, then the request to the maintainer | none |
+| RV5 | Done: a gap review of the text phase 11 wrote after RV4 and the text F2 and RD write, then repairs | F2, RD |
+| E | Done: write suite W20 on library-shaped code; Implement I5 on deduction from a call | W20 after FE; I5 after RD |
 
 ## Parallel lanes
 
