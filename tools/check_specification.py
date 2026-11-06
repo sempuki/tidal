@@ -16,7 +16,8 @@ Fails when:
   rule's test or as the one test that decides a rule (decision 0044),
 - a specification page, test, or document refers to a question (Q-NNNN) with no file in questions/,
 - a test that some compiler is expected to fail to link cites no no-diagnostic
-  rule (TR-4: no class requires a diagnostic at link time),
+  rule and not TR-17, the one rule whose diagnostic can come at link time
+  (TR-P1),
 - a test has no base tidal-expect line, or a tidal-allows-edg line names a
   rule that the test does not cite, a rule whose class allows no second
   answer, or sits on a test whose EDG answer is the base answer,
@@ -456,8 +457,8 @@ def main() -> int:
                 {rules[rid][1] for rid in test.rules} & MAY_REJECT):
             errors.append(f"{test.name}: expects reject, but cites no rule of a class that allows it (decision 0034)")
         if "link-fail" in {test.default, *test.overrides.values()} and all(rid in rules for rid in test.rules) and (
-                "no-diagnostic" not in {rules[rid][1] for rid in test.rules}):
-            errors.append(f"{test.name}: expects a link failure, but cites no no-diagnostic rule (TR-4)")
+                "no-diagnostic" not in {rules[rid][1] for rid in test.rules}) and "TR-17" not in test.rules:
+            errors.append(f"{test.name}: expects a link failure, but cites no no-diagnostic rule and not TR-17 (TR-P1)")
         program = test.name.startswith(PROGRAMS)
         for rid in test.rules:
             if rid not in rules and rid.rsplit("-", 1)[0] not in prefixes:

@@ -53,7 +53,7 @@ initializer.
 |---|---|
 | Parentheses, or braces without `=` | The parentheses or braces hold one expression, and the type of that expression is read. |
 | A braced list after `=` | The initializer is a list, so the variable becomes a `std::initializer_list`. |
-| `decltype(auto)` | As `decltype` reads the initializer. A name gives its declared type. For any other expression, the value category decides between a reference and a plain type. In a `return` statement, a local variable named in parentheses is an xvalue ({rule}`JMP-10`), so the type is an rvalue reference ({rule}`RET-6`). |
+| `decltype(auto)` | As `decltype` reads the initializer. A name gives its declared type. For any other expression, the value category decides between a reference and a plain type. In a `return` statement, a local object that is not `volatile`, named in parentheses, is an xvalue ({rule}`JMP-10`), so the type is an rvalue reference ({rule}`RET-6`). A `volatile` local and a local lvalue reference stay lvalues and give an lvalue reference. |
 
 :::
 

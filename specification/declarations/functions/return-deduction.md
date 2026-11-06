@@ -107,12 +107,13 @@ A virtual function must not have a deduced return type ({rule}`VIRT-2`).
 
 :::{rule} RET-6
 :kind: undefined
-:tests: declarations/functions/return-deduction/decltype-auto-dangling.cpp declarations/functions/return-deduction/decltype-auto-paren-local-xvalue.cpp declarations/functions/return-deduction/decltype-auto-paren-local-sanitizer.cpp declarations/functions/return-deduction/trailing-auto.cpp
+:tests: declarations/functions/return-deduction/decltype-auto-dangling.cpp declarations/functions/return-deduction/decltype-auto-paren-local-xvalue.cpp declarations/functions/return-deduction/decltype-auto-paren-local-sanitizer.cpp declarations/functions/return-deduction/trailing-auto.cpp declarations/functions/return-deduction/decltype-auto-paren-local-lvalue-kinds.cpp
 
 If a `decltype(auto)` function returns a parenthesized local variable
 with {term}`automatic storage`, the return type is an rvalue reference
-to it (CPY-11). For a `static` local or a global variable, the return
-type is an lvalue reference. A use of the rvalue reference is
+to it (CPY-11). For a `static` local, a global variable, a `volatile`
+local, or a local of lvalue reference type, the return type is an
+lvalue reference ({rule}`JMP-10`). A use of the rvalue reference is
 undefined, and {term}`constant evaluation` rejects the use ({rule}`CE-9`).
 :::
 
@@ -163,7 +164,7 @@ auto [w, r] = split(47);            // 4 and 7 (SB-3)
 
 ## Evidence
 
-All eight compilers agree on all 25 tests. The results are in
+All eight compilers agree on all 26 tests. The results are in
 `tests/RESULTS.md`.
 
 - RET-6: the address sanitizer stops the use of the result on GCC and

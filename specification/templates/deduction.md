@@ -480,7 +480,7 @@ a {term}`deduction failure`.
 
 :::{rule} DED-24
 :kind: required
-:tests: templates/deduction/substitution-failure-removes.cpp templates/deduction/substitution-failure-forms.cpp templates/deduction/substitution-adjusted-type.cpp templates/deduction/substitution-explicit-specifier.cpp templates/deduction/substitution-lambda-call-fails.cpp templates/deduction/specialization-distinct-functions.cpp templates/deduction/substitution-failure-undefined-operation.cpp templates/deduction/substitution-failure-evaluation-limit.cpp templates/deduction/substitution-failure-negative-bound.cpp templates/deduction/substitution-failure-negative-bound-computed.cpp templates/deduction/substitution-failure-negative-bound-ellipsis.cpp templates/deduction/constraint-failure-in-return-type.cpp templates/deduction/constraint-failure-in-default-template-argument.cpp
+:tests: templates/deduction/substitution-failure-removes.cpp templates/deduction/substitution-failure-forms.cpp templates/deduction/substitution-adjusted-type.cpp templates/deduction/substitution-explicit-specifier.cpp templates/deduction/substitution-lambda-call-fails.cpp templates/deduction/specialization-distinct-functions.cpp templates/deduction/substitution-failure-undefined-operation.cpp templates/deduction/substitution-failure-evaluation-limit.cpp templates/deduction/substitution-failure-negative-bound.cpp templates/deduction/substitution-failure-negative-bound-computed.cpp templates/deduction/substitution-failure-negative-bound-ellipsis.cpp templates/deduction/constraint-failure-in-return-type.cpp templates/deduction/constraint-failure-in-default-template-argument.cpp templates/deduction/address-declared-result-body-not-instantiated.cpp
 
 The values replace the template parameters in these places, and the
 function type is then adjusted as a declared one is ({rule}`DCL-8`):
@@ -558,7 +558,7 @@ the function type is not substituted.
 
 :::{rule} DED-29
 :kind: reject
-:tests: templates/deduction/substitution-hard-error.cpp templates/deduction/substitution-lambda-body.cpp templates/deduction/substitution-noexcept-later.cpp templates/deduction/substitution-deduced-result-body.cpp templates/deduction/substitution-lambda-default.cpp templates/deduction/substitution-lambda-call-fails.cpp templates/deduction/substitution-default-before-check.cpp templates/deduction/losing-candidate-body-not-instantiated.cpp
+:tests: templates/deduction/substitution-hard-error.cpp templates/deduction/substitution-lambda-body.cpp templates/deduction/substitution-noexcept-later.cpp templates/deduction/substitution-deduced-result-body.cpp templates/deduction/substitution-lambda-default.cpp templates/deduction/substitution-lambda-call-fails.cpp templates/deduction/substitution-default-before-check.cpp templates/deduction/losing-candidate-body-not-instantiated.cpp templates/deduction/address-deduced-result-body-instantiated.cpp templates/deduction/address-deduced-result-body-static-cast.cpp templates/deduction/address-declared-result-body-not-instantiated.cpp
 
 An error in one of these places makes the program not valid, even
 during deduction:
@@ -580,6 +580,13 @@ function type only. The body of a candidate is instantiated only when
 the call selects it, also when its result type is deduced. So an error
 in the body of a candidate that loses, such as a generic lambda's call
 operator against a plain one, does not make the program not valid.
+
+Taking the address of an overload set with a target type deduces the
+arguments of each function template from the target. A specialization
+whose result type comes from its body is instantiated to find that
+type, also when a plain function of the set matches the target. So an
+error in that body makes the program not valid
+({question}`Q-0420`).
 :::
 
 ### Other contexts
@@ -806,8 +813,8 @@ Gadget* g = new (&arena) Gadget;  // both match, and ordering prefers neither: n
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 129
-of 140 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 130
+of 143 tests.
 
 ### Divergences
 
@@ -850,6 +857,11 @@ maintainer (`documentation/decisions/pending.md`).
 - {question}`Q-0221` (NEW-25; open): whether a `new` expression is
   valid when its matching deallocation function is deleted. It is not,
   as Clang and EDG say. GCC accepts it.
+- {question}`Q-0420` (DED-29; open): whether the address of an overload
+  set with a target type instantiates a template whose result type
+  comes from its body, when a plain function matches the target. It
+  does, and an error in the body makes the program not valid, as on
+  Clang. GCC and EDG accept and pick the plain function.
 
 ### Split tests
 
@@ -858,6 +870,8 @@ the compile.
 
 | Test | Rules | Expected | Clang | GCC | EDG | Question |
 |---|---|---|---|---|---|---|
+| `address-deduced-result-body-instantiated.cpp` | DED-29 | reject | reject | accept | accept | {question}`Q-0420` |
+| `address-deduced-result-body-static-cast.cpp` | DED-29 | reject | reject | accept | accept | {question}`Q-0420` |
 | `expressions/new-delete/throw-placement-deleted-function-and-template.cpp` | NEW-24, DED-39 | accept | accept | accept | reject | {question}`Q-0220`, {question}`Q-0221` |
 | `expressions/new-delete/throw-placement-function-and-template.cpp` | NEW-24, DED-39 | run | run | run-fail | accept | {question}`Q-0220` |
 | `expressions/new-delete/throw-placement-templates-unordered.cpp` | NEW-24, DED-39 | run | run | run | reject | {question}`Q-0222` |

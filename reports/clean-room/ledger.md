@@ -859,13 +859,13 @@ when a report names a finding that has no row here.
 | X9-15 | `X9/report.md` | commit | bddd2a08 |
 | P1-1 | `P1/report.md` | planned | decision 0059, item FE: front-end round 23; test declarations/declarators/unknown-bound-converted-class-elements.cpp (item T) |
 | P1-2 | `P1/report.md` | planned | decision 0059, item FE: front-end round 23; test declarations/initialization/references/const-ref-through-converting-constructor.cpp and overloading/overload-resolution/const-ref-parameter-through-converting-constructor.cpp (item T) |
-| P1-3 | `P1/report.md` | planned | decision 0059, item F2: an example of a two-alternative class |
+| P1-3 | `P1/report.md` | commit | 0f3f522f |
 | P1-4 | `P1/report.md` | out of scope | the specification does not list what the language lacks |
-| P1-5 | `P1/report.md` | planned | decision 0059, item F2: a link from virtual.md to the Owner example |
+| P1-5 | `P1/report.md` | commit | 0f3f522f |
 | P1-6 | `P1/report.md` | text | DCL-19 and ADD-8 decide it; the finding asks for no change |
-| P1-7 | `P1/report.md` | planned | decision 0059, item F2: the base flags in index.md |
-| P1-8 | `P1/report.md` | planned | decision 0059, item F2: a library-free requirement example |
-| P1-9 | `P1/report.md` | planned | decision 0059, item F2: TR-16 and exact results |
+| P1-7 | `P1/report.md` | commit | 0f3f522f |
+| P1-8 | `P1/report.md` | commit | 0f3f522f |
+| P1-9 | `P1/report.md` | commit | 0f3f522f |
 | I4-1 | `I4/report.md` | commit | decision 0058, item E repairs: COND-16 base row |
 | I4-2 | `I4/report.md` | commit | decision 0058, item E repairs: COND-16 step 1, Q-0418 |
 | I4-3 | `I4/report.md` | commit | decision 0058, item E repairs: COND-P2 and COND-11 |
@@ -882,8 +882,8 @@ when a report names a finding that has no row here.
 | I4-14 | `I4/report.md` | commit | 03e578c4 |
 | X23-1 | `X23/report.md` | commit | decision 0058, item E repairs: ALN-4 and NEW-P5 |
 | X23-2 | `X23/report.md` | commit | decision 0058, item E repairs: NEW-29, Q-0417 |
-| X23-3 | `X23/report.md` | planned | decision 0059, item F2; deferred once; probe `reports/clean-room/roadmap-9/writer-probes/x23-3-thresholds.json` |
+| X23-3 | `X23/report.md` | commit | 0f3f522f |
 | X23-4 | `X23/report.md` | commit | decision 0058, item E repairs: NEW-21 |
 | X23-5 | `X23/report.md` | commit | decision 0058, item E repairs: STG-5 and NEW-29 |
-| X23-6 | `X23/report.md` | planned | decision 0059, item F2; deferred once; probe `reports/clean-room/roadmap-9/writer-probes/x23-6-underaligned-implicit-object.cpp` |
-| X23-7 | `X23/report.md` | planned | decision 0059, item F2 |
+| X23-6 | `X23/report.md` | commit | 0f3f522f |
+| X23-7 | `X23/report.md` | commit | 0f3f522f |

@@ -52,7 +52,7 @@ informative.
 ## Principles
 
 :::{principle} TR-P1
-:rules: TR-1 TR-6 TR-12
+:rules: TR-1 TR-6 TR-12 TR-17
 
 A rule in this specification is a *rule on the program* or a *fact about
 the implementation*. A rule on the program says what a valid program
@@ -75,7 +75,7 @@ which kind it is and how strong it is:
 | `recommended` | advice | An implementation should follow the rule, usually by warning. |
 
 One requirement needs a diagnostic when the units are linked: a program
-defines `main` ({rule}`TR-4`). Every other rule whose break can show
+defines exactly one `main` ({rule}`TR-17`). Every other rule whose break can show
 only when the units are linked, such as {rule}`LNK-7` or {rule}`ODR-8`,
 is a `no-diagnostic` rule.
 
@@ -255,6 +255,16 @@ productions in the `Syntax` segments. A diagnostic for a token sequence
 that the grammar does not derive need not name a rule other than TR-12.
 :::
 
+:::{rule} TR-17
+:kind: reject
+:tests: foundations/translation/main-no-definition.cpp foundations/translation/main-two-definitions.cpp
+
+A program defines exactly one function `main` at global scope. A
+program with no `main`, or with a definition of `main` in each of two
+units, is not valid. The implementation can give the diagnostic when it
+links the units, and every baseline compiler does.
+:::
+
 ## Runtime Behavior
 
 :::{rule} TR-2
@@ -270,7 +280,7 @@ The second is an array of that many strings followed by a null pointer.
 
 :::{rule} TR-4
 :kind: required
-:tests: foundations/translation/units-translated-separately.cpp foundations/translation/unit-sees-own-declarations-only.cpp foundations/translation/undefined-at-link.cpp foundations/translation/main-no-definition.cpp
+:tests: foundations/translation/units-translated-separately.cpp foundations/translation/unit-sees-own-declarations-only.cpp foundations/translation/undefined-at-link.cpp
 
 Each translation unit sees only its own declarations. A function with
 internal linkage is a separate function in each unit that defines it. A
@@ -279,11 +289,8 @@ name that only another unit declares cannot be used (NAM-8).
 A function that is declared and used but defined in no unit breaks
 {rule}`LNK-7`. LNK-7 is a `no-diagnostic` rule ({principle}`TR-P1`).
 An implementation can report its break when it links the units, and the
-link then fails. The implementation can also accept the program. A
-program must define exactly one `main` at global scope, and a program
-with no `main` is not valid with a diagnostic. Every baseline compiler
-reports it when it links the units. Every implementation links a valid
-program.
+link then fails. The implementation can also accept the program. Every
+implementation links a valid program.
 :::
 
 :::{rule} TR-5
@@ -458,8 +465,8 @@ static_assert(Even<100>::value == 100);
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 64
-of 88 tests. EDG takes no optimization flag, so the three `-O2` tests
+The results are in `tests/RESULTS.md`. All eight compilers agree on 65
+of 89 tests. EDG takes no optimization flag, so the three `-O2` tests
 are skipped there. EDG runs and links no programs, so its results for
 the run and link tests say only that the programs are valid.
 
@@ -529,11 +536,11 @@ compile.
 
 ### Notes
 
-- TR-4: the gap review of the text phase 8 wrote on expressions, foundations,
+- TR-17: the gap review of the text phase 8 wrote on expressions, foundations,
   and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`) doubts the class of a
   program with no `main`. The reference waives the diagnostic for a
   used function with no definition, and it states no waiver for the
-  rule that a program has one `main`. TR-4 follows the gap review of 2026-11-05 here: a
+  rule that a program has one `main`. TR-17 follows the gap review of 2026-11-05 here: a
   program with no `main` needs a diagnostic, which the implementation
   can give when it links the units, and LNK-7 keeps the used function
   with no definition. Every compiler of the matrix that links reports

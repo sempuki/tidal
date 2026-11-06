@@ -179,7 +179,7 @@ constant evaluation rejects the read.
 
 :::{rule} JMP-10
 :kind: required
-:tests: statements/jumps/return-move-only-parameter.cpp statements/jumps/return-rvalue-ref-param-as-rvalue-ref.cpp statements/jumps/return-parenthesized-move-only.cpp
+:tests: statements/jumps/return-move-only-parameter.cpp statements/jumps/return-rvalue-ref-param-as-rvalue-ref.cpp statements/jumps/return-parenthesized-move-only.cpp declarations/functions/return-deduction/decltype-auto-paren-local-lvalue-kinds.cpp
 
 If the expression of a `return` statement is the name of a local
 variable or a parameter of the function, the name is an xvalue (see
@@ -189,6 +189,8 @@ These details apply:
 - A variable or parameter of rvalue reference type counts.
 - Parentheses around the name do not change the result.
 - A `static` local variable does not count.
+- A `volatile` local object and a local variable of lvalue reference
+  type do not count. Each name stays an lvalue.
 :::
 
 :::{rule} JMP-15
@@ -352,7 +354,7 @@ int pick(int v) {
 
 ## Evidence
 
-All eight compilers agree on 58 of 61 tests. The results are in
+All eight compilers agree on 59 of 62 tests. The results are in
 `tests/RESULTS.md`.
 
 ### Divergences
