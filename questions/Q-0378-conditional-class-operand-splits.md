@@ -60,21 +60,9 @@ families agree. Form 1 treats a deleted function as access is treated,
 which every compiler leaves out of the test. Form 2 follows the cv
 condition of the COND-16 table.
 
-Kept open on 2026-11-04 under decision 0054, because no review has read the provisional answer, and in each form one newest family differs from it. Item RV2 of decision 0056 reads the question.
-
-Kept open on 2026-11-04 under decision 0055, because COND-16 changed in this commit. The gap review of the text phase 8 wrote on expressions, foundations, and templates supports option 1 in both forms. It also read the base-class row of the COND-16 table without a cv condition, and the row now follows that reading. The question waits for a reader or a reviewer to use the changed rule. In each form one newest family differs.
-
 Used on 2026-11-04 by the principle-use batch PU1 (`reports/clean-room/PU1/`), under decision 0056. A clean-room reader applied COND-P2, without the rule text, to the programs of `class-const-and-volatile-lvalues.cpp` and `class-deleted-conversion-counts.cpp`. The answer for `class-deleted-conversion-counts.cpp` names COND-P2 and reaches the answer (the expression is rejected). The answer for `class-const-and-volatile-lvalues.cpp` names COND-P2 and says the program compiles, which is EDG's result and not the answer. The reader marked that answer doubtful (finding PU1-7), because COND-P2 does not say whether "one type" ignores cv-qualifiers. The batch score counts the answer as right, because the test lists EDG's outcome as an override. So the use does not support the answer in form 2.
 
-Kept open on 2026-11-04 under decisions 0054 and 0056, because the use in batch PU1 does not support the answer in form 2 (finding PU1-7). The question waits for COND-P2 to say how the cv-qualifiers of two class lvalues count, and for a later use. In each form one newest family differs.
-
-Kept open on 2026-11-04 under decision 0055, because COND-P2 changed in this commit after finding PU1-7. COND-P2 now says that two lvalues of one type apart from cv-qualifiers give an lvalue only when the cv-qualifiers of one include those of the other, and that a `const` and a `volatile` lvalue of one class type are rejected. Judged by the base expectation, the answer of batch PU1 for `class-const-and-volatile-lvalues.cpp` is wrong. The question waits for the next use of COND-P2. In each form one newest family differs.
-
 Used on 2026-11-04 by the principle-use batch PU2 (`reports/clean-room/PU2/`), under decision 0056. A clean-room reader applied COND-P2, without the rule text, to the programs of `class-const-and-volatile-lvalues.cpp` and `class-deleted-conversion-counts.cpp`. Each answer names COND-P2 and reaches the answer (a rejection), and the batch score counts the use as support. The reader marked the answer for `class-deleted-conversion-counts.cpp` doubtful (finding PU2-3). COND-P2 does not say whether a conversion through a deleted function counts, and the reader took that from the order of the steps in OVL-P1.
-
-Kept open on 2026-11-04 under decisions 0054 and 0056, because the reader answered form 1 with doubt (finding PU2-3). COND-P2 does not rule out the reading in which a deleted conversion function gives no conversion, so the use does not pass step 3 of the test of the style guide in that form. In each form one newest family differs.
-
-Kept open on 2026-11-04 under decision 0055, because COND-P2 changed in this commit after finding PU2-3: the bullet on two class types that each convert to the other now says that a conversion counts when it can be formed, even if its function is deleted or not accessible. The question waits for the next use of COND-P2. In each form one newest family differs.
 
 Kept open on 2026-11-05 under decision 0054, because the review reads the answer with a doubt (gap review of the text phase 9 wrote, item RV3).
 

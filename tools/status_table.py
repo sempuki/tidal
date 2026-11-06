@@ -371,7 +371,9 @@ def frontend_counts() -> tuple[int, int, int]:
 
 def frontend_text() -> str:
     passing, checks, total = frontend_counts()
-    return f"clean-room front end passes {passing} of {total} tests, and {checks} pass their check."
+    rounds = [int(m.group(1)) for f in CONFORMANCE.parent.iterdir() if (m := ROUND_REPORT.match(f.name))]
+    return (f"clean-room front end passed {passing} of {total} tests at front-end round {max(rounds)} "
+            f"(`conformance.tsv`), and {checks} passed their check.")
 
 
 def conformance() -> dict[str, str]:
@@ -394,10 +396,10 @@ def run_text() -> str:
         counts["unsupported"] += status == "run-unsupported"
         counts["wrong"] += rank == 1 and status != "run-unsupported"
         counts["not run"] += rank == 0
-    return (f"Its interpreter runs {counts['all']} tests: {counts['pass']} give the expected result "
-            f"({counts['partial']} of them with a partial exploration), {counts['wrong']} give a "
-            f"wrong result, {counts['unsupported']} stop as unsupported, and {counts['not run']} do "
-            "not run because the check fails.")
+    return (f"At that round, its interpreter ran {counts['all']} tests: {counts['pass']} gave the expected "
+            f"result ({counts['partial']} of them with a partial exploration), {counts['wrong']} gave a "
+            f"wrong result, {counts['unsupported']} stopped as unsupported, and {counts['not run']} did "
+            "not run because the check failed.")
 
 
 WRITE_PROGRAMS = re.compile(r"^The front end's interpreter gives these results on the Write programs[^\n]*(?:\n[^\n]+)*", re.M)
@@ -509,9 +511,10 @@ def render(text: str) -> tuple[str, list[str]]:
          f"In {counts['no pattern']} tests, some compiler family has no pattern"),
         ("sanitizer count", r"sanitizers\s+\(\d+ tests, decision 0028\)",
          f"sanitizers ({counts['sanitizer']} tests, decision 0028)"),
-        ("front end", r"clean-room front end passes \d+ of \d+ tests, and \d+ pass\s+their check\.",
+        ("front end", r"clean-room front end pass(?:es|ed) \d+ of \d+ tests(?: at front-end round \d+\s+"
+         r"\(`conformance\.tsv`\))?, and \d+ pass(?:ed)?\s+their check\.",
          frontend_text()),
-        ("interpreter", r"Its interpreter runs \d+ tests:[^.]*\.", run_text()),
+        ("interpreter", r"(?:Its interpreter runs|At that round, its interpreter ran) \d+ tests:[^.]*\.", run_text()),
         ("similarity report", r"The latest similarity report that checked every page is\s+`[^`]*`\."
          r"|No similarity report has checked every page\.",
          f"The latest similarity report that checked every page is `reports/similarity/{whole}.txt`."

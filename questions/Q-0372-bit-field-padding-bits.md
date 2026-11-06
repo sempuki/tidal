@@ -46,10 +46,6 @@ copy of a class with bit-fields go through any byte type, as the
 probes do. A front end that gives the padding bits the value 0 follows
 option 1.
 
-Kept open on 2026-11-04 under decision 0054, because the gap review of the rules that phase 7 rewrote finds the reference silent on the value of such a byte, leaning to option 2. BF-9 now says that the bits of an unnamed bit-field are padding bits.
-
-Kept open on 2026-11-05 under decision 0054, because the gap review of the text phase 9 wrote finds the reference silent.
-
 Kept open on 2026-11-05 under decision 0054, because the review reads the reference as silent (gap review of the text phase 9 wrote, item RV3).
 
 ## Opinions

@@ -254,11 +254,23 @@ def check_ledger(errors: list[str]) -> None:
                 errors.append(f"{report.relative_to(ROOT)}: finding {g} has no row in {ledger.relative_to(ROOT)}")
     # Every other exercise finding has a row in the exercise ledger (decision 0058).
     exercise_rows = {}
+    ended = ended_items()
+    where = EXERCISE_LEDGER.relative_to(ROOT)
     for line in EXERCISE_LEDGER.read_text().splitlines():
-        if m := re.match(r"^\| ([A-Z][A-Z0-9]*-\d+) \| [^|]+ \| ([^|]+?) \|", line):
-            exercise_rows[m.group(1)] = m.group(2)
-            if m.group(2) not in LEDGER_STATES:
-                errors.append(f"{EXERCISE_LEDGER.relative_to(ROOT)}: {m.group(1)} has an unknown state {m.group(2)!r}")
+        if m := re.match(r"^\| ([A-Z][A-Z0-9]*-\d+) \| [^|]+ \| ([^|]+?) \| ([^|]*?) \|$", line):
+            fid, state, record = m.groups()
+            exercise_rows[fid] = state
+            if state not in LEDGER_STATES:
+                errors.append(f"{where}: {fid} has an unknown state {state!r}")
+            # A commit row names its commit (decision 0059, item L2).
+            if state == "commit" and not re.search(r"\b[0-9a-f]{7,40}\b", record):
+                errors.append(f"{where}: {fid} is in state commit, and its Record names no commit")
+            # A planned row names an item that has not ended (decision 0059).
+            if state == "planned" and (p := re.match(r"decision (\d{4}), items? ([A-Z0-9]+(?: and [A-Z0-9]+)*)", record)):
+                for item in p.group(2).split(" and "):
+                    if (p.group(1), item) in ended:
+                        errors.append(f"{where}: {fid} is planned for item {item} of decision {p.group(1)}, "
+                                      "which the roadmap marks done or moved")
     for report in sorted((ROOT / "reports" / "clean-room").rglob("*.md")):
         rel = report.relative_to(ROOT)
         if report == EXERCISE_LEDGER or "roadmap" in str(rel) or "rust-frontend" in str(rel):
@@ -268,6 +280,21 @@ def check_ledger(errors: list[str]) -> None:
                 continue  # a question ID, not a finding
             if fid not in exercise_rows:
                 errors.append(f"{rel}: finding {fid} has no row in {EXERCISE_LEDGER.relative_to(ROOT)}")
+
+
+def ended_items() -> set[tuple[str, str]]:
+    """(decision, item) for each item of a phase table in the roadmap whose
+    Work cell starts with "Done" or "Moved"."""
+    ended = set()
+    text = (ROOT / "documentation" / "roadmap.md").read_text()
+    for section in re.split(r"^## ", text, flags=re.M):
+        d = re.search(r"Decision (\d{4}) \(provisional\) adopts this phase", section)
+        if not d:
+            continue
+        for item, work in re.findall(r"^\| ([A-Z0-9]+) \| ([^|]*)\|", section, re.M):
+            if work.strip().startswith(("Done", "Moved")):
+                ended.add((d.group(1), item))
+    return ended
 
 
 def check_records(errors: list[str], warnings: list[str]) -> None:

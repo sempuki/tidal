@@ -50,15 +50,7 @@ The question stays open under decision 0051 (2026-11-03). Clang 22 finds no orde
 
 Kept on 2026-11-03. The source-reader gap review of question cluster 3 agrees with option 1.
 
-Kept open on 2026-11-03 under decision 0054, because two of the newest families differ from the answer in at least one form, and the rule records one differing family.
-
-Kept open on 2026-11-04 under decision 0055, because ORD-P2 changed in this commit: steps 1, 3, and 6 now give the type of an invented value, the pairing of packs, and the agreement of the values from all pairs. Steps 5a and 5b did not change. The question waits for the next use of ORD-P2.
-
 Used on 2026-11-04 by the principle-use batch PU2 (`reports/clean-room/PU2/`), under decision 0056. A clean-room reader applied ORD-P1 and ORD-P2, without the rule text, to the program of `reference-kind-and-qualifiers.cpp`. The answer names both principles and says that the outcome depends on the compiler: Clang finds no order and rejects, and GCC and EDG choose `operator T&()`. The test allows both outcomes, and the batch score counts the use as support. The answer takes the split from the example table of ORD-P1 and does not say which option the model gives.
-
-Kept open on 2026-11-04 under decision 0054, because two newest families, GCC 16 and EDG 7.0, differ from the answer (`documentation/decisions/pending.md`, row 1). The answer in batch PU2 also does not choose between the options.
-
-Kept open on 2026-11-04 under decision 0055, because ORD-P2 changed in this commit: steps 6c and 6d now say how an ellipsis counts and that 6d compares the declared types. Steps 5a and 5b did not change. The question waits for the next use of ORD-P2.
 
 Kept open on 2026-11-05 under decision 0054, because two newest families differ from the answer in at least one form (gap review of the text phase 9 wrote, item RV3).
 

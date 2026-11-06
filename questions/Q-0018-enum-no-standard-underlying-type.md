@@ -30,25 +30,13 @@ that the choice of type is the implementation's.
 Impl-defined (option 1). Both behaviors exist, and the choice of underlying type is
 already the implementation's (ENUM-5).
 
-Kept open on 2026-11-03 (replaced by the note of 2026-11-04) under decision 0054, because no principle on the page gives the answer. ENUM-P3 says that the implementation chooses a type wide enough, and it does not say what happens when no type is wide enough. The review also doubts that GCC's 128-bit type counts as an extended integer type under strict options.
-
 Checked on 2026-11-04 under the principle test of the style guide (section 3, item PQ of decision 0055). ENUM-P3 failed step 3, because the model did not say what happens when no type is wide enough. ENUM-P3 now says that the implementation can reject the enumeration when no integer type that it provides is wide enough, which fits the provisional answer. The review still doubts that GCC's 128-bit type counts as such a type under strict options, so the question stays open on the review as well. Under decision 0055, the question also does not settle on a principle that phase 8 wrote until a reader or a reviewer uses ENUM-P3.
-
-Kept open on 2026-11-04 (replaced by the next note) under decision 0054, because the gap review reads with doubt, and under decision 0055 the question waits for a reader or a reviewer to use ENUM-P3.
 
 Used on 2026-11-04 by the source-reader gap review of the text phase 8 wrote on the declarations and statements chapters (`reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md`), under decision 0056. The review applied ENUM-P3 to the program of `unscoped-value-too-large.cpp` without the rule text and reached the provisional answer: the values need more bits than any standard type has, so an implementation with a wider type of its own can use it, and one without must reject the enumeration.
 
-Kept open on 2026-11-04 under decisions 0054 and 0055, because ENUM-P3 changed in this commit: the implementation now rejects the enumeration when none of its types is wide enough. The review also still reads with doubt on GCC's 128-bit type. The question waits for the next use of the changed text.
-
 Used on 2026-11-04 by the principle-use batch PU1 (`reports/clean-room/PU1/`), under decision 0056. A clean-room reader applied ENUM-P3, without the rule text, to the program of `unscoped-value-too-large.cpp` and gave no answer (`not-decided`). ENUM-P3 says that an implementation can provide wider integer types of its own, and it does not say whether the baseline compilers use one for these values (finding PU1-1). The use does not support the answer.
 
-Kept open on 2026-11-04 under decisions 0054 and 0056, because the use in batch PU1 gave no answer (finding PU1-1), and the gap review still reads with doubt on GCC's 128-bit type.
-
-Kept open on 2026-11-04 under decision 0055, because ENUM-P3 changed in this commit after finding PU1-1. ENUM-P3 now says what each baseline compiler does with an enumeration whose values need more than 64 bits. On x86-64, GCC accepts it with a 128-bit type, and Clang and EDG reject it. With `-m32`, every compiler rejects it (`tests/declarations/enumerations/unscoped-value-too-large-ilp32.cpp`). The question waits for the next use of ENUM-P3.
-
 Used on 2026-11-04 by the principle-use batch PU2 (`reports/clean-room/PU2/`), under decision 0056. A clean-room reader applied ENUM-P3, without the rule text, to the programs of `unscoped-value-too-large.cpp` and `unscoped-value-too-large-ilp32.cpp`. Each answer names ENUM-P3 and gives an outcome that the tests allow. On x86-64 the outcome depends on the compiler, and with `-m32` every compiler rejects the enumeration. The use supports the answer.
-
-Kept open on 2026-11-04 under decision 0054, because the latest gap review (2026-11-04) still reads with doubt on GCC's 128-bit type. The use in batch PU2 meets the other conditions.
 
 Kept open on 2026-11-05 under decision 0054, because the review reads the answer with a doubt (gap review of the text phase 9 wrote, item RV3).
 

@@ -3,7 +3,7 @@
 **Status:** provisional
 **Affects:** NAM-21, `tests/foundations/names/friend-qualified-declarator-lookup.cpp`
 **Source:** the gap review `reports/review/2026-11-05-gap-review-phase-10-classes-declarations-foundations.md`, section NAM-21, from the probe that a clean-room writer ran for it.
-**Waits for:** a review (doubt)
+**Waits for:** a first review
 
 ## Context
 

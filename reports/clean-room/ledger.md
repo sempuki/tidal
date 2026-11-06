@@ -16,7 +16,14 @@ writer answered the finding:
 For a `commit` row from before this ledger, the Record column names
 the first commits after the report that cite the finding, alone or in
 a range such as "RC-1 to RC-25". `tools/check_specification.py` fails
-when a report names a finding that has no row here.
+when a report names a finding that has no row here, when a `commit`
+row names no commit, and when a `planned` row names an item that the
+roadmap marks done or moved (decision 0059).
+
+A gap review under `reports/review/` gives each point that its repair
+commit leaves an ID such as `RV5-A3`, and the point gets a row here.
+The rows RV4-1 to RV4-7 give IDs to the doubts that the RV4 repair
+commit (7cf4574b) left for the next review.
 
 | Finding | Report | State | Record |
 |---|---|---|---|
@@ -866,9 +873,9 @@ when a report names a finding that has no row here.
 | P1-7 | `P1/report.md` | commit | 0f3f522f |
 | P1-8 | `P1/report.md` | commit | 0f3f522f |
 | P1-9 | `P1/report.md` | commit | 0f3f522f |
-| I4-1 | `I4/report.md` | commit | decision 0058, item E repairs: COND-16 base row |
-| I4-2 | `I4/report.md` | commit | decision 0058, item E repairs: COND-16 step 1, Q-0418 |
-| I4-3 | `I4/report.md` | commit | decision 0058, item E repairs: COND-P2 and COND-11 |
+| I4-1 | `I4/report.md` | commit | ee6085aa: COND-16 base row |
+| I4-2 | `I4/report.md` | commit | ee6085aa: COND-16 step 1, Q-0418 |
+| I4-3 | `I4/report.md` | commit | ee6085aa: COND-P2 and COND-11 |
 | I4-4 | `I4/report.md` | planned | decision 0059, item FE: front-end round 23; test expressions/conditional/class-converts-to-int-reference-lvalue.cpp (item T) |
 | I4-5 | `I4/report.md` | planned | decision 0059, item FE: front-end round 23; test expressions/conditional/class-explicit-conversion-only.cpp (item T) |
 | I4-6 | `I4/report.md` | planned | decision 0059, item FE: front-end round 23; test expressions/conditional/class-ambiguous-base-operand.cpp (item T) |
@@ -880,10 +887,17 @@ when a report names a finding that has no row here.
 | I4-12 | `I4/report.md` | commit | 03e578c4 |
 | I4-13 | `I4/report.md` | commit | 03e578c4 |
 | I4-14 | `I4/report.md` | commit | 03e578c4 |
-| X23-1 | `X23/report.md` | commit | decision 0058, item E repairs: ALN-4 and NEW-P5 |
-| X23-2 | `X23/report.md` | commit | decision 0058, item E repairs: NEW-29, Q-0417 |
+| X23-1 | `X23/report.md` | commit | ee6085aa: ALN-4 and NEW-P5 |
+| X23-2 | `X23/report.md` | commit | ee6085aa: NEW-29, Q-0417 |
 | X23-3 | `X23/report.md` | commit | 0f3f522f |
-| X23-4 | `X23/report.md` | commit | decision 0058, item E repairs: NEW-21 |
-| X23-5 | `X23/report.md` | commit | decision 0058, item E repairs: STG-5 and NEW-29 |
+| X23-4 | `X23/report.md` | commit | ee6085aa: NEW-21 |
+| X23-5 | `X23/report.md` | commit | ee6085aa: STG-5 and NEW-29 |
 | X23-6 | `X23/report.md` | commit | 0f3f522f |
 | X23-7 | `X23/report.md` | commit | 0f3f522f |
+| RV4-1 | `../review/2026-11-05-gap-review-phase-10-expressions-templates.md` | planned | decision 0059, item RV5: the term "named capture" in LAM-6 |
+| RV4-2 | `../review/2026-11-05-gap-review-phase-10-expressions-templates.md` | planned | decision 0059, item RV5: LAM-29 |
+| RV4-3 | `../review/2026-11-05-gap-review-phase-10-classes-declarations-foundations.md` | planned | decision 0059, item RV5: the "needs" of SW-P1 against FN-7 |
+| RV4-4 | `../review/2026-11-05-gap-review-phase-10-classes-declarations-foundations.md` | commit | 6c6f69f8: the limits of JMP-10 in AUTO-P3 and RET-6 |
+| RV4-5 | `../review/2026-11-05-gap-review-phase-10-classes-declarations-foundations.md` | commit | 3b83788d: SINIT-6 points at OBJ-11 |
+| RV4-6 | `../review/2026-11-05-gap-review-phase-10-classes-declarations-foundations.md` | commit | 6c6f69f8: TR-17 for two definitions of main and the class of the main rule |
+| RV4-7 | `../review/2026-11-05-gap-review-phase-10-expressions-templates.md` | commit | 6c6f69f8: DED-29 for an address with a target type, Q-0420 |

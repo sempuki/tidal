@@ -33,7 +33,7 @@ last column lists the questions that the decision closes or changes.
 | 10 | phase 10 item RV3, the gap reviews of the text phase 9 wrote: Q-0092, Q-0247, Q-0340, Q-0358, Q-0390, Q-0392, Q-0397, Q-0398, Q-0399, Q-0400 | b1d89e7 |
 | 2 | phase 10 item PU3, the principle-use batch PU3: Q-0370, Q-0376 | 75e4fab |
 | 4 | phase 11 item RV4, the gap reviews of the text phase 10 wrote: Q-0263, Q-0386, Q-0395, Q-0413 | 1e51073 |
-| 2 | phase 12 item QR, question records: Q-0323, Q-0383 | |
+| 2 | phase 12 item QR, question records: Q-0323, Q-0383 | da51ae9 |
 | -8 | phase 8 item PQ reopened these under the principle test of the style guide: Q-0064, Q-0067, Q-0111, Q-0242, Q-0259, Q-0319, Q-0329, Q-0373. Item PU settled Q-0067 and Q-0329 again | |
 
 ## Decision packet
@@ -66,7 +66,7 @@ review finds the reference silent.
 
 The rows 1 to 9 hold 110 of the open questions.
 
-72 open questions wait for a review that supports the answer with no doubt. By what the last review found: 47 doubt, 15 silent, 9 against, 1 part.
+71 open questions wait for a review that supports the answer with no doubt. By what the last review found: 46 doubt, 15 silent, 9 against, 1 part.
 
 ## Matrix against review
 

@@ -49,10 +49,6 @@ No; only a function that returns an lvalue reference serves it (option 1). GCC a
 
 The question was split from Q-0156 on 2026-11-03. The source-reader gap review of question cluster 2 (`reports/review/2026-11-03-gap-review-question-cluster-2.md`) reads the reference as supporting option 1, weakly, and calls the literal reading a possible gap, since an lvalue reference to `const` can bind to an rvalue. For the xvalue result, EDG joins Clang, so the answer there rests on GCC and OVL-15 alone.
 
-Kept open on 2026-11-03 under decision 0054, because the gap review does not support the answer with no doubt (it reads with doubt, weakly, unclearly, or for only part of the question).
-
-Kept open on 2026-11-05 under decision 0054, because the gap review of the text phase 9 wrote reads the answer with a doubt.
-
 Noted on 2026-11-05 under decision 0058, item PK2. A test whose notes name the question has two newest families that differ from the answer, so the question also waits for newest families that agree (`pending.md` row 1). The check of `tools/question_index.py` found the case.
 
 Kept open on 2026-11-05 under decision 0054, because the review reads the answer with a doubt, and the question also waits on newest families that agree (gap review of the text phase 10 wrote, item RV4).

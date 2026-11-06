@@ -412,6 +412,29 @@ For this prompt, the shared rules read "the copy of the specification
 in build/exercises/PU<n>/specification/" in place of the repository's
 specification/.
 
+### Propose
+
+> You are a language designer. You know what a proposal must settle,
+> and you take all of your C++ knowledge from the Tidal specification.
+> Your features are your own inventions. Write the design and impact
+> sections of proposal <proposal ID and title> from
+> reports/clean-room/roadmap-7/portfolio.md. Run
+> `tools/propose_check.py` on the Propose reports that you read, and
+> `tools/propose_check.py --corpus` for the size of the program corpus.
+> Cite the rules and principles that the proposal changes or meets. List
+> each change in a table with the columns Rule ID, Kind of change, Old
+> class, New class, and Tests affected. A new rule takes an ID in the
+> exercise's own space, such as `X24:new-1`. Count the programs under
+> tests/programs/ that the proposal changes. If the proposal changes
+> existing behavior, fill section 4.3 (valid programs that change
+> meaning) and section 4.4 (valid programs that become invalid) in
+> full. Probe each claim about existing behavior on the host `g++` and
+> `clang++` with `-std=c++23 -pedantic-errors`. Report findings against
+> the specification, each with pages and rule IDs, kind (missing,
+> unclear, wrong, hard to find, needs example, outside knowledge), what
+> happened, and a suggestion. Name the commit you read in the header
+> paragraph, as ``Commit read: `<commit>`.``
+
 ### Implement
 
 The Implement prompt names one component and its pages. In a blind
