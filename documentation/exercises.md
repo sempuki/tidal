@@ -316,6 +316,7 @@ No page has only a Predict batch that showed test names.
 | R-handlers, R-throw, R-unwinding | done, 171/172 (165 cite a rule of the test), without test names; findings RPE-1 to RPE-6 | `reports/clean-room/R-exceptions/` |
 | R10-objects | done, 61/61 (60 cite a rule of the test), without test names; findings R10-1 to R10-9 | `reports/clean-room/R10/` |
 | PU1 | done: 66 programs of 29 questions, 64/66, 1 not decided; findings PU1-1 to PU1-8 | `reports/clean-room/PU1/` |
+| PU3 | done: 13 programs of 5 questions, 5/13; findings PU3-1 to PU3-4 | `reports/clean-room/PU3/` |
 | PU2 | done: 44 programs of 15 questions, 42/44, 1 not decided; findings PU2-1 to PU2-6 | `reports/clean-room/PU2/` |
 | All others | planned | |
 

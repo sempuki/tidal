@@ -43,6 +43,10 @@ Kept open on 2026-11-04 under decision 0054, because SB-5 changed in this commit
 
 Kept open on 2026-11-05 under decision 0054, because the use of SB-P2 did not give the provisional answer, so the principle needs a repair and a new use (gap review of the text phase 9 wrote, item RV3).
 
+Used on 2026-11-05 in batch PU3 (`reports/clean-room/PU3/report.md`). The reader applied SB-P2 to the question's two programs and rejected both, because SB-P2 said "a member `get` template" and a nested class template and a variable template are member templates (finding PU3-1). SB-P2 now names a member function template and says that the other two do not count.
+
+Kept open on 2026-11-05 under decisions 0054 and 0055, because SB-P2 changed in this commit after finding PU3-1. The question waits for the next use of SB-P2.
+
 ## Opinions
 
 ### Gap review, 2026-11-04

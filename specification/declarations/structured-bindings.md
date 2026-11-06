@@ -52,10 +52,13 @@ with the qualifiers of the hidden variable added, so a binding to a
 `mutable` member or a bit-field behaves as that member does. A name for
 an element of the tuple protocol has the type that
 `std::tuple_element` gives, as written. Element `i` is the result of
-`get<i>`, with `i` a constant of type `std::size_t`. The call is the
+`get<i>`, with `i` a constant of type `std::size_t` that passes to the
+template parameter as any constant template argument does. The call is the
 member form `e.get<i>()` when a search for `get` in the class finds a
-member `get` template that takes a constant as its leading template
-parameter, and the call `get<i>(e)` by argument-dependent lookup otherwise
+member function template named `get` that takes a constant as its
+leading template parameter. A nested class template or a variable
+template named `get` does not count. Otherwise the call is `get<i>(e)`
+by argument-dependent lookup
 ({rule}`SB-5`).
 :::
 

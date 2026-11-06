@@ -1,8 +1,7 @@
 # Q-0370: Can a definition outside the class add a default argument that makes a constructor a default, copy, or move constructor?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** DEFARG-12, DEFARG-2, `tests/declarations/functions/default-arguments/outside-default-makes-default-constructor.cpp`, `tests/declarations/functions/default-arguments/outside-default-makes-copy-constructor.cpp`, `tests/declarations/functions/default-arguments/outside-default-makes-move-constructor.cpp`
-**Waits for:** a use of DEFARG-P2
 
 ## Context
 
@@ -41,7 +40,7 @@ results.
 2. The program is valid, and the constructor gets its new kind from the
    definition on (GCC).
 
-## Provisional answer
+## Answer
 
 No; the program is not valid (option 1). Two of three families reject
 it, and the kinds of a class's special member functions stay fixed after
@@ -50,6 +49,10 @@ the class definition.
 Kept open on 2026-11-04 under decision 0055, because DEFARG-2 changed in the commit that read the review, to name the limit of the new rule DEFARG-13, and no reader or review has used the changed rule. The gap review of the rules that phase 7 rewrote supports the answer with no doubt. GCC 16 is the one newest family that differs.
 
 Kept open on 2026-11-05 under decision 0054, because the use of DEFARG-P2 did not give the provisional answer, so the principle needs a repair and a new use (gap review of the text phase 9 wrote, item RV3).
+
+Used on 2026-11-05 in batch PU3 (`reports/clean-room/PU3/report.md`). The reader applied DEFARG-P2, without the rule text, to the question's three programs and rejected each, the provisional answer.
+
+Settled on 2026-11-05 under decision 0054. The use in batch PU3 supports the answer, the gap review of the text phase 9 wrote supports it with no doubt, and GCC 16 is the one newest family that differs. Each test keeps its override.
 
 ## Opinions
 

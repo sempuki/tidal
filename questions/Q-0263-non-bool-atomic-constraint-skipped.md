@@ -46,6 +46,10 @@ Kept open on 2026-11-03 under decision 0054, because CNS-39 changed on the same 
 
 Kept open on 2026-11-05 under decision 0054, because the use of CNS-P2 did not give the provisional answer, so the principle needs a repair and a new use, and the review reads the answer with a doubt (gap review of the text phase 9 wrote, item RV3).
 
+Used on 2026-11-05 in batch PU3 (`reports/clean-room/PU3/report.md`). CNS-P2 and CNS-P3 gave answers that do not match the tests, because they do not say when an atom whose type is never `bool` is diagnosed (finding PU3-3).
+
+Kept open on 2026-11-05 under decision 0054, because the use in batch PU3 does not support the answer.
+
 ## Opinions
 
 ### Gap review, 2026-11-03

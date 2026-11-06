@@ -1,0 +1,33 @@
+5/13 predictions match the tests
+
+A question's answer is reached when every program of the question has the right
+outcome. A use supports the answer when, in addition, every program's answer names
+a principle that the question waits on.
+
+| Question | Waits on | Programs | Right | Name a waited principle | Not decided | Answer reached | Use supports the answer |
+|---|---|---|---|---|---|---|---|
+| Q-0263 | CNS-P2 | p06 p07 p13 | 0/3 | 0/3 | 0 | no | no |
+| Q-0299 | LSUP-P2 | p03 p04 p12 | 0/3 | 0/3 | 3 | no | no |
+| Q-0370 | DEFARG-P2 | p05 p08 p11 | 3/3 | 3/3 | 0 | yes | yes |
+| Q-0376 | SB-P2 | p02 p09 | 2/2 | 2/2 | 0 | yes | yes |
+| Q-0395 | SB-P2 | p01 p10 | 0/2 | 0/2 | 0 | no | no |
+
+| Principle | Answers that name it |
+|---|---|
+| CNS-P2 | p06 wrong, p07 wrong, p13 wrong |
+| CNS-P3 | p07 wrong, p13 wrong |
+| DEFARG-P2 | p05 right, p08 right, p11 right |
+| LSUP-P1 | p03 wrong, p04 wrong, p12 wrong |
+| LSUP-P2 | p03 wrong, p04 wrong, p12 wrong |
+| SB-P2 | p01 wrong, p02 right, p09 right, p10 wrong |
+
+| Program | Test | Questions | Expected | Answer | Principles named | Reason given |
+|---|---|---|---|---|---|---|
+| p01 | declarations/structured-bindings/tuple-member-class-template-get-uses-free.cpp | Q-0395 | accept, reject | reject | SB-P2 | Pair has std::tuple_size with a value member (test 2), and its member get is a nested class template with a constant parameter, so the model picks the member form e.get<i>(), which cannot call a class; doubtful, see PU3-1. |
+| p03 | foundations/language-support/alignment-enumeration-unscoped.cpp | Q-0299 | accept, reject | not-decided | LSUP-P2 LSUP-P1 | The program declares std::align_val_t as an unscoped enumeration over std::size_t and never uses it; the principles do not give the expected kind, and do not say whether a mismatch is checked without a use. |
+| p04 | foundations/language-support/alignment-enumeration-class.cpp | Q-0299 | accept, reject | not-decided | LSUP-P2 LSUP-P1 | The program declares std::align_val_t as a struct; the principles do not say whether a struct is the right kind or whether the declaration alone is checked. |
+| p06 | templates/constraints/atomic-not-bool-skipped.cpp | Q-0263 | accept, reject | compiles | CNS-P2 | For int the atom sizeof(T) > 100 is false, so the non-bool atom (sizeof(T)) is never checked, Odd<int> is false, and the static_assert holds; doubtful because the right atom has type std::size_t for every T, see PU3-3. |
+| p07 | templates/constraints/atomic-not-bool-nondependent-clause.cpp | Q-0263 | reject | runs | CNS-P3 CNS-P2 | wide is never used, so its constraints are never checked and the non-bool atom (sizeof(T)) never reaches the CNS-9 branch; main returns 0; doubtful, see PU3-3. |
+| p10 | declarations/structured-bindings/tuple-member-variable-template-get-uses-free.cpp | Q-0395 | accept, reject | reject | SB-P2 | The member get is a static variable template with a constant parameter, so the model picks e.get<i>(), which calls an int; doubtful, see PU3-1. |
+| p12 | foundations/language-support/alignment-enumeration-wrong-underlying-type.cpp | Q-0299 | accept, reject | not-decided | LSUP-P2 LSUP-P1 | The program declares std::align_val_t as a scoped enumeration over unsigned char; the principles do not say whether the underlying type is part of the shape that must agree, nor whether an unused declaration is checked. |
+| p13 | templates/constraints/atomic-not-bool-nondependent-concept.cpp | Q-0263 | accept, reject | runs | CNS-P3 CNS-P2 | The concept Odd is never used, so its atoms are never checked; main returns 0; doubtful, see PU3-3. |

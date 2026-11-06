@@ -1,8 +1,7 @@
 # Q-0376: What type does the index of `get` have in the tuple protocol of a structured binding?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** SB-5, `tests/declarations/structured-bindings/tuple-index-size-type.cpp`
-**Waits for:** a use of SB-P2
 
 ## Context
 
@@ -32,7 +31,7 @@ which Clang and EDG reject and GCC accepts.
    `std::tuple_size<E>::value`.
 2. The index is an `int` constant (GCC).
 
-## Provisional answer
+## Answer
 
 `std::size_t` (option 1). Two of three families agree, and the type
 matches the parameter of `std::tuple_element` that SB-5 also uses with
@@ -41,6 +40,10 @@ the index.
 Kept open on 2026-11-04 under decision 0055, because SB-5 changed in the commit that read the review, in the condition for the member form of `get`, and no reader or review has used the changed rule. The gap review of the rules that phase 7 rewrote supports the answer with no doubt. GCC 16 is the one newest family that differs.
 
 Kept open on 2026-11-05 under decision 0054, because the use of SB-P2 did not give the provisional answer, so the principle needs a repair and a new use (gap review of the text phase 9 wrote, item RV3).
+
+Used on 2026-11-05 in batch PU3 (`reports/clean-room/PU3/report.md`). The reader applied SB-P2, without the rule text, to `tuple-index-size-type.cpp` and its companion, and gave the provisional answer for each, with outside knowledge on how the index reaches the parameter (finding PU3-2). SB-P2 now says so.
+
+Settled on 2026-11-05 under decision 0054. The use in batch PU3 supports the answer, the gap review of the text phase 9 wrote supports it with no doubt, and GCC 16 is the one newest family that differs. Each test keeps its override.
 
 ## Opinions
 

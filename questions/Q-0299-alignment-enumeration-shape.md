@@ -37,6 +37,10 @@ Kept open on 2026-11-03 under decision 0054, because LSUP-5 changed on the same 
 
 Kept open on 2026-11-05 under decision 0054, because the use of LSUP-P2 did not give the provisional answer, so the principle needs a repair and a new use, and the review reads the answer with a doubt (gap review of the text phase 9 wrote, item RV3).
 
+Used on 2026-11-05 in batch PU3 (`reports/clean-room/PU3/report.md`). LSUP-P2 decided none of the three programs, because it gives no kind or underlying type for `std::align_val_t` (finding PU3-4).
+
+Kept open on 2026-11-05 under decision 0054, because the use in batch PU3 gives no answer.
+
 ## Opinions
 
 ### Gap review, 2026-11-04
