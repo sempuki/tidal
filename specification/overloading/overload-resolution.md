@@ -359,14 +359,15 @@ also removes the built-in candidate ({question}`Q-0147`).
 
 :::{rule} OVL-11
 :kind: reject
-:tests: overloading/overload-resolution/builtin-chosen-then-checked.cpp overloading/overload-resolution/builtin-chosen-other-operand.cpp overloading/overload-resolution/builtin-three-way-bool-operand.cpp
+:tests: overloading/overload-resolution/builtin-chosen-then-checked.cpp overloading/overload-resolution/builtin-chosen-other-operand.cpp overloading/overload-resolution/builtin-three-way-bool-operand.cpp expressions/conditional/two-classes-int-references-prvalue.cpp expressions/conditional/two-classes-int-references-value.cpp
 
 If a built-in candidate wins, each class operand converts by the
 conversion function of its sequence. The standard conversions after the
 conversion function do not apply, and an operand that is not of class
 type keeps its type. The built-in operator then applies to
 the operands, and the program is not valid if the operator's own rules
-reject them.
+reject them. For `?:`, the result is the prvalue that {rule}`COND-11`
+gives, also when the conversion functions return references.
 :::
 
 :::{rule} OVL-12
@@ -848,8 +849,8 @@ struct Self {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 161
-of 191 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 163
+of 193 tests.
 
 ### Divergences
 

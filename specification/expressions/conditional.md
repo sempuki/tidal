@@ -111,20 +111,23 @@ conversion`.
 
 :::{rule} COND-3
 :kind: required
-:tests: expressions/conditional/lvalue-result.cpp expressions/conditional/arithmetic-prvalue.cpp expressions/conditional/same-type-prvalue.cpp expressions/conditional/array-function-operands.cpp expressions/conditional/mixed-category-prvalue.cpp expressions/conditional/pointer-operands.cpp expressions/conditional/bitfield-or-enum.cpp expressions/conditional/class-one-way.cpp expressions/conditional/mixed-enum-types.cpp expressions/conditional/cv-lvalues-and-strings.cpp expressions/conditional/two-zeros.cpp expressions/conditional/member-pointer-nullptr.cpp expressions/conditional/xvalue-operands.cpp expressions/conditional/const-volatile-lvalues-prvalue.cpp expressions/conditional/const-and-plain-lvalue.cpp expressions/conditional/derived-base-lvalue.cpp expressions/conditional/class-converts-to-int.cpp expressions/conditional/zero-and-nullptr.cpp expressions/conditional/class-converts-best-conversion.cpp expressions/conditional/class-converts-to-reference.cpp expressions/conditional/class-base-target-keeps-cv.cpp expressions/conditional/class-base-does-not-convert-to-derived.cpp expressions/conditional/class-const-and-volatile-lvalues.cpp expressions/conditional/class-converts-to-decayed-array.cpp expressions/conditional/class-same-type-toward-more-qualified.cpp expressions/conditional/nonclass-converts-to-class.cpp expressions/conditional/class-lvalue-and-prvalue-constant.cpp expressions/conditional/class-lvalue-and-int-run.cpp expressions/conditional/class-lvalue-and-other-class-lvalue-run.cpp expressions/conditional/class-lvalue-and-string-literal-run.cpp expressions/conditional/class-prvalue-and-other-class-prvalue-run.cpp
+:tests: expressions/conditional/lvalue-result.cpp expressions/conditional/arithmetic-prvalue.cpp expressions/conditional/same-type-prvalue.cpp expressions/conditional/array-function-operands.cpp expressions/conditional/mixed-category-prvalue.cpp expressions/conditional/pointer-operands.cpp expressions/conditional/bitfield-or-enum.cpp expressions/conditional/class-one-way.cpp expressions/conditional/mixed-enum-types.cpp expressions/conditional/cv-lvalues-and-strings.cpp expressions/conditional/two-zeros.cpp expressions/conditional/member-pointer-nullptr.cpp expressions/conditional/xvalue-operands.cpp expressions/conditional/const-volatile-lvalues-prvalue.cpp expressions/conditional/const-and-plain-lvalue.cpp expressions/conditional/derived-base-lvalue.cpp expressions/conditional/class-converts-to-int.cpp expressions/conditional/zero-and-nullptr.cpp expressions/conditional/class-converts-best-conversion.cpp expressions/conditional/class-converts-to-reference.cpp expressions/conditional/class-base-target-keeps-cv.cpp expressions/conditional/class-base-does-not-convert-to-derived.cpp expressions/conditional/class-const-and-volatile-lvalues.cpp expressions/conditional/class-converts-to-decayed-array.cpp expressions/conditional/class-same-type-toward-more-qualified.cpp expressions/conditional/nonclass-converts-to-class.cpp expressions/conditional/class-lvalue-and-prvalue-constant.cpp expressions/conditional/class-lvalue-and-int-run.cpp expressions/conditional/class-lvalue-and-other-class-lvalue-run.cpp expressions/conditional/class-lvalue-and-string-literal-run.cpp expressions/conditional/class-prvalue-and-other-class-prvalue-run.cpp expressions/conditional/xvalues-cv-included.cpp expressions/conditional/lvalue-and-xvalue-types.cpp expressions/conditional/class-const-and-volatile-xvalues.cpp expressions/conditional/class-converts-to-rvalue-reference.cpp expressions/conditional/class-step3-after-step1.cpp
 
 The second and third operands give one result type and
 {term}`value category`. The first row that matches the operands gives
 the result. For the rows after the first four, an array operand becomes
 a pointer to its first element, a function operand becomes a pointer to
 the function, and the cv-qualifiers of a non-class operand are removed.
+Class operands whose types differ only in cv-qualifiers, and that match
+none of the first four rows, go to the last row. So a `Box` lvalue and a
+`const Box` xvalue give a `const Box` prvalue by COND-16.
 
 | Operands | Result |
 |---|---|
 | Lvalues of the same type apart from cv-qualifiers, where the cv-qualifiers of one include those of the other | An lvalue with the larger set |
 | Lvalues of the same non-class type apart from cv-qualifiers, where neither set includes the other, as for `const int` and `volatile int` | A prvalue. Two such lvalues of class type go to the last row ({question}`Q-0378`). |
-| Two xvalues | An xvalue |
-| An lvalue and an xvalue | A prvalue |
+| Xvalues of the same type apart from cv-qualifiers, where the cv-qualifiers of one include those of the other | An xvalue with the larger set. Two such xvalues of class type whose sets do not include each other go to the last row ({question}`Q-0378`). |
+| An lvalue and an xvalue of the same type | A prvalue of that type |
 | Two operands of the same type | A prvalue of that type, with no promotion. `true ? 'a' : 'b'` has type `char`, and two enumerators of `E` give `E`. |
 | Both of arithmetic or enumeration type | A prvalue of the type that the {term}`usual arithmetic conversions` give. A `char` and a `short` give `int`. |
 | A pointer, and a pointer or a null pointer constant | A pointer prvalue with the combined cv-qualifiers |
@@ -152,7 +155,7 @@ operand is not valid.
 
 :::{rule} COND-5
 :kind: reject
-:tests: expressions/conditional/no-common-type.cpp expressions/conditional/pointer-and-int.cpp expressions/conditional/class-ambiguous.cpp expressions/conditional/class-ambiguous-conversion.cpp expressions/conditional/two-classes-no-candidate.cpp expressions/conditional/two-classes-several-conversions.cpp expressions/conditional/class-base-less-qualified-rejected.cpp expressions/conditional/class-base-const-derived-prvalue-rejected.cpp expressions/conditional/class-const-and-volatile-lvalues.cpp expressions/conditional/class-deleted-conversion-counts.cpp expressions/conditional/class-private-conversion-counts.cpp expressions/conditional/nonclass-and-class-both-ways.cpp expressions/conditional/class-explicit-conversion-only.cpp
+:tests: expressions/conditional/no-common-type.cpp expressions/conditional/pointer-and-int.cpp expressions/conditional/class-ambiguous.cpp expressions/conditional/class-ambiguous-conversion.cpp expressions/conditional/two-classes-no-candidate.cpp expressions/conditional/two-classes-several-conversions.cpp expressions/conditional/class-base-less-qualified-rejected.cpp expressions/conditional/class-base-const-derived-prvalue-rejected.cpp expressions/conditional/class-const-and-volatile-lvalues.cpp expressions/conditional/class-deleted-conversion-counts.cpp expressions/conditional/class-private-conversion-counts.cpp expressions/conditional/nonclass-and-class-both-ways.cpp expressions/conditional/class-explicit-conversion-only.cpp expressions/conditional/class-const-and-volatile-xvalues.cpp expressions/conditional/class-explicit-reference-conversion.cpp
 
 The second and third operands must have a common type by COND-3 or
 COND-4. If each operand converts for the other by COND-16, the
@@ -193,11 +196,22 @@ constant expression. COND-7 gives the operand that is not selected.
 
 :::{rule} COND-8
 :kind: reject
-:tests: expressions/conditional/class-lvalue-prvalue-copy.cpp expressions/conditional/class-prvalue-lvalue-private-copy.cpp expressions/conditional/class-lvalue-and-prvalue-constant.cpp
+:tests: expressions/conditional/class-lvalue-prvalue-copy.cpp expressions/conditional/class-prvalue-lvalue-private-copy.cpp expressions/conditional/class-lvalue-and-prvalue-constant.cpp expressions/conditional/lvalue-xvalue-deleted-move.cpp expressions/conditional/derived-xvalue-base-deleted-move.cpp expressions/conditional/derived-lvalue-base-copied.cpp
 
-If one operand is an lvalue and the other a prvalue of the same class
-type, the result is a prvalue copied from the selected operand. The copy
-must be valid, so a class with a deleted copy constructor is rejected.
+When the result is a prvalue of class type and an operand is a
+glvalue, the result is initialized from the selected operand. It is
+copied from an lvalue and moved from an xvalue. These cases are:
+
+- an lvalue or an xvalue against a prvalue of the same class type,
+- an lvalue against an xvalue of the same class type (COND-3),
+- an operand that converts to a prvalue by COND-16 step 3, such as a
+  `Box` lvalue that becomes a `const Box` prvalue, or a `Derived`
+  xvalue that becomes a `Base` prvalue.
+
+The copy or the move for each glvalue operand must be valid, also for
+the operand that is not selected and in an unevaluated operand. So a
+deleted copy constructor rejects an lvalue operand, and a deleted move
+constructor rejects an xvalue operand.
 :::
 
 :::{rule} COND-9
@@ -217,7 +231,7 @@ The second operand can be a comma expression without parentheses.
 
 :::{rule} COND-11
 :kind: required
-:tests: expressions/conditional/two-classes-convert-to-int.cpp expressions/conditional/two-classes-convert-to-pointer.cpp expressions/conditional/two-classes-promoted-types.cpp expressions/conditional/two-classes-several-conversions.cpp expressions/conditional/two-classes-no-candidate.cpp expressions/conditional/two-classes-scoped-enumeration.cpp expressions/conditional/two-classes-float.cpp expressions/conditional/class-cv-lvalues-convert-to-int.cpp expressions/conditional/class-explicit-conversion-only.cpp
+:tests: expressions/conditional/two-classes-convert-to-int.cpp expressions/conditional/two-classes-convert-to-pointer.cpp expressions/conditional/two-classes-promoted-types.cpp expressions/conditional/two-classes-several-conversions.cpp expressions/conditional/two-classes-no-candidate.cpp expressions/conditional/two-classes-scoped-enumeration.cpp expressions/conditional/two-classes-float.cpp expressions/conditional/class-cv-lvalues-convert-to-int.cpp expressions/conditional/class-explicit-conversion-only.cpp expressions/conditional/two-classes-int-references-prvalue.cpp expressions/conditional/two-classes-int-references-value.cpp expressions/conditional/two-classes-pointer-to-void.cpp
 
 Overload resolution ({rule}`OVL-9`) over the built-in
 operator candidates picks a conversion for each operand if all of these
@@ -235,30 +249,47 @@ The candidates are these, and each gives a prvalue
 | `(L, R)` for every pair of {term}`promoted arithmetic types <promoted arithmetic type>` `L` and `R` | the type that the {term}`usual arithmetic conversions` give |
 | `(T, T)` for each pointer type, pointer-to-member type, and scoped enumeration type `T` | `T` |
 
+Of the `(T, T)` candidates for pointers, only those for the types that
+the operands reach by their conversion functions can win, and the one
+for the composite pointer type of those types is better than the
+others. So a class that converts to `int*` and a class that converts
+to `const int*` give `const int*`, as COND-3 gives for the two pointers.
+
 If no candidate is viable, or no candidate is better than all others,
-the expression is not valid ({rule}`COND-5`).
+the expression is not valid ({rule}`COND-5`). For example, `Wide`
+converts to `int` and to `long`, and `Narrow` converts to `int`. The
+candidates `(int, int)` and `(long, int)` are both viable. Their
+sequences for the `Wide` operand use different conversion functions, so
+the sequences tie ({rule}`ICS-25`), neither candidate is better, and
+`c ? wide : narrow` is not valid.
 :::
 
 :::{rule} COND-16
 :kind: required
-:tests: expressions/conditional/class-converts-to-reference.cpp expressions/conditional/class-converts-best-conversion.cpp expressions/conditional/class-ambiguous-conversion.cpp expressions/conditional/class-base-less-qualified-rejected.cpp expressions/conditional/class-base-const-derived-prvalue-rejected.cpp expressions/conditional/class-base-does-not-convert-to-derived.cpp expressions/conditional/class-base-target-keeps-cv.cpp expressions/conditional/class-const-and-volatile-lvalues.cpp expressions/conditional/class-converts-to-decayed-array.cpp expressions/conditional/class-deleted-conversion-counts.cpp expressions/conditional/class-private-conversion-counts.cpp expressions/conditional/class-same-type-toward-more-qualified.cpp expressions/conditional/nonclass-and-class-both-ways.cpp expressions/conditional/nonclass-converts-to-class.cpp expressions/conditional/class-derived-prvalue-against-base-xvalue.cpp expressions/conditional/class-derived-prvalue-const-base-lvalue.cpp expressions/conditional/class-const-lvalue-against-xvalue.cpp expressions/conditional/class-derived-xvalue-const-base-lvalue.cpp expressions/conditional/class-cv-lvalues-convert-to-int.cpp expressions/conditional/class-converts-to-int-reference-lvalue.cpp expressions/conditional/class-lvalue-and-int-run.cpp expressions/conditional/class-lvalue-and-other-class-lvalue-run.cpp expressions/conditional/class-lvalue-and-string-literal-run.cpp expressions/conditional/class-prvalue-and-other-class-prvalue-run.cpp expressions/conditional/class-ambiguous-base-operand.cpp expressions/conditional/class-private-base-operand.cpp
+:tests: expressions/conditional/class-converts-to-reference.cpp expressions/conditional/class-converts-best-conversion.cpp expressions/conditional/class-ambiguous-conversion.cpp expressions/conditional/class-base-less-qualified-rejected.cpp expressions/conditional/class-base-const-derived-prvalue-rejected.cpp expressions/conditional/class-base-does-not-convert-to-derived.cpp expressions/conditional/class-base-target-keeps-cv.cpp expressions/conditional/class-const-and-volatile-lvalues.cpp expressions/conditional/class-converts-to-decayed-array.cpp expressions/conditional/class-deleted-conversion-counts.cpp expressions/conditional/class-private-conversion-counts.cpp expressions/conditional/class-same-type-toward-more-qualified.cpp expressions/conditional/nonclass-and-class-both-ways.cpp expressions/conditional/nonclass-converts-to-class.cpp expressions/conditional/class-derived-prvalue-against-base-xvalue.cpp expressions/conditional/class-derived-prvalue-const-base-lvalue.cpp expressions/conditional/class-const-lvalue-against-xvalue.cpp expressions/conditional/class-derived-xvalue-const-base-lvalue.cpp expressions/conditional/class-cv-lvalues-convert-to-int.cpp expressions/conditional/class-converts-to-int-reference-lvalue.cpp expressions/conditional/class-lvalue-and-int-run.cpp expressions/conditional/class-lvalue-and-other-class-lvalue-run.cpp expressions/conditional/class-lvalue-and-string-literal-run.cpp expressions/conditional/class-prvalue-and-other-class-prvalue-run.cpp expressions/conditional/class-ambiguous-base-operand.cpp expressions/conditional/class-private-base-operand.cpp expressions/conditional/lvalue-and-xvalue-types.cpp expressions/conditional/class-const-and-volatile-xvalues.cpp expressions/conditional/derived-xvalue-base-deleted-move.cpp expressions/conditional/derived-lvalue-base-copied.cpp expressions/conditional/class-explicit-reference-conversion.cpp expressions/conditional/class-converts-to-rvalue-reference.cpp expressions/conditional/class-step3-after-step1.cpp
 
 For COND-3, COND-5, and COND-11, when the two operands have different
 types and at least one has class type, each operand `X` is tried
-against the other operand `Y`. `T` is the type of `Y`. The first of
-these steps that applies decides whether `X` converts:
+against the other operand `Y`. `T` is the type of `Y`. `X` converts
+by the first of these steps that gives a conversion:
 
 1. If `X` and `Y` are lvalues, and a `T&` {term}`binds directly <bind directly>`
    to `X`, `X` converts to an lvalue of type `T`
    ({question}`Q-0418`).
 2. If `Y` is an xvalue, and a `T&&` binds directly to `X`, `X` converts
    to an xvalue of type `T`.
-3. Otherwise `X` converts to a prvalue of the target in this table, if
-   `X` has an {term}`implicit conversion sequence` to the target.
+3. If neither step 1 nor step 2 gives a conversion, `X` converts to a
+   prvalue of the target in this table, if `X` has an
+   {term}`implicit conversion sequence` to the target.
 
-In steps 1 and 2, a reference does not bind directly to a class
+In steps 1 and 2, a reference binds directly to `X` itself, or to the
+lvalue or xvalue that a conversion function of `X` returns. A
+conversion function that returns a value gives a prvalue, so steps 1
+and 2 do not use it. A reference does not bind directly to a class
 prvalue, because the prvalue first becomes a temporary object
-({question}`Q-0401`). So a `Derived`
+({question}`Q-0401`). Each step initializes its target as copy
+initialization does, so an `explicit` conversion function or an
+`explicit` constructor takes no part ({rule}`CTOR-9`, {rule}`CVF-3`). So a `Derived`
 prvalue against a `Base` xvalue converts by step 3, to a prvalue of
 `Base`.
 
@@ -329,7 +360,7 @@ int m = larger(x, y);          // fine: x and y outlive the call
 
 ## Evidence
 
-All eight compilers agree on 74 of 81 tests. The results are in
+All eight compilers agree on 85 of 93 tests. The results are in
 `tests/RESULTS.md`.
 
 ### Divergences
@@ -358,6 +389,7 @@ All eight compilers agree on 74 of 81 tests. The results are in
 | Test | Rules | Expected | Clang | GCC | EDG | Question |
 |---|---|---|---|---|---|---|
 | `class-const-and-volatile-lvalues.cpp` | COND-16, COND-3, COND-5 | reject | reject | reject | accept | {question}`Q-0378` |
+| `class-const-and-volatile-xvalues.cpp` | COND-3, COND-5, COND-16 | reject | reject | reject | accept | {question}`Q-0378` |
 | `class-deleted-conversion-counts.cpp` | COND-16, COND-5 | reject | accept | reject | reject | {question}`Q-0378` |
 | `class-derived-prvalue-against-base-xvalue.cpp` | COND-16 | accept | accept | reject | accept | |
 | `class-derived-xvalue-const-base-lvalue.cpp` | COND-16 | accept | reject | accept | accept | {question}`Q-0418` |

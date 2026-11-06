@@ -141,7 +141,7 @@ conversion sequence.
 
 :::{rule} CVF-3
 :kind: required
-:tests: classes/conversion-functions/explicit-bool-if.cpp classes/conversion-functions/explicit-bool-noexcept.cpp classes/conversion-functions/explicit-bool-static-assert.cpp classes/conversion-functions/explicit-brace-init.cpp classes/conversion-functions/explicit-condition-constant.cpp classes/conversion-functions/explicit-direct-init.cpp
+:tests: classes/conversion-functions/explicit-bool-if.cpp classes/conversion-functions/explicit-bool-noexcept.cpp classes/conversion-functions/explicit-bool-static-assert.cpp classes/conversion-functions/explicit-brace-init.cpp classes/conversion-functions/explicit-condition-constant.cpp classes/conversion-functions/explicit-direct-init.cpp expressions/conditional/class-explicit-reference-conversion.cpp
 
 An `explicit` conversion function can be used by these:
 
@@ -295,8 +295,8 @@ Reading r = live;        // valid: the constructor binds Sensor&, which
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 66
-of 69 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 67
+of 70 tests.
 
 ### Divergences
 
