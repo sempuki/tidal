@@ -410,13 +410,13 @@ commit (7cf4574b) left for the next review.
 | RPC-1 | `R-foundations/report-c.md` | commit | a9906a86 |
 | RPC-2 | `R-foundations/report-c.md` | commit | a9906a86 |
 | RPC-3 | `R-foundations/report-c.md` | commit | a9906a86 |
-| RPC-4 | `R-foundations/report-c.md` | open | no later commit or question names the finding |
-| RPC-5 | `R-foundations/report-c.md` | open | no later commit or question names the finding |
-| RPC-6 | `R-foundations/report-c.md` | open | no later commit or question names the finding |
-| RPC-7 | `R-foundations/report-c.md` | open | no later commit or question names the finding |
-| RPC-8 | `R-foundations/report-c.md` | open | no later commit or question names the finding |
-| RPC-9 | `R-foundations/report-c.md` | open | no later commit or question names the finding |
-| RPC-10 | `R-foundations/report-c.md` | open | no later commit or question names the finding |
+| RPC-4 | `R-foundations/report-c.md` | commit | a9906a86 (matched by diff hunk) |
+| RPC-5 | `R-foundations/report-c.md` | commit | a9906a86 (matched by diff hunk) |
+| RPC-6 | `R-foundations/report-c.md` | commit | a9906a86 (matched by diff hunk) |
+| RPC-7 | `R-foundations/report-c.md` | commit | a9906a86 (matched by diff hunk) |
+| RPC-8 | `R-foundations/report-c.md` | commit | a9906a86 (matched by diff hunk) |
+| RPC-9 | `R-foundations/report-c.md` | commit | a9906a86 (matched by diff hunk) |
+| RPC-10 | `R-foundations/report-c.md` | commit | a9906a86 (matched by diff hunk) |
 | RPC-11 | `R-foundations/report-c.md` | commit | a9906a86 |
 | RPD-1 | `R-foundations/report-d.md` | commit | a9906a86 |
 | RPD-2 | `R-foundations/report-d.md` | commit | a9906a86 |
@@ -452,13 +452,13 @@ commit (7cf4574b) left for the next review.
 | RS-15 | `R-statements/report.md` | commit | 1b47525e |
 | RS-16 | `R-statements/report.md` | commit | 1b47525e |
 | W1-1 | `W1/report.md` | commit | ea47eaf8, 0bf1a546 |
-| W1-2 | `W1/report.md` | open | no later commit or question names the finding |
-| W1-3 | `W1/report.md` | open | no later commit or question names the finding |
-| W1-4 | `W1/report.md` | open | no later commit or question names the finding |
-| W1-5 | `W1/report.md` | open | no later commit or question names the finding |
-| W1-6 | `W1/report.md` | open | no later commit or question names the finding |
-| W1-7 | `W1/report.md` | open | no later commit or question names the finding |
-| W1-8 | `W1/report.md` | open | no later commit or question names the finding |
+| W1-2 | `W1/report.md` | commit | 0bf1a546 (matched by diff hunk) |
+| W1-3 | `W1/report.md` | commit | 0bf1a546 (matched by diff hunk) |
+| W1-4 | `W1/report.md` | commit | 0bf1a546 (matched by diff hunk) |
+| W1-5 | `W1/report.md` | commit | 0bf1a546 (matched by diff hunk) |
+| W1-6 | `W1/report.md` | commit | 0bf1a546 (matched by diff hunk) |
+| W1-7 | `W1/report.md` | commit | 0bf1a546 (matched by diff hunk) |
+| W1-8 | `W1/report.md` | commit | 0bf1a546 (matched by diff hunk) |
 | W1-9 | `W1/report.md` | commit | 0bf1a546 |
 | W10-1 | `W10/report.md` | commit | d58799c6 |
 | W10-2 | `W10/report.md` | commit | d58799c6 |
@@ -480,23 +480,23 @@ commit (7cf4574b) left for the next review.
 | W12-5 | `W12/report.md` | commit | d58799c6 |
 | W12-6 | `W12/report.md` | commit | d58799c6 |
 | W12-7 | `W12/report.md` | commit | d58799c6 |
-| W13-1 | `W13/report.md` | open | no later commit or question names the finding |
+| W13-1 | `W13/report.md` | commit | 0bf1a546 (matched by diff hunk) |
 | W13-2 | `W13/report.md` | commit | 0bf1a546 |
-| W13-3 | `W13/report.md` | open | no later commit or question names the finding |
-| W13-4 | `W13/report.md` | open | no later commit or question names the finding |
-| W13-5 | `W13/report.md` | open | no later commit or question names the finding |
-| W13-6 | `W13/report.md` | open | no later commit or question names the finding |
-| W13-7 | `W13/report.md` | open | no later commit or question names the finding |
+| W13-3 | `W13/report.md` | commit | 0bf1a546 (matched by diff hunk) |
+| W13-4 | `W13/report.md` | commit | 0bf1a546 (matched by diff hunk) |
+| W13-5 | `W13/report.md` | commit | 0bf1a546 (matched by diff hunk) |
+| W13-6 | `W13/report.md` | commit | 0bf1a546 (matched by diff hunk) |
+| W13-7 | `W13/report.md` | commit | 0bf1a546 (matched by diff hunk) |
 | W13-8 | `W13/report.md` | commit | 0bf1a546 |
-| W13-9 | `W13/report.md` | open | no later commit or question names the finding |
-| W14-1 | `W14/report.md` | open | no later commit or question names the finding |
-| W14-2 | `W14/report.md` | open | no later commit or question names the finding |
-| W14-3 | `W14/report.md` | open | no later commit or question names the finding |
-| W14-4 | `W14/report.md` | open | no later commit or question names the finding |
-| W14-5 | `W14/report.md` | open | no later commit or question names the finding |
-| W14-6 | `W14/report.md` | open | no later commit or question names the finding |
-| W14-7 | `W14/report.md` | open | no later commit or question names the finding |
-| W14-8 | `W14/report.md` | open | no later commit or question names the finding |
+| W13-9 | `W13/report.md` | commit | 0bf1a546 (matched by diff hunk) |
+| W14-1 | `W14/report.md` | commit | 0bf1a546 (matched by diff hunk) |
+| W14-2 | `W14/report.md` | commit | 0bf1a546 (matched by diff hunk) |
+| W14-3 | `W14/report.md` | commit | 0bf1a546 (matched by diff hunk) |
+| W14-4 | `W14/report.md` | commit | 0bf1a546 (matched by diff hunk) |
+| W14-5 | `W14/report.md` | commit | 0bf1a546 (matched by diff hunk) |
+| W14-6 | `W14/report.md` | commit | 0bf1a546 (matched by diff hunk) |
+| W14-7 | `W14/report.md` | commit | 0bf1a546 (matched by diff hunk) |
+| W14-8 | `W14/report.md` | text | TR-P2 links the units into one program; SINIT-P2 gives the accessor idiom; the linker command is a tool matter |
 | W15-1 | `W15/report.md` | commit | ef3408dd |
 | W15-2 | `W15/report.md` | commit | ef3408dd |
 | W15-3 | `W15/report.md` | commit | ef3408dd, b456a30d |
@@ -520,49 +520,49 @@ commit (7cf4574b) left for the next review.
 | W17-5 | `W17/report.md` | commit | 26f05fca |
 | W17-6 | `W17/report.md` | commit | 26f05fca |
 | W17-7 | `W17/report.md` | commit | 26f05fca |
-| W18-1 | `W18/report.md` | open | no later commit or question names the finding |
+| W18-1 | `W18/report.md` | commit | eff1a372 |
 | W18-2 | `W18/report.md` | commit | 4a193ea4 |
-| W18-3 | `W18/report.md` | open | no later commit or question names the finding |
-| W18-4 | `W18/report.md` | open | no later commit or question names the finding |
-| W18-5 | `W18/report.md` | open | no later commit or question names the finding |
-| W18-6 | `W18/report.md` | open | no later commit or question names the finding |
-| W18-7 | `W18/report.md` | open | no later commit or question names the finding |
-| W18-8 | `W18/report.md` | open | no later commit or question names the finding |
+| W18-3 | `W18/report.md` | commit | eff1a372 |
+| W18-4 | `W18/report.md` | commit | eff1a372 |
+| W18-5 | `W18/report.md` | commit | eff1a372 |
+| W18-6 | `W18/report.md` | commit | eff1a372 |
+| W18-7 | `W18/report.md` | commit | eff1a372 |
+| W18-8 | `W18/report.md` | commit | eff1a372 |
 | W18-9 | `W18/report.md` | commit | 4a193ea4 |
-| W18-10 | `W18/report.md` | open | no later commit or question names the finding |
-| W18-11 | `W18/report.md` | open | no later commit or question names the finding |
+| W18-10 | `W18/report.md` | commit | eff1a372 |
+| W18-11 | `W18/report.md` | commit | eff1a372 |
 | W18-12 | `W18/report.md` | commit | 4a193ea4 |
 | W18-13 | `W18/report.md` | commit | 4a193ea4 |
-| W18-14 | `W18/report.md` | open | an example only; no commit acted on it |
+| W18-14 | `W18/report.md` | text | UNI-7 gives the designator form; the -Wextra warning is outside Tidal |
 | W18-15 | `W18/report.md` | commit | 4a193ea4 |
 | W19-1 | `W19/report.md` | commit | b1d89e77 |
 | W19-2 | `W19/report.md` | commit | b1d89e77 |
-| W19-3 | `W19/report.md` | open | no later commit or question names the finding |
-| W19-4 | `W19/report.md` | open | no later commit or question names the finding |
+| W19-3 | `W19/report.md` | commit | eff1a372 |
+| W19-4 | `W19/report.md` | commit | eff1a372 |
 | W19-5 | `W19/report.md` | commit | b1d89e77 |
-| W19-6 | `W19/report.md` | open | no later commit or question names the finding |
+| W19-6 | `W19/report.md` | text | needs no change: domain knowledge and idioms that TSP-10 and the declarators page allow |
 | W2-1 | `W2/report.md` | commit | d58799c6 |
 | W2-2 | `W2/report.md` | commit | d58799c6 |
 | W2-3 | `W2/report.md` | commit | d58799c6 |
 | W2-4 | `W2/report.md` | commit | d58799c6 |
 | W2-5 | `W2/report.md` | commit | d58799c6 |
 | W2-6 | `W2/report.md` | commit | d58799c6 |
-| W3-1 | `W3/report.md` | open | no later commit or question names the finding |
-| W3-2 | `W3/report.md` | open | no later commit or question names the finding |
-| W3-3 | `W3/report.md` | open | no later commit or question names the finding |
-| W3-4 | `W3/report.md` | open | no later commit or question names the finding |
+| W3-1 | `W3/report.md` | commit | 0bf1a546 (matched by diff hunk) |
+| W3-2 | `W3/report.md` | commit | 0bf1a546 (matched by diff hunk) |
+| W3-3 | `W3/report.md` | commit | 0bf1a546 (matched by diff hunk) |
+| W3-4 | `W3/report.md` | commit | 0bf1a546 (matched by diff hunk) |
 | W3-5 | `W3/report.md` | commit | 0bf1a546 |
-| W3-6 | `W3/report.md` | open | no later commit or question names the finding |
+| W3-6 | `W3/report.md` | commit | 0bf1a546 (matched by diff hunk) |
 | W4-1 | `W4/report.md` | commit | 0bf1a546 |
-| W4-2 | `W4/report.md` | open | no later commit or question names the finding |
-| W4-3 | `W4/report.md` | open | no later commit or question names the finding |
-| W4-4 | `W4/report.md` | open | no later commit or question names the finding |
-| W4-5 | `W4/report.md` | open | no later commit or question names the finding |
-| W4-6 | `W4/report.md` | open | no later commit or question names the finding |
-| W4-7 | `W4/report.md` | open | no later commit or question names the finding |
-| W4-8 | `W4/report.md` | open | no later commit or question names the finding |
-| W4-9 | `W4/report.md` | open | no later commit or question names the finding |
-| W4-10 | `W4/report.md` | open | no later commit or question names the finding |
+| W4-2 | `W4/report.md` | commit | 0bf1a546 (matched by diff hunk) |
+| W4-3 | `W4/report.md` | commit | 0bf1a546 (matched by diff hunk) |
+| W4-4 | `W4/report.md` | commit | 0bf1a546 (matched by diff hunk) |
+| W4-5 | `W4/report.md` | commit | 0bf1a546 (matched by diff hunk) |
+| W4-6 | `W4/report.md` | commit | 0bf1a546 (matched by diff hunk) |
+| W4-7 | `W4/report.md` | commit | 0bf1a546 (matched by diff hunk) |
+| W4-8 | `W4/report.md` | commit | 0bf1a546 (matched by diff hunk) |
+| W4-9 | `W4/report.md` | commit | 0bf1a546 (matched by diff hunk) |
+| W4-10 | `W4/report.md` | commit | 0bf1a546 (matched by diff hunk) |
 | W5-1 | `W5/report.md` | commit | e5cb0b27, d58799c6 |
 | W5-2 | `W5/report.md` | commit | d58799c6 |
 | W5-3 | `W5/report.md` | commit | d58799c6 |
@@ -584,15 +584,15 @@ commit (7cf4574b) left for the next review.
 | W7-5 | `W7/report.md` | commit | d58799c6 |
 | W7-6 | `W7/report.md` | commit | d58799c6 |
 | W7-7 | `W7/report.md` | commit | d58799c6 |
-| W8-1 | `W8/report.md` | open | no later commit or question names the finding |
-| W8-2 | `W8/report.md` | open | no later commit or question names the finding |
+| W8-1 | `W8/report.md` | commit | 0bf1a546 (matched by diff hunk) |
+| W8-2 | `W8/report.md` | commit | 0bf1a546 (matched by diff hunk) |
 | W8-3 | `W8/report.md` | commit | 0bf1a546 |
 | W8-4 | `W8/report.md` | commit | 0bf1a546 |
-| W8-5 | `W8/report.md` | open | no later commit or question names the finding |
-| W8-6 | `W8/report.md` | open | no later commit or question names the finding |
-| W8-7 | `W8/report.md` | open | no later commit or question names the finding |
-| W8-8 | `W8/report.md` | open | no later commit or question names the finding |
-| W8-9 | `W8/report.md` | open | no later commit or question names the finding |
+| W8-5 | `W8/report.md` | commit | 0bf1a546 (matched by diff hunk) |
+| W8-6 | `W8/report.md` | commit | 0bf1a546 (matched by diff hunk) |
+| W8-7 | `W8/report.md` | commit | 0bf1a546 (matched by diff hunk) |
+| W8-8 | `W8/report.md` | commit | 0bf1a546 (matched by diff hunk) |
+| W8-9 | `W8/report.md` | text | needs no change: the preference for noexcept moves belongs to the library |
 | W9-1 | `W9/report.md` | commit | d58799c6 |
 | W9-2 | `W9/report.md` | commit | d58799c6 |
 | W9-3 | `W9/report.md` | commit | d58799c6 |
@@ -802,11 +802,11 @@ commit (7cf4574b) left for the next review.
 | X5-15 | `X5/report.md` | commit | 3c569c2b |
 | X5-16 | `X5/report.md` | commit | 3c569c2b |
 | X5-17 | `X5/report.md` | commit | 3c569c2b |
-| X5-18 | `X5/report.md` | open | no later commit or question names the finding |
-| X5-19 | `X5/report.md` | open | no later commit or question names the finding |
+| X5-18 | `X5/report.md` | text | needs no change: a judgment about usage, with no language rule involved |
+| X5-19 | `X5/report.md` | question | Q-0007 |
 | X5-20 | `X5/report.md` | commit | 3c569c2b |
 | X6-1 | `X6/report.md` | commit | 3c569c2b |
-| X6-2 | `X6/report.md` | open | no later commit or question names the finding |
+| X6-2 | `X6/report.md` | commit | 3c569c2b (matched by diff hunk) |
 | X6-3 | `X6/report.md` | commit | 9b60e6e4, 3c569c2b |
 | X6-4 | `X6/report.md` | commit | 3c569c2b |
 | X6-5 | `X6/report.md` | commit | 3c569c2b |
@@ -818,8 +818,8 @@ commit (7cf4574b) left for the next review.
 | X6-11 | `X6/report.md` | commit | 3c569c2b |
 | X6-12 | `X6/report.md` | commit | 3c569c2b |
 | X6-13 | `X6/report.md` | commit | 3c569c2b |
-| X6-14 | `X6/report.md` | open | no later commit or question names the finding |
-| X6-15 | `X6/report.md` | open | no later commit or question names the finding |
+| X6-14 | `X6/report.md` | text | needs no change: a judgment about usage, with no language rule involved |
+| X6-15 | `X6/report.md` | question | Q-0007 |
 | X7-1 | `X7/report.md` | commit | 97a31fbb |
 | X7-2 | `X7/report.md` | commit | 97a31fbb |
 | X7-3 | `X7/report.md` | commit | 97a31fbb |
