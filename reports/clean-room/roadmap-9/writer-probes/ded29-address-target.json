@@ -1,0 +1,17 @@
+{
+ "prelude": "struct Circle { double r; };\nstruct Square { double side; };\nconstexpr int g(const Circle&) { return 0; }",
+ "template": "{prelude}\n{col}\nint main() {{ {row} return 0; }}",
+ "rows": {
+  "call with Circle (control)": "static_assert(g(Circle{1.0}) == 0);",
+  "address with target int(*)(const Circle&)": "int (*p)(const Circle&) = g; (void)p;",
+  "address with target, through static_cast": "auto p = static_cast<int (*)(const Circle&)>(g); (void)p;",
+  "address with target double(*)(const Square&)": "double (*p)(const Square&) = g; (void)p;",
+  "address with target int(*)(const Circle&), explicit argument": "int (*p)(const Circle&) = g<Circle>; (void)p;"
+ },
+ "cols": {
+  "template with deduced result, body not valid for Circle": "template <class T> constexpr auto g(const T& t) { return t.side; }",
+  "template with trailing decltype result": "template <class T> constexpr auto g(const T& t) -> decltype(t.side) { return t.side; }",
+  "template with declared result double, body not valid for Circle": "template <class T> constexpr double g(const T& t) { return t.side; }"
+ },
+ "flags": []
+}

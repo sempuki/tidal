@@ -1,0 +1,17 @@
+{
+ "prelude": "",
+ "template": "{prelude}\nstatic_assert({row});\nint main() {{ return 0; }}",
+ "rows": {
+  "default new alignment == alignof(long double)": "__STDCPP_DEFAULT_NEW_ALIGNMENT__ == alignof(long double)",
+  "default new alignment >= alignof(long double)": "__STDCPP_DEFAULT_NEW_ALIGNMENT__ >= alignof(long double)",
+  "default new alignment == 16": "__STDCPP_DEFAULT_NEW_ALIGNMENT__ == 16",
+  "default new alignment == 8": "__STDCPP_DEFAULT_NEW_ALIGNMENT__ == 8",
+  "alignof(long double) == 16": "alignof(long double) == 16",
+  "alignof(long double) == 4": "alignof(long double) == 4",
+  "alignof(long long) == 8": "alignof(long long) == 8"
+ },
+ "cols": {
+  "holds": ""
+ },
+ "flags": []
+}

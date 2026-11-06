@@ -1,0 +1,26 @@
+| | holds |
+|---|---|
+| default new alignment == alignof(long double) | accept: gcc-host, gcc-16, gcc-14, clang-host, edg-7.0, clang-18, clang-22; reject: edg-7.0-ilp32 |
+| default new alignment >= alignof(long double) | accept |
+| default new alignment == 16 | accept |
+| default new alignment == 8 | reject |
+| alignof(long double) == 16 | accept: edg-7.0, gcc-16, gcc-14, gcc-host, clang-host, clang-18, clang-22; reject: edg-7.0-ilp32 |
+| alignof(long double) == 4 | accept: edg-7.0-ilp32; reject: edg-7.0, gcc-14, gcc-host, gcc-16, clang-host, clang-18, clang-22 |
+| alignof(long long) == 8 | accept |
+default new alignment == alignof(long double) / holds / edg-7.0-ilp32: ouble--holds.cpp", line 2: error: static assertion failed
+default new alignment == 8 / holds / clang-18: /tidal/build/probes/x23-3-thresholds/0003-default-new-alignment-8--holds.cpp:2:15: error: static assertion failed due to requirement '16UL == 8'
+default new alignment == 8 / holds / clang-22: /tidal/build/probes/x23-3-thresholds/0003-default-new-alignment-8--holds.cpp:2:15: error: static assertion failed due to requirement '16UL == 8'
+default new alignment == 8 / holds / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/x23-3-thresholds/0003-default-new-alignment-8--holds.cpp:2:15: error: static assertion failed due to requirement '16UL == 8'
+default new alignment == 8 / holds / edg-7.0: line 2: error: static assertion failed
+default new alignment == 8 / holds / edg-7.0-ilp32: line 2: error: static assertion failed
+default new alignment == 8 / holds / gcc-14: /tidal/build/probes/x23-3-thresholds/0003-default-new-alignment-8--holds.cpp:2:48: error: static assertion failed
+default new alignment == 8 / holds / gcc-16: /tidal/build/probes/x23-3-thresholds/0003-default-new-alignment-8--holds.cpp:2:48: error: static assertion failed
+default new alignment == 8 / holds / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/x23-3-thresholds/0003-default-new-alignment-8--holds.cpp:2:48: error: static assertion failed
+alignof(long double) == 16 / holds / edg-7.0-ilp32: line 2: error: static assertion failed
+alignof(long double) == 4 / holds / clang-18: /tidal/build/probes/x23-3-thresholds/0005-alignof-long-double-4--holds.cpp:2:15: error: static assertion failed due to requirement 'alignof(long double) == 4'
+alignof(long double) == 4 / holds / clang-22: /tidal/build/probes/x23-3-thresholds/0005-alignof-long-double-4--holds.cpp:2:15: error: static assertion failed due to requirement 'alignof(long double) == 4'
+alignof(long double) == 4 / holds / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/x23-3-thresholds/0005-alignof-long-double-4--holds.cpp:2:15: error: static assertion failed due to requirement 'alignof(long double) == 4'
+alignof(long double) == 4 / holds / edg-7.0: line 2: error: static assertion failed
+alignof(long double) == 4 / holds / gcc-14: /tidal/build/probes/x23-3-thresholds/0005-alignof-long-double-4--holds.cpp:2:36: error: static assertion failed
+alignof(long double) == 4 / holds / gcc-16: /tidal/build/probes/x23-3-thresholds/0005-alignof-long-double-4--holds.cpp:2:36: error: static assertion failed
+alignof(long double) == 4 / holds / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/x23-3-thresholds/0005-alignof-long-double-4--holds.cpp:2:36: error: static assertion failed

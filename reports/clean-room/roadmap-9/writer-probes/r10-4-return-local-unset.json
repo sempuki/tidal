@@ -1,0 +1,17 @@
+{
+ "prelude": "struct S { int a; int b; constexpr S() : a(1) {} };",
+ "template": "{prelude}\n{row}\n{col}\nint main() {{ return 0; }}",
+ "rows": {
+  "return a named local": "constexpr S make() { S s; return s; }",
+  "return a parenthesized local": "constexpr S make() { S s; return (s); }",
+  "return a prvalue": "constexpr S make() { return S(); }",
+  "return a local through a conditional": "constexpr S make() { S s; return true ? s : s; }",
+  "return a local after setting every part": "constexpr S make() { S s; s.b = 2; return s; }"
+ },
+ "cols": {
+  "static_assert on make().a": "static_assert(make().a == 1);",
+  "a local initialized from make()": "constexpr int read() { S t = make(); return t.a; }\nstatic_assert(read() == 1);",
+  "a constexpr variable of type S": "constexpr S v = make();"
+ },
+ "flags": []
+}

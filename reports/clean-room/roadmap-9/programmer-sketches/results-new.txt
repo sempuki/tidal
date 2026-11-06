@@ -1,0 +1,698 @@
+=== new/function.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: unsupported at line 111: default constructor 
+=== new/function_first_try.cpp
+g++: FAILED: new/function_first_try.cpp:44:7: error: data member ‘Function<int(int)>::Model<int(int)>::f’ invalidly declared function type 
+g++ ped: FAILED: new/function_first_try.cpp:44:7: error: data member ‘Function<int(int)>::Model<int(int)>::f’ invalidly declared function type 
+g++ san: FAILED: new/function_first_try.cpp:44:7: error: data member ‘Function<int(int)>::Model<int(int)>::f’ invalidly declared function type 
+clang++: FAILED: new/function_first_try.cpp:44:7: error: data member instantiated with function type 'int (int)' 1 error generated. 
+clang++ ped: FAILED: new/function_first_try.cpp:44:7: error: data member instantiated with function type 'int (int)' 1 error generated. 
+clang++ san: FAILED: new/function_first_try.cpp:44:7: error: data member instantiated with function type 'int (int)' 1 error generated. 
+EDG: rejects: "/w/function_first_try.cpp", line 44: error: a function type is not allowed
+tidal-fe: unsupported at line 56: constructor with an initializer the front end does not model 
+=== new/function_second_try.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: unsupported at line 99: class assignment 
+=== new/function_third_try.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: unsupported at line 111: call needing template deduction or unknown arguments 
+=== new/map.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: unsupported at line 115: check: static_assert: default constructor 
+=== new/map_first_try.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: rejected [TR-12] at line 43: the grammar does not derive this: expected ')' but found '...' 
+=== new/optional_body_construct.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: unsupported at line 126: check: static_assert: class prvalue 
+=== new/optional.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: rejected [TR-12] at line 50: the grammar does not derive this: expected ')' but found '...' 
+=== new/optional_first_try.cpp
+g++: FAILED: new/optional_first_try.cpp:120:25: error: non-constant condition for static assertion new/optional_first_try.cpp:102:12: error: ‘constexpr T& Optional<T>::emplace(A&& ...) [with A = {int, int}; T = Point]’ called in a constant expression 
+g++ ped: FAILED: new/optional_first_try.cpp:120:25: error: non-constant condition for static assertion new/optional_first_try.cpp:102:12: error: ‘constexpr T& Optional<T>::emplace(A&& ...) [with A = {int, int}; T = Point]’ called in a constant expression 
+g++ san: FAILED: new/optional_first_try.cpp:120:25: error: non-constant condition for static assertion new/optional_first_try.cpp:102:12: error: ‘constexpr T& Optional<T>::emplace(A&& ...) [with A = {int, int}; T = Point]’ called in a constant expression 
+clang++: FAILED: new/optional_first_try.cpp:120:15: error: static assertion expression is not an integral constant expression new/optional_first_try.cpp:121:15: error: static assertion expression is not an integral constant expression 
+clang++ ped: FAILED: new/optional_first_try.cpp:120:15: error: static assertion expression is not an integral constant expression new/optional_first_try.cpp:121:15: error: static assertion expression is not an integral constant expression 
+clang++ san: FAILED: new/optional_first_try.cpp:120:15: error: static assertion expression is not an integral constant expression new/optional_first_try.cpp:121:15: error: static assertion expression is not an integral constant expression 
+EDG: rejects: "/w/optional_first_try.cpp", line 120: error: expression must have a constant
+tidal-fe: rejected [TR-12] at line 44: the grammar does not derive this: expected ')' but found '...' 
+=== new/text.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: unsupported at line 100: check: static_assert: class prvalue 
+=== new/text_first_try.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: rejected [DED-35] at line 94: no viable function for the call of 'insertion_sort': deduction fails for each template 
+=== new/text_second_try.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: unsupported at line 99: check: static_assert: class temporary 
+=== new/text_third_try.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: unsupported at line 100: check: static_assert: class conditional 
+=== new/vec.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: unspecified: result 0 with fixed choices: SEQ-1 at line 67 (arguments evaluated from left to right); SEQ-1 at line 150 (arguments evaluated from left to right); SEQ-1 at line 151 (arguments evaluated from left to right) explored: 64 runs (the bound of 64 runs stopped the exploration; the set is partial); other outcomes: result 0 
+=== new/vec_first_try.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: rejected [OVL-35] at line 150: no viable function for operator '==' 
+=== reductions/array_of_class_with_constructor_template.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: unsupported at line 0: default constructor 
+=== reductions/assign_through_constructor_template.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: unsupported at line 8: class assignment 
+=== reductions/assign_through_converting_constructor.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: unsupported at line 4: class assignment 
+=== reductions/cond_class_lvalue_vs_convertible_class.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: unsupported at line 12: class prvalue 
+=== reductions/cond_class_lvalue_vs_int.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: unsupported at line 9: class conditional 
+=== reductions/cond_class_lvalue_vs_prvalue_constant.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: unsupported at line 5: check: static_assert: class prvalue 
+=== reductions/cond_class_lvalue_vs_string_literal.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: unsupported at line 9: class conditional 
+=== reductions/cond_class_prvalue_vs_convertible_class.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+=== reductions/direct_init_through_conversion_function.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: unsupported at line 7: class temporary 
+=== reductions/lambda_trailing_decltype_auto.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: unsupported at line 0: object of unknown type 
+=== reductions/literal_pointer_copy_compare.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: unspecified: result 0 with fixed choices: PRIM-9 at line 6 (string literals with the same characters are one object) explored: 2 runs; other outcomes: result 1 
+=== reductions/literal_pointer_range_loop.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: undefined [ADD-10] at line 7: access through a pointer past the end of an array explored: 2 runs; other outcomes: undefined [ADD-10] at line 7: access through a pointer past the end of an array 
+=== reductions/literal_view_range_for.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: undefined [ADD-10] at line 10: access through a pointer past the end of an array explored: 2 runs; other outcomes: undefined [ADD-10] at line 10: access through a pointer past the end of an array 
+=== reductions/unknown_bound_converted_elements_deduce_bound.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: rejected [DED-35] at line 6: no viable function for the call of 'len': deduction fails for each template 
+=== new/one-line/alignas_alignof.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+=== new/one-line/auto_template_parameter.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+=== new/one-line/bit_flags_shift.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+=== new/one-line/capture_this_and_star_this.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+=== new/one-line/catch_derived_by_const_ref.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+=== new/one-line/conditional_base_pointers.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+=== new/one-line/conditional_class_lvalues_ref.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+=== new/one-line/consteval_template_argument.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+=== new/one-line/crtp_static_poly.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+=== new/one-line/default_argument_and_overload_ref.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+=== new/one-line/delegating_constructors.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+=== new/one-line/do_while_reverse_index.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+=== new/one-line/enum_class_switch_using.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+=== new/one-line/explicit_bool_in_if.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+=== new/one-line/fold_max.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+=== new/one-line/functor_by_value_to_algorithm.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+=== new/one-line/inline_static_counter_template.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+=== new/one-line/lookup_table_iife.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+=== new/one-line/maybe_unused_fallthrough.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+=== new/one-line/object_bytes_unsigned_char.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+=== new/one-line/parse_digits.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+=== new/one-line/plus_in_terms_of_plus_assign.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+=== new/one-line/recursive_lambda_deduced_this.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: unspecified: result 0 with fixed choices: SEQ-8 at line 1 (the left operand of '+' first) explored: 64 runs (the bound of 64 runs stopped the exploration; the set is partial); other outcomes: result 0 
+=== new/one-line/ref_qualified_members.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+=== new/one-line/return_noncopyable_prvalue.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+=== new/one-line/struct_return_binding.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+=== new/one-line/throw_in_constructor_cleans_members.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+=== new/one-line/two_d_array_range_for.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+=== new/bugs/dangling_max_of_temporaries.cpp
+g++: built (warnings 1), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 1), exit 1 ================================================================= ==1051542==ERROR: AddressSanitizer: stack-use-after-scope on address 0x7bd6263f0040 at pc 0x00000040077b bp 0x7ffe3a676c00 sp 0x7ffe3a
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 1 ================================================================= ==1051566==ERROR: AddressSanitizer: stack-use-after-scope on address 0x7b166baf0030 at pc 0x0000004ec233 bp 0x7ffff606c1b0 sp 0x7ffff6
+EDG: accepts
+tidal-fe: undefined [OBJ-2] at line 4: access to an object whose lifetime has ended 
+=== new/bugs/divide_by_zero_average.cpp
+./runall.sh: line 10: 1051649 Floating point exception   (core dumped) $B/a > /dev/null 2> $B/rerr
+g++: built (warnings 0), exit 136 
+./runall.sh: line 10: 1051667 Floating point exception   (core dumped) $B/a > /dev/null 2> $B/rerr
+g++ ped: built (warnings 0), exit 136 
+g++ san: built (warnings 0), exit 1 new/bugs/divide_by_zero_average.cpp:1:95: runtime error: division by zero 
+./runall.sh: line 10: 1051699 Floating point exception   (core dumped) $B/a > /dev/null 2> $B/rerr
+clang++: built (warnings 0), exit 136 
+./runall.sh: line 10: 1051737 Floating point exception   (core dumped) $B/a > /dev/null 2> $B/rerr
+clang++ ped: built (warnings 0), exit 136 
+clang++ san: built (warnings 0), exit 1 new/bugs/divide_by_zero_average.cpp:1:95: runtime error: division by zero SUMMARY: UndefinedBehaviorSanitizer: undefined-behavior new/bugs/divide_by_zero_average.cpp:1:95  
+EDG: accepts
+tidal-fe: undefined [MUL-9] at line 1: division by zero 
+=== new/bugs/double_delete.cpp
+./runall.sh: line 10: 1051839 Aborted                    (core dumped) $B/a > /dev/null 2> $B/rerr
+g++: built (warnings 0), exit 134 free(): double free detected in tcache 2 
+./runall.sh: line 10: 1051857 Aborted                    (core dumped) $B/a > /dev/null 2> $B/rerr
+g++ ped: built (warnings 0), exit 134 free(): double free detected in tcache 2 
+g++ san: built (warnings 0), exit 1 ================================================================= ==1051875==ERROR: AddressSanitizer: attempting double-free on 0x7bb9409e0010 in thread T0:     #0 0x7f99426f13bf in operator delete(vo
+./runall.sh: line 10: 1051883 Aborted                    (core dumped) $B/a > /dev/null 2> $B/rerr
+clang++: built (warnings 0), exit 134 free(): double free detected in tcache 2 
+./runall.sh: line 10: 1051899 Aborted                    (core dumped) $B/a > /dev/null 2> $B/rerr
+clang++ ped: built (warnings 0), exit 134 free(): double free detected in tcache 2 
+clang++ san: built (warnings 0), exit 1 ================================================================= ==1051916==ERROR: AddressSanitizer: attempting double-free on 0x7bf4e93e0010 in thread T0:     #0 0x0000004eb816  (/tmp/claude-1000/-h
+EDG: accepts
+tidal-fe: undefined [NEW-5] at line 1: delete of an object that was already deleted 
+=== new/bugs/return_reference_to_local.cpp
+./runall.sh: line 10: 1052015 Segmentation fault         (core dumped) $B/a > /dev/null 2> $B/rerr
+g++: built (warnings 1), exit 139 
+./runall.sh: line 10: 1052038 Segmentation fault         (core dumped) $B/a > /dev/null 2> $B/rerr
+g++ ped: built (warnings 1), exit 139 
+g++ san: built (warnings 1), exit 1 new/bugs/return_reference_to_local.cpp:1:63: runtime error: reference binding to null pointer of type 'const int' 
+clang++: built (warnings 2), exit 0 
+clang++ ped: built (warnings 2), exit 0 
+clang++ san: built (warnings 2), exit 1 ================================================================= ==1052080==ERROR: AddressSanitizer: stack-use-after-return on address 0x7bb1180f0020 at pc 0x0000004ec179 bp 0x7ffd8308c110 sp 0x7ffd8
+EDG: accepts
+tidal-fe: undefined [OBJ-2] at line 1: access to an object whose lifetime has ended 
+=== new/bugs/shift_by_width.cpp
+g++: built (warnings 0), exit 1 
+g++ ped: built (warnings 0), exit 1 
+g++ san: built (warnings 0), exit 1 new/bugs/shift_by_width.cpp:1:34: runtime error: shift exponent 32 is too large for 32-bit type 'unsigned int' 
+clang++: built (warnings 0), exit 1 
+clang++ ped: built (warnings 0), exit 1 
+clang++ san: built (warnings 0), exit 1 new/bugs/shift_by_width.cpp:1:34: runtime error: shift exponent 32 is too large for 32-bit type 'unsigned int' SUMMARY: UndefinedBehaviorSanitizer: undefined-behavior new/bugs/shift_by_width.cpp:1:34 
+EDG: accepts
+tidal-fe: undefined [SHF-7] at line 1: shift count negative or not less than the width 
+=== new/bugs/signed_sum_overflow.cpp
+g++: built (warnings 0), exit 1 
+g++ ped: built (warnings 0), exit 1 
+g++ san: built (warnings 0), exit 1 new/bugs/signed_sum_overflow.cpp:1:73: runtime error: signed integer overflow: 2147483000 + 1000 cannot be represented in type 'int' 
+clang++: built (warnings 0), exit 1 
+clang++ ped: built (warnings 0), exit 1 
+clang++ san: built (warnings 0), exit 1 new/bugs/signed_sum_overflow.cpp:1:73: runtime error: signed integer overflow: 2147483000 + 1000 cannot be represented in type 'int' SUMMARY: UndefinedBehaviorSanitizer: undefined-behavior new/bugs/si
+EDG: accepts
+tidal-fe: undefined [ADD-9] at line 1: signed overflow: 2147484000 does not fit in int 
+=== new/bugs/uninitialized_local_read.cpp
+g++: built (warnings 0), exit 201 
+g++ ped: built (warnings 0), exit 208 
+g++ san: built (warnings 0), exit 230 
+clang++: built (warnings 3), exit 200 
+clang++ ped: built (warnings 0), exit 200 
+clang++ san: built (warnings 3), exit 200 
+EDG: accepts
+tidal-fe: undefined [OBJ-2, INIT-1] at line 1: read of an object with no value 
+=== new/bugs/write_to_string_literal.cpp
+./runall.sh: line 10: 1052574 Segmentation fault         (core dumped) $B/a > /dev/null 2> $B/rerr
+g++: built (warnings 0), exit 139 
+./runall.sh: line 10: 1052592 Segmentation fault         (core dumped) $B/a > /dev/null 2> $B/rerr
+g++ ped: built (warnings 0), exit 139 
+g++ san: built (warnings 0), exit 1 AddressSanitizer:DEADLYSIGNAL ================================================================= ==1052611==ERROR: AddressSanitizer: SEGV on unknown address 0x000000401460 (pc 0x000000400514 bp 0x7ffc3
+./runall.sh: line 10: 1052751 Segmentation fault         (core dumped) $B/a > /dev/null 2> $B/rerr
+clang++: built (warnings 0), exit 139 
+./runall.sh: line 10: 1052943 Segmentation fault         (core dumped) $B/a > /dev/null 2> $B/rerr
+clang++ ped: built (warnings 0), exit 139 
+clang++ san: built (warnings 0), exit 1 AddressSanitizer:DEADLYSIGNAL ================================================================= ==1052980==ERROR: AddressSanitizer: SEGV on unknown address 0x00000052d820 (pc 0x0000004ec027 bp 0x7ffd7
+EDG: accepts
+tidal-fe: undefined [CAST-5, CV-5] at line 1: write to a const object 
+=== new/mistakes/auto_braced_two_elements.cpp
+g++: FAILED: new/mistakes/auto_braced_two_elements.cpp:1:25: error: direct-list-initialization of ‘auto’ requires exactly one element [-fpermissive] new/mistakes/auto_braced_two_elements.cpp:1:25: error: deducing from brace-enclosed initializer list requires ‘#include <initializer_list>’ 
+g++ ped: FAILED: new/mistakes/auto_braced_two_elements.cpp:1:25: error: direct-list-initialization of ‘auto’ requires exactly one element [-fpermissive] new/mistakes/auto_braced_two_elements.cpp:1:25: error: deducing from brace-enclosed initializer list requires ‘#include <initializer_list>’ 
+g++ san: FAILED: new/mistakes/auto_braced_two_elements.cpp:1:25: error: direct-list-initialization of ‘auto’ requires exactly one element [-fpermissive] new/mistakes/auto_braced_two_elements.cpp:1:25: error: deducing from brace-enclosed initializer list requires ‘#include <initializer_list>’ 
+clang++: FAILED: new/mistakes/auto_braced_two_elements.cpp:1:24: error: initializer for variable 'x' with type 'auto' contains multiple expressions 1 error generated. 
+clang++ ped: FAILED: new/mistakes/auto_braced_two_elements.cpp:1:24: error: initializer for variable 'x' with type 'auto' contains multiple expressions 1 error generated. 
+clang++ san: FAILED: new/mistakes/auto_braced_two_elements.cpp:1:24: error: initializer for variable 'x' with type 'auto' contains multiple expressions 1 error generated. 
+EDG: rejects: "/w/auto_braced_two_elements.cpp", line 1: error: braced initialization of a
+tidal-fe: rejected [AUTO-20] at line 1: placeholder initializer must contain exactly one expression 
+=== new/mistakes/copy_in_range_for_move_only.cpp
+g++: FAILED: new/mistakes/copy_in_range_for_move_only.cpp:2:62: error: use of deleted function ‘M::M(const M&)’ 
+g++ ped: FAILED: new/mistakes/copy_in_range_for_move_only.cpp:2:62: error: use of deleted function ‘M::M(const M&)’ 
+g++ san: FAILED: new/mistakes/copy_in_range_for_move_only.cpp:2:62: error: use of deleted function ‘M::M(const M&)’ 
+clang++: FAILED: new/mistakes/copy_in_range_for_move_only.cpp:2:58: error: call to deleted constructor of 'M' 1 error generated. 
+clang++ ped: FAILED: new/mistakes/copy_in_range_for_move_only.cpp:2:58: error: call to deleted constructor of 'M' 1 error generated. 
+clang++ san: FAILED: new/mistakes/copy_in_range_for_move_only.cpp:2:58: error: call to deleted constructor of 'M' 1 error generated. 
+EDG: rejects: "/w/copy_in_range_for_move_only.cpp", line 2: error: function "M::M(const M &)"
+tidal-fe: unsupported at line 2: range-based for 
+=== new/mistakes/explicit_constructor_copy_init.cpp
+g++: FAILED: new/mistakes/explicit_constructor_copy_init.cpp:2:22: error: conversion from ‘int’ to non-scalar type ‘Box’ requested 
+g++ ped: FAILED: new/mistakes/explicit_constructor_copy_init.cpp:2:22: error: conversion from ‘int’ to non-scalar type ‘Box’ requested 
+g++ san: FAILED: new/mistakes/explicit_constructor_copy_init.cpp:2:22: error: conversion from ‘int’ to non-scalar type ‘Box’ requested 
+clang++: FAILED: new/mistakes/explicit_constructor_copy_init.cpp:2:18: error: no viable conversion from 'int' to 'Box' 1 error generated. 
+clang++ ped: FAILED: new/mistakes/explicit_constructor_copy_init.cpp:2:18: error: no viable conversion from 'int' to 'Box' 1 error generated. 
+clang++ san: FAILED: new/mistakes/explicit_constructor_copy_init.cpp:2:18: error: no viable conversion from 'int' to 'Box' 1 error generated. 
+EDG: rejects: "/w/explicit_constructor_copy_init.cpp", line 2: error: no suitable constructor
+tidal-fe: rejected [CTOR-9] at line 2: copy-initialization uses an explicit constructor 
+=== new/mistakes/member_of_function_type.cpp
+g++: FAILED: new/mistakes/member_of_function_type.cpp:1:38: error: data member ‘Holder<int(int)>::f’ invalidly declared function type 
+g++ ped: FAILED: new/mistakes/member_of_function_type.cpp:1:38: error: data member ‘Holder<int(int)>::f’ invalidly declared function type 
+g++ san: FAILED: new/mistakes/member_of_function_type.cpp:1:38: error: data member ‘Holder<int(int)>::f’ invalidly declared function type 
+clang++: FAILED: new/mistakes/member_of_function_type.cpp:1:38: error: data member instantiated with function type 'int (int)' 1 error generated. 
+clang++ ped: FAILED: new/mistakes/member_of_function_type.cpp:1:38: error: data member instantiated with function type 'int (int)' 1 error generated. 
+clang++ san: FAILED: new/mistakes/member_of_function_type.cpp:1:38: error: data member instantiated with function type 'int (int)' 1 error generated. 
+EDG: rejects: "/w/member_of_function_type.cpp", line 1: error: a function type is not allowed
+tidal-fe: result: 0 
+=== new/mistakes/missing_return_value_in_constexpr_branch.cpp
+g++: FAILED: new/mistakes/missing_return_value_in_constexpr_branch.cpp:2:23: error: non-constant condition for static assertion new/mistakes/missing_return_value_in_constexpr_branch.cpp:2:19: error: ‘constexpr’ call flows off the end of the function 
+g++ ped: FAILED: new/mistakes/missing_return_value_in_constexpr_branch.cpp:2:23: error: non-constant condition for static assertion new/mistakes/missing_return_value_in_constexpr_branch.cpp:2:19: error: ‘constexpr’ call flows off the end of the function 
+g++ san: FAILED: new/mistakes/missing_return_value_in_constexpr_branch.cpp:2:23: error: non-constant condition for static assertion new/mistakes/missing_return_value_in_constexpr_branch.cpp:2:19: error: ‘constexpr’ call flows off the end of the function 
+clang++: FAILED: new/mistakes/missing_return_value_in_constexpr_branch.cpp:2:15: error: static assertion expression is not an integral constant expression 1 warning and 1 error generated. 
+clang++ ped: FAILED: new/mistakes/missing_return_value_in_constexpr_branch.cpp:2:15: error: static assertion expression is not an integral constant expression 1 warning and 1 error generated. 
+clang++ san: FAILED: new/mistakes/missing_return_value_in_constexpr_branch.cpp:2:15: error: static assertion expression is not an integral constant expression 1 warning and 1 error generated. 
+EDG: rejects: "/w/missing_return_value_in_constexpr_branch.cpp", line 2: error: expression
+tidal-fe: rejected [FN-3] at line 2: static_assert condition is not a constant expression: control reaches the end of 'sign' without a return 
+=== new/mistakes/missing_template_keyword.cpp
+g++: FAILED: new/mistakes/missing_template_keyword.cpp:2:60: error: expected primary-expression before ‘)’ token [-Wtemplate-body] new/mistakes/missing_template_keyword.cpp:2:56: error: invalid operands of types ‘<unresolved overloaded function type>’ and ‘int’ to binary ‘operator<’ 
+g++ ped: FAILED: new/mistakes/missing_template_keyword.cpp:2:60: error: expected primary-expression before ‘)’ token [-Wtemplate-body] new/mistakes/missing_template_keyword.cpp:2:56: error: invalid operands of types ‘<unresolved overloaded function type>’ and ‘int’ to binary ‘operator<’ 
+g++ san: FAILED: new/mistakes/missing_template_keyword.cpp:2:60: error: expected primary-expression before ‘)’ token [-Wtemplate-body] new/mistakes/missing_template_keyword.cpp:2:56: error: invalid operands of types ‘<unresolved overloaded function type>’ and ‘int’ to binary ‘operator<’ 
+clang++: FAILED: new/mistakes/missing_template_keyword.cpp:2:53: error: missing 'template' keyword prior to dependent template name 'get' 1 error generated. 
+clang++ ped: FAILED: new/mistakes/missing_template_keyword.cpp:2:53: error: missing 'template' keyword prior to dependent template name 'get' 1 error generated. 
+clang++ san: FAILED: new/mistakes/missing_template_keyword.cpp:2:53: error: missing 'template' keyword prior to dependent template name 'get' 1 error generated. 
+EDG: rejects: "/w/missing_template_keyword.cpp", line 2: error: expected an expression
+tidal-fe: rejected [TR-12] at line 2: the grammar does not derive this: expected an expression, found ')' 
+=== new/mistakes/pack_not_expanded.cpp
+g++: FAILED: new/mistakes/pack_not_expanded.cpp:2:54: error: parameter packs not expanded with ‘...’: [-Wtemplate-body] 
+g++ ped: FAILED: new/mistakes/pack_not_expanded.cpp:2:54: error: parameter packs not expanded with ‘...’: [-Wtemplate-body] 
+g++ san: FAILED: new/mistakes/pack_not_expanded.cpp:2:54: error: parameter packs not expanded with ‘...’: [-Wtemplate-body] 
+clang++: FAILED: new/mistakes/pack_not_expanded.cpp:2:49: error: expression contains unexpanded parameter pack 'a' 1 error generated. 
+clang++ ped: FAILED: new/mistakes/pack_not_expanded.cpp:2:49: error: expression contains unexpanded parameter pack 'a' 1 error generated. 
+clang++ san: FAILED: new/mistakes/pack_not_expanded.cpp:2:49: error: expression contains unexpanded parameter pack 'a' 1 error generated. 
+EDG: rejects: "/w/pack_not_expanded.cpp", line 2: error: parameter pack "a" was referenced
+tidal-fe: rejected [PACK-8] at line 2: a pack is used outside the pattern of an expansion 
+=== new/mistakes/placement_new_in_constant.cpp
+g++: FAILED: new/mistakes/placement_new_in_constant.cpp:5:19: error: non-constant condition for static assertion new/mistakes/placement_new_in_constant.cpp:5:16: error: ‘constexpr int f()’ called in a constant expression 
+g++ ped: FAILED: new/mistakes/placement_new_in_constant.cpp:5:19: error: non-constant condition for static assertion new/mistakes/placement_new_in_constant.cpp:5:16: error: ‘constexpr int f()’ called in a constant expression 
+g++ san: FAILED: new/mistakes/placement_new_in_constant.cpp:5:19: error: non-constant condition for static assertion new/mistakes/placement_new_in_constant.cpp:5:16: error: ‘constexpr int f()’ called in a constant expression 
+clang++: FAILED: new/mistakes/placement_new_in_constant.cpp:5:15: error: static assertion expression is not an integral constant expression 1 error generated. 
+clang++ ped: FAILED: new/mistakes/placement_new_in_constant.cpp:5:15: error: static assertion expression is not an integral constant expression 1 error generated. 
+clang++ san: FAILED: new/mistakes/placement_new_in_constant.cpp:5:15: error: static assertion expression is not an integral constant expression 1 error generated. 
+EDG: rejects: "/w/placement_new_in_constant.cpp", line 5: error: expression must have a
+tidal-fe: rejected [NEW-37] at line 5: static_assert condition is not a constant expression: placement new expression outside std::construct_at 
+=== reductions/capture_pack_by_copy_fold.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: unsupported at line 0: object of unknown type 
+=== reductions/capture_pack_by_copy_generic.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: unsupported at line 7: call needing template deduction or unknown arguments 
+=== reductions/capture_pack_by_copy_fold_generic.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: rejected [PRIM-29] at line 3: the operand of a fold expression names no pack 

@@ -1,0 +1,15 @@
+{
+ "prelude": "// The library function that constant evaluation lets run a placement\n// new expression, declared as a program that includes no header declares\n// it (LSUP-10).\ninline constexpr void* operator new(decltype(sizeof 0), void* place) noexcept { return place; }\ninline void operator delete(void*, void*) noexcept {}\nnamespace std {\ntemplate <class T, class... Args>\nconstexpr T* construct_at(T* location, Args&&... args) {\n  return ::new (static_cast<void*>(location)) T(static_cast<Args&&>(args)...);\n}\n}\nnamespace std {\ntemplate <class T> struct allocator {\n  constexpr allocator() noexcept {}\n  constexpr T* allocate(decltype(sizeof 0) n) { return static_cast<T*>(::operator new(n * sizeof(T))); }\n  constexpr void deallocate(T* p, decltype(sizeof 0)) { ::operator delete(p); }\n};\n}\nstruct Pod { int v; };",
+ "template": "{prelude}\nconstexpr int probe() {{ {row} }}\n{col}\nint main() {{ return 0; }}",
+ "rows": {
+  "int: assign element 0 before construction, read it": "std::allocator<int> a; int* p = a.allocate(2); p[0] = 5; int v = p[0]; a.deallocate(p, 2); return v;",
+  "int: assign element 1 before construction, read it": "std::allocator<int> a; int* p = a.allocate(2); p[1] = 5; int v = p[1]; a.deallocate(p, 2); return v;",
+  "int: construct_at element 0, then read": "std::allocator<int> a; int* p = a.allocate(2); std::construct_at(p, 5); int v = p[0]; a.deallocate(p, 2); return v;",
+  "int: assign through *p before construction": "std::allocator<int> a; int* p = a.allocate(1); *p = 5; int v = *p; a.deallocate(p, 1); return v;",
+  "Pod: assign member of element 0 before construction": "std::allocator<Pod> a; Pod* p = a.allocate(1); p->v = 5; int v = p->v; a.deallocate(p, 1); return v;"
+ },
+ "cols": {
+  "static_assert(probe() == 5)": "static_assert(probe() == 5);"
+ },
+ "flags": []
+}

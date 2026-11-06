@@ -1,0 +1,21 @@
+{
+ "prelude": "template <class T, class U> constexpr bool same = false;\ntemplate <class T> constexpr bool same<T, T> = true;\nint global = 0;",
+ "template": "{prelude}\n{row}\nstatic_assert(same<decltype(f()), {col}>);\nint main() {{ return 0; }}",
+ "rows": {
+  "decltype(auto), return (x), x a local int": "decltype(auto) f() { int x = 0; return (x); }",
+  "decltype(auto), return (x), x a local volatile int": "decltype(auto) f() { volatile int x = 0; return (x); }",
+  "decltype(auto), return (r), r a local int&": "decltype(auto) f() { int& r = global; return (r); }",
+  "decltype(auto), return (r), r a local int&&": "decltype(auto) f() { int&& r = 0; return (r); }",
+  "decltype(auto), return x, x a local int": "decltype(auto) f() { int x = 0; return x; }",
+  "auto&&, return x, x a local int": "auto&& f() { int x = 0; return x; }",
+  "auto&&, return x, x a local volatile int": "auto&& f() { volatile int x = 0; return x; }"
+ },
+ "cols": {
+  "int": "int",
+  "int&": "int&",
+  "int&&": "int&&",
+  "volatile int&": "volatile int&",
+  "volatile int&&": "volatile int&&"
+ },
+ "flags": []
+}

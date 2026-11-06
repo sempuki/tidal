@@ -1,0 +1,15 @@
+{
+ "prelude": "",
+ "template": "{prelude}\n{row}\nint main() {{ return 0; }}",
+ "rows": {
+  "constexpr variable 1.0 / 0.0": "constexpr double x = 1.0 / 0.0;",
+  "static_assert on 1.0 / 0.0": "static_assert(1.0 / 0.0 > 0);",
+  "constexpr function divides by a zero parameter": "constexpr double div(double a, double b) { return a / b; }\nconstexpr double x = div(1.0, 0.0);",
+  "consteval function divides by zero": "consteval double div(double a, double b) { return a / b; }\ndouble x = div(1.0, 0.0);",
+  "constinit variable 1.0 / 0.0": "constinit double x = 1.0 / 0.0;",
+  "array bound from 1.0 / 0.0 > 0": "int a[(1.0 / 0.0 > 0) ? 1 : 2];",
+  "template argument 1.0 / 0.0": "template <double D> struct T {};\nT<1.0 / 0.0> t;"
+ },
+ "cols": {"result": ""},
+ "flags": []
+}

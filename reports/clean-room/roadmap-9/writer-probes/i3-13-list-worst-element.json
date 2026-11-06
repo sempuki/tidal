@@ -1,0 +1,21 @@
+{
+ "prelude": "namespace std {\ntemplate <class E> class initializer_list {\n  const E* first_;\n  decltype(sizeof 0) size_;\n  constexpr initializer_list(const E* f, decltype(sizeof 0) n) : first_(f), size_(n) {}\npublic:\n  constexpr initializer_list() : first_(nullptr), size_(0) {}\n};\n}\nstruct P { constexpr operator int() const { return 1; } };\nstruct Q { constexpr operator long() const { return 2; } };\nconstexpr int fa(const int (&)[2]) { return 1; }\nconstexpr int fa(const long (&)[2]) { return 2; }\nconstexpr int fl(std::initializer_list<int>) { return 1; }\nconstexpr int fl(std::initializer_list<long>) { return 2; }",
+ "template": "{prelude}\nstatic_assert({row} == {col});\nint main() {{ return 0; }}",
+ "rows": {
+  "array: {P, P}": "fa({P{}, P{}})",
+  "array: {Q, Q}": "fa({Q{}, Q{}})",
+  "array: {P, Q}": "fa({P{}, Q{}})",
+  "array: {Q, P}": "fa({Q{}, P{}})",
+  "array: {P, 0}": "fa({P{}, 0})",
+  "array: {P, 0L}": "fa({P{}, 0L})",
+  "initializer_list: {P, P}": "fl({P{}, P{}})",
+  "initializer_list: {Q, Q}": "fl({Q{}, Q{}})",
+  "initializer_list: {P, Q}": "fl({P{}, Q{}})",
+  "initializer_list: {Q, P}": "fl({Q{}, P{}})"
+ },
+ "cols": {
+  "selects the int form": "1",
+  "selects the long form": "2"
+ },
+ "flags": []
+}

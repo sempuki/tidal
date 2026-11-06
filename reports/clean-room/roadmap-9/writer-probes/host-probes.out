@@ -1,0 +1,22 @@
+g++ : before=0 id=1 after=12
+g++ -DUSE_MEMBER: before=0 id=2 after=12
+two-mains-b.cpp:(.text+0x0): multiple definition of `main'; /tmp/cczAZyZx.o:two-mains-a.cpp:(.text+0x0): first defined here
+collect2: error: ld returned 1 exit status
+g++ two mains exit 1
+clang++ : before=0 id=1 after=12
+clang++ -DUSE_MEMBER: before=0 id=2 after=12
+two-mains-b.cpp:(.text+0x0): multiple definition of `main'; /tmp/two-mains-a-cffec8.o:two-mains-a.cpp:(.text+0x0): first defined here
+clang++: error: linker command failed with exit code 1 (use -v to see invocation)
+clang++ two mains exit 1
+direct=1 lvalue=1 prvalue=2
+g++ i3-5-qualification-direct-binding exit 0
+g++ i3-1-pointer-then-qualification exit 2
+direct=1 lvalue=1 prvalue=2
+clang++ i3-5-qualification-direct-binding exit 0
+clang++ i3-1-pointer-then-qualification exit 2
+x23-6-underaligned-implicit-object.cpp:11:8: runtime error: member access within misaligned address 0x00001db40050 for type 'struct Line', which requires 64 byte alignment
+0x00001db40050: note: pointer points here
+g++ exit 0
+x23-6-underaligned-implicit-object.cpp:11:6: runtime error: member access within misaligned address 0x00001fa793d0 for type 'Line', which requires 64 byte alignment
+0x00001fa793d0: note: pointer points here
+clang++ exit 0

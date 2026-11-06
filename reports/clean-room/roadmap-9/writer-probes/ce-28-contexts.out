@@ -1,0 +1,51 @@
+| | result |
+|---|---|
+| constexpr variable 1.0 / 0.0 | accept: edg-7.0-ilp32, edg-7.0; reject: gcc-host, gcc-16, gcc-14, clang-host, clang-18, clang-22 |
+| static_assert on 1.0 / 0.0 | accept: edg-7.0, edg-7.0-ilp32; reject: gcc-host, gcc-16, gcc-14, clang-host, clang-18, clang-22 |
+| constexpr function divides by a zero parameter | accept: edg-7.0, edg-7.0-ilp32; reject: gcc-host, gcc-16, gcc-14, clang-host, clang-18, clang-22 |
+| consteval function divides by zero | accept: edg-7.0-ilp32, edg-7.0; reject: gcc-host, gcc-14, gcc-16, clang-host, clang-18, clang-22 |
+| constinit variable 1.0 / 0.0 | accept: edg-7.0, edg-7.0-ilp32; reject: gcc-host, gcc-16, gcc-14, clang-host, clang-18, clang-22 |
+| array bound from 1.0 / 0.0 > 0 | accept: edg-7.0, edg-7.0-ilp32; reject: gcc-host, gcc-14, gcc-16, clang-host, clang-18, clang-22 |
+| template argument 1.0 / 0.0 | accept: edg-7.0-ilp32, edg-7.0; reject: gcc-14, gcc-host, gcc-16, clang-host, clang-18, clang-22 |
+constexpr variable 1.0 / 0.0 / result / clang-18: /tidal/build/probes/ce-28-contexts/0000-constexpr-variable-1-0-0-0--result.cpp:2:18: error: constexpr variable 'x' must be initialized by a constant expression
+constexpr variable 1.0 / 0.0 / result / clang-22: /tidal/build/probes/ce-28-contexts/0000-constexpr-variable-1-0-0-0--result.cpp:2:18: error: constexpr variable 'x' must be initialized by a constant expression
+constexpr variable 1.0 / 0.0 / result / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/ce-28-contexts/0000-constexpr-variable-1-0-0-0--result.cpp:2:18: error: constexpr variable 'x' must be initialized by a constant expression
+constexpr variable 1.0 / 0.0 / result / gcc-14: /tidal/build/probes/ce-28-contexts/0000-constexpr-variable-1-0-0-0--result.cpp:2:26: error: '(1.0e+0 / 0.0)' is not a constant expression
+constexpr variable 1.0 / 0.0 / result / gcc-16: /tidal/build/probes/ce-28-contexts/0000-constexpr-variable-1-0-0-0--result.cpp:2:26: error: '(1.0e+0 / 0.0)' is not a constant expression
+constexpr variable 1.0 / 0.0 / result / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/ce-28-contexts/0000-constexpr-variable-1-0-0-0--result.cpp:2:26: error: ‘(1.0e+0 / 0.0)’ is not a constant expression
+static_assert on 1.0 / 0.0 / result / clang-18: /tidal/build/probes/ce-28-contexts/0001-static-assert-on-1-0-0-0--result.cpp:2:15: error: static assertion expression is not an integral constant expression
+static_assert on 1.0 / 0.0 / result / clang-22: /tidal/build/probes/ce-28-contexts/0001-static-assert-on-1-0-0-0--result.cpp:2:15: error: static assertion expression is not an integral constant expression
+static_assert on 1.0 / 0.0 / result / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/ce-28-contexts/0001-static-assert-on-1-0-0-0--result.cpp:2:15: error: static assertion expression is not an integral constant expression
+static_assert on 1.0 / 0.0 / result / gcc-14: /tidal/build/probes/ce-28-contexts/0001-static-assert-on-1-0-0-0--result.cpp:2:25: error: non-constant condition for static assertion
+static_assert on 1.0 / 0.0 / result / gcc-16: /tidal/build/probes/ce-28-contexts/0001-static-assert-on-1-0-0-0--result.cpp:2:25: error: non-constant condition for static assertion
+static_assert on 1.0 / 0.0 / result / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/ce-28-contexts/0001-static-assert-on-1-0-0-0--result.cpp:2:25: error: non-constant condition for static assertion
+constexpr function divides by a zero parameter / result / clang-18: /tidal/build/probes/ce-28-contexts/0002-constexpr-function-divides-by-a-zero-parameter--result.cpp:3:18: error: constexpr variable 'x' must be initialized by a constant expression
+constexpr function divides by a zero parameter / result / clang-22: /tidal/build/probes/ce-28-contexts/0002-constexpr-function-divides-by-a-zero-parameter--result.cpp:3:18: error: constexpr variable 'x' must be initialized by a constant expression
+constexpr function divides by a zero parameter / result / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/ce-28-contexts/0002-constexpr-function-divides-by-a-zero-parameter--result.cpp:3:18: error: constexpr variable 'x' must be initialized by a constant expression
+constexpr function divides by a zero parameter / result / gcc-14: /tidal/build/probes/ce-28-contexts/0002-constexpr-function-divides-by-a-zero-parameter--result.cpp:2:53: error: '(1.0e+0 / 0.0)' is not a constant expression
+constexpr function divides by a zero parameter / result / gcc-16: /tidal/build/probes/ce-28-contexts/0002-constexpr-function-divides-by-a-zero-parameter--result.cpp:2:53: error: '(1.0e+0 / 0.0)' is not a constant expression
+constexpr function divides by a zero parameter / result / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/ce-28-contexts/0002-constexpr-function-divides-by-a-zero-parameter--result.cpp:2:53: error: ‘(1.0e+0 / 0.0)’ is not a constant expression
+consteval function divides by zero / result / clang-18: /tidal/build/probes/ce-28-contexts/0003-consteval-function-divides-by-zero--result.cpp:3:12: error: call to consteval function 'div' is not a constant expression
+consteval function divides by zero / result / clang-22: /tidal/build/probes/ce-28-contexts/0003-consteval-function-divides-by-zero--result.cpp:3:12: error: call to consteval function 'div' is not a constant expression
+consteval function divides by zero / result / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/ce-28-contexts/0003-consteval-function-divides-by-zero--result.cpp:3:12: error: call to consteval function 'div' is not a constant expression
+consteval function divides by zero / result / gcc-14: /tidal/build/probes/ce-28-contexts/0003-consteval-function-divides-by-zero--result.cpp:3:15: error: call to consteval function 'div(1.0e+0, 0.0)' is not a constant expression
+consteval function divides by zero / result / gcc-16: /tidal/build/probes/ce-28-contexts/0003-consteval-function-divides-by-zero--result.cpp:3:15: error: call to consteval function 'div(1.0e+0, 0.0)' is not a constant expression
+consteval function divides by zero / result / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/ce-28-contexts/0003-consteval-function-divides-by-zero--result.cpp:3:15: error: call to consteval function ‘div(1.0e+0, 0.0)’ is not a constant expression
+constinit variable 1.0 / 0.0 / result / clang-18: /tidal/build/probes/ce-28-contexts/0004-constinit-variable-1-0-0-0--result.cpp:2:18: error: variable does not have a constant initializer
+constinit variable 1.0 / 0.0 / result / clang-22: /tidal/build/probes/ce-28-contexts/0004-constinit-variable-1-0-0-0--result.cpp:2:18: error: variable does not have a constant initializer
+constinit variable 1.0 / 0.0 / result / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/ce-28-contexts/0004-constinit-variable-1-0-0-0--result.cpp:2:18: error: variable does not have a constant initializer
+constinit variable 1.0 / 0.0 / result / gcc-14: /tidal/build/probes/ce-28-contexts/0004-constinit-variable-1-0-0-0--result.cpp:2:18: error: 'constinit' variable 'x' does not have a constant initializer
+constinit variable 1.0 / 0.0 / result / gcc-16: /tidal/build/probes/ce-28-contexts/0004-constinit-variable-1-0-0-0--result.cpp:2:18: error: 'constinit' variable 'x' does not have a constant initializer
+constinit variable 1.0 / 0.0 / result / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/ce-28-contexts/0004-constinit-variable-1-0-0-0--result.cpp:2:18: error: ‘constinit’ variable ‘x’ does not have a constant initializer
+array bound from 1.0 / 0.0 > 0 / result / clang-18: /tidal/build/probes/ce-28-contexts/0005-array-bound-from-1-0-0-0-0--result.cpp:2:7: error: variable length arrays in C++ are a Clang extension [-Werror,-Wvla-cxx-extension]
+array bound from 1.0 / 0.0 > 0 / result / clang-22: /tidal/build/probes/ce-28-contexts/0005-array-bound-from-1-0-0-0-0--result.cpp:2:7: error: variable length arrays in C++ are a Clang extension [-Werror,-Wvla-cxx-extension]
+array bound from 1.0 / 0.0 > 0 / result / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/ce-28-contexts/0005-array-bound-from-1-0-0-0-0--result.cpp:2:7: error: variable length arrays in C++ are a Clang extension [-Werror,-Wvla-cxx-extension]
+array bound from 1.0 / 0.0 > 0 / result / gcc-14: /tidal/build/probes/ce-28-contexts/0005-array-bound-from-1-0-0-0-0--result.cpp:2:23: error: size of array 'a' is not an integral constant-expression
+array bound from 1.0 / 0.0 > 0 / result / gcc-16: /tidal/build/probes/ce-28-contexts/0005-array-bound-from-1-0-0-0-0--result.cpp:2:23: error: size of array 'a' is not an integral constant-expression
+array bound from 1.0 / 0.0 > 0 / result / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/ce-28-contexts/0005-array-bound-from-1-0-0-0-0--result.cpp:2:23: error: size of array ‘a’ is not an integral constant-expression
+template argument 1.0 / 0.0 / result / clang-18: /tidal/build/probes/ce-28-contexts/0006-template-argument-1-0-0-0--result.cpp:3:3: error: non-type template argument is not a constant expression
+template argument 1.0 / 0.0 / result / clang-22: /tidal/build/probes/ce-28-contexts/0006-template-argument-1-0-0-0--result.cpp:3:3: error: non-type template argument is not a constant expression
+template argument 1.0 / 0.0 / result / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/ce-28-contexts/0006-template-argument-1-0-0-0--result.cpp:3:3: error: non-type template argument is not a constant expression
+template argument 1.0 / 0.0 / result / gcc-14: /tidal/build/probes/ce-28-contexts/0006-template-argument-1-0-0-0--result.cpp:3:7: error: '(1.0e+0 / 0.0)' is not a constant expression
+template argument 1.0 / 0.0 / result / gcc-16: /tidal/build/probes/ce-28-contexts/0006-template-argument-1-0-0-0--result.cpp:3:7: error: '(1.0e+0 / 0.0)' is not a constant expression
+template argument 1.0 / 0.0 / result / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/ce-28-contexts/0006-template-argument-1-0-0-0--result.cpp:3:7: error: ‘(1.0e+0 / 0.0)’ is not a constant expression

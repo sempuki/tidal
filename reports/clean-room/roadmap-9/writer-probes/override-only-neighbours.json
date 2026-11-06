@@ -1,0 +1,15 @@
+{
+ "prelude": "struct S { void f(); static int n; struct In; };\nS s;",
+ "template": "{prelude}\n{row}\nint main() {{ return 0; }}",
+ "rows": {
+  "ALN-7: alignas on an opaque scoped enumeration declaration": "enum class alignas(8) E : int;",
+  "ALN-7: alignas after the enumeration name": "enum E alignas(8) { a };",
+  "ALN-7: alignas on an enumerator": "enum E { a alignas(8) };",
+  "DTY-5: decltype in the nested name of a nested class definition": "struct decltype(s)::In {};",
+  "DTY-5: decltype in a using-declaration's nested name (control, valid)": "struct D : S { using decltype(s)::f; };",
+  "DEP-34: keyword template before a destructor name with ::": "struct Item {}; template <class T> void end(T* p) { p->T::template ~T(); } void use(Item* i) { end(i); }",
+  "CE-28 neighbour: integer division by zero in a constant": "constexpr int x = 1 / 0;"
+ },
+ "cols": {"result": ""},
+ "flags": []
+}

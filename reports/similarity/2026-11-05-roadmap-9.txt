@@ -1,0 +1,112 @@
+Similarity report: run threshold 8 words, overlap threshold 0.25
+
+ok   roadmap-9/designer.md:Roadmap, round 9: what to do after phase longest=0   overlap=0.00
+ok   roadmap-9/designer.md:1.1 Counts at a15a877d longest=0   overlap=0.00
+ok   roadmap-9/designer.md:1.2 What phase 11 did for the designer longest=0   overlap=0.00
+ok   roadmap-9/designer.md:1.3 What X22 and X23 found, and what the longest=0   overlap=0.00
+ok   roadmap-9/designer.md:1.4 Pages the Propose exercises have rea longest=0   overlap=0.00
+ok   roadmap-9/designer.md:1.5 The refresh check at a15a877d longest=0   overlap=0.00
+ok   roadmap-9/designer.md:1.6 What a designer still cannot state longest=0   overlap=0.00
+ok   roadmap-9/designer.md:1.7 The portfolio longest=0   overlap=0.00
+ok   roadmap-9/designer.md:1.8 Questions and principles longest=0   overlap=0.00
+ok   roadmap-9/designer.md:2. Ranked items longest=0   overlap=0.00
+ok   roadmap-9/designer.md:Item 1. Answer X23's planned rows, and t longest=0   overlap=0.00
+ok   roadmap-9/designer.md:Item 2. A Propose prompt, then X24 on P2 longest=0   overlap=0.00
+ok   roadmap-9/designer.md:Item 3. Refresh notes where phase 11 tex longest=0   overlap=0.00
+ok   roadmap-9/designer.md:Item 4. A front-end prototype of P25, in longest=0   overlap=0.00
+ok   roadmap-9/designer.md:Item 5. A shared impact scanner longest=0   overlap=0.00
+ok   roadmap-9/designer.md:Item 6. The later-version probe longest=0   overlap=0.00
+ok   roadmap-9/designer.md:Item 7. Pair exercises, starting with X1 longest=0   overlap=0.00
+ok   roadmap-9/designer.md:Item 8. An index of what a test of valid longest=0   overlap=0.00
+ok   roadmap-9/designer.md:Item 9. ILP32 runs for the alignment and longest=0   overlap=0.00
+ok   roadmap-9/designer.md:3. Keep out of scope longest=0   overlap=0.00
+ok   roadmap-9/designer.md:4. Process changes longest=0   overlap=0.00
+ok   roadmap-9/designer.md:5. The decision packet from a designer's longest=0   overlap=0.00
+ok   roadmap-9/editor.md:Roadmap, round 9: what to do after phase longest=0   overlap=0.00
+ok   roadmap-9/editor.md:Repo-wide counts longest=0   overlap=0.00
+ok   roadmap-9/editor.md:The read-only checks longest=0   overlap=0.00
+ok   roadmap-9/editor.md:What phase 11 did to the questions longest=0   overlap=0.00
+ok   roadmap-9/editor.md:Text phase 11 wrote that no review has r longest=0   overlap=0.00
+ok   roadmap-9/editor.md:What phase 11 took from round 8 longest=0   overlap=0.00
+ok   roadmap-9/editor.md:Decision 0058's standing choices in phas longest=0   overlap=0.00
+ok   roadmap-9/editor.md:Phase 11 commit messages against their d longest=0   overlap=0.00
+ok   roadmap-9/editor.md:Records that drift longest=0   overlap=0.00
+ok   roadmap-9/editor.md:The ten weakest pages longest=0   overlap=0.00
+ok   roadmap-9/editor.md:2. Ranked work items longest=0   overlap=0.00
+ok   roadmap-9/editor.md:2.1 Review the text phase 11 wrote after longest=0   overlap=0.01
+ok   roadmap-9/editor.md:2.2 Answer the 20 planned rows of ended  longest=0   overlap=0.00
+ok   roadmap-9/editor.md:2.3 Put the packet to the maintainer, wi longest=0   overlap=0.00
+ok   roadmap-9/editor.md:2.4 Read the open ledger rows, and tight longest=0   overlap=0.00
+ok   roadmap-9/editor.md:2.5 Repair the records that drift longest=0   overlap=0.00
+ok   roadmap-9/editor.md:2.6 A narrow second review of the doubt- longest=0   overlap=0.00
+ok   roadmap-9/editor.md:3. What to keep out of scope longest=0   overlap=0.00
+ok   roadmap-9/editor.md:4. Process changes longest=0   overlap=0.00
+ok   roadmap-9/editor.md:5. Files     longest=0   overlap=0.00
+ok   roadmap-9/implementer.md:Roadmap, round 9: what to do after phase longest=0   overlap=0.00
+ok   roadmap-9/implementer.md:1. Where the specification and the front longest=0   overlap=0.00
+ok   roadmap-9/implementer.md:What phase 11 took from round 8 longest=0   overlap=0.00
+ok   roadmap-9/implementer.md:The `planned` rows whose item ended longest=0   overlap=0.00
+ok   roadmap-9/implementer.md:The failures that front-end round 23 tak longest=0   overlap=0.00
+ok   roadmap-9/implementer.md:Failures by page longest=0   overlap=0.00
+ok   roadmap-9/implementer.md:G152 has an answer, and the front end st longest=0   overlap=0.02
+ok   roadmap-9/implementer.md:The steps of the conditional operator th longest=0   overlap=0.00
+ok   roadmap-9/implementer.md:The rules the interpreter still cannot r longest=0   overlap=0.00
+ok   roadmap-9/implementer.md:2. Ranked items longest=0   overlap=0.00
+ok   roadmap-9/implementer.md:1. Front-end round 23 (item FE), in four longest=0   overlap=0.00
+ok   roadmap-9/implementer.md:2. Tests for the six front-end reduction longest=0   overlap=0.00
+ok   roadmap-9/implementer.md:3. Answers for I4-8 to I4-14 and the oth longest=0   overlap=0.00
+ok   roadmap-9/implementer.md:4. Implement I5: deduction from a call a longest=0   overlap=0.00
+ok   roadmap-9/implementer.md:5. Take or drop the three items deferred longest=0   overlap=0.00
+ok   roadmap-9/implementer.md:6. The rules the interpreter cannot run longest=0   overlap=0.00
+ok   roadmap-9/implementer.md:7. A front-end prototype of P23 longest=0   overlap=0.00
+ok   roadmap-9/implementer.md:Dependency sketch longest=0   overlap=0.01
+ok   roadmap-9/implementer.md:3. Scope longest=0   overlap=0.00
+ok   roadmap-9/implementer.md:4. Process changes longest=0   overlap=0.00
+ok   roadmap-9/programmer.md:Roadmap, round 9: what to do after phase longest=0   overlap=0.00
+ok   roadmap-9/programmer.md:1. The state from a programmer's view longest=0   overlap=0.00
+ok   roadmap-9/programmer.md:1.1 Counts longest=0   overlap=0.00
+ok   roadmap-9/programmer.md:1.2 Round 8 items that phase 11 took and longest=0   overlap=0.00
+ok   roadmap-9/programmer.md:1.3 The round 8 sketches, rerun longest=0   overlap=0.00
+ok   roadmap-9/programmer.md:1.4 New programs longest=0   overlap=0.00
+ok   roadmap-9/programmer.md:1.5 Reductions longest=0   overlap=0.00
+ok   roadmap-9/programmer.md:1.6 Short programs, planted bugs, and pl longest=0   overlap=0.00
+ok   roadmap-9/programmer.md:1.7 The P1 and I4 reports, from a progra longest=0   overlap=0.00
+ok   roadmap-9/programmer.md:1.8 Ledger rows longest=0   overlap=0.00
+ok   roadmap-9/programmer.md:2. Ranked work items longest=0   overlap=0.00
+ok   roadmap-9/programmer.md:Item 1. Front-end round 23, with library longest=0   overlap=0.00
+ok   roadmap-9/programmer.md:Item 2. Tests for every front-end target longest=0   overlap=0.00
+ok   roadmap-9/programmer.md:Item 3. Answer the 21 planned rows whose longest=0   overlap=0.00
+ok   roadmap-9/programmer.md:Item 4. Repair the ledger, and check pla longest=0   overlap=0.00
+ok   roadmap-9/programmer.md:Item 5. Write suite W20 on library-shape longest=0   overlap=0.00
+ok   roadmap-9/programmer.md:Item 6. Interpreter output when every or longest=0   overlap=0.00
+ok   roadmap-9/programmer.md:Item 7. Diagnose batches with the front  longest=0   overlap=0.00
+ok   roadmap-9/programmer.md:Item 8. A count of grammar forms by test longest=0   overlap=0.00
+ok   roadmap-9/programmer.md:Item 9. Guides on owners, containers, an longest=0   overlap=0.00
+ok   roadmap-9/programmer.md:3. Out of scope longest=0   overlap=0.00
+ok   roadmap-9/programmer.md:4. Process changes longest=0   overlap=0.00
+ok   roadmap-9/programmer.md:5. Suggested order longest=0   overlap=0.00
+ok   roadmap-9/programmer.md:6. Doubts for the clean-room writers longest=0   overlap=0.01
+ok   roadmap-9/writer-probes/README.md:Writer probes, roadmap round 9 longest=0   overlap=0.00
+ok   roadmap-9/writer.md:Roadmap, round 9: what to do after phase longest=0   overlap=0.00
+ok   roadmap-9/writer.md:1.1 Counts   longest=0   overlap=0.00
+ok   roadmap-9/writer.md:1.2 What phase 11 took from round 8 longest=0   overlap=0.00
+ok   roadmap-9/writer.md:1.3 Where the writer's time went longest=0   overlap=0.00
+ok   roadmap-9/writer.md:1.4 Questions longest=0   overlap=0.00
+ok   roadmap-9/writer.md:1.5 Findings with no answer, and the wri longest=0   overlap=0.00
+ok   roadmap-9/writer.md:1.6 Rules that rest on tests with an ove longest=0   overlap=0.00
+ok   roadmap-9/writer.md:1.7 Coverage by readers and reviewers longest=0   overlap=0.00
+ok   roadmap-9/writer.md:1.8 Front end and the writer longest=0   overlap=0.00
+ok   roadmap-9/writer.md:1.9 Similarity longest=0   overlap=0.00
+ok   roadmap-9/writer.md:2. Proposed items, ranked longest=0   overlap=0.00
+ok   roadmap-9/writer.md:Item 1. FE23. Front-end round 23 longest=0   overlap=0.00
+ok   roadmap-9/writer.md:Item 2. F2. Answer the planned rows whos longest=0   overlap=0.00
+ok   roadmap-9/writer.md:Item 3. RD. The RV4 points that a probe  longest=0   overlap=0.00
+ok   roadmap-9/writer.md:Item 4. QR. Question records the writer  longest=0   overlap=0.00
+ok   roadmap-9/writer.md:Item 5. RV5. A gap review of the text ph longest=0   overlap=0.00
+ok   roadmap-9/writer.md:Item 6. OV. A recorded reason for each r longest=0   overlap=0.00
+ok   roadmap-9/writer.md:Item 7. LO. Triage of the 68 open ledger longest=0   overlap=0.00
+ok   roadmap-9/writer.md:What the rules need before the next exer longest=0   overlap=0.00
+ok   roadmap-9/writer.md:3. Out of scope longest=0   overlap=0.01
+ok   roadmap-9/writer.md:4. Process changes longest=0   overlap=0.00
+
+0 flagged

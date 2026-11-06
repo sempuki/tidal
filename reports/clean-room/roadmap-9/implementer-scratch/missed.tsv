@@ -1,0 +1,118 @@
+classes/access	ACC-15	classes/access/friend-private-member-of-other.cpp
+classes/access	ACC-15	classes/access/friend-protected-member-of-other.cpp
+classes/access	ACC-18	classes/access/private-base-function-in-derived.cpp
+classes/access	ACC-19	classes/access/enclosing-not-access-nested-function.cpp
+classes/access	ACC-3	classes/access/target-selects-private.cpp
+classes/access	ACC-3	classes/access/template-call-selects-private.cpp
+classes/comparisons	DCMP-11	classes/comparisons/spaceship-member-returns-non-category.cpp
+classes/comparisons	DCMP-13 DCMP-12	classes/comparisons/ne-matching-other-result.cpp
+classes/comparisons	DCMP-13 DCMP-12	classes/comparisons/ne-matching-ref-qualifier.cpp
+classes/comparisons	DCMP-13 DCMP-12	classes/comparisons/ne-matching-using-declaration.cpp
+classes/comparisons	DCMP-3	classes/comparisons/template-defaulted.cpp
+classes/constructors	CTOR-12	classes/constructors/base-init-dynamic-cast-early-constant.cpp
+classes/constructors	CTOR-21	classes/constructors/mem-init-braces-narrowing-array.cpp
+classes/constructors	CTOR-22	classes/constructors/one-user-conversion-copy-init.cpp
+classes/conversion-functions	CVF-8	classes/conversion-functions/new-size-two-integral-conversions.cpp
+classes/conversion-functions	CVF-9	classes/conversion-functions/const-object-explicit-cast.cpp
+classes/copy-move	CPY-15	classes/copy-move/class-template-ctor-by-value.cpp
+classes/virtual	VIRT-13	classes/virtual/hidden-virtual-warns.cpp
+classes/virtual	VIRT-5	classes/virtual/no-unique-final-overrider.cpp
+declarations/alignment	ALN-2	declarations/alignment/on-handler-variable.cpp
+declarations/auto	AUTO-8 OVL-20	declarations/auto/overload-set-template.cpp
+declarations/constexpr	CEV-1	declarations/constexpr/lambda-escalates-runtime.cpp
+declarations/constexpr	CEV-2	declarations/constexpr/consteval-address-taken.cpp
+declarations/constexpr	CEV-2	declarations/constexpr/consteval-selected-by-target.cpp
+declarations/declarators	DCL-19	declarations/declarators/array-4gib-ilp32.cpp
+declarations/functions	DEFARG-13	declarations/functions/default-arguments/class-template-member-outside-adds.cpp
+declarations/functions	DEFARG-13	declarations/functions/default-arguments/function-template-added-later.cpp
+declarations/functions	DEFARG-13	declarations/functions/default-arguments/member-template-outside-adds.cpp
+declarations/functions	DEFARG-13	declarations/functions/default-arguments/nested-class-of-template-outside-adds.cpp
+declarations/functions	DEFARG-4	declarations/functions/default-arguments/this-in-sizeof-default.cpp
+declarations/initialization	LIST-13	declarations/initialization/list/empty-base-no-elision.cpp
+declarations/initialization	LIST-13	declarations/initialization/list/empty-member-no-elision.cpp
+declarations/initialization	LIST-16	declarations/initialization/list/omitted-member-explicit-default.cpp
+declarations/initialization	LIST-16	declarations/initialization/list/omitted-member-explicit-default-designated.cpp
+declarations/initialization	REF-15	declarations/initialization/references/dangling-new-member-warns.cpp
+declarations/initialization	REF-15	declarations/initialization/references/dangling-new-member-warns-default.cpp
+declarations/inline	INL-6	declarations/inline/inline-variable-undefined-used.cpp
+declarations/linkage-specifications	LSP-7	declarations/linkage-specifications/c-function-conflicts-global-variable.cpp
+declarations/linkage-specifications	LSP-7	declarations/linkage-specifications/c-name-before-global.cpp
+exceptions/handlers	TRY-13	exceptions/handlers/dtor-try-block-member-use-warns.cpp
+exceptions/unwinding	UNW-11	exceptions/unwinding/placement-new-global-usual-delete-rejected.cpp
+expressions/conditional	COND-11 COND-5	expressions/conditional/two-classes-several-conversions.cpp
+expressions/conditional	COND-16 COND-5	expressions/conditional/nonclass-and-class-both-ways.cpp
+expressions/conditional	COND-8	expressions/conditional/class-prvalue-lvalue-private-copy.cpp
+expressions/decltype	UNEV-1 PRIM-25	expressions/decltype/nested-class-member-evaluated.cpp
+expressions/decltype	UNEV-4	expressions/decltype/side-effect-decltype-warns.cpp
+expressions/decltype	UNEV-4	expressions/decltype/side-effect-unevaluated-warns.cpp
+expressions/logical	LOG-3	expressions/logical/operand-ambiguous-conversion.cpp
+expressions/member-pointers	MPTR-10	expressions/member-pointers/call-result-only.cpp
+expressions/member-pointers	MPTR-11	expressions/member-pointers/private-base-static-cast.cpp
+expressions/member-pointers	MPTR-11	expressions/member-pointers/qualification-conversion-unsafe.cpp
+expressions/member-pointers	MPTR-11	expressions/member-pointers/reinterpret-data-to-function.cpp
+expressions/new-delete	NEW-29 NEW-25	expressions/new-delete/aligned-deleted-form-beside-unaligned.cpp
+expressions/new-delete	NEW-29 NEW-25	expressions/new-delete/aligned-private-form-beside-unaligned.cpp
+expressions/new-delete	NEW-30	expressions/new-delete/aligned-form-only-for-ordinary-type.cpp
+expressions/new-delete	NEW-30	expressions/new-delete/aligned-form-only-placement.cpp
+expressions/postfix	PFX-11 CLS-2	expressions/postfix/default-template-argument-incomplete-class.cpp
+expressions/primary	PRIM-26	expressions/primary/number-runs-over-dots.cpp
+expressions/unary	UN-19	expressions/unary/sizeof-array-parameter-warns.cpp
+foundations/constant-evaluation	CE-3	foundations/constant-evaluation/read-extended-temporary-not-const.cpp
+foundations/language-support	LSUP-1	foundations/language-support/initializer-list-no-members.cpp
+foundations/language-support	LSUP-5	foundations/language-support/alignment-enumeration-class.cpp
+foundations/names	NAM-42	foundations/names/shared-name-class-template-function.cpp
+foundations/names	NAM-42	foundations/names/shared-name-variable-class-template.cpp
+foundations/names	NAM-8 NAM-27	foundations/names/adl-function-template-parameter-adds-nothing.cpp
+foundations/storage	STG-1 DCL-19	foundations/storage/array-size-exceeds-size-type.cpp
+overloading/conversion-sequences	ICS-10 OVL-35	overloading/conversion-sequences/assignment-left-no-builtin.cpp
+overloading/conversion-sequences	ICS-6 ICS-47 OVL-36	overloading/conversion-sequences/overload-set-to-ellipsis.cpp
+overloading/overload-resolution	OVL-20	overloading/overload-resolution/address-no-target-auto-template-parameter.cpp
+overloading/overload-resolution	OVL-20	overloading/overload-resolution/address-no-target-init-capture.cpp
+overloading/overload-resolution	OVL-9 OVL-36	overloading/overload-resolution/builtin-logical-explicit-competes-and.cpp
+overloading/overload-resolution	OVL-9 OVL-36	overloading/overload-resolution/builtin-logical-explicit-competes.cpp
+statements/if	IF-22	statements/if/constexpr-template-nondependent-call-checked.cpp
+statements/range-for	AUTO-21 RFOR-1	statements/range-for/braced-list-mixed-types.cpp
+statements/range-for	RFOR-7	statements/range-for/postfix-only-iterator.cpp
+templates/arguments	TARG-15	templates/arguments/class-argument-reference-temporary.cpp
+templates/arguments	TARG-24	templates/arguments/argument-makes-parameter-invalid.cpp
+templates/arguments	TARG-24	templates/arguments/argument-makes-parameter-invalid-pointer.cpp
+templates/arguments	TARG-7	templates/arguments/concept-for-template.cpp
+templates/class-template-deduction	CTAD-12	templates/class-template-deduction/guide-result-other-template.cpp
+templates/class-template-deduction	CTAD-19 CTAD-23	templates/class-template-deduction/tie-own-constructor-template.cpp
+templates/class-template-deduction	CTAD-2	templates/class-template-deduction/site-member.cpp
+templates/class-template-deduction	CTAD-2	templates/class-template-deduction/site-return-type.cpp
+templates/concepts	CPT-15	templates/concepts/virtual-override.cpp
+templates/concepts	CPT-37	templates/concepts/placeholder-parameter-decltype-auto.cpp
+templates/constraints	CNS-13	templates/constraints/explicit-instantiation-member-not-satisfied.cpp
+templates/constraints	CNS-24 CNS-27	templates/constraints/lambda-overload.cpp
+templates/constraints	CNS-26 CNS-27	templates/constraints/lambda-redeclaration.cpp
+templates/constraints	CNS-29	templates/constraints/out-of-class-other-clause.cpp
+templates/constraints	CNS-29	templates/constraints/out-of-class-without-clause.cpp
+templates/declarations	TPL-16	templates/declarations/default-repeated-function.cpp
+templates/declarations	TPL-31	templates/declarations/alias-template-self-through-class.cpp
+templates/declarations	TPL-7	templates/declarations/constant-parameter-no-constexpr-constructor.cpp
+templates/deduction	DED-29	templates/deduction/substitution-lambda-body.cpp
+templates/deduction	DED-29	templates/deduction/substitution-lambda-default.cpp
+templates/dependent-names	DEP-30	templates/dependent-names/independent-error-unused-call.cpp
+templates/dependent-names	DEP-31	templates/dependent-names/incomplete-then-complete.cpp
+templates/dependent-names	DEP-33	templates/dependent-names/base-pack-expanded-twice.cpp
+templates/dependent-names	DEP-37	templates/dependent-names/binary-operator-pack-never-fits.cpp
+templates/dependent-names	DEP-37	templates/dependent-names/operator-pack-never-fits.cpp
+templates/instantiation	INST-11	templates/instantiation/virtual-object.cpp
+templates/instantiation	INST-12 INST-6	templates/instantiation/local-class-default-argument.cpp
+templates/instantiation	INST-12 INST-6	templates/instantiation/local-class-exception-specification.cpp
+templates/instantiation	INST-15 TR-13	templates/instantiation/recursion-endless-function.cpp
+templates/instantiation	INST-21	templates/instantiation/explicit-unqualified-outside-namespace-function.cpp
+templates/instantiation	INST-22	templates/instantiation/explicit-variable-wrong-type.cpp
+templates/instantiation	INST-29	templates/instantiation/explicit-declaration-internal.cpp
+templates/instantiation	INST-33	templates/instantiation/class-point-not-later-type.cpp
+templates/instantiation	INST-6	templates/instantiation/class-static-member-function-type.cpp
+templates/ordering	ORD-3 ORD-15	templates/ordering/nondeduced-only-parameter.cpp
+templates/packs	PACK-26 PACK-6	templates/packs/member-template-pack-length.cpp
+templates/packs	PACK-2	templates/packs/unnamed-pack-in-parentheses.cpp
+templates/packs	PACK-8	templates/packs/fold-in-outer-pattern.cpp
+templates/packs	PACK-8	templates/packs/pattern-without-pack.cpp
+templates/packs	PACK-8	templates/packs/size-operator-in-outer-pattern.cpp
+templates/specialization	TSP-17	templates/specialization/partial-after-use.cpp
+templates/specialization	TSP-23	templates/specialization/explicit-member-class-template-no-prefix.cpp
+templates/specialization	TSP-31	templates/specialization/partial-no-primary-variable.cpp
