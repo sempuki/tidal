@@ -3,7 +3,7 @@
 **Status:** provisional
 **Affects:** DCMP-1, `tests/classes/comparisons/eq-array-of-arrays-member-constant.cpp`, `tests/classes/comparisons/eq-array-of-arrays-member.cpp`
 **Source:** finding W19-1 of `reports/clean-room/W19/report.md`, from the probes that a clean-room writer ran for it.
-**Waits for:** a first review; newest families that agree
+**Waits for:** newest families that agree
 
 ## Context
 
@@ -36,6 +36,10 @@ Every element, also in constant evaluation (option 1). DCMP-1 gives one
 meaning to the defaulted `==`, and every compiler gives that meaning at
 run time.
 
+Kept open on 2026-11-05 under decision 0054, because the question also waits on newest families that agree (gap review of the text phase 10 wrote, item RV4).
+
 ## Opinions
 
-<!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+### Gap review, 2026-11-05 (phase 10 text, classes, declarations, foundations, overloading, and statements)
+
+The source-reader gap review of the text phase 10 wrote on classes, declarations, foundations, overloading, and statements (`reports/review/2026-11-05-gap-review-phase-10-classes-declarations-foundations.md`) reads the question: supports with no doubt. The defaulted equality flattens nested arrays down to their scalar elements, and constant evaluation gives the same result as run time. The GCC and EDG results do not follow the reference.

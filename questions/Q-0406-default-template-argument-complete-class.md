@@ -28,3 +28,7 @@ newest family follows the review.
 ### Gap review, 2026-11-05
 
 The source-reader gap review (`reports/review/2026-11-05-gap-review-phase-9-expressions-templates.md`) reads the reference as option 2. See its section on PFX-P3, CLS-2.
+
+### Gap review, 2026-11-05 (phase 10 text)
+
+The source-reader gap review of the text phase 10 wrote (`reports/review/2026-11-05-gap-review-phase-10-classes-declarations-foundations.md`) names the question in its section on CLS-2. The reference counts a default template argument of a member template among the places where the class is complete, against the answer that every baseline compiler gives. The question stays in `pending.md` row 4.

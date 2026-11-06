@@ -3,7 +3,7 @@
 **Status:** provisional
 **Affects:** ACC-10, ACC-5, `tests/classes/access/nested-class-friend-reads-enclosing.cpp`
 **Source:** roadmap round 8 programmer reduction `nested_friend_reads_enclosing.cpp` (`reports/clean-room/roadmap-8/programmer.md`, section 1.5), from the probe that a clean-room writer ran for it.
-**Waits for:** a first review
+**Waits for:** a review (doubt)
 
 ## Context
 
@@ -28,6 +28,10 @@ The test in **Affects**, with an override for EDG.
 
 The friend has the nested class's access (option 1). Two of three families agree, and ACC-5 with ACC-10 gives that answer.
 
+Kept open on 2026-11-05 under decision 0054, because the review reads the answer with a doubt (gap review of the text phase 10 wrote, item RV4).
+
 ## Opinions
 
-<!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+### Gap review, 2026-11-05 (phase 10 text, classes, declarations, foundations, overloading, and statements)
+
+The source-reader gap review of the text phase 10 wrote on classes, declarations, foundations, overloading, and statements (`reports/review/2026-11-05-gap-review-phase-10-classes-declarations-foundations.md`) reads the question: supports with a doubt. A private member is reachable from code inside a direct member of the class, and the friend's body is written inside the nested class, which is a member. The reference also says friendship does not pass along, and it does not say whether a friend defined inside a nested class counts as code inside that member.

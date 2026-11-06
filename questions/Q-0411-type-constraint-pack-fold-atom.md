@@ -3,7 +3,7 @@
 **Status:** provisional
 **Affects:** CPT-19, CNS-4, `tests/templates/concepts/type-constraint-pack-same-concept-two-declarations.cpp`
 **Source:** finding X22-3 of `reports/clean-room/X22/report.md`, from the probe `k1.cpp` beside it.
-**Waits for:** a first review
+**Waits for:** a review (doubt)
 
 ## Context
 
@@ -34,6 +34,10 @@ The test in **Affects**, with an override for EDG.
 Two atoms (option 1). Two of three families agree, and CNS-4 makes two
 atoms identical only when they come from the same place in the source.
 
+Kept open on 2026-11-05 under decision 0054, because the review reads the answer with a doubt (gap review of the text phase 10 wrote, item RV4).
+
 ## Opinions
 
-<!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+### Gap review, 2026-11-05 (phase 10 text, expressions and templates)
+
+The source-reader gap review of the text phase 10 wrote on expressions and templates (`reports/review/2026-11-05-gap-review-phase-10-expressions-templates.md`) reads the question: supports with a doubt. In C++23 each type constraint on a pack gives its own fold, which is one atom. Two atoms are identical only when they come from one appearance, so neither declaration subsumes the other and the call is ambiguous. The doubt is that the fold has no written appearance, and a C++26 change may give EDG's answer.

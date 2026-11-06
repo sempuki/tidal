@@ -28,3 +28,7 @@ newest family follows the review.
 ### Gap review, 2026-11-05
 
 The source-reader gap review (`reports/review/2026-11-05-gap-review-phase-9-expressions-templates.md`) reads the reference as option 2. See its section on TARG-27.
+
+### Gap review, 2026-11-05 (phase 10 text)
+
+The source-reader gap review of the text phase 10 wrote (`reports/review/2026-11-05-gap-review-phase-10-expressions-templates.md`) names the question in its section on TARG-27. The reference treats the name as the template, with no ambiguity, against the answer that every baseline compiler gives. The question stays in `pending.md` row 4.

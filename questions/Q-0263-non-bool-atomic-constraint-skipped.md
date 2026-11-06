@@ -1,8 +1,7 @@
 # Q-0263: Is an atomic constraint whose type is never bool an error when a short circuit skips it?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** CNS-9, CNS-39, `tests/templates/constraints/atomic-not-bool-skipped.cpp`, `tests/templates/constraints/atomic-not-bool-nondependent-concept.cpp`
-**Waits for:** a use of CNS-P2; a review (doubt)
 
 ## Context
 
@@ -36,7 +35,7 @@ Every compiler accepts a skipped atomic constraint whose type depends on the arg
 3. Not valid, and no diagnostic is required. Each compiler's result
    lies within the rule.
 
-## Provisional answer
+## Answer
 
 Not valid, no diagnostic required; Clang and EDG diagnose, GCC does not (option 3). A constraint that no argument can satisfy is not valid in the template, and DEP-P6 needs no diagnostic for a construct that no argument list makes valid. CNS-39 states the answer.
 
@@ -52,6 +51,8 @@ Kept open on 2026-11-05 under decision 0054, because the use in batch PU3 does n
 
 Kept open on 2026-11-05 under decision 0055, because CNS-P2 changed in this commit after finding PU3-3: it now says that an atom whose type does not depend on a template parameter and is not `bool` makes the program not valid, with no diagnostic required, also when no check reaches it. The question waits for the next use of CNS-P2.
 
+Settled on 2026-11-05 under decision 0054. The gap review of the text phase 10 wrote (item RV4) supports the answer with no doubt, and its use of the principle on the question's programs gives the provisional answer (decision 0056). At most one newest family differs in each form, and each test keeps its override.
+
 ## Opinions
 
 ### Gap review, 2026-11-03
@@ -62,4 +63,6 @@ The source-reader gap review of the open questions on templates (`reports/review
 
 The source-reader gap review of the text phase 9 wrote on expressions and templates (`reports/review/2026-11-05-gap-review-phase-9-expressions-templates.md`) used CNS-P2 on ``atomic-not-bool-skipped.cpp``, without the rule text. The model's answer: The left operand is false, so the right one is never substituted or checked, and the program is accepted. Matches the provisional answer: partly: the outcome is one that option 3 allows, and the model does not give "not valid". Reference verdict: supports with a doubt.
 
-<!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+### Gap review, 2026-11-05 (phase 10 text, expressions and templates)
+
+The source-reader gap review of the text phase 10 wrote on expressions and templates (`reports/review/2026-11-05-gap-review-phase-10-expressions-templates.md`) used CNS-P2 on ``atomic-not-bool-skipped.cpp``, without the rule text. The model's answer: The right operand of the concept has an unsigned integer type for every argument, so it can pass no check. The program is not valid even though the short circuit skips it. No diagnostic is required, and an implementation may reject the concept where it is written. Matches the provisional answer: yes (option 3). Reference verdict: supports with no doubt. used CNS-P2 on ``atomic-not-bool-nondependent-concept.cpp``, without the rule text. The model's answer: The concept is never used, and its second atom is never bool. The program is not valid, with no diagnostic required. Rejection at the definition and acceptance both fit. Matches the provisional answer: yes (option 3). Reference verdict: supports with no doubt. used CNS-P2 on ``atomic-not-bool-nondependent-clause.cpp``, without the rule text. The model's answer: The same atom in the requires clause of an unused function template. Not valid, no diagnostic required, and rejection at the definition is allowed. Matches the provisional answer: yes. Reference verdict: supports with no doubt. used CNS-P2 on ``atomic-not-bool.cpp``, without the rule text. The model's answer: The check reaches the atom, the atom has type int, and the atom must be bool, so the program is not valid and is diagnosed (CNS-9). Matches the provisional answer: yes. Reference verdict: supports with no doubt. used CNS-P2 on ``or-short-circuit.cpp``, without the rule text. The model's answer: The type of the skipped atom depends on the argument, so the new sentence does not apply. The left operand is true, the atom is never checked, and the program is accepted. Matches the provisional answer: yes. Reference verdict: supports with no doubt.

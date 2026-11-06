@@ -575,7 +575,7 @@ of 69 tests. EDG compiles the run tests and does not run them.
   class with only `!=` against `0` serves a defaulted `<=>`. It does,
   since either operator serves, as Clang and EDG say. GCC tests each
   part with `== 0` and rejects the class.
-- {question}`Q-0386` (LSUP-2; open): whether a use of `<=>` needs all
+- {question}`Q-0386` (LSUP-2; settled): whether a use of `<=>` needs all
   three ordering classes declared. It needs only the class that it
   yields, as Clang and GCC say. EDG needs all three for a built-in
   `<=>` evaluated as a constant and for a defaulted `<=>`.

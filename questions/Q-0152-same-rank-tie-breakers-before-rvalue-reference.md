@@ -2,7 +2,7 @@
 
 **Status:** provisional
 **Affects:** ICS-28, ICS-31, ICS-32 to ICS-36, ICS-P5, `tests/overloading/conversion-sequences/tie-breaker-before-rvalue-reference.cpp`, `tests/overloading/conversion-sequences/fixed-enumeration-before-rvalue-reference.cpp`, `tests/overloading/conversion-sequences/floating-before-rvalue-reference.cpp`, `tests/overloading/conversion-sequences/rvalue-reference-before-qualification.cpp`
-**Waits for:** a review (doubt); newest families that agree
+**Waits for:** newest families that agree
 
 ## Context
 
@@ -56,10 +56,14 @@ Kept open on 2026-11-03 under decision 0054, because the gap review does not sup
 
 Noted on 2026-11-05 under decision 0058, item PK2. A test whose notes name the question has two newest families that differ from the answer, so the question also waits for newest families that agree (`pending.md` row 1). The check of `tools/question_index.py` found the case.
 
+Kept open on 2026-11-05 under decision 0054, because the question also waits on newest families that agree (gap review of the text phase 10 wrote, item RV4).
+
 ## Opinions
 
 ### Gap review, 2026-11-03
 
 The source-reader gap review of question cluster 2 (`reports/review/2026-11-03-gap-review-question-cluster-2.md`) agrees with option 1. The same-rank tie-breakers belong to the rank step, which comes before the reference steps, and the rvalue-reference preference comes before the step that compares qualification conversions. Each row of the table follows option 1. The review has a small doubt about whether the reference steps cover bindings that make a temporary. The reference speaks of sequences that include a reference binding, and compilers apply the steps to these bindings.
 
-<!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+### Gap review, 2026-11-05 (phase 10 text, classes, declarations, foundations, overloading, and statements)
+
+The source-reader gap review of the text phase 10 wrote on classes, declarations, foundations, overloading, and statements (`reports/review/2026-11-05-gap-review-phase-10-classes-declarations-foundations.md`) reads the question: supports with no doubt. The reference compares ranks first and resolves same-rank ties inside that step. The rvalue reference preference comes next, and the qualification step after it. Every row of the question follows from that order.

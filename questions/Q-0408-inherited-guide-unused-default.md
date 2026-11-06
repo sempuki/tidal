@@ -28,3 +28,7 @@ newest family follows the review.
 ### Gap review, 2026-11-05
 
 The source-reader gap review (`reports/review/2026-11-05-gap-review-phase-9-expressions-templates.md`) reads the reference as option 2. See its section on CTAD-16.
+
+### Gap review, 2026-11-05 (phase 10 text)
+
+The source-reader gap review of the text phase 10 wrote (`reports/review/2026-11-05-gap-review-phase-10-expressions-templates.md`) names the question in its section on CTAD-16. The reference reads that a default does not rescue the inherited guide, as Clang does, against the answer of GCC and EDG that Tidal keeps. The question stays in `pending.md` row 4.

@@ -28,3 +28,7 @@ newest family follows the review.
 ### Gap review, 2026-11-05
 
 The source-reader gap review (`reports/review/2026-11-05-gap-review-phase-9-expressions-templates.md`) reads the reference as option 2. See its section on ORD-P1.
+
+### Gap review, 2026-11-05 (phase 10 text)
+
+The source-reader gap review of the text phase 10 wrote (`reports/review/2026-11-05-gap-review-phase-10-expressions-templates.md`) names the question in its section on ORD-P1. The reference keeps partial ordering on the function types with no target, against the answer that every baseline compiler gives. A later defect resolution may change the answer. The question stays in `pending.md` row 4.

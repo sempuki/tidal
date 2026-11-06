@@ -3,7 +3,7 @@
 **Status:** provisional
 **Affects:** ICS-45, OVL-15, `tests/overloading/conversion-sequences/user-defined-explicit-reference-value.cpp`, `tests/overloading/conversion-sequences/user-defined-explicit-reference-xvalue.cpp`
 **Parent:** Q-0156, which covers rvalue references
-**Waits for:** a review (doubt); newest families that agree
+**Waits for:** newest families that agree; a review (doubt)
 
 ## Context
 
@@ -55,6 +55,8 @@ Kept open on 2026-11-05 under decision 0054, because the gap review of the text 
 
 Noted on 2026-11-05 under decision 0058, item PK2. A test whose notes name the question has two newest families that differ from the answer, so the question also waits for newest families that agree (`pending.md` row 1). The check of `tools/question_index.py` found the case.
 
+Kept open on 2026-11-05 under decision 0054, because the review reads the answer with a doubt, and the question also waits on newest families that agree (gap review of the text phase 10 wrote, item RV4).
+
 ## Opinions
 
 ### Gap review, 2026-11-03
@@ -65,4 +67,6 @@ The source-reader gap review of question cluster 2 (`reports/review/2026-11-03-g
 
 The source-reader gap review of the text phase 9 wrote on classes, overloading, and exceptions (`reports/review/2026-11-05-gap-review-phase-9-classes-overloading-exceptions.md`) supports the answer with a doubt. The reader finds that only lvalue reference results are offered to an lvalue reference and that the fallback through a temporary takes no explicit function, which gives option 1. An example in the reference that binds a reference to const through a conversion by value leaves a doubt.
 
-<!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+### Gap review, 2026-11-05 (phase 10 text, classes, declarations, foundations, overloading, and statements)
+
+The source-reader gap review of the text phase 10 wrote on classes, declarations, foundations, overloading, and statements (`reports/review/2026-11-05-gap-review-phase-10-classes-declarations-foundations.md`) reads the question: supports with a doubt. The candidate set for direct binding gives an lvalue reference only functions that return an lvalue reference. The fallback then copy-initializes a temporary, which excludes explicit functions. An example in the reference binds an lvalue reference to const directly to a value result of a conversion function, which does not fit that candidate set.

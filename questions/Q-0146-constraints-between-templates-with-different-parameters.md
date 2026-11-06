@@ -71,7 +71,7 @@ Settled on 2026-11-03 under decision 0054. The source-reader gap review of quest
 
 The source-reader gap review of question cluster 5 (`reports/review/2026-11-03-gap-review-question-cluster-5.md`) reads the reference as supporting option 1. For functions that are not templates, constraints decide only when the parameter type lists are the same, and a default argument or an ellipsis makes the lists differ. For templates, a different length of either list, a pair of parameters of different types, or different conversion results stops the comparison. Each row of the table falls under one of these cases.
 
-<!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+
 
 ### Gap review, 2026-10-31
 
@@ -84,3 +84,7 @@ The source-reader inventory of concepts and constraints (`reports/review/2026-10
 ### Gap review of cluster 3, 2026-11-03
 
 The source-reader gap review of question cluster 3 (`reports/review/2026-11-03-gap-review-question-cluster-3.md`) reads the constraint tie-breaker for two plain functions as needing the same list of parameter types, a list that records an ellipsis. The ellipsis then counts, which the review says fits this question. The review reads the condition for two templates differently, in line with Clang 22.
+
+### Gap review, 2026-11-05 (phase 10 text)
+
+The source-reader gap review of the text phase 10 wrote (`reports/review/2026-11-05-gap-review-phase-10-expressions-templates.md`) names the question in its section on Q-0293, and finds that the parameter-type-lists of two plain functions record the ellipsis, so the answer for functions can differ from the answer for templates.

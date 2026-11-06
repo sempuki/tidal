@@ -6,7 +6,7 @@ last column lists the questions that the decision closes or changes.
 
 | # | Item | Options | Tidal keeps | Questions |
 |---|---|---|---|---|
-| 1 | The choices of decision 0054: settling by review, and program tests under `tests/programs/` | Confirm, change, or drop each choice | Both choices. A question settles by review only when at most one newest family differs from the answer in each form | Confirms the 194 questions settled under decision 0054 ([by item below](#settlements-under-decision-0054)). `tools/question_index.py` writes the total and fails `--check` when the total is wrong. If the maintainer lets the rule settle a question where two families differ, the questions of the [decision packet](#decision-packet) row 1 settle too |
+| 1 | The choices of decision 0054: settling by review, and program tests under `tests/programs/` | Confirm, change, or drop each choice | Both choices. A question settles by review only when at most one newest family differs from the answer in each form | Confirms the 198 questions settled under decision 0054 ([by item below](#settlements-under-decision-0054)). `tools/question_index.py` writes the total and fails `--check` when the total is wrong. If the maintainer lets the rule settle a question where two families differ, the questions of the [decision packet](#decision-packet) row 1 settle too |
 | 2 | The choices of decision 0051: settling when the newest version of each family agrees, and keeping the implementation-only operations referenced | Confirm or change each choice | Both choices | Q-0322 |
 | 3 | A report of EDG behavior to the EDG project ([groups below](#edg-report)) | Approve the report, or hold it | Tidal follows Clang 22 and GCC 16. Each test records EDG's result as an override | Q-0002, Q-0003, and the cluster 5 groups below |
 | 4 | A gap review reads the C++23 text against the matrix's answer, and at most one newest family follows the review ([items below](#matrix-against-review)) | Follow the review, against the compilers that differ from it, or follow the matrix | The matrix's answer in each, except Q-0307, where Tidal follows the review | Each question and rule in the section below |
@@ -32,6 +32,7 @@ last column lists the questions that the decision closes or changes.
 | 7 | the principle-use batch PU2 | f2ac11c |
 | 10 | phase 10 item RV3, the gap reviews of the text phase 9 wrote: Q-0092, Q-0247, Q-0340, Q-0358, Q-0390, Q-0392, Q-0397, Q-0398, Q-0399, Q-0400 | b1d89e7 |
 | 2 | phase 10 item PU3, the principle-use batch PU3: Q-0370, Q-0376 | 75e4fab |
+| 4 | phase 11 item RV4, the gap reviews of the text phase 10 wrote: Q-0263, Q-0386, Q-0395, Q-0413 | |
 | -8 | phase 8 item PQ reopened these under the principle test of the style guide: Q-0064, Q-0067, Q-0111, Q-0242, Q-0259, Q-0319, Q-0329, Q-0373. Item PU settled Q-0067 and Q-0329 again | |
 
 ## Decision packet
@@ -64,7 +65,7 @@ review finds the reference silent.
 
 The rows 1 to 9 hold 110 of the open questions.
 
-75 open questions wait for a review that supports the answer with no doubt. By what the last review found: 50 doubt, 15 silent, 9 against, 1 part.
+72 open questions wait for a review that supports the answer with no doubt. By what the last review found: 47 doubt, 15 silent, 9 against, 1 part.
 
 ## Matrix against review
 

@@ -28,3 +28,7 @@ newest family follows the review.
 ### Gap review, 2026-11-05
 
 The source-reader gap review (`reports/review/2026-11-05-gap-review-phase-9-declarations-statements-foundations.md`) reads the reference as option 2. See its section on NAM-21.
+
+### Gap review, 2026-11-05 (phase 10 text)
+
+The source-reader gap review of the text phase 10 wrote (`reports/review/2026-11-05-gap-review-phase-10-classes-declarations-foundations.md`) names the question in its section on NAM-21. The reference brings the underlying type into the scope of the qualifier, against the answer that every baseline compiler gives. The question stays in `pending.md` row 4.

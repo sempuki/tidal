@@ -2,7 +2,7 @@
 
 **Status:** provisional
 **Affects:** ICS-45, `tests/overloading/conversion-sequences/user-defined-explicit-rvalue-reference-value.cpp`
-**Waits for:** a review (doubt); newest families that agree
+**Waits for:** newest families that agree
 
 ## Context
 
@@ -73,10 +73,14 @@ Kept open on 2026-11-03 under decision 0054, because the gap review does not sup
 
 Noted on 2026-11-05 under decision 0058, item PK2. A test whose notes name the question has two newest families that differ from the answer, so the question also waits for newest families that agree (`pending.md` row 1). The check of `tools/question_index.py` found the case.
 
+Kept open on 2026-11-05 under decision 0054, because the question also waits on newest families that agree (gap review of the text phase 10 wrote, item RV4).
+
 ## Opinions
 
 ### Gap review, 2026-11-03
 
 The source-reader gap review of question cluster 2 (`reports/review/2026-11-03-gap-review-question-cluster-2.md`) reads the reference as supporting option 2 for the rvalue references. A cast to an rvalue reference, and its direct initialization, consider conversion functions that return a value, and the explicit ones are allowed when their result reaches the target by a qualification conversion. The reference binds directly to the materialized result. For the lvalue reference to `const`, the review reads the text as supporting option 1, with doubt, and suggests a split of the question.
 
-<!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+### Gap review, 2026-11-05 (phase 10 text, classes, declarations, foundations, overloading, and statements)
+
+The source-reader gap review of the text phase 10 wrote on classes, declarations, foundations, overloading, and statements (`reports/review/2026-11-05-gap-review-phase-10-classes-declarations-foundations.md`) reads the question: supports with no doubt. For an rvalue reference, the candidate set for direct binding admits functions that return a plain value, and in direct initialization the explicit ones count when only a qualification adjustment remains.

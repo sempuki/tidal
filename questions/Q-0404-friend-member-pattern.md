@@ -39,4 +39,6 @@ family follows the review.
 
 ## Opinions
 
-<!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+### Gap review, 2026-11-05 (phase 10 text)
+
+The source-reader gap review of the text phase 10 wrote (`reports/review/2026-11-05-gap-review-phase-10-classes-declarations-foundations.md`) names the question in its section on ACC-20. The reference reads against the answer that Tidal keeps: the member of a specialization outside the qualifier's pattern is not a friend. The question stays in `pending.md` row 4.

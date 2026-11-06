@@ -345,7 +345,7 @@ All eight compilers agree on 64 of 71 tests. The results are in
   It is `std::size_t`, as Clang and EDG pass it, so `template <auto I>`
   deduces that type. GCC passes an `int`. Every compiler accepts a
   member `get` with an `int` parameter.
-- {question}`Q-0395` (SB-5; open): whether a member `get` that is not
+- {question}`Q-0395` (SB-5; settled): whether a member `get` that is not
   a function template selects the member form. It does not, so a member
   variable template or member class template named `get` leads to the
   free `get`, as Clang and EDG do. GCC takes the member form and

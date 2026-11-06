@@ -1,9 +1,8 @@
 # Q-0386: Must a program declare all three ordering classes before a use of `<=>` that yields only one of them?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** LSUP-2, `tests/foundations/language-support/ordering-strong-only-builtin.cpp`, `tests/foundations/language-support/ordering-strong-only-builtin-runtime.cpp`, `tests/foundations/language-support/ordering-strong-only-defaulted.cpp`, `tests/foundations/language-support/ordering-partial-not-declared.cpp`, `tests/overloading/overload-resolution/builtin-three-way.cpp`, `tests/overloading/overload-resolution/builtin-three-way-mixed.cpp`
 **Source:** section 1.4, item 7, and section 6 of `reports/clean-room/roadmap-6/programmer.md`, from the probes that a clean-room writer ran for them.
-**Waits for:** a review (doubt)
 
 ## Context
 
@@ -47,7 +46,7 @@ accepted them.
    only the class that they yield.
 3. Each use needs only the class that it yields (Clang, GCC).
 
-## Provisional answer
+## Answer
 
 No; each use needs only the ordering class that it yields (option 3).
 Clang and GCC accept each program, and the gap review of the text
@@ -74,6 +73,8 @@ Kept open on 2026-11-04 under decision 0055, because CMP-P5 and CONV-P2 changed 
 
 Kept open on 2026-11-05 under decision 0054, because the review reads the answer with a doubt (gap review of the text phase 9 wrote, item RV3).
 
+Settled on 2026-11-05 under decision 0054. The gap review of the text phase 10 wrote (item RV4) supports the answer with no doubt. At most one newest family differs in each form, and each test keeps its override.
+
 ## Opinions
 
 ### Gap review, 2026-11-04
@@ -92,4 +93,6 @@ The source-reader gap review of the text phase 9 wrote on declarations, statemen
 
 The source-reader gap review of the text phase 9 wrote on expressions and templates (`reports/review/2026-11-05-gap-review-phase-9-expressions-templates.md`) used CMP-P5 on ``builtin-three-way-mixed.cpp``, without the rule text. The model's answer: Each use yields one class (strong for two integers, partial for an integer against a floating-point value), and only that class is needed. Matches the provisional answer: yes. Reference verdict: supports with a doubt. used CMP-P5 on ``ordering-strong-only-builtin.cpp``, without the rule text. The model's answer: Two integers yield the strong ordering class, the only class declared and needed. Matches the provisional answer: yes. Reference verdict: supports with a doubt.
 
-<!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+### Gap review, 2026-11-05 (phase 10 text, classes, declarations, foundations, overloading, and statements)
+
+The source-reader gap review of the text phase 10 wrote on classes, declarations, foundations, overloading, and statements (`reports/review/2026-11-05-gap-review-phase-10-classes-declarations-foundations.md`) reads the question: supports with no doubt. The reference requires a declaration only of the ordering type that a use involves, and it names each type separately.

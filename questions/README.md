@@ -299,7 +299,7 @@ status, and the first sentence of its answer section.
 | [Q-0260](Q-0260-trailing-clause-in-function-template.md) | Can a lambda or a member of a local class inside a function template have a trailing requires clause? | settled | Yes; Clang and GCC agree, EDG differs |
 | [Q-0261](Q-0261-constraints-before-return-type.md) | Are the constraints of a function template checked before its return type is formed? | settled | Yes; every current compiler agrees, Clang 18 differs |
 | [Q-0262](Q-0262-order-of-placeholder-constraints.md) | Is the requires clause after the template parameter list checked before the constraints of placeholder parameters? | settled | Yes; GCC and EDG agree, Clang differs |
-| [Q-0263](Q-0263-non-bool-atomic-constraint-skipped.md) | Is an atomic constraint whose type is never bool an error when a short circuit skips it? | provisional | Not valid, no diagnostic required; Clang and EDG diagnose, GCC does not |
+| [Q-0263](Q-0263-non-bool-atomic-constraint-skipped.md) | Is an atomic constraint whose type is never bool an error when a short circuit skips it? | settled | Not valid, no diagnostic required; Clang and EDG diagnose, GCC does not |
 | [Q-0264](Q-0264-satisfaction-changes-between-checks.md) | Does an implementation diagnose an atomic constraint whose result changes between two checks? | settled | No diagnostic required; GCC 16 diagnoses |
 | [Q-0265](Q-0265-template-template-argument-more-constrained.md) | Can a template template argument be more constrained than its parameter? | settled | No; Clang 22 and GCC agree, Clang 18 and EDG differ |
 | [Q-0266](Q-0266-eligible-constrained-special-members.md) | Do the constraints of special member functions decide which ones make a class trivial? | provisional | Yes; Clang and GCC agree, EDG differs |
@@ -422,7 +422,7 @@ status, and the first sentence of its answer section.
 | [Q-0383](Q-0383-reserved-literal-suffix-use.md) | Does a literal call a literal operator whose suffix does not start with `_`? | provisional | The declaration is not valid, and no diagnostic is required |
 | [Q-0384](Q-0384-union-end-padding.md) | Does a union follow the end-padding conditions of a class? | provisional | The conditions of a class apply to a union |
 | [Q-0385](Q-0385-edg-member-outside-clause-missing.md) | Must a member defined after the body of a class template repeat the requires clause of the class's template head? | settled | The definition repeats the whole head, requires clause included |
-| [Q-0386](Q-0386-ordering-classes-one-declared.md) | Must a program declare all three ordering classes before a use of `<=>` that yields only one of them? | provisional | No; each use needs only the ordering class that it yields |
+| [Q-0386](Q-0386-ordering-classes-one-declared.md) | Must a program declare all three ordering classes before a use of `<=>` that yields only one of them? | settled | No; each use needs only the ordering class that it yields |
 | [Q-0387](Q-0387-constant-compare-base-subobjects.md) | Does constant evaluation reject a relational comparison that involves a base class subobject? | settled | Yes; constant evaluation rejects the comparison |
 | [Q-0388](Q-0388-deduced-conversion-function-template.md) | Can a conversion function template have `auto` as its name? | settled | No; the declaration is rejected |
 | [Q-0389](Q-0389-default-argument-local-constant.md) | Can a default argument read the value of a local constant of an enclosing function? | provisional | The default argument is not valid |
@@ -431,7 +431,7 @@ status, and the first sentence of its answer section.
 | [Q-0392](Q-0392-local-class-member-requires-clause.md) | Can a member function of a local class in a function template have a requires clause? | settled | Yes; the requires clause is valid and waits for a use of the member |
 | [Q-0393](Q-0393-noexcept-operand-null-pointer.md) | Can the operand of a `noexcept` specifier be a null pointer constant of the null pointer type? | provisional | The operand is valid and gives a potentially throwing function |
 | [Q-0394](Q-0394-override-without-ref-qualifier.md) | Does a member function with no ref-qualifier override a base virtual function with one? | provisional | No; the ref-qualifiers must match |
-| [Q-0395](Q-0395-tuple-member-get-not-function-template.md) | Does a member `get` that is not a function template select the member form of the tuple protocol? | provisional | Only a member function template selects the member form |
+| [Q-0395](Q-0395-tuple-member-get-not-function-template.md) | Does a member `get` that is not a function template select the member form of the tuple protocol? | settled | Only a member function template selects the member form |
 | [Q-0396](Q-0396-function-type-references-ordering.md) | Does partial ordering remove the references inside the function types of ORD-9? | provisional | One pair of whole function types |
 | [Q-0397](Q-0397-invented-value-placeholder-type.md) | Is a partial specialization with `int V` more specialized than one with a constrained `auto V`? | settled | The one with `int V` |
 | [Q-0398](Q-0398-object-parameter-member-const.md) | Does the object parameter of a `const` member keep the `const` in partial ordering? | settled | The object parameter keeps the member's `const` |
@@ -449,7 +449,7 @@ status, and the first sentence of its answer section.
 | [Q-0410](Q-0410-qualified-enum-underlying-type.md) | In the definition of an enumeration with a qualified name, is the underlying type looked up in the scope that the qualifier names? | provisional | Rejected |
 | [Q-0411](Q-0411-type-constraint-pack-fold-atom.md) | Are the folds that one concept makes on a type parameter pack in two declarations one atom or two? | provisional | Two atoms |
 | [Q-0412](Q-0412-standard-attribute-effects.md) | Which effects can a standard attribute have, and can a new one add a required rejection? | provisional | Placement rules, warnings, promises, and layout changes only |
-| [Q-0413](Q-0413-consteval-conversion-for-parameter.md) | Is a call rejected when the implicit conversion of an argument to a parameter calls a consteval constructor that is not a constant expression? | provisional | Rejected |
+| [Q-0413](Q-0413-consteval-conversion-for-parameter.md) | Is a call rejected when the implicit conversion of an argument to a parameter calls a consteval constructor that is not a constant expression? | settled | Rejected |
 | [Q-0414](Q-0414-nested-class-friend-access.md) | Does a friend function that a nested class declares have access to the private members of the enclosing class? | provisional | The friend has the nested class's access |
 
 ## Status values

@@ -324,7 +324,7 @@ of 74 tests.
   variable of a class with a trivial default constructor and no
   initializer has a constant initializer. It has none, as Clang says.
   GCC and EDG accept the variable.
-- {question}`Q-0413` (CEV-1; open): whether a call is rejected when the
+- {question}`Q-0413` (CEV-1; settled): whether a call is rejected when the
   conversion of an argument calls a `consteval` constructor that is not
   a constant expression. It is, as Clang and GCC say. EDG accepts the
   call, and rejects the same failure for a variable.

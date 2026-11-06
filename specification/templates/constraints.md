@@ -839,7 +839,7 @@ waits on the maintainer (`documentation/decisions/pending.md`).
 - {question}`Q-0285` (CNS-3; settled on CNS-P1): whether two variadic
   templates are ordered by the type constraints on their packs. They
   are not. EDG differs.
-- {question}`Q-0263` (CNS-9, CNS-39; open): whether an atomic
+- {question}`Q-0263` (CNS-9, CNS-39; settled): whether an atomic
   constraint whose type is never `bool` is an error when a short
   circuit skips it. The program is not valid, and no diagnostic is
   required. Clang and EDG diagnose it at the definition, and GCC does

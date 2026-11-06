@@ -2,7 +2,7 @@
 
 **Status:** provisional
 **Affects:** LSUP-5, `tests/foundations/language-support/alignment-enumeration-unscoped.cpp`, `tests/foundations/language-support/alignment-enumeration-wrong-underlying-type.cpp`, `tests/foundations/language-support/alignment-enumeration-class.cpp`
-**Waits for:** a use of LSUP-P2; a review (doubt)
+**Waits for:** a review (doubt)
 
 ## Context
 
@@ -43,6 +43,8 @@ Kept open on 2026-11-05 under decision 0054, because the use in batch PU3 gives 
 
 Kept open on 2026-11-05 under decision 0055, because LSUP-P2 changed in this commit after finding PU3-4: it now gives the shape of `std::align_val_t` and says that another shape needs no diagnostic and can be rejected where it is written. The writer's probe of round 8 (`reports/clean-room/roadmap-8/writer-probes/`) found that GCC and EDG reject the other shapes at the declaration and Clang accepts them. The question waits for the next use of LSUP-P2.
 
+Kept open on 2026-11-05 under decision 0054, because the review reads the answer with a doubt (gap review of the text phase 10 wrote, item RV4).
+
 ## Opinions
 
 ### Gap review, 2026-11-04
@@ -53,8 +55,12 @@ The source-reader gap review of the rules that phase 7 added (`reports/review/20
 
 The source-reader gap review of the text phase 9 wrote on declarations, statements, and foundations (`reports/review/2026-11-05-gap-review-phase-9-declarations-statements-foundations.md`) used LSUP-P2 on ``foundations/language-support/alignment-enumeration-unscoped.cpp`, `alignment-enumeration-wrong-underlying-type.cpp`, `alignment-enumeration-class.cpp``, without the rule text. The model's answer: The program's declaration disagrees with the library on the kind of the name, so the program is not valid. The principle does not say whether a diagnostic is needed. Matches the provisional answer: partly (it gives "not valid" and leaves the diagnostic open). Reference verdict: supports with a doubt.
 
-<!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+
 
 ### Gap review, 2026-11-03
 
 The source-reader gap review of the object model (`reports/review/2026-11-03-gap-review-object-model.md`) reads the reference as supporting option 2. In the reference, a program that adds a declaration to namespace `std` has undefined behavior, so no shape needs a diagnostic. The rules of the language-support page have no counterpart in the reference, and decision 0041 makes them Tidal choices.
+
+### Gap review, 2026-11-05 (phase 10 text, classes, declarations, foundations, overloading, and statements)
+
+The source-reader gap review of the text phase 10 wrote on classes, declarations, foundations, overloading, and statements (`reports/review/2026-11-05-gap-review-phase-10-classes-declarations-foundations.md`) used LSUP-P2 on ``alignment-enumeration-unscoped.cpp``, without the rule text. The model's answer: The type is declared unscoped, which is another kind. The program is not valid and needs no diagnostic. An implementation can reject the declaration where it stands, so the GCC and EDG rejection and the Clang acceptance both conform. Matches the provisional answer: yes. Reference verdict: supports with a doubt. used LSUP-P2 on ``alignment-enumeration-wrong-underlying-type.cpp``, without the rule text. The model's answer: The type is scoped but has a one-byte underlying type, which is another underlying type. The program is not valid and needs no diagnostic, and rejection at the declaration is allowed. Matches the provisional answer: yes. Reference verdict: supports with a doubt. used LSUP-P2 on ``alignment-enumeration-class.cpp``, without the rule text. The model's answer: The type is declared as a class, which is another kind. The program is not valid and needs no diagnostic, and rejection at the declaration is allowed. Matches the provisional answer: yes. Reference verdict: supports with a doubt.

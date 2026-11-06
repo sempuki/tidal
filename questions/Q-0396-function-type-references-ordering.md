@@ -63,10 +63,14 @@ from GCC 16 and EDG 7.0.
 
 Kept open on 2026-11-05 under decision 0054, because the review reads the answer with a doubt (gap review of the text phase 9 wrote, item RV3).
 
+Kept open on 2026-11-05 under decision 0054, because the review reads the answer with a doubt (gap review of the text phase 10 wrote, item RV4).
+
 ## Opinions
 
 ### Gap review, 2026-11-05 (expressions and templates)
 
 The source-reader gap review of the text phase 9 wrote on expressions and templates (`reports/review/2026-11-05-gap-review-phase-9-expressions-templates.md`) reads the question: supports with a doubt. Outside a call, the function type is the one type that takes part, so only the top level is stripped. The forwarding parameter part has no special basis.
 
-<!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+### Gap review, 2026-11-05 (phase 10 text, expressions and templates)
+
+The source-reader gap review of the text phase 10 wrote on expressions and templates (`reports/review/2026-11-05-gap-review-phase-10-expressions-templates.md`) reads the question: supports with a doubt. Outside a call, the function type is the one type that takes part, and only a top-level reference would be stripped. The function type is not a reference, so the references inside it stay. The doubt concerns the forwarding parameter case, where an adjustment exists for deduction when an address is taken and it is unclear whether ordering in that context shares it.

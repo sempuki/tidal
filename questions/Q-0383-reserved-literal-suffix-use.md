@@ -3,7 +3,7 @@
 **Status:** provisional
 **Affects:** OPR-9, OPR-P3, KW-4, `tests/classes/operators/literal-reserved-suffix-used.cpp`, `tests/classes/operators/literal-reserved-suffix-u8.cpp`
 **Source:** finding X19-1 of `reports/clean-room/X19/report.md`
-**Waits for:** a review (doubt); newest families that agree
+**Waits for:** newest families that agree
 
 ## Context
 
@@ -69,6 +69,8 @@ Noted on 2026-11-05 after the X19 refresh note (`reports/clean-room/X22/X19-refr
 
 Noted on 2026-11-05 under decision 0058, item PK2. A test whose notes name the question has two newest families that differ from the answer, so the question also waits for newest families that agree (`pending.md` row 1). The check of `tools/question_index.py` found the case.
 
+Kept open on 2026-11-05 under decision 0054, because the question also waits on newest families that agree (gap review of the text phase 10 wrote, item RV4).
+
 ## Opinions
 
 ### Gap review, 2026-11-04
@@ -79,4 +81,6 @@ The source-reader gap review of the text phase 8 wrote on classes and overloadin
 
 The source-reader gap review of the text phase 8 wrote on expressions, foundations, exceptions, and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`) contradicts option 1 and supports neither option as written. The declaration makes the program not valid with no diagnostic required, so an implementation can call the operator or reject the literal. KW-4's class matches the reference, and OPR-9's class does not. The review reads the `u8` test as GCC does.
 
-<!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+### Gap review, 2026-11-05 (phase 10 text, classes, declarations, foundations, overloading, and statements)
+
+The source-reader gap review of the text phase 10 wrote on classes, declarations, foundations, overloading, and statements (`reports/review/2026-11-05-gap-review-phase-10-classes-declarations-foundations.md`) reads the question: supports with no doubt. Declaring a literal operator whose suffix does not start with an underscore is not valid, and no diagnostic is required, so every compiler result conforms. In `literal-builtin-suffix-wins.cpp` each literal matches the grammar of a built-in literal and is read as one, so no operator runs. The test's expectation of a clean run records what compilers do, because the declarations in the test are themselves not valid with no diagnostic required.

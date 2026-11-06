@@ -62,6 +62,8 @@ Kept open on 2026-11-04 under decision 0055, because ORD-P2 and ORD-P4 changed i
 
 Kept open on 2026-11-05 under decision 0054, because the review reads the answer with a doubt (gap review of the text phase 9 wrote, item RV3).
 
+Kept open on 2026-11-05 under decision 0054, because the review reads the answer with a doubt (gap review of the text phase 10 wrote, item RV4).
+
 ## Opinions
 
 ### Gap review, 2026-11-03
@@ -72,4 +74,6 @@ The source-reader gap review of question cluster 3 (`reports/review/2026-11-03-g
 
 The source-reader gap review of the text phase 9 wrote on expressions and templates (`reports/review/2026-11-05-gap-review-phase-9-expressions-templates.md`) used ORD-P2, ORD-P4 on ``constraints-ellipsis.cpp``, without the rule text. The model's answer: The ellipsis is no pack and does not count, the lists tie, and the constraint picks the constrained template. Matches the provisional answer: yes. Reference verdict: supports with a doubt. used ORD-P2, ORD-P4 on ``constraints-ellipsis-on-second.cpp``, without the rule text. The model's answer: The same steps, with the constraint on the template that has the ellipsis. Matches the provisional answer: yes. Reference verdict: supports with a doubt.
 
-<!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+### Gap review, 2026-11-05 (phase 10 text, expressions and templates)
+
+The source-reader gap review of the text phase 10 wrote on expressions and templates (`reports/review/2026-11-05-gap-review-phase-10-expressions-templates.md`) reads the question: supports with a doubt. After both deductions succeed, the reference compares the lengths of the template parameter lists and the function parameter lists, and an ellipsis is not a parameter. So the constraint decides. The doubt is that the reference does not define the function parameter list as a term.
