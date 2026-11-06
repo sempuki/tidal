@@ -193,18 +193,22 @@ through the principle-use batch PU3.
 ## Phase 11: answer every finding, review phase 10, and reach library-style code
 
 Decision 0058 (provisional) adopts this phase from the eighth round of
-clean-room roadmaps (`reports/clean-room/roadmap-8/`).
+clean-room roadmaps (`reports/clean-room/roadmap-8/`). Every item is
+done except FE, which moved to the next phase. Open questions went from
+171 to 174: the phase opened 7 (Q-0412 to Q-0418) and settled 4
+through the review RV4 (Q-0263, Q-0386, Q-0395, Q-0413), two of them
+by its principle uses.
 
 | Item | Work | Prerequisites |
 |---|---|---|
-| F | Answer the phase 10 findings that no commit acted on, and make TR-P1 and TR-4 agree | none |
-| L | A ledger row for every finding, with a check | none |
-| R5 | Repair and generate the records that drift; a script for the Checks paragraph | none |
-| P | Tests and text for library-style initialization, the two EDG splits, and the round 8 programs | none |
-| RV4 | A gap review of the text phase 10, F, and P wrote, then repairs | F, P |
-| PK2 | A decision packet by option, with row 4 split | R5 |
-| E | Implement I4 on COND-16; Port suite P1; Propose X23 on P25 | none (P1 after R5's prompt changes) |
-| FE | Front-end round 23 | P, F (G152) |
+| F | Done: answer the phase 10 findings that no commit acted on, and make TR-P1 and TR-4 agree | none |
+| L | Done: a ledger row for every finding, with a check | none |
+| R5 | Done: repair and generate the records that drift; a script for the Checks paragraph | none |
+| P | Done: tests and text for library-style initialization, the two EDG splits, and the round 8 programs | none |
+| RV4 | Done: a gap review of the text phase 10, F, and P wrote, then repairs | F, P |
+| PK2 | Done: a decision packet by option, with row 4 split | R5 |
+| E | Done: Implement I4 on COND-16; Port suite P1; Propose X23 on P25 | none (P1 after R5's prompt changes) |
+| FE | Moved to the next phase: front-end round 23 | P, F (G152) |
 
 ## Parallel lanes
 
