@@ -263,6 +263,8 @@ def check_ledger(errors: list[str]) -> None:
         if report == EXERCISE_LEDGER or "roadmap" in str(rel) or "rust-frontend" in str(rel):
             continue
         for fid in sorted(set(FINDING_HEAD.findall(report.read_text()))):
+            if re.fullmatch(r"Q-\d{4}", fid):
+                continue  # a question ID, not a finding
             if fid not in exercise_rows:
                 errors.append(f"{rel}: finding {fid} has no row in {EXERCISE_LEDGER.relative_to(ROOT)}")
 
