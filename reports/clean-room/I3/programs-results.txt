@@ -1,0 +1,17 @@
+p01-enum-before-rref: g++=run:1 clang++=run:0 tidal-fe=rc:0 result: 0 
+p02-array-bound-direct: g++=run:0 clang++=reject tidal-fe=rc:0 result: 0 
+p03-rref-before-qual: g++=run:1 clang++=run:0 tidal-fe=rc:0 result: 0 
+p04-nearest-source: g++=run:0 clang++=run:0 tidal-fe=rc:0 result: 0 
+p05-reference-kind: g++=run:0 clang++=run:1 tidal-fe=rc:127 unsupported at line 10: conversion to a function reference 
+p06-list-nearest-base: g++=run:0 clang++=run:0 tidal-fe=rc:127 unsupported at line 8: constructor call 
+p07-ilist-over-kind: g++=run:1 clang++=run:0 tidal-fe=rc:0 result: 0 
+p08-object-noref: g++=run:0 clang++=run:0 tidal-fe=rc:0 result: 0 
+p09-same-aggregate: g++=run:0 clang++=run:0 tidal-fe=rc:0 result: 0 
+p10-static-slot-derived: g++=run:0 clang++=run:0 tidal-fe=rc:0 result: 0 
+p11-base-pointer-qual: g++=run:0 clang++=run:0 tidal-fe=rc:0 result: 0 
+p12-ambiguous-ties: g++=run:0 clang++=run:0 tidal-fe=rc:127 unsupported at line 6: converting constructor 
+p13-conv-result-ctor: g++=run:0 clang++=reject tidal-fe=rc:0 result: 0 
+p14-tie-swapped: g++=run:0 clang++=run:0 tidal-fe=rc:0 result: 0 
+p15-explicit-ref-base: g++=run:0 clang++=run:0 tidal-fe=rc:127 unsupported at line 7: concept 
+p16-utf8-literal: g++=run:1 clang++=run:0 tidal-fe=rc:0 result: 0 
+p17-reference-explicit-direct: g++=run:0 clang++=run:0 tidal-fe: unsupported at line 5: reference bound to a temporary

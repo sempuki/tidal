@@ -1,0 +1,379 @@
+# Grid scoring of ranking.py (sha1 in ranking.sha1)
+
+arithmetic           pass  190  fail    0  split    5  caller   0
+pointers             pass   80  fail    2  split    8  caller   0
+member-pointers      pass   24  fail    0  split    0  caller   0
+functions            pass   20  fail    0  split    0  caller   0
+references           pass  123  fail    3  split    0  caller   0
+classes              pass  147  fail    0  split    0  caller   0
+user-defined         pass   60  fail    0  split    0  caller   0
+lists                pass  117  fail    0  split    9  caller   0
+object-parameter     pass   24  fail    0  split    0  caller   0
+order                pass   32  fail    0  split    8  caller   0
+list-references      pass   60  fail    0  split    0  caller   0
+viability            pass   36  fail    0  split    0  caller   0
+object-call          pass   18  fail    0  split    0  caller   0
+operators            pass   10  fail    0  split    0  caller   0
+templates            pass  136  fail    0  split    8  caller   0
+reference-kind       pass    7  fail    0  split    5  caller   0
+initialization       pass   21  fail    0  split    0  caller   0
+three-way            pass   29  fail    0  split    2  caller  18
+compound-integral    pass   50  fail    0  split    0  caller   0
+TOTAL                pass 1184  fail    5  split   45  caller  18
+
+FAIL pointers | Derived* | Middle* / const Middle* | expected first | got neither 
+FAIL pointers | Derived[2] | Middle* / const Middle* | expected first | got neither 
+FAIL references | int : 3 bit-field | const volatile int lref / int rref | expected neither | got first 
+FAIL references | int : 3 bit-field | const volatile int lref / const int rref | expected neither | got first 
+FAIL references | int : 3 bit-field | const volatile int lref / const long lref | expected neither | got first 
+
+# Individual tests: 329 pass, 14 fail, 4 not representable
+
+pass ambiguous-loses-to-standard.cpp | take(1) | expected Two | got Two
+pass ambiguous-loses-to-standard.cpp | look(Source{}) | expected Two | got Two
+pass ambiguous-ties-user-defined.cpp | take(Source{}, 0) | expected Two | got Two
+pass array-fewer-elements-const-lvalue.cpp | take({1.0}) | expected One | got One
+pass array-fewer-elements.cpp | take({1,2}) | expected One | got One
+pass array-known-bound-const-lvalue.cpp | take({1L,2L,3L}) | expected One | got One
+pass array-known-bound.cpp | take({1,2}) | expected One | got One
+pass array-known-bound-direct.cpp | take(row) | expected One | got One
+pass array-known-bound-direct-cv.cpp | take(row) | expected One | got One
+pass array-pointer-tie-breaker.cpp | take(items) | expected Two | got Two
+pass array-pointer-tie-breaker.cpp | near(items) | expected Two | got Two
+pass assignment-left-no-builtin.cpp | c = 1 | expected no viable function | got no viable function
+pass assignment-left-standard-only.cpp | c = 5 | expected Cell=(long) | got Cell=(long)
+pass base-pointer-over-void.cpp | take(d) | expected One | got One
+FAIL bit-field-promotion.cpp | take(bits.v) | expected One | got ambiguous | the component has no bit-field argument; long long stands in
+pass chosen-ambiguous-base.cpp | take(j) chooses take(Base*) | expected One | got One
+pass chosen-ambiguous-constructor-conversion.cpp | take(s) chooses take(Target) with an ambiguous sequence | expected One+ambiguous | got One+ambiguous
+pass chosen-ambiguous.cpp | take(Source{}) | expected One+ambiguous | got One+ambiguous
+pass chosen-ambiguous-tie.cpp | take(Source{}, 0) | expected One+ambiguous | got One+ambiguous
+pass chosen-bit-field.cpp | take(flags.mode) chooses take(int&) | expected One | got One
+pass chosen-deleted-constructor.cpp | take(1) chooses take(Gate) | expected One | got One
+pass chosen-deleted-conversion-function.cpp | take(Source{}) chooses take(int) | expected One | got One
+pass chosen-designator-order.cpp | take({.x=1,.y=2}, 0) chooses take(Swapped,int) | expected Two | got Two
+pass chosen-explicit-copy-list.cpp | take({1,2}, 0) chooses take(Strict,int) | expected One | got One
+pass chosen-list-ambiguous.cpp | take({1,1}) | expected One+ambiguous | got One+ambiguous
+pass chosen-narrowing.cpp | take({d}) chooses take(int) | expected One | got One
+pass chosen-private-base.cpp | take(d) chooses take(Base*) | expected One | got One
+pass conversion-choice-class-value.cpp | Base b = Source{} | expected op Middle | got op Middle
+pass conversion-choice-nearest-source.cpp | static_cast<Base*>(Ptr{}) | expected op Middle* | got op Middle*
+pass conversion-choice-nearest-source.cpp | Base& r = Ref{} | expected op Middle& | got op Middle&
+pass conversion-choice-nearest-source.cpp | int Derived::* m = Mem{} | expected op int Middle::* | got op int Middle::*
+pass conversion-choice-promotion-result.cpp | double d = Source{} | expected op float | got op float
+pass conversion-choice-second-part.cpp | long l = Source{} | expected op long | got op long
+pass conversion-choice-second-part.cpp | int chosen = Small{} | expected op short | got op short
+pass conversion-choice-void-const.cpp | const void* p = Source{} | expected op Middle* | got op Middle*
+pass conversion-choice-void.cpp | void* p = Source{} | expected op Base* | got op Base*
+pass double-brace-standard-only.cpp | take({{1,2}}) | expected Two | got Two
+pass ellipsis-braced-list.cpp | show({item}) | expected no viable function | got no viable function
+pass ellipsis-braced-list-other-wins.cpp | show({1}) | expected int | got int
+pass ellipsis-sequence.cpp | any(1, 2.0, Tag{}) | expected One | got One
+pass fixed-enumeration-before-rvalue-reference.cpp | take(low) | expected One | got One
+pass fixed-enumeration.cpp | take(low) | expected One | got One
+pass fixed-enumeration.cpp | code(none) | expected One | got One
+pass fixed-enumeration-promotion.cpp | take(low) | expected One | got One
+pass fixed-enumeration-promotion.cpp | wide(low) | expected One | got One
+pass fixed-enumeration-promotion.cpp | code(none) | expected One | got One
+pass fixed-enumeration-promotion-unsigned-char.cpp | narrow(off) | expected One | got One
+pass fixed-enumeration-promotion-unsigned-char.cpp | wide(off) | expected One | got One
+pass function-lvalue-reference-cast.cpp | take(static_cast<int(&&)(int)>(twice)) | expected One | got One
+pass function-lvalue-reference.cpp | take(run) | expected One | got One
+pass implicit-object-standard-only.cpp | fixed.get(1) | expected Two | got Two
+pass initializer-list-over-kind.cpp | take({1}) | expected Two | got Two
+pass initializer-list-over-rank.cpp | take({1}) | expected One | got One
+pass initializer-list-reference.cpp | take({1}) | expected Two | got Two
+pass initializer-list-reference.cpp | wide({1}) | expected Two | got Two
+pass initializer-list-reference.cpp | move({1}) | expected One | got One
+pass initializer-list-target.cpp | take({1}) | expected One | got One
+pass kind-order.cpp | take(1) | expected One | got One
+pass kind-order.cpp | put(1) | expected One | got One
+pass kind-order.cpp | any(1) | expected One | got One
+pass list-aggregate.cpp | take({1}) | expected Two | got Two
+pass list-aggregate.cpp | copy({p}) | expected One | got One
+pass list-aggregate.cpp | base({d}) | expected One | got One
+pass list-aggregate-nearest-base.cpp | take({d}) | expected One | got One
+pass list-array-against-scalar.cpp | take({1}, 0) | expected Two | got Two
+pass list-array.cpp | take({1}) | expected One | got One
+pass list-array.cpp | open({1,2}) | expected One | got One
+pass list-array.cpp | room({1,2}) | expected One | got One
+pass list-array.cpp | text({"ab"}) | expected One | got One
+pass list-array.cpp | full({1,2}) | expected Two | got Two
+pass list-class-constructor.cpp | take({1}) | expected Two | got Two
+pass list-class-constructor.cpp | put({1,2}) | expected One | got One
+pass list-class-list-constructor.cpp | take({c}, 0) | expected Two | got Two
+pass list-class-nearest-base.cpp | take({d}) | expected One | got One
+pass list-class-same-class.cpp | take({c}) | expected One | got One
+pass list-class-same-class.cpp | base({d}) | expected One | got One
+pass list-class-same-class.cpp | rank({d}) | expected One | got One
+pass list-class-tie.cpp | take({1,1}, 0) | expected Two | got Two
+pass list-designated.cpp | take({.x=1,.y=2}, 0) | expected One | got One
+pass list-designated.cpp | pick({.x=1}) | expected One | got One
+pass list-initializer-list.cpp | take({small, 1}) | expected One | got One
+pass list-initializer-list.cpp | put({1, 2}) | expected Two | got Two
+pass list-initializer-list.cpp | none({}) | expected One | got One
+pass list-initializer-list-designated.cpp | take({.x=1}) | expected Two | got Two
+pass list-reference-class-element-class.cpp | edit({s}) | expected Two | got Two
+pass list-reference-class-element-scalar.cpp | edit({s}) | expected Two | got Two
+pass list-reference.cpp | take({1}) | expected One | got One
+pass list-reference.cpp | put({1}) | expected Two | got Two
+pass list-reference-direct.cpp | edit({i}) | expected One | got One
+pass list-reference-direct.cpp | look({i}) | expected One | got One
+pass list-reference-direct.cpp | take({i}) | expected Two | got Two
+pass list-reference-direct.cpp | keep({i}) | expected Two | got Two
+pass list-reference-direct.cpp | part({d}) | expected One | got One
+pass list-reference-direct.cpp | whole({pair}) | expected One | got One
+pass list-reference-temporary.cpp | take({s}) | expected One | got One
+pass list-reference-temporary.cpp | move({1}) | expected One | got One
+pass list-reference-temporary.cpp | put({.x=1}, 0) | expected One | got One
+pass list-scalar.cpp | take({}) | expected One | got One
+pass list-scalar.cpp | one({1}) | expected One | got One
+pass list-scalar.cpp | put({{1}}) | expected Two | got Two
+pass list-scalar-pointer-and-pair.cpp | take({}) | expected One | got One
+pass list-scalar-pointer-and-pair.cpp | real({1.5f}) | expected One | got One
+pass list-scalar-pointer-and-pair.cpp | two({1,2}) | expected Two | got Two
+pass list-string-literal-binds-literal.cpp | known({"ab"}) | expected One | got One
+pass list-string-literal-binds-literal.cpp | unknown({"ab"}) | expected One | got One
+pass list-string-literal-bound.cpp | take({"ab"}) | expected Two | got Two
+pass list-string-literal.cpp | narrow({L"ab"}) | expected Two | got Two
+pass list-string-literal.cpp | plain({"ab"}) | expected One | got One
+pass list-string-literal.cpp | kind({"ab"}) | expected One | got One
+pass list-string-literal-too-short.cpp | take({"ab"}) | expected Two | got Two
+FAIL list-string-literal-utf8.cpp | take({u8"ab"}) | expected One | got Two
+pass nearest-base.cpp | ptr(dp) | expected Two | got Two
+pass nearest-base.cpp | ref(d) | expected Two | got Two
+pass nearest-base.cpp | val(d) | expected Two | got Two
+pass nearest-base.cpp | mem(&Base::x) | expected One | got One
+pass object-conversion-function-class.cpp | int chosen = Derived{} | expected op int | got op int
+pass object-explicit-assignment.cpp | t = 1 | expected One | got One
+pass object-explicit-assignment.cpp | t += 1 | expected Two | got Two
+pass object-explicit-user-defined.cpp | Item{}.get() | expected One | got One
+pass object-ref-qualifier.cpp | i.get() | expected One | got One
+pass object-ref-qualifier.cpp | Item{}.get() | expected Two | got Two
+pass object-ref-qualifier.cpp | Fixed{}.get() | expected Two | got Two
+pass object-rvalue-non-const.cpp | Item{}.get() | expected One | got One
+pass object-using-declaration.cpp | d.get(1, 0) | expected One | got One
+pass object-using-declaration.cpp | d2.get(1, 0) | expected Two | got Two
+pass overload-set-argument-sequence.cpp | a::g(twice) | expected Two | got Two
+pass overload-set-argument-sequence.cpp | a::g(once) | expected Two | got Two
+pass overload-set-argument-sequence.cpp | b::g(once) | expected One | got One
+pass overload-set-argument-sequence.cpp | c::g(once) | expected Two | got Two
+pass overload-set-argument-sequence.cpp | c::g(generic<int>) | expected Two | got Two
+pass overload-set-argument-sequence.cpp | d::g(exact) | expected Two | got Two
+pass overload-set-argument-sequence.cpp | e::g(twice) | expected One | got One
+pass overload-set-reference-or-pointer.cpp | g(f) | expected ambiguous | got ambiguous
+pass overload-set-to-ellipsis.cpp | g(f) | expected no viable function | got no viable function
+pass pointer-to-bool.cpp | take(p) | expected Two | got Two
+pass pointer-to-bool.cpp | member(&Item::x) | expected One | got One
+pass qualification-array-bound.cpp | take(row) | expected One | got One
+pass qualification-fewer.cpp | take(p) | expected One | got One
+pass qualification-fewer.cpp | deep(pp) | expected One | got One
+pass qualification-reference-temporary.cpp | take(&n) | expected One | got One
+pass rank-before-reference.cpp | take(1) | expected Two | got Two
+pass rank-class-value.cpp | take(d) | expected Two | got Two
+pass rank-class-value.cpp | first::put(c, 0) | expected One | got One
+pass rank-class-value.cpp | second::put(c, 0) | expected Two | got Two
+pass rank-comparison.cpp | take(small) | expected One | got One
+pass rank-comparison.cpp | real(1.0f) | expected One | got One
+pass rank-worst-step.cpp | take(values) | expected One | got One
+pass rank-worst-step.cpp | widen(small) | expected One | got One
+pass reference-conversion-result.cpp | take(s) | expected Two | got Two
+pass reference-conversion-value-result.cpp | take(s) | expected One | got One
+pass reference-conversion-value-result.cpp | edit(s) | expected Two | got Two
+pass reference-conversion-value-result.cpp | part(s) | expected One | got One
+pass reference-direct-derived.cpp | take(d) | expected Two | got Two
+pass reference-direct-fewer-qualifiers.cpp | take(p) | expected One | got One
+pass reference-direct-fewer-qualifiers.cpp | give(p) | expected One | got One
+pass reference-function-rvalue.cpp | take(run) | expected One | got One
+pass reference-less-cv.cpp | take(value) | expected One | got One
+pass reference-less-cv.cpp | look(value) | expected One | got One
+pass reference-no-sequence.cpp | change(1) | expected Two | got Two
+pass reference-no-sequence.cpp | steal(value) | expected Two | got Two
+pass reference-no-sequence.cpp | watch(1) | expected Two | got Two
+pass reference-rvalue-other-type.cpp | take(s) | expected One | got One
+pass reference-rvalue-other-type.cpp | take(c) | expected One | got One
+pass reference-rvalue-other-type.cpp | take(ti) | expected One | got One
+pass reference-rvalue-other-type.cpp | wide(i) | expected One | got One
+pass reference-rvalue-other-type.cpp | part(d) | expected Two | got Two
+pass reference-rvalue-other-type.cpp | part(tb) | expected Two | got Two
+pass reference-temporary.cpp | take(small) | expected Two | got Two
+pass reference-temporary.cpp | first::put(1, 0) | expected One | got One
+pass reference-temporary.cpp | second::put(1, 0) | expected Two | got Two
+pass rvalue-reference-before-cv.cpp | take(1) | expected One | got One
+pass rvalue-reference-before-cv.cpp | put(Item{}) | expected One | got One
+FAIL rvalue-reference-before-qualification.cpp | take(&n) | expected Two | got One
+pass rvalue-reference-binding.cpp | take(1) | expected One | got One
+pass rvalue-reference-binding.cpp | put(Item{}) | expected One | got One
+pass rvalue-reference-object-exception.cpp | Item{} + 0 | expected One | got One
+pass rvalue-reference-object-exception.cpp | Fixed{} + 0 | expected Two | got Two
+pass standard-three-steps.cpp | take(items) | expected One | got One
+pass standard-top-level-cv.cpp | take(limit) | expected One | got One
+pass standard-top-level-cv.cpp | keep(5) | expected One | got One
+pass static-object-slot.cpp | t.use(1, 0) | expected One | got One
+pass static-object-slot.cpp | t2.use(1, 0) | expected Two | got Two
+pass static-object-slot-derived.cpp | d.use(1, 0) | expected One | got One
+pass static-object-slot-derived.cpp | d2.use(1, 0) | expected Two | got Two
+pass subsequence-function-pointer.cpp | take(run) | expected One | got One
+pass subsequence-qualification.cpp | take(p) | expected One | got One
+pass subsequence-qualification.cpp | take(values) | expected One | got One
+pass template-conversion-exact.cpp | take(Source{}) | expected Two | got Two
+pass template-conversion-exact.cpp | keep(Source{}) | expected One | got One
+pass template-conversion-exact.cpp | take(Plain{}) | expected One | got One
+pass template-conversion-exact-long.cpp | take(Source{}) | expected One | got One
+pass template-conversion-exact-long.cpp | scale(Source{}) | expected Two | got Two
+pass tie-breaker-before-rvalue-reference.cpp | flag(&n) | expected One | got One
+pass tie-breaker-before-rvalue-reference.cpp | near(Derived{}) | expected One | got One
+pass tie-breaker-before-rvalue-reference.cpp | base(&d) | expected One | got One
+pass tie-breaker-before-rvalue-reference.cpp | nearer(&d) | expected One | got One
+pass tie-breaker-before-rvalue-reference.cpp | member(&Base::x) | expected One | got One
+pass two-user-defined-function-then-constructor.cpp | take(Source{}) | expected Two | got Two
+pass two-user-defined-function-then-constructor.cpp | take(Middle{}) | expected One | got One
+pass two-user-defined-none.cpp | take(1) | expected Two | got Two
+pass user-defined-candidates.cpp | Target t = Source{} | expected op Derived | got op Derived
+pass user-defined-candidates.cpp | Copyable c(Maker{}) | expected True | got True
+pass user-defined-candidates.cpp | const int* p(Address{}) | expected True | got True
+pass user-defined-candidates.cpp | Target& r = Holder{} | expected op Target& | got op Target&
+pass user-defined-choice-object-parameter.cpp | Target t = s | expected op Target | got op Target
+pass user-defined-choice-object-parameter.cpp | take(s) | expected One | got One
+pass user-defined-choice-object-parameter.cpp | Goal g = m | expected Goal(Maker&) | got Goal(Maker&)
+pass user-defined-different-functions.cpp | first::take(1, 0) | expected One | got One
+pass user-defined-different-functions.cpp | second::take(1, 0) | expected Two | got Two
+pass user-defined-different-functions.cpp | third::put(Source{}, 0) | expected One | got One
+pass user-defined-different-functions.cpp | fourth::put(Source{}, 0) | expected Two | got Two
+pass user-defined-different-functions.cpp | fifth::set({1,2}, 0) | expected One | got One
+pass user-defined-different-functions.cpp | sixth::set({1,2}, 0) | expected Two | got Two
+pass user-defined-explicit.cpp | makes<Item, ToItem> | expected True | got True
+pass user-defined-explicit.cpp | makes<Item, ToConstItem> | expected True | got True
+pass user-defined-explicit.cpp | makes<Item, ToItemRef> | expected True | got True
+pass user-defined-explicit.cpp | makes<Base, ToDerived> | expected False | got False
+pass user-defined-explicit.cpp | makes<const int*, ToPointer> | expected True | got True
+pass user-defined-explicit.cpp | makes<const void*, ToPointer> | expected False | got False
+pass user-defined-explicit.cpp | makes<long, ToInt> | expected False | got False
+pass user-defined-explicit.cpp | makes<const Item&, ToItemRef> | expected True | got True
+pass user-defined-explicit.cpp | makes<const int&, ToIntRef> | expected True | got True
+FAIL user-defined-explicit.cpp | makes<Base&, ToDerivedRef> | expected False | got True
+pass user-defined-explicit.cpp | pass(ToItem{}) | expected Two | got Two
+FAIL user-defined-explicit-reference-other-type.cpp | !makes<Base&&, ToDerived> | expected False | got True
+pass user-defined-explicit-reference-other-type.cpp | !makes<const Base&, ToDerived> | expected False | got False
+pass user-defined-explicit-reference-other-type.cpp | !makes<Base&&, ToDerivedLvalue> | expected False | got False
+FAIL user-defined-explicit-reference-other-type.cpp | !makes<const Base&, ToDerivedLvalue> | expected False | got True
+FAIL user-defined-explicit-reference-other-type.cpp | !makes<Base&&, ToDerivedRvalue> | expected False | got True
+pass user-defined-explicit-reference-other-type.cpp | !makes<const Base&, ToDerivedRvalue> | expected False | got False
+pass user-defined-explicit-reference-other-type.cpp | !makes<long&&, ToInt> | expected False | got False
+pass user-defined-explicit-reference-other-type.cpp | !makes<const long&, ToInt> | expected False | got False
+pass user-defined-explicit-reference-other-type.cpp | !makes<long&&, ToIntLvalue> | expected False | got False
+pass user-defined-explicit-reference-other-type.cpp | !makes<const long&, ToIntLvalue> | expected False | got False
+pass user-defined-explicit-reference-other-type.cpp | !makes<long&&, ToIntRvalue> | expected False | got False
+pass user-defined-explicit-reference-other-type.cpp | !makes<const long&, ToIntRvalue> | expected False | got False
+FAIL user-defined-explicit-reference-value.cpp | !makes<const Item&, ToItem> | expected False | got True
+pass user-defined-explicit-reference-xvalue.cpp | makes<Item&&, ToItemRvalue> | expected True | got True
+FAIL user-defined-explicit-reference-xvalue.cpp | !makes<const Item&, ToItemRvalue> | expected False | got True
+pass user-defined-explicit-rvalue-reference-value.cpp | !makes<long&&, ToInt> | expected False | got False
+FAIL user-defined-explicit-rvalue-reference-value.cpp | !makes<Base&&, ToDerived> | expected False | got True
+pass user-defined-explicit-rvalue-reference-value.cpp | makes<Item&&, ToItem> | expected True | got True
+pass user-defined-explicit-rvalue-reference-value.cpp | makes<const Item&&, ToItem> | expected True | got True
+pass user-defined-explicit-rvalue-reference-value.cpp | makes<int&&, ToInt> | expected True | got True
+pass user-defined-first-part.cpp | take(1) | expected One | got One
+pass user-defined-same-aggregate.cpp | take({1,2}) | expected Two | got Two
+pass user-defined-same-aggregate.cpp | put({1,2}) | expected Two | got Two
+pass user-defined-same-function.cpp | take(Source{}) | expected Two | got Two
+pass user-defined-same-function.cpp | put(Small{}) | expected One | got One
+pass user-defined-second-part.cpp | take(Source{}) | expected Two | got Two
+pass user-defined-second-part.cpp | look(Pointer{}) | expected One | got One
+pass user-defined-step-standard-only.cpp | take(Source{}) | expected Two | got Two
+pass user-defined-step-standard-only.cpp | put(Number{}) | expected Two | got Two
+pass best-beats-each.cpp | f(1, 1) | expected One | got One
+pass best-no-single-winner.cpp | f(1, 1) | expected ambiguous | got ambiguous
+pass better-crossing-arguments.cpp | f(1, 1) | expected ambiguous | got ambiguous
+pass better-one-argument.cpp | f(1, 1) | expected One | got One
+pass template-exact-over-plain.cpp | f(1L) | expected Two | got Two
+pass tie-constraints-default-parameter.cpp | Pick<int>::f(1) | expected ambiguous | got ambiguous | the caller answers that ORD-13 conditions fail (parameter lists differ)
+pass tie-constraints-ellipsis.cpp | Pick<int>::f(1) | expected ambiguous | got ambiguous
+pass tie-constraints-different-parameters.cpp | f(n) | expected ambiguous | got ambiguous
+pass tie-conversion-result-before-constraints.cpp | int x = Source<int>{} | expected op int | got op int
+pass tie-conversion-result-before-template.cpp | int n = Source{} | expected op T<int> | got op T<int>
+pass tie-conversion-result-constructor.cpp | Target t = s | expected Target(const Source&) | got Target(const Source&)
+pass tie-conversion-result.cpp | long a = Source{} | expected op long | got op long
+pass tie-conversion-result.cpp | int b = Source{} | expected op int | got op int
+pass tie-conversion-result-noexcept.cpp | int (*p)() = Source{} | expected op Plain | got op Plain
+pass tie-conversion-result-templates.cpp | int (*p)() = Source{} | expected op fp<T> | got op fp<T>
+pass tie-derived-over-inherited.cpp | Derived(5) | expected Derived(int,int=0) | got Derived(int,int=0)
+pass tie-function-reference-kind.cpp | F& left = Source{} | expected op F& | got op F&
+pass tie-function-reference-kind.cpp | F&& right = Source{} | expected op F&& | got op F&&
+pass tie-more-constrained.cpp | Box<int>{}.get() | expected Two | got Two
+pass tie-more-constrained.cpp | Box<double>{}.get() | expected One | got One
+pass tie-more-specialized-constraints.cpp | f(1) | expected Two | got Two
+pass tie-more-specialized-constraints.cpp | f('c') | expected One | got One
+pass tie-more-specialized.cpp | f(p) | expected Two | got Two
+pass tie-plain-over-template.cpp | f(1) | expected One | got One
+pass tie-reference-kind-before-constraints.cpp | F& r = Source<int>{} | expected op F& | got op F& | constraints cannot reach a nested conversion in this API; OVL-29 decides first anyway
+pass tie-reference-kind-before-more-specialized.cpp | F&& r = Source{} | expected op T&& | got op T&&
+pass tie-reference-kind-before-template.cpp | F&& r = Source{} | expected op T&& | got op T&&
+pass tie-reference-kind-before-template-lvalue.cpp | F& r = Source{} | expected op T& | got op T&
+pass tie-swapped-same-function.cpp | a == b | expected ambiguous | got ambiguous | the swapped member candidate is modelled as a free function with its parameters reversed
+pass tie-template-before-inherited.cpp | Derived(5) | expected Base(int) inherited | got Base(int) inherited
+pass tie-template-before-rewritten.cpp | Item{} != Item{} | expected rewritten == | got rewritten ==
+pass tie-template-before-swapped.cpp | Left{} == Right{} | expected swapped == | got swapped ==
+pass tie-written-order.cpp | a < b | expected One | got One
+pass tie-written-over-rewritten.cpp | a < b | expected One | got One
+pass init-constructor-against-conversion.cpp | Target t = s | expected Target(Source&) | got Target(Source&)
+pass init-constructor-conversion-tie.cpp | Target t = s | expected ambiguous | got ambiguous
+pass init-conversion-to-derived.cpp | Base b = Source{} | expected op Derived | got op Derived
+pass init-copy-constructor-standard-only.cpp | Target copied = ToMid{} | expected none | got none
+pass init-copy-constructor-standard-only.cpp | Target direct(ToMid{}) | expected Target(Mid) | got Target(Mid)
+pass init-copy-explicit-conversion.cpp | Target t = s | expected none | got none
+FAIL init-direct-explicit-conversion.cpp | Target t(s) | expected Target(const Target&) | got no viable function | resolve has no direct-initialization flag for the copy constructor parameter (OVL-40)
+pass init-copy-list-explicit-conversion.cpp | Target t = {s} | expected none | got none
+pass init-qualified-result.cpp | Box b = Source{} | expected op const Box& | got op const Box&
+pass reference-conversion-kind.cpp | int& left = Source{} | expected op int& | got op int&
+pass reference-conversion-kind.cpp | int&& right = Source{} | expected op int&& | got op int&&
+pass reference-conversion-not-compatible.cpp | const int& r = Source{} binds a temporary | expected user/temporary | got user/temporary
+pass reference-explicit-copy.cpp | const int& r = s | expected none | got none
+pass reference-explicit-direct.cpp | const int& r(s) | expected op int& | got op int&
+pass reference-function-both-kinds.cpp | F& r = Source{} | expected op F&& | got op F&&
+pass viable-constraints.cpp | Box<double>{}.put(1.0) | expected One | got One
+pass viable-constraints.cpp | Box<char>{}.put('a') | expected Two | got Two
+pass viable-constraints-function-template.cpp | put(1.0) | expected One | got One
+pass viable-constraints-function-template.cpp | put('a') | expected Two | got Two
+pass viable-count.cpp | f with 2 arguments | expected One | got One
+pass viable-count.cpp | f with 3 arguments | expected Two | got Two
+pass viable-count.cpp | f with 5 arguments | expected Three | got Three
+pass viable-count.cpp | f with 1 arguments | expected Three | got Three
+pass viable-count.cpp | g with 0 arguments | expected One | got One
+pass viable-count.cpp | g with 3 arguments | expected One | got One
+pass viable-count-defaults-and-ellipsis.cpp | k with 1 arguments | expected One | got One
+pass viable-count-defaults-and-ellipsis.cpp | k with 3 arguments | expected One | got One
+pass viable-count-defaults-and-ellipsis.cpp | k with 4 arguments | expected Two | got Two
+pass viable-count-defaults-and-ellipsis.cpp | k with 6 arguments | expected Two | got Two
+pass viable-sequence.cpp | f(n, 1) | expected One | got One
+pass viable-sequence.cpp | f(1, 1) | expected Two | got Two
+pass viable-sequence.cpp | v.get(1) | expected One | got One
+pass viable-sequence.cpp | Item{}.get(1) | expected Two | got Two
+pass defaults-take-no-part.cpp | f(1) | expected ambiguous | got ambiguous
+pass static-slot-no-part.cpp | v.get(1) | expected One | got One
+pass static-slot-no-part.cpp | v.get(1L) | expected Two | got Two
+pass no-object-nonstatic-chosen.cpp | reset() chooses the non-static member | expected reset() | got reset()
+pass no-object-static-chosen.cpp | reset(0) | expected reset(int) | got reset(int)
+pass no-object-ref-qualified-member.cpp | put(1) chooses put(int)&& | expected put(int)&& | got put(int)&&
+pass no-object-static-default-ambiguous.cpp | reset() | expected ambiguous | got ambiguous
+FAIL builtin-logical-explicit-bool.cpp | !f | expected builtin ! | got no viable function | no per-parameter direct-initialization flag (ICS-45, OVL-9)
+FAIL builtin-logical-explicit-competes.cpp | !f | expected ambiguous | got operator!(Gate)
+FAIL builtin-logical-explicit-competes-and.cpp | f && f | expected ambiguous | got operator&&(Gate,Gate)
+pass builtin-logical-explicit-int.cpp | !c | expected no viable function | got no viable function
+pass builtin-increment-from-conversion.cpp | ++c | expected builtin ++(int&) | got builtin ++(int&)
+pass builtin-increment-from-conversion.cpp | c += 5 | expected builtin +=(int&,int) | got builtin +=(int&,int)
+pass builtin-increment-from-value.cpp | ++c | expected no viable function | got no viable function
+pass builtin-other-shape-kept.cpp | red == blue | expected ambiguous | got ambiguous
+pass declarations/functions/definitions/different-parameter-types-overload.cpp | kind(0) | expected 1 | got 1
+pass declarations/functions/definitions/different-parameter-types-overload.cpp | kind(0L) | expected 2 | got 2
+pass declarations/functions/definitions/different-parameter-types-overload.cpp | kind(&v) | expected 3 | got 3
+pass declarations/functions/definitions/different-parameter-types-overload.cpp | g.read() | expected 4 | got 4
+pass declarations/functions/definitions/different-parameter-types-overload.cpp | Gauge{}.read() | expected 5 | got 5
+pass declarations/functions/definitions/different-parameter-types-overload.cpp | g.peek() | expected 6 | got 6
+pass declarations/functions/definitions/different-parameter-types-overload.cpp | cg.peek() | expected 7 | got 7
+pass foundations/language-support/initializer-list-candidate-not-viable.cpp | take({1, 2}) | expected Point | got Point
+
+NOT REPRESENTABLE conversion-choice-equal-rank-extended-target.cpp | needs an extended floating-point type (ICS-44)
+NOT REPRESENTABLE conversion-choice-equal-rank-source.cpp | needs extended floating-point types (ICS-44)
+NOT REPRESENTABLE floating-before-rvalue-reference.cpp | needs std::float64_t (ICS-35)
+NOT REPRESENTABLE floating-equal-rank.cpp | needs std::float64_t (ICS-35)

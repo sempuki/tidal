@@ -266,6 +266,7 @@ No page has only a Predict batch that showed test names.
 | X19 | done: 34 rule changes, 1 test changes outcome; findings X19-1 to X19-11 | `reports/clean-room/X19/` |
 | X20 | done: 58 rule changes, no test changes outcome; findings X20-1 to X20-11 | `reports/clean-room/X20/` |
 | X21 | done: 32 rule changes, no test changes outcome; findings X21-1 to X21-11 | `reports/clean-room/X21/` |
+| I3 | done: overload ranking from the rules alone, 1513 of 1532 decided assertions (1184 of 1189 grid cells, 329 of 343 test assertions); 12 of 17 programs run on the front end; findings I3-1 to I3-18 | `reports/clean-room/I3/` |
 | I2 | done: partial ordering from the rules alone, 140 of 140 ordering checks (76 grid cells); 5 of 46 programs differ on the front end; findings I2-1 to I2-17 | `reports/clean-room/I2/` |
 | I1 | done: class layout from the rules alone, 241 of 243 `static_assert` checks, 24 of 24 run checks; findings I1-1 to I1-13 | `reports/clean-room/I1/` |
 | W4 | done: four programs build and run on GCC and Clang; findings W4-1 to W4-10 | `reports/clean-room/W4/` |

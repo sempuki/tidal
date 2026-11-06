@@ -1,0 +1,7 @@
+r1-function-reference-conversion.cpp | g++: 0 | clang++: 0 | tidal-fe: unsupported at line 4: conversion to a function reference
+r2-list-derived-element-class-parameter.cpp | g++: 0 | clang++: 0 | tidal-fe: unsupported at line 5: constructor call
+r3-converting-constructor-argument.cpp | g++: 0 | clang++: 0 | tidal-fe: unsupported at line 4: converting constructor
+r4-reference-cast-from-class.cpp | g++: 0 | clang++: 0 | tidal-fe: unsupported at line 3: reference cast
+r5-requires-reference-cast.cpp | g++: 0 | clang++: 0 | tidal-fe: unsupported at line 3: concept
+r6-explicit-conversion-reference-block.cpp | g++: 0 | clang++: 0 | tidal-fe: unsupported at line 3: conversion to reference
+r7-explicit-conversion-const-reference-namespace.cpp | g++: 0 | clang++: 0 | tidal-fe: unsupported at line 4: reference bound to a temporary
