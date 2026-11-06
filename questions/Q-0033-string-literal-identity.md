@@ -2,7 +2,7 @@
 
 **Status:** provisional
 **Affects:** CE-13, PRIM-9, `tests/foundations/constant-evaluation/string-literal-identity.cpp`, `tests/expressions/primary/string-compare-constant.cpp`
-**Waits for:** a review (doubt)
+**Waits for:** a review (doubt); newest families that agree
 
 ## Context
 
@@ -29,6 +29,8 @@ No; rejected (option 1). A constant expression should not depend on a choice tha
 implementation need not make the same way each time.
 
 Kept open on 2026-11-03 under decision 0054, because the review reads with doubt.
+
+Noted on 2026-11-05 under decision 0058, item PK2. A test whose notes name the question has two newest families that differ from the answer, so the question also waits for newest families that agree (`pending.md` row 1). The check of `tools/question_index.py` found the case.
 
 ## Opinions
 

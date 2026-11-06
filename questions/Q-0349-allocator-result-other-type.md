@@ -2,7 +2,7 @@
 
 **Status:** provisional
 **Affects:** CE-4, LSUP-11, `tests/foundations/constant-evaluation/allocator-result-other-type.cpp`
-**Waits for:** a review (silent)
+**Waits for:** a review (silent); newest families that agree
 
 ## Context
 
@@ -50,6 +50,8 @@ that STG-28 describes, and a pointer of another type does not point to
 an element of that array.
 
 Kept open on 2026-11-03 under decision 0054, because the review is silent.
+
+Noted on 2026-11-05 under decision 0058, item PK2. A test whose notes name the question has two newest families that differ from the answer, so the question also waits for newest families that agree (`pending.md` row 1). The check of `tools/question_index.py` found the case.
 
 ## Opinions
 

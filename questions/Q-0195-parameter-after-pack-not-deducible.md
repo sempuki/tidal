@@ -2,7 +2,7 @@
 
 **Status:** provisional
 **Affects:** TPL-35, TPL-30, TPL-36, `tests/templates/declarations/pack-then-not-deducible.cpp`, `tests/templates/declarations/pack-then-pack-not-deducible.cpp`, `tests/templates/declarations/pack-then-typed-pack-not-deducible.cpp`
-**Waits for:** the maintainer (pending.md row 3)
+**Waits for:** the maintainer (pending.md row 3); newest families that agree
 
 ## Context
 
@@ -46,6 +46,8 @@ Changed on 2026-11-03. The source-reader gap review of question cluster 5 (`repo
 The question stays open under decision 0051 (2026-11-03). Clang 22 and GCC 16 accept the declaration, and EDG 7.0 rejects it, so two families disagree. The front end accepts the three tests, so `tools/frontend_check.py` reports them as missed rejections. This goes to item FE.
 
 Kept open on 2026-11-03 under decision 0054, because the question waits on the maintainer (`documentation/decisions/pending.md`).
+
+Noted on 2026-11-05 under decision 0058, item PK2. A test whose notes name the question has two newest families that differ from the answer, so the question also waits for newest families that agree (`pending.md` row 1). The check of `tools/question_index.py` found the case.
 
 ## Opinions
 

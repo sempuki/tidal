@@ -2,7 +2,7 @@
 
 **Status:** provisional
 **Affects:** INST-21, `tests/templates/instantiation/explicit-unqualified-outside-namespace.cpp`, `tests/templates/instantiation/explicit-unqualified-outside-namespace-variable.cpp`
-**Waits for:** the maintainer (pending.md row 3, row 5)
+**Waits for:** the maintainer (pending.md row 3, row 5); newest families that agree
 
 ## Context
 
@@ -47,6 +47,8 @@ Checked on 2026-11-04 under the principle test of the style guide (section 3, it
 Used on 2026-11-04 by the source-reader gap review of the text phase 8 wrote on expressions, foundations, and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`), Part B. The review applied INST-P3 to the question's program, an unqualified explicit instantiation after a using-directive, outside the template's namespace (`explicit-unqualified-outside-namespace.cpp`, `explicit-unqualified-outside-namespace-variable.cpp`), without the rule text: the name must be qualified outside the template's namespace, for a class, a function, and a variable template, which is the provisional answer.
 
 Kept open on 2026-11-04 under decision 0054, because the review reads the class and variable forms against the answer, and the question waits on the maintainer (`documentation/decisions/pending.md`, row 5). The review agrees with the function form. INST-P3 did not change.
+
+Noted on 2026-11-05 under decision 0058, item PK2. A test whose notes name the question has two newest families that differ from the answer, so the question also waits for newest families that agree (`pending.md` row 1). The check of `tools/question_index.py` found the case.
 
 ## Opinions
 

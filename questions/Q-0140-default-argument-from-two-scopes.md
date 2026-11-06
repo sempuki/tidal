@@ -2,7 +2,7 @@
 
 **Status:** provisional
 **Affects:** OVL-38, `tests/overloading/overload-resolution/default-from-two-scopes.cpp`, `tests/overloading/overload-resolution/default-from-two-scopes-same.cpp`, `tests/overloading/overload-resolution/default-from-two-scopes-same-value.cpp`, `tests/overloading/overload-resolution/default-from-two-scopes-same-literal.cpp`, `tests/overloading/overload-resolution/default-from-two-scopes-same-variable.cpp`, `tests/overloading/overload-resolution/default-from-two-scopes-same-name-other-variable.cpp`
-**Waits for:** the maintainer (pending.md row 4)
+**Waits for:** the maintainer (pending.md row 4); newest families that agree
 
 ## Context
 
@@ -63,6 +63,8 @@ Kept open on 2026-11-04 under decision 0054, because the question waits on the m
 Read again on 2026-11-04 by the gap review of the text phase 8 wrote on classes and overloading (`reports/review/2026-11-04-gap-review-phase-8-classes-overloading.md`). The review reads option 2 again, and adds that the test of sameness in OVL-38, which phase 8 wrote, has no basis in the reference and widens the distance between OVL-38 and the reference. Tidal keeps the matrix's answer until the maintainer decides row 4. The question stays open.
 
 Clarified on 2026-11-04 after finding G145 of the front end (`reports/clean-room/rust-frontend/report-20.md`). OVL-38 now says when two default arguments are the same expression: when they apply the same operations to the same entities and literals. Two names of one variable, such as `shared` and `::shared`, are the same, and a name `n` that each namespace declares for a different variable gives different expressions. GCC 16 and GCC 14 behave this way, and Clang and EDG accept both calls. Two new tests check the forms: `tests/overloading/overload-resolution/default-from-two-scopes-same-variable.cpp` and `tests/overloading/overload-resolution/default-from-two-scopes-same-name-other-variable.cpp`. The provisional answer stays, and the question still waits on the maintainer (`documentation/decisions/pending.md`, row 4).
+
+Noted on 2026-11-05 under decision 0058, item PK2. A test whose notes name the question has two newest families that differ from the answer, so the question also waits for newest families that agree (`pending.md` row 1). The check of `tools/question_index.py` found the case.
 
 ## Opinions
 

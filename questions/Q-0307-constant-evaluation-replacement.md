@@ -2,7 +2,7 @@
 
 **Status:** provisional
 **Affects:** STG-19, STG-20, `tests/foundations/storage/replace-base-old-pointer-constant.cpp`, `tests/foundations/storage/reuse-const-automatic-object-constant.cpp`
-**Waits for:** the maintainer (pending.md row 4)
+**Waits for:** the maintainer (pending.md row 4); newest families that agree
 
 ## Context
 
@@ -51,6 +51,8 @@ The question stays open under decision 0051 (2026-11-03). Clang 22, GCC 16, and 
 Kept on 2026-11-03. The source-reader gap review of question cluster 4 agrees with option 1.
 
 Kept open on 2026-11-03 under decision 0054, because the question waits on the maintainer (`documentation/decisions/pending.md`).
+
+Noted on 2026-11-05 under decision 0058, item PK2. A test whose notes name the question has two newest families that differ from the answer, so the question also waits for newest families that agree (`pending.md` row 1). The check of `tools/question_index.py` found the case.
 
 ## Opinions
 

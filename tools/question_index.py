@@ -210,11 +210,28 @@ def note_citations() -> dict[str, set[str]]:
     return cited
 
 
+def row4_split(text: str) -> tuple[set[str], set[str]]:
+    """Row 4's questions: those where every newest family keeps the matrix's answer (4a), and the rest (4b)."""
+    section = text.split("## Matrix against review", 1)[1].split("\n## ", 1)[0]
+    review: set[str] = set()
+    named: set[str] = set()
+    for line in section.splitlines():
+        if not line.startswith("| ") or line.startswith("| Item"):
+            continue
+        cells = [c.strip() for c in line.strip("|").split("|")]
+        qs = set(QUESTION_ID.findall(cells[0]))
+        named |= qs
+        if any(c.startswith("review") for c in cells[2:5]):
+            review |= qs
+    return named - review, review
+
+
 def render_packet(text: str, questions: list[Question]) -> str | None:
     """Return pending.md with the decision packet rewritten, or None when the heading is missing."""
     if PACKET_HEADING not in text:
         return None
     held: dict[int, list[str]] = {}
+    silent: list[str] = []
     for q in questions:
         for item in q.waits_for:
             if m := WAITS_FOR[0].fullmatch(item):
@@ -222,31 +239,56 @@ def render_packet(text: str, questions: list[Question]) -> str | None:
                     held.setdefault(int(row), []).append(q.id)
             elif item == "newest families that agree":
                 held.setdefault(1, []).append(q.id)
+            elif item == "a review (silent)":
+                silent.append(q.id)
     cited = note_citations()
+
+    def tests(qs: list[str]) -> int:
+        return len(set().union(*(cited.get(q, set()) for q in qs))) if qs else 0
+
+    def listed(qs: list[str]) -> str:
+        qs = sorted(set(qs))
+        return f"{len(qs)}: {', '.join(qs)}" if qs else "none"
+
+    four_a, four_b = row4_split(text)
+    row4 = set(held.get(4, []))
     rows = sorted(set(int(m) for m in re.findall(r"^\| (\d+) \|", text.split("\n## ")[0], re.M)))
     lines = [PACKET_HEADING, "",
              "`tools/question_index.py` writes this section from the `**Waits for:**`",
-             "line of each open question. For each row above, it lists the open",
-             "questions that wait on the row, and the number of tests whose notes",
-             "name them. Row 1 lists the questions whose line names `newest",
-             "families that agree`. A decision on a row settles its questions, or",
-             "changes their answers and the expectations of those tests.", "",
-             "| Row | Open questions | Tests that name them |", "|---|---|---|"]
+             "line of each open question and from the row 4 table below. For each",
+             "row and option, it gives the open questions that the option settles",
+             "and the number of tests whose notes name them. \"Answers stay\" means",
+             "that no test's expectation changes; \"answers change\" means that those",
+             "tests change their expectation. Row 4a holds the questions where every",
+             "newest family keeps the matrix's answer, and row 4b those where one",
+             "family follows the review. Row 10 holds the questions whose last",
+             "review finds the reference silent.", "",
+             "| Row | Option | Open questions it settles | Tests that name them |", "|---|---|---|---|"]
     for row in rows:
-        qs = sorted(set(held.get(row, [])))
-        tests = set().union(*(cited.get(q, set()) for q in qs)) if qs else set()
-        lines.append(f"| {row} | {len(qs)}: {', '.join(qs)} | {len(tests)} |" if qs else f"| {row} | none | 0 |")
+        qs = held.get(row, [])
+        if row == 1:
+            lines.append(f"| 1 | Widen decision 0054 to settle while two newest families differ; answers stay | {listed(qs)} | {tests(qs)} |")
+        elif row == 4:
+            a = [q for q in row4 if q in four_a]
+            b = [q for q in row4 if q not in four_a]
+            lines.append(f"| 4a | Follow the compilers; answers stay | {listed(a)} | {tests(a)} |")
+            lines.append(f"| 4a | Follow the review; answers change | {listed(a)} | {tests(a)} |")
+            lines.append(f"| 4b | Follow the compilers; answers stay | {listed(b)} | {tests(b)} |")
+            lines.append(f"| 4b | Follow the review; answers change | {listed(b)} | {tests(b)} |")
+        elif row != 10:
+            lines.append(f"| {row} | Decide the row; answers may change | {listed(qs)} | {tests(qs)} |")
+    lines.append(f"| 10 | Record each answer as Tidal's own choice; answers stay | {listed(silent)} | {tests(silent)} |")
     total = len({q for qs in held.values() for q in qs})
-    lines += ["", f"The rows hold {total} of the open questions.", ""]
+    lines += ["", f"The rows 1 to 9 hold {total} of the open questions.", ""]
     kinds: dict[str, int] = {}
     for q in questions:
         for item in q.waits_for:
             if m := re.fullmatch(r"a review \((\w+)\)", item):
                 kinds[m.group(1)] = kinds.get(m.group(1), 0) + 1
     if kinds:
-        listed = ", ".join(f"{kinds[k]} {k}" for k in ("doubt", "silent", "against", "part") if k in kinds)
+        listed_kinds = ", ".join(f"{kinds[k]} {k}" for k in ("doubt", "silent", "against", "part") if k in kinds)
         lines += [f"{sum(kinds.values())} open questions wait for a review that supports the answer "
-                  f"with no doubt. By what the last review found: {listed}.", ""]
+                  f"with no doubt. By what the last review found: {listed_kinds}.", ""]
     before, after = text.split(PACKET_HEADING, 1)
     rest = after[after.index("\n## "):] if "\n## " in after else ""
     return before + "\n".join(lines) + rest

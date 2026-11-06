@@ -15,6 +15,7 @@ last column lists the questions that the decision closes or changes.
 | 7 | A probe of which C++23 rejections later language versions accept, as an index with no rules ([plan below](#later-version-probe)) | Run the probe as planned, or keep later versions out of scope | C++23 only. Newer features are rejected under strict mode | Q-0007. A choice to follow later changes also decides Q-0087, Q-0181, and Q-0188 |
 | 8 | An outside reader for the Foundations chapter and two topic pages (decision 0024) | Ask the reviewer who prompted the principles-first change, or skip | No outside reading | None |
 | 9 | Process questions that name no rule ([list below](#process-questions)) | Confirm or change each provisional answer | Each provisional answer | Q-0006, Q-0008, Q-0116, Q-0119, Q-0182, Q-0183, Q-0186, Q-0312, Q-0412 |
+| 10 | A review finds the reference silent on a question, so its answer is Tidal's own choice ([decision packet](#decision-packet), row 10) | Record each answer as Tidal's choice in the page's Evidence and settle it, or keep it open | Kept open | The questions of the packet's row 10 |
 
 ## Settlements under decision 0054
 
@@ -36,25 +37,32 @@ last column lists the questions that the decision closes or changes.
 ## Decision packet
 
 `tools/question_index.py` writes this section from the `**Waits for:**`
-line of each open question. For each row above, it lists the open
-questions that wait on the row, and the number of tests whose notes
-name them. Row 1 lists the questions whose line names `newest
-families that agree`. A decision on a row settles its questions, or
-changes their answers and the expectations of those tests.
+line of each open question and from the row 4 table below. For each
+row and option, it gives the open questions that the option settles
+and the number of tests whose notes name them. "Answers stay" means
+that no test's expectation changes; "answers change" means that those
+tests change their expectation. Row 4a holds the questions where every
+newest family keeps the matrix's answer, and row 4b those where one
+family follows the review. Row 10 holds the questions whose last
+review finds the reference silent.
 
-| Row | Open questions | Tests that name them |
-|---|---|---|
-| 1 | 39: Q-0017, Q-0021, Q-0045, Q-0062, Q-0080, Q-0082, Q-0084, Q-0121, Q-0126, Q-0129, Q-0132, Q-0133, Q-0142, Q-0143, Q-0148, Q-0153, Q-0159, Q-0165, Q-0168, Q-0174, Q-0216, Q-0217, Q-0218, Q-0227, Q-0234, Q-0241, Q-0248, Q-0251, Q-0274, Q-0301, Q-0320, Q-0323, Q-0331, Q-0335, Q-0339, Q-0341, Q-0368, Q-0374, Q-0403 | 84 |
-| 2 | 1: Q-0322 | 0 |
-| 3 | 12: Q-0195, Q-0197, Q-0198, Q-0201, Q-0203, Q-0235, Q-0266, Q-0272, Q-0277, Q-0278, Q-0280, Q-0282 | 23 |
-| 4 | 37: Q-0074, Q-0077, Q-0087, Q-0123, Q-0131, Q-0140, Q-0142, Q-0181, Q-0190, Q-0191, Q-0205, Q-0225, Q-0226, Q-0243, Q-0246, Q-0275, Q-0277, Q-0280, Q-0300, Q-0307, Q-0330, Q-0336, Q-0362, Q-0366, Q-0369, Q-0371, Q-0389, Q-0393, Q-0394, Q-0401, Q-0404, Q-0405, Q-0406, Q-0407, Q-0408, Q-0409, Q-0410 | 74 |
-| 5 | 1: Q-0235 | 3 |
-| 6 | 2: Q-0041, Q-0343 | 5 |
-| 7 | 5: Q-0007, Q-0087, Q-0116, Q-0181, Q-0188 | 5 |
-| 8 | none | 0 |
-| 9 | 9: Q-0006, Q-0008, Q-0116, Q-0119, Q-0182, Q-0183, Q-0186, Q-0312, Q-0412 | 1 |
+| Row | Option | Open questions it settles | Tests that name them |
+|---|---|---|---|
+| 1 | Widen decision 0054 to settle while two newest families differ; answers stay | 56: Q-0017, Q-0021, Q-0033, Q-0041, Q-0045, Q-0062, Q-0080, Q-0082, Q-0084, Q-0121, Q-0126, Q-0129, Q-0132, Q-0133, Q-0134, Q-0140, Q-0142, Q-0143, Q-0148, Q-0152, Q-0153, Q-0156, Q-0159, Q-0161, Q-0165, Q-0168, Q-0174, Q-0192, Q-0193, Q-0195, Q-0197, Q-0216, Q-0217, Q-0218, Q-0227, Q-0234, Q-0235, Q-0241, Q-0248, Q-0251, Q-0274, Q-0301, Q-0307, Q-0320, Q-0323, Q-0331, Q-0335, Q-0337, Q-0339, Q-0341, Q-0346, Q-0349, Q-0368, Q-0374, Q-0383, Q-0403 | 132 |
+| 2 | Decide the row; answers may change | 1: Q-0322 | 0 |
+| 3 | Decide the row; answers may change | 12: Q-0195, Q-0197, Q-0198, Q-0201, Q-0203, Q-0235, Q-0266, Q-0272, Q-0277, Q-0278, Q-0280, Q-0282 | 23 |
+| 4a | Follow the compilers; answers stay | 17: Q-0140, Q-0142, Q-0181, Q-0225, Q-0243, Q-0246, Q-0275, Q-0277, Q-0280, Q-0300, Q-0336, Q-0394, Q-0405, Q-0406, Q-0407, Q-0409, Q-0410 | 31 |
+| 4a | Follow the review; answers change | 17: Q-0140, Q-0142, Q-0181, Q-0225, Q-0243, Q-0246, Q-0275, Q-0277, Q-0280, Q-0300, Q-0336, Q-0394, Q-0405, Q-0406, Q-0407, Q-0409, Q-0410 | 31 |
+| 4b | Follow the compilers; answers stay | 20: Q-0074, Q-0077, Q-0087, Q-0123, Q-0131, Q-0190, Q-0191, Q-0205, Q-0226, Q-0307, Q-0330, Q-0362, Q-0366, Q-0369, Q-0371, Q-0389, Q-0393, Q-0401, Q-0404, Q-0408 | 43 |
+| 4b | Follow the review; answers change | 20: Q-0074, Q-0077, Q-0087, Q-0123, Q-0131, Q-0190, Q-0191, Q-0205, Q-0226, Q-0307, Q-0330, Q-0362, Q-0366, Q-0369, Q-0371, Q-0389, Q-0393, Q-0401, Q-0404, Q-0408 | 43 |
+| 5 | Decide the row; answers may change | 1: Q-0235 | 3 |
+| 6 | Decide the row; answers may change | 2: Q-0041, Q-0343 | 5 |
+| 7 | Decide the row; answers may change | 5: Q-0007, Q-0087, Q-0116, Q-0181, Q-0188 | 5 |
+| 8 | Decide the row; answers may change | none | 0 |
+| 9 | Decide the row; answers may change | 9: Q-0006, Q-0008, Q-0116, Q-0119, Q-0182, Q-0183, Q-0186, Q-0312, Q-0412 | 1 |
+| 10 | Record each answer as Tidal's own choice; answers stay | 15: Q-0020, Q-0079, Q-0165, Q-0176, Q-0179, Q-0180, Q-0184, Q-0185, Q-0321, Q-0325, Q-0349, Q-0361, Q-0372, Q-0381, Q-0384 | 27 |
 
-The rows hold 99 of the open questions.
+The rows 1 to 9 hold 110 of the open questions.
 
 75 open questions wait for a review that supports the answer with no doubt. By what the last review found: 50 doubt, 15 silent, 9 against, 1 part.
 

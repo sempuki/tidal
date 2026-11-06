@@ -2,7 +2,7 @@
 
 **Status:** provisional
 **Affects:** CE-14, CE-3, `tests/foundations/constant-evaluation/extended-temporary-member.cpp`, `tests/foundations/constant-evaluation/extended-temporary-nested.cpp`, `tests/foundations/constant-evaluation/read-extended-temporary-class.cpp`, `tests/foundations/constant-evaluation/read-extended-temporary-nested.cpp`
-**Waits for:** a review (doubt)
+**Waits for:** a review (doubt); newest families that agree
 
 ## Context
 
@@ -69,6 +69,8 @@ The question stays open under decision 0051 (2026-11-03). The newest versions st
 Kept on 2026-11-03. The source-reader gap review of question cluster 4 agrees with option 1, with doubt. The review notes that the front end's interpreter rejects the read of the nested temporary with OBJ-2, and the provisional answer allows that read when both temporaries have a `const` type. This mismatch goes to item FE.
 
 Kept open on 2026-11-03 under decision 0054, because the gap review does not support the answer with no doubt (it reads with doubt, weakly, unclearly, or for only part of the question).
+
+Noted on 2026-11-05 under decision 0058, item PK2. A test whose notes name the question has two newest families that differ from the answer, so the question also waits for newest families that agree (`pending.md` row 1). The check of `tools/question_index.py` found the case.
 
 ## Opinions
 

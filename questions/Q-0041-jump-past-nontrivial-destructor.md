@@ -2,7 +2,7 @@
 
 **Status:** provisional
 **Affects:** JMP-6, SW-5, `tests/statements/jumps/goto-past-nontrivial-destructor.cpp`, `tests/statements/jumps/goto-skips-nontrivial-destructor.cpp`, `tests/statements/switch/case-skips-nontrivial-destructor.cpp`
-**Waits for:** the maintainer (pending.md row 6)
+**Waits for:** the maintainer (pending.md row 6); newest families that agree
 
 ## Context
 
@@ -50,6 +50,8 @@ agrees, and the jump skips no construction. The destructor runs at
 the end of the block in either case.
 
 Kept open on 2026-11-03 under decision 0054, because the question waits on the maintainer (`documentation/decisions/pending.md`).
+
+Noted on 2026-11-05 under decision 0058, item PK2. A test whose notes name the question has two newest families that differ from the answer, so the question also waits for newest families that agree (`pending.md` row 1). The check of `tools/question_index.py` found the case.
 
 ## Opinions
 

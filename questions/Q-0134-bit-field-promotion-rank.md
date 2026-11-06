@@ -2,7 +2,7 @@
 
 **Status:** provisional
 **Affects:** ICS-2, `tests/overloading/conversion-sequences/bit-field-promotion.cpp`
-**Waits for:** a review (doubt)
+**Waits for:** a review (doubt); newest families that agree
 
 ## Context
 
@@ -39,6 +39,8 @@ and CONV-1 decides a bit-field's promotion by its width. One rule for
 arithmetic and for sequences is simpler.
 
 Kept open on 2026-11-03 under decision 0054, because the review reads the answer with doubt.
+
+Noted on 2026-11-05 under decision 0058, item PK2. A test whose notes name the question has two newest families that differ from the answer, so the question also waits for newest families that agree (`pending.md` row 1). The check of `tools/question_index.py` found the case.
 
 ## Opinions
 

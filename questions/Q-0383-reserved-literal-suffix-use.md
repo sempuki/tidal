@@ -3,7 +3,7 @@
 **Status:** provisional
 **Affects:** OPR-9, OPR-P3, KW-4, `tests/classes/operators/literal-reserved-suffix-used.cpp`, `tests/classes/operators/literal-reserved-suffix-u8.cpp`
 **Source:** finding X19-1 of `reports/clean-room/X19/report.md`
-**Waits for:** a review (doubt)
+**Waits for:** a review (doubt); newest families that agree
 
 ## Context
 
@@ -66,6 +66,8 @@ Used on 2026-11-04 by the principle-use batch PU2 (`reports/clean-room/PU2/`), u
 Kept open on 2026-11-04 under decisions 0054 and 0055, because the reader in batch PU2 answered each program with doubt (finding PU2-5), as in batch PU1. No answer gives option 3 as its outcome. The question waits for a review or a reader batch that reads option 3 with no doubt.
 
 Noted on 2026-11-05 after the X19 refresh note (`reports/clean-room/X22/X19-refresh.md`, section 4). `tests/classes/operators/literal-builtin-suffix-wins.cpp` declares literal operators for the suffixes `u` and `z`, which OPR-9 makes not valid with no diagnostic required. The test now cites OPR-9 and says that it records what every compiler does. The next review of this question reads the test with it (decision 0058, item F).
+
+Noted on 2026-11-05 under decision 0058, item PK2. A test whose notes name the question has two newest families that differ from the answer, so the question also waits for newest families that agree (`pending.md` row 1). The check of `tools/question_index.py` found the case.
 
 ## Opinions
 

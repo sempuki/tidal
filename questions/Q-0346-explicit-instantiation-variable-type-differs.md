@@ -2,7 +2,7 @@
 
 **Status:** provisional
 **Affects:** INST-22, `tests/templates/instantiation/explicit-variable-wrong-type.cpp`, `tests/templates/instantiation/explicit-array-bound-differs.cpp`
-**Waits for:** a review (doubt)
+**Waits for:** a review (doubt); newest families that agree
 
 ## Context
 
@@ -50,6 +50,8 @@ The question stays open under decision 0051 (2026-11-03). GCC 16 accepts every c
 Kept on 2026-11-03. The source-reader gap review of question cluster 6 (`reports/review/2026-11-03-gap-review-question-cluster-6.md`) agrees with option 1, with doubt for a bound where the template states none. The review's reading of how an initializer fixes the bound points to option 1, and Clang 22 follows it. INST-22 stays.
 
 Kept open on 2026-11-03 under decision 0054, because the gap review does not support the answer with no doubt (it reads with doubt, weakly, unclearly, or for only part of the question).
+
+Noted on 2026-11-05 under decision 0058, item PK2. A test whose notes name the question has two newest families that differ from the answer, so the question also waits for newest families that agree (`pending.md` row 1). The check of `tools/question_index.py` found the case.
 
 ## Opinions
 
