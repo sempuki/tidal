@@ -79,6 +79,7 @@ each item starts.
 | Item | Work | Prerequisites |
 |---|---|---|
 | FI | The interpreter of decision 0048: run tests on the abstract machine, stop at undefined behavior with the rule, and serve constant evaluation as a client | front-end round 6 |
+| FR | Rewrite the front end as software that a person can read and extend: a design document, modules by chapter and page, a parser from the Syntax segments, unit tests per stage, landed in stages with 0 worse (decision 0060) | the completion test of decision 0060: every test passes its check, except ledger rows marked `out of scope`, and every program test runs |
 
 ## Phase 5: consolidate, fill the object model, exercise
 

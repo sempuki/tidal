@@ -189,13 +189,16 @@ forward-progress rule belongs with threads, which are out of scope.
 ## Next steps
 
 `documentation/roadmap.md` orders the work (decisions 0033, 0039, 0050,
-0051, 0054, 0055, 0056, 0057, 0058, and 0059). Phases 1 to 11 are
+0051, 0054, 0055, 0056, 0057, 0058, 0059, and 0060). Phases 1 to 11 are
 done. Phase 12 (decision 0059) is next:
 
 1. Item T, tests for every front-end target that has none, then
    front-end round 23 (item FE).
 2. Items F2, RD, QR, L2, R6, and PK3, beside FE.
 3. RV5, the gap review, after F2 and RD; then item E.
+
+After the front end meets the completion test of decision 0060, a
+phase item rewrites it (roadmap item FR).
 
 The items that wait on the maintainer are in
 `documentation/decisions/pending.md`, one row each, with the options,
