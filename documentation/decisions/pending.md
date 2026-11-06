@@ -55,6 +55,8 @@ changes their answers and the expectations of those tests.
 
 The rows hold 98 of the open questions.
 
+75 open questions wait for a review that supports the answer with no doubt. By what the last review found: 50 doubt, 15 silent, 9 against, 1 part.
+
 ## Matrix against review
 
 Row 4 holds these items. In each, a source-reader gap review reads the

@@ -238,6 +238,15 @@ def render_packet(text: str, questions: list[Question]) -> str | None:
         lines.append(f"| {row} | {len(qs)}: {', '.join(qs)} | {len(tests)} |" if qs else f"| {row} | none | 0 |")
     total = len({q for qs in held.values() for q in qs})
     lines += ["", f"The rows hold {total} of the open questions.", ""]
+    kinds: dict[str, int] = {}
+    for q in questions:
+        for item in q.waits_for:
+            if m := re.fullmatch(r"a review \((\w+)\)", item):
+                kinds[m.group(1)] = kinds.get(m.group(1), 0) + 1
+    if kinds:
+        listed = ", ".join(f"{kinds[k]} {k}" for k in ("doubt", "silent", "against", "part") if k in kinds)
+        lines += [f"{sum(kinds.values())} open questions wait for a review that supports the answer "
+                  f"with no doubt. By what the last review found: {listed}.", ""]
     before, after = text.split(PACKET_HEADING, 1)
     rest = after[after.index("\n## "):] if "\n## " in after else ""
     return before + "\n".join(lines) + rest
