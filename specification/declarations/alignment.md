@@ -168,8 +168,9 @@ applies to objects in:
 - static storage,
 - {term}`automatic storage`,
 - dynamic storage, including objects and arrays that `new` creates with
-  an alignment larger than the largest {term}`fundamental alignment`.
-  The global allocation functions give such storage ({rule}`NEW-26`).
+  an alignment larger than the {term}`default new alignment`
+  ({rule}`NEW-28`). The global allocation functions give such storage
+  ({rule}`NEW-26`).
   A class's own allocation function that NEW-29 calls without the
   alignment gets no such promise from the implementation; the program
   must make it return aligned storage.

@@ -414,7 +414,10 @@ class of the matrix compilers has this size in bytes:
 Whether a floating-point operation gives the same result in constant
 evaluation and at run time is unspecified. Constant evaluation on the
 matrix rounds each operation to its type. At run time {rule}`MUL-17`
-applies, so GCC with `-m32` can give another result.
+applies, so GCC with `-m32` can give another result. An operation
+whose exact result the type can represent, such as `2.0 * 3.0` in
+`double`, needs no rounding, and the matrix gives that result in both
+modes.
 :::
 
 ## Recommended Practice

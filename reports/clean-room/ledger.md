@@ -67,11 +67,11 @@ when a report names a finding that has no row here.
 | I2-15 | `I2/report.md` | commit | d9c18bcc, 593f9e5a |
 | I2-16 | `I2/report.md` | commit | d9c18bcc, 593f9e5a |
 | I2-17 | `I2/report.md` | commit | d9c18bcc |
-| I3-1 | `I3/report.md` | planned | decision 0059, item F2: an ICS-26 example; deferred twice; probe `reports/clean-room/roadmap-9/writer-probes/i3-1-pointer-then-qualification.cpp` |
+| I3-1 | `I3/report.md` | commit | 3b83788d |
 | I3-2 | `I3/report.md` | commit | 4a193ea4 |
 | I3-3 | `I3/report.md` | commit | 4a193ea4 |
 | I3-4 | `I3/report.md` | text | a component error; the text decides it |
-| I3-5 | `I3/report.md` | planned | decision 0059, item F2: ICS-11 and REF-1; deferred twice; probe `reports/clean-room/roadmap-9/writer-probes/i3-5-qualification-direct-binding.cpp` |
+| I3-5 | `I3/report.md` | commit | 3b83788d |
 | I3-6 | `I3/report.md` | text | a component error; the text decides it |
 | I3-7 | `I3/report.md` | commit | 4a193ea4 |
 | I3-8 | `I3/report.md` | commit | 4a193ea4 |
@@ -79,7 +79,7 @@ when a report names a finding that has no row here.
 | I3-10 | `I3/report.md` | commit | 4a193ea4 |
 | I3-11 | `I3/report.md` | commit | 4a193ea4 |
 | I3-12 | `I3/report.md` | text | CONV-1 gives the promotion of every character type |
-| I3-13 | `I3/report.md` | planned | decision 0059, item F2: ICS-25; deferred twice; probe `reports/clean-room/roadmap-9/writer-probes/i3-13-list-worst-element.json` |
+| I3-13 | `I3/report.md` | commit | 3b83788d |
 | I3-14 | `I3/report.md` | commit | 4a193ea4, eff1a372 |
 | I3-15 | `I3/report.md` | commit | 4a193ea4, eff1a372 |
 | I3-16 | `I3/report.md` | commit | 4a193ea4, eff1a372 |
@@ -106,9 +106,9 @@ when a report names a finding that has no row here.
 | R10-1 | `R10/report.md` | commit | 47f58739 |
 | R10-2 | `R10/report.md` | commit | 47f58739 |
 | R10-3 | `R10/report.md` | commit | 47f58739 |
-| R10-4 | `R10/report.md` | planned | decision 0059, item F2: the return case of Q-0115; deferred twice; probe `reports/clean-room/roadmap-9/writer-probes/r10-4-return-local-unset.json` |
+| R10-4 | `R10/report.md` | commit | 3b83788d |
 | R10-5 | `R10/report.md` | commit | 47f58739 |
-| R10-6 | `R10/report.md` | planned | decision 0059, item F2: a static thread_local data member under OBJ-11; deferred twice; probe `reports/clean-room/roadmap-9/writer-probes/r10-6-static-thread-local-member.cpp` |
+| R10-6 | `R10/report.md` | commit | 3b83788d |
 | R10-7 | `R10/report.md` | commit | 47f58739 |
 | R10-8 | `R10/report.md` | text | no change needed; the finding says so |
 | R10-9 | `R10/report.md` | commit | 47f58739 |

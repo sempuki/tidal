@@ -123,6 +123,12 @@ through the positions of the elements before it builds them:
     built         built       not built    not built
     ^items                    ^items + 2
 ```
+
+A call without an alignment argument gives storage aligned only to the
+{term}`default new alignment` ({principle}`NEW-P5`). For a `T` with a
+larger alignment, the call passes the alignment, as
+`::operator new(4 * sizeof(T), std::align_val_t(alignof(T)))` does
+({rule}`NEW-26`). Otherwise the storage holds no array of `T`.
 :::
 
 :::{principle} STG-P4
@@ -330,7 +336,7 @@ These types are
 
 :::{rule} STG-8
 :kind: required
-:tests: foundations/storage/implicit-object-from-allocation-function.cpp foundations/storage/implicit-array-for-arithmetic.cpp foundations/storage/implicit-object-class-allocation-function.cpp foundations/storage/implicit-objects-follow-later-use.cpp foundations/storage/implicit-object-first-use-member.cpp foundations/storage/allocation-array-class-elements.cpp foundations/storage/arena-reset-reuses-bytes.cpp foundations/storage/byte-array-placement-reaches-object.cpp foundations/storage/implicit-objects-fixed-counterpart.cpp foundations/storage/implicit-union-member-assignment.cpp
+:tests: foundations/storage/implicit-object-from-allocation-function.cpp foundations/storage/implicit-array-for-arithmetic.cpp foundations/storage/implicit-object-class-allocation-function.cpp foundations/storage/implicit-objects-follow-later-use.cpp foundations/storage/implicit-object-first-use-member.cpp foundations/storage/allocation-array-class-elements.cpp foundations/storage/arena-reset-reuses-bytes.cpp foundations/storage/byte-array-placement-reaches-object.cpp foundations/storage/implicit-objects-fixed-counterpart.cpp foundations/storage/implicit-union-member-assignment.cpp foundations/storage/implicit-object-misaligned-sanitizer.cpp
 
 These operations create objects implicitly in the storage that they
 name:
@@ -346,6 +352,11 @@ one of them. The set exists from the operation on, and a later use can
 only decide which set it is. A pointer from an earlier use points to
 the matching object of that set. Each created object has an
 implicit-lifetime type, and STG-28 gives the elements of other arrays.
+
+Each created object is aligned for its type ({rule}`ALN-4`). Storage at
+an address that is not a multiple of the alignment of `T` holds no
+object of `T`, so a use of the storage there as a `T` has no set that
+gives defined behavior (STG-18, {rule}`STG-23`).
 :::
 
 :::{rule} STG-9
@@ -597,7 +608,7 @@ of a pointer or glvalue that refers to its storage are undefined:
 
 :::{rule} STG-23
 :kind: undefined
-:tests: foundations/storage/access-unrelated-scalar-sanitizer.cpp foundations/storage/access-unrelated-class-sanitizer.cpp foundations/storage/access-signed-char.cpp foundations/storage/byte-array-cast-reaches-byte.cpp foundations/storage/misaligned-read-sanitizer.cpp classes/unions/common-initial-sequence-enum.cpp classes/unions/common-initial-sequence-nested.cpp foundations/storage/placement-then-cast-read.cpp foundations/storage/access-enumeration-underlying-sanitizer.cpp
+:tests: foundations/storage/access-unrelated-scalar-sanitizer.cpp foundations/storage/access-unrelated-class-sanitizer.cpp foundations/storage/access-signed-char.cpp foundations/storage/byte-array-cast-reaches-byte.cpp foundations/storage/misaligned-read-sanitizer.cpp classes/unions/common-initial-sequence-enum.cpp classes/unions/common-initial-sequence-nested.cpp foundations/storage/placement-then-cast-read.cpp foundations/storage/access-enumeration-underlying-sanitizer.cpp foundations/storage/implicit-object-misaligned-sanitizer.cpp
 
 If a program reads or writes an object through a glvalue of a type
 that STG-14 does not list, the behavior is undefined. These cases
@@ -856,8 +867,8 @@ static_assert(read_old() == 1);       // rejected (CE-9)
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 89
-of 95 tests. EDG runs no programs, so its results for the run tests say
+The results are in `tests/RESULTS.md`. All eight compilers agree on 90
+of 96 tests. EDG runs no programs, so its results for the run tests say
 only that the programs are valid.
 
 ### Divergences

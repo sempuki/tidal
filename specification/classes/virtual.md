@@ -518,6 +518,12 @@ struct Sealed { virtual ~Sealed() final; };
 struct Child : Sealed { };         // rejected: the implicit ~Child overrides a final destructor
 ```
 
+A heap object used through its base needs an owner that deletes it
+through the base, with a virtual destructor (VIRT-7). The `Owner`
+example of {doc}`/classes/copy-move` is such an owner. It is
+move-only, converts from `Owner<U>&&` for a derived `U`, and has a
+`make` function that forwards its arguments to the constructor.
+
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 140

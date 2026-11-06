@@ -190,9 +190,10 @@ function:
 For the global deallocation function of a type that is not a placement
 form:
 
-- A type with extended alignment uses a form that takes the alignment.
-- A single object of complete type without extended alignment uses the
-  sized form.
+- A type whose alignment is more than the {term}`default new alignment`
+  uses a form that takes the alignment ({rule}`NEW-28`).
+- A single object of complete type whose alignment is not more than the
+  default new alignment uses the sized form.
 - An array whose element type has a destructor that is not trivial
   uses the sized form.
 - In the other cases, the implementation calls the sized or the unsized

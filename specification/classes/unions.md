@@ -701,6 +701,34 @@ Shape s{.line = {{1, 2}, 3}};
 int y = s.span.range.second;     // 2: Point and Pair are layout-compatible
 ```
 
+A class with two alternatives keeps a tag and an anonymous union, and
+has one constructor for each alternative. A defaulted `==` is deleted
+for a class with an anonymous union member ({rule}`DCMP-2`), so the
+class writes `==` and reads only the active members:
+
+```cpp
+struct Error { int code; };
+template <class T> class Result {
+  bool ok_;
+  union { T value_; Error error_; };
+public:
+  constexpr Result(T v) : ok_(true), value_(v) {}
+  constexpr Result(Error e) : ok_(false), error_(e) {}
+  constexpr bool ok() const { return ok_; }
+  friend constexpr bool operator==(const Result& a, const Result& b) {
+    if (a.ok_ != b.ok_) return false;
+    return a.ok_ ? a.value_ == b.value_ : a.error_.code == b.error_.code;
+  }
+};
+static_assert(Result<int>(3) == Result<int>(3));
+static_assert(!(Result<int>(3) == Result<int>(Error{3})));
+```
+
+For a `T` with a destructor or a copy function that is not trivial, the
+matching special member of the class is deleted ({rule}`UNI-3`). The
+class then writes that member, such as a destructor that destroys the
+active member.
+
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 151

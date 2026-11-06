@@ -454,8 +454,8 @@ the aligned forms, the forms that the search finds decide the call:
 - If a class declares both forms, the form without the size is called.
 - If a class declares one form, that form is called.
 - For the global functions, {rule}`UNW-3` gives the form. A single
-  object of complete type without extended alignment uses the sized
-  form. In the cases that UNW-3 leaves open, either form can be called.
+  object of complete type whose alignment is not more than the default
+  new alignment uses the sized form. In the cases that UNW-3 leaves open, either form can be called.
 :::
 
 :::{rule} NEW-23
@@ -665,6 +665,13 @@ predefined macro `__STDCPP_DEFAULT_NEW_ALIGNMENT__` gives its value
 | x86-64, Clang, GCC, and EDG | 16 |
 | `-m32`, GCC and EDG | 16 |
 | `-m32`, Clang | 8 |
+
+On each matrix target where {rule}`ALN-5` gives the largest
+{term}`fundamental alignment`, the default new alignment is equal to
+it. NEW-28, NEW-22, {rule}`UNW-3`, and {rule}`ALN-4` all use the
+default new alignment as the point above which `new` and the
+deallocation function pass the alignment, so the allocation and the
+deallocation of one object agree.
 :::
 
 :::{rule} NEW-42

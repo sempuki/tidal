@@ -106,6 +106,11 @@ ready proposal. Round 7 starts from the refreshed portfolio
 (`reports/clean-room/roadmap-7/portfolio.md`, P22 to P26) with X22 on
 P23.
 
+A proposal that changes existing behavior fills two sections of its
+report in full: section 4.3, on valid programs that change meaning,
+and section 4.4, on valid programs that become invalid, as in the
+reports of X17, X22, and X23.
+
 A new rule in a proposal takes an ID in the exercise's own space, such
 as `X9:new-1`. A real prefix such as `OVL-45` can later name an
 unrelated rule.

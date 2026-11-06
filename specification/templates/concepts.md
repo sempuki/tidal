@@ -650,6 +650,21 @@ static_assert(Valid<char>);                // holds: the expression is valid, th
 template <class T> concept Old [[deprecated]] = true;   // the attribute appertains to Old
 ```
 
+A simple requirement can ask that an operator's result converts to
+`bool`, with no library concept ({rule}`CPT-31`):
+
+```cpp
+template <class T>
+concept Ordered = requires(const T& a, const T& b) {
+  bool(a < b);
+  bool(a == b);
+};
+struct Opaque {};
+static_assert(Ordered<int>);
+static_assert(Ordered<const char*>);
+static_assert(!Ordered<Opaque>);
+```
+
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 108
