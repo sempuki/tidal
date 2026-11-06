@@ -2,7 +2,7 @@
 
 **Status:** provisional
 **Affects:** ORD-13, `tests/templates/ordering/constraints-ellipsis.cpp`, `tests/templates/ordering/constraints-ellipsis-on-second.cpp`
-**Waits for:** a use of ORD-P2 ORD-P4
+**Waits for:** a review (doubt)
 
 ## Context
 
@@ -60,10 +60,16 @@ Kept open on 2026-11-04 under decisions 0054 and 0056, because the use in batch 
 
 Kept open on 2026-11-04 under decision 0055, because ORD-P2 and ORD-P4 changed in this commit: steps 6c and 6d of ORD-P2 and the text of ORD-P4 now say that an ellipsis is not a pack in 6c and does not count in 6d for two templates, and that 6d compares the declared types (findings PU2-2, R9D-2, and R9D-3). The question waits for the next use of ORD-P2.
 
+Kept open on 2026-11-05 under decision 0054, because the review reads the answer with a doubt (gap review of the text phase 9 wrote, item RV3).
+
 ## Opinions
 
 ### Gap review, 2026-11-03
 
 The source-reader gap review of question cluster 3 (`reports/review/2026-11-03-gap-review-question-cluster-3.md`) reads the reference as supporting option 1, with a small doubt. For two templates, the constraint step checks the template parameter lists and the function parameter lists, and an ellipsis is not a parameter, so the constraint decides. For two plain functions, the list of parameter types records the ellipsis, which fits Q-0146. The two conditions differ, as in Clang 22. The doubt is that the reference does not define a function parameter list as a term.
+
+### Gap review, 2026-11-05 (expressions and templates)
+
+The source-reader gap review of the text phase 9 wrote on expressions and templates (`reports/review/2026-11-05-gap-review-phase-9-expressions-templates.md`) used ORD-P2, ORD-P4 on ``constraints-ellipsis.cpp``, without the rule text. The model's answer: The ellipsis is no pack and does not count, the lists tie, and the constraint picks the constrained template. Matches the provisional answer: yes. Reference verdict: supports with a doubt. used ORD-P2, ORD-P4 on ``constraints-ellipsis-on-second.cpp``, without the rule text. The model's answer: The same steps, with the constraint on the template that has the ellipsis. Matches the provisional answer: yes. Reference verdict: supports with a doubt.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

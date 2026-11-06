@@ -2,7 +2,7 @@
 
 **Status:** provisional
 **Affects:** CNS-27, CNS-40, `tests/templates/constraints/redeclare-placeholder.cpp`, `tests/templates/constraints/redeclare-placeholder-unconstrained.cpp`, the spellings grid
-**Waits for:** a use of CNS-P5; a review (doubt)
+**Waits for:** a review (doubt)
 
 ## Context
 
@@ -37,6 +37,8 @@ Changed on 2026-11-03 to option 2, with no diagnostic required. The review reads
 
 Kept open on 2026-11-03 under decision 0054, because CNS-27 changed and CNS-40 is new on the same day, and a question settles only after a reader or a review has used the changed rule (decision 0055). The review also reads with doubt.
 
+Kept open on 2026-11-05 under decision 0054, because the review reads the answer with a doubt (gap review of the text phase 9 wrote, item RV3).
+
 ## Opinions
 
 ### Gap review, 2026-11-03
@@ -46,6 +48,10 @@ The source-reader gap review of the open questions on templates (`reports/review
 ### Gap review, 2026-11-04
 
 The source-reader gap review of the rules that phase 7 added (`reports/review/2026-11-04-gap-review-phase-7-additions.md`) agrees with CNS-40 and reads its condition as narrower than the reference. The reference makes a program not valid, with no diagnostic required, when two function templates that are not the same template have one name and one signature, would declare one entity, and accept and are satisfied by the same template argument lists. So two templates whose constraints differ in form and have one meaning also fall under the rule. CNS-40 now states this condition. Editorial notes in the draft ask what two of its terms mean, so the wording is not settled text.
+
+### Gap review, 2026-11-05 (expressions and templates)
+
+The source-reader gap review of the text phase 9 wrote on expressions and templates (`reports/review/2026-11-05-gap-review-phase-9-expressions-templates.md`) used CNS-P5 on ``redeclare-placeholder.cpp``, without the rule text. The model's answer: The constraint on the placeholder sits in another place, so the two declarations are two templates, and the call is ambiguous. Matches the provisional answer: yes, with a doubt about what "place" means for an invented parameter. Reference verdict: supports with no doubt.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
 

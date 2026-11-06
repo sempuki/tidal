@@ -3,7 +3,7 @@
 **Status:** provisional
 **Affects:** DEFARG-4, DEFARG-P1, `tests/declarations/functions/default-arguments/local-constant-value-read.cpp`, `tests/declarations/functions/default-arguments/local-constexpr-value-read.cpp`
 **Source:** reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md, the DEFARG-P1 section
-**Waits for:** the maintainer (pending.md row 4)
+**Waits for:** the maintainer (pending.md row 4); a review (against)
 
 ## Context
 
@@ -51,10 +51,16 @@ review").
 
 Kept open on 2026-11-04 under decision 0054, because the gap review reads against the answer, and Clang 22 differs from it.
 
+Kept open on 2026-11-05 under decision 0054, because the review reads against the answer, and the question waits on the maintainer (gap review of the text phase 9 wrote, item RV3).
+
 ## Opinions
 
 ### Gap review, 2026-11-04
 
 The source-reader gap review of the text phase 8 wrote on the declarations and statements chapters (`reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md`) supports option 2. For a parameter, the reference bans every use that could be evaluated. For a local of an enclosing function, it bans only a use that needs the object itself. Reading the value of a local constant of integral type is not such a use, so a default argument can read it. DEFARG-P1 and DEFARG-4 allow a local only in an operand that is not evaluated, which the review finds too narrow.
+
+### Gap review, 2026-11-05 (declarations, statements, and foundations)
+
+The source-reader gap review of the text phase 9 wrote on declarations, statements, and foundations (`reports/review/2026-11-05-gap-review-phase-9-declarations-statements-foundations.md`) reads the question: reads against. The reference forbids a local of an enclosing function in a default argument only where the local is odr-used. Reading the value of a local integer constant that is usable in constant expressions is not an odr-use, so option 2 holds.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

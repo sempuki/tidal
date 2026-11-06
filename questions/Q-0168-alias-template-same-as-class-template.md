@@ -2,7 +2,7 @@
 
 **Status:** provisional
 **Affects:** TARG-19, TARG-22
-**Waits for:** a use of TARG-P4; newest families that agree; a review (doubt)
+**Waits for:** newest families that agree; a review (doubt)
 
 ## Context
 
@@ -36,10 +36,16 @@ Changed on 2026-11-03 to option 1. The review reads option 1, Clang 22 follows i
 
 Kept open on 2026-11-03 under decision 0054, because the review reads option 1 with doubt, and two newest families differ from the answer (GCC 16 and EDG 7.0). TARG-22 also changed on the same day, and a question settles only after a reader or a review has used the changed rule (decision 0055).
 
+Kept open on 2026-11-05 under decision 0054, because the review reads the answer with a doubt, and two newest families differ from the answer in at least one form (gap review of the text phase 9 wrote, item RV3).
+
 ## Opinions
 
 ### Gap review, 2026-11-03
 
 The source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`) reads option 1, with doubt. Two specializations are the same when, among other conditions, their template template arguments refer to the same template. An alias template is a template of its own, and nothing makes it refer to the class template, even when it passes its parameters through. So `Use<List>` and `Use<ListAlias>` differ, as Clang finds, and the result is not unspecified. The doubt is an old open core issue about whether such an alias should count as the class template. GCC and EDG follow that idea, and no resolution of it is known to have been adopted.
+
+### Gap review, 2026-11-05 (expressions and templates)
+
+The source-reader gap review of the text phase 9 wrote on expressions and templates (`reports/review/2026-11-05-gap-review-phase-9-expressions-templates.md`) used TARG-P4 on ``same-specialization-alias-template.cpp``, without the rule text. The model's answer: The alias template is a template of its own, so the two specializations differ. Matches the provisional answer: yes. Reference verdict: supports with a doubt.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

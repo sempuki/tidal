@@ -50,6 +50,8 @@ Used on 2026-11-04 by the principle-use batch PU2 (`reports/clean-room/PU2/`), u
 
 Kept open on 2026-11-04 under decision 0054, because the latest gap review (2026-11-04) still reads with doubt on GCC's 128-bit type. The use in batch PU2 meets the other conditions.
 
+Kept open on 2026-11-05 under decision 0054, because the review reads the answer with a doubt (gap review of the text phase 9 wrote, item RV3).
+
 ## Opinions
 
 ### Gap review, 2026-11-03
@@ -59,3 +61,7 @@ The source-reader gap review of the open questions on expressions, declarations,
 ### Gap review, 2026-11-04
 
 The source-reader gap review of the text phase 8 wrote on the declarations and statements chapters (`reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md`) agrees with option 1, with the doubt of its earlier reading. An implementation can choose any integral type that holds the values, its extended types included, and must reject the enumeration when it has none. ENUM-5 matches that reading. Whether GCC's 128-bit type counts as an extended type is GCC's own statement, and the reference says nothing about it. The review also found that ENUM-P3 said the implementation "can" reject where the reference requires the rejection.
+
+### Gap review, 2026-11-05 (declarations, statements, and foundations)
+
+The source-reader gap review of the text phase 9 wrote on declarations, statements, and foundations (`reports/review/2026-11-05-gap-review-phase-9-declarations-statements-foundations.md`) reads the question: supports with a doubt. The reference makes the enumeration ill-formed when no integral type of the implementation fits, and the implementation chooses among the types that fit. A wider type is fine only if it counts as an extended integer type, and GCC documents none.

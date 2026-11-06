@@ -2,7 +2,7 @@
 
 **Status:** provisional
 **Affects:** ODR-P1, ODR-2, ODR-3, `tests/foundations/odr/class-constant-copy-in-lambda.cpp`
-**Waits for:** a use of ODR-P1; newest families that agree
+**Waits for:** newest families that agree
 
 ## Context
 
@@ -41,7 +41,13 @@ Changed on 2026-11-03. The source-reader gap review of program structure (`repor
 
 Kept open on 2026-11-03 under decision 0054, because ODR-3 changed on the same day, and a question settles only after a reader or a review has used the changed rule (decision 0055). GCC 16 and EDG 7.0 also differ from the answer.
 
+Kept open on 2026-11-05 under decision 0054, because two newest families differ from the answer in at least one form (gap review of the text phase 9 wrote, item RV3).
+
 ## Opinions
+
+### Gap review, 2026-11-05 (declarations, statements, and foundations)
+
+The source-reader gap review of the text phase 9 wrote on declarations, statements, and foundations (`reports/review/2026-11-05-gap-review-phase-9-declarations-statements-foundations.md`) used ODR-P1 on ``foundations/odr/class-constant-copy-in-lambda.cpp``, without the rule text. The model's answer: The return copies a whole class constant, so the copy constructor binds a reference to it. That binding is a use, and a lambda with no capture cannot use the local. Reject. Matches the provisional answer: yes. Reference verdict: supports with no doubt.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
 

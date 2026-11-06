@@ -48,7 +48,13 @@ that copies an object with padding uses `unsigned char` or `std::byte`.
 
 Kept open on 2026-11-03 under decision 0054, because the review reads against the answer with doubt. STG-12 now allows an array of `char`, and sets the condition only on a copy that reads each byte through a `char` glvalue.
 
+Kept open on 2026-11-05 under decision 0054, because the review reads against the answer (gap review of the text phase 9 wrote, item RV3).
+
 ## Opinions
+
+### Gap review, 2026-11-05 (declarations, statements, and foundations)
+
+The source-reader gap review of the text phase 9 wrote on declarations, statements, and foundations (`reports/review/2026-11-05-gap-review-phase-9-declarations-statements-foundations.md`) reads the question: reads against. Zero initialization sets padding bits to zero. So a padding byte of a static object, or of a class object that is value initialized with no user-provided constructor, has a value before the program writes it. The part on copies through plain char is unclear in the reference, which speaks of unsigned ordinary character types without saying whether a plain char that is unsigned counts.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
 

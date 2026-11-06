@@ -328,14 +328,17 @@ operand of `decltype` or `sizeof`.
 
 :::{rule} LAM-15
 :kind: required
-:tests: expressions/lambdas/generic.cpp templates/dependent-names/generic-lambda-argument-lookup.cpp expressions/lambdas/template-head.cpp expressions/lambdas/generic-pack.cpp
+:tests: expressions/lambdas/generic.cpp templates/dependent-names/generic-lambda-argument-lookup.cpp expressions/lambdas/template-head.cpp expressions/lambdas/generic-pack.cpp expressions/lambdas/template-head-dependent-call.cpp
 
 A parameter of type `auto` makes the call operator a template
 ({rule}`DED-34`). Each call deduces the parameter type. `auto...`
 gives the call operator a pack ({rule}`PACK-1`). A template head after
 the captures, as in `[]<class T>(T x) { ... }`, makes the call operator
 a template with those parameters. A call deduces them as for a function
-template, or names them in `l.operator()<int>()`. The body is a
+template, or names them in `l.operator()<int>()`. Inside a template,
+where the closure type depends on a template parameter, the call
+names the template with `template`, as in `f.template
+operator()<T>()` ({rule}`DEP-24`). The body is a
 {term}`templated context` also at namespace scope, so its dependent
 calls look up names as {rule}`DEP-9` gives, at the points of
 {rule}`INST-31`.
@@ -494,8 +497,8 @@ int dispatch(int base) {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 85
-of 89 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 86
+of 90 tests.
 
 ### Divergences
 

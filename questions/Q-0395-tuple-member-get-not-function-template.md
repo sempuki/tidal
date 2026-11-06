@@ -41,10 +41,16 @@ same way.
 
 Kept open on 2026-11-04 under decision 0054, because SB-5 changed in this commit (decision 0055), and GCC 16 differs from the answer.
 
+Kept open on 2026-11-05 under decision 0054, because the use of SB-P2 did not give the provisional answer, so the principle needs a repair and a new use (gap review of the text phase 9 wrote, item RV3).
+
 ## Opinions
 
 ### Gap review, 2026-11-04
 
 The source-reader gap review of the text phase 8 wrote on the declarations and statements chapters (`reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md`) supports option 1. In its reading, the member form needs a lookup in the class that finds a function template whose first template parameter takes a value. A member class template or variable template of the same name does not count. SB-5 said "member template", which the review found too wide.
+
+### Gap review, 2026-11-05 (declarations, statements, and foundations)
+
+The source-reader gap review of the text phase 9 wrote on declarations, statements, and foundations (`reports/review/2026-11-05-gap-review-phase-9-declarations-statements-foundations.md`) reads the question: supports with no doubt. The reference chooses the member form only when the search for get in the class finds a member function template that takes a value as its leading parameter. A member variable template or class template does not count. used SB-P2 on ``declarations/structured-bindings/tuple-member-variable-template-get-uses-free.cpp`, `tuple-member-class-template-get-uses-free.cpp``, without the rule text. The model's answer: The principle says the elements come from get, and does not say when the member form is chosen. No answer. Matches the provisional answer: no (not decided). Reference verdict: supports the provisional answer with no doubt.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

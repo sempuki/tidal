@@ -59,3 +59,7 @@ Kept open on 2026-11-03 under decision 0054, because two of the newest families 
 The source-reader gap review of question cluster 3 (`reports/review/2026-11-03-gap-review-question-cluster-3.md`) reads the reference as supporting option 1. The pack tie-breaker looks at the declared parameters, including those with no call argument. The template with the defaulted parameter has a parameter at the position of the pack, so the tie-breaker does not apply, and the call is ambiguous. The reference has an example of this pair of templates with one argument and marks the call ambiguous. The limit of ORD-5 to the parameters with call arguments is a separate step, so it gives no support for option 2.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+
+### Gap review, 2026-11-05 (expressions and templates)
+
+The source-reader gap review of the text phase 9 wrote on expressions and templates (`reports/review/2026-11-05-gap-review-phase-9-expressions-templates.md`) names the question in its section on ORD-12 and finds that ORD-12 agrees on the default argument of this question.

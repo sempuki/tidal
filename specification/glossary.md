@@ -473,7 +473,9 @@ literal type
 member template
   A template declared in a class body. Such a template declares a
   function, a nested class, or a static variable with a head of its own
-  ({rule}`TPL-24`).
+  ({rule}`TPL-24`). The call operator of a lambda with a template head
+  or an `auto` parameter is a member template of the closure type
+  ({rule}`LAM-15`).
 
 memory location
   The storage of one scalar object, or of a group of adjacent

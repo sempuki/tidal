@@ -1,9 +1,8 @@
 # Q-0390: Can a `fallthrough` statement lead to a label of an enclosing `switch`?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** ATTR-2, ATTR-P1, `tests/declarations/attributes/fallthrough-into-outer-switch.cpp`
 **Source:** reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md, the ATTR-P1 section
-**Waits for:** a use of ATTR-P1
 
 ## Context
 
@@ -45,7 +44,7 @@ Clang's acceptance as an override.
 2. The statement is valid. Any `case` or `default` label after it is
    enough (Clang).
 
-## Provisional answer
+## Answer
 
 The statement is not valid (option 1). The gap review reads the C++23
 text this way, and GCC 16 and EDG 7.0 follow it. ATTR-P1 now gives the place of
@@ -55,10 +54,16 @@ Q-0021.
 
 Kept open on 2026-11-04 under decision 0054, because ATTR-P1 changed in this commit (decision 0055). Clang 22 is the one newest family that differs.
 
+Settled on 2026-11-05 under decision 0054. The gap review of the text phase 9 wrote (item RV3) supports the answer with no doubt, and its use of the principle on the question's program gives the provisional answer (decision 0056). At most one newest family differs in each form, and each test keeps its override.
+
 ## Opinions
 
 ### Gap review, 2026-11-04
 
 The source-reader gap review of the text phase 8 wrote on the declarations and statements chapters (`reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md`) supports option 1. In its reading, a `fallthrough` statement is valid only where the next statement to run has a `case` or `default` label of the same `switch`. ATTR-P1 and ATTR-2 did not say "of the same `switch`", and the review called the case rare.
+
+### Gap review, 2026-11-05 (declarations, statements, and foundations)
+
+The source-reader gap review of the text phase 9 wrote on declarations, statements, and foundations (`reports/review/2026-11-05-gap-review-phase-9-declarations-statements-foundations.md`) reads the question: supports with no doubt. The reference asks that the next statement carry a case or default label of the same switch statement. used ATTR-P1 on ``declarations/attributes/fallthrough-into-outer-switch.cpp``, without the rule text. The model's answer: The next statement carries a label of the outer switch, which is not the switch of the fallthrough. Reject. Matches the provisional answer: yes. Reference verdict: supports with no doubt.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

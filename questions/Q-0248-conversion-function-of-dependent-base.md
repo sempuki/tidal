@@ -2,7 +2,7 @@
 
 **Status:** provisional
 **Affects:** DEP-11, DEP-12, `tests/templates/dependent-names/dependent-base-conversion-function.cpp`, `tests/templates/dependent-names/dependent-base-conversion-function-independent.cpp`
-**Waits for:** a use of DEP-P3; newest families that agree
+**Waits for:** newest families that agree
 
 ## Context
 
@@ -38,10 +38,16 @@ Changed on 2026-11-03 to option 2. The review reads option 2, Clang 22 follows i
 
 Kept open on 2026-11-03 under decision 0054, because two newest families differ from the answer (GCC 16 and EDG 7.0). DEP-11 also changed on the same day, and a question settles only after a reader or a review has used the changed rule (decision 0055).
 
+Kept open on 2026-11-05 under decision 0054, because two newest families differ from the answer in at least one form (gap review of the text phase 9 wrote, item RV3).
+
 ## Opinions
 
 ### Gap review, 2026-11-03
 
 The source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`) reads option 2. An unqualified conversion function name whose target type is dependent is a dependent name. It is looked up at the point of instantiation, so lookup can find a member of a dependent base. An example calls such a conversion function of a base given as a template argument without `this->` and accepts the call. GCC and EDG apply the older rule that never looks into a dependent base for an unqualified name. A name with a target type that is not dependent stays unfound, as every compiler finds.
+
+### Gap review, 2026-11-05 (expressions and templates)
+
+The source-reader gap review of the text phase 9 wrote on expressions and templates (`reports/review/2026-11-05-gap-review-phase-9-expressions-templates.md`) used DEP-P3 on ``dependent-base-conversion-function.cpp``, without the rule text. The model's answer: The conversion function name with a dependent target type searches the dependent base at the instantiation, and the call finds the base's function. Matches the provisional answer: yes. Reference verdict: supports with no doubt.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

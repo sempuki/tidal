@@ -47,10 +47,16 @@ extra conditions of those compilers.
 
 Kept open on 2026-11-03 under decision 0054, because the review finds the question outside the C++23 text.
 
+Kept open on 2026-11-05 under decision 0054, because the gap review of the text phase 9 wrote finds the reference silent, as the earlier reviews did.
+
 ## Opinions
 
 ### Gap review, 2026-11-03
 
 The source-reader gap review of the open questions on classes and statements (`reports/review/2026-11-03-gap-review-questions-classes-statements.md`) finds the question outside the C++23 text. The language does not fix whether a derived class reuses the end padding of a base. The choice belongs to the implementation and its ABI, so every compiler in the table conforms.
+
+### Gap review, 2026-11-05
+
+The source-reader gap review of the text phase 9 wrote on classes, overloading, and exceptions (`reports/review/2026-11-05-gap-review-phase-9-classes-overloading-exceptions.md`) finds the reference silent. The reuse of end padding is left to the implementation, and both options conform.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

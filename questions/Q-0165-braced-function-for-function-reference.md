@@ -3,7 +3,7 @@
 **Status:** provisional
 **Affects:** REF-6, REF-11, `tests/declarations/initialization/references/braced-function-overload-set.cpp`, `tests/declarations/initialization/references/braced-function-noexcept.cpp`
 **Parent:** Q-0294, the model of braced lists for references, arrays, and conversion sequences
-**Waits for:** a use of REF-P3; a review (doubt)
+**Waits for:** newest families that agree; a review (silent)
 
 ## Context
 
@@ -44,10 +44,16 @@ Changed on 2026-11-03 for the `noexcept` function. The review reads option 3 the
 
 Kept open on 2026-11-03 under decision 0054, because the review finds the overload set unclear. REF-6 and REF-11 also changed on the same day for the `noexcept` function, and a question settles only after a reader or a review has used the changed rule (decision 0055).
 
+Kept open on 2026-11-05 under decision 0054, because the review reads the reference as silent, and two newest families differ from the answer in at least one form (gap review of the text phase 9 wrote, item RV3).
+
 ## Opinions
 
 ### Gap review, 2026-11-03
 
 The source-reader gap review of the open questions on overloading, references, and list initialization (`reports/review/2026-11-03-gap-review-questions-overloading.md`) reads the `noexcept` function against the answer, with doubt, and finds the overload set unclear. The one braced element binds the reference as `=` does only when the referenced type is related to the element's type, and for function types that means the same type. A `noexcept` function has another type. After `=` the binding allows the function pointer conversion, but with braces a temporary of the function type would follow, which cannot exist. So the braced form is not valid, as EDG finds (option 3). For an overload set, the reference is a target that resolves the set, which supports Clang and EDG, but the list rule picks its branch from the element's type, which an overload set lacks, so GCC's rejection is a possible reading. The review has not checked whether a later change aligns braces with `=`.
+
+### Gap review, 2026-11-05 (declarations, statements, and foundations)
+
+The source-reader gap review of the text phase 9 wrote on declarations, statements, and foundations (`reports/review/2026-11-05-gap-review-phase-9-declarations-statements-foundations.md`) used REF-P3 on ``declarations/initialization/references/braced-function-overload-set.cpp``, without the rule text. The model's answer: A braced overload set for a function reference binds directly to the matching function. Accept. Matches the provisional answer: yes. Reference verdict: silent (unclear). used REF-P3 on ``declarations/initialization/references/braced-function-noexcept.cpp``, without the rule text. The model's answer: The element's type differs from the referenced function type by the exception specification, and a function type has no temporary. Reject. Matches the provisional answer: yes. Reference verdict: supports with no doubt.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

@@ -1,9 +1,8 @@
 # Q-0397: Is a partial specialization with `int V` more specialized than one with a constrained `auto V`?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** ORD-17, ORD-14, `tests/templates/ordering/partial-specializations-int-against-constrained-auto.cpp`
 **Source:** finding I2-7 of `reports/clean-room/I2/report.md`, from the probes that a clean-room writer ran for it.
-**Waits for:** a first review
 
 ## Context
 
@@ -40,7 +39,7 @@ The tests in **Affects**, with an override for EDG.
 2. The two partial specializations tie, and the constraint decides
    (EDG). Under ORD-14, the constraint then needs equivalent heads.
 
-## Provisional answer
+## Answer
 
 The one with `int V` (option 1). Two of three families agree, and
 option 1 follows ORD-17. Option 2 would also need constraints to decide
@@ -50,6 +49,12 @@ allow (Q-0146).
 The question stays open under decision 0051, because EDG 7.0 differs
 from Clang 22 and GCC 16.
 
+Settled on 2026-11-05 under decision 0054. The gap review of the text phase 9 wrote (item RV3) supports the answer with no doubt. At most one newest family differs in each form, and each test keeps its override.
+
 ## Opinions
+
+### Gap review, 2026-11-05 (expressions and templates)
+
+The source-reader gap review of the text phase 9 wrote on expressions and templates (`reports/review/2026-11-05-gap-review-phase-9-expressions-templates.md`) reads the question: supports with no doubt. The invented value of a placeholder parameter has a new invented type, so one direction fails and the int partial specialization is more specialized.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

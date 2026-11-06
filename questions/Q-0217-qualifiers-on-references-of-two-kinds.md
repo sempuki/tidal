@@ -2,7 +2,7 @@
 
 **Status:** provisional
 **Affects:** ORD-11, `tests/templates/ordering/reference-kind-and-qualifiers.cpp`
-**Waits for:** a use of ORD-P2; newest families that agree
+**Waits for:** newest families that agree
 
 ## Context
 
@@ -60,10 +60,16 @@ Kept open on 2026-11-04 under decision 0054, because two newest families, GCC 16
 
 Kept open on 2026-11-04 under decision 0055, because ORD-P2 changed in this commit: steps 6c and 6d now say how an ellipsis counts and that 6d compares the declared types. Steps 5a and 5b did not change. The question waits for the next use of ORD-P2.
 
+Kept open on 2026-11-05 under decision 0054, because two newest families differ from the answer in at least one form (gap review of the text phase 9 wrote, item RV3).
+
 ## Opinions
 
 ### Gap review, 2026-11-03
 
 The source-reader gap review of question cluster 3 (`reports/review/2026-11-03-gap-review-question-cluster-3.md`) reads the reference as supporting option 1. The more qualified of the two referenced types is recorded whenever both types are references, of either kind. The check on reference kinds and the check on cv-qualifiers each remove the same direction, so the condition that links them never changes a result, and neither template wins.
+
+### Gap review, 2026-11-05 (expressions and templates)
+
+The source-reader gap review of the text phase 9 wrote on expressions and templates (`reports/review/2026-11-05-gap-review-phase-9-expressions-templates.md`) used ORD-P2 on ``reference-kind-and-qualifiers.cpp``, without the rule text. The model's answer: Step 5a removes one direction and step 5b the other, so there is no order and the initialization is ambiguous. Matches the provisional answer: yes. Reference verdict: supports with no doubt.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

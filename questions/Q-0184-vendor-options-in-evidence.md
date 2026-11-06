@@ -30,10 +30,16 @@ not.
 
 Kept open on 2026-11-03 under decision 0054, because the review finds the reference silent.
 
+Kept open on 2026-11-05 under decision 0054, because the review reads the reference as silent (gap review of the text phase 9 wrote, item RV3).
+
 ## Opinions
 
 ### Gap review, 2026-11-03
 
 The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) finds the reference silent. The question concerns Tidal's Evidence.
+
+### Gap review, 2026-11-05 (declarations, statements, and foundations)
+
+The source-reader gap review of the text phase 9 wrote on declarations, statements, and foundations (`reports/review/2026-11-05-gap-review-phase-9-declarations-statements-foundations.md`) reads the question: silent. The question is about what Tidal's Evidence records. The reference says nothing on vendor options.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

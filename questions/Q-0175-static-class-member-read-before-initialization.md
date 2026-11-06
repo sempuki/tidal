@@ -63,7 +63,13 @@ Used on 2026-11-04 by the principle-use batch PU2 (`reports/clean-room/PU2/`), u
 
 Kept open on 2026-11-04 under decision 0054, because the latest gap review (2026-11-03) reads the reference as unclear. The question waits for a review that reads option 1 with no doubt.
 
+Kept open on 2026-11-05 under decision 0054, because the review reads the answer with a doubt (gap review of the text phase 9 wrote, item RV3).
+
 ## Opinions
+
+### Gap review, 2026-11-05 (declarations, statements, and foundations)
+
+The source-reader gap review of the text phase 9 wrote on declarations, statements, and foundations (`reports/review/2026-11-05-gap-review-phase-9-declarations-statements-foundations.md`) reads the question: supports with a doubt. For a class with a non-trivial constructor, the reference makes any reference to a member before the constructor starts undefined. For an aggregate with no constructor, the answer rests on the lifetime rule, and the reference's own example on scalars shows that a read of the zero before dynamic initialization is meant to work.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
 

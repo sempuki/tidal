@@ -135,14 +135,15 @@ result must not be weaker than the {term}`natural alignment` of the entity
 
 :::{rule} ALN-8
 :kind: reject
-:tests: declarations/alignment/operand-floating.cpp declarations/alignment/operand-scoped-enumeration.cpp declarations/alignment/operand-unscoped-enumeration.cpp declarations/alignment/operand-class-converts.cpp declarations/alignment/operand-class-conversion-not-constexpr.cpp declarations/alignment/operand-class-conversion-ambiguous.cpp declarations/alignment/operand-class-not-literal.cpp declarations/alignment/operand-class-explicit-conversion.cpp
+:tests: declarations/alignment/operand-floating.cpp declarations/alignment/operand-scoped-enumeration.cpp declarations/alignment/operand-unscoped-enumeration.cpp declarations/alignment/operand-class-converts.cpp declarations/alignment/operand-class-conversion-not-constexpr.cpp declarations/alignment/operand-class-conversion-ambiguous.cpp declarations/alignment/operand-class-not-literal.cpp declarations/alignment/operand-class-explicit-conversion.cpp declarations/alignment/operand-class-two-conversions-same-type.cpp
 
 The operand of `alignas` must have integral or unscoped enumeration
 type, or a class type that converts to such a type ({question}`Q-0313`,
-{question}`Q-0314`). Such a class is a literal type, and exactly one of
-its conversion functions that are not `explicit` gives an integral or
-unscoped enumeration type. That function is `constexpr`. An `explicit`
-conversion function does not count.
+{question}`Q-0314`). Such a class is a literal type, and its conversion
+functions that are not `explicit` give exactly one integral or unscoped
+enumeration type as their target. Several functions can give that one
+type. The function that the conversion selects is `constexpr`. An
+`explicit` conversion function does not count.
 :::
 
 :::{rule} ALN-3
@@ -239,7 +240,7 @@ static_assert(round_up(13, 8) == 16 && round_up(16, 8) == 16);
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 29
-of 53 tests. Each divergence has a question, except the
+of 54 tests. Each divergence has a question, except the
 implementation-defined limits of ALN-5 and the GCC 14 result of ALN-2.
 
 ### Divergences
@@ -297,6 +298,7 @@ implementation-defined limits of ALN-5 and the GCC 14 result of ALN-2.
 | `on-typedef.cpp` | ALN-2 | reject | reject | GCC 16: reject; GCC 14: accept | reject | {question}`Q-0072` |
 | `operand-class-converts.cpp` | ALN-8 | accept | accept | reject | accept | {question}`Q-0314` |
 | `operand-class-explicit-conversion.cpp` | ALN-8 | accept | accept | reject | accept | {question}`Q-0314` |
+| `operand-class-two-conversions-same-type.cpp` | ALN-8 | accept | accept | reject | accept | {question}`Q-0314` |
 | `operand-scoped-enumeration.cpp` | ALN-8 | reject | reject | reject | accept | {question}`Q-0313` |
 | `redeclare-different.cpp` | ALN-3 | reject | reject | accept | reject | {question}`Q-0070` |
 | `scoped-enum.cpp` | ALN-7 | reject | reject | GCC 16: reject; GCC 14: accept | accept | {question}`Q-0073` |

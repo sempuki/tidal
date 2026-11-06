@@ -1,9 +1,8 @@
 # Q-0400: Is a concept valid when its requirement is satisfied for no argument?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** CPT-35, `tests/templates/concepts/nested-requirement.cpp`, `tests/templates/concepts/nested-requirement-never-satisfied.cpp`
 **Source:** finding R9B-9 of `reports/clean-room/R9/report-b.md`
-**Waits for:** a first review
 
 ## Context
 
@@ -43,7 +42,7 @@ the last row are not tests.
 2. Such a requirement makes the program not valid, with no diagnostic
    required. The tests then check only that every compiler accepts.
 
-## Provisional answer
+## Answer
 
 The concept is valid (option 1), as CPT-35 says. A nested requirement
 holds when its constraint is satisfied, and `false` is a valid
@@ -51,6 +50,12 @@ constraint that is never satisfied. Every compiler agrees. Under option
 2, the tests would keep their expectation, because a rule with no
 diagnostic allows an implementation to accept.
 
+Settled on 2026-11-05 under decision 0054. The gap review of the text phase 9 wrote (item RV3) supports the answer with no doubt. At most one newest family differs in each form, and each test keeps its override.
+
 ## Opinions
+
+### Gap review, 2026-11-05 (expressions and templates)
+
+The source-reader gap review of the text phase 9 wrote on expressions and templates (`reports/review/2026-11-05-gap-review-phase-9-expressions-templates.md`) reads the question: supports with no doubt. The no-diagnostic rule covers a requirement whose substitution always fails. A valid requirement that is always false is outside it.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

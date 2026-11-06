@@ -67,7 +67,8 @@ suffixes with two underscores in a row belong to the implementation. A
 program that declares a literal operator for such a suffix is not
 valid, and no diagnostic is required.
 
-The language uses these suffixes, in either case. A suffix that the
+The language uses these suffixes, each in all lowercase or all
+uppercase letters. A suffix that the
 language uses keeps its built-in meaning ({principle}`PRIM-P1`), and
 the literal calls no literal operator:
 
@@ -308,12 +309,15 @@ if the built-in operator or the operator function is used.
 
 :::{rule} OPR-9
 :kind: no-diagnostic
-:tests: classes/operators/literal-no-underscore-warns.cpp classes/operators/literal-no-underscore-floating-warns.cpp classes/operators/literal-double-underscore-suffix.cpp classes/operators/literal-reserved-suffix-used.cpp classes/operators/literal-reserved-suffix-u8.cpp
+:tests: classes/operators/literal-no-underscore-warns.cpp classes/operators/literal-no-underscore-floating-warns.cpp classes/operators/literal-double-underscore-suffix.cpp classes/operators/literal-reserved-suffix-used.cpp classes/operators/literal-reserved-suffix-u8.cpp classes/operators/literal-spaced-reserved-identifier.cpp
 
 A program must not declare a literal operator whose suffix does not
 start with `_`, or whose suffix has two underscores in a row. The first
 kind is reserved for later forms of literals, and the second for the
-implementation. No diagnostic is required. A literal that uses such a suffix can call
+implementation. In the form with a space between `""` and the suffix,
+the suffix is an ordinary identifier, so a suffix that starts with `_`
+and an uppercase letter is reserved too. Written without the space,
+the same suffix is allowed. No diagnostic is required. A literal that uses such a suffix can call
 the literal operator or be rejected ({question}`Q-0383`).
 :::
 
@@ -340,8 +344,8 @@ Meters len = 2.5_m;
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 108
-of 111 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 109
+of 112 tests.
 
 ### Divergences
 

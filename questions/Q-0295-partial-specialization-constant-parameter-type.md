@@ -40,10 +40,16 @@ the matching rule of function templates (DED-12).
 
 Kept open on 2026-11-03 under decision 0054, because the review reads the answer with doubt.
 
+Kept open on 2026-11-05 under decision 0054, because the review reads the answer with a doubt (gap review of the text phase 9 wrote, item RV3).
+
 ## Opinions
 
 ### Gap review, 2026-11-03
 
 The source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`) agrees with option 1, with doubt. A partial specialization matches by deduction, which fails when a constant has a type other than that of the matching parameter. When the primary template's parameter has a placeholder type, the text does not say clearly which type the rule compares with. The natural reading takes the argument's own type, which gives option 1. For `const auto*` against an `int*`, the text does not settle whether the added `const` is a mismatch.
+
+### Gap review, 2026-11-05 (expressions and templates)
+
+The source-reader gap review of the text phase 9 wrote on expressions and templates (`reports/review/2026-11-05-gap-review-phase-9-expressions-templates.md`) reads the question: supports with a doubt. Deduction fails when a constant's type differs from the type of the matching parameter of the named template. The reference does not say plainly what that type is when the primary parameter is a placeholder.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

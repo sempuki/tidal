@@ -81,3 +81,7 @@ The source-reader gap review of the open questions on overloading, references, a
 ### Inventory, 2026-10-31
 
 The source-reader inventory of concepts and constraints (`reports/review/2026-10-31-inventory-concepts-and-constraints.md`) names the question in its list of compiler differences that Tidal already records, and gives no reading.
+
+### Gap review, 2026-11-05 (expressions and templates)
+
+The source-reader gap review of the text phase 9 wrote on expressions and templates (`reports/review/2026-11-05-gap-review-phase-9-expressions-templates.md`) names the question in its section on ORD-P1. For functions that are not templates, the reference removes a less constrained function from the address of an overload set with no condition on the parameter lists. `address-no-target-constraints-different-parameters.cpp` and this question follow the compilers, and the reference reads against them.

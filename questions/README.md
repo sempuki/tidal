@@ -128,7 +128,7 @@ status, and the first sentence of its answer section.
 | [Q-0089](Q-0089-decltype-in-destructor-call.md) | Can decltype name the class in an explicit destructor call? | settled | Yes; `decltype` can name the class in an explicit destructor call |
 | [Q-0090](Q-0090-unknown-reference-constant.md) | Can constant evaluation use a reference whose referent is unknown, if it does not read through it? | settled | Yes; Clang 22, GCC, and EDG agree, Clang 18 rejects |
 | [Q-0091](Q-0091-delete-array-through-base-constant.md) | Is delete[] of a derived array through a base pointer rejected during constant evaluation? | settled | Yes; the behavior is undefined, so constant evaluation rejects the deletion |
-| [Q-0092](Q-0092-lambda-capture-trailing-return.md) | Do names in a lambda's trailing return type find its captures? | provisional | Captures are visible in the trailing return type (option 1), and a name in the parameter list refers to the enclosing variable |
+| [Q-0092](Q-0092-lambda-capture-trailing-return.md) | Do names in a lambda's trailing return type find its captures? | settled | Captures are visible in the trailing return type (option 1), and a name in the parameter list refers to the enclosing variable |
 | [Q-0093](Q-0093-class-key-qualified-declaration.md) | Is a declaration of only a class key and a qualified name valid? | settled | No; the declaration is not valid |
 | [Q-0094](Q-0094-class-operator-delete-noexcept.md) | Is a class-specific operator delete without a specifier non-throwing? | settled | Yes; a deallocation function is non-throwing without the keyword |
 | [Q-0095](Q-0095-defaulted-comparison-member-throwing.md) | Is a defaulted == non-throwing if a member == is potentially throwing? | settled | No; the defaulted comparison is potentially throwing, as for defaulted special members |
@@ -283,7 +283,7 @@ status, and the first sentence of its answer section.
 | [Q-0244](Q-0244-aggregate-candidate-in-new-expression.md) | Does a parenthesized list in a `new` expression form the aggregate deduction candidate? | settled | Yes; Clang and EDG agree, GCC differs |
 | [Q-0245](Q-0245-template-keyword-before-destructor.md) | Can the keyword template come before a destructor name? | settled | No; Clang and GCC agree, EDG differs |
 | [Q-0246](Q-0246-current-instantiation-member-changes-at-instantiation.md) | Is a program in error when a name found in the current instantiation finds a different single member at the instantiation? | provisional | Yes, no diagnostic required; every compiler accepts |
-| [Q-0247](Q-0247-pack-expanded-twice-in-base-list.md) | Is a base list that expands the same pack twice diagnosed before instantiation? | provisional | No diagnostic required; Clang and EDG diagnose, GCC does not |
+| [Q-0247](Q-0247-pack-expanded-twice-in-base-list.md) | Is a base list that expands the same pack twice diagnosed before instantiation? | settled | No diagnostic required; Clang and EDG diagnose, GCC does not |
 | [Q-0248](Q-0248-conversion-function-of-dependent-base.md) | Does an unqualified conversion function name find a conversion function of a dependent base? | provisional | Yes; Clang agrees, GCC and EDG differ |
 | [Q-0249](Q-0249-later-default-argument-for-qualified-call.md) | Does a qualified call in a template use a default argument that a later declaration adds? | settled | No diagnostic required; GCC uses it, Clang and EDG reject |
 | [Q-0250](Q-0250-constant-function-defined-after-template.md) | Can a template's independent constant use a constexpr function that is defined after the template? | settled | No diagnostic required; GCC and EDG accept, Clang rejects |
@@ -376,7 +376,7 @@ status, and the first sentence of its answer section.
 | [Q-0337](Q-0337-explicit-conversion-value-for-const-reference.md) | Can direct initialization of an lvalue reference to `const` use an explicit conversion function that does not return an lvalue? | provisional | No; only a function that returns an lvalue reference serves it |
 | [Q-0338](Q-0338-constant-equality-class-and-subobject.md) | During constant evaluation, does the address of a class object compare equal to the address of its first member or of its base? | settled | True |
 | [Q-0339](Q-0339-copy-part-with-two-copy-constructors.md) | Does a part with a trivial and a non-trivial copy constructor make the enclosing copy constructor non-trivial when the copy selects the trivial one? | provisional | The selected function decides |
-| [Q-0340](Q-0340-layout-compatible-overlap-mark.md) | Are two structs layout-compatible when matching members both have `[[no_unique_address]]`? | provisional | Layout-compatible |
+| [Q-0340](Q-0340-layout-compatible-overlap-mark.md) | Are two structs layout-compatible when matching members both have `[[no_unique_address]]`? | settled | Layout-compatible |
 | [Q-0341](Q-0341-standard-layout-base-type-at-offset-zero.md) | Does a base whose type sits deep inside the first member, or in a `[[no_unique_address]]` member, make a class not standard-layout? | provisional | Not standard-layout in all four cases |
 | [Q-0342](Q-0342-tail-padding-defaulted-functions.md) | Does a base that declares defaulted special members lend its tail padding to a derived class? | settled | The base keeps its padding |
 | [Q-0343](Q-0343-trivially-copyable-deleted-functions.md) | Is a class trivially copyable when its destructor is deleted, or when all its copy and move functions are deleted? | provisional | No; neither class is trivially copyable |
@@ -394,7 +394,7 @@ status, and the first sentence of its answer section.
 | [Q-0355](Q-0355-edg-virtual-call-from-intermediate-class-constant.md) | Does EDG calling a base's function for a virtual call made inside an intermediate class during constant evaluation change VIRT-1? | settled | No; the call reaches `W::f`, and EDG differs |
 | [Q-0356](Q-0356-gcc14-member-pointer-comma-operand-order.md) | Does GCC 14 evaluating the right operand of `.*` first, when the left operand is a comma expression, change SEQ-2? | compiler defect | No; the left operand comes first, and GCC 14 is wrong |
 | [Q-0357](Q-0357-byte-copy-into-shared-padding.md) | What value does a derived member have after a byte copy into the base subobject writes over it? | provisional | The member takes the value of its new bytes, and a padding byte with no value gives it none |
-| [Q-0358](Q-0358-new-deallocation-noexcept-constructor.md) | Does a `new` expression use the deallocation function when its constructor is `noexcept`? | provisional | Yes; the `new` expression uses the deallocation function whatever the exception specification of the constructor |
+| [Q-0358](Q-0358-new-deallocation-noexcept-constructor.md) | Does a `new` expression use the deallocation function when its constructor is `noexcept`? | settled | Yes; the `new` expression uses the deallocation function whatever the exception specification of the constructor |
 | [Q-0359](Q-0359-volatile-byte-copy.md) | Is a read of a volatile object's bytes through `unsigned char` that is not volatile an access under VOL-6? | provisional | Yes; the plain byte copy is undefined, and a copy uses volatile byte glvalues |
 | [Q-0360](Q-0360-alignment-above-largest-extended.md) | Does an implementation reject an `alignas` above its largest extended alignment? | settled | The implementation rejects the alignment |
 | [Q-0361](Q-0361-tail-padding-deleted-and-move-members.md) | Does a base with a deleted constructor or a user-provided move assignment operator lend its tail padding? | provisional | The base keeps its padding |
@@ -426,19 +426,21 @@ status, and the first sentence of its answer section.
 | [Q-0387](Q-0387-constant-compare-base-subobjects.md) | Does constant evaluation reject a relational comparison that involves a base class subobject? | settled | Yes; constant evaluation rejects the comparison |
 | [Q-0388](Q-0388-deduced-conversion-function-template.md) | Can a conversion function template have `auto` as its name? | settled | No; the declaration is rejected |
 | [Q-0389](Q-0389-default-argument-local-constant.md) | Can a default argument read the value of a local constant of an enclosing function? | provisional | The default argument is not valid |
-| [Q-0390](Q-0390-fallthrough-label-of-other-switch.md) | Can a `fallthrough` statement lead to a label of an enclosing `switch`? | provisional | The statement is not valid |
+| [Q-0390](Q-0390-fallthrough-label-of-other-switch.md) | Can a `fallthrough` statement lead to a label of an enclosing `switch`? | settled | The statement is not valid |
 | [Q-0391](Q-0391-friend-member-of-specialization.md) | Does a friend template that names a member of a class template befriend only that member, in every specialization? | settled | The named member of every specialization is a friend, and no other member is |
-| [Q-0392](Q-0392-local-class-member-requires-clause.md) | Can a member function of a local class in a function template have a requires clause? | provisional | Yes; the requires clause is valid and waits for a use of the member |
+| [Q-0392](Q-0392-local-class-member-requires-clause.md) | Can a member function of a local class in a function template have a requires clause? | settled | Yes; the requires clause is valid and waits for a use of the member |
 | [Q-0393](Q-0393-noexcept-operand-null-pointer.md) | Can the operand of a `noexcept` specifier be a null pointer constant of the null pointer type? | provisional | The operand is valid and gives a potentially throwing function |
 | [Q-0394](Q-0394-override-without-ref-qualifier.md) | Does a member function with no ref-qualifier override a base virtual function with one? | provisional | No; the ref-qualifiers must match |
 | [Q-0395](Q-0395-tuple-member-get-not-function-template.md) | Does a member `get` that is not a function template select the member form of the tuple protocol? | provisional | Only a member function template selects the member form |
 | [Q-0396](Q-0396-function-type-references-ordering.md) | Does partial ordering remove the references inside the function types of ORD-9? | provisional | One pair of whole function types |
-| [Q-0397](Q-0397-invented-value-placeholder-type.md) | Is a partial specialization with `int V` more specialized than one with a constrained `auto V`? | provisional | The one with `int V` |
-| [Q-0398](Q-0398-object-parameter-member-const.md) | Does the object parameter of a `const` member keep the `const` in partial ordering? | provisional | The object parameter keeps the member's `const` |
-| [Q-0399](Q-0399-negative-array-bound-in-substitution.md) | Is a negative array bound that substitution makes a substitution failure? | provisional | Yes; the template is removed in every form |
-| [Q-0400](Q-0400-requirement-never-satisfied.md) | Is a concept valid when its requirement is satisfied for no argument? | provisional | The concept is valid (option 1), as CPT-35 says |
+| [Q-0397](Q-0397-invented-value-placeholder-type.md) | Is a partial specialization with `int V` more specialized than one with a constrained `auto V`? | settled | The one with `int V` |
+| [Q-0398](Q-0398-object-parameter-member-const.md) | Does the object parameter of a `const` member keep the `const` in partial ordering? | settled | The object parameter keeps the member's `const` |
+| [Q-0399](Q-0399-negative-array-bound-in-substitution.md) | Is a negative array bound that substitution makes a substitution failure? | settled | Yes; the template is removed in every form |
+| [Q-0400](Q-0400-requirement-never-satisfied.md) | Is a concept valid when its requirement is satisfied for no argument? | settled | The concept is valid (option 1), as CPT-35 says |
 | [Q-0401](Q-0401-cond-class-prvalue-binds-directly.md) | Does a reference bind directly to a class prvalue in steps 1 and 2 of COND-16? | provisional | No; the operand converts by step 3, and the result is a prvalue |
 | [Q-0402](Q-0402-ordering-class-before-defaulted-declaration.md) | Must the ordering class be declared before a defaulted `<=>` is declared, or only before it is used? | provisional | Before the defaulted declaration |
+| [Q-0403](Q-0403-defaulted-eq-nested-array-constant.md) | In constant evaluation, does a defaulted `==` compare every element of a member that is an array of arrays? | provisional | Every element, also in constant evaluation |
+| [Q-0404](Q-0404-friend-member-pattern.md) | Does a friend declaration that names a member through a pattern such as `A<T*>::f` befriend that member of a specialization that does not match the pattern? | provisional | Every specialization |
 
 ## Status values
 

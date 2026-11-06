@@ -48,10 +48,22 @@ option 1.
 
 Kept open on 2026-11-04 under decision 0054, because the gap review of the rules that phase 7 rewrote finds the reference silent on the value of such a byte, leaning to option 2. BF-9 now says that the bits of an unnamed bit-field are padding bits.
 
+Kept open on 2026-11-05 under decision 0054, because the gap review of the text phase 9 wrote finds the reference silent.
+
+Kept open on 2026-11-05 under decision 0054, because the review reads the reference as silent (gap review of the text phase 9 wrote, item RV3).
+
 ## Opinions
 
 ### Gap review, 2026-11-04
 
 The source-reader gap review of the rules that the phase 7 front-end and Propose repairs rewrote (`reports/review/2026-11-04-gap-review-phase-7-repairs.md`) finds the reference silent on the case, leaning to option 2. The reference calls the bits outside the value representation padding bits, the extra bits of a wide bit-field among them, and says that an unnamed bit-field is not a member. It says nothing direct about the value that a read through `unsigned char` gives for a byte with value bits and padding bits. Three places lean to option 2. A bit cast makes a bit of its result indeterminate when the bit comes from outside the source's value representation, and then the smallest object that holds the bit has an indeterminate value. A note on atomic compare-and-exchange says that padding bits outside the active member's value representation are indeterminate. And an automatic object with no initializer has an indeterminate value as a whole. Zero-initialization sets padding bits to zero, for a class and for a union, so after static initialization, or after value initialization of a class without a user-provided default constructor, the bits read as zero. The probes used aggregate initialization, which does not zero padding. Option 1 allows a byte copy through plain `char`, and option 2 only through `unsigned char` or `std::byte`. Committee work on access to object representations continues.
+
+### Gap review, 2026-11-05
+
+The source-reader gap review of the text phase 9 wrote on classes, overloading, and exceptions (`reports/review/2026-11-05-gap-review-phase-9-classes-overloading-exceptions.md`) finds the reference silent on the value of a byte that holds value bits and padding bits. The reader notes that zero initialization sets padding bits to zero, so an object that is zero-initialized has known padding.
+
+### Gap review, 2026-11-05 (declarations, statements, and foundations)
+
+The source-reader gap review of the text phase 9 wrote on declarations, statements, and foundations (`reports/review/2026-11-05-gap-review-phase-9-declarations-statements-foundations.md`) reads the question: silent. The reference does not say what a byte read gives when the byte holds bit-field bits and bits that no member covers. It does say that zero initialization zeroes padding bits.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

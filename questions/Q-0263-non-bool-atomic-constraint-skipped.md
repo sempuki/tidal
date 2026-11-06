@@ -2,7 +2,7 @@
 
 **Status:** provisional
 **Affects:** CNS-9, CNS-39, `tests/templates/constraints/atomic-not-bool-skipped.cpp`, `tests/templates/constraints/atomic-not-bool-nondependent-concept.cpp`
-**Waits for:** a use of CNS-P2
+**Waits for:** a use of CNS-P2; a review (doubt)
 
 ## Context
 
@@ -44,10 +44,16 @@ Changed on 2026-11-03 to option 3. The review reads option 3, every compiler's r
 
 Kept open on 2026-11-03 under decision 0054, because CNS-39 changed on the same day, and a question settles only after a reader or a review has used the changed rule (decision 0055). Every compiler's result fits the rule.
 
+Kept open on 2026-11-05 under decision 0054, because the use of CNS-P2 did not give the provisional answer, so the principle needs a repair and a new use, and the review reads the answer with a doubt (gap review of the text phase 9 wrote, item RV3).
+
 ## Opinions
 
 ### Gap review, 2026-11-03
 
 The source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`) reads against the answer in part. Satisfaction checks the type of an atomic constraint only when it reaches the constraint. A separate rule makes the program not valid, with no diagnostic required, when an atomic constraint can never be checked successfully and no check reaches it. So the program is not valid, and GCC's acceptance conforms, as do Clang's and EDG's rejections at the definition. CNS-9 and CNS-39 need a diagnostic, which the review does not support. The same holds for the requires clause of a function template.
+
+### Gap review, 2026-11-05 (expressions and templates)
+
+The source-reader gap review of the text phase 9 wrote on expressions and templates (`reports/review/2026-11-05-gap-review-phase-9-expressions-templates.md`) used CNS-P2 on ``atomic-not-bool-skipped.cpp``, without the rule text. The model's answer: The left operand is false, so the right one is never substituted or checked, and the program is accepted. Matches the provisional answer: partly: the outcome is one that option 3 allows, and the model does not give "not valid". Reference verdict: supports with a doubt.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

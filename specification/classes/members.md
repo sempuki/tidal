@@ -244,12 +244,15 @@ lvalue selects `&`, and a call on an rvalue selects `&&`.
 
 :::{rule} CLS-26
 :kind: reject
-:tests: classes/members/ref-qualified-mixed.cpp classes/members/ref-qualified-mixed-const.cpp classes/members/ref-qualified-mixed-call.cpp classes/members/ref-qualified-mixed-different-cv.cpp
+:tests: classes/members/ref-qualified-mixed.cpp classes/members/ref-qualified-mixed-const.cpp classes/members/ref-qualified-mixed-call.cpp classes/members/ref-qualified-mixed-different-cv.cpp classes/members/explicit-object-and-unqualified-clash.cpp
 
 The overloads of a member function that CLS-6 describes must all have
 ref-qualifiers, or none, if they have the same parameters and the same
 cv-qualifiers ({question}`Q-0027`). Overloads whose cv-qualifiers
-differ can mix a function with a ref-qualifier and one without.
+differ can mix a function with a ref-qualifier and one without. A
+member function without a ref-qualifier and one with an explicit object
+parameter of reference to the same class type, with the same other
+parameters, also clash.
 :::
 
 :::{rule} CLS-7
@@ -700,8 +703,8 @@ struct Pointers { char c; int& r; int Plain::* p; void (Shape::* f)(); };
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 153
-of 169 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 154
+of 170 tests.
 
 ### Divergences
 

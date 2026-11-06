@@ -44,6 +44,8 @@ lists the EDG choice as an extra condition of EDG.
 
 Kept open on 2026-11-04 under decision 0054, because the gap review of the text phase 8 wrote on classes and overloading finds the reference silent. Both options conform, and the question records a property of the platform ABIs. EDG 7.0 is the one newest family that differs.
 
+Kept open on 2026-11-05 under decision 0054, because the gap review of the text phase 9 wrote finds the reference silent.
+
 ## Opinions
 
 ### Gap review, 2026-11-04
@@ -53,5 +55,9 @@ The source-reader gap review of the text phase 8 wrote on classes and overloadin
 ### Gap review, 2026-11-04 (expressions, foundations, and templates)
 
 The source-reader gap review of the text phase 8 wrote on expressions, foundations, exceptions, and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`) names the question and leaves it out, because its rules are on the classes pages.
+
+### Gap review, 2026-11-05
+
+The source-reader gap review of the text phase 9 wrote on classes, overloading, and exceptions (`reports/review/2026-11-05-gap-review-phase-9-classes-overloading-exceptions.md`) finds the reference silent on the end padding of a union used as an overlapping member. Both options conform.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

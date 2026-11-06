@@ -2,7 +2,7 @@
 
 **Status:** provisional
 **Affects:** STG-25, STG-11, STG-12, `tests/foundations/storage/base-bytes-shared-with-member.cpp`
-**Waits for:** a review (doubt)
+**Waits for:** a review (against)
 
 ## Context
 
@@ -41,11 +41,17 @@ new kind of undefined behavior.
 
 Kept open on 2026-11-04 under decision 0054, because the gap review of the rules that phase 7 added reads a byte copy into a base or a marked member as undefined by omission, with doubt. STG-25 keeps the result that the compilers show.
 
+Kept open on 2026-11-05 under decision 0054, because the review reads against the answer (gap review of the text phase 9 wrote, item RV3).
+
 ## Opinions
 
 ### Gap review, 2026-11-04
 
 The source-reader gap review of the rules that phase 7 added (`reports/review/2026-11-04-gap-review-phase-7-additions.md`) reads the reference with doubt, against the answer. The reference gives a byte copy its result only when neither the source nor the target is a subobject that can overlap. For a base or a marked member, the reference does not say what a byte copy into it does, not even for the target's own value, so the case is undefined by omission. STG-25 and this answer promise a result that the reference does not give.
+
+### Gap review, 2026-11-05 (declarations, statements, and foundations)
+
+The source-reader gap review of the text phase 9 wrote on declarations, statements, and foundations (`reports/review/2026-11-05-gap-review-phase-9-declarations-statements-foundations.md`) reads the question: reads against, with doubt. The reference's guarantee for byte copies excludes potentially overlapping subobjects, and a base subobject is one. So the copy into the base has no meaning in the reference (undefined by omission). Option 2 is closer.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
 

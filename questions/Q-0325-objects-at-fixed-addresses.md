@@ -49,7 +49,17 @@ On the matrix targets no object lies at such an address.
 
 Kept open on 2026-11-03 under decision 0054, because the review is silent.
 
+Kept open on 2026-11-05 under decision 0054, because the review reads the reference as silent (gap review of the text phase 9 wrote, item RV3).
+
 ## Opinions
+
+### Gap review, 2026-11-05 (declarations, statements, and foundations)
+
+The source-reader gap review of the text phase 9 wrote on declarations, statements, and foundations (`reports/review/2026-11-05-gap-review-phase-9-declarations-statements-foundations.md`) reads the question: silent. The reference leaves the mapping from integers to pointers to the implementation and has no notion of an object that exists at a fixed address without being created.
+
+### Gap review, 2026-11-05 (expressions and templates)
+
+The source-reader gap review of the text phase 9 wrote on expressions and templates (`reports/review/2026-11-05-gap-review-phase-9-expressions-templates.md`) reads the question: silent. The reference leaves the integer to pointer mapping to the implementation and says nothing about objects at such addresses.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
 

@@ -2,7 +2,7 @@
 
 **Status:** provisional
 **Affects:** ORD-7, `tests/templates/ordering/reversed-member-object.cpp`
-**Waits for:** a use of ORD-P1
+**Waits for:** newest families that agree
 
 ## Context
 
@@ -67,10 +67,16 @@ Kept open on 2026-11-04 under decision 0054, because two newest families, GCC 16
 
 Kept open on 2026-11-04 under decision 0055, because ORD-P1 changed in this commit: its table gives the address of an overload set with no target type its own row, which cites OVL-20 (finding R9D-4). The ORD-7 example on the ordering page now shows a swapped member template and says that GCC and EDG choose the written non-member (finding PU2-6). The question waits for the next use of ORD-P1.
 
+Kept open on 2026-11-05 under decision 0054, because two newest families differ from the answer in at least one form (gap review of the text phase 9 wrote, item RV3).
+
 ## Opinions
 
 ### Gap review, 2026-11-03
 
 The source-reader gap review of question cluster 3 (`reports/review/2026-11-03-gap-review-question-cluster-3.md`) reads the reference as supporting option 1, with a small doubt. The object parameter is inserted first, and then the parameter order is reversed, so the reversal covers the object parameter. The reference states the two steps one after the other and gives no example of a swapped member.
+
+### Gap review, 2026-11-05 (expressions and templates)
+
+The source-reader gap review of the text phase 9 wrote on expressions and templates (`reports/review/2026-11-05-gap-review-phase-9-expressions-templates.md`) used ORD-P1 on ``reversed-member-object.cpp``, without the rule text. The model's answer: The member gets its object parameter, then the swapped pair is reversed, and the member is more specialized. Matches the provisional answer: yes. Reference verdict: supports with no doubt.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

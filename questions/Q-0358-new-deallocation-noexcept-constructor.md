@@ -1,8 +1,7 @@
 # Q-0358: Does a `new` expression use the deallocation function when its constructor is `noexcept`?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** ODR-5, ODR-8, `tests/foundations/odr/new-noexcept-constructor-uses-deallocation.cpp`
-**Waits for:** a use of ODR-P1 ODR-P2
 
 ## Context
 
@@ -36,7 +35,7 @@ itself `noexcept`, fails to link on Clang and GCC.
 2. A `new` expression with a class allocation function always uses the
    matching deallocation function.
 
-## Provisional answer
+## Answer
 
 Yes; the `new` expression uses the deallocation function whatever the exception specification of the constructor (option 2). The program of the test is not valid, and ODR-8 needs no diagnostic. The test expects the link failure of GCC 16 at `-O0`, and records the run of Clang, GCC 14, and GCC 16 at `-O2` with overrides.
 
@@ -44,7 +43,13 @@ Changed on 2026-11-03. The source-reader gap review of program structure (`repor
 
 Kept open on 2026-11-03 under decision 0054, because ODR-5 changed on the same day, and a question settles only after a reader or a review has used the changed rule (decision 0055). Every compiler's result fits ODR-8.
 
+Settled on 2026-11-05 under decision 0054. The gap review of the text phase 9 wrote (item RV3) supports the answer with no doubt, and its use of the principle on the question's program gives the provisional answer (decision 0056). At most one newest family differs in each form, and each test keeps its override.
+
 ## Opinions
+
+### Gap review, 2026-11-05 (declarations, statements, and foundations)
+
+The source-reader gap review of the text phase 9 wrote on declarations, statements, and foundations (`reports/review/2026-11-05-gap-review-phase-9-declarations-statements-foundations.md`) used ODR-P1, ODR-P2 on ``foundations/odr/new-noexcept-constructor-uses-deallocation.cpp``, without the rule text. The model's answer: The new expression uses the class's deallocation function whatever the constructor's exception specification. The function has external linkage and no definition, and the fault shows only at link, if at all. Not valid, no diagnostic needed. Matches the provisional answer: yes. Reference verdict: supports with no doubt.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
 

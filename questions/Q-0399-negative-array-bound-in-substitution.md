@@ -1,9 +1,8 @@
 # Q-0399: Is a negative array bound that substitution makes a substitution failure?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** DED-24, `tests/templates/deduction/substitution-failure-negative-bound-computed.cpp`, `tests/templates/deduction/substitution-failure-negative-bound-ellipsis.cpp`
 **Source:** finding R9C-4 of `reports/clean-room/R9/report-c.md`
-**Waits for:** a first review
 
 ## Context
 
@@ -48,13 +47,19 @@ records the compiler that rejects as an override.
 3. A negative bound in a pointer type is an error in the program in
    some contexts (EDG, form 2).
 
-## Provisional answer
+## Answer
 
 Yes; the template is removed in every form (option 1). DED-24 makes every type that is
 not valid a substitution failure, and DCL-19 makes such a bound not
 valid. Clang gives this answer in every form, and in each form one
 newest family differs.
 
+Settled on 2026-11-05 under decision 0054. The gap review of the text phase 9 wrote (item RV3) supports the answer with no doubt. At most one newest family differs in each form, and each test keeps its override.
+
 ## Opinions
+
+### Gap review, 2026-11-05 (expressions and templates)
+
+The source-reader gap review of the text phase 9 wrote on expressions and templates (`reports/review/2026-11-05-gap-review-phase-9-expressions-templates.md`) reads the question: supports with no doubt. The reference lists an array with a size of zero or less among the substitution failures. Whether the bound is computed does not matter.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

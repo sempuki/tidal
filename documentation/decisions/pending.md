@@ -6,7 +6,7 @@ last column lists the questions that the decision closes or changes.
 
 | # | Item | Options | Tidal keeps | Questions |
 |---|---|---|---|---|
-| 1 | The choices of decision 0054: settling by review, and program tests under `tests/programs/` | Confirm, change, or drop each choice | Both choices. A question settles by review only when at most one newest family differs from the answer in each form | Confirms the 182 questions settled under decision 0054 ([by item below](#settlements-under-decision-0054)). `tools/question_index.py` writes the total and fails `--check` when the total is wrong. If the maintainer lets the rule settle a question where two families differ, the questions of the [decision packet](#decision-packet) row 1 settle too |
+| 1 | The choices of decision 0054: settling by review, and program tests under `tests/programs/` | Confirm, change, or drop each choice | Both choices. A question settles by review only when at most one newest family differs from the answer in each form | Confirms the 192 questions settled under decision 0054 ([by item below](#settlements-under-decision-0054)). `tools/question_index.py` writes the total and fails `--check` when the total is wrong. If the maintainer lets the rule settle a question where two families differ, the questions of the [decision packet](#decision-packet) row 1 settle too |
 | 2 | The choices of decision 0051: settling when the newest version of each family agrees, and keeping the implementation-only operations referenced | Confirm or change each choice | Both choices | Q-0322 |
 | 3 | A report of EDG behavior to the EDG project ([groups below](#edg-report)) | Approve the report, or hold it | Tidal follows Clang 22 and GCC 16. Each test records EDG's result as an override | Q-0002, Q-0003, and the cluster 5 groups below |
 | 4 | A gap review reads the C++23 text against the matrix's answer, and at most one newest family follows the review ([items below](#matrix-against-review)) | Follow the review, against the compilers that differ from it, or follow the matrix | The matrix's answer in each, except Q-0307, where Tidal follows the review | Each question and rule in the section below |
@@ -29,6 +29,7 @@ last column lists the questions that the decision closes or changes.
 | 35 | phase 9 item RV2, the repairs from the gap reviews of the text phase 8 wrote | 1bf7812 |
 | 20 | phase 9 item PU, the principle-use batch PU1 | 926831c |
 | 7 | the principle-use batch PU2 | f2ac11c |
+| 10 | phase 10 item RV3, the gap reviews of the text phase 9 wrote: Q-0092, Q-0247, Q-0340, Q-0358, Q-0390, Q-0392, Q-0397, Q-0398, Q-0399, Q-0400 | |
 | -8 | phase 8 item PQ reopened these under the principle test of the style guide: Q-0064, Q-0067, Q-0111, Q-0242, Q-0259, Q-0319, Q-0329, Q-0373. Item PU settled Q-0067 and Q-0329 again | |
 
 ## Decision packet
@@ -42,17 +43,17 @@ changes their answers and the expectations of those tests.
 
 | Row | Open questions | Tests that name them |
 |---|---|---|
-| 1 | 36: Q-0017, Q-0021, Q-0045, Q-0062, Q-0080, Q-0082, Q-0084, Q-0121, Q-0126, Q-0129, Q-0132, Q-0133, Q-0142, Q-0143, Q-0148, Q-0153, Q-0159, Q-0168, Q-0174, Q-0216, Q-0217, Q-0227, Q-0234, Q-0241, Q-0248, Q-0251, Q-0274, Q-0301, Q-0320, Q-0323, Q-0331, Q-0335, Q-0339, Q-0341, Q-0368, Q-0374 | 79 |
+| 1 | 39: Q-0017, Q-0021, Q-0045, Q-0062, Q-0080, Q-0082, Q-0084, Q-0121, Q-0126, Q-0129, Q-0132, Q-0133, Q-0142, Q-0143, Q-0148, Q-0153, Q-0159, Q-0165, Q-0168, Q-0174, Q-0216, Q-0217, Q-0218, Q-0227, Q-0234, Q-0241, Q-0248, Q-0251, Q-0274, Q-0301, Q-0320, Q-0323, Q-0331, Q-0335, Q-0339, Q-0341, Q-0368, Q-0374, Q-0403 | 84 |
 | 2 | 1: Q-0322 | 0 |
 | 3 | 12: Q-0195, Q-0197, Q-0198, Q-0201, Q-0203, Q-0235, Q-0266, Q-0272, Q-0277, Q-0278, Q-0280, Q-0282 | 23 |
-| 4 | 29: Q-0074, Q-0077, Q-0087, Q-0123, Q-0131, Q-0140, Q-0142, Q-0181, Q-0190, Q-0191, Q-0205, Q-0225, Q-0226, Q-0243, Q-0246, Q-0275, Q-0277, Q-0280, Q-0300, Q-0307, Q-0330, Q-0336, Q-0362, Q-0366, Q-0369, Q-0371, Q-0389, Q-0393, Q-0394 | 68 |
+| 4 | 31: Q-0074, Q-0077, Q-0087, Q-0123, Q-0131, Q-0140, Q-0142, Q-0181, Q-0190, Q-0191, Q-0205, Q-0225, Q-0226, Q-0243, Q-0246, Q-0275, Q-0277, Q-0280, Q-0300, Q-0307, Q-0330, Q-0336, Q-0362, Q-0366, Q-0369, Q-0371, Q-0389, Q-0393, Q-0394, Q-0401, Q-0404 | 69 |
 | 5 | 1: Q-0235 | 3 |
 | 6 | 2: Q-0041, Q-0343 | 5 |
 | 7 | 5: Q-0007, Q-0087, Q-0116, Q-0181, Q-0188 | 5 |
 | 8 | none | 0 |
 | 9 | 8: Q-0006, Q-0008, Q-0116, Q-0119, Q-0182, Q-0183, Q-0186, Q-0312 | 1 |
 
-The rows hold 87 of the open questions.
+The rows hold 92 of the open questions.
 
 ## Matrix against review
 
@@ -104,6 +105,8 @@ each item, except Q-0307, where Tidal follows the review.
 | Q-0369 | a C name in an unnamed namespace | matrix | matrix | review | `2026-11-04-gap-review-phase-7-repairs` |
 | Q-0371 | a qualified definition inside the member's own namespace | review | matrix | matrix | `2026-11-04-gap-review-phase-7-repairs` |
 | VIRT-1, Q-0394 | a derived member function with no ref-qualifier against a base virtual function with one; VIRT-1 says it does not override, and Clang 18 follows the review | matrix | matrix | matrix | `2026-11-04-gap-review-phase-8-classes-overloading` |
+| ACC-20, Q-0404 | a friend declaration that names a member through a qualifier such as `A<T*>::`, used by the member of a specialization that does not match; ACC-20 gives access | matrix | matrix | review | `2026-11-05-gap-review-phase-9-classes-overloading-exceptions` |
+| COND-16, Q-0401 | a `Derived` prvalue against a `Base` xvalue in a conditional expression; COND-16 says the reference does not bind directly, so the result is a prvalue | matrix | review | matrix | `2026-11-05-gap-review-phase-9-expressions-templates` |
 | ENUM-10, ENUM-P1 | inside the list, an enumerator whose initializer has an unscoped enumeration type keeps that enumeration type; the review reads the underlying type | matrix | matrix | matrix | `2026-11-04-gap-review-phase-8-declarations-statements` |
 | NS-12 | a class in an inline namespace and a variable of the same name in the enclosing namespace are ambiguous; the review sets the class aside | matrix | matrix | matrix | `2026-11-04-gap-review-phase-8-declarations-statements` |
 | Q-0393 | the null pointer literal as the operand of `noexcept` | review | matrix | matrix | `2026-11-04-gap-review-phase-8-declarations-statements` |

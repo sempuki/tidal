@@ -3,7 +3,7 @@
 **Status:** provisional
 **Affects:** LSUP-2, `tests/foundations/language-support/ordering-strong-only-builtin.cpp`, `tests/foundations/language-support/ordering-strong-only-builtin-runtime.cpp`, `tests/foundations/language-support/ordering-strong-only-defaulted.cpp`, `tests/foundations/language-support/ordering-partial-not-declared.cpp`, `tests/overloading/overload-resolution/builtin-three-way.cpp`, `tests/overloading/overload-resolution/builtin-three-way-mixed.cpp`
 **Source:** section 1.4, item 7, and section 6 of `reports/clean-room/roadmap-6/programmer.md`, from the probes that a clean-room writer ran for them.
-**Waits for:** a use of CMP-P5 CONV-P2 LSUP-P1
+**Waits for:** a review (doubt)
 
 ## Context
 
@@ -72,6 +72,8 @@ Kept open on 2026-11-04 under decisions 0055 and 0056, because the use in batch 
 
 Kept open on 2026-11-04 under decision 0055, because CMP-P5 and CONV-P2 changed in this commit after finding PU2-1. CMP-P5 now says that `<=>` lets an integer to floating-point conversion through and that `int <=> double` gives `partial_ordering`, and CONV-P2 says that such a conversion narrows by its types alone. The question waits for the next use of LSUP-P1 and CMP-P5. EDG 7.0 is the one newest family that differs.
 
+Kept open on 2026-11-05 under decision 0054, because the review reads the answer with a doubt (gap review of the text phase 9 wrote, item RV3).
+
 ## Opinions
 
 ### Gap review, 2026-11-04
@@ -81,5 +83,13 @@ The source-reader gap review of the text phase 8 wrote on expressions, foundatio
 ### Gap reviews of classes and of declarations, 2026-11-04
 
 The source-reader gap reviews of the text phase 8 wrote on classes and overloading (`reports/review/2026-11-04-gap-review-phase-8-classes-overloading.md`) and on declarations and statements (`reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md`) name the question only to say that it affects no rule on their pages. Neither gives a reading.
+
+### Gap review, 2026-11-05 (declarations, statements, and foundations)
+
+The source-reader gap review of the text phase 9 wrote on declarations, statements, and foundations (`reports/review/2026-11-05-gap-review-phase-9-declarations-statements-foundations.md`) reads the question: supports with a doubt. The reference asks only that a declaration of the class that a use needs precede the use. The tests' uses need only the strong class. Two doubts remain: the reference asks for the library's own declaration, and a program that declares names in namespace std itself is undefined by the library rules. Also, a defaulted operator that returns the weak or partial class uses the strong class too. used CONV-P2, LSUP-P1 on ``foundations/language-support/ordering-strong-only-builtin.cpp`, `ordering-strong-only-builtin-runtime.cpp`, `ordering-strong-only-defaulted.cpp`, `ordering-partial-not-declared.cpp`, `overloading/overload-resolution/builtin-three-way.cpp`, `builtin-three-way-mixed.cpp``, without the rule text. The model's answer: Each use needs only the class it yields. The two strong-only built-in programs and the defaulted program run. The program that compares two double values and declares only the strong class is rejected. The two decltype programs are accepted, and int against double gives the partial class, since the operator lets that narrowing through. Matches the provisional answer: yes. Reference verdict: supports with a doubt.
+
+### Gap review, 2026-11-05 (expressions and templates)
+
+The source-reader gap review of the text phase 9 wrote on expressions and templates (`reports/review/2026-11-05-gap-review-phase-9-expressions-templates.md`) used CMP-P5 on ``builtin-three-way-mixed.cpp``, without the rule text. The model's answer: Each use yields one class (strong for two integers, partial for an integer against a floating-point value), and only that class is needed. Matches the provisional answer: yes. Reference verdict: supports with a doubt. used CMP-P5 on ``ordering-strong-only-builtin.cpp``, without the rule text. The model's answer: Two integers yield the strong ordering class, the only class declared and needed. Matches the provisional answer: yes. Reference verdict: supports with a doubt.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

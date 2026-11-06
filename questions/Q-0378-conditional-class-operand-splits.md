@@ -3,7 +3,7 @@
 **Status:** provisional
 **Affects:** COND-16, COND-3, COND-5, `tests/expressions/conditional/class-deleted-conversion-counts.cpp`, `tests/expressions/conditional/class-const-and-volatile-lvalues.cpp`
 **Source:** reports/review/2026-11-04-gap-review-phase-7-additions.md and reports/review/2026-11-04-gap-review-phase-7-repairs.md, the COND-16 sections
-**Waits for:** a use of COND-P2
+**Waits for:** a review (doubt)
 
 ## Context
 
@@ -75,10 +75,16 @@ Kept open on 2026-11-04 under decisions 0054 and 0056, because the reader answer
 
 Kept open on 2026-11-04 under decision 0055, because COND-P2 changed in this commit after finding PU2-3: the bullet on two class types that each convert to the other now says that a conversion counts when it can be formed, even if its function is deleted or not accessible. The question waits for the next use of COND-P2. In each form one newest family differs.
 
+Kept open on 2026-11-05 under decision 0054, because the review reads the answer with a doubt (gap review of the text phase 9 wrote, item RV3).
+
 ## Opinions
 
 ### Gap review, 2026-11-04
 
 The source-reader gap review of the text phase 8 wrote on expressions, foundations, and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`) agrees with option 1. The reference sets access, bit-fields, and deleted functions aside when it asks whether a conversion sequence can be formed, so both operands of form 1 convert, and the expression is not valid. In form 2 neither reference binding works, and the row for one class type needs the target to carry every cv-qualifier of the source, which fails in both directions. The overload step then finds no candidate.
+
+### Gap review, 2026-11-05 (expressions and templates)
+
+The source-reader gap review of the text phase 9 wrote on expressions and templates (`reports/review/2026-11-05-gap-review-phase-9-expressions-templates.md`) used COND-P2 on ``class-deleted-conversion-counts.cpp``, without the rule text. The model's answer: The deleted conversion counts, both operands convert, and the expression is rejected. Matches the provisional answer: yes. Reference verdict: supports with no doubt. used COND-P2 on ``class-const-and-volatile-lvalues.cpp``, without the rule text. The model's answer: Neither set of qualifiers includes the other, so two class lvalues are rejected. Matches the provisional answer: yes. Reference verdict: supports with a doubt.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

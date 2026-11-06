@@ -42,10 +42,20 @@ Kept on 2026-11-03. The source-reader gap review of question cluster 4 agrees wi
 
 Kept open on 2026-11-03 under decision 0054, because the gap review does not support the answer with no doubt (it reads with doubt, weakly, unclearly, or for only part of the question).
 
+Kept open on 2026-11-05 under decision 0054, because the review reads the answer with a doubt (gap review of the text phase 9 wrote, item RV3).
+
 ## Opinions
 
 ### Gap review, 2026-11-03
 
 The source-reader gap review of question cluster 4 (`reports/review/2026-11-03-gap-review-question-cluster-4.md`) reads the reference as supporting option 1, with doubt. The arrow form of member access is an indirection followed by the dot form, and a null pointer points to no object. A member access is undefined when the left operand gives an object of a type that does not match. The doubt is that the reference does not say plainly that the call through a null pointer is undefined. A later core change makes an indirection through a pointer that points to no object or function undefined, which settles the case for option 1.
+
+### Gap review, 2026-11-05 (declarations, statements, and foundations)
+
+The source-reader gap review of the text phase 9 wrote on declarations, statements, and foundations (`reports/review/2026-11-05-gap-review-phase-9-declarations-statements-foundations.md`) reads the question: supports with a doubt. C++23 gives no explicit rule that indirection through a null pointer is undefined. The answer rests on the indirection result naming the object the pointer points to, and a null pointer points to none. A later defect resolution (CWG2823) makes such an indirection explicitly undefined, which would remove the doubt.
+
+### Gap review, 2026-11-05 (expressions and templates)
+
+The source-reader gap review of the text phase 9 wrote on expressions and templates (`reports/review/2026-11-05-gap-review-phase-9-expressions-templates.md`) reads the question: supports with a doubt. No rule names a member call through a null pointer as undefined. The answer rests on the lack of any object, and constant evaluation rejects only undefined operations that the text specifies.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

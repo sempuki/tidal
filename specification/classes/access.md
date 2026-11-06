@@ -183,7 +183,7 @@ An access label has no effect on a friend declaration.
 
 :::{rule} ACC-20
 :kind: required
-:tests: classes/access/friend-class-template.cpp classes/access/friend-function-template.cpp classes/access/friend-specialization-only.cpp classes/access/friend-one-specialization.cpp classes/access/friend-member-of-every-specialization.cpp classes/access/friend-member-of-explicit-specialization.cpp classes/access/friend-member-of-specialization-other-member.cpp
+:tests: classes/access/friend-class-template.cpp classes/access/friend-function-template.cpp classes/access/friend-specialization-only.cpp classes/access/friend-one-specialization.cpp classes/access/friend-member-of-every-specialization.cpp classes/access/friend-member-of-explicit-specialization.cpp classes/access/friend-member-of-specialization-other-member.cpp classes/access/friend-member-of-partial-specialization.cpp classes/access/friend-member-pattern-other-specialization.cpp
 
 A friend declaration with a template head names a class template or a
 function template. Every specialization of that template is a friend. A
@@ -195,8 +195,10 @@ A friend declaration with a template head can also name a member
 function or a member class of a class template, with a qualifier such
 as `Box<T>::` whose template arguments give each parameter of the head.
 That member of every specialization of the class template is then a
-friend, explicit specializations included
-({question}`Q-0391`). The other members
+friend, explicit specializations included ({question}`Q-0391`). This
+holds also for a qualifier with a pattern such as `Box<T*>::`, and for
+a specialization that does not match it
+({question}`Q-0404`). The other members
 of the specializations are not friends.
 
 A friend declaration without a template head can name one
@@ -386,8 +388,8 @@ class Token {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 73
-of 77 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 74
+of 79 tests.
 
 ### Divergences
 
@@ -406,6 +408,10 @@ of 77 tests.
   it does not support the form, turns off access checks for the
   befriending class, and accepts a use from a member that is not a
   friend.
+- {question}`Q-0404` (ACC-20; open): whether a friend declaration that names
+  a member through a pattern such as `A<T*>::f` befriends that member of
+  a specialization that does not match the pattern. It does, as Clang
+  and GCC say. EDG 7.0 and the gap review read the pattern as a limit.
 
 ### Split tests
 
@@ -413,6 +419,7 @@ of 77 tests.
 |---|---|---|---|---|---|---|
 | `friend-member-of-explicit-specialization.cpp` | ACC-20 | run | run | run | reject | {question}`Q-0391` |
 | `friend-member-of-specialization-other-member.cpp` | ACC-20, ACC-2 | reject | accept | reject | reject | {question}`Q-0391` |
+| `friend-member-pattern-other-specialization.cpp` | ACC-20 | run | run | run | reject | {question}`Q-0404` |
 | `hidden-friend-qualified-redeclaration.cpp` | ACC-17 | reject | accept | reject | reject | {question}`Q-0131` |
 | `using-reduces-access.cpp` | ACC-2 | reject | reject | reject | accept | {question}`Q-0052` |
 

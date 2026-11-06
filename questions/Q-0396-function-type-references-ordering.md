@@ -3,7 +3,7 @@
 **Status:** provisional
 **Affects:** ORD-9, ORD-2, `tests/templates/ordering/address-reference-against-value.cpp`, `tests/templates/ordering/address-value-against-forwarding.cpp`
 **Source:** finding I2-5 of `reports/clean-room/I2/report.md`, from the probes that a clean-room writer ran for it.
-**Waits for:** a first review
+**Waits for:** a review (doubt)
 
 ## Context
 
@@ -61,6 +61,12 @@ agree, and ORD-9 says that the whole function types take part.
 The question stays open under decision 0051, because Clang 22 differs
 from GCC 16 and EDG 7.0.
 
+Kept open on 2026-11-05 under decision 0054, because the review reads the answer with a doubt (gap review of the text phase 9 wrote, item RV3).
+
 ## Opinions
+
+### Gap review, 2026-11-05 (expressions and templates)
+
+The source-reader gap review of the text phase 9 wrote on expressions and templates (`reports/review/2026-11-05-gap-review-phase-9-expressions-templates.md`) reads the question: supports with a doubt. Outside a call, the function type is the one type that takes part, so only the top level is stripped. The forwarding parameter part has no special basis.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

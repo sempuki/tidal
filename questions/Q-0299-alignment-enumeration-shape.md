@@ -2,7 +2,7 @@
 
 **Status:** provisional
 **Affects:** LSUP-5, `tests/foundations/language-support/alignment-enumeration-unscoped.cpp`, `tests/foundations/language-support/alignment-enumeration-wrong-underlying-type.cpp`, `tests/foundations/language-support/alignment-enumeration-class.cpp`
-**Waits for:** a use of LSUP-P2
+**Waits for:** a use of LSUP-P2; a review (doubt)
 
 ## Context
 
@@ -35,11 +35,17 @@ Changed on 2026-11-03. The source-reader gap review of the object model (`report
 
 Kept open on 2026-11-03 under decision 0054, because LSUP-5 changed on the same day, and a question settles only after a reader or a review has used the changed rule (decision 0055). Every compiler's result fits the rule.
 
+Kept open on 2026-11-05 under decision 0054, because the use of LSUP-P2 did not give the provisional answer, so the principle needs a repair and a new use, and the review reads the answer with a doubt (gap review of the text phase 9 wrote, item RV3).
+
 ## Opinions
 
 ### Gap review, 2026-11-04
 
 The source-reader gap review of the rules that phase 7 added (`reports/review/2026-11-04-gap-review-phase-7-additions.md`) reads LSUP-5 against the classification. In the reference, a program that adds a declaration to namespace `std` has undefined behavior unless a rule allows it, and no rule allows a declaration of `std::align_val_t`. A note says that the implicit declarations of the allocation functions do not declare the type. So every shape that a program declares is undefined, the right one included. The `no-diagnostic` class matches the compilers, and LSUP-P2's model of a program that supplies a library declaration is Tidal's own choice.
+
+### Gap review, 2026-11-05 (declarations, statements, and foundations)
+
+The source-reader gap review of the text phase 9 wrote on declarations, statements, and foundations (`reports/review/2026-11-05-gap-review-phase-9-declarations-statements-foundations.md`) used LSUP-P2 on ``foundations/language-support/alignment-enumeration-unscoped.cpp`, `alignment-enumeration-wrong-underlying-type.cpp`, `alignment-enumeration-class.cpp``, without the rule text. The model's answer: The program's declaration disagrees with the library on the kind of the name, so the program is not valid. The principle does not say whether a diagnostic is needed. Matches the provisional answer: partly (it gives "not valid" and leaves the diagnostic open). Reference verdict: supports with a doubt.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
 

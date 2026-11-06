@@ -49,8 +49,14 @@ the class definition.
 
 Kept open on 2026-11-04 under decision 0055, because DEFARG-2 changed in the commit that read the review, to name the limit of the new rule DEFARG-13, and no reader or review has used the changed rule. The gap review of the rules that phase 7 rewrote supports the answer with no doubt. GCC 16 is the one newest family that differs.
 
+Kept open on 2026-11-05 under decision 0054, because the use of DEFARG-P2 did not give the provisional answer, so the principle needs a repair and a new use (gap review of the text phase 9 wrote, item RV3).
+
 ## Opinions
 
 ### Gap review, 2026-11-04
 
 The source-reader gap review of the rules that the phase 7 front-end and Propose repairs rewrote (`reports/review/2026-11-04-gap-review-phase-7-repairs.md`) agrees with option 1. The reference makes a program not valid when a default argument that a member definition outside the class adds makes a default, copy, or move constructor. It names the copy and move assignment operators too, which cannot have default arguments in any case.
+
+### Gap review, 2026-11-05 (declarations, statements, and foundations)
+
+The source-reader gap review of the text phase 9 wrote on declarations, statements, and foundations (`reports/review/2026-11-05-gap-review-phase-9-declarations-statements-foundations.md`) used DEFARG-P2 on `outside-default-makes-default-constructor.cpp`, `outside-default-makes-copy-constructor.cpp`, and `outside-default-makes-move-constructor.cpp`, without the rule text. The model accepts each program, because DEFARG-P2 names no limit for constructors. That is not the provisional answer. The reference supports the provisional answer (reject) with no doubt.

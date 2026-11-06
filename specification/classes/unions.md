@@ -90,9 +90,11 @@ declared type each decide part of its behavior:
 
 The width is an integer constant. The width has an integral or unscoped
 enumeration type, or a class type whose conversion function gives such
-a type. The class must be a literal type with exactly one such
-conversion function, and the function must be `constexpr`, because the
-conversion runs during constant evaluation.
+a type. The class must be a literal type, and its conversion functions
+that are not `explicit` must give exactly one such target type. Two
+functions with one target type, such as a `const` and a non-`const`
+overload, are allowed. The function that the conversion selects must be
+`constexpr`, because the conversion runs during constant evaluation.
 A class whose destructor is user-provided and not `constexpr`, such as
 `~W() {}`, is not a literal type, so it fails here even when its
 conversion function is `constexpr`. A floating-point width is
@@ -303,15 +305,16 @@ union must not have:
 
 :::{rule} BF-1
 :kind: required
-:tests: classes/unions/bitfield-basic.cpp classes/unions/bitfield-bool.cpp classes/unions/bitfield-char-types.cpp classes/unions/bitfield-constant-width.cpp classes/unions/bitfield-enum.cpp classes/unions/bitfield-in-union.cpp classes/unions/bitfield-zero-unnamed.cpp classes/unions/bitfield-width-unscoped-enumeration.cpp classes/unions/bitfield-width-class-converts.cpp classes/unions/bitfield-width-class-explicit-conversion.cpp
+:tests: classes/unions/bitfield-basic.cpp classes/unions/bitfield-bool.cpp classes/unions/bitfield-char-types.cpp classes/unions/bitfield-constant-width.cpp classes/unions/bitfield-enum.cpp classes/unions/bitfield-in-union.cpp classes/unions/bitfield-zero-unnamed.cpp classes/unions/bitfield-width-unscoped-enumeration.cpp classes/unions/bitfield-width-class-converts.cpp classes/unions/bitfield-width-class-explicit-conversion.cpp classes/unions/bitfield-width-class-two-conversions-same-type.cpp
 
 A bit-field has an integral or enumeration type and a width. The width
 is a constant expression of integral or unscoped enumeration type, or of
 a class type that converts to such a type ({question}`Q-0314`). Such a
-class is a literal type, and exactly one of its conversion functions
-that are not `explicit` gives an integral or unscoped enumeration type.
-That function is `constexpr`. An `explicit` conversion function does
-not count. A
+class is a literal type, and its conversion functions that are not
+`explicit` give exactly one integral or unscoped enumeration type as
+their target. Several functions can give that one type. The function
+that the conversion selects is `constexpr`. An `explicit` conversion
+function does not count. A
 bit-field can be unnamed. An unnamed bit-field of width 0 makes the next
 bit-field start at a new allocation unit. A union can have bit-fields.
 :::
@@ -701,7 +704,7 @@ int y = s.span.range.second;     // 2: Point and Pair are layout-compatible
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 151
-of 165 tests.
+of 166 tests.
 
 ### Divergences
 
@@ -774,6 +777,7 @@ configuration.
 | `bitfield-wide-layout-ilp32.cpp` | BF-9, BF-3 | accept | accept | accept | reject | {question}`Q-0120` |
 | `bitfield-width-class-converts.cpp` | BF-1 | accept | accept | reject | accept | {question}`Q-0314` |
 | `bitfield-width-class-explicit-conversion.cpp` | BF-1 | accept | accept | reject | accept | {question}`Q-0314` |
+| `bitfield-width-class-two-conversions-same-type.cpp` | BF-1 | accept | accept | reject | accept | {question}`Q-0314` |
 | `bitfield-width-scoped-enumeration.cpp` | BF-2 | reject | reject | reject | accept | {question}`Q-0313` |
 | `chain-assign-nontrivial-constant.cpp` | UNI-6, UNI-13 | reject | reject | reject | accept | {question}`Q-0213` |
 | `classes/copy-move/trivially-copyable-member-selected.cpp` | CPY-27, CPY-19, UNI-3 | accept | accept | reject | reject | {question}`Q-0339` |

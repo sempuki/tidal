@@ -1,8 +1,7 @@
 # Q-0247: Is a base list that expands the same pack twice diagnosed before instantiation?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** DEP-33, DEP-37, `tests/templates/dependent-names/base-pack-expanded-twice.cpp`
-**Waits for:** a use of DEP-P6
 
 ## Context
 
@@ -26,7 +25,7 @@ error for every size of the pack.
 1. The implementation rejects the template at the definition (Clang, EDG).
 2. DEP-33 covers the template, and no diagnostic is required (GCC).
 
-## Provisional answer
+## Answer
 
 No diagnostic required; Clang and EDG diagnose, GCC does not (option 2). Only an empty pack makes the base list valid, and DEP-33 needs no diagnostic for such a template (DEP-P6). Each compiler's result lies within the rule.
 
@@ -34,10 +33,16 @@ Changed on 2026-11-03 to option 2. The review reads option 2, GCC 16 follows it,
 
 Kept open on 2026-11-03 under decision 0054, because DEP-33 and DEP-37 changed on the same day, and a question settles only after a reader or a review has used the changed rule (decision 0055). Every compiler's result fits DEP-33.
 
+Settled on 2026-11-05 under decision 0054. The gap review of the text phase 9 wrote (item RV3) supports the answer with no doubt, and its use of the principle on the question's program gives the provisional answer (decision 0056). At most one newest family differs in each form, and each test keeps its override.
+
 ## Opinions
 
 ### Gap review, 2026-11-03
 
 The source-reader gap review of the open questions on templates (`reports/review/2026-11-03-gap-review-questions-templates.md`) reads option 2. A variadic template whose only valid specializations need an empty pack makes the program not valid, with no diagnostic required. A base list that expands the same pack twice is valid only for an empty pack. So an implementation may report the error at the definition, as Clang and EDG do, and need not, as GCC does. A specialization with a non-empty pack needs a diagnostic, and every compiler rejects it. The earlier gap review's reading does not match this rule.
+
+### Gap review, 2026-11-05 (expressions and templates)
+
+The source-reader gap review of the text phase 9 wrote on expressions and templates (`reports/review/2026-11-05-gap-review-phase-9-expressions-templates.md`) used DEP-P6 on ``base-pack-expanded-twice.cpp``, without the rule text. The model's answer: Every valid argument list leaves the pack empty, so no diagnostic is required, and each compiler's result fits. Matches the provisional answer: yes. Reference verdict: supports with no doubt.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

@@ -44,7 +44,13 @@ shows a difference.
 
 Kept open on 2026-11-03 under decision 0054, because the review reads the reference with doubt.
 
+Kept open on 2026-11-05 under decision 0054, because the review reads the answer with a doubt (gap review of the text phase 9 wrote, item RV3).
+
 ## Opinions
+
+### Gap review, 2026-11-05 (declarations, statements, and foundations)
+
+The source-reader gap review of the text phase 9 wrote on declarations, statements, and foundations (`reports/review/2026-11-05-gap-review-phase-9-declarations-statements-foundations.md`) reads the question: supports with a doubt. The reference makes an access to an object defined volatile through a glvalue that is not volatile undefined. Whether a byte read of the object representation counts as such an access is not spelled out.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
 

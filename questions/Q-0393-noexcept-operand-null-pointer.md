@@ -3,7 +3,7 @@
 **Status:** provisional
 **Affects:** EXS-7, EXS-P1, `tests/declarations/exception-specifications/null-pointer-operand.cpp`, `tests/declarations/exception-specifications/null-pointer-constant-operand.cpp`
 **Source:** reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md, the EXS-P1 and EXS-7 section
-**Waits for:** the maintainer (pending.md row 4)
+**Waits for:** the maintainer (pending.md row 4); a review (against)
 
 ## Context
 
@@ -50,10 +50,16 @@ review").
 
 Kept open on 2026-11-04 under decision 0054, because the gap review reads against the answer, and Clang 22 differs from it.
 
+Kept open on 2026-11-05 under decision 0054, because the review reads against the answer, and the question waits on the maintainer (gap review of the text phase 9 wrote, item RV3).
+
 ## Opinions
 
 ### Gap review, 2026-11-04
 
 The source-reader gap review of the text phase 8 wrote on the declarations and statements chapters (`reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md`) supports option 2. In its reading, the operand must become a `bool` constant through a fixed list of conversions: user conversions, the lvalue, array, and function conversions, qualification and function pointer conversions, integral promotions, and integral conversions that do not narrow. A conversion from the null pointer type to `bool` is not on the list, so the operand is not valid, although the conversion is not a narrowing conversion.
+
+### Gap review, 2026-11-05 (declarations, statements, and foundations)
+
+The source-reader gap review of the text phase 9 wrote on declarations, statements, and foundations (`reports/review/2026-11-05-gap-review-phase-9-declarations-statements-foundations.md`) reads the question: reads against. The operand must be a constant converted to bool using only a fixed list of conversions. The conversion from the null pointer type to bool is not on that list, so option 2 holds.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

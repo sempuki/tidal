@@ -93,7 +93,7 @@ object.
 
 :::{rule} CVF-7
 :kind: reject
-:tests: classes/conversion-functions/function-pointer-without-alias.cpp classes/conversion-functions/nonmember.cpp classes/conversion-functions/parameters.cpp classes/conversion-functions/redeclared.cpp classes/conversion-functions/return-type.cpp classes/conversion-functions/static.cpp classes/conversion-functions/to-array.cpp classes/conversion-functions/to-function.cpp classes/conversion-functions/variadic.cpp classes/conversion-functions/template-deduced-auto.cpp
+:tests: classes/conversion-functions/function-pointer-without-alias.cpp classes/conversion-functions/nonmember.cpp classes/conversion-functions/parameters.cpp classes/conversion-functions/redeclared.cpp classes/conversion-functions/return-type.cpp classes/conversion-functions/static.cpp classes/conversion-functions/to-array.cpp classes/conversion-functions/to-function.cpp classes/conversion-functions/variadic.cpp classes/conversion-functions/template-deduced-auto.cpp classes/conversion-functions/template-pointer-to-placeholder.cpp
 
 A conversion function must not:
 
@@ -102,8 +102,8 @@ A conversion function must not:
 - be `static` or a non-member,
 - convert to an array or a function type,
 - be declared two times in its class,
-- be a template whose name is `auto` or another placeholder
-  ({question}`Q-0388`).
+- be a template whose target type is deduced: a placeholder such as
+  `auto`, or a pointer or reference to one ({question}`Q-0388`).
 
 The target type is a type name with `*` and `&` only. A pointer to a
 function needs a type alias.
@@ -296,7 +296,7 @@ Reading r = live;        // valid: the constructor binds Sensor&, which
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 64
-of 66 tests.
+of 67 tests.
 
 ### Divergences
 
@@ -319,6 +319,7 @@ the compile.
 |---|---|---|---|---|---|---|
 | `deduced-auto.cpp` | CVF-1 | run | run | GCC 16: reject; GCC 14: run | accept | {question}`Q-0059` |
 | `template-deduced-auto.cpp` | CVF-7 | reject | reject | GCC 16: reject; GCC 14: accept | accept | {question}`Q-0388` |
+| `template-pointer-to-placeholder.cpp` | CVF-7 | reject | reject | GCC 16: reject; GCC 14: accept | accept | |
 
 ### Notes
 

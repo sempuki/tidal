@@ -45,10 +45,16 @@ Kept open on 2026-11-04 under decision 0054, because the gap review
 reads against the answer, and the case waits on the maintainer
 (`documentation/decisions/pending.md`, row 4).
 
+Kept open on 2026-11-05 under decision 0054. The gap review of the text phase 9 wrote supports the answer with a doubt, and the question still waits on the maintainer (`documentation/decisions/pending.md`, row 4), because the earlier review reads against the answer.
+
 ## Opinions
 
 ### Gap review, 2026-11-04
 
 The source-reader gap review of the text phase 8 wrote on classes and overloading (`reports/review/2026-11-04-gap-review-phase-8-classes-overloading.md`) reads option 2 in the C++23 text. A member function overrides a base virtual function when the two declarations correspond, trailing constraints aside. Correspondence compares the object parameters, and when one function has neither an explicit object parameter nor a ref-qualifier and the other has a ref-qualifier, it compares the object types with references dropped. The review believes that a later core issue on overriding and explicit object parameters restores the need for the same ref-qualifier, and could not confirm the resolution or its date. If the later text applies, VIRT-1 matches it.
+
+### Gap review, 2026-11-05
+
+The source-reader gap review of the text phase 9 wrote on classes, overloading, and exceptions (`reports/review/2026-11-05-gap-review-phase-9-classes-overloading-exceptions.md`) supports the answer with a doubt. The reader finds that the C++23 text cannot decide the case as written, and that a later resolution on overriding gives option 1, the provisional answer.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

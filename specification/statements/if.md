@@ -380,7 +380,7 @@ over initialization apply ({rule}`JMP-6`).
 
 :::{rule} IF-18
 :kind: required
-:tests: statements/if/consteval-branches.cpp statements/if/consteval-in-consteval.cpp statements/if/consteval-plain-function.cpp declarations/initialization/static/consteval-branch-in-initializer.cpp statements/if/consteval-local-initializers.cpp
+:tests: statements/if/consteval-branches.cpp statements/if/consteval-in-consteval.cpp statements/if/consteval-plain-function.cpp declarations/initialization/static/consteval-branch-in-initializer.cpp statements/if/consteval-local-initializers.cpp statements/if/consteval-scoped-enum-initializer.cpp
 
 The `if consteval` form executes its then branch during
 {term}`constant evaluation` and its else branch at run time (IF-25).
@@ -392,7 +392,7 @@ does the opposite. In a `consteval` function, the then branch of
 
 :::{rule} IF-25
 :kind: required
-:tests: statements/if/consteval-local-initializers.cpp declarations/initialization/static/consteval-branch-in-initializer.cpp statements/if/consteval-local-reference.cpp statements/if/consteval-static-fallback.cpp statements/if/consteval-local-reference-static-object.cpp statements/if/consteval-enclosing-evaluation.cpp
+:tests: statements/if/consteval-local-initializers.cpp declarations/initialization/static/consteval-branch-in-initializer.cpp statements/if/consteval-local-reference.cpp statements/if/consteval-static-fallback.cpp statements/if/consteval-local-reference-static-object.cpp statements/if/consteval-enclosing-evaluation.cpp statements/if/consteval-scoped-enum-initializer.cpp
 
 An evaluation is a constant evaluation only if it starts in one of
 these places:
@@ -402,7 +402,8 @@ these places:
   `static`, or `thread_local` variable of any type, a class type
   included ({rule}`SINIT-1`),
 - an initializer that is a constant expression, of a `const` variable
-  of integer or enumeration type that is not `volatile` ({rule}`CE-3`),
+  of integer or enumeration type, scoped or unscoped, that is not
+  `volatile` ({rule}`CE-3`),
 - an initializer that is a constant expression, of a reference
   ({rule}`CE-3`).
 
@@ -473,7 +474,7 @@ void conditions() {
 ## Evidence
 
 All rules in this page are `required` or `reject`. All eight compilers
-agree on 79 of 80 tests. The results are in `tests/RESULTS.md`.
+agree on 80 of 81 tests. The results are in `tests/RESULTS.md`.
 
 ### Divergences
 

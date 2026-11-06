@@ -1,8 +1,7 @@
 # Q-0340: Are two structs layout-compatible when matching members both have `[[no_unique_address]]`?
 
-**Status:** provisional
+**Status:** settled
 **Affects:** UNI-15, UNI-16, `tests/classes/members/grids/layout-compatible.json`
-**Waits for:** a use of UNI-P6
 
 ## Context
 
@@ -40,7 +39,7 @@ The grid `tests/classes/members/grids/layout-compatible.json`, rows
 2. Not layout-compatible: a member with the attribute ends the common
    initial sequence (Clang 22).
 
-## Provisional answer
+## Answer
 
 Layout-compatible (option 1). The inventory describes this condition,
 and the two members have the same type and the same attribute. The
@@ -55,6 +54,8 @@ Used on 2026-11-04 under decision 0056 by the source-reader gap review of the te
 
 Kept open on 2026-11-04 under decision 0055, because UNI-P6 changed in the same commit: the review found that it paired only the members, and an unnamed bit-field also takes part in the sequence. The question waits for the next use of UNI-P6.
 
+Settled on 2026-11-05 under decision 0054. The gap review of the text phase 9 wrote used UNI-P6 on the question's program (decision 0056), the use supports the answer, and the review supports it with no doubt. No test of the question has a newest-family override.
+
 ## Opinions
 
 ### Gap review, 2026-11-03
@@ -64,5 +65,9 @@ The source-reader gap review of item O (`reports/review/2026-11-03-gap-review-it
 ### Gap review, 2026-11-04
 
 The source-reader gap review of the text phase 8 wrote on classes and overloading (`reports/review/2026-11-04-gap-review-phase-8-classes-overloading.md`) agrees with option 1. The common initial sequence runs over the non-static data members and bit-fields, unnamed bit-fields included, and the reference's own example shows an unnamed bit-field of width 0 ending it. For this question the attribute condition is the one that matters.
+
+### Gap review, 2026-11-05
+
+The source-reader gap review of the text phase 9 wrote on classes, overloading, and exceptions (`reports/review/2026-11-05-gap-review-phase-9-classes-overloading-exceptions.md`) used UNI-P6 on the question's program, the row "overlap mark on both" of `tests/classes/members/grids/layout-compatible.json`, without the rule text. The model gives layout-compatible, the provisional answer, and the reference supports that answer with no doubt.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->

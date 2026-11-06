@@ -98,11 +98,13 @@ are not.
 
 :::{rule} DCMP-1
 :kind: required
-:tests: classes/comparisons/eq-array-member.cpp classes/comparisons/eq-bases-first.cpp classes/comparisons/eq-constexpr.cpp classes/comparisons/eq-friend-by-value.cpp classes/comparisons/eq-friend.cpp classes/comparisons/eq-memberwise.cpp classes/comparisons/eq-out-of-class.cpp classes/comparisons/eq-private-members.cpp classes/comparisons/eq-stops-at-first-false.cpp
+:tests: classes/comparisons/eq-array-member.cpp classes/comparisons/eq-bases-first.cpp classes/comparisons/eq-constexpr.cpp classes/comparisons/eq-friend-by-value.cpp classes/comparisons/eq-friend.cpp classes/comparisons/eq-memberwise.cpp classes/comparisons/eq-out-of-class.cpp classes/comparisons/eq-private-members.cpp classes/comparisons/eq-stops-at-first-false.cpp classes/comparisons/eq-array-of-arrays-member.cpp classes/comparisons/eq-array-of-arrays-member-constant.cpp
 
 A defaulted `==` compares the direct bases in the order of the base list,
 then the non-static data members in the order of their declarations. An
-array member is compared element by element. The first comparison that
+array member is compared element by element. An element that is itself
+an array is compared element by element in turn, down to elements that
+are not arrays. The first comparison that
 gives `false` ends the comparison. The defaulted `==` can be used in
 {term}`constant evaluation` and has access to private members.
 :::
@@ -316,8 +318,8 @@ bool y = l == s;   // the friend from Name<8>, with M = 2
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 74
-of 80 tests. The tests declare the comparison category types themselves.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 75
+of 82 tests. The tests declare the comparison category types themselves.
 
 ### Divergences
 
@@ -336,12 +338,18 @@ of 80 tests. The tests declare the comparison category types themselves.
   take part in the match of `!=` and `==`. They do not, as Clang and
   EDG say. GCC treats `const&` and `const&&` as different. The choice
   waits on the maintainer (`documentation/decisions/pending.md`, row 4).
+- {question}`Q-0403` (DCMP-1; open): whether a defaulted `==` compares
+  every element of a member that is an array of arrays in constant
+  evaluation. It does, as Clang does and every compiler does at run
+  time. GCC gives `true` for objects that differ in the second row,
+  and EDG does not evaluate the comparison as a constant.
 
 ### Split tests
 
 | Test | Rules | Expected | Clang | GCC | EDG | Question |
 |---|---|---|---|---|---|---|
 | `declared-outside-then-defaulted.cpp` | DCMP-3 | reject | reject | accept | reject | {question}`Q-0061` |
+| `eq-array-of-arrays-member-constant.cpp` | DCMP-1 | accept | accept | reject | reject | {question}`Q-0403` |
 | `eq-reference-to-bool-result.cpp` | DCMP-12 | reject | reject | accept | reject | {question}`Q-0158` |
 | `ne-matching-ref-qualifier.cpp` | DCMP-13, DCMP-12 | reject | reject | accept | reject | {question}`Q-0190` |
 | `ne-rewrite-reference-to-bool-result.cpp` | DCMP-12 | reject | reject | accept | reject | {question}`Q-0158` |

@@ -51,10 +51,16 @@ The question was split from Q-0156 on 2026-11-03. The source-reader gap review o
 
 Kept open on 2026-11-03 under decision 0054, because the gap review does not support the answer with no doubt (it reads with doubt, weakly, unclearly, or for only part of the question).
 
+Kept open on 2026-11-05 under decision 0054, because the gap review of the text phase 9 wrote reads the answer with a doubt.
+
 ## Opinions
 
 ### Gap review, 2026-11-03
 
 The source-reader gap review of question cluster 2 (`reports/review/2026-11-03-gap-review-question-cluster-2.md`) reads the reference as supporting option 1, weakly. The candidates for a direct binding of an lvalue reference return lvalue references, and the fallback through copy-initialization takes no explicit function. The review sees a gap, because the binding rules for this kind of reference expect a conversion to an rvalue that the candidate set never offers.
+
+### Gap review, 2026-11-05
+
+The source-reader gap review of the text phase 9 wrote on classes, overloading, and exceptions (`reports/review/2026-11-05-gap-review-phase-9-classes-overloading-exceptions.md`) supports the answer with a doubt. The reader finds that only lvalue reference results are offered to an lvalue reference and that the fallback through a temporary takes no explicit function, which gives option 1. An example in the reference that binds a reference to const through a conversion by value leaves a doubt.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
