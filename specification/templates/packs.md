@@ -73,6 +73,7 @@ that list:
 |---|---|---|---|
 | call arguments | `f(p...)` | an argument | PACK-13 |
 | braced list | `{p...}` | an element of the list | PACK-13 |
+| the expression list of an initializer | `T x(p...)`, `: m(p...)`, `: B<T...>(p...)`, `new T(p...)`, `T(p...)` | an argument of the initialization | PACK-13 |
 | {term}`template arguments <template argument>` | `List<T...>` | a template argument | PACK-10, {rule}`TSP-9` |
 | function parameters | `void f(T... p)` | a parameter | PACK-1 |
 | template parameters | `template <T... N>`, `template <Same<T>... U>` | a template parameter | {rule}`TPL-36`, PACK-26 |
@@ -298,16 +299,18 @@ arguments give it elements. An expansion at the end deduces as
 
 :::{rule} PACK-13
 :kind: required
-:tests: templates/packs/call-and-braced-list.cpp templates/packs/braced-list-order-aggregate.cpp
+:tests: templates/packs/call-and-braced-list.cpp templates/packs/braced-list-order-aggregate.cpp templates/packs/expansion-in-parenthesized-initializer.cpp templates/packs/expansion-in-member-initializer.cpp templates/packs/expansion-in-base-initializer-arguments.cpp
 
 In the arguments of a call, each copy of the pattern is one argument.
-In a braced list, each copy is one element, and the elements are
-evaluated from left to right ({rule}`LIST-7`).
+The same holds in the expression list of a parenthesized initializer,
+of a member or base initializer, of a `new` initializer, and of a
+functional cast. In a braced list, each copy is one element, and the
+elements are evaluated from left to right ({rule}`LIST-7`).
 :::
 
 :::{rule} PACK-14
 :kind: required
-:tests: templates/packs/base-list-and-initializers.cpp templates/packs/base-list-order.cpp
+:tests: templates/packs/base-list-and-initializers.cpp templates/packs/base-list-order.cpp templates/packs/expansion-in-base-initializer-arguments.cpp templates/packs/base-pack-template-id-initializers.cpp
 
 An expansion in a base list gives one base for each element, in order.
 In a member initializer list, an expansion of a `mem_init` that names a
@@ -580,8 +583,8 @@ template <class... T> void keep(T... x) {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 67
-of 71 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 71
+of 75 tests.
 
 ### Divergences
 

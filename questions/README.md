@@ -449,6 +449,8 @@ status, and the first sentence of its answer section.
 | [Q-0410](Q-0410-qualified-enum-underlying-type.md) | In the definition of an enumeration with a qualified name, is the underlying type looked up in the scope that the qualifier names? | provisional | Rejected |
 | [Q-0411](Q-0411-type-constraint-pack-fold-atom.md) | Are the folds that one concept makes on a type parameter pack in two declarations one atom or two? | provisional | Two atoms |
 | [Q-0412](Q-0412-standard-attribute-effects.md) | Which effects can a standard attribute have, and can a new one add a required rejection? | provisional | Placement rules, warnings, promises, and layout changes only |
+| [Q-0413](Q-0413-consteval-conversion-for-parameter.md) | Is a call rejected when the implicit conversion of an argument to a parameter calls a consteval constructor that is not a constant expression? | provisional | Rejected |
+| [Q-0414](Q-0414-nested-class-friend-access.md) | Does a friend function that a nested class declares have access to the private members of the enclosing class? | provisional | The friend has the nested class's access |
 
 ## Status values
 

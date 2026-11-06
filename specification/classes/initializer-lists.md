@@ -67,7 +67,7 @@ from the standard library ({rule}`LSUP-1`).
 
 :::{rule} ILC-1
 :kind: required
-:tests: classes/initializer-lists/selects-constructor.cpp classes/initializer-lists/selects-constructor-return-and-argument.cpp
+:tests: classes/initializer-lists/selects-constructor.cpp classes/initializer-lists/selects-constructor-return-and-argument.cpp declarations/initialization/list/braced-constructor-template.cpp
 
 A braced list for a class that is not an aggregate selects a
 constructor. The elements of the list are the arguments. This rule
@@ -194,8 +194,8 @@ Point q{1.5, 2};       // rejected: narrowing
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 30
-of 32 tests. The tests declare a minimal `std::initializer_list`.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 31
+of 33 tests. The tests declare a minimal `std::initializer_list`.
 
 ### Divergences
 

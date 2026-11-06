@@ -166,7 +166,7 @@ A static protected member has no such limit.
 
 :::{rule} ACC-5
 :kind: required
-:tests: classes/access/friend-function.cpp classes/access/friend-class.cpp classes/access/friend-member-function.cpp classes/access/friend-ignores-label.cpp classes/access/friend-plain-type-name.cpp
+:tests: classes/access/friend-function.cpp classes/access/friend-class.cpp classes/access/friend-member-function.cpp classes/access/friend-ignores-label.cpp classes/access/friend-plain-type-name.cpp classes/access/nested-class-friend-reads-enclosing.cpp
 
 A friend declaration gives a function or a class the access of a member.
 A friend can be:
@@ -305,10 +305,13 @@ derived class.
 
 :::{rule} ACC-10
 :kind: required
-:tests: classes/access/nested-accesses-enclosing.cpp classes/access/local-class-member-access.cpp
+:tests: classes/access/nested-accesses-enclosing.cpp classes/access/local-class-member-access.cpp classes/access/nested-class-friend-reads-enclosing.cpp
 
 A nested class is a member of its enclosing class. The nested class has
 access to the private and protected members of the enclosing class. A
+friend function that the nested class declares has the nested class's
+access ({rule}`ACC-5`), so it can name those members too
+({question}`Q-0414`). A
 local class in a member function has the access of that member function.
 :::
 
@@ -389,7 +392,7 @@ class Token {
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 74
-of 79 tests.
+of 80 tests.
 
 ### Divergences
 
@@ -412,6 +415,10 @@ of 79 tests.
   a member through a pattern such as `A<T*>::f` befriends that member of
   a specialization that does not match the pattern. It does, as Clang
   and GCC say. EDG 7.0 and the gap review read the pattern as a limit.
+- {question}`Q-0414` (ACC-10, ACC-5; open): whether a friend function
+  that a nested class declares can name the private members of the
+  enclosing class. It can, as Clang and GCC say. EDG rejects the
+  access.
 
 ### Split tests
 
@@ -421,6 +428,7 @@ of 79 tests.
 | `friend-member-of-specialization-other-member.cpp` | ACC-20, ACC-2 | reject | accept | reject | reject | {question}`Q-0391` |
 | `friend-member-pattern-other-specialization.cpp` | ACC-20 | run | run | run | reject | {question}`Q-0404` |
 | `hidden-friend-qualified-redeclaration.cpp` | ACC-17 | reject | accept | reject | reject | {question}`Q-0131` |
+| `nested-class-friend-reads-enclosing.cpp` | ACC-10, ACC-5 | run | run | run | reject | {question}`Q-0414` |
 | `using-reduces-access.cpp` | ACC-2 | reject | reject | reject | accept | {question}`Q-0052` |
 
 ### Notes

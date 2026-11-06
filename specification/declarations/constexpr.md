@@ -152,11 +152,12 @@ function must agree on each of the two specifiers.
 
 :::{rule} CEV-1
 :kind: reject
-:tests: declarations/constexpr/consteval-call-constant.cpp declarations/constexpr/consteval-call-runtime-arg.cpp declarations/constexpr/consteval-in-consteval.cpp declarations/constexpr/consteval-ub-rejected.cpp declarations/constexpr/immediate-escalation.cpp declarations/constexpr/lambda-escalates-constant.cpp declarations/constexpr/lambda-escalates-runtime.cpp declarations/constexpr/consteval-returns-allocation.cpp declarations/constexpr/plain-constexpr-no-escalation.cpp declarations/constexpr/consteval-converting-constructor.cpp declarations/constexpr/consteval-converting-constructor-throws.cpp
+:tests: declarations/constexpr/consteval-call-constant.cpp declarations/constexpr/consteval-call-runtime-arg.cpp declarations/constexpr/consteval-in-consteval.cpp declarations/constexpr/consteval-ub-rejected.cpp declarations/constexpr/immediate-escalation.cpp declarations/constexpr/lambda-escalates-constant.cpp declarations/constexpr/lambda-escalates-runtime.cpp declarations/constexpr/consteval-returns-allocation.cpp declarations/constexpr/plain-constexpr-no-escalation.cpp declarations/constexpr/consteval-converting-constructor.cpp declarations/constexpr/consteval-converting-constructor-throws.cpp declarations/constexpr/consteval-conversion-for-parameter-not-constant.cpp
 
 Each call to a `consteval` function must be a constant expression. A
 `consteval` constructor counts, also when an implicit conversion calls
-it. This rule does not apply to a call in an {term}`immediate function context`,
+it, as when it initializes a function parameter
+({question}`Q-0413`). This rule does not apply to a call in an {term}`immediate function context`,
 such as the body of another `consteval` function.
 
 These functions take on `consteval` from their bodies:
@@ -296,7 +297,7 @@ Identifier bad = "2x";              // rejected
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 64
-of 73 tests.
+of 74 tests.
 
 ### Divergences
 
@@ -323,11 +324,16 @@ of 73 tests.
   variable of a class with a trivial default constructor and no
   initializer has a constant initializer. It has none, as Clang says.
   GCC and EDG accept the variable.
+- {question}`Q-0413` (CEV-1; open): whether a call is rejected when the
+  conversion of an argument calls a `consteval` constructor that is not
+  a constant expression. It is, as Clang and GCC say. EDG accepts the
+  call, and rejects the same failure for a variable.
 
 ### Split tests
 
 | Test | Rules | Expected | Clang | GCC | EDG | Question |
 |---|---|---|---|---|---|---|
+| `consteval-conversion-for-parameter-not-constant.cpp` | CEV-1 | reject | reject | reject | accept | {question}`Q-0413` |
 | `constinit-added-late-thread-local.cpp` | CINIT-3 | reject | reject | accept | accept | {question}`Q-0025` |
 | `constinit-added-late.cpp` | CINIT-3 | reject | reject | accept | accept | {question}`Q-0025` |
 | `constinit-on-declaration-only.cpp` | CINIT-2 | reject | reject | accept | reject | {question}`Q-0025` |

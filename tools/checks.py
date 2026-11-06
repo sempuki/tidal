@@ -5,12 +5,16 @@ The commit's Checks paragraph is this script's output (decision 0058),
 so a message cannot claim more or less than the checks showed. The
 script runs, in order:
 
-- tools/check_specification.py,
-- tools/question_index.py --check,
 - tools/similarity.py --fail-on-flag on the default directories, when
   TIDAL_REFERENCE names the reference corpus or --reference is given,
   writing the report to --similarity-out if given,
+- tools/check_specification.py,
+- tools/question_index.py --check,
 - tools/frontend_check.py, unless --no-frontend.
+
+A new similarity report changes the similarity column of the status
+page, so run tools/status_table.py after the first run that writes one,
+and then run this script again.
 
 It prints one paragraph that gives each check's own summary line, and
 exits 1 if any check failed. Use it as `tools/checks.py > FILE && git
@@ -48,12 +52,6 @@ def main() -> int:
     ap.add_argument("--no-frontend", action="store_true")
     args = ap.parse_args()
     parts, failed = [], False
-    code, line = run(["tools/check_specification.py"])
-    failed |= code != 0
-    parts.append(f"check_specification.py reports \"{line}\"")
-    code, line = run(["tools/question_index.py", "--check"])
-    failed |= code != 0
-    parts.append(f"question_index.py --check reports \"{line}\"")
     if args.reference:
         out = args.similarity_out.resolve() if args.similarity_out else None
         code, line = run(["tools/similarity.py", "--fail-on-flag", "--reference", args.reference], out)
@@ -62,6 +60,12 @@ def main() -> int:
         parts.append(f"similarity.py --fail-on-flag on the default directories reports \"{line}\"{where}")
     else:
         parts.append("similarity.py did not run (no reference corpus given)")
+    code, line = run(["tools/check_specification.py"])
+    failed |= code != 0
+    parts.append(f"check_specification.py reports \"{line}\"")
+    code, line = run(["tools/question_index.py", "--check"])
+    failed |= code != 0
+    parts.append(f"question_index.py --check reports \"{line}\"")
     if not args.no_frontend:
         proc = subprocess.run([sys.executable, "-I", "tools/frontend_check.py"], cwd=ROOT,
                               capture_output=True, text=True)
