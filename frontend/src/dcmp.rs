@@ -33,21 +33,33 @@ impl P {
             }
             let mx = Expr::new(EK::Member(Box::new(x.clone()), f), ft.clone(), Cat::L, line);
             let my = Expr::new(EK::Member(Box::new(y.clone()), f), ft.clone(), Cat::L, line);
-            if let Ty::Array(_, Some(n)) = &ft.t {
-                if *n > 64 {
-                    return None;
-                }
-                for i in 0..*n {
-                    let ix = Expr::new(EK::Int(i as i128), QTy::new(Ty::Long), Cat::PR, line);
-                    let ex = self.build_subscript(mx.clone(), ix.clone(), line);
-                    let ey = self.build_subscript(my.clone(), ix, line);
-                    out.push((ex, ey));
-                }
-                continue;
+            if !self.cmp_elements(mx, my, line, &mut out) {
+                return None;
             }
-            out.push((mx, my));
         }
         Some(out)
+    }
+
+    /// DCMP-1: an array part element by element, and an element that is
+    /// an array in turn, down to elements that are not arrays.
+    fn cmp_elements(&mut self, mx: Expr, my: Expr, line: u32, out: &mut Vec<(Expr, Expr)>) -> bool {
+        if let Ty::Array(_, Some(n)) = &mx.ty.t {
+            let n = *n;
+            if n > 64 || out.len() > 4096 {
+                return false;
+            }
+            for i in 0..n {
+                let ix = Expr::new(EK::Int(i as i128), QTy::new(Ty::Long), Cat::PR, line);
+                let ex = self.build_subscript(mx.clone(), ix.clone(), line);
+                let ey = self.build_subscript(my.clone(), ix, line);
+                if !self.cmp_elements(ex, ey, line, out) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        out.push((mx, my));
+        true
     }
 
     /// The static member `name` of the comparison category class `cc`.
@@ -118,8 +130,14 @@ impl P {
         }
         let (me, mu, mark) = (self.d.muted_errors, self.d.muted_unsup, self.d.list.len());
         self.d.muted += 1;
-        let r = self.cmp_body(&name, c, &f, x, y, line);
+        self.dcmp_lsup = None;
+        let r = self.cmp_body(&name, c, &f, x, y, line, fid);
         self.d.muted -= 1;
+        if let Some(m) = self.dcmp_lsup.take() {
+            // LSUP-2: the ordering class that the defaulted `<=>` uses.
+            self.error(line, "LSUP-2", m);
+            return None;
+        }
         let bad = self.d.muted_errors != me || self.d.muted_unsup != mu;
         let only_errors = self.d.muted_unsup == mu && self.d.muted_errors != me;
         self.d.muted_errors = me;
@@ -154,7 +172,8 @@ impl P {
         Some(())
     }
 
-    fn cmp_body(&mut self, name: &str, c: usize, f: &FuncInfo, x: Expr, y: Expr, line: u32) -> Option<(Expr, Option<QTy>)> {
+    #[allow(clippy::too_many_arguments)]
+    fn cmp_body(&mut self, name: &str, c: usize, f: &FuncInfo, x: Expr, y: Expr, line: u32, fid: DeclId) -> Option<(Expr, Option<QTy>)> {
         let int0 = Expr::new(EK::Int(0), QTy::new(Ty::Int), Cat::PR, line);
         match name {
             "operator==" => {
@@ -198,16 +217,28 @@ impl P {
                             return None;
                         }
                     }
-                    let k = match rank {
-                        0 => strong?,
-                        1 => weak?,
-                        _ => partial?,
+                    let (k, n) = match rank {
+                        0 => (strong?, "strong_ordering"),
+                        1 => (weak?, "weak_ordering"),
+                        _ => (partial?, "partial_ordering"),
                     };
+                    // LSUP-2 (Q-0402): with `auto`, the class is declared
+                    // before the defaulted declaration.
+                    if self.std_class_decl(n).is_some_and(|d| d > fid) {
+                        self.dcmp_lsup = Some(format!("'std::{}' is declared after the defaulted '<=>' whose return type is 'auto'", n));
+                        return None;
+                    }
                     QTy::new(Ty::Class(k))
                 } else {
                     f.fty.ret.clone()
                 };
                 let Ty::Class(rc) = ret.t else { return None };
+                if Some(rc) != self.std_class("strong_ordering") && self.std_class("strong_ordering").is_none() {
+                    // LSUP-2: a defaulted `<=>` that returns another ordering
+                    // class also uses `std::strong_ordering`.
+                    self.dcmp_lsup = Some("a defaulted '<=>' that returns 'std::weak_ordering' or 'std::partial_ordering' needs 'std::strong_ordering'".into());
+                    return None;
+                }
                 let fin = match self.category_value(rc, "equal", line) {
                     Some(e) => e,
                     None => self.category_value(rc, "equivalent", line)?,

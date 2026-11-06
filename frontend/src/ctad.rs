@@ -1091,6 +1091,9 @@ impl P {
         let save = self.pos;
         let mark = self.d.list.len();
         let (me, mu) = (self.d.muted_errors, self.d.muted_unsup);
+        self.lambda_memo.clear();
+        let in_t = self.in_template();
+        let rec = std::mem::replace(&mut self.lambda_memo_record, !in_t);
         self.d.muted += 1;
         let r = (|| -> PR<(Expr, InitForm)> {
             if self.at("{") {
@@ -1114,13 +1117,18 @@ impl P {
             }
         })();
         self.d.muted -= 1;
+        self.lambda_memo_record = rec;
         let bad = self.d.muted_errors != me || self.d.muted_unsup != mu;
         self.d.muted_errors = me;
         self.d.muted_unsup = mu;
         self.d.list.truncate(mark);
         self.pos = save;
-        let (init, form) = r.ok()?;
+        let Ok((init, form)) = r else {
+            self.lambda_memo.clear();
+            return None;
+        };
         if bad {
+            self.lambda_memo.clear();
             return None;
         }
         let q = self.ctad(tid, Some(&init), &form, line)?;

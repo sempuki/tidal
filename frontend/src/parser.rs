@@ -254,6 +254,10 @@ pub struct GenLambda {
     pub depth: u32,
     pub params: Vec<crate::templ::TParam>,
     pub ptys: Vec<QTy>,
+    /// The index of the trailing function parameter pack.
+    pub pack: Option<usize>,
+    /// The type of the explicit object parameter (CLS-13, LAM-16).
+    pub xobj: Option<QTy>,
     pub limit: usize,
     pub origin: (usize, usize),
 }
@@ -575,10 +579,32 @@ pub struct P {
     /// The generic lambdas, by the call operator of their closure type
     /// (LAM-15), and the specializations made for calls.
     pub generic_lambdas: HashMap<DeclId, Rc<GenLambda>>,
-    pub generic_insts: Vec<(DeclId, Vec<QTy>, Option<DeclId>, bool, bool)>,
+    pub generic_insts: Vec<(DeclId, Vec<crate::types::TArg>, Option<DeclId>, bool, bool)>,
     /// The types of the placeholder parameters of the generic lambda that
     /// is parsed again for a call.
     pub lambda_inst: Option<Vec<QTy>>,
+    /// The name after `.` or `->` is an operator name; its template
+    /// arguments stay for the member access.
+    pub member_op_name: bool,
+    /// LAM-16: the call operator that a generic lambda's instantiation
+    /// fills, so that a call in the body can name it.
+    pub lambda_placeholder: Option<DeclId>,
+    pub lambda_placeholder_class: Option<usize>,
+    /// RFOR-1: the variable that holds a braced range.
+    pub rfor_list_var: Option<DeclId>,
+    pub generic_specs: std::collections::HashSet<DeclId>,
+    /// CTAD-1: the lambdas that a deduction's look-ahead parsed, by token
+    /// position, with the position after each.
+    pub lambda_memo: HashMap<(usize, (usize, usize), usize), (Expr, usize)>,
+    pub lambda_memo_record: bool,
+    /// OVL-29: the kind of the reference to function that a user-defined
+    /// sequence binds (true: an rvalue reference).
+    pub fn_ref_kind: Option<bool>,
+    /// The errors in the body of a generic lambda's call operator made
+    /// for a call, given when a call selects it.
+    pub generic_body_errs: HashMap<DeclId, Vec<crate::diag::Diag>>,
+    /// LSUP-2: why a defaulted `<=>` lacks its ordering class.
+    pub dcmp_lsup: Option<String>,
     /// The parameters or the result type of the generic lambda parsed
     /// again had an error: substitution failed (DED-29).
     pub lambda_inst_failed: bool,
@@ -945,6 +971,16 @@ impl P {
             generic_lambdas: HashMap::new(),
             generic_insts: Vec::new(),
             lambda_inst: None,
+            member_op_name: false,
+            lambda_placeholder: None,
+            lambda_placeholder_class: None,
+            rfor_list_var: None,
+            generic_specs: Default::default(),
+            lambda_memo: Default::default(),
+            lambda_memo_record: false,
+            fn_ref_kind: None,
+            generic_body_errs: Default::default(),
+            dcmp_lsup: None,
             lambda_inst_failed: false,
             generic_conv: std::collections::HashSet::new(),
             var_align: HashMap::new(),
@@ -1649,6 +1685,22 @@ impl P {
     }
     pub fn in_block(&self) -> bool {
         matches!(self.scopes[self.decl_scope()].kind, SK::Block | SK::Params)
+    }
+    /// A template specialization, also the call operator that a generic
+    /// lambda's call made (OVL-27).
+    pub fn is_spec(&self, f: DeclId) -> bool {
+        self.spec_of.contains_key(&f) || self.generic_specs.contains(&f)
+    }
+    /// The held errors of the body of a generic lambda's call operator
+    /// that a call selected.
+    pub fn selected(&mut self, f: DeclId) {
+        if let Some(v) = self.generic_body_errs.remove(&f) {
+            if self.d.muted > 0 {
+                self.d.muted_errors += v.len() as u32;
+            } else {
+                self.d.list.extend(v);
+            }
+        }
     }
     pub fn in_template(&self) -> bool {
         self.templ > 0

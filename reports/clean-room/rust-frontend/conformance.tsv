@@ -17,7 +17,9 @@ pass	classes/access/friend-member-function-only.cpp
 pass	classes/access/friend-member-function.cpp
 pass	classes/access/friend-member-of-every-specialization.cpp
 EDG-ONLY	classes/access/friend-member-of-explicit-specialization.cpp
+pass	classes/access/friend-member-of-partial-specialization.cpp
 pass	classes/access/friend-member-of-specialization-other-member.cpp
+EDG-ONLY	classes/access/friend-member-pattern-other-specialization.cpp
 pass	classes/access/friend-not-inherited.cpp
 pass	classes/access/friend-not-transitive.cpp
 pass	classes/access/friend-one-specialization.cpp
@@ -76,6 +78,8 @@ pass	classes/comparisons/empty-class-compares-equal.cpp
 pass	classes/comparisons/eq-across-specializations.cpp
 pass	classes/comparisons/eq-anonymous-union-member.cpp
 pass	classes/comparisons/eq-array-member.cpp
+EDG-ONLY	classes/comparisons/eq-array-of-arrays-member-constant.cpp
+pass	classes/comparisons/eq-array-of-arrays-member.cpp
 pass	classes/comparisons/eq-auto-return.cpp
 pass	classes/comparisons/eq-bases-first.cpp
 pass	classes/comparisons/eq-by-value-param.cpp
@@ -349,7 +353,7 @@ pass	classes/conversion-functions/basic.cpp
 pass	classes/conversion-functions/best-match-exact.cpp
 pass	classes/conversion-functions/builtin-operator.cpp
 run-unsupported	classes/conversion-functions/call-by-name.cpp
-run-unsupported	classes/conversion-functions/call-through-function-reference.cpp
+pass	classes/conversion-functions/call-through-function-reference.cpp
 MISSED-REJECT	classes/conversion-functions/const-object-explicit-cast.cpp
 pass	classes/conversion-functions/const-overloads.cpp
 pass	classes/conversion-functions/const-qualified-needed.cpp
@@ -394,6 +398,7 @@ pass	classes/conversion-functions/static.cpp
 pass	classes/conversion-functions/switch-condition.cpp
 pass	classes/conversion-functions/switch-two-integral-conversions.cpp
 EDG-ONLY	classes/conversion-functions/template-deduced-auto.cpp
+EDG-ONLY	classes/conversion-functions/template-pointer-to-placeholder.cpp
 pass	classes/conversion-functions/then-standard-conversion.cpp
 pass	classes/conversion-functions/to-array.cpp
 pass	classes/conversion-functions/to-function-pointer.cpp
@@ -518,7 +523,8 @@ pass	classes/copy-move/trivially-copyable-every-eligible.cpp
 EDG-ONLY	classes/copy-move/trivially-copyable-member-selected.cpp
 EDG-AGREES	classes/copy-move/trivially-copyable-member-template-selected.cpp
 pass	classes/copy-move/trivially-copyable-private-copy.cpp
-run-unsupported	classes/copy-move/trivially-copyable-types.cpp
+pass	classes/copy-move/trivially-copyable-scalar-kinds.cpp
+pass	classes/copy-move/trivially-copyable-types.cpp
 pass	classes/copy-move/trivially-copyable-volatile-member.cpp
 pass	classes/copy-move/user-dtor-keeps-copy.cpp
 pass	classes/copy-move/virtual-base-assigned-count.cpp
@@ -664,11 +670,16 @@ pass	classes/members/empty-standard-layout-base-zero-size-ilp32.cpp
 pass	classes/members/empty-standard-layout-base-zero-size.cpp
 pass	classes/members/explicit-object-address-by-value.cpp
 pass	classes/members/explicit-object-address-ordinary.cpp
+pass	classes/members/explicit-object-and-unqualified-clash.cpp
+pass	classes/members/explicit-object-deduced-constant.cpp
+pass	classes/members/explicit-object-deduced-forwarding.cpp
+pass	classes/members/explicit-object-deduced-lvalue.cpp
 EDG-ONLY	classes/members/explicit-object-default-argument.cpp
 pass	classes/members/explicit-object-from-prvalue.cpp
 pass	classes/members/explicit-object-no-this.cpp
 pass	classes/members/explicit-object-non-member.cpp
 pass	classes/members/explicit-object-not-first.cpp
+pass	classes/members/explicit-object-overloads-by-const.cpp
 pass	classes/members/explicit-object-parameter.cpp
 pass	classes/members/explicit-object-qualified.cpp
 pass	classes/members/explicit-object-static.cpp
@@ -808,6 +819,7 @@ pass	classes/operators/builtin-candidate-via-conversion.cpp
 pass	classes/operators/call-default-argument-ok.cpp
 pass	classes/operators/call-nonmember.cpp
 pass	classes/operators/call-operator-overloads.cpp
+pass	classes/operators/call-operator-template.cpp
 pass	classes/operators/call-operator.cpp
 pass	classes/operators/comma-order-kept.cpp
 pass	classes/operators/comma-overload.cpp
@@ -841,6 +853,7 @@ pass	classes/operators/literal-raw-float.cpp
 pass	classes/operators/literal-raw.cpp
 EDG-ONLY	classes/operators/literal-reserved-suffix-u8.cpp
 pass	classes/operators/literal-reserved-suffix-used.cpp
+pass	classes/operators/literal-spaced-reserved-identifier.cpp
 pass	classes/operators/literal-string-concat-suffix.cpp
 pass	classes/operators/literal-string-concat-two-suffixes.cpp
 pass	classes/operators/literal-string.cpp
@@ -874,10 +887,12 @@ pass	classes/operators/relational-chain-class.cpp
 pass	classes/operators/shift-order-kept.cpp
 pass	classes/operators/shift-right-order-kept.cpp
 pass	classes/operators/static-call-not-other.cpp
+pass	classes/operators/static-call-operator-template.cpp
 pass	classes/operators/static-call-operator.cpp
 pass	classes/operators/static-member-operator.cpp
 pass	classes/operators/static-subscript.cpp
 pass	classes/operators/subscript-default-arg.cpp
+pass	classes/operators/subscript-explicit-object-two-args.cpp
 pass	classes/operators/subscript-multi-order.cpp
 pass	classes/operators/subscript-multi.cpp
 pass	classes/operators/subscript-nonmember.cpp
@@ -892,7 +907,7 @@ pass	classes/unions/aggregate-first-member.cpp
 pass	classes/unions/alignment-strictest-not-largest.cpp
 unsupported	classes/unions/anonymous-union-brace-elision.cpp
 pass	classes/unions/anonymous-union-default-member-init.cpp
-unsupported	classes/unions/anonymous-union-designated-member.cpp
+pass	classes/unions/anonymous-union-designated-member.cpp
 pass	classes/unions/anonymous-union-function.cpp
 pass	classes/unions/anonymous-union-init.cpp
 run-unsupported	classes/unions/anonymous-union-local.cpp
@@ -965,8 +980,10 @@ pass	classes/unions/bitfield-wider-than-type.cpp
 pass	classes/unions/bitfield-wider-warns-default.cpp
 pass	classes/unions/bitfield-wider-warns.cpp
 pass	classes/unions/bitfield-width-class-converts.cpp
+pass	classes/unions/bitfield-width-class-explicit-conversion.cpp
 pass	classes/unions/bitfield-width-class-not-constexpr.cpp
 pass	classes/unions/bitfield-width-class-not-literal.cpp
+pass	classes/unions/bitfield-width-class-two-conversions-same-type.cpp
 pass	classes/unions/bitfield-width-class-two-conversions.cpp
 pass	classes/unions/bitfield-width-floating.cpp
 EDG-ONLY	classes/unions/bitfield-width-scoped-enumeration.cpp
@@ -1210,7 +1227,9 @@ pass	declarations/alignment/on-typedef.cpp
 pass	declarations/alignment/operand-class-conversion-ambiguous.cpp
 pass	declarations/alignment/operand-class-conversion-not-constexpr.cpp
 pass	declarations/alignment/operand-class-converts.cpp
+pass	declarations/alignment/operand-class-explicit-conversion.cpp
 pass	declarations/alignment/operand-class-not-literal.cpp
+pass	declarations/alignment/operand-class-two-conversions-same-type.cpp
 pass	declarations/alignment/operand-floating.cpp
 EDG-ONLY	declarations/alignment/operand-scoped-enumeration.cpp
 pass	declarations/alignment/operand-unscoped-enumeration.cpp
@@ -1354,7 +1373,7 @@ pass	declarations/auto/lvalue-reference-to-xvalue.cpp
 pass	declarations/auto/lvalue-reference.cpp
 pass	declarations/auto/no-initializer.cpp
 pass	declarations/auto/nullptr.cpp
-unsupported	declarations/auto/overload-set-one-function.cpp
+pass	declarations/auto/overload-set-one-function.cpp
 MISSED-REJECT	declarations/auto/overload-set-template.cpp
 pass	declarations/auto/overloaded-function.cpp
 pass	declarations/auto/own-initializer.cpp
@@ -1363,6 +1382,7 @@ pass	declarations/auto/paren-multiple.cpp
 pass	declarations/auto/paren-single.cpp
 pass	declarations/auto/pointer-from-non-pointer.cpp
 pass	declarations/auto/pointer-from-null-pointer-constant.cpp
+pass	declarations/auto/pointer-placeholder-return-nullptr.cpp
 pass	declarations/auto/ref-const-xvalue.cpp
 pass	declarations/auto/several-declarators-conflict.cpp
 pass	declarations/auto/several-declarators-pointer-conflict.cpp
@@ -1521,7 +1541,7 @@ pass	declarations/declarators/reference-binds-same-object.cpp
 pass	declarations/declarators/reference-collapsing.cpp
 pass	declarations/declarators/reference-parameter-no-initializer.cpp
 pass	declarations/declarators/reference-requires-initializer.cpp
-run-unsupported	declarations/declarators/reference-to-function-and-element.cpp
+pass	declarations/declarators/reference-to-function-and-element.cpp
 pass	declarations/declarators/reference-to-reference.cpp
 pass	declarations/declarators/reference-to-void.cpp
 pass	declarations/declarators/star-binds-to-declarator.cpp
@@ -1917,7 +1937,7 @@ pass	declarations/initialization/references/bit-field-const-ref.cpp
 pass	declarations/initialization/references/bit-field-nonconst-ref.cpp
 pass	declarations/initialization/references/braced-function-noexcept.cpp
 pass	declarations/initialization/references/braced-function-overload-set.cpp
-unsupported	declarations/initialization/references/braced-function-reference.cpp
+pass	declarations/initialization/references/braced-function-reference.cpp
 pass	declarations/initialization/references/braced-list-array-binds-directly.cpp
 pass	declarations/initialization/references/braced-list-array-drops-const.cpp
 pass	declarations/initialization/references/braced-list-array-rvalue-ref-lvalue.cpp
@@ -1973,7 +1993,7 @@ pass	declarations/initialization/references/rvalue-ref-to-function.cpp
 pass	declarations/initialization/references/static-reference-to-temporary.cpp
 pass	declarations/initialization/references/unknown-bound-ref.cpp
 pass	declarations/initialization/static/accessor-across-units.cpp
-run-unsupported	declarations/initialization/static/across-units-class-member.cpp
+pass	declarations/initialization/static/across-units-class-member.cpp
 pass	declarations/initialization/static/across-units-order.cpp
 pass	declarations/initialization/static/before-main-observed.cpp
 pass	declarations/initialization/static/const-variable-in-initializer.cpp
@@ -2190,6 +2210,7 @@ pass	declarations/storage-linkage/extern-then-static.cpp
 pass	declarations/storage-linkage/extern-with-initializer.cpp
 pass	declarations/storage-linkage/external-default.cpp
 pass	declarations/storage-linkage/external-namespace-member.cpp
+pass	declarations/storage-linkage/function-pointer-other-unit.cpp
 pass	declarations/storage-linkage/function-then-static.cpp
 pass	declarations/storage-linkage/inline-different-bodies.cpp
 pass	declarations/storage-linkage/inline-function-static-local.cpp
@@ -2583,7 +2604,7 @@ pass	exceptions/throw/throwing-destructor-accepted.cpp
 pass	exceptions/throw/volatile-local-copied.cpp
 pass	exceptions/throw/xvalue-operand-moved.cpp
 pass	exceptions/unwinding/aggregate-init-throws-members-destroyed.cpp
-run-unsupported	exceptions/unwinding/array-element-throws-built-destroyed.cpp
+pass	exceptions/unwinding/array-element-throws-built-destroyed.cpp
 pass	exceptions/unwinding/base-built-before-member-throws.cpp
 pass	exceptions/unwinding/block-objects-end-before-handler.cpp
 pass	exceptions/unwinding/call-in-noexcept-no-warning.cpp
@@ -2769,8 +2790,9 @@ pass	expressions/casts/const-cast-reference.cpp
 pass	expressions/casts/const-cast-value.cpp
 pass	expressions/casts/const-cast-write-const-object-sanitizer.cpp
 pass	expressions/casts/const-cast-write-const-object.cpp
-run-unsupported	expressions/casts/decay-copy-auto.cpp
-unsupported	expressions/casts/decay-copy-type.cpp
+pass	expressions/casts/decay-copy-auto.cpp
+pass	expressions/casts/decay-copy-class.cpp
+pass	expressions/casts/decay-copy-type.cpp
 pass	expressions/casts/functional-braced-unknown-bound.cpp
 pass	expressions/casts/functional-cast-several-arguments.cpp
 pass	expressions/casts/functional-cast-several-scalar.cpp
@@ -2842,6 +2864,7 @@ pass	expressions/comparison/array-comparison-warns.cpp
 pass	expressions/comparison/array-comparison.cpp
 pass	expressions/comparison/array-relational-warns.cpp
 pass	expressions/comparison/base-and-member-pointers-constant.cpp
+pass	expressions/comparison/base-member-and-member-pointers-constant.cpp
 pass	expressions/comparison/base-subobject-pointers-constant.cpp
 pass	expressions/comparison/base-subobject-pointers-either.cpp
 pass	expressions/comparison/chained-class-bool-warns.cpp
@@ -2891,6 +2914,7 @@ EDG-ONLY	expressions/comparison/relational-nullptr-values.cpp
 pass	expressions/comparison/result-type.cpp
 pass	expressions/comparison/row-end-equals-next-row-run.cpp
 pass	expressions/comparison/row-end-equals-next-row.cpp
+pass	expressions/comparison/same-base-members-constant.cpp
 pass	expressions/comparison/scoped-enum-different.cpp
 pass	expressions/comparison/scoped-enum-integer.cpp
 pass	expressions/comparison/scoped-enum-order.cpp
@@ -2953,6 +2977,7 @@ pass	expressions/conditional/class-converts-to-decayed-array.cpp
 pass	expressions/conditional/class-converts-to-int.cpp
 pass	expressions/conditional/class-converts-to-reference.cpp
 pass	expressions/conditional/class-deleted-conversion-counts.cpp
+pass	expressions/conditional/class-derived-prvalue-against-base-xvalue.cpp
 pass	expressions/conditional/class-lvalue-prvalue-copy.cpp
 pass	expressions/conditional/class-one-way.cpp
 pass	expressions/conditional/class-private-conversion-counts.cpp
@@ -3077,6 +3102,7 @@ pass	expressions/lambdas/capturing-no-function-pointer-argument.cpp
 pass	expressions/lambdas/capturing-no-function-pointer.cpp
 pass	expressions/lambdas/capturing-not-default-constructible.cpp
 pass	expressions/lambdas/closure-alignment-unspecified.cpp
+pass	expressions/lambdas/closure-as-base-overload-set.cpp
 pass	expressions/lambdas/closure-copy-array-capture.cpp
 pass	expressions/lambdas/closure-copy-assign-deleted.cpp
 pass	expressions/lambdas/closure-copy-keeps-state.cpp
@@ -3101,11 +3127,13 @@ pass	expressions/lambdas/distinct-types-overload.cpp
 pass	expressions/lambdas/explicit-capture-order.cpp
 pass	expressions/lambdas/explicit-capture-unevaluated-member.cpp
 pass	expressions/lambdas/explicit-object-mutable.cpp
-run-unsupported	expressions/lambdas/explicit-object-recursion-run.cpp
-unsupported	expressions/lambdas/explicit-object-recursion.cpp
+pass	expressions/lambdas/explicit-object-recursion-constant.cpp
+pass	expressions/lambdas/explicit-object-recursion-run.cpp
+pass	expressions/lambdas/explicit-object-recursion.cpp
 pass	expressions/lambdas/function-pointer-constant.cpp
 pass	expressions/lambdas/function-pointer.cpp
-unsupported	expressions/lambdas/generic-function-pointer.cpp
+pass	expressions/lambdas/generic-function-pointer.cpp
+pass	expressions/lambdas/generic-pack.cpp
 pass	expressions/lambdas/generic.cpp
 pass	expressions/lambdas/immediately-invoked.cpp
 pass	expressions/lambdas/implicit-capture-order.cpp
@@ -3118,6 +3146,7 @@ pass	expressions/lambdas/init-capture.cpp
 pass	expressions/lambdas/member-use-without-this.cpp
 pass	expressions/lambdas/modify-through-reference-capture.cpp
 pass	expressions/lambdas/mutable.cpp
+pass	expressions/lambdas/named-capture-in-block-function-default-argument.cpp
 pass	expressions/lambdas/namespace-init-capture.cpp
 pass	expressions/lambdas/nested-capture-ok.cpp
 pass	expressions/lambdas/nested-capture.cpp
@@ -3132,6 +3161,8 @@ pass	expressions/lambdas/static-call-operator.cpp
 pass	expressions/lambdas/static-with-capture-default.cpp
 pass	expressions/lambdas/static-with-capture.cpp
 pass	expressions/lambdas/syntax-forms.cpp
+pass	expressions/lambdas/template-head-dependent-call.cpp
+pass	expressions/lambdas/template-head.cpp
 pass	expressions/lambdas/this-in-static-member.cpp
 pass	expressions/lambdas/this-outside-member.cpp
 pass	expressions/lambdas/unary-plus-function-pointer.cpp
@@ -3401,7 +3432,7 @@ pass	expressions/new-delete/null-result-non-throwing-placement.cpp
 pass	expressions/new-delete/null-result-nothrow-tag.cpp
 pass	expressions/new-delete/null-result-throwing-form-sanitizer.cpp
 run-unsupported	expressions/new-delete/parenthesized-type.cpp
-run-unsupported	expressions/new-delete/placement-argument-converts.cpp
+pass	expressions/new-delete/placement-argument-converts.cpp
 pass	expressions/new-delete/placement-arguments.cpp
 pass	expressions/new-delete/placement-array-no-overhead.cpp
 pass	expressions/new-delete/placement-form-undeclared.cpp
@@ -3444,7 +3475,7 @@ pass	expressions/postfix/call-explicit-constructor-braced.cpp
 pass	expressions/postfix/call-explicit-constructor.cpp
 pass	expressions/postfix/call-incomplete-parameter.cpp
 pass	expressions/postfix/call-incomplete-return.cpp
-run-unsupported	expressions/postfix/call-noexcept-function-through-plain-pointer.cpp
+pass	expressions/postfix/call-noexcept-function-through-plain-pointer.cpp
 pass	expressions/postfix/call-non-function.cpp
 pass	expressions/postfix/call-null-pointer-sanitizer.cpp
 pass	expressions/postfix/call-null-pointer.cpp
@@ -3455,6 +3486,7 @@ pass	expressions/postfix/call-through-pointer-array.cpp
 pass	expressions/postfix/call-through-pointer.cpp
 pass	expressions/postfix/call-too-many-arguments.cpp
 pass	expressions/postfix/call-wrong-function-type-sanitizer.cpp
+MISSED-REJECT	expressions/postfix/default-template-argument-incomplete-class.cpp
 pass	expressions/postfix/dot-on-pointer.cpp
 FALSE-REJECT	expressions/postfix/ellipsis-argument-conversions.cpp
 pass	expressions/postfix/ellipsis-argument-kinds.cpp
@@ -3951,6 +3983,7 @@ pass	foundations/conversions/uac-unsigned-of-signed-ilp32.cpp
 pass	foundations/conversions/uac-unsigned-of-signed-lp64.cpp
 pass	foundations/conversions/uac-unsigned-rank-not-lower.cpp
 pass	foundations/conversions/void-pointer-to-pointer.cpp
+pass	foundations/conversions/zero-to-null-pointer-type.cpp
 pass	foundations/evaluation-order/adjacent-bitfields-unsequenced.cpp
 pass	foundations/evaluation-order/argument-read-and-write.cpp
 pass	foundations/evaluation-order/arguments-before-body.cpp
@@ -4126,6 +4159,7 @@ pass	foundations/language-support/initializer-list-pointer-and-size.cpp
 run-unsupported	foundations/language-support/nothrow-tag-self-declared.cpp
 pass	foundations/language-support/ordering-complete-declaration.cpp
 pass	foundations/language-support/ordering-converting-constructor.cpp
+pass	foundations/language-support/ordering-declared-after-class.cpp
 pass	foundations/language-support/ordering-defaulted-needs-conversion.cpp
 pass	foundations/language-support/ordering-defaulted-needs-equal-zero.cpp
 pass	foundations/language-support/ordering-defaulted-not-equal-zero-only.cpp
@@ -4137,6 +4171,7 @@ pass	foundations/language-support/ordering-rewritten-needs-relational-zero.cpp
 pass	foundations/language-support/ordering-strong-only-builtin-runtime.cpp
 EDG-ONLY	foundations/language-support/ordering-strong-only-builtin.cpp
 EDG-ONLY	foundations/language-support/ordering-strong-only-defaulted.cpp
+pass	foundations/language-support/ordering-weak-defaulted-needs-strong.cpp
 pass	foundations/language-support/placement-array-needs-array-form.cpp
 pass	foundations/language-support/placement-forms-self-declared.cpp
 pass	foundations/language-support/placement-new-form-only.cpp
@@ -4319,6 +4354,7 @@ pass	foundations/names/qualified-directive-in-inline-namespace.cpp
 pass	foundations/names/qualified-directive-stops.cpp
 pass	foundations/names/qualified-directive-transitive.cpp
 pass	foundations/names/qualified-directive-type-and-variable.cpp
+pass	foundations/names/qualified-enum-underlying-type-lookup.cpp
 pass	foundations/names/qualified-follows-directive.cpp
 pass	foundations/names/qualified-global-directive.cpp
 pass	foundations/names/qualified-global-not-named-namespace.cpp
@@ -4379,7 +4415,7 @@ pass	foundations/names/use-before-declaration.cpp
 pass	foundations/names/visible-from-declaration.cpp
 pass	foundations/names/visible-in-own-initializer.cpp
 pass	foundations/objects/address-stable.cpp
-run-unsupported	foundations/objects/array-elements-order.cpp
+pass	foundations/objects/array-elements-order.cpp
 pass	foundations/objects/block-reverse-order.cpp
 pass	foundations/objects/constant-evaluation-same-order.cpp
 pass	foundations/objects/construction-order.cpp
@@ -4434,7 +4470,7 @@ pass	foundations/odr/constant-read-through-operators.cpp
 pass	foundations/odr/constant-reads-in-lambda.cpp
 pass	foundations/odr/constant-reference-through-conditional-is-use.cpp
 pass	foundations/odr/constant-value-read-not-use.cpp
-FALSE-REJECT	foundations/odr/constexpr-member-redeclared-outside.cpp
+pass	foundations/odr/constexpr-member-redeclared-outside.cpp
 pass	foundations/odr/constructor-uses-allocation-functions.cpp
 pass	foundations/odr/constructor-uses-member-constructor.cpp
 pass	foundations/odr/constructor-uses-member-destructor.cpp
@@ -4456,7 +4492,7 @@ pass	foundations/odr/explicit-instantiation-declaration-not-definition.cpp
 pass	foundations/odr/explicit-specialization-declared-in-header.cpp
 pass	foundations/odr/explicit-specialization-in-one-unit.cpp
 pass	foundations/odr/explicit-specialization-with-initializer-twice.cpp
-FALSE-REJECT	foundations/odr/explicit-specialization-without-initializer.cpp
+pass	foundations/odr/explicit-specialization-without-initializer.cpp
 pass	foundations/odr/explicit-variable-specialization-in-two-units.cpp
 pass	foundations/odr/extern-initializer-is-definition.cpp
 pass	foundations/odr/function-address-is-use.cpp
@@ -4824,7 +4860,7 @@ EDG-ONLY	overloading/conversion-sequences/chosen-explicit-copy-list.cpp
 pass	overloading/conversion-sequences/chosen-list-ambiguous.cpp
 pass	overloading/conversion-sequences/chosen-narrowing.cpp
 pass	overloading/conversion-sequences/chosen-private-base.cpp
-unsupported	overloading/conversion-sequences/conversion-choice-class-value.cpp
+pass	overloading/conversion-sequences/conversion-choice-class-value.cpp
 unsupported	overloading/conversion-sequences/conversion-choice-equal-rank-extended-target.cpp
 unsupported	overloading/conversion-sequences/conversion-choice-equal-rank-source.cpp
 pass	overloading/conversion-sequences/conversion-choice-nearest-source.cpp
@@ -4937,21 +4973,22 @@ EDG-ONLY	overloading/overload-resolution/address-more-constrained.cpp
 pass	overloading/overload-resolution/address-more-specialized.cpp
 pass	overloading/overload-resolution/address-no-conversion.cpp
 MISSED-REJECT	overloading/overload-resolution/address-no-target-auto-template-parameter.cpp
-MISSED-REJECT	overloading/overload-resolution/address-no-target-cast-void.cpp
+pass	overloading/overload-resolution/address-no-target-cast-void.cpp
 pass	overloading/overload-resolution/address-no-target-constraints-different-parameters.cpp
 EDG-ONLY	overloading/overload-resolution/address-no-target-constraints.cpp
 pass	overloading/overload-resolution/address-no-target-explicit-arguments.cpp
-MISSED-REJECT	overloading/overload-resolution/address-no-target-explicit-partial.cpp
-MISSED-REJECT	overloading/overload-resolution/address-no-target-expression-statement.cpp
+pass	overloading/overload-resolution/address-no-target-explicit-partial.cpp
+pass	overloading/overload-resolution/address-no-target-expression-statement.cpp
 MISSED-REJECT	overloading/overload-resolution/address-no-target-init-capture.cpp
 EDG-ONLY	overloading/overload-resolution/address-no-target-more-constrained.cpp
 pass	overloading/overload-resolution/address-no-target-return.cpp
-unsupported	overloading/overload-resolution/address-no-target-single-positions.cpp
+pass	overloading/overload-resolution/address-no-target-single-positions.cpp
 pass	overloading/overload-resolution/address-no-target-single.cpp
 pass	overloading/overload-resolution/address-no-target-template.cpp
 pass	overloading/overload-resolution/address-noexcept-target.cpp
 pass	overloading/overload-resolution/address-of-deleted-chosen.cpp
 pass	overloading/overload-resolution/address-plain-over-template.cpp
+pass	overloading/overload-resolution/address-static-member-template.cpp
 pass	overloading/overload-resolution/address-targets.cpp
 pass	overloading/overload-resolution/best-beats-each.cpp
 pass	overloading/overload-resolution/best-no-single-winner.cpp
@@ -5022,12 +5059,12 @@ pass	overloading/overload-resolution/inherited-copy-shape-excluded.cpp
 pass	overloading/overload-resolution/inherited-copy-shape-two-arguments.cpp
 pass	overloading/overload-resolution/init-constructor-against-conversion.cpp
 pass	overloading/overload-resolution/init-constructor-conversion-tie.cpp
-unsupported	overloading/overload-resolution/init-conversion-to-derived.cpp
+pass	overloading/overload-resolution/init-conversion-to-derived.cpp
 pass	overloading/overload-resolution/init-copy-constructor-standard-only.cpp
 pass	overloading/overload-resolution/init-copy-explicit-conversion.cpp
 pass	overloading/overload-resolution/init-copy-list-explicit-conversion.cpp
 unsupported	overloading/overload-resolution/init-direct-explicit-conversion.cpp
-unsupported	overloading/overload-resolution/init-qualified-result.cpp
+pass	overloading/overload-resolution/init-qualified-result.cpp
 pass	overloading/overload-resolution/member-call-object.cpp
 pass	overloading/overload-resolution/no-object-nonstatic-chosen.cpp
 pass	overloading/overload-resolution/no-object-ref-qualified-member.cpp
@@ -5045,8 +5082,8 @@ pass	overloading/overload-resolution/overload-set-argument.cpp
 pass	overloading/overload-resolution/reference-conversion-kind.cpp
 pass	overloading/overload-resolution/reference-conversion-not-compatible.cpp
 pass	overloading/overload-resolution/reference-explicit-copy.cpp
-run-unsupported	overloading/overload-resolution/reference-explicit-direct.cpp
-unsupported	overloading/overload-resolution/reference-function-both-kinds.cpp
+pass	overloading/overload-resolution/reference-explicit-direct.cpp
+pass	overloading/overload-resolution/reference-function-both-kinds.cpp
 pass	overloading/overload-resolution/rewritten-inner-no-rewrite.cpp
 pass	overloading/overload-resolution/rewritten-inner-reversed-only.cpp
 pass	overloading/overload-resolution/rewritten-not-equal-result.cpp
@@ -5076,15 +5113,15 @@ EDG-ONLY	overloading/overload-resolution/tie-conversion-result-noexcept.cpp
 EDG-ONLY	overloading/overload-resolution/tie-conversion-result-templates.cpp
 pass	overloading/overload-resolution/tie-conversion-result.cpp
 pass	overloading/overload-resolution/tie-derived-over-inherited.cpp
-unsupported	overloading/overload-resolution/tie-function-reference-kind.cpp
+pass	overloading/overload-resolution/tie-function-reference-kind.cpp
 pass	overloading/overload-resolution/tie-more-constrained.cpp
 pass	overloading/overload-resolution/tie-more-specialized-constraints.cpp
 pass	overloading/overload-resolution/tie-more-specialized.cpp
 pass	overloading/overload-resolution/tie-plain-over-template.cpp
-unsupported	overloading/overload-resolution/tie-reference-kind-before-constraints.cpp
-unsupported	overloading/overload-resolution/tie-reference-kind-before-more-specialized.cpp
-unsupported	overloading/overload-resolution/tie-reference-kind-before-template-lvalue.cpp
-unsupported	overloading/overload-resolution/tie-reference-kind-before-template.cpp
+pass	overloading/overload-resolution/tie-reference-kind-before-constraints.cpp
+EDG-ONLY	overloading/overload-resolution/tie-reference-kind-before-more-specialized.cpp
+EDG-ONLY	overloading/overload-resolution/tie-reference-kind-before-template-lvalue.cpp
+EDG-ONLY	overloading/overload-resolution/tie-reference-kind-before-template.cpp
 pass	overloading/overload-resolution/tie-swapped-same-function.cpp
 pass	overloading/overload-resolution/tie-template-before-inherited.cpp
 pass	overloading/overload-resolution/tie-template-before-rewritten.cpp
@@ -5136,6 +5173,14 @@ pass-partial	programs/W16/evaluator.cpp
 pass-partial	programs/W16/textstats.cpp
 pass-partial	programs/W17/hashmap.cpp
 pass	programs/W17/units/main.cpp
+pass	programs/W18/callbacks/main.cpp
+pass	programs/W18/comparators.cpp
+EDG-ONLY	programs/W18/container.cpp
+pass	programs/W18/visitor.cpp
+pass	programs/W19/helper.cpp
+pass-partial	programs/W19/matrix.cpp
+pass	programs/W19/table.cpp
+pass	programs/W19/typelist.cpp
 pass	programs/W2/clamp_sort.cpp
 pass	programs/W2/order.cpp
 pass	programs/W2/three_way.cpp
@@ -5182,6 +5227,10 @@ pass	programs/roadmap/r5-prelude.cpp
 pass	programs/roadmap/r6-inventory.cpp
 pass-partial	programs/roadmap/r6-scheduler.cpp
 pass-partial	programs/roadmap/r6-text.cpp
+pass	programs/roadmap/r7-grid.cpp
+pass	programs/roadmap/r7-jobs.cpp
+pass-partial	programs/roadmap/r7-lambdas.cpp
+EDG-ONLY	programs/roadmap/r7-registry/main.cpp
 pass	statements/blocks/ambiguous-declaration.cpp
 pass	statements/blocks/block-hides-outer.cpp
 pass	statements/blocks/block-scope.cpp
@@ -5247,6 +5296,7 @@ pass	statements/if/consteval-local-reference.cpp
 pass	statements/if/consteval-no-condition.cpp
 pass	statements/if/consteval-plain-function.cpp
 pass	statements/if/consteval-requires-braces.cpp
+pass	statements/if/consteval-scoped-enum-initializer.cpp
 pass	statements/if/consteval-static-fallback.cpp
 pass	statements/if/constexpr-case-into.cpp
 pass	statements/if/constexpr-condition-explicit-bool.cpp
@@ -5365,7 +5415,7 @@ pass	statements/loops/while-condition-redeclared.cpp
 pass	statements/range-for/array.cpp
 pass	statements/range-for/begin-end-not-adl.cpp
 MISSED-REJECT	statements/range-for/braced-list-mixed-types.cpp
-run-unsupported	statements/range-for/braced-list.cpp
+pass	statements/range-for/braced-list.cpp
 EDG-ONLY	statements/range-for/callable-data-members.cpp
 EDG-ONLY	statements/range-for/data-member-begin-counts.cpp
 EDG-ONLY	statements/range-for/data-member-begin-not-callable-class.cpp
@@ -5479,6 +5529,7 @@ pass	templates/arguments/greater-ends-list.cpp
 pass	templates/arguments/injected-name-as-template.cpp
 pass	templates/arguments/injected-name-specialization.cpp
 pass	templates/arguments/injected-name-two-bases-arguments.cpp
+pass	templates/arguments/injected-name-two-bases-template-argument.cpp
 pass	templates/arguments/injected-name-two-bases-template.cpp
 pass	templates/arguments/injected-name-two-bases.cpp
 pass	templates/arguments/injected-name.cpp
@@ -5606,6 +5657,7 @@ pass	templates/class-template-deduction/guide-wrong-scope.cpp
 pass	templates/class-template-deduction/inherited-constructors.cpp
 pass	templates/class-template-deduction/inherited-copy-candidate-user-guide.cpp
 pass	templates/class-template-deduction/inherited-copy-candidate.cpp
+pass	templates/class-template-deduction/inherited-guide-unused-parameter-default.cpp
 pass	templates/class-template-deduction/inherited-not-deducible.cpp
 pass	templates/class-template-deduction/inherited-user-guide.cpp
 pass	templates/class-template-deduction/inherited-without-using.cpp
@@ -5759,6 +5811,7 @@ pass	templates/concepts/type-constraint-default.cpp
 pass	templates/concepts/type-constraint-missing-arguments.cpp
 pass	templates/concepts/type-constraint-not-type-concept.cpp
 EDG-ONLY	templates/concepts/type-constraint-pack-one-atom.cpp
+EDG-ONLY	templates/concepts/type-constraint-pack-same-concept-two-declarations.cpp
 pass	templates/concepts/type-constraint-pack.cpp
 pass	templates/concepts/type-constraint-qualified.cpp
 pass	templates/concepts/type-constraint-variadic-concept.cpp
@@ -5879,11 +5932,14 @@ pass	templates/constraints/spellings-same.cpp
 pass	templates/constraints/substitution-failure.cpp
 pass	templates/constraints/subsumes-conjunction.cpp
 pass	templates/constraints/subsumes-normal-forms.cpp
+pass	templates/constraints/template-id-in-called-member-body.cpp
+pass	templates/constraints/template-id-in-uncalled-member-body.cpp
 pass	templates/constraints/template-template-argument-constraint-use.cpp
 pass	templates/constraints/template-template-constrained.cpp
 EDG-ONLY	templates/constraints/template-template-more-constrained.cpp
 EDG-ONLY	templates/constraints/template-template-parameter-constraint-alias.cpp
 EDG-ONLY	templates/constraints/template-template-parameter-constraint-use.cpp
+pass	templates/constraints/template-template-parameter-own-constraint-dependent.cpp
 pass	templates/constraints/unconstrained.cpp
 pass	templates/constraints/unsatisfied-address.cpp
 pass	templates/constraints/unsatisfied-call.cpp
@@ -6039,6 +6095,8 @@ pass	templates/deduction/combine-conflict.cpp
 pass	templates/deduction/combine-defaults.cpp
 pass	templates/deduction/combine-leading-pack-empty.cpp
 pass	templates/deduction/combine-missing.cpp
+pass	templates/deduction/constraint-failure-in-default-template-argument.cpp
+pass	templates/deduction/constraint-failure-in-return-type.cpp
 pass	templates/deduction/context-address-mismatch.cpp
 pass	templates/deduction/context-address.cpp
 pass	templates/deduction/context-conversion-differences.cpp
@@ -6066,8 +6124,8 @@ pass	templates/deduction/explicit-fixed-not-deduced.cpp
 pass	templates/deduction/explicit-fixed-parameter-converts.cpp
 pass	templates/deduction/explicit-invalid-removes.cpp
 pass	templates/deduction/explicit-invalid-template-template.cpp
-unsupported	templates/deduction/explicit-leading.cpp
-unsupported	templates/deduction/explicit-pack-then-deduced.cpp
+pass	templates/deduction/explicit-leading.cpp
+pass	templates/deduction/explicit-pack-then-deduced.cpp
 pass	templates/deduction/forwarding-class-parameter-not.cpp
 pass	templates/deduction/forwarding-const-not.cpp
 pass	templates/deduction/forwarding-nested-not.cpp
@@ -6376,6 +6434,8 @@ MISSED-REJECT	templates/instantiation/local-class-exception-specification.cpp
 pass	templates/instantiation/local-class-member-initializer.cpp
 pass	templates/instantiation/local-class-member.cpp
 pass	templates/instantiation/local-class-requires-clause-checked-at-use.cpp
+pass	templates/instantiation/local-class-requires-clause-substitution-failure-call.cpp
+EDG-ONLY	templates/instantiation/local-class-requires-clause-substitution-failure.cpp
 EDG-ONLY	templates/instantiation/local-class-requires-clause-waits.cpp
 run-unsupported	templates/instantiation/local-entities-per-specialization.cpp
 pass	templates/instantiation/local-entities-thread-local-and-nested-lambda.cpp
@@ -6397,6 +6457,7 @@ pass	templates/instantiation/variable-template-used.cpp
 MISSED-REJECT	templates/instantiation/virtual-object.cpp
 pass	templates/instantiation/virtual-point-after-class.cpp
 pass	templates/instantiation/virtual-sizeof.cpp
+pass	templates/ordering/address-explicit-arguments-no-target.cpp
 pass	templates/ordering/address-function-type.cpp
 pass	templates/ordering/address-reference-against-value.cpp
 pass	templates/ordering/address-reference-kinds.cpp
@@ -6425,6 +6486,7 @@ EDG-ONLY	templates/ordering/member-object-rvalue.cpp
 pass	templates/ordering/member-object.cpp
 pass	templates/ordering/member-objects-lvalue-and-none.cpp
 pass	templates/ordering/member-objects-rvalue-and-none.cpp
+pass	templates/ordering/member-using-base-against-derived.cpp
 pass	templates/ordering/more-qualified-reference.cpp
 pass	templates/ordering/more-specialized.cpp
 pass	templates/ordering/neither.cpp
@@ -6484,7 +6546,7 @@ pass	templates/packs/forwarding-cast-explicit-argument.cpp
 pass	templates/packs/forwarding-cast.cpp
 pass	templates/packs/forwarding-const-bit-field.cpp
 pass	templates/packs/forwarding-pack.cpp
-unsupported	templates/packs/forwarding-placeholder-pack.cpp
+pass	templates/packs/forwarding-placeholder-pack.cpp
 pass	templates/packs/forwarding-prvalue-moved.cpp
 pass	templates/packs/function-pack-array-and-unnamed.cpp
 pass	templates/packs/function-pack-default-placeholder.cpp

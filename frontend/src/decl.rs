@@ -550,12 +550,27 @@ impl P {
     /// one of its conversion functions gives such a type, a `constexpr`
     /// one. Returns the reason when the class does not meet this.
     pub fn int_class_operand(&mut self, e: &Expr) -> Option<String> {
+        self.int_class_convert(e).err()
+    }
+
+    /// BF-1, ALN-8: as `int_class_operand`, with the operand converted to
+    /// the one target type when the front end can form the conversion.
+    pub fn int_class_convert(&mut self, e: &Expr) -> Result<Option<Expr>, String> {
+        let r = self.int_class_convert0(e);
+        match r {
+            Some(Err(w)) => Err(w),
+            Some(Ok(x)) => Ok(x),
+            None => Ok(None),
+        }
+    }
+
+    fn int_class_convert0(&mut self, e: &Expr) -> Option<Result<Option<Expr>, String>> {
         let Ty::Class(c) = nonref(&e.ty).t else { return None };
         if self.in_template() || !self.class_ok(c) {
             return None;
         }
         if self.literal_type(&QTy::new(Ty::Class(c))) == Some(false) {
-            return Some(format!("the class '{}' is not a literal type", self.classes[c].name));
+            return Some(Err(format!("the class '{}' is not a literal type", self.classes[c].name)));
         }
         let mut fs = Vec::new();
         self.conv_fns(c, 0, &mut fs);
@@ -573,17 +588,46 @@ impl P {
                 ints.push(d);
             }
         }
-        match ints.len() {
-            0 => Some(format!("the class '{}' has no conversion function to an integral type", self.classes[c].name)),
+        // BF-1, ALN-8: several functions can give the one target type.
+        let mut targets: Vec<QTy> = Vec::new();
+        for &d in &ints {
+            let t = nonref(&self.func(d).unwrap().fty.ret).unqual();
+            if !targets.contains(&t) {
+                targets.push(t);
+            }
+        }
+        match targets.len() {
+            0 => Some(Err(format!("the class '{}' has no conversion function to an integral type", self.classes[c].name))),
             1 => {
-                let f = self.func(ints[0]).unwrap();
+                // The function that the conversion selects is constexpr.
+                let mark = self.d.list.len();
+                let x = self.user_conv(e, &targets[0], e.line);
+                if self.d.list.len() != mark {
+                    self.d.list.truncate(mark);
+                    return None;
+                }
+                let x = x?;
+                let mut sel = None;
+                crate::ast::walk_expr(&x, &mut |y| {
+                    if let EK::Call(_, _, Some(f)) = &y.k {
+                        if ints.contains(f) && sel.is_none() {
+                            sel = Some(*f);
+                        }
+                    }
+                });
+                let sel = match sel {
+                    Some(f) => f,
+                    None if ints.len() == 1 => ints[0],
+                    None => return None,
+                };
+                let f = self.func(sel).unwrap();
                 if f.constexpr || f.consteval {
-                    None
+                    Some(Ok(Some(x)))
                 } else {
-                    Some(format!("the conversion function of '{}' is not constexpr", self.classes[c].name))
+                    Some(Err(format!("the conversion function of '{}' is not constexpr", self.classes[c].name)))
                 }
             }
-            _ => Some(format!("the class '{}' has more than one conversion function to an integral type", self.classes[c].name)),
+            _ => Some(Err(format!("the class '{}' has conversion functions to more than one integral type", self.classes[c].name))),
         }
     }
 
@@ -605,10 +649,14 @@ impl P {
                     } else if let Ok(e) = self.parse_assignment() {
                         // ALN-8: a class operand converts to an integer by
                         // its conversion function.
-                        if let Some(why) = self.int_class_operand(&e) {
-                            self.error(line, "ALN-8", format!("the operand of alignas does not convert to an integral type: {}", why));
-                            return Ok(Some(0));
-                        }
+                        let e = match self.int_class_convert(&e) {
+                            Err(why) => {
+                                self.error(line, "ALN-8", format!("the operand of alignas does not convert to an integral type: {}", why));
+                                return Ok(Some(0));
+                            }
+                            Ok(Some(x)) => x,
+                            Ok(None) => e,
+                        };
                         let e = if matches!(nonref(&e.ty).t, Ty::Class(_)) && !self.in_template() {
                             let mark = self.d.list.len();
                             match self.user_conv(&e, &QTy::new(Ty::size_t()), line) {
@@ -948,6 +996,11 @@ impl P {
                         break;
                     }
                     self.pos += 1;
+                    if self.at("decltype") {
+                        // DEP-22: a nested name can start with a decltype
+                        // specifier, which the decltype branch reads.
+                        continue;
+                    }
                     if self.tok().kind == TK::Ident && !is_keyword(&self.tok().text) && !self.at_k(1, "::") && !(self.at_k(1, "<") && self.at_k(self.skip_angle_at(1), "::")) {
                         // DEP-21, DEP-29: the name after `typename` is a
                         // qualified name.
@@ -1767,6 +1820,8 @@ impl P {
         self.in_unevaluated -= 1;
         let e = e?;
         self.expect(")")?;
+        // DED-2: a template-id that names one specialization.
+        let e = if matches!(e.k, EK::TemplId(None, ..)) { { let l = e.line; self.resolve_templ_id(e, l) } } else { e };
         self.check_unevaluated_dtor(&e, true);
         if let Some((fs, addr)) = Self::overload_set_of(&e) {
             if !self.in_template() && fs.iter().all(|&f| self.func(f).is_some_and(|f| !f.constrained && f.class.is_none_or(|c| !self.class_uncertain(c)))) {
@@ -2284,7 +2339,7 @@ impl P {
         if self.eat("operator") {
             let op = self.parse_operator_name(d)?;
             d.name = Some(format!("operator{}", op));
-            if self.at("<") && d.kind != NameKind::Conversion {
+            if self.at("<") && d.kind != NameKind::Conversion && !self.member_op_name {
                 self.skip_template_args()?;
                 d.template_args = true;
             }

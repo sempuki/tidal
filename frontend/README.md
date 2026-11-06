@@ -68,8 +68,11 @@ target/release/tidal-fe run FILE [FILE...] [--m32]
 ```
 
 `run` checks each file as a translation unit of its own, links the units
-together, and runs the program on the interpreter (decision 0048). It
-prints one line:
+together, and runs the program on the interpreter (decision 0048). The
+members of a closure type never link, since each lambda has a type of
+its own. A call through a pointer to a function of another unit runs
+that unit's function when its parameters and result have scalar types
+(LNK-2). `run` prints one line:
 
 ```
 result: 0
@@ -337,17 +340,38 @@ placeholder pattern, such as `auto*`, matches an argument whose type has
 that form (DED-12).
 
 Partial ordering in a call gives each member template an object
-parameter (ORD-6), but for two members only when both belong to one
-class (G147 in report 21). For the whole function types of ORD-9, a
-`T&&` in one type takes an lvalue reference `X&` of the other as
-`T = X&` (G146). A requires clause of a member of a local class in a
-specialization is parsed with its errors held back, and a clause with
-an error stays unknown until a use needs it (INST-12, G149).
+parameter (ORD-6). For two members, the object parameters name the
+more derived of the two classes, so a member that a using declaration
+brings in from a base counts as a member of the derived class. For the
+whole function types of ORD-9, a `T&&` in one type takes an lvalue
+reference `X&` of the other as `T = X&` (G146). A requires clause of a
+member of a local class in a specialization is parsed with its errors
+held back. A clause with an error is a constraint that is not
+satisfied (INST-12).
 
-A lambda with a placeholder parameter is a generic lambda (LAM-15). Its
-body is parsed as a pattern, so a check that needs the parameter types
-waits for a call (SA-5). The call operator is not instantiated, so a call
-of a generic lambda stays unknown.
+A member function with an explicit object parameter of a deduced type
+deduces it from the object of the call, as the first argument (CLS-13).
+
+A lambda with a placeholder parameter or a template head is a generic
+lambda (LAM-15). Its body is parsed as a pattern, so a check that needs
+the parameter types waits for a call (SA-5). A call deduces the
+template arguments, also a trailing pack and explicit type arguments,
+and parses the lambda again with them bound to make the call operator.
+A lambda with an explicit object parameter gets the call operator's
+declaration before its body is parsed, so the body can call itself
+(LAM-16). A lambda with a template head and a requires clause after its
+parameters stays unknown. A generic lambda with no captures converts to
+a pointer to function when the specialization for the target's
+parameters has the target's type (LAM-10).
+
+An error in the body of such a call operator is held, and the front end
+reports it only when a call selects that operator. So a generic lambda
+in an overload set does not make the program invalid for a call that
+another candidate wins (G152 in report 22).
+
+A lambda that the look-ahead of class template argument deduction
+parses keeps its closure type when the initializer is parsed again, so
+the deduced class names that type (CTAD-1).
 
 ## Bytes
 
@@ -357,7 +381,10 @@ object are computed from its value when a program reads them through
 the scalar that holds it. Integers are little-endian two's complement
 (STG-26), and `float` and `double` use their IEEE formats (MUL-20).
 Padding bytes, and the bytes of a scalar with no value, are kept apart
-from the values. A pointer's bytes are its address. The interpreter
+from the values. A pointer's bytes are its address. The bytes of a
+pointer to member hold a number that the interpreter gives each value
+it encodes, and 0 for the null value, so a copy of the bytes gives the
+same pointer (STG-12). The interpreter
 gives each object an address when a program first needs one, aligned
 for its type. The interpreter computes bytes only for classes without
 bases and bit-fields, and not for `long double`.

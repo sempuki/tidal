@@ -154,7 +154,7 @@ impl P {
                         // OPR-7: a call of a class object calls its operator().
                         if !self.in_template() && !self.class_uncertain(c) && !self.scopes[self.classes[c].scope].uncertain && !self.any_conv(c, 0) {
                             if let Some(ids) = self.lookup_member(c, "operator()") {
-                                if ids.iter().all(|&i| self.func(i).is_some_and(|f| !f.template) || self.generic_lambdas.contains_key(&i)) {
+                                if ids.iter().all(|&i| self.func(i).is_some_and(|f| !f.template) || self.generic_lambdas.contains_key(&i) || self.is_func_templ(i)) {
                                     return self.call_overloads(Some(callee), ids, args, line);
                                 }
                             }
@@ -440,6 +440,21 @@ impl P {
         }
     }
 
+    /// OVL-20: an overload set, or a function template, used where no
+    /// target type chooses a function. True after the error.
+    pub fn overload_set_no_target(&mut self, e: &Expr, line: u32) -> bool {
+        if self.in_template() {
+            return false;
+        }
+        let Some((fs, _)) = Self::overload_set_of(e) else { return false };
+        let plain = fs.iter().all(|&f| self.func(f).is_some_and(|g| !g.constrained && g.class.is_none_or(|c| !self.class_uncertain(c))));
+        if plain && (fs.len() > 1 || fs.iter().any(|&f| self.is_func_templ(f))) {
+            self.error(line, "OVL-20", format!("the overload set '{}' is used where no target type chooses a function", self.decls[fs[0]].name));
+            return true;
+        }
+        false
+    }
+
     pub fn call_overloads_pub(&mut self, obj: Option<Expr>, cands: Vec<DeclId>, args: Vec<Expr>, line: u32) -> Expr {
         self.call_overloads(obj, cands, args, line)
     }
@@ -497,7 +512,11 @@ impl P {
         let explicit = self.call_explicit.take();
         if !self.in_template() && (explicit.is_some() || cands.iter().any(|&c| self.func(c).is_some_and(|f| f.template))) {
             let name = cands.first().map(|&c| self.decls[c].name.clone()).unwrap_or_default();
-            match self.templ_candidates(&cands, explicit.as_ref(), &args, line) {
+            let obj_x = obj.as_ref().map(|o| match (&o.k, &o.ty.t) {
+                (EK::This, Ty::Ptr(p)) => Expr::new(EK::Unary(UOp::Deref, Box::new(o.clone())), (**p).clone(), Cat::L, line),
+                _ => o.clone(),
+            });
+            match self.templ_candidates(obj_x.as_ref(), &cands, explicit.as_ref(), &args, line) {
                 Ok(v) => cands = v,
                 Err(true) => return Expr::unknown(line, "call needing template deduction or unknown arguments"),
                 Err(false) => {
@@ -550,6 +569,7 @@ impl P {
             }
         }
         let fid = if let Some((f, _)) = &picked {
+            self.selected(*f);
             *f
         } else {
         let mut viable: Vec<(DeclId, Vec<u8>)> = Vec::new();
@@ -604,6 +624,13 @@ impl P {
             } else {
                 self.error(line, "OVL-35", "no viable function: an argument cannot be converted to the parameter type");
             }
+            return Expr::unknown(line, "bad call");
+        }
+        if self.ics_no_viable && !cands.is_empty() && cands.iter().all(|&c| self.fn_sat_cache.get(&c) == Some(&crate::cons::Sat::No)) {
+            // CNS-12, OVL-24: the constraints of each candidate are not
+            // satisfied.
+            self.ics_no_viable = false;
+            self.error(line, "CNS-12", format!("no viable function for the call of '{}': its constraints are not satisfied", self.decls[cands[0]].name));
             return Expr::unknown(line, "bad call");
         }
         if std::mem::take(&mut self.ics_no_viable) {
@@ -977,6 +1004,10 @@ impl P {
             }
             self.d.list.truncate(mark);
         }
+        if target.t == Ty::Void && cat == Cat::PR && self.overload_set_no_target(&e, line) {
+            // OVL-20: a cast to void gives no target type.
+            return Expr::unknown(line, "bad cast");
+        }
         if e.ty.is_unknown() || matches!(e.k, EK::Overloads(_) | EK::BoundMember(..)) {
             return Expr::new(EK::Unknown("cast of unknown operand".into()), target, cat, line);
         }
@@ -1033,9 +1064,30 @@ impl P {
             if et.t == target.t || matches!((&et.t, &target.t), (Ty::Class(a), Ty::Class(b)) if self.is_base_of(*b, *a) || self.is_base_of(*a, *b)) {
                 return Expr::new(EK::Conv(Conv::Bind, Box::new(e)), target, cat, line);
             }
+            if kind == CastKind::Static && matches!(et.t, Ty::Class(_)) && !self.in_template() {
+                // CAST-1, ICS-45: the operand of a cast is direct-initialized,
+                // and the reference binds the result of a conversion
+                // function.
+                let rt = QTy::new(if cat == Cat::L { Ty::LRef(Box::new(target.clone())) } else { Ty::RRef(Box::new(target.clone())) });
+                let saved = std::mem::replace(&mut self.direct_conv, true);
+                let mark = self.d.list.len();
+                let x = self.user_conv(&e, &rt, line);
+                self.direct_conv = saved;
+                match x {
+                    Some(mut x) if self.d.list.len() == mark && !matches!(x.k, EK::Unknown(_)) => {
+                        x.ty = target;
+                        x.cat = cat;
+                        return x;
+                    }
+                    _ => self.d.list.truncate(mark),
+                }
+            }
             return Expr::new(EK::Unknown("reference cast".into()), target, cat, line);
         }
         if target.t == Ty::Void {
+            if self.overload_set_no_target(&e, line) {
+                return Expr::unknown(line, "bad cast");
+            }
             return self.conv(e, Conv::ToVoid, target);
         }
         if let Ty::Class(_) = target.t {
@@ -1383,7 +1435,14 @@ impl P {
                     return Expr::unknown(line, "bad reference init");
                 }
             }
-            return self.bind_ref(one, ty, line, "INIT-7");
+            // ICS-45: a direct initialization can use an explicit
+            // conversion function.
+            let direct = matches!(form, InitForm::Paren(_) | InitForm::DirectList);
+            let dc = direct || self.direct_conv;
+            let saved = std::mem::replace(&mut self.direct_conv, dc);
+            let x = self.bind_ref(one, ty, line, "INIT-7");
+            self.direct_conv = saved;
+            return x;
         }
         match &ty.t {
             Ty::Array(el, n) => {
@@ -1459,7 +1518,9 @@ impl P {
                 let mut out = Vec::new();
                 for x in v {
                     let xl = x.line;
-                    let f = if matches!(x.k, EK::InitList(_)) { InitForm::CopyList } else { sub_form };
+                    // LIST rules: an element that is not a list
+                    // copy-initializes an element of class type.
+                    let f = if matches!(x.k, EK::InitList(_)) { InitForm::CopyList } else if matches!(el.t, Ty::Class(c) if !self.classes[c].ctors.is_empty() && !matches!(nonref(&x.ty).t, Ty::Class(_))) { InitForm::Copy } else { sub_form };
                     out.push(self.convert_init(x, &el, f, xl));
                 }
                 Expr::new(EK::InitList(out), ty.clone(), Cat::PR, line)
@@ -1607,6 +1668,20 @@ impl P {
                                         let call = Expr::new(EK::Call(Box::new(e.clone()), vec![], Some(fid)), ty.unqual(), Cat::PR, line);
                                         return call;
                                     }
+                                    // OVL-14: a reference to the class, or a
+                                    // derived class: the object copies the
+                                    // result, or the base part of it.
+                                    if let Some(f) = self.func(fid).cloned().filter(|f| f.kind == FnKind::Conversion && !f.deleted && matches!(nonref(&f.fty.ret).t, Ty::Class(r) if r == c || self.is_base_of(c, r))) {
+                                        if self.in_unevaluated == 0 {
+                                            self.use_fn(fid);
+                                        }
+                                        let (t, cat) = ret_cat(&f.fty.ret);
+                                        let call = Expr::new(EK::Call(Box::new(e.clone()), vec![], Some(fid)), t.clone(), cat, line);
+                                        if cat == Cat::PR {
+                                            return Expr::new(EK::Conv(Conv::Bind, Box::new(call)), t, Cat::L, line);
+                                        }
+                                        return call;
+                                    }
                                     // OVL-14: a converting constructor won, also
                                     // a specialization of a constructor
                                     // template (DED-1).
@@ -1648,7 +1723,7 @@ impl P {
                     }
                     (Some(v), false) if (is_list || is_paren) && !self.classes[c].ctors.is_empty() => {
                         let has_list_ctor = self.classes[c].ctors.iter().any(|&cid| self.func(cid).and_then(|f| f.params.first().copied()).and_then(|p| self.var(p)).is_some_and(|v| matches!(nonref(&v.ty).t, Ty::Class(lc) if self.init_list_elem(lc).is_some())));
-                        if v.len() == 1 && nonref(&v[0].ty).t == Ty::Class(c) {
+                        if v.len() == 1 && (nonref(&v[0].ty).t == Ty::Class(c) || matches!(nonref(&v[0].ty).t, Ty::Class(d) if self.is_base_of(c, d) && !self.class_uncertain(d))) {
                             if is_list && has_list_ctor {
                                 return Expr::new(EK::Unknown("constructor call".into()), ty.clone(), Cat::PR, line);
                             }
@@ -2230,6 +2305,39 @@ impl P {
             }
             _ => {}
         }
+        if matches!(init.k, EK::TemplId(None, ..)) {
+            // DED-2: a template-id that names one specialization.
+            init = self.resolve_templ_id(init, line);
+        }
+        if let EK::Unary(UOp::AddrOf, x) = &init.k {
+            if let EK::TemplId(None, fs, raw) = &x.k {
+                // OVL-20 (Q-0405): two specializations that explicit
+                // template arguments give are not ordered.
+                let ts: Vec<DeclId> = fs.iter().copied().filter(|&f| self.is_func_templ(f)).collect();
+                // OVL-20: with no target type, a parameter that the
+                // explicit arguments leave has nothing to deduce from.
+                if !ts.is_empty() && !self.in_template() && ts.len() == fs.len() {
+                    let all_short = ts.iter().all(|t| {
+                        let Some(&tid) = self.decl_tid.get(t) else { return false };
+                        let ps = &self.templs[tid].params;
+                        raw.len() < ps.len() && !raw.iter().any(|r| matches!(r, crate::templ::RawArg::Expand(_))) && ps[raw.len()..].iter().any(|p| !p.pack && p.default.is_none())
+                    });
+                    if all_short {
+                        self.error(line, "OVL-20", format!("the address of '{}' leaves a template parameter that no target type deduces", self.decls[fs[0]].name));
+                        return None;
+                    }
+                }
+                if ts.len() > 1 && !self.in_template() && ts.len() == fs.len() {
+                    let raw = raw.clone();
+                    if let Some(v) = self.templ_id_specs(&ts, &raw, line) {
+                        if v.len() > 1 {
+                            self.error(line, "OVL-20", format!("the address of '{}' with explicit template arguments names more than one specialization and has no target type", self.decls[fs[0]].name));
+                            return None;
+                        }
+                    }
+                }
+            }
+        }
         if matches!(init.k, EK::Overloads(_)) {
             self.error(line, "AUTO-8", "auto initialized from an overloaded function name");
             return None;
@@ -2382,12 +2490,48 @@ impl P {
         }
         let fields: Vec<DeclId> = self.classes[c].fields.iter().copied().filter(|&f| !(matches!(&self.decls[f].k, DK::Field(fi) if fi.bits.is_some()) && self.decls[f].name.is_empty())).collect();
         let mut vals: Vec<Option<Expr>> = vec![None; fields.len()];
+        let mut ready = vec![false; fields.len()];
         for x in v {
             let EK::Unknown(s) = &x.k else { return None };
             let mut w = s.split_whitespace().skip(1);
             let name = w.next()?;
             let id: usize = w.next()?.parse().ok()?;
-            let i = fields.iter().position(|&f| self.decls[f].name == name)?;
+            let i = match fields.iter().position(|&f| self.decls[f].name == name) {
+                Some(i) => i,
+                None => {
+                    // UNI-7: a member of an anonymous union initializes the
+                    // union with that member.
+                    let (i, u, j) = fields.iter().enumerate().find_map(|(i, &f)| match &self.decls[f].k {
+                        DK::Field(fi) if self.decls[f].name.is_empty() => match fi.ty.t {
+                            Ty::Class(u) if self.classes[u].key == 2 => self.classes[u].fields.iter().position(|&g| self.decls[g].name == name).map(|j| (i, u, j)),
+                            _ => None,
+                        },
+                        _ => None,
+                    })?;
+                    if vals[i].is_some() {
+                        return None;
+                    }
+                    let g = self.classes[u].fields[j];
+                    let DK::Field(gi) = &self.decls[g].k else { return None };
+                    let gty = gi.ty.clone();
+                    let xv = self.designated.get(id)?.clone();
+                    let xl = xv.line;
+                    let mark = self.d.list.len();
+                    let y = self.convert_init(xv, &gty, InitForm::CopyList, xl);
+                    if self.d.list.len() != mark {
+                        return None;
+                    }
+                    let mut items: Vec<Expr> = Vec::new();
+                    for k in 0..j {
+                        let DK::Field(hi) = &self.decls[self.classes[u].fields[k]].k else { return None };
+                        items.push(Expr::new(EK::MemberDefault, hi.ty.clone(), Cat::PR, line));
+                    }
+                    items.push(y);
+                    vals[i] = Some(Expr::new(EK::InitList(items), QTy::new(Ty::Class(u)), Cat::PR, line));
+                    ready[i] = true;
+                    continue;
+                }
+            };
             if vals[i].is_some() {
                 return None;
             }
@@ -2406,6 +2550,7 @@ impl P {
             let fty = fi.ty.clone();
             let is_ref = fty.t.is_ref();
             match val {
+                Some(x) if ready[i] => out.push(x),
                 Some(x) => {
                     let xl = x.line;
                     let mark = self.d.list.len();

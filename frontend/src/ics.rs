@@ -148,11 +148,6 @@ impl P {
         }
         let r = match &to.t {
             Ty::LRef(i) | Ty::RRef(i) => {
-                if matches!(i.t, Ty::Func(_)) {
-                    // The evaluator does not model a reference to a function
-                    // from a conversion function.
-                    return None;
-                }
                 let i = (**i).clone();
                 self.ics_user_from_class(e, ac, &i, Some(matches!(to.t, Ty::RRef(_))))
             }
@@ -356,6 +351,8 @@ impl P {
                 }
             }
             (_, Ty::Ptr(_) | Ty::MemPtr(..)) if null && !matches!(from, Ty::Ptr(_) | Ty::MemPtr(..)) => mk(2, Sec::Null, false),
+            // CONV-8: a zero literal converts to `decltype(nullptr)`.
+            (_, Ty::NullPtr) if null => mk(2, Sec::Null, false),
             (Ty::NullPtr, _) => mk(2, Sec::Null, false),
             (Ty::Ptr(fp), Ty::Ptr(tp)) => {
                 let added = (tp.c && !fp.c) || (tp.v && !fp.v);
@@ -522,6 +519,10 @@ impl P {
     /// when `p` is the referenced type of a reference parameter, with
     /// whether the reference is an rvalue reference.
     pub(crate) fn ics_user_from_class(&mut self, a: &Expr, ac: usize, p: &QTy, to_ref: Option<bool>) -> R {
+        if to_ref.is_none() && matches!(p.t, Ty::Ptr(_)) {
+            // LAM-10: a generic lambda converts for this target.
+            self.generic_conv_for(ac, p);
+        }
         let mut fns = Vec::new();
         self.conv_fns(ac, 0, &mut fns);
         let mut cands: Vec<UCand> = Vec::new();
@@ -556,6 +557,11 @@ impl P {
             if third.kind != IK::Std {
                 continue;
             }
+            if f.explicit && self.direct_conv && to_ref.is_some_and(|rref| if rref { matches!(f.fty.ret.t, Ty::LRef(_)) } else { !matches!(f.fty.ret.t, Ty::LRef(_)) }) {
+                // ICS-45, OVL-15: the reference binds directly to the
+                // result, of the kind that the reference takes.
+                continue;
+            }
             if f.explicit && self.direct_conv && third.s.sec != Sec::None {
                 // ICS-45: in a direct-initialization, an explicit conversion
                 // function serves only with a qualification adjustment left.
@@ -584,14 +590,16 @@ impl P {
                 }
             }
         }
+        self.fn_ref_kind = if matches!(p.t, Ty::Func(_)) { to_ref } else { None };
         let r = self.pick_user(cands, true);
+        self.fn_ref_kind = None;
         self.tie_more.clear();
         Ok(r)
     }
 
     /// ICS-3, ICS-4: a user-defined sequence to class `pc` through a
     /// converting constructor, or a conversion function of the argument.
-    fn ics_user_to_class(&mut self, a: &Expr, pc: usize) -> R {
+    pub(crate) fn ics_user_to_class(&mut self, a: &Expr, pc: usize) -> R {
         let mut cands: Vec<UCand> = Vec::new();
         let ctors = self.classes[pc].ctors.clone();
         let ctors = if ctors.iter().any(|&cid| self.func(cid).is_some_and(|f| f.template)) {
@@ -658,6 +666,16 @@ impl P {
             let t = if by_third || conv(x.f) || conv(y.f) { self.std_cmp(&x.third, &y.third, true) } else { 0 };
             if t != 0 {
                 return t > 0;
+            }
+            // OVL-29: a reference to function prefers the result of its
+            // own kind of reference.
+            if let Some(rref) = self.fn_ref_kind {
+                let kind = |f: DeclId| self.func(f).map(|g| matches!(g.fty.ret.t, Ty::RRef(_)) == rref && g.fty.ret.t.is_ref());
+                match (kind(x.f), kind(y.f)) {
+                    (Some(true), Some(false)) => return true,
+                    (Some(false), Some(true)) => return false,
+                    _ => {}
+                }
             }
             // OVL-27, OVL-28.
             (!self.spec_of.contains_key(&x.f) && self.spec_of.contains_key(&y.f)) || self.tie_more.contains(&(x.f, y.f))
@@ -941,7 +959,7 @@ impl P {
             }
             if !some {
                 // OVL-27: a plain function beats a template specialization.
-                if !self.spec_of.contains_key(&fx) && self.spec_of.contains_key(&fy) && self.func(fx).is_some() {
+                if !self.is_spec(fx) && self.is_spec(fy) && self.func(fx).is_some() {
                     return true;
                 }
                 // OVL-28: the more specialized template wins.
@@ -1279,6 +1297,25 @@ impl P {
                 if !same_params(f, g) || f.template || g.template {
                     continue;
                 }
+                // DER-3 for templates: the specializations of two member
+                // templates hide only when the templates have the same
+                // parameters.
+                let (sc, so) = (self.spec_of.get(&c).map(|x| x.0), self.spec_of.get(&o).map(|x| x.0));
+                if sc.is_some() || so.is_some() {
+                    let same_t = match (sc, so) {
+                        (Some(a), Some(b)) => {
+                            let (da, db) = (self.templs[a].decl, self.templs[b].decl);
+                            match (self.func(da), self.func(db)) {
+                                (Some(x), Some(y)) => same_params(x, y) && self.templs[a].params.len() == self.templs[b].params.len(),
+                                _ => false,
+                            }
+                        }
+                        _ => false,
+                    };
+                    if !same_t {
+                        continue;
+                    }
+                }
                 if self.c_fns.contains(&c) && self.c_fns.contains(&o) {
                     continue 'next;
                 }
@@ -1384,7 +1421,7 @@ impl P {
                 return None;
             }
             let rest: Vec<Expr> = r.iter().map(|x| (*x).clone()).collect();
-            members = self.expand_fn_templates(&members, &rest, line)?;
+            members = self.expand_fn_templates_obj(&members, Some(l), &rest, line)?;
             let all: Vec<Expr> = ops.iter().map(|e| (*e).clone()).collect();
             others = self.expand_fn_templates(&others, &all, line)?;
         }

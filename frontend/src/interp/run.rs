@@ -217,6 +217,10 @@ impl<'a> Machine<'a> {
                     if !is_c_name(p, id) && (p.internal_fns.contains(&id) || f.template || p.in_unnamed_ns(p.decls[id].scope)) {
                         return None;
                     }
+                    // LAM rules: each closure type is a type of its own.
+                    if f.class.is_some_and(|c| p.classes[c].name == "(lambda)") {
+                        return None;
+                    }
                     Some(f.body.is_some() || f.defaulted)
                 }
                 DK::Var(v) => {

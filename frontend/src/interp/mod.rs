@@ -301,6 +301,11 @@ pub struct Machine<'a> {
     /// Bytes of object representations that the values do not hold:
     /// padding, and the bytes of scalars with no value (STG-11).
     pub shadow: HashMap<(usize, i64), bytes::Byte>,
+    /// The values of pointers to members whose bytes a program read: a
+    /// pointer's bytes hold its index here, plus one (STG-12).
+    pub member_reprs: Vec<Val>,
+    /// LNK-2: the parameter types for the next binding of arguments.
+    pub ptr_param_tys: Option<Vec<QTy>>,
     /// The address of each object that has one, and the table of
     /// addresses, sizes, and objects (CAST-16).
     pub addr_of: HashMap<usize, u64>,
@@ -400,6 +405,8 @@ impl<'a> Machine<'a> {
             residents: HashMap::new(),
             resident_of: HashMap::new(),
             shadow: HashMap::new(),
+            member_reprs: Vec::new(),
+            ptr_param_tys: None,
             addr_of: HashMap::new(),
             addr_table: Vec::new(),
             next_addr: 0,
@@ -1224,6 +1231,13 @@ impl<'a> Machine<'a> {
     }
 
     fn cleanup_one(&mut self, c: Cleanup) -> R<()> {
+        // The type of the cleanup is the type of the unit that made the
+        // object.
+        let tu = self.objs[c.place.obj].tu;
+        self.in_tu(tu, |m| m.cleanup_one_here(c))
+    }
+
+    fn cleanup_one_here(&mut self, c: Cleanup) -> R<()> {
         {
             let nontrivial = self.needs_dtor(&c.ty.t) || matches!(&c.ty.t, Ty::Class(k) if self.p.classes[*k].dtor.is_some_and(|d| self.p.func(d).is_some_and(|f| !f.defaulted)));
             if !self.objs[c.place.obj].alive && c.place.path.is_empty() && nontrivial {

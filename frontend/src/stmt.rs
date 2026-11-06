@@ -580,6 +580,9 @@ impl P {
                 self.warn(e.line, "ATTR-5", "temporary from a 'nodiscard' constructor discarded");
             }
         }
+        if self.overload_set_no_target(e, e.line) {
+            return;
+        }
         if e.ty.is_unknown() {
             return;
         }
@@ -1404,6 +1407,7 @@ impl P {
         // RFOR-1, RFOR-2: the loop as a block with a reference to the
         // range, an iterator and its end, for the interpreter. A step that
         // raises a diagnostic leaves the statement unsupported, as before.
+        self.rfor_list_var = None;
         let lowered = if (decl.is_some() || ds.auto == Some(false)) && !self.in_template() { self.lower_range_for(&range, s, line) } else { None };
         let mut loop_var = None;
         let mut hidden_parts: Vec<DeclId> = Vec::new();
@@ -1494,6 +1498,9 @@ impl P {
             if let Some(i) = init {
                 items.push(*i);
             }
+            if let Some(lv) = self.rfor_list_var.take() {
+                items.push(Stmt::Decl(vec![lv]));
+            }
             items.push(Stmt::Decl(vec![range_var]));
             items.push(lp);
             return Ok(Stmt::Block(items));
@@ -1505,7 +1512,48 @@ impl P {
     /// the expressions `*__begin`, `__begin != __end`, and `++__begin`.
     /// None if a step is not modeled or raises a diagnostic.
     fn lower_range_for(&mut self, range: &Expr, s: usize, line: u32) -> Option<(DeclId, DeclId, DeclId, Expr, Expr, Expr)> {
-        if range.ty.is_unknown() || matches!(range.k, EK::InitList(_) | EK::Unknown(_)) {
+        if let EK::InitList(items) = &range.k {
+            // RFOR-1, AUTO-7: a braced list is a std::initializer_list of
+            // the one type that its elements deduce.
+            if items.is_empty() || !self.init_list_shape_ok() {
+                return None;
+            }
+            let mut el: Option<QTy> = None;
+            for x in items {
+                let t = nonref(&x.ty);
+                if t.is_unknown() || matches!(x.k, EK::InitList(_) | EK::Unknown(_)) {
+                    return None;
+                }
+                let t = match &t.t {
+                    Ty::Array(e, _) => QTy::new(Ty::Ptr(e.clone())),
+                    Ty::Func(_) => QTy::new(Ty::Ptr(Box::new(t.unqual()))),
+                    _ => t.unqual(),
+                };
+                if el.as_ref().is_some_and(|e| *e != t) {
+                    return None;
+                }
+                el = Some(t);
+            }
+            let lc = self.init_list_class(el?, line);
+            // The list is a variable of its own, so that its array lives
+            // as long as the loop (ILC rules).
+            let lt = QTy::new(Ty::Class(lc));
+            let mark = self.d.list.len();
+            let init = self.convert_init(range.clone(), &lt, crate::decl2::InitForm::CopyList, line);
+            if self.d.list.len() != mark || matches!(init.k, EK::Unknown(_)) {
+                self.d.list.truncate(mark);
+                return None;
+            }
+            let vi = VarInfo { ty: lt.clone(), storage: Storage::Auto, constexpr: false, constinit: false, init: Some(Rc::new(init)), param: false, local: true, dependent: false, defined: true, class: None };
+            let lv = self.add_decl_in(s, " list", DK::Var(vi), line);
+            let obj = Expr::new(EK::Var(lv), lt, Cat::L, line);
+            let r = self.lower_range_for(&obj, s, line);
+            if r.is_some() {
+                self.rfor_list_var = Some(lv);
+            }
+            return r;
+        }
+        if range.ty.is_unknown() || matches!(range.k, EK::Unknown(_)) {
             return None;
         }
         let mark = self.d.list.len();

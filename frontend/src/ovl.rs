@@ -364,7 +364,7 @@ impl P {
         }
         // OVL-27: a function that is not a template specialization (or a
         // built-in candidate) beats a specialization.
-        let spec = |c: &OCand| c.fid.is_some_and(|f| self.spec_of.contains_key(&f));
+        let spec = |c: &OCand| c.fid.is_some_and(|f| self.is_spec(f));
         if spec(x) != spec(y) {
             return !spec(x);
         }
@@ -415,7 +415,7 @@ impl P {
         // DED-1: an operator function template adds its specialization for
         // the operands.
         let rev: Vec<Expr> = ops.iter().rev().cloned().collect();
-        let Some(members) = self.expand_fn_templates(&members, &ops[1..], line) else { return OpRes::NotHandled };
+        let Some(members) = self.expand_fn_templates_obj(&members, Some(&ops[0]), &ops[1..], line) else { return OpRes::NotHandled };
         let Some(others) = self.expand_fn_templates(&others, ops, line) else { return OpRes::NotHandled };
         // OVL-8: with no class operand, a non-member needs a parameter of
         // the type of the matching enumeration operand.
@@ -469,8 +469,8 @@ impl P {
             if let Some(src) = src {
                 let Some((m_left, o_all)) = self.op_functions(src, class_of(&ops[0]), ops) else { return OpRes::NotHandled };
                 let m_right = class_of(&ops[1]).and_then(|c| self.lookup_member(c, src)).unwrap_or_default();
-                let Some(m_left) = self.expand_fn_templates(&m_left, &ops[1..], line) else { return OpRes::NotHandled };
-                let Some(m_right) = self.expand_fn_templates(&m_right, &ops[..1], line) else { return OpRes::NotHandled };
+                let Some(m_left) = self.expand_fn_templates_obj(&m_left, Some(&ops[0]), &ops[1..], line) else { return OpRes::NotHandled };
+                let Some(m_right) = self.expand_fn_templates_obj(&m_right, ops.get(1), &ops[..1], line) else { return OpRes::NotHandled };
                 let Some(o_written) = self.expand_fn_templates(&o_all, ops, line) else { return OpRes::NotHandled };
                 let Some(o_swapped) = self.expand_fn_templates(&o_all, &rev, line) else { return OpRes::NotHandled };
                 let normal = src != format!("operator{}", op);
@@ -1004,10 +1004,24 @@ impl P {
         if self.in_template() || !self.class_ok(c) || args.iter().any(|a| a.ty.is_unknown() && !matches!(a.k, EK::InitList(_))) {
             return None;
         }
-        let ops = self.lookup_member(c, "operator()").unwrap_or_default();
+        let ops0 = self.lookup_member(c, "operator()").unwrap_or_default();
         let mut convs = Vec::new();
         if !self.surrogate_fns(c, 0, &mut convs) {
             return None;
+        }
+        // DED-1, LAM-15: a call operator template adds the specialization
+        // that deduction gives.
+        let mut ops = Vec::new();
+        for &op in &ops0 {
+            if self.is_func_templ(op) || self.generic_lambdas.contains_key(&op) {
+                match self.templ_candidates(Some(callee), &[op], None, args, line) {
+                    Ok(v) => ops.extend(v),
+                    Err(false) => {}
+                    Err(true) => return None,
+                }
+            } else {
+                ops.push(op);
+            }
         }
         let obj_t = nonref(&callee.ty);
         let mut cands: Vec<(ObjCand, Vec<Ics>)> = Vec::new();
@@ -1096,22 +1110,28 @@ impl P {
             self.error(line, "OVL-35", format!("no viable function for the call of an object of class '{}'", self.classes[c].name));
             return Some(Expr::unknown(line, "bad call"));
         }
-        let better = |p: &P, x: &[Ics], y: &[Ics]| {
+        let spec = |p: &P, c: &ObjCand| matches!(c, ObjCand::Op(f) if p.is_spec(*f));
+        let better = |p: &P, x: &(ObjCand, Vec<Ics>), y: &(ObjCand, Vec<Ics>)| {
             let mut some = false;
-            for (a, b) in x.iter().zip(y.iter()) {
+            for (a, b) in x.1.iter().zip(y.1.iter()) {
                 let k = p.ics_cmp(a, b);
                 if k < 0 {
                     return false;
                 }
                 some |= k > 0;
             }
-            some
+            // OVL-27: a function that is not a template specialization
+            // beats a specialization.
+            some || (!spec(p, &x.0) && spec(p, &y.0))
         };
-        let best = (0..cands.len()).find(|&i| (0..cands.len()).all(|j| i == j || better(self, &cands[i].1, &cands[j].1)));
+        let best = (0..cands.len()).find(|&i| (0..cands.len()).all(|j| i == j || better(self, &cands[i], &cands[j])));
         let Some(bi) = best else {
             self.error(line, "OVL-36", format!("ambiguous call of an object of class '{}'", self.classes[c].name));
             return Some(Expr::unknown(line, "bad call"));
         };
+        if let ObjCand::Op(f) = cands[bi].0 {
+            self.selected(f);
+        }
         let (w, seqs) = cands[bi].clone();
         match w {
             ObjCand::Op(fid) => Some(self.call_overloads_pub(Some(callee.clone()), vec![fid], args.to_vec(), line)),

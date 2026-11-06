@@ -3773,10 +3773,15 @@ impl P {
                 // BF-2 (Q-0313): a width of scoped enumeration type.
                 self.error(bl, "BF-2", "bit-field width has a scoped enumeration type");
             }
-            if let Some(why) = self.int_class_operand(&e) {
-                // BF-1, BF-2: a width of class type.
-                self.error(bl, "BF-2", format!("bit-field width does not convert to an integral constant: {}", why));
-            }
+            let e = match self.int_class_convert(&e) {
+                Err(why) => {
+                    // BF-1, BF-2: a width of class type.
+                    self.error(bl, "BF-2", format!("bit-field width does not convert to an integral constant: {}", why));
+                    e
+                }
+                Ok(Some(x)) => x,
+                Ok(None) => e,
+            };
             match self.const_int(&e) {
                 Ok(v) => {
                     if v < 0 {
@@ -4177,7 +4182,16 @@ impl P {
         }
         // ODR-1: a static data member defined twice outside its class.
         let explicit = std::mem::take(&mut self.explicit_spec);
-        if let (Some(q), Some(p)) = (d.qual, redecl) {
+        // ODR-15: outside the class and without an initializer, the
+        // declaration of a member that the class declares constexpr, or an
+        // explicit specialization of a static data member, is no
+        // definition.
+        let no_init = self.at(";") || self.at(",");
+        let odr15_decl = no_init && !self.in_template() && match (d.qual, redecl) {
+            (Some(q), Some(p)) if matches!(self.scopes[q].kind, SK::Class(_)) => explicit || self.var(p).is_some_and(|v| v.constexpr),
+            _ => false,
+        };
+        if let (Some(q), Some(p)) = (d.qual, redecl.filter(|_| !odr15_decl)) {
             if matches!(self.scopes[q].kind, SK::Class(_)) && !self.in_template() {
                 // SINIT-7: the definition's place in the order of the
                 // unit's definitions.
@@ -4430,7 +4444,7 @@ impl P {
             // the class initializes its members; the front end does not
             // check that, so class types are not reported here.
             let class_with_ctor = matches!(&ty.t, Ty::Class(_));
-            if ds.constexpr && !class_with_ctor {
+            if ds.constexpr && !class_with_ctor && !odr15_decl {
                 // CX-1. A class with a constexpr default constructor needs
                 // no written initializer; the rule text does not say so.
                 self.error(line, "CX-1", "constexpr variable without an initializer");
@@ -4971,6 +4985,7 @@ impl P {
         let mut clause: Option<Option<Rc<crate::cons::CNorm>>> = None;
         let mut clause_key: Option<Vec<String>> = None;
         let mut clause_unmodeled = false;
+        let mut clause_failed = false;
         let save_virt = self.pos;
         while self.at("override") || self.at("final") {
             self.pos += 1;
@@ -4993,7 +5008,10 @@ impl P {
             let r = self.cons_clause(false);
             let failed = held.is_some_and(|h| self.end_held(h));
             self.cons_head = saved_head;
-            clause_unmodeled = std::mem::replace(&mut self.cons_unmodeled, saved_unmodeled) || failed;
+            // INST-12: a substitution failure in the waiting clause makes
+            // the constraint not satisfied at a use.
+            clause_failed = failed;
+            clause_unmodeled = std::mem::replace(&mut self.cons_unmodeled, saved_unmodeled) && !failed;
             let n = r?;
             clause_key = Some(self.clause_key(st, self.pos));
             clause = Some(n);
@@ -5076,6 +5094,16 @@ impl P {
                     // equivalent.
                     let same_clause = self.fn_clause_toks.get(&p) == clause_key.as_ref();
                     if !same_clause {
+                        continue;
+                    }
+                    // CLS-9: explicit object parameters of different types
+                    // declare two functions.
+                    let obj_differ = f.explicit_obj && fd.has_explicit_this && {
+                        let a = f.params.first().and_then(|&q| self.var(q)).map(|v| v.ty.clone());
+                        let b = fd.params.first().and_then(|&q| self.var(q)).map(|v| v.ty.clone());
+                        a.as_ref().is_some_and(|a| !a.is_unknown()) && b.as_ref().is_some_and(|b| !b.is_unknown()) && a != b
+                    };
+                    if obj_differ {
                         continue;
                     }
                     if f.fty.params == fty.params && f.fty.variadic == fty.variadic && f.fty.cv_c == fty.cv_c && f.fty.cv_v == fty.cv_v && f.fty.refq == fty.refq && !distinct_templates {
@@ -5484,6 +5512,9 @@ impl P {
             self.fn_head_key.insert(id, k);
             let n = self.abbrev.as_ref().map_or(0, |a| a.params.len());
             self.fn_invented.insert(id, n);
+        }
+        if clause_failed {
+            self.fn_sat_cache.insert(id, crate::cons::Sat::No);
         }
         if let Some(c) = clause {
             if inst_req.is_none() {

@@ -2678,9 +2678,17 @@ impl P {
             }
         }
         // Steps 2 and 3: each pair (DED-6 to DED-20).
-        let ptys = f.fty.params.clone();
-        let np = ptys.len();
+        let mut ptys = f.fty.params.clone();
         let pack_i = self.templs[tid].fn_pack;
+        if f.explicit_obj && f.params.len() == ptys.len() + 1 {
+            // CLS-13: the explicit object parameter is the first parameter,
+            // and the object of the call is its argument. The caller puts
+            // the object first in `args`.
+            let Some(t) = self.var(f.params[0]).map(|v| v.ty.clone()) else { return Ded::Unknown };
+            // `fn_pack` counts the explicit object parameter already.
+            ptys.insert(0, t);
+        }
+        let np = ptys.len();
         let mut pack_vals: Vec<(u32, Vec<TArg>)> = Vec::new();
         let mut pack_params: Vec<u32> = Vec::new();
         if let Some(k) = pack_i {
@@ -2698,17 +2706,25 @@ impl P {
                 Some(k) if k + 1 == np && i >= k => {
                     // DED-20: the trailing pack takes the remaining
                     // arguments, each with the pattern.
-                    if pack_params.is_empty() || explicit_pack_len.is_some() {
-                        if let Some(n) = explicit_pack_len {
-                            if i - k < n {
-                                continue;
-                            }
+                    if let Some(n) = explicit_pack_len {
+                        if i - k < n {
+                            continue;
                         }
+                    }
+                    if pack_params.is_empty() || (explicit_pack_len.is_some() && pack_params.len() != 1) {
                         return Ded::Unknown;
+                    }
+                    if explicit_pack_len.is_some() && pack_vals.is_empty() {
+                        // DED-20: the explicit elements come first, and
+                        // deduction adds the rest.
+                        let q = pack_params[0];
+                        let Some(TArg::Pack(v)) = b.vals[q as usize].clone() else { return Ded::Unknown };
+                        pack_vals.push((q, v));
                     }
                     let mut t = b.clone();
                     for &q in &pack_params {
                         t.vals[q as usize] = None;
+                        t.fixed[q as usize] = false;
                     }
                     // CTAD-27, Q-0276: in an aggregate candidate, a pack that
                     // an earlier element fixed keeps its length. Each later
@@ -2819,11 +2835,15 @@ impl P {
             if params[i].default.is_some() {
                 let prev: Vec<TArg> = b.vals[..i].iter().map(|v| v.clone().unwrap_or(TArg::Pack(vec![]))).collect();
                 let me = self.d.muted_errors;
+                let mu = self.d.muted_unsup;
                 self.d.muted += 1;
                 let r = self.default_arg(tid, i, &prev);
                 self.d.muted -= 1;
                 match r {
                     Some(a) if !a.is_dep() && self.d.muted_errors == me => b.vals[i] = Some(a),
+                    // DED-24: an error in the substitution of a default
+                    // argument makes deduction fail.
+                    Some(_) if self.d.muted_errors != me && self.d.muted_unsup == mu => return Ded::Fail,
                     Some(_) => return Ded::Unknown,
                     None => return Ded::Fail,
                 }
@@ -2937,6 +2957,36 @@ impl P {
             if self.deduce_ty(&strip_cv(pp, true, true), &strip_cv(aa, true, true), &mut t) {
                 *b = t;
                 return true;
+            }
+        }
+        // DED-14: the cv-qualifiers of an array type are those of its
+        // elements, so a referred array can have more const elements.
+        if is_ref {
+            if let (Ty::Dep(d), Ty::Array(ae, _)) = (&pp.t, &aa.t) {
+                if let Dep::Array(pe, bound) = &**d {
+                    let (pc, pv) = (pp.c || pe.c, pp.v || pe.v);
+                    let (ac, av) = (aa.c || ae.c, aa.v || ae.v);
+                    if (!ac || pc) && (!av || pv) && (pc || pv) {
+                        let p2 = dep(Dep::Array(strip_cv(pe, true, true), bound.clone()));
+                        let a2 = strip_cv(aa, true, true);
+                        let mut t = b.clone();
+                        if self.deduce_ty(&p2, &a2, &mut t) {
+                            *b = t;
+                            return true;
+                        }
+                    }
+                }
+            }
+            if let (Ty::Array(pe, pn), Ty::Array(ae, an)) = (&pp.t, &aa.t) {
+                if (!ae.c || pe.c) && (!ae.v || pe.v) && (pe.c || pe.v) {
+                    let p2 = QTy::new(Ty::Array(Box::new(strip_cv(pe, true, true)), pn.clone()));
+                    let a2 = QTy::new(Ty::Array(Box::new(strip_cv(ae, true, true)), *an));
+                    let mut t = b.clone();
+                    if self.deduce_ty(&p2, &a2, &mut t) {
+                        *b = t;
+                        return true;
+                    }
+                }
             }
         }
         // DED-14: a qualification adjustment or a dropped noexcept.
@@ -3289,11 +3339,22 @@ impl P {
     /// adds its specialization (DED-1, OVL-P2). Err(true) when the front
     /// end cannot tell; Err(false) when every template failed and no
     /// other candidate is left.
-    pub fn templ_candidates(&mut self, cands: &[DeclId], explicit: Option<&Rc<Vec<RawArg>>>, args: &[Expr], line: u32) -> Result<Vec<DeclId>, bool> {
+    pub fn templ_candidates(&mut self, obj: Option<&Expr>, cands: &[DeclId], explicit: Option<&Rc<Vec<RawArg>>>, args: &[Expr], line: u32) -> Result<Vec<DeclId>, bool> {
         let mut out = Vec::new();
         for &c in cands {
             if self.is_func_templ(c) {
-                match self.deduce_call(c, explicit, args, line) {
+                // CLS-13: the object of the call is the argument of an
+                // explicit object parameter.
+                let xobj = self.func(c).is_some_and(|f| f.explicit_obj && f.params.len() == f.fty.params.len() + 1);
+                let with_obj: Vec<Expr>;
+                let args_c: &[Expr] = if xobj {
+                    let Some(o) = obj else { return Err(true) };
+                    with_obj = std::iter::once(o.clone()).chain(args.iter().cloned()).collect();
+                    &with_obj
+                } else {
+                    args
+                };
+                match self.deduce_call(c, explicit, args_c, line) {
                     Ded::Ok(targs) => {
                         let tid = self.decl_tid[&c];
                         match self.func_spec(tid, &targs, line) {
@@ -3309,9 +3370,9 @@ impl P {
                     Ded::Fail => {}
                     Ded::Unknown => return Err(true),
                 }
-            } else if self.generic_lambdas.contains_key(&c) && explicit.is_none() {
+            } else if self.generic_lambdas.contains_key(&c) {
                 // LAM-15: the call operator of a generic lambda.
-                match self.generic_lambda_spec(c, args, line) {
+                match self.generic_lambda_spec(c, obj, explicit, args, line) {
                     Ok(s) => {
                         if !out.contains(&s) {
                             out.push(s);
@@ -3394,8 +3455,22 @@ impl P {
         // function without one gets a first parameter of reference to its
         // class.
         let member = |f: &FuncInfo| f.class.is_some() && !f.is_static && !f.explicit_obj && f.kind != FnKind::Ctor;
+        // ORD-6: a member that a using declaration brings into a derived
+        // class counts as a member of the derived class.
+        let common: Option<usize> = match (f1.class, f2.class) {
+            (Some(a), Some(b)) if member(&f1) && member(&f2) => {
+                if a == b || self.is_base_of(a, b) {
+                    Some(b)
+                } else if self.is_base_of(b, a) {
+                    Some(a)
+                } else {
+                    None
+                }
+            }
+            _ => None,
+        };
         let obj_param = |f: &FuncInfo, other: &FuncInfo| -> QTy {
-            let c = f.class.unwrap();
+            let c = if member(other) { common.unwrap() } else { f.class.unwrap() };
             let ct = QTy { t: Ty::Class(c), c: f.fty.cv_c, v: f.fty.cv_v };
             let other_rref = if member(other) { other.fty.refq == 2 } else { other.fty.params.first().is_some_and(|p| matches!(p.t, Ty::RRef(_))) };
             let rref = f.fty.refq == 2 || (f.fty.refq == 0 && other_rref);
@@ -3405,13 +3480,13 @@ impl P {
             let mut g = f.clone();
             // ORD-6: each member gets an object parameter. For two
             // members, only members of one class (G147).
-            if member(f) && nargs.is_some() && (!member(other) || other.class == f.class) {
+            if member(f) && nargs.is_some() && (!member(other) || common.is_some()) {
                 g.fty.params.insert(0, obj_param(f, other));
                 return (g, k.map(|k| k + 1));
             }
             (g, k)
         };
-        let both = member(&f1) && member(&f2) && f1.class == f2.class && nargs.is_some();
+        let both = member(&f1) && member(&f2) && common.is_some() && nargs.is_some();
         let (g1, k1) = shift(&f1, &f2, k1);
         let (g2, k2) = shift(&f2, &f1, k2);
         // The call's count of arguments leaves out the object argument.
@@ -3854,9 +3929,24 @@ impl P {
     /// specializations for these arguments (DED-1). None when the front
     /// end cannot tell.
     pub fn expand_fn_templates(&mut self, fids: &[DeclId], args: &[Expr], line: u32) -> Option<Vec<DeclId>> {
+        self.expand_fn_templates_obj(fids, None, args, line)
+    }
+
+    /// As `expand_fn_templates`, with the object of a member call, which
+    /// an explicit object parameter takes (CLS-13).
+    pub fn expand_fn_templates_obj(&mut self, fids: &[DeclId], obj: Option<&Expr>, args: &[Expr], line: u32) -> Option<Vec<DeclId>> {
         let mut out = Vec::new();
         for &f in fids {
             if self.is_func_templ(f) {
+                let xobj = self.func(f).is_some_and(|g| g.explicit_obj && g.params.len() == g.fty.params.len() + 1);
+                let with_obj: Vec<Expr>;
+                let args: &[Expr] = if xobj {
+                    let o = obj?;
+                    with_obj = std::iter::once(o.clone()).chain(args.iter().cloned()).collect();
+                    &with_obj
+                } else {
+                    args
+                };
                 match self.deduce_call(f, None, args, line) {
                     Ded::Ok(a) => {
                         let t = self.decl_tid[&f];

@@ -34,7 +34,22 @@ impl<'a> Machine<'a> {
         if let Some(op) = self.frame().func {
             if let Some(caps) = self.p.closure_caps.get(&op) {
                 if let Some(&(_, idx, _)) = caps.iter().find(|c| c.0 == id) {
-                    let Some(this) = self.frame().this.clone() else { return unsup("closure without an object") };
+                    let this = match self.frame().this.clone() {
+                        Some(t) => t,
+                        None => {
+                            // LAM-16: with an explicit object parameter, the
+                            // closure object is that parameter's object.
+                            let p0 = self.p.func(op).filter(|f| f.explicit_obj).and_then(|f| f.params.first().copied());
+                            let Some(p0) = p0 else { return unsup("closure without an object") };
+                            if let Some(r) = self.frame().refs.get(&p0) {
+                                r.clone()
+                            } else if let Some(&o) = self.frame().vars.get(&p0) {
+                                Ptr::whole(o)
+                            } else {
+                                return unsup("closure without an object");
+                            }
+                        }
+                    };
                     let place = this.sub(idx);
                     let c = self.p.func(op).and_then(|f| f.class);
                     let is_ref = c.and_then(|c| self.fields(c).into_iter().find(|(_, fi)| fi.index == idx)).is_some_and(|(_, fi)| fi.ty.t.is_ref());
@@ -296,6 +311,16 @@ impl<'a> Machine<'a> {
         self.step()?;
         self.line = e.line;
         match &e.k {
+            EK::Func(f) => {
+                // A function lvalue that a reference binds: a place that
+                // holds the function, which a call and `&` read.
+                let o = self.new_obj(Val::FnPtr(self.tu, *f), true);
+                self.objs[o].ty = Some(QTy::new(Ty::Ptr(Box::new(e.ty.unqual()))));
+                // A function exists for the whole program.
+                self.objs[o].is_static = true;
+                self.objs[o].konst = true;
+                Ok(Ptr::whole(o))
+            }
             EK::Var(id) => self.var_place(*id),
             EK::Unary(UOp::Deref, a) => {
                 let v = self.eval(a)?;
@@ -840,6 +865,15 @@ impl<'a> Machine<'a> {
             EK::Var(_) | EK::Member(..) | EK::Index(..) | EK::PtrMem(..) => {
                 if e.cat == Cat::PR {
                     return unsup("prvalue member");
+                }
+                if matches!(e.ty.t, Ty::Func(_)) {
+                    // A reference to a function: its place holds the
+                    // function.
+                    let p = self.lvalue(e)?;
+                    return match self.get_at(&p)?.clone() {
+                        v @ Val::FnPtr(..) => Ok(v),
+                        _ => unsup("a reference to a function"),
+                    };
                 }
                 if let Ty::Class(c) = &e.ty.t {
                     if self.copy_runs_code(*c) {
@@ -3776,8 +3810,14 @@ impl<'a> Machine<'a> {
                 self.choice("SEQ-1", if forward { "arguments evaluated from left to right" } else if backward { "arguments evaluated from right to left" } else { "arguments evaluated in another order" });
             }
         }
+        let over = std::mem::take(&mut self.ptr_param_tys);
         for (pid, a) in all {
-            let pty = self.p.var(pid).map(|v| v.ty.clone()).unwrap_or(QTy::unknown());
+            let pty = match &over {
+                // LNK-2: the parameter types of a function of another
+                // unit, from the type of the pointer.
+                Some(v) => f.params.iter().position(|&q| q == pid).and_then(|i| v.get(i).cloned()).unwrap_or(QTy::unknown()),
+                None => self.p.var(pid).map(|v| v.ty.clone()).unwrap_or(QTy::unknown()),
+            };
             if pty.is_unknown() {
                 return unsup("parameter of unknown type");
             }
@@ -3982,6 +4022,9 @@ impl<'a> Machine<'a> {
         }
         // SEQ-2: the function, with its object, before the arguments.
         let from_ptr = fid.is_none();
+        // LNK-2: a pointer to a function of another unit runs that unit's
+        // function.
+        let mut ptr_tu: Option<usize> = None;
         let mut fid = match fid {
             Some(f) => *f,
             None => {
@@ -3991,13 +4034,29 @@ impl<'a> Machine<'a> {
                 };
                 match v {
                     Val::FnPtr(t, f) if t == self.tu => f,
-                    Val::FnPtr(..) => return unsup("call through a pointer to a function of another translation unit"),
+                    Val::FnPtr(t, f) if self.ps[t].func(f).is_some_and(|g| g.class.is_none()) || self.ps[t].closure_conv.values().any(|&op| op == f) => {
+                        // Only scalar types, whose meaning does not depend
+                        // on the unit.
+                        let g = self.ps[t].func(f).unwrap();
+                        let scalar = |q: &QTy| !q.is_unknown() && !matches!(nonref(q).t, Ty::Class(_) | Ty::Enum(_) | Ty::MemPtr(..)) && !matches!(&nonref(q).t, Ty::Ptr(x) if matches!(x.t, Ty::Class(_) | Ty::Enum(_)));
+                        if g.fty.variadic || !g.fty.params.iter().all(scalar) || !(g.fty.ret.t == Ty::Void || scalar(&g.fty.ret)) || g.params.len() != g.fty.params.len() {
+                            return unsup("call through a pointer to a function of another translation unit");
+                        }
+                        self.ptr_param_tys = Some(g.fty.params.clone());
+                        ptr_tu = Some(t);
+                        f
+                    }
+                    Val::FnPtr(..) => return unsup("call through a pointer to a member function of another translation unit"),
                     Val::Null => return ub("PFX-8", "call through a null function pointer"),
                     _ => return unsup("indirect call"),
                 }
             }
         };
-        let Some(f) = self.p.func(fid) else { return unsup("call of a non-function") };
+        let fp = match ptr_tu {
+            Some(t) => self.ps[t],
+            None => self.p,
+        };
+        let Some(f) = fp.func(fid) else { return unsup("call of a non-function") };
         if from_ptr && !self.constant {
             // PFX-19: the pointer's function type must be the function's
             // type, `noexcept` included (Q-0178). A pointer without
@@ -4029,7 +4088,7 @@ impl<'a> Machine<'a> {
         let static_f = f.clone();
         let static_fid = fid;
         let mut f = static_f.clone();
-        let name0 = self.p.decls[fid].name.clone();
+        let name0 = fp.decls[fid].name.clone();
         let member = f.class.is_some() && !f.is_static && !f.explicit_obj && f.kind != FnKind::Ctor;
         // SEQ-6: an assignment operator function keeps the order of the
         // built-in assignment, the right operand first.
@@ -4044,13 +4103,16 @@ impl<'a> Machine<'a> {
             self.fixed_order = fixed;
             early_frame = Some(self.bind_args(&f, args, &f)?);
         }
-        let mut this = if member && from_ptr && self.p.closure_conv.values().any(|&op| op == fid) {
+        let mut this = if member && from_ptr && fp.closure_conv.values().any(|&op| op == fid) {
             // LAM-10: a call through the pointer of a lambda with no
             // captures runs its call operator on a closure with no state.
             let c = f.class.unwrap();
             let t = QTy::new(Ty::Class(c));
-            let p = self.alloc(&t)?;
-            self.add_temp(&p, &t);
+            let p = self.in_tu(ptr_tu.unwrap_or(self.tu), |m| {
+                let p = m.alloc(&t)?;
+                m.add_temp(&p, &t);
+                Ok(p)
+            })?;
             Some(p)
         } else if member {
             if matches!(callee.k, EK::Func(_)) {
@@ -4128,7 +4190,9 @@ impl<'a> Machine<'a> {
         // TR-4: a declaration names the definition, which can be in another
         // translation unit. An inline function is one entity.
         let mut ctu = self.tu;
-        if let Some(&(t2, g)) = self.links.get(&(self.tu, fid)) {
+        if let Some(t2) = ptr_tu {
+            ctu = t2;
+        } else if let Some(&(t2, g)) = self.links.get(&(self.tu, fid)) {
             ctu = t2;
             fid = g;
             f = self.ps[t2].func(g).unwrap().clone();
@@ -4153,7 +4217,7 @@ impl<'a> Machine<'a> {
         }
         if f.defaulted && f.body.is_none() {
             if ctu != self.tu {
-                return unsup("defaulted function of another translation unit");
+                return unsup(format!("defaulted function {} of another translation unit", name));
             }
             return self.call_defaulted(&f, fid, this, args);
         }

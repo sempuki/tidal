@@ -169,3 +169,4 @@ that has no row.
 | G149 | `report-21.md` | commit | decision 0057, item G: INST-12, Q-0392 |
 | G150 | `report-21.md` | commit | decision 0057, item G: CMP-8, Q-0387 |
 | G151 | `report-21.md` | commit | decision 0057, item G: BF-1, ALN-8, Q-0314 |
+| G152 | `report-22.md` | open | no commit or question names the finding |

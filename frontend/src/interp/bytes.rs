@@ -648,6 +648,19 @@ impl<'a> Machine<'a> {
                 let a = self.val_addr(v)?;
                 int(a as i128)
             }
+            (Val::Null, Ty::MemPtr(..)) => vec![0; s],
+            (Val::Member(..), Ty::MemPtr(..)) => {
+                // STG-12: a pointer to member has bytes that a copy keeps.
+                // The interpreter numbers each value it encodes.
+                let i = match self.member_reprs.iter().position(|x| x == v) {
+                    Some(i) => i,
+                    None => {
+                        self.member_reprs.push(v.clone());
+                        self.member_reprs.len() - 1
+                    }
+                };
+                int(i as i128 + 1)
+            }
             _ => return unsup("bytes of a value the interpreter does not encode"),
         })
     }
@@ -679,6 +692,13 @@ impl<'a> Machine<'a> {
             Ty::LDouble if b.len() >= 10 => Ok(Val::LD(super::f80::F80::from_bytes(b))),
             Ty::NullPtr => Ok(Val::Null),
             Ty::Ptr(pt) => self.addr_val(u as u64, pt),
+            Ty::MemPtr(..) => match u {
+                0 => Ok(Val::Null),
+                n => match self.member_reprs.get(n as usize - 1) {
+                    Some(v) => Ok(v.clone()),
+                    None => unsup("a pointer to member from bytes that no pointer to member had"),
+                },
+            },
             _ => unsup("a value of this type from its bytes"),
         }
     }
