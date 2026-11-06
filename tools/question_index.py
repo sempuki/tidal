@@ -226,6 +226,16 @@ def row4_split(text: str) -> tuple[set[str], set[str]]:
     return named - review, review
 
 
+def share_line(questions: list[Question], held: dict[int, list[str]], silent: list[str]) -> str:
+    """The share of open questions that the rows of pending.md hold (decision 0059)."""
+    open_ids = {q.id for q in questions if q.status == "provisional"}
+    nine = {q for qs in held.values() for q in qs} & open_ids
+    ten = (nine | set(silent)) & open_ids
+    pct = lambda n: round(100 * n / len(open_ids)) if open_ids else 0
+    return (f"Rows 1 to 9 hold {len(nine)} of the {len(open_ids)} open questions ({pct(len(nine))}%). "
+            f"With row 10, the rows hold {len(ten)} ({pct(len(ten))}%).")
+
+
 def render_packet(text: str, questions: list[Question]) -> str | None:
     """Return pending.md with the decision packet rewritten, or None when the heading is missing."""
     if PACKET_HEADING not in text:
@@ -246,6 +256,13 @@ def render_packet(text: str, questions: list[Question]) -> str | None:
     def tests(qs: list[str]) -> int:
         return len(set().union(*(cited.get(q, set()) for q in qs))) if qs else 0
 
+    def stay(qs: list[str]) -> str:
+        return f"{tests(qs)} | 0"
+
+    def change(qs: list[str]) -> str:
+        n = tests(qs)
+        return f"{n} | at most {n}" if n else "0 | 0"
+
     def listed(qs: list[str]) -> str:
         qs = sorted(set(qs))
         return f"{len(qs)}: {', '.join(qs)}" if qs else "none"
@@ -258,28 +275,30 @@ def render_packet(text: str, questions: list[Question]) -> str | None:
              "line of each open question and from the row 4 table below. For each",
              "row and option, it gives the open questions that the option settles",
              "and the number of tests whose notes name them. \"Answers stay\" means",
-             "that no test's expectation changes; \"answers change\" means that those",
-             "tests change their expectation. Row 4a holds the questions where every",
+             "that no test's expectation changes. For the other options, the last",
+             "column gives an upper bound: the tests that name the questions, some of",
+             "which hold a case that the option leaves as it is. The tool cannot tell",
+             "which case each test holds. Row 4a holds the questions where every",
              "newest family keeps the matrix's answer, and row 4b those where one",
              "family follows the review. Row 10 holds the questions whose last",
              "review finds the reference silent.", "",
-             "| Row | Option | Open questions it settles | Tests that name them |", "|---|---|---|---|"]
+             "| Row | Option | Open questions it settles | Tests that name them | Tests whose expectation changes |",
+             "|---|---|---|---|---|"]
     for row in rows:
         qs = held.get(row, [])
         if row == 1:
-            lines.append(f"| 1 | Widen decision 0054 to settle while two newest families differ; answers stay | {listed(qs)} | {tests(qs)} |")
+            lines.append(f"| 1 | Widen decision 0054 to settle while two newest families differ; answers stay | {listed(qs)} | {stay(qs)} |")
         elif row == 4:
             a = [q for q in row4 if q in four_a]
             b = [q for q in row4 if q not in four_a]
-            lines.append(f"| 4a | Follow the compilers; answers stay | {listed(a)} | {tests(a)} |")
-            lines.append(f"| 4a | Follow the review; answers change | {listed(a)} | {tests(a)} |")
-            lines.append(f"| 4b | Follow the compilers; answers stay | {listed(b)} | {tests(b)} |")
-            lines.append(f"| 4b | Follow the review; answers change | {listed(b)} | {tests(b)} |")
+            lines.append(f"| 4a | Follow the compilers; answers stay | {listed(a)} | {stay(a)} |")
+            lines.append(f"| 4a | Follow the review; answers change | {listed(a)} | {change(a)} |")
+            lines.append(f"| 4b | Follow the compilers; answers stay | {listed(b)} | {stay(b)} |")
+            lines.append(f"| 4b | Follow the review; answers change | {listed(b)} | {change(b)} |")
         elif row != 10:
-            lines.append(f"| {row} | Decide the row; answers may change | {listed(qs)} | {tests(qs)} |")
-    lines.append(f"| 10 | Record each answer as Tidal's own choice; answers stay | {listed(silent)} | {tests(silent)} |")
-    total = len({q for qs in held.values() for q in qs})
-    lines += ["", f"The rows 1 to 9 hold {total} of the open questions.", ""]
+            lines.append(f"| {row} | Decide the row; answers may change | {listed(qs)} | {change(qs)} |")
+    lines.append(f"| 10 | Record each answer as Tidal's own choice; answers stay | {listed(silent)} | {stay(silent)} |")
+    lines += ["", share_line(questions, held, silent), ""]
     kinds: dict[str, int] = {}
     for q in questions:
         for item in q.waits_for:
@@ -372,6 +391,8 @@ def render(text: str, questions: list[Question]) -> str:
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--check", action="store_true", help="fail if the table is out of date")
+    ap.add_argument("--share", action="store_true",
+                    help="print the share of open questions that pending.md holds, for a closing commit")
     args = ap.parse_args()
     questions, problems = load()
     old = README.read_text()
@@ -388,6 +409,10 @@ def main() -> int:
     else:
         pending_new = packet
     problems.extend(waits_problems(questions, pending_old))
+    if args.share:
+        if m := re.search(r"^Rows 1 to 9 hold .*$", pending_new, re.M):
+            print(m.group(0))
+        return 0
     if args.check:
         if new != old:
             problems.append("questions/README.md: the index is out of date; run tools/question_index.py")
