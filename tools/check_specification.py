@@ -257,7 +257,7 @@ def check_ledger(errors: list[str]) -> None:
     ended = ended_items()
     where = EXERCISE_LEDGER.relative_to(ROOT)
     for line in EXERCISE_LEDGER.read_text().splitlines():
-        if m := re.match(r"^\| ([A-Z][A-Z0-9]*-\d+) \| [^|]+ \| ([^|]+?) \| ([^|]*?) \|$", line):
+        if m := re.match(r"^\| ([A-Z][A-Z0-9]*(?:-[A-Z])?-\d+) \| [^|]+ \| ([^|]+?) \| ([^|]*?) \|$", line):
             fid, state, record = m.groups()
             exercise_rows[fid] = state
             if state not in LEDGER_STATES:

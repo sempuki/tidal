@@ -23,7 +23,8 @@ roadmap marks done or moved (decision 0059).
 A gap review under `reports/review/` gives each point that its repair
 commit leaves an ID such as `RV5-A3`, and the point gets a row here.
 The rows RV4-1 to RV4-7 give IDs to the doubts that the RV4 repair
-commit (7cf4574b) left for the next review.
+commit (7cf4574b) left for the next review. The RV5 reviews gave their
+own IDs (RV5-A-n and RV5-B-n).
 
 | Finding | Report | State | Record |
 |---|---|---|---|
@@ -894,10 +895,43 @@ commit (7cf4574b) left for the next review.
 | X23-5 | `X23/report.md` | commit | ee6085aa: STG-5 and NEW-29 |
 | X23-6 | `X23/report.md` | commit | 0f3f522f |
 | X23-7 | `X23/report.md` | commit | 0f3f522f |
-| RV4-1 | `../review/2026-11-05-gap-review-phase-10-expressions-templates.md` | planned | decision 0059, item RV5: the term "named capture" in LAM-6 |
-| RV4-2 | `../review/2026-11-05-gap-review-phase-10-expressions-templates.md` | planned | decision 0059, item RV5: LAM-29 |
-| RV4-3 | `../review/2026-11-05-gap-review-phase-10-classes-declarations-foundations.md` | planned | decision 0059, item RV5: the "needs" of SW-P1 against FN-7 |
+| RV4-1 | `../review/2026-11-05-gap-review-phase-10-expressions-templates.md` | commit | 3bed9cb5: LAM-6 says simple capture (RV5-B-14) |
+| RV4-2 | `../review/2026-11-05-gap-review-phase-10-expressions-templates.md` | text | LAM-29 states the right result (RV5-B-15) |
+| RV4-3 | `../review/2026-11-05-gap-review-phase-10-classes-declarations-foundations.md` | commit | 3bed9cb5: SW-P1 (RV5-A-18) |
 | RV4-4 | `../review/2026-11-05-gap-review-phase-10-classes-declarations-foundations.md` | commit | 6c6f69f8: the limits of JMP-10 in AUTO-P3 and RET-6 |
 | RV4-5 | `../review/2026-11-05-gap-review-phase-10-classes-declarations-foundations.md` | commit | 3b83788d: SINIT-6 points at OBJ-11 |
 | RV4-6 | `../review/2026-11-05-gap-review-phase-10-classes-declarations-foundations.md` | commit | 6c6f69f8: TR-17 for two definitions of main and the class of the main rule |
 | RV4-7 | `../review/2026-11-05-gap-review-phase-10-expressions-templates.md` | commit | 6c6f69f8: DED-29 for an address with a target type, Q-0420 |
+| RV5-A-1 | `../review/2026-11-05-gap-review-phase-12-classes-declarations-foundations.md` | commit | 3bed9cb5: CLS-26 and trailing requires clauses |
+| RV5-A-2 | `../review/2026-11-05-gap-review-phase-12-classes-declarations-foundations.md` | commit | 3bed9cb5: ALN-4 cites STG-23 alone |
+| RV5-A-3 | `../review/2026-11-05-gap-review-phase-12-classes-declarations-foundations.md` | commit | 3bed9cb5: the decltype(auto) row of AUTO-P3 |
+| RV5-A-4 | `../review/2026-11-05-gap-review-phase-12-classes-declarations-foundations.md` | commit | 3bed9cb5: RET-6 |
+| RV5-A-5 | `../review/2026-11-05-gap-review-phase-12-classes-declarations-foundations.md` | commit | 3bed9cb5: REF-1, every implicit pointer conversion |
+| RV5-A-6 | `../review/2026-11-05-gap-review-phase-12-classes-declarations-foundations.md` | commit | 3bed9cb5: SINIT-6 |
+| RV5-A-7 | `../review/2026-11-05-gap-review-phase-12-classes-declarations-foundations.md` | commit | 3bed9cb5: UNW-3 points at NEW-22 for a class |
+| RV5-A-8 | `../review/2026-11-05-gap-review-phase-12-classes-declarations-foundations.md` | commit | 3bed9cb5: CONV-1 and BF-6, bit-fields of enumeration type |
+| RV5-A-9 | `../review/2026-11-05-gap-review-phase-12-classes-declarations-foundations.md` | text | LSUP-11 keeps the matrix's answer; pending.md row 4 holds the split |
+| RV5-A-10 | `../review/2026-11-05-gap-review-phase-12-classes-declarations-foundations.md` | commit | 3bed9cb5: NAM-21's friend sentence |
+| RV5-A-11 | `../review/2026-11-05-gap-review-phase-12-classes-declarations-foundations.md` | question | Q-0416 |
+| RV5-A-12 | `../review/2026-11-05-gap-review-phase-12-classes-declarations-foundations.md` | commit | 3bed9cb5: STG-5, a class's allocation function hides placement |
+| RV5-A-13 | `../review/2026-11-05-gap-review-phase-12-classes-declarations-foundations.md` | commit | 3bed9cb5: STG-P3 |
+| RV5-A-14 | `../review/2026-11-05-gap-review-phase-12-classes-declarations-foundations.md` | commit | 3bed9cb5: an Evidence note on TR-17 |
+| RV5-A-15 | `../review/2026-11-05-gap-review-phase-12-classes-declarations-foundations.md` | commit | 3bed9cb5: TR-P1 |
+| RV5-A-16 | `../review/2026-11-05-gap-review-phase-12-classes-declarations-foundations.md` | commit | 3bed9cb5: JMP-10, with Q-0422 for structured bindings |
+| RV5-A-17 | `../review/2026-11-05-gap-review-phase-12-classes-declarations-foundations.md` | question | Q-0421 |
+| RV5-A-18 | `../review/2026-11-05-gap-review-phase-12-classes-declarations-foundations.md` | commit | 3bed9cb5: SW-P1 |
+| RV5-B-1 | `../review/2026-11-05-gap-review-phase-12-expressions-overloading-templates.md` | question | Q-0418 |
+| RV5-B-2 | `../review/2026-11-05-gap-review-phase-12-expressions-overloading-templates.md` | commit | 3bed9cb5: an Evidence note on COND-16 and COND-3 |
+| RV5-B-3 | `../review/2026-11-05-gap-review-phase-12-expressions-overloading-templates.md` | commit | 3bed9cb5: an Evidence note on COND-16 and COND-3 |
+| RV5-B-4 | `../review/2026-11-05-gap-review-phase-12-expressions-overloading-templates.md` | commit | 3bed9cb5: an Evidence note on NEW-P5, pending.md row 4 |
+| RV5-B-5 | `../review/2026-11-05-gap-review-phase-12-expressions-overloading-templates.md` | commit | 3bed9cb5: an Evidence note on NEW-22 |
+| RV5-B-6 | `../review/2026-11-05-gap-review-phase-12-expressions-overloading-templates.md` | commit | 3bed9cb5: ICS-11 |
+| RV5-B-7 | `../review/2026-11-05-gap-review-phase-12-expressions-overloading-templates.md` | commit | 3bed9cb5: an Evidence note on ICS-17 |
+| RV5-B-8 | `../review/2026-11-05-gap-review-phase-12-expressions-overloading-templates.md` | question | Q-0419 |
+| RV5-B-9 | `../review/2026-11-05-gap-review-phase-12-expressions-overloading-templates.md` | commit | 3bed9cb5: an Evidence note on ICS-45, pending.md row 4 |
+| RV5-B-10 | `../review/2026-11-05-gap-review-phase-12-expressions-overloading-templates.md` | text | DED-29 is a fair reading; the doubt is in the reference's note |
+| RV5-B-11 | `../review/2026-11-05-gap-review-phase-12-expressions-overloading-templates.md` | text | DEP-P6 follows the intent of the C++23 change; the doubt is in the reference |
+| RV5-B-12 | `../review/2026-11-05-gap-review-phase-12-expressions-overloading-templates.md` | commit | 3bed9cb5: ORD-13 names the conditions it replaces |
+| RV5-B-13 | `../review/2026-11-05-gap-review-phase-12-expressions-overloading-templates.md` | question | Q-0417 |
+| RV5-B-14 | `../review/2026-11-05-gap-review-phase-12-expressions-overloading-templates.md` | commit | 3bed9cb5: LAM-5 to LAM-7, simple and init captures |
+| RV5-B-15 | `../review/2026-11-05-gap-review-phase-12-expressions-overloading-templates.md` | text | LAM-29 states the right result; the reference is silent |
