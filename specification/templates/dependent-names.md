@@ -872,7 +872,7 @@ waits on the maintainer (`documentation/decisions/pending.md`).
   independent constant can use a `constexpr` function defined after the
   template. No diagnostic is required. No family differs from the
   answer, and Clang rejects the template.
-- {question}`Q-0247` (DEP-33, DEP-37; open): whether a base list that
+- {question}`Q-0247` (DEP-33, DEP-37; settled): whether a base list that
   expands one pack twice is diagnosed before instantiation. No
   diagnostic is required. Every compiler's result fits, and GCC waits
   for the instantiation.

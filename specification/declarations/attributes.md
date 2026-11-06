@@ -411,7 +411,7 @@ of 90 tests. EDG skips the tests that use `-Werror`.
   `no_unique_address` on a bit-field. The program is rejected. GCC
   accepts all four with a warning, and Clang accepts the two
   `nodiscard` forms.
-- {question}`Q-0390` (ATTR-2; open): whether a `fallthrough` statement
+- {question}`Q-0390` (ATTR-2; settled): whether a `fallthrough` statement
   can lead to a label of an enclosing `switch`. It cannot, as GCC and
   EDG say. Clang accepts the program.
 - {question}`Q-0046` (ATTR-2; settled on ATTR-P1): whether `likely` and

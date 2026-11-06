@@ -252,6 +252,46 @@ def render_packet(text: str, questions: list[Question]) -> str | None:
     return before + "\n".join(lines) + rest
 
 
+NEWEST = ("clang-22", "gcc-16", "edg-7.0")
+
+
+def family_warnings(questions: list[Question]) -> list[str]:
+    """Questions whose "newest families that agree" item disagrees with their tests' overrides.
+
+    For each open question, the tests whose notes name it give the most
+    newest families that differ from the base expectation in one test.
+    The item belongs on the line when that count is two or more.
+    """
+    sys.path.insert(0, str(ROOT / "tools"))
+    import matrix
+    import run_tests
+    comps = {c.id: c for c in matrix.load()}
+    cited = note_citations()
+    out = []
+    for q in questions:
+        if q.status != "provisional":
+            continue
+        most = 0
+        for name in cited.get(q.id, ()):
+            test = run_tests.parse_test(TESTS / name)
+            base = test.default
+            differ = 0
+            for cid in NEWEST:
+                c = comps[cid]
+                expect = test.expect(c)
+                own = "accept" if c.frontend_only and base in {"run", "run-fail", "link-fail"} else base
+                differ += expect is not None and expect != own
+            most = max(most, differ)
+        has = "newest families that agree" in q.waits_for
+        if has and most < 2:
+            out.append(f"{q.path.relative_to(ROOT)}: names newest families that agree, and no test "
+                       "that names it has two newest families that differ")
+        elif not has and most >= 2:
+            out.append(f"{q.path.relative_to(ROOT)}: a test that names it has {most} newest families "
+                       "that differ, and its line does not name newest families that agree")
+    return out
+
+
 def cell(text: str) -> str:
     return text.replace("|", r"\|")
 
@@ -292,6 +332,8 @@ def main() -> int:
             problems.append(f"{PENDING.relative_to(ROOT)}: the count of questions settled under "
                             "decision 0054 or the decision packet is out of date; run tools/question_index.py")
         problems.extend(review_warnings(questions))
+        for w in family_warnings(questions):
+            print(f"warning: {w}")
     else:
         if new != old:
             README.write_text(new)

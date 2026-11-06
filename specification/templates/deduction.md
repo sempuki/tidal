@@ -825,7 +825,7 @@ maintainer (`documentation/decisions/pending.md`).
   specialization's constant parameter with no conversion. It must, as
   in a function template, and as GCC and EDG say. Clang converts the
   argument.
-- {question}`Q-0399` (DED-24; open): whether a negative array bound
+- {question}`Q-0399` (DED-24; settled): whether a negative array bound
   that substitution makes removes the template. It does in every form,
   as Clang says. GCC rejects a computed negative bound such as `N - 2`,
   and EDG rejects a negative bound in a pointer to an array when the

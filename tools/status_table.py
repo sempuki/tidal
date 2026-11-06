@@ -2,7 +2,8 @@
 """Regenerate the numbers in documentation/status.md from the files that hold them.
 
 It also rewrites the agreement sentence in each page's Evidence segment
-(tools/agreement.py) and the Split tests table (tools/split_tests.py).
+(tools/agreement.py), the Split tests table (tools/split_tests.py), and
+the status tags of the Divergences lines (tools/divergence_tags.py).
 
 The tool writes:
 - the specification table. It lists every page that a section index
@@ -68,6 +69,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import agreement  # noqa: E402
 import split_tests  # noqa: E402
+import divergence_tags  # noqa: E402
 import frontend_check  # noqa: E402
 import matrix  # noqa: E402
 import question_index  # noqa: E402
@@ -526,7 +528,10 @@ def render(text: str) -> tuple[str, list[str]]:
 
 def main() -> int:
     argparse.ArgumentParser(description=__doc__.split("\n")[0]).parse_args()
+    known = divergence_tags.statuses()
     for p in all_pages():
+        if divergence_tags.rewrite(p, known):
+            print(f"Divergences tags updated: {p.relative_to(ROOT)}")
         if agreement.rewrite(p):
             print(f"agreement sentence updated: {p.relative_to(ROOT)}")
         if split_tests.rewrite(p):

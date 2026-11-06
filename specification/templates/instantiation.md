@@ -771,7 +771,7 @@ waits on the maintainer (`documentation/decisions/pending.md`).
   argument of a member function of a local class is instantiated with
   the enclosing function. It is, as Clang and EDG say. GCC 16 waits for
   a call.
-- {question}`Q-0392` (INST-12, INST-P1; open): whether a member
+- {question}`Q-0392` (INST-12, INST-P1; settled): whether a member
   function of a local class in a function template can have a requires
   clause. It can, and the clause waits for a use of the member, as
   Clang 22 and GCC 16 say. EDG 7.0 rejects the requires clause.

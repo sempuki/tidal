@@ -302,7 +302,7 @@ All eight compilers agree on 41 of 51 tests. The results are in
   accepts it. The gap review of the text phase 8 wrote reads the C++23
   text as Clang does, and Tidal keeps the matrix's answer
   (`documentation/decisions/pending.md`, "Matrix against review").
-- {question}`Q-0370` (DEFARG-12; open): whether a definition outside the
+- {question}`Q-0370` (DEFARG-12; settled): whether a definition outside the
   class can add a default argument that makes a constructor a default,
   copy, or move constructor. It cannot, as Clang and EDG say. GCC
   accepts each form.

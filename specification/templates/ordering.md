@@ -645,7 +645,7 @@ project waits on the maintainer (`documentation/decisions/pending.md`).
   partial ordering chooses among matching placement deallocation
   templates. It does, as GCC and EDG say. Clang warns that two
   functions match and calls neither.
-- {question}`Q-0398` (ORD-6; open): whether
+- {question}`Q-0398` (ORD-6; settled): whether
   the object parameter of a `const` member keeps the `const`. It does,
   as Clang and GCC say. EDG finds the call ambiguous.
 - {question}`Q-0218` (ORD-7; open): whether the object parameter of a
@@ -662,7 +662,7 @@ project waits on the maintainer (`documentation/decisions/pending.md`).
 - {question}`Q-0216` (ORD-12; open): whether a parameter with a default
   argument counts against a trailing pack. It does, and Clang finds the
   call ambiguous. GCC and EDG choose the template with no pack.
-- {question}`Q-0397` (ORD-17; open):
+- {question}`Q-0397` (ORD-17; settled):
   whether a partial specialization with `int V` is more specialized than
   one with a constrained `auto V`. It is, as Clang and GCC say. EDG
   chooses the constrained partial specialization.

@@ -341,7 +341,7 @@ All eight compilers agree on 64 of 71 tests. The results are in
 - {question}`Q-0107` (SB-11; settled on SB-P3): whether `constinit`
   can apply to a structured binding declaration. It cannot, as Clang
   and GCC 16 say. EDG 7.0 and GCC 14 accept it.
-- {question}`Q-0376` (SB-5; open): which type the index of `get` has.
+- {question}`Q-0376` (SB-5; settled): which type the index of `get` has.
   It is `std::size_t`, as Clang and EDG pass it, so `template <auto I>`
   deduces that type. GCC passes an `int`. Every compiler accepts a
   member `get` with an `int` parameter.

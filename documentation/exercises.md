@@ -206,24 +206,12 @@ answer (style guide, section 3).
 
 ## 6. Order
 
-The Write suites W1 to W17, the Propose rounds X1 to X21, the Diagnose
-batches of D-classes, the Implement exercises I1 and I2, the
-principle-use batches PU1 and PU2, and a Predict batch without test
-names for every page are done (section 8). Decision 0057 orders the
-next exercises:
-
-1. A principle-use batch PU3 on the questions whose `**Waits for:**`
-   line names a use (item PU3).
-2. An Implement exercise I3 on the ranking of conversion sequences and
-   the best viable function (item E).
-3. Write suites W18 (callables) and W19 (compile-time and generic code),
-   with the interpreter step (item E).
-4. A refreshed Propose portfolio, a refresh note for X19, and Propose
-   X22 on P23 (item E).
+Section 8 lists the exercises that are done. The table of the current
+phase in `documentation/roadmap.md`, and the phase's decision, order
+the next ones.
 
 Each phase runs at least one exercise by use that writes programs
-(Write or Port), beside any Implement exercise. Port suites and
-Diagnose batches beyond D-classes wait for a later phase.
+(Write or Port), beside any Implement exercise.
 
 ## 7. Coverage
 

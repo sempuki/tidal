@@ -706,7 +706,7 @@ Q-0285, and Q-0286 to the EDG project waits on the maintainer
 - {question}`Q-0289` (CPT-35, CNS-9; settled): whether a nested
   requirement that evaluates a parameter of the requires expression is
   an error. It is. Clang 18 gives `false`.
-- {question}`Q-0400` (CPT-35; open): whether a concept is valid when
+- {question}`Q-0400` (CPT-35; settled): whether a concept is valid when
   its requirement is satisfied for no argument. It is. No family
   differs.
 - {question}`Q-0286` (CPT-37; settled on CPT-P1): whether a structured

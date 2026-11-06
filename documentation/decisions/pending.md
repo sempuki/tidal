@@ -29,8 +29,8 @@ last column lists the questions that the decision closes or changes.
 | 35 | phase 9 item RV2, the repairs from the gap reviews of the text phase 8 wrote | 1bf7812 |
 | 20 | phase 9 item PU, the principle-use batch PU1 | 926831c |
 | 7 | the principle-use batch PU2 | f2ac11c |
-| 10 | phase 10 item RV3, the gap reviews of the text phase 9 wrote: Q-0092, Q-0247, Q-0340, Q-0358, Q-0390, Q-0392, Q-0397, Q-0398, Q-0399, Q-0400 | |
-| 2 | phase 10 item PU3, the principle-use batch PU3: Q-0370, Q-0376 | |
+| 10 | phase 10 item RV3, the gap reviews of the text phase 9 wrote: Q-0092, Q-0247, Q-0340, Q-0358, Q-0390, Q-0392, Q-0397, Q-0398, Q-0399, Q-0400 | b1d89e7 |
+| 2 | phase 10 item PU3, the principle-use batch PU3: Q-0370, Q-0376 | 75e4fab |
 | -8 | phase 8 item PQ reopened these under the principle test of the style guide: Q-0064, Q-0067, Q-0111, Q-0242, Q-0259, Q-0319, Q-0329, Q-0373. Item PU settled Q-0067 and Q-0329 again | |
 
 ## Decision packet

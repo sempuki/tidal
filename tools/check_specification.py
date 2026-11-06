@@ -27,6 +27,7 @@ Fails when:
   REFERENCED_TOPICS,
 - a page's agreement sentence is out of date (run tools/status_table.py),
 - a page's Split tests table is out of date or missing (run tools/status_table.py),
+- a Divergences tag disagrees with its question's status (run tools/status_table.py),
 - a front-end report names a finding with no row in
   reports/clean-room/rust-frontend/ledger.md, or another report under
   reports/clean-room/ names a finding with no row in
@@ -498,8 +499,12 @@ def main() -> int:
             if ref not in (rules if role == "rule" else principles):
                 errors.append(f"{f.relative_to(ROOT)}: {{{role}}} refers to {ref}, which no page defines")
     import agreement
+    import divergence_tags
     import split_tests
+    known = divergence_tags.statuses()
     for f in sorted(SPEC.rglob("*.md")):
+        if not divergence_tags.current(f, known):
+            errors.append(f"{f.relative_to(ROOT)}: a Divergences tag disagrees with its question's status; run tools/status_table.py")
         if not agreement.current(f.read_text()):
             errors.append(f"{f.relative_to(ROOT)}: the agreement sentence is out of date; run tools/status_table.py")
         if not split_tests.current(f):

@@ -662,7 +662,7 @@ of 155 tests.
   compare the addresses of two string literals. CE-13 rejects the
   comparison, as Clang does. GCC and EDG fold some or all such
   comparisons.
-- {question}`Q-0078` (CE-11; open): whether the operand of `noexcept` or
+- {question}`Q-0078` (CE-11; settled): whether the operand of `noexcept` or
   `explicit` can narrow when it converts to `bool`. It cannot, as Clang
   and GCC say. EDG 7.0 accepts `explicit(2)`.
 - {question}`Q-0090` (CE-18; settled): whether an evaluation can use a

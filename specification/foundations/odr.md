@@ -530,7 +530,7 @@ the units are valid.
   for a warning. No family differs. GCC gives no diagnostic when the
   only use is in an `inline` function that nothing calls, and Clang 18
   gives a warning that `-pedantic-errors` leaves a warning.
-- {question}`Q-0358` (ODR-5, ODR-8; open): whether a `new` expression
+- {question}`Q-0358` (ODR-5, ODR-8; settled): whether a `new` expression
   uses the deallocation function when its constructor is `noexcept`.
   It does, and ODR-8 needs no diagnostic. GCC 16 at `-O0` fails to link,
   and Clang, GCC 14, and GCC 16 at `-O2` link and run.

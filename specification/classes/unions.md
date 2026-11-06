@@ -731,7 +731,7 @@ that still differs.
   evaluation must reject a read of a union member after an explicit
   destructor call ends it. It must, as Clang and EDG say. GCC accepts
   the read and gives 0.
-- {question}`Q-0340` (UNI-15, UNI-16; open): whether two structs are
+- {question}`Q-0340` (UNI-15, UNI-16; settled): whether two structs are
   layout-compatible when matching members both have
   `[[no_unique_address]]`. They are, as GCC's builtin query says.
   Clang 22's query says they are not. No test shows the property.
