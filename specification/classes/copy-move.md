@@ -497,7 +497,7 @@ copyable.
 
 :::{rule} CPY-12
 :kind: unspecified
-:tests: classes/copy-move/named-return-elision-either.cpp classes/copy-move/constant-evaluation-no-nrvo.cpp
+:tests: classes/copy-move/named-return-elision-either.cpp classes/copy-move/constant-evaluation-no-nrvo.cpp foundations/constant-evaluation/return-local-unset-member.cpp
 
 If a `return` statement names a local variable of the return type, it is
 unspecified if the variable is moved to the return value or is the return
@@ -698,7 +698,7 @@ Any c(1);                          // the template, with T = int
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 121
-of 126 tests.
+of 127 tests.
 
 ### Divergences
 
@@ -708,6 +708,10 @@ of 126 tests.
   is rejected. No newest family differs. GCC 14 rejects the declaration
   of a `const volatile` copy constructor and a `const` move
   constructor.
+- {question}`Q-0115` (CPY-12, CE-22; compiler defect): whether the
+  move of a returned local with a part that has no value is rejected in
+  constant evaluation. It is, as Clang and EDG do. GCC 14 and 16 accept
+  it.
 - {question}`Q-0339` (CPY-27, CPY-19; open): whether a part with a
   trivial and a non-trivial copy constructor makes the enclosing copy
   constructor non-trivial when the copy selects the trivial one. The
@@ -731,6 +735,7 @@ of 126 tests.
 | `classes/unions/union-copy-two-copy-constructors.cpp` | UNI-3, CPY-27 | accept | accept | reject | reject | {question}`Q-0339` |
 | `defaulted-move-const-param.cpp` | CPY-14 | accept | accept | GCC 16: accept; GCC 14: reject | accept | {question}`Q-0055` |
 | `defaulted-volatile-param.cpp` | CPY-14 | accept | accept | GCC 16: accept; GCC 14: reject | accept | {question}`Q-0055` |
+| `foundations/constant-evaluation/return-local-unset-member.cpp` | CE-22, CPY-12 | reject | reject | accept | reject | {question}`Q-0115` |
 | `trivially-copyable-member-selected.cpp` | CPY-27, CPY-19, UNI-3 | accept | accept | reject | reject | {question}`Q-0339` |
 | `trivially-copyable-member-template-selected.cpp` | CPY-27, UNI-11 | reject | reject | reject | accept | {question}`Q-0339` |
 

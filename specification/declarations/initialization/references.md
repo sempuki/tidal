@@ -91,14 +91,17 @@ model, and its child questions hold each split between the compilers.
 
 :::{rule} REF-1
 :kind: required
-:tests: declarations/initialization/references/lvalue-ref-binds-lvalue.cpp declarations/initialization/references/base-ref-to-derived.cpp declarations/initialization/references/unknown-bound-ref.cpp declarations/initialization/references/const-element-array-ref.cpp declarations/initialization/references/const-ref-binds-lvalue-directly.cpp
+:tests: declarations/initialization/references/lvalue-ref-binds-lvalue.cpp declarations/initialization/references/base-ref-to-derived.cpp declarations/initialization/references/unknown-bound-ref.cpp declarations/initialization/references/const-element-array-ref.cpp declarations/initialization/references/const-ref-binds-lvalue-directly.cpp declarations/initialization/references/pointer-lvalue-binds-more-qualified-pointer.cpp
 
 An lvalue reference {term}`binds directly <bind directly>` to an
 lvalue that is not a bit-field, if the lvalue has one of these types:
 
 - the same type,
 - the same type with fewer {term}`cv-qualifiers <cv-qualifier>`,
-- a class derived from the type through an accessible base.
+- a class derived from the type through an accessible base,
+- a pointer type that converts to the type by an implicit qualification
+  adjustment below the top level ({rule}`CONV-9`), as an `int*` lvalue
+  for `const int* const&`.
 
 The reference and the lvalue are then the same object, and no temporary
 object exists. The cv-qualifiers of an array's elements count as those
@@ -339,7 +342,7 @@ int& m{s};                   // rejected: a temporary needs const or &&
 
 ## Evidence
 
-All eight compilers agree on 51 of 66 tests. The results are in
+All eight compilers agree on 52 of 67 tests. The results are in
 `tests/RESULTS.md`.
 
 ### Divergences

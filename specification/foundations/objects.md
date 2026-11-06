@@ -279,7 +279,7 @@ object.
 
 :::{rule} OBJ-11
 :kind: impl-defined
-:tests: foundations/objects/thread-local-init-point.cpp foundations/objects/thread-local-member-init-point.cpp foundations/objects/thread-local-constant-variable-starts-nothing.cpp foundations/objects/thread-local-started-by-other-variable.cpp foundations/objects/thread-local-constant-use-no-construction.cpp
+:tests: foundations/objects/thread-local-init-point.cpp foundations/objects/thread-local-member-init-point.cpp foundations/objects/thread-local-constant-variable-starts-nothing.cpp foundations/objects/thread-local-started-by-other-variable.cpp foundations/objects/thread-local-constant-use-no-construction.cpp foundations/objects/thread-local-member-starts-unit.cpp
 
 The implementation constructs a `thread_local` object at namespace
 scope that is not `inline` and has a constructor either before the
@@ -294,8 +294,14 @@ constant initialization does not start it
 use, and in which threads, the construction runs is also
 implementation-defined.
 
+A `static` data member declared `thread_local` and defined at
+namespace scope is such an object. The first use of the member can
+start the other `thread_local` variables of its unit, and the first
+use of one of them can start the member.
+
 Every compiler of the matrix defers the construction. The first use of
-one such variable of the unit constructs all of them.
+one such variable of the unit constructs all of them, the static data
+members included.
 :::
 
 ## Examples
@@ -319,8 +325,8 @@ int main() {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 57
-of 62 tests. EDG runs no programs, so its results for the run tests say
+The results are in `tests/RESULTS.md`. All eight compilers agree on 58
+of 63 tests. EDG runs no programs, so its results for the run tests say
 only that the programs are valid.
 
 ### Divergences

@@ -171,7 +171,7 @@ and the destructor is not needed (UNEV-1).
 
 :::{rule} VC-4
 :kind: required
-:tests: foundations/values/guaranteed-elision.cpp foundations/values/materialization-binds.cpp foundations/values/prvalue-no-object-until-needed.cpp
+:tests: foundations/values/guaranteed-elision.cpp foundations/values/materialization-binds.cpp foundations/values/prvalue-no-object-until-needed.cpp foundations/constant-evaluation/return-prvalue-unset-member-read.cpp
 
 A prvalue that initializes an object of the same type initializes that
 object directly. No temporary object exists, and no copy or move
@@ -304,7 +304,7 @@ NoCopy a = NoCopy(NoCopy(5));      // fine: no copy occurs
 
 ## Evidence
 
-All eight compilers agree on 62 of 64 tests. The results are in
+All eight compilers agree on 63 of 65 tests. The results are in
 `tests/RESULTS.md`.
 
 ### Divergences

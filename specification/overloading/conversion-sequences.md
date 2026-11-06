@@ -404,7 +404,7 @@ Only a standard sequence can reach these parameters:
 
 :::{rule} ICS-11
 :kind: required
-:tests: overloading/conversion-sequences/reference-direct-derived.cpp overloading/conversion-sequences/reference-temporary.cpp overloading/conversion-sequences/reference-conversion-result.cpp overloading/conversion-sequences/reference-conversion-value-result.cpp expressions/conditional/class-converts-to-int-reference-lvalue.cpp
+:tests: overloading/conversion-sequences/reference-direct-derived.cpp overloading/conversion-sequences/reference-temporary.cpp overloading/conversion-sequences/reference-conversion-result.cpp overloading/conversion-sequences/reference-conversion-value-result.cpp expressions/conditional/class-converts-to-int-reference-lvalue.cpp declarations/initialization/references/pointer-lvalue-binds-more-qualified-pointer.cpp
 
 The sequence of a reference parameter depends on how the reference binds
 ({rule}`REF-1`, {rule}`REF-2`, {rule}`REF-3`):
@@ -417,6 +417,12 @@ The sequence of a reference parameter depends on how the reference binds
   result can be a class prvalue.
 - to a temporary: the sequence that converts the argument to the
   referenced type, without its top-level cv-qualifiers.
+
+A prvalue that is not of class type always binds a temporary
+({rule}`REF-2`). So an `int*` prvalue for a `const int* const&`
+parameter has the qualification adjustment to `const int*` as its
+sequence, and an `int*` lvalue binds the same parameter directly with
+the identity (REF-1).
 :::
 
 :::{rule} ICS-12
@@ -496,18 +502,23 @@ this sequence:
 
 :::{rule} ICS-16
 :kind: required
-:tests: overloading/conversion-sequences/list-initializer-list.cpp overloading/conversion-sequences/list-initializer-list-designated.cpp foundations/language-support/initializer-list-candidate-not-viable.cpp
+:tests: overloading/conversion-sequences/list-initializer-list.cpp overloading/conversion-sequences/list-initializer-list-designated.cpp foundations/language-support/initializer-list-candidate-not-viable.cpp overloading/conversion-sequences/list-user-defined-same-function.cpp overloading/conversion-sequences/list-user-defined-first-element-int.cpp overloading/conversion-sequences/list-user-defined-first-element-long.cpp
 
 For a parameter of type `std::initializer_list<E>` ({rule}`LSUP-1`), a
 braced list has a sequence if each element converts to `E`. An element
 can use a user-defined conversion. The sequence is the worst element
 conversion, or the identity for an empty list. A designated list has no
 sequence.
+
+When the worst kind is a user-defined sequence, the list sequence is
+the user-defined sequence of the first element that has one. ICS-25
+then compares two list sequences by that element's conversion function
+and third part ({question}`Q-0419`).
 :::
 
 :::{rule} ICS-17
 :kind: required
-:tests: overloading/conversion-sequences/list-array.cpp overloading/conversion-sequences/list-array-against-scalar.cpp
+:tests: overloading/conversion-sequences/list-array.cpp overloading/conversion-sequences/list-array-against-scalar.cpp overloading/conversion-sequences/array-list-user-defined-first-element.cpp
 
 For a reference to an array of `E` that binds a temporary (ICS-20,
 {principle}`REF-P3`), a braced list has a sequence if each element converts to `E` and these
@@ -516,7 +527,8 @@ conditions hold:
 - A known bound is not less than the number of elements.
 - Each element past the list converts from empty braces.
 
-The sequence is the worst element conversion. ICS-38 gives one string
+The sequence is the worst element conversion, chosen as ICS-16 says
+when the worst kind is a user-defined sequence. ICS-38 gives one string
 literal for an array of characters.
 :::
 
@@ -632,7 +644,7 @@ ICS-38, {principle}`REF-P3`).
 
 :::{rule} ICS-25
 :kind: required
-:tests: overloading/conversion-sequences/user-defined-same-function.cpp overloading/conversion-sequences/user-defined-same-aggregate.cpp overloading/conversion-sequences/user-defined-different-functions.cpp
+:tests: overloading/conversion-sequences/user-defined-same-function.cpp overloading/conversion-sequences/user-defined-same-aggregate.cpp overloading/conversion-sequences/user-defined-different-functions.cpp overloading/conversion-sequences/list-user-defined-same-function.cpp overloading/conversion-sequences/list-user-defined-first-element-int.cpp overloading/conversion-sequences/list-user-defined-first-element-long.cpp overloading/conversion-sequences/array-list-user-defined-first-element.cpp
 
 Two user-defined sequences compare by their third parts, as standard
 sequences, in these cases:
@@ -646,12 +658,18 @@ user-defined sequence.
 
 :::{rule} ICS-26
 :kind: required
-:tests: overloading/conversion-sequences/subsequence-function-pointer.cpp overloading/conversion-sequences/subsequence-qualification.cpp
+:tests: overloading/conversion-sequences/subsequence-function-pointer.cpp overloading/conversion-sequences/subsequence-qualification.cpp overloading/conversion-sequences/derived-pointer-then-qualification.cpp
 
 Two standard sequences are compared without their lvalue
 transformations. If one is a proper subsequence of the other, the
 shorter one is better. The identity is a subsequence of every other
 sequence.
+
+A pointer conversion followed by a qualification adjustment is two
+steps. `Derived*` to `const Middle*` is the derived-to-base conversion
+to `Middle*` and then the adjustment to `const Middle*`. So `Derived*`
+to `Middle*` is a proper subsequence of it, and for a `Derived*`
+argument, `f(Middle*)` is better than `f(const Middle*)`.
 :::
 
 :::{rule} ICS-27
@@ -857,8 +875,8 @@ send(s);                    // rejected: Target(Source&) and operator Target()
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 108
-of 135 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 110
+of 141 tests.
 
 ### Divergences
 
@@ -934,6 +952,10 @@ of 135 tests.
   lvalue reference to `const` can use an `explicit` conversion function
   that does not return an lvalue. It cannot, as on GCC. Clang accepts
   both forms, and EDG accepts an rvalue reference result.
+- {question}`Q-0419` (ICS-16, ICS-17, ICS-25; open): which element's
+  conversion a list sequence holds when the worst element conversion is
+  user-defined. It holds the first such element's, as Clang and EDG do.
+  GCC calls every such call ambiguous.
 
 ### Split tests
 
@@ -945,6 +967,7 @@ cells give the outcome of the test on each compiler.
 |---|---|---|---|---|---|---|
 | `array-known-bound-direct-cv.cpp` | ICS-46 | accept | reject | accept | accept | {question}`Q-0188` |
 | `array-known-bound-direct.cpp` | ICS-46 | accept | reject | accept | accept | {question}`Q-0188` |
+| `array-list-user-defined-first-element.cpp` | ICS-17, ICS-25 | accept | accept | reject | accept | {question}`Q-0419` |
 | `array-pointer-tie-breaker.cpp` | ICS-33, ICS-36 | accept | accept | reject | accept | {question}`Q-0137` |
 | `bit-field-promotion.cpp` | ICS-2 | accept | accept | reject | reject | {question}`Q-0134` |
 | `chosen-explicit-copy-list.cpp` | ICS-8, ILC-8 | reject | accept | reject | accept | {question}`Q-0132` |
@@ -963,6 +986,9 @@ cells give the outcome of the test on each compiler.
 | `list-string-literal-bound.cpp` | ICS-38, ICS-46 | accept | reject | accept | accept | {question}`Q-0155`, {question}`Q-0188` |
 | `list-string-literal-too-short.cpp` | ICS-38 | accept | reject | accept | accept | {question}`Q-0155` |
 | `list-string-literal-utf8.cpp` | ICS-38 | accept | accept | reject | accept | {question}`Q-0155` |
+| `list-user-defined-first-element-int.cpp` | ICS-16, ICS-25 | accept | accept | reject | accept | {question}`Q-0419` |
+| `list-user-defined-first-element-long.cpp` | ICS-16, ICS-25 | accept | accept | reject | accept | {question}`Q-0419` |
+| `list-user-defined-same-function.cpp` | ICS-16, ICS-25 | accept | accept | reject | accept | {question}`Q-0419` |
 | `qualification-array-bound.cpp` | ICS-31 | accept | accept | reject | reject | {question}`Q-0153` |
 | `qualification-reference-temporary.cpp` | ICS-31 | accept | accept | accept | reject | {question}`Q-0153` |
 | `rvalue-reference-before-qualification.cpp` | ICS-28, ICS-31 | accept | accept | reject | accept | {question}`Q-0152` |

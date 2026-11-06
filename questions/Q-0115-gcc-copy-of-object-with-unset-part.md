@@ -1,7 +1,7 @@
 # Q-0115: Does GCC accepting a copy of an object with an unset part during constant evaluation change CE-22?
 
 **Status:** compiler defect
-**Affects:** CE-22, CE-21, `tests/foundations/constant-evaluation/copy-unset-member.cpp`, `tests/foundations/constant-evaluation/copy-unset-array-element.cpp`, `tests/foundations/constant-evaluation/result-returned-local-unset-element.cpp`, `tests/foundations/constant-evaluation/read-returned-local-unset-element.cpp`
+**Affects:** CE-22, CE-21, `tests/foundations/constant-evaluation/copy-unset-member.cpp`, `tests/foundations/constant-evaluation/copy-unset-array-element.cpp`, `tests/foundations/constant-evaluation/result-returned-local-unset-element.cpp`, `tests/foundations/constant-evaluation/read-returned-local-unset-element.cpp`, `tests/foundations/constant-evaluation/return-local-unset-member.cpp`, `tests/foundations/constant-evaluation/return-prvalue-unset-member-read.cpp`
 
 ## Context
 
@@ -22,11 +22,20 @@ the variable, and a `static_assert` that reads the unset element as 0
 passes on GCC. When a default member initializer gives every part a
 value, every compiler accepts the constant.
 
+The return of a local with an unset member, where the caller reads only
+a member that has a value, splits the same way. A grid of the named
+local, the parenthesized local, and a local through a conditional
+(`reports/clean-room/roadmap-9/writer-probes/r10-4-return-local-unset.json`)
+gives a rejection on Clang and EDG and acceptance on GCC 14 and 16. A
+returned prvalue makes no copy, and every compiler accepts the read of
+the member that has a value.
+
 ## Evidence
 
 `tests/RESULTS.md`, rows `copy-unset-member.cpp`,
 `copy-unset-array-element.cpp`, `result-returned-local-unset-element.cpp`,
-and `read-returned-local-unset-element.cpp`. Clang notes that the subobject is not
+and `read-returned-local-unset-element.cpp`, `return-local-unset-member.cpp`, and
+`return-prvalue-unset-member-read.cpp`. Clang notes that the subobject is not
 initialized in the call to the copy constructor. EDG notes an access to
 an uninitialized object.
 

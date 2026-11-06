@@ -405,7 +405,7 @@ value to each of its scalar parts. These conditions apply:
 
 :::{rule} CE-22
 :kind: reject
-:tests: foundations/constant-evaluation/copy-unset-member.cpp foundations/constant-evaluation/copy-unset-array-element.cpp foundations/constant-evaluation/unset-member-not-copied.cpp foundations/constant-evaluation/copy-after-every-part-set.cpp foundations/constant-evaluation/result-returned-local-unset-element.cpp declarations/initialization/forms/copy-indeterminate-unsigned-char.cpp foundations/constant-evaluation/read-returned-local-unset-element.cpp
+:tests: foundations/constant-evaluation/copy-unset-member.cpp foundations/constant-evaluation/copy-unset-array-element.cpp foundations/constant-evaluation/unset-member-not-copied.cpp foundations/constant-evaluation/copy-after-every-part-set.cpp foundations/constant-evaluation/result-returned-local-unset-element.cpp declarations/initialization/forms/copy-indeterminate-unsigned-char.cpp foundations/constant-evaluation/read-returned-local-unset-element.cpp foundations/constant-evaluation/return-local-unset-member.cpp foundations/constant-evaluation/return-prvalue-unset-member-read.cpp
 
 Constant evaluation must not read a scalar object that has no value
 ({rule}`OBJ-2`). The rule also applies where a run-time read is not
@@ -641,8 +641,8 @@ constexpr All all{.a = 1};            // rejected: All is not literal (CE-23)
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 131
-of 155 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 132
+of 157 tests.
 
 ### Divergences
 
@@ -726,6 +726,7 @@ family column gives the outcome that the test expects on that family.
 | `read-returned-local-unset-element.cpp` | CE-22, CE-21 | reject | reject | accept | reject | {question}`Q-0115` |
 | `result-returned-local-unset-element.cpp` | CE-21, CE-22 | reject | reject | accept | reject | {question}`Q-0115` |
 | `result-union-no-active-member.cpp` | CE-21 | accept | accept | reject | accept | {question}`Q-0117` |
+| `return-local-unset-member.cpp` | CE-22, CPY-12 | reject | reject | accept | reject | {question}`Q-0115` |
 | `string-literal-identity-variables.cpp` | CE-13 | reject | reject | accept | accept | {question}`Q-0033` |
 | `string-literal-identity.cpp` | CE-13 | reject | reject | accept | accept | {question}`Q-0033` |
 | `unknown-reference-not-read.cpp` | CE-18 | accept | Clang 22: accept; Clang 18: reject | accept | accept | {question}`Q-0090` |

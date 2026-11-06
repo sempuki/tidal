@@ -873,13 +873,13 @@ when a report names a finding that has no row here.
 | I4-5 | `I4/report.md` | planned | decision 0059, item FE: front-end round 23; test expressions/conditional/class-explicit-conversion-only.cpp (item T) |
 | I4-6 | `I4/report.md` | planned | decision 0059, item FE: front-end round 23; test expressions/conditional/class-ambiguous-base-operand.cpp (item T) |
 | I4-7 | `I4/report.md` | planned | decision 0059, item FE: front-end round 23; test expressions/conditional/class-private-base-operand.cpp (item T) |
-| I4-8 | `I4/report.md` | planned | decision 0059, item F2 |
-| I4-9 | `I4/report.md` | planned | decision 0059, item F2 |
-| I4-10 | `I4/report.md` | planned | decision 0059, item F2 |
-| I4-11 | `I4/report.md` | planned | decision 0059, item F2 |
-| I4-12 | `I4/report.md` | planned | decision 0059, item F2: outside knowledge on explicit functions and promotions |
-| I4-13 | `I4/report.md` | planned | decision 0059, item F2 |
-| I4-14 | `I4/report.md` | planned | decision 0059, item F2 |
+| I4-8 | `I4/report.md` | commit | 03e578c4 |
+| I4-9 | `I4/report.md` | commit | 03e578c4 |
+| I4-10 | `I4/report.md` | commit | 03e578c4 |
+| I4-11 | `I4/report.md` | commit | 03e578c4 |
+| I4-12 | `I4/report.md` | commit | 03e578c4 |
+| I4-13 | `I4/report.md` | commit | 03e578c4 |
+| I4-14 | `I4/report.md` | commit | 03e578c4 |
 | X23-1 | `X23/report.md` | commit | decision 0058, item E repairs: ALN-4 and NEW-P5 |
 | X23-2 | `X23/report.md` | commit | decision 0058, item E repairs: NEW-29, Q-0417 |
 | X23-3 | `X23/report.md` | planned | decision 0059, item F2; deferred once; probe `reports/clean-room/roadmap-9/writer-probes/x23-3-thresholds.json` |

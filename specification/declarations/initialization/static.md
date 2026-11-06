@@ -145,13 +145,16 @@ other unit names.
 
 :::{rule} SINIT-6
 :kind: impl-defined
-:tests: declarations/initialization/static/thread-local-init-deferred.cpp declarations/initialization/static/thread-local-unused.cpp
+:tests: declarations/initialization/static/thread-local-init-deferred.cpp declarations/initialization/static/thread-local-unused.cpp foundations/objects/thread-local-member-starts-unit.cpp
 
 A `thread_local` variable at namespace scope that is not `inline`, with
 {term}`dynamic initialization`, is initialized before the first statement of the thread, or when the
 thread first uses the variable. The choice is implementation-defined.
 Clang and GCC initialize the variable at the first use, also when the
-variable has a class type with a constructor ({rule}`OBJ-11`).
+variable has a class type with a constructor. {rule}`OBJ-11` gives the
+uses that start the initialization, including the use of another
+`thread_local` variable of the unit, and covers a `thread_local` static
+data member.
 :::
 
 ## Examples
@@ -208,7 +211,7 @@ int cap = table_limit;            // 64, in any unit order
 
 ## Evidence
 
-All eight compilers agree on all 25 tests. The results are in
+All eight compilers agree on all 26 tests. The results are in
 `tests/RESULTS.md`.
 
 ### Divergences

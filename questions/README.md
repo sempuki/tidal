@@ -455,6 +455,7 @@ status, and the first sentence of its answer section.
 | [Q-0416](Q-0416-thread-local-constant-use.md) | Does a use of a constant-initialized thread_local variable start the deferred construction of the other thread_local variables of its unit? | provisional | It does not start it |
 | [Q-0417](Q-0417-aligned-form-deleted-or-private.md) | Does a new expression for an over-aligned class fall back to the unaligned form when the class's aligned form is deleted or private? | provisional | Not valid |
 | [Q-0418](Q-0418-cond-derived-xvalue-step-one.md) | In step 1 of COND-16, can an xvalue operand bind the lvalue reference to the other operand's type? | provisional | Step 1 needs an lvalue |
+| [Q-0419](Q-0419-list-user-defined-element.md) | Which element's conversion does a list sequence hold when the worst element conversion is user-defined? | provisional | The list sequence holds the user-defined sequence of the first element that has one |
 
 ## Status values
 
