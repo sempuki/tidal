@@ -491,7 +491,7 @@ declared deleted is a candidate, and OVL-37 applies when it wins.
 
 :::{rule} OVL-18
 :kind: required
-:tests: overloading/overload-resolution/address-targets.cpp overloading/overload-resolution/address-exact-type.cpp overloading/overload-resolution/address-no-conversion.cpp overloading/overload-resolution/address-noexcept-target.cpp overloading/overload-resolution/address-member-kinds.cpp overloading/overload-resolution/address-base-member.cpp
+:tests: overloading/overload-resolution/address-targets.cpp overloading/overload-resolution/address-exact-type.cpp overloading/overload-resolution/address-no-conversion.cpp overloading/overload-resolution/address-noexcept-target.cpp overloading/overload-resolution/address-member-kinds.cpp overloading/overload-resolution/address-base-member.cpp overloading/overload-resolution/address-static-member-template.cpp
 
 The name of an overload set, with or without `&`, takes its function
 from a target type. These contexts give a target type:
@@ -848,8 +848,8 @@ struct Self {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 152
-of 181 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 153
+of 182 tests.
 
 ### Divergences
 

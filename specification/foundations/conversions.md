@@ -204,11 +204,11 @@ bit-field whose values all fit in the target is not narrowing
 
 :::{rule} CONV-8
 :kind: reject
-:tests: foundations/conversions/null-pointer-constants.cpp foundations/conversions/nonzero-to-pointer.cpp foundations/conversions/integer-variable-to-pointer.cpp foundations/conversions/false-not-null-pointer.cpp foundations/conversions/null-member-pointer-from-zero.cpp foundations/conversions/parenthesized-zero-null.cpp foundations/conversions/char-zero-not-null.cpp
+:tests: foundations/conversions/null-pointer-constants.cpp foundations/conversions/nonzero-to-pointer.cpp foundations/conversions/integer-variable-to-pointer.cpp foundations/conversions/false-not-null-pointer.cpp foundations/conversions/null-member-pointer-from-zero.cpp foundations/conversions/parenthesized-zero-null.cpp foundations/conversions/char-zero-not-null.cpp foundations/conversions/zero-to-null-pointer-type.cpp
 
 `nullptr` and an integer literal with the value zero convert to a null
-pointer of any pointer type and to a null pointer to member of any
-member type. A zero literal in parentheses counts. A character literal
+pointer of any pointer type, to a null pointer to member of any
+member type, and to the null pointer type `decltype(nullptr)`. A zero literal in parentheses counts. A character literal
 with the value zero is not an integer literal, so it does not count
 ({question}`Q-0100`). Other values must not convert to a pointer
 type implicitly. This rule applies to an integer variable with the value

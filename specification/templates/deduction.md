@@ -186,7 +186,7 @@ The defaults of the template parameters come before the function type
 
 :::{rule} DED-1
 :kind: required
-:tests: templates/deduction/call-each-argument.cpp templates/deduction/call-member-and-operator.cpp classes/constructors/return-owner-converts-to-base-owner.cpp
+:tests: templates/deduction/call-each-argument.cpp templates/deduction/call-member-and-operator.cpp classes/constructors/return-owner-converts-to-base-owner.cpp classes/operators/call-operator-template.cpp classes/operators/static-call-operator-template.cpp
 
 In a call that names a function template, {term}`deduction` finds the
 {term}`template arguments <template argument>` from the call arguments. The specialization that
@@ -260,7 +260,7 @@ Except under DED-8, the {term}`value category` of the argument takes no part.
 
 :::{rule} DED-8
 :kind: required
-:tests: templates/deduction/forwarding-reference.cpp templates/deduction/forwarding-const-not.cpp templates/deduction/forwarding-class-parameter-not.cpp templates/deduction/forwarding-nested-not.cpp templates/deduction/forwarding-nested-rvalue.cpp
+:tests: templates/deduction/forwarding-reference.cpp templates/deduction/forwarding-const-not.cpp templates/deduction/forwarding-class-parameter-not.cpp templates/deduction/forwarding-nested-not.cpp templates/deduction/forwarding-nested-rvalue.cpp classes/members/explicit-object-deduced-forwarding.cpp classes/members/explicit-object-deduced-constant.cpp
 
 A {term}`forwarding reference` is a function parameter of type `T&&`,
 with `T` an unqualified type parameter of the template itself. `T&&`
@@ -798,8 +798,8 @@ Gadget* g = new (&arena) Gadget;  // both match, and ordering prefers neither: n
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 119
-of 130 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 123
+of 134 tests.
 
 ### Divergences
 

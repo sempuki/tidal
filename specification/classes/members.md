@@ -339,7 +339,7 @@ variables of the function, except as CLS-12 allows.
 
 :::{rule} CLS-13
 :kind: required
-:tests: classes/members/explicit-object-parameter.cpp classes/members/explicit-object-from-prvalue.cpp foundations/evaluation-order/explicit-object-order-unspecified.cpp
+:tests: classes/members/explicit-object-parameter.cpp classes/members/explicit-object-from-prvalue.cpp foundations/evaluation-order/explicit-object-order-unspecified.cpp classes/members/explicit-object-deduced-forwarding.cpp classes/members/explicit-object-deduced-lvalue.cpp classes/members/explicit-object-deduced-constant.cpp classes/operators/subscript-explicit-object-two-args.cpp
 
 A member function can declare its first parameter as an explicit object
 parameter, written `this T self`. The object of the call initializes that
@@ -347,6 +347,18 @@ parameter. If the parameter has class type and the object is a prvalue
 of that type, the prvalue initializes the parameter directly, with no
 temporary ({rule}`VC-4`, {question}`Q-0181`). The parameter ends
 when any other parameter would ({rule}`FN-10`).
+
+The parameter can have a type that the call deduces, such as
+`this Self&& self` in a member function template or `this auto& self`.
+The object of the call is then the argument that deduction uses
+({rule}`DED-8`). One such function serves objects of every value
+category and cv-qualification:
+
+| Object of the call | `Self` for `this Self&& self` | `Self` for `this Self& self` |
+|---|---|---|
+| a non-`const` lvalue `g` of type `G` | `G&` | `G` |
+| a `const` lvalue of type `G` | `const G&` | `const G` |
+| an rvalue of type `G` | `G` | no match |
 :::
 
 :::{rule} CLS-14
@@ -367,7 +379,7 @@ member function or a lambda, and it must not have a default argument
 
 :::{rule} CLS-15
 :kind: required
-:tests: classes/members/static-call-operator.cpp classes/members/static-subscript-no-parameters.cpp
+:tests: classes/members/static-call-operator.cpp classes/members/static-subscript-no-parameters.cpp classes/operators/subscript-explicit-object-two-args.cpp classes/operators/static-call-operator-template.cpp overloading/overload-resolution/address-static-member-template.cpp
 
 `operator()` and `operator[]` can be static member functions. `operator[]`
 can have any number of parameters ({rule}`OPR-3`).
@@ -604,6 +616,24 @@ definition before linking.
 
 ## Examples
 
+A deduced object parameter gives one accessor for a non-`const` and a
+`const` object (CLS-13):
+
+% tidal-example: fragment
+```cpp
+struct Grid {
+  int cells[4]{};
+  template <class Self>
+  auto&& operator[](this Self&& self, int r, int c) {
+    return static_cast<Self&&>(self).cells[r * 2 + c];
+  }
+};
+Grid g;
+g[1, 1] = 7;              // Self is Grid&, the result is int&
+const Grid& c = g;
+int x = c[1, 1];          // Self is const Grid&, the result is const int&
+```
+
 ```cpp
 struct Node {
   int value;
@@ -670,8 +700,8 @@ struct Pointers { char c; int& r; int Plain::* p; void (Shape::* f)(); };
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 147
-of 163 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 153
+of 169 tests.
 
 ### Divergences
 

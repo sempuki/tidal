@@ -156,7 +156,7 @@ built-in operator.
 
 :::{rule} OPR-3
 :kind: required
-:tests: classes/operators/call-operator-overloads.cpp classes/operators/call-operator.cpp classes/operators/static-call-operator.cpp classes/operators/static-subscript.cpp classes/operators/subscript-default-arg.cpp classes/operators/subscript-multi.cpp classes/operators/subscript-operator.cpp classes/operators/subscript-zero-params.cpp
+:tests: classes/operators/call-operator-overloads.cpp classes/operators/call-operator.cpp classes/operators/static-call-operator.cpp classes/operators/static-subscript.cpp classes/operators/subscript-default-arg.cpp classes/operators/subscript-multi.cpp classes/operators/subscript-operator.cpp classes/operators/subscript-zero-params.cpp classes/operators/subscript-explicit-object-two-args.cpp classes/operators/call-operator-template.cpp classes/operators/static-call-operator-template.cpp
 
 `operator()` and `operator[]` can be `static` member functions. Both can
 be overloaded and can have default arguments. `operator[]` can have any
@@ -340,8 +340,8 @@ Meters len = 2.5_m;
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 105
-of 108 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 108
+of 111 tests.
 
 ### Divergences
 

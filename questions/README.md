@@ -438,6 +438,7 @@ status, and the first sentence of its answer section.
 | [Q-0399](Q-0399-negative-array-bound-in-substitution.md) | Is a negative array bound that substitution makes a substitution failure? | provisional | Yes; the template is removed in every form |
 | [Q-0400](Q-0400-requirement-never-satisfied.md) | Is a concept valid when its requirement is satisfied for no argument? | provisional | The concept is valid (option 1), as CPT-35 says |
 | [Q-0401](Q-0401-cond-class-prvalue-binds-directly.md) | Does a reference bind directly to a class prvalue in steps 1 and 2 of COND-16? | provisional | No; the operand converts by step 3, and the result is a prvalue |
+| [Q-0402](Q-0402-ordering-class-before-defaulted-declaration.md) | Must the ordering class be declared before a defaulted `<=>` is declared, or only before it is used? | provisional | Before the defaulted declaration |
 
 ## Status values
 

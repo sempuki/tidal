@@ -175,7 +175,7 @@ first cast that is valid:
 
 :::{rule} CAST-13
 :kind: required
-:tests: expressions/casts/decay-copy-auto.cpp expressions/casts/decay-copy-type.cpp
+:tests: expressions/casts/decay-copy-auto.cpp expressions/casts/decay-copy-type.cpp expressions/casts/decay-copy-class.cpp
 
 `auto(e)` and `auto{e}` give a prvalue copy of `e`. The type of the copy
 is the type of `e` without cv-qualifiers or a reference, and with arrays
@@ -331,7 +331,7 @@ auto* port = reinterpret_cast<volatile unsigned*>(size_t{0x4000'1000});
 
 ## Evidence
 
-All eight compilers agree on 60 of 61 tests. The results are in
+All eight compilers agree on 61 of 62 tests. The results are in
 `tests/RESULTS.md`.
 
 ### Divergences

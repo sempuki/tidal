@@ -184,7 +184,7 @@ external linkage refers to one entity in all translation units.
 
 :::{rule} LNK-2
 :kind: required
-:tests: declarations/storage-linkage/static-internal.cpp declarations/storage-linkage/static-not-visible.cpp
+:tests: declarations/storage-linkage/static-internal.cpp declarations/storage-linkage/static-not-visible.cpp declarations/storage-linkage/function-pointer-other-unit.cpp
 
 `static` gives a variable or function at namespace scope internal
 linkage. Each translation unit that declares the name has its own
@@ -378,7 +378,7 @@ static int y;                  // rejected
 
 ## Evidence
 
-All eight compilers agree on 82 of 84 tests. The results are in
+All eight compilers agree on 83 of 85 tests. The results are in
 `tests/RESULTS.md`. 21 tests use two translation units (decision 0014).
 EDG checks each unit and does not link.
 

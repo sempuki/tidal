@@ -122,11 +122,13 @@ need, the program must declare `std::initializer_list` with this shape:
 
 :::{rule} LSUP-2
 :kind: reject
-:tests: foundations/language-support/strong-ordering-minimal.cpp foundations/language-support/strong-ordering-missing-member.cpp foundations/language-support/strong-ordering-missing.cpp expressions/comparison/three-way-result-copies-member.cpp foundations/language-support/ordering-complete-declaration.cpp foundations/language-support/ordering-strong-only-builtin.cpp foundations/language-support/ordering-strong-only-builtin-runtime.cpp foundations/language-support/ordering-strong-only-defaulted.cpp foundations/language-support/ordering-partial-not-declared.cpp
+:tests: foundations/language-support/strong-ordering-minimal.cpp foundations/language-support/strong-ordering-missing-member.cpp foundations/language-support/strong-ordering-missing.cpp expressions/comparison/three-way-result-copies-member.cpp foundations/language-support/ordering-complete-declaration.cpp foundations/language-support/ordering-strong-only-builtin.cpp foundations/language-support/ordering-strong-only-builtin-runtime.cpp foundations/language-support/ordering-strong-only-defaulted.cpp foundations/language-support/ordering-partial-not-declared.cpp foundations/language-support/ordering-declared-after-class.cpp
 
 A program that uses `<=>` on built-in operands, or a defaulted `<=>`,
 must first declare in namespace `std` the ordering class that the use
-yields. The use does not need the other two classes
+yields. For a defaulted `<=>` whose return type is `auto`, the class is
+declared before the defaulted declaration
+({question}`Q-0402`). The use does not need the other two classes
 ({question}`Q-0386`). Each class has static data members of its own
 type, defined as constants ({rule}`CLS-16`):
 
@@ -525,7 +527,7 @@ int* r = new (raw) int(3);          // raw hosts the int
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 51
-of 66 tests. EDG compiles the run tests and does not run them.
+of 67 tests. EDG compiles the run tests and does not run them.
 
 ### Divergences
 
@@ -568,6 +570,10 @@ of 66 tests. EDG compiles the run tests and does not run them.
   three ordering classes declared. It needs only the class that it
   yields, as Clang and GCC say. EDG needs all three for a built-in
   `<=>` evaluated as a constant and for a defaulted `<=>`.
+- {question}`Q-0402` (LSUP-2; open): whether the ordering class must be
+  declared before a defaulted `<=>` is declared, or only before it is
+  used. Before the declaration, as Clang and EDG say. GCC accepts a
+  class declared after the defaulted `<=>` and before its use.
 
 ### Split tests
 
@@ -589,6 +595,7 @@ different exit codes.
 | `expressions/new-delete/constant-evaluation-nothrow.cpp` | NEW-37, LSUP-6 | accept | accept | GCC 16: accept; GCC 14: reject | reject | {question}`Q-0303` |
 | `initializer-list-candidate-not-viable.cpp` | LSUP-1, ICS-16 | accept | accept | reject | accept | {question}`Q-0321` |
 | `initializer-list-parameter-not-needed.cpp` | LSUP-1 | accept | accept | reject | accept | {question}`Q-0321` |
+| `ordering-declared-after-class.cpp` | LSUP-2 | reject | reject | run | reject | {question}`Q-0402` |
 | `ordering-defaulted-not-equal-zero-only.cpp` | LSUP-12 | accept | accept | reject | accept | {question}`Q-0334` |
 | `ordering-strong-only-builtin.cpp` | LSUP-2 | run | run | run | reject | {question}`Q-0386` |
 | `ordering-strong-only-defaulted.cpp` | LSUP-2 | run | run | run | reject | {question}`Q-0386` |
