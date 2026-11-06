@@ -857,3 +857,12 @@ when a report names a finding that has no row here.
 | X9-13 | `X9/report.md` | commit | bddd2a08 |
 | X9-14 | `X9/report.md` | commit | bddd2a08 |
 | X9-15 | `X9/report.md` | commit | bddd2a08 |
+| P1-1 | `P1/report.md` | planned | decision 0058, item FE: front-end round 23 |
+| P1-2 | `P1/report.md` | planned | decision 0058, item FE: front-end round 23 |
+| P1-3 | `P1/report.md` | planned | decision 0058, item E repairs: an example of a two-alternative class |
+| P1-4 | `P1/report.md` | out of scope | the specification does not list what the language lacks |
+| P1-5 | `P1/report.md` | planned | decision 0058, item E repairs: a link from virtual.md to the Owner example |
+| P1-6 | `P1/report.md` | text | DCL-19 and ADD-8 decide it; the finding asks for no change |
+| P1-7 | `P1/report.md` | planned | decision 0058, item E repairs: the base flags in index.md |
+| P1-8 | `P1/report.md` | planned | decision 0058, item E repairs: a library-free requirement example |
+| P1-9 | `P1/report.md` | planned | decision 0058, item E repairs: TR-16 and exact results |
