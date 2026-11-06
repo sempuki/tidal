@@ -6,7 +6,7 @@ last column lists the questions that the decision closes or changes.
 
 | # | Item | Options | Tidal keeps | Questions |
 |---|---|---|---|---|
-| 1 | The choices of decision 0054: settling by review, and program tests under `tests/programs/` | Confirm, change, or drop each choice | Both choices. A question settles by review only when at most one newest family differs from the answer in each form | Confirms the 182 questions settled under decision 0054 (34 by item SR in 0637b59, 1 by the repairs from the exceptions and names reviews in b00cbf2, 13 by the repairs from the object-model and program-structure reviews in 573d849, 36 by the question reviews of overloading and templates in e0d06f0, 40 by the question reviews of classes, statements, expressions, and declarations in 8c15b06, 4 by phase 8 item RV, the repairs from the gap reviews of the text phase 7 wrote, 35 by phase 9 item RV2, the repairs from the gap reviews of the text phase 8 wrote, 20 by phase 9 item PU, the principle-use batch PU1, and 7 by the principle-use batch PU2, less 8 that phase 8 item PQ reopened under the principle test of the style guide: Q-0064, Q-0067, Q-0111, Q-0242, Q-0259, Q-0319, Q-0329, Q-0373. Item PU settled Q-0067 and Q-0329 again). `tools/question_index.py` writes the total and fails `--check` when the total is wrong. If the maintainer lets the rule settle a question where two families differ, these 15 settle too: Q-0017, Q-0021, Q-0121, Q-0133, Q-0148, Q-0153, Q-0159, Q-0216, Q-0217, Q-0227, Q-0234, Q-0301, Q-0320, Q-0339, Q-0341 |
+| 1 | The choices of decision 0054: settling by review, and program tests under `tests/programs/` | Confirm, change, or drop each choice | Both choices. A question settles by review only when at most one newest family differs from the answer in each form | Confirms the 182 questions settled under decision 0054 ([by item below](#settlements-under-decision-0054)). `tools/question_index.py` writes the total and fails `--check` when the total is wrong. If the maintainer lets the rule settle a question where two families differ, the questions of the [decision packet](#decision-packet) row 1 settle too |
 | 2 | The choices of decision 0051: settling when the newest version of each family agrees, and keeping the implementation-only operations referenced | Confirm or change each choice | Both choices | Q-0322 |
 | 3 | A report of EDG behavior to the EDG project ([groups below](#edg-report)) | Approve the report, or hold it | Tidal follows Clang 22 and GCC 16. Each test records EDG's result as an override | Q-0002, Q-0003, and the cluster 5 groups below |
 | 4 | A gap review reads the C++23 text against the matrix's answer, and at most one newest family follows the review ([items below](#matrix-against-review)) | Follow the review, against the compilers that differ from it, or follow the matrix | The matrix's answer in each, except Q-0307, where Tidal follows the review | Each question and rule in the section below |
@@ -15,6 +15,44 @@ last column lists the questions that the decision closes or changes.
 | 7 | A probe of which C++23 rejections later language versions accept, as an index with no rules ([plan below](#later-version-probe)) | Run the probe as planned, or keep later versions out of scope | C++23 only. Newer features are rejected under strict mode | Q-0007. A choice to follow later changes also decides Q-0087, Q-0181, and Q-0188 |
 | 8 | An outside reader for the Foundations chapter and two topic pages (decision 0024) | Ask the reviewer who prompted the principles-first change, or skip | No outside reading | None |
 | 9 | Process questions that name no rule ([list below](#process-questions)) | Confirm or change each provisional answer | Each provisional answer | Q-0006, Q-0008, Q-0116, Q-0119, Q-0182, Q-0183, Q-0186, Q-0312 |
+
+## Settlements under decision 0054
+
+| Questions | Item | Commit |
+|---|---|---|
+| 34 | item SR | 0637b59 |
+| 1 | the repairs from the exceptions and names reviews | b00cbf2 |
+| 13 | the repairs from the object-model and program-structure reviews | 573d849 |
+| 36 | the question reviews of overloading and templates | e0d06f0 |
+| 40 | the question reviews of classes, statements, expressions, and declarations | 8c15b06 |
+| 4 | phase 8 item RV, the repairs from the gap reviews of the text phase 7 wrote | 7a68692 |
+| 35 | phase 9 item RV2, the repairs from the gap reviews of the text phase 8 wrote | 1bf7812 |
+| 20 | phase 9 item PU, the principle-use batch PU1 | 926831c |
+| 7 | the principle-use batch PU2 | f2ac11c |
+| -8 | phase 8 item PQ reopened these under the principle test of the style guide: Q-0064, Q-0067, Q-0111, Q-0242, Q-0259, Q-0319, Q-0329, Q-0373. Item PU settled Q-0067 and Q-0329 again | |
+
+## Decision packet
+
+`tools/question_index.py` writes this section from the `**Waits for:**`
+line of each open question. For each row above, it lists the open
+questions that wait on the row, and the number of tests whose notes
+name them. Row 1 lists the questions whose line names `newest
+families that agree`. A decision on a row settles its questions, or
+changes their answers and the expectations of those tests.
+
+| Row | Open questions | Tests that name them |
+|---|---|---|
+| 1 | 36: Q-0017, Q-0021, Q-0045, Q-0062, Q-0080, Q-0082, Q-0084, Q-0121, Q-0126, Q-0129, Q-0132, Q-0133, Q-0142, Q-0143, Q-0148, Q-0153, Q-0159, Q-0168, Q-0174, Q-0216, Q-0217, Q-0227, Q-0234, Q-0241, Q-0248, Q-0251, Q-0274, Q-0301, Q-0320, Q-0323, Q-0331, Q-0335, Q-0339, Q-0341, Q-0368, Q-0374 | 79 |
+| 2 | 1: Q-0322 | 0 |
+| 3 | 12: Q-0195, Q-0197, Q-0198, Q-0201, Q-0203, Q-0235, Q-0266, Q-0272, Q-0277, Q-0278, Q-0280, Q-0282 | 23 |
+| 4 | 29: Q-0074, Q-0077, Q-0087, Q-0123, Q-0131, Q-0140, Q-0142, Q-0181, Q-0190, Q-0191, Q-0205, Q-0225, Q-0226, Q-0243, Q-0246, Q-0275, Q-0277, Q-0280, Q-0300, Q-0307, Q-0330, Q-0336, Q-0362, Q-0366, Q-0369, Q-0371, Q-0389, Q-0393, Q-0394 | 68 |
+| 5 | 1: Q-0235 | 3 |
+| 6 | 2: Q-0041, Q-0343 | 5 |
+| 7 | 5: Q-0007, Q-0087, Q-0116, Q-0181, Q-0188 | 5 |
+| 8 | none | 0 |
+| 9 | 8: Q-0006, Q-0008, Q-0116, Q-0119, Q-0182, Q-0183, Q-0186, Q-0312 | 1 |
+
+The rows hold 87 of the open questions.
 
 ## Matrix against review
 

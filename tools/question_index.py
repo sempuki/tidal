@@ -28,6 +28,11 @@ into row 1 of documentation/decisions/pending.md ("Confirms the N
 questions settled under decision 0054"). A question counts when its file
 says "Settled on DATE under decision 0054".
 
+The tool also writes the "Decision packet" section of pending.md from
+the **Waits for:** lines: for each row, the open questions that wait on
+it, and the tests whose tidal-note lines name those questions. Row 1
+holds the questions that wait for "newest families that agree".
+
 --check writes nothing. It fails when the table is out of date, when the
 count in pending.md is wrong, and when a file in reports/review/ names a
 question whose Opinions section does not name that file. Each commit
@@ -188,6 +193,56 @@ def waits_problems(questions: list[Question], pending: str) -> list[str]:
     return problems
 
 
+PACKET_HEADING = "## Decision packet"
+TESTS = ROOT / "tests"
+
+
+def note_citations() -> dict[str, set[str]]:
+    """For each question ID, the tests whose tidal-note lines name it."""
+    cited: dict[str, set[str]] = {}
+    for f in TESTS.rglob("*.cpp"):
+        for line in f.read_text().splitlines():
+            if not line.startswith("//"):
+                break
+            if line.startswith("// tidal-note:"):
+                for q in QUESTION_ID.findall(line):
+                    cited.setdefault(q, set()).add(str(f.relative_to(TESTS)))
+    return cited
+
+
+def render_packet(text: str, questions: list[Question]) -> str | None:
+    """Return pending.md with the decision packet rewritten, or None when the heading is missing."""
+    if PACKET_HEADING not in text:
+        return None
+    held: dict[int, list[str]] = {}
+    for q in questions:
+        for item in q.waits_for:
+            if m := WAITS_FOR[0].fullmatch(item):
+                for row in re.findall(r"\d+", m.group(1)):
+                    held.setdefault(int(row), []).append(q.id)
+            elif item == "newest families that agree":
+                held.setdefault(1, []).append(q.id)
+    cited = note_citations()
+    rows = sorted(set(int(m) for m in re.findall(r"^\| (\d+) \|", text.split("\n## ")[0], re.M)))
+    lines = [PACKET_HEADING, "",
+             "`tools/question_index.py` writes this section from the `**Waits for:**`",
+             "line of each open question. For each row above, it lists the open",
+             "questions that wait on the row, and the number of tests whose notes",
+             "name them. Row 1 lists the questions whose line names `newest",
+             "families that agree`. A decision on a row settles its questions, or",
+             "changes their answers and the expectations of those tests.", "",
+             "| Row | Open questions | Tests that name them |", "|---|---|---|"]
+    for row in rows:
+        qs = sorted(set(held.get(row, [])))
+        tests = set().union(*(cited.get(q, set()) for q in qs)) if qs else set()
+        lines.append(f"| {row} | {len(qs)}: {', '.join(qs)} | {len(tests)} |" if qs else f"| {row} | none | 0 |")
+    total = len({q for qs in held.values() for q in qs})
+    lines += ["", f"The rows hold {total} of the open questions.", ""]
+    before, after = text.split(PACKET_HEADING, 1)
+    rest = after[after.index("\n## "):] if "\n## " in after else ""
+    return before + "\n".join(lines) + rest
+
+
 def cell(text: str) -> str:
     return text.replace("|", r"\|")
 
@@ -215,13 +270,18 @@ def main() -> int:
         problems.append(f"{PENDING.relative_to(ROOT)}: row 1 has no phrase "
                         "'Confirms the N questions settled under decision 0054'")
         pending_new = pending_old
+    packet = render_packet(pending_new, questions)
+    if packet is None:
+        problems.append(f"{PENDING.relative_to(ROOT)}: no '{PACKET_HEADING}' section")
+    else:
+        pending_new = packet
     problems.extend(waits_problems(questions, pending_old))
     if args.check:
         if new != old:
             problems.append("questions/README.md: the index is out of date; run tools/question_index.py")
         if pending_new != pending_old:
             problems.append(f"{PENDING.relative_to(ROOT)}: the count of questions settled under "
-                            "decision 0054 is wrong; run tools/question_index.py")
+                            "decision 0054 or the decision packet is out of date; run tools/question_index.py")
         problems.extend(review_warnings(questions))
     else:
         if new != old:
@@ -229,7 +289,7 @@ def main() -> int:
             print("questions/README.md: index rebuilt")
         if pending_new != pending_old:
             PENDING.write_text(pending_new)
-            print(f"{PENDING.relative_to(ROOT)}: count of questions settled under decision 0054 rewritten")
+            print(f"{PENDING.relative_to(ROOT)}: count and decision packet rewritten")
     for p in problems:
         print(p)
     print(f"{len(questions)} questions, {len(problems)} problems")
