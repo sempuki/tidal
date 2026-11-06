@@ -291,11 +291,13 @@ An array of `char` or `signed char` hosts no object
 
 :::{rule} STG-5
 :kind: required
-:tests: foundations/storage/placement-new-result-is-address.cpp foundations/storage/keep-placement-new-pointer.cpp foundations/storage/cast-to-target-then-construct.cpp foundations/storage/placement-new-array.cpp foundations/storage/byte-array-hosts-objects.cpp foundations/storage/std-byte-array-hosts-objects.cpp foundations/language-support/construct-at-self-declared.cpp foundations/storage/allocation-array-class-elements.cpp foundations/storage/arena-reset-reuses-bytes.cpp foundations/storage/byte-array-placement-reaches-object.cpp foundations/storage/byte-array-rows-host-objects.cpp foundations/storage/byte-array-member-of-array-hosts.cpp foundations/storage/placement-then-cast-read.cpp
+:tests: foundations/storage/placement-new-result-is-address.cpp foundations/storage/keep-placement-new-pointer.cpp foundations/storage/cast-to-target-then-construct.cpp foundations/storage/placement-new-array.cpp foundations/storage/byte-array-hosts-objects.cpp foundations/storage/std-byte-array-hosts-objects.cpp foundations/language-support/construct-at-self-declared.cpp foundations/storage/allocation-array-class-elements.cpp foundations/storage/arena-reset-reuses-bytes.cpp foundations/storage/byte-array-placement-reaches-object.cpp foundations/storage/byte-array-rows-host-objects.cpp foundations/storage/byte-array-member-of-array-hosts.cpp foundations/storage/placement-then-cast-read.cpp expressions/new-delete/non-allocating-placement-over-aligned.cpp
 
 `new (p) T(args)` creates an object of type `T` at the address `p`, with
 a {term}`non-allocating placement form` ({rule}`LSUP-7`). The result
-points to the new object. The array form `new (p) T[n]` calls the
+points to the new object. For a type with more than the default new
+alignment, the expression calls the non-allocating form without the
+alignment ({rule}`NEW-29`), and `p` must be aligned for `T`. The array form `new (p) T[n]` calls the
 `operator new[]` form and creates an array at `p` ({rule}`NEW-11`).
 :::
 
@@ -854,8 +856,8 @@ static_assert(read_old() == 1);       // rejected (CE-9)
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 88
-of 94 tests. EDG runs no programs, so its results for the run tests say
+The results are in `tests/RESULTS.md`. All eight compilers agree on 89
+of 95 tests. EDG runs no programs, so its results for the run tests say
 only that the programs are valid.
 
 ### Divergences

@@ -453,6 +453,8 @@ status, and the first sentence of its answer section.
 | [Q-0414](Q-0414-nested-class-friend-access.md) | Does a friend function that a nested class declares have access to the private members of the enclosing class? | provisional | The friend has the nested class's access |
 | [Q-0415](Q-0415-friend-qualified-declarator-lookup.md) | In a friend declaration with a qualified name, is a name after the declarator searched in the scope that the qualifier names? | provisional | Searched first in `N` |
 | [Q-0416](Q-0416-thread-local-constant-use.md) | Does a use of a constant-initialized thread_local variable start the deferred construction of the other thread_local variables of its unit? | provisional | It does not start it |
+| [Q-0417](Q-0417-aligned-form-deleted-or-private.md) | Does a new expression for an over-aligned class fall back to the unaligned form when the class's aligned form is deleted or private? | provisional | Not valid |
+| [Q-0418](Q-0418-cond-derived-xvalue-step-one.md) | In step 1 of COND-16, can an xvalue operand bind the lvalue reference to the other operand's type? | provisional | Step 1 needs an lvalue |
 
 ## Status values
 

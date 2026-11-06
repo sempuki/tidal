@@ -117,8 +117,9 @@ storage aligned to the {term}`default new alignment`. A type that needs
 more alignment gets it from an aligned form: the `new` expression
 passes the alignment to the allocation function, and `delete` passes
 it to the deallocation function. A class that declares only the forms
-without alignment still works, because the expression drops the
-alignment when no function accepts it. The expression never adds an
+without alignment is still called, because the expression drops the
+alignment when no function accepts it, and the class's function must
+then give storage aligned for the type itself. The expression never adds an
 alignment that the first call did not pass.
 
 | Alignment of the type | First call | If no function accepts the first call |
@@ -374,7 +375,7 @@ tried in its place ({question}`Q-0300`).
 
 :::{rule} NEW-25
 :kind: reject
-:tests: expressions/new-delete/deallocation-private.cpp expressions/new-delete/deallocation-private-no-throw.cpp expressions/new-delete/deallocation-deleted.cpp expressions/new-delete/deallocation-deleted-no-throw.cpp expressions/new-delete/deallocation-placement-deleted.cpp expressions/new-delete/placement-matches-usual-form.cpp
+:tests: expressions/new-delete/deallocation-private.cpp expressions/new-delete/deallocation-private-no-throw.cpp expressions/new-delete/deallocation-deleted.cpp expressions/new-delete/deallocation-deleted-no-throw.cpp expressions/new-delete/deallocation-placement-deleted.cpp expressions/new-delete/placement-matches-usual-form.cpp expressions/new-delete/aligned-deleted-form-beside-unaligned.cpp expressions/new-delete/aligned-private-form-beside-unaligned.cpp
 
 The deallocation function that NEW-21 to NEW-23 choose must be
 accessible and must not be deleted ({question}`Q-0221`). The
@@ -423,7 +424,7 @@ initializer are evaluated.
 
 :::{rule} NEW-21
 :kind: required
-:tests: expressions/new-delete/throw-in-initializer-argument.cpp expressions/new-delete/throw-class-both-usual-forms.cpp expressions/new-delete/throw-class-sized-form-only.cpp expressions/new-delete/throw-class-delete-hides-global.cpp expressions/new-delete/throw-global-scope-new.cpp expressions/new-delete/throw-placement-in-base-class.cpp expressions/new-delete/throw-placement-global.cpp expressions/new-delete/throw-placement-class-new-global-delete.cpp expressions/new-delete/throw-placement-array.cpp expressions/new-delete/aligned-delete-passes-alignment.cpp
+:tests: expressions/new-delete/throw-in-initializer-argument.cpp expressions/new-delete/throw-class-both-usual-forms.cpp expressions/new-delete/throw-class-sized-form-only.cpp expressions/new-delete/throw-class-delete-hides-global.cpp expressions/new-delete/throw-global-scope-new.cpp expressions/new-delete/throw-placement-in-base-class.cpp expressions/new-delete/throw-placement-global.cpp expressions/new-delete/throw-placement-class-new-global-delete.cpp expressions/new-delete/throw-placement-array.cpp expressions/new-delete/aligned-delete-passes-alignment.cpp expressions/new-delete/virtual-destructor-dynamic-type-deallocation.cpp
 
 If the initialization in a `new` expression throws, a deallocation
 function frees the storage before the exception leaves the expression
@@ -432,7 +433,10 @@ initializer's arguments. The function is an `operator delete`, or an
 `operator delete[]` for an array, that this search finds:
 
 - If the type is a class and the expression does not start with `::`,
-  the search looks in the class and its bases.
+  the search looks in the class and its bases. For a `delete` through a
+  pointer to a base with a virtual destructor, the class is the dynamic
+  type, and the choice is made where that class's destructor is
+  defined ({rule}`ODR-5`).
 - If that search finds no function with the name, the search uses the
   global functions.
 :::
@@ -497,10 +501,15 @@ function gets the alignment too, after `delete` and after a throw
 
 :::{rule} NEW-29
 :kind: required
-:tests: expressions/new-delete/aligned-fallback-without-alignment.cpp expressions/new-delete/aligned-fallback-array.cpp
+:tests: expressions/new-delete/aligned-fallback-without-alignment.cpp expressions/new-delete/aligned-fallback-array.cpp expressions/new-delete/aligned-deleted-form-beside-unaligned.cpp expressions/new-delete/aligned-private-form-beside-unaligned.cpp expressions/new-delete/non-allocating-placement-over-aligned.cpp
 
 If no allocation function accepts the arguments of NEW-28, the `new`
-expression tries again without the alignment argument. A `delete`
+expression tries again without the alignment argument. A function that
+overload resolution selects accepts them even when it is deleted or
+not accessible, so the expression is then not valid and does not try
+again ({question}`Q-0417`). The
+non-allocating placement form reaches an over-aligned type this way,
+because no aligned non-allocating form exists ({rule}`STG-5`). A `delete`
 expression for the object finds its deallocation function in the same
 way.
 :::
@@ -757,8 +766,8 @@ int* q = new (cell) int(4);     // the int is at cell (NEW-33)
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 121
-of 144 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 123
+of 148 tests.
 
 ### Divergences
 
@@ -812,6 +821,10 @@ of 144 tests.
 - {question}`Q-0303` (NEW-37; settled on NEW-P4): whether constant
   evaluation can use a `new` expression with the nothrow tag. It can,
   as Clang and GCC 16 say. GCC 14 and EDG reject it.
+- {question}`Q-0417` (NEW-29, NEW-25; open): whether a `new` expression
+  for an over-aligned class falls back to the unaligned form when the
+  aligned form is deleted or private. It does not, and the expression is
+  not valid, as Clang and EDG say. GCC calls the unaligned form.
 
 ### Split tests
 
@@ -820,7 +833,9 @@ the compile.
 
 | Test | Rules | Expected | Clang | GCC | EDG | Question |
 |---|---|---|---|---|---|---|
+| `aligned-deleted-form-beside-unaligned.cpp` | NEW-29, NEW-25 | reject | reject | run | reject | {question}`Q-0417` |
 | `aligned-forms-by-name.cpp` | NEW-26, LSUP-5 | run | Clang 22: run; Clang 18: reject | run | accept | {question}`Q-0125` |
+| `aligned-private-form-beside-unaligned.cpp` | NEW-29, NEW-25 | reject | reject | run | reject | {question}`Q-0417` |
 | `array-floating-size-exact.cpp` | NEW-2 | run | run | reject | accept | {question}`Q-0036` |
 | `array-non-integral-size.cpp` | NEW-2 | accept | accept | reject | accept | {question}`Q-0036` |
 | `array-scoped-enumeration-size.cpp` | NEW-17, NEW-2 | reject | reject | run | reject | {question}`Q-0313` |

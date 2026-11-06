@@ -169,6 +169,10 @@ applies to objects in:
 - {term}`automatic storage`,
 - dynamic storage, including objects and arrays that `new` creates with
   an alignment larger than the largest {term}`fundamental alignment`.
+  The global allocation functions give such storage ({rule}`NEW-26`).
+  A class's own allocation function that NEW-29 calls without the
+  alignment gets no such promise from the implementation; the program
+  must make it return aligned storage.
 
 So no object of a type sits at an address that is not a multiple of the
 type's alignment. A read or write through a glvalue at such an address

@@ -265,7 +265,7 @@ These constructs use {term}`special member functions <special member function>`:
 
 :::{rule} ODR-5
 :kind: required
-:tests: foundations/odr/delete-uses-destructor.cpp foundations/odr/new-uses-deallocation-function.cpp foundations/odr/virtual-destructor-uses-deallocation-function.cpp foundations/odr/new-noexcept-constructor-uses-deallocation.cpp foundations/odr/destructor-uses-deallocation-function.cpp foundations/odr/constructor-uses-allocation-functions.cpp
+:tests: foundations/odr/delete-uses-destructor.cpp foundations/odr/new-uses-deallocation-function.cpp foundations/odr/virtual-destructor-uses-deallocation-function.cpp foundations/odr/new-noexcept-constructor-uses-deallocation.cpp foundations/odr/destructor-uses-deallocation-function.cpp foundations/odr/constructor-uses-allocation-functions.cpp expressions/new-delete/virtual-destructor-dynamic-type-deallocation.cpp
 
 These constructs use allocation and deallocation functions:
 
@@ -502,7 +502,7 @@ template <> int rank<bool> = 2;                // two units: two definitions
 
 ## Evidence
 
-All eight compilers agree on 84 of 97 tests. EDG checks each unit and
+All eight compilers agree on 85 of 98 tests. EDG checks each unit and
 does not link, so its results for the link and run tests say only that
 the units are valid.
 
