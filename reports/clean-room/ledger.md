@@ -67,11 +67,11 @@ when a report names a finding that has no row here.
 | I2-15 | `I2/report.md` | commit | d9c18bcc, 593f9e5a |
 | I2-16 | `I2/report.md` | commit | d9c18bcc, 593f9e5a |
 | I2-17 | `I2/report.md` | commit | d9c18bcc |
-| I3-1 | `I3/report.md` | planned | decision 0058, item RV4: an ICS-26 example, after a probe |
+| I3-1 | `I3/report.md` | planned | decision 0059, item F2: an ICS-26 example; deferred twice; probe `reports/clean-room/roadmap-9/writer-probes/i3-1-pointer-then-qualification.cpp` |
 | I3-2 | `I3/report.md` | commit | 4a193ea4 |
 | I3-3 | `I3/report.md` | commit | 4a193ea4 |
 | I3-4 | `I3/report.md` | text | a component error; the text decides it |
-| I3-5 | `I3/report.md` | planned | decision 0058, item RV4: ICS-11 and REF-1, after a probe |
+| I3-5 | `I3/report.md` | planned | decision 0059, item F2: ICS-11 and REF-1; deferred twice; probe `reports/clean-room/roadmap-9/writer-probes/i3-5-qualification-direct-binding.cpp` |
 | I3-6 | `I3/report.md` | text | a component error; the text decides it |
 | I3-7 | `I3/report.md` | commit | 4a193ea4 |
 | I3-8 | `I3/report.md` | commit | 4a193ea4 |
@@ -79,7 +79,7 @@ when a report names a finding that has no row here.
 | I3-10 | `I3/report.md` | commit | 4a193ea4 |
 | I3-11 | `I3/report.md` | commit | 4a193ea4 |
 | I3-12 | `I3/report.md` | text | CONV-1 gives the promotion of every character type |
-| I3-13 | `I3/report.md` | planned | decision 0058, item RV4: ICS-25, after a probe |
+| I3-13 | `I3/report.md` | planned | decision 0059, item F2: ICS-25; deferred twice; probe `reports/clean-room/roadmap-9/writer-probes/i3-13-list-worst-element.json` |
 | I3-14 | `I3/report.md` | commit | 4a193ea4, eff1a372 |
 | I3-15 | `I3/report.md` | commit | 4a193ea4, eff1a372 |
 | I3-16 | `I3/report.md` | commit | 4a193ea4, eff1a372 |
@@ -106,9 +106,9 @@ when a report names a finding that has no row here.
 | R10-1 | `R10/report.md` | commit | 47f58739 |
 | R10-2 | `R10/report.md` | commit | 47f58739 |
 | R10-3 | `R10/report.md` | commit | 47f58739 |
-| R10-4 | `R10/report.md` | planned | decision 0058, item RV4: the return case of Q-0115 needs a probe |
+| R10-4 | `R10/report.md` | planned | decision 0059, item F2: the return case of Q-0115; deferred twice; probe `reports/clean-room/roadmap-9/writer-probes/r10-4-return-local-unset.json` |
 | R10-5 | `R10/report.md` | commit | 47f58739 |
-| R10-6 | `R10/report.md` | planned | decision 0058, item RV4: a static thread_local data member under OBJ-11 needs a probe |
+| R10-6 | `R10/report.md` | planned | decision 0059, item F2: a static thread_local data member under OBJ-11; deferred twice; probe `reports/clean-room/roadmap-9/writer-probes/r10-6-static-thread-local-member.cpp` |
 | R10-7 | `R10/report.md` | commit | 47f58739 |
 | R10-8 | `R10/report.md` | text | no change needed; the finding says so |
 | R10-9 | `R10/report.md` | commit | 47f58739 |
@@ -857,33 +857,33 @@ when a report names a finding that has no row here.
 | X9-13 | `X9/report.md` | commit | bddd2a08 |
 | X9-14 | `X9/report.md` | commit | bddd2a08 |
 | X9-15 | `X9/report.md` | commit | bddd2a08 |
-| P1-1 | `P1/report.md` | planned | decision 0058, item FE: front-end round 23 |
-| P1-2 | `P1/report.md` | planned | decision 0058, item FE: front-end round 23 |
-| P1-3 | `P1/report.md` | planned | decision 0058, item E repairs: an example of a two-alternative class |
+| P1-1 | `P1/report.md` | planned | decision 0059, items T and FE: a test, then front-end round 23 |
+| P1-2 | `P1/report.md` | planned | decision 0059, items T and FE: a test, then front-end round 23 |
+| P1-3 | `P1/report.md` | planned | decision 0059, item F2: an example of a two-alternative class |
 | P1-4 | `P1/report.md` | out of scope | the specification does not list what the language lacks |
-| P1-5 | `P1/report.md` | planned | decision 0058, item E repairs: a link from virtual.md to the Owner example |
+| P1-5 | `P1/report.md` | planned | decision 0059, item F2: a link from virtual.md to the Owner example |
 | P1-6 | `P1/report.md` | text | DCL-19 and ADD-8 decide it; the finding asks for no change |
-| P1-7 | `P1/report.md` | planned | decision 0058, item E repairs: the base flags in index.md |
-| P1-8 | `P1/report.md` | planned | decision 0058, item E repairs: a library-free requirement example |
-| P1-9 | `P1/report.md` | planned | decision 0058, item E repairs: TR-16 and exact results |
+| P1-7 | `P1/report.md` | planned | decision 0059, item F2: the base flags in index.md |
+| P1-8 | `P1/report.md` | planned | decision 0059, item F2: a library-free requirement example |
+| P1-9 | `P1/report.md` | planned | decision 0059, item F2: TR-16 and exact results |
 | I4-1 | `I4/report.md` | commit | decision 0058, item E repairs: COND-16 base row |
 | I4-2 | `I4/report.md` | commit | decision 0058, item E repairs: COND-16 step 1, Q-0418 |
 | I4-3 | `I4/report.md` | commit | decision 0058, item E repairs: COND-P2 and COND-11 |
-| I4-4 | `I4/report.md` | planned | decision 0058, item FE: front-end round 23 |
-| I4-5 | `I4/report.md` | planned | decision 0058, item FE: front-end round 23 |
-| I4-6 | `I4/report.md` | planned | decision 0058, item FE: front-end round 23 |
-| I4-7 | `I4/report.md` | planned | decision 0058, item FE: front-end round 23 |
-| I4-8 | `I4/report.md` | planned | decision 0058, item E repairs |
-| I4-9 | `I4/report.md` | planned | decision 0058, item E repairs |
-| I4-10 | `I4/report.md` | planned | decision 0058, item E repairs |
-| I4-11 | `I4/report.md` | planned | decision 0058, item E repairs |
-| I4-12 | `I4/report.md` | planned | decision 0058, item E repairs (outside knowledge on explicit functions and promotions) |
-| I4-13 | `I4/report.md` | planned | decision 0058, item E repairs |
-| I4-14 | `I4/report.md` | planned | decision 0058, item E repairs |
+| I4-4 | `I4/report.md` | planned | decision 0059, items T and FE: a test, then front-end round 23 |
+| I4-5 | `I4/report.md` | planned | decision 0059, items T and FE: a test, then front-end round 23 |
+| I4-6 | `I4/report.md` | planned | decision 0059, items T and FE: a test, then front-end round 23 |
+| I4-7 | `I4/report.md` | planned | decision 0059, items T and FE: a test, then front-end round 23 |
+| I4-8 | `I4/report.md` | planned | decision 0059, item F2 |
+| I4-9 | `I4/report.md` | planned | decision 0059, item F2 |
+| I4-10 | `I4/report.md` | planned | decision 0059, item F2 |
+| I4-11 | `I4/report.md` | planned | decision 0059, item F2 |
+| I4-12 | `I4/report.md` | planned | decision 0059, item F2: outside knowledge on explicit functions and promotions |
+| I4-13 | `I4/report.md` | planned | decision 0059, item F2 |
+| I4-14 | `I4/report.md` | planned | decision 0059, item F2 |
 | X23-1 | `X23/report.md` | commit | decision 0058, item E repairs: ALN-4 and NEW-P5 |
 | X23-2 | `X23/report.md` | commit | decision 0058, item E repairs: NEW-29, Q-0417 |
-| X23-3 | `X23/report.md` | planned | decision 0058, item E repairs |
+| X23-3 | `X23/report.md` | planned | decision 0059, item F2; deferred once; probe `reports/clean-room/roadmap-9/writer-probes/x23-3-thresholds.json` |
 | X23-4 | `X23/report.md` | commit | decision 0058, item E repairs: NEW-21 |
 | X23-5 | `X23/report.md` | commit | decision 0058, item E repairs: STG-5 and NEW-29 |
-| X23-6 | `X23/report.md` | planned | decision 0058, item E repairs |
-| X23-7 | `X23/report.md` | planned | decision 0058, item E repairs |
+| X23-6 | `X23/report.md` | planned | decision 0059, item F2; deferred once; probe `reports/clean-room/roadmap-9/writer-probes/x23-6-underaligned-implicit-object.cpp` |
+| X23-7 | `X23/report.md` | planned | decision 0059, item F2 |

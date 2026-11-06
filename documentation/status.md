@@ -189,13 +189,13 @@ forward-progress rule belongs with threads, which are out of scope.
 ## Next steps
 
 `documentation/roadmap.md` orders the work (decisions 0033, 0039, 0050,
-0051, 0054, 0055, 0056, 0057, and 0058). Phases 1 to 11 are done.
-Next:
+0051, 0054, 0055, 0056, 0057, 0058, and 0059). Phases 1 to 11 are
+done. Phase 12 (decision 0059) is next:
 
-1. A ninth round of clean-room roadmaps under
-   `reports/clean-room/roadmap-9/`, from the same five views, then a
-   decision that adopts phase 12. Front-end round 23, moved from
-   decision 0058, comes first in that phase.
+1. Item T, tests for every front-end target that has none, then
+   front-end round 23 (item FE).
+2. Items F2, RD, QR, L2, R6, and PK3, beside FE.
+3. RV5, the gap review, after F2 and RD; then item E.
 
 The items that wait on the maintainer are in
 `documentation/decisions/pending.md`, one row each, with the options,
