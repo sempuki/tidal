@@ -117,7 +117,10 @@ The {term}`lifetime` of an object begins and ends at these points:
 | A scalar object | Its storage is obtained and its initializer completes. A scalar with no initializer begins with its storage, before it has a value. | It is destroyed ({rule}`DTOR-6`), or its storage is released or reused (OBJ-10). |
 
 So a read or a write of a scalar during its own initializer is outside
-its lifetime ({rule}`OBJ-2`, {question}`Q-0368`).
+its lifetime ({rule}`OBJ-2`, {question}`Q-0368`). For destruction, an
+object that a delegating constructor makes counts as complete when its
+target constructor completes, so its destructor runs if the delegating
+body then throws ({rule}`UNW-2`).
 An object that {rule}`STG-8` creates begins its lifetime when the
 operation creates it, and {rule}`STG-27` gives the end of storage.
 :::
@@ -282,7 +285,8 @@ The implementation constructs a `thread_local` object at namespace
 scope that is not `inline` and has a constructor either before the
 thread runs its first statement, or later. The choice is
 implementation-defined, as {rule}`SINIT-6` gives. A later construction
-happens before the thread first uses the object, or another
+happens before the thread first uses the object, and taking the
+object's address is such a use ({rule}`ODR-3`), or another
 `thread_local` variable of the same translation unit that is not
 `inline` and has {term}`dynamic initialization`. A use of a variable with
 constant initialization does not start it. At which point before that
@@ -345,6 +349,10 @@ only that the programs are valid.
 
 ### Notes
 
+- OBJ-2: under `-fsanitize=address`, Clang and GCC stop a read through
+  a pointer to a variable whose block has ended
+  (`read-after-block-ends-sanitizer.cpp`), and a read through a pointer
+  after `delete` (`classes/constructors/use-after-delete-sanitizer.cpp`).
 - OBJ-11: the tests accept either construction point for one object.
   Every Clang and GCC configuration defers the construction, and the
   first use of one `thread_local` variable of the unit with dynamic

@@ -80,7 +80,10 @@ kind. Each name has one job:
 
 The library defines the functions and the members. A program that
 includes no header declares the names, and the library supplies the
-definitions when the program is linked.
+definitions when the program is linked. `std::align_val_t` is a scoped
+enumeration with the underlying type `std::size_t`. A declaration with
+another kind or underlying type needs no diagnostic, and an
+implementation can reject it where it is written, with no use (LSUP-5).
 :::
 
 :::{principle} LSUP-P3
@@ -226,7 +229,7 @@ evaluation ({rule}`NEW-37`, {question}`Q-0303`).
 
 :::{rule} LSUP-7
 :kind: required
-:tests: foundations/language-support/placement-forms-self-declared.cpp expressions/new-delete/placement-array-no-overhead.cpp foundations/language-support/placement-array-needs-array-form.cpp foundations/language-support/placement-new-form-only.cpp
+:tests: foundations/language-support/placement-forms-self-declared.cpp expressions/new-delete/placement-array-no-overhead.cpp foundations/language-support/placement-array-needs-array-form.cpp foundations/language-support/placement-new-form-only.cpp foundations/odr/placement-allocation-declared-used.cpp
 
 A program that includes no header defines the non-allocating placement
 forms itself. Each form is an `inline` function with `noexcept`:
@@ -305,7 +308,10 @@ A program that includes no header can declare `std::allocator` as a
 class template with the member functions `allocate` and `deallocate`.
 These members call `::operator new` and `::operator delete` by name. During
 {term}`constant evaluation`, such a call is valid only inside these
-members ({rule}`NEW-37`, {rule}`STG-28`). The element type need not be
+members ({rule}`NEW-37`, {rule}`STG-28`). A read of an element of
+storage from `allocate` where no object has begun its lifetime is a
+read outside a lifetime ({rule}`OBJ-2`), and constant evaluation
+rejects it ({rule}`CE-22`). The element type need not be
 a literal type.
 :::
 
@@ -529,8 +535,8 @@ int* r = new (raw) int(3);          // raw hosts the int
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 51
-of 68 tests. EDG compiles the run tests and does not run them.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 52
+of 69 tests. EDG compiles the run tests and does not run them.
 
 ### Divergences
 

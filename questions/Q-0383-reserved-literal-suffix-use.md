@@ -65,6 +65,8 @@ Used on 2026-11-04 by the principle-use batch PU2 (`reports/clean-room/PU2/`), u
 
 Kept open on 2026-11-04 under decisions 0054 and 0055, because the reader in batch PU2 answered each program with doubt (finding PU2-5), as in batch PU1. No answer gives option 3 as its outcome. The question waits for a review or a reader batch that reads option 3 with no doubt.
 
+Noted on 2026-11-05 after the X19 refresh note (`reports/clean-room/X22/X19-refresh.md`, section 4). `tests/classes/operators/literal-builtin-suffix-wins.cpp` declares literal operators for the suffixes `u` and `z`, which OPR-9 makes not valid with no diagnostic required. The test now cites OPR-9 and says that it records what every compiler does. The next review of this question reads the test with it (decision 0058, item F).
+
 ## Opinions
 
 ### Gap review, 2026-11-04

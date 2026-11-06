@@ -50,6 +50,8 @@ Used on 2026-11-05 in batch PU3 (`reports/clean-room/PU3/report.md`). CNS-P2 and
 
 Kept open on 2026-11-05 under decision 0054, because the use in batch PU3 does not support the answer.
 
+Kept open on 2026-11-05 under decision 0055, because CNS-P2 changed in this commit after finding PU3-3: it now says that an atom whose type does not depend on a template parameter and is not `bool` makes the program not valid, with no diagnostic required, also when no check reaches it. The question waits for the next use of CNS-P2.
+
 ## Opinions
 
 ### Gap review, 2026-11-03

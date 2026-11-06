@@ -14,7 +14,7 @@ last column lists the questions that the decision closes or changes.
 | 6 | Q-0343 and Q-0041 | Follow the gap review of item O, or follow the compilers | The review's reading. CPY-19 says a class with a deleted destructor, or with every copy and move function deleted, is not trivially copyable, and every family's builtin query says it is. JMP-6 accepts the jump, as GCC does, and Clang and EDG reject it | Q-0343, Q-0041 |
 | 7 | A probe of which C++23 rejections later language versions accept, as an index with no rules ([plan below](#later-version-probe)) | Run the probe as planned, or keep later versions out of scope | C++23 only. Newer features are rejected under strict mode | Q-0007. A choice to follow later changes also decides Q-0087, Q-0181, and Q-0188 |
 | 8 | An outside reader for the Foundations chapter and two topic pages (decision 0024) | Ask the reviewer who prompted the principles-first change, or skip | No outside reading | None |
-| 9 | Process questions that name no rule ([list below](#process-questions)) | Confirm or change each provisional answer | Each provisional answer | Q-0006, Q-0008, Q-0116, Q-0119, Q-0182, Q-0183, Q-0186, Q-0312 |
+| 9 | Process questions that name no rule ([list below](#process-questions)) | Confirm or change each provisional answer | Each provisional answer | Q-0006, Q-0008, Q-0116, Q-0119, Q-0182, Q-0183, Q-0186, Q-0312, Q-0412 |
 
 ## Settlements under decision 0054
 
@@ -52,9 +52,9 @@ changes their answers and the expectations of those tests.
 | 6 | 2: Q-0041, Q-0343 | 5 |
 | 7 | 5: Q-0007, Q-0087, Q-0116, Q-0181, Q-0188 | 5 |
 | 8 | none | 0 |
-| 9 | 8: Q-0006, Q-0008, Q-0116, Q-0119, Q-0182, Q-0183, Q-0186, Q-0312 | 1 |
+| 9 | 9: Q-0006, Q-0008, Q-0116, Q-0119, Q-0182, Q-0183, Q-0186, Q-0312, Q-0412 | 1 |
 
-The rows hold 98 of the open questions.
+The rows hold 99 of the open questions.
 
 75 open questions wait for a review that supports the answer with no doubt. By what the last review found: 50 doubt, 15 silent, 9 against, 1 part.
 
@@ -190,3 +190,4 @@ names compiler behavior only.
 | Q-0183: a cost model for proposals | None. A proposal states cost in words |
 | Q-0186: judgments from outside Tidal in a proposal | Allowed when marked as outside knowledge |
 | Q-0312: a list of token sequences that no production accepts | TR-12 gives the grammar its effect, and no rule lists such sequences. The maintainer decides whether the roadmap also keeps a list (option 3) |
+| Q-0412: which effects a standard attribute may have (X22-6) | Placement rules, warnings, promises, and layout changes only; a new attribute adds no required rejection |

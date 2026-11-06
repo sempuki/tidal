@@ -41,6 +41,8 @@ Used on 2026-11-05 in batch PU3 (`reports/clean-room/PU3/report.md`). LSUP-P2 de
 
 Kept open on 2026-11-05 under decision 0054, because the use in batch PU3 gives no answer.
 
+Kept open on 2026-11-05 under decision 0055, because LSUP-P2 changed in this commit after finding PU3-4: it now gives the shape of `std::align_val_t` and says that another shape needs no diagnostic and can be rejected where it is written. The writer's probe of round 8 (`reports/clean-room/roadmap-8/writer-probes/`) found that GCC and EDG reject the other shapes at the declaration and Clang accepts them. The question waits for the next use of LSUP-P2.
+
 ## Opinions
 
 ### Gap review, 2026-11-04

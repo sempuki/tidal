@@ -74,10 +74,10 @@ which kind it is and how strong it is:
 | `conditionally-supported` | fact | An implementation can reject the construct. If the implementation accepts the construct, it documents the behavior. |
 | `recommended` | advice | An implementation should follow the rule, usually by warning. |
 
-Tidal has no class of rule that requires a diagnostic when the units
-are linked. A rule whose break can show only when the units are linked,
-such as {rule}`LNK-7` or {rule}`ODR-8`, is a `no-diagnostic` rule
-({rule}`TR-4`).
+One requirement needs a diagnostic when the units are linked: a program
+defines `main` ({rule}`TR-4`). Every other rule whose break can show
+only when the units are linked, such as {rule}`LNK-7` or {rule}`ODR-8`,
+is a `no-diagnostic` rule.
 
 A diagnostic for a `recommended` rule is a warning. The warning
 leaves the program valid, and a program can ask the implementation
@@ -530,9 +530,11 @@ compile.
   and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`) doubts the class of a
   program with no `main`. The reference waives the diagnostic for a
   used function with no definition, and it states no waiver for the
-  rule that a program has one `main`. Tidal has no class that requires
-  a diagnostic at link time, so TR-P1 and TR-4 send both cases to LNK-7. Every
-  compiler of the matrix that links reports both at link time
+  rule that a program has one `main`. TR-4 follows the gap review of 2026-11-05 here: a
+  program with no `main` needs a diagnostic, which the implementation
+  can give when it links the units, and LNK-7 keeps the used function
+  with no definition. Every compiler of the matrix that links reports
+  both at link time
   (`main-no-definition.cpp`). `main-no-definition.cpp` is the one test with no `main`
   that the matrix links. `tools/run_tests.py` links a test of one file
   only when the test expects `run`, `run-fail`, or `link-fail`, and

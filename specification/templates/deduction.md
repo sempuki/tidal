@@ -558,7 +558,7 @@ the function type is not substituted.
 
 :::{rule} DED-29
 :kind: reject
-:tests: templates/deduction/substitution-hard-error.cpp templates/deduction/substitution-lambda-body.cpp templates/deduction/substitution-noexcept-later.cpp templates/deduction/substitution-deduced-result-body.cpp templates/deduction/substitution-lambda-default.cpp templates/deduction/substitution-lambda-call-fails.cpp templates/deduction/substitution-default-before-check.cpp
+:tests: templates/deduction/substitution-hard-error.cpp templates/deduction/substitution-lambda-body.cpp templates/deduction/substitution-noexcept-later.cpp templates/deduction/substitution-deduced-result-body.cpp templates/deduction/substitution-lambda-default.cpp templates/deduction/substitution-lambda-call-fails.cpp templates/deduction/substitution-default-before-check.cpp templates/deduction/losing-candidate-body-not-instantiated.cpp
 
 An error in one of these places makes the program not valid, even
 during deduction:
@@ -574,6 +574,12 @@ during deduction:
 A call with no viable function in the function type is a
 {term}`substitution failure` (DED-24), also when the called function is
 a lambda.
+
+Forming a candidate for overload resolution substitutes into the
+function type only. The body of a candidate is instantiated only when
+the call selects it, also when its result type is deduced. So an error
+in the body of a candidate that loses, such as a generic lambda's call
+operator against a plain one, does not make the program not valid.
 :::
 
 ### Other contexts
@@ -800,8 +806,8 @@ Gadget* g = new (&arena) Gadget;  // both match, and ordering prefers neither: n
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 125
-of 136 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 126
+of 137 tests.
 
 ### Divergences
 

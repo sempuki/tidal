@@ -1,6 +1,6 @@
-// tidal-rules: OPR-8
+// tidal-rules: OPR-8 OPR-9
 // tidal-expect: run
-// tidal-note: The program declares literal operators for suffixes that are forms in the syntax of literals. Each literal with such a suffix keeps its built-in type and value, and no literal operator runs.
+// tidal-note: The program declares literal operators for suffixes that are forms in the syntax of literals. Each literal with such a suffix keeps its built-in type and value, and no literal operator runs. The declarations break OPR-9, which needs no diagnostic, so the test records what every compiler does (Q-0383).
 template <class A, class B> constexpr bool same = false;
 template <class A> constexpr bool same<A, A> = true;
 int calls = 0;

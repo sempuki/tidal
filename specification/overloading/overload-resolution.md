@@ -665,7 +665,7 @@ The identity is better than a function pointer conversion
 
 :::{rule} OVL-27
 :kind: required
-:tests: overloading/overload-resolution/tie-plain-over-template.cpp overloading/overload-resolution/template-exact-over-plain.cpp overloading/overload-resolution/tie-conversion-result-before-template.cpp overloading/overload-resolution/tie-template-before-inherited.cpp overloading/overload-resolution/tie-template-before-rewritten.cpp overloading/overload-resolution/tie-template-before-swapped.cpp overloading/overload-resolution/tie-reference-kind-before-template.cpp overloading/overload-resolution/tie-reference-kind-before-template-lvalue.cpp overloading/overload-resolution/builtin-over-template.cpp expressions/lambdas/closure-as-base-overload-set.cpp
+:tests: overloading/overload-resolution/tie-plain-over-template.cpp overloading/overload-resolution/template-exact-over-plain.cpp overloading/overload-resolution/tie-conversion-result-before-template.cpp overloading/overload-resolution/tie-template-before-inherited.cpp overloading/overload-resolution/tie-template-before-rewritten.cpp overloading/overload-resolution/tie-template-before-swapped.cpp overloading/overload-resolution/tie-reference-kind-before-template.cpp overloading/overload-resolution/tie-reference-kind-before-template-lvalue.cpp overloading/overload-resolution/builtin-over-template.cpp expressions/lambdas/closure-as-base-overload-set.cpp templates/deduction/losing-candidate-body-not-instantiated.cpp
 
 A function that is not a template specialization wins over a
 specialization. A built-in candidate counts as such a function. The
@@ -848,8 +848,8 @@ struct Self {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 155
-of 185 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 156
+of 186 tests.
 
 ### Divergences
 

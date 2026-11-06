@@ -511,7 +511,7 @@ of 92 tests.
   outside a block can have a capture default. It cannot, at namespace
   scope, in a default argument, or in a member declaration of a local
   class, as Clang and GCC say. EDG accepts all three.
-- {question}`Q-0092` (LAM-18; open): whether a name in a lambda's
+- {question}`Q-0092` (LAM-18; settled): whether a name in a lambda's
   trailing return type finds a capture. It does, as GCC 16 and EDG say.
   Clang and GCC 14 find the outer variable. In the parameter list,
   every compiler finds the outer variable, so `decltype((x))` there is
@@ -575,6 +575,10 @@ of 92 tests.
 - LAM-18: Clang warns under `-Wall` (`-Wunused-lambda-capture`) about an
   explicit capture that the body names only in unevaluated operands.
   GCC does not warn. On every compiler, the closure is at least as
-  large as the captured object.
+  large as the captured object. Clang gives the same warning for an
+  explicit copy capture of a `const` integer variable with a constant
+  initializer that the body only reads, because such a read is not a
+  use ({rule}`ODR-3`) and needs no capture. GCC does not warn there
+  either.
 
 Inputs: clang-sema-expr, clang-diag-sema.

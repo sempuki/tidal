@@ -21,7 +21,7 @@ that has no row.
 | G1 | `report-2.md` | commit | 6c9fde1 |
 | G2 | `report-2.md` | commit | 6c9fde1 |
 | G3 | `report-2.md` | commit | 7d5499b |
-| G4 | `report-2.md` | open | no commit or question names the finding |
+| G4 | `report-2.md` | text | CE-23 lists the conditions on literal types that a test can observe, with 11 tests |
 | G5 | `report-2.md` | commit | 6c9fde1 |
 | G6 | `report-2.md` | commit | 7d5499b |
 | G7 | `report-2.md` | commit | af445f1 |
@@ -30,7 +30,7 @@ that has no row.
 | G10 | `report-2.md` | commit | 6c9fde1 |
 | G11 | `report-2.md` | commit | 6c9fde1 |
 | G12 | `report-2.md` | commit | 6c9fde1 |
-| G13 | `report-2.md` | open | no later commit or question names the finding |
+| G13 | `report-2.md` | text | the fundamental types page states TYP-2 |
 | G14 | `report-3.md` | commit | b594fe1, c354685 |
 | G15 | `report-3.md` | commit | 68b5195 |
 | G16 | `report-3.md` | commit | 68b5195 |
@@ -42,7 +42,7 @@ that has no row.
 | G22 | `report-3.md` | commit | 68b5195 |
 | G23 | `report-3.md` | commit | b594fe1, 68b5195 |
 | G24 | `report-3.md` | text | `foundations/keywords.md` states KW-1 and the keyword rules |
-| G25 | `report-3.md` | open | no later commit or question names the finding |
+| G25 | `report-3.md` | text | the overloading pages give the ranking that CTOR-14 needed |
 | G26 | `report-4.md` | commit | a581fe1 |
 | G27 | `report-4.md` | commit | a581fe1 |
 | G28 | `report-4.md` | commit | a581fe1 |
@@ -169,4 +169,4 @@ that has no row.
 | G149 | `report-21.md` | commit | decision 0057, item G: INST-12, Q-0392 |
 | G150 | `report-21.md` | commit | decision 0057, item G: CMP-8, Q-0387 |
 | G151 | `report-21.md` | commit | decision 0057, item G: BF-1, ALN-8, Q-0314 |
-| G152 | `report-22.md` | open | no commit or question names the finding |
+| G152 | `report-22.md` | commit | decision 0058, item F: DED-29 |

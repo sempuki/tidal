@@ -309,7 +309,7 @@ if the built-in operator or the operator function is used.
 
 :::{rule} OPR-9
 :kind: no-diagnostic
-:tests: classes/operators/literal-no-underscore-warns.cpp classes/operators/literal-no-underscore-floating-warns.cpp classes/operators/literal-double-underscore-suffix.cpp classes/operators/literal-reserved-suffix-used.cpp classes/operators/literal-reserved-suffix-u8.cpp classes/operators/literal-spaced-reserved-identifier.cpp
+:tests: classes/operators/literal-no-underscore-warns.cpp classes/operators/literal-no-underscore-floating-warns.cpp classes/operators/literal-double-underscore-suffix.cpp classes/operators/literal-reserved-suffix-used.cpp classes/operators/literal-reserved-suffix-u8.cpp classes/operators/literal-spaced-reserved-identifier.cpp classes/operators/literal-builtin-suffix-wins.cpp
 
 A program must not declare a literal operator whose suffix does not
 start with `_`, or whose suffix has two underscores in a row. The first

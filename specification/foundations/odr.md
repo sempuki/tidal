@@ -359,7 +359,7 @@ at every inclusion.
 
 :::{rule} ODR-8
 :kind: no-diagnostic
-:tests: foundations/odr/header-function-in-two-units.cpp foundations/odr/unused-function-defined-in-two-units.cpp foundations/odr/unused-variable-defined-in-two-units.cpp foundations/odr/constructor-uses-member-destructor.cpp foundations/odr/destructor-uses-deallocation-function.cpp foundations/odr/constructor-uses-allocation-functions.cpp foundations/odr/virtual-function-no-object-is-used.cpp foundations/odr/unused-member-function-no-definition.cpp foundations/odr/local-object-uses-destructor.cpp foundations/odr/constructor-uses-member-constructor.cpp foundations/odr/destructor-uses-pure-base-destructor.cpp foundations/odr/copy-uses-copy-constructor.cpp foundations/odr/delete-uses-destructor.cpp foundations/odr/new-uses-deallocation-function.cpp foundations/odr/virtual-destructor-uses-deallocation-function.cpp foundations/odr/default-argument-used.cpp foundations/odr/virtual-function-not-called-is-used.cpp foundations/odr/constant-address-is-use.cpp foundations/odr/function-address-is-use.cpp foundations/odr/template-argument-address-links.cpp foundations/odr/explicit-variable-specialization-in-two-units.cpp foundations/odr/explicit-class-member-in-two-units.cpp foundations/odr/constant-reference-through-conditional-is-use.cpp foundations/odr/new-noexcept-constructor-uses-deallocation.cpp
+:tests: foundations/odr/header-function-in-two-units.cpp foundations/odr/unused-function-defined-in-two-units.cpp foundations/odr/unused-variable-defined-in-two-units.cpp foundations/odr/constructor-uses-member-destructor.cpp foundations/odr/destructor-uses-deallocation-function.cpp foundations/odr/constructor-uses-allocation-functions.cpp foundations/odr/virtual-function-no-object-is-used.cpp foundations/odr/unused-member-function-no-definition.cpp foundations/odr/local-object-uses-destructor.cpp foundations/odr/constructor-uses-member-constructor.cpp foundations/odr/destructor-uses-pure-base-destructor.cpp foundations/odr/copy-uses-copy-constructor.cpp foundations/odr/delete-uses-destructor.cpp foundations/odr/new-uses-deallocation-function.cpp foundations/odr/virtual-destructor-uses-deallocation-function.cpp foundations/odr/default-argument-used.cpp foundations/odr/virtual-function-not-called-is-used.cpp foundations/odr/constant-address-is-use.cpp foundations/odr/function-address-is-use.cpp foundations/odr/template-argument-address-links.cpp foundations/odr/explicit-variable-specialization-in-two-units.cpp foundations/odr/explicit-class-member-in-two-units.cpp foundations/odr/constant-reference-through-conditional-is-use.cpp foundations/odr/new-noexcept-constructor-uses-deallocation.cpp foundations/odr/placement-allocation-declared-unused.cpp foundations/odr/placement-allocation-declared-used.cpp
 
 This rule applies to a variable or function with external linkage that
 is not `inline`. The program must not define such an entity in two
@@ -502,7 +502,7 @@ template <> int rank<bool> = 2;                // two units: two definitions
 
 ## Evidence
 
-All eight compilers agree on 82 of 95 tests. EDG checks each unit and
+All eight compilers agree on 84 of 97 tests. EDG checks each unit and
 does not link, so its results for the link and run tests say only that
 the units are valid.
 

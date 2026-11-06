@@ -103,7 +103,11 @@ that the substitution instantiates makes the program not valid (CNS-33).
 
 An atomic constraint must be a constant of type `bool` exactly. Its
 value is never converted, so a constraint means the same in every
-use.
+use. An atom whose type does not depend on a template parameter and is
+not `bool` can pass no check. The program is then not valid, also when
+no check reaches the atom, as after a short circuit or in a concept
+that no declaration uses. No diagnostic is required, and an
+implementation can reject the atom where it is written (CNS-39).
 
 For the same reason, an atomic constraint with the same arguments must
 give the same result at every point where the implementation checks
