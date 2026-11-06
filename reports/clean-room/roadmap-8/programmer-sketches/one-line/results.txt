@@ -1,0 +1,38 @@
+one-line/aggregate_binding.cpp: result: 0
+one-line/aggregate_ctad.cpp: result: 0
+one-line/char8_literal.cpp: result: 0
+one-line/class_template_static_inline.cpp: result: 0
+one-line/concept_nested_requirement.cpp: result: 0
+one-line/conditional_throw.cpp: result: 0
+one-line/consteval_iife.cpp: result: 0
+one-line/constexpr_virtual_dtor.cpp: result: 0
+one-line/constrained_auto_variable.cpp: result: 0
+one-line/decltype_auto_return.cpp: result: 0
+one-line/default_member_braces.cpp: result: 0
+one-line/explicit_bool.cpp: result: 0
+one-line/fold_and_pred.cpp: result: 0
+one-line/forward_ctor_parens.cpp: rejected [TR-12] at line 3: the grammar does not derive this: expected ')' but found '...'
+one-line/generic_lambda_forwarding_pack.cpp: result: 0
+one-line/if_constexpr_requires.cpp: result: 0
+one-line/if_init_switch_init.cpp: result: 0
+one-line/init_capture_move.cpp: result: 0
+one-line/init_capture_pack.cpp: result: 0
+one-line/init_list_ctor.cpp: result: 0
+one-line/lambda_in_default_argument.cpp: result: 0
+one-line/lambda_unevaluated.cpp: result: 0
+one-line/member_pointer_invoke.cpp: result: 0
+one-line/nested_designated.cpp: result: 0
+one-line/new_braced_pack.cpp: result: 0
+one-line/noexcept_noexcept.cpp: result: 0
+one-line/overloaded_lambdas_ctad.cpp: unspecified: result 0 with fixed choices: SEQ-8 at line 2 (the left operand of '+' first)
+one-line/paren_aggregate_init.cpp: result: 0
+one-line/partial_ordering_double.cpp: result: 0
+one-line/pointer_to_member_data_sort_key.cpp: result: 0
+one-line/range_for_binding_ref.cpp: result: 0
+one-line/requires_member_clause.cpp: unspecified: result 0 with fixed choices: SEQ-8 at line 2 (the left operand of '+' first)
+one-line/spaceship_defaulted_member_sort.cpp: result: 0
+one-line/static_constexpr_member_array.cpp: result: 0
+one-line/structured_binding_array.cpp: result: 0
+one-line/template_template.cpp: result: 0
+one-line/using_enum_namespace.cpp: result: 0
+one-line/variadic_class_sizeof_pack_array.cpp: result: 0

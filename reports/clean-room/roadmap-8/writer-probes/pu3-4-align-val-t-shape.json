@@ -1,0 +1,17 @@
+{
+ "prelude": "using size_t = decltype(sizeof 0);",
+ "template": "{prelude}\nnamespace std {{ {row} }}\n{col}\nint main() {{ return 0; }}",
+ "rows": {
+  "scoped enumeration, size_t": "enum class align_val_t : size_t {};",
+  "scoped enumeration, unsigned char": "enum class align_val_t : unsigned char {};",
+  "unscoped enumeration, size_t": "enum align_val_t : size_t {};",
+  "class": "struct align_val_t { size_t v; };",
+  "no declaration": ""
+ },
+ "cols": {
+  "no use": "",
+  "new of an over-aligned type": "struct alignas(256) Big { char c; }; void f() { delete new Big; }",
+  "names std::align_val_t in a cast": "auto v = static_cast<std::align_val_t>(64);"
+ },
+ "flags": []
+}

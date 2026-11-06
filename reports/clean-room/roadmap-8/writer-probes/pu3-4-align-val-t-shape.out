@@ -1,0 +1,57 @@
+| | no use | new of an over-aligned type | names std::align_val_t in a cast |
+|---|---|---|---|
+| scoped enumeration, size_t | accept | accept | accept |
+| scoped enumeration, unsigned char | accept: clang-18, clang-host, clang-22; reject: edg-7.0, gcc-16, gcc-14, edg-7.0-ilp32, gcc-host | accept: clang-18, clang-host, clang-22; reject: gcc-16, gcc-14, edg-7.0-ilp32, edg-7.0, gcc-host | accept: clang-18, clang-host, clang-22; reject: gcc-host, gcc-14, edg-7.0-ilp32, edg-7.0, gcc-16 |
+| unscoped enumeration, size_t | accept: clang-host, clang-18, clang-22; reject: gcc-14, edg-7.0-ilp32, edg-7.0, gcc-host, gcc-16 | accept: clang-host, clang-18, clang-22; reject: gcc-14, edg-7.0-ilp32, gcc-16, edg-7.0, gcc-host | accept: clang-host, clang-18, clang-22; reject: gcc-host, gcc-14, edg-7.0-ilp32, edg-7.0, gcc-16 |
+| class | accept: clang-18, clang-host, clang-22; reject: edg-7.0-ilp32, edg-7.0, gcc-host, gcc-16, gcc-14 | accept: clang-host, clang-18, clang-22; reject: edg-7.0-ilp32, edg-7.0, gcc-14, gcc-host, gcc-16 | accept: clang-host, clang-18, clang-22; reject: edg-7.0, gcc-14, edg-7.0-ilp32, gcc-host, gcc-16 |
+| no declaration | accept | accept | accept: gcc-host, gcc-16, gcc-14; reject: edg-7.0, edg-7.0-ilp32, clang-host, clang-18, clang-22 |
+scoped enumeration, unsigned char / no use / edg-7.0: har--no-use.cpp", line 2: error: enum "std::align_val_t" was
+scoped enumeration, unsigned char / no use / edg-7.0-ilp32: har--no-use.cpp", line 2: error: enum "std::align_val_t" was
+scoped enumeration, unsigned char / no use / gcc-14: /tidal/build/probes/pu3-4-align-val-t-shape/0003-scoped-enumeration-unsigned-char--no-use.cpp:2:51: error: different underlying type in enum 'enum class std::align_val_t'
+scoped enumeration, unsigned char / no use / gcc-16: /tidal/build/probes/pu3-4-align-val-t-shape/0003-scoped-enumeration-unsigned-char--no-use.cpp:2:51: error: different underlying type in enum 'enum class std::align_val_t'
+scoped enumeration, unsigned char / no use / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/pu3-4-align-val-t-shape/0003-scoped-enumeration-unsigned-char--no-use.cpp:2:51: error: different underlying type in enum ‘enum class std::align_val_t’
+scoped enumeration, unsigned char / new of an over-aligned type / edg-7.0: har--new-of-an-over-aligned-type.cpp", line 2: error: enum
+scoped enumeration, unsigned char / new of an over-aligned type / edg-7.0-ilp32: har--new-of-an-over-aligned-type.cpp", line 2: error: enum
+scoped enumeration, unsigned char / new of an over-aligned type / gcc-14: /tidal/build/probes/pu3-4-align-val-t-shape/0004-scoped-enumeration-unsigned-char--new-of-an-over-aligned-type.cpp:2:51: error: different underlying type in enum 'enum class std::align_val_t'
+scoped enumeration, unsigned char / new of an over-aligned type / gcc-16: /tidal/build/probes/pu3-4-align-val-t-shape/0004-scoped-enumeration-unsigned-char--new-of-an-over-aligned-type.cpp:2:51: error: different underlying type in enum 'enum class std::align_val_t'
+scoped enumeration, unsigned char / new of an over-aligned type / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/pu3-4-align-val-t-shape/0004-scoped-enumeration-unsigned-char--new-of-an-over-aligned-type.cpp:2:51: error: different underlying type in enum ‘enum class std::align_val_t’
+scoped enumeration, unsigned char / names std::align_val_t in a cast / edg-7.0: har--names-std-align-val-t-in-a-cast.cpp", line 2: error: enum
+scoped enumeration, unsigned char / names std::align_val_t in a cast / edg-7.0-ilp32: har--names-std-align-val-t-in-a-cast.cpp", line 2: error: enum
+scoped enumeration, unsigned char / names std::align_val_t in a cast / gcc-14: /tidal/build/probes/pu3-4-align-val-t-shape/0005-scoped-enumeration-unsigned-char--names-std-align-val-t-in-a-cast.cpp:2:51: error: different underlying type in enum 'enum class std::align_val_t'
+scoped enumeration, unsigned char / names std::align_val_t in a cast / gcc-16: /tidal/build/probes/pu3-4-align-val-t-shape/0005-scoped-enumeration-unsigned-char--names-std-align-val-t-in-a-cast.cpp:2:51: error: different underlying type in enum 'enum class std::align_val_t'
+scoped enumeration, unsigned char / names std::align_val_t in a cast / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/pu3-4-align-val-t-shape/0005-scoped-enumeration-unsigned-char--names-std-align-val-t-in-a-cast.cpp:2:51: error: different underlying type in enum ‘enum class std::align_val_t’
+unscoped enumeration, size_t / no use / edg-7.0: no-use.cpp", line 2: error: enum "std::align_val_t" was previously
+unscoped enumeration, size_t / no use / edg-7.0-ilp32: no-use.cpp", line 2: error: enum "std::align_val_t" was previously
+unscoped enumeration, size_t / no use / gcc-14: /tidal/build/probes/pu3-4-align-val-t-shape/0006-unscoped-enumeration-size-t--no-use.cpp:2:36: error: scoped/unscoped mismatch in enum 'enum class std::align_val_t'
+unscoped enumeration, size_t / no use / gcc-16: /tidal/build/probes/pu3-4-align-val-t-shape/0006-unscoped-enumeration-size-t--no-use.cpp:2:36: error: scoped/unscoped mismatch in enum 'enum class std::align_val_t'
+unscoped enumeration, size_t / no use / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/pu3-4-align-val-t-shape/0006-unscoped-enumeration-size-t--no-use.cpp:2:36: error: scoped/unscoped mismatch in enum ‘enum class std::align_val_t’
+unscoped enumeration, size_t / new of an over-aligned type / edg-7.0: new-of-an-over-aligned-type.cpp", line 2: error: enum
+unscoped enumeration, size_t / new of an over-aligned type / edg-7.0-ilp32: new-of-an-over-aligned-type.cpp", line 2: error: enum
+unscoped enumeration, size_t / new of an over-aligned type / gcc-14: /tidal/build/probes/pu3-4-align-val-t-shape/0007-unscoped-enumeration-size-t--new-of-an-over-aligned-type.cpp:2:36: error: scoped/unscoped mismatch in enum 'enum class std::align_val_t'
+unscoped enumeration, size_t / new of an over-aligned type / gcc-16: /tidal/build/probes/pu3-4-align-val-t-shape/0007-unscoped-enumeration-size-t--new-of-an-over-aligned-type.cpp:2:36: error: scoped/unscoped mismatch in enum 'enum class std::align_val_t'
+unscoped enumeration, size_t / new of an over-aligned type / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/pu3-4-align-val-t-shape/0007-unscoped-enumeration-size-t--new-of-an-over-aligned-type.cpp:2:36: error: scoped/unscoped mismatch in enum ‘enum class std::align_val_t’
+unscoped enumeration, size_t / names std::align_val_t in a cast / edg-7.0: names-std-align-val-t-in-a-cast.cpp", line 2: error: enum
+unscoped enumeration, size_t / names std::align_val_t in a cast / edg-7.0-ilp32: names-std-align-val-t-in-a-cast.cpp", line 2: error: enum
+unscoped enumeration, size_t / names std::align_val_t in a cast / gcc-14: /tidal/build/probes/pu3-4-align-val-t-shape/0008-unscoped-enumeration-size-t--names-std-align-val-t-in-a-cast.cpp:2:36: error: scoped/unscoped mismatch in enum 'enum class std::align_val_t'
+unscoped enumeration, size_t / names std::align_val_t in a cast / gcc-16: /tidal/build/probes/pu3-4-align-val-t-shape/0008-unscoped-enumeration-size-t--names-std-align-val-t-in-a-cast.cpp:2:36: error: scoped/unscoped mismatch in enum 'enum class std::align_val_t'
+unscoped enumeration, size_t / names std::align_val_t in a cast / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/pu3-4-align-val-t-shape/0008-unscoped-enumeration-size-t--names-std-align-val-t-in-a-cast.cpp:2:36: error: scoped/unscoped mismatch in enum ‘enum class std::align_val_t’
+class / no use / edg-7.0: error: tag kind of class or struct is incompatible with declaration
+class / no use / edg-7.0-ilp32: error: tag kind of class or struct is incompatible with declaration
+class / no use / gcc-14: /tidal/build/probes/pu3-4-align-val-t-shape/0009-class--no-use.cpp:2:24: error: 'std::align_val_t' referred to as 'struct'
+class / no use / gcc-16: /tidal/build/probes/pu3-4-align-val-t-shape/0009-class--no-use.cpp:2:24: error: 'std::align_val_t' referred to as 'struct'
+class / no use / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/pu3-4-align-val-t-shape/0009-class--no-use.cpp:2:24: error: ‘std::align_val_t’ referred to as ‘struct’
+class / new of an over-aligned type / edg-7.0: -type.cpp", line 2: error: tag kind of class or struct is
+class / new of an over-aligned type / edg-7.0-ilp32: -type.cpp", line 2: error: tag kind of class or struct is
+class / new of an over-aligned type / gcc-14: /tidal/build/probes/pu3-4-align-val-t-shape/0010-class--new-of-an-over-aligned-type.cpp:2:24: error: 'std::align_val_t' referred to as 'struct'
+class / new of an over-aligned type / gcc-16: /tidal/build/probes/pu3-4-align-val-t-shape/0010-class--new-of-an-over-aligned-type.cpp:2:24: error: 'std::align_val_t' referred to as 'struct'
+class / new of an over-aligned type / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/pu3-4-align-val-t-shape/0010-class--new-of-an-over-aligned-type.cpp:2:24: error: ‘std::align_val_t’ referred to as ‘struct’
+class / names std::align_val_t in a cast / edg-7.0: in-a-cast.cpp", line 2: error: tag kind of class or struct is
+class / names std::align_val_t in a cast / edg-7.0-ilp32: in-a-cast.cpp", line 2: error: tag kind of class or struct is
+class / names std::align_val_t in a cast / gcc-14: /tidal/build/probes/pu3-4-align-val-t-shape/0011-class--names-std-align-val-t-in-a-cast.cpp:2:24: error: 'std::align_val_t' referred to as 'struct'
+class / names std::align_val_t in a cast / gcc-16: /tidal/build/probes/pu3-4-align-val-t-shape/0011-class--names-std-align-val-t-in-a-cast.cpp:2:24: error: 'std::align_val_t' referred to as 'struct'
+class / names std::align_val_t in a cast / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/pu3-4-align-val-t-shape/0011-class--names-std-align-val-t-in-a-cast.cpp:2:24: error: ‘std::align_val_t’ referred to as ‘struct’
+no declaration / names std::align_val_t in a cast / clang-18: /tidal/build/probes/pu3-4-align-val-t-shape/0014-no-declaration--names-std-align-val-t-in-a-cast.cpp:3:27: error: no type named 'align_val_t' in namespace 'std'
+no declaration / names std::align_val_t in a cast / clang-22: /tidal/build/probes/pu3-4-align-val-t-shape/0014-no-declaration--names-std-align-val-t-in-a-cast.cpp:3:27: error: no type named 'align_val_t' in namespace 'std'
+no declaration / names std::align_val_t in a cast / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/pu3-4-align-val-t-shape/0014-no-declaration--names-std-align-val-t-in-a-cast.cpp:3:27: error: no type named 'align_val_t' in namespace 'std'
+no declaration / names std::align_val_t in a cast / edg-7.0: gn-val-t-in-a-cast.cpp", line 3: error: namespace "std" has no member
+no declaration / names std::align_val_t in a cast / edg-7.0-ilp32: gn-val-t-in-a-cast.cpp", line 3: error: namespace "std" has no member

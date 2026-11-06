@@ -1,0 +1,8 @@
+bugs/array_index_past_end_in_loop.cpp: undefined [PFX-4] at line 4: subscript outside the array
+bugs/dangling_deduced_this_value.cpp: undefined [OBJ-2] at line 8: access to an object whose lifetime has ended
+bugs/delete_through_base_without_virtual_destructor.cpp: undefined [VIRT-12] at line 5: delete through a pointer to a base whose destructor is not virtual, or to a member
+bugs/inactive_union_member.cpp: undefined [UNI-6] at line 9: access to a union member that is not active
+bugs/lambda_captures_dead_local.cpp: undefined [OBJ-2] at line 3: access to an object whose lifetime has ended
+bugs/negate_long_min.cpp: undefined [UN-4] at line 3: negation overflows
+bugs/reference_into_grown_storage.cpp: undefined [OBJ-2] at line 21: access to an object whose lifetime has ended
+bugs/string_view_of_temporary.cpp: undefined [OBJ-2] at line 6: access to an object whose lifetime has ended

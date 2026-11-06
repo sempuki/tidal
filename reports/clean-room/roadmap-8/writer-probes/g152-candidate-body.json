@@ -1,0 +1,17 @@
+{
+ "prelude": "struct Circle { double r; };\nstruct Square { double side; };\ntemplate <class... F> struct overloaded : F... { using F::operator()...; };\ntemplate <class... F> overloaded(F...) -> overloaded<F...>;",
+ "template": "{prelude}\n{row}\nconstexpr int probe() {{ {col} }}\nint main() {{ return probe(); }}",
+ "rows": {
+  "generic lambda, deduced result, body not valid for Circle": "constexpr overloaded o{ [](const Circle&) { return 0; }, [](const auto& t) { return t.side; } };",
+  "generic lambda, deduced result, body valid for Circle": "constexpr overloaded o{ [](const Circle&) { return 0; }, [](const auto& t) { return sizeof t; } };",
+  "generic lambda, trailing decltype result": "constexpr overloaded o{ [](const Circle&) { return 0; }, [](const auto& t) -> decltype(t.side) { return t.side; } };",
+  "generic lambda, declared result int": "constexpr overloaded o{ [](const Circle&) { return 0; }, [](const auto& t) -> int { return t.side; } };",
+  "function template, deduced result, body not valid": "struct FO { constexpr int operator()(const Circle&) const { return 0; } template <class T> constexpr auto operator()(const T& t) const { return t.side; } }; constexpr FO o{};"
+ },
+ "cols": {
+  "call with Circle": "return o(Circle{1.0});",
+  "call with Square": "return o(Square{1.0}) == 1.0 ? 0 : 1;",
+  "address of the template specialization for Circle not taken, only the call; result in static_assert": "static_assert(o(Circle{1.0}) == 0); return 0;"
+ },
+ "flags": []
+}

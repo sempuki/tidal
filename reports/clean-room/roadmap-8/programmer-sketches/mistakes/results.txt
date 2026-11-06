@@ -1,0 +1,48 @@
+== mistakes/ambiguous_call.cpp
+  gcc: error: call of overloaded ‘f(int)’ is ambiguous
+  clang: error: call to 'f' is ambiguous
+  fe: mistakes/ambiguous_call.cpp:3: error [OVL-36]: ambiguous call of 'f': no viable function is better than each of the others 
+== mistakes/auto_return_used_before_deduced.cpp
+  gcc: error: use of ‘auto fact(int)’ before deduction of ‘auto’
+  clang: error: function 'fact' with deduced return type cannot be used before it is defined
+  fe: mistakes/auto_return_used_before_deduced.cpp:2: error [RET-3]: 'fact' is used before its return type is deduced mistakes/auto_return_used_before_deduced.cpp:3: error [RET-3]: 'fact' is used before its return type is deduced 
+== mistakes/constexpr_not_constant.cpp
+  gcc: error: call to non-‘constexpr’ function ‘int rt()’
+  clang: error: constexpr variable 'k' must be initialized by a constant expression
+  fe: mistakes/constexpr_not_constant.cpp:2: error [CX-1, CE-2]: initializer is not a constant expression (CE-2: call of non-constexpr function 'rt') 
+== mistakes/constraint_not_satisfied.cpp
+  gcc: error: no matching function for call to ‘f(double)’
+  clang: error: no matching function for call to 'f'
+  fe: mistakes/constraint_not_satisfied.cpp:3: error [DED-35]: no viable function for the call of 'f': deduction fails for each template 
+== mistakes/copy_move_only.cpp
+  gcc: error: use of deleted function ‘Box::Box(const Box&)’
+  clang: error: call to deleted constructor of 'Box'
+  fe: mistakes/copy_move_only.cpp:2: error [DEL-1, CPY-24]: the copy constructor of 'Box' is deleted 
+== mistakes/designator_out_of_order.cpp
+  gcc: error: designator order for field ‘P::x’ does not match declaration order in ‘P’
+  clang: warning: ISO C++ requires field designators to be specified in declaration order; field 'y' will be initialized after field 'x' [-Wreorder-init-list]
+  fe: mistakes/designator_out_of_order.cpp:2: error [LIST-14]: designator 'x' is out of declaration order 
+== mistakes/missing_override_target.cpp
+  gcc: error: ‘int D::f()’ marked ‘override’, but does not override
+  clang: error: non-virtual member function marked 'override' hides virtual member function
+  fe: mistakes/missing_override_target.cpp:2: error [VIRT-3]: 'f' is marked override but overrides no virtual function of a base 
+== mistakes/missing_typename.cpp
+  gcc: error: need ‘typename’ before ‘T::type’ because ‘T’ is a dependent scope [-Wtemplate-body]
+  clang: error: missing 'typename' prior to dependent type name 'T::type'
+  fe: mistakes/missing_typename.cpp:1: error [TR-12]: the grammar does not derive this: expected ';' but found 'x' mistakes/missing_typename.cpp:1: error [DEP-19]: 'type' names a type, but the template reads it as a value without 'typename' 
+== mistakes/narrowing_braces.cpp
+  gcc: error: narrowing conversion of ‘d’ from ‘double’ to ‘int’ [-Wnarrowing]
+  clang: error: type 'double' cannot be narrowed to 'int' in initializer list [-Wc++11-narrowing]
+  fe: mistakes/narrowing_braces.cpp:1: error [LIST-2]: narrowing conversion from double to int in braces 
+== mistakes/nonconst_member_on_const.cpp
+  gcc: error: passing ‘const C’ as ‘this’ argument discards qualifiers [-fpermissive]
+  clang: error: 'this' argument to member function 'get' has type 'const C', but function is not marked const
+  fe: mistakes/nonconst_member_on_const.cpp:2: error [CLS-25]: non-const member function called on a const object 
+== mistakes/nonconst_ref_to_temporary.cpp
+  gcc: error: cannot bind non-const lvalue reference of type ‘int&’ to an rvalue of type ‘int’
+  clang: error: no matching function for call to 'twice'
+  fe: mistakes/nonconst_ref_to_temporary.cpp:2: error [OVL-35]: no viable function: an argument cannot be converted to the parameter type 
+== mistakes/private_member.cpp
+  gcc: error: ‘int A::secret’ is private within this context
+  clang: error: 'secret' is a private member of 'A'
+  fe: mistakes/private_member.cpp:2: error [ACC-2]: 'secret' is a private member of 'A' 

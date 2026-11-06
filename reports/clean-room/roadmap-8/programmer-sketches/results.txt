@@ -1,0 +1,224 @@
+=== pipeline_first_try.cpp
+g++: FAILED: pipeline_first_try.cpp:29:35: error: expected primary-expression before ‘)’ token pipeline_first_try.cpp:29:20: error: there are no arguments to ‘__is_integral’ that depend on a template parameter, so a declaration of ‘__is_integral’ must be available [-fpermissive] 
+g++ san: FAILED: pipeline_first_try.cpp:29:35: error: expected primary-expression before ‘)’ token pipeline_first_try.cpp:29:20: error: there are no arguments to ‘__is_integral’ that depend on a template parameter, so a declaration of ‘__is_integral’ must be available [-fpermissive] 
+clang++: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: rejects: "/w/pipeline_first_try.cpp", line 19: error: type name is not allowed
+tidal-fe: rejected [TR-12] at line 19: the grammar does not derive this: expected '(' or '{' after a type name in an expression 
+=== pipeline.cpp
+g++: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: rejects: "/w/pipeline.cpp", line 65: error: member "filter_view<R, Pred>::base_ [with
+tidal-fe: unspecified: result 0 with fixed choices: SEQ-1 at line 130 (arguments evaluated from left to right); SEQ-1 at line 118 (arguments evaluated from left to right) explored: 4 runs; other outcomes: result 0 
+=== fmt.cpp
+g++: built (warnings 1), exit 0 
+g++ san: built (warnings 1), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+=== fmt_wrong_count.cpp
+g++: FAILED: fmt_wrong_count.cpp:99:10: error: call to consteval function ‘format_string<int>("{} {}")’ is not a constant expression fmt_wrong_count.cpp:39:47: error: call to non-‘constexpr’ function ‘void format_error(const char*)’ 
+g++ san: FAILED: fmt_wrong_count.cpp:99:10: error: call to consteval function ‘format_string<int>("{} {}")’ is not a constant expression fmt_wrong_count.cpp:39:47: error: call to non-‘constexpr’ function ‘void format_error(const char*)’ 
+clang++: FAILED: fmt_wrong_count.cpp:99:10: error: call to consteval function 'format_string<int>::format_string<6UL>' is not a constant expression fmt_wrong_count.cpp:39:35: note: non-constexpr function 'format_error' cannot be used in a constant expression 
+clang++ san: FAILED: fmt_wrong_count.cpp:99:10: error: call to consteval function 'format_string<int>::format_string<6UL>' is not a constant expression fmt_wrong_count.cpp:39:35: note: non-constexpr function 'format_error' cannot be used in a constant expression 
+EDG: accepts
+tidal-fe: rejected [CEV-1] at line 99: call of consteval constructor is not a constant expression (CE-2: call of non-constexpr function 'format_error') 
+=== owner.cpp
+g++: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: unspecified: result 0 with fixed choices: SEQ-1 at line 55 (arguments evaluated from left to right) explored: 4 runs; other outcomes: result 0 
+=== config.cpp
+g++: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: rejects: "/w/config.cpp", line 113: error: no valid std::weak_ordering type found
+tidal-fe: unspecified: result 0 with fixed choices: SEQ-8 at line 28 (the left operand of '|' first); PRIM-9 at line 64 (string literals with the same characters are one object); SEQ-8 at line 29 (the left operand of '&' first) explored: 16 runs; other outcomes: result 0 
+=== tasks.cpp
+g++: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: rejected [CTOR-15] at line 34: 'leaf' is initialized two times 
+=== tasks_type_pack_bases.cpp
+g++: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: unsupported at line 135: check: constant initializer: constructor with an initializer the front end does not model 
+=== nested_friend_reads_enclosing.cpp
+g++: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: rejects: "/w/nested_friend_reads_enclosing.cpp", line 6: error: member "Outer::secret_"
+tidal-fe: result: 0 
+=== base_pack_mem_init.cpp
+g++: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: rejected [CTOR-15] at line 5: 'leaf' is initialized two times 
+=== base_pack_mem_init_type.cpp
+g++: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+=== base_type_pack_mem_init_one.cpp
+g++: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+=== base_template_id_pack_args_mem_init.cpp
+g++: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+=== base_template_id_mem_init_pack_argument.cpp
+g++: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: unsupported at line 8: check: parse: expected ')' but found '...' 
+=== member_init_pack_argument.cpp
+g++: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: unsupported at line 9: check: parse: expected ')' but found '...' 
+=== member_init_pack_argument_braced.cpp
+g++: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+=== mem_init_pack_argument_partial_spec.cpp
+g++: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: unsupported at line 8: check: parse: expected ')' but found '...' 
+=== mem_init_pack_argument_constexpr.cpp
+g++: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: rejected [TR-12] at line 8: the grammar does not derive this: expected ')' but found '...' 
+=== braced_init_constructor_template.cpp
+g++: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: unsupported at line 5: constructor call 
+=== braced_init_constructor_template_constant.cpp
+g++: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: unsupported at line 5: check: constant initializer: constructor call 
+=== braced_base_init_constructor_template.cpp
+g++: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: unsupported at line 8: constructor with an initializer the front end does not model 
+=== overload_set_generic_body_invalid.cpp
+g++: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: unspecified: result 0 with fixed choices: SEQ-8 at line 11 (the left operand of '+' first) explored: 2 runs; other outcomes: result 0 
+=== paren-pack/copy_init_functional_cast_paren_pack.cpp
+g++: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+=== paren-pack/functional_cast_paren_pack.cpp
+g++: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: unspecified: result 0 with fixed choices: SEQ-8 at line 2 (the left operand of '+' first) explored: 2 runs; other outcomes: result 0 
+=== paren-pack/new_paren_pack.cpp
+g++: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+=== paren-pack/variable_paren_pack.cpp
+g++: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: rejected [PACK-8] at line 2: a pack is used outside the pattern of an expansion 
+=== paren-pack/variable_paren_pack_int.cpp
+g++: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: rejected [PACK-8] at line 1: a pack is used outside the pattern of an expansion 
+=== paren-pack/variable_paren_pack_nontemplate_class.cpp
+g++: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: rejected [PACK-8] at line 2: a pack is used outside the pattern of an expansion 
+=== logger/main.cpp logger/sink.cpp
+g++: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts accepts
+tidal-fe: result: 0 
+=== consteval_converting_constructor_not_constant.cpp
+g++: FAILED: consteval_converting_constructor_not_constant.cpp:10:26: error: call to consteval function ‘checked(-1)’ is not a constant expression consteval_converting_constructor_not_constant.cpp:5:52: error: call to non-‘constexpr’ function ‘void fail()’ 
+g++ san: FAILED: consteval_converting_constructor_not_constant.cpp:10:26: error: call to consteval function ‘checked(-1)’ is not a constant expression consteval_converting_constructor_not_constant.cpp:5:52: error: call to non-‘constexpr’ function ‘void fail()’ 
+clang++: FAILED: consteval_converting_constructor_not_constant.cpp:10:26: error: call to consteval function 'checked::checked' is not a constant expression 1 error generated. 
+clang++ san: FAILED: consteval_converting_constructor_not_constant.cpp:10:26: error: call to consteval function 'checked::checked' is not a constant expression 1 error generated. 
+EDG: accepts
+tidal-fe: rejected [CEV-1] at line 10: call of consteval constructor is not a constant expression (CE-2: call of non-constexpr function 'fail') 
+=== consteval_template_converting_constructor_not_constant.cpp
+g++: FAILED: consteval_template_converting_constructor_not_constant.cpp:14:26: error: call to consteval function ‘checked<int>(2)’ is not a constant expression consteval_template_converting_constructor_not_constant.cpp:6:64: error: call to non-‘constexpr’ function ‘void fail()’ 
+g++ san: FAILED: consteval_template_converting_constructor_not_constant.cpp:14:26: error: call to consteval function ‘checked<int>(2)’ is not a constant expression consteval_template_converting_constructor_not_constant.cpp:6:64: error: call to non-‘constexpr’ function ‘void fail()’ 
+clang++: FAILED: consteval_template_converting_constructor_not_constant.cpp:14:26: error: call to consteval function 'checked<int>::checked' is not a constant expression 1 error generated. 
+clang++ san: FAILED: consteval_template_converting_constructor_not_constant.cpp:14:26: error: call to consteval function 'checked<int>::checked' is not a constant expression 1 error generated. 
+EDG: accepts
+tidal-fe: rejected [CEV-1] at line 14: call of consteval constructor is not a constant expression (CE-2: call of non-constexpr function 'fail') 
+=== mistakes/designator_out_of_order.cpp
+g++: FAILED: mistakes/designator_out_of_order.cpp:2:32: error: designator order for field ‘P::x’ does not match declaration order in ‘P’ 
+g++ san: FAILED: mistakes/designator_out_of_order.cpp:2:32: error: designator order for field ‘P::x’ does not match declaration order in ‘P’ 
+clang++: built (warnings 2), exit 2 
+clang++ san: built (warnings 2), exit 2 
+EDG: rejects: "/w/designator_out_of_order.cpp", line 2: error: out-of-order initializers are
+tidal-fe: rejected [LIST-14] at line 2: designator 'x' is out of declaration order 

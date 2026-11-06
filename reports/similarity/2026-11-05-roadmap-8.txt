@@ -1,0 +1,105 @@
+Similarity report: run threshold 8 words, overlap threshold 0.25
+
+ok   roadmap-8/designer.md:Roadmap, round 8: what to do after phase longest=0   overlap=0.00
+ok   roadmap-8/designer.md:1.1 Counts at 1e20bfa2 longest=0   overlap=0.00
+ok   roadmap-8/designer.md:1.2 What phase 10 did for the designer longest=0   overlap=0.00
+ok   roadmap-8/designer.md:1.3 What X22 found, and what the repairs longest=0   overlap=0.00
+ok   roadmap-8/designer.md:1.4 Pages the Propose exercises have rea longest=0   overlap=0.00
+ok   roadmap-8/designer.md:1.5 The refresh check at 1e20bfa2 longest=0   overlap=0.00
+ok   roadmap-8/designer.md:1.6 What a designer still cannot state longest=0   overlap=0.00
+ok   roadmap-8/designer.md:1.7 The portfolio longest=0   overlap=0.00
+ok   roadmap-8/designer.md:1.8 Questions and principles longest=0   overlap=0.00
+ok   roadmap-8/designer.md:2. Ranked items longest=0   overlap=0.00
+ok   roadmap-8/designer.md:Item 1. Repair TR-P1 against TR-4, and r longest=0   overlap=0.00
+ok   roadmap-8/designer.md:Item 2. Propose X23 on P25 and X24 on P2 longest=0   overlap=0.00
+ok   roadmap-8/designer.md:Item 3. The later-version probe: a maint longest=0   overlap=0.00
+ok   roadmap-8/designer.md:Item 4. Refresh notes where changed text longest=0   overlap=0.00
+ok   roadmap-8/designer.md:Item 5. A shared impact scanner, started longest=0   overlap=0.00
+ok   roadmap-8/designer.md:Item 6. A front-end prototype of one don longest=0   overlap=0.00
+ok   roadmap-8/designer.md:Item 7. An index of what a test of valid longest=0   overlap=0.00
+ok   roadmap-8/designer.md:Item 8. Pair exercises, starting with X1 longest=0   overlap=0.00
+ok   roadmap-8/designer.md:Item 9. ILP32 runs for tests of conversi longest=0   overlap=0.00
+ok   roadmap-8/designer.md:3. Keep out of scope longest=0   overlap=0.00
+ok   roadmap-8/designer.md:4. Process changes longest=0   overlap=0.00
+ok   roadmap-8/editor.md:Roadmap, round 8: what to do after phase longest=0   overlap=0.00
+ok   roadmap-8/editor.md:Repo-wide counts longest=0   overlap=0.00
+ok   roadmap-8/editor.md:What phase 10 did to the questions longest=0   overlap=0.00
+ok   roadmap-8/editor.md:Text phase 10 wrote that no review has r longest=0   overlap=0.00
+ok   roadmap-8/editor.md:What phase 10 took from round 7 longest=0   overlap=0.00
+ok   roadmap-8/editor.md:Records that drift longest=0   overlap=0.00
+ok   roadmap-8/editor.md:The ten weakest pages longest=0   overlap=0.00
+ok   roadmap-8/editor.md:2. Ranked work items longest=0   overlap=0.00
+ok   roadmap-8/editor.md:2.1 Review the text phase 10 wrote longest=0   overlap=0.00
+ok   roadmap-8/editor.md:2.2 A second packet for `pending.md`, by longest=0   overlap=0.00
+ok   roadmap-8/editor.md:2.3 A narrow second review of the doubt- longest=0   overlap=0.00
+ok   roadmap-8/editor.md:2.4 One ledger for every exercise findin longest=0   overlap=0.00
+ok   roadmap-8/editor.md:2.5 Repair the records, and generate the longest=0   overlap=0.00
+ok   roadmap-8/editor.md:2.6 A principle-use batch PU4 longest=0   overlap=0.00
+ok   roadmap-8/editor.md:3. What to keep out of scope longest=0   overlap=0.00
+ok   roadmap-8/editor.md:4. Process changes longest=0   overlap=0.00
+ok   roadmap-8/editor.md:5. Files     longest=0   overlap=0.00
+ok   roadmap-8/implementer.md:Roadmap, round 8: what to do after phase longest=0   overlap=0.00
+ok   roadmap-8/implementer.md:1. Where the specification and the front longest=0   overlap=0.00
+ok   roadmap-8/implementer.md:What phase 10 took from round 7 longest=0   overlap=0.00
+ok   roadmap-8/implementer.md:The old failures moved a little longest=0   overlap=0.00
+ok   roadmap-8/implementer.md:Failures by page longest=0   overlap=0.00
+ok   roadmap-8/implementer.md:Places where the text or the record stil longest=0   overlap=0.00
+ok   roadmap-8/implementer.md:2. Ranked items longest=0   overlap=0.00
+ok   roadmap-8/implementer.md:1. One ledger for every finding, and ans longest=0   overlap=0.00
+ok   roadmap-8/implementer.md:2. Implement I4: the conditional operato longest=0   overlap=0.01
+ok   roadmap-8/implementer.md:3. Implement I5: deduction from a call a longest=0   overlap=0.00
+ok   roadmap-8/implementer.md:4. Front-end round 23: the template chec longest=0   overlap=0.01
+ok   roadmap-8/implementer.md:5. Rule boundaries on the lowest pages,  longest=0   overlap=0.00
+ok   roadmap-8/implementer.md:6. The library surface and the variadic  longest=0   overlap=0.00
+ok   roadmap-8/implementer.md:7. Labels for the 32 `unspecified` rules longest=0   overlap=0.00
+ok   roadmap-8/implementer.md:8. A front-end prototype of P23 (Propose longest=0   overlap=0.00
+ok   roadmap-8/implementer.md:Dependency sketch longest=0   overlap=0.00
+ok   roadmap-8/implementer.md:3. Scope longest=0   overlap=0.00
+ok   roadmap-8/implementer.md:4. Process changes longest=0   overlap=0.00
+ok   roadmap-8/programmer.md:Roadmap, round 8: what to do after phase longest=0   overlap=0.00
+ok   roadmap-8/programmer.md:1. The state from a programmer's view longest=0   overlap=0.01
+ok   roadmap-8/programmer.md:1.1 Counts longest=0   overlap=0.00
+ok   roadmap-8/programmer.md:1.2 Round 7 items that phase 10 took and longest=0   overlap=0.00
+ok   roadmap-8/programmer.md:1.3 The earlier sketches, rerun longest=0   overlap=0.00
+ok   roadmap-8/programmer.md:1.4 New programs longest=0   overlap=0.00
+ok   roadmap-8/programmer.md:1.5 Reductions longest=0   overlap=0.00
+ok   roadmap-8/programmer.md:1.6 Short programs, planted bugs, and pl longest=0   overlap=0.00
+ok   roadmap-8/programmer.md:1.7 Records that drift longest=0   overlap=0.00
+ok   roadmap-8/programmer.md:2. Ranked work items longest=0   overlap=0.00
+ok   roadmap-8/programmer.md:Item 1. Tests for the initializer forms  longest=0   overlap=0.00
+ok   roadmap-8/programmer.md:Item 2. Text: pack expansion in initiali longest=0   overlap=0.00
+ok   roadmap-8/programmer.md:Item 3. A front-end round on library-sty longest=0   overlap=0.00
+ok   roadmap-8/programmer.md:Item 4. Port suites, starting with two longest=0   overlap=0.00
+ok   roadmap-8/programmer.md:Item 5. A Write suite on library-shaped  longest=0   overlap=0.00
+ok   roadmap-8/programmer.md:Item 6. Diagnose batches with the front  longest=0   overlap=0.00
+ok   roadmap-8/programmer.md:Item 7. A count of grammar forms by test longest=0   overlap=0.00
+ok   roadmap-8/programmer.md:Item 8. A findings ledger for every exer longest=0   overlap=0.00
+ok   roadmap-8/programmer.md:Item 9. Interpreter output that says whe longest=0   overlap=0.00
+ok   roadmap-8/programmer.md:Item 10. Guides on callables, owners, an longest=0   overlap=0.00
+ok   roadmap-8/programmer.md:3. Out of scope longest=0   overlap=0.00
+ok   roadmap-8/programmer.md:4. Process changes longest=0   overlap=0.00
+ok   roadmap-8/programmer.md:5. Suggested order longest=0   overlap=0.00
+ok   roadmap-8/programmer.md:6. Doubts for the clean-room writers longest=0   overlap=0.02
+ok   roadmap-8/writer-probes/README.md:Writer probes, roadmap round 8 longest=0   overlap=0.01
+ok   roadmap-8/writer.md:Roadmap, round 8: what to do after phase longest=0   overlap=0.00
+ok   roadmap-8/writer.md:1.1 Counts   longest=0   overlap=0.00
+ok   roadmap-8/writer.md:1.2 What phase 10 took from round 7 longest=0   overlap=0.00
+ok   roadmap-8/writer.md:1.3 Where the writer's time went longest=0   overlap=0.00
+ok   roadmap-8/writer.md:1.4 Questions longest=0   overlap=0.00
+ok   roadmap-8/writer.md:1.5 Evidence longest=0   overlap=0.00
+ok   roadmap-8/writer.md:1.6 Coverage by readers and reviewers longest=0   overlap=0.00
+ok   roadmap-8/writer.md:1.7 Findings with no answer longest=0   overlap=0.00
+ok   roadmap-8/writer.md:1.8 Front end and the writer longest=0   overlap=0.00
+ok   roadmap-8/writer.md:1.9 Similarity longest=0   overlap=0.00
+ok   roadmap-8/writer.md:2. Proposed items, ranked longest=0   overlap=0.00
+ok   roadmap-8/writer.md:Item 1. F. Answer the phase 10 findings  longest=0   overlap=0.00
+ok   roadmap-8/writer.md:Item 2. RV4. A gap review of the text ph longest=0   overlap=0.00
+ok   roadmap-8/writer.md:Item 3. R5. Close the phase 10 record longest=0   overlap=0.00
+ok   roadmap-8/writer.md:Item 4. I4. Implement on constraint norm longest=0   overlap=0.00
+ok   roadmap-8/writer.md:Item 5. P1. The first Port suite longest=0   overlap=0.00
+ok   roadmap-8/writer.md:Item 6. FE23. Front-end round 23 longest=0   overlap=0.00
+ok   roadmap-8/writer.md:Item 7. D2. Diagnose batches longest=0   overlap=0.00
+ok   roadmap-8/writer.md:3. Out of scope longest=0   overlap=0.00
+ok   roadmap-8/writer.md:4. Process changes longest=0   overlap=0.00
+
+0 flagged

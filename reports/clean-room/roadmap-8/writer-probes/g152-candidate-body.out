@@ -1,0 +1,7 @@
+| | call with Circle | call with Square | address of the template specialization for Circle not taken, only the call; result in static_assert |
+|---|---|---|---|
+| generic lambda, deduced result, body not valid for Circle | accept | accept | accept |
+| generic lambda, deduced result, body valid for Circle | accept | accept | accept |
+| generic lambda, trailing decltype result | accept | accept | accept |
+| generic lambda, declared result int | accept | accept | accept |
+| function template, deduced result, body not valid | accept | accept | accept |
