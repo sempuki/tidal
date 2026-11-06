@@ -866,3 +866,24 @@ when a report names a finding that has no row here.
 | P1-7 | `P1/report.md` | planned | decision 0058, item E repairs: the base flags in index.md |
 | P1-8 | `P1/report.md` | planned | decision 0058, item E repairs: a library-free requirement example |
 | P1-9 | `P1/report.md` | planned | decision 0058, item E repairs: TR-16 and exact results |
+| I4-1 | `I4/report.md` | planned | decision 0058, item E repairs |
+| I4-2 | `I4/report.md` | planned | decision 0058, item E repairs |
+| I4-3 | `I4/report.md` | planned | decision 0058, item E repairs |
+| I4-4 | `I4/report.md` | planned | decision 0058, item FE: front-end round 23 |
+| I4-5 | `I4/report.md` | planned | decision 0058, item FE: front-end round 23 |
+| I4-6 | `I4/report.md` | planned | decision 0058, item FE: front-end round 23 |
+| I4-7 | `I4/report.md` | planned | decision 0058, item FE: front-end round 23 |
+| I4-8 | `I4/report.md` | planned | decision 0058, item E repairs |
+| I4-9 | `I4/report.md` | planned | decision 0058, item E repairs |
+| I4-10 | `I4/report.md` | planned | decision 0058, item E repairs |
+| I4-11 | `I4/report.md` | planned | decision 0058, item E repairs |
+| I4-12 | `I4/report.md` | planned | decision 0058, item E repairs (outside knowledge on explicit functions and promotions) |
+| I4-13 | `I4/report.md` | planned | decision 0058, item E repairs |
+| I4-14 | `I4/report.md` | planned | decision 0058, item E repairs |
+| X23-1 | `X23/report.md` | planned | decision 0058, item E repairs |
+| X23-2 | `X23/report.md` | planned | decision 0058, item E repairs |
+| X23-3 | `X23/report.md` | planned | decision 0058, item E repairs |
+| X23-4 | `X23/report.md` | planned | decision 0058, item E repairs |
+| X23-5 | `X23/report.md` | planned | decision 0058, item E repairs |
+| X23-6 | `X23/report.md` | planned | decision 0058, item E repairs |
+| X23-7 | `X23/report.md` | planned | decision 0058, item E repairs |

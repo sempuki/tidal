@@ -152,6 +152,7 @@ programs, the programs with more than one unit, and the lines.
 | X20 | P17, explicit aliases | no |
 | X21 | P15, declared initialization order across translation units | no |
 | X22 | P23, template bodies checked against their constraints (form 1, template-ids) | no |
+| X23 | P25, `new` and `delete` that honor every alignment | yes |
 
 ## 5. Predict and Diagnose batches
 
@@ -256,8 +257,10 @@ No page has only a Predict batch that showed test names.
 | X18 | done: 21 rule changes, no test changes outcome; findings X18-1 to X18-11 | `reports/clean-room/X18/` |
 | X19 | done: 34 rule changes, 1 test changes outcome; findings X19-1 to X19-11 | `reports/clean-room/X19/` |
 | X20 | done: 58 rule changes, no test changes outcome; findings X20-1 to X20-11 | `reports/clean-room/X20/` |
+| X23 | done: 33 rule changes, 2 tests change outcome; findings X23-1 to X23-7 | `reports/clean-room/X23/` |
 | X22 | done: 36 rule changes, no test changes outcome; findings X22-1 to X22-9; refresh note for X19 | `reports/clean-room/X22/` |
 | X21 | done: 32 rule changes, no test changes outcome; findings X21-1 to X21-11 | `reports/clean-room/X21/` |
+| I4 | done: the conditional operator with class operands from the rules alone, 85 of 85 assertions; 13 programs, 6 reductions; findings I4-1 to I4-14 | `reports/clean-room/I4/` |
 | I3 | done: overload ranking from the rules alone, 1513 of 1532 decided assertions (1184 of 1189 grid cells, 329 of 343 test assertions); 12 of 17 programs run on the front end; findings I3-1 to I3-18 | `reports/clean-room/I3/` |
 | I2 | done: partial ordering from the rules alone, 140 of 140 ordering checks (76 grid cells); 5 of 46 programs differ on the front end; findings I2-1 to I2-17 | `reports/clean-room/I2/` |
 | I1 | done: class layout from the rules alone, 241 of 243 `static_assert` checks, 24 of 24 run checks; findings I1-1 to I1-13 | `reports/clean-room/I1/` |

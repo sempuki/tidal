@@ -1,0 +1,5 @@
+ALIGNED-NEW-WARN tests/expressions/new-delete/aligned-fallback-array.cpp 1
+ALIGNED-NEW-WARN tests/expressions/new-delete/aligned-fallback-without-alignment.cpp 1
+PLACEMENT-OVERALIGNED tests/programs/W13/aligned.cpp 1
+PLACEMENT-OVERALIGNED tests/programs/W4/arena.cpp 1
+PLACEMENT-OVERALIGNED tests/programs/W4/vector.cpp 1

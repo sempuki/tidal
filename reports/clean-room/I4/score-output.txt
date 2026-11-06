@@ -1,0 +1,173 @@
+conditional.py sha1 37da55eb14efdda80e8671e0c1121a2fc905575b (matches the Phase 1 record)
+ok   class-ambiguous-conversion: Wide lvalue : short lvalue
+       expected reject; got rejected (COND-16): the implicit conversion sequence is ambiguous
+ok   class-converts-best-conversion: Wide lvalue : int lvalue
+       expected prvalue int; got prvalue int
+ok   class-ambiguous: A{} : B{}
+       expected reject; got rejected (COND-5): each operand converts for the other (COND-16)
+ok   class-base-const-derived-prvalue-rejected: Base prvalue : const Derived prvalue
+       expected reject; got rejected (COND-5): after the conversion (derived to base), no row of COND-3 gives one type
+ok   class-base-does-not-convert-to-derived: Base prvalue : Derived prvalue
+       expected prvalue Base; got prvalue Base
+ok   class-base-less-qualified-rejected: Base prvalue : const Derived lvalue
+       expected reject; got rejected (COND-5): after the conversion (derived to base), no row of COND-3 gives one type
+ok   class-base-target-keeps-cv: Derived lvalue : Base prvalue
+       expected prvalue Base; got prvalue Base
+ok   class-base-target-keeps-cv: const Derived lvalue : const Base prvalue
+       expected prvalue const Base; got prvalue const Base
+ok   class-derived-prvalue-against-base-xvalue: Derived prvalue : Base xvalue
+       expected prvalue Base; got prvalue Base
+ok   derived-base-lvalue: D lvalue : B lvalue
+       expected lvalue Base; got lvalue Base
+ok   class-const-and-volatile-lvalues: const Box lvalue : volatile Box lvalue
+       expected reject; got rejected (COND-5): neither operand converts, one class type (COND-P2)
+ok   class-same-type-toward-more-qualified: const Box lvalue : Box prvalue
+       expected prvalue const Box; got prvalue const Box
+ok   class-same-type-toward-more-qualified: Box prvalue : const Box lvalue
+       expected prvalue const Box; got prvalue const Box
+ok   class-converts-to-decayed-array: View lvalue : int[3] lvalue
+       expected prvalue const int*; got prvalue const int*
+ok   class-converts-to-int: S lvalue : 7
+       expected prvalue int; got prvalue int
+ok   class-converts-to-reference: ToRef : B lvalue
+       expected lvalue B; got lvalue B
+ok   class-converts-to-reference: ToValue : B lvalue
+       expected prvalue B; got prvalue B
+ok   class-converts-to-reference: ToRvalueRef : B xvalue
+       expected xvalue B; got xvalue B
+ok   class-converts-to-reference: ToRef : B xvalue
+       expected prvalue B; got prvalue B
+ok   class-converts-to-reference: ToRvalueRef : B lvalue
+       expected prvalue B; got prvalue B
+ok   class-deleted-conversion-counts: Wrap lvalue : Tag lvalue
+       expected reject; got rejected (COND-5): each operand converts for the other (COND-16)
+ok   class-private-conversion-counts: Wrap lvalue : Tag lvalue
+       expected reject; got rejected (COND-5): each operand converts for the other (COND-16)
+ok   class-lvalue-prvalue-copy: S lvalue : S prvalue
+       expected reject; got rejected (COND-8): the copy constructor of S is deleted
+ok   class-prvalue-lvalue-private-copy: S prvalue : S lvalue
+       expected reject; got rejected (COND-8): the copy constructor of S is not accessible
+ok   prvalue-no-copy: S prvalue : S prvalue
+       expected prvalue S; got prvalue S
+ok   prvalue-no-copy-argument: S(1) : S(2)
+       expected prvalue S; got prvalue S
+ok   class-one-way: A{} : B{A{}}
+       expected prvalue B; got prvalue B
+ok   no-common-type: A{} : B{}
+       expected reject; got rejected (COND-5): neither operand converts (COND-16), and COND-11 finds no viable candidate
+ok   nonclass-and-class-both-ways: Meter lvalue : 1
+       expected reject; got rejected (COND-5): each operand converts for the other (COND-16)
+ok   nonclass-converts-to-class: Meter lvalue : 1
+       expected prvalue Meter; got prvalue Meter
+ok   nonclass-converts-to-class: 1 : Meter lvalue
+       expected prvalue Meter; got prvalue Meter
+ok   two-classes-convert-to-int: A lvalue : B lvalue
+       expected prvalue int; got prvalue int
+ok   two-classes-convert-to-pointer: A lvalue : B lvalue
+       expected prvalue int*; got prvalue int*
+ok   two-classes-float: First lvalue : Second lvalue
+       expected prvalue float; got prvalue float
+ok   two-classes-no-candidate: ToInt lvalue : ToPointer lvalue
+       expected reject; got rejected (COND-5): neither operand converts (COND-16), and COND-11 finds no viable candidate
+ok   two-classes-promoted-types: ch1 : ch2
+       expected prvalue int; got prvalue int
+ok   two-classes-promoted-types: b1 : b2
+       expected prvalue int; got prvalue int
+ok   two-classes-promoted-types: e1 : e2
+       expected prvalue int; got prvalue int
+ok   two-classes-promoted-types: i1 : d1
+       expected prvalue double; got prvalue double
+ok   two-classes-promoted-types: i1 : l1
+       expected prvalue long; got prvalue long
+ok   two-classes-promoted-types: p1 : p2
+       expected prvalue const int*; got prvalue const int*
+ok   two-classes-promoted-types: m1 : m2
+       expected prvalue int B::*; got prvalue int B::*
+ok   two-classes-scoped-enumeration: First lvalue : Second lvalue
+       expected prvalue Mode; got prvalue Mode
+ok   two-classes-several-conversions: Wide lvalue : Narrow lvalue
+       expected reject; got rejected (COND-11): no built-in candidate is better than all others (COND-5)   [rule: component COND-11, test cites COND-5]
+ok   arithmetic-prvalue: i : l
+       expected prvalue long; got prvalue long
+ok   arithmetic-prvalue: i : d
+       expected prvalue double; got prvalue double
+ok   arithmetic-prvalue: 'a' : 'b'
+       expected prvalue char; got prvalue char
+ok   arithmetic-prvalue: (char)1 : (short)2
+       expected prvalue int; got prvalue int
+ok   array-function-operands: three : four
+       expected prvalue int*; got prvalue int*
+ok   array-function-operands: "ab" : "xyz"
+       expected prvalue const char*; got prvalue const char*
+ok   array-function-operands: "ab" : "cd"
+       expected lvalue const char[3]; got lvalue const char[3]
+ok   bitfield-or-enum: e : e
+       expected lvalue E; got lvalue E
+ok   bitfield-or-enum: A : B
+       expected prvalue E; got prvalue E
+ok   cv-lvalues-and-strings: x : cx
+       expected lvalue const int; got lvalue const int
+ok   cv-lvalues-and-strings: "ab" : "c"
+       expected prvalue const char*; got prvalue const char*
+ok   lvalue-result: x : y
+       expected lvalue int; got lvalue int
+ok   member-pointer-nullptr: &S::v : nullptr
+       expected prvalue int S::*; got prvalue int S::*
+ok   mixed-enum-types: A : C
+       expected prvalue int; got prvalue int
+ok   pointer-and-int: p : 1
+       expected reject; got rejected (COND-5): no common type for int* and int
+ok   pointer-operands: &x : nullptr
+       expected prvalue int*; got prvalue int*
+ok   pointer-operands: &x : &cx
+       expected prvalue const int*; got prvalue const int*
+ok   pointer-operands: nullptr : nullptr
+       expected prvalue std::nullptr_t; got prvalue std::nullptr_t
+ok   same-type-prvalue: letter : 'b'
+       expected prvalue char; got prvalue char
+ok   same-type-prvalue: fixed : 'c'
+       expected prvalue char; got prvalue char
+ok   same-type-prvalue: count : (short)2
+       expected prvalue short; got prvalue short
+ok   same-type-prvalue: true : false
+       expected prvalue bool; got prvalue bool
+ok   same-type-prvalue: flag : 1
+       expected prvalue int; got prvalue int
+ok   same-type-prvalue: Mode::on : Mode::off
+       expected prvalue Mode; got prvalue Mode
+ok   same-type-prvalue: red : green
+       expected prvalue E; got prvalue E
+ok   same-type-prvalue: 1.0f : 2.0f
+       expected prvalue float; got prvalue float
+ok   same-type-prvalue: (char)1 : (unsigned char)2
+       expected prvalue int; got prvalue int
+ok   two-zeros: 0 : 0
+       expected prvalue int; got prvalue int
+ok   two-zeros: nullptr : nullptr
+       expected prvalue std::nullptr_t; got prvalue std::nullptr_t
+ok   zero-and-nullptr: 0 : nullptr
+       expected prvalue std::nullptr_t; got prvalue std::nullptr_t
+ok   zero-and-nullptr: nullptr : 0
+       expected prvalue std::nullptr_t; got prvalue std::nullptr_t
+ok   xvalue-operands: int xvalue : int xvalue
+       expected xvalue int; got xvalue int
+ok   xvalue-operands: a : int xvalue
+       expected prvalue int; got prvalue int
+ok   throw-operand: x : throw 1
+       expected lvalue int; got lvalue int
+ok   throw-operand: throw 1 : 2
+       expected prvalue int; got prvalue int
+ok   void-and-value: f() : 1
+       expected reject; got rejected (COND-13): a void operand with a value operand
+ok   value-and-void: x : (void)x
+       expected reject; got rejected (COND-13): a void operand with a value operand
+ok   void-operands: f() : g()
+       expected prvalue void; got prvalue void
+ok   const-volatile-lvalues-prvalue: c : v
+       expected prvalue int; got prvalue int
+ok   const-and-plain-lvalue: c : m
+       expected lvalue const int; got lvalue const int
+ok   mixed-category-prvalue: x : 2
+       expected prvalue int; got prvalue int
+
+85 of 85 assertions right, 0 wrong; 1 right rejections that cite a different rule
