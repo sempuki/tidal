@@ -1,0 +1,85 @@
+frozen sha1 cdd14838ad15c9de54e53cdedf43f2008e36bb91
+416 of 427 assertions right; 40 assertions not expressible
+131 tests scored
+
+WRONG address-deduced-result-body-instantiated: body of the deduced result type is instantiated: reject (DED-29)
+      got Deduced(args={'T': Circle}, ptypes=[], ret=None, viable=True, why='', ranks=[]): deduce_target never instantiates a deduced result type
+WRONG address-deduced-result-body-static-cast: body of the deduced result type is instantiated: reject (DED-29)
+      got Deduced(args={'T': Circle}, ptypes=[], ret=None, viable=True, why='', ranks=[]): deduce_target never instantiates a deduced result type
+WRONG braced-other-parameter-fixed: put(1, {2})
+      got Deduced(args={'T': int}, ptypes=[int, Box<int>], ret=void, viable=False, why='no conversion from the argument to Box<int>', ranks=[])
+WRONG explicit-empty-list: pick<>(1) template
+      got Chosen(index=0, result=None)
+WRONG explicit-empty-list-default: show<>(1) template
+      got Chosen(index=0, result=None)
+WRONG forwarding-class-parameter-not: b.put(1) is One
+      got Reject(rule='OVL-36', why='ambiguous')
+WRONG specialization-distinct-functions: &keep<const int> is void(*)(int)
+      Failure(rule='OVL-22', why='no argument for parameter 1')
+WRONG specialization-distinct-unused-parameter: &id<char> is int(*)(int)
+      Failure(rule='OVL-22', why='no argument for parameter 1')
+WRONG substitution-adjusted-type: &take<const int> is void(*)(int)
+      Failure(rule='OVL-22', why='no argument for parameter 1')
+WRONG substitution-adjusted-type: &take<int[3]> is void(*)(int*)
+      Failure(rule='OVL-22', why='no argument for parameter 1')
+WRONG grids/call-types: function gives function / const T lref
+      table accept, got Failure(rule='DED-10', why='const T against int(char)')
+
+
+INNER adjust-reference-rvalue: ref(1): ['viable=False']
+INNER braced-elements-differ: list({1, 2L}): ['DED-21']
+INNER braced-empty: list({}): ['DED-23']
+INNER braced-other-parameter: one({1}): ['DED-23']
+INNER combine-conflict: larger(1, 2L): ['DED-21']
+INNER combine-conflict-one-pair: apply(shrink): ['DED-21']
+INNER combine-missing: make(1): ['DED-23']
+INNER default-argument-not-deduced: fill(): ['DED-23']
+INNER difference-derived-two-bases: up(b): ['DED-15']
+INNER explicit-fixed-not-deduced: add(Meter{}, 1): ['DED-21']
+INNER forwarding-const-not: take(n): ['viable=False']
+INNER forwarding-nested-not: take(sink(int&)): ['DED-10']
+INNER match-constant-type-differs: take(Fixed<4>): ['DED-12']
+INNER match-shape-mismatch: point(1): ['DED-10']
+INNER nondeduced-alias-unused-parameter: tagged(1): ['DED-23']
+INNER nondeduced-array-by-value: fill(arr): ['DED-23']
+INNER nondeduced-decltype: typed(1): ['DED-23']
+INNER nondeduced-expression: next(Fixed<3>): ['DED-23']
+INNER nondeduced-member-template-arguments: take(1, Outer<int>::In<char>{}): ['DED-23']
+INNER nondeduced-qualified-only: only(1): ['DED-23']
+INNER overload-set-template: apply(make): ['DED-23']
+INNER overload-set-two-match: apply(square): ['DED-23']
+INNER pack-not-last-call: lead(1, 2): ['OVL-22']
+INNER pack-not-last-other-position: take(1, 2, List<int,int>): ['OVL-22']
+INNER substitution-deduced-result-body: pick(1): ['DED-29']
+INNER substitution-default-before-check: pick(1, 1): ['DED-29']
+INNER substitution-hard-error: pick(1): ['DED-29']
+INNER substitution-lambda-body: pick(1): ['DED-29']
+INNER substitution-lambda-default: pick(1): ['DED-29', 'deduced']
+INNER substitution-noexcept-later: act(1): ['deduced']
+INNER templates/packs/nondeduced-before-end-call: take(List<char, int>): ['viable=False']
+
+SKIP  context-conversion (6): DED-31 is not modeled
+SKIP  context-conversion-differences (2): DED-31 is not modeled
+SKIP  context-conversion-exact (2): DED-31 is not modeled
+SKIP  context-conversion-qualification-place (2): DED-31 is not modeled
+SKIP  context-conversion-reference-qualifiers (5): DED-31 is not modeled
+SKIP  explicit-fixed-parameter-converts (1): add<int>(Meter{}, 1) needs a conversion function; the conversion model has none
+SKIP  placement-deallocation-match (1): DED-39 is not modeled
+SKIP  placement-deallocation-ordered (1): DED-39 is not modeled
+SKIP  placement-deallocation-ordered-instantiation (1): DED-39 is not modeled
+SKIP  specialization-distinct-functions (1): addresses of two specializations (DED-38) are outside the model
+SKIP  specialization-distinct-unused-parameter (1): addresses of two specializations (DED-38) are outside the model
+SKIP  expressions/new-delete/throw-placement-function-and-template (1): DED-39 is not modeled
+SKIP  expressions/new-delete/throw-placement-function-before-template-instantiation (1): DED-39 is not modeled
+SKIP  expressions/new-delete/throw-placement-templates-unordered (1): DED-39 is not modeled
+SKIP  expressions/new-delete/throw-placement-deleted-function-and-template (1): DED-39 is not modeled
+SKIP  templates/specialization/partial-placeholder-pattern-const (2): partial specialization matching (TSP-14) is outside the component
+SKIP  templates/specialization/partial-constant-type-exact (3): partial specialization matching (TSP-14) is outside the component
+SKIP  programs/W12/sort (1): a whole program; decision 0054 says it decides no rule alone
+SKIP  programs/W12/compose (1): a whole program; decision 0054 says it decides no rule alone
+SKIP  programs/W15/shapes (1): a whole program; decision 0054 says it decides no rule alone
+SKIP  programs/W16/evaluator (1): a whole program; decision 0054 says it decides no rule alone
+SKIP  programs/W16/textstats (1): a whole program; decision 0054 says it decides no rule alone
+SKIP  programs/W18/container (1): a whole program; decision 0054 says it decides no rule alone
+SKIP  programs/roadmap/r7-grid (1): a whole program; decision 0054 says it decides no rule alone
+SKIP  programs/roadmap/r9-text (1): a whole program; decision 0054 says it decides no rule alone
