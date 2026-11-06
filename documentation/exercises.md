@@ -350,7 +350,12 @@ Fill in the angle brackets.
 > principle IDs that tell you how to write each construct. Build each
 > with `g++` and `clang++` using `-std=c++23 -pedantic-errors -Wall
 > -Wextra`, run it, and check that it exits 0. Build once more with
-> `-fsanitize=undefined,address` and run it. Build Tidal's front end
+> `-pedantic-errors` alone, as the matrix builds, because some
+> diagnostics are errors only without `-Wall`. Build once more with
+> `-fsanitize=undefined,address` and run it. Use the forms that your
+> own language would use for each task, such as a method generic over
+> `Self`, a generic closure, a forwarding constructor, or a result
+> type, when the specification gives a C++ form for them. Build Tidal's front end
 > into your scratch directory (`cargo build --release --manifest-path
 > frontend/Cargo.toml --target-dir <scratch directory>`, without reading
 > frontend/), and run each program with `<scratch directory>/release/tidal-fe
