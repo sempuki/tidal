@@ -32,3 +32,7 @@ The source-reader gap review (`reports/review/2026-11-05-gap-review-phase-9-decl
 ### Gap review, 2026-11-05 (phase 10 text)
 
 The source-reader gap review of the text phase 10 wrote (`reports/review/2026-11-05-gap-review-phase-10-classes-declarations-foundations.md`) names the question in its section on NAM-21. The reference brings the underlying type into the scope of the qualifier, against the answer that every baseline compiler gives. The question stays in `pending.md` row 4.
+
+### Gap review, 2026-11-05 (phase 12 text, classes, declarations, foundations, statements, and exceptions)
+
+The source-reader gap review of the text phase 12 wrote on classes, declarations, foundations, statements, and exceptions (`reports/review/2026-11-05-gap-review-phase-12-classes-declarations-foundations.md`) names the question in its reading of NAM-21 (RV5-A-10). The underlying type of an enumeration comes after the qualified name, and the review still reads against the answer that the matrix keeps. The question stays in `pending.md` row 4.

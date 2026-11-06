@@ -3,7 +3,7 @@
 **Status:** provisional
 **Affects:** NAM-21, `tests/foundations/names/friend-qualified-declarator-lookup.cpp`
 **Source:** the gap review `reports/review/2026-11-05-gap-review-phase-10-classes-declarations-foundations.md`, section NAM-21, from the probe that a clean-room writer ran for it.
-**Waits for:** a first review
+**Waits for:** a review (doubt)
 
 ## Context
 
@@ -28,8 +28,14 @@ The test in **Affects**.
 
 Searched first in `N` (option 1). Two of three families agree, and the gap review of the text phase 10 wrote reads it so.
 
+Kept open on 2026-11-05 under decision 0054, because the review reads the answer with a doubt on NAM-21's wording (item RV5).
+
 ## Opinions
 
 ### Gap review, 2026-11-05 (phase 10 text)
 
 The source-reader gap review of the text phase 10 wrote (`reports/review/2026-11-05-gap-review-phase-10-classes-declarations-foundations.md`) reads the case as the question's option 1. See its section on NAM-21.
+
+### Gap review, 2026-11-05 (phase 12 text, classes, declarations, foundations, statements, and exceptions)
+
+The source-reader gap review of the text phase 12 wrote on classes, declarations, foundations, statements, and exceptions (`reports/review/2026-11-05-gap-review-phase-12-classes-declarations-foundations.md`) reads the question: supports with a doubt (RV5-A-10). For a friend whose declarator names a member through a qualifier, a plain name that follows the qualified name inside the declarator is searched in the named scope first and then by ordinary lookup. The test's parameter type is such a name. The doubt is in NAM-21's wording: it says "after the declarator", and the parameter list is part of the declarator.

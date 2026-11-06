@@ -3,7 +3,7 @@
 **Status:** provisional
 **Affects:** ICS-16, ICS-17, ICS-25, `tests/overloading/conversion-sequences/list-user-defined-same-function.cpp`, `tests/overloading/conversion-sequences/list-user-defined-first-element-int.cpp`, `tests/overloading/conversion-sequences/list-user-defined-first-element-long.cpp`, `tests/overloading/conversion-sequences/array-list-user-defined-first-element.cpp`
 **Source:** I3 finding I3-13 (`reports/clean-room/I3/report.md`), from the probe grid `reports/clean-room/roadmap-9/writer-probes/i3-13-list-worst-element.json` that a clean-room writer ran for it.
-**Waits for:** a first review
+**Waits for:** a review (doubt)
 
 ## Context
 
@@ -50,4 +50,10 @@ The list sequence holds the user-defined sequence of the first element
 that has one (option 1). Two of three families agree, and the answer
 gives ICS-25 one conversion function to compare.
 
+Kept open on 2026-11-05 under decision 0054, because the review reads the mixed lists as a choice the reference does not make (item RV5).
+
 ## Opinions
+
+### Gap review, 2026-11-05 (phase 12 text, expressions, overloading, and templates)
+
+The source-reader gap review of the text phase 12 wrote on expressions, overloading, and templates (`reports/review/2026-11-05-gap-review-phase-12-expressions-overloading-templates.md`) reads the question: supports with a doubt (RV5-B-8). When every element uses the same conversion function, the reference decides by the third parts and supports the answer, and GCC's ambiguity reads against it. When the elements use different functions, the reference names the worst conversion and never says which of two user-defined sequences through different functions is worse, so the choice of the first element is Tidal's own.

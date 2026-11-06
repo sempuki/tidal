@@ -3,7 +3,7 @@
 **Status:** provisional
 **Affects:** LSUP-11, CE-9, `tests/foundations/storage/allocation-assign-before-construction-int-element.cpp`, `tests/foundations/storage/allocation-assign-before-construction-pod-member.cpp`
 **Source:** Q-0323, which held this form until decision 0059 item QR moved it here, with the probe grid `reports/clean-room/roadmap-9/writer-probes/q-0323-assign-before-construction.json` that a clean-room writer ran for it.
-**Waits for:** newest families that agree; a first review
+**Waits for:** newest families that agree; a review (doubt)
 
 ## Context
 
@@ -45,4 +45,10 @@ The assignment is rejected (option 1). The gap review that read Q-0323
 on 2026-11-03 reads the reference as Clang does for this form, and the
 tests build each element with `std::construct_at` before they use it.
 
+Kept open on 2026-11-05 under decision 0054, because two newest families differ from the answer and the review reads it with a doubt (item RV5).
+
 ## Opinions
+
+### Gap review, 2026-11-05 (phase 12 text, classes, declarations, foundations, statements, and exceptions)
+
+The source-reader gap review of the text phase 12 wrote on classes, declarations, foundations, statements, and exceptions (`reports/review/2026-11-05-gap-review-phase-12-classes-declarations-foundations.md`) reads the question: supports with a doubt (RV5-A-17). The allocate member starts the life of the array and of no element, so an assignment to an element changes an object outside its lifetime, and constant evaluation stops. The doubt is that the reference's exemption for the allocator members names the library's own template, and the tests declare their own.

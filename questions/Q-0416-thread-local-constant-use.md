@@ -33,3 +33,7 @@ It does not start it (option 1). Every newest family that runs the program agree
 ### Gap review, 2026-11-05 (phase 10 text)
 
 The source-reader gap review of the text phase 10 wrote (`reports/review/2026-11-05-gap-review-phase-10-classes-declarations-foundations.md`) reads the case as the question's option 2. See its section on OBJ-11.
+
+### Gap review, 2026-11-05 (phase 12 text, classes, declarations, foundations, statements, and exceptions)
+
+The source-reader gap review of the text phase 12 wrote on classes, declarations, foundations, statements, and exceptions (`reports/review/2026-11-05-gap-review-phase-12-classes-declarations-foundations.md`) names the question in its reading of OBJ-11 (RV5-A-11). The reference starts a deferred construction on a use of any thread-local variable of the unit, so the review still reads against the answer that the matrix keeps. A read of a `const` integral thread-local variable with constant initialization may not be a use in the reference's sense. The question stays in `pending.md` row 4.

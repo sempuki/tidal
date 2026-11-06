@@ -62,8 +62,8 @@ review finds the reference silent.
 | 3 | Decide the row; answers may change | 12: Q-0195, Q-0197, Q-0198, Q-0201, Q-0203, Q-0235, Q-0266, Q-0272, Q-0277, Q-0278, Q-0280, Q-0282 | 23 | at most 23 |
 | 4a | Follow the compilers; answers stay | 18: Q-0140, Q-0142, Q-0181, Q-0225, Q-0243, Q-0246, Q-0275, Q-0277, Q-0280, Q-0300, Q-0336, Q-0394, Q-0405, Q-0406, Q-0407, Q-0409, Q-0410, Q-0416 | 32 | 0 |
 | 4a | Follow the review; answers change | 18: Q-0140, Q-0142, Q-0181, Q-0225, Q-0243, Q-0246, Q-0275, Q-0277, Q-0280, Q-0300, Q-0336, Q-0394, Q-0405, Q-0406, Q-0407, Q-0409, Q-0410, Q-0416 | 32 | at most 32 |
-| 4b | Follow the compilers; answers stay | 20: Q-0074, Q-0077, Q-0087, Q-0123, Q-0131, Q-0190, Q-0191, Q-0205, Q-0226, Q-0307, Q-0330, Q-0362, Q-0366, Q-0369, Q-0371, Q-0389, Q-0393, Q-0401, Q-0404, Q-0408 | 43 | 0 |
-| 4b | Follow the review; answers change | 20: Q-0074, Q-0077, Q-0087, Q-0123, Q-0131, Q-0190, Q-0191, Q-0205, Q-0226, Q-0307, Q-0330, Q-0362, Q-0366, Q-0369, Q-0371, Q-0389, Q-0393, Q-0401, Q-0404, Q-0408 | 43 | at most 43 |
+| 4b | Follow the compilers; answers stay | 21: Q-0074, Q-0077, Q-0087, Q-0123, Q-0131, Q-0190, Q-0191, Q-0205, Q-0226, Q-0307, Q-0330, Q-0362, Q-0366, Q-0369, Q-0371, Q-0389, Q-0393, Q-0401, Q-0404, Q-0408, Q-0418 | 44 | 0 |
+| 4b | Follow the review; answers change | 21: Q-0074, Q-0077, Q-0087, Q-0123, Q-0131, Q-0190, Q-0191, Q-0205, Q-0226, Q-0307, Q-0330, Q-0362, Q-0366, Q-0369, Q-0371, Q-0389, Q-0393, Q-0401, Q-0404, Q-0408, Q-0418 | 44 | at most 44 |
 | 5 | Decide the row; answers may change | 1: Q-0235 | 3 | at most 3 |
 | 6 | Decide the row; answers may change | 2: Q-0041, Q-0343 | 5 | at most 5 |
 | 7 | Decide the row; answers may change | 5: Q-0007, Q-0087, Q-0116, Q-0181, Q-0188 | 5 | at most 5 |
@@ -71,9 +71,9 @@ review finds the reference silent.
 | 9 | Decide the row; answers may change | 9: Q-0006, Q-0008, Q-0116, Q-0119, Q-0182, Q-0183, Q-0186, Q-0312, Q-0412 | 1 | at most 1 |
 | 10 | Record each answer as Tidal's own choice; answers stay | 15: Q-0020, Q-0079, Q-0165, Q-0176, Q-0179, Q-0180, Q-0184, Q-0185, Q-0321, Q-0325, Q-0349, Q-0361, Q-0372, Q-0381, Q-0384 | 27 | 0 |
 
-Rows 1 to 9 hold 110 of the 175 open questions (63%). With row 10, the rows hold 123 (70%).
+Rows 1 to 9 hold 111 of the 175 open questions (63%). With row 10, the rows hold 124 (71%).
 
-71 open questions wait for a review that supports the answer with no doubt. By what the last review found: 46 doubt, 15 silent, 9 against, 1 part.
+75 open questions wait for a review that supports the answer with no doubt. By what the last review found: 50 doubt, 15 silent, 9 against, 1 part.
 
 ## Matrix against review
 
@@ -138,6 +138,8 @@ each item, except Q-0307, where Tidal follows the review.
 | NS-12 | a class in an inline namespace and a variable of the same name in the enclosing namespace are ambiguous; the review sets the class aside | matrix | matrix | matrix | `2026-11-04-gap-review-phase-8-declarations-statements` |
 | Q-0393 | the null pointer literal as the operand of `noexcept` | review | matrix | matrix | `2026-11-04-gap-review-phase-8-declarations-statements` |
 | Q-0389 | a default argument that reads the value of a local constant | review | matrix | matrix | `2026-11-04-gap-review-phase-8-declarations-statements` |
+| COND-16, Q-0418 | step 1 for a `Derived` xvalue against a `const Base` lvalue; COND-16 needs an lvalue, the review lets a reference to `const` bind the xvalue | review | matrix | matrix | `2026-11-05-gap-review-phase-12-expressions-overloading-templates` |
+| COND-16, Q-0418 | step 1 for an `A` xvalue against a `const A` lvalue | matrix | matrix | matrix | `2026-11-05-gap-review-phase-12-expressions-overloading-templates` |
 | CMP-8 | a relational comparison of pointers to two members of a union, or to a member that occupies no storage, during constant evaluation; Tidal keeps a result | matrix | matrix | matrix | `2026-11-04-gap-review-phase-8-expressions-foundations-templates` |
 
 ## EDG report

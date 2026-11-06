@@ -3,7 +3,7 @@
 **Status:** provisional
 **Affects:** NEW-29, NEW-25, `tests/expressions/new-delete/aligned-deleted-form-beside-unaligned.cpp`, `tests/expressions/new-delete/aligned-private-form-beside-unaligned.cpp`
 **Source:** finding X23-2 of `reports/clean-room/X23/report.md`, from the probes `d2.cpp` and `d3.cpp` beside it.
-**Waits for:** a first review
+**Waits for:** a review (doubt)
 
 ## Context
 
@@ -34,6 +34,10 @@ The tests in **Affects**, each with an override for GCC.
 
 Not valid (option 1). Two of three families agree.
 
+Kept open on 2026-11-05 under decision 0054, because the review reads the answer with a doubt (item RV5).
+
 ## Opinions
 
-<!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+### Gap review, 2026-11-05 (phase 12 text, expressions, overloading, and templates)
+
+The source-reader gap review of the text phase 12 wrote on expressions, overloading, and templates (`reports/review/2026-11-05-gap-review-phase-12-expressions-overloading-templates.md`) reads the question: supports with a doubt (RV5-B-13). The second search happens only when overload resolution finds no function. A deleted or inaccessible aligned form takes part in overload resolution and is selected, and the checks for deletion and access come after the selection, so the search ends and the program is not valid. The doubt is that the reference does not define what passes the test for the second search.

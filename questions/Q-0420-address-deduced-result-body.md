@@ -3,7 +3,7 @@
 **Status:** provisional
 **Affects:** DED-29, `tests/templates/deduction/address-deduced-result-body-instantiated.cpp`, `tests/templates/deduction/address-deduced-result-body-static-cast.cpp`
 **Source:** the RV4 gap review of the text phase 10 wrote on expressions and templates (`reports/review/2026-11-05-gap-review-phase-10-expressions-templates.md`, the DED-29 section), from the probe grid `reports/clean-room/roadmap-9/writer-probes/ded29-address-target.json` that a clean-room writer ran for it.
-**Waits for:** newest families that agree; a first review
+**Waits for:** newest families that agree
 
 ## Context
 
@@ -48,4 +48,10 @@ The specialization is instantiated and the program is not valid
 type, result included, for each candidate, and the gap review reads the
 reference the same way.
 
+Kept open on 2026-11-05 under decision 0054, because two newest families (GCC and EDG) differ from the answer. The review supports it with no doubt (item RV5).
+
 ## Opinions
+
+### Gap review, 2026-11-05 (phase 12 text, expressions, overloading, and templates)
+
+The source-reader gap review of the text phase 12 wrote on expressions, overloading, and templates (`reports/review/2026-11-05-gap-review-phase-12-expressions-overloading-templates.md`) reads the question: supports with no doubt. For a template whose result type is a placeholder, deduction from the target type deduces nothing from the result. When deduction succeeds, the result type comes from instantiating the body, and that step comes before a plain function is preferred to the specializations. So the error in the body makes the program not valid.
