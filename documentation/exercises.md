@@ -100,7 +100,9 @@ existed then. Round 2 (X5 to X8) takes the proposals that phases 3 and
 used: storage, virtual functions, types, handlers, blocks,
 enumerations, and primary expressions. Rounds 4 to 6 (X13 to X21) take
 the proposals that later phases made ready. X21 took P15, the last
-ready proposal.
+ready proposal. Round 7 starts from the refreshed portfolio
+(`reports/clean-room/roadmap-7/portfolio.md`, P22 to P26) with X22 on
+P23.
 
 A new rule in a proposal takes an ID in the exercise's own space, such
 as `X9:new-1`. A real prefix such as `OVL-45` can later name an
@@ -147,8 +149,9 @@ programs, the programs with more than one unit, and the lines.
 | X17 | P2, narrowing is an error everywhere | yes |
 | X18 | P18, required `override` | no |
 | X19 | P1, width-named literal suffixes | yes |
-| X20 | P17, opaque type aliases | no |
+| X20 | P17, explicit aliases | no |
 | X21 | P15, declared initialization order across translation units | no |
+| X22 | P23, template bodies checked against their constraints (form 1, template-ids) | no |
 
 ## 5. Predict and Diagnose batches
 
@@ -265,6 +268,7 @@ No page has only a Predict batch that showed test names.
 | X18 | done: 21 rule changes, no test changes outcome; findings X18-1 to X18-11 | `reports/clean-room/X18/` |
 | X19 | done: 34 rule changes, 1 test changes outcome; findings X19-1 to X19-11 | `reports/clean-room/X19/` |
 | X20 | done: 58 rule changes, no test changes outcome; findings X20-1 to X20-11 | `reports/clean-room/X20/` |
+| X22 | done: 36 rule changes, no test changes outcome; findings X22-1 to X22-9; refresh note for X19 | `reports/clean-room/X22/` |
 | X21 | done: 32 rule changes, no test changes outcome; findings X21-1 to X21-11 | `reports/clean-room/X21/` |
 | I3 | done: overload ranking from the rules alone, 1513 of 1532 decided assertions (1184 of 1189 grid cells, 329 of 343 test assertions); 12 of 17 programs run on the front end; findings I3-1 to I3-18 | `reports/clean-room/I3/` |
 | I2 | done: partial ordering from the rules alone, 140 of 140 ordering checks (76 grid cells); 5 of 46 programs differ on the front end; findings I2-1 to I2-17 | `reports/clean-room/I2/` |

@@ -1,0 +1,32 @@
+# templates by corpus, kind, constrained
+('prog', 'alias', False) 3
+('prog', 'alias', True) 1
+('prog', 'class', False) 71
+('prog', 'class', True) 5
+('prog', 'function', False) 108
+('prog', 'function', True) 19
+('prog', 'variable', False) 29
+('test', 'alias', False) 61
+('test', 'alias', True) 4
+('test', 'class', False) 1226
+('test', 'class', True) 41
+('test', 'function', False) 1148
+('test', 'function', True) 125
+('test', 'variable', False) 1541
+('test', 'variable', True) 2
+# sites: file | enclosing | kind | enclosing constrained | template-id | callee declaration
+/home/ryanm/Code/tidal/tests/programs/W15/largest.cpp | largest | function | True | Common<A, B> | using Common = decltype(A() + B())
+/home/ryanm/Code/tidal/tests/templates/concepts/type-constraint-arguments.cpp | has_one | variable | False | one<T> | constexpr int one = 1
+/home/ryanm/Code/tidal/tests/templates/constraints/dependent-checked-at-instantiation.cpp | User | class | False | Box<T> | requires (sizeof(T) > 1) struct Box
+/home/ryanm/Code/tidal/tests/templates/constraints/dependent-postponed.cpp | User | class | False | Box<T> | requires (sizeof(T) > 1) struct Box
+/home/ryanm/Code/tidal/tests/templates/constraints/dependent-postponed.cpp | size | function | False | Box<T> | requires (sizeof(T) > 1) struct Box
+# site count 5 in programs 1
+# constrained class, variable and alias templates under programs/
+/home/ryanm/Code/tidal/tests/programs/W15/largest.cpp | alias Common | using Common = decltype(A() + B())
+/home/ryanm/Code/tidal/tests/programs/W15/stack.cpp | class Stack | requires (Capacity > 0)
+class Stack
+/home/ryanm/Code/tidal/tests/programs/W17/hashmap.cpp | class HashMap | requires (Capacity > 0 && (Capacity & (Capacity - 1)) == 0)
+class HashMap
+/home/ryanm/Code/tidal/tests/programs/roadmap/r4-smallvec-nongeneric.cpp | class Vec | class Vec
+/home/ryanm/Code/tidal/tests/programs/roadmap/r4-smallvec.cpp | class Vec | class Vec
+/home/ryanm/Code/tidal/tests/programs/roadmap/r5-hashmap-kept-pointer.cpp | class Map | class Map
