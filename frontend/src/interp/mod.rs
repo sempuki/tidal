@@ -352,6 +352,11 @@ pub struct Machine<'a> {
     pub fixed_order: bool,
     /// PRIM-9: the choice made for each string literal object.
     pub prim9: HashMap<usize, u8>,
+    /// PRIM-9: each evaluation of a string literal after the first gives
+    /// an object of its own; this maps it to the first object with the
+    /// same characters, with the number of such objects at the first.
+    pub string_root: HashMap<usize, usize>,
+    pub string_count: HashMap<usize, usize>,
     /// UNI-10: places of the active member that a read through the
     /// common initial sequence reaches with the type of the other member.
     pub uni_alias: std::cell::RefCell<std::collections::HashSet<(usize, Vec<usize>)>>,
@@ -427,6 +432,8 @@ impl<'a> Machine<'a> {
             seq_watch: Vec::new(),
             fixed_order: false,
             prim9: HashMap::new(),
+            string_root: HashMap::new(),
+            string_count: HashMap::new(),
         }
     }
 
@@ -986,6 +993,16 @@ impl<'a> Machine<'a> {
         if !init {
             self.record(p, true);
             self.implicit_use(p)?;
+            if self.constant && !p.bytes && !self.unbuilt.is_empty() {
+                if let Some(&i) = full_path(p).first() {
+                    if self.unbuilt.contains(&(p.obj, i)) {
+                        // LSUP-11, CE-9 (Q-0421): an assignment to an
+                        // element of storage from std::allocator before its
+                        // construction.
+                        return limit("CE-9", "assignment to an element of allocated storage before its construction");
+                    }
+                }
+            }
         }
         if p.bytes || self.hosted_byte(p).is_some() {
             // STG-13: a write of one byte of an object representation.

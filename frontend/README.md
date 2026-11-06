@@ -116,6 +116,13 @@ partial too, and the second line says so.
 If one of the other runs stops at undefined behavior, the program's
 outcome is that stop. The conformance harness uses the same outcome.
 
+The first evaluation of a string literal makes its object. Each later
+evaluation of a literal with the same characters makes an object of
+its own, and a comparison of pointers into two such objects is the
+choice point of PRIM-9: one object, with the offsets compared, or two.
+A copy of one pointer points into one object, so it compares equal to
+the original with no choice.
+
 Within the operands of a built-in operator whose operands are
 unsequenced (SEQ-8), the run records the reads and writes of objects in
 the caller's frame. Two accesses to one memory location, one of them a
@@ -167,7 +174,8 @@ targets, as the tests do:
 
 | Rule | What the interpreter does |
 |---|---|
-| OBJ-11 | a `thread_local` object at namespace scope with dynamic initialization is constructed at the first use of such a variable of its unit; a use of a variable with constant initialization starts nothing |
+| OBJ-11 | a `thread_local` object at namespace scope, or a `thread_local` static data member, with dynamic initialization is constructed at the first use of such a variable of its unit; a use of a variable with constant initialization starts nothing |
+| INST-11 | the definition of an object of a class specialization makes the virtual member functions that are not pure, at the end of the unit; `sizeof` of the class makes none |
 | LSP-8 | a global variable with C++ language linkage and a C variable of the same spelling in another unit are one variable |
 
 `main` can have the parameters `()`, `(int)`, `(int, char**)`, and
@@ -314,6 +322,24 @@ the run status second (`run-pass`, the run statuses above, and
 | `src/consteval.rs` | constant evaluation, as a client of the interpreter with the limits of `constant-evaluation.md` |
 | `src/conform.rs` | the conformance harness |
 
+## The conditional operator
+
+When an operand has class type, `class_cond` in `src/expr.rs` follows
+the page as one procedure. The rows of COND-3 before the last come
+first (`cond_rows`). Otherwise COND-16 tries each operand against the
+other (`cond16_try`): step 1 for two lvalues, step 2 for an xvalue
+target, then the table of step 3, whose sequence is formed without
+access or deleted checks. If exactly one operand converts, the
+conversion is made (`cond16_apply`), and a private or ambiguous base
+or an ambiguous sequence is an error there. The rows of COND-3 then
+run again. If neither converts, COND-11 runs overload resolution over
+the built-in candidates (`cond11`): every pair of promoted arithmetic
+types, a `(T, T)` candidate for each pointer, pointer-to-member, and
+scoped enumeration type that the operands reach, and the composite
+pointer types of the reached pointers. A class prvalue result copies or
+moves each glvalue operand, and the copy or the move must be valid and
+accessible (COND-8).
+
 ## Templates
 
 A template keeps the tokens of its declaration. The front end parses
@@ -395,6 +421,15 @@ gives the pointer-interconvertible object of that type (STG-16, CLS-19),
 or else the same object. A read or write through a glvalue whose type
 STG-14 does not allow for the object stops the run with STG-23.
 
+## Allocated storage in constant evaluation
+
+In constant evaluation, the elements of storage from `std::allocator`
+begin their lifetimes only when `std::construct_at` builds them, also
+for an implicit-lifetime type. An assignment to an element, or to a
+member of an element, before that is not a constant expression (LSUP-11,
+CE-9, Q-0421). A run outside constant evaluation keeps the implicit
+objects of STG-8.
+
 ## Exception specifications
 
 The `noexcept` operator (UN-18) follows EXS-4: a function is
@@ -407,4 +442,4 @@ function with that number of arguments is non-throwing.
 
 The findings about the specification are in
 `reports/clean-room/rust-frontend/report.md`, `report-2.md` to
-`report-19.md`, and `report-10b.md`.
+`report-23.md`, and `report-10b.md`.

@@ -9,6 +9,24 @@ use std::collections::HashSet;
 use std::rc::Rc;
 
 impl P {
+    /// JMP-10: whether a returned name of variable `id` is an xvalue: a
+    /// local variable or parameter of the innermost function or lambda,
+    /// not `static`, not a volatile object, not of lvalue reference type,
+    /// not an rvalue reference to a volatile object, and no structured
+    /// binding.
+    pub fn jmp10_moves(&self, id: DeclId) -> bool {
+        let Some(v) = self.var(id) else { return false };
+        // A variable of an enclosing function, named in a lambda through a
+        // capture, is not a local of the lambda.
+        let outside = self.fns.last().is_some_and(|f| f.is_lambda && !self.stack[f.scope_base.saturating_sub(1).min(self.stack.len())..].contains(&self.decls[id].scope));
+        let kind_ok = match &v.ty.t {
+            Ty::LRef(_) => false,
+            Ty::RRef(t) => !t.v,
+            _ => !v.ty.v,
+        };
+        v.local && !outside && v.storage == Storage::Auto && kind_ok && !self.sb_place.contains_key(&id)
+    }
+
     /// Parse `{ ... }` using `scope`, which the caller has pushed. This
     /// lets a function body share the parameter scope (NAM-3, FN-1).
     pub fn parse_compound_in(&mut self, _scope: usize) -> PR<Stmt> {
@@ -630,11 +648,9 @@ impl P {
                 }
                 let mut x0 = x.clone();
                 if let EK::Var(id) = &x0.k {
-                    if let Some(v) = self.var(*id) {
-                        if v.local && v.storage == Storage::Auto && (!v.ty.t.is_ref() || matches!(v.ty.t, Ty::RRef(_))) {
-                            // JMP-10, RET-6: a returned local name is an xvalue.
-                            x0.cat = Cat::X;
-                        }
+                    if self.jmp10_moves(*id) {
+                        // JMP-10, RET-6: a returned local name is an xvalue.
+                        x0.cat = Cat::X;
                     }
                 }
                 let ra = self.fns.last().unwrap().ret_auto.clone();
@@ -723,14 +739,8 @@ impl P {
             }
         };
         if let Some(id) = strip(&x) {
-            if let Some(v) = self.var(id) {
-                // A variable of an enclosing function, named in a lambda
-                // through a capture, is not a local of the lambda.
-                let outside = self.fns.last().is_some_and(|f| f.is_lambda && !self.stack[f.scope_base.saturating_sub(1).min(self.stack.len())..].contains(&self.decls[id].scope));
-                let implicit_move = v.local && !outside && v.storage == Storage::Auto && (!v.ty.t.is_ref() || matches!(v.ty.t, Ty::RRef(_)));
-                if implicit_move {
-                    x.cat = Cat::X;
-                }
+            if self.jmp10_moves(id) {
+                x.cat = Cat::X;
             }
         }
         self.check_unsequenced(&x);

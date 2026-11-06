@@ -570,11 +570,15 @@ impl P {
             if let Some(e) = en {
                 let mut pa2 = vec![Expr::new(EK::Int(a as i128), QTy::new(Ty::Enum(e)), Cat::PR, line)];
                 pa2.extend(pa.iter().cloned());
+                let mark = self.d.list.len();
                 if let Some(r) = self.resolve_new_alloc(class, array, &pa2, global, line, None) {
                     if r.func.is_some() {
                         return Some(r);
                     }
                 }
+                // NEW-29: no function accepts the alignment, so the call
+                // tries again without it.
+                self.d.list.truncate(mark);
             }
         }
         let aname = if array { "operatornew[]" } else { "operatornew" };
@@ -606,10 +610,27 @@ impl P {
                 return None;
             }
             let mark = self.d.list.len();
+            self.ics_no_viable = false;
             let r = self.ics_select(None, &cands, &args);
             self.d.list.truncate(mark);
+            if r.is_err() && std::mem::take(&mut self.ics_no_viable) {
+                // OVL-35, NEW-13: the search stops in the class, and no
+                // function found there accepts the arguments.
+                self.error(line, "OVL-35", format!("no allocation function '{}' accepts the arguments of the new expression", if array { "operator new[]" } else { "operator new" }));
+                return Some(NewAlloc { func: None, args: Vec::new(), nothrow: false, dealloc: Dealloc::None });
+            }
             let Ok(Some((f, _))) = r else { return None };
             let fi = self.func(f)?.clone();
+            if fi.deleted {
+                // NEW-29, DEL-1: the selected function is deleted.
+                self.error_because(line, "DEL-1", "NEW-29", "the new expression selects a deleted allocation function");
+                return Some(NewAlloc { func: Some(f), args: Vec::new(), nothrow: false, dealloc: Dealloc::None });
+            }
+            if from_class && !self.accessible(f, false) {
+                // NEW-29, ACC-3: the selected function is not accessible.
+                self.error_because(line, "ACC-3", "NEW-29", "the new expression selects an allocation function that is not accessible here");
+                return Some(NewAlloc { func: Some(f), args: Vec::new(), nothrow: false, dealloc: Dealloc::None });
+            }
             let mark = self.d.list.len();
             let conv = self.convert_args(&fi.fty, pa.to_vec().into_iter().fold(vec![args[0].clone()], |mut v, a| {
                 v.push(a);
@@ -2011,7 +2032,7 @@ impl P {
                 continue;
             }
             match self.lookup(&t.text) {
-                Some(ids) if ids.iter().any(|d| self.pack_decls.contains(d) || self.pack_params.contains(d)) => has_pack = true,
+                Some(ids) if ids.iter().any(|d| self.pack_decls.contains(d) || self.pack_params.contains(d) || self.fn_param_packs.contains_key(d)) => has_pack = true,
                 Some(_) => {}
                 None => sure = false,
             }
@@ -2707,20 +2728,42 @@ impl P {
         // The parameter list can carry `noexcept` and the trailing return
         // type. A `decltype` there can name a capture (Q-0092), which the
         // front end does not model, so such a lambda stays unknown.
-        let has_decltype = self.toks[ppos..self.pos].iter().any(|t| t.text == "decltype") && inst.is_none();
+        let has_decltype = (ppos..self.pos).any(|k| self.toks[k].text == "decltype" && !(self.toks.get(k + 2).is_some_and(|t| t.text == "auto") && self.toks.get(k + 3).is_some_and(|t| t.text == ")"))) && inst.is_none();
         if has_decltype {
             generic = true;
         }
-        if self.toks[ppos..self.pos].iter().any(|t| t.text == "auto" && t.kind == TK::Ident) && !generic && inst.is_none() {
+        // The parameter list ends at its closing parenthesis; a placeholder
+        // in the trailing return type after it makes no template.
+        let pend = {
+            let mut depth = 0i32;
+            let mut k = ppos;
+            while k < self.pos {
+                match self.toks[k].text.as_str() {
+                    "(" => depth += 1,
+                    ")" => {
+                        depth -= 1;
+                        if depth == 0 {
+                            k += 1;
+                            break;
+                        }
+                    }
+                    _ => {}
+                }
+                k += 1;
+            }
+            k.min(self.pos)
+        };
+        if self.toks[ppos..pend].iter().any(|t| t.text == "auto" && t.kind == TK::Ident) && !generic && inst.is_none() {
             // LAM-15: a placeholder parameter makes the call operator a
             // template, whose body is a pattern (SA-5).
             self.templ += 1;
             generic = true;
         }
-        let mut ret = if has_decltype || (inst.is_some() && fdecl.as_ref().is_some_and(|f| f.trailing_auto.is_some())) { None } else { fdecl.as_ref().and_then(|f| f.trailing.clone()) };
+        let mut ret = if has_decltype || fdecl.as_ref().is_some_and(|f| f.trailing_auto.is_some()) { None } else { fdecl.as_ref().and_then(|f| f.trailing.clone()) };
         let mut lambda_noexcept = fdecl.as_ref().is_some_and(|f| f.noexcept);
         let mut lambda_noexcept_expr = false;
         let mut lambda_clause: Option<Rc<crate::cons::CNorm>> = None;
+        let mut lambda_trailing_auto: Option<(crate::decl::DeclSpec, crate::decl::Declarator)> = None;
         loop {
             if self.at("mutable") || self.at("constexpr") || self.at("consteval") || self.at("static") {
                 if self.at("mutable") {
@@ -2744,7 +2787,21 @@ impl P {
                 }
             } else if self.at("->") {
                 self.pos += 1;
-                ret = Some(self.parse_type_id()?);
+                let placeholder = (self.at("auto") || (self.at("decltype") && self.at_k(1, "(") && self.at_k(2, "auto") && self.at_k(3, ")")));
+                if placeholder {
+                    // RET-2: a placeholder after `->` deduces the result
+                    // from the body.
+                    let ds = self.parse_decl_specs(None)?;
+                    let d = self.parse_declarator(true, false)?;
+                    if ds.auto.is_some() {
+                        lambda_trailing_auto = Some((ds, d));
+                        ret = None;
+                        continue;
+                    }
+                    ret = Some(QTy::unknown());
+                } else {
+                    ret = Some(self.parse_type_id()?);
+                }
             } else if self.at("requires") {
                 self.pos += 1;
                 if self.in_template() || generic || inst.is_some() {
@@ -2818,9 +2875,9 @@ impl P {
         // body: a separate function (JMP-7, SW-3)
         let mut ctx = FnCtx::new(ret.clone());
         ctx.deduce = ret.is_none();
-        if inst.is_some() && ret.is_none() {
+        if ret.is_none() {
             // RET-2: `-> decltype(auto)` or another placeholder.
-            ctx.ret_auto = fdecl.as_ref().and_then(|f| f.trailing_auto.clone());
+            ctx.ret_auto = lambda_trailing_auto.clone().or_else(|| fdecl.as_ref().and_then(|f| f.trailing_auto.clone()));
         }
         ctx.is_lambda = true;
         ctx.lambda_mutable = is_mutable;
@@ -2835,7 +2892,17 @@ impl P {
         self.stack.push(scope);
         let save = self.no_gt;
         self.no_gt = 0;
+        // DED-29: the body of a lambda in a function type that substitution
+        // makes is outside the immediate context, so its errors are errors
+        // of the program.
+        let hard = self.fn_subst && self.sfinae_mark.is_some() && !generic && self.fns.iter().rev().skip(1).all(|f| f.is_lambda);
+        let saved_muted = if hard { Some((std::mem::take(&mut self.d.muted), self.sfinae_mark.take(), std::mem::replace(&mut self.fn_subst, false))) } else { None };
         let r = self.parse_compound_in(scope);
+        if let Some((m, k, f)) = saved_muted {
+            self.d.muted = m;
+            self.sfinae_mark = k;
+            self.fn_subst = f;
+        }
         self.no_gt = save;
         self.stack.pop();
         let depth = self.fns.len();
@@ -3275,8 +3342,7 @@ impl P {
                 let by_ref = self.eat("&");
                 let pack = self.eat("...");
                 let name = self.ident()?;
-                self.eat("...");
-                let _ = pack;
+                let trailing_pack = self.eat("...");
                 if seen.contains(&name) {
                     self.error(cl, "LAM-6", format!("'{}' captured twice", name));
                 }
@@ -3359,6 +3425,18 @@ impl P {
                             // PACK-5: in a copy of a pattern, a pack names
                             // the element of the copy.
                             if let Some(list) = self.fn_param_packs.get(&ids[0]).cloned() {
+                                if trailing_pack && self.pack_index.is_none() {
+                                    // PACK-17: `x...` captures each element
+                                    // of the pack.
+                                    for &d in &list {
+                                        items.push((0, Some(d), by_ref, None));
+                                    }
+                                    first = false;
+                                    if !self.eat(",") {
+                                        break;
+                                    }
+                                    continue;
+                                }
                                 self.pack_refs.push(list.len());
                                 if let Some(&d) = list.get(self.pack_index.unwrap_or(0)) {
                                     ids = vec![d];
@@ -4317,7 +4395,12 @@ impl P {
         if let EK::Member(_, f) = &inner.k {
             if let DK::Field(fi) = &self.decls[*f].k {
                 if let Some(w) = fi.bits {
-                    let t = if let Ty::Enum(en) = &fi.ty.t { self.enum_underlying(*en) } else { fi.ty.t.clone() };
+                    if matches!(fi.ty.t, Ty::Enum(_)) {
+                        // BF-6, CONV-1: a bit-field of an enumeration type
+                        // promotes as its enumeration does.
+                        return None;
+                    }
+                    let t = fi.ty.t.clone();
                     if !t.is_integral() {
                         return None;
                     }
@@ -4337,7 +4420,12 @@ impl P {
         if let EK::Member(_, f) = &inner.k {
             if let DK::Field(fi) = &self.decls[*f].k {
                 if let Some(w) = fi.bits {
-                    let t = if let Ty::Enum(en) = &fi.ty.t { self.enum_underlying(*en) } else { fi.ty.t.clone() };
+                    if matches!(fi.ty.t, Ty::Enum(_)) {
+                        // BF-6, CONV-1: a bit-field of an enumeration type
+                        // promotes as its enumeration does.
+                        return None;
+                    }
+                    let t = fi.ty.t.clone();
                     if !t.is_integral() {
                         return None;
                     }
@@ -4871,7 +4959,7 @@ impl P {
     /// CV-10: one level of a qualification conversion. `const_above`
     /// says whether each level above this one (except the outermost) is
     /// `const`.
-    fn qual_level(&self, from: &QTy, to: &QTy, const_above: bool) -> bool {
+    pub fn qual_level(&self, from: &QTy, to: &QTy, const_above: bool) -> bool {
         if (from.c && !to.c) || (from.v && !to.v) {
             return false;
         }
@@ -4881,6 +4969,7 @@ impl P {
         }
         match (&from.t, &to.t) {
             (Ty::Ptr(a), Ty::Ptr(b)) => self.qual_level(a, b, const_above && to.c),
+            (Ty::MemPtr(x, a), Ty::MemPtr(y, b)) if x == y => self.qual_level(a, b, const_above && to.c),
             (Ty::Array(a, n), Ty::Array(b, m)) => {
                 if n != m && m.is_some() {
                     return false;
@@ -5061,7 +5150,10 @@ impl P {
         let et = e.ty.clone();
         let related = et.t == inner.t
             || matches!((&et.t, &inner.t), (Ty::Class(a), Ty::Class(b)) if self.is_base_of(*b, *a))
-            || (matches!((&et.t, &inner.t), (Ty::Array(..), Ty::Array(..))) && self.array_qual_ok(&et.t, &inner.t));
+            || (matches!((&et.t, &inner.t), (Ty::Array(..), Ty::Array(..))) && self.array_qual_ok(&et.t, &inner.t))
+            // REF-1: a pointer that converts by a qualification adjustment
+            // below the top level.
+            || (is_l && e.cat == Cat::L && matches!((&et.t, &inner.t), (Ty::Ptr(_), Ty::Ptr(_)) | (Ty::MemPtr(..), Ty::MemPtr(..)) | (Ty::Array(..), Ty::Array(..))) && et.t != inner.t && self.qual_level(&et, &inner, true));
         let cv_ok = (!et.c || inner.c) && (!et.v || inner.v);
         if matches!(et.t, Ty::Class(_)) && matches!(inner.t, Ty::Func(_)) {
             // OVL-15: a reference to function binds to the result of a
@@ -6169,10 +6261,17 @@ impl P {
                 // operators take a `C` made from a value of another type by
                 // a converting constructor.
                 if !same && !rt.is_unknown() && !self.in_template() && !self.class_uncertain(c) && !self.scopes[self.classes[c].scope].names.contains_key("operator=") && l.cat == Cat::L && !lt.c && !matches!(r.k, EK::Unknown(_) | EK::InitList(_)) {
-                    if let Ty::Class(rc) = rt.t {
-                        let mut fns = Vec::new();
-                        self.conv_fns(rc, 0, &mut fns);
-                        if !self.class_uncertain(rc) && fns.is_empty() {
+                    let plain_src = match rt.t {
+                        Ty::Class(rc) => {
+                            let mut fns = Vec::new();
+                            self.conv_fns(rc, 0, &mut fns);
+                            !self.class_uncertain(rc) && fns.is_empty()
+                        }
+                        Ty::Dep(_) => false,
+                        _ => true,
+                    };
+                    {
+                        if plain_src {
                             let mark = self.d.list.len();
                             let x = self.ctor_call_mode(c, std::slice::from_ref(&r), &QTy::new(Ty::Class(c)), false, true, false, line);
                             if self.d.list.len() != mark {
@@ -6196,8 +6295,9 @@ impl P {
                     let mut fns = Vec::new();
                     self.conv_fns(rc, 0, &mut fns);
                     // An explicit conversion function takes no part in a
-                    // copy-initialization.
-                    fns.retain(|&d| self.func(d).is_none_or(|f| !f.explicit));
+                    // copy-initialization, and one to a type that is not a
+                    // class cannot give the class.
+                    fns.retain(|&d| self.func(d).is_none_or(|f| !f.explicit && matches!(nonref(&f.fty.ret).t, Ty::Class(_) | Ty::Unknown | Ty::Dep(_))));
                     if own && rc != c && !self.is_base_of(c, rc) && !self.class_uncertain(rc) && fns.is_empty() {
                         let mark = self.d.list.len();
                         let x = self.ctor_call_mode(c, std::slice::from_ref(&r), &QTy::new(Ty::Class(c)), false, true, false, line);
@@ -6307,216 +6407,198 @@ impl P {
         Expr::new(EK::Assign(Some((bop, ct)), Box::new(l), Box::new(r)), lt, Cat::L, line)
     }
 
-    /// COND-3, COND-11: operands of different types, at least one of
-    /// class type. None when the front end cannot decide.
+    /// The conditional operator when an operand has class type and the
+    /// rows of COND-3 that keep a type do not apply at once: COND-3,
+    /// COND-5, COND-8, COND-11, and COND-16 as one procedure. None when
+    /// the front end cannot decide.
     fn class_cond(&mut self, c: &Expr, a: &Expr, b: &Expr, line: u32) -> Option<Expr> {
         if self.in_template() {
             return None;
         }
-        let (at, bt) = (a.ty.clone(), b.ty.clone());
-        let class_of = |t: &QTy| match t.t {
-            Ty::Class(k) => Some(k),
-            _ => None,
-        };
-        let (ac, bc) = (class_of(&at), class_of(&bt));
-        if ac.is_some_and(|k| self.class_uncertain(k)) || bc.is_some_and(|k| self.class_uncertain(k)) {
-            return None;
-        }
-        if ac.is_some() && bc.is_some() {
-            if let Some(r) = self.cond16_classes(c, a, b, line) {
-                return Some(r);
-            }
-        }
-        // A derived class lvalue and a base class lvalue give a base class
-        // lvalue.
-        if let (Some(x), Some(y), Cat::L, Cat::L) = (ac, bc, a.cat, b.cat) {
-            let to_base = |p: &mut P, from: &Expr, ft: &QTy, base: usize, bt: &QTy| -> Option<Expr> {
-                if !p.is_base_of(base, match ft.t { Ty::Class(k) => k, _ => return None }) || (ft.c && !bt.c) || (ft.v && !bt.v) {
+        for e in [a, b] {
+            if let Ty::Class(k) = nonref(&e.ty).t {
+                if self.class_uncertain(k) {
                     return None;
                 }
-                let target = QTy::new(Ty::LRef(Box::new(QTy { t: Ty::Class(base), c: bt.c, v: bt.v })));
-                let mark = p.d.list.len();
-                let r = p.bind_ref(from.clone(), &target, line, "COND-3");
-                if p.d.list.len() != mark || matches!(r.k, EK::Unknown(_)) {
-                    p.d.list.truncate(mark);
-                    return None;
-                }
-                Some(r)
-            };
-            if x != y {
-                if let Some(a2) = to_base(self, a, &at, y, &bt) {
-                    return Some(self.build_cond(c.clone(), a2, b.clone(), line));
-                }
-                if let Some(b2) = to_base(self, b, &bt, x, &at) {
-                    return Some(self.build_cond(c.clone(), a.clone(), b2, line));
-                }
-            }
-            if x == y || self.is_base_of(x, y) || self.is_base_of(y, x) {
-                return None;
             }
         }
-        // One operand converts to the type of the other, which does not
-        // convert back.
-        let converts = |p: &mut P, e: &Expr, t: &QTy| -> Option<bool> {
-            match p.ics_value_pub(e, &t.unqual()) {
-                Ok(Some(s)) if s.kind == crate::ics::IK::Ambig => None,
-                Ok(Some(_)) => Some(true),
-                Ok(None) => Some(false),
-                Err(()) => None,
+        if let Ok(e) = self.cond_rows(c, a.clone(), b.clone(), line) {
+            return Some(e);
+        }
+        // The last row of COND-3: COND-16 tries each operand against the
+        // other.
+        let da = self.cond16_try(a, b).ok()?;
+        let db = self.cond16_try(b, a).ok()?;
+        match (da, db) {
+            (Some(_), Some(_)) => {
+                self.error(line, "COND-5", format!("each operand of the conditional converts to the type of the other: {} and {}", self.show_ty(&a.ty), self.show_ty(&b.ty)));
+                Some(Expr::unknown(line, "bad conditional"))
             }
-        };
-        let convert = |p: &mut P, e: &Expr, t: &QTy| -> Option<Expr> {
-            let mark = p.d.list.len();
-            let r = p.implicit(e.clone(), &t.unqual(), false).ok();
-            if p.d.list.len() != mark || r.as_ref().is_none_or(|x| matches!(x.k, EK::Unknown(_))) {
-                p.d.list.truncate(mark);
-                return None;
+            (None, None) => {
+                self.cond11(c, a, b, line)
             }
-            r
-        };
-        // Two classes with no constructors of their own and conversion
-        // functions only to types that are not classes convert to
-        // neither.
-        let conv_rets = |p: &P, k: usize| -> Vec<QTy> {
-            let mut fns = Vec::new();
-            p.conv_fns(k, 0, &mut fns);
-            fns.iter().filter_map(|&f| p.func(f)).filter(|f| !f.template && !f.explicit).map(|f| nonref(&f.fty.ret).unqual()).collect()
-        };
-        let plain = |p: &P, k: usize| p.classes[k].ctors.is_empty() && p.classes[k].bases.is_empty() && conv_rets(p, k).iter().all(|t| !matches!(t.t, Ty::Class(_) | Ty::Unknown | Ty::Dep(_)));
-        if ac.is_some() != bc.is_some() {
-            // COND-16: an ambiguous conversion sequence of the class
-            // operand makes the expression not valid.
-            let (ce, ot) = if ac.is_some() { (a, &bt) } else { (b, &at) };
-            let target = match &ot.t {
-                Ty::Array(el, _) => QTy::new(Ty::Ptr(el.clone())),
-                Ty::Func(_) => QTy::new(Ty::Ptr(Box::new(ot.clone()))),
-                _ => ot.unqual(),
-            };
-            if let Ok(Some(s)) = self.ics_value_pub(ce, &target) {
-                if s.kind == crate::ics::IK::Ambig {
-                    self.error(line, "COND-5", format!("the conversion of the conditional operand to {} is ambiguous", self.show_ty(&target)));
-                    return Some(Expr::unknown(line, "bad conditional"));
+            (Some(d), None) => {
+                let a2 = self.cond16_apply(a, d, line)?;
+                if matches!(a2.k, EK::Unknown(_)) {
+                    return Some(a2);
                 }
+                self.cond_after(c, a2, b.clone(), line)
             }
-        }
-        let (a2b, b2a) = match (ac, bc) {
-            (Some(x), Some(y)) if plain(self, x) && plain(self, y) => (false, false),
-            _ => (converts(self, a, &bt)?, converts(self, b, &at)?),
-        };
-        match (a2b, b2a) {
-            (true, false) if bc.is_none() => {
-                let a2 = convert(self, a, &bt)?;
-                return Some(self.build_cond(c.clone(), a2, b.clone(), line));
-            }
-            (false, true) if ac.is_none() => {
-                let b2 = convert(self, b, &at)?;
-                return Some(self.build_cond(c.clone(), a.clone(), b2, line));
-            }
-            (false, false) => {}
-            _ => return None,
-        }
-        // COND-11: two operands that convert to no common class: each
-        // converts by its one conversion function to a type that is not a
-        // class, and the built-in candidates take those types.
-        let target = |p: &P, k: Option<usize>, t: &QTy| -> Option<QTy> {
-            match k {
-                None => Some(t.unqual()),
-                Some(k) => {
-                    let v = conv_rets(p, k);
-                    if v.len() == 1 && !matches!(v[0].t, Ty::Class(_)) {
-                        Some(v[0].clone())
-                    } else {
-                        None
-                    }
+            (None, Some(d)) => {
+                let b2 = self.cond16_apply(b, d, line)?;
+                if matches!(b2.k, EK::Unknown(_)) {
+                    return Some(b2);
                 }
+                self.cond_after(c, a.clone(), b2, line)
             }
-        };
-        let ta = target(self, ac, &at)?;
-        let tb = target(self, bc, &bt)?;
-        let a2 = if ac.is_some() { convert(self, a, &ta)? } else { a.clone() };
-        let b2 = if bc.is_some() { convert(self, b, &tb)? } else { b.clone() };
-        if matches!(a2.ty.t, Ty::Class(_)) || matches!(b2.ty.t, Ty::Class(_)) {
-            return None;
         }
-        // COND-11: the built-in candidates take promoted arithmetic types,
-        // so each arithmetic or unscoped enumeration operand promotes.
-        let arith = |p: &P, t: &Ty| t.is_arithmetic() || p.is_unscoped_enum(t);
-        let (a2, b2) = if arith(self, &a2.ty.t) && arith(self, &b2.ty.t) { (self.promote_expr(a2), self.promote_expr(b2)) } else { (a2, b2) };
-        Some(self.build_cond(c.clone(), a2, b2, line))
     }
 
-    /// COND-16: how the class operand `e` converts for an operand of type
-    /// `t` and category `cat`: the type and category it converts to, and
-    /// whether the conversion sequence is ambiguous. Ok(None) when it does
-    /// not convert, Err(()) when the front end cannot tell.
-    fn cond16_dir(&mut self, e: &Expr, t: &QTy, cat: Cat) -> Result<Option<(QTy, Cat, bool)>, ()> {
-        let et = nonref(&e.ty);
-        let Ty::Class(x) = et.t else { return Err(()) };
-        let compat = |p: &P, from: &QTy, to: &QTy| -> bool {
-            let rel = match (&from.t, &to.t) {
+    /// COND-3 again after the conversion of COND-16.
+    fn cond_after(&mut self, c: &Expr, a: Expr, b: Expr, line: u32) -> Option<Expr> {
+        if nonref(&a.ty).is_unknown() || nonref(&b.ty).is_unknown() {
+            return None;
+        }
+        match self.cond_rows(c, a.clone(), b.clone(), line) {
+            Ok(e) => Some(e),
+            Err(()) => {
+                self.error(line, "COND-5", format!("conditional operands have no common type after the conversion: {} and {}", self.show_ty(&a.ty), self.show_ty(&b.ty)));
+                Some(Expr::unknown(line, "bad conditional"))
+            }
+        }
+    }
+
+    /// The rows of COND-3 before the last. Err(()) when the last row
+    /// (COND-16) decides.
+    fn cond_rows(&mut self, c: &Expr, a: Expr, b: Expr, line: u32) -> Result<Expr, ()> {
+        let (at, bt) = (nonref(&a.ty), nonref(&b.ty));
+        let (acl, bcl) = (matches!(at.t, Ty::Class(_)), matches!(bt.t, Ty::Class(_)));
+        if !acl && !bcl {
+            return Ok(self.build_cond(c.clone(), a, b, line));
+        }
+        if at.t != bt.t {
+            return Err(());
+        }
+        // x's cv-qualifiers are among y's.
+        let within = |x: &QTy, y: &QTy| (!x.c || y.c) && (!x.v || y.v);
+        let same = at.c == bt.c && at.v == bt.v;
+        match (a.cat, b.cat) {
+            (Cat::L, Cat::L) if within(&at, &bt) || within(&bt, &at) => {
+                // Row 1: an lvalue with the larger set.
+                let t = if within(&at, &bt) { bt.clone() } else { at.clone() };
+                let c2 = self.contextual_bool(c.clone(), "COND-1");
+                Ok(Expr::new(EK::Cond(Box::new(c2), Box::new(a), Box::new(b)), t, Cat::L, line))
+            }
+            (Cat::X, Cat::X) if same => {
+                // Row 3: an xvalue.
+                let c2 = self.contextual_bool(c.clone(), "COND-1");
+                Ok(Expr::new(EK::Cond(Box::new(c2), Box::new(a), Box::new(b)), at, Cat::X, line))
+            }
+            (Cat::L, Cat::L) | (Cat::X, Cat::X) => Err(()),
+            _ if same => {
+                // Row 4 and row 5: a prvalue, copied or moved from each
+                // glvalue operand (COND-8). Two prvalues need no copy
+                // (COND-12).
+                self.cond_prvalue(c, a, b, &at, line).ok_or(())
+            }
+            _ => Err(()),
+        }
+    }
+
+    /// COND-8: a class prvalue of type `t` from operands of that type.
+    /// The copy or the move of each glvalue operand must be valid.
+    fn cond_prvalue(&mut self, c: &Expr, a: Expr, b: Expr, t: &QTy, line: u32) -> Option<Expr> {
+        let prv = |p: &mut P, e: Expr| -> Option<Expr> {
+            if e.cat == Cat::PR {
+                return Some(e);
+            }
+            if let Ty::Class(k) = t.t {
+                p.check_copy_from(k, &e, true, false, line);
+            }
+            let mark = p.d.list.len();
+            match p.implicit(e, &t.unqual(), false) {
+                Ok(x) => Some(cond_prvalue_of(x, t.clone())),
+                Err(_) => {
+                    p.d.list.truncate(mark);
+                    None
+                }
+            }
+        };
+        let a2 = prv(self, a)?;
+        let b2 = prv(self, b)?;
+        let c2 = self.contextual_bool(c.clone(), "COND-1");
+        Some(Expr::new(EK::Cond(Box::new(c2), Box::new(a2), Box::new(b2)), t.clone(), Cat::PR, line))
+    }
+
+    /// COND-16: how operand `x` converts for operand `y`. Ok(None) when it
+    /// does not convert, Err(()) when the front end cannot tell.
+    fn cond16_try(&mut self, x: &Expr, y: &Expr) -> Result<Option<Cond16>, ()> {
+        let xt = nonref(&x.ty);
+        let t = nonref(&y.ty);
+        if xt.is_unknown() || t.is_unknown() {
+            return Err(());
+        }
+        // A reference to `t` binds directly to `x` itself (REF-1): the
+        // same class or a class derived from it, with no more
+        // cv-qualifiers. Access and ambiguity are checked when the
+        // conversion is made.
+        let related = |p: &P| -> bool {
+            let rel = match (&xt.t, &t.t) {
                 (Ty::Class(f), Ty::Class(g)) => f == g || p.is_base_of(*g, *f),
                 (f, g) => f == g,
             };
-            rel && (to.c || !from.c) && (to.v || !from.v)
+            rel && (t.c || !xt.c) && (t.v || !xt.v)
         };
-        let mut fns = Vec::new();
-        self.conv_fns(x, 0, &mut fns);
-        let mut rets = Vec::new();
-        for &f in &fns {
-            if self.is_func_templ(f) {
+        // Steps 1 and 2 through a conversion function of `x` that returns
+        // a reference of the kind that the step needs.
+        let via_conv = |p: &mut P, lref: bool| -> Result<bool, ()> {
+            let Ty::Class(k) = xt.t else { return Ok(false) };
+            if !p.class_ok(k) {
                 return Err(());
             }
-            match self.func(f) {
-                Some(fi) if fi.explicit => {}
-                Some(fi) => rets.push(fi.fty.ret.clone()),
-                None => return Err(()),
+            let mut fns = Vec::new();
+            p.conv_fns(k, 0, &mut fns);
+            let kind_ok = |r: &QTy| if lref { matches!(r.t, Ty::LRef(_)) } else { matches!(r.t, Ty::RRef(_)) };
+            if !fns.iter().any(|&f| p.is_func_templ(f) || p.func(f).is_some_and(|fi| !fi.explicit && kind_ok(&fi.fty.ret))) {
+                return Ok(false);
+            }
+            let r = QTy::new(if lref { Ty::LRef(Box::new(t.clone())) } else { Ty::RRef(Box::new(t.clone())) });
+            let mark = p.d.list.len();
+            let s = p.ics_form(x, &r, false);
+            p.d.list.truncate(mark);
+            match s {
+                Ok(Some(i)) if i.kind == crate::ics::IK::User => {
+                    let Some(crate::ics::UKey::Fn(f)) = i.user else { return Err(()) };
+                    let ret = p.func(f).map(|fi| fi.fty.ret.clone()).ok_or(())?;
+                    Ok(kind_ok(&ret) && i.s.refb.as_ref().is_none_or(|rb| !rb.to_rvalue || !lref))
+                }
+                Ok(Some(i)) if i.kind == crate::ics::IK::Ambig => Err(()),
+                Ok(_) => Ok(false),
+                Err(()) => Err(()),
+            }
+        };
+        // Step 1.
+        if x.cat == Cat::L && y.cat == Cat::L {
+            if related(self) || via_conv(self, true)? {
+                return Ok(Some(Cond16 { target: t.clone(), cat: Cat::L, amb: false }));
             }
         }
-        // Steps 1 and 2: a reference to `t` that binds directly.
-        let direct = |p: &P, lref: bool| -> usize {
-            rets.iter()
-                .filter(|r| match &r.t {
-                    Ty::LRef(u) => lref && compat(p, u, t),
-                    Ty::RRef(u) => !lref && compat(p, u, t),
-                    // A reference does not bind directly to a class
-                    // prvalue (COND-16, Q-0401).
-                    _ => false,
-                })
-                .count()
-        };
-        match cat {
-            Cat::L => {
-                if e.cat == Cat::L && compat(self, &et, t) {
-                    return Ok(Some((t.clone(), Cat::L, false)));
-                }
-                match direct(self, true) {
-                    0 => {}
-                    1 => return Ok(Some((t.clone(), Cat::L, false))),
-                    _ => return Err(()),
-                }
+        // Step 2.
+        if y.cat == Cat::X {
+            if (x.cat == Cat::X && related(self)) || via_conv(self, false)? {
+                return Ok(Some(Cond16 { target: t.clone(), cat: Cat::X, amb: false }));
             }
-            Cat::X => {
-                if e.cat == Cat::X && compat(self, &et, t) {
-                    return Ok(Some((t.clone(), Cat::X, false)));
-                }
-                match direct(self, false) {
-                    0 => {}
-                    1 => return Ok(Some((t.clone(), Cat::X, false))),
-                    _ => return Err(()),
-                }
-            }
-            Cat::PR => {}
         }
         // Step 3: the target of the table.
-        if let Ty::Class(y) = t.t {
-            if x == y {
-                let ok = (t.c || !et.c) && (t.v || !et.v);
-                return Ok(ok.then(|| (t.clone(), Cat::PR, false)));
+        if let (Ty::Class(xc), Ty::Class(yc)) = (&xt.t, &t.t) {
+            let has_cv = (t.c || !xt.c) && (t.v || !xt.v);
+            if xc == yc {
+                return Ok(has_cv.then(|| Cond16 { target: t.clone(), cat: Cat::PR, amb: false }));
             }
-            if self.is_base_of(y, x) {
-                return Ok(Some((QTy { t: Ty::Class(y), c: et.c, v: et.v }, Cat::PR, false)));
+            if self.is_base_of(*yc, *xc) {
+                return Ok(has_cv.then(|| Cond16 { target: t.clone(), cat: Cat::PR, amb: false }));
             }
-            if self.is_base_of(x, y) {
+            if self.is_base_of(*xc, *yc) {
                 return Ok(None);
             }
         }
@@ -6526,128 +6608,220 @@ impl P {
             Ty::Func(_) => QTy::new(Ty::Ptr(Box::new(t.clone()))),
             _ => t.unqual(),
         };
-        match self.ics_value_pub(e, &target.unqual()) {
-            Ok(Some(s)) => Ok(Some((target, Cat::PR, s.kind == crate::ics::IK::Ambig))),
+        let mark = self.d.list.len();
+        let s = self.ics_value_pub(x, &target.unqual());
+        self.d.list.truncate(mark);
+        match s {
+            Ok(Some(s)) => Ok(Some(Cond16 { target, cat: Cat::PR, amb: s.kind == crate::ics::IK::Ambig })),
             Ok(None) => Ok(None),
             Err(()) => Err(()),
         }
     }
 
-    /// COND-16, COND-3, COND-5 for two operands of class type. None when
-    /// the front end leaves the case to the older steps.
-    fn cond16_classes(&mut self, c: &Expr, a: &Expr, b: &Expr, line: u32) -> Option<Expr> {
-        let (at, bt) = (nonref(&a.ty), nonref(&b.ty));
-        if at == bt && at.c == bt.c && at.v == bt.v {
-            // The same type and different categories: a prvalue.
-            return self.cond16_finish(c, a.clone(), b.clone(), line);
+    /// Make the conversion that COND-16 found. A conversion that counts
+    /// and cannot be used is an error. None when the front end cannot
+    /// make it.
+    fn cond16_apply(&mut self, x: &Expr, d: Cond16, line: u32) -> Option<Expr> {
+        let Cond16 { target: t, cat, amb } = d;
+        if amb {
+            self.error(line, "COND-5", format!("the conversion of the conditional operand to {} is ambiguous", self.show_ty(&t)));
+            return Some(Expr::unknown(line, "bad conditional"));
         }
-        let da = self.cond16_dir(a, &bt, b.cat).ok()?;
-        let db = self.cond16_dir(b, &at, a.cat).ok()?;
-        let conv = |p: &mut P, e: &Expr, (t, cat, amb): (QTy, Cat, bool)| -> Expr {
-            if amb {
-                p.error(line, "COND-5", format!("the conversion of the conditional operand to {} is ambiguous", p.show_ty(&t)));
-                return Expr::unknown(line, "bad conditional");
-            }
-            match cat {
-                Cat::L | Cat::X => {
-                    let r = if cat == Cat::L { Ty::LRef(Box::new(t.clone())) } else { Ty::RRef(Box::new(t.clone())) };
-                    let mut x = p.bind_ref(e.clone(), &QTy::new(r), line, "COND-16");
-                    if !matches!(x.k, EK::Unknown(_)) {
-                        x.ty = t;
-                        x.cat = cat;
-                    }
-                    x
+        let xt = nonref(&x.ty);
+        if let (Ty::Class(xc), Ty::Class(tc)) = (&xt.t, &t.t) {
+            if xc != tc && !self.in_template() && self.is_base_of(*tc, *xc) {
+                // CONV-17, ACC-12: the base must be unambiguous and
+                // accessible.
+                if self.base_count(*tc, *xc, 0) > 1 {
+                    self.error(line, "CONV-17", format!("the conditional operand converts to '{}', an ambiguous base of '{}'", self.classes[*tc].name, self.classes[*xc].name));
+                    return Some(Expr::unknown(line, "bad conditional"));
                 }
-                Cat::PR => match p.implicit(e.clone(), &t.unqual(), false) {
-                    Ok(mut x) => {
-                        x.ty = t;
-                        x.cat = Cat::PR;
-                        x
+                if !self.base_accessible(*xc, *tc) {
+                    self.error(line, "ACC-12", format!("the conditional operand converts to '{}', a base of '{}' that is not accessible", self.classes[*tc].name, self.classes[*xc].name));
+                    return Some(Expr::unknown(line, "bad conditional"));
+                }
+            }
+        }
+        match cat {
+            Cat::L | Cat::X => {
+                let r = if cat == Cat::L { Ty::LRef(Box::new(t.clone())) } else { Ty::RRef(Box::new(t.clone())) };
+                let mut e = self.bind_ref(x.clone(), &QTy::new(r), line, "COND-16");
+                if matches!(e.k, EK::Unknown(_)) {
+                    return if self.d.has_errors() { Some(e) } else { None };
+                }
+                e.ty = t;
+                e.cat = cat;
+                Some(e)
+            }
+            Cat::PR => {
+                if let (Ty::Class(xc), Ty::Class(tc)) = (&xt.t, &t.t) {
+                    if x.cat != Cat::PR {
+                        // COND-8: the prvalue is copied from an lvalue and
+                        // moved from an xvalue, also from a derived class.
+                        let mut probe = x.clone();
+                        probe.ty = QTy { t: Ty::Class(*tc), c: xt.c, v: xt.v };
+                        let _ = xc;
+                        let mark = self.d.list.len();
+                        self.check_copy_from(*tc, &probe, true, false, line);
+                        if self.d.list.len() != mark && self.d.has_errors() {
+                            return Some(Expr::unknown(line, "bad conditional"));
+                        }
+                    }
+                }
+                match self.implicit(x.clone(), &t.unqual(), false) {
+                    Ok(e) => {
+                        if matches!(e.k, EK::Unknown(_)) {
+                            return None;
+                        }
+                        Some(cond_prvalue_of(e, t))
                     }
                     Err(m) => {
-                        p.error(line, "COND-5", m);
-                        Expr::unknown(line, "bad conditional")
+                        self.error(line, "COND-5", m);
+                        Some(Expr::unknown(line, "bad conditional"))
                     }
-                },
-            }
-        };
-        match (da, db) {
-            (Some(_), Some(_)) => {
-                self.error(line, "COND-5", format!("each operand of the conditional converts to the type of the other: {} and {}", self.show_ty(&a.ty), self.show_ty(&b.ty)));
-                Some(Expr::unknown(line, "bad conditional"))
-            }
-            (None, None) => {
-                let has_conv = |p: &P, q: &QTy| match q.t {
-                    Ty::Class(k) => {
-                        let mut v = Vec::new();
-                        p.conv_fns(k, 0, &mut v);
-                        !v.is_empty()
-                    }
-                    _ => false,
-                };
-                if has_conv(self, &at) || has_conv(self, &bt) {
-                    return None;
                 }
-                self.error(line, "COND-5", format!("conditional operands have no common type: {} and {}", self.show_ty(&a.ty), self.show_ty(&b.ty)));
-                Some(Expr::unknown(line, "bad conditional"))
-            }
-            (Some(d), None) => {
-                let a2 = conv(self, a, d);
-                if matches!(a2.k, EK::Unknown(_)) {
-                    return Some(a2);
-                }
-                self.cond16_finish(c, a2, b.clone(), line)
-            }
-            (None, Some(d)) => {
-                let b2 = conv(self, b, d);
-                if matches!(b2.k, EK::Unknown(_)) {
-                    return Some(b2);
-                }
-                self.cond16_finish(c, a.clone(), b2, line)
             }
         }
     }
 
-    /// COND-3 after COND-16: operands of one type keep a common category,
-    /// or give a prvalue. Operands that still differ are an error.
-    fn cond16_finish(&mut self, c: &Expr, a: Expr, b: Expr, line: u32) -> Option<Expr> {
-        let (at, bt) = (nonref(&a.ty), nonref(&b.ty));
-        if at.is_unknown() || bt.is_unknown() {
-            return None;
-        }
-        if !(at == bt && at.c == bt.c && at.v == bt.v) {
-            self.error(line, "COND-5", format!("conditional operands have no common type: {} and {}", self.show_ty(&a.ty), self.show_ty(&b.ty)));
-            return Some(Expr::unknown(line, "bad conditional"));
-        }
-        if a.cat == b.cat {
-            return Some(self.build_cond(c.clone(), a, b, line));
-        }
-        // A prvalue: each glvalue operand is copied.
-        let prv = |p: &mut P, e: Expr| -> Option<Expr> {
-            if e.cat == Cat::PR {
-                return Some(e);
-            }
-            if let Ty::Class(k) = at.t {
-                p.check_copy_from(k, &e, true, false, line);
-            }
-            let mark = p.d.list.len();
-            match p.implicit(e, &at.unqual(), false) {
-                Ok(mut x) => {
-                    x.ty = QTy { t: x.ty.t.clone(), c: at.c, v: at.v };
-                    x.cat = Cat::PR;
-                    Some(x)
-                }
-                Err(_) => {
-                    p.d.list.truncate(mark);
-                    None
-                }
+    /// COND-11: overload resolution over the built-in candidates, when
+    /// neither operand converts for the other.
+    fn cond11(&mut self, c: &Expr, a: &Expr, b: &Expr, line: u32) -> Option<Expr> {
+        // The types that the operands reach.
+        let mut reached: Vec<QTy> = Vec::new();
+        let decay = |t: &QTy| -> QTy {
+            match &t.t {
+                Ty::Array(el, _) => QTy::new(Ty::Ptr(el.clone())),
+                Ty::Func(_) => QTy::new(Ty::Ptr(Box::new(t.clone()))),
+                _ => t.unqual(),
             }
         };
-        let a2 = prv(self, a)?;
-        let b2 = prv(self, b)?;
-        let t = QTy { t: at.t.clone(), c: at.c, v: at.v };
-        let c2 = self.contextual_bool(c.clone(), "COND-1");
-        Some(Expr::new(EK::Cond(Box::new(c2), Box::new(a2), Box::new(b2)), t, Cat::PR, line))
+        for e in [a, b] {
+            let et = nonref(&e.ty);
+            match et.t {
+                Ty::Class(k) => {
+                    if !self.class_ok(k) {
+                        return None;
+                    }
+                    let mut fns = Vec::new();
+                    self.conv_fns(k, 0, &mut fns);
+                    for f in fns {
+                        if self.is_func_templ(f) {
+                            return None;
+                        }
+                        let fi = self.func(f)?;
+                        if fi.fty.ret.is_unknown() {
+                            return None;
+                        }
+                        if !fi.explicit {
+                            reached.push(decay(&nonref(&fi.fty.ret)));
+                        }
+                    }
+                }
+                _ => reached.push(decay(&et)),
+            }
+        }
+        let promoted = [Ty::Int, Ty::UInt, Ty::Long, Ty::ULong, Ty::LLong, Ty::ULLong, Ty::Float, Ty::Double, Ty::LDouble];
+        let mut cands: Vec<(QTy, QTy)> = Vec::new();
+        for l in &promoted {
+            for r in &promoted {
+                cands.push((QTy::new(l.clone()), QTy::new(r.clone())));
+            }
+        }
+        let mut ptrs: Vec<QTy> = Vec::new();
+        for t in &reached {
+            if matches!(t.t, Ty::Ptr(_) | Ty::MemPtr(..)) && !ptrs.contains(t) {
+                ptrs.push(t.clone());
+            }
+        }
+        let n = ptrs.len();
+        for i in 0..n {
+            for j in i + 1..n {
+                if let Some(k) = self.cond_composite(&ptrs[i], &ptrs[j]) {
+                    if !ptrs.contains(&k) {
+                        ptrs.push(k);
+                    }
+                }
+            }
+        }
+        for p in ptrs {
+            cands.push((p.clone(), p));
+        }
+        for t in &reached {
+            if self.is_scoped_enum(&t.t) && !cands.iter().any(|(l, _)| l == t) {
+                cands.push((t.clone(), t.clone()));
+            }
+        }
+        let mut viable: Vec<(QTy, QTy, crate::ics::Ics, crate::ics::Ics)> = Vec::new();
+        for (l, r) in cands {
+            let mark = self.d.list.len();
+            let sa = self.ics_value_pub(a, &l);
+            let sb = self.ics_value_pub(b, &r);
+            self.d.list.truncate(mark);
+            match (sa, sb) {
+                (Ok(Some(x)), Ok(Some(y))) => viable.push((l, r, x, y)),
+                (Err(()), _) | (_, Err(())) => return None,
+                _ => {}
+            }
+        }
+        if viable.is_empty() {
+            self.error(line, "COND-5", format!("conditional operands have no common type: {} and {}, and no built-in candidate is viable (COND-11)", self.show_ty(&a.ty), self.show_ty(&b.ty)));
+            return Some(Expr::unknown(line, "bad conditional"));
+        }
+        let beats = |p: &P, x: &(QTy, QTy, crate::ics::Ics, crate::ics::Ics), y: &(QTy, QTy, crate::ics::Ics, crate::ics::Ics)| -> bool {
+            let (c1, c2) = (p.ics_cmp(&x.2, &y.2), p.ics_cmp(&x.3, &y.3));
+            c1 >= 0 && c2 >= 0 && (c1 > 0 || c2 > 0)
+        };
+        let best: Vec<usize> = (0..viable.len()).filter(|&i| (0..viable.len()).all(|j| i == j || beats(self, &viable[i], &viable[j]))).collect();
+        if best.len() != 1 {
+            self.error(line, "COND-5", format!("no built-in candidate for the conditional operands {} and {} is better than the others (COND-11)", self.show_ty(&a.ty), self.show_ty(&b.ty)));
+            return Some(Expr::unknown(line, "bad conditional"));
+        }
+        let (l, r, sa, sb) = viable.swap_remove(best[0]);
+        if sa.kind == crate::ics::IK::Ambig || sb.kind == crate::ics::IK::Ambig {
+            self.error(line, "COND-5", "the conversion of a conditional operand to its built-in parameter is ambiguous (COND-11)");
+            return Some(Expr::unknown(line, "bad conditional"));
+        }
+        let a2 = match self.implicit(a.clone(), &l, false) {
+            Ok(x) => x,
+            Err(m) => {
+                self.error(line, "COND-5", m);
+                return Some(Expr::unknown(line, "bad conditional"));
+            }
+        };
+        let b2 = match self.implicit(b.clone(), &r, false) {
+            Ok(x) => x,
+            Err(m) => {
+                self.error(line, "COND-5", m);
+                return Some(Expr::unknown(line, "bad conditional"));
+            }
+        };
+        if matches!(a2.k, EK::Unknown(_)) || matches!(b2.k, EK::Unknown(_)) {
+            return None;
+        }
+        Some(self.build_cond(c.clone(), a2, b2, line))
+    }
+
+    /// The composite pointer type of two pointer types, for the
+    /// candidates of COND-11 (COND-3 row 7).
+    fn cond_composite(&self, x: &QTy, y: &QTy) -> Option<QTy> {
+        let (Ty::Ptr(px), Ty::Ptr(py)) = (&x.t, &y.t) else { return None };
+        let (c, v) = (px.c || py.c, px.v || py.v);
+        if px.t == py.t {
+            return Some(QTy::new(Ty::Ptr(Box::new(QTy { t: px.t.clone(), c, v }))));
+        }
+        if px.t == Ty::Void || py.t == Ty::Void {
+            return Some(QTy::new(Ty::Ptr(Box::new(QTy { t: Ty::Void, c, v }))));
+        }
+        if let (Ty::Class(m), Ty::Class(n)) = (&px.t, &py.t) {
+            if self.is_base_of(*m, *n) {
+                return Some(QTy::new(Ty::Ptr(Box::new(QTy { t: px.t.clone(), c, v }))));
+            }
+            if self.is_base_of(*n, *m) {
+                return Some(QTy::new(Ty::Ptr(Box::new(QTy { t: py.t.clone(), c, v }))));
+            }
+        }
+        None
     }
 
     pub fn build_cond(&mut self, c: Expr, a: Expr, b: Expr, line: u32) -> Expr {
@@ -7074,6 +7248,25 @@ impl P {
                     return x;
                 }
             }
+            if !braced && items.len() == 1 && !self.in_template() && !self.class_uncertain(c) && self.classes[c].complete {
+                // OVL-14, CVF-1: a conversion function of a class argument
+                // gives the class.
+                if let Ty::Class(sc) = nonref(&items[0].ty).t {
+                    if sc != c && !self.is_base_of(c, sc) {
+                        let mark = self.d.list.len();
+                        let r = self.implicit(items[0].clone(), &ty.unqual(), true);
+                        let ok = self.d.list.len() == mark;
+                        match r {
+                            Ok(x) if ok && !matches!(x.k, EK::Unknown(_)) && x.cat == Cat::PR && matches!(x.k, EK::Call(..)) => {
+                                let mut x = x;
+                                x.ty = ty.unqual();
+                                return x;
+                            }
+                            _ => self.d.list.truncate(mark),
+                        }
+                    }
+                }
+            }
             let mut e = Expr::unknown(line, "class temporary");
             e.ty = ty.unqual();
             return e;
@@ -7355,4 +7548,23 @@ pub enum CastKind {
     Dynamic,
     CStyle,
     Functional,
+}
+
+/// The conversion that COND-16 finds for an operand.
+pub struct Cond16 {
+    pub target: QTy,
+    pub cat: Cat,
+    pub amb: bool,
+}
+
+/// A prvalue of type `t` from a converted operand: a glvalue is copied
+/// (COND-8).
+fn cond_prvalue_of(x: Expr, t: QTy) -> Expr {
+    if x.cat == Cat::PR {
+        let mut x = x;
+        x.ty = t;
+        return x;
+    }
+    let line = x.line;
+    Expr::new(EK::Conv(Conv::LToR, Box::new(x)), t, Cat::PR, line)
 }

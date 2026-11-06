@@ -1929,6 +1929,14 @@ impl P {
                                 self.error(line, "INST-22", format!("the explicit instantiation writes the bound {}, and the specialization has the bound {}", m, n));
                             }
                         }
+                        // INST-22: a written type that is not an array and
+                        // differs from the specialization's.
+                        let vt = self.var(v).map(|x| x.ty.clone());
+                        if let Some(vt) = vt {
+                            if written_bound.is_none() && d.ops.is_empty() && !base.is_unknown() && !vt.is_unknown() && !matches!(vt.t, Ty::Array(..)) && base.t != vt.t {
+                                self.error(line, "INST-22", format!("the explicit instantiation writes the type {}, and the specialization has the type {}", self.show_ty(&base), self.show_ty(&vt)));
+                            }
+                        }
                     }
                 }
             }
@@ -2017,6 +2025,13 @@ impl P {
             // INST-22: a deduced return type is named with `auto`.
             self.error(line, "INST-22", "an explicit instantiation writes the deduced return type");
             return Ok(());
+        }
+        let tdecl = self.templs[t].decl;
+        let static_src = self.templs[t].src.as_ref().is_some_and(|s| s.toks.iter().take_while(|x| x.text != "(" && x.text != "{" && x.text != ";").any(|x| x.text == "static"));
+        if ext && self.func(tdecl).is_some_and(|f| f.class.is_none()) && (self.internal_fns.contains(&tdecl) || static_src || self.in_unnamed_ns(self.templs[t].scope)) {
+            // INST-29 (Q-0234): no explicit instantiation declaration of a
+            // specialization with internal linkage.
+            self.error(line, "INST-29", "an explicit instantiation declaration of a specialization with internal linkage");
         }
         let k = format!("fn {} {}", t, self.show_targs(&args));
         self.note_explicit_inst(&k, ext, line);
@@ -2461,9 +2476,23 @@ impl P {
                 let defined = self.func(id).is_some_and(|f| f.defined);
                 match self.decl_tid.get(&id).copied() {
                     Some(t) => {
+                        if !dependent && self.inst_depth == 0 && self.templs[t].params.len() == tparams.len() && self.templs[t].params.iter().zip(tparams.iter()).any(|(a, b)| a.default.is_some() && b.default.is_some()) {
+                            // TPL-16: one default per parameter.
+                            self.error(line, "TPL-16", format!("a default template argument of '{}' is given again", self.templs[t].name));
+                        }
                         if defined {
+                            // A later definition keeps the defaults of the
+                            // earlier declarations (TPL-15).
+                            let old = self.templs[t].params.clone();
                             self.templs[t].src = Some(src);
                             self.templs[t].params = tparams.clone();
+                            if old.len() == tparams.len() {
+                                for (i, o) in old.into_iter().enumerate() {
+                                    if self.templs[t].params[i].default.is_none() && o.default.is_some() {
+                                        self.templs[t].params[i].default = o.default;
+                                    }
+                                }
+                            }
                         }
                         self.templs[t].constrained |= head_constrained;
                         if self.templs[t].cons.is_none() {
@@ -3490,6 +3519,13 @@ impl P {
             return Ok((None, false));
         }
         if let Ty::Func(ft) = &ty.t {
+            if !matches!(d.ops.last(), Some(DOp::Func(_))) && self.inst_depth > 0 && matches!(ctx, Ctx::Class(_)) && d.ops.is_empty() {
+                // INST-6: a member declared without a function declarator
+                // gets a function type from the arguments.
+                self.error(line, "INST-6", format!("the member '{}' gets the function type {} from the template arguments", name, self.show_ty(&ty)));
+                self.skip_initializer();
+                return Ok((None, false));
+            }
             if !matches!(d.ops.last(), Some(DOp::Func(_))) {
                 // A function declared through a typedef of function type
                 // (TYN-2: it cannot define the function).
@@ -3702,8 +3738,9 @@ impl P {
     fn declare_var_template_spec(&mut self, name: &str, pt: PendingTemplate, line: u32) -> PR<(Option<DeclId>, bool)> {
         // The declarator stopped at `<`: the arguments are the pattern
         // of a partial specialization (TSP-10).
-        let _ = (pt, line);
+        let _ = pt;
         let found = self.lookup(name);
+        let was_found = found.is_some();
         let target = found.and_then(|ids| ids.into_iter().find_map(|i| self.tid_of(i)));
         match target {
             Some(t) => {
@@ -3712,7 +3749,14 @@ impl P {
                     self.last_templ = Some(crate::templ::Last::VarPartial(t, pats));
                 }
             }
-            None => self.skip_template_args()?,
+            None => {
+                if !was_found && !self.lookup_uncertain() && self.inst_depth == 0 {
+                    // TSP-31: a partial specialization needs its primary
+                    // template declared first.
+                    self.error(line, "TSP-31", format!("a partial specialization of '{}', which is not declared", name));
+                }
+                self.skip_template_args()?
+            }
         }
         if self.eat("=") {
             let _ = self.parse_assignment()?;
@@ -4314,17 +4358,8 @@ impl P {
                 form = InitForm::DirectList;
             } else if self.at("(") {
                 self.pos += 1;
-                let mut args = Vec::new();
-                if !self.at(")") {
-                    loop {
-                        let a = if self.at("{") { self.parse_braced_init()? } else { self.parse_assignment()? };
-                        args.push(a);
-                        if !self.eat(",") {
-                            break;
-                        }
-                    }
-                }
-                self.expect(")")?;
+                // PACK-13: an initializer can be a pack expansion.
+                let args = self.parse_call_args()?;
                 form = InitForm::Paren(args.len());
                 init = Some(Expr::new(EK::InitList(args), QTy::unknown(), Cat::PR, init_line));
             }
@@ -4430,6 +4465,24 @@ impl P {
                         self.error(line, "DCL-19", "array without a bound has an empty initializer");
                     }
                     ty = QTy { t: Ty::Array(el.clone(), Some(n as u64)), c: ty.c, v: ty.v };
+                }
+            }
+        }
+        if !self.in_template() && storage != Storage::Extern && class_member.is_none() {
+            // INST-11: an object of a class specialization needs the
+            // virtual member functions that are not pure, as the matrix
+            // compilers make them. They are made at the end of the unit.
+            let mut t = &ty.t;
+            while let Ty::Array(e, _) = t {
+                t = &e.t;
+            }
+            if let Ty::Class(c) = t {
+                let c = *c;
+                if self.in_instance(c) {
+                    let fns: Vec<DeclId> = self.scopes[self.classes[c].scope].names.values().flatten().copied().filter(|&f| self.decls[f].scope == self.classes[c].scope && self.func(f).is_some_and(|fi| fi.is_virtual && !fi.template) && !self.pure_fns.contains(&f)).collect();
+                    for f in fns {
+                        self.use_fn(f);
+                    }
                 }
             }
         }
@@ -4687,9 +4740,12 @@ impl P {
                         return Some(items.len());
                     }
                     // An element of the class type itself initializes one
-                    // element, with no brace elision (INIT rules).
+                    // element, with no brace elision (INIT rules). A class
+                    // with a constructor of its own is no aggregate, so each
+                    // item initializes one element (INIT-5).
                     if let Ty::Class(c) = el.t {
-                        if items.iter().all(|i| matches!(i.k, EK::InitList(_)) || nonref(&i.ty).t == Ty::Class(c)) {
+                        let ctor_class = self.classes[c].complete && self.classes[c].ctors.iter().any(|&f| self.func(f).is_some_and(|fi| !fi.first_defaulted && !fi.deleted));
+                        if ctor_class || items.iter().all(|i| matches!(i.k, EK::InitList(_)) || nonref(&i.ty).t == Ty::Class(c)) {
                             return Some(items.len());
                         }
                     }
@@ -5027,7 +5083,13 @@ impl P {
             } else if ctx == Ctx::Block && self.inst_depth == 0 {
                 self.error(cl, "CPT-14", format!("the function '{}' declared in a block has a trailing requires clause", name));
             }
-            if ds.virtual_ && self.inst_depth == 0 {
+            // CPT-15: a function that overrides a virtual function of a
+            // base is virtual too.
+            let overrides = match ctx {
+                Ctx::Class(c) if !ds.virtual_ => self.classes[c].bases.clone().iter().filter_map(|b| b.class).any(|b| !self.class_uncertain(b) && self.lookup_member(b, &name).is_some_and(|ids| ids.iter().any(|&f| self.func(f).is_some_and(|fi| fi.is_virtual)))),
+                _ => false,
+            };
+            if (ds.virtual_ || overrides) && self.inst_depth == 0 {
                 // CPT-15: no trailing clause on a virtual function.
                 self.error(cl, "CPT-15", format!("the virtual function '{}' has a trailing requires clause", name));
             }
@@ -6286,12 +6348,31 @@ impl P {
             // PACK-14: `Bs(args)...` initializes each base of the pack.
             let (items, expanded) = self.parse_expansion(|p| {
                 // mem-initializer-id
+                let start = p.pos;
                 let scope = p.parse_nested_name()?;
                 let name = p.ident()?;
+                let mut named_spec: Option<usize> = None;
                 if p.at("<") {
-                    p.skip_template_args()?;
+                    // A template-id names the specialization, also one of a
+                    // pack expansion (PACK-14).
+                    let after_name = p.pos;
+                    p.pos = start;
+                    let mark = p.d.list.len();
+                    match p.parse_type_id() {
+                        Ok(QTy { t: Ty::Class(b), .. }) if p.d.list.len() == mark && (p.at("(") || p.at("{")) => named_spec = Some(b),
+                        _ => {
+                            p.d.list.truncate(mark);
+                            p.pos = after_name;
+                            p.skip_template_args()?;
+                        }
+                    }
                 }
                 let mut target = match (scope, class) {
+                    _ if named_spec.is_some() => {
+                        let b = named_spec.unwrap();
+                        let bname = p.classes[b].name.clone();
+                        p.lookup_in_scope(p.classes[b].scope, &bname, false)
+                    }
                     (None, Some(c)) => p.lookup_member(c, &name).or_else(|| p.lookup(&name)),
                     (Some(Ok(s)), _) => p.lookup_in_scope(s, &name, true),
                     _ => None,
@@ -6313,16 +6394,8 @@ impl P {
                     args.push(p.parse_braced_init()?);
                 } else {
                     p.expect("(")?;
-                    if !p.at(")") {
-                        loop {
-                            let a = if p.at("{") { p.parse_braced_init()? } else { p.parse_assignment()? };
-                            args.push(a);
-                            if !p.eat(",") {
-                                break;
-                            }
-                        }
-                    }
-                    p.expect(")")?;
+                    // PACK-13: an argument can be a pack expansion.
+                    args = p.parse_call_args()?;
                 }
                 Ok((name, target, args, braced))
             })?;

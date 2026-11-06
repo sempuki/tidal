@@ -3242,10 +3242,12 @@ impl P {
         self.d.muted += 1;
         let ctx = src.ctx;
         let saved_mark = self.sfinae_mark.replace(me);
+        let saved_subst = std::mem::replace(&mut self.fn_subst, true);
         let r = self.replay(&src, &params, args, Some(InstReq::Func { name, existing: None }), |p| {
             let r = p.parse_declaration(ctx);
             r.is_ok()
         });
+        self.fn_subst = saved_subst;
         self.sfinae_mark = saved_mark;
         self.d.muted -= 1;
         let k = self.templs[tid].insts.iter().position(|x| x.0 == args).unwrap();
@@ -3623,6 +3625,30 @@ impl P {
         let dmark = self.d.list.len();
         let (me, mu) = (self.d.muted_errors, self.d.muted_unsup);
         let first = parse(self)?;
+        if self.at("...") && self.in_template() && self.inst_depth == 0 && self.pos > start {
+            // PACK-8: the pattern of an expansion names a pack. A pattern
+            // whose names are all variables that are not packs names none.
+            let mut all_vars = true;
+            let mut any = false;
+            for k in start..self.pos {
+                let t = self.toks[k].clone();
+                if t.kind != TK::Ident {
+                    if t.kind == TK::Punct && matches!(t.text.as_str(), "..." | "::" | "<" | ">" | "." | "->") {
+                        all_vars = false;
+                    }
+                    continue;
+                }
+                any = true;
+                match self.lookup(&t.text) {
+                    Some(ids) if ids.iter().all(|&d| matches!(self.decls[d].k, DK::Var(_)) && !self.pack_decls.contains(&d) && !self.pack_params.contains(&d) && !self.fn_param_packs.contains_key(&d) && self.var(d).is_some_and(|v| v.local && !v.dependent || v.param)) => {}
+                    _ => all_vars = false,
+                }
+            }
+            if any && all_vars {
+                let line = self.line();
+                self.error(line, "PACK-8", "the pattern of the pack expansion names no pack");
+            }
+        }
         if self.at("...") && !self.in_template() && self.pack_refs.len() > mark {
             let n = self.pack_refs[mark];
             let differ = self.pack_refs[mark..].iter().any(|&m| m != n);

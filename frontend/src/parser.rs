@@ -750,6 +750,9 @@ pub struct P {
     pub noexcept_errors: HashMap<DeclId, Vec<crate::diag::Diag>>,
     /// In a substitution: the count of muted errors at its start.
     pub sfinae_mark: Option<u32>,
+    /// DED-29: the substitution into a function template's type is under
+    /// way, so the body of a lambda there is outside its immediate context.
+    pub fn_subst: bool,
     /// Where the current tokens come from: the token vector and the
     /// index of the first token (main unit: vector 0, index 0).
     pub tok_origin: (usize, usize),
@@ -1050,6 +1053,7 @@ impl P {
             pending_noexcept_errors: None,
             noexcept_errors: HashMap::new(),
             sfinae_mark: None,
+            fn_subst: false,
             tok_origin: (0, 0),
             lazy_origins: HashMap::new(),
             pattern_facts: HashMap::new(),

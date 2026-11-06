@@ -416,7 +416,11 @@ impl P {
             _ => None,
         };
         // An array's qualifiers are those of its elements (CV-6).
-        let related = at.t == inner.t || crate::templ::strip_cv(&at, true, true).t == crate::templ::strip_cv(inner, true, true).t || related_base.is_some();
+        // REF-1: an lvalue of a pointer type that converts to the
+        // referenced type by a qualification adjustment below the top
+        // level binds an lvalue reference directly, with the identity.
+        let ptr_qual = !rref && is_lv && matches!((&at.t, &inner.t), (Ty::Ptr(_), Ty::Ptr(_)) | (Ty::MemPtr(..), Ty::MemPtr(..)) | (Ty::Array(..), Ty::Array(..))) && at.t != inner.t && self.qual_level(&at, inner, true);
+        let related = at.t == inner.t || crate::templ::strip_cv(&at, true, true).t == crate::templ::strip_cv(inner, true, true).t || related_base.is_some() || ptr_qual;
         let cv_ok = (!at.c || inner.c) && (!at.v || inner.v);
         let const_lref = !rref && inner.c && !inner.v;
         if related && cv_ok {
@@ -437,7 +441,21 @@ impl P {
                     return Err(());
                 }
                 // ICS-11: a conversion function whose result binds.
-                return self.ics_user_from_class(a, ac, inner, Some(rref));
+                let r = self.ics_user_from_class(a, ac, inner, Some(rref))?;
+                let mut fns = Vec::new();
+                self.conv_fns(ac, 0, &mut fns);
+                if r.is_some() || !matches!(inner.t, Ty::Class(_)) || !(rref || const_lref) || !fns.is_empty() {
+                    return Ok(r);
+                }
+                // ICS-11, ICS-3: a temporary of the referenced class made by
+                // a converting constructor.
+                // Where the front end cannot form that sequence, it keeps
+                // the older answer of no sequence.
+                let r = self.ics_value(a, &inner.unqual(), std_only).unwrap_or(None);
+                return Ok(r.map(|mut x| {
+                    x.s.refb = Some(refb(true, false));
+                    x
+                }));
             }
         }
         if related || !(rref || const_lref) {
@@ -1117,6 +1135,17 @@ impl P {
                     if (!x.c || y.c) && (!x.v || y.v) {
                         return if na.is_some() { 1 } else { -1 };
                     }
+                }
+            }
+            // ICS-46: fewer cv-qualifiers below the top level, when both
+            // bind directly.
+            if !ra.to_rvalue && !rb.to_rvalue && !ra.rref && !rb.rref && ra.referenced.t != rb.referenced.t && matches!((&ra.referenced.t, &rb.referenced.t), (Ty::Ptr(_), Ty::Ptr(_))) && a.sec == Sec::None && b.sec == Sec::None {
+                let (x, y) = (&ra.referenced, &rb.referenced);
+                if self.qual_level(x, y, true) && !self.qual_level(y, x, true) {
+                    return 1;
+                }
+                if self.qual_level(y, x, true) && !self.qual_level(x, y, true) {
+                    return -1;
                 }
             }
             if ra.referenced.t == rb.referenced.t {

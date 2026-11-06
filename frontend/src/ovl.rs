@@ -770,7 +770,23 @@ impl P {
                 }
             }
             if list {
-                return CtorRes::Unknown;
+                // A braced list goes to the templates only when no
+                // constructor can take the list itself (ILC-2): each
+                // template's first parameter is a template parameter, and
+                // no other constructor takes an initializer list.
+                let plain_param = |p: &Self, cid: DeclId| -> bool {
+                    let Some(f) = p.func(cid) else { return false };
+                    match f.params.first().and_then(|&q| p.var(q)).map(|v| nonref(&v.ty).t) {
+                        None => true,
+                        Some(Ty::Dep(d)) => matches!(*d, crate::types::Dep::Param(..)),
+                        Some(Ty::Class(lc)) => !f.template && p.init_list_elem(lc).is_none(),
+                        Some(Ty::Unknown) => false,
+                        Some(_) => !f.template,
+                    }
+                };
+                if !ctors.iter().all(|&cid| plain_param(self, cid)) {
+                    return CtorRes::Unknown;
+                }
             }
             match self.expand_fn_templates(&ctors, args, 0) {
                 Some(v) if !v.is_empty() => v,
@@ -867,8 +883,10 @@ impl P {
                 self.conv_fns(ac, 0, &mut fns);
                 // Only a function that gives `c`, a class derived from it,
                 // or an unknown type can reach such a parameter.
+                // ICS-45: an explicit function serves only with a result of
+                // the class itself.
                 let reaches = |p: &Self, t: &QTy| match nonref(t).t {
-                    Ty::Class(r) => r == c || p.is_base_of(c, r),
+                    Ty::Class(r) => r == c || (p.is_base_of(c, r) && matches!(t.t, Ty::LRef(_) | Ty::RRef(_))),
                     Ty::Unknown | Ty::Dep(_) => true,
                     _ => false,
                 };
@@ -909,7 +927,7 @@ impl P {
                     // A user-defined sequence to an implicit copy or move
                     // constructor loses to a candidate whose sequences are
                     // all standard (ICS-21).
-                    Ok(Some(s)) if matches!(s.kind, crate::ics::IK::User | crate::ics::IK::Ambig) && !matches!(nonref(&args[0].ty).t, Ty::Class(_)) && !own => implicit_user = true,
+                    Ok(Some(s)) if matches!(s.kind, crate::ics::IK::User | crate::ics::IK::Ambig) && (!matches!(nonref(&args[0].ty).t, Ty::Class(_)) || s.user.as_ref().is_some_and(|u| matches!(u, crate::ics::UKey::Fn(f) if self.func(*f).is_some_and(|fi| fi.kind == FnKind::Ctor)))) && !own => implicit_user = true,
                     _ => return CtorRes::Unknown,
                 }
             }
@@ -1320,6 +1338,14 @@ impl P {
                 self.error(line, "DED-35", format!("no specialization of '{}' matches the target type {}", name, show(to)));
                 return Some(Expr::unknown(line, "bad overload set"));
             }
+            // DED-29 (Q-0420): a specialization whose result type comes
+            // from its body is instantiated to find that type, also when a
+            // plain function of the set matches the target.
+            for &sf in &v {
+                if self.spec_of.contains_key(&sf) && self.func(sf).is_some_and(|f| f.ret_auto.is_some() && f.fty.ret.is_unknown()) {
+                    self.use_fn(sf);
+                }
+            }
             v
         } else {
             fs
@@ -1374,6 +1400,12 @@ impl P {
         }
         if f.is_main {
             self.error(line, "TR-3", "address of 'main' taken");
+        }
+        if f.class.is_some() && !self.in_template() && !self.accessible(fid, false) {
+            // ACC-3, OVL-18: the function that the target type selects must
+            // be accessible.
+            self.error(line, "ACC-3", format!("the function '{}' that the target type selects is not accessible here", self.decls[fid].name));
+            return Some(Expr::unknown(line, "bad overload set"));
         }
         let x = if let Some(fc) = memclass {
             Expr::new(if self.in_template() { EK::Unknown("pointer to member function".into()) } else { EK::MemberPtr(fid) }, QTy::new(Ty::MemPtr(fc, Box::new(QTy::new(Ty::Func(Box::new(fty)))))), Cat::PR, line)

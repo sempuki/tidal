@@ -310,7 +310,7 @@ impl<'a> Machine<'a> {
             }
         }
         let Some((mt, main)) = main else {
-            return unsup("no definition of main in the program (TR-4)");
+            return unsup("no definition of main in the program (TR-17)");
         };
         let n = self.ps.len();
         // Zero-initialization of every static object comes first.
@@ -349,7 +349,7 @@ impl<'a> Machine<'a> {
             self.choice("SINIT-3", "the translation units initialize their static objects in the order the units are given");
         }
         for (t, id) in dynamic {
-            if self.ps[t].var(id).is_some_and(|v| v.storage == Storage::ThreadLocal && !v.local) {
+            if self.ps[t].var(id).is_some_and(|v| (v.storage == Storage::ThreadLocal || self.ps[t].thread_vars.contains(&id)) && !v.local) {
                 // OBJ-11: Clang and GCC defer the construction to the first
                 // use of such a variable of the unit.
                 self.deferred_tl.push((t, id));

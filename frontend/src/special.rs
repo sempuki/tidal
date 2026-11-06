@@ -700,6 +700,20 @@ impl P {
                         self.warn(line, "CPY-13", format!("the implicit {} of '{}' is deprecated, because the class has a user-provided copy function", sm.what(), name));
                     }
                 }
+                if !assign && !self.class_uncertain(c) {
+                    // ACC-3: the constructor that the copy or the move
+                    // selects must be accessible.
+                    let pick = |p: &P, r: bool| -> Vec<DeclId> { p.copy_cands(c, false, r).unwrap_or_default().into_iter().filter(|&f| p.func(f).is_some_and(|fi| !fi.deleted && (r || fi.params.len() <= 1 + fi.defaults))).collect() };
+                    let mut chosen = if rv { pick(self, true) } else { Vec::new() };
+                    if chosen.is_empty() {
+                        chosen = pick(self, false);
+                    }
+                    if chosen.len() == 1 && !self.accessible(chosen[0], false) {
+                        let what = if self.copy_param(chosen[0], c, false) == Some(true) { "move" } else { "copy" };
+                        self.error(line, "ACC-3", format!("the {} constructor of '{}' is not accessible here", what, name));
+                        return;
+                    }
+                }
                 if !rv && !const_src && x.ty.c {
                     let r = if implicit { "CPY-22" } else { "CPY-20" };
                     self.error(line, r, format!("the {} of '{}' cannot copy a const object", sm.what(), name));

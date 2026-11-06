@@ -2123,7 +2123,10 @@ impl P {
             d.conv_ty = inner.conv_ty;
             d.line = inner.line;
             // PACK-1: `...` can come inside the parentheses, as in
-            // `R (*... fp)()`.
+            // `R (*... fp)()`. PACK-2: not for a pack with no name.
+            if inner.pack && d.name.is_none() && self.inst_depth == 0 {
+                self.error(inner.line, "PACK-2", "a pack with no name has its '...' inside parentheses");
+            }
             d.pack |= inner.pack;
             inner_ops = inner.ops;
         } else if self.is_ident() || self.at("::") || self.at("~") || self.at("operator") {

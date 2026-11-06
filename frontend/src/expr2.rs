@@ -715,6 +715,11 @@ impl P {
             if !self.in_template() && nonref(&o.ty).t == Ty::Class(owner) && !self.accessible(fid, false) {
                 self.error(line, "ACC-3", format!("'{}' is not accessible here", self.decls[fid].name));
             }
+        } else if obj.is_none() && f.is_static && f.class.is_some() && !self.in_template() && !self.accessible(fid, false) {
+            // ACC-3: a static member function that overload resolution
+            // selects must be accessible where the call is, also in a
+            // specialization of a template.
+            self.error(line, "ACC-3", format!("'{}' is not accessible here", self.decls[fid].name));
         }
         if f.deleted {
             // DEL-1: a program must not refer to a deleted function.
@@ -939,7 +944,10 @@ impl P {
 
     pub fn convert_args(&mut self, ft: &FnTy, args: Vec<Expr>, line: u32, fid: Option<DeclId>) -> Vec<Expr> {
         let np = ft.params.len();
-        if fid.is_none() {
+        // In a pattern, an argument of unknown type can be an expansion
+        // of a pack whose length is not known yet.
+        let open_pack = self.in_template() && args.iter().any(|a| a.ty.is_unknown());
+        if fid.is_none() && !open_pack {
             if args.len() < np || (args.len() > np && !ft.variadic) {
                 self.error(line, "PFX-5", "wrong number of arguments in a call through a pointer");
             }
@@ -1001,6 +1009,11 @@ impl P {
                 let mut r = r;
                 r.cat = cat;
                 return r;
+            }
+            if self.d.list.len() > mark && self.d.list[mark..].iter().all(|d| d.line != line && d.sev == crate::diag::Severity::Error) {
+                // DED-29: an error in the body of a specialization that the
+                // target type made the front end instantiate.
+                return Expr::unknown(line, "bad cast");
             }
             self.d.list.truncate(mark);
         }
@@ -1090,7 +1103,36 @@ impl P {
             }
             return self.conv(e, Conv::ToVoid, target);
         }
-        if let Ty::Class(_) = target.t {
+        if let Ty::Class(c) = target.t {
+            if kind == CastKind::Static && !self.in_template() && !self.class_uncertain(c) && self.classes[c].complete && !e.ty.is_unknown() {
+                // CAST-1: the result is direct-initialized from the
+                // operand, as `T t(e)` is.
+                let mark = self.d.list.len();
+                if let Ty::Class(sc) = nonref(&e.ty).t {
+                    if sc != c && !self.is_base_of(c, sc) {
+                        // OVL-14, CVF-1: a conversion function gives the class.
+                        if let Ok(x) = self.implicit(e.clone(), &target, true) {
+                            if self.d.list.len() == mark && x.cat == Cat::PR && matches!(x.k, EK::Call(..)) {
+                                let mut x = x;
+                                x.ty = target;
+                                return x;
+                            }
+                        }
+                        self.d.list.truncate(mark);
+                    }
+                }
+                let init = Expr::new(EK::InitList(vec![e.clone()]), QTy::unknown(), Cat::PR, line);
+                let x = self.convert_init(init, &target, crate::decl2::InitForm::Paren(1), line);
+                if self.d.list.len() == mark && !matches!(x.k, EK::Unknown(_)) && !x.ty.is_unknown() {
+                    let mut x = x;
+                    if x.cat != Cat::PR || matches!(x.k, EK::InitList(_)) {
+                        x = Expr::new(EK::Conv(Conv::NoOp, Box::new(x)), target.clone(), Cat::PR, line);
+                    }
+                    x.ty = target;
+                    return x;
+                }
+                self.d.list.truncate(mark);
+            }
             return Expr::new(EK::Unknown("cast to class".into()), target, Cat::PR, line);
         }
         if let Ty::Class(c) = nonref(&e.ty).t {
@@ -1983,9 +2025,20 @@ impl P {
     /// takes no arguments and none is a template.
     pub fn default_ctor(&self, c: usize) -> Option<DeclId> {
         let ctors = &self.classes[c].ctors;
-        if ctors.iter().any(|&i| self.func(i).is_none_or(|f| f.template)) {
+        // A constructor template whose parameters all need arguments is no
+        // candidate for a call with none.
+        let needs_args = |i: DeclId| -> bool {
+            let Some(f) = self.func(i) else { return false };
+            let pack = self.decl_tid.get(&i).is_some_and(|&t| self.templs[t].fn_pack.is_some()) as usize;
+            // A pack makes the type variadic; a C ellipsis alone needs no
+            // argument.
+            (pack == 1 || !f.fty.variadic) && f.params.len() > f.defaults + pack
+        };
+        if ctors.iter().any(|&i| self.func(i).is_none_or(|f| f.template && !needs_args(i))) {
             return None;
         }
+        let ctors: Vec<DeclId> = ctors.iter().copied().filter(|&i| self.func(i).is_some_and(|f| !f.template)).collect();
+        let ctors = &ctors;
         let v: Vec<DeclId> = ctors.iter().copied().filter(|&i| self.func(i).is_some_and(|f| f.params.len() <= f.defaults)).collect();
         if v.len() == 1 {
             Some(v[0])
@@ -2105,6 +2158,23 @@ impl P {
                     return self.check_consteval_ctor(x, cid, line);
                 }
                 self.d.list.truncate(mark);
+            }
+        }
+        if args.len() == 1 && !list && !self.class_uncertain(c) && !self.in_template() && matches!(chosen_for_build, crate::ovl::CtorRes::Unknown) {
+            if let Ty::Class(sc) = nonref(&args[0].ty).t {
+                if sc != c && !self.is_base_of(c, sc) && self.class_converts(sc) != Some(false) {
+                    // OVL-14, CVF-1: a conversion function of the argument
+                    // gives the class, for the copy or move constructor.
+                    let mark = self.d.list.len();
+                    if let Ok(x) = self.implicit(args[0].clone(), &ty.unqual(), !copy) {
+                        if self.d.list.len() == mark && x.cat == Cat::PR && matches!(x.k, EK::Call(..)) {
+                            let mut x = x;
+                            x.ty = ty.unqual();
+                            return x;
+                        }
+                    }
+                    self.d.list.truncate(mark);
+                }
             }
         }
         if self.class_uncertain(c) || self.in_template() || args.iter().any(|a| a.ty.is_unknown() || matches!(a.k, EK::InitList(_))) {

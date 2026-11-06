@@ -170,3 +170,8 @@ that has no row.
 | G150 | `report-21.md` | commit | decision 0057, item G: CMP-8, Q-0387 |
 | G151 | `report-21.md` | commit | decision 0057, item G: BF-1, ALN-8, Q-0314 |
 | G152 | `report-22.md` | commit | decision 0058, item F: DED-29 |
+| G153 | `report-23.md` | open | |
+| G154 | `report-23.md` | open | |
+| G155 | `report-23.md` | open | |
+| G156 | `report-23.md` | open | |
+| G157 | `report-23.md` | open | |

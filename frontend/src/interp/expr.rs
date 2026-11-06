@@ -453,19 +453,35 @@ impl<'a> Machine<'a> {
     /// one object (PRIM-9: whether two literals share an object is
     /// unspecified). Constant evaluation makes a new object each time.
     pub fn string_obj(&mut self, units: &[u32]) -> Ptr {
+        let mut root = None;
         if !self.constant {
             if let Some(&o) = self.strings.get(units) {
-                return Ptr::whole(o);
+                // PRIM-9: a later evaluation gives an object of its own,
+                // which a comparison treats as the first object or as
+                // another one. A copy of one pointer stays one object.
+                let n = self.string_count.entry(o).or_insert(1);
+                if *n >= 256 {
+                    return Ptr::whole(o);
+                }
+                *n += 1;
+                root = Some(o);
             }
         }
         let o = self.new_obj(Val::Agg(units.iter().map(|&u| Val::Int(u as i128)).chain(std::iter::once(Val::Int(0))).collect()), false);
         self.objs[o].string = true;
         self.objs[o].is_static = true;
         self.objs[o].konst = true;
-        if !self.constant {
+        if let Some(r) = root {
+            self.string_root.insert(o, r);
+        } else if !self.constant {
             self.strings.insert(units.to_vec(), o);
         }
         Ptr::whole(o)
+    }
+
+    /// PRIM-9: the first object of a string literal object's characters.
+    pub fn string_root_of(&self, o: usize) -> usize {
+        self.string_root.get(&o).copied().unwrap_or(o)
     }
 
     fn member_place(&mut self, base: &Expr, fid: DeclId) -> R<Ptr> {
@@ -1364,9 +1380,12 @@ impl<'a> Machine<'a> {
                         // set of objects serves both uses.
                         self.no_set.insert(r.obj);
                     }
-                    if built {
+                    if built && !self.constant {
                         self.implicit.insert(r.obj);
                     } else {
+                        // LSUP-11 (Q-0421): in constant evaluation, an
+                        // element begins its lifetime only when the program
+                        // constructs it.
                         for i in 0..n as usize {
                             self.unbuilt.insert((r.obj, i));
                         }
@@ -2867,14 +2886,16 @@ impl<'a> Machine<'a> {
                             if self.constant && p.obj != q.obj {
                                 return limit("CE-13", "comparison of the addresses of string literals");
                             }
-                            if !self.constant && p.obj == q.obj {
+                            let root = self.string_root_of(p.obj);
+                            if !self.constant && p.obj != q.obj && root == self.string_root_of(q.obj) {
                                 // PRIM-9: two evaluations can give one
-                                // object or two. One choice per object.
-                                let two = match self.prim9.get(&p.obj) {
+                                // object or two. One choice per set of
+                                // characters.
+                                let two = match self.prim9.get(&root) {
                                     Some(&c) => c == 1,
                                     None => {
                                         let c = self.decide(2);
-                                        self.prim9.insert(p.obj, c);
+                                        self.prim9.insert(root, c);
                                         c == 1
                                     }
                                 };
@@ -2882,6 +2903,8 @@ impl<'a> Machine<'a> {
                                 if two {
                                     return Ok(Val::Int((op != BOp::Eq) as i128));
                                 }
+                                let eq = p.off == q.off && p.path == q.path;
+                                return Ok(Val::Int((if op == BOp::Eq { eq } else { !eq }) as i128));
                             }
                         }
                         if let (Some(a), Some(b)) = (self.byte_address(p), self.byte_address(q)) {
