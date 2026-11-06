@@ -77,6 +77,7 @@ needs a language-support type declares the shape that its page gives
 | W13 | Low level | Ada | volatile, alignment, unions (bit-fields), casts, attributes, linkage-specifications | a device-register map; a packed header with bit-fields; a function with C linkage; a buffer aligned for a wider type |
 | W14 | Program structure | Ada | storage-linkage, namespaces, inline, static initialization, names, type-names, translation | a program in three translation units; a namespace with internal helpers; a shared constant across units; a counter whose initialization order matters |
 | W15 | Generic code | Haskell | templates (declarations, arguments, deduction, packs, concepts, constraints, specialization), storage, language-support | a fixed-capacity stack; the largest of any number of arguments; a concept for shapes with a more specific overload; a compile-time type list; an optional that keeps its value in raw storage |
+| W20 | Library-shaped code | C# | storage, unions, copy-move, packs, constraints, casts, class-template-deduction | Done: a fixed-capacity vector in raw storage; a result type with a tagged union; a span with a sort that takes a comparator; a type-erased box with a per-type tag |
 
 Each finished program becomes a run test under
 `tests/programs/<suite>/`. Probes and deliberate mistakes stay in the
@@ -276,6 +277,7 @@ No page has only a Predict batch that showed test names.
 | W1 | done: five programs build and run on GCC and Clang; findings W1-1 to W1-9 | `reports/clean-room/W1/` |
 | P1 | done: three Rust programs ported to C++ (shapes, parse, stats) build and run on GCC and Clang; the final versions run on the front end; findings P1-1 to P1-9 | `reports/clean-room/P1/` |
 | W18 | done: four programs (a container with a deduced object parameter, comparators, a visitor over a tagged union, a callback table in two units) build and run on GCC and Clang; findings W18-1 to W18-15 | `reports/clean-room/W18/` |
+| W20 | done: four programs (a fixed-capacity vector, a result type, a span with a sort, a type-erased box) build and run on GCC and Clang and on the front end; findings W20-1 to W20-7 | `reports/clean-room/W20/` |
 | W19 | done: four programs (a matrix, a type list, a consteval table, an `if consteval` helper) build and run on GCC and Clang; findings W19-1 to W19-6 | `reports/clean-room/W19/` |
 | W16 | done: two programs (an expression evaluator and a text-statistics program) build and run on GCC and Clang; findings W16-1 to W16-7 | `reports/clean-room/W16/` |
 | W17 | done: a hash map in raw storage and a multi-unit template library build and run on GCC and Clang; findings W17-1 to W17-7 | `reports/clean-room/W17/` |

@@ -935,3 +935,10 @@ own IDs (RV5-A-n and RV5-B-n).
 | RV5-B-13 | `../review/2026-11-05-gap-review-phase-12-expressions-overloading-templates.md` | question | Q-0417 |
 | RV5-B-14 | `../review/2026-11-05-gap-review-phase-12-expressions-overloading-templates.md` | commit | 3bed9cb5: LAM-5 to LAM-7, simple and init captures |
 | RV5-B-15 | `../review/2026-11-05-gap-review-phase-12-expressions-overloading-templates.md` | text | LAM-29 states the right result; the reference is silent |
+| W20-1 | `W20/report.md` | open | no in-object storage form gives a pointer and a length; STG-P2 and the FixedVec example |
+| W20-2 | `W20/report.md` | open | no rule for the elements of an array member of a union (UNI-14) |
+| W20-3 | `W20/report.md` | open | CPY-15 and CNS-11: when the by-value constructor template leaves the candidates; the front end gives CNS-35 |
+| W20-4 | `W20/report.md` | open | GCC with -fsanitize=undefined rejects a constant comparison of tag addresses (CMP-15 Evidence) |
+| W20-5 | `W20/report.md` | open | CAST-1 does not state the void* round trip that STG-16 gives |
+| W20-6 | `W20/report.md` | open | a table of the storage forms and what each allows |
+| W20-7 | `W20/report.md` | text | outside knowledge on assignment idioms and sorting; no language rule involved |
