@@ -229,7 +229,8 @@ conversions must not occur implicitly:
 - a conversion that removes a cv-qualifier,
 - a pointer to a function to a pointer to `void`,
 - across several levels of pointers, a conversion that adds `const` at
-  one level without adding it at every level above that level.
+  one level without `const` at every level above that level in the
+  target.
 :::
 
 :::{rule} CONV-10

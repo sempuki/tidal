@@ -384,7 +384,7 @@ pattern, such as `T*`, is not valid there.
 
 :::{rule} PACK-21
 :kind: required
-:tests: templates/packs/using-declaration-pack.cpp templates/packs/using-declaration-empty-pack.cpp
+:tests: templates/packs/using-declaration-pack.cpp templates/packs/using-declaration-empty-pack.cpp expressions/lambdas/closure-as-base-overload-set.cpp
 
 A using-declarator in a class can be expanded over a pack of bases. The
 declaration then names the member of each base. For a pack with no
@@ -580,8 +580,8 @@ template <class... T> void keep(T... x) {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 66
-of 70 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 67
+of 71 tests.
 
 ### Divergences
 

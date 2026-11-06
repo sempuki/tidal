@@ -280,10 +280,14 @@ and assigned.
 
 :::{rule} LAM-29
 :kind: required
-:tests: expressions/lambdas/closure-copy-keeps-state.cpp expressions/lambdas/closure-copy-array-capture.cpp
+:tests: expressions/lambdas/closure-copy-keeps-state.cpp expressions/lambdas/closure-copy-array-capture.cpp expressions/lambdas/closure-as-base-overload-set.cpp
 
 A closure type can be copied and moved if each of its captures can. The
-copy starts with the state of the original.
+copy starts with the state of the original. A closure type is not
+`final`, so a class can derive from it. A class template that derives
+from a pack of closure types and brings in each call operator
+({rule}`PACK-21`) makes one overload set from several lambdas, and
+aggregate deduction ({rule}`CTAD-27`) gives its arguments.
 :::
 
 :::{rule} LAM-26
@@ -498,8 +502,8 @@ int dispatch(int base) {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 87
-of 91 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 88
+of 92 tests.
 
 ### Divergences
 

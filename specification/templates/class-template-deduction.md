@@ -292,7 +292,7 @@ The elements match the members as in aggregate initialization
 
 :::{rule} CTAD-27
 :kind: required
-:tests: templates/class-template-deduction/aggregate-candidate-pack.cpp templates/class-template-deduction/aggregate-pack-not-last.cpp templates/class-template-deduction/aggregate-pack-not-last-element.cpp templates/class-template-deduction/aggregate-pack-length-fixed.cpp templates/class-template-deduction/aggregate-pack-length-conflict.cpp templates/class-template-deduction/aggregate-pack-length-fewer.cpp templates/class-template-deduction/aggregate-pack-length-position.cpp templates/class-template-deduction/aggregate-pack-length-parentheses.cpp templates/class-template-deduction/aggregate-pack-parentheses.cpp
+:tests: templates/class-template-deduction/aggregate-candidate-pack.cpp templates/class-template-deduction/aggregate-pack-not-last.cpp templates/class-template-deduction/aggregate-pack-not-last-element.cpp templates/class-template-deduction/aggregate-pack-length-fixed.cpp templates/class-template-deduction/aggregate-pack-length-conflict.cpp templates/class-template-deduction/aggregate-pack-length-fewer.cpp templates/class-template-deduction/aggregate-pack-length-position.cpp templates/class-template-deduction/aggregate-pack-length-parentheses.cpp templates/class-template-deduction/aggregate-pack-parentheses.cpp expressions/lambdas/closure-as-base-overload-set.cpp
 
 A pack of bases gives the aggregate candidate a {term}`function parameter pack`
 of the base types:
@@ -685,8 +685,8 @@ Bases c{List<X, Y, Z>{}, Y{}};    // rejected: Y stands where X is fixed
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 96
-of 118 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 97
+of 119 tests.
 
 ### Divergences
 

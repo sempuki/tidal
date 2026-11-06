@@ -26,7 +26,11 @@ to the innermost `switch` around it, and a lambda or local class body is
 a different function, so a label in such a body belongs to nothing
 outside.
 
-A `switch` over an enumeration usually means to handle each enumerator.
+A `switch` over an enumeration usually means to handle each enumerator. An
+enumeration can hold values that no enumerator has, so a `switch` with a
+`case` for every enumerator and no `default` can still complete. A
+function that returns a value needs a statement after such a `switch`
+({principle}`FN-P3`, {rule}`FN-7`).
 So an implementation should warn when an enumerator has no `case` label
 and the `switch` has no `default`. A case value that no enumerator has
 is likely a mistake, so an implementation should warn about it too.

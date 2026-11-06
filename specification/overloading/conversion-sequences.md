@@ -34,8 +34,10 @@ set, and then has the sequence of an lvalue that names that function
 (ICS-47).
 
 A sequence holds at most one user-defined conversion (ICS-9, ICS-10).
-Forming a sequence looks only at the argument's type, {term}`cv-qualifiers <cv-qualifier>`, and
-{term}`value category`. Faults such as access, narrowing, a deleted function, or
+Forming a sequence looks at the argument's type, {term}`cv-qualifiers <cv-qualifier>`, and
+{term}`value category`, and for some arguments at the expression
+itself: the width of a bit-field (CONV-1), a null pointer constant
+(CONV-8), a string literal (ICS-38), and an {term}`overload set`. Faults such as access, narrowing, a deleted function, or
 a bit-field are checked only for the function that is chosen (ICS-8).
 So a function can win and then fail.
 :::
@@ -286,7 +288,13 @@ Direct initialization can also use an `explicit` conversion function
   ({question}`Q-0337`).
 
 A function parameter is copy-initialized, so these functions never
-serve it.
+serve it. The temporary that a reference binds is copy-initialized
+too, also in direct initialization, so an `explicit` conversion
+function cannot make it. These are direct-initialized: the operand of
+a cast, the variable of a direct initialization, the parameter of a
+copy or move constructor in the direct initialization of a class
+({rule}`OVL-40`), and the operands of the built-in `!`, `&&`, and `||`
+({rule}`OVL-9`).
 :::
 
 :::{rule} ICS-5
@@ -709,7 +717,8 @@ ICS-26 and ICS-27 come first.
 :tests: overloading/conversion-sequences/rvalue-reference-binding.cpp overloading/conversion-sequences/rvalue-reference-before-cv.cpp overloading/conversion-sequences/rvalue-reference-object-exception.cpp overloading/conversion-sequences/rank-before-reference.cpp overloading/conversion-sequences/tie-breaker-before-rvalue-reference.cpp overloading/conversion-sequences/fixed-enumeration-before-rvalue-reference.cpp overloading/conversion-sequences/floating-before-rvalue-reference.cpp overloading/conversion-sequences/rvalue-reference-before-qualification.cpp
 
 If both sequences bind references to an rvalue, binding an rvalue
-reference is better than binding an lvalue reference. The rule does not
+reference is better than binding an lvalue reference. A reference that
+binds a temporary binds an rvalue. The rule does not
 apply if either sequence binds the implicit object parameter of a
 function without a ref-qualifier (ICS-40). ICS-32 to ICS-36 come first
 ({question}`Q-0152`).

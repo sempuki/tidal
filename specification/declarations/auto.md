@@ -163,9 +163,12 @@ type. `constexpr` makes the variable `const`. AUTO-19 states what
 
 :::{rule} AUTO-19
 :kind: reject
-:tests: declarations/auto/pointer-from-non-pointer.cpp declarations/auto/pointer-from-null-pointer-constant.cpp
+:tests: declarations/auto/pointer-from-non-pointer.cpp declarations/auto/pointer-from-null-pointer-constant.cpp declarations/auto/pointer-placeholder-return-nullptr.cpp
 
-With `auto*` (AUTO-5), the initializer must have pointer type.
+With `auto*` (AUTO-5), the initializer must have pointer type. `nullptr`
+and a literal `0` do not have pointer type, so a function that returns
+`auto*` cannot deduce from `return nullptr;`. One `return` of a
+conditional expression such as `c ? &x : nullptr` has pointer type.
 :::
 
 :::{rule} AUTO-6
@@ -395,7 +398,7 @@ Int auto ib = 1.0;              // rejected
 ## Evidence
 
 All rules on this page are `required` or `reject`. All eight compilers
-agree on all 63 tests. The results are in `tests/RESULTS.md`.
+agree on all 64 tests. The results are in `tests/RESULTS.md`.
 
 The tests for `auto x = { ... }` declare a small
 `std::initializer_list` with the shape that {rule}`LSUP-1` gives,

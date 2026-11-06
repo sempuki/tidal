@@ -36,7 +36,7 @@ cannot deduce, because its callers never see its definition.
 
 :::{rule} RET-1
 :kind: required
-:tests: declarations/functions/return-deduction/basic.cpp declarations/functions/return-deduction/discarded-return-not-deduced.cpp declarations/functions/return-deduction/void-call-return.cpp
+:tests: declarations/functions/return-deduction/basic.cpp declarations/functions/return-deduction/discarded-return-not-deduced.cpp declarations/functions/return-deduction/void-call-return.cpp declarations/auto/pointer-placeholder-return-nullptr.cpp
 
 Each `return` statement gives a type, as for a variable that the
 returned expression initializes. A function with no `return` statement,
@@ -64,6 +64,7 @@ The rules for variables apply to the return type:
 |---|---|---|
 | `auto` | Removes references and top-level qualifiers | AUTO-1 |
 | `auto&` | Keeps references and top-level qualifiers | AUTO-3 |
+| `auto&&` | An lvalue reference for an lvalue, an rvalue reference for an rvalue, so the value category of the returned expression stays | AUTO-4 |
 | `decltype(auto)` | Uses `decltype` of the returned expression | AUTO-10 |
 :::
 
@@ -162,7 +163,7 @@ auto [w, r] = split(47);            // 4 and 7 (SB-3)
 
 ## Evidence
 
-All eight compilers agree on all 24 tests. The results are in
+All eight compilers agree on all 25 tests. The results are in
 `tests/RESULTS.md`.
 
 - RET-6: the address sanitizer stops the use of the result on GCC and

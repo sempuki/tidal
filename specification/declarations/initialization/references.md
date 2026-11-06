@@ -111,8 +111,8 @@ bound binds to an array of known bound. REF-8 lists what is not valid.
 :tests: declarations/initialization/references/lvalue-ref-other-type.cpp declarations/initialization/references/lvalue-ref-drops-const.cpp declarations/initialization/references/bit-field-nonconst-ref.cpp overloading/conversion-sequences/chosen-bit-field.cpp declarations/initialization/references/braced-list-array-drops-const.cpp
 
 The lvalue that a non-`const` lvalue reference binds to must have one of
-the types that REF-1 lists. A non-`const` lvalue reference must not bind
-to a bit-field.
+the types that REF-1 lists. An lvalue reference that is not `const`, or
+that is `volatile`, must not bind to a bit-field.
 :::
 
 :::{rule} REF-2

@@ -294,13 +294,15 @@ or an enumerator ({rule}`NAM-39`).
 
 :::{rule} CLS-9
 :kind: reject
-:tests: classes/members/duplicate-member.cpp classes/members/member-named-as-class.cpp classes/members/member-named-as-class-with-constructor.cpp classes/members/auto-data-member.cpp classes/members/anonymous-struct.cpp classes/members/member-function-initialized.cpp classes/members/anonymous-union.cpp classes/members/static-member-named-as-class.cpp classes/members/member-function-declared-twice.cpp classes/members/mutable-const.cpp classes/members/mutable-reference.cpp classes/members/mutable-static.cpp classes/members/paren-default-member-init.cpp classes/members/data-and-function-same-name.cpp classes/members/class-name-nested-class.cpp classes/members/class-name-alias.cpp classes/members/class-name-enumerator.cpp classes/members/class-name-function.cpp classes/members/class-name-anon-union-member.cpp classes/members/static-and-nonstatic-same-params.cpp classes/members/thread-local-nonstatic.cpp classes/members/extern-member.cpp classes/members/register-member.cpp classes/members/unnamed-class-static-member.cpp classes/members/nested-in-unnamed-static-member.cpp
+:tests: classes/members/duplicate-member.cpp classes/members/member-named-as-class.cpp classes/members/member-named-as-class-with-constructor.cpp classes/members/auto-data-member.cpp classes/members/anonymous-struct.cpp classes/members/member-function-initialized.cpp classes/members/anonymous-union.cpp classes/members/static-member-named-as-class.cpp classes/members/member-function-declared-twice.cpp classes/members/mutable-const.cpp classes/members/mutable-reference.cpp classes/members/mutable-static.cpp classes/members/paren-default-member-init.cpp classes/members/data-and-function-same-name.cpp classes/members/class-name-nested-class.cpp classes/members/class-name-alias.cpp classes/members/class-name-enumerator.cpp classes/members/class-name-function.cpp classes/members/class-name-anon-union-member.cpp classes/members/static-and-nonstatic-same-params.cpp classes/members/thread-local-nonstatic.cpp classes/members/extern-member.cpp classes/members/register-member.cpp classes/members/unnamed-class-static-member.cpp classes/members/nested-in-unnamed-static-member.cpp classes/members/explicit-object-overloads-by-const.cpp
 
 A class must not declare:
 
 - two data members with the same name, or a data member and a member
   function with the same name,
-- the same member function two times, also if only one is `static`,
+- the same member function two times, also if only one is `static`.
+  Two declarations with explicit object parameters of different types,
+  such as `this V&` and `this const V&`, declare two functions,
 - a static data member, nested class, member type alias, member
   function, or unscoped enumerator with the name of the class, or a
   member of an anonymous union with that name,
@@ -345,7 +347,7 @@ variables of the function, except as CLS-12 allows.
 
 :::{rule} CLS-13
 :kind: required
-:tests: classes/members/explicit-object-parameter.cpp classes/members/explicit-object-from-prvalue.cpp foundations/evaluation-order/explicit-object-order-unspecified.cpp classes/members/explicit-object-deduced-forwarding.cpp classes/members/explicit-object-deduced-lvalue.cpp classes/members/explicit-object-deduced-constant.cpp classes/operators/subscript-explicit-object-two-args.cpp
+:tests: classes/members/explicit-object-parameter.cpp classes/members/explicit-object-from-prvalue.cpp foundations/evaluation-order/explicit-object-order-unspecified.cpp classes/members/explicit-object-deduced-forwarding.cpp classes/members/explicit-object-deduced-lvalue.cpp classes/members/explicit-object-deduced-constant.cpp classes/operators/subscript-explicit-object-two-args.cpp classes/members/explicit-object-overloads-by-const.cpp
 
 A member function can declare its first parameter as an explicit object
 parameter, written `this T self`. The object of the call initializes that
@@ -706,8 +708,8 @@ struct Pointers { char c; int& r; int Plain::* p; void (Shape::* f)(); };
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 155
-of 171 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 156
+of 172 tests.
 
 ### Divergences
 
