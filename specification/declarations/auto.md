@@ -251,7 +251,7 @@ If one declaration declares several variables with `auto` (AUTO-9),
 
 :::{rule} AUTO-10
 :kind: required
-:tests: declarations/auto/decltype-auto-value-category.cpp declarations/auto/decltype-auto-keeps-cv.cpp
+:tests: declarations/auto/decltype-auto-value-category.cpp declarations/auto/decltype-auto-keeps-cv.cpp expressions/lambdas/trailing-decltype-auto.cpp
 
 `decltype(auto)` gives the type that `decltype` gives the initializer
 ({rule}`DTY-2`). The {term}`value category` of the initializer controls
@@ -398,7 +398,7 @@ Int auto ib = 1.0;              // rejected
 ## Evidence
 
 All rules on this page are `required` or `reject`. All eight compilers
-agree on all 64 tests. The results are in `tests/RESULTS.md`.
+agree on all 65 tests. The results are in `tests/RESULTS.md`.
 
 The tests for `auto x = { ... }` declare a small
 `std::initializer_list` with the shape that {rule}`LSUP-1` gives,

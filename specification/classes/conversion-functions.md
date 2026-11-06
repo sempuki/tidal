@@ -64,7 +64,7 @@ name of the function is `operator` followed by the target type.
 
 :::{rule} CVF-1
 :kind: required
-:tests: classes/conversion-functions/basic.cpp classes/conversion-functions/call-by-name.cpp classes/conversion-functions/constexpr-conversion.cpp classes/conversion-functions/deduced-auto.cpp classes/conversion-functions/explicit-object-conversion.cpp classes/conversion-functions/out-of-line.cpp classes/conversion-functions/pointer-target.cpp classes/conversion-functions/to-function-pointer.cpp classes/conversion-functions/to-reference.cpp classes/conversion-functions/virtual-conversion.cpp
+:tests: classes/conversion-functions/basic.cpp classes/conversion-functions/call-by-name.cpp classes/conversion-functions/constexpr-conversion.cpp classes/conversion-functions/deduced-auto.cpp classes/conversion-functions/explicit-object-conversion.cpp classes/conversion-functions/out-of-line.cpp classes/conversion-functions/pointer-target.cpp classes/conversion-functions/to-function-pointer.cpp classes/conversion-functions/to-reference.cpp classes/conversion-functions/virtual-conversion.cpp overloading/overload-resolution/direct-init-through-conversion-function.cpp
 
 A conversion function is a non-static member function. Its target type
 can be:
@@ -162,7 +162,7 @@ Contextual conversion occurs in:
 
 :::{rule} CVF-11
 :kind: reject
-:tests: classes/conversion-functions/explicit-argument.cpp classes/conversion-functions/explicit-arithmetic.cpp classes/conversion-functions/explicit-bool-comparison.cpp classes/conversion-functions/explicit-bool-copy-init.cpp classes/conversion-functions/explicit-bool-return.cpp classes/conversion-functions/explicit-copy-init.cpp classes/conversion-functions/explicit-int-in-if.cpp
+:tests: classes/conversion-functions/explicit-argument.cpp classes/conversion-functions/explicit-arithmetic.cpp classes/conversion-functions/explicit-bool-comparison.cpp classes/conversion-functions/explicit-bool-copy-init.cpp classes/conversion-functions/explicit-bool-return.cpp classes/conversion-functions/explicit-copy-init.cpp classes/conversion-functions/explicit-int-in-if.cpp expressions/conditional/class-explicit-conversion-only.cpp
 
 The uses that CVF-3 lists are the only uses of an `explicit` conversion
 function. Other conversions must not use the function. An operand of a
@@ -295,8 +295,8 @@ Reading r = live;        // valid: the constructor binds Sensor&, which
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 64
-of 67 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 66
+of 69 tests.
 
 ### Divergences
 

@@ -127,7 +127,7 @@ A `capture` with `...` captures a pack ({rule}`PACK-17`,
 
 :::{rule} LAM-1
 :kind: required
-:tests: expressions/lambdas/default-arguments.cpp expressions/lambdas/immediately-invoked.cpp expressions/lambdas/syntax-forms.cpp
+:tests: expressions/lambdas/default-arguments.cpp expressions/lambdas/immediately-invoked.cpp expressions/lambdas/syntax-forms.cpp expressions/lambdas/trailing-decltype-auto.cpp templates/packs/capture-pack-fold-generic-lambda.cpp
 
 A lambda can have these:
 
@@ -502,8 +502,8 @@ int dispatch(int base) {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 88
-of 92 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 90
+of 94 tests.
 
 ### Divergences
 

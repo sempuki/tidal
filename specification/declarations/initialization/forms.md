@@ -109,7 +109,7 @@ meet these conditions:
 
 :::{rule} INIT-5
 :kind: required
-:tests: declarations/initialization/forms/array-partial.cpp declarations/initialization/forms/array-paren-init.cpp declarations/initialization/forms/paren-array-unknown-bound.cpp
+:tests: declarations/initialization/forms/array-partial.cpp declarations/initialization/forms/array-paren-init.cpp declarations/initialization/forms/paren-array-unknown-bound.cpp declarations/declarators/unknown-bound-converted-class-elements.cpp
 
 An array is initialized from a list of values in braces or in
 parentheses. In both forms, an array without a bound gets the number of
@@ -155,7 +155,7 @@ left to right.
 
 :::{rule} INIT-9
 :kind: required
-:tests: declarations/initialization/forms/default-init-member-initializer.cpp declarations/initialization/forms/default-init-member-no-value.cpp declarations/initialization/forms/default-init-base.cpp declarations/initialization/forms/default-init-array-of-class.cpp declarations/initialization/forms/default-init-member-not-named.cpp declarations/initialization/forms/default-init-member-not-named-no-value.cpp declarations/initialization/forms/default-init-scalar-no-value.cpp declarations/initialization/forms/default-init-new-class.cpp
+:tests: declarations/initialization/forms/default-init-member-initializer.cpp declarations/initialization/forms/default-init-member-no-value.cpp declarations/initialization/forms/default-init-base.cpp declarations/initialization/forms/default-init-array-of-class.cpp declarations/initialization/forms/default-init-member-not-named.cpp declarations/initialization/forms/default-init-member-not-named-no-value.cpp declarations/initialization/forms/default-init-scalar-no-value.cpp declarations/initialization/forms/default-init-new-class.cpp declarations/initialization/forms/default-init-array-class-with-constructor-template.cpp
 
 *Default initialization* happens to a variable with no initializer, to
 an object that `new` creates with no initializer, and to a member or
@@ -227,7 +227,7 @@ struct Bits {
 
 ## Evidence
 
-All eight compilers agree on 38 of 39 tests. The results are in
+All eight compilers agree on 40 of 41 tests. The results are in
 `tests/RESULTS.md`.
 
 ### Divergences

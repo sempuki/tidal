@@ -409,7 +409,7 @@ the program is not valid.
 
 :::{rule} OVL-14
 :kind: required
-:tests: overloading/overload-resolution/init-constructor-against-conversion.cpp overloading/overload-resolution/init-constructor-conversion-tie.cpp overloading/overload-resolution/init-conversion-to-derived.cpp overloading/overload-resolution/init-qualified-result.cpp overloading/overload-resolution/init-copy-explicit-conversion.cpp overloading/overload-resolution/init-copy-constructor-standard-only.cpp classes/constructors/return-owner-converts-to-base-owner.cpp
+:tests: overloading/overload-resolution/init-constructor-against-conversion.cpp overloading/overload-resolution/init-constructor-conversion-tie.cpp overloading/overload-resolution/init-conversion-to-derived.cpp overloading/overload-resolution/init-qualified-result.cpp overloading/overload-resolution/init-copy-explicit-conversion.cpp overloading/overload-resolution/init-copy-constructor-standard-only.cpp classes/constructors/return-owner-converts-to-base-owner.cpp overloading/overload-resolution/direct-init-through-conversion-function.cpp classes/copy-move/assign-from-int-through-converting-constructor.cpp classes/copy-move/assign-from-lambda-through-constructor-template.cpp
 
 The initialization of an object of class `T` from one initializer `v`
 has these candidates:
@@ -430,7 +430,7 @@ the copy or move constructor, takes `v` through a conversion function.
 
 :::{rule} OVL-15
 :kind: required
-:tests: overloading/overload-resolution/reference-conversion-kind.cpp overloading/overload-resolution/reference-function-both-kinds.cpp overloading/overload-resolution/reference-conversion-not-compatible.cpp overloading/overload-resolution/reference-explicit-direct.cpp overloading/overload-resolution/reference-explicit-copy.cpp
+:tests: overloading/overload-resolution/reference-conversion-kind.cpp overloading/overload-resolution/reference-function-both-kinds.cpp overloading/overload-resolution/reference-conversion-not-compatible.cpp overloading/overload-resolution/reference-explicit-direct.cpp overloading/overload-resolution/reference-explicit-copy.cpp expressions/conditional/class-converts-to-int-reference-lvalue.cpp
 
 When a reference binds directly to the result of a conversion function
 ({rule}`ICS-4`), the reference decides the candidates:
@@ -606,7 +606,7 @@ arguments ({rule}`PFX-5`):
 
 :::{rule} OVL-23
 :kind: required
-:tests: overloading/overload-resolution/viable-sequence.cpp overloading/overload-resolution/no-object-ref-qualified-member.cpp
+:tests: overloading/overload-resolution/viable-sequence.cpp overloading/overload-resolution/no-object-ref-qualified-member.cpp overloading/overload-resolution/const-ref-parameter-through-converting-constructor.cpp
 
 A viable function has an {term}`implicit conversion sequence` ({rule}`ICS-1`)
 from each argument to its parameter, and a reference that cannot bind
@@ -848,8 +848,8 @@ struct Self {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 156
-of 186 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 161
+of 191 tests.
 
 ### Divergences
 

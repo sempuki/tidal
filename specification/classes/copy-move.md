@@ -222,7 +222,7 @@ parameter has a default argument.
 
 :::{rule} CPY-3
 :kind: required
-:tests: classes/copy-move/copy-assign-forms.cpp classes/copy-move/explicit-object-copy-assign.cpp classes/copy-move/move-assign-only-from-prvalue.cpp classes/copy-move/assign-converted-owner.cpp
+:tests: classes/copy-move/copy-assign-forms.cpp classes/copy-move/explicit-object-copy-assign.cpp classes/copy-move/move-assign-only-from-prvalue.cpp classes/copy-move/assign-converted-owner.cpp classes/copy-move/assign-from-lambda-through-constructor-template.cpp
 
 A *copy assignment operator* of class `T` is a non-static member
 `operator=` with one parameter of type `T` or a reference to `T` with any
@@ -244,7 +244,7 @@ valid.
 
 :::{rule} CPY-4
 :kind: required
-:tests: classes/copy-move/defaulted-copy-restores.cpp classes/copy-move/implicit-copy.cpp classes/copy-move/user-dtor-keeps-copy.cpp classes/copy-move/implicit-copy-of-owner-sanitizer.cpp classes/copy-move/move-assign-only-from-prvalue.cpp classes/copy-move/move-assign-deletes-copy-assign.cpp
+:tests: classes/copy-move/defaulted-copy-restores.cpp classes/copy-move/implicit-copy.cpp classes/copy-move/user-dtor-keeps-copy.cpp classes/copy-move/implicit-copy-of-owner-sanitizer.cpp classes/copy-move/move-assign-only-from-prvalue.cpp classes/copy-move/move-assign-deletes-copy-assign.cpp classes/copy-move/assign-from-int-through-converting-constructor.cpp
 
 A class has an implicit copy constructor if it has no user-declared copy
 constructor, and an implicit copy assignment operator if it has no
@@ -263,7 +263,7 @@ A program must not use an implicit copy function that CPY-4 deletes.
 
 :::{rule} CPY-5
 :kind: required
-:tests: classes/copy-move/implicit-move-assign.cpp classes/copy-move/implicit-move.cpp classes/copy-move/no-implicit-move-assign-user-dtor.cpp classes/copy-move/no-implicit-move-user-copy-assign.cpp classes/copy-move/no-implicit-move-user-copy.cpp classes/copy-move/no-implicit-move-user-dtor.cpp
+:tests: classes/copy-move/implicit-move-assign.cpp classes/copy-move/implicit-move.cpp classes/copy-move/no-implicit-move-assign-user-dtor.cpp classes/copy-move/no-implicit-move-user-copy-assign.cpp classes/copy-move/no-implicit-move-user-copy.cpp classes/copy-move/no-implicit-move-user-dtor.cpp classes/copy-move/assign-from-int-through-converting-constructor.cpp
 
 A class has an implicit move constructor and move assignment operator
 only if it has none of these user-declared functions:
@@ -697,8 +697,8 @@ Any c(1);                          // the template, with T = int
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 119
-of 124 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 121
+of 126 tests.
 
 ### Divergences
 

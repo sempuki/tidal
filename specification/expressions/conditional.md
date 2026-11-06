@@ -111,7 +111,7 @@ conversion`.
 
 :::{rule} COND-3
 :kind: required
-:tests: expressions/conditional/lvalue-result.cpp expressions/conditional/arithmetic-prvalue.cpp expressions/conditional/same-type-prvalue.cpp expressions/conditional/array-function-operands.cpp expressions/conditional/mixed-category-prvalue.cpp expressions/conditional/pointer-operands.cpp expressions/conditional/bitfield-or-enum.cpp expressions/conditional/class-one-way.cpp expressions/conditional/mixed-enum-types.cpp expressions/conditional/cv-lvalues-and-strings.cpp expressions/conditional/two-zeros.cpp expressions/conditional/member-pointer-nullptr.cpp expressions/conditional/xvalue-operands.cpp expressions/conditional/const-volatile-lvalues-prvalue.cpp expressions/conditional/const-and-plain-lvalue.cpp expressions/conditional/derived-base-lvalue.cpp expressions/conditional/class-converts-to-int.cpp expressions/conditional/zero-and-nullptr.cpp expressions/conditional/class-converts-best-conversion.cpp expressions/conditional/class-converts-to-reference.cpp expressions/conditional/class-base-target-keeps-cv.cpp expressions/conditional/class-base-does-not-convert-to-derived.cpp expressions/conditional/class-const-and-volatile-lvalues.cpp expressions/conditional/class-converts-to-decayed-array.cpp expressions/conditional/class-same-type-toward-more-qualified.cpp expressions/conditional/nonclass-converts-to-class.cpp
+:tests: expressions/conditional/lvalue-result.cpp expressions/conditional/arithmetic-prvalue.cpp expressions/conditional/same-type-prvalue.cpp expressions/conditional/array-function-operands.cpp expressions/conditional/mixed-category-prvalue.cpp expressions/conditional/pointer-operands.cpp expressions/conditional/bitfield-or-enum.cpp expressions/conditional/class-one-way.cpp expressions/conditional/mixed-enum-types.cpp expressions/conditional/cv-lvalues-and-strings.cpp expressions/conditional/two-zeros.cpp expressions/conditional/member-pointer-nullptr.cpp expressions/conditional/xvalue-operands.cpp expressions/conditional/const-volatile-lvalues-prvalue.cpp expressions/conditional/const-and-plain-lvalue.cpp expressions/conditional/derived-base-lvalue.cpp expressions/conditional/class-converts-to-int.cpp expressions/conditional/zero-and-nullptr.cpp expressions/conditional/class-converts-best-conversion.cpp expressions/conditional/class-converts-to-reference.cpp expressions/conditional/class-base-target-keeps-cv.cpp expressions/conditional/class-base-does-not-convert-to-derived.cpp expressions/conditional/class-const-and-volatile-lvalues.cpp expressions/conditional/class-converts-to-decayed-array.cpp expressions/conditional/class-same-type-toward-more-qualified.cpp expressions/conditional/nonclass-converts-to-class.cpp expressions/conditional/class-lvalue-and-prvalue-constant.cpp expressions/conditional/class-lvalue-and-int-run.cpp expressions/conditional/class-lvalue-and-other-class-lvalue-run.cpp expressions/conditional/class-lvalue-and-string-literal-run.cpp expressions/conditional/class-prvalue-and-other-class-prvalue-run.cpp
 
 The second and third operands give one result type and
 {term}`value category`. The first row that matches the operands gives
@@ -152,7 +152,7 @@ operand is not valid.
 
 :::{rule} COND-5
 :kind: reject
-:tests: expressions/conditional/no-common-type.cpp expressions/conditional/pointer-and-int.cpp expressions/conditional/class-ambiguous.cpp expressions/conditional/class-ambiguous-conversion.cpp expressions/conditional/two-classes-no-candidate.cpp expressions/conditional/two-classes-several-conversions.cpp expressions/conditional/class-base-less-qualified-rejected.cpp expressions/conditional/class-base-const-derived-prvalue-rejected.cpp expressions/conditional/class-const-and-volatile-lvalues.cpp expressions/conditional/class-deleted-conversion-counts.cpp expressions/conditional/class-private-conversion-counts.cpp expressions/conditional/nonclass-and-class-both-ways.cpp
+:tests: expressions/conditional/no-common-type.cpp expressions/conditional/pointer-and-int.cpp expressions/conditional/class-ambiguous.cpp expressions/conditional/class-ambiguous-conversion.cpp expressions/conditional/two-classes-no-candidate.cpp expressions/conditional/two-classes-several-conversions.cpp expressions/conditional/class-base-less-qualified-rejected.cpp expressions/conditional/class-base-const-derived-prvalue-rejected.cpp expressions/conditional/class-const-and-volatile-lvalues.cpp expressions/conditional/class-deleted-conversion-counts.cpp expressions/conditional/class-private-conversion-counts.cpp expressions/conditional/nonclass-and-class-both-ways.cpp expressions/conditional/class-explicit-conversion-only.cpp
 
 The second and third operands must have a common type by COND-3 or
 COND-4. If each operand converts for the other by COND-16, the
@@ -193,7 +193,7 @@ constant expression. COND-7 gives the operand that is not selected.
 
 :::{rule} COND-8
 :kind: reject
-:tests: expressions/conditional/class-lvalue-prvalue-copy.cpp expressions/conditional/class-prvalue-lvalue-private-copy.cpp
+:tests: expressions/conditional/class-lvalue-prvalue-copy.cpp expressions/conditional/class-prvalue-lvalue-private-copy.cpp expressions/conditional/class-lvalue-and-prvalue-constant.cpp
 
 If one operand is an lvalue and the other a prvalue of the same class
 type, the result is a prvalue copied from the selected operand. The copy
@@ -217,7 +217,7 @@ The second operand can be a comma expression without parentheses.
 
 :::{rule} COND-11
 :kind: required
-:tests: expressions/conditional/two-classes-convert-to-int.cpp expressions/conditional/two-classes-convert-to-pointer.cpp expressions/conditional/two-classes-promoted-types.cpp expressions/conditional/two-classes-several-conversions.cpp expressions/conditional/two-classes-no-candidate.cpp expressions/conditional/two-classes-scoped-enumeration.cpp expressions/conditional/two-classes-float.cpp expressions/conditional/class-cv-lvalues-convert-to-int.cpp
+:tests: expressions/conditional/two-classes-convert-to-int.cpp expressions/conditional/two-classes-convert-to-pointer.cpp expressions/conditional/two-classes-promoted-types.cpp expressions/conditional/two-classes-several-conversions.cpp expressions/conditional/two-classes-no-candidate.cpp expressions/conditional/two-classes-scoped-enumeration.cpp expressions/conditional/two-classes-float.cpp expressions/conditional/class-cv-lvalues-convert-to-int.cpp expressions/conditional/class-explicit-conversion-only.cpp
 
 Overload resolution ({rule}`OVL-9`) over the built-in
 operator candidates picks a conversion for each operand if all of these
@@ -241,7 +241,7 @@ the expression is not valid ({rule}`COND-5`).
 
 :::{rule} COND-16
 :kind: required
-:tests: expressions/conditional/class-converts-to-reference.cpp expressions/conditional/class-converts-best-conversion.cpp expressions/conditional/class-ambiguous-conversion.cpp expressions/conditional/class-base-less-qualified-rejected.cpp expressions/conditional/class-base-const-derived-prvalue-rejected.cpp expressions/conditional/class-base-does-not-convert-to-derived.cpp expressions/conditional/class-base-target-keeps-cv.cpp expressions/conditional/class-const-and-volatile-lvalues.cpp expressions/conditional/class-converts-to-decayed-array.cpp expressions/conditional/class-deleted-conversion-counts.cpp expressions/conditional/class-private-conversion-counts.cpp expressions/conditional/class-same-type-toward-more-qualified.cpp expressions/conditional/nonclass-and-class-both-ways.cpp expressions/conditional/nonclass-converts-to-class.cpp expressions/conditional/class-derived-prvalue-against-base-xvalue.cpp expressions/conditional/class-derived-prvalue-const-base-lvalue.cpp expressions/conditional/class-const-lvalue-against-xvalue.cpp expressions/conditional/class-derived-xvalue-const-base-lvalue.cpp expressions/conditional/class-cv-lvalues-convert-to-int.cpp
+:tests: expressions/conditional/class-converts-to-reference.cpp expressions/conditional/class-converts-best-conversion.cpp expressions/conditional/class-ambiguous-conversion.cpp expressions/conditional/class-base-less-qualified-rejected.cpp expressions/conditional/class-base-const-derived-prvalue-rejected.cpp expressions/conditional/class-base-does-not-convert-to-derived.cpp expressions/conditional/class-base-target-keeps-cv.cpp expressions/conditional/class-const-and-volatile-lvalues.cpp expressions/conditional/class-converts-to-decayed-array.cpp expressions/conditional/class-deleted-conversion-counts.cpp expressions/conditional/class-private-conversion-counts.cpp expressions/conditional/class-same-type-toward-more-qualified.cpp expressions/conditional/nonclass-and-class-both-ways.cpp expressions/conditional/nonclass-converts-to-class.cpp expressions/conditional/class-derived-prvalue-against-base-xvalue.cpp expressions/conditional/class-derived-prvalue-const-base-lvalue.cpp expressions/conditional/class-const-lvalue-against-xvalue.cpp expressions/conditional/class-derived-xvalue-const-base-lvalue.cpp expressions/conditional/class-cv-lvalues-convert-to-int.cpp expressions/conditional/class-converts-to-int-reference-lvalue.cpp expressions/conditional/class-lvalue-and-int-run.cpp expressions/conditional/class-lvalue-and-other-class-lvalue-run.cpp expressions/conditional/class-lvalue-and-string-literal-run.cpp expressions/conditional/class-prvalue-and-other-class-prvalue-run.cpp expressions/conditional/class-ambiguous-base-operand.cpp expressions/conditional/class-private-base-operand.cpp
 
 For COND-3, COND-5, and COND-11, when the two operands have different
 types and at least one has class type, each operand `X` is tried
@@ -329,7 +329,7 @@ int m = larger(x, y);          // fine: x and y outlive the call
 
 ## Evidence
 
-All eight compilers agree on 65 of 72 tests. The results are in
+All eight compilers agree on 74 of 81 tests. The results are in
 `tests/RESULTS.md`.
 
 ### Divergences

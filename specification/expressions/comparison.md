@@ -337,7 +337,7 @@ can do this comparison.
 
 :::{rule} CMP-15
 :kind: required
-:tests: expressions/comparison/pointer-equality.cpp expressions/comparison/pointer-equality-constant.cpp expressions/comparison/struct-and-first-member-equal.cpp expressions/comparison/union-members-equal.cpp expressions/comparison/struct-and-first-member-equal-run.cpp
+:tests: expressions/comparison/pointer-equality.cpp expressions/comparison/pointer-equality-constant.cpp expressions/comparison/struct-and-first-member-equal.cpp expressions/comparison/union-members-equal.cpp expressions/comparison/struct-and-first-member-equal-run.cpp expressions/primary/string-literal-pointer-copy-equal.cpp
 
 Two pointers are equal if they hold the same address, or if both are
 null. Pointers to different objects can be equal. Examples are a pointer
@@ -496,8 +496,8 @@ balance <=> count      // valid if long is wider than unsigned
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 83
-of 102 tests. The `<=>` tests declare a minimal `std::strong_ordering`,
+The results are in `tests/RESULTS.md`. All eight compilers agree on 84
+of 103 tests. The `<=>` tests declare a minimal `std::strong_ordering`,
 `std::weak_ordering`, and `std::partial_ordering`, because tests include
 no headers. EDG needs `std::weak_ordering` declared even for integer
 operands.

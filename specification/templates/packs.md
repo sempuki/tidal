@@ -299,7 +299,7 @@ arguments give it elements. An expansion at the end deduces as
 
 :::{rule} PACK-13
 :kind: required
-:tests: templates/packs/call-and-braced-list.cpp templates/packs/braced-list-order-aggregate.cpp templates/packs/expansion-in-parenthesized-initializer.cpp templates/packs/expansion-in-member-initializer.cpp templates/packs/expansion-in-base-initializer-arguments.cpp
+:tests: templates/packs/call-and-braced-list.cpp templates/packs/braced-list-order-aggregate.cpp templates/packs/expansion-in-parenthesized-initializer.cpp templates/packs/expansion-in-member-initializer.cpp templates/packs/expansion-in-base-initializer-arguments.cpp templates/packs/capture-pack-expanded-in-call.cpp
 
 In the arguments of a call, each copy of the pattern is one argument.
 The same holds in the expression list of a parenthesized initializer,
@@ -345,7 +345,7 @@ with no elements adds no alignment requirement.
 
 :::{rule} PACK-17
 :kind: required
-:tests: templates/packs/capture-pack.cpp templates/packs/capture-pack-same-mode.cpp templates/packs/capture-default-pack.cpp templates/packs/capture-pack-same-mode-reference.cpp
+:tests: templates/packs/capture-pack.cpp templates/packs/capture-pack-same-mode.cpp templates/packs/capture-default-pack.cpp templates/packs/capture-pack-same-mode-reference.cpp templates/packs/capture-pack-expanded-in-call.cpp templates/packs/capture-pack-fold-generic-lambda.cpp templates/packs/capture-pack-fold-in-body.cpp
 
 A capture `p...` captures each element of the function parameter pack
 `p` by copy, and `&p...` captures each element by reference. A capture
@@ -583,8 +583,8 @@ template <class... T> void keep(T... x) {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 71
-of 75 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 74
+of 78 tests.
 
 ### Divergences
 

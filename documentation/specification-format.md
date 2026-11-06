@@ -302,8 +302,9 @@ Test code is written fresh. Don't adapt examples from any source.
 
 ## Program tests
 
-A program test is a whole program from a Write exercise, kept under
-`tests/programs/<suite>/` (decision 0054). W0 is the pilot suite in
+A program test is a whole program from a Write or Port exercise, or
+from a roadmap reader's sketches, kept under `tests/programs/<suite>/`
+(decisions 0054 and 0059). W0 is the pilot suite in
 `reports/clean-room/java-programmer/`. A program test is evidence from
 use. It shows that a reader wrote a working program from the
 specification, and the matrix and `tools/frontend_check.py` catch a

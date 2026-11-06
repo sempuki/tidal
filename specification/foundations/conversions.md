@@ -279,7 +279,7 @@ still names the member that the base declares.
 
 :::{rule} CONV-17
 :kind: reject
-:tests: foundations/conversions/member-pointer-virtual-base.cpp foundations/conversions/member-pointer-ambiguous-base.cpp foundations/conversions/ambiguous-base.cpp foundations/conversions/member-pointer-derived-to-base.cpp overloading/conversion-sequences/chosen-private-base.cpp overloading/conversion-sequences/chosen-ambiguous-base.cpp
+:tests: foundations/conversions/member-pointer-virtual-base.cpp foundations/conversions/member-pointer-ambiguous-base.cpp foundations/conversions/ambiguous-base.cpp foundations/conversions/member-pointer-derived-to-base.cpp overloading/conversion-sequences/chosen-private-base.cpp overloading/conversion-sequences/chosen-ambiguous-base.cpp expressions/conditional/class-ambiguous-base-operand.cpp
 
 These conversions must not occur implicitly:
 

@@ -236,7 +236,7 @@ promotion to `U` and to the type that `U` promotes to ({rule}`CONV-1`).
 
 :::{rule} ICS-3
 :kind: required
-:tests: overloading/conversion-sequences/user-defined-first-part.cpp overloading/conversion-sequences/user-defined-second-part.cpp
+:tests: overloading/conversion-sequences/user-defined-first-part.cpp overloading/conversion-sequences/user-defined-second-part.cpp overloading/overload-resolution/const-ref-parameter-through-converting-constructor.cpp
 
 A {term}`user-defined conversion sequence` has three parts:
 
@@ -404,7 +404,7 @@ Only a standard sequence can reach these parameters:
 
 :::{rule} ICS-11
 :kind: required
-:tests: overloading/conversion-sequences/reference-direct-derived.cpp overloading/conversion-sequences/reference-temporary.cpp overloading/conversion-sequences/reference-conversion-result.cpp overloading/conversion-sequences/reference-conversion-value-result.cpp
+:tests: overloading/conversion-sequences/reference-direct-derived.cpp overloading/conversion-sequences/reference-temporary.cpp overloading/conversion-sequences/reference-conversion-result.cpp overloading/conversion-sequences/reference-conversion-value-result.cpp expressions/conditional/class-converts-to-int-reference-lvalue.cpp
 
 The sequence of a reference parameter depends on how the reference binds
 ({rule}`REF-1`, {rule}`REF-2`, {rule}`REF-3`):
@@ -857,8 +857,8 @@ send(s);                    // rejected: Target(Source&) and operator Target()
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 106
-of 133 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 108
+of 135 tests.
 
 ### Divergences
 

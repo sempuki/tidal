@@ -158,7 +158,7 @@ than the largest value of the type.
 
 :::{rule} ADD-6
 :kind: required
-:tests: expressions/additive/pointer-within-array.cpp expressions/additive/pointer-one-past-end.cpp expressions/additive/pointer-object-as-array.cpp expressions/additive/pointer-arith-runtime.cpp expressions/additive/pointer-difference-run.cpp expressions/additive/base-pointer-one-past-subobject.cpp foundations/storage/byte-pointer-walks-object.cpp
+:tests: expressions/additive/pointer-within-array.cpp expressions/additive/pointer-one-past-end.cpp expressions/additive/pointer-object-as-array.cpp expressions/additive/pointer-arith-runtime.cpp expressions/additive/pointer-difference-run.cpp expressions/additive/base-pointer-one-past-subobject.cpp foundations/storage/byte-pointer-walks-object.cpp expressions/additive/pointer-loop-inside-string-literal.cpp statements/range-for/view-over-string-literal.cpp
 
 Adding `n` to a pointer to an array element moves the pointer `n`
 elements forward. Subtracting `n` moves the pointer back. The position
@@ -197,7 +197,7 @@ does not fit in it, the behavior is undefined.
 
 :::{rule} ADD-10
 :kind: undefined
-:tests: expressions/additive/pointer-beyond-array.cpp expressions/additive/intermediate-step-beyond-array.cpp expressions/additive/pointer-before-array.cpp expressions/additive/null-plus-nonzero.cpp expressions/additive/deref-one-past-end.cpp expressions/additive/past-end-of-row.cpp expressions/additive/null-plus-nonzero-sanitizer.cpp expressions/additive/base-pointer-beyond-subobject.cpp expressions/additive/base-pointer-beyond-subobject-run.cpp
+:tests: expressions/additive/pointer-beyond-array.cpp expressions/additive/intermediate-step-beyond-array.cpp expressions/additive/pointer-before-array.cpp expressions/additive/null-plus-nonzero.cpp expressions/additive/deref-one-past-end.cpp expressions/additive/past-end-of-row.cpp expressions/additive/null-plus-nonzero-sanitizer.cpp expressions/additive/base-pointer-beyond-subobject.cpp expressions/additive/base-pointer-beyond-subobject-run.cpp expressions/additive/pointer-loop-inside-string-literal.cpp
 
 The behavior is undefined if pointer arithmetic gives a position that
 is:
@@ -322,8 +322,8 @@ bool add_fits(int a, int b) {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 51
-of 60 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 53
+of 62 tests.
 
 ### Divergences
 

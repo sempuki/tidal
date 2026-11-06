@@ -649,7 +649,7 @@ targets choose these:
 
 :::{rule} PRIM-9
 :kind: unspecified
-:tests: expressions/primary/string-compare-constant.cpp expressions/primary/string-same-object-either.cpp expressions/primary/string-same-literal-two-evaluations.cpp
+:tests: expressions/primary/string-compare-constant.cpp expressions/primary/string-same-object-either.cpp expressions/primary/string-same-literal-two-evaluations.cpp expressions/primary/string-literal-pointer-copy-equal.cpp
 
 Whether two string literals with the same characters are the same
 object is unspecified. The same rule applies to two evaluations of one
@@ -756,8 +756,8 @@ total(1, 2, 3);           // ((0 + 1) + 2) + 3
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 131
-of 143 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 132
+of 144 tests.
 
 ### Divergences
 

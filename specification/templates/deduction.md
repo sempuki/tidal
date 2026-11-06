@@ -186,7 +186,7 @@ The defaults of the template parameters come before the function type
 
 :::{rule} DED-1
 :kind: required
-:tests: templates/deduction/call-each-argument.cpp templates/deduction/call-member-and-operator.cpp classes/constructors/return-owner-converts-to-base-owner.cpp classes/operators/call-operator-template.cpp classes/operators/static-call-operator-template.cpp declarations/initialization/list/braced-constructor-template.cpp
+:tests: templates/deduction/call-each-argument.cpp templates/deduction/call-member-and-operator.cpp classes/constructors/return-owner-converts-to-base-owner.cpp classes/operators/call-operator-template.cpp classes/operators/static-call-operator-template.cpp declarations/initialization/list/braced-constructor-template.cpp templates/deduction/array-bound-from-converted-elements.cpp classes/copy-move/assign-from-lambda-through-constructor-template.cpp
 
 In a call that names a function template, {term}`deduction` finds the
 {term}`template arguments <template argument>` from the call arguments. The specialization that
@@ -806,8 +806,8 @@ Gadget* g = new (&arena) Gadget;  // both match, and ordering prefers neither: n
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 127
-of 138 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 129
+of 140 tests.
 
 ### Divergences
 

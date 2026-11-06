@@ -86,6 +86,8 @@ report directory. `documentation/specification-format.md` (section
 Port suites (P1 to P8) follow one per persona after the Write suites.
 Each suite gives three short programs in the persona's language that
 use the language's typical idioms, and asks for a C++ program with the same behavior.
+Each finished C++ program of a Port suite becomes a run test under
+`tests/programs/<suite>/` too (decision 0059).
 
 ## 4. Propose exercises
 

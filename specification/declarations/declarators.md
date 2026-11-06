@@ -213,7 +213,7 @@ such an alias has no effect.
 
 :::{rule} DCL-5
 :kind: required
-:tests: declarations/declarators/array-bound-deduced.cpp declarations/declarators/array-bound-constant.cpp declarations/declarators/array-incomplete-extern.cpp declarations/declarators/array-bound-class-conversion.cpp declarations/declarators/static-member-unknown-bound.cpp
+:tests: declarations/declarators/array-bound-deduced.cpp declarations/declarators/array-bound-constant.cpp declarations/declarators/array-incomplete-extern.cpp declarations/declarators/array-bound-class-conversion.cpp declarations/declarators/static-member-unknown-bound.cpp declarations/declarators/unknown-bound-converted-class-elements.cpp templates/deduction/array-bound-from-converted-elements.cpp
 
 These types are valid types for an array bound:
 
@@ -565,7 +565,7 @@ void send(volatile int* to);   // valid
 
 ## Evidence
 
-All eight compilers agree on 96 of 99 tests. The results are in
+All eight compilers agree on 98 of 101 tests. The results are in
 `tests/RESULTS.md`.
 
 ### Divergences

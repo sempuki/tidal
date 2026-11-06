@@ -59,7 +59,7 @@ would give the name two meanings, so both are rejected.
 
 :::{rule} RFOR-2
 :kind: required
-:tests: statements/range-for/member-begin-end.cpp statements/range-for/free-begin-end.cpp statements/range-for/sentinel-end.cpp statements/range-for/data-member-named-begin.cpp statements/range-for/equality-only-iterator.cpp statements/range-for/member-begin-only-uses-free.cpp statements/range-for/callable-data-members.cpp statements/range-for/data-member-function-pointers.cpp
+:tests: statements/range-for/member-begin-end.cpp statements/range-for/free-begin-end.cpp statements/range-for/sentinel-end.cpp statements/range-for/data-member-named-begin.cpp statements/range-for/equality-only-iterator.cpp statements/range-for/member-begin-only-uses-free.cpp statements/range-for/callable-data-members.cpp statements/range-for/data-member-function-pointers.cpp statements/range-for/view-over-string-literal.cpp
 
 For a range of class type, `begin` and `end` are found as follows:
 

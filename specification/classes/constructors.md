@@ -152,7 +152,7 @@ A program cannot take the address of a constructor.
 
 :::{rule} CTOR-2
 :kind: required
-:tests: classes/constructors/defaulted-default-restores.cpp classes/constructors/implicit-default.cpp classes/constructors/inherited-ctors-keep-default.cpp classes/constructors/default-constructor-default-arguments.cpp classes/derived/inherited-ctor-keeps-implicit.cpp
+:tests: classes/constructors/defaulted-default-restores.cpp classes/constructors/implicit-default.cpp classes/constructors/inherited-ctors-keep-default.cpp classes/constructors/default-constructor-default-arguments.cpp classes/derived/inherited-ctor-keeps-implicit.cpp declarations/initialization/forms/default-init-array-class-with-constructor-template.cpp
 
 If a class declares no constructor, it has an implicit public default
 constructor. A declaration of any other constructor, including a copy
@@ -670,8 +670,8 @@ Span g{{1}};   // Span(int): {1} gives an int directly (ICS-15). The
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 179
-of 200 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 180
+of 201 tests.
 
 ### Divergences
 

@@ -117,7 +117,7 @@ that is `volatile`, must not bind to a bit-field.
 
 :::{rule} REF-2
 :kind: required
-:tests: declarations/initialization/references/const-ref-binds-rvalue.cpp declarations/initialization/references/bit-field-const-ref.cpp declarations/initialization/references/const-ref-xvalue-direct.cpp
+:tests: declarations/initialization/references/const-ref-binds-rvalue.cpp declarations/initialization/references/bit-field-const-ref.cpp declarations/initialization/references/const-ref-xvalue-direct.cpp declarations/initialization/references/const-ref-through-converting-constructor.cpp overloading/overload-resolution/const-ref-parameter-through-converting-constructor.cpp
 
 A `const` lvalue reference that is not `volatile` can also bind to an
 rvalue, to an expression of a different type that converts to its type,
@@ -339,7 +339,7 @@ int& m{s};                   // rejected: a temporary needs const or &&
 
 ## Evidence
 
-All eight compilers agree on 49 of 64 tests. The results are in
+All eight compilers agree on 51 of 66 tests. The results are in
 `tests/RESULTS.md`.
 
 ### Divergences
