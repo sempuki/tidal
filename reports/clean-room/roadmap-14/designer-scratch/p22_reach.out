@@ -1,0 +1,4 @@
+tests 190 cite step-3 chapters only 190
+tests citing each chapter {'declarations': 4, 'expressions': 1, 'foundations': 4, 'statements': 190}
+tests that cite a later chapter, by directory {}
+tests by use {'class': 67, 'template': 9} tests with none of these 120

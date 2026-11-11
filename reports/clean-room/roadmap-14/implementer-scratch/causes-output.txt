@@ -1,0 +1,50 @@
+failing their check (completion line): 74; marked 36; unmarked 38; out of scope 9
+
+| Cause | Tests | Statuses |
+|---|---|---|
+| Template checks outside the marks (missed rejects) | 8 | 8 MISSED-REJECT |
+| Template constructs outside the marks (unsupported) | 6 | 6 unsupported |
+| Class template argument deduction and constant parameters of class template type | 6 | 1 MISSED-REJECT, 5 unsupported |
+| Constant evaluation of a construct (unsupported) | 4 | 4 unsupported |
+| Constant evaluation and immediate functions (missed rejects) | 3 | 3 MISSED-REJECT |
+| Missed rejects in other chapters | 5 | 5 MISSED-REJECT |
+| Unsupported constructs in other chapters | 3 | 3 unsupported |
+| EDG-AGREES | 2 | 2 EDG-AGREES |
+| False reject | 1 | 1 FALSE-REJECT |
+
+Marked, by model section and status:
+  section 1: 4: {'MISSED-REJECT': 1, 'unsupported': 1, 'EDG-AGREES': 2}
+  section 2: 6: {'MISSED-REJECT': 2, 'unsupported': 1, 'FALSE-REJECT': 3}
+  section 3: 13: {'MISSED-REJECT': 8, 'unsupported': 3, 'EDG-AGREES': 2}
+  section 4: 6: {'MISSED-REJECT': 3, 'unsupported': 3}
+  section 5: 7: {'MISSED-REJECT': 7}
+
+By chapter (failing):
+  templates: marked 34, unmarked 20
+  classes: marked 1, unmarked 4
+  expressions: marked 0, unmarked 5
+  foundations: marked 0, unmarked 4
+  overloading: marked 0, unmarked 3
+  declarations: marked 0, unmarked 2
+  statements: marked 1, unmarked 0
+
+unmarked now that failed at round 26: 38; new since round 26: 0
+failing now that passed their check at round 26: []
+round 26 failures that pass their check now: 4
+run stops: 23
+
+marked tests that the new parser does not parse as needed: [('templates/dependent-names/sizeof-value-dependent-operand-call-bound-early.cpp', 'G166 template-id cast with braced list'), ('templates/dependent-names/sizeof-value-dependent-operand-no-typename.cpp', 'other'), ('templates/dependent-names/current-instantiation-enclosing-base.cpp', 'G167 base or mem-initializer template-id or decltype'), ('templates/dependent-names/member-template-non-dependent-base.cpp', 'G166 template-id cast with braced list'), ('templates/instantiation/static-inline-member-incomplete-argument.cpp', 'G167 base or mem-initializer template-id or decltype')]
+unmarked failing tests with a parse disagreement: []
+parse disagreements on tests that the old front end passes its check on: 431 of 438
+parse disagreements by chapter (tree side, reject side):
+  templates: 104, 97
+  declarations: 21, 50
+  foundations: 26, 30
+  programs: 38, 0
+  classes: 9, 17
+  expressions: 6, 11
+  statements: 1, 14
+  overloading: 11, 2
+  exceptions: 0, 1
+tree-side disagreements in a G group (by pattern): 209
+test files by base expectation: {'reject': 2840, 'run': 1781, 'accept': 2307, 'run-fail': 99, 'link-fail': 46}

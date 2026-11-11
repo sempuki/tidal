@@ -1,0 +1,980 @@
+=== new/bugs/callable_ref_to_temporary.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 1 ================================================================= ==3073330==ERROR: AddressSanitizer: stack-use-after-scope on address 0x7b8a9cbf0060 at pc 0x00000040090f bp 0x7ffc38ed5e90 sp 0x7ffc38
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 1 ================================================================= ==3073460==ERROR: AddressSanitizer: stack-use-after-scope on address 0x7beba8bf0040 at pc 0x0000004ec705 bp 0x7ffd7a46bcc0 sp 0x7ffd7a
+EDG: accepts
+tidal-fe: undefined [OBJ-2] at line 8: indirection through a pointer to an object whose lifetime has ended 
+tidal-next parse: tree 
+=== new/bugs/dangling_reference_return.cpp
+g++: built (warnings 1), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 1), exit 1 ================================================================= ==3073327==ERROR: AddressSanitizer: stack-use-after-scope on address 0x7b37c03f0040 at pc 0x000000400784 bp 0x7ffe1c48b740 sp 0x7ffe1c
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 1 ================================================================= ==3073450==ERROR: AddressSanitizer: stack-use-after-scope on address 0x7b3ec24f0030 at pc 0x0000004ec212 bp 0x7ffef23846f0 sp 0x7ffef2
+EDG: accepts
+tidal-fe: undefined [OBJ-2] at line 4: access to an object whose lifetime has ended 
+tidal-next parse: tree 
+=== new/bugs/int_min_div_minus_one.cpp
+g++: built (warnings 0), exit 136 timeout: the monitored command dumped core 
+g++ ped: built (warnings 0), exit 136 timeout: the monitored command dumped core 
+g++ san: built (warnings 0), exit 1 new/bugs/int_min_div_minus_one.cpp:1:36: runtime error: division of -2147483648 by -1 cannot be represented in type 'int' 
+clang++: built (warnings 0), exit 136 timeout: the monitored command dumped core 
+clang++ ped: built (warnings 0), exit 136 timeout: the monitored command dumped core 
+clang++ san: built (warnings 0), exit 1 new/bugs/int_min_div_minus_one.cpp:1:36: runtime error: division of -2147483648 by -1 cannot be represented in type 'int' SUMMARY: UndefinedBehaviorSanitizer: undefined-behavior new/bugs/int_min_div_m
+EDG: accepts
+tidal-fe: undefined [MUL-10] at line 1: quotient does not fit in the type 
+tidal-next parse: tree 
+=== new/bugs/null_member_call.cpp
+g++: built (warnings 0), exit 139 timeout: the monitored command dumped core 
+g++ ped: built (warnings 0), exit 139 timeout: the monitored command dumped core 
+g++ san: built (warnings 0), exit 1 new/bugs/null_member_call.cpp:6:18: runtime error: member call on null pointer of type 'struct Node' 
+clang++: built (warnings 0), exit 139 timeout: the monitored command dumped core 
+clang++ ped: built (warnings 0), exit 139 timeout: the monitored command dumped core 
+clang++ san: built (warnings 0), exit 1 new/bugs/null_member_call.cpp:6:13: runtime error: member call on null pointer of type 'Node' SUMMARY: UndefinedBehaviorSanitizer: undefined-behavior new/bugs/null_member_call.cpp:6:13  
+EDG: accepts
+tidal-fe: undefined [PFX-21, UN-7] at line 6: member function called through a null pointer 
+tidal-next parse: tree 
+=== new/bugs/pointer_past_end.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 1 new/bugs/pointer_past_end.cpp:3:14: runtime error: index 3 out of bounds for type 'int[2]' SUMMARY: UndefinedBehaviorSanitizer: undefined-behavior new/bugs/pointer_past_end.cpp:3:14  
+EDG: accepts
+tidal-fe: undefined [ADD-10] at line 3: pointer arithmetic outside the array 
+tidal-next parse: tree 
+=== new/bugs/uninitialized_read.cpp
+g++: built (warnings 0), exit 1 
+g++ ped: built (warnings 0), exit 1 
+g++ san: built (warnings 0), exit 1 
+clang++: built (warnings 3), exit 1 
+clang++ ped: built (warnings 0), exit 1 
+clang++ san: built (warnings 3), exit 1 
+EDG: accepts
+tidal-fe: undefined [OBJ-2, INIT-1] at line 3: read of an object with no value 
+tidal-next parse: tree 
+=== new/bugs/use_after_delete.cpp
+g++: built (warnings 0), exit 1 
+g++ ped: built (warnings 0), exit 1 
+g++ san: built (warnings 0), exit 1 ================================================================= ==3074021==ERROR: AddressSanitizer: heap-use-after-free on address 0x7b66b45e0010 at pc 0x0000004005e7 bp 0x7fff71894190 sp 0x7fff7189
+clang++: built (warnings 0), exit 1 
+clang++ ped: built (warnings 0), exit 1 
+clang++ san: built (warnings 0), exit 1 ================================================================= ==3074185==ERROR: AddressSanitizer: heap-use-after-free on address 0x7b95135e0010 at pc 0x0000004ec128 bp 0x7fff1fffbde0 sp 0x7fff1fff
+EDG: accepts
+tidal-fe: undefined [OBJ-2] at line 6: indirection through a pointer to an object whose lifetime has ended 
+tidal-next parse: tree 
+=== new/bugs/write_string_literal.cpp
+g++: built (warnings 0), exit 139 timeout: the monitored command dumped core 
+g++ ped: built (warnings 0), exit 139 timeout: the monitored command dumped core 
+g++ san: built (warnings 0), exit 1 AddressSanitizer:DEADLYSIGNAL ================================================================= ==3074240==ERROR: AddressSanitizer: SEGV on unknown address 0x000000401460 (pc 0x000000400514 bp 0x7ffde
+clang++: built (warnings 0), exit 139 timeout: the monitored command dumped core 
+clang++ ped: built (warnings 0), exit 139 timeout: the monitored command dumped core 
+clang++ san: built (warnings 0), exit 1 AddressSanitizer:DEADLYSIGNAL ================================================================= ==3074493==ERROR: AddressSanitizer: SEGV on unknown address 0x00000052d820 (pc 0x0000004ec027 bp 0x7ffff
+EDG: accepts
+tidal-fe: undefined [CAST-5, CV-5] at line 3: write to a const object 
+tidal-next parse: tree 
+=== new/fields.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 in every explored order (8 runs); unspecified choices: SEQ-8 at line 192 (the left operand of '==' first); SEQ-8 at line 193 (the left operand of '!=' first); SEQ-8 at line 194 (the left operand of '!=' first) explored: 8 runs; other outcomes: result 0 
+tidal-next parse: stop 30: the grammar derives no declaration here: expected 'const' or 'volatile', found ';' 
+=== new/fields_first_try.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: rejected [SB-2] at line 51: structured binding declares 1 names but the initializer has 4 elements 
+tidal-next parse: stop 28: the grammar derives no declaration here: expected 'const' or 'volatile', found ';' 
+=== new/fields_second_try.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: unsupported at line 201: check: static_assert: call needing template deduction or unknown arguments 
+tidal-next parse: stop 28: the grammar derives no declaration here: expected 'const' or 'volatile', found ';' 
+=== new/fnref.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 in every explored order (64 runs, of a partial set); unspecified choices: SEQ-1 at line 163 (arguments evaluated from left to right); SEQ-1 at line 170 (arguments evaluated from left to right); SEQ-1 at line 172 (arguments evaluated from left to right); SEQ-1 at line 176 (arguments evaluated from left to right) explored: 64 runs (the bound of 64 runs stopped the exploration; the set is p
+tidal-next parse: tree 
+=== new/fnref_fifth_try.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: unsupported at line 191: check: static_assert: call needing template deduction or unknown arguments 
+tidal-next parse: tree 
+=== new/fnref_first_try.cpp
+g++: FAILED: new/fnref_first_try.cpp:54:55: error: ‘convertible_to’ does not name a type new/fnref_first_try.cpp:54:69: error: expected primary-expression before ‘<’ token 
+g++ ped: FAILED: new/fnref_first_try.cpp:54:55: error: ‘convertible_to’ does not name a type new/fnref_first_try.cpp:54:69: error: expected primary-expression before ‘<’ token 
+g++ san: FAILED: new/fnref_first_try.cpp:54:55: error: ‘convertible_to’ does not name a type new/fnref_first_try.cpp:54:69: error: expected primary-expression before ‘<’ token 
+clang++: FAILED: new/fnref_first_try.cpp:54:55: error: expected concept name with optional arguments new/fnref_first_try.cpp:126:7: error: type 'lib::FunctionRef<void (View)>' does not provide a call operator 
+clang++ ped: FAILED: new/fnref_first_try.cpp:54:55: error: expected concept name with optional arguments new/fnref_first_try.cpp:126:7: error: type 'lib::FunctionRef<void (View)>' does not provide a call operator 
+clang++ san: FAILED: new/fnref_first_try.cpp:54:55: error: expected concept name with optional arguments new/fnref_first_try.cpp:126:7: error: type 'lib::FunctionRef<void (View)>' does not provide a call operator 
+EDG: rejects: "/w/fnref_first_try.cpp", line 54: error: expected a concept name
+tidal-fe: rejected [CPT-34] at line 54: a type after '->' in a compound requirement; a type constraint is needed 
+tidal-next parse: stop 54: the grammar derives no declaration here: expected a concept name, found 'convertible_to' 
+=== new/fnref_fourth_try.cpp
+g++: FAILED: new/fnref_fourth_try.cpp:195:15: error: static assertion failed 
+g++ ped: FAILED: new/fnref_fourth_try.cpp:195:15: error: static assertion failed 
+g++ san: FAILED: new/fnref_fourth_try.cpp:195:15: error: static assertion failed 
+clang++: FAILED: new/fnref_fourth_try.cpp:195:15: error: static assertion failed due to requirement '!lib::invocable_r<int (*)(int), Word, int>' 1 error generated. 
+clang++ ped: FAILED: new/fnref_fourth_try.cpp:195:15: error: static assertion failed due to requirement '!lib::invocable_r<int (*)(int), Word, int>' 1 error generated. 
+clang++ san: FAILED: new/fnref_fourth_try.cpp:195:15: error: static assertion failed due to requirement '!lib::invocable_r<int (*)(int), Word, int>' 1 error generated. 
+EDG: rejects: "/w/fnref_fourth_try.cpp", line 195: error: static assertion failed
+tidal-fe: rejected [SA-1] at line 195: static assertion failed 
+tidal-next parse: tree 
+=== new/fnref_second_try.cpp
+g++: FAILED: new/fnref_second_try.cpp:45:18: error: no match for ‘operator*’ (operand type is ‘const Word’) new/fnref_second_try.cpp:180:44: error: conversion from ‘int (Word::*)() const’ to non-scalar type ‘lib::FunctionRef<int(const Word&)>’ requested 
+g++ ped: FAILED: new/fnref_second_try.cpp:45:18: error: no match for ‘operator*’ (operand type is ‘const Word’) new/fnref_second_try.cpp:180:44: error: conversion from ‘int (Word::*)() const’ to non-scalar type ‘lib::FunctionRef<int(const Word&)>’ requested 
+g++ san: FAILED: new/fnref_second_try.cpp:45:18: error: no match for ‘operator*’ (operand type is ‘const Word’) new/fnref_second_try.cpp:180:44: error: conversion from ‘int (Word::*)() const’ to non-scalar type ‘lib::FunctionRef<int(const Word&)>’ requested 
+clang++: FAILED: new/fnref_second_try.cpp:45:18: error: indirection requires pointer operand ('const Word' invalid) new/fnref_second_try.cpp:180:38: error: no viable conversion from 'int (Word::*)() const' to 'lib::FunctionRef<int (const Word &)>' 
+clang++ ped: FAILED: new/fnref_second_try.cpp:45:18: error: indirection requires pointer operand ('const Word' invalid) new/fnref_second_try.cpp:180:38: error: no viable conversion from 'int (Word::*)() const' to 'lib::FunctionRef<int (const Word &)>' 
+clang++ san: FAILED: new/fnref_second_try.cpp:45:18: error: indirection requires pointer operand ('const Word' invalid) new/fnref_second_try.cpp:180:38: error: no viable conversion from 'int (Word::*)() const' to 'lib::FunctionRef<int (const Word &)>' 
+EDG: rejects: "/w/fnref_second_try.cpp", line 45: error: no operator "*" matches these
+tidal-fe: rejected [UN-6] at line 45: no operator '*' for class operand 
+tidal-next parse: tree 
+=== new/fnref_sixth_try.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: unsupported at line 169: converting constructor 
+tidal-next parse: tree 
+=== new/fnref_third_try.cpp
+g++: FAILED: new/fnref_third_try.cpp:188:25: error: non-constant condition for static assertion new/fnref_third_try.cpp:81:40: error: cast from ‘void*’ is not allowed in a constant expression before C++26 
+g++ ped: FAILED: new/fnref_third_try.cpp:188:25: error: non-constant condition for static assertion new/fnref_third_try.cpp:81:40: error: cast from ‘void*’ is not allowed in a constant expression before C++26 
+g++ san: FAILED: new/fnref_third_try.cpp:188:25: error: non-constant condition for static assertion new/fnref_third_try.cpp:81:40: error: cast from ‘void*’ is not allowed in a constant expression before C++26 
+clang++: FAILED: new/fnref_third_try.cpp:188:15: error: static assertion expression is not an integral constant expression new/fnref_third_try.cpp:189:15: error: static assertion expression is not an integral constant expression 
+clang++ ped: FAILED: new/fnref_third_try.cpp:188:15: error: static assertion expression is not an integral constant expression new/fnref_third_try.cpp:189:15: error: static assertion expression is not an integral constant expression 
+clang++ san: FAILED: new/fnref_third_try.cpp:188:15: error: static assertion expression is not an integral constant expression new/fnref_third_try.cpp:189:15: error: static assertion expression is not an integral constant expression 
+EDG: rejects: "/w/fnref_third_try.cpp", line 188: error: expression must have a constant
+tidal-fe: rejected [CE-4] at line 188: static_assert condition is not a constant expression: conversion from void* 
+tidal-next parse: tree 
+=== new/fsm.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next parse: stop 19: the grammar derives no declaration here: expected '{', found '<' 
+=== new/fsm_first_try.cpp
+g++: FAILED: new/fsm_first_try.cpp:79:7: error: operand of fold expression has no unexpanded parameter packs [-Wtemplate-body] new/fsm_first_try.cpp:148:44: error: static assertion failed 
+g++ ped: FAILED: new/fsm_first_try.cpp:79:7: error: operand of fold expression has no unexpanded parameter packs [-Wtemplate-body] new/fsm_first_try.cpp:148:44: error: static assertion failed 
+g++ san: FAILED: new/fsm_first_try.cpp:79:7: error: operand of fold expression has no unexpanded parameter packs [-Wtemplate-body] new/fsm_first_try.cpp:148:44: error: static assertion failed 
+clang++: FAILED: new/fsm_first_try.cpp:80:6: error: pack expansion does not contain any unexpanded parameter packs new/fsm_first_try.cpp:148:15: error: static assertion failed due to requirement 'fsm::Machine<fsm::List<door::Closed, door::Open, door::Locked>, fsm::List<door::Push, door::Pull, door::Lock, door::Unloc
+clang++ ped: FAILED: new/fsm_first_try.cpp:80:6: error: pack expansion does not contain any unexpanded parameter packs new/fsm_first_try.cpp:148:15: error: static assertion failed due to requirement 'fsm::Machine<fsm::List<door::Closed, door::Open, door::Locked>, fsm::List<door::Push, door::Pull, door::Lock, door::Unloc
+clang++ san: FAILED: new/fsm_first_try.cpp:80:6: error: pack expansion does not contain any unexpanded parameter packs new/fsm_first_try.cpp:148:15: error: static assertion failed due to requirement 'fsm::Machine<fsm::List<door::Closed, door::Open, door::Locked>, fsm::List<door::Push, door::Pull, door::Lock, door::Unloc
+EDG: rejects: "/w/fsm_first_try.cpp", line 80: error: fold expression does not refer to a
+tidal-fe: unsupported at line 84: check: constant initializer: body of 'make_table' is not available yet 
+tidal-next parse: stop 18: the grammar derives no declaration here: expected '{', found '<' 
+=== new/fsm_second_try.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: unsupported at line 85: check: constant initializer: body of 'make_table' is not available yet 
+tidal-next parse: stop 18: the grammar derives no declaration here: expected '{', found '<' 
+=== new/heap.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 in every explored order (64 runs, of a partial set); unspecified choices: SEQ-1 at line 103 (arguments evaluated from left to right) explored: 64 runs (the bound of 64 runs stopped the exploration; the set is partial); other outcomes: result 0 
+tidal-next parse: tree 
+=== new/heap_first_try.cpp
+g++: FAILED: new/heap_first_try.cpp:43:18: error: ‘bool_like’ does not name a type new/heap_first_try.cpp:43:27: error: expected primary-expression before ‘;’ token 
+g++ ped: FAILED: new/heap_first_try.cpp:43:18: error: ‘bool_like’ does not name a type new/heap_first_try.cpp:43:27: error: expected primary-expression before ‘;’ token 
+g++ san: FAILED: new/heap_first_try.cpp:43:18: error: ‘bool_like’ does not name a type new/heap_first_try.cpp:43:27: error: expected primary-expression before ‘;’ token 
+clang++: FAILED: new/heap_first_try.cpp:43:18: error: expected concept name with optional arguments 1 error generated. 
+clang++ ped: FAILED: new/heap_first_try.cpp:43:18: error: expected concept name with optional arguments 1 error generated. 
+clang++ san: FAILED: new/heap_first_try.cpp:43:18: error: expected concept name with optional arguments 1 error generated. 
+EDG: rejects: "/w/heap_first_try.cpp", line 43: error: expected a concept name
+tidal-fe: rejected [CPT-34] at line 43: a type after '->' in a compound requirement; a type constraint is needed 
+tidal-next parse: stop 43: the grammar derives no declaration here: expected a concept name, found 'bool_like' 
+=== new/heap_second_try.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 in every explored order (64 runs, of a partial set); unspecified choices: SEQ-1 at line 102 (arguments evaluated from left to right) explored: 64 runs (the bound of 64 runs stopped the exploration; the set is partial); other outcomes: result 0 
+tidal-next parse: tree 
+=== new/heap_third_try.cpp
+g++: FAILED: new/heap_third_try.cpp:210:15: error: static assertion failed 
+g++ ped: FAILED: new/heap_third_try.cpp:210:15: error: static assertion failed 
+g++ san: FAILED: new/heap_third_try.cpp:210:15: error: static assertion failed 
+clang++: FAILED: new/heap_third_try.cpp:210:15: error: static assertion failed due to requirement '!sortable_array<NoOrder>' 1 error generated. 
+clang++ ped: FAILED: new/heap_third_try.cpp:210:15: error: static assertion failed due to requirement '!sortable_array<NoOrder>' 1 error generated. 
+clang++ san: FAILED: new/heap_third_try.cpp:210:15: error: static assertion failed due to requirement '!sortable_array<NoOrder>' 1 error generated. 
+EDG: rejects: "/w/heap_third_try.cpp", line 210: error: static assertion failed
+tidal-fe: rejected [SA-1] at line 210: static assertion failed 
+tidal-next parse: tree 
+=== new/keys.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 in every explored order (8 runs); unspecified choices: SEQ-8 at line 167 (the left operand of '+' first) explored: 8 runs; other outcomes: result 0 
+tidal-next parse: stop 142: the grammar derives no declaration here: expected an assignment operator, found '{' 
+=== new/keys_first_try.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: unsupported at line 135: check: static_assert: call needing template deduction or unknown arguments 
+tidal-next parse: stop 136: the grammar derives no declaration here: expected an assignment operator, found '{' 
+=== new/mistakes/abstract_instance.cpp
+g++: FAILED: new/mistakes/abstract_instance.cpp:3:18: error: cannot declare variable ‘t’ to be of abstract type ‘Tri’ 
+g++ ped: FAILED: new/mistakes/abstract_instance.cpp:3:18: error: cannot declare variable ‘t’ to be of abstract type ‘Tri’ 
+g++ san: FAILED: new/mistakes/abstract_instance.cpp:3:18: error: cannot declare variable ‘t’ to be of abstract type ‘Tri’ 
+clang++: FAILED: new/mistakes/abstract_instance.cpp:3:18: error: variable type 'Tri' is an abstract class 1 error generated. 
+clang++ ped: FAILED: new/mistakes/abstract_instance.cpp:3:18: error: variable type 'Tri' is an abstract class 1 error generated. 
+clang++ san: FAILED: new/mistakes/abstract_instance.cpp:3:18: error: variable type 'Tri' is an abstract class 1 error generated. 
+EDG: rejects: "/w/abstract_instance.cpp", line 3: error: object of abstract class type "Tri"
+tidal-fe: rejected [VIRT-8] at line 3: variable 't' of an abstract class type 
+tidal-next parse: tree 
+=== new/mistakes/auto_return_inconsistent.cpp
+g++: FAILED: new/mistakes/auto_return_inconsistent.cpp:1:45: error: inconsistent deduction for auto return type: ‘int’ and then ‘double’ 
+g++ ped: FAILED: new/mistakes/auto_return_inconsistent.cpp:1:45: error: inconsistent deduction for auto return type: ‘int’ and then ‘double’ 
+g++ san: FAILED: new/mistakes/auto_return_inconsistent.cpp:1:45: error: inconsistent deduction for auto return type: ‘int’ and then ‘double’ 
+clang++: FAILED: new/mistakes/auto_return_inconsistent.cpp:1:38: error: 'auto' in return type deduced as 'double' here but deduced as 'int' in earlier return statement 1 error generated. 
+clang++ ped: FAILED: new/mistakes/auto_return_inconsistent.cpp:1:38: error: 'auto' in return type deduced as 'double' here but deduced as 'int' in earlier return statement 1 error generated. 
+clang++ san: FAILED: new/mistakes/auto_return_inconsistent.cpp:1:38: error: 'auto' in return type deduced as 'double' here but deduced as 'int' in earlier return statement 1 error generated. 
+EDG: rejects: "/w/auto_return_inconsistent.cpp", line 1: error: deduced return type "double"
+tidal-fe: rejected [RET-7] at line 1: return statements deduce different types 
+tidal-next parse: tree 
+=== new/mistakes/consteval_runtime_argument.cpp
+g++: FAILED: new/mistakes/consteval_runtime_argument.cpp:2:39: error: call to consteval function ‘sq(argc)’ is not a constant expression new/mistakes/consteval_runtime_argument.cpp:2:40: error: ‘argc’ is not a constant expression 
+g++ ped: FAILED: new/mistakes/consteval_runtime_argument.cpp:2:39: error: call to consteval function ‘sq(argc)’ is not a constant expression new/mistakes/consteval_runtime_argument.cpp:2:40: error: ‘argc’ is not a constant expression 
+g++ san: FAILED: new/mistakes/consteval_runtime_argument.cpp:2:39: error: call to consteval function ‘sq(argc)’ is not a constant expression new/mistakes/consteval_runtime_argument.cpp:2:40: error: ‘argc’ is not a constant expression 
+clang++: FAILED: new/mistakes/consteval_runtime_argument.cpp:2:37: error: call to consteval function 'sq' is not a constant expression 1 error generated. 
+clang++ ped: FAILED: new/mistakes/consteval_runtime_argument.cpp:2:37: error: call to consteval function 'sq' is not a constant expression 1 error generated. 
+clang++ san: FAILED: new/mistakes/consteval_runtime_argument.cpp:2:37: error: call to consteval function 'sq' is not a constant expression 1 error generated. 
+EDG: rejects: "/w/consteval_runtime_argument.cpp", line 2: error: call to consteval function
+tidal-fe: rejected [CEV-1] at line 2: call of consteval function is not a constant expression (CE-3: 'argc' is not usable in constant expressions) 
+tidal-next parse: tree 
+=== new/mistakes/constexpr_from_runtime.cpp
+g++: FAILED: new/mistakes/constexpr_from_runtime.cpp:2:36: error: call to non-‘constexpr’ function ‘int read()’ 
+g++ ped: FAILED: new/mistakes/constexpr_from_runtime.cpp:2:36: error: call to non-‘constexpr’ function ‘int read()’ 
+g++ san: FAILED: new/mistakes/constexpr_from_runtime.cpp:2:36: error: call to non-‘constexpr’ function ‘int read()’ 
+clang++: FAILED: new/mistakes/constexpr_from_runtime.cpp:2:28: error: constexpr variable 'n' must be initialized by a constant expression 1 error generated. 
+clang++ ped: FAILED: new/mistakes/constexpr_from_runtime.cpp:2:28: error: constexpr variable 'n' must be initialized by a constant expression 1 error generated. 
+clang++ san: FAILED: new/mistakes/constexpr_from_runtime.cpp:2:28: error: constexpr variable 'n' must be initialized by a constant expression 1 error generated. 
+EDG: rejects: "/w/constexpr_from_runtime.cpp", line 2: error: expression must have a constant
+tidal-fe: rejected [CX-1] at line 2: initializer is not a constant expression (CE-2: call of non-constexpr function 'read') 
+tidal-next parse: tree 
+=== new/mistakes/const_member_write.cpp
+g++: FAILED: new/mistakes/const_member_write.cpp:1:57: error: increment of member ‘Counter::n’ in read-only object 
+g++ ped: FAILED: new/mistakes/const_member_write.cpp:1:57: error: increment of member ‘Counter::n’ in read-only object 
+g++ san: FAILED: new/mistakes/const_member_write.cpp:1:57: error: increment of member ‘Counter::n’ in read-only object 
+clang++: FAILED: new/mistakes/const_member_write.cpp:1:55: error: cannot assign to non-static data member within const member function 'bump' 1 error generated. 
+clang++ ped: FAILED: new/mistakes/const_member_write.cpp:1:55: error: cannot assign to non-static data member within const member function 'bump' 1 error generated. 
+clang++ san: FAILED: new/mistakes/const_member_write.cpp:1:55: error: cannot assign to non-static data member within const member function 'bump' 1 error generated. 
+EDG: rejects: "/w/const_member_write.cpp", line 1: error: expression must be a modifiable
+tidal-fe: rejected [CV-4] at line 1: '++' on a const object 
+tidal-next parse: tree 
+=== new/mistakes/copy_move_only.cpp
+g++: FAILED: new/mistakes/copy_move_only.cpp:2:38: error: use of deleted function ‘constexpr Handle::Handle(const Handle&)’ 
+g++ ped: FAILED: new/mistakes/copy_move_only.cpp:2:38: error: use of deleted function ‘constexpr Handle::Handle(const Handle&)’ 
+g++ san: FAILED: new/mistakes/copy_move_only.cpp:2:38: error: use of deleted function ‘constexpr Handle::Handle(const Handle&)’ 
+clang++: FAILED: new/mistakes/copy_move_only.cpp:2:34: error: call to implicitly-deleted copy constructor of 'Handle' 1 error generated. 
+clang++ ped: FAILED: new/mistakes/copy_move_only.cpp:2:34: error: call to implicitly-deleted copy constructor of 'Handle' 1 error generated. 
+clang++ san: FAILED: new/mistakes/copy_move_only.cpp:2:34: error: call to implicitly-deleted copy constructor of 'Handle' 1 error generated. 
+EDG: rejects: "/w/copy_move_only.cpp", line 2: error: function "Handle::Handle(const Handle
+tidal-fe: rejected [CPY-21] at line 2: the copy constructor of 'Handle' is deleted 
+tidal-next parse: tree 
+=== new/mistakes/missing_typename.cpp
+g++: FAILED: new/mistakes/missing_typename.cpp:2:34: error: need ‘typename’ before ‘C::value_type’ because ‘C’ is a dependent scope [-Wtemplate-body] new/mistakes/missing_typename.cpp:2:62: error: ‘x’ was not declared in this scope [-Wtemplate-body] 
+g++ ped: FAILED: new/mistakes/missing_typename.cpp:2:34: error: need ‘typename’ before ‘C::value_type’ because ‘C’ is a dependent scope [-Wtemplate-body] new/mistakes/missing_typename.cpp:2:62: error: ‘x’ was not declared in this scope [-Wtemplate-body] 
+g++ san: FAILED: new/mistakes/missing_typename.cpp:2:34: error: need ‘typename’ before ‘C::value_type’ because ‘C’ is a dependent scope [-Wtemplate-body] new/mistakes/missing_typename.cpp:2:62: error: ‘x’ was not declared in this scope [-Wtemplate-body] 
+clang++: FAILED: new/mistakes/missing_typename.cpp:2:34: error: missing 'typename' prior to dependent type name 'C::value_type' 1 error generated. 
+clang++ ped: FAILED: new/mistakes/missing_typename.cpp:2:34: error: missing 'typename' prior to dependent type name 'C::value_type' 1 error generated. 
+clang++ san: FAILED: new/mistakes/missing_typename.cpp:2:34: error: missing 'typename' prior to dependent type name 'C::value_type' 1 error generated. 
+EDG: rejects: "/w/missing_typename.cpp", line 2: error: expected a ";"
+tidal-fe: rejected [TR-12] at line 2: the grammar does not derive this: expected ';' but found 'x' 
+tidal-next parse: stop 2: the grammar derives no declaration here: expected an assignment operator, found 'x' 
+=== new/mistakes/override_not_virtual.cpp
+g++: FAILED: new/mistakes/override_not_virtual.cpp:2:29: error: ‘int Derived::f() const’ marked ‘override’, but does not override 
+g++ ped: FAILED: new/mistakes/override_not_virtual.cpp:2:29: error: ‘int Derived::f() const’ marked ‘override’, but does not override 
+g++ san: FAILED: new/mistakes/override_not_virtual.cpp:2:29: error: ‘int Derived::f() const’ marked ‘override’, but does not override 
+clang++: FAILED: new/mistakes/override_not_virtual.cpp:2:39: error: only virtual member functions can be marked 'override' 1 error generated. 
+clang++ ped: FAILED: new/mistakes/override_not_virtual.cpp:2:39: error: only virtual member functions can be marked 'override' 1 error generated. 
+clang++ san: FAILED: new/mistakes/override_not_virtual.cpp:2:39: error: only virtual member functions can be marked 'override' 1 error generated. 
+EDG: rejects: "/w/override_not_virtual.cpp", line 2: error: member function declared with
+tidal-fe: rejected [VIRT-3] at line 2: 'f' is marked override but overrides no virtual function of a base 
+tidal-next parse: tree 
+=== new/mistakes/private_member.cpp
+g++: FAILED: new/mistakes/private_member.cpp:2:44: error: ‘int Account::balance’ is private within this context 
+g++ ped: FAILED: new/mistakes/private_member.cpp:2:44: error: ‘int Account::balance’ is private within this context 
+g++ san: FAILED: new/mistakes/private_member.cpp:2:44: error: ‘int Account::balance’ is private within this context 
+clang++: FAILED: new/mistakes/private_member.cpp:2:44: error: 'balance' is a private member of 'Account' 1 error generated. 
+clang++ ped: FAILED: new/mistakes/private_member.cpp:2:44: error: 'balance' is a private member of 'Account' 1 error generated. 
+clang++ san: FAILED: new/mistakes/private_member.cpp:2:44: error: 'balance' is a private member of 'Account' 1 error generated. 
+EDG: rejects: "/w/private_member.cpp", line 2: error: member "Account::balance" (declared at
+tidal-fe: rejected [ACC-2] at line 2: 'balance' is a private member of 'Account' 
+tidal-next parse: tree 
+=== new/one-line/alias_template_deduction.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next parse: tree 
+=== new/one-line/assume_attribute.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next parse: tree 
+=== new/one-line/auto_decay_copy.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next parse: tree 
+=== new/one-line/capture_structured_binding.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next parse: tree 
+=== new/one-line/char8_literal.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next parse: tree 
+=== new/one-line/consteval_default_argument.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next parse: tree 
+=== new/one-line/constexpr_dynamic_cast.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next parse: tree 
+=== new/one-line/constexpr_try_block.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next parse: tree 
+=== new/one-line/constexpr_union_switch.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next parse: tree 
+=== new/one-line/constexpr_virtual.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next parse: tree 
+=== new/one-line/defaulted_equality_array.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next parse: tree 
+=== new/one-line/explicit_bool.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next parse: tree 
+=== new/one-line/explicit_object_chain.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next parse: tree 
+=== new/one-line/generic_lambda_by_copy_call.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 in every explored order (2 runs); unspecified choices: SEQ-8 at line 2 (the left operand of '+' first) explored: 2 runs; other outcomes: result 0 
+tidal-next parse: tree 
+=== new/one-line/if_consteval.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next parse: tree 
+=== new/one-line/inline_nested_namespace.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next parse: tree 
+=== new/one-line/lambda_unique_type.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next parse: tree 
+=== new/one-line/multi_subscript.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next parse: tree 
+=== new/one-line/paren_aggregate_init.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next parse: tree 
+=== new/one-line/size_literal_suffix.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next parse: tree 
+=== new/one-line/static_subscript.cpp
+g++: built (warnings 1), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 1), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next parse: tree 
+=== probes/class_argument_converting_constructor_template.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next parse: tree 
+=== probes/class_constant_parameter_braced_argument.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next parse: stop 4: the grammar derives no declaration here: expected an assignment operator, found '{' 
+=== probes/class_template_constant_parameter_member_read.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: unsupported at line 4: check: static_assert: dependent name 
+tidal-next parse: tree 
+=== probes/class_template_constant_parameter_object.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: unsupported at line 0: object of unknown type 
+tidal-next parse: tree 
+=== probes/closure_argument_function_ref_thunk.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: unsupported at line 11: converting constructor 
+tidal-next parse: tree 
+=== probes/closure_copy_init_variable_converting_constructor_template.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next parse: tree 
+=== probes/closure_direct_init_converting_constructor_template.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next parse: tree 
+=== probes/field_count_flat_aggregates.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next parse: stop 2: the grammar derives no declaration here: expected 'const' or 'volatile', found ';' 
+=== probes/fixed_capacity_string_constant_parameter.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next parse: stop 6: the grammar derives no declaration here: expected an assignment operator, found '{' 
+=== probes/fsm_first_try_with_table_function.cpp
+g++: FAILED: probes/fsm_first_try_with_table_function.cpp:79:7: error: operand of fold expression has no unexpanded parameter packs [-Wtemplate-body] probes/fsm_first_try_with_table_function.cpp:148:46: error: static assertion failed 
+g++ ped: FAILED: probes/fsm_first_try_with_table_function.cpp:79:7: error: operand of fold expression has no unexpanded parameter packs [-Wtemplate-body] probes/fsm_first_try_with_table_function.cpp:148:46: error: static assertion failed 
+g++ san: FAILED: probes/fsm_first_try_with_table_function.cpp:79:7: error: operand of fold expression has no unexpanded parameter packs [-Wtemplate-body] probes/fsm_first_try_with_table_function.cpp:148:46: error: static assertion failed 
+clang++: FAILED: probes/fsm_first_try_with_table_function.cpp:80:6: error: pack expansion does not contain any unexpanded parameter packs probes/fsm_first_try_with_table_function.cpp:148:15: error: static assertion failed due to requirement 'fsm::Machine<fsm::List<door::Closed, door::Open, door::Locked>, fsm::List<d
+clang++ ped: FAILED: probes/fsm_first_try_with_table_function.cpp:80:6: error: pack expansion does not contain any unexpanded parameter packs probes/fsm_first_try_with_table_function.cpp:148:15: error: static assertion failed due to requirement 'fsm::Machine<fsm::List<door::Closed, door::Open, door::Locked>, fsm::List<d
+clang++ san: FAILED: probes/fsm_first_try_with_table_function.cpp:80:6: error: pack expansion does not contain any unexpanded parameter packs probes/fsm_first_try_with_table_function.cpp:148:15: error: static assertion failed due to requirement 'fsm::Machine<fsm::List<door::Closed, door::Open, door::Locked>, fsm::List<d
+EDG: rejects: "/w/fsm_first_try_with_table_function.cpp", line 80: error: fold expression
+tidal-fe: rejected [PACK-6] at line 79: the packs of one expansion have different numbers of elements 
+tidal-next parse: stop 18: the grammar derives no declaration here: expected '{', found '<' 
+=== probes/generic_lambda_copy_capture_member_pointer.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next parse: tree 
+=== probes/generic_lambda_copy_capture_object_call.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next parse: tree 
+=== probes/generic_lambda_no_capture_in_template.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next parse: tree 
+=== probes/generic_lambda_reference_capture_closure_constant.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: unsupported at line 4: check: static_assert: call needing template deduction or unknown arguments 
+tidal-next parse: tree 
+=== probes/generic_lambda_reference_capture_closure_in_template.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: unsupported at line 3: call needing template deduction or unknown arguments 
+tidal-next parse: tree 
+=== probes/generic_lambda_reference_capture_function_pointer.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next parse: tree 
+=== probes/generic_lambda_reference_capture_int.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next parse: tree 
+=== probes/generic_lambda_reference_capture_member_access.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next parse: tree 
+=== probes/generic_lambda_reference_capture_plain_function_argument.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next parse: tree 
+=== probes/generic_lambda_reference_capture_scalar_in_template.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next parse: tree 
+=== probes/if_constexpr_structured_bindings_size_condition.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next parse: tree 
+=== probes/literal_operator_class_template_parameter.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: unsupported at line 7: check: static_assert: literal operator template 
+tidal-next parse: tree 
+=== probes/requires_braced_initializers_nested_aggregate_fits.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next parse: tree 
+=== probes/requires_too_many_braced_initializers_array_member.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: unsupported at line 3: check: static_assert: concept 
+tidal-next parse: tree 
+=== probes/requires_too_many_braced_initializers_flat_aggregate.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next parse: tree 
+=== probes/requires_too_many_braced_initializers_run.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: unsupported at line 4: concept 
+tidal-next parse: tree 
+=== probes/specialization_in_namespace_member_type.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next parse: tree 
+=== probes/static_constexpr_member_from_member_function_run.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: unsupported at line 3: check: constant initializer: body of 'make' is not available yet 
+tidal-next parse: tree 
+=== reductions/class_template_constant_parameter_from_string_literal.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: unsupported at line 7: check: static_assert: dependent name 
+tidal-next parse: tree 
+=== reductions/closure_argument_converting_constructor_template.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: unsupported at line 7: converting constructor 
+tidal-next parse: tree 
+=== reductions/generic_lambda_reference_capture_member_pointer.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: unsupported at line 5: call needing template deduction or unknown arguments 
+tidal-next parse: tree 
+=== reductions/generic_lambda_reference_capture_object_call.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: unsupported at line 5: call needing template deduction or unknown arguments 
+tidal-next parse: tree 
+=== reductions/generic_lambda_reference_capture_template_argument.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: unsupported at line 6: call needing template deduction or unknown arguments 
+tidal-next parse: tree 
+=== reductions/if_constexpr_braced_initializers_nested_aggregate.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: rejected [SB-2] at line 5: structured binding declares 3 names but the initializer has 2 elements 
+tidal-next parse: tree 
+=== reductions/lambda_attribute_without_template_head.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next parse: stop 2: the grammar derives no declaration here: expected a lambda specifier, found '[' 
+=== reductions/member_template_conversion_declared_only.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next parse: stop 2: the grammar derives no declaration here: expected 'const' or 'volatile', found ';' 
+=== reductions/qualified_specialization_member_type_from_namespace.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next parse: stop 3: the grammar derives no declaration here: expected 'override' or 'final', found 'value' 
+=== reductions/requires_too_many_braced_initializers_nested_aggregate.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: unsupported at line 4: check: static_assert: concept 
+tidal-next parse: tree 
+=== reductions/static_constexpr_member_from_member_function.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: unsupported at line 3: check: constant initializer: body of 'make' is not available yet 
+tidal-next parse: tree 
+=== reductions/static_constexpr_member_from_member_function_plain_class.cpp
+g++: FAILED: reductions/static_constexpr_member_from_member_function_plain_class.cpp:3:36: error: ‘static constexpr int M::make()’ called in a constant expression before its definition is complete 
+g++ ped: FAILED: reductions/static_constexpr_member_from_member_function_plain_class.cpp:3:36: error: ‘static constexpr int M::make()’ called in a constant expression before its definition is complete 
+g++ san: FAILED: reductions/static_constexpr_member_from_member_function_plain_class.cpp:3:36: error: ‘static constexpr int M::make()’ called in a constant expression before its definition is complete 
+clang++: FAILED: reductions/static_constexpr_member_from_member_function_plain_class.cpp:3:24: error: constexpr variable 'value' must be initialized by a constant expression 1 error generated. 
+clang++ ped: FAILED: reductions/static_constexpr_member_from_member_function_plain_class.cpp:3:24: error: constexpr variable 'value' must be initialized by a constant expression 1 error generated. 
+clang++ san: FAILED: reductions/static_constexpr_member_from_member_function_plain_class.cpp:3:24: error: constexpr variable 'value' must be initialized by a constant expression 1 error generated. 
+EDG: rejects:           error: expression must have a constant value
+tidal-fe: unsupported at line 3: check: constant initializer: body of 'make' is not available yet 
+tidal-next parse: tree 
+=== reductions/typename_specifier_braced_cast.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+tidal-next parse: stop 2: the grammar derives no declaration here: expected a type name, found 'typename' 

@@ -1,0 +1,21 @@
+changed 18 CE-21 CE-22 CE-P3 CPT-28 FN-12 INST-1 INST-30 INST-P4 LSUP-10 LSUP-P3 OBJ-1 OBJ-2 OPR-8 STG-6 STG-P2 TYN-10 TYN-6 UNI-14
+new []
+CE-21 rows: X3,X6,X25 | mentions: -
+CE-22 rows: X3 | mentions: X25
+CE-P3 rows: X1,X10 | mentions: X3,X25
+CPT-28 rows: - | mentions: -
+FN-12 rows: - | mentions: -
+INST-1 rows: - | mentions: X7
+INST-30 rows: - | mentions: X6
+INST-P4 rows: - | mentions: X22
+LSUP-10 rows: X25 | mentions: -
+LSUP-P3 rows: - | mentions: X25
+OBJ-1 rows: X9,X25 | mentions: X3
+OBJ-2 rows: X3,X9,X11,X25 | mentions: X4,X21
+OPR-8 rows: X19 | mentions: -
+STG-6 rows: X9,X25 | mentions: -
+STG-P2 rows: X25 | mentions: X14
+TYN-10 rows: X20 | mentions: -
+TYN-6 rows: - | mentions: X12,X20
+UNI-14 rows: X25 | mentions: -
+change-table rows 19 in 9 reports ['X1', 'X3', 'X6', 'X9', 'X10', 'X11', 'X19', 'X20', 'X25']

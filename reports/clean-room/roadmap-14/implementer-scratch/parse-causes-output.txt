@@ -1,0 +1,19 @@
+| Cause | Need a tree (accept, run, run-fail, link-fail) | Reject tests | All |
+|---|---|---|---|
+| G166 template-id cast with braced list | 81 | 20 | 101 |
+| G167 base or mem-initializer template-id or decltype | 56 | 29 | 85 |
+| G168 using-directive or alias, unqualified | 36 | 23 | 59 |
+| G169 using enum | 4 | 3 | 7 |
+| G170 attribute position | 5 | 2 | 7 |
+| G171 operator or destructor template-id | 11 | 1 | 12 |
+| G172 opaque enum in a class | 2 | 0 | 2 |
+| G173 member template with no decl-specifiers | 2 | 2 | 4 |
+| G174 structured binding in init-statement | 2 | 1 | 3 |
+| G175 throw() | 3 | 0 | 3 |
+| G176 static_assert with two literals | 1 | 0 | 1 |
+| G177 pointer to member in conversion_type | 2 | 1 | 3 |
+| G178 braced template argument | 2 | 0 | 2 |
+| G179 template and a name with no list | 2 | 0 | 2 |
+| tree where the old first error names TR-12 | 0 | 7 | 7 |
+| other | 7 | 133 | 140 |
+| total | 216 | 222 | 438 |

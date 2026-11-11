@@ -1,0 +1,63 @@
+| | program |
+|---|---|
+| G166 template-id then braced list | accept |
+| G166 template-id then empty braces | accept |
+| G166 qualified template-id then braced list | accept |
+| G166 template-id then parentheses, a cast | accept |
+| G167 base written as a template-id | accept |
+| G167 base written as a qualified template-id | accept |
+| G167 pack of bases | accept |
+| G167 base written with decltype | accept |
+| G167 member initializer written as a template-id | accept |
+| G167 member initializer written with decltype | accept |
+| G168 using-directive with an unqualified name | accept |
+| G168 namespace alias to an unqualified name | accept |
+| G168 using-directive with a qualified name | accept |
+| G169 using enum at block scope | accept |
+| G169 using enum in a class | accept |
+| G169 using enum at namespace scope | accept |
+| G170 attribute after the decl-specifiers | accept |
+| G170 side: maybe_unused after the decl-specifiers, which applies to the type | accept: gcc-host, gcc-16, gcc-14; reject: edg-7.0, edg-7.0-ilp32, clang-host, clang-18, clang-22 |
+| G170 attribute before a parameter | accept |
+| G170 attribute before a base specifier | accept: edg-7.0, edg-7.0-ilp32, gcc-host, gcc-16, clang-host, clang-18, clang-22; reject: gcc-14 |
+| G171 template-id of operator() after a member access | accept |
+| G171 address of a qualified operator() template-id | accept |
+| G171 literal operator template-id | accept |
+| G171 destructor name with a template-id | accept |
+| G171 destructor name with decltype | accept: edg-7.0, edg-7.0-ilp32, clang-host, clang-18, clang-22; reject: gcc-host, gcc-16, gcc-14 |
+| G172 opaque scoped enumeration in a class | accept |
+| G172 opaque unscoped enumeration in a class | accept |
+| G173 member conversion function template declared with no decl-specifiers | accept |
+| G173 member constructor template declared with no decl-specifiers | accept |
+| G174 structured binding in an if init-statement | accept |
+| G174 structured binding in a switch init-statement | accept |
+| G174 structured binding in a for init-statement | accept |
+| G171 control: destructor name with decltype of a reference | reject |
+| G175 throw() after a function declarator | accept: gcc-host, gcc-16, clang-host, clang-18, gcc-14, clang-22; reject: edg-7.0, edg-7.0-ilp32 |
+| G176 static_assert message of two string literals | accept |
+| G177 conversion function to a pointer to member | accept |
+| G178 braced list as a template argument | accept |
+| G179 typename T::template name with no argument list, deduced | accept: edg-7.0, edg-7.0-ilp32, gcc-host, gcc-16, gcc-14; reject: clang-host, clang-18, clang-22 |
+| G179 template template default T::template name | accept |
+G170 side: maybe_unused after the decl-specifiers, which applies to the type / program / clang-18: /tidal/build/probes/grammar-forms/0017-g170-side-maybe-unused-after-the-decl-specifiers-which-applies-to-the-type--program.cpp:1:7: error: 'maybe_unused' attribute cannot be applied to types
+G170 side: maybe_unused after the decl-specifiers, which applies to the type / program / clang-22: /tidal/build/probes/grammar-forms/0017-g170-side-maybe-unused-after-the-decl-specifiers-which-applies-to-the-type--program.cpp:1:7: error: 'maybe_unused' attribute cannot be applied to types
+G170 side: maybe_unused after the decl-specifiers, which applies to the type / program / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/rv9c/build/clang-host/probes/grammar-forms/0017-g170-side-maybe-unused-after-the-decl-specifiers-which-applies-to-the-type--program.cpp:1:7: error: 'maybe_unused' attribute cannot be applied to types
+G170 side: maybe_unused after the decl-specifiers, which applies to the type / program / edg-7.0: pecifiers-which-applies-to-the-type--program.cpp", line 1: error:
+G170 side: maybe_unused after the decl-specifiers, which applies to the type / program / edg-7.0-ilp32: pecifiers-which-applies-to-the-type--program.cpp", line 1: error:
+G170 attribute before a base specifier / program / gcc-14: /tidal/build/probes/grammar-forms/0019-g170-attribute-before-a-base-specifier--program.cpp:2:12: error: expected class-name before '[' token
+G171 destructor name with decltype / program / gcc-14: /tidal/build/probes/grammar-forms/0024-g171-destructor-name-with-decltype--program.cpp:2:20: error: expected class-name before 'decltype'
+G171 destructor name with decltype / program / gcc-16: /tidal/build/probes/grammar-forms/0024-g171-destructor-name-with-decltype--program.cpp:2:20: error: expected class-name before 'decltype'
+G171 destructor name with decltype / program / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/rv9c/build/gcc-host/probes/grammar-forms/0024-g171-destructor-name-with-decltype--program.cpp:2:20: error: expected class-name before ‘decltype’
+G171 control: destructor name with decltype of a reference / program / clang-18: /tidal/build/probes/grammar-forms/0032-g171-control-destructor-name-with-decltype-of-a-reference--program.cpp:2:20: error: destructor type 'decltype(*p)' (aka 'T &') in object destruction expression does not match the type 'T' of the object being destroyed
+G171 control: destructor name with decltype of a reference / program / clang-22: /tidal/build/probes/grammar-forms/0032-g171-control-destructor-name-with-decltype-of-a-reference--program.cpp:2:20: error: destructor type 'decltype(*p)' (aka 'T &') in object destruction expression does not match the type 'T' of the object being destroyed
+G171 control: destructor name with decltype of a reference / program / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/rv9c/build/clang-host/probes/grammar-forms/0032-g171-control-destructor-name-with-decltype-of-a-reference--program.cpp:2:20: error: destructor type 'decltype(*p)' (aka 'T &') in object destruction expression does not match the type 'T' of the object being destroyed
+G171 control: destructor name with decltype of a reference / program / edg-7.0: ype-of-a-reference--program.cpp", line 2: error: invalid destructor
+G171 control: destructor name with decltype of a reference / program / edg-7.0-ilp32: ype-of-a-reference--program.cpp", line 2: error: invalid destructor
+G171 control: destructor name with decltype of a reference / program / gcc-14: /tidal/build/probes/grammar-forms/0032-g171-control-destructor-name-with-decltype-of-a-reference--program.cpp:2:20: error: expected class-name before 'decltype'
+G171 control: destructor name with decltype of a reference / program / gcc-16: /tidal/build/probes/grammar-forms/0032-g171-control-destructor-name-with-decltype-of-a-reference--program.cpp:2:20: error: expected class-name before 'decltype'
+G171 control: destructor name with decltype of a reference / program / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/rv9c/build/gcc-host/probes/grammar-forms/0032-g171-control-destructor-name-with-decltype-of-a-reference--program.cpp:2:20: error: expected class-name before ‘decltype’
+G175 throw() after a function declarator / program / edg-7.0: -program.cpp", line 1: error: the "throw()" specification is not part
+G175 throw() after a function declarator / program / edg-7.0-ilp32: -program.cpp", line 1: error: the "throw()" specification is not part
+G179 typename T::template name with no argument list, deduced / program / clang-18: /tidal/build/probes/grammar-forms/0037-g179-typename-t-template-name-with-no-argument-list-deduced--program.cpp:2:46: error: expected an identifier or template-id after '::'
+G179 typename T::template name with no argument list, deduced / program / clang-22: /tidal/build/probes/grammar-forms/0037-g179-typename-t-template-name-with-no-argument-list-deduced--program.cpp:2:55: error: a template argument list is expected after a name prefixed by the template keyword [-Wmissing-template-arg-list-after-template-kw]
+G179 typename T::template name with no argument list, deduced / program / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/rv9c/build/clang-host/probes/grammar-forms/0037-g179-typename-t-template-name-with-no-argument-list-deduced--program.cpp:2:55: error: a template argument list is expected after a name prefixed by the template keyword [-Wmissing-template-arg-list-after-template-kw]

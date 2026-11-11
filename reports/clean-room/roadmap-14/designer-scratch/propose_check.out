@@ -1,0 +1,225 @@
+reports/clean-room/X1/report.md: 30 rows, 1 conflicts, names no commit
+  withdrawn: reports/clean-room/X1/report.md:129: SEQ-3: withdrawn (merged into SEQ-2)
+reports/clean-room/X2/report.md: 20 rows, 3 conflicts, names no commit
+  new-id: reports/clean-room/X2/report.md:171: EXS-P5: a new row uses an ID that a page now defines; use the X<n>:new-<k> form
+  new-id: reports/clean-room/X2/report.md:176: EXS-9: a new row uses an ID that a page now defines; use the X<n>:new-<k> form
+  new-id: reports/clean-room/X2/report.md:177: EXS-10: a new row uses an ID that a page now defines; use the X<n>:new-<k> form
+reports/clean-room/X3/report.md: 22 rows, 0 conflicts, names no commit
+reports/clean-room/X4/report.md: 17 rows, 1 conflicts, names no commit
+  class: reports/clean-room/X4/report.md:147: CTOR-17: old class no-diagnostic, now reject
+reports/clean-room/X5/report.md: 41 rows, 3 conflicts, names no commit
+  new-id: reports/clean-room/X5/report.md:159: ICS-47: a new row uses an ID that a page now defines; use the X<n>:new-<k> form
+  new-id: reports/clean-room/X5/report.md:160: NAM-37: a new row uses an ID that a page now defines; use the X<n>:new-<k> form
+  new-id: reports/clean-room/X5/report.md:161: DEP-39: a new row uses an ID that a page now defines; use the X<n>:new-<k> form
+reports/clean-room/X6/report.md: 75 rows, 4 conflicts, names no commit
+  new-id: reports/clean-room/X6/report.md:207: RFOR-8: a new row uses an ID that a page now defines; use the X<n>:new-<k> form
+  new-id: reports/clean-room/X6/report.md:215: SB-17: a new row uses an ID that a page now defines; use the X<n>:new-<k> form
+  new-id: reports/clean-room/X6/report.md:216: INST-36: a new row uses an ID that a page now defines; use the X<n>:new-<k> form
+  withdrawn: reports/clean-room/X6/report.md:273: INST-14: withdrawn (merged into TR-13)
+reports/clean-room/X7/report.md: 69 rows, 4 conflicts, names no commit
+  new-id: reports/clean-room/X7/report.md:172: TPL-48: a new row uses an ID that a page now defines; use the X<n>:new-<k> form
+  new-id: reports/clean-room/X7/report.md:176: CE-30: a new row uses an ID that a page now defines; use the X<n>:new-<k> form
+  class: reports/clean-room/X7/report.md:219: CE-11: old class required, now reject
+  withdrawn: reports/clean-room/X7/report.md:231: INST-14: withdrawn (merged into TR-13)
+reports/clean-room/X8/report.md: 60 rows, 6 conflicts, names no commit
+  new-id: reports/clean-room/X8/report.md:135: PFX-20: a new row uses an ID that a page now defines; use the X<n>:new-<k> form
+  new-id: reports/clean-room/X8/report.md:136: PFX-21: a new row uses an ID that a page now defines; use the X<n>:new-<k> form
+  new-id: reports/clean-room/X8/report.md:137: NAM-37: a new row uses an ID that a page now defines; use the X<n>:new-<k> form
+  new-id: reports/clean-room/X8/report.md:138: CLS-29: a new row uses an ID that a page now defines; use the X<n>:new-<k> form
+  new-id: reports/clean-room/X8/report.md:139: CLS-30: a new row uses an ID that a page now defines; use the X<n>:new-<k> form
+  new-id: reports/clean-room/X8/report.md:141: DEP-39: a new row uses an ID that a page now defines; use the X<n>:new-<k> form
+reports/clean-room/X9/report.md: 90 rows, 2 conflicts, names no commit
+  class: reports/clean-room/X9/report.md:306: STG-25: old class impl-defined, now unspecified
+  withdrawn: reports/clean-room/X9/report.md:318: UNW-9: withdrawn (merged into UNW-1)
+reports/clean-room/X10/report.md: 53 rows, 2 conflicts, names no commit
+  withdrawn: reports/clean-room/X10/report.md:130: CE-31: withdrawn (merged into CE-8)
+  withdrawn: reports/clean-room/X10/report.md:163: UNW-9: withdrawn (merged into UNW-1)
+reports/clean-room/X11/report.md: 67 rows, 3 conflicts, names no commit
+  withdrawn: reports/clean-room/X11/report.md:194: UNW-9: withdrawn (merged into UNW-1)
+  withdrawn: reports/clean-room/X11/report.md:205: CE-31: withdrawn (merged into CE-8)
+  withdrawn: reports/clean-room/X11/report.md:206: CX-6: withdrawn (merged into CE-2, CE-17)
+reports/clean-room/X12/report.md: 37 rows, 1 conflicts, names no commit
+  withdrawn: reports/clean-room/X12/report.md:155: CE-31: withdrawn (merged into CE-8)
+reports/clean-room/X13/report.md: 59 rows, 0 conflicts, read 573d849, 65 later commits change specification/
+  changed: reports/clean-room/X13/report.md:187: PFX-P2: changed since 573d849
+  changed: reports/clean-room/X13/report.md:189: DEFARG-P2: changed since 573d849
+  changed: reports/clean-room/X13/report.md:190: FN-P1: changed since 573d849
+  changed: reports/clean-room/X13/report.md:192: VIRT-1: changed since 573d849
+  changed: reports/clean-room/X13/report.md:197: ODR-10: changed since 573d849
+  changed: reports/clean-room/X13/report.md:200: DEFARG-2: changed since 573d849
+  changed: reports/clean-room/X13/report.md:201: DEFARG-3: changed since 573d849
+  changed: reports/clean-room/X13/report.md:202: DEFARG-5: changed since 573d849
+  changed: reports/clean-room/X13/report.md:204: DEFARG-9: changed since 573d849
+  changed: reports/clean-room/X13/report.md:219: OVL-38: changed since 573d849
+  changed: reports/clean-room/X13/report.md:221: DED-20: changed since 573d849
+  changed: reports/clean-room/X13/report.md:223: PACK-13: changed since 573d849
+  changed: reports/clean-room/X13/report.md:228: LIST-14: changed since 573d849
+  changed: reports/clean-room/X13/report.md:235: LSP-4: changed since 573d849
+  changed: reports/clean-room/X13/report.md:237: DEP-30: changed since 573d849
+reports/clean-room/X14/report.md: 56 rows, 0 conflicts, read 573d849, 65 later commits change specification/
+  changed: reports/clean-room/X14/report.md:195: KW-3: changed since 573d849
+  changed: reports/clean-room/X14/report.md:196: ALN-P1: changed since 573d849
+  changed: reports/clean-room/X14/report.md:197: ALN-1: changed since 573d849
+  changed: reports/clean-room/X14/report.md:198: ALN-2: changed since 573d849
+  changed: reports/clean-room/X14/report.md:199: ALN-4: changed since 573d849
+  changed: reports/clean-room/X14/report.md:201: CLS-31: changed since 573d849
+  changed: reports/clean-room/X14/report.md:203: BF-9: changed since 573d849
+  changed: reports/clean-room/X14/report.md:204: STG-16: changed since 573d849
+  changed: reports/clean-room/X14/report.md:205: REF-1: changed since 573d849
+  changed: reports/clean-room/X14/report.md:206: REF-2: changed since 573d849
+  changed: reports/clean-room/X14/report.md:207: REF-8: changed since 573d849
+  changed: reports/clean-room/X14/report.md:218: CLS-11: changed since 573d849
+  changed: reports/clean-room/X14/report.md:221: CLS-33: changed since 573d849
+  changed: reports/clean-room/X14/report.md:222: CLS-35: changed since 573d849
+  changed: reports/clean-room/X14/report.md:224: STG-8: changed since 573d849
+  changed: reports/clean-room/X14/report.md:227: STG-17: changed since 573d849
+  changed: reports/clean-room/X14/report.md:228: STG-23: changed since 573d849
+  changed: reports/clean-room/X14/report.md:229: BF-4: changed since 573d849
+  changed: reports/clean-room/X14/report.md:237: ATTR-1: changed since 573d849
+  changed: reports/clean-room/X14/report.md:239: ODR-10: changed since 573d849
+reports/clean-room/X15/report.md: 60 rows, 0 conflicts, read 573d849, 65 later commits change specification/
+  changed: reports/clean-room/X15/report.md:170: NS-P2: changed since 573d849
+  changed: reports/clean-room/X15/report.md:171: NS-P3: changed since 573d849
+  changed: reports/clean-room/X15/report.md:172: NS-1: changed since 573d849
+  changed: reports/clean-room/X15/report.md:173: NS-10: changed since 573d849
+  changed: reports/clean-room/X15/report.md:175: NS-4: changed since 573d849
+  changed: reports/clean-room/X15/report.md:181: NAM-P5: changed since 573d849
+  changed: reports/clean-room/X15/report.md:183: NAM-9: changed since 573d849
+  changed: reports/clean-room/X15/report.md:188: NAM-30: changed since 573d849
+  changed: reports/clean-room/X15/report.md:190: DEP-9: changed since 573d849
+  changed: reports/clean-room/X15/report.md:192: STO-P3: changed since 573d849
+  changed: reports/clean-room/X15/report.md:193: LSP-P2: changed since 573d849
+  changed: reports/clean-room/X15/report.md:197: NS-12: changed since 573d849
+  changed: reports/clean-room/X15/report.md:199: NS-15: changed since 573d849
+  changed: reports/clean-room/X15/report.md:202: NAM-3: changed since 573d849
+  changed: reports/clean-room/X15/report.md:205: NAM-21: changed since 573d849
+  changed: reports/clean-room/X15/report.md:213: ODR-10: changed since 573d849
+  changed: reports/clean-room/X15/report.md:214: LNK-5: changed since 573d849
+  changed: reports/clean-room/X15/report.md:215: LSP-4: changed since 573d849
+  changed: reports/clean-room/X15/report.md:217: LSP-7: changed since 573d849
+reports/clean-room/X16/report.md: 41 rows, 0 conflicts, read 573d849, 65 later commits change specification/
+  changed: reports/clean-room/X16/report.md:136: CMP-P1: changed since 573d849
+  changed: reports/clean-room/X16/report.md:139: CMP-14: changed since 573d849
+  changed: reports/clean-room/X16/report.md:142: SEQ-P1: changed since 573d849
+  changed: reports/clean-room/X16/report.md:146: PRIM-27: changed since 573d849
+  changed: reports/clean-room/X16/report.md:158: SEQ-4: changed since 573d849
+  changed: reports/clean-room/X16/report.md:163: OVL-11: changed since 573d849
+  changed: reports/clean-room/X16/report.md:169: CPT-26: changed since 573d849
+  changed: reports/clean-room/X16/report.md:173: DEP-2: changed since 573d849
+reports/clean-room/X17/report.md: 61 rows, 0 conflicts, read dad8bf8, 56 later commits change specification/
+  changed: reports/clean-room/X17/report.md:182: LIST-P1: changed since dad8bf8
+  changed: reports/clean-room/X17/report.md:183: LIST-2: changed since dad8bf8
+  changed: reports/clean-room/X17/report.md:185: INIT-4: changed since dad8bf8
+  changed: reports/clean-room/X17/report.md:186: INIT-5: changed since dad8bf8
+  changed: reports/clean-room/X17/report.md:188: ILC-4: changed since dad8bf8
+  changed: reports/clean-room/X17/report.md:193: ASN-5: changed since dad8bf8
+  changed: reports/clean-room/X17/report.md:194: CONV-P2: changed since dad8bf8
+  changed: reports/clean-room/X17/report.md:196: CONV-20: changed since dad8bf8
+  changed: reports/clean-room/X17/report.md:197: ADD-4: changed since dad8bf8
+  changed: reports/clean-room/X17/report.md:198: MUL-5: changed since dad8bf8
+  changed: reports/clean-room/X17/report.md:199: BIT-4: changed since dad8bf8
+  changed: reports/clean-room/X17/report.md:200: CMP-P1: changed since dad8bf8
+  changed: reports/clean-room/X17/report.md:201: CMP-13: changed since dad8bf8
+  changed: reports/clean-room/X17/report.md:203: BF-7: changed since dad8bf8
+  changed: reports/clean-room/X17/report.md:206: CONV-19: changed since dad8bf8
+  changed: reports/clean-room/X17/report.md:220: COND-3: changed since dad8bf8
+  changed: reports/clean-room/X17/report.md:224: DEFARG-10: changed since dad8bf8
+  changed: reports/clean-room/X17/report.md:226: SA-3: changed since dad8bf8
+  changed: reports/clean-room/X17/report.md:228: IF-16: changed since dad8bf8
+  changed: reports/clean-room/X17/report.md:229: CE-P4: changed since dad8bf8
+  changed: reports/clean-room/X17/report.md:230: CE-19: changed since dad8bf8
+  changed: reports/clean-room/X17/report.md:233: CPT-26: changed since dad8bf8
+  changed: reports/clean-room/X17/report.md:234: DED-24: changed since dad8bf8
+  changed: reports/clean-room/X17/report.md:235: TYP-1: changed since dad8bf8
+  changed: reports/clean-room/X17/report.md:237: CTOR-21: changed since dad8bf8
+reports/clean-room/X18/report.md: 21 rows, 0 conflicts, read dad8bf8, 56 later commits change specification/
+  changed: reports/clean-room/X18/report.md:132: KW-3: changed since dad8bf8
+  changed: reports/clean-room/X18/report.md:133: DER-1: changed since dad8bf8
+  changed: reports/clean-room/X18/report.md:136: VIRT-1: changed since dad8bf8
+  changed: reports/clean-room/X18/report.md:137: VIRT-3: changed since dad8bf8
+  changed: reports/clean-room/X18/report.md:139: VIRT-7: changed since dad8bf8
+  changed: reports/clean-room/X18/report.md:140: VIRT-13: changed since dad8bf8
+  changed: reports/clean-room/X18/report.md:146: DEP-30: changed since dad8bf8
+  changed: reports/clean-room/X18/report.md:147: INST-5: changed since dad8bf8
+  changed: reports/clean-room/X18/report.md:148: ODR-10: changed since dad8bf8
+reports/clean-room/X19/report.md: 34 rows, 1 conflicts, read dad8bf8, 56 later commits change specification/
+  class: reports/clean-room/X19/report.md:139: OPR-9: old class recommended, now no-diagnostic
+  changed: reports/clean-room/X19/report.md:126: PRIM-P1: changed since dad8bf8
+  changed: reports/clean-room/X19/report.md:128: PRIM-1: changed since dad8bf8
+  changed: reports/clean-room/X19/report.md:132: OPR-P3: changed since dad8bf8
+  changed: reports/clean-room/X19/report.md:133: OPR-8: changed since dad8bf8
+  changed: reports/clean-room/X19/report.md:137: PRIM-2: changed since dad8bf8
+  changed: reports/clean-room/X19/report.md:139: OPR-9: changed since dad8bf8
+  changed: reports/clean-room/X19/report.md:140: OPR-16: changed since dad8bf8
+  changed: reports/clean-room/X19/report.md:141: TYP-1: changed since dad8bf8
+  changed: reports/clean-room/X19/report.md:142: TYP-4: changed since dad8bf8
+  changed: reports/clean-room/X19/report.md:147: KW-4: changed since dad8bf8
+  changed: reports/clean-room/X19/report.md:148: CONV-1: changed since dad8bf8
+  changed: reports/clean-room/X19/report.md:149: CONV-19: changed since dad8bf8
+  changed: reports/clean-room/X19/report.md:151: UN-3: changed since dad8bf8
+  changed: reports/clean-room/X19/report.md:152: LIST-2: changed since dad8bf8
+  changed: reports/clean-room/X19/report.md:155: TARG-13: changed since dad8bf8
+reports/clean-room/X20/report.md: 58 rows, 0 conflicts, read dad8bf8, 56 later commits change specification/
+  changed: reports/clean-room/X20/report.md:195: TYN-P1: changed since dad8bf8
+  changed: reports/clean-room/X20/report.md:201: TPL-6: changed since dad8bf8
+  changed: reports/clean-room/X20/report.md:204: DED-P3: changed since dad8bf8
+  changed: reports/clean-room/X20/report.md:211: CAST-1: changed since dad8bf8
+  changed: reports/clean-room/X20/report.md:216: LNK-1: changed since dad8bf8
+  changed: reports/clean-room/X20/report.md:217: TYN-10: changed since dad8bf8
+  changed: reports/clean-room/X20/report.md:221: TARG-13: changed since dad8bf8
+  changed: reports/clean-room/X20/report.md:226: DED-24: changed since dad8bf8
+  changed: reports/clean-room/X20/report.md:227: DEP-15: changed since dad8bf8
+  changed: reports/clean-room/X20/report.md:229: ENUM-10: changed since dad8bf8
+  changed: reports/clean-room/X20/report.md:231: ENUM-17: changed since dad8bf8
+  changed: reports/clean-room/X20/report.md:232: ENUM-19: changed since dad8bf8
+  changed: reports/clean-room/X20/report.md:235: OVL-11: changed since dad8bf8
+  changed: reports/clean-room/X20/report.md:237: CONV-20: changed since dad8bf8
+  changed: reports/clean-room/X20/report.md:238: COND-3: changed since dad8bf8
+  changed: reports/clean-room/X20/report.md:242: STG-23: changed since dad8bf8
+  changed: reports/clean-room/X20/report.md:244: ODR-10: changed since dad8bf8
+reports/clean-room/X21/report.md: 32 rows, 0 conflicts, read 926831c, 48 later commits change specification/
+  changed: reports/clean-room/X21/report.md:183: SINIT-P2: changed since 926831c
+  changed: reports/clean-room/X21/report.md:184: SINIT-3: changed since 926831c
+  changed: reports/clean-room/X21/report.md:185: SINIT-5: changed since 926831c
+  changed: reports/clean-room/X21/report.md:186: OBJ-4: changed since 926831c
+  changed: reports/clean-room/X21/report.md:190: SINIT-4: changed since 926831c
+  changed: reports/clean-room/X21/report.md:191: SINIT-6: changed since 926831c
+  changed: reports/clean-room/X21/report.md:192: SINIT-7: changed since 926831c
+  changed: reports/clean-room/X21/report.md:196: STO-10: changed since 926831c
+  changed: reports/clean-room/X21/report.md:203: TR-P1: changed since 926831c
+  changed: reports/clean-room/X21/report.md:204: TR-4: changed since 926831c
+reports/clean-room/X22/report.md: 36 rows, 0 conflicts, read 4a193ea4, 37 later commits change specification/
+  changed: reports/clean-room/X22/report.md:152: CNS-P3: changed since 4a193ea4
+  changed: reports/clean-room/X22/report.md:153: DEP-P6: changed since 4a193ea4
+  changed: reports/clean-room/X22/report.md:163: CNS-11: changed since 4a193ea4
+  changed: reports/clean-room/X22/report.md:164: CNS-13: changed since 4a193ea4
+  changed: reports/clean-room/X22/report.md:165: CNS-14: changed since 4a193ea4
+  changed: reports/clean-room/X22/report.md:171: CPT-19: changed since 4a193ea4
+  changed: reports/clean-room/X22/report.md:173: DEP-P4: changed since 4a193ea4
+  changed: reports/clean-room/X22/report.md:174: DEP-30: changed since 4a193ea4
+  changed: reports/clean-room/X22/report.md:176: DED-24: changed since 4a193ea4
+  changed: reports/clean-room/X22/report.md:178: INST-P1: changed since 4a193ea4
+reports/clean-room/X23/report.md: 33 rows, 0 conflicts, read 696e9977, 32 later commits change specification/
+  changed: reports/clean-room/X23/report.md:139: NEW-29: changed since 696e9977
+  changed: reports/clean-room/X23/report.md:140: NEW-P5: changed since 696e9977
+  changed: reports/clean-room/X23/report.md:142: NEW-22: changed since 696e9977
+  changed: reports/clean-room/X23/report.md:143: NEW-25: changed since 696e9977
+  changed: reports/clean-room/X23/report.md:144: UNW-3: changed since 696e9977
+  changed: reports/clean-room/X23/report.md:145: ALN-4: changed since 696e9977
+  changed: reports/clean-room/X23/report.md:146: STG-5: changed since 696e9977
+  changed: reports/clean-room/X23/report.md:153: NEW-21: changed since 696e9977
+  changed: reports/clean-room/X23/report.md:156: NEW-27: changed since 696e9977
+  changed: reports/clean-room/X23/report.md:164: STG-8: changed since 696e9977
+  changed: reports/clean-room/X23/report.md:166: DED-24: changed since 696e9977
+reports/clean-room/X24/report.md: 33 rows, 0 conflicts, read 5f0ffdd9, 4 later commits change specification/
+reports/clean-room/X25/report.md: 31 rows, 0 conflicts, read 13e3f3c0, 7 later commits change specification/
+  changed: reports/clean-room/X25/report.md:131: UNI-14: changed since 13e3f3c0
+  changed: reports/clean-room/X25/report.md:135: CE-21: changed since 13e3f3c0
+  changed: reports/clean-room/X25/report.md:136: LSUP-10: changed since 13e3f3c0
+  changed: reports/clean-room/X25/report.md:137: OBJ-1: changed since 13e3f3c0
+  changed: reports/clean-room/X25/report.md:138: STG-P2: changed since 13e3f3c0
+  changed: reports/clean-room/X25/report.md:145: STG-6: changed since 13e3f3c0
+  changed: reports/clean-room/X25/report.md:149: STG-28: changed since 13e3f3c0
+  changed: reports/clean-room/X25/report.md:153: ADD-14: changed since 13e3f3c0
+  changed: reports/clean-room/X25/report.md:156: OBJ-2: changed since 13e3f3c0
+25 reports, 31 conflicts: 10 withdrawn, 4 class, 17 new-id, 0 unknown; 168 rows changed since their report's commit; 0 warnings

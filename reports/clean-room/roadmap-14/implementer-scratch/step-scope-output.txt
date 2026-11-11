@@ -1,0 +1,43 @@
+| Tests whose rules all sit on pages of | Tests | Old front end passes its check | Program tests | Parse disagreements (tree side, reject side) |
+|---|---|---|---|---|
+| 3 | 3791 | 3775 | 43 | 53, 106 |
+| 4 | 1873 | 1860 | 55 | 29, 19 |
+| templates | 1409 | 1355 | 68 | 134, 97 |
+| none | 0 | 0 | 0 | 0, 0 |
+
+step 3 scope, old front end fails its check: 16
+  MISSED-REJECT	declarations/constexpr/lambda-escalates-runtime.cpp
+  FALSE-REJECT	declarations/structured-bindings/tuple-member-get-type-parameter-uses-free.cpp
+  MISSED-REJECT	expressions/decltype/nested-class-member-evaluated.cpp
+  unsupported	expressions/lambdas/capture-default-in-member-initializer.cpp
+  unsupported	expressions/lambdas/capture-visible-in-trailing-return.cpp
+  FALSE-REJECT	expressions/postfix/ellipsis-argument-conversions.cpp
+  FALSE-REJECT	expressions/postfix/ellipsis-nullptr-becomes-void-pointer.cpp
+  unsupported	expressions/primary/char-named-escape-unknown.cpp
+  FALSE-REJECT	expressions/primary/char-named-escape.cpp
+  unsupported	expressions/primary/fold-expansion.cpp
+  MISSED-REJECT	foundations/constant-evaluation/read-extended-temporary-not-const.cpp
+  unsupported	foundations/constant-evaluation/reference-to-local-not-usable.cpp
+  unsupported	foundations/language-support/ordering-defaulted-specified-needs-conversion.cpp
+  MISSED-REJECT	foundations/names/adl-function-template-parameter-adds-nothing.cpp
+  unsupported	foundations/odr/include-missing-file-angle.cpp
+  MISSED-REJECT	statements/if/constexpr-template-nondependent-call-checked.cpp
+
+step 4 scope, old front end fails its check: 13
+  MISSED-REJECT	classes/comparisons/spaceship-member-returns-non-category.cpp
+  MISSED-REJECT	classes/constructors/base-init-dynamic-cast-early-constant.cpp
+  MISSED-REJECT	classes/copy-move/class-template-ctor-by-value.cpp
+  EDG-AGREES	classes/copy-move/trivially-copyable-member-template-selected.cpp
+  unsupported	classes/operators/literal-operator-template-class-parameter.cpp
+  MISSED-REJECT	expressions/postfix/default-template-argument-incomplete-class.cpp
+  unsupported	overloading/conversion-sequences/conversion-choice-equal-rank-extended-target.cpp
+  unsupported	overloading/conversion-sequences/conversion-choice-equal-rank-source.cpp
+  unsupported	overloading/conversion-sequences/floating-before-rvalue-reference.cpp
+  unsupported	overloading/conversion-sequences/floating-equal-rank.cpp
+  unsupported	overloading/conversion-sequences/overload-set-argument-sequence.cpp
+  MISSED-REJECT	overloading/overload-resolution/address-no-target-auto-template-parameter.cpp
+  unsupported	overloading/overload-resolution/init-direct-explicit-conversion.cpp
+
+run stops by step scope: 3 5, 4 9, templates 9, none 0
+
+step 3 tests with no keyword of a later step: 1890; the old front end passes its check on 1885; parse disagreements 26 on the tree side and 66 reject tests; program tests 3

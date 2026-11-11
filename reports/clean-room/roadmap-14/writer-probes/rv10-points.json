@@ -1,0 +1,32 @@
+{
+ "prelude": "",
+ "template": "{row}\n{col}",
+ "rows": {
+  "R-1 noexcept operand in class reads Holder<Coin>::n, which needs Coin complete": "template <class T> struct Holder { T value; static constexpr bool n = sizeof(T) > 0; };\nstruct Coin { int c; void f() noexcept(Holder<Coin>::n); int d; };\nstatic_assert(noexcept(Coin{}.f()));\nint main() {}",
+  "R-1 noexcept operand in class: Holder<Coin> sees a member declared after the operand": "template <class T> struct Holder { T value; static constexpr int n = sizeof(T); };\nstruct Coin { int c; void f() noexcept(Holder<Coin>::n == 2 * sizeof(int)); int d; };\nstatic_assert(noexcept(Coin{}.f()));\nint main() {}",
+  "R-1 default member initializer reads Holder<Coin>::n": "template <class T> struct Holder { T value; static constexpr int n = sizeof(T); };\nstruct Coin { int c; int size = Holder<Coin>::n; };\nint main() { return Coin{}.size == 2 * sizeof(int) ? 0 : 1; }",
+  "R-1 default template argument of a member template reads Holder<Coin>::n (Q-0406)": "template <class T> struct Holder { T value; static constexpr int n = sizeof(T); };\nstruct Coin { int c; template <int N = Holder<Coin>::n> int f() { return N; } };\nint main() {}",
+  "R-1 default template argument names Holder<Coin> with no member use": "template <class T> struct Holder { T value; };\nstruct Coin { int c; template <class H = Holder<Coin>> int f() { return 0; } };\nint main() {}",
+  "R-2 nested class defined after its enclosing class returns Holder<Inner>": "template <class T> struct Holder { T value; };\nstruct Outer { struct Inner; };\nstruct Outer::Inner { int k; Holder<Inner> wrap() const { return {*this}; } };\nint main() { return Outer::Inner{3}.wrap().value.k == 3 ? 0 : 1; }",
+  "R-2 nested class defined after its enclosing class returns its own type by value": "struct Outer { struct Inner; };\nstruct Outer::Inner { int k; Inner next() const { return {k + 1}; } };\nint main() { return Outer::Inner{3}.next().k == 4 ? 0 : 1; }",
+  "R-2 nested class defined after its enclosing class: a friend returns Holder<Inner>": "template <class T> struct Holder { T value; };\nstruct Outer { struct Inner; };\nstruct Outer::Inner { int k; friend Holder<Inner> wrap(Inner i) { return {i}; } };\nint main() { return wrap(Outer::Inner{3}).value.k == 3 ? 0 : 1; }",
+  "R-2 control: nested class defined after its enclosing class returns a type completed after it": "struct Later;\nstruct Outer { struct Inner; };\nstruct Outer::Inner { Later make() const { throw 0; } };\nstruct Later { int k; };\nint main() {}",
+  "R-3 union int member ended, assigned through its name, read, constant": "using Int = int;\nunion U { int a; float b; };\nconstexpr int f() { U u{1}; u.a.~Int(); u.a = 3; return u.a; }\nstatic_assert(f() == 3);\nint main() {}",
+  "R-3 union int member ended, the other member assigned, read, constant": "using Int = int;\nunion U { int a; float b; };\nconstexpr float f() { U u{1}; u.a.~Int(); u.b = 2.0f; return u.b; }\nstatic_assert(f() == 2.0f);\nint main() {}",
+  "R-3 element of a union's int array member ended, assigned, read, constant": "using Int = int;\nunion U { int a[2]; float b; };\nconstexpr int f() { U u{{1, 2}}; u.a[1].~Int(); u.a[1] = 3; return u.a[1]; }\nstatic_assert(f() == 3);\nint main() {}",
+  "R-3 member int of a struct member of a union ended, assigned, read, constant": "using Int = int;\nstruct P { int x; int y; };\nunion U { P p; float b; };\nconstexpr int f() { U u{{1, 2}}; u.p.y.~Int(); u.p.y = 3; return u.p.y; }\nstatic_assert(f() == 3);\nint main() {}",
+  "R-3 control: struct int member ended, assigned, read, constant": "using Int = int;\nstruct S { int a; float b; };\nconstexpr int f() { S s{1, 0}; s.a.~Int(); s.a = 3; return s.a; }\nstatic_assert(f() == 3);\nint main() {}",
+  "R-4 copy of a constexpr union whose active member is not mutable, beside a mutable one": "union U { mutable int m; int n; };\nconstexpr U a{.n = 1};\nconstexpr U b = a;\nstatic_assert(b.n == 1);\nint main() {}",
+  "R-4 copy of a constexpr struct with a mutable member": "struct S { mutable int m; };\nconstexpr S a{1};\nconstexpr S b = a;\nint main() {}",
+  "R-4 read of the mutable member of a constexpr union": "union U { mutable int m; int n; };\nconstexpr U a{1};\nconstexpr int r = a.m;\nint main() {}",
+  "R-4 copy assignment into a local union from a constexpr union whose active member is mutable": "union U { mutable int m; int n; };\nconstexpr U a{1};\nconstexpr int g() { U b{.n = 2}; b = a; return 1; }\nstatic_assert(g() == 1);\nint main() {}",
+  "R-5 requires expression in a concept, parameter type not valid": "template <class T> T&& value_of();\ntemplate <class R> using It = decltype(value_of<R&>().begin());\ntemplate <class R> concept Steps = requires(It<R> it) { ++it; };\nstatic_assert(!Steps<int>);\nint main() {}",
+  "R-5 requires expression in a variable template, parameter type not valid": "template <class T> T&& value_of();\ntemplate <class R> using It = decltype(value_of<R&>().begin());\ntemplate <class R> constexpr bool steps = requires(It<R> it) { ++it; };\nstatic_assert(!steps<int>);\nint main() {}",
+  "R-5 requires expression in if constexpr, parameter type not valid": "template <class T> T&& value_of();\ntemplate <class R> using It = decltype(value_of<R&>().begin());\ntemplate <class R> constexpr int pick() { if constexpr (requires(It<R> it) { ++it; }) return 1; else return 2; }\nstatic_assert(pick<int>() == 2);\nint main() {}",
+  "R-5 requires expression in a requires clause, parameter type not valid": "template <class T> T&& value_of();\ntemplate <class R> using It = decltype(value_of<R&>().begin());\ntemplate <class R> requires requires(It<R> it) { ++it; } constexpr int pick() { return 1; }\ntemplate <class R> constexpr int pick() { return 2; }\nstatic_assert(pick<int>() == 2);\nint main() {}"
+ },
+ "cols": {
+  "program": ""
+ },
+ "flags": []
+}

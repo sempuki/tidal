@@ -1,0 +1,30 @@
+# Writer probes, roadmap round 14
+
+Commit read: `f77bbe05`. The grids ran with `tools/probe_grid.py --errors`
+on the baseline compilers (Clang 18, Clang 22 in its container and on
+the host, GCC 14, GCC 16 in its container and on the host, EDG 7.0, and
+EDG 7.0 ILP32), each run under the run lock, in a worktree of the
+repository. `writer-scratch/make_grids.py` writes the JSON files. Each
+`.out` file holds the table and the first error of each compiler that
+rejects. The paths of the host compilers in the `.out` files start at
+the worktree.
+
+The grids compile only, with `-c`, so GCC gives the warnings that need
+code generation. A probe that needs a value puts it in a
+`static_assert`, so EDG takes part. The `x24-warnings` grid passes
+`-Werror` with `-Wreturn-type`, so EDG skips it, as it skips the
+warning-flag tests of the matrix.
+
+`writer-scratch/run_probes.py` builds and runs programs on the six
+compilers that build (Clang 18, Clang 22 in its container and on the
+host, GCC 14, GCC 16 in its container and on the host). Its output is
+`run-probes.out`. `d2.cpp` is this round's own probe for X24-1, with one
+`CASE` define for each exit.
+
+| File | Finding | Result |
+|---|---|---|
+| `x24-compile.json`, `.out` | The X24 compile claims, each probe of `reports/clean-room/X24/p/` as written and with each define, the two JMP-17 tests, and rows for X24-2, X24-3, X24-6, and X24-7 | Every compiler: accepts the flag form of a two-loop search as a constant and rejects the `goto` form (`c1`); accepts `k1`, `l1`, and `s1`; rejects `l2`, both forms of `r1`, a `break` outside a loop in a template never instantiated, and the two JMP-17 tests; accepts a `continue`, `break`, or `return` before a later initialized declaration and rejects a `goto` past one (X24-2); rejects a label declared twice and a `continue` outside a loop in a template never instantiated, and a `break` outside a loop in a discarded branch of an instantiated template (X24-3); rejects a `break`, a `continue`, and a `goto` that leave a member function of a local class (X24-6); accepts one label name in a member function of a local class and in its enclosing function (X24-7). Splits: GCC 14 and 16 accept, and Clang and EDG reject, a `goto` to a missing label in a function template never instantiated, a member function of a class template never instantiated, a generic lambda never called, and a discarded branch of a template, instantiated or not (X24-3). |
+| `x24-warnings.json`, `.out` | X24-4, FN-7, under `-Wreturn-type -Werror` | Every Clang and GCC warns when a `goto` leaves a `while (true)` or a `for (;;)` and when a `break` leaves the loop itself. None warns when a `break` leaves only an inner `switch`, `for`, or `while`, when a `goto` stays in the body, or when only a `return` leaves. |
+| `rv10-points.json`, `.out` | RV10-R-1 to R-5 of the read of the RV9 repair diff | Every compiler: accepts `Holder<Coin>` in a `noexcept` operand inside `Coin`, also with a member declared after it, and rejects a default template argument of a member template that reads `Holder<Coin>::n` (R-1); accepts member and friend functions of a nested class defined after its enclosing class that return `Holder<Inner>` or `Inner`, and rejects a return type completed after that definition (R-2); accepts an assignment through the name of an ended `int` union member, and to the other member, in constant evaluation (R-3); gives `false` for a requires expression with a parameter type that is not valid in a concept, a variable template, an `if constexpr` condition, and a requires clause (R-5). Splits: EDG alone rejects `Holder<Coin>` in a default member initializer (R-1); Clang alone rejects the assignment to an ended element of a union's array member, to an ended member of a struct member of a union, and to an ended member of a struct (R-3, Q-0447); Clang and GCC reject, and EDG accepts, the copy of a `constexpr` union whose active member is not `mutable`, the copy of a `constexpr` struct with a `mutable` member, and a read of a `mutable` member of a `constexpr` union; GCC and EDG accept, and Clang rejects, the copy assignment from a union whose active member is `mutable` (R-4, Q-0449). |
+| `grammar-forms.json`, `.out` | One row per form that the front-end rows G166 to G179 name | Every compiler accepts every form, except: EDG rejects `throw()` (G175, Q-0077); Clang rejects the name after `template` with no argument list (G179, Q-0226); GCC rejects `~decltype(t)` (G171, Q-0089) and every compiler rejects `~decltype(*p)`; GCC 14 rejects an attribute before a base (G170, Q-0177). Side finding: GCC alone accepts `int [[maybe_unused]] c;`, where the attribute applies to the type (ATTR-19, ATTR-2). |
+| `run-probes.out`, `d2.cpp` | The X24 run claims and X24-1 for other exits | On each of the six compilers: `c1`, `k1`, `l1`, `s1`, and `f1` exit 0; `d1` and `d1 -DCONT` print the order that X24 claims; a `return` and a throw out of nested loops (`d2` cases 1 and 2) end the inner body's objects, then each inner statement's condition and initializer variables and the range temporary, from the inside out; a `goto` out of an `if` with an init-statement and a condition, a `while` with a condition, and a `switch` with an init-statement, and a `break` out of a `for` (cases 3 to 6), end the body's objects before the statement's own variables. |

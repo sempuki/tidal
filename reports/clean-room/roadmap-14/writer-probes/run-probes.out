@@ -1,0 +1,80 @@
+| Program | Compiler | Result | Output |
+|---|---|---|---|
+| c1 (exit 0 when the claim holds) | clang-18 | exit 0 |  |
+| c1 (exit 0 when the claim holds) | clang-22 | exit 0 |  |
+| c1 (exit 0 when the claim holds) | clang-host | exit 0 |  |
+| c1 (exit 0 when the claim holds) | gcc-14 | exit 0 |  |
+| c1 (exit 0 when the claim holds) | gcc-16 | exit 0 |  |
+| c1 (exit 0 when the claim holds) | gcc-host | exit 0 |  |
+| d1 (goto models break outer) | clang-18 | exit 0 | +outerinit +outerbody +range +rangebody +innerinit +innercond +innerbody -innerbody -innercond -innerinit -rangebody -range -outerbody -outerinit end |
+| d1 (goto models break outer) | clang-22 | exit 0 | +outerinit +outerbody +range +rangebody +innerinit +innercond +innerbody -innerbody -innercond -innerinit -rangebody -range -outerbody -outerinit end |
+| d1 (goto models break outer) | clang-host | exit 0 | +outerinit +outerbody +range +rangebody +innerinit +innercond +innerbody -innerbody -innercond -innerinit -rangebody -range -outerbody -outerinit end |
+| d1 (goto models break outer) | gcc-14 | exit 0 | +outerinit +outerbody +range +rangebody +innerinit +innercond +innerbody -innerbody -innercond -innerinit -rangebody -range -outerbody -outerinit end |
+| d1 (goto models break outer) | gcc-16 | exit 0 | +outerinit +outerbody +range +rangebody +innerinit +innercond +innerbody -innerbody -innercond -innerinit -rangebody -range -outerbody -outerinit end |
+| d1 (goto models break outer) | gcc-host | exit 0 | +outerinit +outerbody +range +rangebody +innerinit +innercond +innerbody -innerbody -innercond -innerinit -rangebody -range -outerbody -outerinit end |
+| d1 -DCONT (goto models continue outer) | clang-18 | exit 0 | +outerinit +outerbody +range +rangebody +innerinit +innercond +innerbody -innerbody -innercond -innerinit -rangebody -range | -outerbody +outerbody +range +rangebody +innerinit +innercond +innerbody -innerbody -innercond -innerinit -rangebody -range | -outerbody -outerinit end |
+| d1 -DCONT (goto models continue outer) | clang-22 | exit 0 | +outerinit +outerbody +range +rangebody +innerinit +innercond +innerbody -innerbody -innercond -innerinit -rangebody -range | -outerbody +outerbody +range +rangebody +innerinit +innercond +innerbody -innerbody -innercond -innerinit -rangebody -range | -outerbody -outerinit end |
+| d1 -DCONT (goto models continue outer) | clang-host | exit 0 | +outerinit +outerbody +range +rangebody +innerinit +innercond +innerbody -innerbody -innercond -innerinit -rangebody -range | -outerbody +outerbody +range +rangebody +innerinit +innercond +innerbody -innerbody -innercond -innerinit -rangebody -range | -outerbody -outerinit end |
+| d1 -DCONT (goto models continue outer) | gcc-14 | exit 0 | +outerinit +outerbody +range +rangebody +innerinit +innercond +innerbody -innerbody -innercond -innerinit -rangebody -range | -outerbody +outerbody +range +rangebody +innerinit +innercond +innerbody -innerbody -innercond -innerinit -rangebody -range | -outerbody -outerinit end |
+| d1 -DCONT (goto models continue outer) | gcc-16 | exit 0 | +outerinit +outerbody +range +rangebody +innerinit +innercond +innerbody -innerbody -innercond -innerinit -rangebody -range | -outerbody +outerbody +range +rangebody +innerinit +innercond +innerbody -innerbody -innercond -innerinit -rangebody -range | -outerbody -outerinit end |
+| d1 -DCONT (goto models continue outer) | gcc-host | exit 0 | +outerinit +outerbody +range +rangebody +innerinit +innercond +innerbody -innerbody -innercond -innerinit -rangebody -range | -outerbody +outerbody +range +rangebody +innerinit +innercond +innerbody -innerbody -innercond -innerinit -rangebody -range | -outerbody -outerinit end |
+| d2 CASE 1: return out of nested loops | clang-18 | exit 0 | +outerinit +outercond +outerbody +range +rangebody +innerinit +innercond +innerbody -innerbody -innercond -innerinit -rangebody -range -outerbody -outercond -outerinit end |
+| d2 CASE 1: return out of nested loops | clang-22 | exit 0 | +outerinit +outercond +outerbody +range +rangebody +innerinit +innercond +innerbody -innerbody -innercond -innerinit -rangebody -range -outerbody -outercond -outerinit end |
+| d2 CASE 1: return out of nested loops | clang-host | exit 0 | +outerinit +outercond +outerbody +range +rangebody +innerinit +innercond +innerbody -innerbody -innercond -innerinit -rangebody -range -outerbody -outercond -outerinit end |
+| d2 CASE 1: return out of nested loops | gcc-14 | exit 0 | +outerinit +outercond +outerbody +range +rangebody +innerinit +innercond +innerbody -innerbody -innercond -innerinit -rangebody -range -outerbody -outercond -outerinit end |
+| d2 CASE 1: return out of nested loops | gcc-16 | exit 0 | +outerinit +outercond +outerbody +range +rangebody +innerinit +innercond +innerbody -innerbody -innercond -innerinit -rangebody -range -outerbody -outercond -outerinit end |
+| d2 CASE 1: return out of nested loops | gcc-host | exit 0 | +outerinit +outercond +outerbody +range +rangebody +innerinit +innercond +innerbody -innerbody -innercond -innerinit -rangebody -range -outerbody -outercond -outerinit end |
+| d2 CASE 2: throw out of nested loops | clang-18 | exit 0 | +outerinit +outercond +outerbody +range +rangebody +innerinit +innercond +innerbody -innerbody -innercond -innerinit -rangebody -range -outerbody -outercond -outerinit caught end |
+| d2 CASE 2: throw out of nested loops | clang-22 | exit 0 | +outerinit +outercond +outerbody +range +rangebody +innerinit +innercond +innerbody -innerbody -innercond -innerinit -rangebody -range -outerbody -outercond -outerinit caught end |
+| d2 CASE 2: throw out of nested loops | clang-host | exit 0 | +outerinit +outercond +outerbody +range +rangebody +innerinit +innercond +innerbody -innerbody -innercond -innerinit -rangebody -range -outerbody -outercond -outerinit caught end |
+| d2 CASE 2: throw out of nested loops | gcc-14 | exit 0 | +outerinit +outercond +outerbody +range +rangebody +innerinit +innercond +innerbody -innerbody -innercond -innerinit -rangebody -range -outerbody -outercond -outerinit caught end |
+| d2 CASE 2: throw out of nested loops | gcc-16 | exit 0 | +outerinit +outercond +outerbody +range +rangebody +innerinit +innercond +innerbody -innerbody -innercond -innerinit -rangebody -range -outerbody -outercond -outerinit caught end |
+| d2 CASE 2: throw out of nested loops | gcc-host | exit 0 | +outerinit +outercond +outerbody +range +rangebody +innerinit +innercond +innerbody -innerbody -innercond -innerinit -rangebody -range -outerbody -outercond -outerinit caught end |
+| d2 CASE 3: goto out of if with init and condition | clang-18 | exit 0 | +ifinit +ifcond +ifbody -ifbody -ifcond -ifinit end |
+| d2 CASE 3: goto out of if with init and condition | clang-22 | exit 0 | +ifinit +ifcond +ifbody -ifbody -ifcond -ifinit end |
+| d2 CASE 3: goto out of if with init and condition | clang-host | exit 0 | +ifinit +ifcond +ifbody -ifbody -ifcond -ifinit end |
+| d2 CASE 3: goto out of if with init and condition | gcc-14 | exit 0 | +ifinit +ifcond +ifbody -ifbody -ifcond -ifinit end |
+| d2 CASE 3: goto out of if with init and condition | gcc-16 | exit 0 | +ifinit +ifcond +ifbody -ifbody -ifcond -ifinit end |
+| d2 CASE 3: goto out of if with init and condition | gcc-host | exit 0 | +ifinit +ifcond +ifbody -ifbody -ifcond -ifinit end |
+| d2 CASE 4: goto out of while with condition | clang-18 | exit 0 | +whilecond +whilebody -whilebody -whilecond end |
+| d2 CASE 4: goto out of while with condition | clang-22 | exit 0 | +whilecond +whilebody -whilebody -whilecond end |
+| d2 CASE 4: goto out of while with condition | clang-host | exit 0 | +whilecond +whilebody -whilebody -whilecond end |
+| d2 CASE 4: goto out of while with condition | gcc-14 | exit 0 | +whilecond +whilebody -whilebody -whilecond end |
+| d2 CASE 4: goto out of while with condition | gcc-16 | exit 0 | +whilecond +whilebody -whilebody -whilecond end |
+| d2 CASE 4: goto out of while with condition | gcc-host | exit 0 | +whilecond +whilebody -whilebody -whilecond end |
+| d2 CASE 5: goto out of switch with init | clang-18 | exit 0 | +swinit +swbody -swbody -swinit end |
+| d2 CASE 5: goto out of switch with init | clang-22 | exit 0 | +swinit +swbody -swbody -swinit end |
+| d2 CASE 5: goto out of switch with init | clang-host | exit 0 | +swinit +swbody -swbody -swinit end |
+| d2 CASE 5: goto out of switch with init | gcc-14 | exit 0 | +swinit +swbody -swbody -swinit end |
+| d2 CASE 5: goto out of switch with init | gcc-16 | exit 0 | +swinit +swbody -swbody -swinit end |
+| d2 CASE 5: goto out of switch with init | gcc-host | exit 0 | +swinit +swbody -swbody -swinit end |
+| d2 CASE 6: break out of for with init and condition | clang-18 | exit 0 | +forinit +forcond +forbody -forbody -forcond -forinit end |
+| d2 CASE 6: break out of for with init and condition | clang-22 | exit 0 | +forinit +forcond +forbody -forbody -forcond -forinit end |
+| d2 CASE 6: break out of for with init and condition | clang-host | exit 0 | +forinit +forcond +forbody -forbody -forcond -forinit end |
+| d2 CASE 6: break out of for with init and condition | gcc-14 | exit 0 | +forinit +forcond +forbody -forbody -forcond -forinit end |
+| d2 CASE 6: break out of for with init and condition | gcc-16 | exit 0 | +forinit +forcond +forbody -forbody -forcond -forinit end |
+| d2 CASE 6: break out of for with init and condition | gcc-host | exit 0 | +forinit +forcond +forbody -forbody -forcond -forinit end |
+| f1 (exit 0 when the claim holds) | clang-18 | exit 0 |  |
+| f1 (exit 0 when the claim holds) | clang-22 | exit 0 |  |
+| f1 (exit 0 when the claim holds) | clang-host | exit 0 |  |
+| f1 (exit 0 when the claim holds) | gcc-14 | exit 0 |  |
+| f1 (exit 0 when the claim holds) | gcc-16 | exit 0 |  |
+| f1 (exit 0 when the claim holds) | gcc-host | exit 0 |  |
+| k1 (exit 0 when the claim holds) | clang-18 | exit 0 |  |
+| k1 (exit 0 when the claim holds) | clang-22 | exit 0 |  |
+| k1 (exit 0 when the claim holds) | clang-host | exit 0 |  |
+| k1 (exit 0 when the claim holds) | gcc-14 | exit 0 |  |
+| k1 (exit 0 when the claim holds) | gcc-16 | exit 0 |  |
+| k1 (exit 0 when the claim holds) | gcc-host | exit 0 |  |
+| l1 (exit 0 when the claim holds) | clang-18 | exit 0 |  |
+| l1 (exit 0 when the claim holds) | clang-22 | exit 0 |  |
+| l1 (exit 0 when the claim holds) | clang-host | exit 0 |  |
+| l1 (exit 0 when the claim holds) | gcc-14 | exit 0 |  |
+| l1 (exit 0 when the claim holds) | gcc-16 | exit 0 |  |
+| l1 (exit 0 when the claim holds) | gcc-host | exit 0 |  |
+| s1 (exit 0 when the claim holds) | clang-18 | exit 0 |  |
+| s1 (exit 0 when the claim holds) | clang-22 | exit 0 |  |
+| s1 (exit 0 when the claim holds) | clang-host | exit 0 |  |
+| s1 (exit 0 when the claim holds) | gcc-14 | exit 0 |  |
+| s1 (exit 0 when the claim holds) | gcc-16 | exit 0 |  |
+| s1 (exit 0 when the claim holds) | gcc-host | exit 0 |  |

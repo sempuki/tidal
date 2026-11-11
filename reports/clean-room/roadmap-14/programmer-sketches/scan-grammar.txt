@@ -1,0 +1,2 @@
+lambda attribute with no template head | declarations/attributes/attribute-positions-base-and-new-bound.cpp:9 | pass | int* list = new int[3] [[tidal::note]];
+lambda attribute with no template head | declarations/attributes/attribute-positions.cpp:8 | pass | int list[3] [[tidal::note]];

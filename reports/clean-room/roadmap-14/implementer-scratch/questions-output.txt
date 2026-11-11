@@ -1,0 +1,17 @@
+74 failing tests; 12 questions named
+Q-0092 (settled; waits for: -): 1 tests, 0 marked: expressions/lambdas/capture-visible-in-trailing-return.cpp
+Q-0231 (settled; waits for: -): 3 tests, 3 marked: templates/instantiation/class-point-static-constexpr-made-at-use.cpp, templates/instantiation/class-static-constexpr-member-initializer-waits.cpp, templates/instantiation/static-inline-member-incomplete-argument.cpp
+Q-0253 (settled; waits for: -): 1 tests, 1 marked: templates/instantiation/local-class-default-argument.cpp
+Q-0257 (settled; waits for: -): 1 tests, 1 marked: templates/instantiation/class-point-not-later.cpp
+Q-0268 (settled; waits for: -): 1 tests, 0 marked: templates/constraints/friend-distinct-from-namespace.cpp
+Q-0291 (settled; waits for: -): 1 tests, 0 marked: templates/constraints/explicit-instantiation-member-not-satisfied.cpp
+Q-0339 (provisional; waits for: newest families that agree): 1 tests, 0 marked: classes/copy-move/trivially-copyable-member-template-selected.cpp
+Q-0406 (provisional; waits for: the maintainer (pending.md row 4)): 1 tests, 0 marked: expressions/postfix/default-template-argument-incomplete-class.cpp
+Q-0427 (provisional; waits for: a use of DEP-P5): 3 tests, 3 marked: templates/dependent-names/member-template-current-instantiation-pointer.cpp, templates/dependent-names/member-template-non-dependent-base.cpp, templates/dependent-names/member-template-through-current-instantiation-object.cpp
+Q-0432 (provisional; waits for: a use of DEP-P2): 2 tests, 2 marked: templates/dependent-names/sizeof-value-dependent-operand-call-bound-early.cpp, templates/dependent-names/sizeof-value-dependent-operand-no-typename.cpp
+Q-0433 (provisional; waits for: a review (doubt)): 1 tests, 1 marked: templates/instantiation/class-point-static-const-member.cpp
+Q-0441 (provisional; waits for: a review (doubt); newest families that agree): 1 tests, 1 marked: templates/instantiation/static-inline-member-incomplete-argument.cpp
+
+questions in the G166 to G179 rows and report-rw1 section 10:
+Q-0077 (provisional; waits for: the maintainer (pending.md row 4))
+Q-0226 (provisional; waits for: the maintainer (pending.md row 4))

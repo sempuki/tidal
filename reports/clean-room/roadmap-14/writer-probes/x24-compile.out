@@ -1,0 +1,202 @@
+| | program |
+|---|---|
+| c1.cpp as written | accept |
+| c1.cpp GOTO | reject |
+| k1.cpp as written | accept |
+| l1.cpp as written | accept |
+| l2.cpp as written | reject |
+| r1.cpp as written | reject |
+| r1.cpp DEP | reject |
+| s1.cpp as written | accept |
+| t1.cpp TEMPLATE | accept: gcc-host, gcc-16, gcc-14; reject: edg-7.0, clang-host, clang-18, edg-7.0-ilp32, clang-22 |
+| t1.cpp DISCARDED | reject |
+| t1.cpp TEMPLATE_DISCARDED | accept: gcc-16, gcc-14, gcc-host; reject: edg-7.0-ilp32, clang-host, edg-7.0, clang-18, clang-22 |
+| t1.cpp TEMPLATE_BREAK | reject |
+| JMP-17 test break-with-label.cpp | reject |
+| JMP-17 test continue-with-label.cpp | reject |
+| X24-2 continue before a later declaration of a class with a constructor and destructor, constant | accept |
+| X24-2 break before a later initialized declaration | accept |
+| X24-2 return before a later initialized declaration | accept |
+| X24-2 control: goto to the end of the body past an initialized declaration | reject |
+| X24-2 control: goto forward past an initialized declaration in scope at the label | reject |
+| X24-3 goto to a missing label in a member function of a class template, never instantiated | accept: gcc-14, gcc-16, gcc-host; reject: edg-7.0, edg-7.0-ilp32, clang-host, clang-18, clang-22 |
+| X24-3 goto to a missing label in a generic lambda that is never called | accept: gcc-host, gcc-14, gcc-16; reject: edg-7.0, edg-7.0-ilp32, clang-host, clang-18, clang-22 |
+| X24-3 goto to a missing label in a function template, instantiated | reject |
+| X24-3 a label declared twice in a function template, never instantiated | reject |
+| X24-3 continue outside a loop in a function template, never instantiated | reject |
+| X24-3 break outside a loop in a discarded branch of an instantiated template | reject |
+| X24-3 goto to a missing label in a discarded branch of a template, never instantiated | accept: gcc-host, gcc-14, gcc-16; reject: edg-7.0-ilp32, edg-7.0, clang-host, clang-18, clang-22 |
+| X24-6 continue in a member function of a local class, inside a loop | reject |
+| X24-6 goto from a member function of a local class to a label of the enclosing function | reject |
+| X24-6 control: break in a lambda body inside a loop | reject |
+| X24-7 one label name in a member function of a local class and in its enclosing function | accept |
+| X24-7 control: one label name twice in one lambda body | reject |
+c1.cpp GOTO / program / clang-18: /tidal/build/probes/x24-compile/0001-c1-cpp-goto--program.cpp:22:15: error: static assertion expression is not an integral constant expression
+c1.cpp GOTO / program / clang-22: /tidal/build/probes/x24-compile/0001-c1-cpp-goto--program.cpp:22:15: error: static assertion expression is not an integral constant expression
+c1.cpp GOTO / program / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/rv9c/build/clang-host/probes/x24-compile/0001-c1-cpp-goto--program.cpp:22:15: error: static assertion expression is not an integral constant expression
+c1.cpp GOTO / program / edg-7.0: error: expression must have a constant value
+c1.cpp GOTO / program / edg-7.0-ilp32: error: expression must have a constant value
+c1.cpp GOTO / program / gcc-14: /tidal/build/probes/x24-compile/0001-c1-cpp-goto--program.cpp:22:26: error: non-constant condition for static assertion
+c1.cpp GOTO / program / gcc-16: /tidal/build/probes/x24-compile/0001-c1-cpp-goto--program.cpp:22:26: error: non-constant condition for static assertion
+c1.cpp GOTO / program / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/rv9c/build/gcc-host/probes/x24-compile/0001-c1-cpp-goto--program.cpp:22:26: error: non-constant condition for static assertion
+l2.cpp as written / program / clang-18: /tidal/build/probes/x24-compile/0004-l2-cpp-as-written--program.cpp:5:27: error: 'break' statement not in loop or switch statement
+l2.cpp as written / program / clang-22: /tidal/build/probes/x24-compile/0004-l2-cpp-as-written--program.cpp:5:27: error: 'break' statement not in loop or switch statement
+l2.cpp as written / program / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/rv9c/build/clang-host/probes/x24-compile/0004-l2-cpp-as-written--program.cpp:5:27: error: 'break' statement not in loop or switch statement
+l2.cpp as written / program / edg-7.0: error: a break statement may only be used within a loop or switch
+l2.cpp as written / program / edg-7.0-ilp32: error: a break statement may only be used within a loop or switch
+l2.cpp as written / program / gcc-14: /tidal/build/probes/x24-compile/0004-l2-cpp-as-written--program.cpp:5:27: error: break statement not within loop or switch
+l2.cpp as written / program / gcc-16: /tidal/build/probes/x24-compile/0004-l2-cpp-as-written--program.cpp:5:27: error: break statement not within loop or switch
+l2.cpp as written / program / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/rv9c/build/gcc-host/probes/x24-compile/0004-l2-cpp-as-written--program.cpp:5:27: error: break statement not within loop or switch
+r1.cpp as written / program / clang-18: /tidal/build/probes/x24-compile/0005-r1-cpp-as-written--program.cpp:9:8: error: 'break' statement not in loop or switch statement
+r1.cpp as written / program / clang-22: /tidal/build/probes/x24-compile/0005-r1-cpp-as-written--program.cpp:9:8: error: 'break' statement not in loop or switch statement
+r1.cpp as written / program / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/rv9c/build/clang-host/probes/x24-compile/0005-r1-cpp-as-written--program.cpp:9:8: error: 'break' statement not in loop or switch statement
+r1.cpp as written / program / edg-7.0: error: a break statement may only be used within a loop or switch
+r1.cpp as written / program / edg-7.0-ilp32: error: a break statement may only be used within a loop or switch
+r1.cpp as written / program / gcc-14: /tidal/build/probes/x24-compile/0005-r1-cpp-as-written--program.cpp:9:8: error: break statement not within loop or switch
+r1.cpp as written / program / gcc-16: /tidal/build/probes/x24-compile/0005-r1-cpp-as-written--program.cpp:9:8: error: break statement not within loop or switch [-Wtemplate-body]
+r1.cpp as written / program / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/rv9c/build/gcc-host/probes/x24-compile/0005-r1-cpp-as-written--program.cpp:9:8: error: break statement not within loop or switch [-Wtemplate-body]
+r1.cpp DEP / program / clang-18: /tidal/build/probes/x24-compile/0006-r1-cpp-dep--program.cpp:8:22: error: 'break' statement not in loop or switch statement
+r1.cpp DEP / program / clang-22: /tidal/build/probes/x24-compile/0006-r1-cpp-dep--program.cpp:8:22: error: 'break' statement not in loop or switch statement
+r1.cpp DEP / program / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/rv9c/build/clang-host/probes/x24-compile/0006-r1-cpp-dep--program.cpp:8:22: error: 'break' statement not in loop or switch statement
+r1.cpp DEP / program / edg-7.0: "/tidal/build/probes/x24-compile/0006-r1-cpp-dep--program.cpp", line 8: error:
+r1.cpp DEP / program / edg-7.0-ilp32: "/tidal/build/probes/x24-compile/0006-r1-cpp-dep--program.cpp", line 8: error:
+r1.cpp DEP / program / gcc-14: /tidal/build/probes/x24-compile/0006-r1-cpp-dep--program.cpp:8:22: error: break statement not within loop or switch
+r1.cpp DEP / program / gcc-16: /tidal/build/probes/x24-compile/0006-r1-cpp-dep--program.cpp:8:22: error: break statement not within loop or switch [-Wtemplate-body]
+r1.cpp DEP / program / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/rv9c/build/gcc-host/probes/x24-compile/0006-r1-cpp-dep--program.cpp:8:22: error: break statement not within loop or switch [-Wtemplate-body]
+t1.cpp TEMPLATE / program / clang-18: /tidal/build/probes/x24-compile/0008-t1-cpp-template--program.cpp:4:36: error: use of undeclared label 'nowhere'
+t1.cpp TEMPLATE / program / clang-22: /tidal/build/probes/x24-compile/0008-t1-cpp-template--program.cpp:4:36: error: use of undeclared label 'nowhere'
+t1.cpp TEMPLATE / program / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/rv9c/build/clang-host/probes/x24-compile/0008-t1-cpp-template--program.cpp:4:36: error: use of undeclared label 'nowhere'
+t1.cpp TEMPLATE / program / edg-7.0: error: label "nowhere" was referenced but not defined
+t1.cpp TEMPLATE / program / edg-7.0-ilp32: error: label "nowhere" was referenced but not defined
+t1.cpp DISCARDED / program / clang-18: /tidal/build/probes/x24-compile/0009-t1-cpp-discarded--program.cpp:7:40: error: use of undeclared label 'nowhere'
+t1.cpp DISCARDED / program / clang-22: /tidal/build/probes/x24-compile/0009-t1-cpp-discarded--program.cpp:7:40: error: use of undeclared label 'nowhere'
+t1.cpp DISCARDED / program / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/rv9c/build/clang-host/probes/x24-compile/0009-t1-cpp-discarded--program.cpp:7:40: error: use of undeclared label 'nowhere'
+t1.cpp DISCARDED / program / edg-7.0: error: label "nowhere" was referenced but not defined
+t1.cpp DISCARDED / program / edg-7.0-ilp32: error: label "nowhere" was referenced but not defined
+t1.cpp DISCARDED / program / gcc-14: /tidal/build/probes/x24-compile/0009-t1-cpp-discarded--program.cpp:7:40: error: label 'nowhere' used but not defined
+t1.cpp DISCARDED / program / gcc-16: /tidal/build/probes/x24-compile/0009-t1-cpp-discarded--program.cpp:7:40: error: label 'nowhere' used but not defined
+t1.cpp DISCARDED / program / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/rv9c/build/gcc-host/probes/x24-compile/0009-t1-cpp-discarded--program.cpp:7:40: error: label ‘nowhere’ used but not defined
+t1.cpp TEMPLATE_DISCARDED / program / clang-18: /tidal/build/probes/x24-compile/0010-t1-cpp-template-discarded--program.cpp:10:68: error: use of undeclared label 'nowhere'
+t1.cpp TEMPLATE_DISCARDED / program / clang-22: /tidal/build/probes/x24-compile/0010-t1-cpp-template-discarded--program.cpp:10:68: error: use of undeclared label 'nowhere'
+t1.cpp TEMPLATE_DISCARDED / program / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/rv9c/build/clang-host/probes/x24-compile/0010-t1-cpp-template-discarded--program.cpp:10:68: error: use of undeclared label 'nowhere'
+t1.cpp TEMPLATE_DISCARDED / program / edg-7.0: line 10: error: label "nowhere" was referenced but not defined
+t1.cpp TEMPLATE_DISCARDED / program / edg-7.0-ilp32: line 10: error: label "nowhere" was referenced but not defined
+t1.cpp TEMPLATE_BREAK / program / clang-18: /tidal/build/probes/x24-compile/0011-t1-cpp-template-break--program.cpp:14:31: error: 'break' statement not in loop or switch statement
+t1.cpp TEMPLATE_BREAK / program / clang-22: /tidal/build/probes/x24-compile/0011-t1-cpp-template-break--program.cpp:14:31: error: 'break' statement not in loop or switch statement
+t1.cpp TEMPLATE_BREAK / program / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/rv9c/build/clang-host/probes/x24-compile/0011-t1-cpp-template-break--program.cpp:14:31: error: 'break' statement not in loop or switch statement
+t1.cpp TEMPLATE_BREAK / program / edg-7.0: 14: error: a break statement may only be used within a loop or switch
+t1.cpp TEMPLATE_BREAK / program / edg-7.0-ilp32: 14: error: a break statement may only be used within a loop or switch
+t1.cpp TEMPLATE_BREAK / program / gcc-14: /tidal/build/probes/x24-compile/0011-t1-cpp-template-break--program.cpp:14:31: error: break statement not within loop or switch
+t1.cpp TEMPLATE_BREAK / program / gcc-16: /tidal/build/probes/x24-compile/0011-t1-cpp-template-break--program.cpp:14:31: error: break statement not within loop or switch [-Wtemplate-body]
+t1.cpp TEMPLATE_BREAK / program / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/rv9c/build/gcc-host/probes/x24-compile/0011-t1-cpp-template-break--program.cpp:14:31: error: break statement not within loop or switch [-Wtemplate-body]
+JMP-17 test break-with-label.cpp / program / clang-18: /tidal/build/probes/x24-compile/0012-jmp-17-test-break-with-label-cpp--program.cpp:11:28: error: expected ';' after break statement
+JMP-17 test break-with-label.cpp / program / clang-22: /tidal/build/probes/x24-compile/0012-jmp-17-test-break-with-label-cpp--program.cpp:11:29: error: named 'break' is only supported in C2y
+JMP-17 test break-with-label.cpp / program / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/rv9c/build/clang-host/probes/x24-compile/0012-jmp-17-test-break-with-label-cpp--program.cpp:11:29: error: named 'break' is only supported in C2y
+JMP-17 test break-with-label.cpp / program / edg-7.0: .cpp", line 11: error: expected a ";"
+JMP-17 test break-with-label.cpp / program / edg-7.0-ilp32: .cpp", line 11: error: expected a ";"
+JMP-17 test break-with-label.cpp / program / gcc-14: /tidal/build/probes/x24-compile/0012-jmp-17-test-break-with-label-cpp--program.cpp:11:28: error: expected ';' before 'outer'
+JMP-17 test break-with-label.cpp / program / gcc-16: /tidal/build/probes/x24-compile/0012-jmp-17-test-break-with-label-cpp--program.cpp:11:28: error: expected ';' before 'outer'
+JMP-17 test break-with-label.cpp / program / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/rv9c/build/gcc-host/probes/x24-compile/0012-jmp-17-test-break-with-label-cpp--program.cpp:11:28: error: expected ‘;’ before ‘outer’
+JMP-17 test continue-with-label.cpp / program / clang-18: /tidal/build/probes/x24-compile/0013-jmp-17-test-continue-with-label-cpp--program.cpp:11:31: error: expected ';' after continue statement
+JMP-17 test continue-with-label.cpp / program / clang-22: /tidal/build/probes/x24-compile/0013-jmp-17-test-continue-with-label-cpp--program.cpp:11:32: error: named 'continue' is only supported in C2y
+JMP-17 test continue-with-label.cpp / program / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/rv9c/build/clang-host/probes/x24-compile/0013-jmp-17-test-continue-with-label-cpp--program.cpp:11:32: error: named 'continue' is only supported in C2y
+JMP-17 test continue-with-label.cpp / program / edg-7.0: ram.cpp", line 11: error: expected a ";"
+JMP-17 test continue-with-label.cpp / program / edg-7.0-ilp32: ram.cpp", line 11: error: expected a ";"
+JMP-17 test continue-with-label.cpp / program / gcc-14: /tidal/build/probes/x24-compile/0013-jmp-17-test-continue-with-label-cpp--program.cpp:11:31: error: expected ';' before 'outer'
+JMP-17 test continue-with-label.cpp / program / gcc-16: /tidal/build/probes/x24-compile/0013-jmp-17-test-continue-with-label-cpp--program.cpp:11:31: error: expected ';' before 'outer'
+JMP-17 test continue-with-label.cpp / program / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/rv9c/build/gcc-host/probes/x24-compile/0013-jmp-17-test-continue-with-label-cpp--program.cpp:11:31: error: expected ‘;’ before ‘outer’
+X24-2 control: goto to the end of the body past an initialized declaration / program / clang-18: /tidal/build/probes/x24-compile/0017-x24-2-control-goto-to-the-end-of-the-body-past-an-initialized-declaration--program.cpp:1:63: error: cannot jump from this goto statement to its label
+X24-2 control: goto to the end of the body past an initialized declaration / program / clang-22: /tidal/build/probes/x24-compile/0017-x24-2-control-goto-to-the-end-of-the-body-past-an-initialized-declaration--program.cpp:1:63: error: cannot jump from this goto statement to its label
+X24-2 control: goto to the end of the body past an initialized declaration / program / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/rv9c/build/clang-host/probes/x24-compile/0017-x24-2-control-goto-to-the-end-of-the-body-past-an-initialized-declaration--program.cpp:1:63: error: cannot jump from this goto statement to its label
+X24-2 control: goto to the end of the body past an initialized declaration / program / edg-7.0: -past-an-initialized-declaration--program.cpp", line 1: error:
+X24-2 control: goto to the end of the body past an initialized declaration / program / edg-7.0-ilp32: -past-an-initialized-declaration--program.cpp", line 1: error:
+X24-2 control: goto to the end of the body past an initialized declaration / program / gcc-14: /tidal/build/probes/x24-compile/0017-x24-2-control-goto-to-the-end-of-the-body-past-an-initialized-declaration--program.cpp:1:115: error: jump to label 'end'
+X24-2 control: goto to the end of the body past an initialized declaration / program / gcc-16: /tidal/build/probes/x24-compile/0017-x24-2-control-goto-to-the-end-of-the-body-past-an-initialized-declaration--program.cpp:1:115: error: jump to label 'end'
+X24-2 control: goto to the end of the body past an initialized declaration / program / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/rv9c/build/gcc-host/probes/x24-compile/0017-x24-2-control-goto-to-the-end-of-the-body-past-an-initialized-declaration--program.cpp:1:115: error: jump to label ‘end’
+X24-2 control: goto forward past an initialized declaration in scope at the label / program / clang-18: /tidal/build/probes/x24-compile/0018-x24-2-control-goto-forward-past-an-initialized-declaration-in-scope-at-the-label--program.cpp:1:23: error: cannot jump from this goto statement to its label
+X24-2 control: goto forward past an initialized declaration in scope at the label / program / clang-22: /tidal/build/probes/x24-compile/0018-x24-2-control-goto-forward-past-an-initialized-declaration-in-scope-at-the-label--program.cpp:1:23: error: cannot jump from this goto statement to its label
+X24-2 control: goto forward past an initialized declaration in scope at the label / program / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/rv9c/build/clang-host/probes/x24-compile/0018-x24-2-control-goto-forward-past-an-initialized-declaration-in-scope-at-the-label--program.cpp:1:23: error: cannot jump from this goto statement to its label
+X24-2 control: goto forward past an initialized declaration in scope at the label / program / edg-7.0: lized-declaration-in-scope-at-the-label--program.cpp", line 1: error:
+X24-2 control: goto forward past an initialized declaration in scope at the label / program / edg-7.0-ilp32: lized-declaration-in-scope-at-the-label--program.cpp", line 1: error:
+X24-2 control: goto forward past an initialized declaration in scope at the label / program / gcc-14: /tidal/build/probes/x24-compile/0018-x24-2-control-goto-forward-past-an-initialized-declaration-in-scope-at-the-label--program.cpp:1:45: error: jump to label 'next'
+X24-2 control: goto forward past an initialized declaration in scope at the label / program / gcc-16: /tidal/build/probes/x24-compile/0018-x24-2-control-goto-forward-past-an-initialized-declaration-in-scope-at-the-label--program.cpp:1:45: error: jump to label 'next'
+X24-2 control: goto forward past an initialized declaration in scope at the label / program / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/rv9c/build/gcc-host/probes/x24-compile/0018-x24-2-control-goto-forward-past-an-initialized-declaration-in-scope-at-the-label--program.cpp:1:45: error: jump to label ‘next’
+X24-3 goto to a missing label in a member function of a class template, never instantiated / program / clang-18: /tidal/build/probes/x24-compile/0019-x24-3-goto-to-a-missing-label-in-a-member-function-of-a-class-template-never-instantiated--program.cpp:1:47: error: use of undeclared label 'nowhere'
+X24-3 goto to a missing label in a member function of a class template, never instantiated / program / clang-22: /tidal/build/probes/x24-compile/0019-x24-3-goto-to-a-missing-label-in-a-member-function-of-a-class-template-never-instantiated--program.cpp:1:47: error: use of undeclared label 'nowhere'
+X24-3 goto to a missing label in a member function of a class template, never instantiated / program / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/rv9c/build/clang-host/probes/x24-compile/0019-x24-3-goto-to-a-missing-label-in-a-member-function-of-a-class-template-never-instantiated--program.cpp:1:47: error: use of undeclared label 'nowhere'
+X24-3 goto to a missing label in a member function of a class template, never instantiated / program / edg-7.0: 1: error: label "nowhere" was referenced but not defined
+X24-3 goto to a missing label in a member function of a class template, never instantiated / program / edg-7.0-ilp32: 1: error: label "nowhere" was referenced but not defined
+X24-3 goto to a missing label in a generic lambda that is never called / program / clang-18: /tidal/build/probes/x24-compile/0020-x24-3-goto-to-a-missing-label-in-a-generic-lambda-that-is-never-called--program.cpp:1:26: error: use of undeclared label 'nowhere'
+X24-3 goto to a missing label in a generic lambda that is never called / program / clang-22: /tidal/build/probes/x24-compile/0020-x24-3-goto-to-a-missing-label-in-a-generic-lambda-that-is-never-called--program.cpp:1:26: error: use of undeclared label 'nowhere'
+X24-3 goto to a missing label in a generic lambda that is never called / program / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/rv9c/build/clang-host/probes/x24-compile/0020-x24-3-goto-to-a-missing-label-in-a-generic-lambda-that-is-never-called--program.cpp:1:26: error: use of undeclared label 'nowhere'
+X24-3 goto to a missing label in a generic lambda that is never called / program / edg-7.0: c-lambda-that-is-never-called--program.cpp", line 1: error: label
+X24-3 goto to a missing label in a generic lambda that is never called / program / edg-7.0-ilp32: c-lambda-that-is-never-called--program.cpp", line 1: error: label
+X24-3 goto to a missing label in a function template, instantiated / program / clang-18: /tidal/build/probes/x24-compile/0021-x24-3-goto-to-a-missing-label-in-a-function-template-instantiated--program.cpp:1:36: error: use of undeclared label 'nowhere'
+X24-3 goto to a missing label in a function template, instantiated / program / clang-22: /tidal/build/probes/x24-compile/0021-x24-3-goto-to-a-missing-label-in-a-function-template-instantiated--program.cpp:1:36: error: use of undeclared label 'nowhere'
+X24-3 goto to a missing label in a function template, instantiated / program / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/rv9c/build/clang-host/probes/x24-compile/0021-x24-3-goto-to-a-missing-label-in-a-function-template-instantiated--program.cpp:1:36: error: use of undeclared label 'nowhere'
+X24-3 goto to a missing label in a function template, instantiated / program / edg-7.0: on-template-instantiated--program.cpp", line 1: error: label
+X24-3 goto to a missing label in a function template, instantiated / program / edg-7.0-ilp32: on-template-instantiated--program.cpp", line 1: error: label
+X24-3 goto to a missing label in a function template, instantiated / program / gcc-14: /tidal/build/probes/x24-compile/0021-x24-3-goto-to-a-missing-label-in-a-function-template-instantiated--program.cpp:1:36: error: label 'nowhere' used but not defined
+X24-3 goto to a missing label in a function template, instantiated / program / gcc-16: /tidal/build/probes/x24-compile/0021-x24-3-goto-to-a-missing-label-in-a-function-template-instantiated--program.cpp:1:36: error: label 'nowhere' used but not defined
+X24-3 goto to a missing label in a function template, instantiated / program / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/rv9c/build/gcc-host/probes/x24-compile/0021-x24-3-goto-to-a-missing-label-in-a-function-template-instantiated--program.cpp:1:36: error: label ‘nowhere’ used but not defined
+X24-3 a label declared twice in a function template, never instantiated / program / clang-18: /tidal/build/probes/x24-compile/0022-x24-3-a-label-declared-twice-in-a-function-template-never-instantiated--program.cpp:1:35: error: redefinition of label 'a'
+X24-3 a label declared twice in a function template, never instantiated / program / clang-22: /tidal/build/probes/x24-compile/0022-x24-3-a-label-declared-twice-in-a-function-template-never-instantiated--program.cpp:1:35: error: redefinition of label 'a'
+X24-3 a label declared twice in a function template, never instantiated / program / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/rv9c/build/clang-host/probes/x24-compile/0022-x24-3-a-label-declared-twice-in-a-function-template-never-instantiated--program.cpp:1:35: error: redefinition of label 'a'
+X24-3 a label declared twice in a function template, never instantiated / program / edg-7.0: n-template-never-instantiated--program.cpp", line 1: error: label "a"
+X24-3 a label declared twice in a function template, never instantiated / program / edg-7.0-ilp32: n-template-never-instantiated--program.cpp", line 1: error: label "a"
+X24-3 a label declared twice in a function template, never instantiated / program / gcc-14: /tidal/build/probes/x24-compile/0022-x24-3-a-label-declared-twice-in-a-function-template-never-instantiated--program.cpp:1:35: error: duplicate label 'a'
+X24-3 a label declared twice in a function template, never instantiated / program / gcc-16: /tidal/build/probes/x24-compile/0022-x24-3-a-label-declared-twice-in-a-function-template-never-instantiated--program.cpp:1:35: error: duplicate label 'a' [-Wtemplate-body]
+X24-3 a label declared twice in a function template, never instantiated / program / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/rv9c/build/gcc-host/probes/x24-compile/0022-x24-3-a-label-declared-twice-in-a-function-template-never-instantiated--program.cpp:1:35: error: duplicate label ‘a’ [-Wtemplate-body]
+X24-3 continue outside a loop in a function template, never instantiated / program / clang-18: /tidal/build/probes/x24-compile/0023-x24-3-continue-outside-a-loop-in-a-function-template-never-instantiated--program.cpp:1:31: error: 'continue' statement not in loop statement
+X24-3 continue outside a loop in a function template, never instantiated / program / clang-22: /tidal/build/probes/x24-compile/0023-x24-3-continue-outside-a-loop-in-a-function-template-never-instantiated--program.cpp:1:31: error: 'continue' statement not in loop statement
+X24-3 continue outside a loop in a function template, never instantiated / program / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/rv9c/build/clang-host/probes/x24-compile/0023-x24-3-continue-outside-a-loop-in-a-function-template-never-instantiated--program.cpp:1:31: error: 'continue' statement not in loop statement
+X24-3 continue outside a loop in a function template, never instantiated / program / edg-7.0: on-template-never-instantiated--program.cpp", line 1: error: a
+X24-3 continue outside a loop in a function template, never instantiated / program / edg-7.0-ilp32: on-template-never-instantiated--program.cpp", line 1: error: a
+X24-3 continue outside a loop in a function template, never instantiated / program / gcc-14: /tidal/build/probes/x24-compile/0023-x24-3-continue-outside-a-loop-in-a-function-template-never-instantiated--program.cpp:1:31: error: continue statement not within a loop
+X24-3 continue outside a loop in a function template, never instantiated / program / gcc-16: /tidal/build/probes/x24-compile/0023-x24-3-continue-outside-a-loop-in-a-function-template-never-instantiated--program.cpp:1:31: error: continue statement not within a loop [-Wtemplate-body]
+X24-3 continue outside a loop in a function template, never instantiated / program / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/rv9c/build/gcc-host/probes/x24-compile/0023-x24-3-continue-outside-a-loop-in-a-function-template-never-instantiated--program.cpp:1:31: error: continue statement not within a loop [-Wtemplate-body]
+X24-3 break outside a loop in a discarded branch of an instantiated template / program / clang-18: /tidal/build/probes/x24-compile/0024-x24-3-break-outside-a-loop-in-a-discarded-branch-of-an-instantiated-template--program.cpp:1:63: error: 'break' statement not in loop or switch statement
+X24-3 break outside a loop in a discarded branch of an instantiated template / program / clang-22: /tidal/build/probes/x24-compile/0024-x24-3-break-outside-a-loop-in-a-discarded-branch-of-an-instantiated-template--program.cpp:1:63: error: 'break' statement not in loop or switch statement
+X24-3 break outside a loop in a discarded branch of an instantiated template / program / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/rv9c/build/clang-host/probes/x24-compile/0024-x24-3-break-outside-a-loop-in-a-discarded-branch-of-an-instantiated-template--program.cpp:1:63: error: 'break' statement not in loop or switch statement
+X24-3 break outside a loop in a discarded branch of an instantiated template / program / edg-7.0: -branch-of-an-instantiated-template--program.cpp", line 1: error: a
+X24-3 break outside a loop in a discarded branch of an instantiated template / program / edg-7.0-ilp32: -branch-of-an-instantiated-template--program.cpp", line 1: error: a
+X24-3 break outside a loop in a discarded branch of an instantiated template / program / gcc-14: /tidal/build/probes/x24-compile/0024-x24-3-break-outside-a-loop-in-a-discarded-branch-of-an-instantiated-template--program.cpp:1:63: error: break statement not within loop or switch
+X24-3 break outside a loop in a discarded branch of an instantiated template / program / gcc-16: /tidal/build/probes/x24-compile/0024-x24-3-break-outside-a-loop-in-a-discarded-branch-of-an-instantiated-template--program.cpp:1:63: error: break statement not within loop or switch [-Wtemplate-body]
+X24-3 break outside a loop in a discarded branch of an instantiated template / program / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/rv9c/build/gcc-host/probes/x24-compile/0024-x24-3-break-outside-a-loop-in-a-discarded-branch-of-an-instantiated-template--program.cpp:1:63: error: break statement not within loop or switch [-Wtemplate-body]
+X24-3 goto to a missing label in a discarded branch of a template, never instantiated / program / clang-18: /tidal/build/probes/x24-compile/0025-x24-3-goto-to-a-missing-label-in-a-discarded-branch-of-a-template-never-instantiated--program.cpp:1:68: error: use of undeclared label 'nowhere'
+X24-3 goto to a missing label in a discarded branch of a template, never instantiated / program / clang-22: /tidal/build/probes/x24-compile/0025-x24-3-goto-to-a-missing-label-in-a-discarded-branch-of-a-template-never-instantiated--program.cpp:1:68: error: use of undeclared label 'nowhere'
+X24-3 goto to a missing label in a discarded branch of a template, never instantiated / program / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/rv9c/build/clang-host/probes/x24-compile/0025-x24-3-goto-to-a-missing-label-in-a-discarded-branch-of-a-template-never-instantiated--program.cpp:1:68: error: use of undeclared label 'nowhere'
+X24-3 goto to a missing label in a discarded branch of a template, never instantiated / program / edg-7.0: error: label "nowhere" was referenced but not defined
+X24-3 goto to a missing label in a discarded branch of a template, never instantiated / program / edg-7.0-ilp32: error: label "nowhere" was referenced but not defined
+X24-6 continue in a member function of a local class, inside a loop / program / clang-18: /tidal/build/probes/x24-compile/0026-x24-6-continue-in-a-member-function-of-a-local-class-inside-a-loop--program.cpp:1:64: error: 'continue' statement not in loop statement
+X24-6 continue in a member function of a local class, inside a loop / program / clang-22: /tidal/build/probes/x24-compile/0026-x24-6-continue-in-a-member-function-of-a-local-class-inside-a-loop--program.cpp:1:64: error: 'continue' statement not in loop statement
+X24-6 continue in a member function of a local class, inside a loop / program / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/rv9c/build/clang-host/probes/x24-compile/0026-x24-6-continue-in-a-member-function-of-a-local-class-inside-a-loop--program.cpp:1:64: error: 'continue' statement not in loop statement
+X24-6 continue in a member function of a local class, inside a loop / program / edg-7.0: local-class-inside-a-loop--program.cpp", line 1: error: a continue
+X24-6 continue in a member function of a local class, inside a loop / program / edg-7.0-ilp32: local-class-inside-a-loop--program.cpp", line 1: error: a continue
+X24-6 continue in a member function of a local class, inside a loop / program / gcc-14: /tidal/build/probes/x24-compile/0026-x24-6-continue-in-a-member-function-of-a-local-class-inside-a-loop--program.cpp:1:64: error: continue statement not within a loop
+X24-6 continue in a member function of a local class, inside a loop / program / gcc-16: /tidal/build/probes/x24-compile/0026-x24-6-continue-in-a-member-function-of-a-local-class-inside-a-loop--program.cpp:1:64: error: continue statement not within a loop
+X24-6 continue in a member function of a local class, inside a loop / program / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/rv9c/build/gcc-host/probes/x24-compile/0026-x24-6-continue-in-a-member-function-of-a-local-class-inside-a-loop--program.cpp:1:64: error: continue statement not within a loop
+X24-6 goto from a member function of a local class to a label of the enclosing function / program / clang-18: /tidal/build/probes/x24-compile/0027-x24-6-goto-from-a-member-function-of-a-local-class-to-a-label-of-the-enclosing-function--program.cpp:1:39: error: use of undeclared label 'out'
+X24-6 goto from a member function of a local class to a label of the enclosing function / program / clang-22: /tidal/build/probes/x24-compile/0027-x24-6-goto-from-a-member-function-of-a-local-class-to-a-label-of-the-enclosing-function--program.cpp:1:39: error: use of undeclared label 'out'
+X24-6 goto from a member function of a local class to a label of the enclosing function / program / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/rv9c/build/clang-host/probes/x24-compile/0027-x24-6-goto-from-a-member-function-of-a-local-class-to-a-label-of-the-enclosing-function--program.cpp:1:39: error: use of undeclared label 'out'
+X24-6 goto from a member function of a local class to a label of the enclosing function / program / edg-7.0: error: label "out" was referenced but not defined
+X24-6 goto from a member function of a local class to a label of the enclosing function / program / edg-7.0-ilp32: error: label "out" was referenced but not defined
+X24-6 goto from a member function of a local class to a label of the enclosing function / program / gcc-14: /tidal/build/probes/x24-compile/0027-x24-6-goto-from-a-member-function-of-a-local-class-to-a-label-of-the-enclosing-function--program.cpp:1:39: error: label 'out' used but not defined
+X24-6 goto from a member function of a local class to a label of the enclosing function / program / gcc-16: /tidal/build/probes/x24-compile/0027-x24-6-goto-from-a-member-function-of-a-local-class-to-a-label-of-the-enclosing-function--program.cpp:1:39: error: label 'out' used but not defined
+X24-6 goto from a member function of a local class to a label of the enclosing function / program / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/rv9c/build/gcc-host/probes/x24-compile/0027-x24-6-goto-from-a-member-function-of-a-local-class-to-a-label-of-the-enclosing-function--program.cpp:1:39: error: label ‘out’ used but not defined
+X24-6 control: break in a lambda body inside a loop / program / clang-18: /tidal/build/probes/x24-compile/0028-x24-6-control-break-in-a-lambda-body-inside-a-loop--program.cpp:1:56: error: 'break' statement not in loop or switch statement
+X24-6 control: break in a lambda body inside a loop / program / clang-22: /tidal/build/probes/x24-compile/0028-x24-6-control-break-in-a-lambda-body-inside-a-loop--program.cpp:1:56: error: 'break' statement not in loop or switch statement
+X24-6 control: break in a lambda body inside a loop / program / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/rv9c/build/clang-host/probes/x24-compile/0028-x24-6-control-break-in-a-lambda-body-inside-a-loop--program.cpp:1:56: error: 'break' statement not in loop or switch statement
+X24-6 control: break in a lambda body inside a loop / program / edg-7.0: de-a-loop--program.cpp", line 1: error: a break statement may only be
+X24-6 control: break in a lambda body inside a loop / program / edg-7.0-ilp32: de-a-loop--program.cpp", line 1: error: a break statement may only be
+X24-6 control: break in a lambda body inside a loop / program / gcc-14: /tidal/build/probes/x24-compile/0028-x24-6-control-break-in-a-lambda-body-inside-a-loop--program.cpp:1:56: error: break statement not within loop or switch
+X24-6 control: break in a lambda body inside a loop / program / gcc-16: /tidal/build/probes/x24-compile/0028-x24-6-control-break-in-a-lambda-body-inside-a-loop--program.cpp:1:56: error: break statement not within loop or switch
+X24-6 control: break in a lambda body inside a loop / program / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/rv9c/build/gcc-host/probes/x24-compile/0028-x24-6-control-break-in-a-lambda-body-inside-a-loop--program.cpp:1:56: error: break statement not within loop or switch
+X24-7 control: one label name twice in one lambda body / program / clang-18: /tidal/build/probes/x24-compile/0030-x24-7-control-one-label-name-twice-in-one-lambda-body--program.cpp:1:19: error: redefinition of label 'a'
+X24-7 control: one label name twice in one lambda body / program / clang-22: /tidal/build/probes/x24-compile/0030-x24-7-control-one-label-name-twice-in-one-lambda-body--program.cpp:1:19: error: redefinition of label 'a'
+X24-7 control: one label name twice in one lambda body / program / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/rv9c/build/clang-host/probes/x24-compile/0030-x24-7-control-one-label-name-twice-in-one-lambda-body--program.cpp:1:19: error: redefinition of label 'a'
+X24-7 control: one label name twice in one lambda body / program / edg-7.0: -lambda-body--program.cpp", line 1: error: label "a" has already been
+X24-7 control: one label name twice in one lambda body / program / edg-7.0-ilp32: -lambda-body--program.cpp", line 1: error: label "a" has already been
+X24-7 control: one label name twice in one lambda body / program / gcc-14: /tidal/build/probes/x24-compile/0030-x24-7-control-one-label-name-twice-in-one-lambda-body--program.cpp:1:19: error: duplicate label 'a'
+X24-7 control: one label name twice in one lambda body / program / gcc-16: /tidal/build/probes/x24-compile/0030-x24-7-control-one-label-name-twice-in-one-lambda-body--program.cpp:1:19: error: duplicate label 'a'
+X24-7 control: one label name twice in one lambda body / program / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/rv9c/build/gcc-host/probes/x24-compile/0030-x24-7-control-one-label-name-twice-in-one-lambda-body--program.cpp:1:19: error: duplicate label ‘a’

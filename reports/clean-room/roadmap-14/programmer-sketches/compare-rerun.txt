@@ -1,0 +1,103 @@
+CHANGED round13/new/algo_second_try.cpp
+  was: rejected [SA-1] at line 194: static assertion failed
+  now: rejected [DED-35] at line 86: no viable function for the call of 'invoke': deduction fails for each template
+CHANGED round13/new/algo_third_try.cpp
+  was: rejected [SA-1] at line 194: static assertion failed
+  now: result: 0 in every explored order (64 runs, of a partial set); unspecified choices: SEQ-1 at line 86 (arguments evaluated from left to right) explored
+CHANGED round13/new/bits_first_try.cpp
+  was: unsupported at line 175: check: static_assert: class assignment
+  now: result: 0
+CHANGED round13/new/intrusive_first_try.cpp
+  was: unsupported at line 144: check: static_assert: object of unknown type
+  now: rejected [LSUP-1] at line 127: a braced list as the range needs std::initializer_list, which is not declared as a class template of the needed shape
+CHANGED round13/new/intrusive_second_try.cpp
+  was: unsupported at line 155: check: static_assert: object of unknown type
+  now: result: 0
+CHANGED round13/new/mistakes/no_default_constructor.cpp
+  was: unsupported at line 4: default constructor
+  now: rejected [CTOR-25] at line 3: the constructor of 'Server' default-initializes the member 'port', and no constructor of 'Port' takes no arguments (INIT
+CHANGED round13/new/units_fifth_try.cpp
+  was: rejected [TR-12] at line 148: the grammar does not derive this: expected '(' or '{' after a type name in an expression
+  now: result: 0 in every explored order (4 runs); unspecified choices: SEQ-1 at line 169 (arguments evaluated from left to right) explored: 4 runs; other ou
+CHANGED round13/new/units_first_try.cpp
+  was: rejected [TR-12] at line 96: the grammar does not derive this: expected an expression, found '...'
+  now: rejected [DCMP-11] at line 149: use of the defaulted 'operator<=>', which is deleted
+CHANGED round13/new/units_fourth_try.cpp
+  was: rejected [SA-1] at line 162: static assertion failed
+  now: result: 0 in every explored order (4 runs); unspecified choices: SEQ-1 at line 167 (arguments evaluated from left to right) explored: 4 runs; other ou
+CHANGED round13/new/units_second_try.cpp
+  was: rejected [TR-12] at line 97: the grammar does not derive this: expected an expression, found '...'
+  now: result: 0 in every explored order (4 runs); unspecified choices: SEQ-1 at line 166 (arguments evaluated from left to right) explored: 4 runs; other ou
+CHANGED round13/new/units_seventh_try.cpp
+  was: unsupported at line 149: check: static_assert: overloaded operator (in a variable template argument)
+  now: result: 0 in every explored order (4 runs); unspecified choices: SEQ-1 at line 168 (arguments evaluated from left to right) explored: 4 runs; other ou
+CHANGED round13/new/units_sixth_try.cpp
+  was: unsupported at line 147: check: static_assert: member of unknown
+  now: result: 0 in every explored order (4 runs); unspecified choices: SEQ-1 at line 170 (arguments evaluated from left to right) explored: 4 runs; other ou
+CHANGED round13/new/units_third_try.cpp
+  was: rejected [SA-1] at line 155: static assertion failed
+  now: result: 0 in every explored order (4 runs); unspecified choices: SEQ-1 at line 168 (arguments evaluated from left to right) explored: 4 runs; other ou
+CHANGED round13/probes/adl_function_beside_deleted_template_in_requires.cpp
+  was: rejected [SA-1] at line 4: static assertion failed
+  now: result: 0
+CHANGED round13/probes/assignment_beside_converting_assignment_constant.cpp
+  was: unsupported at line 13: check: static_assert: class assignment
+  now: result: 0
+CHANGED round13/probes/binary_operator_beside_constrained_conversion_template.cpp
+  was: unsupported at line 9: check: static_assert: member of unknown
+  now: result: 0
+CHANGED round13/probes/conversion_functions_two_constraints.cpp
+  was: unsupported at line 6: conversion function
+  now: result: 0
+CHANGED round13/probes/conversion_function_unsatisfied_constraint_implicit.cpp
+  was: result: 0
+  now: rejected [INIT-7] at line 5: the constraints of each conversion function of 'Q' fail, so none is viable
+CHANGED round13/probes/decltype_qualifier_operator_template_conversion_template.cpp
+  was: rejected [TR-12] at line 10: the grammar does not derive this: expected '(' or '{' after a type name in an expression
+  now: result: 0
+CHANGED round13/probes/fold_in_requires_clause_plain_expression.cpp
+  was: rejected [TR-12] at line 2: the grammar does not derive this: expected an expression, found '...'
+  now: result: 0
+CHANGED round13/probes/intrusive_first_try_with_declaration.cpp
+  was: unsupported at line 145: check: static_assert: range-based for
+  now: rejected [LSUP-1] at line 128: a braced list as the range needs std::initializer_list, which is not declared as a class template of the needed shape
+CHANGED round13/probes/member_without_default_constructor_used.cpp
+  was: unsupported at line 3: default constructor
+  now: rejected [CTOR-25] at line 2: the constructor of 'Server' default-initializes the member 'port', and no constructor of 'Port' takes no arguments (INIT
+CHANGED round13/probes/range_for_braced_list_without_initializer_list.cpp
+  was: unsupported at line 2: range-based for
+  now: rejected [LSUP-1] at line 3: a braced list as the range needs std::initializer_list, which is not declared as a class template of the needed shape
+CHANGED round13/reductions/adl_function_beside_deleted_template.cpp
+  was: rejected [DEL-1] at line 3: use of the deleted function 'f'
+  now: result: 0
+CHANGED round13/reductions/assignment_beside_converting_assignment.cpp
+  was: unsupported at line 10: class assignment
+  now: result: 0
+CHANGED round13/reductions/binary_operator_beside_conversion_function_template.cpp
+  was: unsupported at line 7: check: static_assert: member of unknown
+  now: result: 0
+CHANGED round13/reductions/conversion_function_unsatisfied_constraint.cpp
+  was: rejected [SA-1] at line 7: static assertion failed
+  now: result: 0
+CHANGED round13/reductions/copy_constructor_unsatisfied_constraint.cpp
+  was: result: 1
+  now: rejected [CTOR-25] at line 8: no constructor of 'It' is viable for the copy constructor: the constraints of each copy or move constructor fail (OVL-24
+CHANGED round13/reductions/decltype_nested_operator_template_calls.cpp
+  was: unsupported at line 5: check: static_assert: overloaded operator (in a variable template argument)
+  now: result: 0
+CHANGED round13/reductions/decltype_qualifier_specialization_from_template_return.cpp
+  was: rejected [NAM-9] at line 3: no member named 'dim'
+  now: result: 0
+CHANGED round13/reductions/fold_in_requires_clause.cpp
+  was: rejected [TR-12] at line 3: the grammar does not derive this: expected an expression, found '...'
+  now: result: 0
+CHANGED round13/reductions/friend_class_template_declared_later_in_class_template.cpp
+  was: unsupported at line 3: object of unknown type
+  now: result: 0
+CHANGED round13/reductions/member_without_default_constructor_not_initialized.cpp
+  was: result: 0
+  now: rejected [CTOR-25] at line 2: the constructor of 'Server' default-initializes the member 'port', and no constructor of 'Port' takes no arguments (INIT
+CHANGED round13/reductions/partial_specialization_class_type_constant_argument.cpp
+  was: result: 2
+  now: result: 0
+94 files: 60 unchanged, 34 changed; 0 compiler lines differ apart from exit codes

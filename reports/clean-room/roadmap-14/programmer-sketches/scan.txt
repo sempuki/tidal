@@ -1,0 +1,8 @@
+class template as a constant parameter type | classes/operators/literal-operator-template-class-parameter.cpp:17 | unsupported
+requires expression with a braced list of a type | programs/W7/date.cpp:141 | pass
+generic lambda with a reference capture | programs/roadmap/r10-hash-map.cpp:146 | pass-partial
+constructor template from a forwarding reference | programs/roadmap/r10-tuple-second-try.cpp:39 | pass-partial
+class template as a constant parameter type | templates/class-template-deduction/constant-parameter-guide.cpp:11 | unsupported
+class template as a constant parameter type | templates/class-template-deduction/sites.cpp:18 | unsupported
+constructor template from a forwarding reference | templates/class-template-deduction/user-guides.cpp:7 | pass
+class template as a constant parameter type | templates/declarations/constant-parameter-class-template.cpp:10 | unsupported

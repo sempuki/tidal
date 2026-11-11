@@ -1,0 +1,21 @@
+{
+ "prelude": "",
+ "template": "{row}\n{col}",
+ "rows": {
+  "a: the break leaves only an inner switch": "int a(int k) { while (true) { switch (k) { case 0: break; } if (k > 3) return k; } }",
+  "b: a goto leaves the loop": "int b(int k) { while (true) { if (k) goto out; } out:; }",
+  "c: the break leaves only an inner for": "int c(int k) { while (true) { for (;;) { if (k) break; } if (k > 3) return k; } }",
+  "d control: a break leaves the loop": "int d(int k) { while (true) { if (k) break; } }",
+  "e: a goto to a label inside the loop body": "int e(int k) { while (true) { if (k) goto next; ++k; next:; if (k > 3) return k; } }",
+  "f: for (;;) with a goto that leaves it": "int f(int k) { for (;;) { if (k) goto out; } out:; }",
+  "g: do while (true) with a break in an inner while": "int g(int k) { do { while (k) { break; } if (k > 3) return k; } while (true); }",
+  "h control: a loop with constant true and only a return": "int h(int k) { while (true) { if (k > 3) return k; ++k; } }"
+ },
+ "cols": {
+  "program": ""
+ },
+ "flags": [
+  "-Wreturn-type",
+  "-Werror"
+ ]
+}

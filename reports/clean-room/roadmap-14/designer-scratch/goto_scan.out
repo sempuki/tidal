@@ -1,0 +1,2 @@
+goto tests/programs/W3/nested.cpp 37 goto done;  // JMP-9: leaves both loop scopes, r and c end
+goto lines in programs: 1 of 189 files scanned

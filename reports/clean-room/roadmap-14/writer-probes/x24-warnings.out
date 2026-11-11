@@ -1,0 +1,28 @@
+| | program |
+|---|---|
+| a: the break leaves only an inner switch | accept |
+| b: a goto leaves the loop | reject |
+| c: the break leaves only an inner for | accept |
+| d control: a break leaves the loop | reject |
+| e: a goto to a label inside the loop body | accept |
+| f: for (;;) with a goto that leaves it | reject |
+| g: do while (true) with a break in an inner while | accept |
+| h control: a loop with constant true and only a return | accept |
+b: a goto leaves the loop / program / clang-18: /tidal/build/probes/x24-warnings/0001-b-a-goto-leaves-the-loop--program.cpp:1:56: error: non-void function does not return a value [-Werror,-Wreturn-type]
+b: a goto leaves the loop / program / clang-22: /tidal/build/probes/x24-warnings/0001-b-a-goto-leaves-the-loop--program.cpp:1:56: error: non-void function does not return a value [-Werror,-Wreturn-type]
+b: a goto leaves the loop / program / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/rv9c/build/clang-host/probes/x24-warnings/0001-b-a-goto-leaves-the-loop--program.cpp:1:56: error: non-void function does not return a value [-Werror,-Wreturn-type]
+b: a goto leaves the loop / program / gcc-14: /tidal/build/probes/x24-warnings/0001-b-a-goto-leaves-the-loop--program.cpp:1:50: error: control reaches end of non-void function [-Werror=return-type]
+b: a goto leaves the loop / program / gcc-16: /tidal/build/probes/x24-warnings/0001-b-a-goto-leaves-the-loop--program.cpp:1:50: error: control reaches end of non-void function [-Werror=return-type]
+b: a goto leaves the loop / program / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/rv9c/build/gcc-host/probes/x24-warnings/0001-b-a-goto-leaves-the-loop--program.cpp:1:50: error: control reaches end of non-void function [-Werror=return-type]
+d control: a break leaves the loop / program / clang-18: /tidal/build/probes/x24-warnings/0003-d-control-a-break-leaves-the-loop--program.cpp:1:47: error: non-void function does not return a value [-Werror,-Wreturn-type]
+d control: a break leaves the loop / program / clang-22: /tidal/build/probes/x24-warnings/0003-d-control-a-break-leaves-the-loop--program.cpp:1:47: error: non-void function does not return a value [-Werror,-Wreturn-type]
+d control: a break leaves the loop / program / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/rv9c/build/clang-host/probes/x24-warnings/0003-d-control-a-break-leaves-the-loop--program.cpp:1:47: error: non-void function does not return a value [-Werror,-Wreturn-type]
+d control: a break leaves the loop / program / gcc-14: /tidal/build/probes/x24-warnings/0003-d-control-a-break-leaves-the-loop--program.cpp:1:47: error: no return statement in function returning non-void [-Werror=return-type]
+d control: a break leaves the loop / program / gcc-16: /tidal/build/probes/x24-warnings/0003-d-control-a-break-leaves-the-loop--program.cpp:1:47: error: no return statement in function returning non-void [-Werror=return-type]
+d control: a break leaves the loop / program / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/rv9c/build/gcc-host/probes/x24-warnings/0003-d-control-a-break-leaves-the-loop--program.cpp:1:47: error: no return statement in function returning non-void [-Werror=return-type]
+f: for (;;) with a goto that leaves it / program / clang-18: /tidal/build/probes/x24-warnings/0005-f-for-with-a-goto-that-leaves-it--program.cpp:1:52: error: non-void function does not return a value [-Werror,-Wreturn-type]
+f: for (;;) with a goto that leaves it / program / clang-22: /tidal/build/probes/x24-warnings/0005-f-for-with-a-goto-that-leaves-it--program.cpp:1:52: error: non-void function does not return a value [-Werror,-Wreturn-type]
+f: for (;;) with a goto that leaves it / program / clang-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/rv9c/build/clang-host/probes/x24-warnings/0005-f-for-with-a-goto-that-leaves-it--program.cpp:1:52: error: non-void function does not return a value [-Werror,-Wreturn-type]
+f: for (;;) with a goto that leaves it / program / gcc-14: /tidal/build/probes/x24-warnings/0005-f-for-with-a-goto-that-leaves-it--program.cpp:1:46: error: control reaches end of non-void function [-Werror=return-type]
+f: for (;;) with a goto that leaves it / program / gcc-16: /tidal/build/probes/x24-warnings/0005-f-for-with-a-goto-that-leaves-it--program.cpp:1:46: error: control reaches end of non-void function [-Werror=return-type]
+f: for (;;) with a goto that leaves it / program / gcc-host: /tmp/claude-1000/-home-ryanm-Code-tidal/34cd0ee5-eea0-4b25-b33b-c46b2846603b/scratchpad/rv9c/build/gcc-host/probes/x24-warnings/0005-f-for-with-a-goto-that-leaves-it--program.cpp:1:46: error: control reaches end of non-void function [-Werror=return-type]
