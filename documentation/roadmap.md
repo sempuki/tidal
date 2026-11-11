@@ -231,6 +231,23 @@ to Q-0422) and settled 2 through item QR (Q-0323, Q-0383).
 | RV5 | Done: a gap review of the text phase 11 wrote after RV4 and the text F2 and RD write, then repairs | F2, RD |
 | E | Done: write suite W20 on library-shaped code; Implement I5 on deduction from a call | W20 after FE; I5 after RD |
 
+## Phase 13: test every front-end finding, answer the open rows, and count the distance to the rewrite
+
+Decision 0061 (provisional) adopts this phase from the tenth round of
+clean-room roadmaps (`reports/clean-room/roadmap-10/`).
+
+| Item | Work | Prerequisites |
+|---|---|---|
+| T2 | Tests for every front-end finding that has none, and the round 10 programs and clean first tries as program tests | none (F3's DEP-24 and UNI-9 answers for those two tests) |
+| F3 | Answer the 17 `open` rows and the text parts of G153 to G157, base relation and storage rows first; then the text points of the round 10 reductions | none |
+| CT | The completion count: an `out of scope` file, the `no-diagnostic` pass, one line from `frontend_check.py` | none |
+| FE | Front-end round 24: wrong verdicts and T2 tests, root causes, run stops, missed rejects outside templates, then template missed rejects | T2; CT for the count; F3's G153 sentence before the base-relation fix |
+| RV6 | A gap review of the 20 rules and principles changed after RV5, F3's text, and Q-0422, then repairs and a read of the repair diff | F3 |
+| QR2 | Question records: Q-0419 split, Q-0421's note, Q-0422's Context | none |
+| PK4 | The packet counts row 4 rule items; the request to the maintainer goes on the record | none |
+| R7 | Repair the records that drift and extend the ledger check; the Propose prompt and P26's entry | none |
+| E | Port suite P2 on generic collections; Implement I6 on dependent names | P2 after FE; I6 none |
+
 ## Parallel lanes
 
 Phase 5 ran three lanes beside its items, and all three are done: U

@@ -935,21 +935,21 @@ own IDs (RV5-A-n and RV5-B-n).
 | RV5-B-13 | `../review/2026-11-05-gap-review-phase-12-expressions-overloading-templates.md` | question | Q-0417 |
 | RV5-B-14 | `../review/2026-11-05-gap-review-phase-12-expressions-overloading-templates.md` | commit | 3bed9cb5: LAM-5 to LAM-7, simple and init captures |
 | RV5-B-15 | `../review/2026-11-05-gap-review-phase-12-expressions-overloading-templates.md` | text | LAM-29 states the right result; the reference is silent |
-| W20-1 | `W20/report.md` | open | no in-object storage form gives a pointer and a length; STG-P2 and the FixedVec example |
-| W20-2 | `W20/report.md` | open | no rule for the elements of an array member of a union (UNI-14) |
-| W20-3 | `W20/report.md` | open | CPY-15 and CNS-11: when the by-value constructor template leaves the candidates; the front end gives CNS-35 |
-| W20-4 | `W20/report.md` | open | GCC with -fsanitize=undefined rejects a constant comparison of tag addresses (CMP-15 Evidence) |
-| W20-5 | `W20/report.md` | open | CAST-1 does not state the void* round trip that STG-16 gives |
-| W20-6 | `W20/report.md` | open | a table of the storage forms and what each allows |
+| W20-1 | `W20/report.md` | planned | decision 0061, item F3: no in-object storage form gives a pointer and a length; STG-P2 and the FixedVec example |
+| W20-2 | `W20/report.md` | planned | decision 0061, items T2 and F3: no rule for the elements of an array member of a union (UNI-14) |
+| W20-3 | `W20/report.md` | planned | decision 0061, items T2, F3, and FE: CPY-15 and CNS-11: when the by-value constructor template leaves the candidates; the front end gives CNS-35 |
+| W20-4 | `W20/report.md` | planned | decision 0061, item F3: GCC with -fsanitize=undefined rejects a constant comparison of tag addresses (CMP-15 Evidence) |
+| W20-5 | `W20/report.md` | planned | decision 0061, item F3: CAST-1 does not state the void* round trip that STG-16 gives |
+| W20-6 | `W20/report.md` | planned | decision 0061, item F3: a table of the storage forms and what each allows |
 | W20-7 | `W20/report.md` | text | outside knowledge on assignment idioms and sorting; no language rule involved |
-| I5-1 | `I5/report.md` | open | DED-30 does not point to DED-29's paragraph on an address with a target type |
-| I5-2 | `I5/report.md` | open | DED-29's first list against its third paragraph on a deduced result type |
-| I5-3 | `I5/report.md` | open | no rule drops const on a function type in deduction (DED-7, DED-14) |
-| I5-4 | `I5/report.md` | open | DED-15 does not point to OVL-37 for an ambiguous or private base |
-| I5-5 | `I5/report.md` | open | DED-24 and INST-1: T::type with an incomplete T |
-| I5-6 | `I5/report.md` | open | DED-8: the cv-qualifiers of a non-class prvalue |
-| I5-7 | `I5/report.md` | open | an example for DED-20 with explicit pack elements |
-| I5-8 | `I5/report.md` | open | DED-14 and DED-P4: a near match that fails |
-| I5-9 | `I5/report.md` | open | front end: T::type with an incomplete T stops as unsupported |
-| I5-10 | `I5/report.md` | open | front end: a reference binds a private or ambiguous base |
-| I5-11 | `I5/report.md` | open | outside knowledge: arrays of functions or void in DED-24, the size type in DED-11 |
+| I5-1 | `I5/report.md` | planned | decision 0061, item F3: DED-30 does not point to DED-29's paragraph on an address with a target type |
+| I5-2 | `I5/report.md` | planned | decision 0061, item F3: DED-29's first list against its third paragraph on a deduced result type |
+| I5-3 | `I5/report.md` | planned | decision 0061, item F3: no rule drops const on a function type in deduction (DED-7, DED-14) |
+| I5-4 | `I5/report.md` | planned | decision 0061, item F3: DED-15 does not point to OVL-37 for an ambiguous or private base |
+| I5-5 | `I5/report.md` | planned | decision 0061, item F3: DED-24 and INST-1: T::type with an incomplete T |
+| I5-6 | `I5/report.md` | planned | decision 0061, item F3: DED-8: the cv-qualifiers of a non-class prvalue |
+| I5-7 | `I5/report.md` | planned | decision 0061, item F3: an example for DED-20 with explicit pack elements |
+| I5-8 | `I5/report.md` | planned | decision 0061, item F3: DED-14 and DED-P4: a near match that fails |
+| I5-9 | `I5/report.md` | planned | decision 0061, items T2, F3 (I5-5), and FE: front end: T::type with an incomplete T stops as unsupported |
+| I5-10 | `I5/report.md` | planned | decision 0061, items T2 and FE: front end: a reference binds a private or ambiguous base |
+| I5-11 | `I5/report.md` | planned | decision 0061, item F3: outside knowledge: arrays of functions or void in DED-24, the size type in DED-11 |

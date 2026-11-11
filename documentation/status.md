@@ -189,14 +189,15 @@ forward-progress rule belongs with threads, which are out of scope.
 ## Next steps
 
 `documentation/roadmap.md` orders the work (decisions 0033, 0039, 0050,
-0051, 0054, 0055, 0056, 0057, 0058, 0059, and 0060). Phases 1 to 12 are
-done. Next:
+0051, 0054, 0055, 0056, 0057, 0058, 0059, 0060, and 0061). Phases 1 to
+12 are done. Phase 13 (decision 0061) is next:
 
-1. A tenth round of clean-room roadmaps under
-   `reports/clean-room/roadmap-10/`, from the same five views, then a
-   decision that adopts phase 13. The 17 open ledger rows of W20 and I5
-   and the 20 rules and principles that changed after RV5 read the tree
-   are among its inputs.
+1. Item T2, tests for every front-end finding that has none, then
+   front-end round 24 (item FE). Item CT gives the round its count.
+2. Items F3, QR2, PK4, and R7, beside FE. F3 answers the 17 open
+   exercise rows (W20-1 to W20-6, I5-1 to I5-11) and the text parts of
+   the 5 open front-end rows (G153 to G157).
+3. RV6, the gap review, after F3; then item E (P2 after FE).
 
 After the front end meets the completion test of decision 0060, a
 phase item rewrites it (roadmap item FR).
