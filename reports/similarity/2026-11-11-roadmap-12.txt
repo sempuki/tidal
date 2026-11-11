@@ -1,0 +1,112 @@
+Similarity report: run threshold 8 words, overlap threshold 0.25
+
+ok   roadmap-12/designer.md:Roadmap, round 12: what to do after phas longest=0   overlap=0.00
+ok   roadmap-12/designer.md:1.1 Counts at bd87b27c longest=0   overlap=0.00
+ok   roadmap-12/designer.md:1.2 What phase 14 did with the round 11  longest=0   overlap=0.00
+ok   roadmap-12/designer.md:1.3 Phase 14 text that reaches a done de longest=0   overlap=0.01
+ok   roadmap-12/designer.md:1.4 The 20 rules and principles changed  longest=0   overlap=0.00
+ok   roadmap-12/designer.md:1.5 Pages the Propose exercises have rea longest=0   overlap=0.00
+ok   roadmap-12/designer.md:1.6 What a designer still cannot state longest=0   overlap=0.00
+ok   roadmap-12/designer.md:1.7 The portfolio longest=0   overlap=0.00
+ok   roadmap-12/designer.md:1.8 Questions and principles longest=0   overlap=0.00
+ok   roadmap-12/designer.md:1.9 The 28 open ledger rows, ranked by d longest=0   overlap=0.00
+ok   roadmap-12/designer.md:1.10 The distance to decision 0060's com longest=0   overlap=0.00
+ok   roadmap-12/designer.md:2. Ranked items longest=0   overlap=0.00
+ok   roadmap-12/designer.md:Item 1. The portfolio step, then X25 on  longest=0   overlap=0.00
+ok   roadmap-12/designer.md:Item 2. X24 on P26, then the stop-rule c longest=0   overlap=0.00
+ok   roadmap-12/designer.md:Item 3. Refresh notes and a refresh chec longest=0   overlap=0.00
+ok   roadmap-12/designer.md:Item 4. A shared impact scanner and the  longest=0   overlap=0.00
+ok   roadmap-12/designer.md:Item 5. The packet rows that reach propo longest=0   overlap=0.00
+ok   roadmap-12/designer.md:Item 6. The open rows with design reach longest=0   overlap=0.00
+ok   roadmap-12/designer.md:Item 7. Pair exercise X14 with X23 longest=0   overlap=0.00
+ok   roadmap-12/designer.md:Item 8. A prototype hook, and the rewrit longest=0   overlap=0.00
+ok   roadmap-12/designer.md:Item 9. An index of what a test of valid longest=0   overlap=0.00
+ok   roadmap-12/designer.md:3. Keep out of scope longest=0   overlap=0.00
+ok   roadmap-12/designer.md:4. Process changes longest=0   overlap=0.00
+ok   roadmap-12/designer.md:5. The decision packet from a designer's longest=0   overlap=0.01
+ok   roadmap-12/designer.md:Host-only claims longest=0   overlap=0.00
+ok   roadmap-12/editor.md:Roadmap, round 12: what to do after phas longest=0   overlap=0.00
+ok   roadmap-12/editor.md:Repo-wide counts longest=0   overlap=0.00
+ok   roadmap-12/editor.md:The read-only checks longest=0   overlap=0.00
+ok   roadmap-12/editor.md:What phase 14 did to the questions longest=0   overlap=0.00
+ok   roadmap-12/editor.md:Text phase 14 wrote that no review has r longest=0   overlap=0.00
+ok   roadmap-12/editor.md:What phase 14 took from round 11 longest=0   overlap=0.00
+ok   roadmap-12/editor.md:Decision 0062's standing choices in phas longest=0   overlap=0.00
+ok   roadmap-12/editor.md:Phase 14 commit messages against their d longest=0   overlap=0.00
+ok   roadmap-12/editor.md:Records that drift longest=0   overlap=0.00
+ok   roadmap-12/editor.md:The ten weakest pages longest=0   overlap=0.00
+ok   roadmap-12/editor.md:2. Ranked work items longest=0   overlap=0.00
+ok   roadmap-12/editor.md:2.1 Answer the 26 open rows and G164 and longest=0   overlap=0.00
+ok   roadmap-12/editor.md:2.2 Review the 20 blocks changed after R longest=0   overlap=0.00
+ok   roadmap-12/editor.md:2.3 Repair the records that drift longest=0   overlap=0.00
+ok   roadmap-12/editor.md:2.4 Put the gate's inputs in the tool longest=0   overlap=0.00
+ok   roadmap-12/editor.md:2.5 Route the rule items and the seven " longest=0   overlap=0.00
+ok   roadmap-12/editor.md:2.6 A narrow second review of the doubt- longest=0   overlap=0.00
+ok   roadmap-12/editor.md:3. What to keep out of scope longest=0   overlap=0.00
+ok   roadmap-12/editor.md:4. Process changes longest=0   overlap=0.00
+ok   roadmap-12/editor.md:5. Files    longest=0   overlap=0.00
+ok   roadmap-12/implementer.md:Roadmap, round 12: what to do after phas longest=0   overlap=0.00
+ok   roadmap-12/implementer.md:1. Where the specification and the front longest=0   overlap=0.00
+ok   roadmap-12/implementer.md:What phase 14 took from round 11 longest=0   overlap=0.00
+ok   roadmap-12/implementer.md:The 107 tests of the completion line longest=0   overlap=0.00
+ok   roadmap-12/implementer.md:The causes longest=0   overlap=0.00
+ok   roadmap-12/implementer.md:Run stops longest=0   overlap=0.01
+ok   roadmap-12/implementer.md:Decision 0060 and the gate of decision 0 longest=0   overlap=0.00
+ok   roadmap-12/implementer.md:Where the rewrite stands longest=0   overlap=0.00
+ok   roadmap-12/implementer.md:The I7 and P3 findings longest=0   overlap=0.00
+ok   roadmap-12/implementer.md:2. Ranked items longest=0   overlap=0.00
+ok   roadmap-12/implementer.md:1. Front-end round 26 on the 77 unmarked longest=0   overlap=0.00
+ok   roadmap-12/implementer.md:2. An amendment to the gate: a `rewrite` longest=0   overlap=0.00
+ok   roadmap-12/implementer.md:3. Rewrite stage 1: the design document, longest=0   overlap=0.00
+ok   roadmap-12/implementer.md:4. Text for the I7 and P3 rows, G164, an longest=0   overlap=0.00
+ok   roadmap-12/implementer.md:5. A gap review of the 20 changed rules, longest=0   overlap=0.00
+ok   roadmap-12/implementer.md:6. Implement I8 on instantiation longest=0   overlap=0.00
+ok   roadmap-12/implementer.md:Dependency sketch longest=0   overlap=0.00
+ok   roadmap-12/implementer.md:3. Scope longest=0   overlap=0.00
+ok   roadmap-12/implementer.md:4. Process changes longest=0   overlap=0.00
+ok   roadmap-12/programmer.md:Roadmap, round 12: what to do after phas longest=0   overlap=0.00
+ok   roadmap-12/programmer.md:1. The state from a programmer's view longest=0   overlap=0.00
+ok   roadmap-12/programmer.md:1.1 Counts longest=0   overlap=0.00
+ok   roadmap-12/programmer.md:1.2 Round 11 items that phase 14 took an longest=0   overlap=0.00
+ok   roadmap-12/programmer.md:1.3 The round 11 sketches, rerun longest=0   overlap=0.00
+ok   roadmap-12/programmer.md:1.4 New programs longest=0   overlap=0.00
+ok   roadmap-12/programmer.md:1.5 Reductions longest=0   overlap=0.00
+ok   roadmap-12/programmer.md:1.6 Short programs, planted bugs, and pl longest=0   overlap=0.01
+ok   roadmap-12/programmer.md:1.7 The phase 14 reports, from a program longest=0   overlap=0.00
+ok   roadmap-12/programmer.md:1.8 Ledger rows longest=0   overlap=0.00
+ok   roadmap-12/programmer.md:2. Ranked work items longest=0   overlap=0.00
+ok   roadmap-12/programmer.md:Item 1. Tests for this round's reduction longest=0   overlap=0.01
+ok   roadmap-12/programmer.md:Item 2. Front-end round 26, with library longest=0   overlap=0.02
+ok   roadmap-12/programmer.md:Item 3. Text for literal operators and f longest=0   overlap=0.02
+ok   roadmap-12/programmer.md:Item 4. Answer the 26 open rows, startin longest=0   overlap=0.00
+ok   roadmap-12/programmer.md:Item 5. Program first tries and their mi longest=0   overlap=0.00
+ok   roadmap-12/programmer.md:Item 6. A gap review of the 20 rules and longest=0   overlap=0.00
+ok   roadmap-12/programmer.md:Item 7. The rewrite gate, read with libr longest=0   overlap=0.00
+ok   roadmap-12/programmer.md:Item 8. Port suite P4 on iterators and o longest=0   overlap=0.00
+ok   roadmap-12/programmer.md:Item 9. Guides on storage, iterators, an longest=0   overlap=0.00
+ok   roadmap-12/programmer.md:3. Out of scope longest=0   overlap=0.00
+ok   roadmap-12/programmer.md:4. Process changes longest=0   overlap=0.00
+ok   roadmap-12/programmer.md:5. Suggested order longest=0   overlap=0.00
+ok   roadmap-12/programmer.md:6. Doubts for the clean-room writers longest=0   overlap=0.01
+ok   roadmap-12/programmer.md:7. Host-only claims longest=0   overlap=0.00
+ok   roadmap-12/writer-probes/README.md:Writer probes, roadmap round 12 longest=0   overlap=0.01
+ok   roadmap-12/writer.md:Roadmap, round 12: what to do after phas longest=0   overlap=0.00
+ok   roadmap-12/writer.md:1.1 Counts  longest=0   overlap=0.00
+ok   roadmap-12/writer.md:1.2 What phase 14 took from round 11 longest=0   overlap=0.00
+ok   roadmap-12/writer.md:1.3 The 26 open ledger rows and G164, G1 longest=0   overlap=0.00
+ok   roadmap-12/writer.md:1.4 The questions phase 14 opened longest=0   overlap=0.00
+ok   roadmap-12/writer.md:1.5 The pending.md row 4 items that phas longest=0   overlap=0.00
+ok   roadmap-12/writer.md:1.6 The 20 rules and principles that cha longest=0   overlap=0.00
+ok   roadmap-12/writer.md:1.7 Distance to decision 0060's completi longest=0   overlap=0.01
+ok   roadmap-12/writer.md:2. Proposed items, ranked longest=0   overlap=0.00
+ok   roadmap-12/writer.md:Item 1. F5. Answer the open rows with th longest=0   overlap=0.00
+ok   roadmap-12/writer.md:Item 2. FE26. Front-end round 26 longest=0   overlap=0.00
+ok   roadmap-12/writer.md:Item 3. RV8. Gap review of the changed t longest=0   overlap=0.00
+ok   roadmap-12/writer.md:Item 4. GL. Guides for a programmer from longest=0   overlap=0.01
+ok   roadmap-12/writer.md:Item 5. I8. Implement on constraints longest=0   overlap=0.00
+ok   roadmap-12/writer.md:Item 6. RC. Records longest=0   overlap=0.00
+ok   roadmap-12/writer.md:What the rules need before front-end rou longest=0   overlap=0.00
+ok   roadmap-12/writer.md:3. Out of scope longest=0   overlap=0.00
+ok   roadmap-12/writer.md:4. Process changes longest=0   overlap=0.00
+
+0 flagged

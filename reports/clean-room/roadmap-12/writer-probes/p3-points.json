@@ -1,0 +1,21 @@
+{
+ "prelude": "",
+ "template": "{row}\n{col}",
+ "rows": {
+  "P3-6 in-class body returns Cursor<D>": "template <class D> struct Cursor { typename D::value_type* p = nullptr; };\ntemplate <class D> struct Base { Cursor<D> begin() { return Cursor<D>{}; } };\nstruct Derived : Base<Derived> { using value_type = int; };",
+  "P3-6 declaration in class returns Cursor<D>, body outside": "template <class D> struct Cursor { typename D::value_type* p = nullptr; };\ntemplate <class D> struct Base { Cursor<D> begin(); };\ntemplate <class D> Cursor<D> Base<D>::begin() { return Cursor<D>{}; }\nstruct Derived : Base<Derived> { using value_type = int; };",
+  "P3-6 virtual in-class body returns Cursor<D>": "template <class D> struct Cursor { typename D::value_type* p = nullptr; };\ntemplate <class D> struct Base { virtual Cursor<D> begin() { return Cursor<D>{}; } };\nstruct Derived : Base<Derived> { using value_type = int; };",
+  "P3-6 in-class body takes Cursor<D> by value": "template <class D> struct Cursor { typename D::value_type* p = nullptr; };\ntemplate <class D> struct Base { void take(Cursor<D>) {} Cursor<D> begin() { return Cursor<D>{}; } };\nstruct Derived : Base<Derived> { using value_type = int; };",
+  "P3-6 deduced return type, body returns Cursor<D>": "template <class D> struct Cursor { typename D::value_type* p = nullptr; };\ntemplate <class D> struct Base { auto begin() { return Cursor<D>{}; } };\nstruct Derived : Base<Derived> { using value_type = int; };",
+  "P3-6 static data member of type Cursor<D>, declaration only": "template <class D> struct Cursor { typename D::value_type* p = nullptr; };\ntemplate <class D> struct Base { static Cursor<D> first; Cursor<D> begin() { return Cursor<D>{}; } };\nstruct Derived : Base<Derived> { using value_type = int; };",
+  "P3-6 static inline data member of type Cursor<D>": "template <class D> struct Cursor { typename D::value_type* p = nullptr; };\ntemplate <class D> struct Base { static inline Cursor<D> first{}; Cursor<D> begin() { return Cursor<D>{}; } };\nstruct Derived : Base<Derived> { using value_type = int; };",
+  "P3-6 control: return type typename D::value_type, in-class body": "template <class D> struct Base { typename D::value_type first() { return 0; } Base& begin() { return *this; } };\nstruct Derived : Base<Derived> { using value_type = int; };",
+  "P3-6 control: data member of type Cursor<D>": "template <class D> struct Cursor { typename D::value_type* p = nullptr; };\ntemplate <class D> struct Base { Cursor<D> held; Cursor<D> begin() { return Cursor<D>{}; } };\nstruct Derived : Base<Derived> { using value_type = int; };",
+  "P3-8 Cursor<D> constructor calls a member of D, from Base<D>::begin": "template <class D> struct Cursor { D* d; Cursor(D* p) : d(p) { p->touch(); } };\ntemplate <class D> struct Base { Cursor<D> begin() { return Cursor<D>(static_cast<D*>(this)); } };\nstruct Derived : Base<Derived> { using value_type = int; void touch() {} };"
+ },
+ "cols": {
+  "no call": "",
+  "call after Derived is complete": "int use() { Derived d; d.begin(); return 0; }"
+ },
+ "flags": []
+}

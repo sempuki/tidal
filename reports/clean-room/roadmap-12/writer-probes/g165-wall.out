@@ -1,0 +1,19 @@
+| | -Wall -Werror |
+|---|---|
+| one of two base overloads overridden, the other hidden | accept |
+| neither overridden, a new f(char) hides both | reject |
+| one base virtual f(double), derived f(int) hides it | reject |
+| control: both overridden | accept |
+| control: using B::f, one overridden | accept |
+neither overridden, a new f(char) hides both / -Wall -Werror / clang-18: /tidal/build/probes/g165-wall/0001-neither-overridden-a-new-f-char-hides-both--wall-werror.cpp:2:21: error: 'D::f' hides overloaded virtual functions [-Werror,-Woverloaded-virtual]
+neither overridden, a new f(char) hides both / -Wall -Werror / clang-22: /tidal/build/probes/g165-wall/0001-neither-overridden-a-new-f-char-hides-both--wall-werror.cpp:2:21: error: 'D::f' hides overloaded virtual functions [-Werror,-Woverloaded-virtual]
+neither overridden, a new f(char) hides both / -Wall -Werror / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/g165-wall/0001-neither-overridden-a-new-f-char-hides-both--wall-werror.cpp:2:21: error: 'D::f' hides overloaded virtual functions [-Werror,-Woverloaded-virtual]
+neither overridden, a new f(char) hides both / -Wall -Werror / gcc-14: /tidal/build/probes/g165-wall/0001-neither-overridden-a-new-f-char-hides-both--wall-werror.cpp:1:46: error: 'virtual void B::f(double)' was hidden [-Werror=overloaded-virtual=]
+neither overridden, a new f(char) hides both / -Wall -Werror / gcc-16: /tidal/build/probes/g165-wall/0001-neither-overridden-a-new-f-char-hides-both--wall-werror.cpp:1:46: error: 'virtual void B::f(double)' was hidden [-Werror=overloaded-virtual=]
+neither overridden, a new f(char) hides both / -Wall -Werror / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/g165-wall/0001-neither-overridden-a-new-f-char-hides-both--wall-werror.cpp:1:25: error: ‘virtual void B::f(int)’ was hidden [-Werror=overloaded-virtual=]
+one base virtual f(double), derived f(int) hides it / -Wall -Werror / clang-18: /tidal/build/probes/g165-wall/0002-one-base-virtual-f-double-derived-f-int-hides-it--wall-werror.cpp:2:21: error: 'D::f' hides overloaded virtual function [-Werror,-Woverloaded-virtual]
+one base virtual f(double), derived f(int) hides it / -Wall -Werror / clang-22: /tidal/build/probes/g165-wall/0002-one-base-virtual-f-double-derived-f-int-hides-it--wall-werror.cpp:2:21: error: 'D::f' hides overloaded virtual function [-Werror,-Woverloaded-virtual]
+one base virtual f(double), derived f(int) hides it / -Wall -Werror / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/g165-wall/0002-one-base-virtual-f-double-derived-f-int-hides-it--wall-werror.cpp:2:21: error: 'D::f' hides overloaded virtual function [-Werror,-Woverloaded-virtual]
+one base virtual f(double), derived f(int) hides it / -Wall -Werror / gcc-14: /tidal/build/probes/g165-wall/0002-one-base-virtual-f-double-derived-f-int-hides-it--wall-werror.cpp:1:25: error: 'virtual void B::f(double)' was hidden [-Werror=overloaded-virtual=]
+one base virtual f(double), derived f(int) hides it / -Wall -Werror / gcc-16: /tidal/build/probes/g165-wall/0002-one-base-virtual-f-double-derived-f-int-hides-it--wall-werror.cpp:1:25: error: 'virtual void B::f(double)' was hidden [-Werror=overloaded-virtual=]
+one base virtual f(double), derived f(int) hides it / -Wall -Werror / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/g165-wall/0002-one-base-virtual-f-double-derived-f-int-hides-it--wall-werror.cpp:1:25: error: ‘virtual void B::f(double)’ was hidden [-Werror=overloaded-virtual=]

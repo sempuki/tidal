@@ -1,0 +1,24 @@
+templates/dependent-names/member-template-current-instantiation-pointer.cpp: Q-0427 (provisional; waits for: a use of DEP-P5)
+templates/dependent-names/member-template-non-dependent-base.cpp: Q-0427 (provisional; waits for: a use of DEP-P5)
+templates/dependent-names/member-template-through-current-instantiation-object.cpp: Q-0427 (provisional; waits for: a use of DEP-P5)
+templates/dependent-names/sizeof-value-dependent-operand-call-bound-early.cpp: Q-0432 (provisional; waits for: a use of DEP-P2)
+templates/dependent-names/sizeof-value-dependent-operand-no-typename.cpp: Q-0432 (provisional; waits for: a use of DEP-P2)
+templates/instantiation/class-point-static-const-member.cpp: Q-0433 (provisional; waits for: a review (doubt))
+overloading/conversion-sequences/user-defined-explicit-reference-value.cpp: Q-0337 (provisional; waits for: newest families that agree; a review (doubt))
+overloading/conversion-sequences/user-defined-explicit-reference-xvalue.cpp: Q-0337 (provisional; waits for: newest families that agree; a review (doubt))
+overloading/conversion-sequences/user-defined-explicit-rvalue-reference-value.cpp: Q-0156 (provisional; waits for: newest families that agree)
+declarations/exception-specifications/operand-cycle-static.cpp: Q-0079 (provisional; waits for: a review (silent))
+declarations/exception-specifications/operand-cycle.cpp: Q-0079 (provisional; waits for: a review (silent))
+templates/instantiation/explicit-unqualified-outside-namespace-function.cpp: Q-0235 (provisional; waits for: the maintainer (pending.md row 3, row 5); newest families th)
+classes/copy-move/trivially-copyable-member-template-selected.cpp: Q-0339 (provisional; waits for: newest families that agree)
+expressions/postfix/default-template-argument-incomplete-class.cpp: Q-0406 (provisional; waits for: the maintainer (pending.md row 4))
+
+107 tests read
+  3: a use of DEP-P5
+  2: a use of DEP-P2
+  2: newest families that agree; a review (doubt)
+  2: newest families that agree
+  2: a review (silent)
+  1: a review (doubt)
+  1: the maintainer (pending.md row 3, row 5); newest families th
+  1: the maintainer (pending.md row 4)

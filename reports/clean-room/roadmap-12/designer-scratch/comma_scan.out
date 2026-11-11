@@ -1,0 +1,10 @@
+declare operator,: 0 []
+fold ./tests/programs/roadmap/r10-list-first-try.cpp 59 template <class... U> explicit List(U&&... us) { (push_back(forward<U>(us)), ...); }
+fold ./tests/programs/roadmap/r10-list.cpp 62 template <class... U> explicit List(U&&... us) { (push_back(forward<U>(us)), ...); }
+fold ./tests/programs/roadmap/r10-tuple-second-try.cpp 111 constexpr void each_impl(Tuple<Ts...>& t, F& f, index_seq<I...>) { (f(get<I>(t)), ...); }
+fold ./tests/programs/roadmap/r10-tuple.cpp 115 constexpr void each_impl(Tuple<Ts...>& t, F& f, index_seq<I...>) { (f(get<I>(t)), ...); }
+for-inc ./tests/programs/roadmap/r5-hashmap-kept-pointer.cpp 51 ++step, i = (i + 1
+for-inc ./tests/programs/roadmap/r5-hashmap-kept-pointer.cpp 67 ++step, i = (i + 1
+fold ./tests/programs/roadmap/r7-registry/registry.h 51 ((acc = fn(acc, rest)), ...);
+fold ./tests/programs/roadmap/r8-fmt.cpp 81 ((next_hole(), write_one(out, args)), ...);
+fold ./tests/programs/roadmap/r9-vec.cpp 106 (v.emplace_back(forward<U>(us)), ...);

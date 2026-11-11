@@ -1,0 +1,22 @@
+changed 20 CNS-13 CNS-P3 DED-20 DEP-30 DEP-4 DEP-40 DEP-6 DEP-P1 DEP-P5 DEP-P6 DTOR-8 INST-1 INST-2 INST-P1 LOOP-9 LSUP-6 REF-2 STG-P2 UNI-14 UNI-P3
+new []
+CNS-13 rows: X22 | mentions: -
+CNS-P3 rows: X22 | mentions: X8
+DED-20 rows: X13 | mentions: X5,X7
+DEP-30 rows: X6,X12,X13,X18,X22 | mentions: X17
+DEP-4 rows: X6,X7 | mentions: -
+DEP-40 rows: - | mentions: -
+DEP-6 rows: - | mentions: -
+DEP-P1 rows: - | mentions: X15,X22
+DEP-P5 rows: - | mentions: X8
+DEP-P6 rows: X22 | mentions: X12
+DTOR-8 rows: - | mentions: -
+INST-1 rows: - | mentions: X7
+INST-2 rows: - | mentions: -
+INST-P1 rows: X6,X22 | mentions: -
+LOOP-9 rows: - | mentions: -
+LSUP-6 rows: - | mentions: X23
+REF-2 rows: X14 | mentions: -
+STG-P2 rows: - | mentions: X14
+UNI-14 rows: - | mentions: -
+UNI-P3 rows: - | mentions: -

@@ -1,0 +1,103 @@
+| | program |
+|---|---|
+| I7-1 Plain p, not dependent, elided: Mixed b{1, 2, 3L} is Mixed<long> | accept |
+| I7-1 int v[2], not dependent, elided: Arr b{1, 2, 3L} is Arr<long> | accept |
+| I7-1 char v[3] from a string literal: Named b{"ab", 1} is Named<int> | accept: clang-18, gcc-host, clang-host, gcc-14, gcc-16, clang-22; reject: edg-7.0-ilp32, edg-7.0 |
+| I7-3 a class that inherits constructors is not an aggregate | accept |
+| I7-6 empty list: guide with no parameters, not the initializer-list guide | accept: clang-host, clang-18, clang-22; reject: edg-7.0-ilp32, gcc-host, edg-7.0, gcc-16, gcc-14 |
+| I7-6 empty list: the initializer-list guide | accept: gcc-host, gcc-16, edg-7.0, gcc-14, edg-7.0-ilp32; reject: clang-18, clang-host, clang-22 |
+| I7-6 two elements: user guide (initializer_list, int = 0) wins over (int, int) | accept |
+| I7-6 two elements, parentheses: (int, int) wins | accept |
+| I7-7 IntPair p(1, 2.0) is Pair<int, double> | accept: edg-7.0, gcc-14, edg-7.0-ilp32, gcc-16, gcc-host, clang-host, clang-22; reject: clang-18 |
+| I7-7 IntPair q(1L, 2.0): the fixed parameter converts | accept: gcc-16, clang-host, gcc-host, gcc-14, clang-22; reject: clang-18, edg-7.0-ilp32, edg-7.0 |
+| I7-8 alias of a constrained alias, constraint met | accept: edg-7.0-ilp32, gcc-16, clang-host, edg-7.0, gcc-host, gcc-14, clang-22; reject: clang-18 |
+| I7-8 alias of a constrained alias, constraint not met | reject |
+| I7-8 control: the constrained alias itself, constraint not met | reject |
+| I7-9 Derived d; base has the guide with no parameters and a default | reject |
+| I7-9 Derived d{1}; base is an aggregate | reject |
+| I7-9 Derived d(1); base has a constructor (control) | accept: gcc-14, edg-7.0, edg-7.0-ilp32, gcc-host, gcc-16; reject: clang-host, clang-18, clang-22 |
+| I7-11 copy init: the only guide needs a user conversion to its parameter | accept: edg-7.0-ilp32, edg-7.0, gcc-14, gcc-host, gcc-16, clang-host, clang-22; reject: clang-18 |
+| I7-11 control: direct init, same guide | accept |
+| I7-13 new Box with no initializer | accept |
+| I7-13 control: new Box{1} | accept |
+| I7-13 static data member, no initializer, not inline | accept: gcc-host, gcc-14, gcc-16; reject: edg-7.0, edg-7.0-ilp32, clang-host, clang-18, clang-22 |
+| I7-13 static inline data member, no initializer | accept: gcc-host, gcc-14, gcc-16; reject: edg-7.0-ilp32, edg-7.0, clang-18, clang-host, clang-22 |
+| I7-13 control: static inline data member with {} | accept |
+| I7-13 control: variable with no initializer | accept |
+| I7-14 copy init: better guide explicit for its T, worse user guide not | accept: edg-7.0, edg-7.0-ilp32, clang-host, clang-18, clang-22; reject: gcc-16, gcc-host, gcc-14 |
+| I7-14 copy-list init, same classes | reject |
+| I7-14 control: direct init picks the explicit guide | accept |
+| I7-16 host claim: Entry a{.key = 3} | accept |
+| I7-16 host claim: Entry b(4L), parentheses | accept |
+I7-1 char v[3] from a string literal: Named b{"ab", 1} is Named<int> / program / edg-7.0: b-1-is-named-int--program.cpp", line 9: error: no instance of
+I7-1 char v[3] from a string literal: Named b{"ab", 1} is Named<int> / program / edg-7.0-ilp32: b-1-is-named-int--program.cpp", line 9: error: no instance of
+I7-6 empty list: guide with no parameters, not the initializer-list guide / program / edg-7.0: the-initializer-list-guide--program.cpp", line 12: error: static
+I7-6 empty list: guide with no parameters, not the initializer-list guide / program / edg-7.0-ilp32: the-initializer-list-guide--program.cpp", line 12: error: static
+I7-6 empty list: guide with no parameters, not the initializer-list guide / program / gcc-14: /tidal/build/probes/i7-ctad/0004-i7-6-empty-list-guide-with-no-parameters-not-the-initializer-list-guide--program.cpp:12:15: error: static assertion failed
+I7-6 empty list: guide with no parameters, not the initializer-list guide / program / gcc-16: /tidal/build/probes/i7-ctad/0004-i7-6-empty-list-guide-with-no-parameters-not-the-initializer-list-guide--program.cpp:12:15: error: static assertion failed
+I7-6 empty list: guide with no parameters, not the initializer-list guide / program / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/i7-ctad/0004-i7-6-empty-list-guide-with-no-parameters-not-the-initializer-list-guide--program.cpp:12:15: error: static assertion failed
+I7-6 empty list: the initializer-list guide / program / clang-18: /tidal/build/probes/i7-ctad/0005-i7-6-empty-list-the-initializer-list-guide--program.cpp:12:15: error: static assertion failed due to requirement 'same<C<char>, C<long>>'
+I7-6 empty list: the initializer-list guide / program / clang-22: /tidal/build/probes/i7-ctad/0005-i7-6-empty-list-the-initializer-list-guide--program.cpp:12:15: error: static assertion failed due to requirement 'same<C<char>, C<long>>'
+I7-6 empty list: the initializer-list guide / program / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/i7-ctad/0005-i7-6-empty-list-the-initializer-list-guide--program.cpp:12:15: error: static assertion failed due to requirement 'same<C<char>, C<long>>'
+I7-7 IntPair p(1, 2.0) is Pair<int, double> / program / clang-18: /tidal/build/probes/i7-ctad/0008-i7-7-intpair-p-1-2-0-is-pair-int-double--program.cpp:10:9: error: alias template 'IntPair' requires template arguments; argument deduction only allowed for class templates
+I7-7 IntPair q(1L, 2.0): the fixed parameter converts / program / clang-18: /tidal/build/probes/i7-ctad/0009-i7-7-intpair-q-1l-2-0-the-fixed-parameter-converts--program.cpp:10:9: error: alias template 'IntPair' requires template arguments; argument deduction only allowed for class templates
+I7-7 IntPair q(1L, 2.0): the fixed parameter converts / program / edg-7.0: verts--program.cpp", line 10: error: no instance of constructor
+I7-7 IntPair q(1L, 2.0): the fixed parameter converts / program / edg-7.0-ilp32: verts--program.cpp", line 10: error: no instance of constructor
+I7-8 alias of a constrained alias, constraint met / program / clang-18: /tidal/build/probes/i7-ctad/0010-i7-8-alias-of-a-constrained-alias-constraint-met--program.cpp:12:7: error: alias template 'Same2' requires template arguments; argument deduction only allowed for class templates
+I7-8 alias of a constrained alias, constraint not met / program / clang-18: /tidal/build/probes/i7-ctad/0011-i7-8-alias-of-a-constrained-alias-constraint-not-met--program.cpp:12:7: error: alias template 'Same2' requires template arguments; argument deduction only allowed for class templates
+I7-8 alias of a constrained alias, constraint not met / program / clang-22: /tidal/build/probes/i7-ctad/0011-i7-8-alias-of-a-constrained-alias-constraint-not-met--program.cpp:12:7: error: no viable constructor or deduction guide for deduction of template arguments of 'Same2'
+I7-8 alias of a constrained alias, constraint not met / program / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/i7-ctad/0011-i7-8-alias-of-a-constrained-alias-constraint-not-met--program.cpp:12:7: error: no viable constructor or deduction guide for deduction of template arguments of 'Same2'
+I7-8 alias of a constrained alias, constraint not met / program / edg-7.0: not-met--program.cpp", line 12: error: no instance of constructor
+I7-8 alias of a constrained alias, constraint not met / program / edg-7.0-ilp32: not-met--program.cpp", line 12: error: no instance of constructor
+I7-8 alias of a constrained alias, constraint not met / program / gcc-14: /tidal/build/probes/i7-ctad/0011-i7-8-alias-of-a-constrained-alias-constraint-not-met--program.cpp:12:17: error: class template argument deduction failed:
+I7-8 alias of a constrained alias, constraint not met / program / gcc-16: /tidal/build/probes/i7-ctad/0011-i7-8-alias-of-a-constrained-alias-constraint-not-met--program.cpp:12:17: error: class template argument deduction failed:
+I7-8 alias of a constrained alias, constraint not met / program / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/i7-ctad/0011-i7-8-alias-of-a-constrained-alias-constraint-not-met--program.cpp:12:17: error: class template argument deduction failed:
+I7-8 control: the constrained alias itself, constraint not met / program / clang-18: /tidal/build/probes/i7-ctad/0012-i7-8-control-the-constrained-alias-itself-constraint-not-met--program.cpp:11:6: error: alias template 'Same' requires template arguments; argument deduction only allowed for class templates
+I7-8 control: the constrained alias itself, constraint not met / program / clang-22: /tidal/build/probes/i7-ctad/0012-i7-8-control-the-constrained-alias-itself-constraint-not-met--program.cpp:11:6: error: no viable constructor or deduction guide for deduction of template arguments of 'Same'
+I7-8 control: the constrained alias itself, constraint not met / program / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/i7-ctad/0012-i7-8-control-the-constrained-alias-itself-constraint-not-met--program.cpp:11:6: error: no viable constructor or deduction guide for deduction of template arguments of 'Same'
+I7-8 control: the constrained alias itself, constraint not met / program / edg-7.0: straint-not-met--program.cpp", line 11: error: no instance of
+I7-8 control: the constrained alias itself, constraint not met / program / edg-7.0-ilp32: straint-not-met--program.cpp", line 11: error: no instance of
+I7-8 control: the constrained alias itself, constraint not met / program / gcc-14: /tidal/build/probes/i7-ctad/0012-i7-8-control-the-constrained-alias-itself-constraint-not-met--program.cpp:11:16: error: class template argument deduction failed:
+I7-8 control: the constrained alias itself, constraint not met / program / gcc-16: /tidal/build/probes/i7-ctad/0012-i7-8-control-the-constrained-alias-itself-constraint-not-met--program.cpp:11:16: error: class template argument deduction failed:
+I7-8 control: the constrained alias itself, constraint not met / program / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/i7-ctad/0012-i7-8-control-the-constrained-alias-itself-constraint-not-met--program.cpp:11:16: error: class template argument deduction failed:
+I7-9 Derived d; base has the guide with no parameters and a default / program / clang-18: /tidal/build/probes/i7-ctad/0013-i7-9-derived-d-base-has-the-guide-with-no-parameters-and-a-default--program.cpp:10:9: error: no viable constructor or deduction guide for deduction of template arguments of 'Derived'
+I7-9 Derived d; base has the guide with no parameters and a default / program / clang-22: /tidal/build/probes/i7-ctad/0013-i7-9-derived-d-base-has-the-guide-with-no-parameters-and-a-default--program.cpp:10:9: error: no viable constructor or deduction guide for deduction of template arguments of 'Derived'
+I7-9 Derived d; base has the guide with no parameters and a default / program / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/i7-ctad/0013-i7-9-derived-d-base-has-the-guide-with-no-parameters-and-a-default--program.cpp:10:9: error: no viable constructor or deduction guide for deduction of template arguments of 'Derived'
+I7-9 Derived d; base has the guide with no parameters and a default / program / edg-7.0: ameters-and-a-default--program.cpp", line 10: error: no instance of
+I7-9 Derived d; base has the guide with no parameters and a default / program / edg-7.0-ilp32: ameters-and-a-default--program.cpp", line 10: error: no instance of
+I7-9 Derived d; base has the guide with no parameters and a default / program / gcc-14: /tidal/build/probes/i7-ctad/0013-i7-9-derived-d-base-has-the-guide-with-no-parameters-and-a-default--program.cpp:10:9: error: class template argument deduction failed:
+I7-9 Derived d; base has the guide with no parameters and a default / program / gcc-16: /tidal/build/probes/i7-ctad/0013-i7-9-derived-d-base-has-the-guide-with-no-parameters-and-a-default--program.cpp:10:9: error: class template argument deduction failed:
+I7-9 Derived d; base has the guide with no parameters and a default / program / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/i7-ctad/0013-i7-9-derived-d-base-has-the-guide-with-no-parameters-and-a-default--program.cpp:10:9: error: class template argument deduction failed:
+I7-9 Derived d{1}; base is an aggregate / program / clang-18: /tidal/build/probes/i7-ctad/0014-i7-9-derived-d-1-base-is-an-aggregate--program.cpp:10:9: error: no viable constructor or deduction guide for deduction of template arguments of 'Derived'
+I7-9 Derived d{1}; base is an aggregate / program / clang-22: /tidal/build/probes/i7-ctad/0014-i7-9-derived-d-1-base-is-an-aggregate--program.cpp:10:9: error: no viable constructor or deduction guide for deduction of template arguments of 'Derived'
+I7-9 Derived d{1}; base is an aggregate / program / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/i7-ctad/0014-i7-9-derived-d-1-base-is-an-aggregate--program.cpp:10:9: error: no viable constructor or deduction guide for deduction of template arguments of 'Derived'
+I7-9 Derived d{1}; base is an aggregate / program / edg-7.0: m.cpp", line 10: error: no instance of constructor "Derived" matches
+I7-9 Derived d{1}; base is an aggregate / program / edg-7.0-ilp32: m.cpp", line 10: error: no instance of constructor "Derived" matches
+I7-9 Derived d{1}; base is an aggregate / program / gcc-14: /tidal/build/probes/i7-ctad/0014-i7-9-derived-d-1-base-is-an-aggregate--program.cpp:10:12: error: class template argument deduction failed:
+I7-9 Derived d{1}; base is an aggregate / program / gcc-16: /tidal/build/probes/i7-ctad/0014-i7-9-derived-d-1-base-is-an-aggregate--program.cpp:10:12: error: class template argument deduction failed:
+I7-9 Derived d{1}; base is an aggregate / program / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/i7-ctad/0014-i7-9-derived-d-1-base-is-an-aggregate--program.cpp:10:12: error: class template argument deduction failed:
+I7-9 Derived d(1); base has a constructor (control) / program / clang-18: /tidal/build/probes/i7-ctad/0015-i7-9-derived-d-1-base-has-a-constructor-control--program.cpp:10:9: error: no viable constructor or deduction guide for deduction of template arguments of 'Derived'
+I7-9 Derived d(1); base has a constructor (control) / program / clang-22: /tidal/build/probes/i7-ctad/0015-i7-9-derived-d-1-base-has-a-constructor-control--program.cpp:10:9: error: no viable constructor or deduction guide for deduction of template arguments of 'Derived'
+I7-9 Derived d(1); base has a constructor (control) / program / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/i7-ctad/0015-i7-9-derived-d-1-base-has-a-constructor-control--program.cpp:10:9: error: no viable constructor or deduction guide for deduction of template arguments of 'Derived'
+I7-11 copy init: the only guide needs a user conversion to its parameter / program / clang-18: /tidal/build/probes/i7-ctad/0016-i7-11-copy-init-the-only-guide-needs-a-user-conversion-to-its-parameter--program.cpp:11:3: error: no viable constructor or deduction guide for deduction of template arguments of 'W'
+I7-13 static data member, no initializer, not inline / program / clang-18: /tidal/build/probes/i7-ctad/0020-i7-13-static-data-member-no-initializer-not-inline--program.cpp:9:23: error: declaration of variable 'b' with deduced type 'Box' requires an initializer
+I7-13 static data member, no initializer, not inline / program / clang-22: /tidal/build/probes/i7-ctad/0020-i7-13-static-data-member-no-initializer-not-inline--program.cpp:9:23: error: declaration of variable 'b' with deduced type 'Box' requires an initializer
+I7-13 static data member, no initializer, not inline / program / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/i7-ctad/0020-i7-13-static-data-member-no-initializer-not-inline--program.cpp:9:23: error: declaration of variable 'b' with deduced type 'Box' requires an initializer
+I7-13 static data member, no initializer, not inline / program / edg-7.0: nline--program.cpp", line 9: error: argument list for class template
+I7-13 static data member, no initializer, not inline / program / edg-7.0-ilp32: nline--program.cpp", line 9: error: argument list for class template
+I7-13 static inline data member, no initializer / program / clang-18: /tidal/build/probes/i7-ctad/0021-i7-13-static-inline-data-member-no-initializer--program.cpp:9:30: error: declaration of variable 'b' with deduced type 'Box' requires an initializer
+I7-13 static inline data member, no initializer / program / clang-22: /tidal/build/probes/i7-ctad/0021-i7-13-static-inline-data-member-no-initializer--program.cpp:9:30: error: declaration of variable 'b' with deduced type 'Box' requires an initializer
+I7-13 static inline data member, no initializer / program / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/i7-ctad/0021-i7-13-static-inline-data-member-no-initializer--program.cpp:9:30: error: declaration of variable 'b' with deduced type 'Box' requires an initializer
+I7-13 static inline data member, no initializer / program / edg-7.0: r--program.cpp", line 9: error: argument list for class template
+I7-13 static inline data member, no initializer / program / edg-7.0-ilp32: r--program.cpp", line 9: error: argument list for class template
+I7-14 copy init: better guide explicit for its T, worse user guide not / program / gcc-14: /tidal/build/probes/i7-ctad/0024-i7-14-copy-init-better-guide-explicit-for-its-t-worse-user-guide-not--program.cpp:10:7: error: conversion from 'char' to non-scalar type 'N<char>' requested
+I7-14 copy init: better guide explicit for its T, worse user guide not / program / gcc-16: /tidal/build/probes/i7-ctad/0024-i7-14-copy-init-better-guide-explicit-for-its-t-worse-user-guide-not--program.cpp:10:7: error: conversion from 'char' to non-scalar type 'N<char>' requested
+I7-14 copy init: better guide explicit for its T, worse user guide not / program / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/i7-ctad/0024-i7-14-copy-init-better-guide-explicit-for-its-t-worse-user-guide-not--program.cpp:10:7: error: conversion from ‘char’ to non-scalar type ‘N<char>’ requested
+I7-14 copy-list init, same classes / program / clang-18: /tidal/build/probes/i7-ctad/0025-i7-14-copy-list-init-same-classes--program.cpp:10:3: error: class template argument deduction for 'N' selected an explicit constructor for copy-list-initialization
+I7-14 copy-list init, same classes / program / clang-22: /tidal/build/probes/i7-ctad/0025-i7-14-copy-list-init-same-classes--program.cpp:10:3: error: class template argument deduction for 'N' selected an explicit constructor for copy-list-initialization
+I7-14 copy-list init, same classes / program / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/i7-ctad/0025-i7-14-copy-list-init-same-classes--program.cpp:10:3: error: class template argument deduction for 'N' selected an explicit constructor for copy-list-initialization
+I7-14 copy-list init, same classes / program / edg-7.0: p", line 10: error: copy-list-initialization cannot use a constructor
+I7-14 copy-list init, same classes / program / edg-7.0-ilp32: p", line 10: error: copy-list-initialization cannot use a constructor
+I7-14 copy-list init, same classes / program / gcc-14: /tidal/build/probes/i7-ctad/0025-i7-14-copy-list-init-same-classes--program.cpp:10:11: error: converting to 'N<char>' from initializer list would use explicit constructor 'constexpr N<T>::N(T) [with T = char]'
+I7-14 copy-list init, same classes / program / gcc-16: /tidal/build/probes/i7-ctad/0025-i7-14-copy-list-init-same-classes--program.cpp:10:11: error: converting to 'N<char>' from initializer list would use explicit constructor 'constexpr N<T>::N(T) [with T = char]'
+I7-14 copy-list init, same classes / program / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/i7-ctad/0025-i7-14-copy-list-init-same-classes--program.cpp:10:11: error: converting to ‘N<char>’ from initializer list would use explicit constructor ‘constexpr N<T>::N(T) [with T = char]’

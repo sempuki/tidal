@@ -1,0 +1,39 @@
+{
+ "prelude": "namespace std { template <class E> class initializer_list {\n  const E* b_; decltype(sizeof 0) n_;\n  constexpr initializer_list(const E* b, decltype(sizeof 0) n) : b_(b), n_(n) {}\npublic: constexpr initializer_list() : b_(nullptr), n_(0) {} }; }\ntemplate <class A, class B> constexpr bool same = false;\ntemplate <class A> constexpr bool same<A, A> = true;\n",
+ "template": "{prelude}\n{row}\n{col}",
+ "rows": {
+  "I7-1 Plain p, not dependent, elided: Mixed b{1, 2, 3L} is Mixed<long>": "struct Plain { int x; int y; };\ntemplate <class T> struct Mixed { Plain p; T z; };\nMixed b{1, 2, 3L};\nstatic_assert(same<decltype(b), Mixed<long>>);",
+  "I7-1 int v[2], not dependent, elided: Arr b{1, 2, 3L} is Arr<long>": "template <class T> struct Arr { int v[2]; T n; };\nArr b{1, 2, 3L};\nstatic_assert(same<decltype(b), Arr<long>>);",
+  "I7-1 char v[3] from a string literal: Named b{\"ab\", 1} is Named<int>": "template <class T> struct Named { char v[3]; T n; };\nNamed b{\"ab\", 1};\nstatic_assert(same<decltype(b), Named<int>>);",
+  "I7-3 a class that inherits constructors is not an aggregate": "template <class T> struct Base { constexpr Base(T) {} };\ntemplate <class T> struct Derived : Base<T> { using Base<T>::Base; };\nstatic_assert(!__is_aggregate(Derived<int>));",
+  "I7-6 empty list: guide with no parameters, not the initializer-list guide": "template <class T> struct C { constexpr C() {} constexpr C(std::initializer_list<int>) {} };\nC(std::initializer_list<int>) -> C<long>;\nC() -> C<char>;\nC c{};\nstatic_assert(same<decltype(c), C<char>>);",
+  "I7-6 empty list: the initializer-list guide": "template <class T> struct C { constexpr C() {} constexpr C(std::initializer_list<int>) {} };\nC(std::initializer_list<int>) -> C<long>;\nC() -> C<char>;\nC c{};\nstatic_assert(same<decltype(c), C<long>>);",
+  "I7-6 two elements: user guide (initializer_list, int = 0) wins over (int, int)": "template <class T> struct C { constexpr C(int, int) {} constexpr C(std::initializer_list<int>, int = 0) {} };\nC(std::initializer_list<int>, int = 0) -> C<long>;\nC(int, int) -> C<char>;\nC c{1, 2};\nstatic_assert(same<decltype(c), C<long>>);",
+  "I7-6 two elements, parentheses: (int, int) wins": "template <class T> struct C { constexpr C(int, int) {} constexpr C(std::initializer_list<int>, int = 0) {} };\nC(std::initializer_list<int>, int = 0) -> C<long>;\nC(int, int) -> C<char>;\nC c(1, 2);\nstatic_assert(same<decltype(c), C<char>>);",
+  "I7-7 IntPair p(1, 2.0) is Pair<int, double>": "template <class T, class U> struct Pair { constexpr Pair(T, U) {} };\ntemplate <class U> using IntPair = Pair<int, U>;\nIntPair p(1, 2.0);\nstatic_assert(same<decltype(p), Pair<int, double>>);",
+  "I7-7 IntPair q(1L, 2.0): the fixed parameter converts": "template <class T, class U> struct Pair { constexpr Pair(T, U) {} };\ntemplate <class U> using IntPair = Pair<int, U>;\nIntPair q(1L, 2.0);\nstatic_assert(same<decltype(q), Pair<int, double>>);",
+  "I7-8 alias of a constrained alias, constraint met": "template <class T> concept Big = sizeof(T) > 1;\ntemplate <class A, class B> struct Pair { constexpr Pair(A, B) {} };\ntemplate <class T> requires Big<T> using Same = Pair<T, T>;\ntemplate <class T> using Same2 = Same<T>;\nSame2 p(1, 2);\nstatic_assert(same<decltype(p), Pair<int, int>>);",
+  "I7-8 alias of a constrained alias, constraint not met": "template <class T> concept Big = sizeof(T) > 1;\ntemplate <class A, class B> struct Pair { constexpr Pair(A, B) {} };\ntemplate <class T> requires Big<T> using Same = Pair<T, T>;\ntemplate <class T> using Same2 = Same<T>;\nSame2 p('a', 'b');",
+  "I7-8 control: the constrained alias itself, constraint not met": "template <class T> concept Big = sizeof(T) > 1;\ntemplate <class A, class B> struct Pair { constexpr Pair(A, B) {} };\ntemplate <class T> requires Big<T> using Same = Pair<T, T>;\nSame p('a', 'b');",
+  "I7-9 Derived d; base has the guide with no parameters and a default": "template <class T = int> struct Base {};\ntemplate <class T> struct Derived : Base<T> { using Base<T>::Base; };\nDerived d;\nstatic_assert(same<decltype(d), Derived<int>>);",
+  "I7-9 Derived d{1}; base is an aggregate": "template <class T> struct Base { T v; };\ntemplate <class T> struct Derived : Base<T> { using Base<T>::Base; };\nDerived d{1};",
+  "I7-9 Derived d(1); base has a constructor (control)": "template <class T> struct Base { constexpr Base(T) {} };\ntemplate <class T> struct Derived : Base<T> { using Base<T>::Base; };\nDerived d(1);\nstatic_assert(same<decltype(d), Derived<int>>);",
+  "I7-11 copy init: the only guide needs a user conversion to its parameter": "struct Conv { constexpr operator int() const { return 1; } };\ntemplate <class T> struct W { constexpr W(const Conv&) {} };\nW(int) -> W<long>;\nW w = Conv{};\nstatic_assert(same<decltype(w), W<long>>);",
+  "I7-11 control: direct init, same guide": "struct Conv { constexpr operator int() const { return 1; } };\ntemplate <class T> struct W { constexpr W(const Conv&) {} };\nW(int) -> W<long>;\nW w(Conv{});\nstatic_assert(same<decltype(w), W<long>>);",
+  "I7-13 new Box with no initializer": "template <class T = int> struct Box { T v; };\nauto p = new Box;",
+  "I7-13 control: new Box{1}": "template <class T = int> struct Box { T v; };\nauto p = new Box{1L};\nstatic_assert(same<decltype(p), Box<long>*>);",
+  "I7-13 static data member, no initializer, not inline": "template <class T = int> struct Box { T v; };\nstruct S { static Box b; };",
+  "I7-13 static inline data member, no initializer": "template <class T = int> struct Box { T v; };\nstruct S { static inline Box b; };",
+  "I7-13 control: static inline data member with {}": "template <class T = int> struct Box { T v; };\nstruct S { static inline Box b{}; };\nstatic_assert(same<decltype(S::b), Box<int>>);",
+  "I7-13 control: variable with no initializer": "template <class T = int> struct Box { T v; };\nBox b;\nstatic_assert(same<decltype(b), Box<int>>);",
+  "I7-14 copy init: better guide explicit for its T, worse user guide not": "template <class T> struct N { constexpr explicit(sizeof(T) == 1) N(T) {} };\nN(int) -> N<int>;\nN b = 'c';\nstatic_assert(same<decltype(b), N<int>>);",
+  "I7-14 copy-list init, same classes": "template <class T> struct N { constexpr explicit(sizeof(T) == 1) N(T) {} };\nN(int) -> N<int>;\nN b = {'c'};",
+  "I7-14 control: direct init picks the explicit guide": "template <class T> struct N { constexpr explicit(sizeof(T) == 1) N(T) {} };\nN(int) -> N<int>;\nN b('c');\nstatic_assert(same<decltype(b), N<char>>);",
+  "I7-16 host claim: Entry a{.key = 3}": "template <class K> struct Entry { K key; };\nEntry a{.key = 3};\nstatic_assert(same<decltype(a), Entry<int>>);",
+  "I7-16 host claim: Entry b(4L), parentheses": "template <class K> struct Entry { K key; };\nEntry b(4L);\nstatic_assert(same<decltype(b), Entry<long>>);"
+ },
+ "cols": {
+  "program": ""
+ },
+ "flags": []
+}

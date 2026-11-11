@@ -1,0 +1,19 @@
+./tests/programs/W7/small_string.cpp 171 static_assert(hello == "hello");
+./tests/programs/W7/small_string.cpp 172 static_assert("hello" == hello);                   // reversed (DCMP-6)
+./tests/programs/W7/small_string.cpp 173 static_assert(hello != "help");                    // rewritten (DCMP-6)
+./tests/programs/W7/small_string.cpp 182 static_assert(braced == "abc");
+./tests/programs/W7/small_string.cpp 192 static_assert(joined == "hello you");
+./tests/programs/W7/small_string.cpp 201 static_assert(built() == "zb");
+./tests/programs/W7/small_string.cpp 223 if (!(s == "xyz")) return 2;
+./tests/programs/W7/small_string.cpp 235 if (count != 3 || s != "XYZ") return 4;
+./tests/programs/W7/small_string.cpp 239 if (greeting != "hi, bob" || greeting.c_str()[7] != '\0') return 5;
+./tests/programs/roadmap/r11-flat-map.cpp 224 if (!(names.at(15) == "fifteen")) ++fails;
+./tests/programs/roadmap/r6-text.cpp 143 if (!(c == "short and more")) ++bad;
+./tests/programs/roadmap/r6-text.cpp 159 if (!(word == "jumper") || at != 3) ++bad;
+./tests/programs/roadmap/r9-map.cpp 116 return first.key == "apple" ? 0 : 7;              // kept in order
+./tests/programs/roadmap/r9-text.cpp 92 if (!(all == "hello, world")) return 1;
+./tests/programs/roadmap/r9-text.cpp 95 if (!(j == "abc")) return 3;
+./tests/programs/roadmap/r9-text.cpp 100 if (!(words[0] == "apple") || !(words[3] == "pear")) return 5;
+./tests/programs/roadmap/r9-vec.cpp 155 if (!(people[0].name == "ann")) return 4;
+./tests/programs/roadmap/r9-vec.cpp 156 std::size_t gone = people.erase_if([](const Tracked& t) { return t.name == "x"; });
+18 lines in 6 files

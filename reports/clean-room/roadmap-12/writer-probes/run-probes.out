@@ -1,0 +1,122 @@
+| Compiler | Program | Result | Note |
+|---|---|---|---|
+| clang-host | P3-5 dangling-stage, -fsanitize=address | exit 1 | stack-use-after-scope |
+| clang-host | events-first-try.cpp, -Wall -Wextra -Werror | exit 0 |  |
+| clang-host | events.cpp, -Wall -Wextra -Werror | exit 0 |  |
+| clang-host | machine.cpp, -Wall -Wextra -Werror | exit 0 |  |
+| clang-host | pipeline-first-try.cpp, -Wall -Wextra -Werror | exit 0 |  |
+| clang-host | pipeline.cpp, -Wall -Wextra -Werror | exit 0 |  |
+| clang-host | I7 p01-aggregate-designators.cpp | exit 0 |  |
+| clang-host | I7 p02-alias-fixed-argument.cpp | exit 0 |  |
+| clang-host | I7 p03-inherited-guide.cpp | build fails | /home/ryanm/Code/tidal/reports/clean-room/I7/programs/p03-inherited-guide.cpp:7:11: error: no viable constructor or deduction guide for deduction of template arguments of 'Derived' |
+| clang-host | I7 p04-string-guide.cpp | exit 0 |  |
+| clang-host | I7 p05-overload-set.cpp | exit 0 |  |
+| clang-host | I7 p06-conditional-explicit.cpp | exit 0 |  |
+| clang-host | I7 p07-initializer-list.cpp | exit 0 |  |
+| clang-host | I7 p08-new-and-cast.cpp | exit 0 |  |
+| clang-host | I7 p09-constrained-guides.cpp | exit 0 |  |
+| clang-host | I7 p10-copy-and-user-guide.cpp | exit 0 |  |
+| clang-host | I7 p11-template-template.cpp | exit 0 |  |
+| clang-host | I7 p12-aggregate-base-braces.cpp | exit 0 |  |
+| clang-host | I7 r1-aggregate-designator.cpp | build fails | clang++: error: linker command failed with exit code 1 (use -v to see invocation) |
+| clang-host | I7 r2-braced-copy-initializer-list-class.cpp | exit 0 |  |
+| gcc-host | P3-5 dangling-stage, -fsanitize=address | exit 1 | stack-use-after-scope |
+| gcc-host | events-first-try.cpp, -Wall -Wextra -Werror | exit 0 |  |
+| gcc-host | events.cpp, -Wall -Wextra -Werror | exit 0 |  |
+| gcc-host | machine.cpp, -Wall -Wextra -Werror | exit 0 |  |
+| gcc-host | pipeline-first-try.cpp, -Wall -Wextra -Werror | exit 0 |  |
+| gcc-host | pipeline.cpp, -Wall -Wextra -Werror | exit 0 |  |
+| gcc-host | I7 p01-aggregate-designators.cpp | exit 0 |  |
+| gcc-host | I7 p02-alias-fixed-argument.cpp | exit 0 |  |
+| gcc-host | I7 p03-inherited-guide.cpp | exit 0 |  |
+| gcc-host | I7 p04-string-guide.cpp | exit 0 |  |
+| gcc-host | I7 p05-overload-set.cpp | exit 0 |  |
+| gcc-host | I7 p06-conditional-explicit.cpp | exit 0 |  |
+| gcc-host | I7 p07-initializer-list.cpp | exit 0 |  |
+| gcc-host | I7 p08-new-and-cast.cpp | exit 0 |  |
+| gcc-host | I7 p09-constrained-guides.cpp | exit 0 |  |
+| gcc-host | I7 p10-copy-and-user-guide.cpp | exit 0 |  |
+| gcc-host | I7 p11-template-template.cpp | exit 0 |  |
+| gcc-host | I7 p12-aggregate-base-braces.cpp | exit 0 |  |
+| gcc-host | I7 r1-aggregate-designator.cpp | build fails | collect2: error: ld returned 1 exit status |
+| gcc-host | I7 r2-braced-copy-initializer-list-class.cpp | exit 0 |  |
+| gcc-14 | P3-5 dangling-stage, -fsanitize=address | exit 1 | stack-use-after-scope |
+| gcc-14 | events-first-try.cpp, -Wall -Wextra -Werror | exit 0 |  |
+| gcc-14 | events.cpp, -Wall -Wextra -Werror | exit 0 |  |
+| gcc-14 | machine.cpp, -Wall -Wextra -Werror | exit 0 |  |
+| gcc-14 | pipeline-first-try.cpp, -Wall -Wextra -Werror | exit 0 |  |
+| gcc-14 | pipeline.cpp, -Wall -Wextra -Werror | exit 0 |  |
+| gcc-14 | I7 p01-aggregate-designators.cpp | exit 0 |  |
+| gcc-14 | I7 p02-alias-fixed-argument.cpp | exit 0 |  |
+| gcc-14 | I7 p03-inherited-guide.cpp | exit 0 |  |
+| gcc-14 | I7 p04-string-guide.cpp | exit 0 |  |
+| gcc-14 | I7 p05-overload-set.cpp | exit 0 |  |
+| gcc-14 | I7 p06-conditional-explicit.cpp | exit 0 |  |
+| gcc-14 | I7 p07-initializer-list.cpp | exit 0 |  |
+| gcc-14 | I7 p08-new-and-cast.cpp | exit 0 |  |
+| gcc-14 | I7 p09-constrained-guides.cpp | exit 0 |  |
+| gcc-14 | I7 p10-copy-and-user-guide.cpp | exit 0 |  |
+| gcc-14 | I7 p11-template-template.cpp | exit 0 |  |
+| gcc-14 | I7 p12-aggregate-base-braces.cpp | exit 0 |  |
+| gcc-14 | I7 r1-aggregate-designator.cpp | build fails | collect2: error: ld returned 1 exit status |
+| gcc-14 | I7 r2-braced-copy-initializer-list-class.cpp | exit 0 |  |
+| clang-18 | P3-5 dangling-stage, -fsanitize=address | exit 1 | stack-use-after-scope |
+| clang-18 | events-first-try.cpp, -Wall -Wextra -Werror | exit 0 |  |
+| clang-18 | events.cpp, -Wall -Wextra -Werror | exit 0 |  |
+| clang-18 | machine.cpp, -Wall -Wextra -Werror | exit 0 |  |
+| clang-18 | pipeline-first-try.cpp, -Wall -Wextra -Werror | exit 0 |  |
+| clang-18 | pipeline.cpp, -Wall -Wextra -Werror | exit 0 |  |
+| clang-18 | I7 p01-aggregate-designators.cpp | exit 0 |  |
+| clang-18 | I7 p02-alias-fixed-argument.cpp | build fails | /tidal/build/probes/writer12/i7-p02-alias-fixed-argument.cpp:7:10: error: alias template 'IntDuo' requires template arguments; argument deduction only allowed for class templates |
+| clang-18 | I7 p03-inherited-guide.cpp | build fails | /tidal/build/probes/writer12/i7-p03-inherited-guide.cpp:7:11: error: no viable constructor or deduction guide for deduction of template arguments of 'Derived' |
+| clang-18 | I7 p04-string-guide.cpp | exit 0 |  |
+| clang-18 | I7 p05-overload-set.cpp | exit 0 |  |
+| clang-18 | I7 p06-conditional-explicit.cpp | exit 0 |  |
+| clang-18 | I7 p07-initializer-list.cpp | exit 0 |  |
+| clang-18 | I7 p08-new-and-cast.cpp | exit 0 |  |
+| clang-18 | I7 p09-constrained-guides.cpp | exit 0 |  |
+| clang-18 | I7 p10-copy-and-user-guide.cpp | exit 0 |  |
+| clang-18 | I7 p11-template-template.cpp | exit 0 |  |
+| clang-18 | I7 p12-aggregate-base-braces.cpp | exit 0 |  |
+| clang-18 | I7 r1-aggregate-designator.cpp | build fails | clang++-18: error: linker command failed with exit code 1 (use -v to see invocation) |
+| clang-18 | I7 r2-braced-copy-initializer-list-class.cpp | exit 0 |  |
+| gcc-16 | P3-5 dangling-stage, -fsanitize=address | exit 1 | stack-use-after-scope |
+| gcc-16 | events-first-try.cpp, -Wall -Wextra -Werror | exit 0 |  |
+| gcc-16 | events.cpp, -Wall -Wextra -Werror | exit 0 |  |
+| gcc-16 | machine.cpp, -Wall -Wextra -Werror | exit 0 |  |
+| gcc-16 | pipeline-first-try.cpp, -Wall -Wextra -Werror | exit 0 |  |
+| gcc-16 | pipeline.cpp, -Wall -Wextra -Werror | exit 0 |  |
+| gcc-16 | I7 p01-aggregate-designators.cpp | exit 0 |  |
+| gcc-16 | I7 p02-alias-fixed-argument.cpp | exit 0 |  |
+| gcc-16 | I7 p03-inherited-guide.cpp | exit 0 |  |
+| gcc-16 | I7 p04-string-guide.cpp | exit 0 |  |
+| gcc-16 | I7 p05-overload-set.cpp | exit 0 |  |
+| gcc-16 | I7 p06-conditional-explicit.cpp | exit 0 |  |
+| gcc-16 | I7 p07-initializer-list.cpp | exit 0 |  |
+| gcc-16 | I7 p08-new-and-cast.cpp | exit 0 |  |
+| gcc-16 | I7 p09-constrained-guides.cpp | exit 0 |  |
+| gcc-16 | I7 p10-copy-and-user-guide.cpp | exit 0 |  |
+| gcc-16 | I7 p11-template-template.cpp | exit 0 |  |
+| gcc-16 | I7 p12-aggregate-base-braces.cpp | exit 0 |  |
+| gcc-16 | I7 r1-aggregate-designator.cpp | build fails | collect2: error: ld returned 1 exit status |
+| gcc-16 | I7 r2-braced-copy-initializer-list-class.cpp | exit 0 |  |
+| clang-22 | P3-5 dangling-stage, -fsanitize=address | exit 1 | stack-use-after-scope |
+| clang-22 | events-first-try.cpp, -Wall -Wextra -Werror | exit 0 |  |
+| clang-22 | events.cpp, -Wall -Wextra -Werror | exit 0 |  |
+| clang-22 | machine.cpp, -Wall -Wextra -Werror | exit 0 |  |
+| clang-22 | pipeline-first-try.cpp, -Wall -Wextra -Werror | exit 0 |  |
+| clang-22 | pipeline.cpp, -Wall -Wextra -Werror | exit 0 |  |
+| clang-22 | I7 p01-aggregate-designators.cpp | exit 0 |  |
+| clang-22 | I7 p02-alias-fixed-argument.cpp | exit 0 |  |
+| clang-22 | I7 p03-inherited-guide.cpp | build fails | /tidal/build/probes/writer12/i7-p03-inherited-guide.cpp:7:11: error: no viable constructor or deduction guide for deduction of template arguments of 'Derived' |
+| clang-22 | I7 p04-string-guide.cpp | exit 0 |  |
+| clang-22 | I7 p05-overload-set.cpp | exit 0 |  |
+| clang-22 | I7 p06-conditional-explicit.cpp | exit 0 |  |
+| clang-22 | I7 p07-initializer-list.cpp | exit 0 |  |
+| clang-22 | I7 p08-new-and-cast.cpp | exit 0 |  |
+| clang-22 | I7 p09-constrained-guides.cpp | exit 0 |  |
+| clang-22 | I7 p10-copy-and-user-guide.cpp | exit 0 |  |
+| clang-22 | I7 p11-template-template.cpp | exit 0 |  |
+| clang-22 | I7 p12-aggregate-base-braces.cpp | exit 0 |  |
+| clang-22 | I7 r1-aggregate-designator.cpp | build fails | clang++-22: error: linker command failed with exit code 1 (use -v to see invocation) |
+| clang-22 | I7 r2-braced-copy-initializer-list-class.cpp | exit 0 |  |

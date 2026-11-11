@@ -1,0 +1,15 @@
+{
+ "prelude": "template <class A> struct Action {\n  template <class F> Action(F) {}\n  Action(const Action&) = delete;\n  Action& operator=(const Action&) = delete; };\ntemplate <class A> struct Strict {\n  template <class F> explicit Strict(F) {}\n  Strict(const Strict&) = delete; };\n",
+ "template": "{prelude}\n{row}\n{col}",
+ "rows": {
+  "P3-11 Action<int> a = closure; copies deleted, converting constructor template": "int f() { int log = 0; Action<int> a = [&log](int v) { log += v; }; return log; }",
+  "P3-11 Action<int> a = Action<int>(closure); a prvalue of the same type": "int f() { int log = 0; Action<int> a = Action<int>([&log](int v) { log += v; }); return log; }",
+  "P3-11 control: Strict<int> s = closure; explicit converting constructor": "int f() { Strict<int> s = [](int) {}; return 0; }",
+  "P3-11 control: Action<int> b = a; a copy of an lvalue": "int f() { Action<int> a = [](int) {}; Action<int> b = a; return 0; }",
+  "P3-3 a function template declared only, named in decltype": "template <class T> T&& fake();\nstruct Sq { long operator()(int&) const { return 0; } };\ntemplate <class F, class T> using result = decltype(fake<F&>()(fake<T&>()));\ntemplate <class X, class Y> constexpr bool same = false;\ntemplate <class X> constexpr bool same<X, X> = true;\nstatic_assert(same<result<Sq, int>, long>);"
+ },
+ "cols": {
+  "program": ""
+ },
+ "flags": []
+}

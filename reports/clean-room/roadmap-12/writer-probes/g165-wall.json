@@ -1,0 +1,18 @@
+{
+ "prelude": "",
+ "template": "{row}\n{col}",
+ "rows": {
+  "one of two base overloads overridden, the other hidden": "struct B { virtual void f(int); virtual void f(double); virtual ~B(); };\nstruct D : B { void f(int) override; };",
+  "neither overridden, a new f(char) hides both": "struct B { virtual void f(int); virtual void f(double); virtual ~B(); };\nstruct D : B { void f(char); };",
+  "one base virtual f(double), derived f(int) hides it": "struct B { virtual void f(double); virtual ~B(); };\nstruct D : B { void f(int); };",
+  "control: both overridden": "struct B { virtual void f(int); virtual void f(double); virtual ~B(); };\nstruct D : B { void f(int) override; void f(double) override; };",
+  "control: using B::f, one overridden": "struct B { virtual void f(int); virtual void f(double); virtual ~B(); };\nstruct D : B { using B::f; void f(int) override; };"
+ },
+ "cols": {
+  "-Wall -Werror": ""
+ },
+ "flags": [
+  "-Wall",
+  "-Werror"
+ ]
+}
