@@ -1,0 +1,16 @@
+{
+ "prelude": "",
+ "template": "constexpr int run(int k) {{ int n = 0; int s = 0; {row} return s * 100 + n; }}\n{col}\nint main() {{ return 0; }}",
+ "rows": {
+  "case into while body": "switch (k) { case 0: while (n < 3) { s += 10; case 1: s += 1; ++n; } }",
+  "case into for body, expression init": "switch (k) { case 0: for (n = 1; n < 3; ++n) { s += 10; case 1: s += 1; } }",
+  "case into for body, declaration init with initializer": "switch (k) { case 0: for (int i = 0; i < 3; ++i) { s += 10; case 1: s += 1; n = i; } }",
+  "case into do body": "switch (k) { case 0: do { s += 10; case 1: s += 1; } while (++n < 3); }"
+ },
+ "cols": {
+  "compiles": "",
+  "run(1) == 2303: rest of the body, then step, then condition": "static_assert(run(1) == 2303);",
+  "run(0) == 3303": "static_assert(run(0) == 3303);"
+ },
+ "flags": []
+}

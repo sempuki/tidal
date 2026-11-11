@@ -1,0 +1,20 @@
+{
+ "prelude": "namespace lib { struct S {}; struct Tag {};\n  constexpr int probe(Tag, long) { return 1; }\n  constexpr int f(S, long) { return 1; } }\nnamespace lib2 { struct Tag2 {}; }",
+ "template": "{prelude}\n{row}\n{col}\nstatic_assert(X<lib::S>::r() == 1);\nint main() {{ return 0; }}",
+ "rows": {
+  "I6-1 independent call, ADL at the definition": "template <class T> struct X { static constexpr int r() { return probe(lib::Tag{}, 0); } };",
+  "I6-1 independent call, only a later declaration": "template <class T> struct X { static constexpr int r() { return probe2(lib2::Tag2{}); } };",
+  "I6-5 f(this->n, 0), n of type lib::S": "template <class T> struct X { lib::S n; constexpr int g() const { return f(this->n, 0); } static constexpr int r() { return X{}.g(); } };",
+  "I6-5 f(n, 0), n of type lib::S": "template <class T> struct X { lib::S n; constexpr int g() const { return f(n, 0); } static constexpr int r() { return X{}.g(); } };",
+  "I6-5 f(this->n, 0), in a local class of a function template": "template <class T> constexpr int loc() { struct L { lib::S n; constexpr int g() const { return f(this->n, 0); } }; return L{}.g(); }\ntemplate <class T> struct X { static constexpr int r() { return loc<T>(); } };",
+  "I6-9 lib::f(T{}, 0), qualified, dependent argument": "template <class T> struct X { static constexpr int r() { return lib::f(T{}, 0); } };",
+  "I6-9 f(T{}, 0) where a member f is found": "template <class T> struct X { static constexpr int f(T, long) { return 1; } static constexpr int r() { return f(T{}, 0); } };",
+  "control: f(T{}, 0), unqualified, dependent argument": "template <class T> struct X { static constexpr int r() { return f(T{}, 0); } };",
+  "I6-10 control, first used before the later overload": "template <class T> struct X { static constexpr int r() { return f(T{}, 0); } };\ninline int first_use() { return X<lib::S>::r(); }"
+ },
+ "cols": {
+  "no later overload": "namespace lib2 { constexpr int probe2(Tag2) { return 1; } }",
+  "later overload": "namespace lib { constexpr int probe(Tag, int) { return 2; } constexpr int f(S, int) { return 2; } }\nnamespace lib2 { constexpr int probe2(Tag2) { return 1; } }"
+ },
+ "flags": []
+}

@@ -1,0 +1,16 @@
+{
+ "prelude": "",
+ "template": "{row}\n{col}\nint main() {{ return 0; }}",
+ "rows": {
+  "P2-6 private constructor, count as decltype(sizeof 0)": "namespace std { template <class E> class initializer_list { const E* p; decltype(sizeof 0) n; constexpr initializer_list(const E* q, decltype(sizeof 0) c) : p(q), n(c) {} public: constexpr initializer_list() : p(nullptr), n(0) {} constexpr decltype(sizeof 0) size() const { return n; } }; }\n",
+  "P2-6 public constructor": "namespace std { template <class E> class initializer_list { const E* p; decltype(sizeof 0) n; public: constexpr initializer_list(const E* q, decltype(sizeof 0) c) : p(q), n(c) {} private: public: constexpr initializer_list() : p(nullptr), n(0) {} constexpr decltype(sizeof 0) size() const { return n; } }; }\n",
+  "P2-6 count first, then pointer": "namespace std { template <class E> class initializer_list { decltype(sizeof 0) n; const E* p; constexpr initializer_list(const E* q, decltype(sizeof 0) c) : n(c), p(q) {} public: constexpr initializer_list() : p(nullptr), n(0) {} constexpr decltype(sizeof 0) size() const { return n; } }; }\n",
+  "P2-6 count as unsigned int": "namespace std { template <class E> class initializer_list { const E* p; unsigned n; constexpr initializer_list(const E* q, unsigned c) : p(q), n(c) {} public: constexpr initializer_list() : p(nullptr), n(0) {} constexpr decltype(sizeof 0) size() const { return n; } }; }\n"
+ },
+ "cols": {
+  "a braced list of three": "constexpr int count(std::initializer_list<int> l) { return (int)l.size(); }\nstatic_assert(count({1, 2, 3}) == 3);",
+  "P2-3 two equal literals, == in a static_assert": "constexpr const char* a = \"pear\"; constexpr const char* b = \"pear\"; static_assert(a == b || a != b);",
+  "P2-3 a literal compared with itself": "constexpr const char* a = \"pear\"; static_assert(a == a);"
+ },
+ "flags": []
+}

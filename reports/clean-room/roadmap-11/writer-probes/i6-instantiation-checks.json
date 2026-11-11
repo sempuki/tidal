@@ -1,0 +1,30 @@
+{
+ "prelude": "template <int K> struct B { using type = int; };",
+ "template": "{prelude}\n{row}\nint main() {{ {col} return 0; }}",
+ "rows": {
+  "I6-6 static_assert(sizeof(N) == 1)": "template <int N> struct A { static_assert(sizeof(N) == 1); };\ntemplate <int = 0> void use() { A<1> a; (void)a; }",
+  "I6-6 B<sizeof(N)>::type with no typename": "template <int N> struct A { void g() { B<sizeof(N)>::type x = 0; (void)x; } };\ntemplate <int = 0> void use() { A<1>{}.g(); }",
+  "I6-6 B<noexcept(N + 1)>::type with no typename": "template <int N> struct A { void g() { B<noexcept(N + 1)>::type x = 0; (void)x; } };\ntemplate <int = 0> void use() { A<1>{}.g(); }",
+  "I6-6 control: B<N>::type with no typename": "template <int N> struct A { void g() { B<N>::type x = 0; (void)x; } };\ntemplate <int = 0> void use() { A<1>{}.g(); }",
+  "I6-3 typename T::template box b(1), no list": "struct H { template <class U> struct box { box(U) {} }; };\ntemplate <class T> struct C { void g() { typename T::template box b(1); (void)b; } };\ntemplate <int = 0> void use() { C<H>{}.g(); }",
+  "I6-7 DEP-6 undeclared name in a body": "template <class T> int h(T) { return undeclared_value; }\ntemplate <int = 0> void use() {}",
+  "I6-7 DEP-12 name from a dependent base": "template <class T> struct Base { int m = 0; };\ntemplate <class T> struct D : Base<T> { int g() { return m; } };\ntemplate <int = 0> void use() { D<int>{}.g(); }",
+  "I6-8 CNS-13 Q<int> fails its constraint": "template <class T> concept Small = sizeof(T) == 1;\ntemplate <Small T> struct Q {};\ntemplate <class T> void k() { Q<int> q; (void)q; }\ntemplate <int = 0> void use() { k<int>(); }",
+  "I6-13 decltype(make()) of an incomplete-able class": "template <class T> struct Bad { static_assert(sizeof(T) == 0); };\nBad<int> make();\ntemplate <int = 0> void use() { using R = decltype(make()); R* p = nullptr; (void)p; }",
+  "I6-13 a call that passes the class by value": "template <class T> struct Bad { static_assert(sizeof(T) == 0); };\nvoid take(Bad<int>);\nextern Bad<int>& gr;\ntemplate <int = 0> void use() { take(gr); }",
+  "I6-14 hard error beside a fallback": "template <class T> struct Hard { static_assert(sizeof(T) == 0); using type = int; };\ntemplate <class T> typename Hard<T>::type pick(T);\nint pick(...);\ntemplate <int = 0> void use() { (void)pick(1); }",
+  "I6-15 static constexpr member, initializer fails": "template <class T> struct A { static constexpr int v = T::missing; };\ntemplate <int = 0> void use() { A<int> a; (void)a; }",
+  "I6-15 static const member, initializer fails": "template <class T> struct A { static const int v = T::missing; };\ntemplate <int = 0> void use() { A<int> a; (void)a; }",
+  "I6-15 static inline member, initializer fails": "template <class T> struct A { static inline int v = T::missing; };\ntemplate <int = 0> void use() { A<int> a; (void)a; }",
+  "I6-16 friend body fails, no call": "template <class T> struct F { friend void ff(F) { T::missing(); } };\ntemplate <int = 0> void use() { F<int> f; (void)f; }",
+  "I6-16 friend body fails, called": "template <class T> struct F { friend void ff(F) { T::missing(); } };\ntemplate <int = 0> void use() { F<int> f; ff(f); }",
+  "I6-18 C::value_type* q = nullptr": "template <class C> void m() { C::value_type* q = nullptr; }\ntemplate <int = 0> void use() {}",
+  "I6-18 T::type value = 0": "template <class T> void m() { T::type value = 0; }\ntemplate <int = 0> void use() {}",
+  "I6-18 control: int p = 0; T::x * p;": "template <class T> void m() { int p = 0; T::x * p; }\ntemplate <int = 0> void use() {}"
+ },
+ "cols": {
+  "not instantiated": "",
+  "instantiated": "use();"
+ },
+ "flags": []
+}

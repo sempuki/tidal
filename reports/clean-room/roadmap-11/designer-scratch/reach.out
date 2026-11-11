@@ -1,0 +1,24 @@
+ids 2041
+pages 85 reached 85
+2 specification/classes/conversion-functions.md ['X2', 'X4'] commits since X4 15
+2 specification/declarations/alignment.md ['X14', 'X23'] commits since X23 4
+2 specification/declarations/auto.md ['X5', 'X6'] commits since X6 12
+2 specification/declarations/functions/deleted.md ['X5', 'X9'] commits since X9 6
+2 specification/declarations/inline.md ['X15', 'X21'] commits since X21 1
+2 specification/declarations/linkage-specifications.md ['X13', 'X15'] commits since X15 7
+1 specification/declarations/namespaces.md ['X15'] commits since X15 7
+2 specification/declarations/type-names.md ['X12', 'X20'] commits since X20 4
+2 specification/declarations/volatile.md ['X3', 'X14'] commits since X14 6
+2 specification/expressions/additive.md ['X1', 'X17'] commits since X17 5
+2 specification/expressions/bitwise.md ['X1', 'X17'] commits since X17 1
+1 specification/expressions/comma.md ['X1'] commits since X1 5
+2 specification/expressions/logical.md ['X1', 'X16'] commits since X16 2
+2 specification/expressions/member-pointers.md ['X5', 'X14'] commits since X14 4
+2 specification/expressions/multiplicative.md ['X1', 'X17'] commits since X17 3
+2 specification/expressions/shift.md ['X1', 'X17'] commits since X17 3
+2 specification/statements/blocks.md ['X9', 'X11'] commits since X11 7
+2 specification/statements/loops.md ['X6', 'X11'] commits since X11 5
+2 specification/templates/class-template-deduction.md ['X7', 'X20'] commits since X20 7
+2 specification/templates/constraints.md ['X8', 'X22'] commits since X22 7
+2 specification/templates/ordering.md ['X5', 'X7'] commits since X7 18
+[(1, 2), (2, 19), (3, 9), (4, 9), (5, 8), (6, 8), (7, 12), (8, 8), (9, 6), (10, 2), (12, 1), (16, 1)]

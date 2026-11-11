@@ -1,0 +1,111 @@
+| | no use | an object A<1> | sizeof(A<1>) | a read of A<1>::v |
+|---|---|---|---|---|
+| I6-6 static_assert(sizeof(N) == 1) in A<N> | accept | reject | reject | reject |
+| I6-6 static_assert(sizeof(N) == 4) in A<N> | accept | accept | accept | accept |
+| I6-6 static_assert(alignof(decltype(N)) == 1) in A<N> | accept | reject | reject | reject |
+| I6-15 static constexpr int v = N / 0 | accept | accept: gcc-host, gcc-16, gcc-14, clang-host, clang-18, clang-22; reject: edg-7.0-ilp32, edg-7.0 | accept: gcc-14, gcc-16, clang-18, gcc-host, clang-host, clang-22; reject: edg-7.0-ilp32, edg-7.0 | reject |
+| I6-15 static constexpr int v = B<N>::missing | accept | accept: gcc-16, gcc-14, gcc-host, clang-host, clang-18, clang-22; reject: edg-7.0-ilp32, edg-7.0 | accept: gcc-14, gcc-host, gcc-16, clang-18, clang-host, clang-22; reject: edg-7.0, edg-7.0-ilp32 | reject |
+| I6-15 static const int v = B<N>::missing | accept | accept: gcc-host, gcc-16, gcc-14; reject: edg-7.0, edg-7.0-ilp32, clang-18, clang-host, clang-22 | accept: gcc-host, gcc-16, gcc-14; reject: edg-7.0-ilp32, edg-7.0, clang-host, clang-18, clang-22 | reject |
+| I6-15 static inline int v = B<N>::missing | accept | accept: gcc-host, gcc-14, gcc-16, clang-host, clang-18, clang-22; reject: edg-7.0-ilp32, edg-7.0 | accept: gcc-14, gcc-host, clang-host, gcc-16, clang-18, clang-22; reject: edg-7.0, edg-7.0-ilp32 | reject |
+I6-6 static_assert(sizeof(N) == 1) in A<N> / an object A<1> / clang-18: /tidal/build/probes/i6-6-15-clean/0001-i6-6-static-assert-sizeof-n-1-in-a-n--an-object-a-1.cpp:2:43: error: static assertion failed due to requirement 'sizeof (1) == 1'
+I6-6 static_assert(sizeof(N) == 1) in A<N> / an object A<1> / clang-22: /tidal/build/probes/i6-6-15-clean/0001-i6-6-static-assert-sizeof-n-1-in-a-n--an-object-a-1.cpp:2:43: error: static assertion failed due to requirement 'sizeof (1) == 1'
+I6-6 static_assert(sizeof(N) == 1) in A<N> / an object A<1> / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/i6-6-15-clean/0001-i6-6-static-assert-sizeof-n-1-in-a-n--an-object-a-1.cpp:2:43: error: static assertion failed due to requirement 'sizeof (1) == 1'
+I6-6 static_assert(sizeof(N) == 1) in A<N> / an object A<1> / edg-7.0: n-object-a-1.cpp", line 2: error: static assertion failed
+I6-6 static_assert(sizeof(N) == 1) in A<N> / an object A<1> / edg-7.0-ilp32: n-object-a-1.cpp", line 2: error: static assertion failed
+I6-6 static_assert(sizeof(N) == 1) in A<N> / an object A<1> / gcc-14: /tidal/build/probes/i6-6-15-clean/0001-i6-6-static-assert-sizeof-n-1-in-a-n--an-object-a-1.cpp:2:53: error: static assertion failed
+I6-6 static_assert(sizeof(N) == 1) in A<N> / an object A<1> / gcc-16: /tidal/build/probes/i6-6-15-clean/0001-i6-6-static-assert-sizeof-n-1-in-a-n--an-object-a-1.cpp:2:53: error: static assertion failed
+I6-6 static_assert(sizeof(N) == 1) in A<N> / an object A<1> / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/i6-6-15-clean/0001-i6-6-static-assert-sizeof-n-1-in-a-n--an-object-a-1.cpp:2:53: error: static assertion failed
+I6-6 static_assert(sizeof(N) == 1) in A<N> / sizeof(A<1>) / clang-18: /tidal/build/probes/i6-6-15-clean/0002-i6-6-static-assert-sizeof-n-1-in-a-n--sizeof-a-1.cpp:2:43: error: static assertion failed due to requirement 'sizeof (1) == 1'
+I6-6 static_assert(sizeof(N) == 1) in A<N> / sizeof(A<1>) / clang-22: /tidal/build/probes/i6-6-15-clean/0002-i6-6-static-assert-sizeof-n-1-in-a-n--sizeof-a-1.cpp:2:43: error: static assertion failed due to requirement 'sizeof (1) == 1'
+I6-6 static_assert(sizeof(N) == 1) in A<N> / sizeof(A<1>) / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/i6-6-15-clean/0002-i6-6-static-assert-sizeof-n-1-in-a-n--sizeof-a-1.cpp:2:43: error: static assertion failed due to requirement 'sizeof (1) == 1'
+I6-6 static_assert(sizeof(N) == 1) in A<N> / sizeof(A<1>) / edg-7.0: izeof-a-1.cpp", line 2: error: static assertion failed
+I6-6 static_assert(sizeof(N) == 1) in A<N> / sizeof(A<1>) / edg-7.0-ilp32: izeof-a-1.cpp", line 2: error: static assertion failed
+I6-6 static_assert(sizeof(N) == 1) in A<N> / sizeof(A<1>) / gcc-14: /tidal/build/probes/i6-6-15-clean/0002-i6-6-static-assert-sizeof-n-1-in-a-n--sizeof-a-1.cpp:2:53: error: static assertion failed
+I6-6 static_assert(sizeof(N) == 1) in A<N> / sizeof(A<1>) / gcc-16: /tidal/build/probes/i6-6-15-clean/0002-i6-6-static-assert-sizeof-n-1-in-a-n--sizeof-a-1.cpp:2:53: error: static assertion failed
+I6-6 static_assert(sizeof(N) == 1) in A<N> / sizeof(A<1>) / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/i6-6-15-clean/0002-i6-6-static-assert-sizeof-n-1-in-a-n--sizeof-a-1.cpp:2:53: error: static assertion failed
+I6-6 static_assert(sizeof(N) == 1) in A<N> / a read of A<1>::v / clang-18: /tidal/build/probes/i6-6-15-clean/0003-i6-6-static-assert-sizeof-n-1-in-a-n--a-read-of-a-1-v.cpp:2:43: error: static assertion failed due to requirement 'sizeof (1) == 1'
+I6-6 static_assert(sizeof(N) == 1) in A<N> / a read of A<1>::v / clang-22: /tidal/build/probes/i6-6-15-clean/0003-i6-6-static-assert-sizeof-n-1-in-a-n--a-read-of-a-1-v.cpp:2:43: error: static assertion failed due to requirement 'sizeof (1) == 1'
+I6-6 static_assert(sizeof(N) == 1) in A<N> / a read of A<1>::v / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/i6-6-15-clean/0003-i6-6-static-assert-sizeof-n-1-in-a-n--a-read-of-a-1-v.cpp:2:43: error: static assertion failed due to requirement 'sizeof (1) == 1'
+I6-6 static_assert(sizeof(N) == 1) in A<N> / a read of A<1>::v / edg-7.0: -read-of-a-1-v.cpp", line 2: error: static assertion failed
+I6-6 static_assert(sizeof(N) == 1) in A<N> / a read of A<1>::v / edg-7.0-ilp32: -read-of-a-1-v.cpp", line 2: error: static assertion failed
+I6-6 static_assert(sizeof(N) == 1) in A<N> / a read of A<1>::v / gcc-14: /tidal/build/probes/i6-6-15-clean/0003-i6-6-static-assert-sizeof-n-1-in-a-n--a-read-of-a-1-v.cpp:2:53: error: static assertion failed
+I6-6 static_assert(sizeof(N) == 1) in A<N> / a read of A<1>::v / gcc-16: /tidal/build/probes/i6-6-15-clean/0003-i6-6-static-assert-sizeof-n-1-in-a-n--a-read-of-a-1-v.cpp:2:53: error: static assertion failed
+I6-6 static_assert(sizeof(N) == 1) in A<N> / a read of A<1>::v / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/i6-6-15-clean/0003-i6-6-static-assert-sizeof-n-1-in-a-n--a-read-of-a-1-v.cpp:2:53: error: static assertion failed
+I6-6 static_assert(alignof(decltype(N)) == 1) in A<N> / an object A<1> / clang-18: /tidal/build/probes/i6-6-15-clean/0009-i6-6-static-assert-alignof-decltype-n-1-in-a-n--an-object-a-1.cpp:2:43: error: static assertion failed due to requirement 'alignof(int) == 1'
+I6-6 static_assert(alignof(decltype(N)) == 1) in A<N> / an object A<1> / clang-22: /tidal/build/probes/i6-6-15-clean/0009-i6-6-static-assert-alignof-decltype-n-1-in-a-n--an-object-a-1.cpp:2:43: error: static assertion failed due to requirement 'alignof(int) == 1'
+I6-6 static_assert(alignof(decltype(N)) == 1) in A<N> / an object A<1> / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/i6-6-15-clean/0009-i6-6-static-assert-alignof-decltype-n-1-in-a-n--an-object-a-1.cpp:2:43: error: static assertion failed due to requirement 'alignof(int) == 1'
+I6-6 static_assert(alignof(decltype(N)) == 1) in A<N> / an object A<1> / edg-7.0: -in-a-n--an-object-a-1.cpp", line 2: error: static assertion failed
+I6-6 static_assert(alignof(decltype(N)) == 1) in A<N> / an object A<1> / edg-7.0-ilp32: -in-a-n--an-object-a-1.cpp", line 2: error: static assertion failed
+I6-6 static_assert(alignof(decltype(N)) == 1) in A<N> / an object A<1> / gcc-14: /tidal/build/probes/i6-6-15-clean/0009-i6-6-static-assert-alignof-decltype-n-1-in-a-n--an-object-a-1.cpp:2:64: error: static assertion failed
+I6-6 static_assert(alignof(decltype(N)) == 1) in A<N> / an object A<1> / gcc-16: /tidal/build/probes/i6-6-15-clean/0009-i6-6-static-assert-alignof-decltype-n-1-in-a-n--an-object-a-1.cpp:2:64: error: static assertion failed
+I6-6 static_assert(alignof(decltype(N)) == 1) in A<N> / an object A<1> / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/i6-6-15-clean/0009-i6-6-static-assert-alignof-decltype-n-1-in-a-n--an-object-a-1.cpp:2:64: error: static assertion failed
+I6-6 static_assert(alignof(decltype(N)) == 1) in A<N> / sizeof(A<1>) / clang-18: /tidal/build/probes/i6-6-15-clean/0010-i6-6-static-assert-alignof-decltype-n-1-in-a-n--sizeof-a-1.cpp:2:43: error: static assertion failed due to requirement 'alignof(int) == 1'
+I6-6 static_assert(alignof(decltype(N)) == 1) in A<N> / sizeof(A<1>) / clang-22: /tidal/build/probes/i6-6-15-clean/0010-i6-6-static-assert-alignof-decltype-n-1-in-a-n--sizeof-a-1.cpp:2:43: error: static assertion failed due to requirement 'alignof(int) == 1'
+I6-6 static_assert(alignof(decltype(N)) == 1) in A<N> / sizeof(A<1>) / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/i6-6-15-clean/0010-i6-6-static-assert-alignof-decltype-n-1-in-a-n--sizeof-a-1.cpp:2:43: error: static assertion failed due to requirement 'alignof(int) == 1'
+I6-6 static_assert(alignof(decltype(N)) == 1) in A<N> / sizeof(A<1>) / edg-7.0: -in-a-n--sizeof-a-1.cpp", line 2: error: static assertion failed
+I6-6 static_assert(alignof(decltype(N)) == 1) in A<N> / sizeof(A<1>) / edg-7.0-ilp32: -in-a-n--sizeof-a-1.cpp", line 2: error: static assertion failed
+I6-6 static_assert(alignof(decltype(N)) == 1) in A<N> / sizeof(A<1>) / gcc-14: /tidal/build/probes/i6-6-15-clean/0010-i6-6-static-assert-alignof-decltype-n-1-in-a-n--sizeof-a-1.cpp:2:64: error: static assertion failed
+I6-6 static_assert(alignof(decltype(N)) == 1) in A<N> / sizeof(A<1>) / gcc-16: /tidal/build/probes/i6-6-15-clean/0010-i6-6-static-assert-alignof-decltype-n-1-in-a-n--sizeof-a-1.cpp:2:64: error: static assertion failed
+I6-6 static_assert(alignof(decltype(N)) == 1) in A<N> / sizeof(A<1>) / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/i6-6-15-clean/0010-i6-6-static-assert-alignof-decltype-n-1-in-a-n--sizeof-a-1.cpp:2:64: error: static assertion failed
+I6-6 static_assert(alignof(decltype(N)) == 1) in A<N> / a read of A<1>::v / clang-18: /tidal/build/probes/i6-6-15-clean/0011-i6-6-static-assert-alignof-decltype-n-1-in-a-n--a-read-of-a-1-v.cpp:2:43: error: static assertion failed due to requirement 'alignof(int) == 1'
+I6-6 static_assert(alignof(decltype(N)) == 1) in A<N> / a read of A<1>::v / clang-22: /tidal/build/probes/i6-6-15-clean/0011-i6-6-static-assert-alignof-decltype-n-1-in-a-n--a-read-of-a-1-v.cpp:2:43: error: static assertion failed due to requirement 'alignof(int) == 1'
+I6-6 static_assert(alignof(decltype(N)) == 1) in A<N> / a read of A<1>::v / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/i6-6-15-clean/0011-i6-6-static-assert-alignof-decltype-n-1-in-a-n--a-read-of-a-1-v.cpp:2:43: error: static assertion failed due to requirement 'alignof(int) == 1'
+I6-6 static_assert(alignof(decltype(N)) == 1) in A<N> / a read of A<1>::v / edg-7.0: -in-a-n--a-read-of-a-1-v.cpp", line 2: error: static assertion failed
+I6-6 static_assert(alignof(decltype(N)) == 1) in A<N> / a read of A<1>::v / edg-7.0-ilp32: -in-a-n--a-read-of-a-1-v.cpp", line 2: error: static assertion failed
+I6-6 static_assert(alignof(decltype(N)) == 1) in A<N> / a read of A<1>::v / gcc-14: /tidal/build/probes/i6-6-15-clean/0011-i6-6-static-assert-alignof-decltype-n-1-in-a-n--a-read-of-a-1-v.cpp:2:64: error: static assertion failed
+I6-6 static_assert(alignof(decltype(N)) == 1) in A<N> / a read of A<1>::v / gcc-16: /tidal/build/probes/i6-6-15-clean/0011-i6-6-static-assert-alignof-decltype-n-1-in-a-n--a-read-of-a-1-v.cpp:2:64: error: static assertion failed
+I6-6 static_assert(alignof(decltype(N)) == 1) in A<N> / a read of A<1>::v / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/i6-6-15-clean/0011-i6-6-static-assert-alignof-decltype-n-1-in-a-n--a-read-of-a-1-v.cpp:2:64: error: static assertion failed
+I6-15 static constexpr int v = N / 0 / an object A<1> / edg-7.0: ject-a-1.cpp", line 2: error: expression must have a constant value
+I6-15 static constexpr int v = N / 0 / an object A<1> / edg-7.0-ilp32: ject-a-1.cpp", line 2: error: expression must have a constant value
+I6-15 static constexpr int v = N / 0 / sizeof(A<1>) / edg-7.0: f-a-1.cpp", line 2: error: expression must have a constant value
+I6-15 static constexpr int v = N / 0 / sizeof(A<1>) / edg-7.0-ilp32: f-a-1.cpp", line 2: error: expression must have a constant value
+I6-15 static constexpr int v = N / 0 / a read of A<1>::v / clang-18: /tidal/build/probes/i6-6-15-clean/0015-i6-15-static-constexpr-int-v-n-0--a-read-of-a-1-v.cpp:2:50: error: constexpr variable 'v' must be initialized by a constant expression
+I6-15 static constexpr int v = N / 0 / a read of A<1>::v / clang-22: /tidal/build/probes/i6-6-15-clean/0015-i6-15-static-constexpr-int-v-n-0--a-read-of-a-1-v.cpp:2:50: error: constexpr variable 'v' must be initialized by a constant expression
+I6-15 static constexpr int v = N / 0 / a read of A<1>::v / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/i6-6-15-clean/0015-i6-15-static-constexpr-int-v-n-0--a-read-of-a-1-v.cpp:2:50: error: constexpr variable 'v' must be initialized by a constant expression
+I6-15 static constexpr int v = N / 0 / a read of A<1>::v / edg-7.0: d-of-a-1-v.cpp", line 2: error: expression must have a constant value
+I6-15 static constexpr int v = N / 0 / a read of A<1>::v / edg-7.0-ilp32: d-of-a-1-v.cpp", line 2: error: expression must have a constant value
+I6-15 static constexpr int v = N / 0 / a read of A<1>::v / gcc-14: /tidal/build/probes/i6-6-15-clean/0015-i6-15-static-constexpr-int-v-n-0--a-read-of-a-1-v.cpp:2:50: error: division by zero is not a constant expression
+I6-15 static constexpr int v = N / 0 / a read of A<1>::v / gcc-16: /tidal/build/probes/i6-6-15-clean/0015-i6-15-static-constexpr-int-v-n-0--a-read-of-a-1-v.cpp:2:56: error: division by zero is not a constant expression
+I6-15 static constexpr int v = N / 0 / a read of A<1>::v / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/i6-6-15-clean/0015-i6-15-static-constexpr-int-v-n-0--a-read-of-a-1-v.cpp:2:56: error: division by zero is not a constant expression
+I6-15 static constexpr int v = B<N>::missing / an object A<1> / edg-7.0: g--an-object-a-1.cpp", line 2: error: class "B<1>" has no member
+I6-15 static constexpr int v = B<N>::missing / an object A<1> / edg-7.0-ilp32: g--an-object-a-1.cpp", line 2: error: class "B<1>" has no member
+I6-15 static constexpr int v = B<N>::missing / sizeof(A<1>) / edg-7.0: g--sizeof-a-1.cpp", line 2: error: class "B<1>" has no member
+I6-15 static constexpr int v = B<N>::missing / sizeof(A<1>) / edg-7.0-ilp32: g--sizeof-a-1.cpp", line 2: error: class "B<1>" has no member
+I6-15 static constexpr int v = B<N>::missing / a read of A<1>::v / clang-18: /tidal/build/probes/i6-6-15-clean/0019-i6-15-static-constexpr-int-v-b-n-missing--a-read-of-a-1-v.cpp:2:60: error: no member named 'missing' in 'B<1>'
+I6-15 static constexpr int v = B<N>::missing / a read of A<1>::v / clang-22: /tidal/build/probes/i6-6-15-clean/0019-i6-15-static-constexpr-int-v-b-n-missing--a-read-of-a-1-v.cpp:2:60: error: no member named 'missing' in 'B<1>'
+I6-15 static constexpr int v = B<N>::missing / a read of A<1>::v / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/i6-6-15-clean/0019-i6-15-static-constexpr-int-v-b-n-missing--a-read-of-a-1-v.cpp:2:60: error: no member named 'missing' in 'B<1>'
+I6-15 static constexpr int v = B<N>::missing / a read of A<1>::v / edg-7.0: g--a-read-of-a-1-v.cpp", line 2: error: class "B<1>" has no member
+I6-15 static constexpr int v = B<N>::missing / a read of A<1>::v / edg-7.0-ilp32: g--a-read-of-a-1-v.cpp", line 2: error: class "B<1>" has no member
+I6-15 static constexpr int v = B<N>::missing / a read of A<1>::v / gcc-14: /tidal/build/probes/i6-6-15-clean/0019-i6-15-static-constexpr-int-v-b-n-missing--a-read-of-a-1-v.cpp:2:60: error: 'missing' is not a member of 'B<1>'
+I6-15 static constexpr int v = B<N>::missing / a read of A<1>::v / gcc-16: /tidal/build/probes/i6-6-15-clean/0019-i6-15-static-constexpr-int-v-b-n-missing--a-read-of-a-1-v.cpp:2:60: error: 'missing' is not a member of 'B<1>'
+I6-15 static constexpr int v = B<N>::missing / a read of A<1>::v / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/i6-6-15-clean/0019-i6-15-static-constexpr-int-v-b-n-missing--a-read-of-a-1-v.cpp:2:60: error: ‘missing’ is not a member of ‘B<1>’
+I6-15 static const int v = B<N>::missing / an object A<1> / clang-18: /tidal/build/probes/i6-6-15-clean/0021-i6-15-static-const-int-v-b-n-missing--an-object-a-1.cpp:2:56: error: no member named 'missing' in 'B<1>'
+I6-15 static const int v = B<N>::missing / an object A<1> / clang-22: /tidal/build/probes/i6-6-15-clean/0021-i6-15-static-const-int-v-b-n-missing--an-object-a-1.cpp:2:56: error: no member named 'missing' in 'B<1>'
+I6-15 static const int v = B<N>::missing / an object A<1> / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/i6-6-15-clean/0021-i6-15-static-const-int-v-b-n-missing--an-object-a-1.cpp:2:56: error: no member named 'missing' in 'B<1>'
+I6-15 static const int v = B<N>::missing / an object A<1> / edg-7.0: n-object-a-1.cpp", line 2: error: class "B<1>" has no member
+I6-15 static const int v = B<N>::missing / an object A<1> / edg-7.0-ilp32: n-object-a-1.cpp", line 2: error: class "B<1>" has no member
+I6-15 static const int v = B<N>::missing / sizeof(A<1>) / clang-18: /tidal/build/probes/i6-6-15-clean/0022-i6-15-static-const-int-v-b-n-missing--sizeof-a-1.cpp:2:56: error: no member named 'missing' in 'B<1>'
+I6-15 static const int v = B<N>::missing / sizeof(A<1>) / clang-22: /tidal/build/probes/i6-6-15-clean/0022-i6-15-static-const-int-v-b-n-missing--sizeof-a-1.cpp:2:56: error: no member named 'missing' in 'B<1>'
+I6-15 static const int v = B<N>::missing / sizeof(A<1>) / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/i6-6-15-clean/0022-i6-15-static-const-int-v-b-n-missing--sizeof-a-1.cpp:2:56: error: no member named 'missing' in 'B<1>'
+I6-15 static const int v = B<N>::missing / sizeof(A<1>) / edg-7.0: izeof-a-1.cpp", line 2: error: class "B<1>" has no member "missing"
+I6-15 static const int v = B<N>::missing / sizeof(A<1>) / edg-7.0-ilp32: izeof-a-1.cpp", line 2: error: class "B<1>" has no member "missing"
+I6-15 static const int v = B<N>::missing / a read of A<1>::v / clang-18: /tidal/build/probes/i6-6-15-clean/0023-i6-15-static-const-int-v-b-n-missing--a-read-of-a-1-v.cpp:2:56: error: no member named 'missing' in 'B<1>'
+I6-15 static const int v = B<N>::missing / a read of A<1>::v / clang-22: /tidal/build/probes/i6-6-15-clean/0023-i6-15-static-const-int-v-b-n-missing--a-read-of-a-1-v.cpp:2:56: error: no member named 'missing' in 'B<1>'
+I6-15 static const int v = B<N>::missing / a read of A<1>::v / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/i6-6-15-clean/0023-i6-15-static-const-int-v-b-n-missing--a-read-of-a-1-v.cpp:2:56: error: no member named 'missing' in 'B<1>'
+I6-15 static const int v = B<N>::missing / a read of A<1>::v / edg-7.0: -read-of-a-1-v.cpp", line 2: error: class "B<1>" has no member
+I6-15 static const int v = B<N>::missing / a read of A<1>::v / edg-7.0-ilp32: -read-of-a-1-v.cpp", line 2: error: class "B<1>" has no member
+I6-15 static const int v = B<N>::missing / a read of A<1>::v / gcc-14: /tidal/build/probes/i6-6-15-clean/0023-i6-15-static-const-int-v-b-n-missing--a-read-of-a-1-v.cpp:2:56: error: 'missing' is not a member of 'B<1>'
+I6-15 static const int v = B<N>::missing / a read of A<1>::v / gcc-16: /tidal/build/probes/i6-6-15-clean/0023-i6-15-static-const-int-v-b-n-missing--a-read-of-a-1-v.cpp:2:56: error: 'missing' is not a member of 'B<1>'
+I6-15 static const int v = B<N>::missing / a read of A<1>::v / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/i6-6-15-clean/0023-i6-15-static-const-int-v-b-n-missing--a-read-of-a-1-v.cpp:2:56: error: ‘missing’ is not a member of ‘B<1>’
+I6-15 static inline int v = B<N>::missing / an object A<1> / edg-7.0: an-object-a-1.cpp", line 2: error: class "B<1>" has no member
+I6-15 static inline int v = B<N>::missing / an object A<1> / edg-7.0-ilp32: an-object-a-1.cpp", line 2: error: class "B<1>" has no member
+I6-15 static inline int v = B<N>::missing / sizeof(A<1>) / edg-7.0: sizeof-a-1.cpp", line 2: error: class "B<1>" has no member "missing"
+I6-15 static inline int v = B<N>::missing / sizeof(A<1>) / edg-7.0-ilp32: sizeof-a-1.cpp", line 2: error: class "B<1>" has no member "missing"
+I6-15 static inline int v = B<N>::missing / a read of A<1>::v / clang-18: /tidal/build/probes/i6-6-15-clean/0027-i6-15-static-inline-int-v-b-n-missing--a-read-of-a-1-v.cpp:2:57: error: no member named 'missing' in 'B<1>'
+I6-15 static inline int v = B<N>::missing / a read of A<1>::v / clang-22: /tidal/build/probes/i6-6-15-clean/0027-i6-15-static-inline-int-v-b-n-missing--a-read-of-a-1-v.cpp:2:57: error: no member named 'missing' in 'B<1>'
+I6-15 static inline int v = B<N>::missing / a read of A<1>::v / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/i6-6-15-clean/0027-i6-15-static-inline-int-v-b-n-missing--a-read-of-a-1-v.cpp:2:57: error: no member named 'missing' in 'B<1>'
+I6-15 static inline int v = B<N>::missing / a read of A<1>::v / edg-7.0: a-read-of-a-1-v.cpp", line 2: error: class "B<1>" has no member
+I6-15 static inline int v = B<N>::missing / a read of A<1>::v / edg-7.0-ilp32: a-read-of-a-1-v.cpp", line 2: error: class "B<1>" has no member
+I6-15 static inline int v = B<N>::missing / a read of A<1>::v / gcc-14: /tidal/build/probes/i6-6-15-clean/0027-i6-15-static-inline-int-v-b-n-missing--a-read-of-a-1-v.cpp:2:57: error: 'missing' is not a member of 'B<1>'
+I6-15 static inline int v = B<N>::missing / a read of A<1>::v / gcc-16: /tidal/build/probes/i6-6-15-clean/0027-i6-15-static-inline-int-v-b-n-missing--a-read-of-a-1-v.cpp:2:57: error: 'missing' is not a member of 'B<1>'
+I6-15 static inline int v = B<N>::missing / a read of A<1>::v / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/i6-6-15-clean/0027-i6-15-static-inline-int-v-b-n-missing--a-read-of-a-1-v.cpp:2:57: error: ‘missing’ is not a member of ‘B<1>’

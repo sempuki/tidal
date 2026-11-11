@@ -1,0 +1,166 @@
+MISSED-REJECT	classes/comparisons/spaceship-member-returns-non-category.cpp	DCMP-11	
+run-unsupported	classes/comparisons/spaceship-specified-type-synthesized.cpp	DCMP-4	unsupported at line 67: overloaded operator
+MISSED-REJECT	classes/comparisons/template-defaulted.cpp	DCMP-3	
+MISSED-REJECT	classes/constructors/base-init-dynamic-cast-early-constant.cpp	CTOR-12	
+MISSED-REJECT	classes/constructors/mem-init-braces-narrowing-array.cpp	CTOR-21	
+MISSED-REJECT	classes/constructors/one-user-conversion-copy-init.cpp	CTOR-22	
+run-unsupported	classes/conversion-functions/call-by-name.cpp	CVF-1	unsupported at line 4: overload set
+MISSED-REJECT	classes/conversion-functions/const-object-explicit-cast.cpp	CVF-9	
+unsupported	classes/conversion-functions/constexpr-conversion.cpp	CVF-1	6:- array bound: non-integer constant
+run-unsupported	classes/conversion-functions/conversion-to-void-explicit-call.cpp	CVF-4	unsupported at line 5: overload set
+run-unsupported	classes/conversion-functions/deduced-auto.cpp	CVF-1	unsupported at line 8: conversion function
+run-unsupported	classes/conversion-functions/different-type-not-hidden.cpp	CVF-5	unsupported at line 5: overload set
+MISSED-REJECT	classes/conversion-functions/new-size-two-integral-conversions.cpp	CVF-8	
+MISSED-REJECT	classes/copy-move/class-template-ctor-by-value.cpp	CPY-15	
+EDG-AGREES	classes/copy-move/trivially-copyable-member-template-selected.cpp	CPY-27 UNI-11	
+unsupported	classes/members/noexcept-complete-class.cpp	CLS-2	4:- noexcept operator
+unsupported	classes/unions/anonymous-union-brace-elision.cpp	UNI-7	9:- constant initializer: aggregate with nested aggregates
+unsupported	classes/unions/bitfield-union-size.cpp	BF-9 UNI-1	7:- static_assert: sizeof of a class with a layout the front end does not compute
+unsupported	classes/unions/bitfield-wide-alignment-128.cpp	BF-9	8:- static_assert: sizeof of a class with a layout the front end does not compute
+unsupported	classes/unions/bitfield-wide-layout-ilp32.cpp	BF-9 BF-3	9:- static_assert: sizeof of a class with a layout the front end does not compute
+unsupported	classes/unions/bitfield-wide-layout.cpp	BF-9 BF-3	6:- static_assert: sizeof of a class with a layout the front end does not compute
+MISSED-REJECT	classes/virtual/hidden-virtual-warns.cpp	VIRT-13	
+MISSED-REJECT	classes/virtual/no-unique-final-overrider.cpp	VIRT-5	
+run-unsupported	classes/virtual/pure-call-in-ctor-sanitizer.cpp	VIRT-12	unsupported at line 8: function 'area' has no definition in the program
+MISSED-REJECT	declarations/alignment/on-handler-variable.cpp	ALN-2	
+unsupported	declarations/auto/copy-list-deduces-initializer-list.cpp	AUTO-7	17:- static_assert: the type of 'a', which its initializer does not give (in a variable template argument)
+MISSED-REJECT	declarations/constexpr/lambda-escalates-runtime.cpp	CEV-1	
+MISSED-REJECT	declarations/declarators/array-4gib-ilp32.cpp	DCL-19	
+unsupported	declarations/declarators/array-bound-class-conversion.cpp	DCL-5	6:- array bound: non-integer constant
+unsupported	declarations/exception-specifications/operand-cycle-static.cpp	EXS-6	6:- noexcept operator
+unsupported	declarations/exception-specifications/operand-cycle.cpp	EXS-6	6:- noexcept operator
+unsupported	declarations/exception-specifications/operand-later-member.cpp	EXS-1	4:- noexcept operator
+MISSED-REJECT	declarations/functions/default-arguments/this-in-sizeof-default.cpp	DEFARG-4	
+unsupported	declarations/initialization/list/brace-elision.cpp	LIST-4	3:- constant initializer: brace elision
+MISSED-REJECT	declarations/initialization/references/dangling-new-member-warns-default.cpp	REF-15	
+MISSED-REJECT	declarations/initialization/references/dangling-new-member-warns.cpp	REF-15	
+run-unsupported	declarations/initialization/static/reference-constant-initialized.cpp	SINIT-1	unsupported at line 7: variable 'ref' has no definition in this translation unit
+MISSED-REJECT	declarations/inline/inline-variable-undefined-used.cpp	INL-6	
+run-unsupported	declarations/storage-linkage/block-function-declaration.cpp	LNK-9	unsupported at line 7: block-scope static variable used before its declaration ran
+FALSE-REJECT	declarations/structured-bindings/tuple-member-get-type-parameter-uses-free.cpp	SB-5	17:DED-35 no viable function for the call of 'get': deduction fails for each template
+run-unsupported	exceptions/handlers/dtor-try-block-member-destructor-throws.cpp	TRY-10	unsupported at line 8: destructor body the front end did not parse
+MISSED-REJECT	exceptions/handlers/dtor-try-block-member-use-warns.cpp	TRY-13	
+run-unsupported	exceptions/handlers/dtor-try-block-rethrows.cpp	TRY-10	unsupported at line 0: destructor body the front end did not parse
+MISSED-REJECT	exceptions/unwinding/placement-new-global-usual-delete-rejected.cpp	UNW-11	
+unsupported	expressions/conditional/member-pointer-nullptr.cpp	COND-3	8:- static_assert: decltype of an expression of unknown type (in a variable template argument)
+MISSED-REJECT	expressions/decltype/nested-class-member-evaluated.cpp	UNEV-1 PRIM-25	
+MISSED-REJECT	expressions/decltype/side-effect-decltype-warns.cpp	UNEV-4	
+MISSED-REJECT	expressions/decltype/side-effect-unevaluated-warns.cpp	UNEV-4	
+unsupported	expressions/lambdas/capture-default-in-member-initializer.cpp	LAM-6	8:- static_assert: call of unknown callee
+run-unsupported	expressions/lambdas/capture-outlived-sanitizer.cpp	LAM-19	unsupported at line 11: new expression
+unsupported	expressions/lambdas/capture-visible-in-trailing-return.cpp	LAM-18	10:- static_assert: call of unknown callee (in a variable template argument)
+MISSED-REJECT	expressions/logical/operand-ambiguous-conversion.cpp	LOG-3	
+unsupported	expressions/new-delete/array-paren-init-narrowing.cpp	NEW-2	10:- static_assert: new expression
+unsupported	expressions/new-delete/array-paren-init.cpp	NEW-2	9:- static_assert: new expression
+unsupported	expressions/new-delete/array-size-from-initializer.cpp	NEW-2	9:- static_assert: new expression
+unsupported	expressions/new-delete/forms.cpp	NEW-1	11:- static_assert: new expression (in a variable template argument)
+run-unsupported	expressions/new-delete/throw-placement-default-argument.cpp	NEW-23	unsupported at line 11: missing argument
+run-unsupported	expressions/new-delete/throw-placement-templates-unordered.cpp	NEW-24 DED-39	unsupported at line 18: new expression
+MISSED-REJECT	expressions/postfix/default-template-argument-incomplete-class.cpp	PFX-11 CLS-2	
+FALSE-REJECT	expressions/postfix/ellipsis-argument-conversions.cpp	PFX-22	10:NAM-8 use of undeclared name 'va_list'
+FALSE-REJECT	expressions/postfix/ellipsis-nullptr-becomes-void-pointer.cpp	PFX-22	7:NAM-8 use of undeclared name 'va_list'
+unsupported	expressions/primary/char-named-escape-unknown.cpp	PRIM-18	7:- named escape \N{...} (needs Unicode name table)
+FALSE-REJECT	expressions/primary/char-named-escape.cpp	PRIM-5	4:SA-1 static assertion failed
+unsupported	expressions/primary/fold-expansion.cpp	PRIM-27 PRIM-28	28:- static_assert: call needing template deduction or unknown arguments
+MISSED-REJECT	expressions/primary/number-runs-over-dots.cpp	PRIM-26	
+MISSED-REJECT	expressions/unary/sizeof-array-parameter-warns.cpp	UN-19	
+MISSED-REJECT	foundations/constant-evaluation/read-extended-temporary-not-const.cpp	CE-3	
+unsupported	foundations/constant-evaluation/reference-to-local-not-usable.cpp	CE-3	10:- constant initializer: pointer arithmetic
+MISSED-REJECT	foundations/language-support/alignment-enumeration-class.cpp	LSUP-5	
+MISSED-REJECT	foundations/language-support/initializer-list-no-members.cpp	LSUP-1	
+unsupported	foundations/language-support/ordering-defaulted-specified-needs-conversion.cpp	LSUP-13	47:- static_assert: overloaded operator
+MISSED-REJECT	foundations/names/adl-function-template-parameter-adds-nothing.cpp	NAM-8 NAM-27	
+unsupported	foundations/odr/include-missing-file-angle.cpp	INC-3	7:- #include form other than "file" (outside the specification)
+run-unsupported	foundations/odr/variable-declaration-forms.cpp	ODR-15	unsupported at line 14: variable 'count' has no definition in this translation unit
+MISSED-REJECT	foundations/storage/array-size-exceeds-size-type.cpp	STG-1 DCL-19	
+run-unsupported	foundations/storage/integer-pointer-no-object-sanitizer.cpp	UN-7 STG-15	unsupported at line 9: indirection through a non-pointer
+MISSED-REJECT	overloading/conversion-sequences/assignment-left-no-builtin.cpp	ICS-10 OVL-35	
+unsupported	overloading/conversion-sequences/conversion-choice-equal-rank-extended-target.cpp	ICS-44	11:- constant initializer: conversion function
+unsupported	overloading/conversion-sequences/conversion-choice-equal-rank-source.cpp	ICS-44	16:- constant initializer: conversion function
+unsupported	overloading/conversion-sequences/floating-before-rvalue-reference.cpp	ICS-28 ICS-35	14:- static_assert: ambiguous call (in a variable template argument)
+unsupported	overloading/conversion-sequences/floating-equal-rank.cpp	ICS-35	12:- static_assert: ambiguous call (in a variable template argument)
+unsupported	overloading/conversion-sequences/overload-set-argument-sequence.cpp	ICS-47	16:- static_assert: ambiguous call (needs full overload resolution) (in a variable template argument)
+unsupported	overloading/conversion-sequences/user-defined-explicit-reference-other-type.cpp	ICS-45	13:- static_assert: concept
+unsupported	overloading/conversion-sequences/user-defined-explicit-reference-value.cpp	ICS-45	9:- static_assert: concept
+unsupported	overloading/conversion-sequences/user-defined-explicit-reference-xvalue.cpp	ICS-45	12:- static_assert: concept
+unsupported	overloading/conversion-sequences/user-defined-explicit-rvalue-reference-value.cpp	ICS-45	15:- static_assert: concept
+unsupported	overloading/conversion-sequences/user-defined-explicit.cpp	ICS-45	20:- static_assert: concept
+MISSED-REJECT	overloading/overload-resolution/address-no-target-auto-template-parameter.cpp	OVL-20	
+MISSED-REJECT	overloading/overload-resolution/builtin-logical-explicit-competes-and.cpp	OVL-9 OVL-36	
+MISSED-REJECT	overloading/overload-resolution/builtin-logical-explicit-competes.cpp	OVL-9 OVL-36	
+run-unsupported	overloading/overload-resolution/deleted-defaulted-move-not-candidate.cpp	OVL-42	unsupported at line 24: class assignment
+unsupported	overloading/overload-resolution/init-direct-explicit-conversion.cpp	OVL-40	14:- static_assert: constructor call
+FALSE-REJECT	programs/roadmap/r10-list-first-try.cpp	TPL-13 OVL-35 DEP-15 RFOR-2 PRIM-27 CNS-13	47:TR-13 instantiation of 'cond<0, const Node*, Node*>' nests deeper than the limit of 256
+unsupported	programs/roadmap/r10-tuple-second-try.cpp	PACK-13 PACK-14 SB-5 PRIM-27 TSP-15 DED-35	162:- static_assert: deduction of class template arguments
+MISSED-REJECT	statements/if/constexpr-template-nondependent-call-checked.cpp	IF-22	
+MISSED-REJECT	statements/range-for/braced-list-mixed-types.cpp	AUTO-21 RFOR-1	
+MISSED-REJECT	statements/range-for/postfix-only-iterator.cpp	RFOR-7	
+MISSED-REJECT	templates/arguments/argument-makes-parameter-invalid-pointer.cpp	TARG-24	
+MISSED-REJECT	templates/arguments/argument-makes-parameter-invalid.cpp	TARG-24	
+MISSED-REJECT	templates/arguments/class-argument-reference-temporary.cpp	TARG-15	
+MISSED-REJECT	templates/arguments/concept-for-template.cpp	TARG-7	
+run-unsupported	templates/arguments/constant-overloaded-function.cpp	TARG-12	unsupported at line 9: call of unknown callee
+unsupported	templates/arguments/pointer-subobject.cpp	TARG-14	8:- static_assert: dependent name
+unsupported	templates/class-template-deduction/aggregate-candidate.cpp	CTAD-9	9:- deduction of class template arguments
+unsupported	templates/class-template-deduction/constant-parameter-guide.cpp	CTAD-1 TPL-11	12:- static_assert: dependent name (in a variable template argument)
+MISSED-REJECT	templates/class-template-deduction/guide-result-other-template.cpp	CTAD-12	
+MISSED-REJECT	templates/class-template-deduction/site-member.cpp	CTAD-2	
+MISSED-REJECT	templates/class-template-deduction/site-return-type.cpp	CTAD-2	
+unsupported	templates/class-template-deduction/sites-for-and-condition.cpp	CTAD-1	16:- static_assert: the type of 'p', which the front end does not know (in a variable template argument)
+unsupported	templates/class-template-deduction/sites.cpp	CTAD-1	19:- static_assert: variable template with unknown arguments
+MISSED-REJECT	templates/class-template-deduction/tie-own-constructor-template.cpp	CTAD-19 CTAD-23	
+unsupported	templates/class-template-deduction/user-guide-beside-constrained-constructor-template.cpp	CTAD-29 CTAD-11	13:- static_assert: deduction of class template arguments (in a variable template argument)
+unsupported	templates/concepts/concept-id-value.cpp	CPT-1	10:- static_assert: dependent name
+unsupported	templates/concepts/lambda-both-clauses.cpp	CPT-16	9:- static_assert: concept
+unsupported	templates/concepts/lambda-clauses.cpp	CPT-16	8:- static_assert: concept
+MISSED-REJECT	templates/concepts/placeholder-parameter-decltype-auto.cpp	CPT-37	
+unsupported	templates/concepts/placeholder-parameter.cpp	CPT-20	9:- static_assert: concept
+MISSED-REJECT	templates/constraints/explicit-instantiation-member-not-satisfied.cpp	CNS-13	
+EDG-AGREES	templates/constraints/friend-distinct-from-namespace.cpp	CNS-32 CNS-24	
+unsupported	templates/constraints/function-type-specialization.cpp	CNS-30	7:- static_assert: a template-id that names a function specialization (in a variable template argument)
+MISSED-REJECT	templates/constraints/lambda-overload.cpp	CNS-24 CNS-27	
+MISSED-REJECT	templates/constraints/lambda-redeclaration.cpp	CNS-26 CNS-27	
+MISSED-REJECT	templates/constraints/out-of-class-other-clause.cpp	CNS-29	
+MISSED-REJECT	templates/constraints/out-of-class-without-clause.cpp	CNS-29	
+MISSED-REJECT	templates/declarations/alias-template-self-through-class.cpp	TPL-31	
+unsupported	templates/declarations/constant-parameter-class-template.cpp	TPL-11 CTAD-1	11:- static_assert: dependent name (in a variable template argument)
+MISSED-REJECT	templates/declarations/constant-parameter-no-constexpr-constructor.cpp	TPL-7	
+run-unsupported	templates/deduction/placement-deallocation-match.cpp	DED-39	unsupported at line 16: new expression
+run-unsupported	templates/deduction/placement-deallocation-ordered.cpp	DED-39 ORD-9	unsupported at line 18: new expression
+unsupported	templates/deduction/substitution-explicit-specifier.cpp	DED-24	9:- static_assert: class temporary
+MISSED-REJECT	templates/deduction/substitution-lambda-body.cpp	DED-29	
+MISSED-REJECT	templates/deduction/substitution-lambda-default.cpp	DED-29	
+unsupported	templates/deduction/substitution-member-wrong-kind.cpp	DED-24	15:- static_assert: call needing template deduction or unknown arguments
+MISSED-REJECT	templates/dependent-names/base-pack-expanded-twice.cpp	DEP-33	
+MISSED-REJECT	templates/dependent-names/binary-operator-pack-never-fits.cpp	DEP-37	
+unsupported	templates/dependent-names/current-instantiation-enclosing-base.cpp	DEP-11	10:- parse: unknown type name 'value_type' in uncertain scope
+run-unsupported	templates/dependent-names/dependent-base-conversion-function.cpp	DEP-11	unsupported at line 10: call of unknown callee
+MISSED-REJECT	templates/dependent-names/incomplete-then-complete.cpp	DEP-31	
+MISSED-REJECT	templates/dependent-names/independent-error-unused-call.cpp	DEP-30	
+FALSE-REJECT	templates/dependent-names/member-template-current-instantiation-pointer.cpp	DEP-24 DEP-2	10:DEP-24 the template reads '<' after 'get' as the less-than operator; the member template needs 'template'
+MISSED-REJECT	templates/dependent-names/member-template-current-instantiation-qualifier-dependent-base.cpp	DEP-24	
+FALSE-REJECT	templates/dependent-names/member-template-non-dependent-base.cpp	DEP-24	9:DEP-24 the template reads '<' after 'get' as the less-than operator; the member template needs 'template'
+FALSE-REJECT	templates/dependent-names/member-template-through-current-instantiation-object.cpp	DEP-24 DEP-2	7:DEP-24 the template reads '<' after 'get' as the less-than operator; the member template needs 'template'
+MISSED-REJECT	templates/dependent-names/operator-pack-never-fits.cpp	DEP-37	
+MISSED-REJECT	templates/dependent-names/other-specialization-constant-argument-member-missing.cpp	DEP-30 DEP-15	
+unsupported	templates/dependent-names/other-specialization-constant-argument-no-typename.cpp	DEP-15 DEP-1	6:- parse: unknown type name 'unit'
+run-unsupported	templates/dependent-names/template-keyword-forms.cpp	DEP-24 DEP-25	unsupported at line 15: dependent name
+unsupported	templates/dependent-names/type-only-positions-more.cpp	DEP-20	14:- static_assert: variable template with unknown arguments (in a variable template argument)
+run-unsupported	templates/dependent-names/type-only-positions.cpp	DEP-20	unsupported at line 35: dependent name
+MISSED-REJECT	templates/instantiation/class-point-not-later-type.cpp	INST-33	
+unsupported	templates/instantiation/class-point-not-later.cpp	INST-30 INST-33	7:- constant initializer: unqualified call to an undeclared name
+MISSED-REJECT	templates/instantiation/explicit-unqualified-outside-namespace-function.cpp	INST-21	
+MISSED-REJECT	templates/instantiation/local-class-default-argument.cpp	INST-12 INST-6	
+MISSED-REJECT	templates/instantiation/local-class-exception-specification.cpp	INST-12 INST-6	
+run-unsupported	templates/instantiation/local-entities-per-specialization.cpp	INST-36	unsupported at line 16: call needing template deduction or unknown arguments
+MISSED-REJECT	templates/instantiation/recursion-endless-function.cpp	INST-15 TR-13	
+MISSED-REJECT	templates/ordering/nondeduced-only-parameter.cpp	ORD-3 ORD-15	
+unsupported	templates/packs/ellipsis-after-parameter.cpp	PACK-3	5:- static_assert: call needing template deduction or unknown arguments
+unsupported	templates/packs/expansion-elements.cpp	PACK-5	15:- static_assert: a type the front end does not know (in a variable template argument)
+MISSED-REJECT	templates/packs/fold-in-outer-pattern.cpp	PACK-8	
+MISSED-REJECT	templates/packs/member-template-pack-length.cpp	PACK-26 PACK-6	
+MISSED-REJECT	templates/packs/size-operator-in-outer-pattern.cpp	PACK-8	
+run-unsupported	templates/specialization/explicit-class-member-default.cpp	TSP-22 TSP-8	unsupported at line 7: missing argument
+MISSED-REJECT	templates/specialization/explicit-member-class-template-no-prefix.cpp	TSP-23	
+MISSED-REJECT	templates/specialization/partial-after-use.cpp	TSP-17	
+MISSED-REJECT	templates/specialization/partial-no-primary-variable.cpp	TSP-31	

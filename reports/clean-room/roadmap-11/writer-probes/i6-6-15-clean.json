@@ -1,0 +1,20 @@
+{
+ "prelude": "template <int K> struct B { using type = int; };",
+ "template": "{prelude}\n{row}\n{col}\nint main() {{ return 0; }}",
+ "rows": {
+  "I6-6 static_assert(sizeof(N) == 1) in A<N>": "template <int N> struct A { static_assert(sizeof(N) == 1); static constexpr int v = 0; };",
+  "I6-6 static_assert(sizeof(N) == 4) in A<N>": "template <int N> struct A { static_assert(sizeof(N) == 4); static constexpr int v = 0; };",
+  "I6-6 static_assert(alignof(decltype(N)) == 1) in A<N>": "template <int N> struct A { static_assert(alignof(decltype(N)) == 1); static constexpr int v = 0; };",
+  "I6-15 static constexpr int v = N / 0": "template <int N> struct A { static constexpr int v = N / 0 + 1; };",
+  "I6-15 static constexpr int v = B<N>::missing": "template <int N> struct A { static constexpr int v = B<N>::missing; };",
+  "I6-15 static const int v = B<N>::missing": "template <int N> struct A { static const int v = B<N>::missing; };",
+  "I6-15 static inline int v = B<N>::missing": "template <int N> struct A { static inline int v = B<N>::missing; };"
+ },
+ "cols": {
+  "no use": "",
+  "an object A<1>": "A<1> a1;",
+  "sizeof(A<1>)": "static_assert(sizeof(A<1>) >= 1);",
+  "a read of A<1>::v": "int r = A<1>::v;"
+ },
+ "flags": []
+}

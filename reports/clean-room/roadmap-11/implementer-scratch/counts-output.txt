@@ -1,0 +1,167 @@
+rows: 166 no-diagnostic allowed: 6
+fail check: 136 of which out of scope: 9
+completion count: 127
+  by status: {'MISSED-REJECT': 69, 'unsupported': 51, 'EDG-AGREES': 2, 'FALSE-REJECT': 5}
+run-unsupported: 24
+
+by chapter (completion set):
+  templates: {'MISSED-REJECT': 33, 'unsupported': 20, 'EDG-AGREES': 1, 'FALSE-REJECT': 3} = 57
+  classes: {'MISSED-REJECT': 10, 'unsupported': 7, 'EDG-AGREES': 1} = 18
+  expressions: {'unsupported': 8, 'MISSED-REJECT': 7} = 15
+  declarations: {'MISSED-REJECT': 6, 'unsupported': 6, 'FALSE-REJECT': 1} = 13
+  overloading: {'MISSED-REJECT': 4, 'unsupported': 7} = 11
+  foundations: {'MISSED-REJECT': 4, 'unsupported': 2} = 6
+  statements: {'MISSED-REJECT': 3} = 3
+  exceptions: {'MISSED-REJECT': 2} = 2
+  programs: {'FALSE-REJECT': 1, 'unsupported': 1} = 2
+run stops by chapter: {'classes': 6, 'declarations': 2, 'templates': 8, 'expressions': 3, 'exceptions': 2, 'foundations': 2, 'overloading': 1}
+
+by rule class of the cited rules (completion set):
+  ('impl-defined', 'unsupported'): 1
+  ('impl-defined+required', 'unsupported'): 3
+  ('no-diagnostic with other', 'MISSED-REJECT'): 1
+  ('no-diagnostic with other', 'unsupported'): 2
+  ('recommended', 'MISSED-REJECT'): 7
+  ('reject', 'EDG-AGREES'): 2
+  ('reject', 'FALSE-REJECT'): 4
+  ('reject', 'MISSED-REJECT'): 60
+  ('reject', 'unsupported'): 5
+  ('required only', 'FALSE-REJECT'): 1
+  ('required only', 'unsupported'): 40
+  ('undefined', 'MISSED-REJECT'): 1
+
+check-side unsupported messages (completion set):
+    8  static_assert: concept
+    4  noexcept operator
+    4  static_assert: sizeof of a class with a layout the front end does not compute
+    3  static_assert: new expression
+    3  static_assert: call needing template deduction or unknown arguments
+    2  array bound: non-integer constant
+    2  static_assert: dependent name
+    2  static_assert: dependent name (in a variable template argument)
+    1  constant initializer: aggregate with nested aggregates
+    1  static_assert: the type of '_', which its initializer does not give (in a variable template argument)
+    1  constant initializer: brace elision
+    1  static_assert: decltype of an expression of unknown type (in a variable template argument)
+    1  static_assert: call of unknown callee
+    1  static_assert: call of unknown callee (in a variable template argument)
+    1  static_assert: new expression (in a variable template argument)
+    1  constant initializer: pointer arithmetic
+    1  static_assert: overloaded operator
+    1  static_assert: ambiguous call (needs full overload resolution) (in a variable template argument)
+    1  static_assert: constructor call
+    1  static_assert: deduction of class template arguments
+    1  deduction of class template arguments
+    1  static_assert: the type of '_', which the front end does not know (in a variable template argument)
+    1  static_assert: variable template with unknown arguments
+    1  static_assert: deduction of class template arguments (in a variable template argument)
+    1  static_assert: a template-id that names a function specialization (in a variable template argument)
+    1  static_assert: class temporary
+    1  parse: unknown type name '_' in uncertain scope
+    1  parse: unknown type name '_'
+    1  static_assert: variable template with unknown arguments (in a variable template argument)
+    1  constant initializer: unqualified call to an undeclared name
+    1  static_assert: a type the front end does not know (in a variable template argument)
+
+run stops:
+    4  new expression
+    3  overload set
+    2  call of unknown callee
+    2  missing argument
+    2  destructor body the front end did not parse
+    2  variable '_' has no definition in this translation unit
+    2  dependent name
+    1  block-scope static variable used before its declaration ran
+    1  call needing template deduction or unknown arguments
+    1  conversion function
+    1  overloaded operator
+    1  indirection through a non-pointer
+    1  class assignment
+    1  function '_' has no definition in the program
+
+false rejects and EDG-AGREES (completion set):
+  EDG-AGREES classes/copy-move/trivially-copyable-member-template-selected.cpp CPY-27 UNI-11 :: 
+  FALSE-REJECT declarations/structured-bindings/tuple-member-get-type-parameter-uses-free.cpp SB-5 :: 17:DED-35 no viable function for the call of 'get': deduction fails for each template
+  FALSE-REJECT programs/roadmap/r10-list-first-try.cpp TPL-13 OVL-35 DEP-15 RFOR-2 PRIM-27 CNS-13 :: 47:TR-13 instantiation of 'cond<0, const Node*, Node*>' nests deeper than the limit of 256
+  EDG-AGREES templates/constraints/friend-distinct-from-namespace.cpp CNS-32 CNS-24 :: 
+  FALSE-REJECT templates/dependent-names/member-template-current-instantiation-pointer.cpp DEP-24 DEP-2 :: 10:DEP-24 the template reads '<' after 'get' as the less-than operator; the member template needs 't
+  FALSE-REJECT templates/dependent-names/member-template-non-dependent-base.cpp DEP-24 :: 9:DEP-24 the template reads '<' after 'get' as the less-than operator; the member template needs 'te
+  FALSE-REJECT templates/dependent-names/member-template-through-current-instantiation-object.cpp DEP-24 DEP-2 :: 7:DEP-24 the template reads '<' after 'get' as the less-than operator; the member template needs 'te
+
+missed rejects by page (completion set):
+  templates/constraints (5): CNS-13; CNS-24 CNS-27; CNS-26 CNS-27; CNS-29; CNS-29
+  templates/instantiation (5): INST-33; INST-21; INST-12 INST-6; INST-12 INST-6; INST-15 TR-13
+  templates/arguments (4): TARG-24; TARG-24; TARG-15; TARG-7
+  templates/class-template-deduction (4): CTAD-12; CTAD-2; CTAD-2; CTAD-19 CTAD-23
+  templates/dependent-names (4): DEP-37; DEP-24; DEP-37; DEP-30 DEP-15
+  classes/constructors (3): CTOR-12; CTOR-21; CTOR-22
+  expressions/decltype (3): UNEV-1 PRIM-25; UNEV-4; UNEV-4
+  overloading/overload-resolution (3): OVL-20; OVL-9 OVL-36; OVL-9 OVL-36
+  templates/packs (3): PACK-8; PACK-26 PACK-6; PACK-8
+  classes/comparisons (2): DCMP-11; DCMP-3
+  classes/conversion-functions (2): CVF-9; CVF-8
+  classes/virtual (2): VIRT-13; VIRT-5
+  declarations/initialization (2): REF-15; REF-15
+  statements/range-for (2): AUTO-21 RFOR-1; RFOR-7
+  templates/declarations (2): TPL-31; TPL-7
+  templates/deduction (2): DED-29; DED-29
+  templates/specialization (2): TSP-23; TSP-31
+  classes/copy-move (1): CPY-15
+  declarations/alignment (1): ALN-2
+  declarations/constexpr (1): CEV-1
+  declarations/declarators (1): DCL-19
+  declarations/functions (1): DEFARG-4
+  exceptions/handlers (1): TRY-13
+  exceptions/unwinding (1): UNW-11
+  expressions/logical (1): LOG-3
+  expressions/postfix (1): PFX-11 CLS-2
+  expressions/primary (1): PRIM-26
+  expressions/unary (1): UN-19
+  foundations/constant-evaluation (1): CE-3
+  foundations/language-support (1): LSUP-1
+  foundations/names (1): NAM-8 NAM-27
+  foundations/storage (1): STG-1 DCL-19
+  overloading/conversion-sequences (1): ICS-10 OVL-35
+  statements/if (1): IF-22
+  templates/concepts (1): CPT-37
+  templates/ordering (1): ORD-3 ORD-15
+
+against round 23: same status 117, other status 0, not in baseline 10
+  round 23 in-scope check failures: 149; run stops then: 40
+  round 23 check failures now passing their check: 38
+  new: FALSE-REJECT programs/roadmap/r10-list-first-try.cpp
+  new: unsupported programs/roadmap/r10-tuple-second-try.cpp
+  new: unsupported templates/class-template-deduction/user-guide-beside-constrained-constructor-template.cpp
+  new: unsupported templates/deduction/substitution-member-wrong-kind.cpp
+  new: FALSE-REJECT templates/dependent-names/member-template-current-instantiation-pointer.cpp
+  new: MISSED-REJECT templates/dependent-names/member-template-current-instantiation-qualifier-dependent-base.cpp
+  new: FALSE-REJECT templates/dependent-names/member-template-non-dependent-base.cpp
+  new: FALSE-REJECT templates/dependent-names/member-template-through-current-instantiation-object.cpp
+  new: MISSED-REJECT templates/dependent-names/other-specialization-constant-argument-member-missing.cpp
+  new: unsupported templates/dependent-names/other-specialization-constant-argument-no-typename.cpp
+
+against round 22: same status 117, other status 0, not in baseline 10
+  round 22 in-scope check failures: 167; run stops then: 40
+  round 22 check failures now passing their check: 56
+
+program tests in the completion set:
+  FALSE-REJECT programs/roadmap/r10-list-first-try.cpp :: 47:TR-13 instantiation of 'cond<0, const Node*, Node*>' nests deeper than the limit of 256
+  unsupported programs/roadmap/r10-tuple-second-try.cpp :: 162:- static_assert: deduction of class template arguments
+
+727 rules with a run test; none passing for 10:
+  CTAD-11 required ['unsupported']
+  CTAD-29 required ['unsupported']
+  DEP-20 required ['run-unsupported']
+  DEP-25 required ['run-unsupported']
+  LAM-19 undefined ['run-unsupported']
+  ORD-9 required ['run-unsupported']
+  OVL-42 required ['run-unsupported']
+  PFX-22 required ['FALSE-REJECT', 'FALSE-REJECT']
+  TARG-12 required ['run-unsupported']
+  TSP-8 reject ['run-unsupported']
+reject: 464 of 559 named in frontend/src
+undefined: 53 of 57 named in frontend/src
+unspecified: 14 of 32 named in frontend/src
+impl-defined: 30 of 52 named in frontend/src
+
+frontend/src: 51375 lines in 28 files; over 2000: [('expr.rs', 7726), ('decl2.rs', 7190), ('interp/expr.rs', 4815), ('templ.rs', 4310), ('decl.rs', 3154), ('expr2.rs', 2829), ('parser.rs', 2396)]
