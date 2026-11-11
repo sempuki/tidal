@@ -266,6 +266,7 @@ No page has only a Predict batch that showed test names.
 | X18 | done: 21 rule changes, no test changes outcome; findings X18-1 to X18-11 | `reports/clean-room/X18/` |
 | X19 | done: 34 rule changes, 1 test changes outcome; findings X19-1 to X19-11 | `reports/clean-room/X19/` |
 | X20 | done: 58 rule changes, no test changes outcome; findings X20-1 to X20-11 | `reports/clean-room/X20/` |
+| X25 | done: 31 rule changes, 1 test changes outcome; findings X25-1 to X25-9 | `reports/clean-room/X25/` |
 | X23 | done: 33 rule changes, 2 tests change outcome; findings X23-1 to X23-7 | `reports/clean-room/X23/` |
 | X22 | done: 36 rule changes, no test changes outcome; findings X22-1 to X22-9; refresh note for X19 | `reports/clean-room/X22/` |
 | X21 | done: 32 rule changes, no test changes outcome; findings X21-1 to X21-11 | `reports/clean-room/X21/` |
