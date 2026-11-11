@@ -922,6 +922,15 @@ drift").
 | X23-5 | `X23/report.md` | commit | ee6085aa: STG-5 and NEW-29 |
 | X23-6 | `X23/report.md` | commit | 0f3f522f |
 | X23-7 | `X23/report.md` | commit | 0f3f522f |
+| X25-1 | `X25/report.md` | open | LSUP-10, UNI-14: LSUP-10's two places for std::construct_at in constant evaluation do not cover a union member that is not active, which UNI-14 accepts |
+| X25-2 | `X25/report.md` | open | OBJ-1, STG-28: no row for when an array's own lifetime begins |
+| X25-3 | `X25/report.md` | open | glossary lifetime, OBJ-1: the entry ends a class object's lifetime when its destructor completes, and OBJ-1 when the call starts; the scalar start differs too |
+| X25-4 | `X25/report.md` | open | UNI-14, UNI-6: at run time, whether the member name reaches an element built inside an inactive array member, and whether a non-overlapping active member stays active |
+| X25-5 | `X25/report.md` | open | CE-22, CE-P3: whether a union's trivial copy reads the parts of its active member |
+| X25-6 | `X25/report.md` | open | STG-P2: the storage-form table sits at the end of the storage.md Examples, and STG-P2 does not cite it |
+| X25-7 | `X25/report.md` | open | CE-21: no example of an element that an explicit destructor call ended |
+| X25-8 | `X25/report.md` | planned | decision 0063, item E: done: the portfolio entry of P27 says no only for a new declaration form, and the table of exercises.md section 4 gains X25 |
+| X25-9 | `X25/report.md` | open | outside knowledge: fixed-capacity vectors are common; no rule rests on it |
 | RV4-1 | `../review/2026-11-05-gap-review-phase-10-expressions-templates.md` | commit | 3bed9cb5: LAM-6 says simple capture (RV5-B-14) |
 | RV4-2 | `../review/2026-11-05-gap-review-phase-10-expressions-templates.md` | text | LAM-29 states the right result (RV5-B-15) |
 | RV4-3 | `../review/2026-11-05-gap-review-phase-10-classes-declarations-foundations.md` | commit | 3bed9cb5: SW-P1 (RV5-A-18) |

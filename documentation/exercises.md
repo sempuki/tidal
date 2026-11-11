@@ -161,6 +161,7 @@ programs, the programs with more than one unit, and the lines.
 | X21 | P15, declared initialization order across translation units | no |
 | X22 | P23, template bodies checked against their constraints (form 1, template-ids) | no |
 | X23 | P25, `new` and `delete` that honor every alignment | yes |
+| X25 | P27, an in-object array whose elements start their lives one at a time | yes |
 
 ## 5. Predict and Diagnose batches
 

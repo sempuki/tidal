@@ -21,11 +21,11 @@ P17 was "opaque type aliases". Tidal uses "opaque" for an enumeration declared w
 | P24 | Flag enumerations: a marked scoped enumeration gets `\|`, `&`, `^` and `~` in its own type | bitwise, enumerations, overload-resolution | no | new | ready | The marker, which must not clash with X12's `final` |
 | P25 | `new` and `delete` that honor every alignment, or reject at compile time | new-delete, alignment, storage | yes | new | done (X23) | Q-0300 is open. P25 uses the answer that `pending.md` row 4 keeps |
 | P26 | No overloaded comma, and a discarded left operand of `,` must have no value or be a call | comma, operators, evaluation-order | yes | new | ready | The meaning of "has no value" for a class result |
-| P27 | An in-object array whose elements start their lives one at a time | storage, unions, language-support | no | new | ready | How an element's lifetime starts and ends, and what constant evaluation allows (Q-0425) |
+| P27 | An in-object array whose elements start their lives one at a time | storage, unions, language-support | yes, narrowly (X25 section 4) | new | done (X25) | How an element's lifetime starts and ends, and what constant evaluation allows (Q-0425) |
 | P28 | Arithmetic that wraps on request | additive, multiplicative, conversions | no | new | partial | The marker, and whether it applies to a type or an operator |
 | P29 | A pointer comparison with a string literal operand is not valid | comparison, primary | yes | new | partial | Whether the rule covers a pointer that a literal initialized; the count of programs it makes invalid |
 
-Totals for P22 onward: 4 ready (P22, P24, P26, P27), 3 partial (P23b, P28, P29), 2 done (P23a by X22, P25 by X23), 0 blocked. P26 is the one ready proposal that changes existing behavior. X24 takes P22 or P26 next, and X25 can take P27.
+Totals for P22 onward: 3 ready (P22, P24, P26), 3 partial (P23b, P28, P29), 3 done (P23a by X22, P25 by X23, P27 by X25), 0 blocked. P26 is the one ready proposal that changes existing behavior. X24 takes P22 or P26 next.
 
 ## 3. The proposals
 
@@ -97,11 +97,11 @@ A class cannot overload `operator,`. The left operand of a built-in comma must h
 A class holds storage for `N` objects of `T` inside itself, and the program starts each element's life when it adds one, as a fixed-capacity vector does. Today no form inside the object gives one array of `T` for pointer arithmetic, constant evaluation, and a `T` with no default constructor together (the storage-form table beside the `FixedVec` example, STG-P2).
 
 - **Pages:** `foundations/storage.md`, `classes/unions.md`, `foundations/language-support.md`.
-- **Changes existing behavior:** no. The proposal adds a form.
+- **Changes existing behavior:** no for a new declaration form. X25's design uses a union with an array member, which is valid text today, and changes behavior narrowly (X25-8).
 - **Cites:** STG-P2, STG-P3, STG-10, STG-28, UNI-13, UNI-14, UNI-6, ADD-10, LSUP-10, LSUP-11, ADD-14, STG-29; Q-0430 and G164 dispute the case that P27 would define.
 - **Settled from Tidal:** UNI-14 says what a construction inside a member that is not active does, at run time and in constant evaluation (W20-2, Q-0425). The storage-form table states the gap.
 - **Not settled:** how an element's lifetime starts and ends, what `std::construct_at` and placement `new` do on one element, what a pointer and a length over the started elements give, and what constant evaluation allows.
-- **Rating:** ready.
+- **Rating:** done (X25). The union form that X25 designs changes existing behavior in three narrow ways (one test from reject to accept, a test of validity, one run-time case made undefined). Nine findings (X25-1 to X25-9).
 
 ### P28. Arithmetic that wraps on request
 

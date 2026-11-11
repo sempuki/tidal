@@ -1,0 +1,19 @@
+tests/classes/members/layout-union-end-padding-ilp32.cpp:7: arrays=['char c[5]'] construct_at=False placement_new=False constant=True
+tests/classes/members/layout-union-end-padding.cpp:6: arrays=['char c[5]'] construct_at=False placement_new=False constant=True
+tests/classes/members/layout-union-end-padding.cpp:9: arrays=['char c[5]'] construct_at=False placement_new=False constant=True
+tests/classes/members/layout-union-end-padding.cpp:10: arrays=['char c[5]'] construct_at=False placement_new=False constant=True
+tests/classes/members/layout-union-size-ilp32.cpp:5: arrays=['char c[5]'] construct_at=False placement_new=False constant=True
+tests/classes/members/layout-union-size-ilp32.cpp:7: arrays=['char c[9]'] construct_at=False placement_new=False constant=True
+tests/classes/members/layout-union-size.cpp:4: arrays=['char c[5]'] construct_at=False placement_new=False constant=True
+tests/classes/unions/alignment-strictest-not-largest.cpp:3: arrays=['char buf[16]'] construct_at=False placement_new=False constant=True
+tests/classes/unions/array-member-element-address-no-active-member.cpp:4: arrays=['int cells[3]'] construct_at=False placement_new=False constant=False
+tests/classes/unions/array-member-element-steps-no-active-member-constant.cpp:4: arrays=['int cells[3]'] construct_at=False placement_new=False constant=True
+tests/classes/unions/bitfield-union-size.cpp:10: arrays=['char y[3]'] construct_at=False placement_new=False constant=True
+tests/classes/unions/chain-assign-activates.cpp:8: arrays=['int arr[2]'] construct_at=False placement_new=False constant=True
+tests/classes/unions/chain-assign-array-element-nontrivial-constant.cpp:11: arrays=['Reading items[2]'] construct_at=False placement_new=False constant=True
+tests/classes/unions/chain-assign-member-function-constant.cpp:5: arrays=['char buf[4]'] construct_at=False placement_new=False constant=True
+tests/classes/unions/chain-assign-member-function.cpp:5: arrays=['char buf[4]'] construct_at=False placement_new=False constant=False
+tests/classes/unions/construct-at-array-member-element-constant.cpp:10: arrays=['int items[2]'] construct_at=True placement_new=False constant=True
+tests/classes/unions/union-array-member.cpp:3: arrays=['int a[4]'] construct_at=False placement_new=False constant=False
+tests/programs/roadmap/r12-sso.cpp:99: arrays=['char small_[small_cap + 1]'] construct_at=False placement_new=False constant=True
+tests/programs/roadmap/r6-text.cpp:20: arrays=['char local[short_cap + 1]'] construct_at=False placement_new=True constant=True

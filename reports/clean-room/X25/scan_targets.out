@@ -1,0 +1,9 @@
+tests/classes/unions/construct-at-array-member-element-constant.cpp:16: int* second = std::construct_at(&r.items[1], 7);
+tests/classes/unions/placement-into-union-member-of-new-array-element.cpp:13: ::new (static_cast<void*>(&table[1].entry)) Entry{4, 40};
+tests/classes/unions/slot-array-constant.cpp:25: std::construct_at(&slots[count].value, static_cast<Args&&>(args)...);
+tests/programs/W15/stack.cpp:63: std::construct_at(&slots[count].value, static_cast<Args&&>(args)...);
+tests/programs/roadmap/r10-hash-map.cpp:77: for (std::size_t i = 0; i < ncap; ++i) ::new (static_cast<void*>(slots_ + i)) Slot();
+tests/programs/roadmap/r10-hash-map.cpp:101: ::new (static_cast<void*>(&slots_[i].kv)) KV{move(key), V(forward<A>(a)...)};
+tests/programs/roadmap/r12-ring-fifth-try.cpp:132: T* p = std::construct_at(&slots_[at(size_)].value, forward<Args>(args)...);
+tests/programs/roadmap/r12-ring-third-try.cpp:129: T* p = std::construct_at(&slots_[at(size_)].value, forward<Args>(args)...);
+tests/programs/roadmap/r12-ring.cpp:132: T* p = std::construct_at(&slots_[at(size_)].value, forward<Args>(args)...);
