@@ -210,6 +210,37 @@ def note_citations() -> dict[str, set[str]]:
     return cited
 
 
+RULE_ID = re.compile(r"\b[A-Z]+-P?\d+\b")
+
+
+def rule_citations() -> dict[str, set[str]]:
+    """For each rule ID, the tests whose tidal-rules lines name it."""
+    cited: dict[str, set[str]] = {}
+    for f in TESTS.rglob("*.cpp"):
+        for line in f.read_text().splitlines():
+            if not line.startswith("//"):
+                break
+            if line.startswith("// tidal-rules:"):
+                for r in line.split(":", 1)[1].split():
+                    cited.setdefault(r, set()).add(str(f.relative_to(TESTS)))
+    return cited
+
+
+def row4_rule_items(text: str) -> tuple[list[str], list[str]]:
+    """Row 4's items that name rules and no question: those where every newest family keeps the matrix's answer (4a), and the rest (4b)."""
+    section = text.split("## Matrix against review", 1)[1].split("\n## ", 1)[0]
+    a: list[str] = []
+    b: list[str] = []
+    for line in section.splitlines():
+        if not line.startswith("| ") or line.startswith("| Item"):
+            continue
+        cells = [c.strip() for c in line.strip("|").split("|")]
+        if QUESTION_ID.search(cells[0]) or not RULE_ID.search(cells[0]):
+            continue
+        (b if any(c.startswith("review") for c in cells[2:5]) else a).append(cells[0])
+    return a, b
+
+
 def row4_split(text: str) -> tuple[set[str], set[str]]:
     """Row 4's questions: those where every newest family keeps the matrix's answer (4a), and the rest (4b)."""
     section = text.split("## Matrix against review", 1)[1].split("\n## ", 1)[0]
@@ -252,6 +283,7 @@ def render_packet(text: str, questions: list[Question]) -> str | None:
             elif item == "a review (silent)":
                 silent.append(q.id)
     cited = note_citations()
+    rules_cited = rule_citations()
 
     def tests(qs: list[str]) -> int:
         return len(set().union(*(cited.get(q, set()) for q in qs))) if qs else 0
@@ -280,8 +312,11 @@ def render_packet(text: str, questions: list[Question]) -> str | None:
              "which hold a case that the option leaves as it is. The tool cannot tell",
              "which case each test holds. Row 4a holds the questions where every",
              "newest family keeps the matrix's answer, and row 4b those where one",
-             "family follows the review. Row 10 holds the questions whose last",
-             "review finds the reference silent.", "",
+             "family follows the review. The rows marked \"rule items\" hold the",
+             "items of the row 4 table that name rules and no question; their",
+             "column of tests counts the tests whose `tidal-rules` line names one",
+             "of the item's rules, so the bound is wide. Row 10 holds the questions",
+             "whose last review finds the reference silent.", "",
              "| Row | Option | Open questions it settles | Tests that name them | Tests whose expectation changes |",
              "|---|---|---|---|---|"]
     for row in rows:
@@ -295,6 +330,14 @@ def render_packet(text: str, questions: list[Question]) -> str | None:
             lines.append(f"| 4a | Follow the review; answers change | {listed(a)} | {change(a)} |")
             lines.append(f"| 4b | Follow the compilers; answers stay | {listed(b)} | {stay(b)} |")
             lines.append(f"| 4b | Follow the review; answers change | {listed(b)} | {change(b)} |")
+            for part, items in zip(("4a", "4b"), row4_rule_items(text)):
+                if not items:
+                    continue
+                n = len(set().union(*(rules_cited.get(r, set()) for i in items for r in RULE_ID.findall(i))))
+                named = f"{len(items)}: {'; '.join(items)}"
+                lines.append(f"| {part} | Follow the compilers, rule items; answers stay | {named} | {n} | 0 |")
+                lines.append(f"| {part} | Follow the review, rule items; answers change | {named} | {n} | at most {n} |" if n
+                             else f"| {part} | Follow the review, rule items; answers change | {named} | 0 | 0 |")
         elif row != 10:
             lines.append(f"| {row} | Decide the row; answers may change | {listed(qs)} | {change(qs)} |")
     lines.append(f"| 10 | Record each answer as Tidal's own choice; answers stay | {listed(silent)} | {stay(silent)} |")

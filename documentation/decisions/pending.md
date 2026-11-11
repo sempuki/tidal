@@ -6,8 +6,13 @@ last column lists the questions that the decision closes or changes.
 
 Rows 1, 4a, and 10 come first (decision 0059, item PK3). Each has an
 option under which no test's expectation changes, and together they
-hold 84 open questions. The [decision packet](#decision-packet) gives
-the questions and tests of each option.
+hold 85 open questions and the 14 rule items of row 4a. The
+[decision packet](#decision-packet) gives the questions and tests of
+each option.
+
+| Date | Request to the maintainer | Answer |
+|---|---|---|
+| 2026-11-10 | Decide rows 1, 4a, and 10 first (decision 0061, item PK4) | none yet |
 
 | # | Item | Options | Tidal keeps | Questions |
 |---|---|---|---|---|
@@ -53,8 +58,11 @@ column gives an upper bound: the tests that name the questions, some of
 which hold a case that the option leaves as it is. The tool cannot tell
 which case each test holds. Row 4a holds the questions where every
 newest family keeps the matrix's answer, and row 4b those where one
-family follows the review. Row 10 holds the questions whose last
-review finds the reference silent.
+family follows the review. The rows marked "rule items" hold the
+items of the row 4 table that name rules and no question; their
+column of tests counts the tests whose `tidal-rules` line names one
+of the item's rules, so the bound is wide. Row 10 holds the questions
+whose last review finds the reference silent.
 
 | Row | Option | Open questions it settles | Tests that name them | Tests whose expectation changes |
 |---|---|---|---|---|
@@ -65,6 +73,8 @@ review finds the reference silent.
 | 4a | Follow the review; answers change | 18: Q-0140, Q-0142, Q-0181, Q-0225, Q-0243, Q-0246, Q-0275, Q-0277, Q-0280, Q-0300, Q-0336, Q-0394, Q-0405, Q-0406, Q-0407, Q-0409, Q-0410, Q-0416 | 32 | at most 32 |
 | 4b | Follow the compilers; answers stay | 21: Q-0074, Q-0077, Q-0087, Q-0123, Q-0131, Q-0190, Q-0191, Q-0205, Q-0226, Q-0307, Q-0330, Q-0362, Q-0366, Q-0369, Q-0371, Q-0389, Q-0393, Q-0401, Q-0404, Q-0408, Q-0418 | 44 | 0 |
 | 4b | Follow the review; answers change | 21: Q-0074, Q-0077, Q-0087, Q-0123, Q-0131, Q-0190, Q-0191, Q-0205, Q-0226, Q-0307, Q-0330, Q-0362, Q-0366, Q-0369, Q-0371, Q-0389, Q-0393, Q-0401, Q-0404, Q-0408, Q-0418 | 44 | at most 44 |
+| 4a | Follow the compilers, rule items; answers stay | 14: THR-3; TRY-2; UNW-3; NAM-40, NAM-41; STG-9; LSUP-11; TR-P6, TR-13, TR-14, TR-15; UNW-1; OBJ-11; ENUM-10, ENUM-P1; NS-12; NEW-P5; ICS-45; CMP-8 | 166 | 0 |
+| 4a | Follow the review, rule items; answers change | 14: THR-3; TRY-2; UNW-3; NAM-40, NAM-41; STG-9; LSUP-11; TR-P6, TR-13, TR-14, TR-15; UNW-1; OBJ-11; ENUM-10, ENUM-P1; NS-12; NEW-P5; ICS-45; CMP-8 | 166 | at most 166 |
 | 5 | Decide the row; answers may change | 1: Q-0235 | 3 | at most 3 |
 | 6 | Decide the row; answers may change | 2: Q-0041, Q-0343 | 5 | at most 5 |
 | 7 | Decide the row; answers may change | 5: Q-0007, Q-0087, Q-0116, Q-0181, Q-0188 | 5 | at most 5 |
