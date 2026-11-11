@@ -269,6 +269,7 @@ No page has only a Predict batch that showed test names.
 | X22 | done: 36 rule changes, no test changes outcome; findings X22-1 to X22-9; refresh note for X19 | `reports/clean-room/X22/` |
 | X21 | done: 32 rule changes, no test changes outcome; findings X21-1 to X21-11 | `reports/clean-room/X21/` |
 | I5 | done: deduction from a call from the rules alone, 416 of 427 assertions; 13 programs, 3 reductions; findings I5-1 to I5-11 | `reports/clean-room/I5/` |
+| I6 | done: dependent names and the checks before instantiation from the rules alone, 352 of 358 assertions (354 with the second-phase reading); 14 programs, 2 reductions; findings I6-1 to I6-20 | `reports/clean-room/I6/` |
 | I4 | done: the conditional operator with class operands from the rules alone, 85 of 85 assertions; 13 programs, 6 reductions; findings I4-1 to I4-14 | `reports/clean-room/I4/` |
 | I3 | done: overload ranking from the rules alone, 1513 of 1532 decided assertions (1184 of 1189 grid cells, 329 of 343 test assertions); 12 of 17 programs run on the front end; findings I3-1 to I3-18 | `reports/clean-room/I3/` |
 | I2 | done: partial ordering from the rules alone, 140 of 140 ordering checks (76 grid cells); 5 of 46 programs differ on the front end; findings I2-1 to I2-17 | `reports/clean-room/I2/` |

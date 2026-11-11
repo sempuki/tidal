@@ -634,7 +634,7 @@ this way join the functions that ordinary lookup finds.
 
 :::{rule} NAM-27
 :kind: required
-:tests: foundations/names/adl-member-template-template-argument.cpp foundations/names/adl-address-of-overload-set.cpp foundations/names/adl-class.cpp foundations/names/adl-union.cpp foundations/names/adl-nested-class-namespace.cpp foundations/names/adl-nested-class-friend.cpp foundations/names/adl-base.cpp foundations/names/adl-indirect-base.cpp foundations/names/adl-base-friend.cpp foundations/names/adl-enum.cpp foundations/names/adl-enum-in-class-friend.cpp foundations/names/adl-enum-in-class-namespace.cpp foundations/names/adl-pointer.cpp foundations/names/adl-reference.cpp foundations/names/adl-array.cpp foundations/names/adl-function-pointer-parameter.cpp foundations/names/adl-function-pointer-return.cpp foundations/names/adl-function-name.cpp foundations/names/adl-member-pointer-class.cpp foundations/names/adl-member-pointer-type.cpp foundations/names/adl-member-function-pointer-parameter.cpp foundations/names/adl-template-argument.cpp foundations/names/adl-template-namespace.cpp foundations/names/adl-template-template-argument.cpp foundations/names/adl-lambda-namespace.cpp foundations/names/adl-lambda-function.cpp foundations/names/adl-lambda-class-member.cpp foundations/names/adl-local-class.cpp foundations/names/adl-local-enum.cpp foundations/names/adl-incomplete-class.cpp foundations/names/adl-second-argument.cpp foundations/names/adl-function-template-in-set.cpp foundations/names/adl-function-template-parameter-adds-nothing.cpp foundations/names/adl-template-id-argument.cpp
+:tests: foundations/names/adl-member-template-template-argument.cpp foundations/names/adl-address-of-overload-set.cpp foundations/names/adl-class.cpp foundations/names/adl-union.cpp foundations/names/adl-nested-class-namespace.cpp foundations/names/adl-nested-class-friend.cpp foundations/names/adl-base.cpp foundations/names/adl-indirect-base.cpp foundations/names/adl-base-friend.cpp foundations/names/adl-enum.cpp foundations/names/adl-enum-in-class-friend.cpp foundations/names/adl-enum-in-class-namespace.cpp foundations/names/adl-pointer.cpp foundations/names/adl-reference.cpp foundations/names/adl-array.cpp foundations/names/adl-function-pointer-parameter.cpp foundations/names/adl-function-pointer-return.cpp foundations/names/adl-function-name.cpp foundations/names/adl-member-pointer-class.cpp foundations/names/adl-member-pointer-type.cpp foundations/names/adl-member-function-pointer-parameter.cpp foundations/names/adl-template-argument.cpp foundations/names/adl-template-namespace.cpp foundations/names/adl-template-template-argument.cpp foundations/names/adl-lambda-namespace.cpp foundations/names/adl-lambda-function.cpp foundations/names/adl-lambda-class-member.cpp foundations/names/adl-local-class.cpp foundations/names/adl-local-enum.cpp foundations/names/adl-incomplete-class.cpp foundations/names/adl-second-argument.cpp foundations/names/adl-function-template-in-set.cpp foundations/names/adl-function-template-parameter-adds-nothing.cpp foundations/names/adl-template-id-argument.cpp overloading/overload-resolution/operator-base-class-namespace.cpp
 
 Each argument of an unqualified call adds
 {term}`associated namespaces <associated namespace>` and
@@ -905,8 +905,8 @@ File::File* q = nullptr;        // rejected: names the constructor
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 239
-of 244 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 240
+of 245 tests.
 
 ### Divergences
 

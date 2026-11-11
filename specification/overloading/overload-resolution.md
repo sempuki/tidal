@@ -305,7 +305,7 @@ those of the function type.
 
 :::{rule} OVL-7
 :kind: required
-:tests: overloading/overload-resolution/operator-sets.cpp overloading/overload-resolution/operator-lookup-skips-members.cpp overloading/overload-resolution/operator-call-by-name-hidden.cpp foundations/names/operator-lookup-block-hides.cpp foundations/names/operator-lookup-namespace-hides.cpp foundations/names/operator-lookup-skips-class.cpp
+:tests: overloading/overload-resolution/operator-sets.cpp overloading/overload-resolution/operator-lookup-skips-members.cpp overloading/overload-resolution/operator-call-by-name-hidden.cpp foundations/names/operator-lookup-block-hides.cpp foundations/names/operator-lookup-namespace-hides.cpp foundations/names/operator-lookup-skips-class.cpp overloading/overload-resolution/operator-base-class-namespace.cpp
 
 For an operator with an operand of class or enumeration type, the
 candidates are these ({rule}`OPR-6`):
@@ -849,8 +849,8 @@ struct Self {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 170
-of 200 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 171
+of 201 tests.
 
 ### Divergences
 

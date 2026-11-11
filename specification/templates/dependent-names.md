@@ -350,7 +350,7 @@ fundamental type add no namespace.
 
 :::{rule} DEP-11
 :kind: required
-:tests: templates/dependent-names/dependent-base-skipped.cpp templates/dependent-names/dependent-base-qualified.cpp templates/dependent-names/independent-base-searched.cpp templates/dependent-names/current-instantiation-enclosing-base.cpp templates/dependent-names/dependent-base-conversion-function.cpp
+:tests: templates/dependent-names/dependent-base-skipped.cpp templates/dependent-names/dependent-base-qualified.cpp templates/dependent-names/independent-base-searched.cpp templates/dependent-names/current-instantiation-enclosing-base.cpp templates/dependent-names/dependent-base-conversion-function.cpp templates/dependent-names/template-keyword-this-dependent-base.cpp
 
 Unqualified lookup in a class template does not search a base whose
 type is dependent. It searches a base whose type is not dependent, and
@@ -539,7 +539,7 @@ type is not valid.
 
 :::{rule} DEP-24
 :kind: reject
-:tests: templates/dependent-names/template-keyword-needed-qualified.cpp templates/dependent-names/template-keyword-needed-member.cpp templates/dependent-names/template-keyword-needed-template-argument.cpp templates/dependent-names/template-keyword-needed-after-typename.cpp templates/dependent-names/template-keyword-forms.cpp templates/dependent-names/template-keyword-needed-base.cpp templates/dependent-names/template-keyword-needed-alias-target.cpp expressions/lambdas/template-head-dependent-call.cpp templates/dependent-names/member-template-through-current-instantiation-object.cpp templates/dependent-names/member-template-current-instantiation-dependent-base-needs-template.cpp templates/dependent-names/member-template-current-instantiation-pointer.cpp
+:tests: templates/dependent-names/template-keyword-needed-qualified.cpp templates/dependent-names/template-keyword-needed-member.cpp templates/dependent-names/template-keyword-needed-template-argument.cpp templates/dependent-names/template-keyword-needed-after-typename.cpp templates/dependent-names/template-keyword-forms.cpp templates/dependent-names/template-keyword-needed-base.cpp templates/dependent-names/template-keyword-needed-alias-target.cpp expressions/lambdas/template-head-dependent-call.cpp templates/dependent-names/member-template-through-current-instantiation-object.cpp templates/dependent-names/member-template-current-instantiation-dependent-base-needs-template.cpp templates/dependent-names/member-template-current-instantiation-pointer.cpp templates/dependent-names/template-keyword-this-dependent-base.cpp
 
 A {term}`member template` must have the keyword `template` before its name in
 these places:
@@ -825,8 +825,8 @@ template <class... T> int count() {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 112
-of 135 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 113
+of 136 tests.
 
 ### Divergences
 

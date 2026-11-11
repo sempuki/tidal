@@ -954,3 +954,23 @@ own IDs (RV5-A-n and RV5-B-n).
 | I5-9 | `I5/report.md` | planned | decision 0061, item FE: F3 answered I5-5 in DED-24; front end: T::type with an incomplete T stops as unsupported; test templates/deduction/qualified-name-in-incomplete-class.cpp |
 | I5-10 | `I5/report.md` | planned | decision 0061, item FE: F3 states the base relation in REF-1, COND-16, and DED-15 (G153); front end: a reference binds a private or ambiguous base; tests declarations/initialization/references/lvalue-ref-to-private-base.cpp, lvalue-ref-to-ambiguous-base.cpp, templates/deduction/two-equal-bases-with-fallback.cpp, private-base-with-fallback.cpp |
 | I5-11 | `I5/report.md` | commit | 0ae4cdb5, decision 0061, item F3: DED-24 names arrays of functions and of void, and DED-11 names the size type as decltype(sizeof 0); test templates/deduction/substitution-failure-array-of-function-or-void.cpp |
+| I6-1 | `I6/report.md` | open | DEP-5 and DEP-P1: an independent call uses argument-dependent lookup at the definition |
+| I6-2 | `I6/report.md` | open | a mistake in the component (DEP-34 with no argument list); no text change |
+| I6-3 | `I6/report.md` | open | DEP-26 and DEP-P5: an example of template with no list before a deduced class template |
+| I6-4 | `I6/report.md` | open | DEP-P5: the first phase chooses a reading and the second reports the error |
+| I6-5 | `I6/report.md` | open | DEP-2: whether a member access through this is type-dependent |
+| I6-6 | `I6/report.md` | open | DEP-4: sizeof of a value-dependent operand |
+| I6-7 | `I6/report.md` | open | DEP-6, DEP-12, DEP-30: must or may before instantiation |
+| I6-8 | `I6/report.md` | open | CNS-13 and the DEP-P6 table give different strengths |
+| I6-9 | `I6/report.md` | open | DEP-8, DEP-9, DEP-14: qualified dependent calls and member calls with a dependent argument |
+| I6-10 | `I6/report.md` | open | DEP-9, INST-31, INST-32: which point of instantiation argument-dependent lookup uses |
+| I6-11 | `I6/report.md` | open | front end: this->template with a dependent base stops; test templates/dependent-names/template-keyword-this-dependent-base.cpp |
+| I6-12 | `I6/report.md` | open | front end: operator lookup leaves out the namespaces of a base; test overloading/overload-resolution/operator-base-class-namespace.cpp |
+| I6-13 | `I6/report.md` | open | INST-1, INST-2: decltype of a call and a call that passes the class by value |
+| I6-14 | `I6/report.md` | open | DED-29, INST-6: an example of a hard error that stands against another candidate |
+| I6-15 | `I6/report.md` | open | INST-5 and INST-33 on a static constexpr member |
+| I6-16 | `I6/report.md` | open | INST-P2: when a friend function defined in a class template is made |
+| I6-17 | `I6/report.md` | open | DEP-37: link the operator arities |
+| I6-18 | `I6/report.md` | open | DEP-19, DEP-29, DEP-6: why T::x * p; and T::x p; are rejected at the definition |
+| I6-19 | `I6/report.md` | open | DEP-20: the return type of a member function |
+| I6-20 | `I6/report.md` | open | outside knowledge: overload ranking, lookup scope, operator arities, this in a local class |

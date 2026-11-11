@@ -1,0 +1,19 @@
+354 of 358 assertions right, from 194 tests and grids
+  dependent-names: 192 of 196
+  grids: 86 of 86
+  instantiation: 76 of 76
+
+WRONG
+   | dependent-names/independent-call-early | chooses probe(Tag, double) | 1 | DEP-5
+   | dependent-names/member-alias-independent | chooses pick(Item, long = 0) | 1 | DEP-5
+   | dependent-names/template-keyword-destructor | template before ~T | reject | accept
+   | dependent-names/template-keyword-destructor-dot | template before ~T | reject | accept
+
+LEFT OUT
+   instantiation/class-declared-not-defined | INST-4: the component has no call for a class template that is not defined
+   instantiation/member-partial-specializations-collide | INST-6 second paragraph: no model of member partial specializations
+   instantiation/local-entities-per-specialization | INST-36: no model of local statics and closure types
+   instantiation/local-entities-thread-local-and-nested-lambda | INST-36: as above
+   instantiation/local-class-requires-clause-checked-at-use | CNS-12: constraint satisfaction at the use
+   instantiation/local-class-requires-clause-substitution-failure-call | CNS-12: as above
+   instantiation/local-class-requires-clause-substitution-failure | CNS-12 and CPT: as above
