@@ -189,21 +189,22 @@ forward-progress rule belongs with threads, which are out of scope.
 ## Next steps
 
 `documentation/roadmap.md` orders the work (decisions 0033, 0039, 0050,
-0051, 0054, 0055, 0056, 0057, 0058, 0059, 0060, 0061, 0062, 0063, and
-0064). Phases 1 to 16 are done. Next:
+0051, 0054, 0055, 0056, 0057, 0058, 0059, 0060, 0061, 0062, 0063, 0064,
+and 0065). Phases 1 to 16 are done. Phase 17 (decision 0065) is next:
 
-1. A fourteenth round of clean-room roadmaps under
-   `reports/clean-room/roadmap-14/`, from the same five views, then a
-   decision that adopts phase 17. Its inputs include the open rows of
-   the exercise ledger (X24-1 to X24-8, RV10-R-1 to RV10-R-3, and
-   RV10-R-5 to RV10-R-8), the open front-end rows G166 to G179 (forms
-   that tests use and the Syntax segments do not derive), the 10 rules
-   that changed after RV9 read the tree, the completion line after phase
-   16 (74 tests that fail their check, 36 of them marked; every program
-   test runs), and the rewrite's lines (`next: parse` at 6475 of 6913).
-2. The rewrite goes on from build step 3 of `frontend/DESIGN-rewrite.md`.
-   It owns no test until step 5, and the old front end stays the front
-   end of record (decision 0064).
+1. Items T6, GR, F7, R11, and E, which can run together. GR writes the
+   grammar gaps G166 to G179 into the Syntax segments before any parser
+   change. F7 answers 15 open exercise rows (X24-1 to X24-8 and the
+   RV10-R rows).
+2. Build step 3 of the rewrite (item RW2) after GR, and front-end round
+   28 (item FE) on the current code after T6, with F7's tests as they
+   arrive.
+3. The RV10 gap review after GR and F7, ending with a recorded read of
+   its repair diff.
+
+The rewrite owns no test yet. At the end of step 3, tests move to it
+one by one through the takeover list (decision 0065). The old front end
+stays the front end of record for every other test.
 
 The items that wait on the maintainer are in
 `documentation/decisions/pending.md`, one row each, with the options,

@@ -309,6 +309,22 @@ fail their check, 36 of them marked.
 | R10 | Done: records: the design documents and exercises.md section 8; a tool for the close's Waits-for change; a similarity record of the design documents; ledger rows for findings in commit messages | none |
 | E | Done: propose X24 on P22 | none; before RW's prototype step |
 
+## Phase 17: write the grammar gaps, start the rewrite's analysis, and answer the open rows
+
+Decision 0065 (provisional) adopts this phase from the fourteenth round
+of clean-room roadmaps (`reports/clean-room/roadmap-14/`).
+
+| Item | Work | Prerequisites |
+|---|---|---|
+| T6 | Tests for the round 14 reductions and probes, and the round 14 programs and clean tries as program tests | none |
+| GR | The grammar gaps G166 to G179 and four more forms into the Syntax segments, then their parser functions | none |
+| F7 | Answer the 15 `open` rows and Q-0449's three forms, with a question for X24-3's split | none |
+| RW2 | The rewrite, build step 3, with the first takeover and the P22 prototype at its end | GR for the parse count; R11's section 7 for the prototype |
+| FE | Front-end round 28 on the current code: the T6 and F7 tests, and the machine and constant-evaluation groups before step 3 copies them | T6; F7 for its tests |
+| RV10 | A gap review of GR's and F7's text; repairs and a recorded read of their diff | GR and F7 |
+| R11 | Records: DESIGN-rewrite.md section 7 to X24; a failing check for takeover-list problems; every gap in the parse count; stale ledger Records | none |
+| E | Propose X26 on P26; the portfolio step with P30 | none |
+
 ## Parallel lanes
 
 Phase 5 ran three lanes beside its items, and all three are done: U
