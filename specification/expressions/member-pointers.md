@@ -140,7 +140,7 @@ are not valid:
 
 :::{rule} MPTR-3
 :kind: required
-:tests: expressions/member-pointers/arrow-star.cpp expressions/member-pointers/call-const-on-nonconst.cpp expressions/member-pointers/constexpr-use.cpp expressions/member-pointers/derived-object.cpp expressions/member-pointers/incomplete-object.cpp expressions/member-pointers/precedence.cpp expressions/member-pointers/ref-qualified-const-lvalue-on-rvalue.cpp expressions/member-pointers/result-const.cpp expressions/member-pointers/result-lvalue.cpp expressions/member-pointers/result-xvalue.cpp expressions/member-pointers/virtual-call.cpp expressions/member-pointers/mutable-direct-ok.cpp
+:tests: expressions/member-pointers/arrow-star.cpp expressions/member-pointers/call-const-on-nonconst.cpp expressions/member-pointers/constexpr-use.cpp expressions/member-pointers/derived-object.cpp expressions/member-pointers/incomplete-object.cpp expressions/member-pointers/precedence.cpp expressions/member-pointers/ref-qualified-const-lvalue-on-rvalue.cpp expressions/member-pointers/result-const.cpp expressions/member-pointers/result-lvalue.cpp expressions/member-pointers/result-xvalue.cpp expressions/member-pointers/virtual-call.cpp expressions/member-pointers/mutable-direct-ok.cpp templates/declarations/constant-parameter-auto-data-member-pointer.cpp templates/declarations/constant-parameter-auto-member-function-pointer.cpp templates/declarations/constant-parameter-auto-member-pointer-class-template.cpp templates/declarations/constant-parameter-member-function-pointer-function-template.cpp
 
 `o.*p` applies the pointer to member `p` to the object `o`, and `q->*p`
 is `(*q).*p`. These rules apply:
@@ -281,8 +281,8 @@ const int* Node::* unsafe = link;      // rejected: no const on the level above
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 75
-of 77 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 79
+of 81 tests.
 
 ### Divergences
 

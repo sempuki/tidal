@@ -619,7 +619,7 @@ cv-qualifiers and ref-qualifier ({question}`Q-0187`).
 
 :::{rule} OVL-24
 :kind: required
-:tests: overloading/overload-resolution/viable-constraints.cpp overloading/overload-resolution/viable-constraints-function-template.cpp
+:tests: overloading/overload-resolution/viable-constraints.cpp overloading/overload-resolution/viable-constraints-function-template.cpp expressions/lambdas/template-head-requires-after-head.cpp expressions/lambdas/template-head-trailing-requires.cpp
 
 A candidate whose constraints are not satisfied ({rule}`CNS-7`) is not
 viable. {rule}`CNS-11` says when a function template's constraints are
@@ -753,7 +753,7 @@ order of the declarations.
 
 :::{rule} OVL-35
 :kind: reject
-:tests: overloading/overload-resolution/no-viable-function.cpp overloading/overload-resolution/current-object-explicit-extra-argument.cpp overloading/overload-resolution/operator-call-by-name-hidden.cpp overloading/overload-resolution/init-copy-explicit-conversion.cpp overloading/overload-resolution/init-copy-list-explicit-conversion.cpp overloading/overload-resolution/rewritten-swapped-member-object.cpp overloading/overload-resolution/rewritten-inner-no-rewrite.cpp overloading/overload-resolution/surrogate-template-not-candidate.cpp overloading/overload-resolution/surrogate-ref-qualifier-lvalue.cpp overloading/overload-resolution/builtin-not-callable-by-name.cpp overloading/overload-resolution/reference-explicit-copy.cpp overloading/overload-resolution/inherited-copy-shape-any-argument.cpp overloading/overload-resolution/inherited-copy-shape-default.cpp overloading/overload-resolution/builtin-logical-explicit-int.cpp overloading/conversion-sequences/ellipsis-braced-list.cpp overloading/overload-resolution/builtin-increment-from-value.cpp overloading/overload-resolution/init-copy-constructor-standard-only.cpp overloading/conversion-sequences/assignment-left-no-builtin.cpp expressions/new-delete/only-aligned-class-form-ordinary-type.cpp overloading/conversion-sequences/explicit-conversion-to-derived-direct-init.cpp foundations/storage/class-allocation-function-hides-placement.cpp templates/declarations/default-argument-constrained-converting-constructor.cpp
+:tests: overloading/overload-resolution/no-viable-function.cpp overloading/overload-resolution/current-object-explicit-extra-argument.cpp overloading/overload-resolution/operator-call-by-name-hidden.cpp overloading/overload-resolution/init-copy-explicit-conversion.cpp overloading/overload-resolution/init-copy-list-explicit-conversion.cpp overloading/overload-resolution/rewritten-swapped-member-object.cpp overloading/overload-resolution/rewritten-inner-no-rewrite.cpp overloading/overload-resolution/surrogate-template-not-candidate.cpp overloading/overload-resolution/surrogate-ref-qualifier-lvalue.cpp overloading/overload-resolution/builtin-not-callable-by-name.cpp overloading/overload-resolution/reference-explicit-copy.cpp overloading/overload-resolution/inherited-copy-shape-any-argument.cpp overloading/overload-resolution/inherited-copy-shape-default.cpp overloading/overload-resolution/builtin-logical-explicit-int.cpp overloading/conversion-sequences/ellipsis-braced-list.cpp overloading/overload-resolution/builtin-increment-from-value.cpp overloading/overload-resolution/init-copy-constructor-standard-only.cpp overloading/conversion-sequences/assignment-left-no-builtin.cpp expressions/new-delete/only-aligned-class-form-ordinary-type.cpp overloading/conversion-sequences/explicit-conversion-to-derived-direct-init.cpp foundations/storage/class-allocation-function-hides-placement.cpp templates/declarations/default-argument-constrained-converting-constructor.cpp templates/declarations/default-argument-converting-constructor-after-derived-pointer.cpp templates/declarations/default-argument-converting-constructor-unconstrained-after-derived-pointer.cpp
 
 If a use has no viable function, the program is not valid. These rules
 name specific cases (decision 0042): {rule}`PFX-5`, {rule}`OPR-15`,
@@ -849,8 +849,8 @@ struct Self {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 171
-of 201 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 175
+of 205 tests.
 
 ### Divergences
 

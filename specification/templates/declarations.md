@@ -259,7 +259,7 @@ can be left out.
 
 :::{rule} TPL-6
 :kind: required
-:tests: templates/declarations/constant-parameter-types.cpp templates/declarations/constant-parameter-void-pointer.cpp
+:tests: templates/declarations/constant-parameter-types.cpp templates/declarations/constant-parameter-void-pointer.cpp templates/declarations/constant-parameter-member-function-pointer-function-template.cpp
 
 A {term}`constant parameter` is declared like a function parameter. Its
 type must be a {term}`structural type`, which is one of these:
@@ -359,7 +359,7 @@ take its address, because the name is a prvalue (TPL-9).
 
 :::{rule} TPL-11
 :kind: required
-:tests: templates/declarations/constant-parameter-auto.cpp templates/declarations/constant-parameter-class-template.cpp templates/class-template-deduction/constant-parameter-guide.cpp
+:tests: templates/declarations/constant-parameter-auto.cpp templates/declarations/constant-parameter-class-template.cpp templates/class-template-deduction/constant-parameter-guide.cpp templates/declarations/constant-parameter-auto-data-member-pointer.cpp templates/declarations/constant-parameter-auto-member-function-pointer.cpp templates/declarations/constant-parameter-auto-member-pointer-class-from-type.cpp templates/declarations/constant-parameter-auto-member-pointer-class-template.cpp
 
 The type of a constant parameter can be one of these:
 
@@ -434,7 +434,7 @@ such a head breaks TPL-30. {rule}`PACK-26` gives the other pack kinds.
 
 :::{rule} TPL-13
 :kind: required
-:tests: templates/declarations/defaults.cpp templates/declarations/defaults-function-any-order.cpp templates/declarations/default-greater-parenthesized.cpp templates/declarations/default-argument-constrained-converting-constructor.cpp
+:tests: templates/declarations/defaults.cpp templates/declarations/defaults-function-any-order.cpp templates/declarations/default-greater-parenthesized.cpp templates/declarations/default-argument-constrained-converting-constructor.cpp templates/declarations/default-argument-converting-constructor-after-derived-pointer.cpp templates/declarations/default-argument-converting-constructor-unconstrained-after-derived-pointer.cpp
 
 A parameter of any kind can have a {term}`default template argument`
 after `=`, unless the parameter is a pack (TPL-34). A default can name
@@ -833,8 +833,8 @@ template <class U> int pick(Host);                // rejected: the same template
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 120
-of 132 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 127
+of 139 tests.
 
 ### Divergences
 

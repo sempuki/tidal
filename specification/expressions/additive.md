@@ -223,7 +223,7 @@ If two pointers do not point into the same array, `p - q` is undefined.
 
 :::{rule} ADD-14
 :kind: undefined
-:tests: expressions/additive/base-pointer-derived-array.cpp expressions/additive/subtract-base-pointers-derived-array.cpp expressions/additive/base-pointer-one-past-subobject.cpp expressions/additive/base-pointer-beyond-subobject.cpp expressions/additive/base-pointer-beyond-subobject-run.cpp
+:tests: expressions/additive/base-pointer-derived-array.cpp expressions/additive/subtract-base-pointers-derived-array.cpp expressions/additive/base-pointer-one-past-subobject.cpp expressions/additive/base-pointer-beyond-subobject.cpp expressions/additive/base-pointer-beyond-subobject-run.cpp expressions/additive/typed-pointer-to-byte-two-past.cpp foundations/storage/allocated-storage-typed-step-after-byte-offset.cpp foundations/storage/byte-array-typed-step-distance.cpp foundations/storage/byte-array-typed-step-placement.cpp
 
 Arithmetic on a pointer whose type differs from the array's element
 type counts the object as an array of one. Cv-qualifiers do not count
@@ -322,8 +322,8 @@ bool add_fits(int a, int b) {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 54
-of 63 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 58
+of 67 tests.
 
 ### Divergences
 

@@ -443,7 +443,7 @@ template comes from the first of these that applies:
 
 :::{rule} TSP-14
 :kind: required
-:tests: templates/specialization/match-cv.cpp templates/specialization/match-defaults.cpp templates/specialization/match-repeated-parameter.cpp templates/specialization/match-values.cpp templates/specialization/match-template-template.cpp templates/specialization/match-alias.cpp templates/specialization/match-using-declaration.cpp templates/specialization/partial-constant-type-exact.cpp templates/specialization/partial-placeholder-pattern-const.cpp templates/specialization/partial-placeholder-pattern-variable.cpp templates/specialization/partial-placeholder-pattern.cpp
+:tests: templates/specialization/match-cv.cpp templates/specialization/match-defaults.cpp templates/specialization/match-repeated-parameter.cpp templates/specialization/match-values.cpp templates/specialization/match-template-template.cpp templates/specialization/match-alias.cpp templates/specialization/match-using-declaration.cpp templates/specialization/partial-constant-type-exact.cpp templates/specialization/partial-placeholder-pattern-const.cpp templates/specialization/partial-placeholder-pattern-variable.cpp templates/specialization/partial-placeholder-pattern.cpp templates/declarations/constant-parameter-auto-member-pointer-class-from-type.cpp
 
 A partial specialization matches an argument list if there are
 arguments for its parameters that make its own argument list the same
@@ -609,8 +609,8 @@ template <class T> template <> int Store<T>::Slot<int>::put();   // rejected
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 81
-of 96 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 82
+of 97 tests.
 
 ### Divergences
 

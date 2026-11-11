@@ -225,7 +225,7 @@ redeclares.
 
 :::{rule} CNS-1
 :kind: required
-:tests: templates/constraints/order.cpp templates/constraints/order-placeholder.cpp templates/constraints/spellings-same.cpp templates/constraints/order-constant-placeholder.cpp templates/constraints/order-constant-placeholder-before-clause.cpp templates/constraints/order-constant-placeholder-after-type.cpp templates/constraints/constant-placeholder-more-constrained.cpp
+:tests: templates/constraints/order.cpp templates/constraints/order-placeholder.cpp templates/constraints/spellings-same.cpp templates/constraints/order-constant-placeholder.cpp templates/constraints/order-constant-placeholder-before-clause.cpp templates/constraints/order-constant-placeholder-after-type.cpp templates/constraints/constant-placeholder-more-constrained.cpp expressions/lambdas/template-head-requires-after-head.cpp expressions/lambdas/template-head-trailing-requires.cpp
 
 The {term}`associated constraints` of a declaration are one conjunction
 of these parts, in this order ({question}`Q-0262`, {question}`Q-0282`):
@@ -817,8 +817,8 @@ bool usable = Usable<Item>;        // rejected: the check needs itself
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 111
-of 145 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 113
+of 147 tests.
 
 ### Divergences
 

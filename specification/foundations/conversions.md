@@ -267,7 +267,7 @@ A function name can be used as a pointer that calls that function.
 
 :::{rule} CONV-14
 :kind: required
-:tests: foundations/conversions/derived-to-base.cpp foundations/conversions/null-derived-to-second-base.cpp
+:tests: foundations/conversions/derived-to-base.cpp foundations/conversions/null-derived-to-second-base.cpp templates/declarations/default-argument-converting-constructor-after-derived-pointer.cpp templates/declarations/default-argument-converting-constructor-unconstrained-after-derived-pointer.cpp
 
 A pointer or reference to a derived class converts implicitly to a
 pointer or reference to a base class (DER-5). A null pointer converts to

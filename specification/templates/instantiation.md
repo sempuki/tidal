@@ -227,7 +227,7 @@ use is not valid ({rule}`TSP-20` gives the same for an {term}`explicit specializ
 
 :::{rule} INST-5
 :kind: required
-:tests: templates/instantiation/class-member-definitions-unused.cpp templates/instantiation/class-inline-static-member-unused.cpp templates/instantiation/class-scoped-enumeration-unused.cpp templates/instantiation/class-deleted-member-specialized.cpp
+:tests: templates/instantiation/class-member-definitions-unused.cpp templates/instantiation/class-inline-static-member-unused.cpp templates/instantiation/class-scoped-enumeration-unused.cpp templates/instantiation/class-deleted-member-specialized.cpp templates/packs/member-template-enclosing-pack-after-deduced.cpp templates/packs/member-template-enclosing-pack-before-deduced.cpp
 
 The instantiation of a class makes the declarations of its members. It
 does not make these definitions:
@@ -744,8 +744,8 @@ extern template constexpr int size_of<long>;  // rejected: constexpr (INST-25)
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 122
-of 147 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 124
+of 149 tests.
 
 ### Divergences
 

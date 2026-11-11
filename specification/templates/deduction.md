@@ -198,7 +198,7 @@ The defaults of the template parameters come before the function type
 
 :::{rule} DED-1
 :kind: required
-:tests: templates/deduction/call-each-argument.cpp templates/deduction/call-member-and-operator.cpp classes/constructors/return-owner-converts-to-base-owner.cpp classes/operators/call-operator-template.cpp classes/operators/static-call-operator-template.cpp declarations/initialization/list/braced-constructor-template.cpp templates/deduction/array-bound-from-converted-elements.cpp classes/copy-move/assign-from-lambda-through-constructor-template.cpp
+:tests: templates/deduction/call-each-argument.cpp templates/deduction/call-member-and-operator.cpp classes/constructors/return-owner-converts-to-base-owner.cpp classes/operators/call-operator-template.cpp classes/operators/static-call-operator-template.cpp declarations/initialization/list/braced-constructor-template.cpp templates/deduction/array-bound-from-converted-elements.cpp classes/copy-move/assign-from-lambda-through-constructor-template.cpp templates/packs/member-template-enclosing-pack-after-deduced.cpp templates/packs/member-template-enclosing-pack-before-deduced.cpp
 
 In a call that names a function template, {term}`deduction` finds the
 {term}`template arguments <template argument>` from the call arguments. The specialization that
@@ -681,7 +681,7 @@ case with no matching template.
 
 :::{rule} DED-34
 :kind: required
-:tests: templates/deduction/placeholder-parameter.cpp templates/deduction/placeholder-parameter-pointer-pack.cpp templates/deduction/placeholder-parameter-after-pack.cpp
+:tests: templates/deduction/placeholder-parameter.cpp templates/deduction/placeholder-parameter-pointer-pack.cpp templates/deduction/placeholder-parameter-after-pack.cpp templates/deduction/placeholder-parameter-generic-lambda-inside.cpp templates/deduction/placeholder-parameter-returns-generic-lambda.cpp
 
 A function parameter whose type has the placeholder `auto` makes the
 function a function template. Each `auto` adds an invented type
@@ -857,8 +857,8 @@ Gadget* g = new (&arena) Gadget;  // both match, and ordering prefers neither: n
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 144
-of 157 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 148
+of 161 tests.
 
 ### Divergences
 

@@ -465,6 +465,8 @@ status, and the first sentence of its answer section.
 | [Q-0426](Q-0426-by-value-constructor-template-constraint.md) | Does a copy of a class check the constraint of a constructor template with the class as the template's argument? | provisional | No; the copy does not check that constraint, and the program runs |
 | [Q-0427](Q-0427-member-template-current-instantiation-object.md) | Does a member template named after `.` need `template` when the object's type is the current instantiation? | provisional | No; the program runs without `template` |
 | [Q-0428](Q-0428-virtual-call-instantiation.md) | Does a call of a virtual member function instantiate the function when no object of the class exists? | settled | Yes; the call instantiates the function |
+| [Q-0429](Q-0429-member-template-enclosing-pack-parameters.md) | Does a function parameter pack of a member template that expands only the enclosing class's pack take part in deduction as a pack? | provisional | The pack takes part as one ordinary parameter for each element of the class's pack, and deduction finds only the member template's own parameters |
+| [Q-0430](Q-0430-typed-pointer-to-byte-step.md) | Where is `p + 1` when `p` is a `T*` that points to a byte, and can placement `new` use that position? | provisional | `p + 1` holds the address `sizeof(T)` bytes after `p`, and placement `new` can use it |
 
 ## Status values
 

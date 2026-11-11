@@ -505,7 +505,7 @@ convert it to `void*`, for example to give the address to placement
 
 :::{rule} STG-28
 :kind: required
-:tests: foundations/storage/allocation-array-class-elements.cpp foundations/storage/allocation-array-class-elements-constant.cpp foundations/storage/allocation-array-unbuilt-element-constant.cpp foundations/storage/implicit-array-for-arithmetic.cpp
+:tests: foundations/storage/allocation-array-class-elements.cpp foundations/storage/allocation-array-class-elements-constant.cpp foundations/storage/allocation-array-unbuilt-element-constant.cpp foundations/storage/implicit-array-for-arithmetic.cpp foundations/storage/allocated-storage-typed-step-after-byte-offset.cpp
 
 If an allocation function creates an array of `T`, a `T*` from its
 result points to element 0 ({question}`Q-0323`).
@@ -516,7 +516,7 @@ arithmetic over the elements ({rule}`ADD-6`) is valid before then.
 
 :::{rule} STG-29
 :kind: required
-:tests: foundations/storage/byte-array-placement-reaches-object.cpp foundations/storage/byte-array-cast-reaches-byte.cpp foundations/storage/cast-to-target-then-construct.cpp foundations/storage/placement-then-cast-read.cpp foundations/storage/member-byte-array-cast-then-construct.cpp foundations/storage/member-byte-array-cast-then-placement.cpp
+:tests: foundations/storage/byte-array-placement-reaches-object.cpp foundations/storage/byte-array-cast-reaches-byte.cpp foundations/storage/cast-to-target-then-construct.cpp foundations/storage/placement-then-cast-read.cpp foundations/storage/member-byte-array-cast-then-construct.cpp foundations/storage/member-byte-array-cast-then-placement.cpp foundations/storage/byte-array-typed-step-distance.cpp foundations/storage/byte-array-typed-step-placement.cpp
 
 A cast of a pointer into a byte array gives a pointer to a byte
 (STG-16). The result does not reach an object that the array hosts,
@@ -897,8 +897,8 @@ static_assert(read_old() == 1);       // rejected (CE-9)
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 99
-of 105 tests. EDG runs no programs, so its results for the run tests say
+The results are in `tests/RESULTS.md`. All eight compilers agree on 102
+of 108 tests. EDG runs no programs, so its results for the run tests say
 only that the programs are valid.
 
 ### Divergences

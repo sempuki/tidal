@@ -145,7 +145,7 @@ A `deduction_guide` is a `declaration`, and in a class it is a
 
 :::{rule} CTAD-1
 :kind: required
-:tests: templates/class-template-deduction/sites.cpp templates/class-template-deduction/dependent-qualifier.cpp templates/class-template-deduction/sites-for-and-condition.cpp templates/class-template-deduction/dependent-qualifier-template-keyword.cpp templates/class-template-deduction/template-template-parameter.cpp templates/class-template-deduction/template-template-parameter-alias.cpp templates/class-template-deduction/constant-parameter-guide.cpp templates/declarations/constant-parameter-class-template.cpp templates/class-template-deduction/no-constructor.cpp
+:tests: templates/class-template-deduction/sites.cpp templates/class-template-deduction/dependent-qualifier.cpp templates/class-template-deduction/sites-for-and-condition.cpp templates/class-template-deduction/dependent-qualifier-template-keyword.cpp templates/class-template-deduction/template-template-parameter.cpp templates/class-template-deduction/template-template-parameter-alias.cpp templates/class-template-deduction/constant-parameter-guide.cpp templates/declarations/constant-parameter-class-template.cpp templates/class-template-deduction/no-constructor.cpp templates/class-template-deduction/braced-cast-class-template-member.cpp templates/class-template-deduction/braced-cast-function-template-return.cpp templates/class-template-deduction/braced-cast-function-template-variable.cpp
 
 The name of a class template, or of an alias template (CTAD-14), can
 stand with no argument list in these places:
@@ -270,7 +270,7 @@ are not satisfied is not viable ({rule}`CNS-13`).
 
 :::{rule} CTAD-9
 :kind: required
-:tests: templates/class-template-deduction/aggregate-base.cpp templates/class-template-deduction/aggregate-candidate.cpp templates/class-template-deduction/aggregate-candidate-arrays.cpp templates/class-template-deduction/aggregate-candidate-pack.cpp templates/class-template-deduction/aggregate-conflict.cpp templates/class-template-deduction/aggregate-new-parentheses.cpp templates/class-template-deduction/aggregate-string-element-type.cpp templates/class-template-deduction/aggregate-string-fixed-array.cpp templates/class-template-deduction/aggregate-pack-not-last.cpp templates/class-template-deduction/aggregate-pack-not-last-element.cpp templates/class-template-deduction/aggregate-pack-length-fixed.cpp templates/class-template-deduction/aggregate-pack-length-conflict.cpp templates/class-template-deduction/aggregate-pack-length-position.cpp templates/class-template-deduction/aggregate-pack-length-parentheses.cpp templates/class-template-deduction/aggregate-pack-parentheses.cpp
+:tests: templates/class-template-deduction/aggregate-base.cpp templates/class-template-deduction/aggregate-candidate.cpp templates/class-template-deduction/aggregate-candidate-arrays.cpp templates/class-template-deduction/aggregate-candidate-pack.cpp templates/class-template-deduction/aggregate-conflict.cpp templates/class-template-deduction/aggregate-new-parentheses.cpp templates/class-template-deduction/aggregate-string-element-type.cpp templates/class-template-deduction/aggregate-string-fixed-array.cpp templates/class-template-deduction/aggregate-pack-not-last.cpp templates/class-template-deduction/aggregate-pack-not-last-element.cpp templates/class-template-deduction/aggregate-pack-length-fixed.cpp templates/class-template-deduction/aggregate-pack-length-conflict.cpp templates/class-template-deduction/aggregate-pack-length-position.cpp templates/class-template-deduction/aggregate-pack-length-parentheses.cpp templates/class-template-deduction/aggregate-pack-parentheses.cpp templates/class-template-deduction/braced-cast-class-template-member.cpp templates/class-template-deduction/braced-cast-function-template-return.cpp templates/class-template-deduction/braced-cast-function-template-variable.cpp
 
 An aggregate class template can have an {term}`aggregate candidate`.
 The candidate has one parameter for each element of the initializer
@@ -685,8 +685,8 @@ Bases c{List<X, Y, Z>{}, Y{}};    // rejected: Y stands where X is fixed
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 98
-of 120 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 101
+of 123 tests.
 
 ### Divergences
 

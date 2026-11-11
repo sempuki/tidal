@@ -127,7 +127,7 @@ names `decltype(x)`.
 
 :::{rule} PACK-1
 :kind: required
-:tests: templates/packs/function-pack-forms.cpp templates/packs/function-pack-array-and-unnamed.cpp expressions/lambdas/generic-pack.cpp
+:tests: templates/packs/function-pack-forms.cpp templates/packs/function-pack-array-and-unnamed.cpp expressions/lambdas/generic-pack.cpp templates/packs/member-template-enclosing-pack-after-deduced.cpp templates/packs/member-template-enclosing-pack-before-deduced.cpp
 
 A function parameter whose {term}`declarator` has `...` before its name, or at
 the end with no name, is a {term}`function parameter pack`. The type of
@@ -583,8 +583,8 @@ template <class... T> void keep(T... x) {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 76
-of 80 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 78
+of 82 tests.
 
 ### Divergences
 

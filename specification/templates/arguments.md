@@ -331,7 +331,7 @@ parameters before it. The pack can take no arguments.
 
 :::{rule} TARG-12
 :kind: required
-:tests: templates/arguments/constant-converted.cpp templates/arguments/constant-pointer-conversions.cpp templates/arguments/constant-overloaded-function.cpp
+:tests: templates/arguments/constant-converted.cpp templates/arguments/constant-pointer-conversions.cpp templates/arguments/constant-overloaded-function.cpp templates/declarations/constant-parameter-auto-data-member-pointer.cpp templates/declarations/constant-parameter-auto-member-function-pointer.cpp templates/declarations/constant-parameter-auto-member-pointer-class-from-type.cpp templates/declarations/constant-parameter-auto-member-pointer-class-template.cpp templates/declarations/constant-parameter-member-function-pointer-function-template.cpp
 
 The argument for a constant parameter is a constant expression
 ({principle}`CE-P1`). The argument is converted to the parameter's type
@@ -581,8 +581,8 @@ Use<Small> m;                  // rejected: Small is a concept
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 88
-of 94 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 93
+of 99 tests.
 
 ### Divergences
 

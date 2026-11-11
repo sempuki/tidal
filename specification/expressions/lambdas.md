@@ -336,7 +336,7 @@ operand of `decltype` or `sizeof`.
 
 :::{rule} LAM-15
 :kind: required
-:tests: expressions/lambdas/generic.cpp templates/dependent-names/generic-lambda-argument-lookup.cpp expressions/lambdas/template-head.cpp expressions/lambdas/generic-pack.cpp expressions/lambdas/template-head-dependent-call.cpp
+:tests: expressions/lambdas/generic.cpp templates/dependent-names/generic-lambda-argument-lookup.cpp expressions/lambdas/template-head.cpp expressions/lambdas/generic-pack.cpp expressions/lambdas/template-head-dependent-call.cpp expressions/lambdas/template-head-requires-after-head.cpp expressions/lambdas/template-head-trailing-requires.cpp templates/deduction/placeholder-parameter-generic-lambda-inside.cpp templates/deduction/placeholder-parameter-returns-generic-lambda.cpp
 
 A parameter of type `auto` makes the call operator a template
 ({rule}`DED-34`). Each call deduces the parameter type. `auto...`
@@ -505,8 +505,8 @@ int dispatch(int base) {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 91
-of 95 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 95
+of 99 tests.
 
 ### Divergences
 
