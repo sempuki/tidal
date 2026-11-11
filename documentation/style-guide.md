@@ -259,10 +259,33 @@ A Syntax segment holds a `productionlist` with the group `tidal`
 | a line that starts with `:` | continues the right-hand side above; `: \|` starts a new alternative |
 | words without quotes or backticks | a set too large to list, such as "any letter" or "any token other than a bracket" |
 
+`translation_unit` in `declarations/index.md` is the start symbol. It
+derives the tokens of one translation unit after preprocessing. Every
+other nonterminal is reached from the start symbol or from a production
+that carries a mark. A mark is a MyST comment on the line just before the block's opening
+fence, and it names productions of that block:
+
+    % tidal-grammar: shape copy_ctor move_ctor copy_assign move_assign
+    ```{eval-rst}
+    .. productionlist:: tidal
+
+| Kind | The marked production gives |
+|---|---|
+| `shape` | the form of a declaration or an expression that a general production also derives, so that rules can name the form |
+| `preprocessing` | source lines that preprocessing reads before the start symbol applies |
+
+A parser reads the productions that the start symbol reaches. The
+productions that a marked production reaches belong to the mark.
+`tools/check_specification.py` fails on a nonterminal that neither the
+start symbol nor a marked production reaches. The check also fails on
+a mark that names a production that its block does not define, or that
+the start symbol reaches.
+
 Shared nonterminals have these names and defining pages:
 
 | Nonterminal | Page |
 |---|---|
+| `translation_unit` | `declarations/index.md` |
 | `statement`, `labeled_stmt`, `compound_stmt`, `expression_stmt` | `statements/index.md`, `statements/blocks.md` |
 | `init_stmt`, `condition` | `statements/if.md` |
 | `declaration`, `block_decl`, `simple_decl`, `decl_specifiers`, `decl_specifier`, `type_specifier` | `declarations/index.md` |

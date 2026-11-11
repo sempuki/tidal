@@ -43,6 +43,10 @@ Fails when:
   number,
 - a grammar nonterminal is defined in more than one production, or used
   and not defined (decision 0040),
+- a grammar nonterminal is reached neither from the start symbol
+  translation_unit nor from a production that a tidal-grammar mark names, or a
+  mark names a production that its block does not define or that the start
+  symbol reaches (documentation/style-guide.md, section 8),
 - a page of specification/ or guides/ refers with {rule} or {principle} to an ID
   that no page defines, or a specification page links to a guide,
 - a rule that the working tree adds, or whose class it changes, relative to
@@ -205,30 +209,90 @@ def check_markers(errors: list[str]) -> None:
 
 PRODUCTION = re.compile(r"^\s+([A-Za-z_][\w-]*)\s*:(.*)$")
 NONTERMINAL = re.compile(r"`([A-Za-z_][\w-]*)`")
+# The start symbol of the grammar (declarations/index.md).
+START = "translation_unit"
+# A mark on the line before a Syntax block names productions of that block
+# that the start symbol does not reach (documentation/style-guide.md, section 8).
+GRAMMAR_MARK = re.compile(r"^%\s*tidal-grammar:\s*(\S+)\s*(.*)$")
+GRAMMAR_MARK_KINDS = {"shape", "preprocessing"}
 
 
 def check_grammar(errors: list[str]) -> None:
     defined, used = {}, set()
+    edges = {}  # nonterminal -> the nonterminals its right-hand side names
+    marks = {}  # nonterminal -> place of the mark that names it
     for f in sorted(SPEC.rglob("*.md")):
         inside = False
-        for n, line in enumerate(f.read_text().splitlines(), 1):
+        current = None
+        pending = []  # (place, names) of the marks above the next line
+        block_marks = []  # the marks of the block being read
+        block = set()
+        lines = f.read_text().splitlines()
+        for n, line in enumerate(lines, 1):
+            if m := GRAMMAR_MARK.match(line):
+                where = f"{f.relative_to(ROOT)}:{n}"
+                if m.group(1) not in GRAMMAR_MARK_KINDS:
+                    errors.append(f"{where}: tidal-grammar mark has unknown kind {m.group(1)!r}")
+                if not m.group(2).split():
+                    errors.append(f"{where}: tidal-grammar mark names no production")
+                pending.append((where, m.group(2).split()))
+                continue
+            if pending:
+                if line.startswith("```{eval-rst}"):
+                    block_marks = pending
+                else:
+                    for where, _ in pending:
+                        errors.append(f"{where}: tidal-grammar mark is not on the line before a Syntax block")
+                pending = []
             if line.startswith(".. productionlist::"):
                 inside = True
+                block = set()
                 continue
             if inside and (not line.startswith(" ") or not line.strip()):
                 inside = False
+                for where, names in block_marks:
+                    for name in names:
+                        if name not in block:
+                            errors.append(f"{where}: tidal-grammar mark names {name}, which the block does not define")
+                        marks[name] = where
+                block_marks = []
             if not inside:
                 continue
             body = line
             if (m := PRODUCTION.match(line)) and not line.lstrip().startswith(":"):
-                defined.setdefault(m.group(1), []).append(f"{f.relative_to(ROOT)}:{n}")
+                current = m.group(1)
+                defined.setdefault(current, []).append(f"{f.relative_to(ROOT)}:{n}")
+                block.add(current)
                 body = m.group(2)
-            used.update(NONTERMINAL.findall(body))
+            names = NONTERMINAL.findall(body)
+            used.update(names)
+            edges.setdefault(current, set()).update(names)
     for name, places in sorted(defined.items()):
         if len(places) > 1:
             errors.append(f"{places[1]}: nonterminal {name} is also defined at {places[0]}")
     for name in sorted(used - defined.keys()):
         errors.append(f"grammar nonterminal {name} is used and not defined")
+    if START not in defined:
+        errors.append(f"the grammar has no start symbol {START}")
+        return
+    from_start = reach([START], edges)
+    for name in sorted(marks.keys() & from_start):
+        errors.append(f"{marks[name]}: tidal-grammar mark names {name}, which the start symbol {START} reaches")
+    covered = from_start | reach(marks, edges)
+    for name in sorted(defined.keys() - covered):
+        errors.append(f"{defined[name][0]}: nonterminal {name} is not reached from {START} "
+                      "and has no tidal-grammar mark")
+
+
+def reach(roots, edges: dict[str, set[str]]) -> set[str]:
+    """The nonterminals that the roots derive, the roots included."""
+    seen, stack = set(), list(roots)
+    while stack:
+        name = stack.pop()
+        if name not in seen:
+            seen.add(name)
+            stack.extend(edges.get(name, ()))
+    return seen
 
 
 FRONTEND = ROOT / "reports" / "clean-room" / "rust-frontend"

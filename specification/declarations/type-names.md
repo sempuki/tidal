@@ -84,6 +84,7 @@ not valid, and an implementation need not notice ({principle}`NAM-P4`).
 
 ## Syntax
 
+% tidal-grammar: shape typedef_decl forward_class
 ```{eval-rst}
 .. productionlist:: tidal
    typedef_decl: "typedef" `decl_specifiers` `declarator` {"," `declarator`} ";"

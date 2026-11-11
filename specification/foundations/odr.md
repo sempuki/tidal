@@ -120,6 +120,7 @@ empty.
 
 ## Syntax
 
+% tidal-grammar: preprocessing include_directive guarded_header pragma_once
 ```{eval-rst}
 .. productionlist:: tidal
    include_directive: "#" "include" '"' `header_name` '"'

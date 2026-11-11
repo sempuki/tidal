@@ -54,6 +54,7 @@ should warn when the rewrites make a comparison ambiguous.
 
 ## Syntax
 
+% tidal-grammar: shape defaulted_comparison
 ```{eval-rst}
 .. productionlist:: tidal
    defaulted_comparison: `comparison_decl` "=" "default" ";"

@@ -159,6 +159,7 @@ The property extends from classes to types:
 
 ## Syntax
 
+% tidal-grammar: shape copy_ctor move_ctor copy_assign move_assign
 ```{eval-rst}
 .. productionlist:: tidal
    copy_ctor: `class_name` "(" [`cv`] `class_name` "&" {`default_param`} ")"

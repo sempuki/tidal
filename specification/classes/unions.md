@@ -168,6 +168,7 @@ tracks the active member and rejects the read.
 
 ## Syntax
 
+% tidal-grammar: shape anonymous_union
 ```{eval-rst}
 .. productionlist:: tidal
    union_def: "union" {`attribute_spec` | `alignment_specifier`} [`class_name` ["final"]] "{" {`member_decl`} "}"

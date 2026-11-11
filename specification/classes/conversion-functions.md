@@ -49,6 +49,7 @@ function.
 
 ## Syntax
 
+% tidal-grammar: shape conversion_decl
 ```{eval-rst}
 .. productionlist:: tidal
    conversion_decl: {`cvf_specifier`} `conversion_function_id` "(" ")" [`cv`] [`ref_qualifier`]

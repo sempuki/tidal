@@ -90,6 +90,7 @@ constructor builds the base subobject and leaves the rest to {term}`default init
 
 ## Syntax
 
+% tidal-grammar: shape inheriting_decl
 ```{eval-rst}
 .. productionlist:: tidal
    base_clause: ":" `base_spec` ["..."] {"," `base_spec` ["..."]}

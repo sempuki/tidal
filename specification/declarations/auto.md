@@ -85,6 +85,7 @@ A placeholder means the same thing wherever a variable is declared:
 
 ## Syntax
 
+% tidal-grammar: shape auto_var_decl
 ```{eval-rst}
 .. productionlist:: tidal
    placeholder: [`type_constraint`] ("auto" | "decltype" "(" "auto" ")")

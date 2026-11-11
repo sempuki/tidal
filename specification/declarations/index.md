@@ -50,6 +50,7 @@ static-assert
 
 ```{eval-rst}
 .. productionlist:: tidal
+   translation_unit: {`declaration`}
    declaration: `block_decl`
               : | `function_definition`
               : | `namespace_def`
@@ -93,3 +94,14 @@ static-assert
               : | [`nested_name`] `identifier`
               : | [`nested_name`] `template_id`
 ```
+
+`translation_unit` is the start symbol of the grammar. It derives the
+tokens of one translation unit after preprocessing
+({doc}`/foundations/translation`). Some productions on other pages are
+outside what the start symbol derives:
+
+- A *shape* production gives the form of a declaration or an expression
+  that a general production also derives, such as a copy constructor.
+  The page names the form so that its rules can refer to it.
+- A *preprocessing* production gives source lines that preprocessing
+  reads before the start symbol applies, such as an `#include` line.

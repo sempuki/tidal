@@ -111,6 +111,7 @@ the program names the type.
 
 ## Syntax
 
+% tidal-grammar: shape ctor_def dtor_decl dtor_call
 ```{eval-rst}
 .. productionlist:: tidal
    ctor_decl: {`ctor_specifier`} `class_name` "(" `parameters` ")" [`noexcept_specifier`]
