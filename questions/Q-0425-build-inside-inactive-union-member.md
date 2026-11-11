@@ -79,8 +79,13 @@ Kept open on 2026-11-10 under decision 0054, because the review reads the answer
 
 Rule text on 2026-11-10 (decision 0061, item RV6): UNI-14 and UNI-6 limit the rejection to constant evaluation. At run time the construction is valid, and the program can use the new object through the pointer that the construction gives. The run test now expects a run on every compiler and in the front end's interpreter. Whether the enclosing member then becomes active is the review's remaining doubt, and no test tells the outcomes apart.
 
+Kept open on 2026-11-11 under decision 0054 (item RV7). The review agrees with the run-time text of UNI-14 and keeps the RV6 doubt on the constant form, and two newest families still differ in the array form.
 ## Opinions
 
 ### Gap review, 2026-11-10 (phase 13 text, classes, declarations, foundations, and statements)
 
 The source-reader gap review of the text phase 13 wrote on classes, declarations, foundations, and statements (`reports/review/2026-11-10-gap-review-phase-13-classes-declarations-foundations.md`) reads the question: supports with a doubt (RV6-A-13, RV6-A-14). Constant evaluation rejects both constant forms, because the member that encloses the new object has not started its lifetime, which option 1 says. The doubt is at run time. The review reads the construction there as defined, against UNI-6's last sentence and the run test's expectation that the interpreter stops. The new object either reuses the union's storage, or, when a whole object of the enclosing member's type fits at the member's address, makes that member active. In the member-union form the inner union and the `double` have the same size, so the second outcome is possible. In the array form it is not.
+
+### Gap review, 2026-11-11 (phase 14 text, classes, declarations, foundations, and statements)
+
+The source-reader gap review of the text phase 14 wrote on classes, declarations, foundations, and statements (`reports/review/2026-11-11-gap-review-phase-14-classes-declarations-foundations.md`) names the question in its read of the RV6 repairs to `unions.md` (RV7-A-4). The Q-0425 divergence line and the run-time sentence of UNI-14 agree: at run time the construction is defined, and the program uses the new object through the pointer that the construction gives. The doubt of RV6-A-13 stays. The allowance that lets constant evaluation use the library's construction function names storage from the library allocator or an object whose lifetime began in the evaluation, and a member that is not active has not begun. The verdict stays supports with a doubt.

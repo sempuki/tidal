@@ -3,7 +3,7 @@
 **Status:** provisional
 **Affects:** DEP-24, DEP-39, DEP-2, `tests/templates/dependent-names/member-template-through-current-instantiation-object.cpp`, `tests/templates/dependent-names/member-template-current-instantiation-pointer.cpp`, `tests/templates/dependent-names/member-template-current-instantiation-dependent-base-needs-template.cpp`, `tests/templates/dependent-names/member-template-non-dependent-base.cpp`, `tests/templates/dependent-names/member-template-current-instantiation-qualifier-dependent-base.cpp`
 **Source:** the round 10 programmer report (`reports/clean-room/roadmap-10/programmer.md`, sections 1.5 and 6), reduction `member_template_through_current_instantiation_object.cpp`.
-**Waits for:** a review (doubt)
+**Waits for:** a use of DEP-P5
 
 ## Context
 
@@ -56,8 +56,14 @@ Kept open on 2026-11-10 under decision 0054, because the review reads the answer
 
 Rule text on 2026-11-10 (decision 0061, item RV6): DEP-24 and the DEP-P5 row say that the member template can come from the class or from a base that is not dependent. A new run test shows the base form after `.` and after `::`, and a reject test shows `::` with the current instantiation for a member of a dependent base. The doubt stays until a review reads the new text.
 
+Kept open on 2026-11-11 under decision 0054 (item RV7). The review supports the answer with no doubt, and every compiler agrees. The DEP-P5 row for `x.name<...>`, where `x` has the type of the current instantiation, gives a template-id, so the model rules out option 2. DEP-P5 changed in phase 14, so it gives no answer until a reader or a review uses it (decision 0055). The review reads DEP-24 and does not use DEP-P5.
+
 ## Opinions
 
 ### Gap review, 2026-11-10 (phase 13 text, expressions, overloading, and templates)
 
 The source-reader gap review of the text phase 13 wrote on expressions, overloading, and templates (`reports/review/2026-11-10-gap-review-phase-13-expressions-overloading-templates.md`) reads the question: supports with a doubt (RV6-B-9). The name after the dot is looked up in the type of the object, and the lookup runs at the definition when that type is the current instantiation. A member template found there makes the `<` open an argument list, so no `template` is needed (option 1). The doubt is DEP-24's phrase "in the class": the lookup also searches the bases that are not dependent, and a member template that such a base declares needs no `template` either.
+
+### Gap review, 2026-11-11 (phase 14 text, expressions, overloading, and templates)
+
+The source-reader gap review of the text phase 14 wrote on expressions, overloading, and templates (`reports/review/2026-11-11-gap-review-phase-14-expressions-overloading-templates.md`) reads the question: supports with no doubt (RV7-B-9). After the dot or arrow, the name is looked up in the class of the object. When that class is the current instantiation, the lookup runs at the definition and also searches the bases that are not dependent. A member template found there makes the `<` open an argument list, so no `template` is needed (option 1). DEP-24's two bullets now say this, and the RV6 doubt is closed. A base that is the current instantiation of an enclosing class counts as a base that is not dependent.

@@ -30,6 +30,8 @@ Searched first in `N` (option 1). Two of three families agree, and the gap revie
 
 Kept open on 2026-11-05 under decision 0054, because the review reads the answer with a doubt on NAM-21's wording (item RV5).
 
+Kept open on 2026-11-11 under decision 0054 (item RV7). The review again reads NAM-21 with a doubt and says that the split stays.
+
 ## Opinions
 
 ### Gap review, 2026-11-05 (phase 10 text)
@@ -39,3 +41,7 @@ The source-reader gap review of the text phase 10 wrote (`reports/review/2026-11
 ### Gap review, 2026-11-05 (phase 12 text, classes, declarations, foundations, statements, and exceptions)
 
 The source-reader gap review of the text phase 12 wrote on classes, declarations, foundations, statements, and exceptions (`reports/review/2026-11-05-gap-review-phase-12-classes-declarations-foundations.md`) reads the question: supports with a doubt (RV5-A-10). For a friend whose declarator names a member through a qualifier, a plain name that follows the qualified name inside the declarator is searched in the named scope first and then by ordinary lookup. The test's parameter type is such a name. The doubt is in NAM-21's wording: it says "after the declarator", and the parameter list is part of the declarator.
+
+### Gap review, 2026-11-11 (phase 14 text, classes, declarations, foundations, and statements)
+
+The source-reader gap review of the text phase 14 wrote on classes, declarations, foundations, and statements (`reports/review/2026-11-11-gap-review-phase-14-classes-declarations-foundations.md`) names the question in its reading of NAM-21 (RV7-A-6). The trailing requires clause that NAM-21 now lists is part of the redeclaration after the qualified name, and the reference searches it in the named scope. The review keeps its doubt on NAM-21 and says that the split of this question stays. The Evidence note on a friend parameter type in an inline namespace states the RV6 reading correctly.

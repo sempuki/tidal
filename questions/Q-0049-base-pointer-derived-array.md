@@ -49,8 +49,14 @@ accepts `p + 1` without a read. ADD-14 states option 2.
 
 Settled on 2026-11-03 under decision 0054. The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) supports this answer with no doubt, and ADD-P6 gives the same answer: a pointer of another type, such as a base class pointer into an array of a derived class, sees only its own object, as an array of one. Tidal records GCC 16's result as a deviation, as for the compiler-defect entries Q-0002 and Q-0003, and the tests keep their overrides for GCC 16.
 
+Kept settled on 2026-11-11 (decision 0062, item RV7). A review of 2026-11-11 reads ADD-14's array of one against the reference, and every compiler accepts `p + 1` with no read, in constant evaluation too. Tidal keeps the answer, and `pending.md` row 4 holds the case as the item "ADD-14, ADD-P6".
+
 ## Opinions
 
 ### Gap review, 2026-11-03
 
 The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) agrees with option 2. For pointer arithmetic, a lone object counts as the single element of a one-element array. Adding anything other than zero or one to a pointer to a base subobject is undefined. A difference needs two elements of one array, and the two base subobjects are not elements of one array. The position one past the end points to no object, so a read through it is undefined.
+
+### Gap review, 2026-11-11 (phase 14 text, expressions, overloading, and templates)
+
+The source-reader gap review of the text phase 14 wrote on expressions, overloading, and templates (`reports/review/2026-11-11-gap-review-phase-14-expressions-overloading-templates.md`) names the question in its reading of ADD-14 (RV7-B-3). Addition and subtraction on a pointer are undefined when the pointed-to type and the element type of the array are not similar. The review reads ADD-14's sentence that counts the object as an array of one for a pointer of another type against that rule, because the sentence allows the move to one past. That reading matches option 1 of the question. It differs from the settled answer and from the gap review of 2026-11-03.

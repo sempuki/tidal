@@ -3,7 +3,7 @@
 **Status:** provisional
 **Affects:** UNI-9, UNI-P3, `tests/classes/unions/anonymous-union-unnamed-struct-member.cpp`, `tests/classes/unions/anonymous-union-nested-anonymous-union.cpp`
 **Source:** the round 10 programmer report (`reports/clean-room/roadmap-10/programmer.md`, sections 1.5 and 6), probe `anonymous_struct_member_in_anonymous_union.cpp`.
-**Waits for:** a use of UNI-P3
+**Waits for:** a review (doubt)
 
 ## Context
 
@@ -51,8 +51,14 @@ Kept open on 2026-11-10 under decision 0054 (item RV6). The review supports the 
 
 Principle text on 2026-11-10 (decision 0061, item RV6): UNI-P3 says that an anonymous union declares no type, so a member whose declaration defines an unnamed class is not valid. UNI-P3 now rules out option 2. The principle changed in this phase, so it gives no answer until a reader or a review uses it (decision 0055).
 
+Kept open on 2026-11-11 under decision 0054 (item RV7). The review uses UNI-P3 on the question and supports the answer, with a doubt on the reason that UNI-P3 gives. The review reads the anonymous union itself as a type with no name, so "declares no type" can mislead a reader. Only GCC differs.
+
 ## Opinions
 
 ### Gap review, 2026-11-10 (phase 13 text, classes, declarations, foundations, and statements)
 
 The source-reader gap review of the text phase 13 wrote on classes, declarations, foundations, and statements (`reports/review/2026-11-10-gap-review-phase-13-classes-declarations-foundations.md`) reads the question: supports with no doubt (RV6-A-17). A member declaration that defines an unnamed class declares a type inside the anonymous union. Nested types are not allowed there, and nothing exempts an unnamed one, so the program is not valid and a diagnostic is required. GCC's acceptance is a missing diagnostic.
+
+### Gap review, 2026-11-11 (phase 14 text, classes, declarations, foundations, and statements)
+
+The source-reader gap review of the text phase 14 wrote on classes, declarations, foundations, and statements (`reports/review/2026-11-11-gap-review-phase-14-classes-declarations-foundations.md`) reads the question: supports with a doubt (RV7-A-3, RV7-A-11). UNI-P3 now rules out option 2, and the reference supports option 1: nothing declared inside an anonymous union may introduce a type, and a diagnostic is required. The doubt is the reason that UNI-P3 gives. In the reference the anonymous union is itself an unnamed type with an object of that type, and the limit falls on the declarations inside it. UNI-P3 also leaves out the static assertion that UNI-9 allows.

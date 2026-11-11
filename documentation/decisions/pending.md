@@ -16,7 +16,7 @@ each option.
 
 | # | Item | Options | Tidal keeps | Questions |
 |---|---|---|---|---|
-| 1 | The choices of decision 0054: settling by review, and program tests under `tests/programs/` | Confirm, change, or drop each choice | Both choices. A question settles by review only when at most one newest family differs from the answer in each form | Confirms the 202 questions settled under decision 0054 ([by item below](#settlements-under-decision-0054)). `tools/question_index.py` writes the total and fails `--check` when the total is wrong. If the maintainer lets the rule settle a question where two families differ, the questions of the [decision packet](#decision-packet) row 1 settle too |
+| 1 | The choices of decision 0054: settling by review, and program tests under `tests/programs/` | Confirm, change, or drop each choice | Both choices. A question settles by review only when at most one newest family differs from the answer in each form | Confirms the 203 questions settled under decision 0054 ([by item below](#settlements-under-decision-0054)). `tools/question_index.py` writes the total and fails `--check` when the total is wrong. If the maintainer lets the rule settle a question where two families differ, the questions of the [decision packet](#decision-packet) row 1 settle too |
 | 2 | The choices of decision 0051: settling when the newest version of each family agrees, and keeping the implementation-only operations referenced | Confirm or change each choice | Both choices | Q-0322 |
 | 3 | A report of EDG behavior to the EDG project ([groups below](#edg-report)) | Approve the report, or hold it | Tidal follows Clang 22 and GCC 16. Each test records EDG's result as an override | Q-0002, Q-0003, and the cluster 5 groups below |
 | 4 | A gap review reads the C++23 text against the matrix's answer, and at most one newest family follows the review ([items below](#matrix-against-review)) | Follow the review, against the compilers that differ from it, or follow the matrix | The matrix's answer in each, except Q-0307, where Tidal follows the review | Each question and rule in the section below |
@@ -46,6 +46,7 @@ each option.
 | 2 | phase 12 item QR, question records: Q-0323, Q-0383 | da51ae9 |
 | 1 | phase 13 item QR2, question records: Q-0419 | 4045bbd |
 | 1 | phase 13 item RV6, the gap reviews of the text phase 13 wrote: Q-0428 | 7dd6d7c |
+| 1 | phase 14 item RV7, the gap reviews of the text phase 14 wrote: Q-0422 | |
 | -8 | phase 8 item PQ reopened these under the principle test of the style guide: Q-0064, Q-0067, Q-0111, Q-0242, Q-0259, Q-0319, Q-0329, Q-0373. Item PU settled Q-0067 and Q-0329 again | |
 
 ## Decision packet
@@ -70,22 +71,22 @@ whose last review finds the reference silent.
 | 1 | Widen decision 0054 to settle while two newest families differ; answers stay | 55: Q-0017, Q-0021, Q-0033, Q-0041, Q-0045, Q-0062, Q-0080, Q-0082, Q-0084, Q-0121, Q-0126, Q-0129, Q-0132, Q-0133, Q-0134, Q-0140, Q-0143, Q-0148, Q-0152, Q-0153, Q-0156, Q-0159, Q-0161, Q-0165, Q-0168, Q-0174, Q-0192, Q-0193, Q-0195, Q-0197, Q-0216, Q-0217, Q-0218, Q-0227, Q-0234, Q-0235, Q-0241, Q-0248, Q-0251, Q-0301, Q-0307, Q-0320, Q-0331, Q-0335, Q-0337, Q-0339, Q-0341, Q-0346, Q-0349, Q-0368, Q-0374, Q-0403, Q-0420, Q-0421, Q-0425 | 131 | 0 |
 | 2 | Decide the row; answers may change | 1: Q-0322 | 0 | 0 |
 | 3 | Decide the row; answers may change | 12: Q-0195, Q-0197, Q-0198, Q-0201, Q-0203, Q-0235, Q-0266, Q-0272, Q-0277, Q-0278, Q-0280, Q-0282 | 23 | at most 23 |
-| 4a | Follow the compilers; answers stay | 18: Q-0140, Q-0142, Q-0181, Q-0225, Q-0243, Q-0246, Q-0275, Q-0277, Q-0280, Q-0300, Q-0336, Q-0394, Q-0405, Q-0406, Q-0407, Q-0409, Q-0410, Q-0416 | 32 | 0 |
-| 4a | Follow the review; answers change | 18: Q-0140, Q-0142, Q-0181, Q-0225, Q-0243, Q-0246, Q-0275, Q-0277, Q-0280, Q-0300, Q-0336, Q-0394, Q-0405, Q-0406, Q-0407, Q-0409, Q-0410, Q-0416 | 32 | at most 32 |
+| 4a | Follow the compilers; answers stay | 19: Q-0140, Q-0142, Q-0181, Q-0225, Q-0243, Q-0246, Q-0275, Q-0277, Q-0280, Q-0300, Q-0336, Q-0394, Q-0405, Q-0406, Q-0407, Q-0409, Q-0410, Q-0416, Q-0430 | 34 | 0 |
+| 4a | Follow the review; answers change | 19: Q-0140, Q-0142, Q-0181, Q-0225, Q-0243, Q-0246, Q-0275, Q-0277, Q-0280, Q-0300, Q-0336, Q-0394, Q-0405, Q-0406, Q-0407, Q-0409, Q-0410, Q-0416, Q-0430 | 34 | at most 34 |
 | 4b | Follow the compilers; answers stay | 22: Q-0074, Q-0077, Q-0087, Q-0123, Q-0131, Q-0190, Q-0191, Q-0205, Q-0226, Q-0307, Q-0330, Q-0362, Q-0366, Q-0369, Q-0371, Q-0389, Q-0393, Q-0401, Q-0404, Q-0408, Q-0418, Q-0426 | 48 | 0 |
 | 4b | Follow the review; answers change | 22: Q-0074, Q-0077, Q-0087, Q-0123, Q-0131, Q-0190, Q-0191, Q-0205, Q-0226, Q-0307, Q-0330, Q-0362, Q-0366, Q-0369, Q-0371, Q-0389, Q-0393, Q-0401, Q-0404, Q-0408, Q-0418, Q-0426 | 48 | at most 48 |
-| 4a | Follow the compilers, rule items; answers stay | 15: THR-3; TRY-2; UNW-3; NAM-40, NAM-41; STG-9; LSUP-11; TR-P6, TR-13, TR-14, TR-15; UNW-1; OBJ-11; ENUM-10, ENUM-P1; NS-12; NEW-P5; ICS-45; DEP-15, DEP-P4; CMP-8 | 185 | 0 |
-| 4a | Follow the review, rule items; answers change | 15: THR-3; TRY-2; UNW-3; NAM-40, NAM-41; STG-9; LSUP-11; TR-P6, TR-13, TR-14, TR-15; UNW-1; OBJ-11; ENUM-10, ENUM-P1; NS-12; NEW-P5; ICS-45; DEP-15, DEP-P4; CMP-8 | 185 | at most 185 |
+| 4a | Follow the compilers, rule items; answers stay | 16: THR-3; TRY-2; UNW-3; NAM-40, NAM-41; STG-9; LSUP-11; TR-P6, TR-13, TR-14, TR-15; UNW-1; OBJ-11; ENUM-10, ENUM-P1; NS-12; NEW-P5; ICS-45; DEP-15, DEP-P4; ADD-14, ADD-P6; CMP-8 | 195 | 0 |
+| 4a | Follow the review, rule items; answers change | 16: THR-3; TRY-2; UNW-3; NAM-40, NAM-41; STG-9; LSUP-11; TR-P6, TR-13, TR-14, TR-15; UNW-1; OBJ-11; ENUM-10, ENUM-P1; NS-12; NEW-P5; ICS-45; DEP-15, DEP-P4; ADD-14, ADD-P6; CMP-8 | 195 | at most 195 |
 | 5 | Decide the row; answers may change | 1: Q-0235 | 3 | at most 3 |
 | 6 | Decide the row; answers may change | 2: Q-0041, Q-0343 | 5 | at most 5 |
 | 7 | Decide the row; answers may change | 5: Q-0007, Q-0087, Q-0116, Q-0181, Q-0188 | 5 | at most 5 |
 | 8 | Decide the row; answers may change | none | 0 | 0 |
 | 9 | Decide the row; answers may change | 9: Q-0006, Q-0008, Q-0116, Q-0119, Q-0182, Q-0183, Q-0186, Q-0312, Q-0412 | 1 | at most 1 |
-| 10 | Record each answer as Tidal's own choice; answers stay | 16: Q-0020, Q-0079, Q-0165, Q-0176, Q-0179, Q-0180, Q-0184, Q-0185, Q-0321, Q-0325, Q-0349, Q-0361, Q-0372, Q-0381, Q-0384, Q-0423 | 30 | 0 |
+| 10 | Record each answer as Tidal's own choice; answers stay | 17: Q-0020, Q-0079, Q-0165, Q-0176, Q-0179, Q-0180, Q-0184, Q-0185, Q-0321, Q-0325, Q-0349, Q-0361, Q-0372, Q-0381, Q-0384, Q-0423, Q-0431 | 31 | 0 |
 
-Rows 1 to 9 hold 113 of the 186 open questions (61%). With row 10, the rows hold 127 (68%).
+Rows 1 to 9 hold 114 of the 185 open questions (62%). With row 10, the rows hold 129 (70%).
 
-77 open questions wait for a review that supports the answer with no doubt. By what the last review found: 51 doubt, 16 silent, 9 against, 1 part.
+80 open questions wait for a review that supports the answer with no doubt. By what the last review found: 53 doubt, 17 silent, 9 against, 1 part.
 
 ## Matrix against review
 
@@ -102,11 +103,11 @@ each item, except Q-0307, where Tidal follows the review.
 | Q-0300 | the aligned allocation form for a type without extended alignment | matrix | matrix | matrix | `2026-11-01-gap-review-question-cluster-1` |
 | Q-0181 | the explicit object parameter initialized from a prvalue | matrix (a later change) | matrix (a later change) | matrix (a later change) | `2026-11-01-gap-review-question-cluster-1` |
 | Q-0243 | a deduced class template name after a dependent qualifier | matrix | matrix | matrix | `2026-10-31-gap-review-packs-and-ctad`, `2026-11-01-gap-review-question-cluster-1` |
-| Q-0226 | the deduced form, which waits with Q-0243 | review | matrix | matrix | `2026-11-03-gap-review-question-cluster-6` |
+| Q-0226 | the deduced form, which waits with Q-0243 | review | matrix | matrix | `2026-11-03-gap-review-question-cluster-6`, `2026-11-11-gap-review-phase-14-expressions-overloading-templates` |
 | Q-0275 | deduction of a template template parameter | matrix | matrix | matrix | `2026-11-01-gap-review-question-cluster-1` |
 | Q-0277 | the first form, a string literal for an array member of dependent type | matrix | matrix | matrix | `2026-11-03-gap-review-question-cluster-5` |
 | Q-0280 | the two guide templates with the same parameters | matrix | matrix | matrix | `2026-11-03-gap-review-question-cluster-5` |
-| Q-0225 | `T::box<int>` as an alias target without `typename` | matrix | matrix | matrix | `2026-11-03-gap-review-question-cluster-6` |
+| Q-0225 | `T::box<int>` as an alias target without `typename` | matrix | matrix | matrix | `2026-11-03-gap-review-question-cluster-6`, `2026-11-11-gap-review-phase-14-expressions-overloading-templates` |
 | Q-0307 | the read through an old base pointer after a replacement, in constant evaluation | matrix | matrix | matrix | `2026-11-03-gap-review-question-cluster-4`, `2026-11-03-gap-review-object-model` |
 | Q-0307 | the same read for a `const` object | review | matrix | matrix | `2026-11-03-gap-review-question-cluster-4`, `2026-11-03-gap-review-object-model` |
 | Q-0336 | the read of an enumeration value that a byte copy stored | matrix (the sanitizer stops the read) | matrix (the sanitizer stops the read) | runs no program | `2026-11-03-gap-review-object-model` |
@@ -157,6 +158,9 @@ each item, except Q-0307, where Tidal follows the review.
 | CNS-11, CPY-15, Q-0426 | the constraint check of a function template candidate when a candidate that is not a template takes every argument with no conversion; CNS-11 skips the check, the review checks every template candidate | matrix | matrix | review | `2026-11-10-gap-review-phase-13-expressions-overloading-templates`, `2026-11-10-gap-review-phase-13-classes-declarations-foundations` |
 | CPY-15, Q-0426 | the W20-3 copy of a `Holder` beside a constructor template whose constraint needs its own result; the program runs, the review checks the constraint for `Holder` | matrix | matrix | review (checks, then accepts) | `2026-11-10-gap-review-phase-13-expressions-overloading-templates` |
 | DEP-15, DEP-P4 | `Box<M>` inside `Box<N>`, where `M` is a `static` constant member of the parameter's type initialized with `N` alone; DEP-15 names another specialization, the review the current instantiation | matrix | matrix | matrix | `2026-11-10-gap-review-phase-13-expressions-overloading-templates` |
+| STG-29, ADD-14, Q-0430 | `p + 1` for a `T*` cast through `void*` from the address of a byte of a byte array, and placement `new` at that position; the matrix gives the address `sizeof(T)` bytes on, the reviews make the step undefined | matrix | matrix | runs no program | `2026-11-11-gap-review-phase-14-classes-declarations-foundations`, `2026-11-11-gap-review-phase-14-expressions-overloading-templates` |
+| STG-28, Q-0430 | `p + 1` for a `T*` cast from the result of an allocation function plus a multiple of `sizeof(T)` bytes; STG-28 gives the next element of a `T` array, part A of the review gives a pointer to a byte, and part B lets the allocation create the `T` array | matrix | matrix | runs no program | `2026-11-11-gap-review-phase-14-classes-declarations-foundations` |
+| ADD-14, ADD-P6 | `p + 1` with no read, for a pointer of another type that counts its object as an array of one, such as a `B*` to the base subobject of an element of an array of a derived class (Q-0049, settled); ADD-14 gives the position one past, the review makes any move undefined | matrix | matrix | matrix | `2026-11-11-gap-review-phase-14-expressions-overloading-templates` |
 | CMP-8 | a relational comparison of pointers to two members of a union, or to a member that occupies no storage, during constant evaluation; Tidal keeps a result | matrix | matrix | matrix | `2026-11-04-gap-review-phase-8-expressions-foundations-templates` |
 
 ## EDG report

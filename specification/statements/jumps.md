@@ -379,7 +379,7 @@ All eight compilers agree on 62 of 66 tests. The results are in
   write a variable whose declaration a jump skipped. It can, and a read
   after the write gives the value, as Clang says. GCC and EDG reject
   the write.
-- {question}`Q-0422` (JMP-10; open): whether a structured binding named
+- {question}`Q-0422` (JMP-10; settled on JMP-P3): whether a structured binding named
   in a `return` statement is an xvalue. It is not, and the name stays an
   lvalue, as Clang and GCC give. EDG gives another type.
 

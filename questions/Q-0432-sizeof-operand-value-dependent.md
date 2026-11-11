@@ -3,7 +3,7 @@
 **Status:** provisional
 **Affects:** DEP-4, `tests/templates/dependent-names/sizeof-value-dependent-operand-call-bound-early.cpp`, `tests/templates/dependent-names/sizeof-value-dependent-operand-no-typename.cpp`
 **Source:** the I6 report (`reports/clean-room/I6/report.md`, I6-6), the round 11 writer probe `reports/clean-room/roadmap-11/writer-probes/i6-instantiation-checks.json`.
-**Waits for:** a first review
+**Waits for:** a use of DEP-P2
 
 ## Context
 
@@ -39,6 +39,10 @@ The operands of `sizeof`, `alignof`, and `noexcept` do not make the
 expression value-dependent (option 1). Clang 22 and GCC 16 agree, and EDG alone differs. DEP-4's last
 bullet leaves out these operands.
 
+Kept open on 2026-11-11 under decision 0054 (item RV7). The review supports the answer with no doubt, and only EDG differs. DEP-P2 says that a value-dependent operand does not make `sizeof`, `alignof`, or `noexcept` value-dependent, so the model rules out option 2. DEP-P2 changed in phase 14, so it gives no answer until a reader or a review uses it (decision 0055). The review reads DEP-4 and does not use DEP-P2.
+
 ## Opinions
 
-<!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+### Gap review, 2026-11-11 (phase 14 text, expressions, overloading, and templates)
+
+The source-reader gap review of the text phase 14 wrote on expressions, overloading, and templates (`reports/review/2026-11-11-gap-review-phase-14-expressions-overloading-templates.md`) reads the question: supports with no doubt (RV7-B-12). For `sizeof` of an expression or a type, `alignof`, `noexcept`, and `typeid`, the result is value-dependent only when the type is dependent or the operand is type-dependent. A value-dependent operand alone is not enough (option 1). DEP-4 states this for three of the operators and leaves out `typeid`.

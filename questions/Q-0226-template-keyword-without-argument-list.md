@@ -54,6 +54,8 @@ Kept open on 2026-11-03 under decision 0054, because the question waits on the m
 
 The probes of 2026-11-03 added no case where Clang 22, GCC 16, and EDG 7.0 agree with the provisional answer. For the deduced form, the cluster 6 review relies in part on the reading of Q-0243 that Tidal does not follow. DEP-26 keeps the deduced form, as GCC 16 and EDG 7.0 do, and that form waits with Q-0243 (`documentation/decisions/pending.md`).
 
+Kept in `pending.md` row 4 on 2026-11-11 (decision 0062, item RV7), because the review still reads against the deduced form.
+
 ## Opinions
 
 ### Gap review, 2026-11-03
@@ -61,3 +63,7 @@ The probes of 2026-11-03 added no case where Clang 22, GCC 16, and EDG 7.0 agree
 The source-reader gap review of question cluster 6 (`reports/review/2026-11-03-gap-review-question-cluster-6.md`) reads the keyword rule as option 1. A data member after `.` and a static data member after a qualifier are not templates, so both need a diagnostic, and GCC's acceptance after `.` is a defect. The class template with deduced arguments meets the keyword rule and fails on two other rules. The keyword has no place before a deduced class type, and the qualifier of a deduced class type must not be dependent. The member alias template fails the same way. So every form in the table is not valid, as Clang finds, and only a template template argument can have the keyword without a list (option 3 for the results). The review has not checked whether a later change lifts the limit on a dependent qualifier.
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+
+### Gap review, 2026-11-11 (phase 14 text, expressions, overloading, and templates)
+
+The source-reader gap review of the text phase 14 wrote on expressions, overloading, and templates (`reports/review/2026-11-11-gap-review-phase-14-expressions-overloading-templates.md`) names the question in its reading of DEP-P5 (RV7-B-1). The new DEP-P5 row states as valid a member class template after `typename T::template` with no argument list, as the type of a declaration whose arguments are deduced. The review reads against that row on two grounds. The C++23 form of a deduced class type has an optional `typename`, an optional qualifier, and the template's name, with no place for `template`. And the qualifier of a deduced class type must not be dependent. The review reads the form after `typename` that uses `template` as one that needs an argument list.

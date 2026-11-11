@@ -25,6 +25,8 @@ newest family follows the review.
 
 Kept in `pending.md` row 4 on 2026-11-10 (decision 0061, item RV6), because the review still reads against the answer.
 
+Kept in `pending.md` row 4 on 2026-11-11 (decision 0062, item RV7), because the review still reads against the answer.
+
 ## Opinions
 
 ### Gap review, 2026-11-05
@@ -42,3 +44,7 @@ The source-reader gap review of the text phase 12 wrote on classes, declarations
 ### Gap review, 2026-11-10 (phase 13 text, classes, declarations, foundations, and statements)
 
 The source-reader gap review of the text phase 13 wrote on classes, declarations, foundations, and statements (`reports/review/2026-11-10-gap-review-phase-13-classes-declarations-foundations.md`) names the question in its reading of NAM-21 (RV6-A-6). The underlying type of an enumeration comes after the qualified name, and the review still reads against the answer that the matrix keeps.
+
+### Gap review, 2026-11-11 (phase 14 text, classes, declarations, foundations, and statements)
+
+The source-reader gap review of the text phase 14 wrote on classes, declarations, foundations, and statements (`reports/review/2026-11-11-gap-review-phase-14-classes-declarations-foundations.md`) names the question in its reading of NAM-21 (RV7-A-6). For a qualified enumeration definition, the reference searches the part after the head name in the named scope, and that part includes the underlying type. The review still reads against the answer that the matrix keeps.

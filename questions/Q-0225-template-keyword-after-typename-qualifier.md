@@ -52,6 +52,8 @@ Checked on 2026-11-04 under the principle test of the style guide (section 3, it
 
 The probes of 2026-11-03 added no case where Clang 22, GCC 16, and EDG 7.0 agree with the provisional answer. DEP-24 keeps the keyword in each position, as Clang 22 and EDG 7.0 do. The alias target that the cluster 6 review reads as valid waits on the maintainer (`documentation/decisions/pending.md`).
 
+Kept in `pending.md` row 4 on 2026-11-11 (decision 0062, item RV7), because the review still reads against the answer.
+
 ## Opinions
 
 ### Gap review, 2026-11-03
@@ -63,3 +65,7 @@ The source-reader gap review of question cluster 6 (`reports/review/2026-11-03-g
 ### Gap review, 2026-10-31
 
 The source-reader gap review of dependent names and instantiation (`reports/review/2026-10-31-gap-review-dependent-names-and-instantiation.md`) reads a less-than sign after the last name of a type-only position as the start of an argument list with no keyword. The last name after `typename` is such a position. The review finds that GCC matches this reading and that Clang and EDG are stricter. The reading goes against the provisional answer, as the later cluster 6 review does.
+
+### Gap review, 2026-11-11 (phase 14 text, expressions, overloading, and templates)
+
+The source-reader gap review of the text phase 14 wrote on expressions, overloading, and templates (`reports/review/2026-11-11-gap-review-phase-14-expressions-overloading-templates.md`) names the question in its reading of DEP-P5 (RV7-B-10). In C++23, a name in a position that allows only a type, other than the last name before `::`, opens an argument list at the `<` with no keyword. That is the reading of the cluster 6 review, and it reads against the answer. The review also finds that the DEP-P5 sentence on the middle column, which says the parser's choice reports no error, does not fit the row for this question, which puts a rejection in that column.

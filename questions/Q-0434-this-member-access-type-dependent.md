@@ -3,7 +3,7 @@
 **Status:** provisional
 **Affects:** DEP-2, `tests/templates/dependent-names/this-member-independent-type-bound-early.cpp`, `tests/templates/dependent-names/this-in-local-class-not-type-dependent.cpp`
 **Source:** the I6 report (`reports/clean-room/I6/report.md`, I6-5 and I6-20), the round 11 writer probe `reports/clean-room/roadmap-11/writer-probes/i6-call-binding.json`.
-**Waits for:** a first review
+**Waits for:** a review (doubt)
 
 ## Context
 
@@ -39,6 +39,10 @@ A member access through `this` is type-dependent only for a dependent
 member type or a dependent base (option 1). Every newest compiler agrees, and Clang 18 alone differs.
 DEP-2 states the limit in its bullets on `this` and on a member access.
 
+Kept open on 2026-11-11 under decision 0054 (item RV7). The review supports the answer with three doubts, and only Clang 18 differs.
+
 ## Opinions
 
-<!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+### Gap review, 2026-11-11 (phase 14 text, expressions, overloading, and templates)
+
+The source-reader gap review of the text phase 14 wrote on expressions, overloading, and templates (`reports/review/2026-11-11-gap-review-phase-14-expressions-overloading-templates.md`) reads the question: supports with a doubt (RV7-B-11). `this` is type-dependent when the class around it is a dependent type, and the reference's list of dependent types names no local class. So `this` in a member of a local class of a function template is not type-dependent (option 1). The doubts are three. The same reading covers a local class inside a member function of a class template, which DEP-2 does not name. A member access is also type-dependent when its name is dependent for another reason, such as a conversion function to a dependent type. And the reference states the member-access case as a sufficient condition, which reads as a full condition only as the exception to the rule on subexpressions. Every newest compiler reads it as DEP-2 does.

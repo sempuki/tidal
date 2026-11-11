@@ -3,7 +3,7 @@
 **Status:** provisional
 **Affects:** DED-20, INST-5, PACK-1, `tests/templates/packs/member-template-enclosing-pack-before-deduced.cpp`, `tests/templates/packs/member-template-enclosing-pack-after-deduced.cpp`
 **Source:** the round 11 programmer report (`reports/clean-room/roadmap-11/programmer.md`, section 1.5), reductions `member_template_class_pack_before_deduced_parameter.cpp` and `member_template_class_pack_after_deduced_parameter.cpp`.
-**Waits for:** a first review; a rule
+**Waits for:** a rule; a principle (DED-P2)
 
 ## Context
 
@@ -46,6 +46,10 @@ The pack takes part as one ordinary parameter for each element of the
 class's pack, and deduction finds only the member template's own
 parameters (option 1). Every compiler agrees.
 
+Kept open on 2026-11-11 under decision 0054 (item RV7). The review supports the answer with no doubt, and every compiler agrees. No rule states the case, and no principle gives the answer. DED-P2 makes each argument and its function parameter a pair in step 2, and both options fit that model, so DED-P2 fails step 3 of the principle test.
+
 ## Opinions
 
-<!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+### Gap review, 2026-11-11 (phase 14 text, expressions, overloading, and templates)
+
+The source-reader gap review of the text phase 14 wrote on expressions, overloading, and templates (`reports/review/2026-11-11-gap-review-phase-14-expressions-overloading-templates.md`) reads the question: supports with no doubt (RV7-B-16). The instantiation of the class makes the declaration of the member template with the class's pack known. A function parameter pack whose pattern names only the class's pack becomes one ordinary parameter for each element. Those parameters hold no parameter of the member template, so deduction does not compare them, and DED-20 does not reach them (option 1). The review finds no single place in the reference that states the case. The reading follows from several rules, and every compiler agrees.

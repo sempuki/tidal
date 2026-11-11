@@ -3,7 +3,7 @@
 **Status:** provisional
 **Affects:** LSUP-1, `tests/foundations/language-support/initializer-list-count-before-pointer.cpp`
 **Source:** the P2 report (`reports/clean-room/P2/report.md`, P2-6), the round 11 writer probe `reports/clean-room/roadmap-11/writer-probes/p2-points.json`.
-**Waits for:** a first review
+**Waits for:** a review (silent)
 
 ## Context
 
@@ -31,6 +31,10 @@ The test in **Affects**, and the probe in **Source**.
 The shape of LSUP-1 is fixed, and another shape is rejected (option 1).
 Clang and GCC reject the other shapes, and EDG alone accepts them.
 
+Kept open on 2026-11-11 under decision 0054 (item RV7). The review finds the reference silent on the shape. The answer is Tidal's own choice, and the question waits with `pending.md` row 10.
+
 ## Opinions
 
-<!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+### Gap review, 2026-11-11 (phase 14 text, classes, declarations, foundations, and statements)
+
+The source-reader gap review of the text phase 14 wrote on classes, declarations, foundations, and statements (`reports/review/2026-11-11-gap-review-phase-14-classes-declarations-foundations.md`) reads the question: the reference is silent (RV7-A-9). The reference gives no layout for the template, and its library text names two possible representations only as a note. The reference also requires the library's own declaration of the template to be reachable at each use, and a program must not add declarations to the standard namespace. So the reference does not decide which shapes of a program's own declaration work. The rejection by Clang and GCC and the acceptance by EDG are both outside what the reference decides, and LSUP-1 records Tidal's own choice.

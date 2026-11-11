@@ -3,7 +3,7 @@
 **Status:** provisional
 **Affects:** INST-5, INST-33, INST-P2, `tests/templates/instantiation/class-static-const-member-initializer-made.cpp`, `tests/templates/instantiation/class-point-static-const-member.cpp`
 **Source:** the I6 report (`reports/clean-room/I6/report.md`, I6-15), the round 11 writer probe `reports/clean-room/roadmap-11/writer-probes/i6-6-15-clean.json`.
-**Waits for:** a first review
+**Waits for:** a review (doubt)
 
 ## Context
 
@@ -44,6 +44,10 @@ The initializer is made with the class (option 1). Clang 22 and EDG 7.0
 agree, and GCC alone waits. INST-5 lists the case as an exception, and
 the INST-P2 table gives it a row.
 
+Kept open on 2026-11-11 under decision 0054 (item RV7). The review supports the answer with a doubt, and only GCC differs.
+
 ## Opinions
 
-<!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+### Gap review, 2026-11-11 (phase 14 text, expressions, overloading, and templates)
+
+The source-reader gap review of the text phase 14 wrote on expressions, overloading, and templates (`reports/review/2026-11-11-gap-review-phase-14-expressions-overloading-templates.md`) reads the question: supports with a doubt (RV7-B-14). The instantiation of the class makes the declarations of its static data members and not their definitions. For a `static const` member of integer or enumeration type that is neither `inline` nor `constexpr`, the declaration in the class is not a definition and carries the initializer. So the initializer comes with the declaration, and the class makes it (option 1). The doubt is a general sentence that delays the initialization of a static data member, with its side effects, until a use needs the definition. GCC can read that sentence as delaying the initializer itself. The review reads it as a statement about run-time effects.
