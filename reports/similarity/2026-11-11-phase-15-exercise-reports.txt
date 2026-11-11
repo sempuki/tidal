@@ -1,0 +1,62 @@
+Similarity report: run threshold 8 words, overlap threshold 0.25
+
+ok   p15ex/P4-report.md:P4: Port suite, Swift persona longest=0   overlap=0.00
+ok   p15ex/P4-report.md:Pages read    longest=0   overlap=0.00
+ok   p15ex/P4-report.md:Rules noted before writing longest=0   overlap=0.00
+ok   p15ex/P4-report.md:Summary       longest=0   overlap=0.02
+ok   p15ex/P4-report.md:P4-1          longest=0   overlap=0.02
+ok   p15ex/P4-report.md:P4-2          longest=0   overlap=0.02
+ok   p15ex/P4-report.md:P4-3          longest=0   overlap=0.00
+ok   p15ex/P4-report.md:P4-4          longest=0   overlap=0.01
+ok   p15ex/P4-report.md:P4-5          longest=0   overlap=0.00
+ok   p15ex/P4-report.md:P4-6          longest=0   overlap=0.00
+ok   p15ex/P4-report.md:P4-7          longest=0   overlap=0.01
+ok   p15ex/P4-report.md:sequences.cpp longest=0   overlap=0.00
+ok   p15ex/P4-report.md:buffer.cpp    longest=0   overlap=0.00
+ok   p15ex/P4-report.md:money.cpp     longest=0   overlap=0.01
+ok   p15ex/P4-report.md:Results       longest=0   overlap=0.00
+ok   p15ex/P4-report.md:Host-only claims longest=0   overlap=0.03
+ok   p15ex/P4-report.md:What worked well longest=0   overlap=0.00
+ok   p15ex/X25-report.md:X25: P27, an in-object array whose eleme longest=0   overlap=0.00
+ok   p15ex/X25-report.md:1.1 The feature longest=0   overlap=0.01
+ok   p15ex/X25-report.md:1.2 Activation by one element (new rule  longest=0   overlap=0.02
+ok   p15ex/X25-report.md:1.3 The elements of an active array memb longest=0   overlap=0.01
+ok   p15ex/X25-report.md:1.4 Copies and constants (new rule X25:n longest=0   overlap=0.00
+ok   p15ex/X25-report.md:1.5 Constant evaluation (amended LSUP-10 longest=0   overlap=0.01
+ok   p15ex/X25-report.md:1.6 Alternatives considered longest=0   overlap=0.01
+ok   p15ex/X25-report.md:1.7 Migration longest=0   overlap=0.00
+ok   p15ex/X25-report.md:2. Rule changes longest=0   overlap=0.00
+ok   p15ex/X25-report.md:3. Interactions longest=0   overlap=0.02
+ok   p15ex/X25-report.md:4. Impact on existing programs longest=0   overlap=0.00
+ok   p15ex/X25-report.md:4.1 Rejected becomes valid longest=0   overlap=0.01
+ok   p15ex/X25-report.md:4.2 Undefined becomes defined longest=0   overlap=0.00
+ok   p15ex/X25-report.md:4.3 Valid programs that change meaning longest=0   overlap=0.02
+ok   p15ex/X25-report.md:4.4 Valid programs that become invalid longest=0   overlap=0.01
+ok   p15ex/X25-report.md:4.5 Evidence longest=0   overlap=0.01
+ok   p15ex/X25-report.md:X25-1        longest=0   overlap=0.01
+ok   p15ex/X25-report.md:X25-2        longest=0   overlap=0.01
+ok   p15ex/X25-report.md:X25-3        longest=0   overlap=0.00
+ok   p15ex/X25-report.md:X25-4        longest=0   overlap=0.00
+ok   p15ex/X25-report.md:X25-5        longest=0   overlap=0.02
+ok   p15ex/X25-report.md:X25-6        longest=0   overlap=0.00
+ok   p15ex/X25-report.md:X25-7        longest=0   overlap=0.01
+ok   p15ex/X25-report.md:X25-8        longest=0   overlap=0.00
+ok   p15ex/X25-report.md:X25-9        longest=0   overlap=0.00
+ok   p15ex/X25-report.md:Host-only claims longest=0   overlap=0.02
+ok   p15ex/report-26.md:Front end, round 26: the STG-23 wrong ve longest=0   overlap=0.00
+ok   p15ex/report-26.md:Method        longest=0   overlap=0.01
+ok   p15ex/report-26.md:Counts        longest=0   overlap=0.01
+ok   p15ex/report-26.md:The checks    longest=0   overlap=0.00
+ok   p15ex/report-26.md:2. Group 1: the STG-23 wrong verdict longest=0   overlap=0.02
+ok   p15ex/report-26.md:3. Group 2: the new tests of T4 and F5 longest=0   overlap=0.02
+ok   p15ex/report-26.md:4. Group 3: the other failures that the  longest=0   overlap=0.01
+ok   p15ex/report-26.md:5. A fault with no test longest=0   overlap=0.04
+ok   p15ex/report-26.md:6. Ledger rows of `reports/clean-room/le longest=0   overlap=0.00
+ok   p15ex/report-26.md:7. Tests added during the round longest=0   overlap=0.04
+ok   p15ex/report-26.md:8. Decision 0060: the completion test longest=0   overlap=0.01
+ok   p15ex/report-26.md:Marks added   longest=0   overlap=0.00
+ok   p15ex/report-26.md:The 45 tests that count toward the gate longest=0   overlap=0.01
+ok   p15ex/report-26.md:9. Run stops  longest=0   overlap=0.00
+ok   p15ex/report-26.md:10. Findings  longest=0   overlap=0.00
+
+0 flagged

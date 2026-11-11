@@ -277,14 +277,14 @@ clean-room roadmaps (`reports/clean-room/roadmap-12/`).
 
 | Item | Work | Prerequisites |
 |---|---|---|
-| T4 | Tests for the round 12 reductions and probes, and the round 12 programs and clean tries as program tests | none |
-| F5 | Answer the 26 `open` rows and G164 and G165, with a question for each new split; literal operators and STG-28 | none |
-| FE | Front-end round 26: the T4 and F5 tests, the STG-23 wrong verdict, and the failures the current design can take | T4; GC for the count |
-| RV8 | A recorded read of the RV7 repair diff; a gap review of the 20 changed rules, the five blocks repaired twice, and F5's text; repairs and a read of their diff | F5 for the review; none for the read of b5d925e0 |
-| GC | A marks file for the tests that need the template model, the completion line with the marked tests apart, and TEMPLATE-MODEL.md up to date | none |
-| RD | The design document of the rewrite's code, and no code | GC |
-| R9 | Records: checks for repair-diff reads, settlement commits, and the request sentence; ledger rows for three findings; the portfolio step | none |
-| E | Port suite P4 on iterators and owned resources; Propose X25 on P27 | P4 after FE; X25 after R9's portfolio step |
+| T4 | Done: tests for the round 12 reductions and probes, and the round 12 programs and clean tries as program tests | none |
+| F5 | Done: answer the 26 `open` rows and G164 and G165, with a question for each new split; literal operators and STG-28 | none |
+| FE | Done: front-end round 26: the T4 and F5 tests, the STG-23 wrong verdict, and the failures the current design can take | T4; GC for the count |
+| RV8 | Done: a recorded read of the RV7 repair diff; a gap review of the 20 changed rules, the five blocks repaired twice, and F5's text; repairs and a read of their diff | F5 for the review; none for the read of b5d925e0 |
+| GC | Done: a marks file for the tests that need the template model, the completion line with the marked tests apart, and TEMPLATE-MODEL.md up to date | none |
+| RD | Done: the design document of the rewrite's code, and no code | GC |
+| R9 | Done: records: checks for repair-diff reads, settlement commits, and the request sentence; ledger rows for three findings; the portfolio step | none |
+| E | Done: port suite P4 on iterators and owned resources; Propose X25 on P27 | P4 after FE; X25 after R9's portfolio step |
 
 ## Parallel lanes
 
