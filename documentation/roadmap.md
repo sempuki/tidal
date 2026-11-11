@@ -293,17 +293,21 @@ and 0063 holds. The close counts 48, because P4 added 3.
 ## Phase 16: start the rewrite, answer the open rows, and review phase 15
 
 Decision 0064 (provisional) adopts this phase from the thirteenth round
-of clean-room roadmaps (`reports/clean-room/roadmap-13/`).
+of clean-room roadmaps (`reports/clean-room/roadmap-13/`). Every item is
+done. Open questions went from 197 to 200: the phase opened 3 (Q-0447
+to Q-0449) and settled none. The rewrite has its crate, lexer, and
+parser, and owns no test. Front-end round 27 ended with 74 tests that
+fail their check, 36 of them marked.
 
 | Item | Work | Prerequisites |
 |---|---|---|
-| T5 | Tests for the round 13 reductions and probes, and the round 13 programs and clean tries as program tests | none |
-| F6 | Answer the 12 `open` rows that need text and the two findings with no row, with a question for each new split; TYN-10 for the specialization form | none |
-| RW | The rewrite, steps 0 to 2: the design document brought up to date with the Propose hook in its build order, the crate with its lexer and parser, and the frontend_check.py lines that measure them | step 0 first; none for steps 1 and 2 |
-| FE | Front-end round 27 on the current code: the T5 and F6 tests, the program tests that do not run, P3-9, P3-10, P4-1, and P4-2 | T5; F6 for its tests |
-| RV9 | A gap review of FN-12, INST-1's clause, the hunks of bdc27d44, and F6's text; repairs and a recorded read of their diff | F6 |
-| R10 | Records: the design documents and exercises.md section 8; a tool for the close's Waits-for change; a similarity record of the design documents; ledger rows for findings in commit messages | none |
-| E | Propose X24 on P22 | none; before RW's prototype step |
+| T5 | Done: tests for the round 13 reductions and probes, and the round 13 programs and clean tries as program tests | none |
+| F6 | Done: answer the 12 `open` rows that need text and the two findings with no row, with a question for each new split; TYN-10 for the specialization form | none |
+| RW | Done: the rewrite, steps 0 to 2: the design document brought up to date with the Propose hook in its build order, the crate with its lexer and parser, and the frontend_check.py lines that measure them | step 0 first; none for steps 1 and 2 |
+| FE | Done: front-end round 27 on the current code: the T5 and F6 tests, the program tests that do not run, P3-9, P3-10, P4-1, and P4-2 | T5; F6 for its tests |
+| RV9 | Done: a gap review of FN-12, INST-1's clause, the hunks of bdc27d44, and F6's text; repairs and a recorded read of their diff | F6 |
+| R10 | Done: records: the design documents and exercises.md section 8; a tool for the close's Waits-for change; a similarity record of the design documents; ledger rows for findings in commit messages | none |
+| E | Done: propose X24 on P22 | none; before RW's prototype step |
 
 ## Parallel lanes
 
