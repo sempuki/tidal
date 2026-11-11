@@ -127,7 +127,7 @@ outermost block of the body.
 
 :::{rule} RFOR-1
 :kind: required
-:tests: statements/range-for/array.cpp statements/range-for/braced-list.cpp statements/range-for/braced-list-mixed-types.cpp statements/range-for/structured-binding.cpp
+:tests: statements/range-for/array.cpp statements/range-for/braced-list.cpp statements/range-for/braced-list-mixed-types.cpp statements/range-for/structured-binding.cpp statements/range-for/by-value-move-only-elements.cpp
 
 The body executes once for each element of the range, in order. Each
 element initializes the loop variable, which can be a structured

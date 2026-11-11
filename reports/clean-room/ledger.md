@@ -936,8 +936,8 @@ own IDs (RV5-A-n and RV5-B-n).
 | RV5-B-14 | `../review/2026-11-05-gap-review-phase-12-expressions-overloading-templates.md` | commit | 3bed9cb5: LAM-5 to LAM-7, simple and init captures |
 | RV5-B-15 | `../review/2026-11-05-gap-review-phase-12-expressions-overloading-templates.md` | text | LAM-29 states the right result; the reference is silent |
 | W20-1 | `W20/report.md` | planned | decision 0061, item F3: no in-object storage form gives a pointer and a length; STG-P2 and the FixedVec example |
-| W20-2 | `W20/report.md` | planned | decision 0061, items T2 and F3: no rule for the elements of an array member of a union (UNI-14) |
-| W20-3 | `W20/report.md` | planned | decision 0061, items T2, F3, and FE: CPY-15 and CNS-11: when the by-value constructor template leaves the candidates; the front end gives CNS-35 |
+| W20-2 | `W20/report.md` | planned | decision 0061, items T2 and F3: no rule for the elements of an array member of a union (UNI-14); test classes/unions/array-member-element-address-no-active-member.cpp and Q-NEW-build-inside-inactive-union-member (item T2) |
+| W20-3 | `W20/report.md` | planned | decision 0061, items F3 and FE: CPY-15 and CNS-11: when the by-value constructor template leaves the candidates; the front end gives CNS-35; test templates/constraints/by-value-constructor-template-constraint-copies-class.cpp and Q-NEW-by-value-constructor-template-constraint (item T2) |
 | W20-4 | `W20/report.md` | planned | decision 0061, item F3: GCC with -fsanitize=undefined rejects a constant comparison of tag addresses (CMP-15 Evidence) |
 | W20-5 | `W20/report.md` | planned | decision 0061, item F3: CAST-1 does not state the void* round trip that STG-16 gives |
 | W20-6 | `W20/report.md` | planned | decision 0061, item F3: a table of the storage forms and what each allows |
@@ -950,6 +950,6 @@ own IDs (RV5-A-n and RV5-B-n).
 | I5-6 | `I5/report.md` | planned | decision 0061, item F3: DED-8: the cv-qualifiers of a non-class prvalue |
 | I5-7 | `I5/report.md` | planned | decision 0061, item F3: an example for DED-20 with explicit pack elements |
 | I5-8 | `I5/report.md` | planned | decision 0061, item F3: DED-14 and DED-P4: a near match that fails |
-| I5-9 | `I5/report.md` | planned | decision 0061, items T2, F3 (I5-5), and FE: front end: T::type with an incomplete T stops as unsupported |
-| I5-10 | `I5/report.md` | planned | decision 0061, items T2 and FE: front end: a reference binds a private or ambiguous base |
+| I5-9 | `I5/report.md` | planned | decision 0061, items F3 (I5-5) and FE: front end: T::type with an incomplete T stops as unsupported; test templates/deduction/qualified-name-in-incomplete-class.cpp (item T2) |
+| I5-10 | `I5/report.md` | planned | decision 0061, item FE: front end: a reference binds a private or ambiguous base; tests declarations/initialization/references/lvalue-ref-to-private-base.cpp, lvalue-ref-to-ambiguous-base.cpp, and templates/deduction/two-equal-bases-with-fallback.cpp (item T2) |
 | I5-11 | `I5/report.md` | planned | decision 0061, item F3: outside knowledge: arrays of functions or void in DED-24, the size type in DED-11 |

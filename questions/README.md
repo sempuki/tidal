@@ -460,6 +460,10 @@ status, and the first sentence of its answer section.
 | [Q-0421](Q-0421-constant-assign-before-construction.md) | In constant evaluation, can a program assign to an element of storage from `std::allocator` before `std::construct_at` builds it? | provisional | The assignment is rejected |
 | [Q-0422](Q-0422-return-structured-binding.md) | Is a structured binding named in a return statement an xvalue? | provisional | The name stays an lvalue |
 | [Q-0423](Q-0423-list-user-defined-different-functions.md) | Which element's conversion does a list sequence hold when the elements do not all use one conversion function? | provisional | The list sequence holds the user-defined sequence of the first element that has one |
+| [Q-0424](Q-0424-anonymous-union-unnamed-class-member.md) | Does a member of an anonymous union whose type is an unnamed class defined in its own declaration count as a nested type? | provisional | Yes; the program is rejected |
+| [Q-0425](Q-0425-build-inside-inactive-union-member.md) | Can a program build an object inside a union member that is not active, as an element of an array member or a member of a member union? | provisional | No; the construction does not make the member active, and constant evaluation rejects it |
+| [Q-0426](Q-0426-by-value-constructor-template-constraint.md) | Does a copy of a class check the constraint of a constructor template with the class as the template's argument? | provisional | No; the copy does not check that constraint, and the program runs |
+| [Q-0427](Q-0427-member-template-current-instantiation-object.md) | Does a member template named after `.` need `template` when the object's type is the current instantiation? | provisional | No; the program runs without `template` |
 
 ## Status values
 

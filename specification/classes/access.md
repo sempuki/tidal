@@ -120,7 +120,7 @@ object of its class.
 
 :::{rule} ACC-3
 :kind: reject
-:tests: classes/access/access-after-overload-resolution.cpp classes/access/private-hides-public-base.cpp overloading/overload-resolution/chosen-not-accessible.cpp classes/access/target-selects-private.cpp classes/access/target-selects-private-in-friend.cpp classes/access/template-call-selects-private.cpp
+:tests: classes/access/access-after-overload-resolution.cpp classes/access/private-hides-public-base.cpp overloading/overload-resolution/chosen-not-accessible.cpp classes/access/target-selects-private.cpp classes/access/target-selects-private-in-friend.cpp classes/access/template-call-selects-private.cpp classes/access/private-copy-constructor-by-value-argument.cpp classes/access/private-copy-constructor-copy-initialization.cpp classes/access/private-copy-constructor-return-local.cpp classes/access/private-copy-constructor-return-parameter.cpp classes/access/private-move-constructor-return-local.cpp classes/access/private-move-constructor-xvalue-initialization.cpp
 
 The implementation checks access after overload resolution
 ({rule}`OVL-34`) selects a function. If the selected
@@ -166,7 +166,7 @@ A static protected member has no such limit.
 
 :::{rule} ACC-5
 :kind: required
-:tests: classes/access/friend-function.cpp classes/access/friend-class.cpp classes/access/friend-member-function.cpp classes/access/friend-ignores-label.cpp classes/access/friend-plain-type-name.cpp classes/access/nested-class-friend-reads-enclosing.cpp
+:tests: classes/access/friend-function.cpp classes/access/friend-class.cpp classes/access/friend-member-function.cpp classes/access/friend-ignores-label.cpp classes/access/friend-plain-type-name.cpp classes/access/nested-class-friend-reads-enclosing.cpp classes/access/friend-class-then-operator-calls.cpp
 
 A friend declaration gives a function or a class the access of a member.
 A friend can be:
@@ -271,7 +271,7 @@ ACC-8 gives the access of the other members.
 
 :::{rule} ACC-12
 :kind: reject
-:tests: classes/access/private-base-conversion.cpp foundations/names/adl-ignores-base-access.cpp expressions/conditional/class-private-base-operand.cpp
+:tests: classes/access/private-base-conversion.cpp foundations/names/adl-ignores-base-access.cpp expressions/conditional/class-private-base-operand.cpp declarations/initialization/references/lvalue-ref-to-private-base.cpp
 
 A conversion from a derived class to one of its bases needs access to
 that base. The rule applies to:
@@ -391,8 +391,8 @@ class Token {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 75
-of 81 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 83
+of 89 tests.
 
 ### Divergences
 

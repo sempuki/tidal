@@ -368,7 +368,7 @@ functions, templates or not, only if all these conditions hold
 
 :::{rule} ORD-14
 :kind: required
-:tests: templates/ordering/partial-specializations.cpp templates/ordering/partial-specializations-placeholder.cpp templates/ordering/constraints-partial.cpp templates/ordering/constraints-partial-different-patterns.cpp templates/ordering/partial-specializations-int-against-auto.cpp templates/ordering/partial-specializations-int-against-constrained-auto.cpp templates/ordering/address-explicit-arguments-no-target.cpp
+:tests: templates/ordering/partial-specializations.cpp templates/ordering/partial-specializations-placeholder.cpp templates/ordering/constraints-partial.cpp templates/ordering/constraints-partial-different-patterns.cpp templates/ordering/partial-specializations-int-against-auto.cpp templates/ordering/partial-specializations-int-against-constrained-auto.cpp templates/ordering/address-explicit-arguments-no-target.cpp templates/specialization/partial-array-and-const-array.cpp
 
 Two partial specializations of one template compare as two function
 templates. Each has the template head and constraints of its partial
@@ -622,8 +622,8 @@ Kind<1> k;                                                 // 1
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 45
-of 64 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 46
+of 65 tests.
 
 ### Divergences
 

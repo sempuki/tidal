@@ -434,7 +434,7 @@ such a head breaks TPL-30. {rule}`PACK-26` gives the other pack kinds.
 
 :::{rule} TPL-13
 :kind: required
-:tests: templates/declarations/defaults.cpp templates/declarations/defaults-function-any-order.cpp templates/declarations/default-greater-parenthesized.cpp
+:tests: templates/declarations/defaults.cpp templates/declarations/defaults-function-any-order.cpp templates/declarations/default-greater-parenthesized.cpp templates/declarations/default-argument-constrained-converting-constructor.cpp
 
 A parameter of any kind can have a {term}`default template argument`
 after `=`, unless the parameter is a pack (TPL-34). A default can name
@@ -833,8 +833,8 @@ template <class U> int pick(Host);                // rejected: the same template
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 119
-of 131 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 120
+of 132 tests.
 
 ### Divergences
 

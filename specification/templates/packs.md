@@ -299,7 +299,7 @@ arguments give it elements. An expansion at the end deduces as
 
 :::{rule} PACK-13
 :kind: required
-:tests: templates/packs/call-and-braced-list.cpp templates/packs/braced-list-order-aggregate.cpp templates/packs/expansion-in-parenthesized-initializer.cpp templates/packs/expansion-in-member-initializer.cpp templates/packs/expansion-in-base-initializer-arguments.cpp templates/packs/capture-pack-expanded-in-call.cpp
+:tests: templates/packs/call-and-braced-list.cpp templates/packs/braced-list-order-aggregate.cpp templates/packs/expansion-in-parenthesized-initializer.cpp templates/packs/expansion-in-member-initializer.cpp templates/packs/expansion-in-base-initializer-arguments.cpp templates/packs/capture-pack-expanded-in-call.cpp templates/packs/base-pack-paren-init-under-derived.cpp
 
 In the arguments of a call, each copy of the pattern is one argument.
 The same holds in the expression list of a parenthesized initializer,
@@ -310,7 +310,7 @@ elements are evaluated from left to right ({rule}`LIST-7`).
 
 :::{rule} PACK-14
 :kind: required
-:tests: templates/packs/base-list-and-initializers.cpp templates/packs/base-list-order.cpp templates/packs/expansion-in-base-initializer-arguments.cpp templates/packs/base-pack-template-id-initializers.cpp
+:tests: templates/packs/base-list-and-initializers.cpp templates/packs/base-list-order.cpp templates/packs/expansion-in-base-initializer-arguments.cpp templates/packs/base-pack-template-id-initializers.cpp templates/packs/base-pack-paren-init-complete-object.cpp templates/packs/base-pack-paren-init-under-derived.cpp
 
 An expansion in a base list gives one base for each element, in order.
 In a member initializer list, an expansion of a `mem_init` that names a
@@ -583,8 +583,8 @@ template <class... T> void keep(T... x) {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 74
-of 78 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 76
+of 80 tests.
 
 ### Divergences
 

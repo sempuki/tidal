@@ -226,7 +226,7 @@ created.
 
 :::{rule} CE-6
 :kind: reject
-:tests: foundations/constant-evaluation/inactive-union-member.cpp foundations/constant-evaluation/active-union-member.cpp classes/unions/construct-activates-constant.cpp
+:tests: foundations/constant-evaluation/inactive-union-member.cpp foundations/constant-evaluation/active-union-member.cpp classes/unions/construct-activates-constant.cpp classes/unions/construct-in-member-of-inactive-member-union-constant.cpp
 
 Constant evaluation must not read a union member that is not the active
 member ({rule}`UNI-6`). Each of these makes a member active:
@@ -642,7 +642,7 @@ constexpr All all{.a = 1};            // rejected: All is not literal (CE-23)
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 132
-of 159 tests.
+of 160 tests.
 
 ### Divergences
 
@@ -701,6 +701,11 @@ of 159 tests.
   accepts an assignment to an element of storage from `std::allocator`
   before `std::construct_at` builds it. It rejects the assignment, as
   Clang does. GCC and EDG accept it.
+- {question}`Q-0425` (CE-6, UNI-14; open):
+  whether building an object inside a union member that is not
+  active, as a member of a member union or an element of an array
+  member, makes the member active. It does not, so constant evaluation
+  rejects the construction, as Clang and GCC say. EDG accepts it.
 
 ### Split tests
 
@@ -711,6 +716,7 @@ family column gives the outcome that the test expects on that family.
 | Test | Rules | Expected | Clang | GCC | EDG | Question |
 |---|---|---|---|---|---|---|
 | `allocator-result-other-type.cpp` | CE-4 | reject | reject | accept | accept | {question}`Q-0349` |
+| `classes/unions/construct-in-member-of-inactive-member-union-constant.cpp` | UNI-14, CE-6 | reject | reject | reject | accept | {question}`Q-0425` |
 | `constant-initializer-trivial-class-array.cpp` | CE-24, CE-21, CINIT-1 | reject | reject | run | accept | {question}`Q-0192` |
 | `constant-initializer-trivial-class-block-static.cpp` | CE-24, CE-21, CINIT-1 | reject | reject | run | accept | {question}`Q-0192` |
 | `constant-initializer-zero-trivial-class.cpp` | CE-24, CE-21, CINIT-1 | reject | reject | run | accept | {question}`Q-0192` |

@@ -290,7 +290,7 @@ union is not valid ({rule}`LIST-14`). An anonymous union can be:
 
 :::{rule} UNI-9
 :kind: reject
-:tests: classes/unions/anonymous-union-function.cpp classes/unions/anonymous-union-name-conflict.cpp classes/unions/anonymous-union-namespace-nonstatic.cpp classes/unions/anonymous-union-nested-type.cpp classes/unions/anonymous-union-private.cpp classes/unions/anonymous-union-static-member.cpp classes/unions/anonymous-union-unnamed-namespace.cpp
+:tests: classes/unions/anonymous-union-function.cpp classes/unions/anonymous-union-name-conflict.cpp classes/unions/anonymous-union-namespace-nonstatic.cpp classes/unions/anonymous-union-nested-type.cpp classes/unions/anonymous-union-private.cpp classes/unions/anonymous-union-static-member.cpp classes/unions/anonymous-union-unnamed-namespace.cpp classes/unions/anonymous-union-unnamed-struct-member.cpp
 
 At namespace scope outside an unnamed namespace, an anonymous union
 needs `static`, as {rule}`STO-11` gives ({question}`Q-0045`). The members of the anonymous
@@ -450,7 +450,7 @@ Constant evaluation follows this rule.
 
 :::{rule} UNI-14
 :kind: required
-:tests: classes/unions/construct-activates-constant.cpp classes/unions/construct-switches-active-constant.cpp classes/unions/placement-new-activates.cpp classes/unions/slot-array-constant.cpp classes/unions/destroyed-member-read-constant.cpp
+:tests: classes/unions/construct-activates-constant.cpp classes/unions/construct-switches-active-constant.cpp classes/unions/placement-new-activates.cpp classes/unions/slot-array-constant.cpp classes/unions/destroyed-member-read-constant.cpp classes/unions/array-member-element-address-no-active-member.cpp classes/unions/construct-in-member-of-inactive-member-union-constant.cpp classes/unions/placement-into-union-member-of-new-array-element.cpp
 
 If placement `new` ({rule}`STG-5`, with a form that {rule}`LSUP-7`
 gives) or `std::construct_at` ({rule}`LSUP-10`) creates an object of a member's type at the address of
@@ -733,8 +733,8 @@ active member.
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 152
-of 167 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 154
+of 171 tests.
 
 ### Divergences
 
@@ -791,6 +791,16 @@ that still differs.
   that phase 7 rewrote
   (`reports/review/2026-11-04-gap-review-phase-7-repairs.md`) reads the
   reference as leaving the value of the byte open.
+- {question}`Q-0424` (UNI-9; open):
+  whether a member whose type is an unnamed class defined in its own
+  declaration counts as a nested type of an anonymous union. It does,
+  as EDG and Clang under `-pedantic-errors` say. GCC accepts the
+  program.
+- {question}`Q-0425` (UNI-14, CE-6; open):
+  whether building an object inside a union member that is not
+  active, as a member of a member union or an element of an array
+  member, makes the member active. It does not, so constant evaluation
+  rejects the construction, as Clang and GCC say. EDG accepts it.
 
 ### Split tests
 
@@ -801,6 +811,7 @@ configuration.
 | Test | Rules | Expected | Clang | GCC | EDG | Question |
 |---|---|---|---|---|---|---|
 | `anonymous-union-unnamed-namespace.cpp` | UNI-9 | accept | accept | reject | reject | {question}`Q-0045` |
+| `anonymous-union-unnamed-struct-member.cpp` | UNI-9 | reject | reject | accept | reject | {question}`Q-0424` |
 | `bitfield-next-unit-ilp32.cpp` | BF-9 | accept | accept | accept | reject | {question}`Q-0120` |
 | `bitfield-unnamed-cv.cpp` | BF-2 | reject | reject | accept | reject | {question}`Q-0058` |
 | `bitfield-wide-alignment-128.cpp` | BF-9 | accept | accept | reject | accept | |
@@ -812,6 +823,7 @@ configuration.
 | `chain-assign-nontrivial-constant.cpp` | UNI-6, UNI-13 | reject | reject | reject | accept | {question}`Q-0213` |
 | `classes/copy-move/trivially-copyable-member-selected.cpp` | CPY-27, CPY-19, UNI-3 | accept | accept | reject | reject | {question}`Q-0339` |
 | `classes/copy-move/trivially-copyable-member-template-selected.cpp` | CPY-27, UNI-11 | reject | reject | reject | accept | {question}`Q-0339` |
+| `construct-in-member-of-inactive-member-union-constant.cpp` | UNI-14, CE-6 | reject | reject | reject | accept | {question}`Q-0425` |
 | `destroyed-member-read-constant.cpp` | UNI-14, UNI-6 | reject | reject | accept | reject | {question}`Q-0309` |
 | `union-copy-two-copy-constructors.cpp` | UNI-3, CPY-27 | accept | accept | reject | reject | {question}`Q-0339` |
 | `user-assignment-not-activating-constant.cpp` | UNI-6 | reject | reject | reject | accept | {question}`Q-0088` |

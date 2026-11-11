@@ -219,7 +219,7 @@ its target type is dependent.
 
 :::{rule} DEP-2
 :kind: required
-:tests: templates/dependent-names/dependent-call-late.cpp templates/dependent-names/type-dependent-placeholder-parameter.cpp templates/dependent-names/type-dependent-placeholder-variable.cpp templates/dependent-names/type-dependent-deduced-return.cpp templates/dependent-names/type-dependent-fold.cpp templates/dependent-names/type-dependent-set-and-binding.cpp
+:tests: templates/dependent-names/dependent-call-late.cpp templates/dependent-names/type-dependent-placeholder-parameter.cpp templates/dependent-names/type-dependent-placeholder-variable.cpp templates/dependent-names/type-dependent-deduced-return.cpp templates/dependent-names/type-dependent-fold.cpp templates/dependent-names/type-dependent-set-and-binding.cpp templates/dependent-names/member-template-through-current-instantiation-object.cpp
 
 An expression is {term}`type-dependent` if one of these holds, and
 DEP-3 does not give a fixed type:
@@ -406,7 +406,7 @@ member defined outside the class.
 
 :::{rule} DEP-15
 :kind: required
-:tests: templates/dependent-names/current-instantiation-forms.cpp templates/dependent-names/current-instantiation-nested.cpp templates/dependent-names/current-instantiation-partial.cpp templates/dependent-names/current-instantiation-partial-alias.cpp templates/dependent-names/current-instantiation-alias.cpp templates/dependent-names/other-specialization-needs-typename.cpp templates/dependent-names/partial-primary-form-needs-typename.cpp templates/dependent-names/current-instantiation-parameter-alias.cpp templates/dependent-names/current-instantiation-constant-member.cpp
+:tests: templates/dependent-names/current-instantiation-forms.cpp templates/dependent-names/current-instantiation-nested.cpp templates/dependent-names/current-instantiation-partial.cpp templates/dependent-names/current-instantiation-partial-alias.cpp templates/dependent-names/current-instantiation-alias.cpp templates/dependent-names/other-specialization-needs-typename.cpp templates/dependent-names/partial-primary-form-needs-typename.cpp templates/dependent-names/current-instantiation-parameter-alias.cpp templates/dependent-names/current-instantiation-constant-member.cpp classes/constructors/mem-init-other-specialization-own-template.cpp templates/dependent-names/member-of-other-specialization-constant-argument.cpp
 
 In a class template, its members, and its nested classes, these names
 name the {term}`current instantiation`:
@@ -452,7 +452,7 @@ specialization is made ({question}`Q-0228`).
 
 :::{rule} DEP-39
 :kind: required
-:tests: templates/dependent-names/member-access-dependent-object-late.cpp templates/dependent-names/member-access-dependent-object-never-found.cpp
+:tests: templates/dependent-names/member-access-dependent-object-late.cpp templates/dependent-names/member-access-dependent-object-never-found.cpp templates/dependent-names/member-of-other-specialization-constant-argument.cpp
 
 If the object expression of `.` or `->` is type-dependent and is not
 the current instantiation, the member name is looked up at the
@@ -534,7 +534,7 @@ type is not valid.
 
 :::{rule} DEP-24
 :kind: reject
-:tests: templates/dependent-names/template-keyword-needed-qualified.cpp templates/dependent-names/template-keyword-needed-member.cpp templates/dependent-names/template-keyword-needed-template-argument.cpp templates/dependent-names/template-keyword-needed-after-typename.cpp templates/dependent-names/template-keyword-forms.cpp templates/dependent-names/template-keyword-needed-base.cpp templates/dependent-names/template-keyword-needed-alias-target.cpp expressions/lambdas/template-head-dependent-call.cpp
+:tests: templates/dependent-names/template-keyword-needed-qualified.cpp templates/dependent-names/template-keyword-needed-member.cpp templates/dependent-names/template-keyword-needed-template-argument.cpp templates/dependent-names/template-keyword-needed-after-typename.cpp templates/dependent-names/template-keyword-forms.cpp templates/dependent-names/template-keyword-needed-base.cpp templates/dependent-names/template-keyword-needed-alias-target.cpp expressions/lambdas/template-head-dependent-call.cpp templates/dependent-names/member-template-through-current-instantiation-object.cpp
 
 A {term}`member template` must have the keyword `template` before its name in
 these places:
@@ -818,8 +818,8 @@ template <class... T> int count() {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 105
-of 128 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 108
+of 131 tests.
 
 ### Divergences
 
@@ -882,6 +882,11 @@ waits on the maintainer (`documentation/decisions/pending.md`).
   single member at the instantiation makes the program an error. It
   does, with no diagnostic required. Every compiler accepts the program
   and uses the other member.
+- {question}`Q-0427` (DEP-24,
+  DEP-39; open): whether a member template named after `.` needs
+  `template` when the object's type is the current instantiation. The
+  test follows every compiler, which accept the call without the
+  keyword. DEP-24's bullet for `.` and `->` still asks for it.
 
 ### Split tests
 

@@ -201,7 +201,7 @@ copy a `const` object.
 
 :::{rule} CPY-15
 :kind: reject
-:tests: classes/copy-move/copy-ctor-by-value.cpp classes/copy-move/template-ctor-by-value-own-class.cpp classes/copy-move/class-template-ctor-by-value.cpp
+:tests: classes/copy-move/copy-ctor-by-value.cpp classes/copy-move/template-ctor-by-value-own-class.cpp classes/copy-move/class-template-ctor-by-value.cpp templates/constraints/by-value-constructor-template-constraint-copies-class.cpp
 
 A constructor of class `T` must not have a first parameter of type `T`
 if all other parameters have default arguments. In a {term}`class template`,
@@ -358,7 +358,7 @@ one that would be deleted.
 
 :::{rule} CPY-9
 :kind: required
-:tests: classes/copy-move/cast-move-only-accepted.cpp classes/copy-move/const-rvalue-picks-copy.cpp classes/copy-move/rvalue-picks-move.cpp classes/copy-move/trivially-copyable-every-eligible.cpp
+:tests: classes/copy-move/cast-move-only-accepted.cpp classes/copy-move/const-rvalue-picks-copy.cpp classes/copy-move/rvalue-picks-move.cpp classes/copy-move/trivially-copyable-every-eligible.cpp classes/access/private-copy-constructor-by-value-argument.cpp classes/access/private-copy-constructor-copy-initialization.cpp classes/access/private-copy-constructor-return-parameter.cpp classes/access/private-move-constructor-xvalue-initialization.cpp
 
 Overload resolution chooses between the copy and move functions:
 
@@ -396,7 +396,7 @@ deleted. The rule applies to:
 
 :::{rule} CPY-11
 :kind: required
-:tests: classes/copy-move/return-converting-move.cpp classes/copy-move/return-local-move-only.cpp classes/copy-move/return-local-prefers-move.cpp classes/copy-move/return-param-move-only.cpp classes/copy-move/return-parenthesized-local.cpp classes/copy-move/return-rvalue-ref-move-only.cpp classes/copy-move/return-rvalue-ref-to-ref.cpp classes/copy-move/parameter-return-moved.cpp classes/constructors/return-owner-converts-to-base-owner.cpp
+:tests: classes/copy-move/return-converting-move.cpp classes/copy-move/return-local-move-only.cpp classes/copy-move/return-local-prefers-move.cpp classes/copy-move/return-param-move-only.cpp classes/copy-move/return-parenthesized-local.cpp classes/copy-move/return-rvalue-ref-move-only.cpp classes/copy-move/return-rvalue-ref-to-ref.cpp classes/copy-move/parameter-return-moved.cpp classes/constructors/return-owner-converts-to-base-owner.cpp classes/access/private-copy-constructor-return-local.cpp classes/access/private-move-constructor-return-local.cpp
 
 In a `return` statement, a name of one of these is an xvalue:
 
@@ -697,8 +697,8 @@ Any c(1);                          // the template, with T = int
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 121
-of 127 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 127
+of 134 tests.
 
 ### Divergences
 
@@ -727,6 +727,11 @@ of 127 tests.
   a live object that has a `const` member. The behavior is undefined,
   as {rule}`CV-5` gives. No test can show the difference, and the tests
   copy into a buffer or into an object with no `const` member.
+- {question}`Q-0426` (CPY-15, CNS-35;
+  open): whether a copy of a class checks the constraint of a constructor
+  template with the class as the template's argument. It does not, so
+  the check never needs its own result, as Clang 22, GCC, and EDG say.
+  Clang 18 rejects the program.
 
 ### Split tests
 
@@ -736,6 +741,7 @@ of 127 tests.
 | `defaulted-move-const-param.cpp` | CPY-14 | accept | accept | GCC 16: accept; GCC 14: reject | accept | {question}`Q-0055` |
 | `defaulted-volatile-param.cpp` | CPY-14 | accept | accept | GCC 16: accept; GCC 14: reject | accept | {question}`Q-0055` |
 | `foundations/constant-evaluation/return-local-unset-member.cpp` | CE-22, CPY-12 | reject | reject | accept | reject | {question}`Q-0115` |
+| `templates/constraints/by-value-constructor-template-constraint-copies-class.cpp` | CNS-35, CPY-15 | run | Clang 22: run; Clang 18: reject | run | accept | {question}`Q-0426` |
 | `trivially-copyable-member-selected.cpp` | CPY-27, CPY-19, UNI-3 | accept | accept | reject | reject | {question}`Q-0339` |
 | `trivially-copyable-member-template-selected.cpp` | CPY-27, UNI-11 | reject | reject | reject | accept | {question}`Q-0339` |
 

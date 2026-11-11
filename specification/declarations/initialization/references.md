@@ -91,7 +91,7 @@ model, and its child questions hold each split between the compilers.
 
 :::{rule} REF-1
 :kind: required
-:tests: declarations/initialization/references/lvalue-ref-binds-lvalue.cpp declarations/initialization/references/base-ref-to-derived.cpp declarations/initialization/references/unknown-bound-ref.cpp declarations/initialization/references/const-element-array-ref.cpp declarations/initialization/references/const-ref-binds-lvalue-directly.cpp declarations/initialization/references/pointer-lvalue-binds-more-qualified-pointer.cpp declarations/initialization/references/member-pointer-and-pointer-array-bind-directly.cpp declarations/initialization/references/noexcept-function-binds-plain-reference.cpp
+:tests: declarations/initialization/references/lvalue-ref-binds-lvalue.cpp declarations/initialization/references/base-ref-to-derived.cpp declarations/initialization/references/unknown-bound-ref.cpp declarations/initialization/references/const-element-array-ref.cpp declarations/initialization/references/const-ref-binds-lvalue-directly.cpp declarations/initialization/references/pointer-lvalue-binds-more-qualified-pointer.cpp declarations/initialization/references/member-pointer-and-pointer-array-bind-directly.cpp declarations/initialization/references/noexcept-function-binds-plain-reference.cpp declarations/initialization/references/lvalue-ref-to-ambiguous-base.cpp declarations/initialization/references/lvalue-ref-to-private-base.cpp
 
 An lvalue reference {term}`binds directly <bind directly>` to an
 lvalue that is not a bit-field, if the lvalue has one of these types:
@@ -346,7 +346,7 @@ int& m{s};                   // rejected: a temporary needs const or &&
 
 ## Evidence
 
-All eight compilers agree on 54 of 69 tests. The results are in
+All eight compilers agree on 56 of 71 tests. The results are in
 `tests/RESULTS.md`.
 
 ### Divergences

@@ -171,7 +171,7 @@ that has no row.
 | G151 | `report-21.md` | commit | decision 0057, item G: BF-1, ALN-8, Q-0314 |
 | G152 | `report-22.md` | commit | decision 0058, item F: DED-29 |
 | G153 | `report-23.md` | open | |
-| G154 | `report-23.md` | open | |
+| G154 | `report-23.md` | commit | decision 0061, item T2: ACC-3 tests classes/access/private-copy-constructor-copy-initialization.cpp, private-copy-constructor-by-value-argument.cpp, private-copy-constructor-return-parameter.cpp, private-copy-constructor-return-local.cpp, private-move-constructor-xvalue-initialization.cpp, and private-move-constructor-return-local.cpp |
 | G155 | `report-23.md` | open | |
 | G156 | `report-23.md` | open | |
 | G157 | `report-23.md` | open | |

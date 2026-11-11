@@ -753,7 +753,7 @@ order of the declarations.
 
 :::{rule} OVL-35
 :kind: reject
-:tests: overloading/overload-resolution/no-viable-function.cpp overloading/overload-resolution/current-object-explicit-extra-argument.cpp overloading/overload-resolution/operator-call-by-name-hidden.cpp overloading/overload-resolution/init-copy-explicit-conversion.cpp overloading/overload-resolution/init-copy-list-explicit-conversion.cpp overloading/overload-resolution/rewritten-swapped-member-object.cpp overloading/overload-resolution/rewritten-inner-no-rewrite.cpp overloading/overload-resolution/surrogate-template-not-candidate.cpp overloading/overload-resolution/surrogate-ref-qualifier-lvalue.cpp overloading/overload-resolution/builtin-not-callable-by-name.cpp overloading/overload-resolution/reference-explicit-copy.cpp overloading/overload-resolution/inherited-copy-shape-any-argument.cpp overloading/overload-resolution/inherited-copy-shape-default.cpp overloading/overload-resolution/builtin-logical-explicit-int.cpp overloading/conversion-sequences/ellipsis-braced-list.cpp overloading/overload-resolution/builtin-increment-from-value.cpp overloading/overload-resolution/init-copy-constructor-standard-only.cpp overloading/conversion-sequences/assignment-left-no-builtin.cpp expressions/new-delete/only-aligned-class-form-ordinary-type.cpp overloading/conversion-sequences/explicit-conversion-to-derived-direct-init.cpp foundations/storage/class-allocation-function-hides-placement.cpp
+:tests: overloading/overload-resolution/no-viable-function.cpp overloading/overload-resolution/current-object-explicit-extra-argument.cpp overloading/overload-resolution/operator-call-by-name-hidden.cpp overloading/overload-resolution/init-copy-explicit-conversion.cpp overloading/overload-resolution/init-copy-list-explicit-conversion.cpp overloading/overload-resolution/rewritten-swapped-member-object.cpp overloading/overload-resolution/rewritten-inner-no-rewrite.cpp overloading/overload-resolution/surrogate-template-not-candidate.cpp overloading/overload-resolution/surrogate-ref-qualifier-lvalue.cpp overloading/overload-resolution/builtin-not-callable-by-name.cpp overloading/overload-resolution/reference-explicit-copy.cpp overloading/overload-resolution/inherited-copy-shape-any-argument.cpp overloading/overload-resolution/inherited-copy-shape-default.cpp overloading/overload-resolution/builtin-logical-explicit-int.cpp overloading/conversion-sequences/ellipsis-braced-list.cpp overloading/overload-resolution/builtin-increment-from-value.cpp overloading/overload-resolution/init-copy-constructor-standard-only.cpp overloading/conversion-sequences/assignment-left-no-builtin.cpp expressions/new-delete/only-aligned-class-form-ordinary-type.cpp overloading/conversion-sequences/explicit-conversion-to-derived-direct-init.cpp foundations/storage/class-allocation-function-hides-placement.cpp templates/declarations/default-argument-constrained-converting-constructor.cpp
 
 If a use has no viable function, the program is not valid. These rules
 name specific cases (decision 0042): {rule}`PFX-5`, {rule}`OPR-15`,
@@ -777,7 +777,7 @@ is not valid. Such a use is ambiguous. These rules name specific cases
 
 :::{rule} OVL-37
 :kind: reject
-:tests: overloading/overload-resolution/chosen-deleted.cpp overloading/overload-resolution/chosen-not-accessible.cpp overloading/overload-resolution/address-of-deleted-chosen.cpp overloading/overload-resolution/user-deleted-move-candidate.cpp
+:tests: overloading/overload-resolution/chosen-deleted.cpp overloading/overload-resolution/chosen-not-accessible.cpp overloading/overload-resolution/address-of-deleted-chosen.cpp overloading/overload-resolution/user-deleted-move-candidate.cpp templates/deduction/two-equal-bases-with-fallback.cpp
 
 The best viable function must pass these checks. A worse viable function
 never takes its place. Each check has its own rule (decision 0042):
@@ -849,8 +849,8 @@ struct Self {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 166
-of 196 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 168
+of 198 tests.
 
 ### Divergences
 

@@ -367,7 +367,7 @@ gives defined behavior (STG-18, {rule}`STG-23`).
 
 :::{rule} STG-9
 :kind: required
-:tests: foundations/storage/replace-variable-old-name.cpp foundations/storage/replace-object-with-const-member.cpp foundations/storage/replace-const-member-constant.cpp foundations/storage/replace-through-reference-constant.cpp foundations/storage/replace-array-element-constant.cpp foundations/storage/assignment-by-destroy-and-construct.cpp foundations/storage/replace-variable-then-scope-end.cpp foundations/storage/replace-member-of-base-constant.cpp
+:tests: foundations/storage/replace-variable-old-name.cpp foundations/storage/replace-object-with-const-member.cpp foundations/storage/replace-const-member-constant.cpp foundations/storage/replace-through-reference-constant.cpp foundations/storage/replace-array-element-constant.cpp foundations/storage/assignment-by-destroy-and-construct.cpp foundations/storage/replace-variable-then-scope-end.cpp foundations/storage/replace-member-of-base-constant.cpp classes/unions/placement-into-union-member-of-new-array-element.cpp foundations/storage/placement-into-new-array-element-then-delete-array.cpp
 
 A new object in the storage of an old object replaces the old object
 if these conditions hold:
@@ -388,7 +388,7 @@ its lifetime. {rule}`UNI-14` gives a union member that holds no object.
 
 :::{rule} STG-10
 :kind: required
-:tests: foundations/storage/outside-lifetime-allowed-uses.cpp foundations/storage/allocation-array-class-elements.cpp
+:tests: foundations/storage/outside-lifetime-allowed-uses.cpp foundations/storage/allocation-array-class-elements.cpp classes/unions/array-member-element-address-no-active-member.cpp
 
 Before the lifetime of an object begins, or after it ends, while its
 storage exists, a program can do these things:
@@ -873,8 +873,8 @@ static_assert(read_old() == 1);       // rejected (CE-9)
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 92
-of 98 tests. EDG runs no programs, so its results for the run tests say
+The results are in `tests/RESULTS.md`. All eight compilers agree on 95
+of 101 tests. EDG runs no programs, so its results for the run tests say
 only that the programs are valid.
 
 ### Divergences

@@ -259,7 +259,7 @@ A guide from a constructor deduces as a function template
 
 :::{rule} CTAD-29
 :kind: required
-:tests: templates/class-template-deduction/guide-constraints.cpp templates/class-template-deduction/guide-constraints-none-satisfied.cpp templates/class-template-deduction/guide-constraints-absent-ambiguous.cpp
+:tests: templates/class-template-deduction/guide-constraints.cpp templates/class-template-deduction/guide-constraints-none-satisfied.cpp templates/class-template-deduction/guide-constraints-absent-ambiguous.cpp templates/class-template-deduction/user-guide-beside-constrained-constructor-template.cpp
 
 A guide from a constructor keeps the constraints of the constructor and
 of the class template ({doc}`constraints`). A guide whose constraints
@@ -337,7 +337,7 @@ elided, also for a string literal ({question}`Q-0277`).
 
 :::{rule} CTAD-11
 :kind: required
-:tests: templates/class-template-deduction/user-guides.cpp templates/class-template-deduction/guide-after-use.cpp templates/class-template-deduction/member-guide.cpp templates/class-template-deduction/declared-not-defined.cpp templates/class-template-deduction/guide-before-instantiation.cpp
+:tests: templates/class-template-deduction/user-guides.cpp templates/class-template-deduction/guide-after-use.cpp templates/class-template-deduction/member-guide.cpp templates/class-template-deduction/declared-not-defined.cpp templates/class-template-deduction/guide-before-instantiation.cpp templates/class-template-deduction/user-guide-beside-constrained-constructor-template.cpp
 
 A `deduction_guide` declares a {term}`user guide <deduction guide>` for
 the class template that it names. A user guide can be a template or
@@ -685,8 +685,8 @@ Bases c{List<X, Y, Z>{}, Y{}};    // rejected: Y stands where X is fixed
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 97
-of 119 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 98
+of 120 tests.
 
 ### Divergences
 

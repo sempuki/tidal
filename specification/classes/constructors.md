@@ -246,7 +246,7 @@ A member initializer with braces must not need a
 
 :::{rule} CTOR-15
 :kind: reject
-:tests: classes/constructors/mem-init-duplicate.cpp classes/constructors/mem-init-in-declaration-only.cpp classes/constructors/mem-init-indirect-base.cpp classes/constructors/mem-init-not-member.cpp classes/constructors/mem-init-pack-of-reference.cpp classes/constructors/mem-init-static-member.cpp
+:tests: classes/constructors/mem-init-duplicate.cpp classes/constructors/mem-init-in-declaration-only.cpp classes/constructors/mem-init-indirect-base.cpp classes/constructors/mem-init-not-member.cpp classes/constructors/mem-init-pack-of-reference.cpp classes/constructors/mem-init-static-member.cpp classes/constructors/mem-init-two-specializations-one-template.cpp templates/packs/base-pack-paren-init-complete-object.cpp
 
 Each `mem_init` must name one of these:
 
@@ -263,7 +263,7 @@ A name can be a type alias of a base. A `mem_init` must not:
 
 :::{rule} CTOR-8
 :kind: reject
-:tests: classes/constructors/delegating-self.cpp classes/constructors/delegating-self-with-argument.cpp
+:tests: classes/constructors/delegating-self.cpp classes/constructors/delegating-self-with-argument.cpp classes/constructors/mem-init-other-specialization-own-template.cpp
 
 A constructor must not delegate to itself.
 :::
@@ -670,8 +670,8 @@ Span g{{1}};   // Span(int): {1} gives an int directly (ICS-15). The
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 180
-of 201 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 183
+of 204 tests.
 
 ### Divergences
 

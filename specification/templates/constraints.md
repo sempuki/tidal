@@ -347,7 +347,7 @@ program is not valid, even if another candidate would be chosen.
 
 :::{rule} CNS-35
 :kind: reject
-:tests: templates/constraints/recursive-satisfaction.cpp templates/constraints/recursive-satisfaction-operator.cpp
+:tests: templates/constraints/recursive-satisfaction.cpp templates/constraints/recursive-satisfaction-operator.cpp templates/constraints/by-value-constructor-template-constraint-copies-class.cpp
 
 The check of an atomic constraint must not need the result of the same
 atomic constraint with the same arguments. Such a check can arise
@@ -813,7 +813,7 @@ bool usable = Usable<Item>;        // rejected: the check needs itself
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 110
-of 140 tests.
+of 141 tests.
 
 ### Divergences
 
@@ -895,6 +895,11 @@ waits on the maintainer (`documentation/decisions/pending.md`).
   concept makes on a type parameter pack in two declarations are one
   atom or two. Two atoms, so neither declaration is more constrained,
   as Clang and GCC say. EDG treats them as one atom.
+- {question}`Q-0426` (CNS-35, CPY-15;
+  open): whether a copy of a class checks the constraint of a constructor
+  template with the class as the template's argument. It does not, so
+  the check never needs its own result, as Clang 22, GCC, and EDG say.
+  Clang 18 rejects the program.
 
 ### Split tests
 
@@ -907,6 +912,7 @@ family column gives the outcome that the test expects on that family.
 | `atomic-not-bool-nondependent-concept.cpp` | CNS-39 | reject | reject | accept | reject | {question}`Q-0263` |
 | `atomic-not-bool-skipped.cpp` | CNS-39 | reject | reject | accept | reject | {question}`Q-0263` |
 | `before-function-type.cpp` | CNS-11 | accept | Clang 22: accept; Clang 18: reject | accept | accept | {question}`Q-0261` |
+| `by-value-constructor-template-constraint-copies-class.cpp` | CNS-35, CPY-15 | run | Clang 22: run; Clang 18: reject | run | accept | {question}`Q-0426` |
 | `constant-placeholder-more-constrained.cpp` | CNS-1, CNS-23 | accept | Clang 22: accept; Clang 18: reject | GCC 16: accept; GCC 14: reject | reject | {question}`Q-0281` |
 | `eligible-copy.cpp` | CNS-21 | accept | accept | accept | reject | {question}`Q-0266` |
 | `eligible-default.cpp` | CNS-21 | accept | accept | accept | reject | {question}`Q-0266` |

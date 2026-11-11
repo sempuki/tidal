@@ -461,7 +461,7 @@ also finds partial specializations declared after it.
 
 :::{rule} TSP-15
 :kind: required
-:tests: templates/specialization/select-most-specialized.cpp templates/specialization/select-most-specialized-pair.cpp
+:tests: templates/specialization/select-most-specialized.cpp templates/specialization/select-most-specialized-pair.cpp templates/specialization/partial-array-and-const-array.cpp
 
 If two or more partial specializations match, the selected one is more
 specialized than each of the others ({rule}`ORD-14`).
@@ -596,8 +596,8 @@ template <class T> template <> int Store<T>::Slot<int>::put();   // rejected
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 80
-of 95 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 81
+of 96 tests.
 
 ### Divergences
 
