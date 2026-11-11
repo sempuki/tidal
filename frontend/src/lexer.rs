@@ -897,6 +897,12 @@ fn lex_number(text: &str, line: u32, d: &mut Diags) -> Token {
         }
     }
     let tok = |lit: Lit| Token { kind: if matches!(lit, Lit::Float { .. }) { TK::Float } else { TK::Int }, text: text.to_string(), line, lit: Some(lit) };
+    if text.matches('.').count() > 1 {
+        // PRIM-26: the literal runs over each `.`, and the run is not one
+        // valid literal.
+        d.error(line, Some("PRIM-26"), format!("'{}' is not one valid numeric literal", text));
+        return tok(Lit::Float { value: 0.0, suffix: FSuffix::None });
+    }
     // Digit separators: PRIM-16.
     let chars: Vec<char> = text.chars().collect();
     for (k, &c) in chars.iter().enumerate() {

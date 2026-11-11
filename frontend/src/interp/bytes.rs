@@ -454,6 +454,19 @@ impl<'a> Machine<'a> {
             if p.off == 0 && self.objs[p.obj].heap == Heap::Raw {
                 return self.storage_pointer(Ptr { obj: p.obj, path: vec![], off: 0, array: true, bytes: false }, &QTy::new(to));
             }
+            if self.objs[p.obj].heap == Heap::Raw && !self.constant {
+                // STG-28: storage from an allocation function holds an
+                // array of `to`, and a pointer to the byte at element
+                // `k`'s offset points to element `k`.
+                if let Ok(size) = self.size_of(&to) {
+                    if size > 0 && p.off % size == 0 {
+                        let q = self.storage_pointer(Ptr { obj: p.obj, path: vec![], off: 0, array: true, bytes: false }, &QTy::new(to.clone()))?;
+                        if q.array && q.off == 0 && !q.bytes && q.obj != p.obj {
+                            return Ok(Ptr { off: p.off / size, ..q });
+                        }
+                    }
+                }
+            }
             return Ok(p);
         }
         if self.type_at(&p).is_some_and(|t| t.t == to) {
@@ -466,6 +479,21 @@ impl<'a> Machine<'a> {
             // STG-8: storage from an allocation function creates the
             // objects that the program needs.
             return self.storage_pointer(p, &QTy::new(to));
+        }
+        if p.array && p.path.is_empty() && !self.constant && self.implicit.contains(&p.obj) {
+            // STG-28: a pointer into a byte array that storage from an
+            // allocation function created, at the offset of element `k`
+            // of an array of `to`, points to element `k` of that array.
+            if let (Some(&(host, at)), Some(QTy { t: Ty::Array(el, _), .. })) = (self.resident_of.get(&p.obj), self.obj_ty(p.obj)) {
+                let size = self.size_of(&to).unwrap_or(0);
+                let k = at + p.off;
+                if self.is_byte_type(&el.unqual().t) && at == 0 && size > 0 && k % size == 0 && self.objs[host].heap == Heap::Raw {
+                    let q = self.storage_pointer(Ptr { obj: host, path: vec![], off: 0, array: true, bytes: false }, &QTy::new(to.clone()))?;
+                    if q.array && q.off == 0 && !q.bytes && q.obj != host {
+                        return Ok(Ptr { off: k / size, ..q });
+                    }
+                }
+            }
         }
         if p.array && !self.constant && self.type_at(&p).is_some_and(|t| self.is_byte_type(&t.t)) && self.residents.contains_key(&p.obj) {
             // STG-29 (Q-0324): a cast of a pointer into a byte array gives

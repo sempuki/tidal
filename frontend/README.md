@@ -107,6 +107,15 @@ explored: 4 runs; other outcomes: result 1; result 0
 explored: 64 runs (the bound of 64 runs stopped the exploration; the set is partial); other outcomes: result 0
 ```
 
+When every explored run returns the result of the first run, the first
+line says so before it lists the choices (finding P2-9). The second line
+stays:
+
+```
+result: 0 in every explored order (8 runs); unspecified choices: SEQ-1 at line 90 (arguments evaluated from left to right)
+explored: 8 runs; other outcomes: result 0
+```
+
 The arguments of a multi-argument `operator[]`, and the operands of the
 other operators that OPR-7 lists, keep their order, so they are no
 choice point. A run with more than 4096 choice points settles a line
@@ -388,6 +397,18 @@ member of a local class in a specialization is parsed with its errors
 held back. A clause with an error is a constraint that is not
 satisfied (INST-12).
 
+In a member template of a class specialization, a function parameter
+pack whose pattern names a pack of the class expands when the member
+template is declared, because the class's pack is known (INST-5,
+PACK-1). A constant template argument of a pointer-to-member type is the
+member it names (TARG-12). In a template, a functional cast with a
+class template name and no argument list deduces at the instantiation
+(CTAD-1). A designated list has an aggregate candidate with one
+parameter for each named member, in member order (CTAD-9). Deduction of
+a converting constructor template that ICS-4 considers takes only a
+standard sequence for its first parameter (ICS-10), so the deduction
+does not consider the constructor again.
+
 A member function with an explicit object parameter of a deduced type
 deduces it from the object of the call, as the first argument (CLS-13).
 
@@ -398,8 +419,12 @@ template arguments, also a trailing pack and explicit type arguments,
 and parses the lambda again with them bound to make the call operator.
 A lambda with an explicit object parameter gets the call operator's
 declaration before its body is parsed, so the body can call itself
-(LAM-16). A lambda with a template head and a requires clause after its
-parameters stays unknown. A generic lambda with no captures converts to
+(LAM-16). The requires clause of a generic lambda, after its template
+head or after its parameters, is checked for each call when the call
+operator is made. A call operator whose clause is not satisfied gives
+no candidate (CNS-1, OVL-24). The placeholder parameters of a lambda are
+the lambda's own invented parameters, also inside an abbreviated
+function template (LAM-15, DED-34). A generic lambda with no captures converts to
 a pointer to function when the specialization for the target's
 parameters has the target's type (LAM-10).
 
@@ -434,6 +459,18 @@ gives the pointer-interconvertible object of that type (STG-16, CLS-19),
 or else the same object. A read or write through a glvalue whose type
 STG-14 does not allow for the object stops the run with STG-23.
 
+A `T*` that points to a byte of a byte array, where `T` is not a byte
+type, counts the byte as an array of one `T` (ADD-14). Arithmetic on it
+steps `sizeof(T)` bytes, so `p + 1` is the address `sizeof(T)` bytes on
+(Q-0430, provisional answer). A step of more than one element is
+undefined. The front end checks each step on its own and does not
+remember where the pointer started, so a second step of one element
+from the position one past is not caught. Subtraction of two such
+pointers counts in units of `T`. In storage from an allocation
+function, a cast to `T*` of a pointer to the byte at the offset of
+element `k` of the array of `T` that the storage holds gives a pointer
+to element `k` (STG-28, finding G164).
+
 ## Allocated storage in constant evaluation
 
 In constant evaluation, the elements of storage from `std::allocator`
@@ -455,4 +492,4 @@ function with that number of arguments is non-throwing.
 
 The findings about the specification are in
 `reports/clean-room/rust-frontend/report.md`, `report-2.md` to
-`report-23.md`, and `report-10b.md`.
+`report-25.md`, and `report-10b.md`.

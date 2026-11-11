@@ -1169,6 +1169,21 @@ impl P {
                 if let Some(x) = x {
                     return x;
                 }
+                let et = nonref(&e.ty);
+                if (et.c || et.v) && !self.in_template() && self.class_ok(c) && !self.class_uncertain(c) && !target.is_unknown() {
+                    // CVF-9: a conversion function that is not const does
+                    // not convert a const object.
+                    let saved = std::mem::replace(&mut self.direct_conv, true);
+                    let none = matches!(self.ics_user_from_class(&e, c, &target.unqual(), None), Ok(None));
+                    let mut plain = e.clone();
+                    plain.ty = QTy::new(et.t.clone());
+                    let would = none && matches!(self.ics_user_from_class(&plain, c, &target.unqual(), None), Ok(Some(crate::ics::Ics { kind: crate::ics::IK::User, .. })));
+                    self.direct_conv = saved;
+                    if would {
+                        self.error(line, "CVF-9", format!("the conversion function of '{}' is not const or volatile, and the object is", self.classes[c].name));
+                        return Expr::unknown(line, "bad cast");
+                    }
+                }
             }
             return Expr::new(EK::Unknown("conversion function".into()), target, Cat::PR, line);
         }
@@ -1516,6 +1531,14 @@ impl P {
                 }
             }
         }
+        if let (Ty::Class(lc), Some(_), true) = (&ty.t, &items, is_list) {
+            if self.init_list_elem(*lc).is_some() && self.classes[*lc].opaque && !self.in_template() && !self.init_list_shape_ok() && self.inst_depth < 64 {
+                // LSUP-1: the program declares std::initializer_list with
+                // another shape, so a braced list cannot make its object.
+                self.error(line, "LSUP-1", "a braced list needs std::initializer_list, which is not declared as a class template of the needed shape");
+                return Expr::unknown(line, "initializer list");
+            }
+        }
         if let (Ty::Class(lc), Some(v), true) = (&ty.t, &items, is_list) {
             if self.init_list_elem(*lc).is_some() && !self.classes[*lc].opaque && !self.in_template() {
                 // ILC-1: a braced list makes the list object.
@@ -1697,6 +1720,12 @@ impl P {
                 let mut out = Vec::new();
                 for x in v {
                     let xl = x.line;
+                    if !is_paren && !self.in_template() && !matches!(x.k, EK::InitList(_)) && !matches!(el.t, Ty::Class(_) | Ty::Array(..) | Ty::Unknown | Ty::Dep(_)) && !matches!(nonref(&x.ty).t, Ty::Class(_)) && self.is_narrowing(&x, &el.t) {
+                        // LIST-2: no narrowing conversion of an element in
+                        // braces (also CTOR-21 for a member initializer).
+                        self.error(xl, "LIST-2", format!("narrowing conversion from {} to {} in braces", show(&nonref(&x.ty)), show(&el)));
+                        return Expr::unknown(line, "bad array init");
+                    }
                     // LIST rules: an element that is not a list
                     // copy-initializes an element of class type.
                     let f = if matches!(x.k, EK::InitList(_)) { InitForm::CopyList } else if matches!(el.t, Ty::Class(c) if !self.classes[c].ctors.is_empty() && !matches!(nonref(&x.ty).t, Ty::Class(_))) { InitForm::Copy } else { sub_form };
@@ -1903,7 +1932,25 @@ impl P {
                     (Some(v), false) if (is_list || is_paren) && !self.classes[c].ctors.is_empty() => {
                         let has_list_ctor = self.classes[c].ctors.iter().any(|&cid| self.func(cid).and_then(|f| f.params.first().copied()).and_then(|p| self.var(p)).is_some_and(|v| matches!(nonref(&v.ty).t, Ty::Class(lc) if self.init_list_elem(lc).is_some())));
                         if v.len() == 1 && (nonref(&v[0].ty).t == Ty::Class(c) || matches!(nonref(&v[0].ty).t, Ty::Class(d) if self.is_base_of(c, d) && !self.class_uncertain(d))) {
-                            if is_list && has_list_ctor {
+                            // ILC-3: the second phase takes the copy when no
+                            // initializer-list constructor converts the
+                            // element to its element type.
+                            let list_takes = has_list_ctor && {
+                                let ctors = self.classes[c].ctors.clone();
+                                let mut takes = false;
+                                for cid in ctors {
+                                    let el = self.func(cid).and_then(|f| f.params.first().copied()).and_then(|p| self.var(p)).and_then(|vr| match nonref(&vr.ty).t {
+                                        Ty::Class(lc) => self.init_list_elem(lc),
+                                        _ => None,
+                                    });
+                                    let Some(el) = el else { continue };
+                                    if el.is_unknown() || matches!(el.t, Ty::Dep(_)) || self.func(cid).is_some_and(|f| f.template) || !matches!(self.ics_form(&v[0], &el, false), Ok(None)) {
+                                        takes = true;
+                                    }
+                                }
+                                takes
+                            };
+                            if is_list && list_takes {
                                 // ILC-3: a braced list goes to an
                                 // initializer-list constructor first, also
                                 // with one element of the class.
@@ -2227,6 +2274,7 @@ impl P {
             return unknown;
         }
         let mut chosen_for_build = crate::ovl::CtorRes::Unknown;
+        self.ctor_two_user = false;
         let rr = self.ctor_resolve(c, args, list, copy, copy_list);
         match rr {
             crate::ovl::CtorRes::Ambiguous => {
@@ -2235,6 +2283,11 @@ impl P {
                 return unknown;
             }
             crate::ovl::CtorRes::NoViable => {
+                if std::mem::take(&mut self.ctor_two_user) {
+                    // CTOR-22, ICS-9: one converting constructor at most.
+                    self.error(line, "CTOR-22", format!("the conversion to '{}' needs two user-defined conversions", self.classes[c].name));
+                    return unknown;
+                }
                 // CTOR-25, OVL-35.
                 self.error(line, "CTOR-25", format!("no constructor of '{}' accepts the arguments", self.classes[c].name));
                 return unknown;
@@ -2430,6 +2483,11 @@ impl P {
         }
         self.require_class(lc, line);
         let el = self.init_list_elem(lc)?;
+        if !self.init_list_shape_ok() {
+            // LSUP-1: the object of the braced list needs the shape.
+            self.error(line, "LSUP-1", "a braced list needs std::initializer_list, which is not declared as a class template of the needed shape");
+            return None;
+        }
         let mk = self.classes[lc].ctors.iter().copied().find(|&k| self.func(k).is_some_and(|g| g.fty.params.len() == 2 && !g.template && matches!(g.fty.params[0].t, Ty::Ptr(_)) && g.fty.params[1].t.is_integral()))?;
         let size_ty = self.func(mk)?.fty.params[1].clone();
         let mark = self.d.list.len();
@@ -2478,8 +2536,15 @@ impl P {
             _ => return false,
         };
         let ci = &self.classes[pc];
-        let nfields = ci.fields.iter().filter(|&&f| matches!(self.decls[f].k, DK::Field(_))).count();
-        nfields == 2 && ci.ctors.iter().any(|&c| self.func(c).is_some_and(|f| f.fty.params.len() == 2))
+        // The pointer, then the count (Q-0431).
+        let ftys: Vec<&QTy> = ci.fields.iter().filter_map(|&f| match &self.decls[f].k {
+            DK::Field(fi) => Some(&fi.ty),
+            _ => None,
+        }).collect();
+        if ftys.len() != 2 || !matches!(ftys[0].t, Ty::Ptr(_)) || !ftys[1].t.is_integral() {
+            return false;
+        }
+        ci.ctors.iter().any(|&c| self.func(c).is_some_and(|f| f.fty.params.len() == 2))
     }
 
     pub fn deduce_auto(&mut self, ds: &DeclSpec, d: &Declarator, _ty: &QTy, e: &Expr, form: &InitForm, line: u32) -> Option<QTy> {

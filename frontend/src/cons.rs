@@ -1376,7 +1376,7 @@ impl P {
     /// specialization, or a new invented parameter of the template being
     /// declared.
     pub fn auto_param_base(&mut self, k: usize, ds: &crate::decl::DeclSpec, line: u32) -> PR<Option<QTy>> {
-        let name = format!("auto:{}", k);
+        let name = if self.lambda_params { format!("lambda auto:{}", k) } else { format!("auto:{}", k) };
         if let Some(ids) = self.lookup(&name) {
             let id = ids[0];
             if self.binding_scopes.contains(&self.decls[id].scope) {

@@ -268,6 +268,13 @@ impl P {
                     self.in_unevaluated -= 1;
                     let e = e?;
                     self.check_unevaluated_dtor(&e, false);
+                    self.warn_unevaluated_effect(&e);
+                    if let EK::Var(id) = &crate::expr::strip_parens(&e).k {
+                        if self.array_params.contains(id) && !self.in_template() {
+                            // UN-19: the parameter is a pointer (DCL-8).
+                            self.warn(line, "UN-19", format!("sizeof of the parameter '{}', which is declared as an array and is a pointer", self.decls[*id].name));
+                        }
+                    }
                     if matches!(e.k, EK::Overloads(_) | EK::Func(_)) {
                         self.error(line, "UN-14", "sizeof applied to a function");
                         return Ok(Expr::new(EK::Int(1), QTy::new(Ty::size_t()), Cat::PR, line));
@@ -733,11 +740,26 @@ impl P {
     /// with placement arguments it must not be a usual form.
     fn check_new_deallocation(&mut self, t: &QTy, array: bool, placement: Option<&[Expr]>, global: bool, line: u32) {
         let Ty::Class(c) = t.t else { return };
+        let dname = if array { "operatordelete[]" } else { "operatordelete" };
+        let nname = if array { "operatornew[]" } else { "operatornew" };
+        if let Some(pa) = placement {
+            // UNW-11, NEW-P3: the global placement form with one extra
+            // size parameter matches the global sized deallocation
+            // function, which is a usual form.
+            let class_new = !global && self.classes[c].complete && self.lookup_member(c, nname).is_some_and(|v| v.iter().any(|&d| self.func(d).is_some()));
+            if pa.len() == 1 && !class_new && !self.in_template() {
+                let st = Ty::size_t();
+                let globals: Vec<DeclId> = self.lookup_in_scope(self.global, nname, false).unwrap_or_default().into_iter().filter(|&d| self.func(d).is_some()).collect();
+                let two: Vec<DeclId> = globals.iter().copied().filter(|&d| self.func(d).is_some_and(|f| f.fty.params.len() == 2 && !f.template)).collect();
+                if two.len() == 1 && self.func(two[0]).is_some_and(|f| f.fty.params[0].t == st && f.fty.params[1].t == st) && nonref(&pa[0].ty).t.is_integral() {
+                    self.error(line, "UNW-11", "the deallocation function that matches the placement allocation function is the usual sized form");
+                    return;
+                }
+            }
+        }
         if global || !self.classes[c].complete {
             return;
         }
-        let dname = if array { "operatordelete[]" } else { "operatordelete" };
-        let nname = if array { "operatornew[]" } else { "operatornew" };
         let Some(ds) = self.lookup_member(c, dname) else { return };
         let ds: Vec<DeclId> = ds.into_iter().filter(|&d| self.func(d).is_some()).collect();
         if ds.is_empty() {
@@ -946,6 +968,24 @@ impl P {
                 let e = self.parse_expression()?;
                 if bounds.is_empty() {
                     let mut fb = self.rvalue(e.clone());
+                    if let (Ty::Class(sc), false) = (nonref(&e.ty).t, self.in_template()) {
+                        // CVF-8: one conversion to an integral or
+                        // enumeration type.
+                        let mut fns = Vec::new();
+                        self.conv_fns(sc, 0, &mut fns);
+                        let mut tys: Vec<Ty> = Vec::new();
+                        for f in fns {
+                            if let Some(fi) = self.func(f) {
+                                let r = nonref(&fi.fty.ret).unqual().t;
+                                if (r.is_integral() || self.is_unscoped_enum(&r)) && !tys.contains(&r) {
+                                    tys.push(r);
+                                }
+                            }
+                        }
+                        if tys.len() > 1 && !self.class_uncertain(sc) {
+                            self.error(bl, "CVF-8", format!("the size of the array converts to more than one integral type ('{}' has two conversion functions)", self.classes[sc].name));
+                        }
+                    }
                     if matches!(nonref(&e.ty).t, Ty::Class(_)) && !self.in_template() {
                         // NEW-2: a class size converts by its conversion
                         // function to an integer.
@@ -1122,6 +1162,28 @@ impl P {
         if !bounds.is_empty() && count.is_none() {
             return Ok(unknown);
         }
+        // REF-15: a reference member of the new object bound to a
+        // temporary outlives it.
+        let dangling = {
+            let items: Option<Vec<Expr>> = match (&init, &braced_init) {
+                (Some((true, _)), Some(b)) => match &b.k {
+                    EK::InitList(v) => Some(v.clone()),
+                    _ => None,
+                },
+                (Some((false, n)), _) if *n > 0 => Some(pargs.clone()),
+                _ => None,
+            };
+            match (&rt.t, items) {
+                (Ty::Class(c), Some(v)) if bounds.is_empty() && self.is_simple_aggregate(*c) && !self.in_template() => {
+                    let fields: Vec<QTy> = self.classes[*c].fields.iter().filter_map(|&f| match &self.decls[f].k {
+                        DK::Field(fi) => Some(fi.ty.clone()),
+                        _ => None,
+                    }).collect();
+                    fields.iter().zip(v.iter()).any(|(ft, x)| ft.t.is_ref() && x.cat == Cat::PR && !matches!(x.k, EK::InitList(_)) && !x.ty.is_unknown())
+                }
+                _ => false,
+            }
+        };
         let conv_init = match (init, braced_init) {
             (None, _) => None,
             (Some((true, _)), Some(b)) => {
@@ -1154,6 +1216,9 @@ impl P {
         if self.d.list.len() != mark || conv_init.as_ref().is_some_and(|e| matches!(e.k, EK::Unknown(_))) {
             self.d.list.truncate(mark);
             return Ok(unknown);
+        }
+        if dangling {
+            self.warn(line, "REF-15", "a reference member of the object that new makes binds to a temporary that ends with the full-expression");
         }
         let k = EK::New { ty: rt.clone(), count: count.map(Box::new), init: conv_init.map(Box::new), place: place_arg.map(Box::new), alloc: alloc_info.map(Rc::new) };
         Ok(Expr::new(k, QTy::new(Ty::Ptr(Box::new(rt))), Cat::PR, line))
@@ -1410,6 +1475,28 @@ impl P {
                 self.pos += 2;
             }
         }
+        // DTOR-8: `obj.B::~B()` with `B` the class of the object or a base
+        // of it names the destructor of that class.
+        let mut qual_class: Option<usize> = None;
+        if self.is_ident() && self.at_k(1, "::") && self.at_k(2, "~") && self.peek(3).text == self.tok().text && !self.in_template() {
+            let ot = nonref(&obj.ty);
+            let objc = match (&ot.t, arrow) {
+                (Ty::Ptr(p), true) => match p.t { Ty::Class(c) => Some(c), _ => None },
+                (Ty::Class(c), false) => Some(*c),
+                _ => None,
+            };
+            let qc = self.lookup(&self.tok().text.clone()).and_then(|ids| match &self.decls[ids[0]].k {
+                DK::Class(b) => Some(*b),
+                DK::Type(QTy { t: Ty::Class(b), .. }) => Some(*b),
+                _ => None,
+            });
+            if let (Some(o), Some(q)) = (objc, qc) {
+                if o == q || self.is_base_of(q, o) {
+                    qual_class = Some(q);
+                    self.pos += 2;
+                }
+            }
+        }
         // destructor call
         if self.at("~") {
             self.pos += 1;
@@ -1452,6 +1539,10 @@ impl P {
                     (t, false) => Some(t.clone()),
                     _ => None,
                 };
+                let objt = match qual_class {
+                    Some(q) => Some(Ty::Class(q)),
+                    None => objt,
+                };
                 if let (Some(n), Some(o)) = (&named, &objt) {
                     if *o != Ty::Unknown && *n != Ty::Unknown && n != o {
                         self.error(line, "DTOR-8", "the name after '~' does not denote the type of the object");
@@ -1480,6 +1571,20 @@ impl P {
                     Some(obj.clone())
                 } else {
                     None
+                };
+                let target = match (target, qual_class) {
+                    (Some(t), Some(q)) if nonref(&t.ty).t != Ty::Class(q) => {
+                        // The base class subobject.
+                        let bt = QTy { t: Ty::Class(q), c: t.ty.c, v: t.ty.v };
+                        let mark = self.d.list.len();
+                        let b = self.bind_ref(t, &QTy::new(Ty::LRef(Box::new(bt.clone()))), line, "DTOR-8");
+                        if self.d.list.len() != mark || matches!(b.k, EK::Unknown(_)) {
+                            None
+                        } else {
+                            Some(Expr { ty: bt, cat: Cat::L, ..b })
+                        }
+                    }
+                    (t, _) => t,
                 };
                 if let Some(t) = target {
                     if !nonref(&t.ty).is_unknown() {
@@ -2675,6 +2780,33 @@ impl P {
         r
     }
 
+    /// CNS-1, OVL-24: the requires clause of a generic lambda, for the
+    /// call operator that a call makes. False when the clause is not
+    /// satisfied, and the call operator then gives no candidate.
+    fn lambda_inst_clause(&mut self, before_params: bool) -> PR<bool> {
+        let st = self.pos;
+        let saved_head = self.cons_head.take();
+        let saved_unmodeled = std::mem::take(&mut self.cons_unmodeled);
+        let r = self.cons_clause(before_params);
+        self.cons_head = saved_head;
+        let unmodeled = std::mem::replace(&mut self.cons_unmodeled, saved_unmodeled);
+        let n = match r {
+            Ok(Some(n)) if !unmodeled => n,
+            _ => {
+                self.pos = st;
+                self.skip_constraint()?;
+                return Ok(true);
+            }
+        };
+        match self.cons_check(&n, u32::MAX, &[]) {
+            crate::cons::Sat::Yes | crate::cons::Sat::Unknown => Ok(true),
+            _ => {
+                self.lambda_inst_failed = true;
+                Ok(false)
+            }
+        }
+    }
+
     fn parse_lambda_inner(&mut self) -> PR<Expr> {
         let line = self.line();
         // LAM-15: a generic lambda parsed again for a call, with the types
@@ -2711,7 +2843,10 @@ impl P {
             self.pos += k;
             if self.at("requires") {
                 self.pos += 1;
-                self.skip_constraint()?;
+                if !self.lambda_inst_clause(true)? {
+                    self.pop_scope();
+                    return Ok(Expr::unknown(line, "lambda"));
+                }
             }
         } else if self.at("<") {
             // LAM-14: the template parameters of a generic lambda, declared
@@ -2732,9 +2867,12 @@ impl P {
             generic = true;
             if self.at("requires") {
                 // CPT-16: a requires clause after the template parameters.
+                // CNS-1: it constrains the call operator, and each call
+                // checks it when it makes the call operator.
                 self.pos += 1;
                 self.skip_constraint()?;
-            } else if outside && !constrained {
+            }
+            if outside && !constrained {
                 head = Some(r);
             }
         }
@@ -2778,7 +2916,9 @@ impl P {
             let saved_ab = if as_template { Some(self.abbrev.replace(crate::cons::Abbrev { depth: LAMBDA_DEPTH, base, params: vec![], cons: None, closed: false })) } else { None };
             let saved_nest = (self.param_nest, self.auto_param_k);
             self.param_nest = 0;
+            let saved_lp = std::mem::replace(&mut self.lambda_params, true);
             let f = self.parse_params();
+            self.lambda_params = saved_lp;
             (self.param_nest, self.auto_param_k) = saved_nest;
             if let Some(sa) = saved_ab {
                 if let Some(ab) = std::mem::replace(&mut self.abbrev, sa) {
@@ -2876,12 +3016,20 @@ impl P {
                 }
             } else if self.at("requires") {
                 self.pos += 1;
-                if self.in_template() || generic || inst.is_some() {
-                    // A trailing clause of a lambda with a template head is
-                    // not modeled, so its call operator stays unknown.
-                    if inst.is_none() && head.is_some() {
-                        gen_params = None;
+                if inst.is_some() {
+                    // CNS-1, OVL-24: the call operator made for a call
+                    // exists only when its clause is satisfied.
+                    // The clause sees the parameters.
+                    self.stack.push(scope);
+                    let ok = self.lambda_inst_clause(false);
+                    self.stack.pop();
+                    if !ok? {
+                        self.pop_scope();
+                        return Ok(Expr::unknown(line, "lambda"));
                     }
+                } else if self.in_template() || generic {
+                    // The clause of a generic lambda is checked for each
+                    // call (above).
                     self.skip_constraint()?;
                 } else {
                     // CNS-18: the clause of the call operator.
@@ -3938,6 +4086,13 @@ impl P {
                     }
                     return Ok(Expr::unknown(line, "deduction of class template arguments"));
                 }
+            }
+            if matches!(self.decls[t].k, DK::Template(TemplKind::Class(_) | TemplKind::Alias)) && (self.at("(") || self.at("{")) && self.in_template() && !self.tparam.contains_key(&t) && !self.injected.contains_key(&t) && self.tid_of(t).is_some() {
+                // CTAD-1: in a template, a functional cast with a deduced
+                // class type deduces at the instantiation, when its
+                // arguments are known.
+                self.skip_balanced();
+                return Ok(Expr::unknown(line, "deduction of class template arguments in a template"));
             }
             if let DK::Template(TemplKind::Var { .. }) = self.decls[t].k {
                 if !self.in_template() && self.tid_of(t).is_some() {
@@ -5398,6 +5553,14 @@ impl P {
                     // CVF-3: the conversion function, explicit ones too.
                     let mark = self.d.list.len();
                     let saved = std::mem::replace(&mut self.contextual, true);
+                    if let Ok(Some(crate::ics::Ics { kind: crate::ics::IK::Ambig, .. })) = self.ics_user_from_class(&e, *c, &QTy::bool_(), None) {
+                        // ICS-7: no conversion function is better than the
+                        // others, so the operand does not convert.
+                        self.contextual = saved;
+                        self.d.list.truncate(mark);
+                        self.error(line, rule, format!("the conversion of '{}' to bool is ambiguous", self.classes[*c].name));
+                        return Expr::unknown(line, "bad condition");
+                    }
                     let x = self.user_conv(&e, &QTy::bool_(), line);
                     self.contextual = saved;
                     match x {
@@ -6454,6 +6617,17 @@ impl P {
                         }
                         self.d.list.truncate(mark);
                     }
+                }
+            }
+            if op == "=" && !self.in_template() && !self.class_uncertain(c) && self.classes[c].ctors.is_empty() && self.classes[c].complete && !self.classes[c].opaque && self.lookup_member(c, "operator=").is_none_or(|v| v.is_empty()) {
+                let rt = nonref(&r.ty);
+                if !rt.is_unknown() && !matches!(rt.t, Ty::Class(_) | Ty::Dep(_)) && !matches!(r.k, EK::Unknown(_) | EK::InitList(_)) {
+                    // ICS-10, OVL-35: the built-in `=` would need a
+                    // user-defined sequence for its left operand, and the
+                    // implicit assignment operators of a class without
+                    // constructors take only the class.
+                    self.error_because(line, "OVL-35", "ICS-10", format!("no viable assignment of '{}' from {}", self.classes[c].name, show(&rt)));
+                    return Expr::unknown(line, "bad class assignment");
                 }
             }
             return Expr::unknown(line, "class assignment");
@@ -7723,4 +7897,32 @@ fn cond_prvalue_of(x: Expr, t: QTy) -> Expr {
     }
     let line = x.line;
     Expr::new(EK::Conv(Conv::LToR, Box::new(x)), t, Cat::PR, line)
+}
+
+/// The expression inside parentheses and no-op conversions.
+pub fn strip_parens(e: &Expr) -> &Expr {
+    match &e.k {
+        EK::Conv(Conv::NoOp | Conv::LToR, x) => strip_parens(x),
+        _ => e,
+    }
+}
+
+impl P {
+    /// UNEV-4: an unevaluated operand with an increment, a decrement, or
+    /// an assignment, whose effect does not occur (Clang's warning, on
+    /// with no flag).
+    pub fn warn_unevaluated_effect(&mut self, e: &Expr) {
+        if self.in_template() || self.in_unevaluated > 0 || self.inst_depth > 0 {
+            return;
+        }
+        let mut found = false;
+        crate::ast::walk_expr(e, &mut |x| {
+            if matches!(x.k, EK::Unary(UOp::PreInc | UOp::PreDec | UOp::PostInc | UOp::PostDec, _) | EK::Assign(..)) {
+                found = true;
+            }
+        });
+        if found {
+            self.warn(e.line, "UNEV-4", "an unevaluated operand has a side effect, which does not occur");
+        }
+    }
 }

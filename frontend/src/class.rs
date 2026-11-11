@@ -1419,6 +1419,44 @@ impl P {
                 }
             }
         }
+        if !self.in_template() && !self.class_uncertain(c) {
+            self.check_final_overriders(c, &fns);
+        }
+        if self.wflag(&["-Wall", "-Woverloaded-virtual"]) && !self.in_template() {
+            // VIRT-13: a function that hides a virtual function of a direct
+            // base with the same name and overrides none of that name.
+            let mut warned = std::collections::HashSet::new();
+            for &f in &fns {
+                let Some(fi) = self.func(f) else { continue };
+                if fi.kind != FnKind::Normal || fi.template {
+                    continue;
+                }
+                let name = self.decls[f].name.clone();
+                if warned.contains(&name) {
+                    continue;
+                }
+                let same_name: Vec<DeclId> = fns.iter().copied().filter(|&g| self.decls[g].name == name).collect();
+                let mut overrides_any = false;
+                let mut uncertain = false;
+                for &g in &same_name {
+                    match self.overridden(c, g, 0) {
+                        Some(v) if !v.is_empty() => overrides_any = true,
+                        Some(_) => {}
+                        None => uncertain = true,
+                    }
+                }
+                if overrides_any || uncertain {
+                    continue;
+                }
+                let bases: Vec<usize> = self.classes[c].bases.iter().filter_map(|b| b.class).collect();
+                let hidden = bases.iter().any(|&b| !self.class_uncertain(b) && self.own_names(self.classes[b].scope, &name).iter().any(|&g| self.func(g).is_some_and(|gi| !gi.template && gi.class == Some(b)) && self.fn_virtual(b, g, 0) == Some(true)));
+                if hidden {
+                    warned.insert(name.clone());
+                    let line = self.decls[f].line;
+                    self.warn(line, "VIRT-13", format!("'{}' hides a virtual function of a base and does not override it", name));
+                }
+            }
+        }
         for f in fns {
             let line = self.decls[f].line;
             let (ov, fin) = self.virt_specs.get(&f).copied().unwrap_or((false, false));
@@ -1611,5 +1649,93 @@ impl P {
             }
         }
         Some(false)
+    }
+}
+
+impl P {
+    /// The functions that `f` of class `x` overrides, directly or through
+    /// other overrides, that override nothing themselves.
+    fn override_roots(&self, x: usize, f: DeclId, depth: u32) -> Option<Vec<DeclId>> {
+        if depth > 16 {
+            return None;
+        }
+        let over = self.overridden(x, f, 0)?;
+        if over.is_empty() {
+            return Some(vec![f]);
+        }
+        let mut out = Vec::new();
+        for g in over {
+            let gc = self.func(g)?.class?;
+            for r in self.override_roots(gc, g, depth + 1)? {
+                if !out.contains(&r) {
+                    out.push(r);
+                }
+            }
+        }
+        Some(out)
+    }
+
+    /// VIRT-5: each virtual function of a shared virtual base has one final
+    /// overrider in class `c`.
+    fn check_final_overriders(&mut self, c: usize, own: &[DeclId]) {
+        let mut all = Vec::new();
+        self.all_bases(c, &mut all, 0);
+        all.sort();
+        all.dedup();
+        if all.iter().any(|&b| self.class_uncertain(b)) {
+            return;
+        }
+        // The classes that are a virtual base somewhere in the lattice.
+        let vbases: Vec<usize> = all.iter().flat_map(|&x| self.classes[x].bases.iter().filter(|b| b.virt).filter_map(|b| b.class).collect::<Vec<_>>()).collect();
+        if vbases.is_empty() {
+            return;
+        }
+        // The overriders in the bases of each root that a virtual base
+        // declares.
+        let mut by_root: Vec<(DeclId, Vec<(usize, DeclId)>)> = Vec::new();
+        let mut own_roots: Vec<DeclId> = Vec::new();
+        for &f in own {
+            match self.override_roots(c, f, 0) {
+                Some(v) => own_roots.extend(v),
+                None => return,
+            }
+        }
+        for &x in &all {
+            let fns: Vec<DeclId> = self.scopes[self.classes[x].scope].names.values().flatten().copied().filter(|&f| self.func(f).is_some_and(|fi| fi.class == Some(x) && !fi.template && fi.kind != FnKind::Ctor)).collect();
+            for f in fns {
+                if self.fn_virtual(x, f, 0) != Some(true) {
+                    continue;
+                }
+                let Some(roots) = self.override_roots(x, f, 0) else { return };
+                for r in roots {
+                    let rc = match self.func(r).and_then(|g| g.class) {
+                        Some(rc) => rc,
+                        None => continue,
+                    };
+                    if !vbases.contains(&rc) {
+                        continue;
+                    }
+                    match by_root.iter_mut().find(|e| e.0 == r) {
+                        Some(e) => {
+                            if !e.1.iter().any(|y| y.1 == f) {
+                                e.1.push((x, f));
+                            }
+                        }
+                        None => by_root.push((r, vec![(x, f)])),
+                    }
+                }
+            }
+        }
+        for (r, overs) in by_root {
+            if own_roots.contains(&r) {
+                continue;
+            }
+            let finals: Vec<&(usize, DeclId)> = overs.iter().filter(|(x, _)| !overs.iter().any(|(y, _)| y != x && self.is_base_of(*x, *y))).collect();
+            if finals.len() > 1 {
+                let line = self.classes[c].line;
+                self.error(line, "VIRT-5", format!("'{}' has no unique final overrider of '{}': two bases override it and neither overrides the other", self.classes[c].name, self.decls[r].name));
+                return;
+            }
+        }
     }
 }

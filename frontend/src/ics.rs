@@ -622,7 +622,10 @@ impl P {
         let ctors = self.classes[pc].ctors.clone();
         let ctors = if ctors.iter().any(|&cid| self.func(cid).is_some_and(|f| f.template)) {
             // DED-1: a converting constructor template.
-            match self.expand_fn_templates(&ctors, std::slice::from_ref(a), a.line) {
+            let saved = std::mem::replace(&mut self.ded_first_std, true);
+            let r = self.expand_fn_templates(&ctors, std::slice::from_ref(a), a.line);
+            self.ded_first_std = saved;
+            match r {
                 Some(v) => v,
                 None => return Err(()),
             }

@@ -1826,6 +1826,7 @@ impl P {
         // DED-2: a template-id that names one specialization.
         let e = if matches!(e.k, EK::TemplId(None, ..)) { { let l = e.line; self.resolve_templ_id(e, l) } } else { e };
         self.check_unevaluated_dtor(&e, true);
+        self.warn_unevaluated_effect(&e);
         if let Some((fs, addr)) = Self::overload_set_of(&e) {
             if !self.in_template() && fs.iter().all(|&f| self.func(f).is_some_and(|f| !f.constrained && f.class.is_none_or(|c| !self.class_uncertain(c)))) {
                 if addr {
@@ -2016,7 +2017,14 @@ impl P {
                     } else {
                         // CV-6: cv on an array applies to the elements.
                         let (c, v) = (t.c, t.v);
-                        QTy { t: Ty::Array(Box::new(t), *n), c, v }
+                        let at = QTy { t: Ty::Array(Box::new(t), *n), c, v };
+                        let max: u128 = if crate::types::ilp32() { u32::MAX as u128 } else { u64::MAX as u128 };
+                        if n.is_some() && !self.in_template() && self.bytes_at_least(&at.t, 0).is_some_and(|b| b > max) {
+                            // STG-1, DCL-19: the size of the array in bytes
+                            // fits in std::size_t.
+                            self.error(line, "DCL-19", "the size of the array does not fit in std::size_t");
+                        }
+                        at
                     }
                 }
                 DOp::Func(f) => {
@@ -2844,9 +2852,11 @@ impl P {
                 self.pos += 1;
                 let _ = self.cons_clause(false)?;
             }
-            if d.pack && !self.in_template() && self.pack_refs.len() > pmark {
+            if d.pack && (!self.in_template() || self.inst_depth > 0) && self.pack_refs.len() > pmark {
                 // A function parameter pack in a specialization: one
-                // parameter for each element.
+                // parameter for each element. INST-5, PACK-1: in a member
+                // template of a class specialization, a pack of the class
+                // is known, and the pack expands in the declaration.
                 let n = self.pack_refs[pmark];
                 self.pack_refs.truncate(pmark);
                 let end = self.pos;
@@ -2917,6 +2927,7 @@ impl P {
                 }
             }
             // DCL-8: parameter type adjustments.
+            let was_array = matches!(ty.t, Ty::Array(..));
             ty = match ty.t {
                 Ty::Array(e, _) => QTy::new(Ty::Ptr(e)),
                 Ty::Func(_) => QTy::new(Ty::Ptr(Box::new(ty))),
@@ -3011,6 +3022,9 @@ impl P {
                 class: None,
             };
             let id = self.add_decl(&name, DK::Var(vi), line);
+            if was_array {
+                self.array_params.insert(id);
+            }
             if let Some(kept) = self.pending_default_errors.take() {
                 self.default_errors.insert(id, kept);
             }
@@ -3118,7 +3132,17 @@ impl P {
                     self.error(line, "DCL-19", "array bound must be greater than zero");
                     return Some(1);
                 }
-                Some(v as u64)
+                let max: u128 = if crate::types::ilp32() { u32::MAX as u128 } else { u64::MAX as u128 };
+                if v as u128 > max {
+                    // DCL-19: the bound converts to the type of sizeof
+                    // without loss of value.
+                    self.error(line, "DCL-19", "the array bound does not fit in std::size_t");
+                    return Some(1);
+                }
+                // u64::MAX stands for an unknown bound, and the values
+                // from ARR_PARAM for a parameter; a larger bound keeps a
+                // known size that does not fit.
+                Some((v as u64).min(ARR_PARAM - 1))
             }
             Err(crate::consteval::CeErr::NotConst(rule, msg)) => {
                 if !self.in_template() {

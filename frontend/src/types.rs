@@ -144,6 +144,8 @@ pub enum CVal {
     Addr(usize, u8),
     /// An object of class type: the variable that holds it.
     Obj(usize),
+    /// A pointer to a member: the member it names (TARG-12, MPTR-3).
+    Member(usize),
 }
 
 impl TArg {

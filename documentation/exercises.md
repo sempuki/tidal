@@ -239,7 +239,7 @@ No page has only a Predict batch that showed test names.
 | Exercise | State | Report |
 |---|---|---|
 | W0 | done | `reports/clean-room/java-programmer/` |
-| Front end | round 24 done: 6718/6878 pass, 6742 pass their check (`conformance.tsv`) | `reports/clean-room/rust-frontend/` |
+| Front end | round 25 done: 6801/6938 pass, 6825 pass their check (`conformance.tsv`) | `reports/clean-room/rust-frontend/` |
 | Guides | done: one tutorial and four how-to guides, not published (decision 0046) | `guides/` |
 | R-translation, R-objects, R-values, R-names, R-conversions, R-evaluation-order, R-constant-evaluation | done, 231/231, with test names, scored by the earlier rule that also counted an override's outcome | `reports/clean-room/R-foundations/` |
 | Designer roadmap | done, findings D1 to D33 | `reports/clean-room/roadmap/designer.md` |

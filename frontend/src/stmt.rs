@@ -1465,6 +1465,9 @@ impl P {
             }
             let vty = vi.ty.clone();
             let id = self.add_decl(&name, DK::Var(vi), line);
+            // JMP-6, LOOP-9: the loop variable has an initializer, so a
+            // jump into the body skips it.
+            self.jump_vars.insert(id);
             // The loop variable from `*__begin`.
             if let Some(lw) = &lowered {
                 if !vty.is_unknown() {
@@ -1544,6 +1547,10 @@ impl P {
                     _ => t.unqual(),
                 };
                 if el.as_ref().is_some_and(|e| *e != t) {
+                    if !self.in_template() {
+                        // AUTO-21, RFOR-1: the elements deduce one type.
+                        self.error(line, "AUTO-21", "the elements of the braced list have different types");
+                    }
                     return None;
                 }
                 el = Some(t);
@@ -1571,6 +1578,7 @@ impl P {
             return None;
         }
         let mark = self.d.list.len();
+        let mut no_prefix_inc = false;
         let r = (|| -> Option<(DeclId, DeclId, DeclId, Expr, Expr, Expr)> {
             let rt = nonref(&range.ty);
             // auto&& __range = range;
@@ -1635,7 +1643,11 @@ impl P {
             let ev = Expr::new(EK::Var(end_var), et, Cat::L, line);
             let cond = self.build_binary(BOp::Ne, bv.clone(), ev, line);
             let cond = self.contextual_bool(cond, "RFOR-1");
+            let inc_mark = self.d.list.len();
             let inc = self.build_unary(UOp::PreInc, bv.clone(), line);
+            if self.d.list[inc_mark..].iter().any(|d| d.sev == crate::diag::Severity::Error) && matches!(nonref(&bv.ty).t, Ty::Class(c) if !self.class_uncertain(c)) {
+                no_prefix_inc = true;
+            }
             let deref = self.build_unary(UOp::Deref, bv, line);
             for x in [&cond, &inc, &deref] {
                 if matches!(x.k, EK::Unknown(_)) || x.ty.is_unknown() {
@@ -1646,6 +1658,10 @@ impl P {
         })();
         if self.d.list.len() != mark || r.is_none() {
             self.d.list.truncate(mark);
+            if no_prefix_inc && !self.in_template() {
+                // RFOR-7: the iterator must have prefix `++`.
+                self.error(line, "RFOR-7", "the iterator of the range has no valid prefix '++'");
+            }
             return None;
         }
         r

@@ -648,6 +648,14 @@ pub struct P {
     /// ILC-3 in CTAD: the initializer-list phase is running, and no
     /// viable guide in it is not an error.
     pub ctad_list_phase: bool,
+    /// UN-19: the parameters declared with an array type (DCL-8).
+    pub array_params: std::collections::HashSet<DeclId>,
+    /// CTOR-22: the last constructor resolution found only candidates
+    /// that need a second user-defined conversion.
+    pub ctor_two_user: bool,
+    /// ICS-10: deduction of a converting constructor template that ICS-4
+    /// considers; its first parameter takes only a standard sequence.
+    pub ded_first_std: bool,
     pub ctad_none: bool,
     /// CTAD-27: the templates made for aggregate candidates.
     pub agg_guide_tids: std::collections::HashSet<usize>,
@@ -855,6 +863,10 @@ pub struct P {
     pub prospective_dtors: HashMap<usize, Vec<DeclId>>,
     pub param_nest: u32,
     pub auto_param_k: usize,
+    /// LAM-15: the parameter list of a lambda is being parsed, so its
+    /// placeholder parameters get names of their own and do not take the
+    /// arguments of an enclosing abbreviated function template.
+    pub lambda_params: bool,
 }
 
 impl P {
@@ -1009,6 +1021,9 @@ impl P {
             dep15_hit: std::cell::Cell::new(0),
             ins_log: Vec::new(),
             ctad_list_phase: false,
+            array_params: Default::default(),
+            ctor_two_user: false,
+            ded_first_std: false,
             ctad_none: false,
             agg_guide_tids: Default::default(),
             explicit_member_classes: Default::default(),
@@ -1109,6 +1124,7 @@ impl P {
             prospective_dtors: HashMap::new(),
             param_nest: 0,
             auto_param_k: 0,
+            lambda_params: false,
         };
         let g = p.new_scope(SK::Namespace, None, "");
         p.global = g;

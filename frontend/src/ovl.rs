@@ -534,7 +534,14 @@ impl P {
                 // ICS-10, OVL-P4: the left operand of a built-in `=` takes
                 // only a standard sequence; a compound assignment does not.
                 let std_only = k == 0 && op == "=";
-                match self.ics_form(o, p, std_only) {
+                // OVL-9, ICS-45: an operand of a built-in `!`, `&&`, or
+                // `||` also takes an explicit conversion function to bool.
+                let logical = matches!(op, "!" | "&&" | "||");
+                let ctx = self.contextual || logical;
+                let saved = std::mem::replace(&mut self.contextual, ctx);
+                let r = self.ics_form(o, p, std_only);
+                self.contextual = saved;
+                match r {
                     Ok(Some(s)) => seqs.push(s),
                     Ok(None) => {
                         ok = false;
@@ -944,7 +951,30 @@ impl P {
                 }
             }
         }
-        let cands: Vec<DeclId> = ctors.iter().copied().filter(|&cid| !(copy && self.func(cid).unwrap().explicit)).collect();
+        let mut cands: Vec<DeclId> = ctors.iter().copied().filter(|&cid| !(copy && self.func(cid).unwrap().explicit)).collect();
+        if copy && !list && args.len() == 1 && !matches!(nonref(&args[0].ty).t, Ty::Class(_)) && !is_list_arg(&args[0]) {
+            // ICS-10, CTOR-22: copy-initialization from a value that is not
+            // of class type converts it by one constructor, so the first
+            // parameter takes only a standard sequence.
+            let mut kept = Vec::new();
+            for &cid in &cands {
+                let Some(pt) = self.func(cid).and_then(|f| f.fty.params.first().cloned()) else { continue };
+                match self.ics_form(&args[0], &pt, true) {
+                    Ok(None) => {}
+                    _ => kept.push(cid),
+                }
+            }
+            if kept.is_empty() && !cands.is_empty() && !implicit_user {
+                let any_user = cands.iter().any(|&cid| self.func(cid).and_then(|f| f.fty.params.first().cloned()).is_some_and(|pt| matches!(self.ics_form(&args[0], &pt, false), Ok(Some(_)))));
+                if any_user {
+                    self.ctor_two_user = true;
+                    return CtorRes::NoViable;
+                }
+            }
+            if !kept.is_empty() {
+                cands = kept;
+            }
+        }
         self.ics_no_viable = false;
         let r = self.ics_select(None, &cands, args);
         match r {
@@ -1434,4 +1464,8 @@ impl P {
             }
         })
     }
+}
+
+fn is_list_arg(a: &Expr) -> bool {
+    matches!(a.k, EK::InitList(_))
 }

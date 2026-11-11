@@ -121,7 +121,16 @@ fn run_command(paths: &[String], m32: bool) -> ! {
             }
             let refs: Vec<&parser::P> = ps.iter().collect();
             let (o, others, bound) = interp::run::run_explored(&refs);
-            println!("{}", describe_run(&o));
+            match &o {
+                // P2-9: when every explored run gives the first result, the
+                // first line says so before it lists the choices.
+                interp::run::RunOutcome::Result(v, ch) if !ch.is_empty() && !others.is_empty() && others.iter().all(|x| matches!(x, interp::run::RunOutcome::Result(w, _) if w == v)) => {
+                    let list: Vec<String> = ch.iter().map(|c| format!("{} at line {} ({})", c.rule, c.line, c.what)).collect();
+                    let partial = if bound.is_some() { ", of a partial set" } else { "" };
+                    println!("result: {} in every explored order ({} runs{}); unspecified choices: {}", v, 1 + others.len(), partial, list.join("; "));
+                }
+                _ => println!("{}", describe_run(&o)),
+            }
             if !others.is_empty() {
                 // Decision 0048: the outcomes of the other choices.
                 let mut set: Vec<String> = Vec::new();

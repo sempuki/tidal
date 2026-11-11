@@ -440,6 +440,41 @@ impl P {
         Some(out)
     }
 
+    /// CTAD-9: the aggregate candidate for a designated list: one
+    /// parameter for each named member, with its declared type. The names
+    /// follow the order of the members (LIST-5).
+    fn aggregate_guide_designated(&mut self, tid: usize, names: &[String]) -> Option<Guide> {
+        let pc = match self.decls[self.templs[tid].decl].k {
+            DK::Template(TemplKind::Class(pc)) if pc != usize::MAX => pc,
+            _ => return None,
+        };
+        let ci = self.classes[pc].clone();
+        if !ci.complete || !ci.ctors.is_empty() || ci.has_virtual || !ci.bases.is_empty() || ci.key == 2 {
+            return None;
+        }
+        if self.user_guides.get(&tid).is_some_and(|v| !v.is_empty()) {
+            return None;
+        }
+        let mut ptys = Vec::new();
+        let mut last = None;
+        for n in names {
+            let k = ci.fields.iter().position(|&f| self.decls[f].name == *n)?;
+            if last.is_some_and(|l| k <= l) || self.member_access.get(&ci.fields[k]).copied().unwrap_or(0) != 0 {
+                return None;
+            }
+            last = Some(k);
+            let DK::Field(fi) = &self.decls[ci.fields[k]].k else { return None };
+            if matches!(fi.ty.t, Ty::Array(..)) || matches!(&fi.ty.t, Ty::Dep(d) if matches!(**d, Dep::Array(..))) {
+                return None;
+            }
+            ptys.push(fi.ty.clone());
+        }
+        let params = self.templs[tid].params.clone();
+        let depth = self.templs[tid].depth;
+        let result = dep(Dep::Id(TName::Templ(tid), Self::head_args(&params, depth)));
+        Some(Guide { head: params.clone(), depth, params: ptys, defaults: 0, variadic: false, fn_pack: None, result, explicit: false, kind: GKind::Aggregate, inherited: false, class_params: params.len(), cons: self.templs[tid].cons.clone(), line: 0, seq: 0, alias: None, explicit_cond: None, result_src: None })
+    }
+
     /// CTAD-9, CTAD-10, CTAD-27: the aggregate candidate for a list.
     fn aggregate_guide(&mut self, tid: usize, items: &[Expr], braced: bool) -> Option<Guide> {
         let pc = match self.decls[self.templs[tid].decl].k {
@@ -801,6 +836,28 @@ impl P {
                 _ => (vec![e.clone()], true),
             },
         };
+        if list && !args.is_empty() && args.iter().all(|a| matches!(&a.k, EK::Unknown(s) if s.starts_with("designator"))) {
+            // CTAD-9: a designated list has only the aggregate candidate,
+            // with the declared type of each named member.
+            let mut names = Vec::new();
+            let mut exprs = Vec::new();
+            for a in &args {
+                let EK::Unknown(s) = &a.k else { return None };
+                let mut parts = s.split(' ').skip(1);
+                let (Some(n), Some(id)) = (parts.next(), parts.next().and_then(|x| x.parse::<usize>().ok())) else { return None };
+                let e = self.designated.get(id)?.clone();
+                if e.ty.is_unknown() && !matches!(e.k, EK::InitList(_)) {
+                    return None;
+                }
+                names.push(n.to_string());
+                exprs.push(e);
+            }
+            let g = self.aggregate_guide_designated(tid, &names)?;
+            let saved = std::mem::replace(&mut self.ctad_list_phase, false);
+            let r = self.ctad_choose(tid, vec![g], exprs, form, line);
+            self.ctad_list_phase = saved;
+            return r;
+        }
         if args.iter().any(|a| a.ty.is_unknown() && !matches!(a.k, EK::InitList(_))) {
             return None;
         }

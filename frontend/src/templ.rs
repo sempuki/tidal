@@ -373,6 +373,7 @@ impl P {
                     CVal::Float(b) => f64::from_bits(*b).to_string(),
                     CVal::Null => "nullptr".into(),
                     CVal::Addr(d, k) => format!("&{}#{}", self.decls[*d].name, k),
+                    CVal::Member(d) => format!("&::{}#{}", self.decls[*d].name, d),
                     CVal::Obj(d) => format!("{{{}}}", d),
                 },
                 TArg::Val(_) => "<value>".into(),
@@ -1046,6 +1047,23 @@ impl P {
             }
             return bad(self, "TARG-13", "the argument is not a null pointer");
         }
+        if let Ty::MemPtr(..) = &pt.t {
+            // TARG-12: a pointer to member names a member of the class,
+            // or is null.
+            let mut x = &e;
+            while let EK::Conv(Conv::NoOp | Conv::LToR, inner) = &x.k {
+                x = inner;
+            }
+            if et.t == Ty::NullPtr {
+                return Ok(TVal::Const(pt, CVal::Null));
+            }
+            if let EK::MemberPtr(d) = &x.k {
+                if nonref(&x.ty).unqual().t == pt.t {
+                    return Ok(TVal::Const(pt, CVal::Member(*d)));
+                }
+            }
+            return Err(false);
+        }
         if let Ty::Ptr(pointee) = &pt.t {
             let mut x = &e;
             while let EK::Conv(Conv::NoOp | Conv::PtrConv | Conv::LToR, inner) = &x.k {
@@ -1294,6 +1312,7 @@ impl P {
                 let t = self.var(*d).map(|v| v.ty.clone()).unwrap_or(QTy::unknown());
                 Expr::new(EK::Var(*d), t, Cat::L, line)
             }
+            CVal::Member(d) => Expr::new(EK::MemberPtr(*d), ty.unqual(), Cat::PR, line),
         }
     }
 
@@ -2670,6 +2689,15 @@ impl P {
     /// DED-P2: deduction of the template arguments of the function
     /// template `fid` for a call with `args`.
     pub fn deduce_call(&mut self, fid: DeclId, explicit: Option<&Rc<Vec<RawArg>>>, args: &[Expr], line: u32) -> Ded {
+        // ICS-10: the flag holds for this deduction only, and not for the
+        // deductions that it causes.
+        let first_std = std::mem::replace(&mut self.ded_first_std, false);
+        let r = self.deduce_call_in(fid, explicit, args, line, first_std);
+        self.ded_first_std = first_std;
+        r
+    }
+
+    fn deduce_call_in(&mut self, fid: DeclId, explicit: Option<&Rc<Vec<RawArg>>>, args: &[Expr], line: u32, first_std: bool) -> Ded {
         let Some(&tid) = self.decl_tid.get(&fid) else { return Ded::Unknown };
         if self.templs[tid].dependent {
             return Ded::Unknown;
@@ -2881,7 +2909,8 @@ impl P {
         }
         // DED-28: a parameter whose type holds no template parameter is
         // checked against its argument before the function type is
-        // substituted.
+        // substituted. ICS-10: for a constructor template that ICS-4
+        // considers, the first parameter takes only a standard sequence.
         for (i, a) in args.iter().enumerate() {
             let Some(p) = ptys.get(i) else { break };
             if p.is_unknown() || pack_i.is_some_and(|k| i >= k) {
@@ -2892,7 +2921,7 @@ impl P {
             if !held.is_empty() {
                 continue;
             }
-            if let Ok(None) = self.ics_form(a, p, false) {
+            if let Ok(None) = self.ics_form(a, p, first_std && i == 0) {
                 return Ded::Fail;
             }
         }

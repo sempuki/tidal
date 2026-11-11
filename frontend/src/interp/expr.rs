@@ -452,7 +452,7 @@ impl<'a> Machine<'a> {
         let base = self.eval(a)?;
         let idx = self.eval_int(i)?;
         match base {
-            Val::Ptr(p) => self.ptr_add(&p, idx, "PFX-4"),
+            Val::Ptr(p) => self.ptr_add_ty(&p, idx, "PFX-4", &a.ty.t),
             Val::Null => ub("UN-7", "subscript of a null pointer"),
             _ => unsup("subscript"),
         }
@@ -2266,6 +2266,42 @@ impl<'a> Machine<'a> {
         }
     }
 
+    /// The size of the pointee of `pt` when `p` is a pointer to a byte
+    /// whose type is a pointer to another object type (STG-29, ADD-14).
+    fn typed_step(&self, p: &Ptr, pt: &Ty) -> Option<i64> {
+        let Ty::Ptr(el) = pt else { return None };
+        let el = el.unqual().t;
+        if el == Ty::Void || self.is_byte_type(&el) || matches!(el, Ty::Unknown | Ty::Dep(_)) {
+            return None;
+        }
+        if !p.bytes {
+            // An element of a byte array that a cast reached (STG-29).
+            if !p.array || p.bytes {
+                return None;
+            }
+            let base = Ptr { array: false, off: 0, ..p.clone() };
+            match self.type_at(&base) {
+                Some(QTy { t: Ty::Array(b, _), .. }) if self.is_byte_type(&b.unqual().t) => {}
+                _ => return None,
+            }
+        }
+        self.size_of(&el).ok().filter(|&s| s > 0)
+    }
+
+    /// Pointer arithmetic on a pointer of type `pt`. A pointer to a byte
+    /// whose type is a pointer to another object type counts the byte as
+    /// an array of one element of that type (ADD-14), and its step is the
+    /// size of the type (Q-0430, provisional answer).
+    pub fn ptr_add_ty(&self, p: &Ptr, n: i128, rule: &'static str, pt: &Ty) -> R<Ptr> {
+        if let Some(size) = self.typed_step(p, pt) {
+            if !(-1..=1).contains(&n) {
+                return ub("ADD-14", "arithmetic on a pointer to a byte moves past one element of its type");
+            }
+            return self.ptr_add(p, n * size as i128, rule);
+        }
+        self.ptr_add(p, n, rule)
+    }
+
     /// Pointer arithmetic: `rule` names the operation for an error.
     pub fn ptr_add(&self, p: &Ptr, n: i128, rule: &'static str) -> R<Ptr> {
         if p.bytes {
@@ -2526,7 +2562,7 @@ impl<'a> Machine<'a> {
                 Val::Float(if a.ty.t == Ty::Float { r as f32 as f64 } else { r })
             }
             Val::LD(f) => Val::LD(f.add(F80::from_i128(delta))),
-            Val::Ptr(p) => Val::Ptr(self.ptr_add(p, delta, ptr_rule)?),
+            Val::Ptr(p) => Val::Ptr(self.ptr_add_ty(p, delta, ptr_rule, &a.ty.t)?),
             Val::Null => return ub(ptr_rule, "increment of a null pointer"),
             _ => return unsup("increment"),
         };
@@ -2604,7 +2640,7 @@ impl<'a> Machine<'a> {
                     let Val::Int(n) = rv else { return unsup("pointer compound assignment") };
                     let n = if *bop == BOp::Sub { -n } else { n };
                     match old {
-                        Val::Ptr(p) => Val::Ptr(self.ptr_add(&p, n, "ADD-10")?),
+                        Val::Ptr(p) => Val::Ptr(self.ptr_add_ty(&p, n, "ADD-10", &l.ty.t)?),
                         _ if n == 0 => Val::Null,
                         _ => return ub("ADD-10", "arithmetic on a null pointer"),
                     }
@@ -2741,7 +2777,8 @@ impl<'a> Machine<'a> {
         let ct = a.ty.t.clone();
         match (&l, &r) {
             (Val::Ptr(_) | Val::Null, _) | (_, Val::Ptr(_) | Val::Null) | (Val::FnPtr(..), _) | (_, Val::FnPtr(..)) | (Val::Member(..), _) | (_, Val::Member(..)) => {
-                return self.ptr_binary(op, l, r);
+                let pt = if matches!(a.ty.t, Ty::Ptr(_)) { a.ty.t.clone() } else { b.ty.t.clone() };
+                return self.ptr_binary(op, l, r, &pt);
             }
             _ => {}
         }
@@ -2872,7 +2909,7 @@ impl<'a> Machine<'a> {
         }
     }
 
-    fn ptr_binary(&mut self, op: BOp, l: Val, r: Val) -> R<Val> {
+    fn ptr_binary(&mut self, op: BOp, l: Val, r: Val, pt: &Ty) -> R<Val> {
         if matches!(l, Val::Member(..)) || matches!(r, Val::Member(..)) {
             if !matches!(op, BOp::Eq | BOp::Ne) {
                 return unsup("pointer to member operation");
@@ -2914,9 +2951,9 @@ impl<'a> Machine<'a> {
             BOp::Add | BOp::Sub => match (&l, &r) {
                 (Val::Ptr(p), Val::Int(n)) => {
                     let n = if op == BOp::Sub { -n } else { *n };
-                    Ok(Val::Ptr(self.ptr_add(p, n, "ADD-10")?))
+                    Ok(Val::Ptr(self.ptr_add_ty(p, n, "ADD-10", pt)?))
                 }
-                (Val::Int(n), Val::Ptr(p)) if op == BOp::Add => Ok(Val::Ptr(self.ptr_add(p, *n, "ADD-10")?)),
+                (Val::Int(n), Val::Ptr(p)) if op == BOp::Add => Ok(Val::Ptr(self.ptr_add_ty(p, *n, "ADD-10", pt)?)),
                 (Val::Null, Val::Int(n)) | (Val::Int(n), Val::Null) => {
                     if *n == 0 {
                         Ok(Val::Null)
@@ -2928,7 +2965,15 @@ impl<'a> Machine<'a> {
                     if p.obj != q.obj || p.path != q.path || p.array != q.array {
                         return ub("ADD-11", "subtraction of pointers into different arrays");
                     }
-                    let d = p.off as i128 - q.off as i128;
+                    let mut d = p.off as i128 - q.off as i128;
+                    if let Some(size) = self.typed_step(p, pt).filter(|_| self.typed_step(q, pt).is_some()) {
+                        // ADD-14 (Q-0430): two typed pointers to bytes
+                        // count in units of their type.
+                        if d % size as i128 != 0 {
+                            return ub("ADD-14", "subtraction of pointers to different bytes as arrays of one");
+                        }
+                        d /= size as i128;
+                    }
                     let pt = Ty::ptrdiff_t();
                     if d < pt.int_min() || d > pt.int_max() {
                         // ADD-18: the difference does not fit in the type

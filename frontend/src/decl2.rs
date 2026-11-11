@@ -6151,10 +6151,10 @@ impl P {
     /// A default argument of a member function, parsed after its class.
     fn run_deferred_param(&mut self, pid: DeclId, df: &Deferred) {
         let line = self.line();
-        // DEFARG-4: `this` in a default argument, outside sizeof and
-        // decltype.
+        // DEFARG-4: `this` in a default argument, also in an operand
+        // that is not evaluated.
         let toks: Vec<String> = self.toks[df.start..df.end].iter().map(|t| t.text.clone()).collect();
-        if toks.iter().any(|t| t == "this") && !toks.iter().any(|t| t == "sizeof" || t == "decltype" || t == "noexcept") {
+        if toks.iter().any(|t| t == "this") {
             self.error(line, "DEFARG-4", "default argument uses 'this'");
         }
         let saved_class_depth = self.class_depth;
@@ -6310,6 +6310,10 @@ impl P {
                     // TRY-12: a handler of a function try block that can
                     // reach its end in a function that returns a value.
                     self.warn(self.decls[fid].line, "TRY-12", "a handler of the function try block can reach its end without a return statement");
+                }
+                if self.func(fid).is_some_and(|f| f.kind == FnKind::Dtor) && !self.in_template() && hs.iter().any(|h| names_member(&h.body, self)) {
+                    // TRY-13: also a destructor's function try block.
+                    self.warn(self.decls[fid].line, "TRY-13", "a handler of a destructor's function try block names a non-static member");
                 }
                 if self.func(fid).is_some_and(|f| f.kind == FnKind::Ctor) {
                     // TRY-13: a handler of a constructor's function try
@@ -6758,6 +6762,10 @@ impl P {
 
     /// TRY-5: what a handler parameter must not be.
     fn check_handler_param(&mut self, ds: &crate::decl::DeclSpec, d: &crate::decl::Declarator, ty: &QTy) {
+        if ds.has_alignas {
+            // ALN-2: no alignment specifier on a handler's variable.
+            self.error(d.line, "ALN-2", "alignas on the variable of a handler");
+        }
         let line = d.line;
         if !ds.storage.is_empty() || ds.register || ds.constexpr || ds.inline {
             self.error(line, "TRY-5", "a handler parameter with a storage class");
