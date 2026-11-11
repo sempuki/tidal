@@ -1,0 +1,32 @@
+failing: 204
+new failing: []
+changed status: []
+fixed: ['classes/access/enclosing-not-access-nested-function.cpp', 'classes/access/target-selects-private.cpp', 'classes/access/template-call-selects-private.cpp', 'expressions/conditional/class-prvalue-lvalue-private-copy.cpp', 'expressions/conditional/nonclass-and-class-both-ways.cpp', 'expressions/conditional/nonclass-converts-to-class.cpp', 'expressions/conditional/two-classes-several-conversions.cpp', 'expressions/new-delete/aligned-form-only-for-ordinary-type.cpp', 'expressions/new-delete/aligned-form-only-placement.cpp', 'templates/concepts/virtual-override.cpp', 'templates/declarations/default-repeated-function.cpp', 'templates/instantiation/class-static-member-function-type.cpp', 'templates/instantiation/explicit-declaration-internal.cpp', 'templates/instantiation/explicit-variable-wrong-type.cpp', 'templates/instantiation/virtual-object.cpp', 'templates/packs/capture-pack.cpp', 'templates/packs/pattern-without-pack.cpp', 'templates/packs/unnamed-pack-in-parentheses.cpp']
+classes/conversion-functions: 7 of 63 (11.1%)
+overloading/conversion-sequences: 12 of 138 (8.7%)
+templates/dependent-names: 10 of 122 (8.2%)
+foundations/language-support: 4 of 49 (8.2%)
+expressions/new-delete: 10 of 133 (7.5%)
+classes/comparisons: 6 of 82 (7.3%)
+templates/class-template-deduction: 8 of 117 (6.8%)
+templates/packs: 5 of 76 (6.6%)
+templates/arguments: 6 of 92 (6.5%)
+declarations/exception-specifications: 3 of 46 (6.5%)
+classes/initializer-lists: 2 of 31 (6.5%)
+statements/range-for: 2 of 34 (5.9%)
+reject: 458 of 559 named in frontend/src
+undefined: 52 of 57 named in frontend/src
+unspecified: 14 of 32 named in frontend/src
+impl-defined: 30 of 52 named in frontend/src
+711 rules with a run test; none passing for 11:
+  DEP-20 required ['run-unsupported']
+  DEP-25 required ['run-unsupported']
+  IF-12 required ['run-unsupported', 'run-unsupported']
+  JMP-16 required ['run-unsupported']
+  LAM-19 undefined ['run-unsupported']
+  ORD-9 required ['run-unsupported']
+  OVL-42 required ['run-unsupported']
+  PFX-22 required ['FALSE-REJECT', 'FALSE-REJECT']
+  SB-12 required ['run-unsupported']
+  TARG-12 required ['run-unsupported']
+  TSP-8 reject ['run-unsupported']

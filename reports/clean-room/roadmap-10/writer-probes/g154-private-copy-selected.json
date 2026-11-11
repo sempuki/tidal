@@ -1,0 +1,18 @@
+{
+ "prelude": "struct S { S() = default; private: S(const S&) = default; };\nstruct M { M() = default; M(const M&) = default; private: M(M&&) = default; };",
+ "template": "{prelude}\n{row}\nint main() {{ return 0; }}",
+ "rows": {
+  "copy-initialization from an S lvalue": "void h() { S s; S t = s; (void)t; }",
+  "by-value argument from an S lvalue": "void g(S); void h() { S s; g(s); }",
+  "return of an S parameter by value": "S h(const S& s) { return s; }",
+  "return of a local S (copy constructor private, no move)": "S h() { S s; return s; }",
+  "M: copy-initialization from an M xvalue (private move)": "void h() { M m; M t = static_cast<M&&>(m); (void)t; }",
+  "M: return of a local M (private move)": "M h() { M m; return m; }",
+  "M: by-value argument from an M prvalue (control, elided)": "void g(M); void h() { g(M()); }",
+  "S: return of an S prvalue (control, elided)": "S h() { return S(); }"
+ },
+ "cols": {
+  "": ""
+ },
+ "flags": []
+}

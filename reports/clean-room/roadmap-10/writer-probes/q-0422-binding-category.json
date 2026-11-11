@@ -1,0 +1,16 @@
+{
+ "prelude": "template <class X, class Y> constexpr bool same = false;\ntemplate <class X> constexpr bool same<X, X> = true;\nstruct Pair { int a; int b; };",
+ "template": "{prelude}\n{row}\nstatic_assert(same<decltype(first()), {col}>);\nint main() {{ return 0; }}",
+ "rows": {
+  "binding of a local, return (a)": "decltype(auto) first() { auto [a, b] = Pair{1, 2}; (void)b; return (a); }",
+  "binding by reference of a local, return (a)": "decltype(auto) first() { Pair p{1, 2}; auto& [a, b] = p; (void)b; return (a); }",
+  "binding of a local, return a": "decltype(auto) first() { auto [a, b] = Pair{1, 2}; (void)b; return a; }",
+  "local int, return (x) (control)": "decltype(auto) first() { int x = 1; return (x); }"
+ },
+ "cols": {
+  "int&": "int&",
+  "int&&": "int&&",
+  "int": "int"
+ },
+ "flags": []
+}

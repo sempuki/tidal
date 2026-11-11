@@ -1,0 +1,19 @@
+{
+ "prelude": "",
+ "template": "{row}\n{col}\nint main() {{ return 0; }}",
+ "rows": {
+  "variable template, inline constexpr": "template <class T> inline constexpr char tag = 0;\nstatic_assert(&tag<int> != &tag<long>);",
+  "variable template, constexpr": "template <class T> constexpr char tag = 0;\nstatic_assert(&tag<int> != &tag<long>);",
+  "static member of class template": "template <class T> struct K { static constexpr char tag = 0; };\nstatic_assert(&K<int>::tag != &K<long>::tag);",
+  "two inline constexpr variables": "inline constexpr char a = 0; inline constexpr char b = 0;\nstatic_assert(&a != &b);",
+  "two constexpr variables": "constexpr char a = 0; constexpr char b = 0;\nstatic_assert(&a != &b);",
+  "inline variable against itself (==)": "inline constexpr char a = 0;\nstatic_assert(&a == &a);",
+  "two static locals of an inline function": "inline const char* f() { static const char x = 0; return &x; }\nconstexpr char z = 0; static_assert(&z != nullptr);"
+ },
+ "cols": {
+  "": ""
+ },
+ "flags": [
+  "-fsanitize=null"
+ ]
+}

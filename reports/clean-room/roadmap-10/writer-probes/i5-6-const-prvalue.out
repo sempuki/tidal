@@ -1,0 +1,20 @@
+| | T unqualified (1) | T const (2) |
+|---|---|---|
+| const int prvalue | accept | reject |
+| const class prvalue | reject | accept |
+const int prvalue / T const (2) / clang-18: /tidal/build/probes/i5-6-const-prvalue/0001-const-int-prvalue--t-const-2.cpp:7:15: error: static assertion failed due to requirement 'fwd(give()) == 2'
+const int prvalue / T const (2) / clang-22: /tidal/build/probes/i5-6-const-prvalue/0001-const-int-prvalue--t-const-2.cpp:7:15: error: static assertion failed due to requirement 'fwd(give()) == 2'
+const int prvalue / T const (2) / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/i5-6-const-prvalue/0001-const-int-prvalue--t-const-2.cpp:7:15: error: static assertion failed due to requirement 'fwd(give()) == 2'
+const int prvalue / T const (2) / edg-7.0: line 7: error: static assertion failed
+const int prvalue / T const (2) / edg-7.0-ilp32: line 7: error: static assertion failed
+const int prvalue / T const (2) / gcc-14: /tidal/build/probes/i5-6-const-prvalue/0001-const-int-prvalue--t-const-2.cpp:7:27: error: static assertion failed
+const int prvalue / T const (2) / gcc-16: /tidal/build/probes/i5-6-const-prvalue/0001-const-int-prvalue--t-const-2.cpp:7:27: error: static assertion failed
+const int prvalue / T const (2) / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/i5-6-const-prvalue/0001-const-int-prvalue--t-const-2.cpp:7:27: error: static assertion failed
+const class prvalue / T unqualified (1) / clang-18: /tidal/build/probes/i5-6-const-prvalue/0002-const-class-prvalue--t-unqualified-1.cpp:7:15: error: static assertion failed due to requirement 'fwdc(givec()) == 1'
+const class prvalue / T unqualified (1) / clang-22: /tidal/build/probes/i5-6-const-prvalue/0002-const-class-prvalue--t-unqualified-1.cpp:7:15: error: static assertion failed due to requirement 'fwdc(givec()) == 1'
+const class prvalue / T unqualified (1) / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/i5-6-const-prvalue/0002-const-class-prvalue--t-unqualified-1.cpp:7:15: error: static assertion failed due to requirement 'fwdc(givec()) == 1'
+const class prvalue / T unqualified (1) / edg-7.0: -1.cpp", line 7: error: static assertion failed
+const class prvalue / T unqualified (1) / edg-7.0-ilp32: -1.cpp", line 7: error: static assertion failed
+const class prvalue / T unqualified (1) / gcc-14: /tidal/build/probes/i5-6-const-prvalue/0002-const-class-prvalue--t-unqualified-1.cpp:7:29: error: static assertion failed
+const class prvalue / T unqualified (1) / gcc-16: /tidal/build/probes/i5-6-const-prvalue/0002-const-class-prvalue--t-unqualified-1.cpp:7:29: error: static assertion failed
+const class prvalue / T unqualified (1) / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/i5-6-const-prvalue/0002-const-class-prvalue--t-unqualified-1.cpp:7:29: error: static assertion failed

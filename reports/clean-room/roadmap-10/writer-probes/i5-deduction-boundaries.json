@@ -1,0 +1,20 @@
+{
+ "prelude": "template <class T> struct Base {};\nstruct Two1 : Base<int> {}; struct Two2 : Base<int> {};\nstruct Both : Two1, Two2 {};\nstruct Priv : private Base<int> {};\nstruct Prot : protected Base<int> {};\nstruct Incomplete;\nstruct NoType {};\ntemplate <class A, class B> constexpr bool same = false;\ntemplate <class A> constexpr bool same<A, A> = true;\nconst int give() { return 7; }\nstruct C {}; const C givec() { return {}; }",
+ "template": "{prelude}\n{col}\nint main() {{ {row} return 0; }}",
+ "rows": {
+  "I5-4 two equal bases, reference": "Both b; static_assert(sizeof(up(b)) == 2);",
+  "I5-4 two equal bases, pointer": "Both b; static_assert(sizeof(upp(&b)) == 2);",
+  "I5-4 private base, reference": "Priv b; static_assert(sizeof(up(b)) == 2);",
+  "I5-4 protected base, reference": "Prot b; static_assert(sizeof(up(b)) == 2);",
+  "I5-5 T::type with T incomplete": "Incomplete* p = nullptr; static_assert(sizeof(qual(p)) == 2);",
+  "I5-5 T::type with T complete, no member (control)": "NoType* p = nullptr; static_assert(sizeof(qual(p)) == 2);",
+  "I5-6 const int prvalue forwarding": "static_assert(fwd(give()) == 1);",
+  "I5-6 const class prvalue forwarding": "static_assert(fwdc(givec()) == 1);",
+  "I5-8 const T** from int**": "int** pp = nullptr; static_assert(sizeof(qq(pp)) == 2);",
+  "I5-8 const T* const* from int** (control)": "int** pp = nullptr; static_assert(sizeof(qc(pp)) == 1);"
+ },
+ "cols": {
+  "with a fallback": "template <class T> char up(Base<T>&); short up(...);\ntemplate <class T> char upp(Base<T>*); short upp(...);\ntemplate <class T> char qual(T*, typename T::type = 0); short qual(...);\ntemplate <class T> constexpr int fwd(T&&) { return same<T, int> ? 1 : same<T, const int> ? 2 : 3; }\ntemplate <class T> constexpr int fwdc(T&&) { return same<T, const C> ? 1 : same<T, C> ? 2 : 3; }\ntemplate <class T> char qq(const T**); short qq(...);\ntemplate <class T> char qc(const T* const*); short qc(...);"
+ },
+ "flags": []
+}

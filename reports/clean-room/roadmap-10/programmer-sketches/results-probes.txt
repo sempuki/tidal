@@ -1,0 +1,90 @@
+=== probes/base_pack_braced_under_derived.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+=== probes/base_pack_paren_no_default.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: rejected [CTOR-15] at line 7: 'Leaf' is initialized two times 
+=== probes/base_pack_type_pack_under_derived.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+=== probes/friend_function_then_operator.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+=== probes/friend_struct_then_operator.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: unsupported at line 10: overloaded operator 
+=== probes/two_specializations_braced_mem_init.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: rejected [CTOR-15] at line 7: 'Leaf' is initialized two times 
+=== probes/two_specializations_paren_by_alias.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+=== probes/anonymous_struct_member_in_anonymous_union.cpp
+g++: built (warnings 0), exit 0 
+g++ ped: built (warnings 0), exit 0 
+g++ san: built (warnings 0), exit 0 
+clang++: FAILED: anonymous_struct_member_in_anonymous_union.cpp:4:11: error: anonymous types declared in an anonymous union are an extension [-Werror,-Wnested-anon-types] 1 error generated. 
+clang++ ped: FAILED: anonymous_struct_member_in_anonymous_union.cpp:4:11: error: anonymous types declared in an anonymous union are an extension [-Werror,-Wnested-anon-types] 1 error generated. 
+clang++ san: FAILED: anonymous_struct_member_in_anonymous_union.cpp:4:11: error: anonymous types declared in an anonymous union are an extension [-Werror,-Wnested-anon-types] 1 error generated. 
+EDG: rejects: "/w/anonymous_struct_member_in_anonymous_union.cpp", line 4: error: types
+tidal-fe: result: 0 
+=== probes/destructor_name_decltype.cpp
+g++: FAILED: destructor_name_decltype.cpp:7:7: error: expected class-name before ‘decltype’ 
+g++ ped: FAILED: destructor_name_decltype.cpp:7:7: error: expected class-name before ‘decltype’ 
+g++ san: FAILED: destructor_name_decltype.cpp:7:7: error: expected class-name before ‘decltype’ 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 
+=== probes/destructor_name_decltype_in_template.cpp
+g++: FAILED: destructor_name_decltype_in_template.cpp:5:25: error: expected identifier before ‘decltype’ [-Wtemplate-body] 
+g++ ped: FAILED: destructor_name_decltype_in_template.cpp:5:25: error: expected identifier before ‘decltype’ [-Wtemplate-body] 
+g++ san: FAILED: destructor_name_decltype_in_template.cpp:5:25: error: expected identifier before ‘decltype’ [-Wtemplate-body] 
+clang++: built (warnings 0), exit 0 
+clang++ ped: built (warnings 0), exit 0 
+clang++ san: built (warnings 0), exit 0 
+EDG: accepts
+tidal-fe: result: 0 

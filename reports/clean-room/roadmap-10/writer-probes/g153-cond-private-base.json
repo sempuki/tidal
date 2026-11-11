@@ -1,0 +1,15 @@
+{
+ "prelude": "struct Root { int v = 0; };\nstruct Hidden : private Root { friend int fr(bool, Hidden&, Root&); };\nstruct L : Root {}; struct R : Root {}; struct Amb : L, R {};\ntemplate <class A, class B> constexpr bool same = false;\ntemplate <class A> constexpr bool same<A, A> = true;",
+ "template": "{prelude}\n{row}\nint main() {{ return 0; }}",
+ "rows": {
+  "friend context: decltype is Root&": "int fr(bool b, Hidden& h, Root& r) { static_assert(same<decltype(b ? h : r), Root&>); return 0; }",
+  "friend context: decltype is Root (prvalue)": "int fr(bool b, Hidden& h, Root& r) { static_assert(same<decltype(b ? h : r), Root>); return 0; }",
+  "outside: requires-expression is false": "template <class H> constexpr bool ok = requires(bool b, H& h, Root& r) { b ? h : r; };\nstatic_assert(!ok<Hidden>);",
+  "outside: ambiguous base, requires-expression is false": "template <class H> constexpr bool ok = requires(bool b, H& h, Root& r) { b ? h : r; };\nstatic_assert(!ok<Amb>);",
+  "outside: unambiguous public base (control)": "template <class H> constexpr bool ok = requires(bool b, H& h, Root& r) { b ? h : r; };\nstatic_assert(ok<L>);"
+ },
+ "cols": {
+  "": ""
+ },
+ "flags": []
+}

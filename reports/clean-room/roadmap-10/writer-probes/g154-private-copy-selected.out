@@ -1,0 +1,58 @@
+| |  |
+|---|---|
+| copy-initialization from an S lvalue | reject |
+| by-value argument from an S lvalue | reject |
+| return of an S parameter by value | reject |
+| return of a local S (copy constructor private, no move) | reject |
+| M: copy-initialization from an M xvalue (private move) | reject |
+| M: return of a local M (private move) | reject |
+| M: by-value argument from an M prvalue (control, elided) | accept |
+| S: return of an S prvalue (control, elided) | accept |
+copy-initialization from an S lvalue /  / clang-18: /tidal/build/probes/g154-private-copy-selected/0000-copy-initialization-from-an-s-lvalue--x.cpp:3:23: error: calling a private constructor of class 'S'
+copy-initialization from an S lvalue /  / clang-22: /tidal/build/probes/g154-private-copy-selected/0000-copy-initialization-from-an-s-lvalue--x.cpp:3:23: error: calling a private constructor of class 'S'
+copy-initialization from an S lvalue /  / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/g154-private-copy-selected/0000-copy-initialization-from-an-s-lvalue--x.cpp:3:23: error: calling a private constructor of class 'S'
+copy-initialization from an S lvalue /  / edg-7.0: n-s-lvalue--x.cpp", line 3: error: "S::S(const S &)" (declared at
+copy-initialization from an S lvalue /  / edg-7.0-ilp32: n-s-lvalue--x.cpp", line 3: error: "S::S(const S &)" (declared at
+copy-initialization from an S lvalue /  / gcc-14: /tidal/build/probes/g154-private-copy-selected/0000-copy-initialization-from-an-s-lvalue--x.cpp:3:23: error: 'constexpr S::S(const S&)' is private within this context
+copy-initialization from an S lvalue /  / gcc-16: /tidal/build/probes/g154-private-copy-selected/0000-copy-initialization-from-an-s-lvalue--x.cpp:3:23: error: 'constexpr S::S(const S&)' is private within this context
+copy-initialization from an S lvalue /  / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/g154-private-copy-selected/0000-copy-initialization-from-an-s-lvalue--x.cpp:3:23: error: ‘constexpr S::S(const S&)’ is private within this context
+by-value argument from an S lvalue /  / clang-18: /tidal/build/probes/g154-private-copy-selected/0001-by-value-argument-from-an-s-lvalue--x.cpp:3:30: error: calling a private constructor of class 'S'
+by-value argument from an S lvalue /  / clang-22: /tidal/build/probes/g154-private-copy-selected/0001-by-value-argument-from-an-s-lvalue--x.cpp:3:30: error: calling a private constructor of class 'S'
+by-value argument from an S lvalue /  / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/g154-private-copy-selected/0001-by-value-argument-from-an-s-lvalue--x.cpp:3:30: error: calling a private constructor of class 'S'
+by-value argument from an S lvalue /  / edg-7.0: s-lvalue--x.cpp", line 3: error: "S::S(const S &)" (declared at line
+by-value argument from an S lvalue /  / edg-7.0-ilp32: s-lvalue--x.cpp", line 3: error: "S::S(const S &)" (declared at line
+by-value argument from an S lvalue /  / gcc-14: /tidal/build/probes/g154-private-copy-selected/0001-by-value-argument-from-an-s-lvalue--x.cpp:3:29: error: 'constexpr S::S(const S&)' is private within this context
+by-value argument from an S lvalue /  / gcc-16: /tidal/build/probes/g154-private-copy-selected/0001-by-value-argument-from-an-s-lvalue--x.cpp:3:29: error: 'constexpr S::S(const S&)' is private within this context
+by-value argument from an S lvalue /  / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/g154-private-copy-selected/0001-by-value-argument-from-an-s-lvalue--x.cpp:3:29: error: ‘constexpr S::S(const S&)’ is private within this context
+return of an S parameter by value /  / clang-18: /tidal/build/probes/g154-private-copy-selected/0002-return-of-an-s-parameter-by-value--x.cpp:3:26: error: calling a private constructor of class 'S'
+return of an S parameter by value /  / clang-22: /tidal/build/probes/g154-private-copy-selected/0002-return-of-an-s-parameter-by-value--x.cpp:3:26: error: calling a private constructor of class 'S'
+return of an S parameter by value /  / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/g154-private-copy-selected/0002-return-of-an-s-parameter-by-value--x.cpp:3:26: error: calling a private constructor of class 'S'
+return of an S parameter by value /  / edg-7.0: y-value--x.cpp", line 3: error: "S::S(const S &)" (declared at line
+return of an S parameter by value /  / edg-7.0-ilp32: y-value--x.cpp", line 3: error: "S::S(const S &)" (declared at line
+return of an S parameter by value /  / gcc-14: /tidal/build/probes/g154-private-copy-selected/0002-return-of-an-s-parameter-by-value--x.cpp:3:26: error: 'constexpr S::S(const S&)' is private within this context
+return of an S parameter by value /  / gcc-16: /tidal/build/probes/g154-private-copy-selected/0002-return-of-an-s-parameter-by-value--x.cpp:3:26: error: 'constexpr S::S(const S&)' is private within this context
+return of an S parameter by value /  / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/g154-private-copy-selected/0002-return-of-an-s-parameter-by-value--x.cpp:3:26: error: ‘constexpr S::S(const S&)’ is private within this context
+return of a local S (copy constructor private, no move) /  / clang-18: /tidal/build/probes/g154-private-copy-selected/0003-return-of-a-local-s-copy-constructor-private-no-move--x.cpp:3:21: error: calling a private constructor of class 'S'
+return of a local S (copy constructor private, no move) /  / clang-22: /tidal/build/probes/g154-private-copy-selected/0003-return-of-a-local-s-copy-constructor-private-no-move--x.cpp:3:21: error: calling a private constructor of class 'S'
+return of a local S (copy constructor private, no move) /  / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/g154-private-copy-selected/0003-return-of-a-local-s-copy-constructor-private-no-move--x.cpp:3:21: error: calling a private constructor of class 'S'
+return of a local S (copy constructor private, no move) /  / edg-7.0: onstructor-private-no-move--x.cpp", line 3: error: "S::S(const S &)"
+return of a local S (copy constructor private, no move) /  / edg-7.0-ilp32: onstructor-private-no-move--x.cpp", line 3: error: "S::S(const S &)"
+return of a local S (copy constructor private, no move) /  / gcc-14: /tidal/build/probes/g154-private-copy-selected/0003-return-of-a-local-s-copy-constructor-private-no-move--x.cpp:3:21: error: 'constexpr S::S(const S&)' is private within this context
+return of a local S (copy constructor private, no move) /  / gcc-16: /tidal/build/probes/g154-private-copy-selected/0003-return-of-a-local-s-copy-constructor-private-no-move--x.cpp:3:21: error: 'constexpr S::S(const S&)' is private within this context
+return of a local S (copy constructor private, no move) /  / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/g154-private-copy-selected/0003-return-of-a-local-s-copy-constructor-private-no-move--x.cpp:3:21: error: ‘constexpr S::S(const S&)’ is private within this context
+M: copy-initialization from an M xvalue (private move) /  / clang-18: /tidal/build/probes/g154-private-copy-selected/0004-m-copy-initialization-from-an-m-xvalue-private-move--x.cpp:3:23: error: calling a private constructor of class 'M'
+M: copy-initialization from an M xvalue (private move) /  / clang-22: /tidal/build/probes/g154-private-copy-selected/0004-m-copy-initialization-from-an-m-xvalue-private-move--x.cpp:3:23: error: calling a private constructor of class 'M'
+M: copy-initialization from an M xvalue (private move) /  / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/g154-private-copy-selected/0004-m-copy-initialization-from-an-m-xvalue-private-move--x.cpp:3:23: error: calling a private constructor of class 'M'
+M: copy-initialization from an M xvalue (private move) /  / edg-7.0: -an-m-xvalue-private-move--x.cpp", line 3: error: "M::M(M &&)"
+M: copy-initialization from an M xvalue (private move) /  / edg-7.0-ilp32: -an-m-xvalue-private-move--x.cpp", line 3: error: "M::M(M &&)"
+M: copy-initialization from an M xvalue (private move) /  / gcc-14: /tidal/build/probes/g154-private-copy-selected/0004-m-copy-initialization-from-an-m-xvalue-private-move--x.cpp:3:41: error: 'constexpr M::M(M&&)' is private within this context
+M: copy-initialization from an M xvalue (private move) /  / gcc-16: /tidal/build/probes/g154-private-copy-selected/0004-m-copy-initialization-from-an-m-xvalue-private-move--x.cpp:3:41: error: 'constexpr M::M(M&&)' is private within this context
+M: copy-initialization from an M xvalue (private move) /  / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/g154-private-copy-selected/0004-m-copy-initialization-from-an-m-xvalue-private-move--x.cpp:3:41: error: ‘constexpr M::M(M&&)’ is private within this context
+M: return of a local M (private move) /  / clang-18: /tidal/build/probes/g154-private-copy-selected/0005-m-return-of-a-local-m-private-move--x.cpp:3:21: error: calling a private constructor of class 'M'
+M: return of a local M (private move) /  / clang-22: /tidal/build/probes/g154-private-copy-selected/0005-m-return-of-a-local-m-private-move--x.cpp:3:21: error: calling a private constructor of class 'M'
+M: return of a local M (private move) /  / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/g154-private-copy-selected/0005-m-return-of-a-local-m-private-move--x.cpp:3:21: error: calling a private constructor of class 'M'
+M: return of a local M (private move) /  / edg-7.0: ate-move--x.cpp", line 3: error: "M::M(M &&)" (declared at line 2) is
+M: return of a local M (private move) /  / edg-7.0-ilp32: ate-move--x.cpp", line 3: error: "M::M(M &&)" (declared at line 2) is
+M: return of a local M (private move) /  / gcc-14: /tidal/build/probes/g154-private-copy-selected/0005-m-return-of-a-local-m-private-move--x.cpp:3:21: error: 'constexpr M::M(M&&)' is private within this context
+M: return of a local M (private move) /  / gcc-16: /tidal/build/probes/g154-private-copy-selected/0005-m-return-of-a-local-m-private-move--x.cpp:3:21: error: 'constexpr M::M(M&&)' is private within this context
+M: return of a local M (private move) /  / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/g154-private-copy-selected/0005-m-return-of-a-local-m-private-move--x.cpp:3:21: error: ‘constexpr M::M(M&&)’ is private within this context

@@ -1,0 +1,21 @@
+{
+ "prelude": "inline void* operator new(decltype(sizeof 0), void* where) noexcept { return where; }\nnamespace std {\ntemplate <class T, class... Args>\nconstexpr T* construct_at(T* location, Args&&... args) {\n  return ::new (static_cast<void*>(location)) T(static_cast<Args&&>(args)...);\n}\n}\nstruct C { int v; constexpr C(int x) : v(x) {} constexpr operator int() const { return v; } };",
+ "template": "{prelude}\n{col}\nconstexpr int probe() {{ U u; {row} }}\nstatic_assert(probe() == 7);\nint main() {{ return 0; }}",
+ "rows": {
+  "construct element 0, read element 0": "std::construct_at(&u.items[0], 7); return int(u.items[0]);",
+  "construct element 1 only, read element 1": "std::construct_at(&u.items[1], 7); return int(u.items[1]);",
+  "construct 0 and 1, read 1": "std::construct_at(&u.items[0], 1); std::construct_at(&u.items[1], 7); return int(u.items[1]);",
+  "construct 0 and 1, read 1 through a pointer to element 0": "std::construct_at(&u.items[0], 1); std::construct_at(&u.items[1], 7); T* p = &u.items[0]; return int(p[1]);",
+  "construct 0 and 1, read 1 through pointer from construct_at(0)": "T* p = std::construct_at(&u.items[0], 1); std::construct_at(&u.items[1], 7); return int(*(p + 1));",
+  "construct 0, then read 1 (never built)": "std::construct_at(&u.items[0], 7); return int(u.items[1]) + 7;",
+  "assign element 1 (UNI-13), read element 1": "u.items[1] = T(7); return int(u.items[1]);",
+  "take &u.items[1] with nothing built, then construct there": "T* q = &u.items[1]; std::construct_at(q, 7); return int(u.items[1]);"
+ },
+ "cols": {
+  "int, no active member": "using T = int; union U { T items[2]; constexpr U() {} };",
+  "int, other member active": "using T = int; union U { char none; T items[2]; constexpr U() : none() {} };",
+  "class, no active member": "using T = C; union U { T items[2]; constexpr U() {} };",
+  "class, other member active": "using T = C; union U { char none; T items[2]; constexpr U() : none() {} };"
+ },
+ "flags": []
+}

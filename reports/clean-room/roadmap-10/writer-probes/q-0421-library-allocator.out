@@ -1,0 +1,6 @@
+g++ : accept
+g++ -DASSIGN_INT: accept
+g++ -DASSIGN_MEMBER: accept
+clang++ : accept
+clang++ -DASSIGN_INT: reject
+clang++ -DASSIGN_MEMBER: reject

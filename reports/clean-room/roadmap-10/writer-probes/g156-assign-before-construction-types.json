@@ -1,0 +1,18 @@
+{
+ "prelude": "namespace std {\ntemplate <class T> struct allocator {\n  constexpr allocator() noexcept {}\n  constexpr T* allocate(decltype(sizeof 0) n) { return static_cast<T*>(::operator new(n * sizeof(T))); }\n  constexpr void deallocate(T* p, decltype(sizeof 0)) { ::operator delete(p); }\n};\n}\nstruct Pod { int v; };\nenum E { e0, e7 = 7 };\nstruct WithAssign { int v; constexpr WithAssign& operator=(int x) { v = x; return *this; } };",
+ "template": "{prelude}\nconstexpr int probe() {{ {row} }}\nstatic_assert(probe() == 7);\nint main() {{ return 0; }}",
+ "rows": {
+  "int element (Q-0421 control)": "std::allocator<int> a; int* p = a.allocate(2); p[1] = 7; int v = p[1]; a.deallocate(p, 2); return v;",
+  "double element": "std::allocator<double> a; double* p = a.allocate(2); p[1] = 7.0; int v = int(p[1]); a.deallocate(p, 2); return v;",
+  "pointer element": "int x = 7; std::allocator<int*> a; int** p = a.allocate(2); p[1] = &x; int v = *p[1]; a.deallocate(p, 2); return v;",
+  "enumeration element": "std::allocator<E> a; E* p = a.allocate(2); p[1] = e7; int v = p[1]; a.deallocate(p, 2); return v;",
+  "whole Pod element by assignment": "std::allocator<Pod> a; Pod* p = a.allocate(2); p[1] = Pod{7}; int v = p[1].v; a.deallocate(p, 2); return v;",
+  "member of a Pod element (Q-0421 control)": "std::allocator<Pod> a; Pod* p = a.allocate(2); p[1].v = 7; int v = p[1].v; a.deallocate(p, 2); return v;",
+  "class with user assignment operator": "std::allocator<WithAssign> a; WithAssign* p = a.allocate(2); p[1] = 7; int v = p[1].v; a.deallocate(p, 2); return v;",
+  "char element": "std::allocator<char> a; char* p = a.allocate(2); p[1] = 7; int v = p[1]; a.deallocate(p, 2); return v;"
+ },
+ "cols": {
+  "": ""
+ },
+ "flags": []
+}

@@ -1,0 +1,9 @@
+| |  |
+|---|---|
+| variable template, inline constexpr | accept |
+| variable template, constexpr | accept |
+| static member of class template | accept |
+| two inline constexpr variables | accept |
+| two constexpr variables | accept |
+| inline variable against itself (==) | accept |
+| two static locals of an inline function | accept |

@@ -1,0 +1,61 @@
+| |  |
+|---|---|
+| an object of S<int> at namespace scope | reject |
+| a local object in an uncalled function | reject |
+| sizeof(S<int>) only | accept |
+| a pointer S<int>* only | accept |
+| a new expression in an uncalled function | reject |
+| a temporary in an uncalled function | reject |
+| a call of nonvirtual g through a pointer | accept |
+| a call of f through a pointer | accept: edg-7.0, edg-7.0-ilp32; reject: gcc-14, gcc-16, clang-host, gcc-host, clang-18, clang-22 |
+| a derived class D only | accept |
+| an object of D | reject |
+| an explicit instantiation declaration, then an object | accept: gcc-14, gcc-host, gcc-16, clang-host, clang-18, clang-22; reject: edg-7.0, edg-7.0-ilp32 |
+an object of S<int> at namespace scope /  / clang-18: /tidal/build/probes/g157-virtual-instantiation-events/0000-an-object-of-s-int-at-namespace-scope--x.cpp:3:28: error: type 'int' cannot be used prior to '::' because it has no members
+an object of S<int> at namespace scope /  / clang-22: /tidal/build/probes/g157-virtual-instantiation-events/0000-an-object-of-s-int-at-namespace-scope--x.cpp:3:28: error: type 'int' cannot be used prior to '::' because it has no members
+an object of S<int> at namespace scope /  / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/g157-virtual-instantiation-events/0000-an-object-of-s-int-at-namespace-scope--x.cpp:3:28: error: type 'int' cannot be used prior to '::' because it has no members
+an object of S<int> at namespace scope /  / edg-7.0: at-namespace-scope--x.cpp", line 3: error: name followed by "::" must
+an object of S<int> at namespace scope /  / edg-7.0-ilp32: at-namespace-scope--x.cpp", line 3: error: name followed by "::" must
+an object of S<int> at namespace scope /  / gcc-14: /tidal/build/probes/g157-virtual-instantiation-events/0000-an-object-of-s-int-at-namespace-scope--x.cpp:3:38: error: 'missing' is not a member of 'int'
+an object of S<int> at namespace scope /  / gcc-16: /tidal/build/probes/g157-virtual-instantiation-events/0000-an-object-of-s-int-at-namespace-scope--x.cpp:3:38: error: 'missing' is not a member of 'int'
+an object of S<int> at namespace scope /  / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/g157-virtual-instantiation-events/0000-an-object-of-s-int-at-namespace-scope--x.cpp:3:38: error: ‘missing’ is not a member of ‘int’
+a local object in an uncalled function /  / clang-18: /tidal/build/probes/g157-virtual-instantiation-events/0001-a-local-object-in-an-uncalled-function--x.cpp:3:28: error: type 'int' cannot be used prior to '::' because it has no members
+a local object in an uncalled function /  / clang-22: /tidal/build/probes/g157-virtual-instantiation-events/0001-a-local-object-in-an-uncalled-function--x.cpp:3:28: error: type 'int' cannot be used prior to '::' because it has no members
+a local object in an uncalled function /  / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/g157-virtual-instantiation-events/0001-a-local-object-in-an-uncalled-function--x.cpp:3:28: error: type 'int' cannot be used prior to '::' because it has no members
+a local object in an uncalled function /  / edg-7.0: n-uncalled-function--x.cpp", line 3: error: name followed by "::"
+a local object in an uncalled function /  / edg-7.0-ilp32: n-uncalled-function--x.cpp", line 3: error: name followed by "::"
+a local object in an uncalled function /  / gcc-14: /tidal/build/probes/g157-virtual-instantiation-events/0001-a-local-object-in-an-uncalled-function--x.cpp:3:38: error: 'missing' is not a member of 'int'
+a local object in an uncalled function /  / gcc-16: /tidal/build/probes/g157-virtual-instantiation-events/0001-a-local-object-in-an-uncalled-function--x.cpp:3:38: error: 'missing' is not a member of 'int'
+a local object in an uncalled function /  / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/g157-virtual-instantiation-events/0001-a-local-object-in-an-uncalled-function--x.cpp:3:38: error: ‘missing’ is not a member of ‘int’
+a new expression in an uncalled function /  / clang-18: /tidal/build/probes/g157-virtual-instantiation-events/0004-a-new-expression-in-an-uncalled-function--x.cpp:3:28: error: type 'int' cannot be used prior to '::' because it has no members
+a new expression in an uncalled function /  / clang-22: /tidal/build/probes/g157-virtual-instantiation-events/0004-a-new-expression-in-an-uncalled-function--x.cpp:3:28: error: type 'int' cannot be used prior to '::' because it has no members
+a new expression in an uncalled function /  / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/g157-virtual-instantiation-events/0004-a-new-expression-in-an-uncalled-function--x.cpp:3:28: error: type 'int' cannot be used prior to '::' because it has no members
+a new expression in an uncalled function /  / edg-7.0: -an-uncalled-function--x.cpp", line 3: error: name followed by "::"
+a new expression in an uncalled function /  / edg-7.0-ilp32: -an-uncalled-function--x.cpp", line 3: error: name followed by "::"
+a new expression in an uncalled function /  / gcc-14: /tidal/build/probes/g157-virtual-instantiation-events/0004-a-new-expression-in-an-uncalled-function--x.cpp:3:38: error: 'missing' is not a member of 'int'
+a new expression in an uncalled function /  / gcc-16: /tidal/build/probes/g157-virtual-instantiation-events/0004-a-new-expression-in-an-uncalled-function--x.cpp:3:38: error: 'missing' is not a member of 'int'
+a new expression in an uncalled function /  / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/g157-virtual-instantiation-events/0004-a-new-expression-in-an-uncalled-function--x.cpp:3:38: error: ‘missing’ is not a member of ‘int’
+a temporary in an uncalled function /  / clang-18: /tidal/build/probes/g157-virtual-instantiation-events/0005-a-temporary-in-an-uncalled-function--x.cpp:3:28: error: type 'int' cannot be used prior to '::' because it has no members
+a temporary in an uncalled function /  / clang-22: /tidal/build/probes/g157-virtual-instantiation-events/0005-a-temporary-in-an-uncalled-function--x.cpp:3:28: error: type 'int' cannot be used prior to '::' because it has no members
+a temporary in an uncalled function /  / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/g157-virtual-instantiation-events/0005-a-temporary-in-an-uncalled-function--x.cpp:3:28: error: type 'int' cannot be used prior to '::' because it has no members
+a temporary in an uncalled function /  / edg-7.0: ncalled-function--x.cpp", line 3: error: name followed by "::" must
+a temporary in an uncalled function /  / edg-7.0-ilp32: ncalled-function--x.cpp", line 3: error: name followed by "::" must
+a temporary in an uncalled function /  / gcc-14: /tidal/build/probes/g157-virtual-instantiation-events/0005-a-temporary-in-an-uncalled-function--x.cpp:3:38: error: 'missing' is not a member of 'int'
+a temporary in an uncalled function /  / gcc-16: /tidal/build/probes/g157-virtual-instantiation-events/0005-a-temporary-in-an-uncalled-function--x.cpp:3:38: error: 'missing' is not a member of 'int'
+a temporary in an uncalled function /  / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/g157-virtual-instantiation-events/0005-a-temporary-in-an-uncalled-function--x.cpp:3:38: error: ‘missing’ is not a member of ‘int’
+a call of f through a pointer /  / clang-18: /tidal/build/probes/g157-virtual-instantiation-events/0007-a-call-of-f-through-a-pointer--x.cpp:3:28: error: type 'int' cannot be used prior to '::' because it has no members
+a call of f through a pointer /  / clang-22: /tidal/build/probes/g157-virtual-instantiation-events/0007-a-call-of-f-through-a-pointer--x.cpp:3:28: error: type 'int' cannot be used prior to '::' because it has no members
+a call of f through a pointer /  / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/g157-virtual-instantiation-events/0007-a-call-of-f-through-a-pointer--x.cpp:3:28: error: type 'int' cannot be used prior to '::' because it has no members
+a call of f through a pointer /  / gcc-14: /tidal/build/probes/g157-virtual-instantiation-events/0007-a-call-of-f-through-a-pointer--x.cpp:3:38: error: 'missing' is not a member of 'int'
+a call of f through a pointer /  / gcc-16: /tidal/build/probes/g157-virtual-instantiation-events/0007-a-call-of-f-through-a-pointer--x.cpp:3:38: error: 'missing' is not a member of 'int'
+a call of f through a pointer /  / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/g157-virtual-instantiation-events/0007-a-call-of-f-through-a-pointer--x.cpp:3:38: error: ‘missing’ is not a member of ‘int’
+an object of D /  / clang-18: /tidal/build/probes/g157-virtual-instantiation-events/0009-an-object-of-d--x.cpp:3:28: error: type 'int' cannot be used prior to '::' because it has no members
+an object of D /  / clang-22: /tidal/build/probes/g157-virtual-instantiation-events/0009-an-object-of-d--x.cpp:3:28: error: type 'int' cannot be used prior to '::' because it has no members
+an object of D /  / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/g157-virtual-instantiation-events/0009-an-object-of-d--x.cpp:3:28: error: type 'int' cannot be used prior to '::' because it has no members
+an object of D /  / edg-7.0: pp", line 3: error: name followed by "::" must be a class or
+an object of D /  / edg-7.0-ilp32: pp", line 3: error: name followed by "::" must be a class or
+an object of D /  / gcc-14: /tidal/build/probes/g157-virtual-instantiation-events/0009-an-object-of-d--x.cpp:3:38: error: 'missing' is not a member of 'int'
+an object of D /  / gcc-16: /tidal/build/probes/g157-virtual-instantiation-events/0009-an-object-of-d--x.cpp:3:38: error: 'missing' is not a member of 'int'
+an object of D /  / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/g157-virtual-instantiation-events/0009-an-object-of-d--x.cpp:3:38: error: ‘missing’ is not a member of ‘int’
+an explicit instantiation declaration, then an object /  / edg-7.0: iation-declaration-then-an-object--x.cpp", line 3: error: name
+an explicit instantiation declaration, then an object /  / edg-7.0-ilp32: iation-declaration-then-an-object--x.cpp", line 3: error: name

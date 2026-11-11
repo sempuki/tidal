@@ -1,0 +1,34 @@
+| |  |
+|---|---|
+| int element (Q-0421 control) | accept: edg-7.0-ilp32, gcc-host, gcc-16, gcc-14, edg-7.0; reject: clang-host, clang-18, clang-22 |
+| double element | accept: gcc-16, gcc-host, edg-7.0, gcc-14, edg-7.0-ilp32; reject: clang-host, clang-18, clang-22 |
+| pointer element | accept: edg-7.0, gcc-14, gcc-host, edg-7.0-ilp32, gcc-16; reject: clang-host, clang-18, clang-22 |
+| enumeration element | accept: edg-7.0, edg-7.0-ilp32, gcc-host, gcc-16, gcc-14; reject: clang-host, clang-18, clang-22 |
+| whole Pod element by assignment | accept: edg-7.0-ilp32, edg-7.0, gcc-14, gcc-host, gcc-16; reject: clang-host, clang-18, clang-22 |
+| member of a Pod element (Q-0421 control) | accept: edg-7.0, gcc-host, gcc-14, edg-7.0-ilp32, gcc-16; reject: clang-host, clang-18, clang-22 |
+| class with user assignment operator | accept: edg-7.0, edg-7.0-ilp32, gcc-host, gcc-16, gcc-14; reject: clang-18, clang-host, clang-22 |
+| char element | accept: edg-7.0, edg-7.0-ilp32, gcc-14, gcc-host, gcc-16; reject: clang-host, clang-18, clang-22 |
+int element (Q-0421 control) /  / clang-18: /tidal/build/probes/g156-assign-before-construction-types/0000-int-element-q-0421-control--x.cpp:12:15: error: static assertion expression is not an integral constant expression
+int element (Q-0421 control) /  / clang-22: /tidal/build/probes/g156-assign-before-construction-types/0000-int-element-q-0421-control--x.cpp:12:15: error: static assertion expression is not an integral constant expression
+int element (Q-0421 control) /  / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/g156-assign-before-construction-types/0000-int-element-q-0421-control--x.cpp:12:15: error: static assertion expression is not an integral constant expression
+double element /  / clang-18: /tidal/build/probes/g156-assign-before-construction-types/0001-double-element--x.cpp:12:15: error: static assertion expression is not an integral constant expression
+double element /  / clang-22: /tidal/build/probes/g156-assign-before-construction-types/0001-double-element--x.cpp:12:15: error: static assertion expression is not an integral constant expression
+double element /  / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/g156-assign-before-construction-types/0001-double-element--x.cpp:12:15: error: static assertion expression is not an integral constant expression
+pointer element /  / clang-18: /tidal/build/probes/g156-assign-before-construction-types/0002-pointer-element--x.cpp:12:15: error: static assertion expression is not an integral constant expression
+pointer element /  / clang-22: /tidal/build/probes/g156-assign-before-construction-types/0002-pointer-element--x.cpp:12:15: error: static assertion expression is not an integral constant expression
+pointer element /  / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/g156-assign-before-construction-types/0002-pointer-element--x.cpp:12:15: error: static assertion expression is not an integral constant expression
+enumeration element /  / clang-18: /tidal/build/probes/g156-assign-before-construction-types/0003-enumeration-element--x.cpp:12:15: error: static assertion expression is not an integral constant expression
+enumeration element /  / clang-22: /tidal/build/probes/g156-assign-before-construction-types/0003-enumeration-element--x.cpp:12:15: error: static assertion expression is not an integral constant expression
+enumeration element /  / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/g156-assign-before-construction-types/0003-enumeration-element--x.cpp:12:15: error: static assertion expression is not an integral constant expression
+whole Pod element by assignment /  / clang-18: /tidal/build/probes/g156-assign-before-construction-types/0004-whole-pod-element-by-assignment--x.cpp:12:15: error: static assertion expression is not an integral constant expression
+whole Pod element by assignment /  / clang-22: /tidal/build/probes/g156-assign-before-construction-types/0004-whole-pod-element-by-assignment--x.cpp:12:15: error: static assertion expression is not an integral constant expression
+whole Pod element by assignment /  / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/g156-assign-before-construction-types/0004-whole-pod-element-by-assignment--x.cpp:12:15: error: static assertion expression is not an integral constant expression
+member of a Pod element (Q-0421 control) /  / clang-18: /tidal/build/probes/g156-assign-before-construction-types/0005-member-of-a-pod-element-q-0421-control--x.cpp:12:15: error: static assertion expression is not an integral constant expression
+member of a Pod element (Q-0421 control) /  / clang-22: /tidal/build/probes/g156-assign-before-construction-types/0005-member-of-a-pod-element-q-0421-control--x.cpp:12:15: error: static assertion expression is not an integral constant expression
+member of a Pod element (Q-0421 control) /  / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/g156-assign-before-construction-types/0005-member-of-a-pod-element-q-0421-control--x.cpp:12:15: error: static assertion expression is not an integral constant expression
+class with user assignment operator /  / clang-18: /tidal/build/probes/g156-assign-before-construction-types/0006-class-with-user-assignment-operator--x.cpp:12:15: error: static assertion expression is not an integral constant expression
+class with user assignment operator /  / clang-22: /tidal/build/probes/g156-assign-before-construction-types/0006-class-with-user-assignment-operator--x.cpp:12:15: error: static assertion expression is not an integral constant expression
+class with user assignment operator /  / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/g156-assign-before-construction-types/0006-class-with-user-assignment-operator--x.cpp:12:15: error: static assertion expression is not an integral constant expression
+char element /  / clang-18: /tidal/build/probes/g156-assign-before-construction-types/0007-char-element--x.cpp:12:15: error: static assertion expression is not an integral constant expression
+char element /  / clang-22: /tidal/build/probes/g156-assign-before-construction-types/0007-char-element--x.cpp:12:15: error: static assertion expression is not an integral constant expression
+char element /  / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/g156-assign-before-construction-types/0007-char-element--x.cpp:12:15: error: static assertion expression is not an integral constant expression

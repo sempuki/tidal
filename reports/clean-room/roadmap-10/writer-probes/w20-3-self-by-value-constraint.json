@@ -1,0 +1,19 @@
+{
+ "prelude": "",
+ "template": "struct Box {{\n  Box() = default;\n  {col}\n}};\ntemplate <class T> concept Boxable = requires(const T& t) {{ Box(t); }};\nint main() {{ {row} return 0; }}",
+ "rows": {
+  "static_assert(Boxable<Box>)": "static_assert(Boxable<Box>);",
+  "static_assert(Boxable<int>)": "static_assert(Boxable<int>);",
+  "copy of a const Box lvalue": "const Box b{}; Box c(b); (void)c;",
+  "copy-initialization from a Box lvalue": "Box b; Box c = b; (void)c;",
+  "Box from int": "Box c(1); (void)c;"
+ },
+ "cols": {
+  "template Box(T), requires T(t)": "template <class T> requires requires(const T& t) { T(t); } Box(T) {}",
+  "template Box(T), requires Boxable<T>": "template <class T> requires requires(const T& t) { Box(t); } Box(T) {}",
+  "template Box(const T&), requires T(t)": "template <class T> requires requires(const T& t) { T(t); } Box(const T&) {}",
+  "template Box(const T&), requires Box(t)": "template <class T> requires requires(const T& t) { Box(t); } Box(const T&) {}",
+  "template Box(T), no constraint": "template <class T> Box(T) {}"
+ },
+ "flags": []
+}

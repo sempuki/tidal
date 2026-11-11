@@ -1,0 +1,13 @@
+{
+ "prelude": "template <class A, class B> constexpr bool same = false;\ntemplate <class A> constexpr bool same<A, A> = true;\nconstexpr const int give() { return 7; }\nstruct C {}; constexpr const C givec() { return {}; }\ntemplate <class T> constexpr int fwd(T&&) { return same<T, int> ? 1 : same<T, const int> ? 2 : 3; }\ntemplate <class T> constexpr int fwdc(T&&) { return same<T, C> ? 1 : same<T, const C> ? 2 : 3; }",
+ "template": "{prelude}\nstatic_assert({row} == {col});\nint main() {{ return 0; }}",
+ "rows": {
+  "const int prvalue": "fwd(give())",
+  "const class prvalue": "fwdc(givec())"
+ },
+ "cols": {
+  "T unqualified (1)": "1",
+  "T const (2)": "2"
+ },
+ "flags": []
+}

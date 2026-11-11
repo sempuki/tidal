@@ -1,0 +1,70 @@
+| | int& | int&& | int |
+|---|---|---|---|
+| binding of a local, return (a) | accept: clang-18, gcc-host, gcc-16, clang-host, gcc-14, clang-22; reject: edg-7.0-ilp32, edg-7.0 | accept: edg-7.0, edg-7.0-ilp32; reject: gcc-16, gcc-14, clang-18, clang-host, gcc-host, clang-22 | reject |
+| binding by reference of a local, return (a) | accept: gcc-16, gcc-host, clang-host, gcc-14, clang-18, clang-22; reject: edg-7.0-ilp32, edg-7.0 | accept: edg-7.0, edg-7.0-ilp32; reject: gcc-14, gcc-16, gcc-host, clang-host, clang-18, clang-22 | reject |
+| binding of a local, return a | reject | reject | accept |
+| local int, return (x) (control) | reject | accept | reject |
+binding of a local, return (a) / int& / edg-7.0: int.cpp", line 5: error: static assertion failed
+binding of a local, return (a) / int& / edg-7.0-ilp32: int.cpp", line 5: error: static assertion failed
+binding of a local, return (a) / int&& / clang-18: /tidal/build/probes/q-0422-binding-category/0001-binding-of-a-local-return-a--int.cpp:5:15: error: static assertion failed due to requirement 'same<int &, int &&>'
+binding of a local, return (a) / int&& / clang-22: /tidal/build/probes/q-0422-binding-category/0001-binding-of-a-local-return-a--int.cpp:5:15: error: static assertion failed due to requirement 'same<int &, int &&>'
+binding of a local, return (a) / int&& / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/q-0422-binding-category/0001-binding-of-a-local-return-a--int.cpp:5:15: error: static assertion failed due to requirement 'same<int &, int &&>'
+binding of a local, return (a) / int&& / gcc-14: /tidal/build/probes/q-0422-binding-category/0001-binding-of-a-local-return-a--int.cpp:5:15: error: static assertion failed
+binding of a local, return (a) / int&& / gcc-16: /tidal/build/probes/q-0422-binding-category/0001-binding-of-a-local-return-a--int.cpp:5:15: error: static assertion failed
+binding of a local, return (a) / int&& / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/q-0422-binding-category/0001-binding-of-a-local-return-a--int.cpp:5:15: error: static assertion failed
+binding of a local, return (a) / int / clang-18: /tidal/build/probes/q-0422-binding-category/0002-binding-of-a-local-return-a--int.cpp:5:15: error: static assertion failed due to requirement 'same<int &, int>'
+binding of a local, return (a) / int / clang-22: /tidal/build/probes/q-0422-binding-category/0002-binding-of-a-local-return-a--int.cpp:5:15: error: static assertion failed due to requirement 'same<int &, int>'
+binding of a local, return (a) / int / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/q-0422-binding-category/0002-binding-of-a-local-return-a--int.cpp:5:15: error: static assertion failed due to requirement 'same<int &, int>'
+binding of a local, return (a) / int / edg-7.0: int.cpp", line 5: error: static assertion failed
+binding of a local, return (a) / int / edg-7.0-ilp32: int.cpp", line 5: error: static assertion failed
+binding of a local, return (a) / int / gcc-14: /tidal/build/probes/q-0422-binding-category/0002-binding-of-a-local-return-a--int.cpp:5:15: error: static assertion failed
+binding of a local, return (a) / int / gcc-16: /tidal/build/probes/q-0422-binding-category/0002-binding-of-a-local-return-a--int.cpp:5:15: error: static assertion failed
+binding of a local, return (a) / int / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/q-0422-binding-category/0002-binding-of-a-local-return-a--int.cpp:5:15: error: static assertion failed
+binding by reference of a local, return (a) / int& / edg-7.0: al-return-a--int.cpp", line 5: error: static assertion failed
+binding by reference of a local, return (a) / int& / edg-7.0-ilp32: al-return-a--int.cpp", line 5: error: static assertion failed
+binding by reference of a local, return (a) / int&& / clang-18: /tidal/build/probes/q-0422-binding-category/0004-binding-by-reference-of-a-local-return-a--int.cpp:5:15: error: static assertion failed due to requirement 'same<int &, int &&>'
+binding by reference of a local, return (a) / int&& / clang-22: /tidal/build/probes/q-0422-binding-category/0004-binding-by-reference-of-a-local-return-a--int.cpp:5:15: error: static assertion failed due to requirement 'same<int &, int &&>'
+binding by reference of a local, return (a) / int&& / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/q-0422-binding-category/0004-binding-by-reference-of-a-local-return-a--int.cpp:5:15: error: static assertion failed due to requirement 'same<int &, int &&>'
+binding by reference of a local, return (a) / int&& / gcc-14: /tidal/build/probes/q-0422-binding-category/0004-binding-by-reference-of-a-local-return-a--int.cpp:5:15: error: static assertion failed
+binding by reference of a local, return (a) / int&& / gcc-16: /tidal/build/probes/q-0422-binding-category/0004-binding-by-reference-of-a-local-return-a--int.cpp:5:15: error: static assertion failed
+binding by reference of a local, return (a) / int&& / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/q-0422-binding-category/0004-binding-by-reference-of-a-local-return-a--int.cpp:5:15: error: static assertion failed
+binding by reference of a local, return (a) / int / clang-18: /tidal/build/probes/q-0422-binding-category/0005-binding-by-reference-of-a-local-return-a--int.cpp:5:15: error: static assertion failed due to requirement 'same<int &, int>'
+binding by reference of a local, return (a) / int / clang-22: /tidal/build/probes/q-0422-binding-category/0005-binding-by-reference-of-a-local-return-a--int.cpp:5:15: error: static assertion failed due to requirement 'same<int &, int>'
+binding by reference of a local, return (a) / int / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/q-0422-binding-category/0005-binding-by-reference-of-a-local-return-a--int.cpp:5:15: error: static assertion failed due to requirement 'same<int &, int>'
+binding by reference of a local, return (a) / int / edg-7.0: al-return-a--int.cpp", line 5: error: static assertion failed
+binding by reference of a local, return (a) / int / edg-7.0-ilp32: al-return-a--int.cpp", line 5: error: static assertion failed
+binding by reference of a local, return (a) / int / gcc-14: /tidal/build/probes/q-0422-binding-category/0005-binding-by-reference-of-a-local-return-a--int.cpp:5:15: error: static assertion failed
+binding by reference of a local, return (a) / int / gcc-16: /tidal/build/probes/q-0422-binding-category/0005-binding-by-reference-of-a-local-return-a--int.cpp:5:15: error: static assertion failed
+binding by reference of a local, return (a) / int / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/q-0422-binding-category/0005-binding-by-reference-of-a-local-return-a--int.cpp:5:15: error: static assertion failed
+binding of a local, return a / int& / clang-18: /tidal/build/probes/q-0422-binding-category/0006-binding-of-a-local-return-a--int.cpp:5:15: error: static assertion failed due to requirement 'same<int, int &>'
+binding of a local, return a / int& / clang-22: /tidal/build/probes/q-0422-binding-category/0006-binding-of-a-local-return-a--int.cpp:5:15: error: static assertion failed due to requirement 'same<int, int &>'
+binding of a local, return a / int& / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/q-0422-binding-category/0006-binding-of-a-local-return-a--int.cpp:5:15: error: static assertion failed due to requirement 'same<int, int &>'
+binding of a local, return a / int& / edg-7.0: int.cpp", line 5: error: static assertion failed
+binding of a local, return a / int& / edg-7.0-ilp32: int.cpp", line 5: error: static assertion failed
+binding of a local, return a / int& / gcc-14: /tidal/build/probes/q-0422-binding-category/0006-binding-of-a-local-return-a--int.cpp:5:15: error: static assertion failed
+binding of a local, return a / int& / gcc-16: /tidal/build/probes/q-0422-binding-category/0006-binding-of-a-local-return-a--int.cpp:5:15: error: static assertion failed
+binding of a local, return a / int& / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/q-0422-binding-category/0006-binding-of-a-local-return-a--int.cpp:5:15: error: static assertion failed
+binding of a local, return a / int&& / clang-18: /tidal/build/probes/q-0422-binding-category/0007-binding-of-a-local-return-a--int.cpp:5:15: error: static assertion failed due to requirement 'same<int, int &&>'
+binding of a local, return a / int&& / clang-22: /tidal/build/probes/q-0422-binding-category/0007-binding-of-a-local-return-a--int.cpp:5:15: error: static assertion failed due to requirement 'same<int, int &&>'
+binding of a local, return a / int&& / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/q-0422-binding-category/0007-binding-of-a-local-return-a--int.cpp:5:15: error: static assertion failed due to requirement 'same<int, int &&>'
+binding of a local, return a / int&& / edg-7.0: int.cpp", line 5: error: static assertion failed
+binding of a local, return a / int&& / edg-7.0-ilp32: int.cpp", line 5: error: static assertion failed
+binding of a local, return a / int&& / gcc-14: /tidal/build/probes/q-0422-binding-category/0007-binding-of-a-local-return-a--int.cpp:5:15: error: static assertion failed
+binding of a local, return a / int&& / gcc-16: /tidal/build/probes/q-0422-binding-category/0007-binding-of-a-local-return-a--int.cpp:5:15: error: static assertion failed
+binding of a local, return a / int&& / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/q-0422-binding-category/0007-binding-of-a-local-return-a--int.cpp:5:15: error: static assertion failed
+local int, return (x) (control) / int& / clang-18: /tidal/build/probes/q-0422-binding-category/0009-local-int-return-x-control--int.cpp:5:15: error: static assertion failed due to requirement 'same<int &&, int &>'
+local int, return (x) (control) / int& / clang-22: /tidal/build/probes/q-0422-binding-category/0009-local-int-return-x-control--int.cpp:5:15: error: static assertion failed due to requirement 'same<int &&, int &>'
+local int, return (x) (control) / int& / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/q-0422-binding-category/0009-local-int-return-x-control--int.cpp:5:15: error: static assertion failed due to requirement 'same<int &&, int &>'
+local int, return (x) (control) / int& / edg-7.0: nt.cpp", line 5: error: static assertion failed
+local int, return (x) (control) / int& / edg-7.0-ilp32: nt.cpp", line 5: error: static assertion failed
+local int, return (x) (control) / int& / gcc-14: /tidal/build/probes/q-0422-binding-category/0009-local-int-return-x-control--int.cpp:5:15: error: static assertion failed
+local int, return (x) (control) / int& / gcc-16: /tidal/build/probes/q-0422-binding-category/0009-local-int-return-x-control--int.cpp:5:15: error: static assertion failed
+local int, return (x) (control) / int& / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/q-0422-binding-category/0009-local-int-return-x-control--int.cpp:5:15: error: static assertion failed
+local int, return (x) (control) / int / clang-18: /tidal/build/probes/q-0422-binding-category/0011-local-int-return-x-control--int.cpp:5:15: error: static assertion failed due to requirement 'same<int &&, int>'
+local int, return (x) (control) / int / clang-22: /tidal/build/probes/q-0422-binding-category/0011-local-int-return-x-control--int.cpp:5:15: error: static assertion failed due to requirement 'same<int &&, int>'
+local int, return (x) (control) / int / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/q-0422-binding-category/0011-local-int-return-x-control--int.cpp:5:15: error: static assertion failed due to requirement 'same<int &&, int>'
+local int, return (x) (control) / int / edg-7.0: nt.cpp", line 5: error: static assertion failed
+local int, return (x) (control) / int / edg-7.0-ilp32: nt.cpp", line 5: error: static assertion failed
+local int, return (x) (control) / int / gcc-14: /tidal/build/probes/q-0422-binding-category/0011-local-int-return-x-control--int.cpp:5:15: error: static assertion failed
+local int, return (x) (control) / int / gcc-16: /tidal/build/probes/q-0422-binding-category/0011-local-int-return-x-control--int.cpp:5:15: error: static assertion failed
+local int, return (x) (control) / int / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/q-0422-binding-category/0011-local-int-return-x-control--int.cpp:5:15: error: static assertion failed

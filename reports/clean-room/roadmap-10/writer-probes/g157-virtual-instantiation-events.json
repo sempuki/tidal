@@ -1,0 +1,21 @@
+{
+ "prelude": "template <class T> struct S {\n  S() = default;\n  virtual int f() { return T::missing(); }\n  int g() { return 0; }\n};\nstruct D : S<int> {};",
+ "template": "{prelude}\n{row}\nint main() {{ return 0; }}",
+ "rows": {
+  "an object of S<int> at namespace scope": "S<int> object;",
+  "a local object in an uncalled function": "void h() { S<int> s; (void)s; }",
+  "sizeof(S<int>) only": "static_assert(sizeof(S<int>) > 0);",
+  "a pointer S<int>* only": "S<int>* p = nullptr;",
+  "a new expression in an uncalled function": "void h() { delete new S<int>; }",
+  "a temporary in an uncalled function": "void h() { (void)S<int>{}; }",
+  "a call of nonvirtual g through a pointer": "int h(S<int>* p) { return p->g(); }",
+  "a call of f through a pointer": "int h(S<int>* p) { return p->f(); }",
+  "a derived class D only": "static_assert(sizeof(D) > 0);",
+  "an object of D": "D object;",
+  "an explicit instantiation declaration, then an object": "extern template struct S<int>; S<int> object;"
+ },
+ "cols": {
+  "": ""
+ },
+ "flags": []
+}

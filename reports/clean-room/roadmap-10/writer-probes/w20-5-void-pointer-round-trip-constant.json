@@ -1,0 +1,16 @@
+{
+ "prelude": "struct S { int v; };",
+ "template": "{prelude}\nconstexpr int probe() {{ {row} }}\n{col}\nint main() {{ return 0; }}",
+ "rows": {
+  "int* to void* to int*": "int x = 7; void* v = &x; int* p = static_cast<int*>(v); return *p;",
+  "S* to const void* to const S*": "S s{7}; const void* v = &s; const S* p = static_cast<const S*>(v); return p->v;",
+  "int* to void* and compare with the original": "int x = 7; void* v = &x; return static_cast<int*>(v) == &x ? 7 : 0;",
+  "int* to void* to long* (wrong type)": "int x = 7; void* v = &x; long* p = static_cast<long*>(v); return p ? 7 : 0;",
+  "int* to void* only (control)": "int x = 7; void* v = &x; return v ? 7 : 0;"
+ },
+ "cols": {
+  "in static_assert": "static_assert(probe() == 7);",
+  "at run time only": "int run = probe();"
+ },
+ "flags": []
+}

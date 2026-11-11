@@ -1,0 +1,60 @@
+| | with a fallback |
+|---|---|
+| I5-4 two equal bases, reference | reject |
+| I5-4 two equal bases, pointer | reject |
+| I5-4 private base, reference | reject |
+| I5-4 protected base, reference | reject |
+| I5-5 T::type with T incomplete | accept |
+| I5-5 T::type with T complete, no member (control) | accept |
+| I5-6 const int prvalue forwarding | reject |
+| I5-6 const class prvalue forwarding | reject |
+| I5-8 const T** from int** | accept |
+| I5-8 const T* const* from int** (control) | accept |
+I5-4 two equal bases, reference / with a fallback / clang-18: /tidal/build/probes/i5-deduction-boundaries/0000-i5-4-two-equal-bases-reference--with-a-fallback.cpp:19:46: error: ambiguous conversion from derived class 'Both' to base class 'Base<int>':
+I5-4 two equal bases, reference / with a fallback / clang-22: /tidal/build/probes/i5-deduction-boundaries/0000-i5-4-two-equal-bases-reference--with-a-fallback.cpp:19:46: error: ambiguous conversion from derived class 'Both' to base class 'Base<int>':
+I5-4 two equal bases, reference / with a fallback / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/i5-deduction-boundaries/0000-i5-4-two-equal-bases-reference--with-a-fallback.cpp:19:46: error: ambiguous conversion from derived class 'Both' to base class 'Base<int>':
+I5-4 two equal bases, reference / with a fallback / edg-7.0: e--with-a-fallback.cpp", line 19: error: base class "Base<int>" is
+I5-4 two equal bases, reference / with a fallback / edg-7.0-ilp32: e--with-a-fallback.cpp", line 19: error: base class "Base<int>" is
+I5-4 two equal bases, reference / with a fallback / gcc-14: /tidal/build/probes/i5-deduction-boundaries/0000-i5-4-two-equal-bases-reference--with-a-fallback.cpp:19:45: error: 'Base<int>' is an ambiguous base of 'Both'
+I5-4 two equal bases, reference / with a fallback / gcc-16: /tidal/build/probes/i5-deduction-boundaries/0000-i5-4-two-equal-bases-reference--with-a-fallback.cpp:19:45: error: 'Base<int>' is an ambiguous base of 'Both'
+I5-4 two equal bases, reference / with a fallback / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/i5-deduction-boundaries/0000-i5-4-two-equal-bases-reference--with-a-fallback.cpp:19:45: error: ‘Base<int>’ is an ambiguous base of ‘Both’
+I5-4 two equal bases, pointer / with a fallback / clang-18: /tidal/build/probes/i5-deduction-boundaries/0001-i5-4-two-equal-bases-pointer--with-a-fallback.cpp:19:47: error: ambiguous conversion from derived class 'Both' to base class 'Base<int>':
+I5-4 two equal bases, pointer / with a fallback / clang-22: /tidal/build/probes/i5-deduction-boundaries/0001-i5-4-two-equal-bases-pointer--with-a-fallback.cpp:19:47: error: ambiguous conversion from derived class 'Both' to base class 'Base<int>':
+I5-4 two equal bases, pointer / with a fallback / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/i5-deduction-boundaries/0001-i5-4-two-equal-bases-pointer--with-a-fallback.cpp:19:47: error: ambiguous conversion from derived class 'Both' to base class 'Base<int>':
+I5-4 two equal bases, pointer / with a fallback / edg-7.0: -with-a-fallback.cpp", line 19: error: base class "Base<int>" is
+I5-4 two equal bases, pointer / with a fallback / edg-7.0-ilp32: -with-a-fallback.cpp", line 19: error: base class "Base<int>" is
+I5-4 two equal bases, pointer / with a fallback / gcc-14: /tidal/build/probes/i5-deduction-boundaries/0001-i5-4-two-equal-bases-pointer--with-a-fallback.cpp:19:46: error: 'Base<int>' is an ambiguous base of 'Both'
+I5-4 two equal bases, pointer / with a fallback / gcc-16: /tidal/build/probes/i5-deduction-boundaries/0001-i5-4-two-equal-bases-pointer--with-a-fallback.cpp:19:46: error: 'Base<int>' is an ambiguous base of 'Both'
+I5-4 two equal bases, pointer / with a fallback / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/i5-deduction-boundaries/0001-i5-4-two-equal-bases-pointer--with-a-fallback.cpp:19:46: error: ‘Base<int>’ is an ambiguous base of ‘Both’
+I5-4 private base, reference / with a fallback / clang-18: /tidal/build/probes/i5-deduction-boundaries/0002-i5-4-private-base-reference--with-a-fallback.cpp:19:46: error: cannot cast 'Priv' to its private base class 'Base<int>'
+I5-4 private base, reference / with a fallback / clang-22: /tidal/build/probes/i5-deduction-boundaries/0002-i5-4-private-base-reference--with-a-fallback.cpp:19:46: error: cannot cast 'Priv' to its private base class 'Base<int>'
+I5-4 private base, reference / with a fallback / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/i5-deduction-boundaries/0002-i5-4-private-base-reference--with-a-fallback.cpp:19:46: error: cannot cast 'Priv' to its private base class 'Base<int>'
+I5-4 private base, reference / with a fallback / edg-7.0: with-a-fallback.cpp", line 19: error: conversion to inaccessible base
+I5-4 private base, reference / with a fallback / edg-7.0-ilp32: with-a-fallback.cpp", line 19: error: conversion to inaccessible base
+I5-4 private base, reference / with a fallback / gcc-14: /tidal/build/probes/i5-deduction-boundaries/0002-i5-4-private-base-reference--with-a-fallback.cpp:19:45: error: 'Base<int>' is an inaccessible base of 'Priv'
+I5-4 private base, reference / with a fallback / gcc-16: /tidal/build/probes/i5-deduction-boundaries/0002-i5-4-private-base-reference--with-a-fallback.cpp:19:45: error: 'Base<int>' is an inaccessible base of 'Priv'
+I5-4 private base, reference / with a fallback / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/i5-deduction-boundaries/0002-i5-4-private-base-reference--with-a-fallback.cpp:19:45: error: ‘Base<int>’ is an inaccessible base of ‘Priv’
+I5-4 protected base, reference / with a fallback / clang-18: /tidal/build/probes/i5-deduction-boundaries/0003-i5-4-protected-base-reference--with-a-fallback.cpp:19:46: error: cannot cast 'Prot' to its protected base class 'Base<int>'
+I5-4 protected base, reference / with a fallback / clang-22: /tidal/build/probes/i5-deduction-boundaries/0003-i5-4-protected-base-reference--with-a-fallback.cpp:19:46: error: cannot cast 'Prot' to its protected base class 'Base<int>'
+I5-4 protected base, reference / with a fallback / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/i5-deduction-boundaries/0003-i5-4-protected-base-reference--with-a-fallback.cpp:19:46: error: cannot cast 'Prot' to its protected base class 'Base<int>'
+I5-4 protected base, reference / with a fallback / edg-7.0: --with-a-fallback.cpp", line 19: error: conversion to inaccessible
+I5-4 protected base, reference / with a fallback / edg-7.0-ilp32: --with-a-fallback.cpp", line 19: error: conversion to inaccessible
+I5-4 protected base, reference / with a fallback / gcc-14: /tidal/build/probes/i5-deduction-boundaries/0003-i5-4-protected-base-reference--with-a-fallback.cpp:19:45: error: 'Base<int>' is an inaccessible base of 'Prot'
+I5-4 protected base, reference / with a fallback / gcc-16: /tidal/build/probes/i5-deduction-boundaries/0003-i5-4-protected-base-reference--with-a-fallback.cpp:19:45: error: 'Base<int>' is an inaccessible base of 'Prot'
+I5-4 protected base, reference / with a fallback / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/i5-deduction-boundaries/0003-i5-4-protected-base-reference--with-a-fallback.cpp:19:45: error: ‘Base<int>’ is an inaccessible base of ‘Prot’
+I5-6 const int prvalue forwarding / with a fallback / clang-18: /tidal/build/probes/i5-deduction-boundaries/0006-i5-6-const-int-prvalue-forwarding--with-a-fallback.cpp:19:28: error: static assertion expression is not an integral constant expression
+I5-6 const int prvalue forwarding / with a fallback / clang-22: /tidal/build/probes/i5-deduction-boundaries/0006-i5-6-const-int-prvalue-forwarding--with-a-fallback.cpp:19:28: error: static assertion expression is not an integral constant expression
+I5-6 const int prvalue forwarding / with a fallback / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/i5-deduction-boundaries/0006-i5-6-const-int-prvalue-forwarding--with-a-fallback.cpp:19:28: error: static assertion expression is not an integral constant expression
+I5-6 const int prvalue forwarding / with a fallback / edg-7.0: ding--with-a-fallback.cpp", line 19: error: expression must have a
+I5-6 const int prvalue forwarding / with a fallback / edg-7.0-ilp32: ding--with-a-fallback.cpp", line 19: error: expression must have a
+I5-6 const int prvalue forwarding / with a fallback / gcc-14: /tidal/build/probes/i5-deduction-boundaries/0006-i5-6-const-int-prvalue-forwarding--with-a-fallback.cpp:19:40: error: non-constant condition for static assertion
+I5-6 const int prvalue forwarding / with a fallback / gcc-16: /tidal/build/probes/i5-deduction-boundaries/0006-i5-6-const-int-prvalue-forwarding--with-a-fallback.cpp:19:40: error: non-constant condition for static assertion
+I5-6 const int prvalue forwarding / with a fallback / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/i5-deduction-boundaries/0006-i5-6-const-int-prvalue-forwarding--with-a-fallback.cpp:19:40: error: non-constant condition for static assertion
+I5-6 const class prvalue forwarding / with a fallback / clang-18: /tidal/build/probes/i5-deduction-boundaries/0007-i5-6-const-class-prvalue-forwarding--with-a-fallback.cpp:19:28: error: static assertion expression is not an integral constant expression
+I5-6 const class prvalue forwarding / with a fallback / clang-22: /tidal/build/probes/i5-deduction-boundaries/0007-i5-6-const-class-prvalue-forwarding--with-a-fallback.cpp:19:28: error: static assertion expression is not an integral constant expression
+I5-6 const class prvalue forwarding / with a fallback / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/i5-deduction-boundaries/0007-i5-6-const-class-prvalue-forwarding--with-a-fallback.cpp:19:28: error: static assertion expression is not an integral constant expression
+I5-6 const class prvalue forwarding / with a fallback / edg-7.0: arding--with-a-fallback.cpp", line 19: error: expression must have a
+I5-6 const class prvalue forwarding / with a fallback / edg-7.0-ilp32: arding--with-a-fallback.cpp", line 19: error: expression must have a
+I5-6 const class prvalue forwarding / with a fallback / gcc-14: /tidal/build/probes/i5-deduction-boundaries/0007-i5-6-const-class-prvalue-forwarding--with-a-fallback.cpp:19:42: error: non-constant condition for static assertion
+I5-6 const class prvalue forwarding / with a fallback / gcc-16: /tidal/build/probes/i5-deduction-boundaries/0007-i5-6-const-class-prvalue-forwarding--with-a-fallback.cpp:19:42: error: non-constant condition for static assertion
+I5-6 const class prvalue forwarding / with a fallback / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/i5-deduction-boundaries/0007-i5-6-const-class-prvalue-forwarding--with-a-fallback.cpp:19:42: error: non-constant condition for static assertion

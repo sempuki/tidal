@@ -1,0 +1,21 @@
+| |  |
+|---|---|
+| variable template, inline constexpr | accept: clang-host, clang-18, clang-22; reject: gcc-14, gcc-host, gcc-16 |
+| variable template, constexpr | accept: clang-host, clang-18, clang-22; reject: gcc-host, gcc-14, gcc-16 |
+| static member of class template | accept: clang-host, clang-18, clang-22; reject: gcc-14, gcc-16, gcc-host |
+| two inline constexpr variables | accept: clang-host, clang-18, clang-22; reject: gcc-16, gcc-host, gcc-14 |
+| two constexpr variables | accept |
+| inline variable against itself (==) | accept |
+| two static locals of an inline function | accept |
+variable template, inline constexpr /  / gcc-14: /tidal/build/probes/w20-4-tag-address-null/0000-variable-template-inline-constexpr--x.cpp:2:25: error: non-constant condition for static assertion
+variable template, inline constexpr /  / gcc-16: /tidal/build/probes/w20-4-tag-address-null/0000-variable-template-inline-constexpr--x.cpp:2:25: error: non-constant condition for static assertion
+variable template, inline constexpr /  / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/w20-4-tag-address-null/0000-variable-template-inline-constexpr--x.cpp:2:25: error: non-constant condition for static assertion
+variable template, constexpr /  / gcc-14: /tidal/build/probes/w20-4-tag-address-null/0001-variable-template-constexpr--x.cpp:2:25: error: non-constant condition for static assertion
+variable template, constexpr /  / gcc-16: /tidal/build/probes/w20-4-tag-address-null/0001-variable-template-constexpr--x.cpp:2:25: error: non-constant condition for static assertion
+variable template, constexpr /  / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/w20-4-tag-address-null/0001-variable-template-constexpr--x.cpp:2:25: error: non-constant condition for static assertion
+static member of class template /  / gcc-14: /tidal/build/probes/w20-4-tag-address-null/0002-static-member-of-class-template--x.cpp:2:28: error: non-constant condition for static assertion
+static member of class template /  / gcc-16: /tidal/build/probes/w20-4-tag-address-null/0002-static-member-of-class-template--x.cpp:2:28: error: non-constant condition for static assertion
+static member of class template /  / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/w20-4-tag-address-null/0002-static-member-of-class-template--x.cpp:2:28: error: non-constant condition for static assertion
+two inline constexpr variables /  / gcc-14: /tidal/build/probes/w20-4-tag-address-null/0003-two-inline-constexpr-variables--x.cpp:2:18: error: non-constant condition for static assertion
+two inline constexpr variables /  / gcc-16: /tidal/build/probes/w20-4-tag-address-null/0003-two-inline-constexpr-variables--x.cpp:2:18: error: non-constant condition for static assertion
+two inline constexpr variables /  / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/w20-4-tag-address-null/0003-two-inline-constexpr-variables--x.cpp:2:18: error: non-constant condition for static assertion

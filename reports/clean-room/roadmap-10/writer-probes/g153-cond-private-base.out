@@ -1,0 +1,15 @@
+| |  |
+|---|---|
+| friend context: decltype is Root& | accept |
+| friend context: decltype is Root (prvalue) | reject |
+| outside: requires-expression is false | accept |
+| outside: ambiguous base, requires-expression is false | accept |
+| outside: unambiguous public base (control) | accept |
+friend context: decltype is Root (prvalue) /  / clang-18: /tidal/build/probes/g153-cond-private-base/0001-friend-context-decltype-is-root-prvalue--x.cpp:6:52: error: static assertion failed due to requirement 'same<Root &, Root>'
+friend context: decltype is Root (prvalue) /  / clang-22: /tidal/build/probes/g153-cond-private-base/0001-friend-context-decltype-is-root-prvalue--x.cpp:6:52: error: static assertion failed due to requirement 'same<Root &, Root>'
+friend context: decltype is Root (prvalue) /  / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/g153-cond-private-base/0001-friend-context-decltype-is-root-prvalue--x.cpp:6:52: error: static assertion failed due to requirement 'same<Root &, Root>'
+friend context: decltype is Root (prvalue) /  / edg-7.0: t-prvalue--x.cpp", line 6: error: static assertion failed
+friend context: decltype is Root (prvalue) /  / edg-7.0-ilp32: t-prvalue--x.cpp", line 6: error: static assertion failed
+friend context: decltype is Root (prvalue) /  / gcc-14: /tidal/build/probes/g153-cond-private-base/0001-friend-context-decltype-is-root-prvalue--x.cpp:6:52: error: static assertion failed
+friend context: decltype is Root (prvalue) /  / gcc-16: /tidal/build/probes/g153-cond-private-base/0001-friend-context-decltype-is-root-prvalue--x.cpp:6:52: error: static assertion failed
+friend context: decltype is Root (prvalue) /  / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/g153-cond-private-base/0001-friend-context-decltype-is-root-prvalue--x.cpp:6:52: error: static assertion failed
