@@ -344,7 +344,11 @@ impl P {
             None => self.scopes[sc].names.get("operator!=").map(|v| v.iter().copied().filter(|d| !self.hidden_friends.contains_key(d)).collect()).unwrap_or_default(),
         };
         let member = f.class.is_some();
-        ids.iter().any(|&d| self.func(d).is_some_and(|g| g.fty.params == f.fty.params && g.fty.cv_c == f.fty.cv_c && g.fty.cv_v == f.fty.cv_v && g.fty.refq == f.fty.refq && g.class.is_some() == member))
+        // The parameter types after DCL-8 decide. The return types, the
+        // cv-qualifiers and ref-qualifiers of members take no part (Q-0190).
+        let adj = |v: &[QTy]| -> Vec<Ty> { v.iter().map(|q| q.t.clone()).collect() };
+        let fp = adj(&f.fty.params);
+        ids.iter().any(|&d| self.func(d).is_some_and(|g| adj(&g.fty.params) == fp && g.class.is_some() == member && g.explicit_obj == f.explicit_obj && !g.template && !self.is_func_templ(d)))
     }
 
     /// OVL-25, OVL-32, OVL-33: is `x` better than `y`?
@@ -823,6 +827,14 @@ impl P {
                     None => false,
                     Some(p) => self.var(p).is_none_or(|v| matches!(nonref(&v.ty).t, Ty::Class(lc) if self.init_list_elem(lc).is_some()) || v.ty.is_unknown()),
                 });
+                if list_ctor && !zero && self.classes[c].bases.is_empty() {
+                    // ILC-2: with no default constructor, empty braces go to
+                    // the initializer-list constructor, with an empty list.
+                    let lcs: Vec<DeclId> = ctors.iter().copied().filter(|&cid| self.func(cid).is_some_and(|f| f.params.len() - 1 <= f.defaults && f.params.first().and_then(|&p| self.var(p)).is_some_and(|v| matches!(nonref(&v.ty).t, Ty::Class(lc) if self.init_list_elem(lc).is_some_and(|e| !e.is_unknown()))))).collect();
+                    if lcs.len() == 1 {
+                        return CtorRes::Chosen(lcs[0], Vec::new());
+                    }
+                }
                 if (list_ctor && !zero) || !self.classes[c].bases.is_empty() {
                     return CtorRes::Unknown;
                 }

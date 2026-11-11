@@ -115,6 +115,15 @@ impl<'a> Machine<'a> {
             if v.local {
                 return unsup("block-scope static variable used before its declaration ran");
             }
+            // LSUP-8: the library defines `std::nothrow`, an object of an
+            // empty class with no state. As a front-end choice under
+            // decision 0035, the run makes it on first use.
+            let d = &self.p.decls[id];
+            if d.name == "nothrow" && self.p.scopes[d.scope].name == "std" && matches!(&v.ty.t, Ty::Class(c) if self.p.classes[*c].name == "nothrow_t" && self.p.classes[*c].fields.is_empty()) {
+                let place = self.alloc(&v.ty)?;
+                self.globals.insert(key, place.obj);
+                return Ok(place);
+            }
             return unsup(format!("variable '{}' has no definition in this translation unit", self.p.decls[id].name));
         }
         self.const_var_place(id, v)
@@ -1124,6 +1133,12 @@ impl<'a> Machine<'a> {
                         return Err(self.throw_std("bad_alloc")?);
                     }
                 }
+                if let Some(Expr { k: EK::InitList(items), .. }) = init {
+                    if items.len() as i128 > n {
+                        // NEW-35: more initializers than the bound gives.
+                        return Err(self.throw_std("bad_array_new_length")?);
+                    }
+                }
                 let at = QTy::new(Ty::Array(Box::new(elem.clone()), Some(n as u64)));
                 let place = self.alloc(&at)?;
                 self.objs[place.obj].heap = Heap::Array;
@@ -1189,7 +1204,13 @@ impl<'a> Machine<'a> {
                 }
             }
             if n > ALLOC_LIMIT as i128 {
-                // NEW-38: the allocation function fails.
+                // NEW-38: the allocation function fails. The form with a
+                // `std::nothrow_t` argument returns a null pointer (LSUP-6,
+                // NEW-31).
+                let nothrow = args.iter().skip(1).any(|a| matches!(nonref(&a.ty).t, Ty::Class(c) if self.p.classes[c].name == "nothrow_t"));
+                if nothrow {
+                    return Ok(Ret::Val(Val::Null));
+                }
                 return Err(self.throw_std("bad_alloc")?);
             }
             if !(0..=1 << 20).contains(&n) {
@@ -1673,6 +1694,21 @@ impl<'a> Machine<'a> {
         // UNI-5: an object made in a union member makes it the active
         // member, and the other members end.
         if !p.path.is_empty() && !p.array {
+            if !self.constant {
+                // UNI-14 (Q-0425): at run time, a new object inside a
+                // member that is not active, such as a member of a member
+                // union, is valid. The enclosing members become active, from
+                // the outside in. Constant evaluation rejects it (UNI-6).
+                for k in 1..p.path.len() {
+                    let outer = Ptr { obj: p.obj, path: p.path[..k].to_vec(), off: 0, array: false, bytes: false };
+                    let parent = Ptr { obj: p.obj, path: p.path[..k - 1].to_vec(), off: 0, array: false, bytes: false };
+                    if let Ok(Val::Agg(items)) = self.get_at(&parent) {
+                        if matches!(items.get(p.path[k - 1]), Some(Val::Inactive)) {
+                            self.activate_member(&outer)?;
+                        }
+                    }
+                }
+            }
             self.activate_member(&p)?;
         }
         let blank = self.shape(&t)?;
@@ -1702,7 +1738,10 @@ impl<'a> Machine<'a> {
         };
         let es = self.size_of(&elem.t)? as i128;
         let size = es.saturating_mul(n.unwrap_or(1));
-        if n.is_some_and(|v| v < 0) || size > Ty::size_t().int_max() {
+        // NEW-35: more initializers than the bound gives is an erroneous
+        // bound too.
+        let too_few = matches!((n, init), (Some(v), Some(Expr { k: EK::InitList(items), .. })) if items.len() as i128 > v);
+        if n.is_some_and(|v| v < 0) || size > Ty::size_t().int_max() || too_few {
             // NEW-35: an erroneous bound calls no allocation function.
             // NEW-36: with a non-throwing allocation function the result
             // is null.
@@ -1780,6 +1819,7 @@ impl<'a> Machine<'a> {
                 Val::Ptr(p) => p,
                 _ => return unsup("allocation function result that points to no object"),
             };
+            let before = self.objs.len();
             let made = match self.place_new_at(p.clone(), ty, n, init) {
                 Ok(v) => v,
                 Err(Stop::Throw(x)) => {
@@ -1794,7 +1834,7 @@ impl<'a> Machine<'a> {
                         Dealloc::None => false,
                     };
                     match (&al.dealloc, al_ty) {
-                        (_, Some(a)) if global_dealloc && pargs.is_empty() && al.func.is_none() => match self.aligned_delete_fn(None, array, true, a) {
+                        (_, Some(a)) if global_dealloc && pargs.is_empty() && al.func.is_none() => match self.aligned_delete_fn(None, array, true, a, false) {
                             Some((d, extra)) => self.call_dealloc(&d, &p, size, &extra, aname)?,
                             None => self.call_dealloc(&al.dealloc, &p, size, &pargs, aname)?,
                         },
@@ -1805,6 +1845,13 @@ impl<'a> Machine<'a> {
                 Err(e) => return Err(e),
             };
             if let Val::Ptr(q) = &made {
+                if place_form && q.obj < before && !self.constant {
+                    // STG-9: the non-allocating form built the object in the
+                    // place of an object that already exists, such as an
+                    // element of an array from new[]. The complete object
+                    // keeps the way that it was created (NEW-5).
+                    return Ok(made);
+                }
                 self.objs[q.obj].heap = if array { Heap::Array } else { Heap::Single };
                 self.user_storage.insert(q.obj, p);
             }
@@ -1919,7 +1966,7 @@ impl<'a> Machine<'a> {
             x => x.clone(),
         };
         let align = self.p.alignof_ty(&elem_t).filter(|&a| a > 16);
-        let (d, extra) = match (tu == self.tu, align.and_then(|a| self.aligned_delete_fn(class, arr, global, a))) {
+        let (d, extra) = match (tu == self.tu, align.and_then(|a| self.aligned_delete_fn(class, arr, global, a, true))) {
             (true, Some(x)) => x,
             (true, None) => (self.delete_fn(class, arr, global), vec![]),
             _ => (Dealloc::Library, vec![]),
@@ -1946,12 +1993,12 @@ impl<'a> Machine<'a> {
     /// NEW-28: the aligned usual deallocation function for a type with
     /// alignment `a`, with the alignment argument; None when the class
     /// or the program declares none (NEW-29).
-    fn aligned_delete_fn(&self, class: Option<usize>, arr: bool, global: bool, a: u64) -> Option<(Dealloc, Vec<Expr>)> {
+    fn aligned_delete_fn(&self, class: Option<usize>, arr: bool, global: bool, a: u64, delete_expr: bool) -> Option<(Dealloc, Vec<Expr>)> {
         let dname = if arr { "operatordelete[]" } else { "operatordelete" };
         let size_t = Ty::size_t();
-        let fns: Vec<DeclId> = match class.filter(|_| !global).and_then(|c| self.p.lookup_member(c, dname)) {
-            Some(v) if !v.is_empty() => v,
-            _ => self.p.scopes[self.p.global].names.get(dname).cloned().unwrap_or_default(),
+        let (fns, from_class): (Vec<DeclId>, bool) = match class.filter(|_| !global).and_then(|c| self.p.lookup_member(c, dname)) {
+            Some(v) if !v.is_empty() => (v, true),
+            _ => (self.p.scopes[self.p.global].names.get(dname).cloned().unwrap_or_default(), false),
         };
         let is_align = |q: &QTy| matches!(q.t, Ty::Enum(e) if self.p.enums[e].name == "align_val_t");
         let form = |d: DeclId| -> Option<(bool, QTy)> {
@@ -1964,7 +2011,11 @@ impl<'a> Machine<'a> {
                 _ => None,
             }
         };
-        let pick = fns.iter().copied().find(|&d| form(d).is_some_and(|f| !f.0)).or_else(|| fns.iter().copied().find(|&d| form(d).is_some()))?;
+        // NEW-22, UNW-3: after `delete`, a single object of complete type
+        // uses the global sized aligned form. A class's forms, and the
+        // other cases, prefer the form without the size.
+        let sized_first = delete_expr && !arr && !from_class;
+        let pick = fns.iter().copied().find(|&d| form(d).is_some_and(|f| f.0 == sized_first)).or_else(|| fns.iter().copied().find(|&d| form(d).is_some()))?;
         let (sized, at) = form(pick)?;
         Some((Dealloc::Func(pick, sized), vec![Expr::new(EK::Int(a as i128), at.unqual(), Cat::PR, self.line)]))
     }
@@ -2229,7 +2280,13 @@ impl<'a> Machine<'a> {
             let base = Ptr { array: false, off: 0, ..p.clone() };
             let len = match self.get_at(&base)? {
                 Val::Agg(items) => items.len() as i128,
-                _ => return unsup("pointer arithmetic"),
+                // STG-10, UNI-14: an array member of a union that is not
+                // active has no elements, and its pointers still step
+                // over the positions that its type gives.
+                _ => match self.type_at(&base) {
+                    Some(QTy { t: Ty::Array(_, Some(n)), .. }) => n as i128,
+                    _ => return unsup("pointer arithmetic"),
+                },
             };
             let no = p.off as i128 + n;
             if no < 0 || no > len {
@@ -2355,8 +2412,13 @@ impl<'a> Machine<'a> {
                         let holder = Ptr { obj: place.obj, path: fp[..k].to_vec(), off: 0, array: false, bytes: false };
                         if let (Ok(Val::Agg(items)), Some(ft)) = (self.get_at(&holder), &ft) {
                             // UNI-13: only a member whose default constructor
-                            // is trivial becomes active.
-                            let trivial = match &ft.t {
+                            // is trivial becomes active. For an array member,
+                            // the default constructor of its element class.
+                            let mut et = &ft.t;
+                            while let Ty::Array(el, _) = et {
+                                et = &el.t;
+                            }
+                            let trivial = match et {
                                 Ty::Class(m) => self.trivial_default(*m, 0),
                                 _ => true,
                             };
@@ -2866,7 +2928,14 @@ impl<'a> Machine<'a> {
                     if p.obj != q.obj || p.path != q.path || p.array != q.array {
                         return ub("ADD-11", "subtraction of pointers into different arrays");
                     }
-                    Ok(Val::Int(p.off as i128 - q.off as i128))
+                    let d = p.off as i128 - q.off as i128;
+                    let pt = Ty::ptrdiff_t();
+                    if d < pt.int_min() || d > pt.int_max() {
+                        // ADD-18: the difference does not fit in the type
+                        // of the result.
+                        return ub("ADD-18", "the difference of two pointers does not fit in the type of the result");
+                    }
+                    Ok(Val::Int(d))
                 }
                 (Val::Null, Val::Null) => Ok(Val::Int(0)),
                 _ => unsup("pointer arithmetic"),

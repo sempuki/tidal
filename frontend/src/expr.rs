@@ -845,6 +845,8 @@ impl P {
         let global = self.pos >= 1 && self.toks[self.pos - 1].text == "::";
         self.expect("new")?;
         let mut placement: Option<Vec<Expr>> = None;
+        // NEW-10: a type in parentheses, `new (int)(4)`.
+        let mut paren_ty: Option<QTy> = None;
         if self.at("(") {
             // placement args or parenthesized type
             let save = self.pos;
@@ -858,19 +860,48 @@ impl P {
                 self.d.list.truncate(nerr);
                 if let Ok(t) = t {
                     if self.eat(")") {
-                        self.parse_new_init()?;
-                        return Ok(Expr::new(EK::Unknown("new expression".into()), QTy::new(Ty::Ptr(Box::new(t))), Cat::PR, line));
+                        if matches!(t.t, Ty::Array(..)) || t.is_unknown() {
+                            self.parse_new_init()?;
+                            return Ok(Expr::new(EK::Unknown("new expression".into()), QTy::new(Ty::Ptr(Box::new(t))), Cat::PR, line));
+                        }
+                        paren_ty = Some(t);
                     }
                 }
             }
-            self.pos = save;
+            if paren_ty.is_none() {
+                self.pos = save;
+                self.pos += 1;
+                placement = Some(self.parse_call_args()?);
+            }
+        }
+        if paren_ty.is_none() && self.at("(") && placement.is_some() {
+            // `new (place) (T)`: a placement with a type in parentheses.
+            let save = self.pos;
             self.pos += 1;
-            placement = Some(self.parse_call_args()?);
+            if self.starts_type() {
+                let nerr = self.d.list.len();
+                self.d.muted += 1;
+                let t = self.parse_type_id();
+                self.d.muted -= 1;
+                self.d.list.truncate(nerr);
+                match t {
+                    Ok(t) if self.at(")") && !matches!(t.t, Ty::Array(..)) && !t.is_unknown() => {
+                        self.pos += 1;
+                        paren_ty = Some(t);
+                    }
+                    _ => self.pos = save,
+                }
+            } else {
+                self.pos = save;
+            }
         }
         self.implicit_tn = true;
-        let ds = self.parse_decl_specs(None)?;
-        let is_auto = ds.auto.is_some() && ds.ty.is_none();
-        let mut base = self.ds_base(&ds).unwrap_or(QTy::unknown());
+        let ds = if paren_ty.is_some() { crate::decl::DeclSpec::default() } else { self.parse_decl_specs(None)? };
+        let is_auto = paren_ty.is_none() && ds.auto.is_some() && ds.ty.is_none();
+        let mut base = match &paren_ty {
+            Some(t) => t.clone(),
+            None => self.ds_base(&ds).unwrap_or(QTy::unknown()),
+        };
         if let Some(ctid) = ds.ctad {
             // CTAD-1: a new expression with a deduced class type.
             if !self.in_template() && (self.at("(") || self.at("{")) {
@@ -882,6 +913,9 @@ impl P {
         let mut t = base;
         // new-declarator: ptr ops and array bounds
         loop {
+            if paren_ty.is_some() {
+                break;
+            }
             if self.eat("*") {
                 let (c, v) = self.parse_cv();
                 t = QTy { t: Ty::Ptr(Box::new(t)), c, v };
@@ -889,7 +923,7 @@ impl P {
                 break;
             }
         }
-        if self.at("&") || self.at("&&") {
+        if paren_ty.is_none() && (self.at("&") || self.at("&&")) {
             // NEW-7: the type must not be a reference.
             self.pos += 1;
             if !self.in_template() {
@@ -901,7 +935,7 @@ impl P {
         let mut first_absent = false;
         let mut first_const: Option<i128> = None;
         let mut first_bound: Option<Expr> = None;
-        while self.at("[") {
+        while self.at("[") && paren_ty.is_none() {
             self.pos += 1;
             let bl = self.line();
             let mut b = None;
@@ -1033,6 +1067,7 @@ impl P {
         if rt.t == Ty::Void {
             self.error(line, "NEW-7", "new of void");
         }
+        self.inst11_object(&rt);
         let unknown = Expr::new(EK::Unknown("new expression".into()), QTy::new(Ty::Ptr(Box::new(rt.clone()))), Cat::PR, line);
         // The expression for the interpreter: the plain forms only, with
         // the global allocation function (NEW-13, NEW-19).
@@ -1090,7 +1125,14 @@ impl P {
         let conv_init = match (init, braced_init) {
             (None, _) => None,
             (Some((true, _)), Some(b)) => {
-                let t = if bounds.is_empty() { rt.clone() } else { QTy::new(Ty::Array(Box::new(rt.clone()), Some(first_const.unwrap_or(0).max(0) as u64))) };
+                // NEW-35: with a bound that is not a constant, the list
+                // converts as an array of its own length; the run compares
+                // the bound with the list.
+                let listed = match &b.k {
+                    EK::InitList(items) => items.len() as i128,
+                    _ => 0,
+                };
+                let t = if bounds.is_empty() { rt.clone() } else { QTy::new(Ty::Array(Box::new(rt.clone()), Some(first_const.unwrap_or(listed).max(0) as u64))) };
                 Some(self.convert_init(b, &t, InitForm::DirectList, line))
             }
             (Some((false, n)), _) => {
@@ -1374,7 +1416,23 @@ impl P {
             let mut named: Option<Ty> = None;
             if self.at("decltype") {
                 self.pos += 1;
-                self.skip_balanced();
+                // DTOR-8: decltype of `*p` gives a reference type, which
+                // does not denote the class.
+                let save = self.pos;
+                let mark = self.d.list.len();
+                match self.parse_decltype() {
+                    Ok(q) if self.d.list.len() == mark && !q.is_unknown() && !matches!(q.t, Ty::Dep(_)) => {
+                        named = Some(if q.t.is_ref() { Ty::Unknown } else { q.t.clone() });
+                        if q.t.is_ref() && !self.in_template() {
+                            self.error(line, "DTOR-8", "the decltype after '~' gives a reference type, which does not denote the class of the object");
+                        }
+                    }
+                    _ => {
+                        self.d.list.truncate(mark);
+                        self.pos = save;
+                        self.skip_balanced();
+                    }
+                }
             } else {
                 if self.is_ident() && !self.at_k(1, "::") && !self.at_k(1, "<") {
                     named = self.lookup(&self.tok().text.clone()).and_then(|ids| match &self.decls[ids[0]].k {
@@ -1510,7 +1568,10 @@ impl P {
             // DEP-24: with an object of unknown type, `<` starts template
             // arguments only after `template`.
             let kw_template = kw_before;
-            if is_templ || (ot.is_unknown() && (kw_template || !self.in_template())) {
+            // A class of the current instantiation with a dependent base
+            // can find the name only at the instantiation (DEP-11).
+            let dependent_class = self.in_template() && found.is_none() && class.is_some_and(|c| self.class_uncertain(c));
+            if is_templ || ((ot.is_unknown() || dependent_class) && (kw_template || !self.in_template())) {
                 self.skip_template_args()?;
                 return Ok(Expr::unknown(line, "member template"));
             }
@@ -1624,6 +1685,12 @@ impl P {
             // than the class whose definition contains the access.
             self.error(line, "TYN-7", "member access into an incomplete class");
             return Ok(Expr::unknown(line, "incomplete"));
+        }
+        if !self.classes[c].complete && self.in_template() && !being_defined && self.inst_of.contains_key(&c) {
+            // A specialization of a template whose definition is still
+            // being read, named in a pattern: the class is complete only
+            // at the instantiation.
+            return Ok(Expr::unknown(line, "member of a specialization not yet defined"));
         }
         // DER-3: a qualified name looks in the class it names, which is
         // the object's class or one of its bases.
@@ -2092,6 +2159,11 @@ impl P {
     }
 
     fn parse_functional_cast(&mut self, ty: QTy, line: u32) -> PR<Expr> {
+        if (self.at("{") || self.at("(")) && !self.in_template() {
+            // INST-11: a temporary of a class specialization.
+            self.require_ty(&ty, line);
+            self.inst11_object(&ty);
+        }
         if self.at("{") {
             let init = self.parse_braced_init()?;
             return Ok(self.build_functional(ty, init, true, line));
@@ -3394,6 +3466,9 @@ impl P {
                         EK::InitList(v) if v.len() == 1 => v[0].clone(),
                         _ => init,
                     };
+                    // OVL-20: the capture deduces its type, so an overload
+                    // set has no target type.
+                    self.overload_set_no_target(&it, cl);
                     let et = nonref(&it.ty);
                     let ty = if by_ref {
                         QTy::new(Ty::LRef(Box::new(et)))
@@ -3490,6 +3565,9 @@ impl P {
     /// LAM-7: the variable of an init capture with the initializer `it`,
     /// and the initializer converted to its type.
     fn init_capture_var(&mut self, it: Expr, name: &str, by_ref: bool, cl: u32) -> (DeclId, Option<Expr>) {
+        // OVL-20: the init capture deduces its type, so an overload set
+        // has no target type.
+        self.overload_set_no_target(&it, cl);
         let et = nonref(&it.ty);
         let ty = if by_ref {
             QTy::new(Ty::LRef(Box::new(et)))
@@ -3814,6 +3892,20 @@ impl P {
             if scope.is_none() && self.private_base_name(&name) {
                 // ACC-18: a member of a private base of another class.
                 self.error(line, "ACC-18", format!("'{}' is a member of a private base of a base class and is not accessible here", name));
+            } else if scope.is_none() {
+                // ACC-18: a private member of a base, named without a
+                // qualifier in a member of the derived class.
+                let here = self.fns.last().and_then(|f| f.class);
+                if let Some(h) = here {
+                    let members: Vec<DeclId> = ids.iter().copied().filter(|&i| match &self.decls[i].k {
+                        DK::Field(fi) => fi.class != h,
+                        DK::Func(fi) => fi.class.is_some_and(|c| c != h),
+                        _ => false,
+                    }).collect();
+                    if !members.is_empty() && members.len() == ids.len() && !self.class_uncertain(h) && members.iter().all(|&i| self.member_access.get(&i) == Some(&2) && self.member_access_ok(i, h).is_err()) {
+                        self.error(line, "ACC-18", format!("'{}' is a private member of a base class and is not accessible here", name));
+                    }
+                }
             }
             if let Some(Ok(s)) = scope {
                 if let SK::Class(c) = self.scopes[s].kind {
@@ -3928,6 +4020,17 @@ impl P {
         }
     }
 
+    /// The construct behind the first template argument of unknown type
+    /// or value.
+    fn targ_unknown_cause(&self, raw: &[crate::templ::RawArg]) -> Option<String> {
+        use crate::templ::RawArg;
+        raw.iter().find_map(|r| match r {
+            RawArg::Expr(e) if e.ty.is_unknown() || crate::templ::has_unknown(e) => crate::templ::first_unknown(e).or_else(|| Some("an expression of unknown type".into())),
+            RawArg::Type(q) if q.is_unknown() => Some(self.unknown_cause.clone().unwrap_or_else(|| "a type the front end does not know".into())),
+            _ => None,
+        })
+    }
+
     fn parse_template_id_expr(&mut self, t: DeclId, line: u32) -> PR<Expr> {
         let k = self.decls[t].k.clone();
         match k {
@@ -3936,16 +4039,23 @@ impl P {
                     self.skip_template_args()?;
                     return Ok(Expr::unknown(line, "variable template"));
                 };
+                self.unknown_cause = None;
                 let raw = self.parse_raw_targs()?;
                 if self.in_template() {
                     return Ok(Expr::new(EK::Unknown("variable template with unknown arguments".into()), QTy::unknown(), Cat::PR, line));
                 }
+                let cause = self.targ_unknown_cause(&raw);
                 match self.targs_for(tid, raw, line, false) {
                     Ok(Some(args)) => match self.var_inst(tid, args, line) {
                         Some(d) => Ok(self.name_expr(vec![d], line)),
                         None => Ok(Expr::unknown(line, "variable template")),
                     },
-                    _ => Ok(Expr::new(EK::Unknown("variable template with unknown arguments".into()), QTy::unknown(), Cat::PR, line)),
+                    // The message names the first construct that gave an
+                    // unknown argument, the root cause of the stop.
+                    _ => Ok(Expr::new(EK::Unknown(match cause {
+                        Some(c) => format!("{} (in a variable template argument)", c),
+                        None => "variable template with unknown arguments".into(),
+                    }), QTy::unknown(), Cat::PR, line)),
                 }
             }
             DK::Template(TemplKind::Concept) => {
@@ -4344,6 +4454,13 @@ impl P {
                 Expr::new(EK::Conv(Conv::ArrayDecay, Box::new(e)), t, Cat::PR, line)
             }
             Ty::Func(_) => {
+                if let EK::Func(f) = &e.k {
+                    if self.func(*f).is_some_and(|fi| fi.consteval) && !self.in_immediate_context() && !self.in_template() && self.in_unevaluated == 0 {
+                        // CEV-2: the conversion to a pointer takes the
+                        // address of the consteval function.
+                        self.error(line, "CEV-2", "address of a consteval function taken outside an immediate function context");
+                    }
+                }
                 let t = QTy::new(Ty::Ptr(Box::new(e.ty.clone())));
                 Expr::new(EK::Conv(Conv::FuncDecay, Box::new(e)), t, Cat::PR, line)
             }
@@ -4654,6 +4771,11 @@ impl P {
             if self.class_has_friend_op(c, &name) {
                 return true;
             }
+            // NAM-27: the namespaces of the bases are associated too.
+            let bases: Vec<usize> = self.classes[c].bases.iter().filter_map(|b| b.class).collect();
+            if !bases.is_empty() && self.operator_visible1(&name, &bases) {
+                return true;
+            }
         }
         self.lookup(&name).is_some()
     }
@@ -4907,6 +5029,14 @@ impl P {
                         }
                     }
                 }
+                if let (Ty::MemPtr(fc, a), Ty::MemPtr(tc, b)) = (&from, &tt) {
+                    if fc == tc && a != b && !matches!(a.t, Ty::Func(_)) && !self.in_template() && !self.ptr_convertible(a, b) {
+                        // MPTR-11: a change of cv-qualifiers that is not
+                        // valid for ordinary pointers (CONV-9).
+                        self.error(line, "MPTR-11", format!("the pointer to member of type {} does not convert to {}", self.show_ty(&e.ty), self.show_ty(to)));
+                        return Ok(Expr::unknown(line, "bad conversion"));
+                    }
+                }
                 if matches!(from, Ty::MemPtr(..)) {
                     // CONV-15: the value keeps its member.
                     Ok(self.conv(e, Conv::PtrConv, target))
@@ -5155,6 +5285,21 @@ impl P {
             // below the top level.
             || (is_l && e.cat == Cat::L && matches!((&et.t, &inner.t), (Ty::Ptr(_), Ty::Ptr(_)) | (Ty::MemPtr(..), Ty::MemPtr(..)) | (Ty::Array(..), Ty::Array(..))) && et.t != inner.t && self.qual_level(&et, &inner, true));
         let cv_ok = (!et.c || inner.c) && (!et.v || inner.v);
+        if let (Ty::Class(d), Ty::Class(b)) = (&et.t, &inner.t) {
+            if d != b && self.is_base_of(*b, *d) && !self.in_template() && !self.class_uncertain(*d) && (cv_ok || !is_l || inner.c) {
+                // REF-1: the base relation alone makes the binding direct.
+                // An ambiguous base (CONV-17) or a base that is not
+                // accessible (ACC-12) makes the binding not valid.
+                if self.base_count(*b, *d, 0) > 1 {
+                    self.error(line, "CONV-17", format!("the reference to '{}' binds to an ambiguous base of '{}'", self.classes[*b].name, self.classes[*d].name));
+                    return Expr::unknown(line, "bad reference");
+                }
+                if !self.base_accessible(*d, *b) {
+                    self.error(line, "ACC-12", format!("the reference to '{}' binds to a base of '{}' that is not accessible", self.classes[*b].name, self.classes[*d].name));
+                    return Expr::unknown(line, "bad reference");
+                }
+            }
+        }
         if matches!(et.t, Ty::Class(_)) && matches!(inner.t, Ty::Func(_)) {
             // OVL-15: a reference to function binds to the result of a
             // conversion function.
@@ -5201,7 +5346,8 @@ impl P {
             self.error(line, "REF-10", "reference binding drops a cv-qualifier");
             return Expr::new(EK::Conv(Conv::Bind, Box::new(e)), inner, Cat::L, line);
         }
-        if related && (e.cat != Cat::PR || matches!(et.t, Ty::Class(_))) {
+        if related && (e.cat != Cat::PR || matches!(et.t, Ty::Class(_)) || (matches!(et.t, Ty::Array(..)) && matches!(e.k, EK::InitList(_)))) {
+            // An array prvalue binds after it is materialized (VC-2).
             return Expr::new(EK::Conv(Conv::Bind, Box::new(e)), inner, Cat::L, line);
         }
         // REF-2: bind to a temporary holding the converted value.
@@ -6998,6 +7144,16 @@ impl P {
                     }
                 }
                 if let Ty::Func(_) = t.t {
+                    // MPTR-10: the result of a pointer to member function
+                    // is called; the call comes after closing parentheses.
+                    let mut k = 0;
+                    while self.at_k(k, ")") {
+                        k += 1;
+                    }
+                    if !self.at_k(k, "(") && !self.in_template() {
+                        self.error(line, "MPTR-10", "the result of a pointer to member function is not called");
+                        return Expr::unknown(line, "bad operand");
+                    }
                     return Expr::new(EK::PtrMem(Box::new(obj), Box::new(rt)), t, Cat::L, line);
                 }
                 if op == ".*" {

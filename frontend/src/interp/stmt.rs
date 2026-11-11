@@ -458,6 +458,11 @@ impl<'a> Machine<'a> {
                     // there.
                     match items.iter().position(|s| has_label(s, &l)) {
                         Some(k) => {
+                            // JMP-16: a jump forward past declarations: the
+                            // variables exist with no value.
+                            for it in items.iter().take(k).skip(i + 1) {
+                                self.skip_decl(it)?;
+                            }
                             let list = self.blocks.last_mut().unwrap();
                             let mut ended = Vec::new();
                             list.retain(|c| {
@@ -519,6 +524,56 @@ impl<'a> Machine<'a> {
                 self.skip_decl(s)?;
                 Ok(Flow::Normal)
             }
+            // IF-12, SW-1, JMP rules: a jump into a branch or a loop body
+            // skips the init statement and the condition. The statement
+            // then goes on from the end of the part that the jump entered.
+            Stmt::If { init, then, els, .. } if self.seek_here(s, seek) => self.in_block(|m| {
+                if let Some(i) = init {
+                    m.skip_decl(i)?;
+                }
+                if m.seek_here(then, seek) {
+                    m.in_block(|m| m.exec(then, seek))
+                } else if let Some(e) = els {
+                    m.in_block(|m| m.exec(e, seek))
+                } else {
+                    Ok(Flow::Normal)
+                }
+            }),
+            Stmt::While { body, .. } if self.seek_here(s, seek) => {
+                match self.in_block(|m| m.in_block(|m| m.exec(body, seek)))? {
+                    Flow::Break => return Ok(Flow::Normal),
+                    f @ (Flow::Return | Flow::Goto(_)) => return Ok(f),
+                    _ => {}
+                }
+                self.exec(s, &mut None)
+            }
+            Stmt::Do { body, cond } if self.seek_here(s, seek) => {
+                match self.in_block(|m| m.exec(body, seek))? {
+                    Flow::Break => return Ok(Flow::Normal),
+                    f @ (Flow::Return | Flow::Goto(_)) => return Ok(f),
+                    _ => {}
+                }
+                if !self.full(|m| m.eval_bool(cond))? {
+                    return Ok(Flow::Normal);
+                }
+                self.exec(s, &mut None)
+            }
+            Stmt::For { init, cond, inc, body } if self.seek_here(s, seek) => self.in_block(|m| {
+                if let Some(i) = init {
+                    m.skip_decl(i)?;
+                }
+                match m.in_block(|m| m.in_block(|m| m.exec(body, seek)))? {
+                    Flow::Break => return Ok(Flow::Normal),
+                    f @ (Flow::Return | Flow::Goto(_)) => return Ok(f),
+                    _ => {}
+                }
+                if let Some(i) = inc {
+                    m.full(|m| m.discard(i))?;
+                }
+                // The rest of the loop: the condition, the body, the step.
+                let rest = Stmt::For { init: None, cond: cond.clone(), inc: inc.clone(), body: body.clone() };
+                m.exec(&rest, &mut None)
+            }),
             Stmt::If { .. } | Stmt::While { .. } | Stmt::For { .. } | Stmt::Do { .. } | Stmt::Switch { .. } => {
                 if self.seek_here(s, seek) {
                     return unsup("jump into a nested statement");
@@ -540,6 +595,10 @@ impl<'a> Machine<'a> {
 
     /// A declaration that a jump skips: the variables exist with no value.
     fn skip_decl(&mut self, s: &Stmt) -> R<()> {
+        // A declaration with a label or a case label before it (SW-5).
+        if let Stmt::Case(_, inner) | Stmt::Default(inner) | Stmt::Label(_, inner) = s {
+            return self.skip_decl(inner);
+        }
         if let Stmt::Decl(ids) = s {
             for &id in ids {
                 if let Some(v) = self.p.var(id) {

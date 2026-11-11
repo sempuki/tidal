@@ -859,6 +859,11 @@ impl P {
                 self.const_targ(e, &t, line, false).map(TArg::Val)
             }
             (TPK::Auto, RawArg::Expr(e)) => {
+                // OVL-20: a placeholder parameter deduces its type, so an
+                // overload set has no target type.
+                if self.overload_set_no_target(&e, line) {
+                    return Err(true);
+                }
                 if e.ty.is_unknown() {
                     return Err(false);
                 }
@@ -2356,7 +2361,7 @@ impl P {
             }
             // An array's cv-qualifiers are those of its elements, which
             // the match compares.
-            let arrays = matches!(**d, Dep::Array(..)) && matches!(a.t, Ty::Array(..));
+            let arrays = matches!(**d, Dep::Array(..)) && (matches!(a.t, Ty::Array(..)) || matches!(&a.t, Ty::Dep(ad) if matches!(**ad, Dep::Array(..))));
             if !arrays && (p.c != a.c || p.v != a.v) {
                 return false;
             }
@@ -2393,7 +2398,13 @@ impl P {
                         r
                     }
                     Ty::Dep(ad) => match &**ad {
-                        Dep::Array(ael, abound) => self.deduce_ty(el, ael, b) && self.deduce_val(bound, abound, b),
+                        Dep::Array(ael, abound) => {
+                            // CV-6: as above, for the unique type of
+                            // partial ordering (ORD-14).
+                            let el = &QTy { t: el.t.clone(), c: el.c || p.c, v: el.v || p.v };
+                            let ael = &QTy { t: ael.t.clone(), c: ael.c || a.c, v: ael.v || a.v };
+                            self.deduce_ty(el, ael, b) && self.deduce_val(bound, abound, b)
+                        }
                         _ => false,
                     },
                     _ => false,
@@ -2505,6 +2516,20 @@ pub fn auto_param_type(e: &Expr) -> QTy {
 }
 
 /// Whether an expression has a part the front end does not model.
+/// The reason of the first part of an expression that the front end
+/// does not know, for an unsupported message that names its cause.
+pub fn first_unknown(e: &Expr) -> Option<String> {
+    match &e.k {
+        EK::Unknown(why) if !why.starts_with('\u{1}') => Some(why.clone()),
+        EK::Unary(_, x) | EK::Conv(_, x) | EK::Member(x, _) | EK::DynamicCast(x) => first_unknown(x),
+        EK::Binary(_, x, y) | EK::Assign(_, x, y) | EK::Comma(x, y) | EK::Index(x, y) => first_unknown(x).or_else(|| first_unknown(y)),
+        EK::Cond(x, y, z) => first_unknown(x).or_else(|| first_unknown(y)).or_else(|| first_unknown(z)),
+        EK::Call(f, a, _) => first_unknown(f).or_else(|| a.iter().find_map(first_unknown)),
+        EK::InitList(v) | EK::Construct(_, v) => v.iter().find_map(first_unknown),
+        _ => None,
+    }
+}
+
 pub fn has_unknown(e: &Expr) -> bool {
     match &e.k {
         EK::Unknown(_) | EK::Reinterpret(..) => true,
@@ -2881,7 +2906,9 @@ impl P {
             return Pair::Ok;
         }
         if let EK::InitList(items) = &a.k {
-            if a.ty.is_unknown() || !matches!(a.ty.t, Ty::Class(_)) {
+            // A braced list with a type, such as the prvalue `Pair{1, 2}`
+            // of an array alias, is an expression of that type (DED-8).
+            if a.ty.is_unknown() || !matches!(a.ty.t, Ty::Class(_) | Ty::Array(..)) {
                 return self.deduce_list(p, items, b, false);
             }
         }
@@ -3343,7 +3370,11 @@ impl P {
     /// other candidate is left.
     pub fn templ_candidates(&mut self, obj: Option<&Expr>, cands: &[DeclId], explicit: Option<&Rc<Vec<RawArg>>>, args: &[Expr], line: u32) -> Result<Vec<DeclId>, bool> {
         let mut out = Vec::new();
+        let skip = explicit.is_none() && self.exact_non_template(cands, args);
         for &c in cands {
+            if skip && (self.is_func_templ(c) || self.generic_lambdas.contains_key(&c)) {
+                continue;
+            }
             if self.is_func_templ(c) {
                 // CLS-13: the object of the call is the argument of an
                 // explicit object parameter.
@@ -3393,6 +3424,55 @@ impl P {
             return Err(false);
         }
         Ok(out)
+    }
+
+    /// CNS-11 (Q-0426): a candidate that is not a template takes every
+    /// argument with no conversion. Each parameter has the type of its
+    /// argument, or is a reference to that type that adds no
+    /// cv-qualifier. The constraints of the function templates are then
+    /// not checked, and the templates add no candidate, since none can
+    /// be better. Only a candidate with no implicit object parameter
+    /// counts.
+    pub fn exact_non_template(&self, cands: &[DeclId], args: &[Expr]) -> bool {
+        if !cands.iter().any(|&c| self.is_func_templ(c)) || self.in_template() {
+            return false;
+        }
+        // The implicit copy constructor `C(const C&)` of a class with no
+        // copy or move constructor or move assignment declared takes a
+        // `const C` argument with no conversion (CPY-1).
+        if let ([a], Some(c)) = (args, cands.iter().find_map(|&c| self.func(c).filter(|f| f.kind == FnKind::Ctor).and_then(|f| f.class))) {
+            let at = nonref(&a.ty);
+            if at.t == Ty::Class(c) && at.c && !at.v && cands.iter().all(|&k| self.func(k).is_some_and(|f| f.kind == FnKind::Ctor)) {
+                let user_copy = self.classes[c].ctors.iter().any(|&k| !self.is_func_templ(k) && self.copy_param(k, c, false).is_some());
+                let move_assign = self.scopes[self.classes[c].scope].names.get("operator=").is_some_and(|v| v.iter().any(|&k| !self.is_func_templ(k) && self.copy_param(k, c, true) == Some(true)));
+                if !user_copy && !move_assign && self.classes[c].complete && !self.class_uncertain(c) {
+                    return true;
+                }
+            }
+        }
+        cands.iter().any(|&c| {
+            let Some(f) = self.func(c) else { return false };
+            if f.template || self.is_func_templ(c) || self.generic_lambdas.contains_key(&c) || f.deleted {
+                return false;
+            }
+            if f.class.is_some() && !f.is_static && f.kind != FnKind::Ctor {
+                return false;
+            }
+            if f.explicit_obj || f.fty.variadic || f.fty.params.len() < args.len() || f.fty.params.len() - args.len() > f.defaults {
+                return false;
+            }
+            args.iter().zip(f.fty.params.iter()).all(|(a, p)| {
+                let at = nonref(&a.ty);
+                if at.is_unknown() || p.is_unknown() || matches!(a.k, EK::InitList(_) | EK::Overloads(_)) {
+                    return false;
+                }
+                match &p.t {
+                    Ty::LRef(x) => x.t == at.t && x.c == at.c && x.v == at.v && (a.cat == Cat::L || (x.c && !x.v)),
+                    Ty::RRef(x) => x.t == at.t && x.c == at.c && x.v == at.v && a.cat != Cat::L,
+                    t => *t == at.t,
+                }
+            })
+        })
     }
 
     /// OVL-28, ORD-P2: the specialization `s1` comes from a template more
@@ -3962,7 +4042,11 @@ impl P {
     /// an explicit object parameter takes (CLS-13).
     pub fn expand_fn_templates_obj(&mut self, fids: &[DeclId], obj: Option<&Expr>, args: &[Expr], line: u32) -> Option<Vec<DeclId>> {
         let mut out = Vec::new();
+        let skip = self.exact_non_template(fids, args);
         for &f in fids {
+            if skip && self.is_func_templ(f) {
+                continue;
+            }
             if self.is_func_templ(f) {
                 let xobj = self.func(f).is_some_and(|g| g.explicit_obj && g.params.len() == g.fty.params.len() + 1);
                 let with_obj: Vec<Expr>;

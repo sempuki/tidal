@@ -278,7 +278,10 @@ impl P {
             }
         }
         for &c in &cls {
-            if self.class_uncertain(c) || self.friend_classes.contains(&c) && !self.class_friends.contains_key(&c) {
+            // A friend class declaration adds no function that the
+            // search can find; a friend function the front end did not
+            // record leaves the search uncertain.
+            if self.class_uncertain(c) || self.friend_fn_classes.contains(&c) && !self.class_friends.contains_key(&c) {
                 certain = false;
             }
             if let Some(fr) = self.class_friends.get(&c) {
@@ -446,8 +449,13 @@ impl P {
         if self.in_template() {
             return false;
         }
-        let Some((fs, _)) = Self::overload_set_of(e) else { return false };
-        let plain = fs.iter().all(|&f| self.func(f).is_some_and(|g| !g.constrained && g.class.is_none_or(|c| !self.class_uncertain(c))));
+        let set = Self::overload_set_of(e).or_else(|| match &e.k {
+            // A function template name alone is an overload set too.
+            EK::Func(f) if self.is_func_templ(*f) => Some((vec![*f], false)),
+            _ => None,
+        });
+        let Some((fs, _)) = set else { return false };
+        let plain = fs.iter().all(|&f| !self.fn_cons.contains_key(&f) && self.func(f).is_some_and(|g| !g.constrained && g.class.is_none_or(|c| !self.class_uncertain(c))));
         if plain && (fs.len() > 1 || fs.iter().any(|&f| self.is_func_templ(f))) {
             self.error(line, "OVL-20", format!("the overload set '{}' is used where no target type chooses a function", self.decls[fs[0]].name));
             return true;
@@ -978,7 +986,12 @@ impl P {
                 };
                 out.push(c);
             } else {
-                // ellipsis: promotions
+                // ellipsis: promotions. An overload set has no target type
+                // there (OVL-20, ICS-47).
+                if self.overload_set_no_target(&a, line) {
+                    out.push(Expr::unknown(line, "bad argument"));
+                    continue;
+                }
                 let a = self.rvalue(a);
                 out.push(a);
             }
@@ -1047,6 +1060,14 @@ impl P {
                 if let (Ty::Ptr(a), Ty::Ptr(b)) = (&et.t, &target.t) {
                     if (a.c && !b.c) || (a.v && !b.v) {
                         self.error(line, "CAST-7", "reinterpret_cast removes a cv-qualifier");
+                    }
+                }
+                if let (Ty::MemPtr(_, a), Ty::MemPtr(_, b)) = (&et.t, &target.t) {
+                    if matches!(a.t, Ty::Func(_)) != matches!(b.t, Ty::Func(_)) && !self.in_template() {
+                        // MPTR-11: no conversion between a pointer to data
+                        // member and a pointer to member function.
+                        self.error(line, "MPTR-11", "reinterpret_cast between a pointer to data member and a pointer to member function");
+                        return Expr::unknown(line, "bad cast");
                     }
                 }
             }
@@ -1239,6 +1260,16 @@ impl P {
                 if self.in_template() || matches!(e.k, EK::Unknown(_)) {
                     return Expr::new(EK::Unknown("member pointer cast".into()), target, Cat::PR, line);
                 }
+                if let (Ty::MemPtr(fc, _), Ty::MemPtr(tc, _), CastKind::Static) = (&nonref(&e.ty).t, &target.t, kind) {
+                    // MPTR-11: a static_cast from a member of a derived class
+                    // to one of its base goes through a base that is not
+                    // virtual, ambiguous, or inaccessible.
+                    let (d, b) = (*fc, *tc);
+                    if d != b && self.is_base_of(b, d) && !self.class_uncertain(d) && (self.has_virtual_base(d, b, 0) || self.base_count(b, d, 0) > 1 || !self.base_accessible(d, b)) {
+                        self.error(line, "MPTR-11", format!("the pointer to member of '{}' converts to one of '{}' through a virtual, ambiguous, or inaccessible base", self.classes[d].name, self.classes[b].name));
+                        return Expr::unknown(line, "bad cast");
+                    }
+                }
                 return Expr::new(EK::Conv(Conv::PtrConv, Box::new(e)), target, Cat::PR, line);
             }
             _ => {}
@@ -1269,6 +1300,41 @@ impl P {
         ci.complete && !ci.opaque && !ci.template && ci.ctors.is_empty() && !ci.has_virtual && !self.class_uncertain(c) && ci.bases.iter().all(|b| !b.virt && b.access == 0 && b.class.is_some())
     }
 
+    /// The number of scalar elements that a list with brace elision gives
+    /// a type: 1 for a scalar, the sum over the bases and members of an
+    /// aggregate class, and the bound times the element for an array.
+    /// None for a class that is not a simple aggregate.
+    fn agg_width(&self, t: &QTy, depth: u32) -> Option<usize> {
+        if depth > 8 {
+            return None;
+        }
+        match &t.t {
+            Ty::Class(c) => {
+                let c = *c;
+                if !self.aggregate_with_bases(c) || self.classes[c].key == 2 {
+                    return None;
+                }
+                let mut n = 0;
+                for b in &self.classes[c].bases {
+                    n += self.agg_width(&QTy::new(Ty::Class(b.class?)), depth + 1)?;
+                }
+                for &f in &self.classes[c].fields {
+                    if let DK::Field(fi) = &self.decls[f].k {
+                        if fi.bits.is_some() && self.decls[f].name.is_empty() {
+                            continue;
+                        }
+                        n += self.agg_width(&fi.ty, depth + 1)?;
+                    }
+                }
+                Some(n)
+            }
+            Ty::Array(el, Some(b)) => Some(self.agg_width(el, depth + 1)? * *b as usize),
+            Ty::Array(..) | Ty::Unknown | Ty::Dep(_) => None,
+            t if t.is_ref() => None,
+            _ => Some(1),
+        }
+    }
+
     /// Aggregate initialization from a list whose elements each match a
     /// base or member, with no brace elision: the bases first, then the
     /// members (LIST rules). None when the list needs more, or when a
@@ -1290,7 +1356,55 @@ impl P {
                 }
             }
         }
-        if v.len() > targets.len() || v.iter().any(|x| matches!(x.k, EK::Unknown(_)) || (x.ty.is_unknown() && !matches!(x.k, EK::InitList(_)))) {
+        if v.iter().any(|x| matches!(x.k, EK::Unknown(_)) || (x.ty.is_unknown() && !matches!(x.k, EK::InitList(_)))) {
+            return None;
+        }
+        // LIST-6: brace elision. An element that does not start a nested
+        // list, and does not initialize the base or member whole, takes
+        // its place with the elements after it, as many as the base or
+        // member needs.
+        let elided: Vec<Expr>;
+        let v: &[Expr] = if !is_paren && v.len() > 0 {
+            let mut out = Vec::new();
+            let mut k = 0;
+            for t in &targets {
+                if k >= v.len() {
+                    break;
+                }
+                let x = &v[k];
+                let whole = matches!(x.k, EK::InitList(_) | EK::Str(_)) || match (&t.t, &nonref(&x.ty).t) {
+                    (Ty::Class(tc), Ty::Class(xc)) => xc == tc || self.is_base_of(*tc, *xc),
+                    (Ty::Class(_) | Ty::Array(..), _) => false,
+                    _ => true,
+                };
+                match (whole, self.agg_width(t, 0)) {
+                    (false, Some(0)) => {
+                        // LIST-13: an empty aggregate takes no element by
+                        // brace elision; it needs braces of its own.
+                        self.error(x.line, "LIST-13", "an empty aggregate base or member needs its own braces when later values follow");
+                        return Some(Expr::unknown(line, "bad aggregate init"));
+                    }
+                    (false, Some(w)) => {
+                        let n = w.min(v.len() - k);
+                        out.push(Expr::new(EK::InitList(v[k..k + n].to_vec()), QTy::unknown(), Cat::PR, x.line));
+                        k += n;
+                    }
+                    (false, None) => return None,
+                    (true, _) => {
+                        out.push(x.clone());
+                        k += 1;
+                    }
+                }
+            }
+            if k < v.len() {
+                return None;
+            }
+            elided = out;
+            &elided
+        } else {
+            v
+        };
+        if v.len() > targets.len() {
             return None;
         }
         let mark = self.d.list.len();
@@ -1331,6 +1445,29 @@ impl P {
         if self.d.list.len() != mark {
             self.d.list.truncate(mark);
             return None;
+        }
+        // LIST-16: a member with no value in the list and no default
+        // member initializer is copy-initialized from an empty list, which
+        // an explicit default constructor cannot do.
+        let nb = self.classes[c].bases.len();
+        if !is_paren && !is_union {
+            let fields = self.classes[c].fields.clone();
+            for (k, &f) in fields.iter().enumerate() {
+                if nb + k < v.len() {
+                    continue;
+                }
+                if let DK::Field(fi) = &self.decls[f].k {
+                    if fi.init.is_some() {
+                        continue;
+                    }
+                    if let Ty::Class(mc) = fi.ty.t {
+                        if self.classes[mc].complete && !self.class_uncertain(mc) && self.default_ctor(mc).and_then(|d| self.func(d)).is_some_and(|df| df.explicit && !df.deleted) {
+                            self.error(line, "LIST-16", format!("the member '{}' has no value in the list, and the default constructor of '{}' is explicit", self.decls[f].name, self.classes[mc].name));
+                            return Some(Expr::unknown(line, "bad aggregate init"));
+                        }
+                    }
+                }
+            }
         }
         let mut x = Expr::new(EK::InitList(out), ty.clone(), Cat::PR, line);
         x.paren = is_paren;
@@ -1767,7 +1904,26 @@ impl P {
                         let has_list_ctor = self.classes[c].ctors.iter().any(|&cid| self.func(cid).and_then(|f| f.params.first().copied()).and_then(|p| self.var(p)).is_some_and(|v| matches!(nonref(&v.ty).t, Ty::Class(lc) if self.init_list_elem(lc).is_some())));
                         if v.len() == 1 && (nonref(&v[0].ty).t == Ty::Class(c) || matches!(nonref(&v[0].ty).t, Ty::Class(d) if self.is_base_of(c, d) && !self.class_uncertain(d))) {
                             if is_list && has_list_ctor {
-                                return Expr::new(EK::Unknown("constructor call".into()), ty.clone(), Cat::PR, line);
+                                // ILC-3: a braced list goes to an
+                                // initializer-list constructor first, also
+                                // with one element of the class.
+                                let x = self.ctor_call_mode(c, v, ty, is_list, false, form == InitForm::CopyList, line);
+                                if form == InitForm::CopyList {
+                                    self.check_explicit_copy(&x, line);
+                                }
+                                return x;
+                            }
+                            // CPY-15, CNS-11 (Q-0426): a constructor template
+                            // never gives a constructor that takes the class
+                            // by value, and its constraints are still checked
+                            // for the copy, unless a constructor that is not a
+                            // template takes the argument with no conversion.
+                            if !self.in_template() && nonref(&v[0].ty).t == Ty::Class(c) {
+                                let ctors = self.classes[c].ctors.clone();
+                                let templs: Vec<DeclId> = ctors.iter().copied().filter(|&k| self.is_func_templ(k)).collect();
+                                if !templs.is_empty() && !self.exact_non_template(&ctors, v) {
+                                    let _ = self.expand_fn_templates(&templs, v, line);
+                                }
                             }
                             // A copy or move: the interpreter chooses the copy
                             // or move constructor from the source's category.
@@ -1778,6 +1934,12 @@ impl P {
                             self.check_explicit_copy(&x, line);
                         }
                         x
+                    }
+                    (Some(v), false) if (is_list || is_paren) && v.len() == 1 && self.classes[c].ctors.is_empty() && !self.class_uncertain(c) && (nonref(&v[0].ty).t == Ty::Class(c) || matches!(nonref(&v[0].ty).t, Ty::Class(d) if self.is_base_of(c, d) && !self.class_uncertain(d))) => {
+                        // CPY-8: a class with no user-declared constructor
+                        // copies or moves with its implicit constructor,
+                        // which the interpreter runs member by member.
+                        v[0].clone()
                     }
                     _ => Expr::new(EK::Unknown("constructor call".into()), ty.clone(), Cat::PR, line),
                 }
@@ -2379,6 +2541,11 @@ impl P {
             // DED-2: a template-id that names one specialization.
             init = self.resolve_templ_id(init, line);
         }
+        if self.overload_set_no_target(&init, line) {
+            // OVL-20, AUTO-8: a placeholder gives no target type to an
+            // overload set or a function template name.
+            return None;
+        }
         if let EK::Unary(UOp::AddrOf, x) = &init.k {
             if let EK::TemplId(None, fs, raw) = &x.k {
                 // OVL-20 (Q-0405): two specializations that explicit
@@ -2613,6 +2780,25 @@ impl P {
             vals[i] = Some(self.designated.get(id)?.clone());
         }
         let union = self.classes[c].key == 2;
+        if !union {
+            // LIST-16: a member that no designator names and that has no
+            // default member initializer cannot use an explicit default
+            // constructor.
+            for (i, &f) in fields.iter().enumerate() {
+                if vals[i].is_some() {
+                    continue;
+                }
+                if let DK::Field(fi) = &self.decls[f].k {
+                    if let (None, Ty::Class(mc)) = (&fi.init, &fi.ty.t) {
+                        let mc = *mc;
+                        if self.classes[mc].complete && !self.class_uncertain(mc) && self.default_ctor(mc).and_then(|d| self.func(d)).is_some_and(|df| df.explicit && !df.deleted) {
+                            self.error(line, "LIST-16", format!("the member '{}' has no value in the list, and the default constructor of '{}' is explicit", self.decls[f].name, self.classes[mc].name));
+                            return Some(Expr::unknown(line, "bad aggregate init"));
+                        }
+                    }
+                }
+            }
+        }
         let last = if union { vals.iter().position(|x| x.is_some())? + 1 } else { fields.len() };
         let mut out = Vec::new();
         for (i, val) in vals.into_iter().enumerate().take(last) {

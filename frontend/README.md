@@ -141,6 +141,12 @@ table for Clang and GCC on both targets).
 After `main` returns, a pass through the declaration of a block-scope
 `static` variable that has ended stops the run with OBJ-12.
 
+A `goto` or a `case` label can enter a branch of an `if` or the body of
+a loop. The jump skips the init statement and the condition, and the
+variables of a skipped declaration exist with no value. After the
+body, a `while` or `for` loop goes on with its step and condition, and
+a `do` loop with its condition (finding G161 of report 24).
+
 An exception unwinds the stack as the UNW-7 table gives for Clang. With
 no matching handler before `main`, no automatic object is destroyed. At
 the boundary of a non-throwing function, the objects of the functions
@@ -165,6 +171,10 @@ at global scope and the usual parameters:
 | `putchar(c)` | returns `c` as an `unsigned char` value; the run does not record the output |
 
 Any other function without a definition leaves the run unsupported.
+A program that declares `std::nothrow` as LSUP-6 gives it, with no
+definition, gets the library's object at its first use. The library's
+nothrow allocation forms return a null pointer when they fail (finding
+G162 of report 24).
 
 ### Choices of the run that follow the matrix
 
@@ -270,7 +280,10 @@ tests:
   program did not run.
 
 The output then lists the unsupported constructs, with the number of tests each
-one affects, first for the interpreter and then for the check. `-v`
+one affects, first for the interpreter and then for the check. A
+variable template argument of unknown type names the construct that
+gave the unknown type, such as `new expression (in a variable template
+argument)`, so that the list counts root causes. `-v`
 also lists every test that did not pass. `--out FILE` writes the tables
 and one line per test to FILE.
 

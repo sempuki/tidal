@@ -391,6 +391,8 @@ pub struct P {
     pub member_access: HashMap<DeclId, u8>,
     pub access_stack: Vec<u8>,
     pub friend_classes: std::collections::HashSet<usize>,
+    /// The classes with a friend declaration of a function (NAM-27).
+    pub friend_fn_classes: std::collections::HashSet<usize>,
     /// ACC-6: the friends that each class declares. `open` is set when a
     /// friend declaration names something the front end does not track.
     pub friend_sets: HashMap<usize, FriendSet>,
@@ -826,6 +828,9 @@ pub struct P {
     pub no_fwd: Option<(u32, u32)>,
     pub extra_ties: Vec<(DeclId, DeclId)>,
     pub ctad_tid: Option<usize>,
+    /// The construct behind the last unknown type that `decltype` gave,
+    /// for the message of a use that needs the type.
+    pub unknown_cause: Option<String>,
     /// The base types of each class as written, with a flag for a pack
     /// expansion; the classes that inherit constructors by the name of a
     /// base (CTAD-16); the condition of a conditional `explicit` of a
@@ -878,6 +883,7 @@ impl P {
             member_access: HashMap::new(),
             access_stack: Vec::new(),
             friend_classes: Default::default(),
+            friend_fn_classes: Default::default(),
             friend_sets: HashMap::new(),
             in_unevaluated: 0,
             internal_fns: Default::default(),
@@ -1089,6 +1095,7 @@ impl P {
             no_fwd: None,
             extra_ties: Vec::new(),
             ctad_tid: None,
+            unknown_cause: None,
             class_base_types: HashMap::new(),
             inherits_ctors: HashMap::new(),
             explicit_cond: HashMap::new(),

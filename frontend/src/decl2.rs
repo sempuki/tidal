@@ -408,8 +408,9 @@ impl P {
                 return;
             }
         }
-        if !is_fn {
-            // LSP-7: a global variable with C++ linkage of the same name.
+        {
+            // LSP-7 (Q-0075): a global variable with C++ linkage of the
+            // same name, for a C variable and a C function.
             let globals: Vec<DeclId> = self.scopes[self.global].names.get(name).cloned().unwrap_or_default();
             if globals.iter().any(|&g| g != id && matches!(self.decls[g].k, DK::Var(_)) && !self.c_names.get(name).is_some_and(|v| v.contains(&g)) && !self.var_internal.contains(&g)) {
                 self.error(line, "LSP-7", format!("the C name '{}' has the spelling of a global variable with C++ linkage", name));
@@ -595,6 +596,24 @@ impl P {
             let (items, _) = self.parse_expansion(|p| {
                 let scope = p.parse_nested_name()?;
                 if p.eat("operator") {
+                    // NS-16: a using declaration can name an operator
+                    // function, as `using other::operator!=;`.
+                    if p.tok().kind == TK::Punct {
+                        let t = p.tok().text.clone();
+                        let close = match t.as_str() {
+                            "(" if p.at_k(1, ")") => Some(")"),
+                            "[" if p.at_k(1, "]") => Some("]"),
+                            "(" | "[" | ";" | "," => return Ok((scope, None)),
+                            _ => None,
+                        };
+                        p.pos += 1;
+                        let mut name = format!("operator{}", t);
+                        if let Some(c) = close {
+                            p.pos += 1;
+                            name.push_str(c);
+                        }
+                        return Ok((scope, Some(name)));
+                    }
                     return Ok((scope, None));
                 }
                 let mut name = p.ident()?;
@@ -2765,7 +2784,15 @@ impl P {
                 }
                 if let Some(c) = ds.defined_class {
                     if self.classes[c].name.is_empty() && self.classes[c].key == 2 {
+                        let n = self.decls.len();
                         self.anonymous_union(c, &ds, ctx, line);
+                        if ctx == Ctx::Block {
+                            // UNI-7: the members of a local anonymous union
+                            // are variables of the block, which the run
+                            // makes at the declaration.
+                            let ids: Vec<DeclId> = (n..self.decls.len()).filter(|&i| matches!(self.decls[i].k, DK::Var(_))).collect();
+                            return Ok(ids);
+                        }
                     } else if self.classes[c].name.is_empty() && matches!(ctx, Ctx::Class(_)) {
                         // CLS-9: an unnamed member of class type must be an
                         // anonymous union.
@@ -3384,10 +3411,19 @@ impl P {
                 };
                 if let Some(w) = what {
                     self.error(line, "UNI-9", format!("an anonymous union with {}", w));
-                    break;
+                    return self.anonymous_union_members(c, ds, ctx, line);
                 }
             }
+            // UNI-9 (Q-0424): an unnamed class that a member declaration
+            // defines, or a nested anonymous union, is a nested type too.
+            if (0..self.classes.len()).any(|x| x != c && self.scopes[self.classes[x].scope].parent == Some(sc)) {
+                self.error(line, "UNI-9", "an anonymous union with a nested type (an unnamed class)");
+            }
         }
+        self.anonymous_union_members(c, ds, ctx, line)
+    }
+
+    fn anonymous_union_members(&mut self, c: usize, ds: &DeclSpec, ctx: Ctx, line: u32) {
         // Members of an anonymous union are members of the enclosing scope.
         if ctx == Ctx::Namespace && !ds.storage.contains(&Storage::Static) && !self.in_unnamed_ns(self.decl_scope()) {
             // STO-11: an anonymous union at namespace scope must be static,
@@ -4328,6 +4364,10 @@ impl P {
                             if storage != Storage::Static {
                                 self.check_c_name(id, &name, line);
                             }
+                        } else if !internal && target_scope == self.global && self.inst_depth == 0 && self.c_names.get(&name).is_some_and(|v| v.iter().any(|&o| o != id && self.decls[o].scope != self.global)) {
+                            // LSP-7 (Q-0075): a global variable with C++
+                            // linkage after a C name of the same spelling.
+                            self.error(line, "LSP-7", format!("the global variable '{}' has the spelling of a C name", name));
                         }
                     }
                     id
@@ -4472,19 +4512,7 @@ impl P {
             // INST-11: an object of a class specialization needs the
             // virtual member functions that are not pure, as the matrix
             // compilers make them. They are made at the end of the unit.
-            let mut t = &ty.t;
-            while let Ty::Array(e, _) = t {
-                t = &e.t;
-            }
-            if let Ty::Class(c) = t {
-                let c = *c;
-                if self.in_instance(c) {
-                    let fns: Vec<DeclId> = self.scopes[self.classes[c].scope].names.values().flatten().copied().filter(|&f| self.decls[f].scope == self.classes[c].scope && self.func(f).is_some_and(|fi| fi.is_virtual && !fi.template) && !self.pure_fns.contains(&f)).collect();
-                    for f in fns {
-                        self.use_fn(f);
-                    }
-                }
-            }
+            self.inst11_object(&ty);
         }
         // Checks without an initializer.
         if init.is_none() && !self.in_template() {
@@ -4778,8 +4806,23 @@ impl P {
         let in_class_body = matches!(ctx, Ctx::Class(_));
         let is_friend = ds.friend;
         if is_friend {
+            if let (Some(q), false) = (d.qual, self.in_template()) {
+                if let SK::Class(oc) = self.scopes[q].kind {
+                    // ACC-15: a friend declaration that names a member
+                    // function of another class needs access to it.
+                    if !self.class_uncertain(oc) && self.classes[oc].complete && Some(oc) != self.current_class() {
+                        if let Some(ids) = self.lookup_member(oc, &name) {
+                            let fns: Vec<DeclId> = ids.into_iter().filter(|&i| self.func(i).is_some()).collect();
+                            if !fns.is_empty() && fns.iter().all(|&i| !self.accessible(i, false)) {
+                                self.error(line, "ACC-15", format!("the friend declaration names '{}', a member of '{}' that is not accessible here", name, self.classes[oc].name));
+                            }
+                        }
+                    }
+                }
+            }
             if let Some(c) = self.current_class() {
                 self.friend_classes.insert(c);
+                self.friend_fn_classes.insert(c);
                 self.friend_sets.entry(c).or_default().names.insert(name.clone());
             }
         }
@@ -5061,7 +5104,19 @@ impl P {
             // clause it does not model.
             let local = self.inst_depth > 0 && !self.in_template() && matches!(ctx, Ctx::Class(_)) && self.stack.iter().any(|&x| matches!(self.scopes[x].kind, SK::Block | SK::Params));
             let held = if local { Some(self.begin_held()) } else { None };
+            // NAM-21: the clause comes after the qualified name, so it
+            // sees the namespace that the qualifier names.
+            let pushed = match d.qual {
+                Some(q) if matches!(self.scopes[q].kind, SK::Namespace) && !self.stack.contains(&q) => {
+                    self.stack.push(q);
+                    true
+                }
+                _ => false,
+            };
             let r = self.cons_clause(false);
+            if pushed {
+                self.stack.pop();
+            }
             let failed = held.is_some_and(|h| self.end_held(h));
             self.cons_head = saved_head;
             // INST-12: a substitution failure in the waiting clause makes
@@ -5178,6 +5233,11 @@ impl P {
                     } else if f.fty.params == fty.params && f.fty.variadic == fty.variadic && !distinct_templates && in_class_body && (f.is_static || is_static) && f.fty.refq == fty.refq {
                         self.error(line, "CLS-9", "same member function declared static and non-static");
                     }
+                }
+                DK::Template(TemplKind::Class(_) | TemplKind::Alias | TemplKind::Var { .. }) if self.inst_depth == 0 && d.qual.is_none() && !in_class_body => {
+                    // NAM-42: a class, alias, or variable template does not
+                    // share its name with a function.
+                    self.error(line, "NAM-42", format!("'{}' has the name of a class, alias, or variable template", name));
                 }
                 DK::Var(_) | DK::Field(_) | DK::Type(_) | DK::Namespace(_) | DK::Enumerator(..) => {
                     // DEP-23: a using declaration of a dependent base can
@@ -5383,6 +5443,14 @@ impl P {
                 let deferred_defaults: Vec<bool> = fd.params.iter().map(|&p| self.deferred.iter().any(|d| d.param == Some(p))).collect();
                 let same_scope = self.decls[p].scope == target_scope || d.qual.is_some() || in_class_body;
                 let old: Vec<bool> = self.func(p).map(|f| f.default_exprs.iter().map(|x| x.is_some()).collect()).unwrap_or_default();
+                if same_scope && old.len() == new_defaults.len() && self.in_template() && self.inst_depth == 0 && !in_class_body {
+                    // DEFARG-13: a later declaration of a function template,
+                    // or of a member of a templated class, adds no default
+                    // argument.
+                    if let Some(i) = (0..old.len()).find(|&i| (new_defaults[i].is_some() || deferred_defaults[i]) && !old[i]) {
+                        self.error(line, "DEFARG-13", format!("a later declaration of '{}' adds a default argument for parameter {}", name, i + 1));
+                    }
+                }
                 if same_scope && old.len() == new_defaults.len() && !self.in_template() {
                     let mut merged = Vec::new();
                     for i in 0..old.len() {
@@ -5514,6 +5582,14 @@ impl P {
                     // A member of a class template defined after the class
                     // (TPL-23): not a function of the namespace.
                     self.qual_templ_defs.insert(id);
+                    if self.in_template() && self.inst_depth == 0 && !in_class_body {
+                        // DEFARG-13: the default arguments of a member of a
+                        // templated class are on its declaration in the
+                        // class.
+                        if let Some(i) = fd.params.iter().position(|&q| self.var(q).is_some_and(|v| v.init.is_some()) || self.deferred.iter().any(|x| x.param == Some(q))) {
+                            self.error(line, "DEFARG-13", format!("the declaration of '{}' outside its class template adds a default argument for parameter {}", name, i + 1));
+                        }
+                    }
                 }
                 if inst_req.is_some() {
                     self.inst_out = Some(crate::templ::InstOut::Func(id));
@@ -6335,6 +6411,29 @@ impl P {
         Ok(())
     }
 
+    /// INST-11: an object of a class specialization, defined as a
+    /// variable, made by a `new` expression, or made as a temporary, needs
+    /// the virtual member functions that are not pure, as the matrix
+    /// compilers make them. They are made at the end of the unit.
+    pub fn inst11_object(&mut self, ty: &QTy) {
+        if self.in_template() {
+            return;
+        }
+        let mut t = &ty.t;
+        while let Ty::Array(e, _) = t {
+            t = &e.t;
+        }
+        if let Ty::Class(c) = t {
+            let c = *c;
+            if self.in_instance(c) {
+                let fns: Vec<DeclId> = self.scopes[self.classes[c].scope].names.values().flatten().copied().filter(|&f| self.decls[f].scope == self.classes[c].scope && self.func(f).is_some_and(|fi| fi.is_virtual && !fi.template) && !self.pure_fns.contains(&f)).collect();
+                for f in fns {
+                    self.use_fn(f);
+                }
+            }
+        }
+    }
+
     fn parse_ctor_initializers(&mut self, class: Option<usize>, fid: DeclId) -> PR<Vec<MemInit>> {
         self.expect(":")?;
         let mut out = Vec::new();
@@ -6358,7 +6457,9 @@ impl P {
                     let after_name = p.pos;
                     p.pos = start;
                     let mark = p.d.list.len();
-                    match p.parse_type_id() {
+                    // The class-or-decltype of the mem-initializer-id: a
+                    // type name, with no declarator after it.
+                    match p.parse_type_name() {
                         Ok(QTy { t: Ty::Class(b), .. }) if p.d.list.len() == mark && (p.at("(") || p.at("{")) => named_spec = Some(b),
                         _ => {
                             p.d.list.truncate(mark);

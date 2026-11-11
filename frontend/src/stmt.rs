@@ -1475,7 +1475,11 @@ impl P {
                             v.init = Some(Rc::new(init));
                         }
                         loop_var = Some(id);
-                    } else {
+                    } else if !self.d.list[mark..].iter().any(|d| d.rule.is_some_and(|r| r == "DEL-1" || r.starts_with("ACC-"))) {
+                        // RFOR-1: the loop variable is initialized from
+                        // `*__begin`, so a deleted or inaccessible
+                        // constructor that the initialization selects
+                        // stays an error of the program (DEL-1, ACC-3).
                         self.d.list.truncate(mark);
                     }
                 }

@@ -1431,8 +1431,9 @@ impl P {
         let amb = amb && !(self.at("<") && found.as_ref().is_some_and(|ids| {
             // TARG-11: with an argument list, the injected class names of
             // one template's specializations name the template.
-            let ts: Vec<Option<usize>> = ids.iter().map(|&i| self.tid_of(i)).collect();
-            ts.iter().all(|t| t.is_some() && *t == ts[0])
+            // A constructor shares the class's name and is no type.
+            let ts: Vec<Option<usize>> = ids.iter().filter(|&&i| !matches!(self.decls[i].k, DK::Func(_))).map(|&i| self.tid_of(i)).collect();
+            !ts.is_empty() && ts.iter().all(|t| t.is_some() && *t == ts[0])
         }));
         if !self.in_template() {
             if amb {
@@ -1681,7 +1682,9 @@ impl P {
                 self.skip_template_args()?;
             }
             let certain = match self.scopes[s].kind {
-                SK::Class(c) => !self.class_uncertain(c) && self.classes[c].complete,
+                // DED-24: an incomplete class has no members to find,
+                // unless its own definition is being read.
+                SK::Class(c) => !self.class_uncertain(c) && (self.classes[c].complete || (!self.stack.contains(&s) && !self.inst_busy.contains(&c) && !self.inst_of.contains_key(&c))),
                 _ => !self.scopes[s].uncertain,
             };
             if certain && !self.in_template() {
@@ -1834,7 +1837,23 @@ impl P {
                 }
             }
         }
-        Ok(self.decltype_of(&e, parenthesized))
+        let t = self.decltype_of(&e, parenthesized);
+        if t.is_unknown() {
+            let mut x = &e;
+            while let EK::Conv(_, y) = &x.k {
+                x = y;
+            }
+            let cause = match &x.k {
+                EK::Var(id) => match self.var(*id).and_then(|v| v.init.clone()) {
+                    Some(init) => crate::templ::first_unknown(&init).unwrap_or_else(|| format!("the type of '{}', which its initializer does not give", self.decls[*id].name)),
+                    None => format!("the type of '{}', which the front end does not know", self.decls[*id].name),
+                },
+                EK::TemplId(..) => "a template-id that names a function specialization".into(),
+                _ => crate::templ::first_unknown(&e).unwrap_or_else(|| "decltype of an expression of unknown type".into()),
+            };
+            self.unknown_cause = Some(cause);
+        }
+        Ok(t)
     }
 
     pub fn decltype_of(&self, e: &Expr, parenthesized: bool) -> QTy {

@@ -202,6 +202,11 @@ impl P {
                                 DK::Type(_) | DK::Var(_) | DK::Func(_) | DK::Enum(_) | DK::Namespace(_) => {
                                     if !matches!(self.decls[id].k, DK::Var(_) | DK::Func(_)) {
                                         self.error(line, "TYN-2", format!("'{}' already declared as something else", name));
+                                    } else if pending.is_some() && self.inst_depth == 0 {
+                                        // NAM-42: a class template does not
+                                        // share its name with a variable or
+                                        // a function.
+                                        self.error(line, "NAM-42", format!("the class template '{}' has the name of another entity in its scope", name));
                                     }
                                 }
                                 _ => {}

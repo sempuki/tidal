@@ -239,7 +239,7 @@ No page has only a Predict batch that showed test names.
 | Exercise | State | Report |
 |---|---|---|
 | W0 | done | `reports/clean-room/java-programmer/` |
-| Front end | round 23 done: 6582/6786 pass, 6622 pass their check (`conformance.tsv`) | `reports/clean-room/rust-frontend/` |
+| Front end | round 24 done: 6718/6878 pass, 6742 pass their check (`conformance.tsv`) | `reports/clean-room/rust-frontend/` |
 | Guides | done: one tutorial and four how-to guides, not published (decision 0046) | `guides/` |
 | R-translation, R-objects, R-values, R-names, R-conversions, R-evaluation-order, R-constant-evaluation | done, 231/231, with test names, scored by the earlier rule that also counted an override's outcome | `reports/clean-room/R-foundations/` |
 | Designer roadmap | done, findings D1 to D33 | `reports/clean-room/roadmap/designer.md` |
@@ -333,7 +333,8 @@ The front end's interpreter gives these results on the Write programs
 pass-partial; W6 4 pass; W7 4 pass; W8 4 pass; W9 3 EDG-ONLY, 1 pass;
 W10 4 pass; W11 4 pass; W12 1 EDG-ONLY, 3 pass; W13 4 pass; W14 4 pass;
 W15 5 pass; W16 2 pass-partial; W17 1 pass, 1 pass-partial; W18 1
-EDG-ONLY, 3 pass; W19 3 pass, 1 pass-partial.
+EDG-ONLY, 3 pass; W19 3 pass, 1 pass-partial; W20 3 pass, 1
+pass-partial.
 
 ## 9. Prompts
 
