@@ -166,7 +166,8 @@ impl P {
                 Ty::Dep(d) => matches!(&**d, Dep::Id(TName::Templ(t), _) if *t == tid),
                 _ => false,
             };
-            if !names_tid && !result.is_unknown() {
+            let other_templ = matches!(&result.t, Ty::Dep(d) if matches!(&**d, Dep::Id(TName::Templ(t), _) if *t != tid));
+            if !names_tid && (!result.is_unknown() || other_templ) {
                 self.error(line, "CTAD-12", format!("the result of a deduction guide is not a specialization of '{}'", self.templs[tid].name));
                 ok = false;
             } else if result.is_unknown() && !matches!(result.t, Ty::Dep(_)) {
@@ -909,7 +910,10 @@ impl P {
                 _ => false,
             };
             let ilist: Vec<Guide> = guides.iter().filter(|g| g.params.first().is_some_and(|q| is_ilist(self, q)) && g.params.len() <= 1 + g.defaults && g.fn_pack.is_none()).cloned().collect();
-            if !single_spec && !ilist.is_empty() {
+            // CTAD-18 (Q-0438): an empty list skips the phase when a guide
+            // with no parameters exists.
+            let empty_default = args.is_empty() && guides.iter().any(|g| g.params.len() <= g.defaults);
+            if !single_spec && !empty_default && !ilist.is_empty() {
                 if let Some(e) = init {
                     let whole = if matches!(e.k, EK::InitList(_)) { e.clone() } else { Expr::new(EK::InitList(args.clone()), QTy::unknown(), Cat::PR, line) };
                     let saved = std::mem::replace(&mut self.ctad_list_phase, true);

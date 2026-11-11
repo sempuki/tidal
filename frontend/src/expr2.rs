@@ -1115,6 +1115,25 @@ impl P {
                     }
                     _ => self.d.list.truncate(mark),
                 }
+                if let Ty::Class(sc) = et.t {
+                    if self.class_ok(sc) && !self.class_uncertain(sc) && self.classes[sc].complete && !target.is_unknown() && !matches!(target.t, Ty::Dep(_)) {
+                        // ICS-45, OVL-15: no conversion function gives a
+                        // result that the reference binds, and no
+                        // temporary can be copy-initialized from the
+                        // operand.
+                        let saved = std::mem::replace(&mut self.direct_conv, true);
+                        let none = matches!(self.ics_user_from_class(&e, sc, &target, Some(cat != Cat::L)), Ok(None));
+                        self.direct_conv = saved;
+                        let temp_none = match target.t {
+                            Ty::Class(tc) => self.class_ok(tc) && !self.class_uncertain(tc) && self.classes[tc].complete && matches!(self.ics_user_to_class(&e, tc), Ok(None)),
+                            _ => cat == Cat::L && !target.c || matches!(self.ics_user_from_class(&e, sc, &target.unqual(), None), Ok(None)),
+                        };
+                        if none && temp_none {
+                            self.error(line, "CAST-19", format!("static_cast: no conversion of '{}' to the reference type", self.classes[sc].name));
+                            return Expr::unknown(line, "bad cast");
+                        }
+                    }
+                }
             }
             return Expr::new(EK::Unknown("reference cast".into()), target, cat, line);
         }
@@ -1140,6 +1159,34 @@ impl P {
                             }
                         }
                         self.d.list.truncate(mark);
+                    }
+                }
+                if let Ty::Class(sc) = nonref(&e.ty).t {
+                    if sc != c && !self.is_base_of(c, sc) && self.class_ok(sc) && !self.class_uncertain(sc) {
+                        // ICS-45: an explicit conversion function whose
+                        // result is `C` or a reference to `C` serves the
+                        // parameter of the copy or move constructor.
+                        let saved = std::mem::replace(&mut self.direct_conv, true);
+                        let r = self.ics_user_from_class(&e, sc, &target.unqual(), None);
+                        self.direct_conv = saved;
+                        if let Ok(Some(crate::ics::Ics { kind: crate::ics::IK::User, user: Some(crate::ics::UKey::Fn(fid)), .. })) = r {
+                            let rt = self.func(fid).map(|f| nonref(&f.fty.ret).t.clone());
+                            if rt == Some(Ty::Class(c)) {
+                                if self.in_unevaluated == 0 {
+                                    self.use_fn(fid);
+                                }
+                                let (t, rc) = ret_cat(&self.func(fid).unwrap().fty.ret.clone());
+                                let call = Expr::new(EK::Call(Box::new(e.clone()), vec![], Some(fid)), t, rc, line);
+                                let init = Expr::new(EK::InitList(vec![call]), QTy::unknown(), Cat::PR, line);
+                                let x = self.convert_init(init, &target, crate::decl2::InitForm::Paren(1), line);
+                                if self.d.list.len() == mark && !matches!(x.k, EK::Unknown(_)) {
+                                    let mut x = Expr::new(EK::Conv(Conv::NoOp, Box::new(x)), target.clone(), Cat::PR, line);
+                                    x.ty = target;
+                                    return x;
+                                }
+                                self.d.list.truncate(mark);
+                            }
+                        }
                     }
                 }
                 let init = Expr::new(EK::InitList(vec![e.clone()]), QTy::unknown(), Cat::PR, line);
@@ -1181,6 +1228,17 @@ impl P {
                     self.direct_conv = saved;
                     if would {
                         self.error(line, "CVF-9", format!("the conversion function of '{}' is not const or volatile, and the object is", self.classes[c].name));
+                        return Expr::unknown(line, "bad cast");
+                    }
+                }
+                if kind == CastKind::Static && !self.in_template() && self.class_ok(c) && !self.class_uncertain(c) && self.classes[c].complete && !target.is_unknown() && !matches!(target.t, Ty::Dep(_)) {
+                    // CAST-19, ICS-45: no conversion function converts the
+                    // operand to the target.
+                    let saved = std::mem::replace(&mut self.direct_conv, true);
+                    let none = matches!(self.ics_user_from_class(&e, c, &target.unqual(), None), Ok(None));
+                    self.direct_conv = saved;
+                    if none {
+                        self.error(line, "CAST-19", format!("static_cast: no conversion function of '{}' converts to the target type", self.classes[c].name));
                         return Expr::unknown(line, "bad cast");
                     }
                 }
@@ -1326,8 +1384,17 @@ impl P {
         match &t.t {
             Ty::Class(c) => {
                 let c = *c;
-                if !self.aggregate_with_bases(c) || self.classes[c].key == 2 {
+                if !self.aggregate_with_bases(c) {
                     return None;
+                }
+                if self.classes[c].key == 2 {
+                    // LIST-6, UNI-7: brace elision into a union initializes
+                    // its first member.
+                    let first = self.classes[c].fields.iter().find_map(|&f| match &self.decls[f].k {
+                        DK::Field(fi) if !(fi.bits.is_some() && self.decls[f].name.is_empty()) => Some(fi.ty.clone()),
+                        _ => None,
+                    })?;
+                    return self.agg_width(&first, depth + 1);
                 }
                 let mut n = 0;
                 for b in &self.classes[c].bases {
@@ -1678,7 +1745,7 @@ impl P {
                         return Expr::new(EK::Conv(Conv::NoOp, Box::new(s)), ty.clone(), Cat::PR, line);
                     }
                 }
-                let Some(v) = items else {
+                let Some(mut v) = items.clone() else {
                     if matches!(e.ty.t, Ty::Array(..)) {
                         // INIT-5: an array must not be initialized from an array.
                         self.error(line, "INIT-8", "array initialized from another array");
@@ -1706,7 +1773,27 @@ impl P {
                             _ => false,
                         }
                     };
-                    let nested_elision = v.iter().any(|x| elided(self, x));
+                    let mut nested_elision = v.iter().any(|x| elided(self, x));
+                    if nested_elision && !is_paren && !self.in_template() && !v.iter().any(|x| matches!(x.k, EK::Str(_)) || matches!(nonref(&x.ty).t, Ty::Array(..))) {
+                        // LIST-6: each element that is not a list takes as
+                        // many values as its type needs, in order.
+                        if let Some(w) = self.agg_width(&el, 0).filter(|&w| w > 0) {
+                            let mut out = Vec::new();
+                            let mut k = 0;
+                            while k < v.len() {
+                                if elided(self, &v[k]) {
+                                    let m = w.min(v.len() - k);
+                                    out.push(Expr::new(EK::InitList(v[k..k + m].to_vec()), QTy::unknown(), Cat::PR, v[k].line));
+                                    k += m;
+                                } else {
+                                    out.push(v[k].clone());
+                                    k += 1;
+                                }
+                            }
+                            v = out;
+                            nested_elision = false;
+                        }
+                    }
                     if !nested_elision && v.len() as u64 > *n {
                         // DCL-5: not more elements than the bound.
                         self.error(line, "DCL-19", "too many initializers for the array");
@@ -1735,6 +1822,10 @@ impl P {
             }
             Ty::Class(c) => {
                 let c = *c;
+                if !self.classes[c].complete && !self.in_template() {
+                    // INST-1: the initialization needs the class complete.
+                    self.require_class(c, line);
+                }
                 if !self.classes[c].complete && !self.in_template() {
                     self.error(line, "TYN-7", "object of incomplete class type");
                     return Expr::unknown(line, "incomplete");

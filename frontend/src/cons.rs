@@ -438,7 +438,18 @@ impl P {
             vid: id.0,
             base: id.1,
         };
-        let key = if self.in_concept_def { String::new() } else { self.clause_key(start, end).join(" ") };
+        let mut key = if self.in_concept_def { String::new() } else { self.clause_key(start, end).join(" ") };
+        // CNS-27: a constraint that contains a lambda expression is not
+        // equivalent to any other, so its key names its place.
+        let lambda = (start..end.min(self.toks.len())).any(|k| {
+            self.toks[k].kind == TK::Punct && self.toks[k].text == "[" && (k == start || {
+                let p = &self.toks[k - 1];
+                !(p.kind == TK::Ident || matches!(p.text.as_str(), ")" | "]" | ">" | "[") || p.kind == TK::Str)
+            })
+        });
+        if lambda && !key.is_empty() {
+            key = format!("{} #lambda@{}:{}", key, id.0, id.1);
+        }
         Rc::new(CNorm::Atom(Rc::new(Atom { id, src, params, map, used, line, type_of: None, key })))
     }
 

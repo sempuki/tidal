@@ -21,6 +21,7 @@ impl P {
         self.last_align = 0;
         let outer_attrs = std::mem::take(&mut self.pending_attrs);
         self.skip_attributes();
+        let attr_seen = self.pos != start_pos + 1;
         let own_attrs: Vec<String> = std::mem::replace(&mut self.pending_attrs, outer_attrs).into_iter().map(|a| a.name).collect();
         let class_align = self.last_align;
         // name
@@ -151,7 +152,14 @@ impl P {
             if name.is_empty() {
                 return Err(self.err("anonymous class without a body"));
             }
-            let q = self.elaborated_class(key, &name, qual, spec_args, line)?;
+            if attr_seen && !self.at(";") && self.inst_depth == 0 {
+                // TYN-10 (Q-NEW-elaborated-type-attribute): an attribute
+                // after the class key belongs to a declaration of the
+                // class alone.
+                self.error(line, "TYN-10", "an attribute or alignment specifier after the class key of an elaborated type specifier that is not a declaration of the class alone");
+            }
+            let friend = self.friend_spec_pos.is_some_and(|p| p + 1 == start_pos);
+            let q = self.elaborated_class(key, &name, qual, spec_args, friend, line)?;
             if let Ty::Class(c) = q.t {
                 self.classes[c].align = self.classes[c].align.max(class_align);
             }
@@ -525,11 +533,14 @@ impl P {
         }
     }
 
-    fn elaborated_class(&mut self, key: u8, name: &str, qual: Option<Result<usize, ()>>, spec_args: bool, line: u32) -> PR<QTy> {
+    fn elaborated_class(&mut self, key: u8, name: &str, qual: Option<Result<usize, ()>>, spec_args: bool, friend: bool, line: u32) -> PR<QTy> {
         if spec_args {
             return Ok(QTy::unknown());
         }
-        let decl_only = self.at(";");
+        // TYN-4: `friend class S;` refers to the class that lookup finds,
+        // such as an enclosing class, and declares `S` in the enclosing
+        // namespace only when lookup finds no class.
+        let decl_only = self.at(";") && !friend;
         let found = match qual {
             Some(Ok(s)) => self.lookup_in_scope(s, name, true),
             Some(Err(())) => return Ok(QTy::unknown()),

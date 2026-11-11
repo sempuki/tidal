@@ -1,0 +1,19 @@
+Similarity report: run threshold 8 words, overlap threshold 0.25
+
+ok   fe26sim/report-26.md:Front end, round 26: the STG-23 wrong ve longest=0   overlap=0.00
+ok   fe26sim/report-26.md:Method      longest=0   overlap=0.01
+ok   fe26sim/report-26.md:Counts      longest=0   overlap=0.01
+ok   fe26sim/report-26.md:The checks  longest=0   overlap=0.00
+ok   fe26sim/report-26.md:2. Group 1: the STG-23 wrong verdict longest=0   overlap=0.02
+ok   fe26sim/report-26.md:3. Group 2: the new tests of T4 and F5 longest=0   overlap=0.02
+ok   fe26sim/report-26.md:4. Group 3: the other failures that the  longest=0   overlap=0.01
+ok   fe26sim/report-26.md:5. A fault with no test longest=0   overlap=0.04
+ok   fe26sim/report-26.md:6. Ledger rows of `reports/clean-room/le longest=0   overlap=0.00
+ok   fe26sim/report-26.md:7. Tests added during the round longest=0   overlap=0.04
+ok   fe26sim/report-26.md:8. Decision 0060: the completion test longest=0   overlap=0.01
+ok   fe26sim/report-26.md:Marks added longest=0   overlap=0.00
+ok   fe26sim/report-26.md:The 45 tests that count toward the gate longest=0   overlap=0.01
+ok   fe26sim/report-26.md:9. Run stops longest=0   overlap=0.00
+ok   fe26sim/report-26.md:10. Findings longest=0   overlap=0.00
+
+0 flagged

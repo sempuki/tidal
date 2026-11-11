@@ -918,7 +918,10 @@ impl P {
             }
         }
         self.implicit_tn = true;
-        let ds = if paren_ty.is_some() { crate::decl::DeclSpec::default() } else { self.parse_decl_specs(None)? };
+        self.in_new_type = paren_ty.is_none();
+        let ds = if paren_ty.is_some() { Ok(crate::decl::DeclSpec::default()) } else { self.parse_decl_specs(None) };
+        self.in_new_type = false;
+        let ds = ds?;
         let is_auto = paren_ty.is_none() && ds.auto.is_some() && ds.ty.is_none();
         let mut base = match &paren_ty {
             Some(t) => t.clone(),
@@ -928,6 +931,12 @@ impl P {
             // CTAD-1: a new expression with a deduced class type.
             if !self.in_template() && (self.at("(") || self.at("{")) {
                 if let Some(q) = self.ctad_lookahead(ctid, line) {
+                    base = add_cv(&q, ds.c > 0, ds.v > 0);
+                }
+            } else if !self.in_template() && !self.at("*") && !self.at("[") && !self.at("&") && !self.at("&&") {
+                // With no initializer, the choice of a guide has no
+                // arguments.
+                if let Some(q) = self.ctad(ctid, None, &crate::decl2::InitForm::None, line) {
                     base = add_cv(&q, ds.c > 0, ds.v > 0);
                 }
             }
@@ -1052,6 +1061,23 @@ impl P {
         let init = self.parse_new_init()?;
         let pargs = std::mem::take(&mut self.new_paren_args);
         let braced_init = self.new_braced.take();
+        if is_auto && bounds.is_empty() && t.is_unknown() && !self.in_template() {
+            // NEW-1, AUTO-1: `new auto(e)` and `new auto{e}` deduce the
+            // type from the one initializer, as a variable does.
+            let one = match (&init, &braced_init) {
+                (Some((false, 1)), _) => pargs.first().cloned(),
+                (Some((true, _)), Some(Expr { k: EK::InitList(v), .. })) if v.len() == 1 => v.first().cloned(),
+                _ => None,
+            };
+            if let Some(x) = one.filter(|x| !x.ty.is_unknown() && !matches!(x.k, EK::InitList(_))) {
+                let d = nonref(&x.ty).unqual();
+                t = match d.t {
+                    Ty::Array(el, _) => QTy::new(Ty::Ptr(el)),
+                    Ty::Func(_) => QTy::new(Ty::Ptr(Box::new(d))),
+                    _ => d,
+                };
+            }
+        }
         if let (Ty::Class(c), true, Some((false, _))) = (&t.t, bounds.is_empty(), init) {
             // CTOR-25: a constructor must accept the arguments.
             if !self.class_uncertain(*c) && !self.in_template() && self.ctor_no_match(*c, &pargs) {
@@ -1158,7 +1184,19 @@ impl P {
             return Ok(unknown);
         }
         let mark = self.d.list.len();
-        let count = if bounds.is_empty() { None } else { first_bound.clone() };
+        let mut count = if bounds.is_empty() { None } else { first_bound.clone() };
+        if first_absent && count.is_none() && bounds.len() == 1 && !self.in_template() {
+            // NEW-2: with no bound, the initializer gives the size.
+            let n = match (&init, &braced_init) {
+                (Some((true, _)), Some(Expr { k: EK::InitList(v), .. })) => Some(v.len()),
+                (Some((false, n)), _) if *n > 0 => Some(*n),
+                _ => None,
+            };
+            if let Some(n) = n {
+                count = Some(Expr::new(EK::Int(n as i128), QTy::new(Ty::size_t()), Cat::PR, line));
+                first_const = Some(n as i128);
+            }
+        }
         if !bounds.is_empty() && count.is_none() {
             return Ok(unknown);
         }
@@ -1200,9 +1238,16 @@ impl P {
             (Some((false, n)), _) => {
                 if !bounds.is_empty() {
                     if n != 0 {
-                        return Ok(unknown);
+                        // NEW-2: a parenthesized list initializes the
+                        // elements as an aggregate does, with the bound of
+                        // the constant or of the list.
+                        let Some(k) = first_const.filter(|&k| k >= n as i128) else { return Ok(unknown) };
+                        let at = QTy::new(Ty::Array(Box::new(rt.clone()), Some(k as u64)));
+                        let e = Expr::new(EK::InitList(pargs.clone()), QTy::unknown(), Cat::PR, line);
+                        Some(self.convert_init(e, &at, InitForm::Paren(n), line))
+                    } else {
+                        Some(Expr::new(EK::ZeroInit, rt.clone(), Cat::PR, line))
                     }
-                    Some(Expr::new(EK::ZeroInit, rt.clone(), Cat::PR, line))
                 } else if n == 0 {
                     let e = Expr::new(EK::InitList(vec![]), QTy::unknown(), Cat::PR, line);
                     Some(self.convert_init(e, &rt, InitForm::DirectList, line))
@@ -2456,17 +2501,32 @@ impl P {
         };
         let fids: Vec<DeclId> = ids.iter().copied().filter(|&i| self.func(i).is_some_and(|f| !f.template)).collect();
         let templ = ids.iter().any(|&i| self.func(i).is_none_or(|f| f.template));
+        // OPR-8 (Q-0435): the literal operator templates of the suffix, each
+        // with a pack of `char` and an empty parameter list.
+        let char_templs: Vec<DeclId> = ids.iter().copied().filter(|&i| {
+            self.func(i).is_some_and(|f| f.template) && self.decl_tid.get(&i).is_some_and(|&t| self.literal_template_form(&self.templs[t].params, i))
+        }).collect();
+        let class_templs: Vec<DeclId> = ids.iter().copied().filter(|&i| {
+            self.func(i).is_some_and(|f| f.template) && self.decl_tid.get(&i).is_some_and(|&t| self.literal_class_template_form(&self.templs[t].params, i))
+        }).collect();
+        let only_char_templs = templ && ids.iter().all(|i| fids.contains(i) || char_templs.contains(i));
+        let known_templs = templ && ids.iter().all(|i| fids.contains(i) || char_templs.contains(i) || class_templs.contains(i));
         let one = |p: &P, f: DeclId, t: &dyn Fn(&QTy) -> bool| p.func(f).is_some_and(|fi| fi.fty.params.len() == 1 && t(&fi.fty.params[0]));
-        let char_ptr = |q: &QTy| matches!(&q.t, Ty::Ptr(x) if x.t == Ty::Char && x.c);
+        let is_text = matches!(base, Lit::Char { .. } | Lit::Str { .. });
         match base {
             Lit::Int { value, .. } => {
                 if let Some(&f) = fids.iter().find(|&&f| one(self, f, &|q| q.unqual().t == Ty::ULLong)) {
+                    if value > u64::MAX as u128 {
+                        // PRIM-2: the numeric form takes the value, and no
+                        // integer type holds it.
+                        self.error(line, "PRIM-2", "integer literal too large for any type");
+                        return Expr::unknown(line, "user-defined literal");
+                    }
                     let a = Expr::new(EK::Int(value as i128), QTy::new(Ty::ULLong), Cat::PR, line);
                     return self.call_overloads(None, vec![f], vec![a], line);
                 }
-                if let Some(&f) = fids.iter().find(|&&f| one(self, f, &char_ptr)) {
-                    let a = self.string_expr(raw.chars().map(|c| c as u32).collect(), Ty::Char, line);
-                    return self.call_overloads(None, vec![f], vec![a], line);
+                if let Some(e) = self.literal_raw_or_template(&fids, &char_templs, &raw, suffix, line) {
+                    return e;
                 }
             }
             Lit::Float { value, .. } => {
@@ -2474,9 +2534,8 @@ impl P {
                     let a = Expr::new(EK::Float(value), QTy::new(Ty::LDouble), Cat::PR, line);
                     return self.call_overloads(None, vec![f], vec![a], line);
                 }
-                if let Some(&f) = fids.iter().find(|&&f| one(self, f, &char_ptr)) {
-                    let a = self.string_expr(raw.chars().map(|c| c as u32).collect(), Ty::Char, line);
-                    return self.call_overloads(None, vec![f], vec![a], line);
+                if let Some(e) = self.literal_raw_or_template(&fids, &char_templs, &raw, suffix, line) {
+                    return e;
                 }
             }
             Lit::Char { prefix, value, .. } => {
@@ -2503,18 +2562,82 @@ impl P {
                 };
                 let n = units.len() as i128;
                 let a = self.string_expr(units, ct, line);
+                if !class_templs.is_empty() && !self.in_template() {
+                    // A literal operator template with a class-type
+                    // parameter takes the string literal as its template
+                    // argument when the literal is a valid argument; else
+                    // the string form serves.
+                    let mark = self.d.list.len();
+                    let me = self.d.muted_errors;
+                    self.d.muted += 1;
+                    self.call_explicit = Some(Rc::new(vec![crate::templ::RawArg::Expr(a.clone())]));
+                    let trial = self.call_overloads(None, class_templs.clone(), vec![], line);
+                    self.d.muted -= 1;
+                    let ok = self.d.muted_errors == me && self.d.list.len() == mark && !matches!(trial.k, EK::Unknown(_));
+                    self.d.muted_errors = me;
+                    self.d.list.truncate(mark);
+                    if ok {
+                        self.call_explicit = Some(Rc::new(vec![crate::templ::RawArg::Expr(a.clone())]));
+                        return self.call_overloads(None, class_templs.clone(), vec![], line);
+                    }
+                    let str_form = fids.iter().copied().any(|f| self.func(f).is_some_and(|fi| fi.fty.params.len() == 2));
+                    let placeholder = class_templs.iter().any(|&i| self.decl_tid.get(&i).is_some_and(|&t| matches!(&self.templs[t].params[0].kind, crate::templ::TPK::Const(q) if q.is_unknown())));
+                    if placeholder && !str_form {
+                        // TPL-11, CTAD-1: a parameter whose type is a class
+                        // template name, which the front end does not deduce.
+                        return Expr::unknown(line, "literal operator template");
+                    }
+                    if !str_form && known_templs {
+                        self.error(line, "OPR-16", format!("the string literal is not a valid template argument of the literal operator template for the suffix '{}'", suffix));
+                        return Expr::unknown(line, "user-defined literal");
+                    }
+                }
                 let len = Expr::new(EK::Int(n), QTy::new(Ty::size_t()), Cat::PR, line);
-                if !fids.is_empty() && !templ {
+                if !fids.is_empty() && (!templ || known_templs) {
                     return self.call_overloads(None, fids, vec![a, len], line);
                 }
             }
             Lit::UserDefined { .. } => {}
+        }
+        if is_text && only_char_templs && !self.lookup_uncertain() {
+            // OPR-8, OPR-16: a literal operator template takes only integer
+            // and floating literals.
+            self.error(line, "OPR-16", format!("no literal operator for the suffix '{}' takes a character or string literal", suffix));
+            return Expr::unknown(line, "user-defined literal");
+        }
+        if !is_text && known_templs && char_templs.is_empty() && !self.lookup_uncertain() {
+            // A template with a class-type parameter serves only string
+            // literals (OPR-16).
+            self.error(line, "OPR-16", format!("no literal operator for the suffix '{}' takes this form of literal", suffix));
+            return Expr::unknown(line, "user-defined literal");
         }
         if templ || self.lookup_uncertain() {
             return Expr::unknown(line, "literal operator template");
         }
         self.error(line, "OPR-16", format!("no literal operator for the suffix '{}' takes this form of literal", suffix));
         Expr::unknown(line, "user-defined literal")
+    }
+
+    /// OPR-8: the raw form or the literal operator template of a numeric
+    /// literal. OPR-16: both exist, and the literal is not valid.
+    fn literal_raw_or_template(&mut self, fids: &[DeclId], char_templs: &[DeclId], raw: &str, suffix: &str, line: u32) -> Option<Expr> {
+        let char_ptr = |p: &P, f: DeclId| p.func(f).is_some_and(|fi| fi.fty.params.len() == 1 && matches!(&fi.fty.params[0].t, Ty::Ptr(x) if x.t == Ty::Char && x.c));
+        let raw_form = fids.iter().copied().find(|&f| char_ptr(self, f));
+        if raw_form.is_some() && !char_templs.is_empty() {
+            self.error(line, "OPR-16", format!("both the raw form and a literal operator template exist for the suffix '{}', and no numeric form", suffix));
+            return Some(Expr::unknown(line, "user-defined literal"));
+        }
+        if let Some(f) = raw_form {
+            let a = self.string_expr(raw.chars().map(|c| c as u32).collect(), Ty::Char, line);
+            return Some(self.call_overloads(None, vec![f], vec![a], line));
+        }
+        if !char_templs.is_empty() {
+            // The characters of the raw form are the template arguments.
+            let targs: Vec<crate::templ::RawArg> = raw.chars().map(|c| crate::templ::RawArg::Expr(Expr::new(EK::Int(c as i128), QTy::new(Ty::Char), Cat::PR, line))).collect();
+            self.call_explicit = Some(Rc::new(targs));
+            return Some(self.call_overloads(None, char_templs.to_vec(), vec![], line));
+        }
+        None
     }
 
     pub fn parse_braced_init(&mut self) -> PR<Expr> {

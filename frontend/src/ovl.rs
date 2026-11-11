@@ -790,7 +790,10 @@ impl P {
                     match f.params.first().and_then(|&q| p.var(q)).map(|v| nonref(&v.ty).t) {
                         None => true,
                         Some(Ty::Dep(d)) => matches!(*d, crate::types::Dep::Param(..)),
-                        Some(Ty::Class(lc)) => !f.template && p.init_list_elem(lc).is_none(),
+                        // A class that is not std::initializer_list makes
+                        // no initializer-list constructor, also in a
+                        // template (ILC-2).
+                        Some(Ty::Class(lc)) => p.init_list_elem(lc).is_none() && !p.inst_of.get(&lc).is_some_and(|(t, _)| p.templs[*t].name == "initializer_list"),
                         Some(Ty::Unknown) => false,
                         Some(_) => !f.template,
                     }

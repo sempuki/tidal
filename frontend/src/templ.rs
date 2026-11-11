@@ -850,6 +850,12 @@ impl P {
                         b.vals[i] = Some(a.clone());
                     }
                     let s = self.subst_ty(t, &b);
+                    if matches!(&s.t, Ty::Ptr(x) if x.t.is_ref()) {
+                        // TARG-24: the arguments make the type of a later
+                        // parameter a pointer to a reference.
+                        self.error(line, "TARG-24", format!("the template arguments make the type of the parameter '{}' a pointer to a reference", p.name));
+                        return Err(true);
+                    }
                     if s.is_unknown() {
                         return Err(false);
                     }
@@ -2742,6 +2748,11 @@ impl P {
             ptys.insert(0, t);
         }
         let np = ptys.len();
+        if pack_i.is_none() && ((args.len() > np && !f.fty.variadic) || args.len() + f.defaults < np) {
+            // DED-6: no parameter for an argument, or no argument and no
+            // default for a parameter. The pairs are not compared.
+            return Ded::Fail;
+        }
         let mut pack_vals: Vec<(u32, Vec<TArg>)> = Vec::new();
         let mut pack_params: Vec<u32> = Vec::new();
         if let Some(k) = pack_i {
@@ -3946,6 +3957,16 @@ impl P {
         self.deferred = vec![df];
         self.force_bodies = true;
         self.inst_depth += 1;
+        // FN-12, INST-1: the definition needs its parameter and return
+        // types complete.
+        if let Some(f) = self.func(fid) {
+            let (ret, params) = (f.fty.ret.clone(), f.fty.params.clone());
+            let line = self.decls[fid].line;
+            self.require_ty(&ret, line);
+            for p in params {
+                self.require_ty(&p, line);
+            }
+        }
         self.run_deferred();
         self.inst_depth -= 1;
         self.force_bodies = false;

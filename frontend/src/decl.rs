@@ -1517,7 +1517,7 @@ impl P {
             // variable declared with the name and an initializer deduces
             // the arguments, which the front end does not model.
             let ctad = self.peek(0).kind == TK::Ident && !is_keyword(&self.peek(0).text) && (self.at_k(1, "{") || self.at_k(1, "(") || self.at_k(1, "=") || self.at_k(1, ";") || self.at_k(1, ":") || self.at_k(1, ","));
-            let ctad = ctad || self.at("{") || self.at("(");
+            let ctad = ctad || self.at("{") || self.at("(") || self.in_new_type;
             if !ctad && !self.in_tparam_decl && (!self.in_template() || scope.is_some()) && !self.tparam.contains_key(&id) && self.tid_of(id).is_some() {
                 self.error(line, "TARG-10", format!("the template '{}' is used without an argument list", name));
             }
@@ -2666,6 +2666,34 @@ impl P {
         if self.at("noexcept") {
             self.pos += 1;
             f.noexcept = true;
+            let member = matches!(self.stack.last().map(|&s| &self.scopes[s].kind), Some(SK::Class(_))) && !self.in_template() && self.inst_depth == 0 && self.pending_template.is_none();
+            if self.at("(") && member {
+                // CLS-2, EXS-1: the operand of a member's noexcept is in a
+                // complete-class context. When it needs later members, it
+                // is parsed again at the end of the class.
+                let open = self.pos;
+                self.pos += 1;
+                self.stack.push(scope);
+                let (me, mu) = (self.d.muted_errors, self.d.muted_unsup);
+                self.d.muted += 1;
+                let e = self.parse_expression();
+                let v = match &e {
+                    Ok(e) if self.at(")") => self.eval_bool_const(e, 0, "EXS-7"),
+                    _ => None,
+                };
+                self.d.muted -= 1;
+                let failed = self.d.muted_errors != me || self.d.muted_unsup != mu || v.is_none();
+                self.d.muted_errors = me;
+                self.d.muted_unsup = mu;
+                self.stack.pop();
+                self.pos = open;
+                if failed {
+                    let stack = { let mut st = self.stack.clone(); st.push(scope); st };
+                    self.skip_balanced();
+                    self.pending_noexcept_defer = Some((open + 1, self.pos - 1, stack));
+                    f.noexcept = false;
+                }
+            }
             if self.at("(") {
                 self.pos += 1;
                 let l = self.line();
@@ -3030,7 +3058,7 @@ impl P {
             }
             if let Some((start, end)) = defer_default {
                 let c = self.current_class_any().unwrap();
-                self.deferred.push(Deferred { func: None, field: None, param: Some(id), start, end, stack: self.stack.clone(), templ: self.templ, class: c });
+                self.deferred.push(Deferred { func: None, field: None, param: Some(id), start, end, stack: self.stack.clone(), templ: self.templ, class: c, noexcept_of: None });
             }
             if ty.v && !ty.t.is_ref() && self.inst_depth == 0 && !self.in_template() {
                 // CV-9: a volatile parameter type is deprecated.
@@ -3126,6 +3154,24 @@ impl P {
             self.error_because(line, "DCL-19", "CE-11", "array bound must have integer or unscoped enumeration type");
             return Some(u64::MAX);
         }
+        let converted;
+        let e = if matches!(t.t, Ty::Class(_)) && !self.in_template() {
+            // DCL-5, CVF-1: a class operand converts to std::size_t by a
+            // conversion function.
+            let mark = self.d.list.len();
+            match self.user_conv(e, &QTy::new(Ty::size_t()), line) {
+                Some(x) if self.d.list.len() == mark && !matches!(x.k, EK::Unknown(_)) => {
+                    converted = x;
+                    &converted
+                }
+                _ => {
+                    self.d.list.truncate(mark);
+                    e
+                }
+            }
+        } else {
+            e
+        };
         match self.const_int(e) {
             Ok(v) => {
                 if v <= 0 {

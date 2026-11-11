@@ -55,6 +55,11 @@ impl<'a> Machine<'a> {
                     let is_ref = c.and_then(|c| self.fields(c).into_iter().find(|(_, fi)| fi.index == idx)).is_some_and(|(_, fi)| fi.ty.t.is_ref());
                     if is_ref {
                         return match self.get_at(&place)?.clone() {
+                            Val::Ptr(q) if !self.objs[q.obj].alive && !self.constant => {
+                                // LAM-19: the body uses a reference capture
+                                // after the life of the variable ended.
+                                ub("LAM-19", "use of a reference capture whose variable's lifetime has ended")
+                            }
                             Val::Ptr(q) => Ok(q),
                             _ => unsup("reference capture"),
                         };
@@ -1345,7 +1350,7 @@ impl<'a> Machine<'a> {
                 match self.obj_ty(o) {
                     Some(q) if q.unqual().t == t.t => return Ok(Ptr::whole(o)),
                     Some(QTy { t: Ty::Array(el, _), .. }) if el.unqual().t == t.t => return Ok(Ptr { obj: o, path: vec![], off: 0, array: true, bytes: false }),
-                    _ if self.implicit.contains(&o) && off == 0 && self.implicit_lifetime(&t.t) => {
+                    _ if self.implicit.contains(&o) && off == 0 && (self.implicit_lifetime(&t.t) || (matches!(t.t, Ty::Class(_)) && !self.constant)) => {
                         // STG-8: a later use needs another set of objects.
                         // The set that serves every use holds the bytes
                         // that the program wrote (STG-12).

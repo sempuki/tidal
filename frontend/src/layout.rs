@@ -310,7 +310,20 @@ impl P {
                 let w = w as u64;
                 let named = !self.decls[*f].name.is_empty();
                 if w > 8 * ts {
-                    return None;
+                    // BF-9: a bit-field wider than its type aligns as the
+                    // largest integer type `U` with at most `w` bits, and
+                    // its first `8 * sizeof(T)` bits hold the value.
+                    let u = [Ty::LLong, Ty::Int, Ty::Short, Ty::Char].into_iter().find(|t| self.sizeof_ty(t).is_some_and(|s| 8 * s <= w))?;
+                    let (_, ua, _) = self.member_parts(&u, depth)?;
+                    let ua = ua.max(1);
+                    let pos = if union { 0 } else { (st.dbits as u64).div_ceil(8 * ua) * 8 * ua };
+                    l.fields[fi.index] = Some(FieldPos { off: pos / 8, bits: Some((pos, (8 * ts) as u32)) });
+                    st.dbits = st.dbits.max((pos + w) as u128);
+                    st.size = st.size.max(st.dsize());
+                    if named {
+                        st.align = st.align.max(ua).max(ta);
+                    }
+                    continue;
                 }
                 if union {
                     l.fields[fi.index] = Some(FieldPos { off: 0, bits: Some((0, w as u32)) });

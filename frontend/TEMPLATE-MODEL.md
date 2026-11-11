@@ -2,12 +2,12 @@
 
 This document gives the model of templates that the rewrite of the
 front end needs (decision 0060, decision 0062 item RP). It comes from
-the templates chapter of the specification, from the 30 tests that
+the templates chapter of the specification, from the 32 tests that
 fail on the current front end because of its model, and from the three
 facts that the I6 component could not compute
 (`reports/clean-room/I6/report.md`, section "Score").
 `reports/clean-room/rust-frontend/rewrite-marks.tsv` (the marks file)
-names the 30 tests and the section of this document that passes each.
+names the 32 tests and the section of this document that passes each.
 The rewrite takes them over, and the gate of decisions 0062 and 0063
 does not count them (decision 0063, item GC). `DESIGN-current.md`
 describes the current template record, and this document refers to it
@@ -27,11 +27,11 @@ positions.
 
 | Limit | Effect | Rules | Tests that fail |
 |---|---|---|---|
-| In a pattern, the type of an object of the current instantiation is `Ty::Unknown`. | A member access on such an object cannot find the member template, and `<` reads as the less-than operator. | DEP-2, DEP-15, DEP-24 | 4 |
+| In a pattern, the type of an object of the current instantiation is `Ty::Unknown`. | A member access on such an object cannot find the member template, and `<` reads as the less-than operator. A constructor that takes the class by value is not seen (CPY-15). | DEP-2, DEP-15, DEP-24, CPY-15 | 5 |
 | A base of a pattern class is a known class or an unknown one (`BaseInfo::class` is `None`). The current instantiation of an enclosing class is an unknown base. | Unqualified lookup in the class is uncertain, and a name that the base declares is unknown. | DEP-11 | 1 |
 | A template-id with independent arguments, inside the template's own definition, gets no special form. | `Meter<0>` inside `Meter<N>` is treated as dependent, so its members are not looked up at the definition. | DEP-1, DEP-15, DEP-30 | 2 |
 | An expression has no value-dependence mark. Any template argument that names a parameter makes the template-id dependent. | `Slot<sizeof(N)>` is treated as dependent, though DEP-4 does not make `sizeof(N)` value-dependent, so a call binds late and `Box<sizeof(N)>::type` needs `typename`. | DEP-4, DEP-5 | 2 |
-| A specialization's lookup has no point of instantiation. | Lookup in a specialization sees declarations after its point, and a `static` member's initializer is made with the class instead of at its use. | INST-5, INST-8, INST-30 to INST-33 | 6 |
+| A specialization's lookup has no point of instantiation. | Lookup in a specialization sees declarations after its point, and a `static` member's initializer is made with the class instead of at its use. | INST-5, INST-8, INST-30 to INST-33 | 7 |
 | The members of a local class in a specialization are made at their use. | Errors in a default argument or an exception specification of such a member are missed when nothing uses it. | INST-6, INST-12 | 2 |
 | Function bodies made at the end of the unit have no `busy` state. | Endless nesting of such bodies is not caught. | INST-15, TR-13 | 1 |
 | A substitution is a replay with every diagnostic muted, and any muted error is a failure. | An error outside the immediate context, such as in a lambda body, becomes a quiet failure instead of an error. A member of the wrong kind, or a conditional `explicit`, stops the replay as unsupported. | DED-24, DED-29 | 4 |
@@ -264,11 +264,11 @@ dependent construct valid. DEP-32 and DEP-33 need no diagnostic, so an
 implementation that accepts follows the text (TR-P1). DEP-37 is the
 case of that kind that the text requires the implementation to reject.
 
-## 6. The 30 tests
+## 6. The 32 tests
 
 The marks file, `reports/clean-room/rust-frontend/rewrite-marks.tsv`,
 names the tests that fail on the current front end because of its
-model. Report 25 section 7 marked them, and `tools/frontend_check.py`
+model. Report 25 section 7 marked 30 of them, and report 26 marked two more, and `tools/frontend_check.py`
 counts them apart on its completion line (decision 0063). This table
 follows the marks file, by the section of this model that passes each
 test. A test path is under `tests/`.
@@ -284,12 +284,14 @@ test. A test path is under `tests/`.
 | `templates/dependent-names/member-template-current-instantiation-qualifier-dependent-base.cpp` | DEP-24 | missed reject | 2 | `Wrap::make` finds nothing, the base is dependent, so `<` needs `template` |
 | `templates/dependent-names/member-template-non-dependent-base.cpp` | DEP-24 | false reject | 2 | `get` and `make` are in an independent base |
 | `templates/dependent-names/member-template-through-current-instantiation-object.cpp` | DEP-24, DEP-2 | false reject | 2 | `w` has type `CurrentInst`; lookup finds `get` |
+| `classes/copy-move/class-template-ctor-by-value.cpp` | CPY-15 | missed reject | 2 | the parameter `Wrapper` has type `CurrentInst`, so CPY-15 rejects the constructor at the definition |
 | `templates/instantiation/class-point-not-later-member-type.cpp` | INST-33, INST-30 | missed reject | 3 | lookup sees only the declarations before the point |
 | `templates/instantiation/class-point-not-later-type.cpp` | INST-33 | missed reject | 3 | the same |
 | `templates/instantiation/class-point-not-later.cpp` | INST-32, INST-31 | unsupported | 3 | the same, for a `static` member's initializer with the points of INST-31 |
 | `templates/instantiation/class-point-static-const-member.cpp` | INST-33, INST-5 | unsupported | 3 | the initializer is a part of the class, made in the order of INST-P2 |
 | `templates/instantiation/class-point-static-constexpr-made-at-use.cpp` | INST-33, INST-5, INST-8 | unsupported | 3 | a `static constexpr` member's initializer waits for its first use |
 | `templates/instantiation/class-static-constexpr-member-initializer-waits.cpp` | INST-5 | EDG-AGREES | 3 | the same |
+| `templates/instantiation/static-inline-member-incomplete-argument.cpp` | INST-5 | EDG-AGREES | 3 | an `inline` static member's definition and initializer wait for a use (Q-0231), so `Cursor<Derived>` is not made with the class |
 | `templates/instantiation/local-class-default-argument.cpp` | INST-12, INST-6 | missed reject | 3 | a local class's members are made with the enclosing function's specialization |
 | `templates/instantiation/local-class-exception-specification.cpp` | INST-12, INST-6 | missed reject | 3 | the same |
 | `templates/instantiation/recursion-endless-function.cpp` | INST-15, TR-13 | missed reject | 3 | the `busy` state and the nesting limit |
@@ -306,24 +308,19 @@ test. A test path is under `tests/`.
 | `templates/packs/fold-in-outer-pattern.cpp` | PACK-8 | missed reject | 5 | the fold empties the outer mark |
 | `templates/packs/size-operator-in-outer-pattern.cpp` | PACK-8 | missed reject | 5 | `sizeof...` empties the outer mark |
 
-By section: 4 tests need section 1, 5 need section 2, 10 need section
+By section: 4 tests need section 1, 6 need section 2, 11 need section
 3, 4 need section 4, and 7 need section 5.
 
-Three false rejects of Port suite P3 are not marked:
+Front-end round 26 passes the false rejects of Port suite P3 that a
+base class template with the derived class as its argument caused:
 `templates/instantiation/member-return-type-waits-for-definition.cpp`
 (P3-7), `templates/instantiation/member-constructor-made-at-call.cpp`
-(P3-8), and `programs/P3/pipeline-first-try.cpp`. In each, a base
-class template takes the derived class as its argument, and a member
-defined in the base returns a specialization that needs the derived
-class complete. The current front end completes that return type when
-it makes the member's declaration with the class, while the derived
-class is incomplete. The same body with another return type passes,
-because the current front end already keeps the bodies of an instance's
-members for a use (`DESIGN-current.md`, "Lazy bodies of instances").
-So the current design can take the three tests by keeping the return
-type of a member definition for the same use. A front-end round that
-finds otherwise marks them for section 3. P3-6 asks the text to say
-when such a return type is made.
+(P3-8), and `templates/instantiation/member-parameter-type-waits-for-definition.cpp`
+(P3-6). The current front end now completes the parameter and return
+types of an instance's member function when it makes the body, which
+waits for a use (`DESIGN-current.md`, "Lazy bodies of instances").
+`programs/P3/pipeline-first-try.cpp` passes its check, and its run
+stops at a range `for` that the interpreter does not model.
 
 `programs/roadmap/r10-list-first-try.cpp` passes. The cause of its
 TR-13 stop was in deduction, outside this model (report 25, section 2).

@@ -1004,6 +1004,11 @@ impl P {
                     // defined.
                     self.error(pl, "TPL-33", "a constant template parameter with a storage class or a type definition");
                 }
+                if !auto && !self.in_template() && matches!(ty.t, Ty::Class(_)) {
+                    // INST-1: TPL-6 asks about the members, so a class
+                    // template specialization is made complete.
+                    self.require_ty(&ty, pl);
+                }
                 if !auto && !ty.is_unknown() && self.inst_depth == 0 && !self.tparam_type_ok(&ty) {
                     self.error(pl, "TPL-7", "the type of a constant template parameter is not a structural type");
                 }
@@ -2040,6 +2045,12 @@ impl P {
             self.error(line, "INST-21", "an explicit instantiation outside the namespace of its template");
             return Ok(());
         }
+        if d.qual.is_none() && self.templs[t].scope != self.decl_scope() && matches!(self.scopes[self.templs[t].scope].kind, SK::Namespace) && !self.inline_ns.contains(&self.templs[t].scope) {
+            // INST-21 (Q-0235): outside the template's namespace the name
+            // is qualified, also when a using-directive finds it.
+            self.error(line, "INST-21", "an explicit instantiation outside the template's namespace needs a qualified name");
+            return Ok(());
+        }
         if ds.auto.is_none() && self.func(self.templs[t].decl).is_some_and(|f| f.ret_auto.is_some()) {
             // INST-22: a deduced return type is named with `auto`.
             self.error(line, "INST-22", "an explicit instantiation writes the deduced return type");
@@ -2493,6 +2504,12 @@ impl P {
             }
             Last::Func(id) => {
                 let defined = self.func(id).is_some_and(|f| f.defined);
+                if !dependent && self.inst_depth == 0 && self.decls[id].name.starts_with("operator\"\"") && !self.literal_template_form(&tparams, id) && !self.literal_class_template_form(&tparams, id) {
+                    // OPR-10 (Q-0435): a literal operator template has one
+                    // template parameter, a pack of `char`, and an empty
+                    // parameter list.
+                    self.error(line, "OPR-10", "a literal operator template must have one template parameter, a pack of 'char', and no function parameters");
+                }
                 match self.decl_tid.get(&id).copied() {
                     Some(t) => {
                         if !dependent && self.inst_depth == 0 && self.templs[t].params.len() == tparams.len() && self.templs[t].params.iter().zip(tparams.iter()).any(|(a, b)| a.default.is_some() && b.default.is_some()) {
@@ -3592,6 +3609,10 @@ impl P {
                 d2.ops.push(DOp::Func(Box::new(fd)));
                 return self.declare_function(ds, &d2, ty, ctx);
             }
+            if ds.ctad.is_some() && self.inst_depth == 0 && !self.in_template() {
+                // CTAD-2: not the return type of a function.
+                self.error(line, "CTAD-2", "a deduced class template type as the return type of a function");
+            }
             return self.declare_function(ds, d, ty, ctx);
         }
         if ds.has_alignas && self.pending_template.is_none() {
@@ -3641,7 +3662,16 @@ impl P {
                     // TPL-27: a non-static data member is not a template.
                     self.error(line, "TPL-27", "a non-static data member declared as a template");
                 }
+                if ds.ctad.is_some() && self.inst_depth == 0 && !self.in_template() {
+                    // CTAD-2: not the type of a non-static member.
+                    self.error(line, "CTAD-2", "a deduced class template type as the type of a non-static data member");
+                }
                 return self.declare_field(ds, d, ty, c);
+            }
+            if ds.ctad.is_some() && d.qual.is_none() && (self.at(";") || self.at(",")) && self.inst_depth == 0 && !self.in_template() {
+                // CTAD-2 (Q-0439): a static data member with a deduced
+                // class template type needs an initializer.
+                self.error(line, "CTAD-2", "a static data member with a deduced class template type and no initializer");
             }
             if d.qual.is_none() && self.class_is_local(c) && !self.in_template() {
                 // CLS-28: a local class has no static data member.
@@ -3947,7 +3977,7 @@ impl P {
                 self.skip_balanced();
             }
             let end = self.pos;
-            self.deferred.push(Deferred { func: None, field: Some(id), param: None, start, end, stack: self.stack.clone(), templ: self.templ, class: c });
+            self.deferred.push(Deferred { func: None, field: Some(id), param: None, start, end, stack: self.stack.clone(), templ: self.templ, class: c, noexcept_of: None });
         } else if self.at("(") {
             // CLS-9: no default member initializer in parentheses.
             self.error(line, "CLS-9", "default member initializer in parentheses");
@@ -3994,6 +4024,25 @@ impl P {
         }
     }
 
+    /// OPR-8: the form of a literal operator template, one template
+    /// parameter that is a pack of `char` and an empty parameter list.
+    pub fn literal_template_form(&self, tparams: &[crate::templ::TParam], id: DeclId) -> bool {
+        let head = matches!(tparams, [p] if p.pack && matches!(&p.kind, crate::templ::TPK::Const(q) if q.unqual().t == Ty::Char));
+        head && self.func(id).is_some_and(|f| f.params.is_empty())
+    }
+
+    /// A literal operator template whose one template parameter is a
+    /// constant of class type, which a string literal calls with the
+    /// literal as its template argument (the tests of RV8-A-3).
+    pub fn literal_class_template_form(&self, tparams: &[crate::templ::TParam], id: DeclId) -> bool {
+        let head = matches!(tparams, [p] if !p.pack && match &p.kind {
+            crate::templ::TPK::Const(q) => matches!(q.unqual().t, Ty::Class(_) | Ty::Unknown),
+            crate::templ::TPK::Auto => false,
+            _ => false,
+        });
+        head && self.func(id).is_some_and(|f| f.params.is_empty())
+    }
+
     /// OPR-9, OPR-10: the limits on a literal operator.
     fn check_literal_operator(&mut self, suffix: &str, member: bool, fd: &FnDecl, line: u32) {
         if !suffix.starts_with('_') {
@@ -4009,6 +4058,11 @@ impl P {
         }
         let ptys: Vec<QTy> = fd.params.iter().map(|&p| self.var(p).map(|v| v.ty.clone()).unwrap_or(QTy::unknown())).collect();
         if ptys.iter().any(|t| t.is_unknown()) {
+            return;
+        }
+        if ptys.is_empty() && self.inst_depth > 0 {
+            // A specialization of a literal operator template, whose form
+            // its declaration checked.
             return;
         }
         if fd.defaults > 0 {
@@ -5640,6 +5694,11 @@ impl P {
         if let Some(errs) = self.pending_noexcept_errors.take() {
             self.noexcept_errors.insert(id, errs);
         }
+        if let Some((start, end, stack)) = self.pending_noexcept_defer.take() {
+            if let Some(c) = self.current_class_any() {
+                self.deferred.push(Deferred { func: None, field: None, param: None, start, end, stack, templ: self.templ, class: c, noexcept_of: Some(id) });
+            }
+        }
         if let Some(src) = self.pending_explicit_cond.take() {
             if kind == FnKind::Ctor {
                 self.explicit_cond.insert(id, src);
@@ -5743,7 +5802,10 @@ impl P {
             }
         }
         let cmp = matches!(name.as_str(), "operator==" | "operator!=" | "operator<" | "operator>" | "operator<=" | "operator>=" | "operator<=>");
-        if defaulted && cmp && !self.in_template() {
+        if defaulted && cmp && template && self.inst_depth == 0 && self.in_template() {
+            // DCMP-3: a defaulted comparison is not a function template.
+            self.error(line, "DCMP-3", format!("defaulted '{}' is a template", name));
+        } else if defaulted && cmp && !self.in_template() {
             self.check_defaulted_comparison(&name, member_class, if is_friend { class } else { None }, existing.is_some() && is_friend, template, ds, &fd, ret_auto.is_some(), &fty.ret, line);
         }
         self.record_attrs(id);
@@ -5853,7 +5915,10 @@ impl P {
             self.member_replay_decl = Some(id);
         }
         // FN-12: complete parameter and return types in a definition.
-        if !self.in_template() && !template && !sig_only {
+        // INST-5: a member function of an instance whose body waits for a
+        // use needs them when the body is made (`run_lazy_body`).
+        let lazy_member = in_class_body && !self.force_bodies && member_class.is_some_and(|c| self.in_instance(c)) && self.func(id).is_some_and(|f| !matches!(f.kind, FnKind::Ctor | FnKind::Dtor));
+        if !self.in_template() && !template && !sig_only && !lazy_member {
             let (ret, params) = {
                 let f = self.func(id).unwrap();
                 (f.fty.ret.clone(), f.fty.params.clone())
@@ -5893,7 +5958,7 @@ impl P {
             let start = self.pos;
             self.skip_function_body()?;
             let end = self.pos;
-            self.deferred.push(Deferred { func: Some(id), field: None, param: None, start, end, stack: self.stack.clone(), templ: self.templ, class: class.unwrap() });
+            self.deferred.push(Deferred { func: Some(id), field: None, param: None, start, end, stack: self.stack.clone(), templ: self.templ, class: class.unwrap(), noexcept_of: None });
             return Ok((Some(id), true));
         }
         let saved = self.stack.clone();
@@ -6014,6 +6079,25 @@ impl P {
             let save_templ = self.templ;
             self.templ = df.templ;
             self.pos = df.start;
+            if let Some(fid) = df.noexcept_of {
+                // CLS-2, EXS-1: the noexcept operand with the class complete.
+                let l = self.line();
+                if let Ok(e) = self.parse_expression() {
+                    if !self.in_template() && !e.ty.is_unknown() && nonref(&e.ty).t != Ty::Bool && self.is_narrowing(&e, &Ty::Bool) {
+                        self.error(l, "EXS-7", "the operand of noexcept narrows in its conversion to bool");
+                    }
+                    if let Some(v) = self.eval_bool_const(&e, l, "EXS-7") {
+                        if let Some(f) = self.func_mut(fid) {
+                            f.fty.noexcept = v;
+                            f.noexcept_false = !v;
+                        }
+                    }
+                }
+                self.pos = self.adjust_pos(save_pos, save_mark);
+                self.stack = save_stack;
+                self.templ = save_templ;
+                continue;
+            }
             if let Some(fid) = df.func {
                 let (scope, auto_ret) = {
                     let f = self.func(fid).unwrap();

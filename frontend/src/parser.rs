@@ -355,6 +355,9 @@ pub struct Deferred {
     pub stack: Vec<usize>,
     pub templ: u32,
     pub class: usize,
+    /// The operand of a member's noexcept specifier, parsed with the
+    /// class complete (CLS-2, EXS-1).
+    pub noexcept_of: Option<DeclId>,
 }
 
 pub struct P {
@@ -709,6 +712,8 @@ pub struct P {
     pub force_bodies: bool,
     pub finished_specs: std::collections::HashSet<DeclId>,
     pub in_tparam_decl: bool,
+    /// Parsing the type of a new expression (CTAD-1).
+    pub in_new_type: bool,
     pub pending_default_errors: Option<Vec<crate::diag::Diag>>,
     /// The definitions that a use needs, made at the end of the unit
     /// (INST-31).
@@ -755,6 +760,8 @@ pub struct P {
     pub later_explicit: Vec<(usize, Vec<TArg>, u32, bool)>,
     pub used_statics: std::collections::HashSet<DeclId>,
     pub pending_noexcept_errors: Option<Vec<crate::diag::Diag>>,
+    /// A member's noexcept operand that waits for the complete class.
+    pub pending_noexcept_defer: Option<(usize, usize, Vec<usize>)>,
     /// The errors of the exception specifications of specializations,
     /// reported when a call chooses one (DED-27).
     pub noexcept_errors: HashMap<DeclId, Vec<crate::diag::Diag>>,
@@ -1048,6 +1055,7 @@ impl P {
             force_bodies: false,
             finished_specs: Default::default(),
             in_tparam_decl: false,
+            in_new_type: false,
             pending_default_errors: None,
             used_later: Vec::new(),
             enum_errors: HashMap::new(),
@@ -1072,6 +1080,7 @@ impl P {
             later_explicit: Vec::new(),
             used_statics: Default::default(),
             pending_noexcept_errors: None,
+            pending_noexcept_defer: None,
             noexcept_errors: HashMap::new(),
             sfinae_mark: None,
             fn_subst: false,

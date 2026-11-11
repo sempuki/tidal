@@ -85,11 +85,17 @@ The pass has three later parts:
 - **Deferred bodies.** A class body records each member function body,
   default argument, and default member initializer as a `Deferred`
   (token range and scope stack). `run_deferred` parses them after the
-  class is complete, so that a body sees the whole class (NAM-6).
+  class is complete, so that a body sees the whole class (NAM-6). The
+  operand of a member's `noexcept` is a `Deferred` too when its first
+  parse needs a later member (CLS-2, EXS-1). Until then the member is
+  potentially throwing.
 - **Lazy bodies of instances.** A member function body of a class
   specialization waits for a use (INST-5, INST-7) in `lazy_bodies`.
   `use_fn` makes it at once for a function that constant evaluation
-  can call, or else at the end of the unit (INST-31).
+  can call, or else at the end of the unit (INST-31). The parameter and
+  return types of such a member are made complete with the body
+  (FN-12, INST-1), so the class argument can be incomplete when the
+  class is made.
 - **The end of the unit.** `finish_lazy` makes the definitions that a
   use needs, with their diagnostics, then the other definitions for
   the interpreter, with no diagnostics. `check_main` and

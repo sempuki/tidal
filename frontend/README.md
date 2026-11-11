@@ -490,6 +490,11 @@ they call for bases and members. A destructor of a class temporary in
 the operand counts. A placement `new` counts when every allocation
 function with that number of arguments is non-throwing.
 
+The operand of a member's `noexcept` that names a later member is
+parsed again at the end of the class (CLS-2, EXS-1). When the operand
+names the function itself (EXS-6), the function stays potentially
+throwing.
+
 The findings about the specification are in
 `reports/clean-room/rust-frontend/report.md`, `report-2.md` to
-`report-25.md`, and `report-10b.md`.
+`report-26.md`, and `report-10b.md`.

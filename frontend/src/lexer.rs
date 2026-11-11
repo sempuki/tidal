@@ -878,6 +878,30 @@ fn lex_quoted_value(elems: Vec<Elem>, q: char, i: usize, prefix: Prefix, line: u
     i
 }
 
+/// The numeric part of a literal with a user-defined suffix. OPR-8: the
+/// raw form and the template take the characters, so a value that no
+/// integer type holds is an error (PRIM-2) only for the numeric form. Such
+/// a value is kept as `u128::MAX`, which `literal_call` checks.
+fn lex_udl_base(num: &str, line: u32, d: &mut Diags) -> (TK, Lit) {
+    let mut inner = Diags::default();
+    let base = lex_number(num, line, &mut inner);
+    let mut too_large = false;
+    for x in inner.list {
+        if x.rule == Some("PRIM-2") && x.msg == "integer literal too large for any type" {
+            too_large = true;
+        } else {
+            d.list.push(x);
+        }
+    }
+    let mut lit = base.lit.unwrap_or(Lit::Int { value: 0, decimal: true, unsigned: false, size: ISize::None });
+    if too_large {
+        if let Lit::Int { value, .. } = &mut lit {
+            *value = u128::MAX;
+        }
+    }
+    (base.kind, lit)
+}
+
 fn lex_number(text: &str, line: u32, d: &mut Diags) -> Token {
     let lower = text.to_ascii_lowercase();
     let is_hex = lower.starts_with("0x");
@@ -890,9 +914,7 @@ fn lex_number(text: &str, line: u32, d: &mut Diags) -> Token {
         if k > 0 && !lower.starts_with("0x") || k > 2 {
             // OPR-8: a suffix that starts with `_` is a user-defined suffix.
             let num = &text[..k];
-            let base = lex_number(num, line, d);
-            let kind = base.kind;
-            let lit = base.lit.unwrap_or(Lit::Int { value: 0, decimal: true, unsigned: false, size: ISize::None });
+            let (kind, lit) = lex_udl_base(num, line, d);
             return Token { kind, text: text.to_string(), line, lit: Some(Lit::UserDefined { suffix: text[k..].to_string(), base: Box::new(lit), raw: num.to_string() }) };
         }
     }
@@ -963,8 +985,7 @@ fn lex_number(text: &str, line: u32, d: &mut Diags) -> Token {
         // names a literal operator, also without `_`.
         None if suffix.starts_with(|c: char| c.is_ascii_alphabetic()) && suffix.chars().all(|c| c.is_ascii_alphanumeric() || c == '_') => {
             let num = &text[..text.len() - suffix.len()];
-            let base = lex_number(num, line, d);
-            let lit = base.lit.unwrap_or(Lit::Int { value: 0, decimal: true, unsigned: false, size: ISize::None });
+            let (_, lit) = lex_udl_base(num, line, d);
             return Token { kind: TK::Int, text: text.to_string(), line, lit: Some(Lit::UserDefined { suffix: suffix.clone(), base: Box::new(lit), raw: num.to_string() }) };
         }
         None => {

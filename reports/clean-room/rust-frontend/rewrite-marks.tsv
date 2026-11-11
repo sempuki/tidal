@@ -17,12 +17,14 @@ templates/dependent-names/member-template-current-instantiation-pointer.cpp	2	An
 templates/dependent-names/member-template-current-instantiation-qualifier-dependent-base.cpp	2	The same, so a name that the class does not declare is not known to need template (DEP-24).
 templates/dependent-names/member-template-non-dependent-base.cpp	2	The same, for a member template of an independent base (DEP-24).
 templates/dependent-names/member-template-through-current-instantiation-object.cpp	2	The same, through a reference parameter of the class's own type (DEP-24, DEP-2).
+classes/copy-move/class-template-ctor-by-value.cpp	2	A parameter of the class's own type has an unknown type in the pattern, so a constructor that takes the class by value is not seen at the definition (CPY-15, DEP-2).
 templates/instantiation/class-point-not-later-member-type.cpp	3	Lookup in a specialization sees declarations after its point of instantiation (INST-33, INST-30).
 templates/instantiation/class-point-not-later-type.cpp	3	The same (INST-33).
 templates/instantiation/class-point-not-later.cpp	3	The same, for a static member's initializer (INST-32, INST-31).
 templates/instantiation/class-point-static-const-member.cpp	3	The same, and the initializer is made with the class (INST-33, INST-5).
 templates/instantiation/class-point-static-constexpr-made-at-use.cpp	3	A static constexpr member's initializer is made with the class and not at its first use (INST-33, INST-5, INST-8).
 templates/instantiation/class-static-constexpr-member-initializer-waits.cpp	3	The same (INST-5).
+templates/instantiation/static-inline-member-incomplete-argument.cpp	3	An inline static member's initializer is made with the class, so its type is completed while the class argument is incomplete (INST-5, Q-0231).
 templates/instantiation/local-class-default-argument.cpp	3	The members of a local class in a specialization are made with the function and not at their use (INST-12, INST-6).
 templates/instantiation/local-class-exception-specification.cpp	3	The same (INST-12, INST-6).
 templates/instantiation/recursion-endless-function.cpp	3	Function bodies made at the end of the unit have no busy state, so endless nesting is not caught (INST-15, TR-13).
