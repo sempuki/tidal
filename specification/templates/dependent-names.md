@@ -41,8 +41,9 @@ definition. A later declaration does not change the binding. A
 {term}`dependent name` can mean something different for each argument
 list, so its lookup waits for the arguments.
 
-Only an unqualified call whose name is dependent uses both phases
-(DEP-9). DEP-8 lists the cases, such as a dependent argument or
+Of the calls, only an unqualified call whose name is dependent uses
+both phases, and so does an operator expression with a type-dependent
+operand (DEP-9). DEP-8 lists the cases of a call, such as a dependent argument or
 dependent explicit template arguments:
 
 | Call | Ordinary lookup | Argument-dependent lookup | Finds a function declared after the template |
@@ -446,7 +447,9 @@ when an argument is dependent. Such a call and an unqualified call
 whose name finds a class member (DEP-14) take no argument-dependent
 lookup. So neither call finds a function declared after the
 definition. A call with a dependent qualifier, such as `Lib<T>::pick(t)`,
-looks up its name at the instantiation ({rule}`DEP-7`).
+looks up its name at the instantiation ({rule}`DEP-7`). A qualifier
+that names the current instantiation follows {rule}`DEP-17` and
+{rule}`DEP-18` instead.
 :::
 
 ### The current instantiation

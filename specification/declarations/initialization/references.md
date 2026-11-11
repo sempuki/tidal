@@ -138,7 +138,8 @@ rvalue, to an expression of a different type that converts to its type,
 and to a bit-field. The reference binds directly in these cases:
 
 - an xvalue or a class rvalue of a type that REF-1 lets the reference
-  bind, such as a class derived from the referenced class,
+  bind, such as a class derived from the referenced class, if the
+  rvalue is not a bit-field,
 - the rvalue of such a type that a conversion function of an unrelated
   class gives ({rule}`ICS-11`),
 - a prvalue of such a type, which becomes a temporary object first.

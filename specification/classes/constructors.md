@@ -423,14 +423,16 @@ implicit and user-declared destructors.
 
 :::{rule} DTOR-8
 :kind: reject
-:tests: classes/constructors/dtor-address.cpp classes/constructors/dtor-call-wrong-type.cpp classes/constructors/dtor-without-call.cpp classes/constructors/pseudo-dtor-wrong-type.cpp classes/constructors/dtor-call-decltype-reference.cpp classes/constructors/dtor-call-qualified-base.cpp
+:tests: classes/constructors/dtor-address.cpp classes/constructors/dtor-call-wrong-type.cpp classes/constructors/dtor-without-call.cpp classes/constructors/pseudo-dtor-wrong-type.cpp classes/constructors/dtor-call-decltype-reference.cpp classes/constructors/dtor-call-qualified-base.cpp classes/constructors/dtor-call-unqualified-base.cpp
 
 A program must call a destructor with `()` and cannot take the address
 of a destructor. In an explicit destructor call, the name after `~` must
 denote the type of the object, also for a {term}`scalar type`. A
 `decltype` that gives a reference type, such as `decltype(*p)`, does
-not denote it. A qualified name of a base class, as in
-`d.Base::~Base()`, names the destructor of that base.
+not denote it, and neither does a base class name with no qualifier, as
+in `d.~Base()` ({question}`Q-0444`).
+A qualified name of a base class, as in `d.Base::~Base()`, names the
+destructor of that base.
 :::
 
 :::{rule} CTOR-18
@@ -677,7 +679,7 @@ Span g{{1}};   // Span(int): {1} gives an int directly (ICS-15). The
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 185
-of 206 tests.
+of 207 tests.
 
 ### Divergences
 
@@ -702,6 +704,11 @@ of 206 tests.
   initializer is on one of its variant members, as Clang 22 says.
   Clang 18, GCC, and EDG each differ in some forms, and the question
   gives the table.
+- {question}`Q-0444` (DTOR-8;
+  open): whether `d.~Base()` on a `Derived` object names the base
+  destructor. It does not, and the call is rejected, as Clang and EDG
+  say. GCC accepts the call. The read of the RV7 repair diff leans
+  toward GCC, and the question waits on `pending.md` row 4.
 - {question}`Q-0082` (DTOR-3; open): whether `new` can create an array
   of a class whose destructor is deleted. It cannot, as Clang says. GCC
   and EDG accept the array `new`.
@@ -735,6 +742,7 @@ the compile. EDG skips the sanitizer tests.
 | `delete-array-deleted-dtor.cpp` | DTOR-3 | reject | reject | accept | accept | {question}`Q-0082` |
 | `double-destroy-constant.cpp` | DTOR-7 | reject | reject | reject | accept | {question}`Q-0054` |
 | `double-destroy-trivial-constant.cpp` | DTOR-7 | reject | reject | reject | accept | {question}`Q-0054` |
+| `dtor-call-unqualified-base.cpp` | DTOR-8 | reject | reject | accept | reject | {question}`Q-0444` |
 | `initializer-list-default-member-from-braces.cpp` | CTOR-17 | reject | reject | accept | accept | {question}`Q-0084` |
 | `initializer-list-member-from-braces.cpp` | CTOR-17 | reject | reject | accept | accept | {question}`Q-0084` |
 | `nested-default-member-init-before-complete.cpp` | CTOR-18 | reject | reject | reject | accept | {question}`Q-0083` |

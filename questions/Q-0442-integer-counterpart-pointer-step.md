@@ -1,7 +1,7 @@
 # Q-0442: Is `p + 1` defined for a pointer to the matching unsigned type that points to an element of an `int` array?
 
 **Status:** provisional
-**Affects:** ADD-14, STG-14
+**Affects:** ADD-14, STG-14, `tests/expressions/additive/integer-counterpart-one-past.cpp`
 **Source:** point RV8-R-9 of the read of the RV7 repair diff (`reports/review/2026-11-11-read-of-rv7-repair-diff.md`), with a probe that a clean-room writer ran for it.
 **Waits for:** the maintainer (pending.md row 4)
 
@@ -36,7 +36,7 @@ test can check the step at compile time.
 
 ## Evidence
 
-The probe in **Context**.
+The test in **Affects**, and the probe in **Context**. The test checks `p + 1 - p` and the read through `p`, and every compiler that runs it passes.
 
 ## Options
 

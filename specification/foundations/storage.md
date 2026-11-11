@@ -442,7 +442,7 @@ reads and writes the bytes through `volatile unsigned char` or
 
 :::{rule} STG-13
 :kind: required
-:tests: foundations/storage/byte-pointer-walks-object.cpp foundations/storage/object-bytes-cover-members.cpp foundations/storage/byte-round-trip.cpp foundations/storage/past-end-address.cpp foundations/storage/padding-bytes-not-in-value.cpp foundations/storage/byte-pointer-from-member-walks-object.cpp foundations/storage/base-bytes-shared-with-member.cpp
+:tests: foundations/storage/byte-pointer-walks-object.cpp foundations/storage/object-bytes-cover-members.cpp foundations/storage/byte-round-trip.cpp foundations/storage/past-end-address.cpp foundations/storage/padding-bytes-not-in-value.cpp foundations/storage/byte-pointer-from-member-walks-object.cpp foundations/storage/base-bytes-shared-with-member.cpp expressions/additive/byte-pointer-into-object-minus-storage.cpp
 
 A pointer to `std::byte`, `unsigned char`, or `char` that points to a
 byte of a complete object can move over the bytes of that object, also
@@ -455,7 +455,7 @@ pointer gives one byte of the object representation.
 
 :::{rule} STG-14
 :kind: required
-:tests: foundations/storage/access-signed-counterpart-and-cv.cpp foundations/storage/access-character-types.cpp foundations/storage/byte-round-trip-char-and-byte.cpp foundations/language-support/byte-self-declared.cpp foundations/storage/implicit-objects-fixed-counterpart.cpp
+:tests: foundations/storage/access-signed-counterpart-and-cv.cpp foundations/storage/access-character-types.cpp foundations/storage/byte-round-trip-char-and-byte.cpp foundations/language-support/byte-self-declared.cpp foundations/storage/implicit-objects-fixed-counterpart.cpp expressions/additive/integer-counterpart-one-past.cpp
 
 A program can read or write the value of an object whose dynamic type
 is `T` through a glvalue of one of these types:
@@ -503,21 +503,23 @@ pointer to one into a pointer to the other ({rule}`CLS-19`). For other
 objects at one address, such as an array and its first element, the
 result points to the original object. A program can copy that result and
 convert it to `void*`, for example to give the address to placement
-`new`.
+`new`. {rule}`STG-28` gives the one exception, for the elements of an
+array of `T` that an allocation function created.
 :::
 
 :::{rule} STG-28
 :kind: required
-:tests: foundations/storage/allocation-array-class-elements.cpp foundations/storage/allocation-array-class-elements-constant.cpp foundations/storage/allocation-array-unbuilt-element-constant.cpp foundations/storage/implicit-array-for-arithmetic.cpp foundations/storage/allocated-storage-typed-step-after-byte-offset.cpp foundations/storage/allocated-storage-byte-pointer-class-placement.cpp foundations/storage/allocated-storage-byte-pointer-destructor-class-placement.cpp
+:tests: foundations/storage/allocation-array-class-elements.cpp foundations/storage/allocation-array-class-elements-constant.cpp foundations/storage/allocation-array-unbuilt-element-constant.cpp foundations/storage/implicit-array-for-arithmetic.cpp foundations/storage/allocated-storage-typed-step-after-byte-offset.cpp foundations/storage/allocated-storage-byte-pointer-class-placement.cpp foundations/storage/allocated-storage-byte-pointer-destructor-class-placement.cpp foundations/storage/allocated-storage-byte-offset-class-placement.cpp
 
 If an allocation function creates an array of `T`, a `T*` from its
 result points to element 0 ({question}`Q-0323`). A `T*` made from the
 result plus a multiple of `sizeof(T)` bytes points to the element at
-that address. So a `T*` cast from a pointer to the byte at the start of
-element `k` points to element `k`. The cast can pass through a byte
-pointer such as `unsigned char*` ({question}`Q-0430`).
+that address, also when the cast passes through a byte pointer such as
+`unsigned char*`. A cast of a pointer to the byte at the start of
+element `k` to `T*` gives element `k`, as an exception to
+{rule}`STG-16` ({question}`Q-0430`).
 The elements exist also when `T` is not an implicit-lifetime type, such
-as a class with a constructor. Their lifetimes begin when the program
+as a class with a user-provided destructor. Their lifetimes begin when the program
 constructs them, for example with placement `new` at the element's
 address, and the `T*` then reaches the new object. Pointer
 arithmetic over the elements ({rule}`ADD-6`) is valid before then.
@@ -908,8 +910,8 @@ static_assert(read_old() == 1);       // rejected (CE-9)
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 104
-of 110 tests. EDG runs no programs, so its results for the run tests say
+The results are in `tests/RESULTS.md`. All eight compilers agree on 107
+of 113 tests. EDG runs no programs, so its results for the run tests say
 only that the programs are valid.
 
 ### Divergences
@@ -954,7 +956,9 @@ only that the programs are valid.
   `new` can use the position one past the byte that a cast `T*` points
   to. It can, and the position is `sizeof(T)` bytes on. No family
   differs. Both gap reviews of the text phase 14 wrote read the step as
-  undefined, and the question waits on `pending.md` row 4.
+  undefined. The gap review of the phase 15 text reads STG-28's cast to
+  element `k` through a byte pointer as undefined too, and the question
+  waits on `pending.md` row 4.
 - {question}`Q-0324` (STG-29; settled on STG-P2): whether a cast of a
   byte array's address reaches an object that the array created. The
   cast still points to a byte. No family differs.
@@ -1088,5 +1092,27 @@ rejection.
   pointing to a byte. Part B lets the allocation create an array of `T`
   there, as STG-28 says. STG-28's sentence on a `T*` cast straight from
   the result of the allocation is not affected.
+- STG-28, STG-16: the read of the RV7 repair diff
+  (`reports/review/2026-11-11-read-of-rv7-repair-diff.md`, RV8-R-10)
+  leans toward part A of RV7 for allocated storage. The gap review of
+  the phase 15 text
+  (`reports/review/2026-11-11-gap-review-phase-15-classes-declarations-foundations.md`,
+  RV8-A-1) agrees with the cast to element 0 with no byte arithmetic.
+  For element `k` above 0, the review finds no choice of created objects
+  under which both the byte step and the cast are defined. A byte and
+  the element that holds it are not pointer-interconvertible, also
+  under ADD-6, so only the pointer that placement `new` returns reaches
+  the new element. Every compiler that runs
+  `allocated-storage-byte-offset-class-placement.cpp` reads the element
+  through the cast pointer, and no sanitizer reports it. STG-28 keeps
+  that answer as an exception to STG-16, and `pending.md` row 4 holds
+  the case ({question}`Q-0430`).
+- STG-28: the gap review of the phase 15 text (RV8-A-2) notes that a
+  class with only a converting constructor is often an implicit-lifetime
+  type, because its copy and move constructors can be trivial
+  ({rule}`STG-7`). The example in STG-28 is a class with a user-provided
+  destructor, and the class of
+  `allocated-storage-byte-pointer-class-placement.cpp` has a
+  user-provided copy constructor and no other trivial constructor.
 
 Inputs: clang-diag-sema.

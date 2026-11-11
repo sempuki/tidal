@@ -51,6 +51,8 @@ use (Q-0231). Clang agrees. GCC differs on both forms, and EDG on the
 
 Kept open on 2026-11-11 under decision 0054 (decision 0063, item RV8). The review supports the answer with a doubt, and GCC 16 and EDG 7.0 differ on the inline form.
 
+Rule text on 2026-11-11 (decision 0063, item RV8): INST-5 says that the parameter and return types of a member function need not be complete when the class is made, and that the definition and a call that passes or returns the class by value need them complete (RV8-B-9). The answer is unchanged.
+
 ## Opinions
 
 ### Gap review, 2026-11-11 (phase 15 text, expressions, overloading, and templates)

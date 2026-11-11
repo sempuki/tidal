@@ -479,6 +479,10 @@ status, and the first sentence of its answer section.
 | [Q-0440](Q-0440-literal-operator-numeric-value-too-large.md) | Must an integer literal that calls the numeric form of a literal operator have a value that `unsigned long long` holds? | provisional | The literal must have a value that `unsigned long long` holds |
 | [Q-0441](Q-0441-static-member-type-incomplete-class-argument.md) | Does the instantiation of a class need the type of a static data member complete? | provisional | The instantiation of the class does not need the type of a `static` data member complete, also when the member is `inline` |
 | [Q-0442](Q-0442-integer-counterpart-pointer-step.md) | Is `p + 1` defined for a pointer to the matching unsigned type that points to an element of an `int` array? | provisional | `p + 1` is the position one past the object |
+| [Q-0443](Q-0443-ctad-initializer-list-guide-reference-parameter.md) | Is a guide whose first parameter is a reference to `std::initializer_list<E>` an initializer-list guide? | provisional | A reference to `std::initializer_list<E>` also makes an initializer-list guide |
+| [Q-0444](Q-0444-destructor-call-unqualified-base-name.md) | Can an explicit destructor call on a derived object name the base class without a qualifier? | provisional | The unqualified name must denote the class of the object |
+| [Q-0445](Q-0445-elaborated-type-attribute.md) | Can an elaborated type specifier that is not a forward declaration have an attribute after its class key? | provisional | Only a forward declaration can have one |
+| [Q-0446](Q-0446-literal-operator-template-class-parameter.md) | Which literal operator does a string literal call when a literal operator template with a class-type parameter exists? | provisional | The template wins when the string literal is a valid argument for it |
 
 ## Status values
 

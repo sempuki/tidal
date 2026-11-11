@@ -191,7 +191,7 @@ definition.
 
 :::{rule} INST-1
 :kind: required
-:tests: templates/instantiation/class-object.cpp templates/instantiation/class-sizeof.cpp templates/instantiation/class-member-access.cpp templates/instantiation/class-delete.cpp templates/instantiation/class-base-conversion.cpp templates/instantiation/class-function-definition-parameter.cpp templates/instantiation/class-function-definition-return.cpp templates/instantiation/class-call-return.cpp templates/instantiation/class-deduction-from-derived.cpp templates/instantiation/class-deduction-from-derived-error.cpp templates/instantiation/class-qualified-name.cpp templates/instantiation/class-call-passes-by-value.cpp templates/instantiation/class-decltype-call-argument-instantiated.cpp templates/instantiation/class-decltype-member-access-instantiated.cpp templates/instantiation/lambda-return-specialization-braced-return.cpp templates/instantiation/member-parameter-type-waits-for-definition.cpp
+:tests: templates/instantiation/class-object.cpp templates/instantiation/class-sizeof.cpp templates/instantiation/class-member-access.cpp templates/instantiation/class-delete.cpp templates/instantiation/class-base-conversion.cpp templates/instantiation/class-function-definition-parameter.cpp templates/instantiation/class-function-definition-return.cpp templates/instantiation/class-call-return.cpp templates/instantiation/class-deduction-from-derived.cpp templates/instantiation/class-deduction-from-derived-error.cpp templates/instantiation/class-qualified-name.cpp templates/instantiation/class-call-passes-by-value.cpp templates/instantiation/class-decltype-call-argument-instantiated.cpp templates/instantiation/class-decltype-member-access-instantiated.cpp templates/instantiation/lambda-return-specialization-braced-return.cpp templates/instantiation/member-parameter-type-waits-for-definition.cpp templates/instantiation/class-decltype-consteval-call-not-instantiated.cpp
 
 A specialization of a {term}`class template` is instantiated when a use needs
 a complete class, or when the definition can change the meaning of the
@@ -214,13 +214,14 @@ use. These uses instantiate the class:
 
 :::{rule} INST-2
 :kind: required
-:tests: templates/instantiation/class-pointer-only.cpp templates/instantiation/class-defined-after-pointer.cpp classes/virtual/override-dependent-base-pointer.cpp templates/instantiation/class-decltype-of-call-not-instantiated.cpp templates/instantiation/class-decltype-parenthesized-call-not-instantiated.cpp
+:tests: templates/instantiation/class-pointer-only.cpp templates/instantiation/class-defined-after-pointer.cpp classes/virtual/override-dependent-base-pointer.cpp templates/instantiation/class-decltype-of-call-not-instantiated.cpp templates/instantiation/class-decltype-parenthesized-call-not-instantiated.cpp templates/instantiation/class-decltype-consteval-call-not-instantiated.cpp
 
 A pointer or reference type, an alias, a template argument, and a
 function declaration can name a specialization of a class template
 without its instantiation. A call whose result is the class does not
 instantiate the class when the call is the whole operand of `decltype`,
-with or without parentheses. A call nested deeper, such as an argument
+with or without parentheses, also when the call is to a `consteval`
+function. A call nested deeper, such as an argument
 of another call or the object of a member access, instantiates the
 class (INST-1).
 :::
@@ -255,8 +256,9 @@ enumeration type is made with the class, if the member is neither
 `inline` nor `constexpr` ({question}`Q-0433`).
 
 The declaration of a member function names its parameter and return
-types. Those types need to be complete only when the definition is made
-(INST-1, INST-7). The type of a `static` data member also need not be
+types. Those types need not be complete when the class is made. The
+definition of the function (INST-7), and a call that passes or returns
+the class by value (INST-1), need them complete. The type of a `static` data member also need not be
 complete when the class is made
 ({question}`Q-0441`).
 :::
@@ -781,8 +783,8 @@ extern template constexpr int size_of<long>;  // rejected: constexpr (INST-25)
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 137
-of 168 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 138
+of 169 tests.
 
 ### Divergences
 
@@ -958,6 +960,18 @@ the compile.
 - INST-1, INST-2: every compiler instantiates a class that a call
   passes by value, and none instantiates the result class of a call
   inside `decltype` (I6-13).
+- INST-1, INST-2, INST-P1: the read of the RV7 repair diff
+  (`reports/review/2026-11-11-read-of-rv7-repair-diff.md`, RV8-R-4)
+  reads a call that is an immediate invocation as an exception to the
+  `decltype` rule, because the call is evaluated as a constant and
+  needs its class result complete. Every compiler leaves the class not
+  instantiated for a call to a `consteval` function as the whole
+  operand of `decltype`, with and without parentheses, and for a
+  `consteval` function template
+  (`class-decltype-consteval-call-not-instantiated.cpp`). In the
+  writer's probe, `sizeof` of the same call instantiates the class on
+  every compiler. INST-2 keeps
+  the compilers' answer, and `pending.md` row 4 holds the case.
 - INST-5, INST-7: every compiler accepts an object of a class whose
   friend function has a body that is not valid, and rejects a call of
   the friend (I6-16).

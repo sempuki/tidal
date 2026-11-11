@@ -81,8 +81,8 @@ static assertions. The anonymous union is itself a type with no name.
 No declaration inside it can introduce another type, so a member whose
 declaration defines an unnamed class, and an anonymous union inside it,
 are not valid. At
-namespace scope an anonymous union needs `static` because its members
-have no name to link by.
+namespace scope outside an unnamed namespace, an anonymous union needs
+`static` because its members have no name to link by (UNI-9).
 :::
 
 :::{principle} UNI-P4

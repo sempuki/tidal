@@ -1,7 +1,7 @@
 # Q-0430: Where is `p + 1` when `p` is a `T*` that points to a byte, and can placement `new` use that position?
 
 **Status:** provisional
-**Affects:** ADD-14, STG-28, STG-29, STG-P2, STG-17, `tests/foundations/storage/byte-array-typed-step-placement.cpp`, `tests/foundations/storage/byte-array-typed-step-distance.cpp`, `tests/expressions/additive/typed-pointer-to-byte-two-past.cpp`, `tests/foundations/storage/allocated-storage-typed-step-after-byte-offset.cpp`, `tests/foundations/storage/allocated-storage-byte-pointer-class-placement.cpp`
+**Affects:** ADD-14, STG-28, STG-29, STG-P2, STG-17, `tests/foundations/storage/byte-array-typed-step-placement.cpp`, `tests/foundations/storage/byte-array-typed-step-distance.cpp`, `tests/expressions/additive/typed-pointer-to-byte-two-past.cpp`, `tests/foundations/storage/allocated-storage-typed-step-after-byte-offset.cpp`, `tests/foundations/storage/allocated-storage-byte-pointer-class-placement.cpp`, `tests/foundations/storage/allocated-storage-byte-offset-class-placement.cpp`
 **Source:** the round 11 programmer report (`reports/clean-room/roadmap-11/programmer.md`, sections 1.5 and 6), reductions `placement_at_typed_step_into_byte_array.cpp` and `typed_step_over_byte_array_distance.cpp`, probe `typed_step_two_past_byte.cpp`.
 **Waits for:** the maintainer (pending.md row 4)
 
@@ -66,6 +66,8 @@ Evidence on 2026-11-11 (decision 0062, item RV7): the Notes of the storage and a
 Rule text on 2026-11-11 (decision 0063, item F5): STG-28 says that a `T*` cast from a pointer to the byte at the start of element `k` of the allocated array points to element `k`, also through `unsigned char*`, and that placement `new` at that address begins the element's lifetime for a `T` with a constructor (front-end finding G164, and the round 12 programmer report, item 3). Part B of RV7 allows the case, and part A reads against it. The question still waits for the maintainer.
 
 Kept in `pending.md` row 4 on 2026-11-11 (decision 0063, item RV8). The gap review of the phase 15 text reads the new STG-28 case of element `k`, reached by byte arithmetic, against the answer, and agrees with the case of element 0 (RV8-A-1). The read of the RV7 repair diff leans toward part A of RV7 for allocated storage (RV8-R-10). Every compiler that runs the programs keeps the matrix's answer, and EDG runs no program. The row 4 item for STG-28 names the element `k` case and both readings.
+
+Rule text on 2026-11-11 (decision 0063, item RV8): STG-28 states the cast to element `k` through a byte pointer as an exception to STG-16, in place of a consequence of its earlier sentence, and STG-16 names the exception (RV8-A-1). The test `allocated-storage-byte-offset-class-placement.cpp` builds a class that is not an implicit-lifetime type at element 1 and reads it through the cast pointer, and every compiler that runs it passes. A storage Note records the readings of RV8-A-1 and RV8-R-10. The answer is unchanged, and the question still waits for the maintainer.
 
 ## Opinions
 

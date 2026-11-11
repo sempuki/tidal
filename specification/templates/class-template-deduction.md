@@ -171,7 +171,7 @@ class template that it names after substitution ({question}`Q-0275`).
 
 :::{rule} CTAD-2
 :kind: reject
-:tests: templates/class-template-deduction/site-pointer.cpp templates/class-template-deduction/site-reference.cpp templates/class-template-deduction/site-array.cpp templates/class-template-deduction/site-parameter.cpp templates/class-template-deduction/site-return-type.cpp templates/class-template-deduction/site-member.cpp templates/class-template-deduction/site-static-member-no-initializer.cpp
+:tests: templates/class-template-deduction/site-pointer.cpp templates/class-template-deduction/site-reference.cpp templates/class-template-deduction/site-array.cpp templates/class-template-deduction/site-parameter.cpp templates/class-template-deduction/site-return-type.cpp templates/class-template-deduction/site-member.cpp templates/class-template-deduction/site-static-member-no-initializer.cpp templates/class-template-deduction/site-static-inline-member-no-initializer.cpp
 
 A class template name with no argument list must not be used in other
 places. In particular, it must not be:
@@ -443,7 +443,7 @@ qualifier.
 
 :::{rule} CTAD-16
 :kind: required
-:tests: templates/class-template-deduction/inherited-constructors.cpp templates/class-template-deduction/inherited-user-guide.cpp templates/class-template-deduction/inherited-without-using.cpp templates/class-template-deduction/inherited-not-deducible.cpp templates/class-template-deduction/inherited-copy-candidate.cpp templates/class-template-deduction/inherited-copy-candidate-user-guide.cpp templates/class-template-deduction/inherited-guide-unused-parameter-default.cpp templates/class-template-deduction/inherited-no-guide-without-parameters.cpp templates/class-template-deduction/inherited-no-aggregate-candidate.cpp
+:tests: templates/class-template-deduction/inherited-constructors.cpp templates/class-template-deduction/inherited-user-guide.cpp templates/class-template-deduction/inherited-without-using.cpp templates/class-template-deduction/inherited-not-deducible.cpp templates/class-template-deduction/inherited-copy-candidate.cpp templates/class-template-deduction/inherited-copy-candidate-user-guide.cpp templates/class-template-deduction/inherited-guide-unused-parameter-default.cpp templates/class-template-deduction/inherited-no-guide-without-parameters.cpp templates/class-template-deduction/inherited-no-aggregate-candidate.cpp templates/class-template-deduction/inherited-aggregate-candidate-own-constructor.cpp
 
 A class template that inherits the constructors of a base
 ({rule}`DER-8`) takes these guides of that base:
@@ -486,13 +486,16 @@ chooses one as {rule}`OVL-14` gives. These points apply:
 
 :::{rule} CTAD-18
 :kind: required
-:tests: templates/class-template-deduction/list-single-specialization.cpp templates/class-template-deduction/list-single-specialization-alias.cpp templates/class-template-deduction/initializer-list-guide-with-default.cpp templates/class-template-deduction/initializer-list-guide-empty-list.cpp
+:tests: templates/class-template-deduction/list-single-specialization.cpp templates/class-template-deduction/list-single-specialization-alias.cpp templates/class-template-deduction/initializer-list-guide-with-default.cpp templates/class-template-deduction/initializer-list-guide-empty-list.cpp templates/class-template-deduction/initializer-list-guide-empty-list-defaults.cpp templates/class-template-deduction/initializer-list-guide-reference-parameter.cpp
 
 An *initializer-list guide* is a guide whose first parameter is
-`std::initializer_list<E>` and whose other parameters have defaults. A
+`std::initializer_list<E>`, or a reference to it, and whose other
+parameters have defaults
+({question}`Q-0443`). A
 braced list chooses a guide in the two phases of {rule}`ILC-3`, with
 the initializer-list guides in the first phase. An empty list skips
-the first phase if a guide with no parameters exists
+the first phase if a guide that takes no arguments exists, such as a
+guide with no parameters or one whose parameters all have defaults
 ({question}`Q-0438`).
 
 A braced list can have one element whose type is a specialization of
@@ -548,7 +551,7 @@ explicit guides take part in the choice ({rule}`ILC-8`).
 
 :::{rule} CTAD-24
 :kind: reject
-:tests: templates/class-template-deduction/no-initializer.cpp templates/class-template-deduction/ambiguous-guides.cpp templates/class-template-deduction/constructor-rvalue-reference-lvalue.cpp templates/class-template-deduction/constructor-nondeduced.cpp templates/class-template-deduction/aggregate-user-guide.cpp templates/class-template-deduction/aggregate-too-many.cpp templates/class-template-deduction/aggregate-conflict.cpp templates/class-template-deduction/aggregate-no-elision.cpp templates/class-template-deduction/alias-template-conflict.cpp templates/class-template-deduction/inherited-without-using.cpp templates/class-template-deduction/inherited-not-deducible.cpp templates/class-template-deduction/selection-explicit-copy.cpp templates/class-template-deduction/specialization-constructors.cpp templates/class-template-deduction/declared-not-defined-no-guide.cpp templates/class-template-deduction/aggregate-dependent-bound.cpp templates/class-template-deduction/aggregate-pack-not-last-element.cpp templates/class-template-deduction/aggregate-pack-length-conflict.cpp templates/class-template-deduction/aggregate-pack-length-position.cpp templates/class-template-deduction/aggregate-string-element-type.cpp templates/class-template-deduction/alias-template-result-check.cpp templates/class-template-deduction/alias-template-constraints.cpp templates/class-template-deduction/alias-template-rvalue-reference.cpp templates/class-template-deduction/tie-own-constructor-types-differ.cpp templates/class-template-deduction/guide-template-same-parameters.cpp templates/class-template-deduction/guide-constraints-none-satisfied.cpp templates/class-template-deduction/guide-constraints-absent-ambiguous.cpp templates/class-template-deduction/inherited-copy-candidate-user-guide.cpp templates/class-template-deduction/aggregate-base-no-elision.cpp templates/class-template-deduction/alias-of-alias-constraint.cpp templates/class-template-deduction/inherited-no-guide-without-parameters.cpp templates/class-template-deduction/inherited-no-aggregate-candidate.cpp
+:tests: templates/class-template-deduction/no-initializer.cpp templates/class-template-deduction/ambiguous-guides.cpp templates/class-template-deduction/constructor-rvalue-reference-lvalue.cpp templates/class-template-deduction/constructor-nondeduced.cpp templates/class-template-deduction/aggregate-user-guide.cpp templates/class-template-deduction/aggregate-too-many.cpp templates/class-template-deduction/aggregate-conflict.cpp templates/class-template-deduction/aggregate-no-elision.cpp templates/class-template-deduction/alias-template-conflict.cpp templates/class-template-deduction/inherited-without-using.cpp templates/class-template-deduction/inherited-not-deducible.cpp templates/class-template-deduction/selection-explicit-copy.cpp templates/class-template-deduction/specialization-constructors.cpp templates/class-template-deduction/declared-not-defined-no-guide.cpp templates/class-template-deduction/aggregate-dependent-bound.cpp templates/class-template-deduction/aggregate-pack-not-last-element.cpp templates/class-template-deduction/aggregate-pack-length-conflict.cpp templates/class-template-deduction/aggregate-pack-length-position.cpp templates/class-template-deduction/aggregate-string-element-type.cpp templates/class-template-deduction/alias-template-result-check.cpp templates/class-template-deduction/alias-template-constraints.cpp templates/class-template-deduction/alias-template-rvalue-reference.cpp templates/class-template-deduction/tie-own-constructor-types-differ.cpp templates/class-template-deduction/guide-template-same-parameters.cpp templates/class-template-deduction/guide-constraints-none-satisfied.cpp templates/class-template-deduction/guide-constraints-absent-ambiguous.cpp templates/class-template-deduction/inherited-copy-candidate-user-guide.cpp templates/class-template-deduction/aggregate-base-no-elision.cpp templates/class-template-deduction/alias-of-alias-constraint.cpp templates/class-template-deduction/inherited-no-guide-without-parameters.cpp templates/class-template-deduction/inherited-no-aggregate-candidate.cpp templates/class-template-deduction/inherited-aggregate-candidate-own-constructor.cpp
 
 The guides must give one best guide. If no guide is viable, or no guide
 is better than all others, the program is not valid. The rule is the
@@ -757,8 +760,8 @@ Pair p(1, 2);                     // rejected: Pair<int>, then a tie
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 107
-of 133 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 108
+of 137 tests.
 
 ### Divergences
 
@@ -830,11 +833,15 @@ waits on the maintainer (`documentation/decisions/pending.md`).
 - {question}`Q-0020` (CTAD-17; open): how a test records a compiler
   that does not implement a feature yet. Clang 18 applies the limit of
   OVL-14 to a guide in copy initialization, and Clang 22 does not
-  (`copy-init-guide-user-conversion.cpp`).
+  (`copy-init-guide-user-conversion.cpp`). The gap review of the phase
+  15 text reads the C++23 text as Clang 18 does, and `pending.md` row 4
+  holds CTAD-17's answer as a rule item.
 - {question}`Q-0439` (CTAD-2; open):
   whether a `static` data member can have a deduced class template type
   with no initializer. It cannot, also when `inline`, as Clang and EDG
-  say. GCC deduces from the guide with no parameters.
+  say. GCC deduces from the guide with no parameters. The gap review of
+  the phase 15 text reads the `inline` form as GCC does, and the
+  question waits on `pending.md` row 4.
 - {question}`Q-0437` (CTAD-17,
   CTAD-5; open): whether copy initialization leaves out a guide that is
   explicit for its own deduced arguments before the choice. It does, as
@@ -843,7 +850,12 @@ waits on the maintainer (`documentation/decisions/pending.md`).
 - {question}`Q-0438` (CTAD-18;
   open): whether an empty list skips the initializer-list guides when a
   guide with no parameters exists. It does, as Clang says and as ILC-3
-  does for constructors. GCC and EDG choose the initializer-list guide.
+  does for constructors, also for a guide whose parameters all have
+  defaults. GCC and EDG choose the initializer-list guide.
+- {question}`Q-0443`
+  (CTAD-18; open): whether a guide whose first parameter is a reference
+  to `std::initializer_list<E>` is an initializer-list guide. It is, as
+  Clang and GCC say. EDG chooses among all guides.
 
 ### Split tests
 
@@ -870,8 +882,11 @@ waits on the maintainer (`documentation/decisions/pending.md`).
 | `inherited-constructors.cpp` | CTAD-16 | accept | reject | accept | accept | {question}`Q-0239` |
 | `inherited-guide-unused-parameter-default.cpp` | CTAD-16 | accept | reject | accept | accept | {question}`Q-0408` |
 | `inherited-user-guide.cpp` | CTAD-16 | accept | reject | accept | accept | {question}`Q-0239` |
+| `initializer-list-guide-empty-list-defaults.cpp` | CTAD-18 | accept | accept | reject | reject | {question}`Q-0438` |
 | `initializer-list-guide-empty-list.cpp` | CTAD-18, CTAD-17 | accept | accept | reject | reject | {question}`Q-0438` |
+| `initializer-list-guide-reference-parameter.cpp` | CTAD-18 | accept | accept | accept | reject | {question}`Q-0443` |
 | `list-single-specialization-alias.cpp` | CTAD-18 | accept | Clang 22: accept; Clang 18: reject | accept | reject | {question}`Q-0240`, {question}`Q-0279` |
+| `site-static-inline-member-no-initializer.cpp` | CTAD-2 | reject | reject | accept | reject | {question}`Q-0439` |
 | `site-static-member-no-initializer.cpp` | CTAD-2 | reject | reject | accept | reject | {question}`Q-0439` |
 | `template-template-parameter-alias.cpp` | CTAD-1 | accept | Clang 22: accept; Clang 18: reject | accept | accept | {question}`Q-0240`, {question}`Q-0275` |
 | `tie-own-constructor-types-differ.cpp` | CTAD-19, CTAD-24 | reject | accept | reject | reject | {question}`Q-0239` |
@@ -932,6 +947,17 @@ waits on the maintainer (`documentation/decisions/pending.md`).
   the base's guide with no parameters nor the base's aggregate candidate
   (`inherited-no-guide-without-parameters.cpp`,
   `inherited-no-aggregate-candidate.cpp`).
+- CTAD-16: the gap review of the phase 15 text
+  (`reports/review/2026-11-11-gap-review-phase-15-expressions-overloading-templates.md`,
+  RV8-B-6) reads the guides that a derived class takes as all the guides
+  of its base, the guide with no parameters and the aggregate candidate
+  included. The two tests above reject under either reading. In
+  `inherited-aggregate-candidate-own-constructor.cpp`, the inherited
+  aggregate candidate alone would deduce the type, and a constructor
+  template of the derived class would then initialize it. GCC and EDG
+  reject the program, and Clang makes no inherited guides
+  ({question}`Q-0239`). CTAD-16 keeps the compilers' answer, and
+  `pending.md` row 4 holds the case.
 - CTAD-14, CTAD-28: every compiler applies the constraint of an inner
   alias through an outer alias (`alias-of-alias-constraint.cpp`).
   CTAD-14 drops a guide whose result cannot match the alias. Keeping the
@@ -940,7 +966,20 @@ waits on the maintainer (`documentation/decisions/pending.md`).
 - CTAD-17: in copy initialization, a user guide that needs a
   user-defined conversion to its parameter is viable on Clang 22, GCC,
   and EDG. Clang 18 finds no viable guide
-  (`copy-init-guide-user-conversion.cpp`).
+  (`copy-init-guide-user-conversion.cpp`). The gap review of the phase
+  15 text
+  (`reports/review/2026-11-11-gap-review-phase-15-expressions-overloading-templates.md`,
+  RV8-B-5) reads the C++23 text as Clang 18 does. The guides act as constructors, and the text states no exception for
+  them from the limit on the first parameter. The review notes that the
+  choice of a guide runs no conversion. CTAD-17 keeps the answer of
+  Clang 22, GCC, and EDG, and `pending.md` row 4 holds the case
+  ({question}`Q-0020` holds Clang 18's override).
+- CTAD-1, CTAD-2: the same review (RV8-B-4) reads an `inline` static
+  data member with no initializer as a definition that default-initializes
+  the member, so deduction runs with no arguments, as GCC does. Clang
+  and EDG reject the member
+  (`site-static-inline-member-no-initializer.cpp`), and CTAD-2 keeps
+  their answer ({question}`Q-0439`).
 - CTAD-1: every compiler deduces `new Box` with no initializer from the
   guide with no parameters (`site-new-no-initializer.cpp`).
 - CTAD-5: no probe separates a guide from an implicitly declared

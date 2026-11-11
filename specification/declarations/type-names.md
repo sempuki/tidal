@@ -89,7 +89,8 @@ not valid, and an implementation need not notice ({principle}`NAM-P4`).
 .. productionlist:: tidal
    typedef_decl: "typedef" `decl_specifiers` `declarator` {"," `declarator`} ";"
    alias_decl: "using" `identifier` {`attribute_spec`} "=" `type_id` ";"
-   elaborated_type: `class_key` [`nested_name`] (`identifier` | `template_id`)
+   elaborated_type: `class_key` {`attribute_spec` | `alignment_specifier`}
+                  :    [`nested_name`] (`identifier` | `template_id`)
                   : | "enum" [`nested_name`] `identifier`
    class_key: "class" | "struct" | "union"
    forward_class: `class_key` {`attribute_spec` | `alignment_specifier`} `identifier` ";"
@@ -197,7 +198,7 @@ not valid.
 
 :::{rule} TYN-10
 :kind: reject
-:tests: declarations/type-names/elaborated-declares-in-namespace.cpp declarations/type-names/elaborated-enum-undeclared.cpp declarations/type-names/elaborated-key-enum-mismatch.cpp declarations/type-names/elaborated-key-union-mismatch.cpp declarations/type-names/elaborated-qualified-undeclared.cpp declarations/type-names/typedef-name-not-class-key.cpp declarations/type-names/elaborated-declares-in-block.cpp declarations/type-names/elaborated-scoped-enum-key.cpp
+:tests: declarations/type-names/elaborated-declares-in-namespace.cpp declarations/type-names/elaborated-enum-undeclared.cpp declarations/type-names/elaborated-key-enum-mismatch.cpp declarations/type-names/elaborated-key-union-mismatch.cpp declarations/type-names/elaborated-qualified-undeclared.cpp declarations/type-names/typedef-name-not-class-key.cpp declarations/type-names/elaborated-declares-in-block.cpp declarations/type-names/elaborated-scoped-enum-key.cpp declarations/type-names/elaborated-attribute-not-forward-declaration.cpp
 
 These uses of an elaborated type specifier (TYN-4) are not valid:
 
@@ -207,15 +208,20 @@ These uses of an elaborated type specifier (TYN-4) are not valid:
 - a qualified name that lookup does not find,
 - a class key with the name of a type alias,
 - a class that `struct S` or `class S` declared, used outside the scope
-  that TYN-4 gives it.
+  that TYN-4 gives it,
+- an attribute or an alignment specifier after the class key, outside
+  a forward declaration (`forward_class`)
+  ({question}`Q-0445`).
 :::
 
 :::{rule} TYN-6
 :kind: required
-:tests: declarations/type-names/complete-after-definition-in-scope.cpp declarations/type-names/forward-after-definition.cpp declarations/type-names/forward-class-reference-param.cpp declarations/type-names/forward-class.cpp declarations/type-names/forward-enum-opaque.cpp declarations/type-names/forward-enum-scoped-default-base.cpp declarations/type-names/forward-enum-scoped-int-then-none.cpp declarations/type-names/forward-nested-class.cpp declarations/type-names/deleted-incomplete-types.cpp
+:tests: declarations/type-names/complete-after-definition-in-scope.cpp declarations/type-names/forward-after-definition.cpp declarations/type-names/forward-class-reference-param.cpp declarations/type-names/forward-class.cpp declarations/type-names/forward-enum-opaque.cpp declarations/type-names/forward-enum-scoped-default-base.cpp declarations/type-names/forward-enum-scoped-int-then-none.cpp declarations/type-names/forward-nested-class.cpp declarations/type-names/deleted-incomplete-types.cpp declarations/type-names/forward-class-attributes.cpp
 
 These rules apply to forward declarations and complete types:
 
+- A forward declaration can have attributes and alignment specifiers
+  after the class key.
 - After a forward declaration, a program can declare pointers and
   references to the class, and functions that take or return the class.
 - A class is complete after its definition.
@@ -294,8 +300,8 @@ void post(Packet* p) {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 61
-of 70 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 62
+of 72 tests.
 
 ### Divergences
 
@@ -312,12 +318,17 @@ of 70 tests.
   typedef can give a name for linkage to an unnamed class that is not
   C-like. It cannot. No newest family differs. GCC 14 accepts the
   classes.
+- {question}`Q-0445` (TYN-10; open): whether
+  an elaborated type specifier that is not a forward declaration can
+  have an attribute after its class key. It cannot, as Clang and EDG
+  say. GCC accepts the attribute.
 
 ### Split tests
 
 | Test | Rules | Expected | Clang | GCC | EDG | Question |
 |---|---|---|---|---|---|---|
 | `alias-shadow-changes-meaning.cpp` | TYN-5 | accept | accept | reject | accept | {question}`Q-0066` |
+| `elaborated-attribute-not-forward-declaration.cpp` | TYN-10 | reject | reject | accept | reject | {question}`Q-0445` |
 | `elaborated-qualified-declaration-only.cpp` | TYN-7 | reject | reject | accept | reject | {question}`Q-0093` |
 | `function-name-changes-meaning.cpp` | TYN-5 | accept | accept | reject | accept | {question}`Q-0066` |
 | `typedef-unnamed-class-base.cpp` | TYN-9 | reject | reject | GCC 16: reject; GCC 14: accept | reject | {question}`Q-0067` |

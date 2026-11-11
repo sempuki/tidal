@@ -1,7 +1,7 @@
 # Q-0438: Does an empty braced list skip the initializer-list guides when a guide with no parameters exists?
 
 **Status:** provisional
-**Affects:** CTAD-18, CTAD-17, `tests/templates/class-template-deduction/initializer-list-guide-empty-list.cpp`
+**Affects:** CTAD-18, CTAD-17, `tests/templates/class-template-deduction/initializer-list-guide-empty-list.cpp`, `tests/templates/class-template-deduction/initializer-list-guide-empty-list-defaults.cpp`
 **Source:** the I7 report (`reports/clean-room/I7/report.md`, I7-6), the round 12 writer probe `reports/clean-room/roadmap-12/writer-probes/i7-ctad.json`.
 **Waits for:** a review (doubt); newest families that agree
 
@@ -43,6 +43,8 @@ class (CTAD-17), and ILC-3 gives this order for constructors. GCC and
 EDG differ, so two newest families stand against the answer.
 
 Kept open on 2026-11-11 under decision 0054 (decision 0063, item RV8). The review supports the answer with a doubt, and GCC 16 and EDG 7.0 differ.
+
+Rule text on 2026-11-11 (decision 0063, item RV8): CTAD-18 says that an empty list skips the first phase when a guide that takes no arguments exists, also a guide whose parameters all have defaults (RV8-B-8). The test `initializer-list-guide-empty-list-defaults.cpp` holds that form, and GCC and EDG differ as for the guide with no parameters. The case of a first parameter that is a reference to the list has its own question, Q-0443.
 
 ## Opinions
 

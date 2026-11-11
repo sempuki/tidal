@@ -1,7 +1,7 @@
 # Q-0439: Can a static data member with no initializer have a class template name with no argument list as its type?
 
 **Status:** provisional
-**Affects:** CTAD-1, CTAD-2, `tests/templates/class-template-deduction/site-static-member-no-initializer.cpp`
+**Affects:** CTAD-1, CTAD-2, `tests/templates/class-template-deduction/site-static-member-no-initializer.cpp`, `tests/templates/class-template-deduction/site-static-inline-member-no-initializer.cpp`
 **Source:** the I7 report (`reports/clean-room/I7/report.md`, I7-13), the round 12 writer probe `reports/clean-room/roadmap-12/writer-probes/i7-ctad.json`.
 **Waits for:** the maintainer (pending.md row 4)
 
@@ -38,6 +38,8 @@ A static data member with no initializer cannot deduce (option 1).
 CTAD-2 lists the form. Clang and EDG agree, and GCC alone differs.
 
 Kept open on 2026-11-11 under decision 0054 (decision 0063, item RV8). The review supports the answer for a member that is not inline and reads against it for an inline member. For the inline form, Clang 22 and EDG 7.0 keep the matrix's answer and GCC 16 follows the review, so the answer stays and the question joins `pending.md` row 4 with that form.
+
+Evidence on 2026-11-11 (decision 0063, item RV8): the test `site-static-inline-member-no-initializer.cpp` holds the `inline` form apart, and `site-static-member-no-initializer.cpp` now holds only the form that is not inline. The CTAD page records the review's reading of the `inline` form in a Note and in the divergence line. CTAD-2 keeps the answer.
 
 ## Opinions
 

@@ -216,14 +216,17 @@ element type of the array (decision 0052).
 
 :::{rule} ADD-11
 :kind: undefined
-:tests: expressions/additive/pointer-difference-different-arrays.cpp expressions/additive/pointer-difference-separate-objects.cpp expressions/additive/pointer-difference-different-arrays-run.cpp
+:tests: expressions/additive/pointer-difference-different-arrays.cpp expressions/additive/pointer-difference-separate-objects.cpp expressions/additive/pointer-difference-different-arrays-run.cpp expressions/additive/byte-pointer-into-object-minus-storage.cpp
 
 If two pointers do not point into the same array, `p - q` is undefined.
+A byte pointer cast from the address of an object points into the bytes
+of that object ({rule}`STG-13`). Its difference with a pointer into the
+storage that holds the object is undefined.
 :::
 
 :::{rule} ADD-14
 :kind: undefined
-:tests: expressions/additive/base-pointer-derived-array.cpp expressions/additive/subtract-base-pointers-derived-array.cpp expressions/additive/base-pointer-one-past-subobject.cpp expressions/additive/base-pointer-beyond-subobject.cpp expressions/additive/base-pointer-beyond-subobject-run.cpp expressions/additive/typed-pointer-to-byte-two-past.cpp foundations/storage/allocated-storage-typed-step-after-byte-offset.cpp foundations/storage/byte-array-typed-step-distance.cpp foundations/storage/byte-array-typed-step-placement.cpp
+:tests: expressions/additive/base-pointer-derived-array.cpp expressions/additive/subtract-base-pointers-derived-array.cpp expressions/additive/base-pointer-one-past-subobject.cpp expressions/additive/base-pointer-beyond-subobject.cpp expressions/additive/base-pointer-beyond-subobject-run.cpp expressions/additive/typed-pointer-to-byte-two-past.cpp foundations/storage/allocated-storage-typed-step-after-byte-offset.cpp foundations/storage/byte-array-typed-step-distance.cpp foundations/storage/byte-array-typed-step-placement.cpp expressions/additive/integer-counterpart-one-past.cpp
 
 Arithmetic on a pointer whose type differs from the array's element
 type counts the object as an array of one. Cv-qualifiers do not count
@@ -237,7 +240,7 @@ pointer are undefined ({question}`Q-0049`):
 - a subtraction of two pointers into different array elements.
 
 The rule covers a pointer to the signed or unsigned integer type that
-matches the element type. A read through such a pointer is valid
+matches the element type ({question}`Q-0442`). A read through such a pointer is valid
 ({rule}`STG-14`). A read of another element through it is undefined.
 
 A move of such a pointer counts in the size of the pointer's type. So
@@ -326,8 +329,8 @@ bool add_fits(int a, int b) {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 58
-of 67 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 60
+of 69 tests.
 
 ### Divergences
 
@@ -341,16 +344,21 @@ of 67 tests.
   past the subobject. The subobject acts as an array of one element, so
   a move of two, a read through the pointer one past, and a difference
   of pointers into two elements are undefined, as Clang and EDG say.
-  GCC accepts all three. The gap review of the text phase 14 wrote
-  reads any move of such a pointer as undefined, also the move to one
-  past. Every compiler accepts that move, and `pending.md` row 4 holds
-  the case as the item "ADD-14, ADD-P6".
+  GCC accepts all three. The read of the RV7 repair diff finds that the
+  reference agrees with the answer for a base class subobject, also for
+  the move to one past.
 - {question}`Q-0430` (ADD-14, STG-29; open): where `p + 1` is when
   `p` is a `T*` that points to a byte, and whether placement `new` can
   use that position. The position is `sizeof(T)` bytes after `p`, and
   placement `new` can use it. No family differs. Both gap reviews of
   the text phase 14 wrote read the step as undefined, and the question
   waits on `pending.md` row 4.
+- {question}`Q-0442` (ADD-14; open):
+  whether `p + 1` is defined for a pointer to the matching signed or
+  unsigned integer type that points to an element of an array. It is,
+  as the position one past the element. No family differs. The read of
+  the RV7 repair diff reads any move of such a pointer as undefined, and
+  the question waits on `pending.md` row 4.
 - {question}`Q-0304` (ADD-6, ADD-10, ADD-14; open): whether a pointer
   to a character type can step through the bytes of an object that is
   not an array of bytes. It can. No family differs, and constant
@@ -454,10 +462,25 @@ EDG skips the tests that use `-fsanitize`.
   the pointer's type is not similar to the element type of the array.
   The review reads the new paragraph on a `T*` that points to a byte,
   and the older sentence on an array of one, against that reading.
-  Every compiler accepts the move to one past in both forms, and ADD-14
-  keeps the compilers' answer. `pending.md` row 4 holds both cases
-  ({question}`Q-0430`, and the item "ADD-14, ADD-P6" for
-  {question}`Q-0049`).
+  The read of the RV7 repair diff
+  (`reports/review/2026-11-11-read-of-rv7-repair-diff.md`, RV8-R-9)
+  limits that reading to a pointer into an element of an array. A
+  pointer to a base class subobject points to no element, so the
+  reference counts the subobject as an array of one of the pointer's
+  type, as ADD-14 does ({question}`Q-0049`). The reading holds for a
+  `T*` to a byte of a byte array ({question}`Q-0430`) and for a pointer
+  to the matching signed or unsigned integer type
+  ({question}`Q-0442`). Every compiler
+  accepts the move to one past in both forms, ADD-14 keeps the
+  compilers' answer, and `pending.md` row 4 holds both cases.
+- ADD-11: the round 11 programmer report doubted whether a program can
+  subtract the pointer to storage from an allocation function from a
+  byte pointer cast from the address of an object in that storage
+  (ledger row RM12-1). ADD-11 makes the difference undefined. No
+  compiler or sanitizer reports it
+  (`byte-pointer-into-object-minus-storage.cpp`), and the front end's
+  interpreter stops it. The defined path keeps the byte offset that made
+  the address.
 
 ### Sources
 

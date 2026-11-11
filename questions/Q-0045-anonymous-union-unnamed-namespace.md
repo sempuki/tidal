@@ -35,6 +35,8 @@ Changed on 2026-11-03 to option 2. The review reads option 2, Clang 22 accepts, 
 
 Kept open on 2026-11-04 under decision 0054, because two newest families, GCC 16 and EDG 7.0, differ from the answer.
 
+Principle text on 2026-11-11 (decision 0063, item RV8): UNI-P3 now says that an anonymous union needs `static` at namespace scope outside an unnamed namespace, and cites UNI-9 (RV8-A-7). The principle changed in this phase, so it gives no answer until a reader or a review uses it (decision 0055). Two newest families still differ.
+
 ## Opinions
 
 ### Gap review, 2026-11-03

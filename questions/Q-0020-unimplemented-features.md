@@ -45,6 +45,8 @@ Kept open on 2026-11-03 under decision 0054, because the review finds the refere
 
 Kept open on 2026-11-11 (decision 0063, item RV8). The gap review of the phase 15 text on expressions names the question at CTAD-17 and does not read the question of the test format, so the last reading of the question stays silent. `pending.md` row 4 holds the CTAD-17 case as a rule item.
 
+Evidence on 2026-11-11 (decision 0063, item RV8): the CTAD divergence line for this question and a CTAD-17 Note record the review's reading of the guide case. The test's override for Clang 18 still names this question.
+
 ## Opinions
 
 ### Gap review, 2026-11-03

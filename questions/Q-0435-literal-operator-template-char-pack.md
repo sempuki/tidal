@@ -1,7 +1,7 @@
 # Q-0435: Is a literal operator template whose head is one pack of `char` valid, and which literals call it?
 
 **Status:** provisional
-**Affects:** OPR-8, OPR-10, OPR-16, `tests/classes/operators/literal-operator-template-char-pack.cpp`, `tests/classes/operators/literal-operator-template-long-digits.cpp`, `tests/classes/operators/literal-operator-template-head-not-char-pack.cpp`, `tests/classes/operators/literal-operator-template-numeric-form-wins.cpp`, `tests/classes/operators/literal-operator-template-and-raw-form.cpp`, `tests/classes/operators/literal-operator-template-string-literal.cpp`, `tests/programs/roadmap/r12-bigint-second-try.cpp`
+**Affects:** OPR-8, OPR-10, OPR-16, `tests/classes/operators/literal-operator-template-char-pack.cpp`, `tests/classes/operators/literal-operator-template-long-digits.cpp`, `tests/classes/operators/literal-operator-template-head-not-char-pack.cpp`, `tests/classes/operators/literal-operator-template-numeric-form-wins.cpp`, `tests/classes/operators/literal-operator-template-and-raw-form.cpp`, `tests/classes/operators/literal-operator-template-string-literal.cpp`, `tests/classes/operators/literal-operator-template-and-raw-form-declared.cpp`, `tests/programs/roadmap/r12-bigint-second-try.cpp`
 **Source:** the round 12 programmer report (`reports/clean-room/roadmap-12/programmer.md`, sections 1.5 and 6), reduction `literal_operator_template.cpp`, and the programmer's sketch `bigint_second_try.cpp`.
 **Waits for:** a review (doubt)
 
@@ -71,6 +71,8 @@ decision 0063 writes the text for OPR-8 and OPR-10.
 Rule text on 2026-11-11 (decision 0063, item F5): OPR-8 defines the literal operator template, the characters that an integer or floating literal passes, and the choice of the numeric form when both exist. OPR-10 accepts the form, and OPR-16 rejects a numeric literal when only the `const char*` form and the template exist. Three tests join: `literal-operator-template-numeric-form-wins.cpp`, `literal-operator-template-and-raw-form.cpp`, and `literal-operator-template-string-literal.cpp`, and every baseline compiler passes them. The question now waits for a first review.
 
 Kept open on 2026-11-11 under decision 0054 (decision 0063, item RV8). The review supports the answer with a doubt. Every compiler agrees. The last sentence of option 1 is too wide for a template with one constant parameter of class type, which a string literal calls.
+
+Rule text on 2026-11-11 (decision 0063, item RV8): OPR-8 gives a second kind of literal operator template, with one constant template parameter of class type, which a string literal calls (RV8-A-3). OPR-10 accepts both kinds, so the last sentence of option 1 now leaves out the class-type kind, and Q-0446 holds the splits of that kind. OPR-8 says that the numeric form is the one of the literal's kind, and OPR-16 says that the `const char*` form and the template are valid declarations for one suffix (RV8-A-4). The test `literal-operator-template-and-raw-form-declared.cpp` has no literal and records GCC's rejection of the second declaration under this question. The question still waits for a review.
 
 ## Opinions
 
