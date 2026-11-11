@@ -290,6 +290,21 @@ and 0063 holds. The close counts 48, because P4 added 3.
 | R9 | Done: records: checks for repair-diff reads, settlement commits, and the request sentence; ledger rows for three findings; the portfolio step | none |
 | E | Done: port suite P4 on iterators and owned resources; Propose X25 on P27 | P4 after FE; X25 after R9's portfolio step |
 
+## Phase 16: start the rewrite, answer the open rows, and review phase 15
+
+Decision 0064 (provisional) adopts this phase from the thirteenth round
+of clean-room roadmaps (`reports/clean-room/roadmap-13/`).
+
+| Item | Work | Prerequisites |
+|---|---|---|
+| T5 | Tests for the round 13 reductions and probes, and the round 13 programs and clean tries as program tests | none |
+| F6 | Answer the 12 `open` rows that need text and the two findings with no row, with a question for each new split; TYN-10 for the specialization form | none |
+| RW | The rewrite, steps 0 to 2: the design document brought up to date with the Propose hook in its build order, the crate with its lexer and parser, and the frontend_check.py lines that measure them | step 0 first; none for steps 1 and 2 |
+| FE | Front-end round 27 on the current code: the T5 and F6 tests, the program tests that do not run, P3-9, P3-10, P4-1, and P4-2 | T5; F6 for its tests |
+| RV9 | A gap review of FN-12, INST-1's clause, the hunks of bdc27d44, and F6's text; repairs and a recorded read of their diff | F6 |
+| R10 | Records: the design documents and exercises.md section 8; a tool for the close's Waits-for change; a similarity record of the design documents; ledger rows for findings in commit messages | none |
+| E | Propose X24 on P22 | none; before RW's prototype step |
+
 ## Parallel lanes
 
 Phase 5 ran three lanes beside its items, and all three are done: U

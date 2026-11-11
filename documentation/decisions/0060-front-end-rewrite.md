@@ -35,7 +35,7 @@ understand, and extend.
   at most 50 tests that fail their check by the completion line of
   `tools/frontend_check.py`, and "stable" as no test moved from a
   passing status to a failing one in either round, with a named cause
-  for each remaining test (provisional). Decision 0063 counts "few" without the tests that its marks file marks as needing the template model, and starts no rewrite code before the gate holds (provisional).
+  for each remaining test (provisional). Decision 0063 counts "few" without the tests that its marks file marks as needing the template model, and starts no rewrite code before the gate holds (provisional). Front-end round 26 ended inside the gate, and decision 0064 starts the rewrite as item RW, with the gate's count kept as a measure (provisional).
 - **What the rewrite gives.**
   - A design document in `frontend/` that names each stage (lexing,
     parsing, semantic analysis, constant evaluation, interpretation)

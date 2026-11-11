@@ -898,17 +898,17 @@ drift").
 | P3-6 | `P3/report.md` | question | Q-0441; decision 0063, item F5: INST-5, INST-1, and INST-P2 say that a member function's parameter and return types need to be complete only when the definition is made; tests member-parameter-type-waits-for-definition.cpp, member-deduced-return-waits-for-definition.cpp, static-member-incomplete-argument-declared.cpp, static-inline-member-incomplete-argument.cpp |
 | P3-7 | `P3/report.md` | commit | a91ccc77 (front-end round 26, decision 0063, item FE): the test passes; front end: an unused member definition in a base over the derived class is checked early (NAM-9, INST-5); test templates/instantiation/member-return-type-waits-for-definition.cpp |
 | P3-8 | `P3/report.md` | commit | a91ccc77 (front-end round 26, decision 0063, item FE): the test passes; front end: a constructor body checked while the derived class is incomplete (TYN-7, INST-5); test templates/instantiation/member-constructor-made-at-call.cpp |
-| P3-9 | `P3/report.md` | open | front-end round 26 (a91ccc77): the test passes its check and stops in the run (report-26 section 9); front end: range-based for with begin and end from a base over the derived class (RFOR-2); test statements/range-for/begin-end-from-base-over-derived.cpp |
-| P3-10 | `P3/report.md` | open | front-end round 26 (a91ccc77): the test passes its check and stops in the run (report-26 section 9); front end: a user operator= with a class parameter stops as class assignment (OVL-7); test overloading/overload-resolution/assignment-operator-class-parameter.cpp |
+| P3-9 | `P3/report.md` | planned | decision 0064, item FE: front-end round 26 (a91ccc77): the test passes its check and stops in the run (report-26 section 9); front end: range-based for with begin and end from a base over the derived class (RFOR-2); test statements/range-for/begin-end-from-base-over-derived.cpp |
+| P3-10 | `P3/report.md` | planned | decision 0064, item FE: front-end round 26 (a91ccc77): the test passes its check and stops in the run (report-26 section 9); front end: a user operator= with a class parameter stops as class assignment (OVL-7); test overloading/overload-resolution/assignment-operator-class-parameter.cpp |
 | P3-11 | `P3/report.md` | commit | 232ac618, decision 0063, item F5: VC-P2 says that copy initialization through a converting constructor initializes the object directly; new test foundations/values/copy-init-converting-constructor-no-copy.cpp |
 | P3-12 | `P3/report.md` | commit | 232ac618, decision 0063, item F5: glossary entries for closure type (LAM-2) and range (RFOR-2) |
-| P4-1 | `P4/report.md` | open | FN-12, CLS-2, INST-1: FN-12 read as rejecting a member function defined in its class whose type is a specialization over the class; the P4 commit adds the FN-12 sentence from the matrix; front end: tests declarations/functions/definitions/member-in-class-specialization-over-class.cpp (false reject) and member-in-class-type-completed-after-class.cpp (missed reject) |
-| P4-2 | `P4/report.md` | open | LSUP-1, OPR-6: front end: an operator function whose parameter is std::initializer_list<E> stops; test classes/operators/initializer-list-parameter.cpp |
-| P4-3 | `P4/report.md` | open | RFOR-P1, RFOR-2, CPT-P3: no example of an adaptor over any sequence |
-| P4-4 | `P4/report.md` | open | CPT-P3, CPT-28: no example that names a member call's result type without the library (outside knowledge) |
-| P4-5 | `P4/report.md` | open | STG-P2 Maybe example, CPY-5, CPY-8: the example shows no move constructor, and the sentence after it cites CPY-8 where CPY-5 applies |
+| P4-1 | `P4/report.md` | planned | decision 0064, item FE: FN-12, CLS-2, INST-1: FN-12 read as rejecting a member function defined in its class whose type is a specialization over the class; the P4 commit adds the FN-12 sentence from the matrix; front end: tests declarations/functions/definitions/member-in-class-specialization-over-class.cpp (false reject) and member-in-class-type-completed-after-class.cpp (missed reject) |
+| P4-2 | `P4/report.md` | planned | decision 0064, item FE: LSUP-1, OPR-6: front end: an operator function whose parameter is std::initializer_list<E> stops; test classes/operators/initializer-list-parameter.cpp |
+| P4-3 | `P4/report.md` | planned | decision 0064, item F6: RFOR-P1, RFOR-2, CPT-P3: no example of an adaptor over any sequence |
+| P4-4 | `P4/report.md` | planned | decision 0064, item F6: CPT-P3, CPT-28: no example that names a member call's result type without the library (outside knowledge) |
+| P4-5 | `P4/report.md` | planned | decision 0064, item F6: STG-P2 Maybe example, CPY-5, CPY-8: the example shows no move constructor, and the sentence after it cites CPY-8 where CPY-5 applies |
 | P4-6 | `P4/report.md` | text | DEL-1: the specification needs no change; the front-end message names a deleted move constructor where the deleted copy constructor is selected, and no test can observe a message's wording (frontend_check.py reads the verdict and the rule ID, which are right) |
-| P4-7 | `P4/report.md` | open | OPR-8, CONV-4: OPR-8 does not say which value the numeric literal form receives |
+| P4-7 | `P4/report.md` | planned | decision 0064, item F6: OPR-8, CONV-4: OPR-8 does not say which value the numeric literal form receives |
 | I4-1 | `I4/report.md` | commit | ee6085aa: COND-16 base row |
 | I4-2 | `I4/report.md` | commit | ee6085aa: COND-16 step 1, Q-0418 |
 | I4-3 | `I4/report.md` | commit | ee6085aa: COND-P2 and COND-11 |
@@ -930,15 +930,15 @@ drift").
 | X23-5 | `X23/report.md` | commit | ee6085aa: STG-5 and NEW-29 |
 | X23-6 | `X23/report.md` | commit | 0f3f522f |
 | X23-7 | `X23/report.md` | commit | 0f3f522f |
-| X25-1 | `X25/report.md` | open | LSUP-10, UNI-14: LSUP-10's two places for std::construct_at in constant evaluation do not cover a union member that is not active, which UNI-14 accepts |
-| X25-2 | `X25/report.md` | open | OBJ-1, STG-28: no row for when an array's own lifetime begins |
-| X25-3 | `X25/report.md` | open | glossary lifetime, OBJ-1: the entry ends a class object's lifetime when its destructor completes, and OBJ-1 when the call starts; the scalar start differs too |
-| X25-4 | `X25/report.md` | open | UNI-14, UNI-6: at run time, whether the member name reaches an element built inside an inactive array member, and whether a non-overlapping active member stays active |
-| X25-5 | `X25/report.md` | open | CE-22, CE-P3: whether a union's trivial copy reads the parts of its active member |
-| X25-6 | `X25/report.md` | open | STG-P2: the storage-form table sits at the end of the storage.md Examples, and STG-P2 does not cite it |
-| X25-7 | `X25/report.md` | open | CE-21: no example of an element that an explicit destructor call ended |
+| X25-1 | `X25/report.md` | planned | decision 0064, item F6: LSUP-10, UNI-14: LSUP-10's two places for std::construct_at in constant evaluation do not cover a union member that is not active, which UNI-14 accepts |
+| X25-2 | `X25/report.md` | planned | decision 0064, item F6: OBJ-1, STG-28: no row for when an array's own lifetime begins |
+| X25-3 | `X25/report.md` | planned | decision 0064, item F6: glossary lifetime, OBJ-1: the entry ends a class object's lifetime when its destructor completes, and OBJ-1 when the call starts; the scalar start differs too |
+| X25-4 | `X25/report.md` | planned | decision 0064, item F6: UNI-14, UNI-6: at run time, whether the member name reaches an element built inside an inactive array member, and whether a non-overlapping active member stays active |
+| X25-5 | `X25/report.md` | planned | decision 0064, item F6: CE-22, CE-P3: whether a union's trivial copy reads the parts of its active member |
+| X25-6 | `X25/report.md` | planned | decision 0064, item F6: STG-P2: the storage-form table sits at the end of the storage.md Examples, and STG-P2 does not cite it |
+| X25-7 | `X25/report.md` | planned | decision 0064, item F6: CE-21: no example of an element that an explicit destructor call ended |
 | X25-8 | `X25/report.md` | commit | bcf30b72, decision 0063, item E: the portfolio entry of P27 says no only for a new declaration form, and the table of exercises.md section 4 gains X25 |
-| X25-9 | `X25/report.md` | open | outside knowledge: fixed-capacity vectors are common; no rule rests on it |
+| X25-9 | `X25/report.md` | planned | decision 0064, item F6: outside knowledge: fixed-capacity vectors are common; no rule rests on it |
 | RV4-1 | `../review/2026-11-05-gap-review-phase-10-expressions-templates.md` | commit | 3bed9cb5: LAM-6 says simple capture (RV5-B-14) |
 | RV4-2 | `../review/2026-11-05-gap-review-phase-10-expressions-templates.md` | text | LAM-29 states the right result (RV5-B-15) |
 | RV4-3 | `../review/2026-11-05-gap-review-phase-10-classes-declarations-foundations.md` | commit | 3bed9cb5: SW-P1 (RV5-A-18) |

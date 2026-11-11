@@ -189,23 +189,24 @@ forward-progress rule belongs with threads, which are out of scope.
 ## Next steps
 
 `documentation/roadmap.md` orders the work (decisions 0033, 0039, 0050,
-0051, 0054, 0055, 0056, 0057, 0058, 0059, 0060, 0061, 0062, and 0063).
-Phases 1 to 15 are done. Next:
+0051, 0054, 0055, 0056, 0057, 0058, 0059, 0060, 0061, 0062, 0063, and
+0064). Phases 1 to 15 are done. Phase 16 (decision 0064) is next:
 
-1. A thirteenth round of clean-room roadmaps under
-   `reports/clean-room/roadmap-13/`, from the same five views, then a
-   decision that adopts phase 16. Its inputs include the open rows of
-   the exercise ledger (P3-9, P3-10, P4-1 to P4-5, P4-7, X25-1 to X25-7,
-   and X25-9), the 20 rules and principles that changed after RV8 read
-   the tree, and the completion line after phase 15 (80 tests that fail
-   their check, 32 of them marked, 48 counting toward the gate; 5 of
-   152 program tests that do not run).
-2. Front-end round 26 ended inside the gate of decisions 0062 and 0063:
-   45 failing tests that the marks file does not mark, no test made
-   worse in rounds 25 and 26, and a named cause for each remaining test
-   (`reports/clean-room/rust-frontend/report-26.md`, section 8). So the
-   phase 16 decision adds the rewrite as an item, names the tests it
-   takes over, and starts from `frontend/DESIGN-rewrite.md`.
+1. Items T5, F6, R10, E, and step 0 of RW, which can run together. F6
+   answers 12 open exercise rows (P4-3 to P4-5, P4-7, X25-1 to X25-7,
+   and X25-9) and the two findings with no row.
+2. Steps 1 and 2 of RW (the crate `frontend/next/`, its lexer, and its
+   parser with the `Names` oracle) after step 0. Front-end round 27
+   (item FE) on the current code after T5, with F6's tests as they
+   arrive.
+3. The RV9 gap review after F6, ending with a recorded read of its
+   repair diff.
+
+The rewrite owns no test in phase 16. The old front end stays the front
+end of record, and the gate's count of decisions 0062 and 0063 is a
+measure (decision 0064). The rewrite takes over the 32 marked tests at
+build steps 5 to 7, and the old front end goes at step 9 (decision
+0060).
 
 The items that wait on the maintainer are in
 `documentation/decisions/pending.md`, one row each, with the options,
