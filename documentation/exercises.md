@@ -355,8 +355,10 @@ Fill in the angle brackets.
 > names. When you use knowledge the specification did not give you, log it as an
 > "outside knowledge" finding. Write only in <output directory>, and run
 > no git command that changes anything. If a file write is refused,
-> return its content in your final message. Write plainly: short
-> sentences, no em-dashes, no "not X but Y".
+> return its content in your final message. List each claim that rests
+> on the host `g++` and `clang++` alone under a heading "Host-only
+> claims", so that a writer probes it on the matrix before acting.
+> Write plainly: short sentences, no em-dashes, no "not X but Y".
 
 ### Write and Port
 

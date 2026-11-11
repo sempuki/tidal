@@ -19,10 +19,12 @@ P17 was "opaque type aliases". Tidal uses "opaque" for an enumeration declared w
 | P23a | Template bodies checked against their constraints, form 1: template-ids | constraints, concepts, dependent-names, instantiation, attributes | no (opt-in) | new | done (X22) | X22-1 to X22-7 |
 | P23b | Template bodies checked against their constraints, form 2: expressions against requirements | concepts, constraints, dependent-names, overload-resolution | no if opt-in. Yes if it becomes the default | new | partial | No rule matches an expression in a body to a requirement (X22-8) |
 | P24 | Flag enumerations: a marked scoped enumeration gets `\|`, `&`, `^` and `~` in its own type | bitwise, enumerations, overload-resolution | no | new | ready | The marker, which must not clash with X12's `final` |
-| P25 | `new` and `delete` that honor every alignment, or reject at compile time | new-delete, alignment, storage | yes | new | ready | Q-0300 is open. P25 uses the answer that `pending.md` row 4 keeps |
+| P25 | `new` and `delete` that honor every alignment, or reject at compile time | new-delete, alignment, storage | yes | new | done (X23) | Q-0300 is open. P25 uses the answer that `pending.md` row 4 keeps |
 | P26 | No overloaded comma, and a discarded left operand of `,` must have no value or be a call | comma, operators, evaluation-order | yes | new | ready | The meaning of "has no value" for a class result |
+| P27 | An in-object array whose elements start their lives one at a time | storage, unions, language-support | no | new | ready | How an element's lifetime starts and ends, and what constant evaluation allows (Q-0425) |
+| P28 | Arithmetic that wraps on request | additive, multiplicative, conversions | no | new | partial | The marker, and whether it applies to a type or an operator |
 
-Totals for P22 onward: 4 ready (P22, P24, P25, P26), 1 partial (P23b), 1 done (P23a), 0 blocked. Two change existing behavior (P25, P26). The order for X23 and X24 stays as roadmap-7 gives it: P25, then P22 or P26.
+Totals for P22 onward: 4 ready (P22, P24, P26, P27), 2 partial (P23b, P28), 2 done (P23a by X22, P25 by X23), 0 blocked. P26 is the one ready proposal that changes existing behavior. X24 takes P22 or P26 next, and X25 can take P27.
 
 ## 3. The proposals
 
@@ -83,8 +85,30 @@ A `new` expression for a type with more than the default new alignment either ca
 A class cannot overload `operator,`. The left operand of a built-in comma must have type `void` or be a call. Today COMMA-5 only recommends a warning for a left operand with no effect, and OPR-7 keeps an overloaded comma's order.
 
 - **Pages:** `expressions/comma.md`, `classes/operators.md`, `foundations/evaluation-order.md`, `expressions/primary.md` (folds over the comma).
-- **Changes existing behavior:** yes. `grep` finds 5 test files that declare `operator,`, and no program. Each program whose comma has a left operand with a value that is not a call becomes invalid.
+- **Changes existing behavior:** yes. `grep` finds 5 test files that declare `operator,`, and no program. Each program whose comma has a left operand with a value that is not a call becomes invalid. Of the 126 programs under `tests/programs/`, 9 files hold a fold over the comma (8 fold calls, and `r7-registry/registry.h` folds an assignment), and `r5-hashmap-kept-pointer.cpp` has a comma with a left operand that is not a call in a `for` increment twice. So at least 2 programs become invalid (the round 11 designer's scan of `for` heads and folds).
 - **Cites:** COMMA-P1, COMMA-P3, COMMA-1, COMMA-4, COMMA-5, COMMA-7, OPR-P2, OPR-7, PRIM-27, STMT-1, STMT-4.
 - **Settled from Tidal:** the comma's order, its result, and the lists where a comma is a separator (COMMA-4) are stated.
 - **Not settled:** whether "a call" includes a call of an operator function and a call through a pointer. Whether a cast to `void` stays the way to keep a value (COMMA-5 says so for the warning). Whether an assignment or an increment counts as a left operand with no value. Whether a fold over the comma (PRIM-27) is checked for each element or once. When a left operand of class type has a value.
 - **Rating:** ready.
+
+### P27. An in-object array whose elements start their lives one at a time
+
+A class holds storage for `N` objects of `T` inside itself, and the program starts each element's life when it adds one, as a fixed-capacity vector does. Today no form inside the object gives one array of `T` for pointer arithmetic, constant evaluation, and a `T` with no default constructor together (the storage-form table beside the `FixedVec` example, STG-P2).
+
+- **Pages:** `foundations/storage.md`, `classes/unions.md`, `foundations/language-support.md`.
+- **Changes existing behavior:** no. The proposal adds a form.
+- **Cites:** STG-P2, STG-P3, STG-10, STG-28, UNI-13, UNI-14, UNI-6, ADD-10, LSUP-10, LSUP-11.
+- **Settled from Tidal:** UNI-14 says what a construction inside a member that is not active does, at run time and in constant evaluation (W20-2, Q-0425). The storage-form table states the gap.
+- **Not settled:** how an element's lifetime starts and ends, what `std::construct_at` and placement `new` do on one element, what a pointer and a length over the started elements give, and what constant evaluation allows.
+- **Rating:** ready.
+
+### P28. Arithmetic that wraps on request
+
+A program asks for wrapping arithmetic on signed integers in the source, in place of the conversion to an unsigned type and back that ADD-9, MUL-10, MUL-8, and CONV-2 together give today (P2-4).
+
+- **Pages:** `expressions/additive.md`, `expressions/multiplicative.md`, `foundations/conversions.md`.
+- **Changes existing behavior:** no. The proposal adds a form.
+- **Cites:** ADD-9, MUL-8, MUL-10, CONV-2.
+- **Settled from Tidal:** the result of unsigned arithmetic and of the conversion back to a signed type.
+- **Not settled:** the marker, whether it applies to a type, an expression, or an operator, and how it meets the usual arithmetic conversions.
+- **Rating:** partial.

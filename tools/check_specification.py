@@ -248,6 +248,9 @@ def check_ledger(errors: list[str]) -> None:
             rows[m.group(1)] = m.group(2)
             if m.group(2) not in LEDGER_STATES:
                 errors.append(f"{ledger.relative_to(ROOT)}: {m.group(1)} has an unknown state {m.group(2)!r}")
+            # A commit row names its commit, as in the exercise ledger (decision 0062).
+            if m.group(2) == "commit" and not re.search(r"\b[0-9a-f]{7,40}\b", line.split("|", 4)[4]):
+                errors.append(f"{ledger.relative_to(ROOT)}: {m.group(1)} is in state commit, and its Record names no commit")
     for report in sorted(FRONTEND.glob("report*.md")):
         for g in re.findall(r"^#+ (G\d+)[.:]", report.read_text(), re.M):
             if g not in rows:

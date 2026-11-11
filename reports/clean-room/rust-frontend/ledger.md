@@ -13,7 +13,8 @@ how the clean-room writer answered the finding:
 The Record column names the commits, questions, or rules. An `out of
 scope` row whose Record names tests takes those tests out of the count
 of decision 0060's completion test (decision 0061, item CT), and
-`tools/frontend_check.py` prints that count. For a
+`tools/frontend_check.py` prints that count. A `commit` row names its commit, and
+`tools/check_specification.py` fails when one does not (decision 0062). For a
 `commit` row from before the ledger, the Record column names the
 first commit after the report that cites the finding.
 `tools/check_specification.py` fails when a report names a finding
@@ -167,14 +168,14 @@ that has no row.
 | G144 | `report-20.md` | commit | b7e0adf |
 | G145 | `report-20.md` | commit | b7e0adf |
 | G146 | `report-21.md` | commit | 32c89f7 (ORD-9, finding R9D-1) |
-| G147 | `report-21.md` | commit | decision 0057, item G: ORD-6 |
+| G147 | `report-21.md` | commit | a9c480b7, decision 0057, item G: ORD-6 |
 | G148 | `report-21.md` | question | decision 0057, item G: COND-16 and Q-0401 |
-| G149 | `report-21.md` | commit | decision 0057, item G: INST-12, Q-0392 |
-| G150 | `report-21.md` | commit | decision 0057, item G: CMP-8, Q-0387 |
-| G151 | `report-21.md` | commit | decision 0057, item G: BF-1, ALN-8, Q-0314 |
-| G152 | `report-22.md` | commit | decision 0058, item F: DED-29 |
+| G149 | `report-21.md` | commit | a9c480b7, decision 0057, item G: INST-12, Q-0392 |
+| G150 | `report-21.md` | commit | a9c480b7, decision 0057, item G: CMP-8, Q-0387 |
+| G151 | `report-21.md` | commit | a9c480b7, decision 0057, item G: BF-1, ALN-8, Q-0314 |
+| G152 | `report-22.md` | commit | 47f58739, decision 0058, item F: DED-29 |
 | G153 | `report-23.md` | commit | 0ae4cdb5, decision 0061, item F3: REF-1, COND-16, DED-15, and DED-P4 state the base relation; access and ambiguity are checked after the choice (ACC-12, CONV-17, OVL-37) |
-| G154 | `report-23.md` | commit | decision 0061, item T2: ACC-3 tests classes/access/private-copy-constructor-copy-initialization.cpp, private-copy-constructor-by-value-argument.cpp, private-copy-constructor-return-parameter.cpp, private-copy-constructor-return-local.cpp, private-move-constructor-xvalue-initialization.cpp, and private-move-constructor-return-local.cpp |
+| G154 | `report-23.md` | commit | afccbb13, decision 0061, item T2: ACC-3 tests classes/access/private-copy-constructor-copy-initialization.cpp, private-copy-constructor-by-value-argument.cpp, private-copy-constructor-return-parameter.cpp, private-copy-constructor-return-local.cpp, private-move-constructor-xvalue-initialization.cpp, and private-move-constructor-return-local.cpp |
 | G155 | `report-23.md` | commit | 0ae4cdb5, decision 0061, item F3: NEW-25 covers the allocation function that a new expression selects, deleted or inaccessible; four tests in `expressions/new-delete/` |
 | G156 | `report-23.md` | commit | 0ae4cdb5, decision 0061, item F3: LSUP-11 rejects an assignment before construction for every element type; Q-0421 |
 | G157 | `report-23.md` | commit | 0ae4cdb5, decision 0061, item F3: the INST-11 Evidence lists the uses that instantiate a virtual function; INST-7 and Q-0428 for a call through a pointer; front-end round 24 (53577f27) passes `templates/instantiation/virtual-new-expression.cpp` and `templates/instantiation/virtual-temporary.cpp` |
