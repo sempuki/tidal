@@ -189,19 +189,21 @@ forward-progress rule belongs with threads, which are out of scope.
 ## Next steps
 
 `documentation/roadmap.md` orders the work (decisions 0033, 0039, 0050,
-0051, 0054, 0055, 0056, 0057, 0058, 0059, 0060, 0061, and 0062). Phases
-1 to 14 are done. Next:
+0051, 0054, 0055, 0056, 0057, 0058, 0059, 0060, 0061, 0062, and 0063).
+Phases 1 to 14 are done, except RV7's read of its repair diff, which
+item RV8 of phase 15 takes. Phase 15 (decision 0063) is next:
 
-1. A twelfth round of clean-room roadmaps under
-   `reports/clean-room/roadmap-12/`, from the same five views, then a
-   decision that adopts phase 15. Its inputs include the open rows of
-   the exercise ledger (I7-1 to I7-3, I7-5 to I7-15, and P3-1 to P3-12),
-   the open front-end rows G164 and G165, the 20 rules and principles
-   that changed after RV7 read the tree, and the completion line after
-   phase 14 (107 tests that fail their check, 3 of 138 program tests
-   that do not run). Front-end round 25 ended with 104 tests, so the
-   gate of decision 0062 does not hold; 30 of the 104 need the template
-   model of `frontend/TEMPLATE-MODEL.md`.
+1. Items T4, F5, GC, R9, and the read of the RV7 repair diff, which can
+   run together. F5 answers 26 open exercise rows (I7 and P3) and the
+   open front-end rows G164 and G165.
+2. Front-end round 26 (item FE) after T4 and GC, then Port suite P4.
+   RD after GC, and Propose X25 after R9's portfolio step.
+3. The RV8 gap review after F5.
+
+The rewrite's code starts when a front-end round ends inside the gate
+of decisions 0062 and 0063: at most 50 failing tests that the marks file
+does not mark, no test made worse in two rounds, and a named cause for
+each remaining test.
 
 After the front end meets the completion test of decision 0060, a
 phase item rewrites it (roadmap item FR).
