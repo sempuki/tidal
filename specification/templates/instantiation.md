@@ -235,7 +235,7 @@ use is not valid ({rule}`TSP-20` gives the same for an {term}`explicit specializ
 
 :::{rule} INST-5
 :kind: required
-:tests: templates/instantiation/class-member-definitions-unused.cpp templates/instantiation/class-inline-static-member-unused.cpp templates/instantiation/class-scoped-enumeration-unused.cpp templates/instantiation/class-deleted-member-specialized.cpp templates/packs/member-template-enclosing-pack-after-deduced.cpp templates/packs/member-template-enclosing-pack-before-deduced.cpp templates/instantiation/friend-body-waits-for-use.cpp templates/instantiation/class-static-const-member-initializer-made.cpp templates/instantiation/class-static-constexpr-member-initializer-waits.cpp templates/instantiation/class-point-static-constexpr-made-at-use.cpp templates/instantiation/class-point-static-const-member.cpp
+:tests: templates/instantiation/class-member-definitions-unused.cpp templates/instantiation/class-inline-static-member-unused.cpp templates/instantiation/class-scoped-enumeration-unused.cpp templates/instantiation/class-deleted-member-specialized.cpp templates/packs/member-template-enclosing-pack-after-deduced.cpp templates/packs/member-template-enclosing-pack-before-deduced.cpp templates/instantiation/friend-body-waits-for-use.cpp templates/instantiation/class-static-const-member-initializer-made.cpp templates/instantiation/class-static-constexpr-member-initializer-waits.cpp templates/instantiation/class-point-static-constexpr-made-at-use.cpp templates/instantiation/class-point-static-const-member.cpp templates/instantiation/member-return-type-waits-for-definition.cpp templates/instantiation/member-constructor-made-at-call.cpp
 
 The instantiation of a class makes the declarations of its members. It
 does not make these definitions:
@@ -274,7 +274,7 @@ must not become the same partial specialization ({question}`Q-0251`).
 
 :::{rule} INST-7
 :kind: required
-:tests: templates/instantiation/function-unevaluated.cpp templates/instantiation/function-called.cpp templates/instantiation/function-address.cpp templates/instantiation/function-deduced-return.cpp templates/instantiation/member-function-called.cpp templates/instantiation/function-unevaluated-braced.cpp templates/instantiation/function-unevaluated-braced-untaken.cpp templates/instantiation/function-unevaluated-parentheses.cpp templates/instantiation/function-unevaluated-sizeof-constant.cpp templates/instantiation/virtual-called-through-pointer.cpp templates/instantiation/friend-body-made-at-call.cpp
+:tests: templates/instantiation/function-unevaluated.cpp templates/instantiation/function-called.cpp templates/instantiation/function-address.cpp templates/instantiation/function-deduced-return.cpp templates/instantiation/member-function-called.cpp templates/instantiation/function-unevaluated-braced.cpp templates/instantiation/function-unevaluated-braced-untaken.cpp templates/instantiation/function-unevaluated-parentheses.cpp templates/instantiation/function-unevaluated-sizeof-constant.cpp templates/instantiation/virtual-called-through-pointer.cpp templates/instantiation/friend-body-made-at-call.cpp templates/instantiation/member-return-type-waits-for-definition.cpp templates/instantiation/member-constructor-made-at-call.cpp
 
 A {term}`function template` specialization, a member function of a class
 specialization, and a friend function that a class specialization
@@ -774,8 +774,8 @@ extern template constexpr int size_of<long>;  // rejected: constexpr (INST-25)
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 132
-of 161 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 134
+of 163 tests.
 
 ### Divergences
 

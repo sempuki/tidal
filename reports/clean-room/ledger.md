@@ -884,6 +884,18 @@ own IDs (RV5-A-n and RV5-B-n).
 | P2-7 | `P2/report.md` | text | decision 0062: the report names no change to the text; outside knowledge: a pointer or nullptr for a missing value (CMP-6, CMP-15, NEW-4) |
 | P2-8 | `P2/report.md` | commit | 1130ceb8, decision 0062, item F4: DCL-19 links CE-3 and CV-8 for the variables that a bound can read |
 | P2-9 | `P2/report.md` | commit | b035efd4 (front-end round 25, decision 0062, item FE): the test passes; front end: "unspecified" is the first word when every explored order gives one result (SEQ-1); the text needs no change, and the front end's first line changes; test programs/P2/ledger.cpp |
+| P3-1 | `P3/report.md` | open | missing, needs example: no lazy-generator form (KW-1), and no iterator example over a computed sequence (RFOR-2) |
+| P3-2 | `P3/report.md` | open | needs example: the delegate form of LAM-P4 (VIRT-P3, NEW-P2, CPY-P3) |
+| P3-3 | `P3/report.md` | open | outside knowledge, needs example: naming a call's result type with a declared-only function in decltype (ODR-3, INST-7) |
+| P3-4 | `P3/report.md` | open | hard to find: == on two const char* compares addresses (PRIM-9); the comparison page does not say so |
+| P3-5 | `P3/report.md` | open | needs example: a stage that holds its source by reference dangles (OBJ-9) |
+| P3-6 | `P3/report.md` | open | unclear: INST-1 and INST-5 on when a member definition's return type is made |
+| P3-7 | `P3/report.md` | open | front end: an unused member definition in a base over the derived class is checked early (NAM-9, INST-5); test templates/instantiation/member-return-type-waits-for-definition.cpp |
+| P3-8 | `P3/report.md` | open | front end: a constructor body checked while the derived class is incomplete (TYN-7, INST-5); test templates/instantiation/member-constructor-made-at-call.cpp |
+| P3-9 | `P3/report.md` | open | front end: range-based for with begin and end from a base over the derived class (RFOR-2); test statements/range-for/begin-end-from-base-over-derived.cpp |
+| P3-10 | `P3/report.md` | open | front end: a user operator= with a class parameter stops as class assignment (OVL-7); test overloading/overload-resolution/assignment-operator-class-parameter.cpp |
+| P3-11 | `P3/report.md` | open | outside knowledge: copy-initialization through a converting constructor makes no copy (VC-4) |
+| P3-12 | `P3/report.md` | open | hard to find: no glossary entry for closure type, iterator, or range (LAM-2) |
 | I4-1 | `I4/report.md` | commit | ee6085aa: COND-16 base row |
 | I4-2 | `I4/report.md` | commit | ee6085aa: COND-16 step 1, Q-0418 |
 | I4-3 | `I4/report.md` | commit | ee6085aa: COND-P2 and COND-11 |
