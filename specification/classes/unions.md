@@ -76,9 +76,11 @@ and leaves the job to the union's own code
 
 An anonymous union adds its members to the scope around it, as if the
 scope held the members, while the members still share one storage. An
-anonymous union can therefore hold only plain public data members. It
-declares no type, so a member whose declaration defines an unnamed
-class, and an anonymous union inside it, are not valid. At
+anonymous union can therefore hold only plain public data members and
+static assertions. The anonymous union is itself a type with no name.
+No declaration inside it can introduce another type, so a member whose
+declaration defines an unnamed class, and an anonymous union inside it,
+are not valid. At
 namespace scope an anonymous union needs `static` because its members
 have no name to link by.
 :::
@@ -463,7 +465,7 @@ Constant evaluation follows this rule.
 
 :::{rule} UNI-14
 :kind: required
-:tests: classes/unions/construct-activates-constant.cpp classes/unions/construct-switches-active-constant.cpp classes/unions/placement-new-activates.cpp classes/unions/slot-array-constant.cpp classes/unions/destroyed-member-read-constant.cpp classes/unions/array-member-element-address-no-active-member.cpp classes/unions/construct-in-member-of-inactive-member-union-constant.cpp classes/unions/placement-into-union-member-of-new-array-element.cpp classes/unions/array-member-element-steps-no-active-member-constant.cpp classes/unions/construct-at-array-member-element-constant.cpp classes/unions/construct-in-member-of-inactive-member-union-run.cpp classes/unions/trivial-copy-changes-active-member-constant.cpp
+:tests: classes/unions/construct-activates-constant.cpp classes/unions/construct-switches-active-constant.cpp classes/unions/placement-new-activates.cpp classes/unions/slot-array-constant.cpp classes/unions/destroyed-member-read-constant.cpp classes/unions/array-member-element-address-no-active-member.cpp classes/unions/construct-in-member-of-inactive-member-union-constant.cpp classes/unions/placement-into-union-member-of-new-array-element.cpp classes/unions/array-member-element-steps-no-active-member-constant.cpp classes/unions/construct-at-array-member-element-constant.cpp classes/unions/construct-in-member-of-inactive-member-union-run.cpp classes/unions/trivial-copy-changes-active-member-constant.cpp classes/unions/trivial-move-changes-active-member-constant.cpp
 
 If placement `new` ({rule}`STG-5`, with a form that {rule}`LSUP-7`
 gives) or `std::construct_at` ({rule}`LSUP-10`) creates an object of a member's type at the address of
@@ -471,8 +473,9 @@ the member, the new object is that member, and the member becomes
 active. The rule holds when the union has no active member, and when
 another member is active. An explicit destructor call on the active
 member ({rule}`DTOR-6`) leaves the union with no active member. A
-trivial copy constructor or copy assignment of the whole union makes
-active in the target the member that is active in the source.
+trivial copy or move constructor, or a trivial copy or move assignment,
+of the whole union makes active in the target the member that is active
+in the source.
 
 During {term}`constant evaluation`, a new object inside a member that
 is not active, such as an element of an array member or a member of a
@@ -758,8 +761,8 @@ active member.
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 158
-of 178 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 159
+of 179 tests.
 
 ### Divergences
 

@@ -423,13 +423,14 @@ implicit and user-declared destructors.
 
 :::{rule} DTOR-8
 :kind: reject
-:tests: classes/constructors/dtor-address.cpp classes/constructors/dtor-call-wrong-type.cpp classes/constructors/dtor-without-call.cpp classes/constructors/pseudo-dtor-wrong-type.cpp classes/constructors/dtor-call-decltype-reference.cpp
+:tests: classes/constructors/dtor-address.cpp classes/constructors/dtor-call-wrong-type.cpp classes/constructors/dtor-without-call.cpp classes/constructors/pseudo-dtor-wrong-type.cpp classes/constructors/dtor-call-decltype-reference.cpp classes/constructors/dtor-call-qualified-base.cpp
 
 A program must call a destructor with `()` and cannot take the address
 of a destructor. In an explicit destructor call, the name after `~` must
 denote the type of the object, also for a {term}`scalar type`. A
 `decltype` that gives a reference type, such as `decltype(*p)`, does
-not denote it.
+not denote it. A qualified name of a base class, as in
+`d.Base::~Base()`, names the destructor of that base.
 :::
 
 :::{rule} CTOR-18
@@ -675,8 +676,8 @@ Span g{{1}};   // Span(int): {1} gives an int directly (ICS-15). The
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 184
-of 205 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 185
+of 206 tests.
 
 ### Divergences
 

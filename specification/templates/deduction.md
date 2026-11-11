@@ -454,13 +454,17 @@ the pair gives no value, and the set resolves after substitution
 
 :::{rule} DED-20
 :kind: required
-:tests: templates/deduction/pack-trailing.cpp templates/deduction/pack-not-last.cpp templates/deduction/pack-not-last-call.cpp templates/deduction/pack-not-last-other-position.cpp templates/deduction/pack-not-last-explicit-then-deduced.cpp
+:tests: templates/deduction/pack-trailing.cpp templates/deduction/pack-not-last.cpp templates/deduction/pack-not-last-call.cpp templates/deduction/pack-not-last-other-position.cpp templates/deduction/pack-not-last-explicit-then-deduced.cpp templates/packs/member-template-enclosing-pack-before-deduced.cpp templates/packs/member-template-enclosing-pack-after-deduced.cpp
 
 A {term}`function parameter pack` at the end of the parameters takes the
 remaining arguments. Each of them makes a pair with the pattern of the
 pack, as for one parameter. A pack before the end is a non-deduced
 position. Such a pack is empty unless explicit arguments give it
-elements, even when a later parameter type names the same pack.
+elements, even when a later parameter type names the same pack. The
+rule covers only a pack of the template that the call deduces. A pack
+of a member template whose pattern names only a pack of the enclosing
+class is expanded when the class is instantiated, and each of its
+elements is an ordinary parameter ({question}`Q-0429`).
 :::
 
 :::{rule} DED-37
@@ -921,6 +925,10 @@ maintainer (`documentation/decisions/pending.md`).
   comes from its body, when a plain function matches the target. It
   does, and an error in the body makes the program not valid, as on
   Clang. GCC and EDG accept and pick the plain function.
+- {question}`Q-0429` (DED-20; open): whether a function parameter pack
+  of a member template that expands only the enclosing class's pack
+  takes part in deduction as a pack. It does not, and each element is
+  an ordinary parameter, so DED-20 does not apply. No family differs.
 
 ### Split tests
 

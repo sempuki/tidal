@@ -3,7 +3,7 @@
 **Status:** provisional
 **Affects:** UNI-9, UNI-P3, `tests/classes/unions/anonymous-union-unnamed-struct-member.cpp`, `tests/classes/unions/anonymous-union-nested-anonymous-union.cpp`
 **Source:** the round 10 programmer report (`reports/clean-room/roadmap-10/programmer.md`, sections 1.5 and 6), probe `anonymous_struct_member_in_anonymous_union.cpp`.
-**Waits for:** a review (doubt)
+**Waits for:** a review (doubt); a use of UNI-P3
 
 ## Context
 
@@ -52,6 +52,8 @@ Kept open on 2026-11-10 under decision 0054 (item RV6). The review supports the 
 Principle text on 2026-11-10 (decision 0061, item RV6): UNI-P3 says that an anonymous union declares no type, so a member whose declaration defines an unnamed class is not valid. UNI-P3 now rules out option 2. The principle changed in this phase, so it gives no answer until a reader or a review uses it (decision 0055).
 
 Kept open on 2026-11-11 under decision 0054 (item RV7). The review uses UNI-P3 on the question and supports the answer, with a doubt on the reason that UNI-P3 gives. The review reads the anonymous union itself as a type with no name, so "declares no type" can mislead a reader. Only GCC differs.
+
+Principle text on 2026-11-11 (decision 0062, item RV7): UNI-P3 says that the anonymous union is itself a type with no name, that no declaration inside it can introduce another type, and that it can hold static assertions. UNI-P3 still rules out option 2. The principle changed in this phase, so it gives no answer until a reader or a review uses it (decision 0055).
 
 ## Opinions
 

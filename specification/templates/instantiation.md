@@ -33,7 +33,7 @@ definition. A use needs the definition in these cases:
 
 | Entity | Instantiated by | Not instantiated by | Rule |
 |---|---|---|---|
-| class | an object, `sizeof`, a member access, `delete`, a conversion to a base, a function definition or call with the class by value | a pointer or reference type, an alias, a {term}`template argument`, a function declaration, `decltype` of a call that returns the class | INST-1, INST-2 |
+| class | an object, `sizeof`, a member access, `delete`, a conversion to a base, a function definition or call with the class by value | a pointer or reference type, an alias, a {term}`template argument`, a function declaration, `decltype` whose whole operand is a call that returns the class | INST-1, INST-2 |
 | function | a call, taking the address, `decltype` of a call when the return type is deduced, a braced initializer that names a `constexpr` function | `decltype`, `sizeof`, or `noexcept` of a call otherwise | INST-7 |
 | `static` data member, {term}`variable template` | a read or other use of the value | `decltype` | INST-8 |
 | default argument | a call that leaves out the argument | a call that gives the argument, an explicit instantiation | INST-9 |
@@ -191,7 +191,7 @@ definition.
 
 :::{rule} INST-1
 :kind: required
-:tests: templates/instantiation/class-object.cpp templates/instantiation/class-sizeof.cpp templates/instantiation/class-member-access.cpp templates/instantiation/class-delete.cpp templates/instantiation/class-base-conversion.cpp templates/instantiation/class-function-definition-parameter.cpp templates/instantiation/class-function-definition-return.cpp templates/instantiation/class-call-return.cpp templates/instantiation/class-deduction-from-derived.cpp templates/instantiation/class-deduction-from-derived-error.cpp templates/instantiation/class-qualified-name.cpp templates/instantiation/class-call-passes-by-value.cpp
+:tests: templates/instantiation/class-object.cpp templates/instantiation/class-sizeof.cpp templates/instantiation/class-member-access.cpp templates/instantiation/class-delete.cpp templates/instantiation/class-base-conversion.cpp templates/instantiation/class-function-definition-parameter.cpp templates/instantiation/class-function-definition-return.cpp templates/instantiation/class-call-return.cpp templates/instantiation/class-deduction-from-derived.cpp templates/instantiation/class-deduction-from-derived-error.cpp templates/instantiation/class-qualified-name.cpp templates/instantiation/class-call-passes-by-value.cpp templates/instantiation/class-decltype-call-argument-instantiated.cpp templates/instantiation/class-decltype-member-access-instantiated.cpp
 
 A specialization of a {term}`class template` is instantiated when a use needs
 a complete class, or when the definition can change the meaning of the
@@ -203,7 +203,8 @@ use. These uses instantiate the class:
 - a conversion of a pointer or reference to a base class,
 - the definition of a function whose parameter or return type is the
   class,
-- a call to a function that returns the class, outside `decltype`,
+- a call to a function that returns the class, unless the call is the
+  whole operand of `decltype` (INST-2),
 - a call that passes the class by value,
 - a {term}`deduction` that searches the bases of the class ({rule}`DED-15`),
 - a qualified name that names a member of the class, such as
@@ -212,12 +213,15 @@ use. These uses instantiate the class:
 
 :::{rule} INST-2
 :kind: required
-:tests: templates/instantiation/class-pointer-only.cpp templates/instantiation/class-defined-after-pointer.cpp classes/virtual/override-dependent-base-pointer.cpp templates/instantiation/class-decltype-of-call-not-instantiated.cpp
+:tests: templates/instantiation/class-pointer-only.cpp templates/instantiation/class-defined-after-pointer.cpp classes/virtual/override-dependent-base-pointer.cpp templates/instantiation/class-decltype-of-call-not-instantiated.cpp templates/instantiation/class-decltype-parenthesized-call-not-instantiated.cpp
 
 A pointer or reference type, an alias, a template argument, and a
 function declaration can name a specialization of a class template
-without its instantiation. A call inside `decltype` whose result is the
-class does not instantiate the class either.
+without its instantiation. A call whose result is the class does not
+instantiate the class when the call is the whole operand of `decltype`,
+with or without parentheses. A call nested deeper, such as an argument
+of another call or the object of a member access, instantiates the
+class (INST-1).
 :::
 
 :::{rule} INST-4
@@ -252,7 +256,7 @@ enumeration type is made with the class, if the member is neither
 
 :::{rule} INST-6
 :kind: reject
-:tests: templates/dependent-names/dependent-error-at-instantiation.cpp templates/dependent-names/value-dependent-bound-fails.cpp templates/instantiation/class-base-conversion.cpp templates/instantiation/class-delete.cpp templates/instantiation/class-member-access.cpp templates/instantiation/class-member-declaration-fails.cpp templates/instantiation/class-object.cpp templates/instantiation/class-sizeof.cpp templates/instantiation/class-unscoped-enumeration.cpp templates/instantiation/default-argument-used.cpp templates/instantiation/default-member-initializer-used.cpp templates/instantiation/explicit-class-members.cpp templates/instantiation/explicit-declaration-inline-still-made.cpp templates/instantiation/explicit-member-class.cpp templates/instantiation/function-address.cpp templates/instantiation/function-called.cpp templates/instantiation/function-deduced-return.cpp templates/instantiation/local-class-member.cpp templates/instantiation/member-function-called.cpp templates/instantiation/static-member-used.cpp templates/instantiation/variable-template-used.cpp templates/instantiation/class-static-member-function-type.cpp templates/instantiation/member-partial-specializations-collide.cpp templates/instantiation/class-function-definition-parameter.cpp templates/instantiation/class-function-definition-return.cpp templates/instantiation/class-call-return.cpp templates/instantiation/function-unevaluated-braced.cpp templates/instantiation/function-unevaluated-braced-untaken.cpp templates/instantiation/default-argument-explicit-specialization.cpp templates/instantiation/default-member-initializer-aggregate-left-out.cpp templates/instantiation/local-class-default-argument.cpp templates/instantiation/local-class-member-initializer.cpp templates/instantiation/local-class-exception-specification.cpp templates/instantiation/local-enumeration.cpp templates/instantiation/class-deduction-from-derived-error.cpp templates/instantiation/member-template-pointer-to-member-non-class.cpp templates/instantiation/class-data-member-function-type.cpp templates/instantiation/class-qualified-name.cpp templates/instantiation/virtual-called-through-pointer.cpp templates/instantiation/class-call-passes-by-value.cpp templates/instantiation/friend-body-made-at-call.cpp templates/instantiation/class-static-const-member-initializer-made.cpp
+:tests: templates/dependent-names/dependent-error-at-instantiation.cpp templates/dependent-names/value-dependent-bound-fails.cpp templates/instantiation/class-base-conversion.cpp templates/instantiation/class-delete.cpp templates/instantiation/class-member-access.cpp templates/instantiation/class-member-declaration-fails.cpp templates/instantiation/class-object.cpp templates/instantiation/class-sizeof.cpp templates/instantiation/class-unscoped-enumeration.cpp templates/instantiation/default-argument-used.cpp templates/instantiation/default-member-initializer-used.cpp templates/instantiation/explicit-class-members.cpp templates/instantiation/explicit-declaration-inline-still-made.cpp templates/instantiation/explicit-member-class.cpp templates/instantiation/function-address.cpp templates/instantiation/function-called.cpp templates/instantiation/function-deduced-return.cpp templates/instantiation/local-class-member.cpp templates/instantiation/member-function-called.cpp templates/instantiation/static-member-used.cpp templates/instantiation/variable-template-used.cpp templates/instantiation/class-static-member-function-type.cpp templates/instantiation/member-partial-specializations-collide.cpp templates/instantiation/class-function-definition-parameter.cpp templates/instantiation/class-function-definition-return.cpp templates/instantiation/class-call-return.cpp templates/instantiation/function-unevaluated-braced.cpp templates/instantiation/function-unevaluated-braced-untaken.cpp templates/instantiation/default-argument-explicit-specialization.cpp templates/instantiation/default-member-initializer-aggregate-left-out.cpp templates/instantiation/local-class-default-argument.cpp templates/instantiation/local-class-member-initializer.cpp templates/instantiation/local-class-exception-specification.cpp templates/instantiation/local-enumeration.cpp templates/instantiation/class-deduction-from-derived-error.cpp templates/instantiation/member-template-pointer-to-member-non-class.cpp templates/instantiation/class-data-member-function-type.cpp templates/instantiation/class-qualified-name.cpp templates/instantiation/virtual-called-through-pointer.cpp templates/instantiation/class-call-passes-by-value.cpp templates/instantiation/friend-body-made-at-call.cpp templates/instantiation/class-static-const-member-initializer-made.cpp templates/instantiation/class-decltype-call-argument-instantiated.cpp templates/instantiation/class-decltype-member-access-instantiated.cpp
 
 Each declaration and definition that an instantiation makes must be
 valid for the arguments of the specialization. These include:
@@ -735,7 +739,9 @@ The same class with the declaration after the point:
 namespace shop { struct Item {}; }
 template <class T> struct Price { static constexpr int value = cost(T{}); };
 
-int p = Price<shop::Item>::value;        // rejected: the first point of value is before cost (INST-32)
+// Not valid, no diagnostic required (INST-32): the first point of value
+// is before cost. Every compiler rejects the program.
+int p = Price<shop::Item>::value;
 namespace shop { constexpr int cost(Item) { return 3; } }
 ```
 
@@ -768,8 +774,8 @@ extern template constexpr int size_of<long>;  // rejected: constexpr (INST-25)
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 129
-of 158 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 132
+of 161 tests.
 
 ### Divergences
 

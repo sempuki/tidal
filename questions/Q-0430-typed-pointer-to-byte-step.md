@@ -1,7 +1,7 @@
 # Q-0430: Where is `p + 1` when `p` is a `T*` that points to a byte, and can placement `new` use that position?
 
 **Status:** provisional
-**Affects:** ADD-14, STG-29, STG-17, `tests/foundations/storage/byte-array-typed-step-placement.cpp`, `tests/foundations/storage/byte-array-typed-step-distance.cpp`, `tests/expressions/additive/typed-pointer-to-byte-two-past.cpp`
+**Affects:** ADD-14, STG-28, STG-29, STG-P2, STG-17, `tests/foundations/storage/byte-array-typed-step-placement.cpp`, `tests/foundations/storage/byte-array-typed-step-distance.cpp`, `tests/expressions/additive/typed-pointer-to-byte-two-past.cpp`, `tests/foundations/storage/allocated-storage-typed-step-after-byte-offset.cpp`
 **Source:** the round 11 programmer report (`reports/clean-room/roadmap-11/programmer.md`, sections 1.5 and 6), reductions `placement_at_typed_step_into_byte_array.cpp` and `typed_step_over_byte_array_distance.cpp`, probe `typed_step_two_past_byte.cpp`.
 **Waits for:** the maintainer (pending.md row 4)
 
@@ -60,6 +60,8 @@ undefined by ADD-14.
 Rule text on 2026-11-11 (decision 0062, item F4): ADD-14 says that a move counts in the size of the pointer's type, so `p + 1` is `sizeof(T)` bytes after a `T*` that points to a byte. STG-29 and STG-P2 say that placement `new` can use that position, and STG-28 says that a `T*` at a multiple of `sizeof(T)` bytes into allocated storage points to that element. The question now waits for a first review.
 
 Kept open on 2026-11-11 under decision 0054. Both reviews read against the answer, and every compiler that runs the programs gives the matrix's answer, so the answer stays and the question joins `pending.md` row 4 (item RV7). EDG runs no program. The two reviews differ on the case of STG-28 in allocated storage: part A reads it against, and part B says that the objects that the allocation creates can include an array of the pointer's type.
+
+Evidence on 2026-11-11 (decision 0062, item RV7): the Notes of the storage and additive pages record both reviews and the path that the reviews read as defined. STG-P2 cites the question at its sentence on the typed step. The rules keep the compilers' answer.
 
 ## Opinions
 

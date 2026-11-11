@@ -1,0 +1,168 @@
+| | program |
+|---|---|
+| A-1 d.Base::~Base() on a Derived | accept |
+| A-1 p->Base::~Base() on a Derived* | accept |
+| A-1 d.~Base() on a Derived, no qualifier | accept: gcc-14, gcc-16-o2, gcc-host, gcc-16; reject: clang-22, clang-18, edg-7.0, clang-host, edg-7.0-ilp32, clang-22-o2 |
+| A-1 control: d.~Other() for an unrelated class | reject |
+| A-4 trivial move assignment of a union, read the new member | accept |
+| A-4 trivial move construction of a union, read the member | accept |
+| A-4 trivial move assignment, read the old member | reject |
+| A-5 const B& from a D xvalue binds to the base subobject | accept |
+| A-5 const int* const& from an int* xvalue | accept: gcc-host, clang-host, clang-22, clang-18, gcc-16-o2, gcc-14, gcc-16, clang-22-o2; reject: edg-7.0, edg-7.0-ilp32 |
+| A-5 const A& from a class rvalue through operator A&& | accept |
+| A-5 A&& from a class rvalue through operator A&& | accept |
+| A-7 goto into a while body past a condition declaration | reject |
+| A-7 goto into a for body past a condition declaration | reject |
+| A-7 goto into a range-based for body | reject |
+| A-7 goto into a range-based for body, reference variable | reject |
+| A-7 control: goto into a while body with no declaration | accept |
+| A-7 case label in a range-based for body | reject |
+| A-7 case label in a while body past a condition declaration | reject |
+| B-6 decltype(make()), the whole operand | accept |
+| B-6 decltype((make())), parenthesized | accept |
+| B-6 decltype(take(make())), make() passed by value | reject |
+| B-6 decltype(make().size), a member access | reject |
+| B-6 decltype(0, make()), make() on the right of a comma | reject |
+| B-6 decltype(make(), 0), make() on the left of a comma | reject |
+| B-6 decltype(take(make())), take by reference | reject |
+| B-7 Lib<T>::f(t), Lib<int> specialized after the template | accept |
+| B-7 T::f(t), with T a class | accept |
+| B-7 control: lib::f(t), a later overload in lib | accept |
+A-1 d.~Base() on a Derived, no qualifier / program / clang-18: /tidal/build/probes/rv7-points/0002-a-1-d-base-on-a-derived-no-qualifier--program.cpp:2:27: error: destructor type 'Base' in object destruction expression does not match the type 'Derived' of the object being destroyed
+A-1 d.~Base() on a Derived, no qualifier / program / clang-22: /tidal/build/probes/rv7-points/0002-a-1-d-base-on-a-derived-no-qualifier--program.cpp:2:27: error: destructor type 'Base' in object destruction expression does not match the type 'Derived' of the object being destroyed
+A-1 d.~Base() on a Derived, no qualifier / program / clang-22-o2: /tidal/build/probes/rv7-points/0002-a-1-d-base-on-a-derived-no-qualifier--program.cpp:2:27: error: destructor type 'Base' in object destruction expression does not match the type 'Derived' of the object being destroyed
+A-1 d.~Base() on a Derived, no qualifier / program / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/rv7-points/0002-a-1-d-base-on-a-derived-no-qualifier--program.cpp:2:27: error: destructor type 'Base' in object destruction expression does not match the type 'Derived' of the object being destroyed
+A-1 d.~Base() on a Derived, no qualifier / program / edg-7.0: ram.cpp", line 2: error: invalid destructor name for type "Derived"
+A-1 d.~Base() on a Derived, no qualifier / program / edg-7.0-ilp32: ram.cpp", line 2: error: invalid destructor name for type "Derived"
+A-1 control: d.~Other() for an unrelated class / program / clang-18: /tidal/build/probes/rv7-points/0003-a-1-control-d-other-for-an-unrelated-class--program.cpp:2:27: error: destructor type 'Other' in object destruction expression does not match the type 'Derived' of the object being destroyed
+A-1 control: d.~Other() for an unrelated class / program / clang-22: /tidal/build/probes/rv7-points/0003-a-1-control-d-other-for-an-unrelated-class--program.cpp:2:27: error: destructor type 'Other' in object destruction expression does not match the type 'Derived' of the object being destroyed
+A-1 control: d.~Other() for an unrelated class / program / clang-22-o2: /tidal/build/probes/rv7-points/0003-a-1-control-d-other-for-an-unrelated-class--program.cpp:2:27: error: destructor type 'Other' in object destruction expression does not match the type 'Derived' of the object being destroyed
+A-1 control: d.~Other() for an unrelated class / program / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/rv7-points/0003-a-1-control-d-other-for-an-unrelated-class--program.cpp:2:27: error: destructor type 'Other' in object destruction expression does not match the type 'Derived' of the object being destroyed
+A-1 control: d.~Other() for an unrelated class / program / edg-7.0: --program.cpp", line 2: error: invalid destructor name for type
+A-1 control: d.~Other() for an unrelated class / program / edg-7.0-ilp32: --program.cpp", line 2: error: invalid destructor name for type
+A-1 control: d.~Other() for an unrelated class / program / gcc-14: /tidal/build/probes/rv7-points/0003-a-1-control-d-other-for-an-unrelated-class--program.cpp:2:27: error: the type being destroyed is 'Derived', but the destructor refers to 'Other'
+A-1 control: d.~Other() for an unrelated class / program / gcc-16: /tidal/build/probes/rv7-points/0003-a-1-control-d-other-for-an-unrelated-class--program.cpp:2:27: error: the type being destroyed is 'Derived', but the destructor refers to 'Other'
+A-1 control: d.~Other() for an unrelated class / program / gcc-16-o2: /tidal/build/probes/rv7-points/0003-a-1-control-d-other-for-an-unrelated-class--program.cpp:2:27: error: the type being destroyed is 'Derived', but the destructor refers to 'Other'
+A-1 control: d.~Other() for an unrelated class / program / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/rv7-points/0003-a-1-control-d-other-for-an-unrelated-class--program.cpp:2:27: error: the type being destroyed is ‘Derived’, but the destructor refers to ‘Other’
+A-4 trivial move assignment, read the old member / program / clang-18: /tidal/build/probes/rv7-points/0006-a-4-trivial-move-assignment-read-the-old-member--program.cpp:3:15: error: static assertion expression is not an integral constant expression
+A-4 trivial move assignment, read the old member / program / clang-22: /tidal/build/probes/rv7-points/0006-a-4-trivial-move-assignment-read-the-old-member--program.cpp:3:15: error: static assertion expression is not an integral constant expression
+A-4 trivial move assignment, read the old member / program / clang-22-o2: /tidal/build/probes/rv7-points/0006-a-4-trivial-move-assignment-read-the-old-member--program.cpp:3:15: error: static assertion expression is not an integral constant expression
+A-4 trivial move assignment, read the old member / program / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/rv7-points/0006-a-4-trivial-move-assignment-read-the-old-member--program.cpp:3:15: error: static assertion expression is not an integral constant expression
+A-4 trivial move assignment, read the old member / program / edg-7.0: ember--program.cpp", line 3: error: expression must have a constant
+A-4 trivial move assignment, read the old member / program / edg-7.0-ilp32: ember--program.cpp", line 3: error: expression must have a constant
+A-4 trivial move assignment, read the old member / program / gcc-14: /tidal/build/probes/rv7-points/0006-a-4-trivial-move-assignment-read-the-old-member--program.cpp:3:23: error: non-constant condition for static assertion
+A-4 trivial move assignment, read the old member / program / gcc-16: /tidal/build/probes/rv7-points/0006-a-4-trivial-move-assignment-read-the-old-member--program.cpp:3:23: error: non-constant condition for static assertion
+A-4 trivial move assignment, read the old member / program / gcc-16-o2: /tidal/build/probes/rv7-points/0006-a-4-trivial-move-assignment-read-the-old-member--program.cpp:3:23: error: non-constant condition for static assertion
+A-4 trivial move assignment, read the old member / program / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/rv7-points/0006-a-4-trivial-move-assignment-read-the-old-member--program.cpp:3:23: error: non-constant condition for static assertion
+A-5 const int* const& from an int* xvalue / program / edg-7.0: ogram.cpp", line 2: error: expression must have a constant value
+A-5 const int* const& from an int* xvalue / program / edg-7.0-ilp32: ogram.cpp", line 2: error: expression must have a constant value
+A-7 goto into a while body past a condition declaration / program / clang-18: /tidal/build/probes/rv7-points/0011-a-7-goto-into-a-while-body-past-a-condition-declaration--program.cpp:2:13: error: cannot jump from this goto statement to its label
+A-7 goto into a while body past a condition declaration / program / clang-22: /tidal/build/probes/rv7-points/0011-a-7-goto-into-a-while-body-past-a-condition-declaration--program.cpp:2:13: error: cannot jump from this goto statement to its label
+A-7 goto into a while body past a condition declaration / program / clang-22-o2: /tidal/build/probes/rv7-points/0011-a-7-goto-into-a-while-body-past-a-condition-declaration--program.cpp:2:13: error: cannot jump from this goto statement to its label
+A-7 goto into a while body past a condition declaration / program / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/rv7-points/0011-a-7-goto-into-a-while-body-past-a-condition-declaration--program.cpp:2:13: error: cannot jump from this goto statement to its label
+A-7 goto into a while body past a condition declaration / program / edg-7.0: n-declaration--program.cpp", line 2: error: transfer of control
+A-7 goto into a while body past a condition declaration / program / edg-7.0-ilp32: n-declaration--program.cpp", line 2: error: transfer of control
+A-7 goto into a while body past a condition declaration / program / gcc-14: /tidal/build/probes/rv7-points/0011-a-7-goto-into-a-while-body-past-a-condition-declaration--program.cpp:2:51: error: jump to label 'inside'
+A-7 goto into a while body past a condition declaration / program / gcc-16: /tidal/build/probes/rv7-points/0011-a-7-goto-into-a-while-body-past-a-condition-declaration--program.cpp:2:51: error: jump to label 'inside'
+A-7 goto into a while body past a condition declaration / program / gcc-16-o2: /tidal/build/probes/rv7-points/0011-a-7-goto-into-a-while-body-past-a-condition-declaration--program.cpp:2:51: error: jump to label 'inside'
+A-7 goto into a while body past a condition declaration / program / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/rv7-points/0011-a-7-goto-into-a-while-body-past-a-condition-declaration--program.cpp:2:51: error: jump to label ‘inside’
+A-7 goto into a for body past a condition declaration / program / clang-18: /tidal/build/probes/rv7-points/0012-a-7-goto-into-a-for-body-past-a-condition-declaration--program.cpp:2:13: error: cannot jump from this goto statement to its label
+A-7 goto into a for body past a condition declaration / program / clang-22: /tidal/build/probes/rv7-points/0012-a-7-goto-into-a-for-body-past-a-condition-declaration--program.cpp:2:13: error: cannot jump from this goto statement to its label
+A-7 goto into a for body past a condition declaration / program / clang-22-o2: /tidal/build/probes/rv7-points/0012-a-7-goto-into-a-for-body-past-a-condition-declaration--program.cpp:2:13: error: cannot jump from this goto statement to its label
+A-7 goto into a for body past a condition declaration / program / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/rv7-points/0012-a-7-goto-into-a-for-body-past-a-condition-declaration--program.cpp:2:13: error: cannot jump from this goto statement to its label
+A-7 goto into a for body past a condition declaration / program / edg-7.0: declaration--program.cpp", line 2: error: transfer of control
+A-7 goto into a for body past a condition declaration / program / edg-7.0-ilp32: declaration--program.cpp", line 2: error: transfer of control
+A-7 goto into a for body past a condition declaration / program / gcc-14: /tidal/build/probes/rv7-points/0012-a-7-goto-into-a-for-body-past-a-condition-declaration--program.cpp:2:53: error: jump to label 'inside'
+A-7 goto into a for body past a condition declaration / program / gcc-16: /tidal/build/probes/rv7-points/0012-a-7-goto-into-a-for-body-past-a-condition-declaration--program.cpp:2:53: error: jump to label 'inside'
+A-7 goto into a for body past a condition declaration / program / gcc-16-o2: /tidal/build/probes/rv7-points/0012-a-7-goto-into-a-for-body-past-a-condition-declaration--program.cpp:2:53: error: jump to label 'inside'
+A-7 goto into a for body past a condition declaration / program / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/rv7-points/0012-a-7-goto-into-a-for-body-past-a-condition-declaration--program.cpp:2:53: error: jump to label ‘inside’
+A-7 goto into a range-based for body / program / clang-18: /tidal/build/probes/rv7-points/0013-a-7-goto-into-a-range-based-for-body--program.cpp:2:13: error: cannot jump from this goto statement to its label
+A-7 goto into a range-based for body / program / clang-22: /tidal/build/probes/rv7-points/0013-a-7-goto-into-a-range-based-for-body--program.cpp:2:13: error: cannot jump from this goto statement to its label
+A-7 goto into a range-based for body / program / clang-22-o2: /tidal/build/probes/rv7-points/0013-a-7-goto-into-a-range-based-for-body--program.cpp:2:13: error: cannot jump from this goto statement to its label
+A-7 goto into a range-based for body / program / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/rv7-points/0013-a-7-goto-into-a-range-based-for-body--program.cpp:2:13: error: cannot jump from this goto statement to its label
+A-7 goto into a range-based for body / program / edg-7.0: ram.cpp", line 2: error: transfer of control bypasses initialization
+A-7 goto into a range-based for body / program / edg-7.0-ilp32: ram.cpp", line 2: error: transfer of control bypasses initialization
+A-7 goto into a range-based for body / program / gcc-14: /tidal/build/probes/rv7-points/0013-a-7-goto-into-a-range-based-for-body--program.cpp:2:48: error: jump to label 'inside'
+A-7 goto into a range-based for body / program / gcc-16: /tidal/build/probes/rv7-points/0013-a-7-goto-into-a-range-based-for-body--program.cpp:2:48: error: jump to label 'inside'
+A-7 goto into a range-based for body / program / gcc-16-o2: /tidal/build/probes/rv7-points/0013-a-7-goto-into-a-range-based-for-body--program.cpp:2:48: error: jump to label 'inside'
+A-7 goto into a range-based for body / program / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/rv7-points/0013-a-7-goto-into-a-range-based-for-body--program.cpp:2:48: error: jump to label ‘inside’
+A-7 goto into a range-based for body, reference variable / program / clang-18: /tidal/build/probes/rv7-points/0014-a-7-goto-into-a-range-based-for-body-reference-variable--program.cpp:2:13: error: cannot jump from this goto statement to its label
+A-7 goto into a range-based for body, reference variable / program / clang-22: /tidal/build/probes/rv7-points/0014-a-7-goto-into-a-range-based-for-body-reference-variable--program.cpp:2:13: error: cannot jump from this goto statement to its label
+A-7 goto into a range-based for body, reference variable / program / clang-22-o2: /tidal/build/probes/rv7-points/0014-a-7-goto-into-a-range-based-for-body-reference-variable--program.cpp:2:13: error: cannot jump from this goto statement to its label
+A-7 goto into a range-based for body, reference variable / program / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/rv7-points/0014-a-7-goto-into-a-range-based-for-body-reference-variable--program.cpp:2:13: error: cannot jump from this goto statement to its label
+A-7 goto into a range-based for body, reference variable / program / edg-7.0: ence-variable--program.cpp", line 2: error: transfer of control
+A-7 goto into a range-based for body, reference variable / program / edg-7.0-ilp32: ence-variable--program.cpp", line 2: error: transfer of control
+A-7 goto into a range-based for body, reference variable / program / gcc-14: /tidal/build/probes/rv7-points/0014-a-7-goto-into-a-range-based-for-body-reference-variable--program.cpp:2:49: error: jump to label 'inside'
+A-7 goto into a range-based for body, reference variable / program / gcc-16: /tidal/build/probes/rv7-points/0014-a-7-goto-into-a-range-based-for-body-reference-variable--program.cpp:2:49: error: jump to label 'inside'
+A-7 goto into a range-based for body, reference variable / program / gcc-16-o2: /tidal/build/probes/rv7-points/0014-a-7-goto-into-a-range-based-for-body-reference-variable--program.cpp:2:49: error: jump to label 'inside'
+A-7 goto into a range-based for body, reference variable / program / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/rv7-points/0014-a-7-goto-into-a-range-based-for-body-reference-variable--program.cpp:2:49: error: jump to label ‘inside’
+A-7 case label in a range-based for body / program / clang-18: /tidal/build/probes/rv7-points/0016-a-7-case-label-in-a-range-based-for-body--program.cpp:2:61: error: cannot jump from switch statement to this case label
+A-7 case label in a range-based for body / program / clang-22: /tidal/build/probes/rv7-points/0016-a-7-case-label-in-a-range-based-for-body--program.cpp:2:61: error: cannot jump from switch statement to this case label
+A-7 case label in a range-based for body / program / clang-22-o2: /tidal/build/probes/rv7-points/0016-a-7-case-label-in-a-range-based-for-body--program.cpp:2:61: error: cannot jump from switch statement to this case label
+A-7 case label in a range-based for body / program / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/rv7-points/0016-a-7-case-label-in-a-range-based-for-body--program.cpp:2:61: error: cannot jump from switch statement to this case label
+A-7 case label in a range-based for body / program / edg-7.0: program.cpp", line 2: error: transfer of control bypasses
+A-7 case label in a range-based for body / program / edg-7.0-ilp32: program.cpp", line 2: error: transfer of control bypasses
+A-7 case label in a range-based for body / program / gcc-14: /tidal/build/probes/rv7-points/0016-a-7-case-label-in-a-range-based-for-body--program.cpp:2:66: error: jump to case label
+A-7 case label in a range-based for body / program / gcc-16: /tidal/build/probes/rv7-points/0016-a-7-case-label-in-a-range-based-for-body--program.cpp:2:66: error: jump to case label
+A-7 case label in a range-based for body / program / gcc-16-o2: /tidal/build/probes/rv7-points/0016-a-7-case-label-in-a-range-based-for-body--program.cpp:2:66: error: jump to case label
+A-7 case label in a range-based for body / program / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/rv7-points/0016-a-7-case-label-in-a-range-based-for-body--program.cpp:2:66: error: jump to case label
+A-7 case label in a while body past a condition declaration / program / clang-18: /tidal/build/probes/rv7-points/0017-a-7-case-label-in-a-while-body-past-a-condition-declaration--program.cpp:2:64: error: cannot jump from switch statement to this case label
+A-7 case label in a while body past a condition declaration / program / clang-22: /tidal/build/probes/rv7-points/0017-a-7-case-label-in-a-while-body-past-a-condition-declaration--program.cpp:2:64: error: cannot jump from switch statement to this case label
+A-7 case label in a while body past a condition declaration / program / clang-22-o2: /tidal/build/probes/rv7-points/0017-a-7-case-label-in-a-while-body-past-a-condition-declaration--program.cpp:2:64: error: cannot jump from switch statement to this case label
+A-7 case label in a while body past a condition declaration / program / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/rv7-points/0017-a-7-case-label-in-a-while-body-past-a-condition-declaration--program.cpp:2:64: error: cannot jump from switch statement to this case label
+A-7 case label in a while body past a condition declaration / program / edg-7.0: ition-declaration--program.cpp", line 2: error: transfer of control
+A-7 case label in a while body past a condition declaration / program / edg-7.0-ilp32: ition-declaration--program.cpp", line 2: error: transfer of control
+A-7 case label in a while body past a condition declaration / program / gcc-14: /tidal/build/probes/rv7-points/0017-a-7-case-label-in-a-while-body-past-a-condition-declaration--program.cpp:2:69: error: jump to case label
+A-7 case label in a while body past a condition declaration / program / gcc-16: /tidal/build/probes/rv7-points/0017-a-7-case-label-in-a-while-body-past-a-condition-declaration--program.cpp:2:69: error: jump to case label
+A-7 case label in a while body past a condition declaration / program / gcc-16-o2: /tidal/build/probes/rv7-points/0017-a-7-case-label-in-a-while-body-past-a-condition-declaration--program.cpp:2:69: error: jump to case label
+A-7 case label in a while body past a condition declaration / program / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/rv7-points/0017-a-7-case-label-in-a-while-body-past-a-condition-declaration--program.cpp:2:69: error: jump to case label
+B-6 decltype(take(make())), make() passed by value / program / clang-18: /tidal/build/probes/rv7-points/0020-b-6-decltype-take-make-make-passed-by-value--program.cpp:1:50: error: static assertion failed due to requirement 'sizeof(int) == 0'
+B-6 decltype(take(make())), make() passed by value / program / clang-22: /tidal/build/probes/rv7-points/0020-b-6-decltype-take-make-make-passed-by-value--program.cpp:1:50: error: static assertion failed due to requirement 'sizeof(int) == 0'
+B-6 decltype(take(make())), make() passed by value / program / clang-22-o2: /tidal/build/probes/rv7-points/0020-b-6-decltype-take-make-make-passed-by-value--program.cpp:1:50: error: static assertion failed due to requirement 'sizeof(int) == 0'
+B-6 decltype(take(make())), make() passed by value / program / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/rv7-points/0020-b-6-decltype-take-make-make-passed-by-value--program.cpp:1:50: error: static assertion failed due to requirement 'sizeof(int) == 0'
+B-6 decltype(take(make())), make() passed by value / program / edg-7.0: e--program.cpp", line 1: error: static assertion failed
+B-6 decltype(take(make())), make() passed by value / program / edg-7.0-ilp32: e--program.cpp", line 1: error: static assertion failed
+B-6 decltype(take(make())), make() passed by value / program / gcc-14: /tidal/build/probes/rv7-points/0020-b-6-decltype-take-make-make-passed-by-value--program.cpp:1:60: error: static assertion failed
+B-6 decltype(take(make())), make() passed by value / program / gcc-16: /tidal/build/probes/rv7-points/0020-b-6-decltype-take-make-make-passed-by-value--program.cpp:1:60: error: static assertion failed
+B-6 decltype(take(make())), make() passed by value / program / gcc-16-o2: /tidal/build/probes/rv7-points/0020-b-6-decltype-take-make-make-passed-by-value--program.cpp:1:60: error: static assertion failed
+B-6 decltype(take(make())), make() passed by value / program / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/rv7-points/0020-b-6-decltype-take-make-make-passed-by-value--program.cpp:1:60: error: static assertion failed
+B-6 decltype(make().size), a member access / program / clang-18: /tidal/build/probes/rv7-points/0021-b-6-decltype-make-size-a-member-access--program.cpp:1:50: error: static assertion failed due to requirement 'sizeof(int) == 0'
+B-6 decltype(make().size), a member access / program / clang-22: /tidal/build/probes/rv7-points/0021-b-6-decltype-make-size-a-member-access--program.cpp:1:50: error: static assertion failed due to requirement 'sizeof(int) == 0'
+B-6 decltype(make().size), a member access / program / clang-22-o2: /tidal/build/probes/rv7-points/0021-b-6-decltype-make-size-a-member-access--program.cpp:1:50: error: static assertion failed due to requirement 'sizeof(int) == 0'
+B-6 decltype(make().size), a member access / program / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/rv7-points/0021-b-6-decltype-make-size-a-member-access--program.cpp:1:50: error: static assertion failed due to requirement 'sizeof(int) == 0'
+B-6 decltype(make().size), a member access / program / edg-7.0: ogram.cpp", line 1: error: static assertion failed
+B-6 decltype(make().size), a member access / program / edg-7.0-ilp32: ogram.cpp", line 1: error: static assertion failed
+B-6 decltype(make().size), a member access / program / gcc-14: /tidal/build/probes/rv7-points/0021-b-6-decltype-make-size-a-member-access--program.cpp:1:60: error: static assertion failed
+B-6 decltype(make().size), a member access / program / gcc-16: /tidal/build/probes/rv7-points/0021-b-6-decltype-make-size-a-member-access--program.cpp:1:60: error: static assertion failed
+B-6 decltype(make().size), a member access / program / gcc-16-o2: /tidal/build/probes/rv7-points/0021-b-6-decltype-make-size-a-member-access--program.cpp:1:60: error: static assertion failed
+B-6 decltype(make().size), a member access / program / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/rv7-points/0021-b-6-decltype-make-size-a-member-access--program.cpp:1:60: error: static assertion failed
+B-6 decltype(0, make()), make() on the right of a comma / program / clang-18: /tidal/build/probes/rv7-points/0022-b-6-decltype-0-make-make-on-the-right-of-a-comma--program.cpp:1:50: error: static assertion failed due to requirement 'sizeof(int) == 0'
+B-6 decltype(0, make()), make() on the right of a comma / program / clang-22: /tidal/build/probes/rv7-points/0022-b-6-decltype-0-make-make-on-the-right-of-a-comma--program.cpp:1:50: error: static assertion failed due to requirement 'sizeof(int) == 0'
+B-6 decltype(0, make()), make() on the right of a comma / program / clang-22-o2: /tidal/build/probes/rv7-points/0022-b-6-decltype-0-make-make-on-the-right-of-a-comma--program.cpp:1:50: error: static assertion failed due to requirement 'sizeof(int) == 0'
+B-6 decltype(0, make()), make() on the right of a comma / program / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/rv7-points/0022-b-6-decltype-0-make-make-on-the-right-of-a-comma--program.cpp:1:50: error: static assertion failed due to requirement 'sizeof(int) == 0'
+B-6 decltype(0, make()), make() on the right of a comma / program / edg-7.0: -comma--program.cpp", line 1: error: static assertion failed
+B-6 decltype(0, make()), make() on the right of a comma / program / edg-7.0-ilp32: -comma--program.cpp", line 1: error: static assertion failed
+B-6 decltype(0, make()), make() on the right of a comma / program / gcc-14: /tidal/build/probes/rv7-points/0022-b-6-decltype-0-make-make-on-the-right-of-a-comma--program.cpp:1:60: error: static assertion failed
+B-6 decltype(0, make()), make() on the right of a comma / program / gcc-16: /tidal/build/probes/rv7-points/0022-b-6-decltype-0-make-make-on-the-right-of-a-comma--program.cpp:1:60: error: static assertion failed
+B-6 decltype(0, make()), make() on the right of a comma / program / gcc-16-o2: /tidal/build/probes/rv7-points/0022-b-6-decltype-0-make-make-on-the-right-of-a-comma--program.cpp:1:60: error: static assertion failed
+B-6 decltype(0, make()), make() on the right of a comma / program / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/rv7-points/0022-b-6-decltype-0-make-make-on-the-right-of-a-comma--program.cpp:1:60: error: static assertion failed
+B-6 decltype(make(), 0), make() on the left of a comma / program / clang-18: /tidal/build/probes/rv7-points/0023-b-6-decltype-make-0-make-on-the-left-of-a-comma--program.cpp:1:50: error: static assertion failed due to requirement 'sizeof(int) == 0'
+B-6 decltype(make(), 0), make() on the left of a comma / program / clang-22: /tidal/build/probes/rv7-points/0023-b-6-decltype-make-0-make-on-the-left-of-a-comma--program.cpp:1:50: error: static assertion failed due to requirement 'sizeof(int) == 0'
+B-6 decltype(make(), 0), make() on the left of a comma / program / clang-22-o2: /tidal/build/probes/rv7-points/0023-b-6-decltype-make-0-make-on-the-left-of-a-comma--program.cpp:1:50: error: static assertion failed due to requirement 'sizeof(int) == 0'
+B-6 decltype(make(), 0), make() on the left of a comma / program / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/rv7-points/0023-b-6-decltype-make-0-make-on-the-left-of-a-comma--program.cpp:1:50: error: static assertion failed due to requirement 'sizeof(int) == 0'
+B-6 decltype(make(), 0), make() on the left of a comma / program / edg-7.0: comma--program.cpp", line 1: error: static assertion failed
+B-6 decltype(make(), 0), make() on the left of a comma / program / edg-7.0-ilp32: comma--program.cpp", line 1: error: static assertion failed
+B-6 decltype(make(), 0), make() on the left of a comma / program / gcc-14: /tidal/build/probes/rv7-points/0023-b-6-decltype-make-0-make-on-the-left-of-a-comma--program.cpp:1:60: error: static assertion failed
+B-6 decltype(make(), 0), make() on the left of a comma / program / gcc-16: /tidal/build/probes/rv7-points/0023-b-6-decltype-make-0-make-on-the-left-of-a-comma--program.cpp:1:60: error: static assertion failed
+B-6 decltype(make(), 0), make() on the left of a comma / program / gcc-16-o2: /tidal/build/probes/rv7-points/0023-b-6-decltype-make-0-make-on-the-left-of-a-comma--program.cpp:1:60: error: static assertion failed
+B-6 decltype(make(), 0), make() on the left of a comma / program / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/rv7-points/0023-b-6-decltype-make-0-make-on-the-left-of-a-comma--program.cpp:1:60: error: static assertion failed
+B-6 decltype(take(make())), take by reference / program / clang-18: /tidal/build/probes/rv7-points/0024-b-6-decltype-take-make-take-by-reference--program.cpp:1:50: error: static assertion failed due to requirement 'sizeof(int) == 0'
+B-6 decltype(take(make())), take by reference / program / clang-22: /tidal/build/probes/rv7-points/0024-b-6-decltype-take-make-take-by-reference--program.cpp:1:50: error: static assertion failed due to requirement 'sizeof(int) == 0'
+B-6 decltype(take(make())), take by reference / program / clang-22-o2: /tidal/build/probes/rv7-points/0024-b-6-decltype-take-make-take-by-reference--program.cpp:1:50: error: static assertion failed due to requirement 'sizeof(int) == 0'
+B-6 decltype(take(make())), take by reference / program / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/rv7-points/0024-b-6-decltype-take-make-take-by-reference--program.cpp:1:50: error: static assertion failed due to requirement 'sizeof(int) == 0'
+B-6 decltype(take(make())), take by reference / program / edg-7.0: program.cpp", line 1: error: static assertion failed
+B-6 decltype(take(make())), take by reference / program / edg-7.0-ilp32: program.cpp", line 1: error: static assertion failed
+B-6 decltype(take(make())), take by reference / program / gcc-14: /tidal/build/probes/rv7-points/0024-b-6-decltype-take-make-take-by-reference--program.cpp:1:60: error: static assertion failed
+B-6 decltype(take(make())), take by reference / program / gcc-16: /tidal/build/probes/rv7-points/0024-b-6-decltype-take-make-take-by-reference--program.cpp:1:60: error: static assertion failed
+B-6 decltype(take(make())), take by reference / program / gcc-16-o2: /tidal/build/probes/rv7-points/0024-b-6-decltype-take-make-take-by-reference--program.cpp:1:60: error: static assertion failed
+B-6 decltype(take(make())), take by reference / program / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/rv7-points/0024-b-6-decltype-take-make-take-by-reference--program.cpp:1:60: error: static assertion failed

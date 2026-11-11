@@ -41,6 +41,8 @@ bullet leaves out these operands.
 
 Kept open on 2026-11-11 under decision 0054 (item RV7). The review supports the answer with no doubt, and only EDG differs. DEP-P2 says that a value-dependent operand does not make `sizeof`, `alignof`, or `noexcept` value-dependent, so the model rules out option 2. DEP-P2 changed in phase 14, so it gives no answer until a reader or a review uses it (decision 0055). The review reads DEP-4 and does not use DEP-P2.
 
+Rule text on 2026-11-11 (decision 0062, item RV7): DEP-4 names `typeid` with `sizeof`, `alignof`, and `noexcept`, as the review reads (RV7-B-12). No test checks `typeid`, which stays referenced. DEP-P2 is unchanged.
+
 ## Opinions
 
 ### Gap review, 2026-11-11 (phase 14 text, expressions, overloading, and templates)

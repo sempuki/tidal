@@ -3,7 +3,7 @@
 **Status:** provisional
 **Affects:** DED-20, INST-5, PACK-1, `tests/templates/packs/member-template-enclosing-pack-before-deduced.cpp`, `tests/templates/packs/member-template-enclosing-pack-after-deduced.cpp`
 **Source:** the round 11 programmer report (`reports/clean-room/roadmap-11/programmer.md`, section 1.5), reductions `member_template_class_pack_before_deduced_parameter.cpp` and `member_template_class_pack_after_deduced_parameter.cpp`.
-**Waits for:** a rule; a principle (DED-P2)
+**Waits for:** a principle (DED-P2)
 
 ## Context
 
@@ -47,6 +47,8 @@ class's pack, and deduction finds only the member template's own
 parameters (option 1). Every compiler agrees.
 
 Kept open on 2026-11-11 under decision 0054 (item RV7). The review supports the answer with no doubt, and every compiler agrees. No rule states the case, and no principle gives the answer. DED-P2 makes each argument and its function parameter a pair in step 2, and both options fit that model, so DED-P2 fails step 3 of the principle test.
+
+Rule text on 2026-11-11 (decision 0062, item RV7): DED-20 says that it covers only a pack of the template that the call deduces, and that a pack of a member template whose pattern names only the enclosing class's pack is expanded with the class, each element an ordinary parameter. The two tests now cite DED-20. No principle gives the answer yet.
 
 ## Opinions
 

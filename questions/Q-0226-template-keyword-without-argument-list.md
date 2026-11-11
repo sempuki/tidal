@@ -56,6 +56,8 @@ The probes of 2026-11-03 added no case where Clang 22, GCC 16, and EDG 7.0 agree
 
 Kept in `pending.md` row 4 on 2026-11-11 (decision 0062, item RV7), because the review still reads against the deduced form.
 
+Evidence on 2026-11-11 (decision 0062, item RV7): the DEP-P5 row for the deduced form stays, as GCC 16 and EDG 7.0 accept the form. The divergence line on the dependent-names page names the review, and `pending.md` row 4 holds the deduced form.
+
 ## Opinions
 
 ### Gap review, 2026-11-03

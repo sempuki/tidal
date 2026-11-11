@@ -156,13 +156,19 @@ destroyed one time, when the statement ends, also after a `break`.
 
 :::{rule} LOOP-9
 :kind: required
-:tests: statements/loops/jump-into-for-body-constant.cpp statements/loops/jump-into-do-body-constant.cpp statements/switch/case-inside-loop.cpp statements/loops/jump-into-for-body-past-initialized-declaration.cpp
+:tests: statements/loops/jump-into-for-body-constant.cpp statements/loops/jump-into-do-body-constant.cpp statements/switch/case-inside-loop.cpp statements/loops/jump-into-for-body-past-initialized-declaration.cpp statements/loops/jump-into-while-body-past-condition-declaration.cpp statements/loops/jump-into-range-for-body.cpp
 
 If a jump enters the body of a loop, execution goes on from the target
 to the end of the body. Then the loop goes on as after a normal pass of
 the body: a `for` evaluates its iteration expression, and each form
-evaluates its condition. The initializer of a `for` does not run, and
-{rule}`JMP-6` applies to a declaration in it.
+evaluates its condition. The initializer of a `for` does not run.
+{rule}`JMP-6` applies to these declarations, which are in scope in the
+body:
+
+- a declaration in the initializer of a `for`,
+- a declaration in the condition of a `while` or a `for`,
+- the variables that a range-based `for` declares for its range and its
+  iterators, so a jump into its body is not valid.
 :::
 
 ## Examples

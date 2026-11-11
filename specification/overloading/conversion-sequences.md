@@ -404,7 +404,7 @@ Only a standard sequence can reach these parameters:
 
 :::{rule} ICS-11
 :kind: required
-:tests: overloading/conversion-sequences/reference-direct-derived.cpp overloading/conversion-sequences/reference-temporary.cpp overloading/conversion-sequences/reference-conversion-result.cpp overloading/conversion-sequences/reference-conversion-value-result.cpp expressions/conditional/class-converts-to-int-reference-lvalue.cpp declarations/initialization/references/pointer-lvalue-binds-more-qualified-pointer.cpp overloading/conversion-sequences/pointer-prvalue-less-qualified-reference.cpp
+:tests: overloading/conversion-sequences/reference-direct-derived.cpp overloading/conversion-sequences/reference-temporary.cpp overloading/conversion-sequences/reference-conversion-result.cpp overloading/conversion-sequences/reference-conversion-value-result.cpp expressions/conditional/class-converts-to-int-reference-lvalue.cpp declarations/initialization/references/pointer-lvalue-binds-more-qualified-pointer.cpp overloading/conversion-sequences/pointer-prvalue-less-qualified-reference.cpp declarations/initialization/references/const-ref-conversion-xvalue-direct.cpp
 
 The sequence of a reference parameter depends on how the reference binds
 ({rule}`REF-1`, {rule}`REF-2`, {rule}`REF-3`):
@@ -876,8 +876,8 @@ send(s);                    // rejected: Target(Source&) and operator Target()
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 113
-of 144 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 114
+of 145 tests.
 
 ### Divergences
 

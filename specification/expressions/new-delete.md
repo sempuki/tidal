@@ -944,7 +944,13 @@ the compile.
   (`reports/review/2026-11-10-gap-review-phase-13-expressions-overloading-templates.md`,
   RV6-B-13) there. After a throw, both call the form without the size,
   and UNW-3 lets either global aligned form be called
-  (`documentation/decisions/pending.md`, row 4).
+  (`documentation/decisions/pending.md`, row 4). The gap review of the
+  text phase 14 wrote on templates
+  (`reports/review/2026-11-11-gap-review-phase-14-expressions-overloading-templates.md`,
+  RV7-B-4) reads the C++23 text as choosing the deallocation function
+  after a throw by the same steps as after `delete`, so a single object
+  of complete type with more alignment gets the sized aligned form there
+  too. NEW-22 keeps the compilers' answer, and row 4 names the review.
 - NEW-22: the gap review of the rules that phase 7 rewrote
   (`reports/review/2026-11-04-gap-review-phase-7-repairs.md`) reads the
   reference as fixing the sized global form for a single object of

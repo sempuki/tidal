@@ -154,7 +154,7 @@ These conditions apply to labels (JMP-5):
 
 :::{rule} JMP-6
 :kind: reject
-:tests: statements/jumps/goto-past-initialization.cpp statements/jumps/goto-past-class-object.cpp statements/jumps/goto-past-uninitialized-scalar.cpp statements/jumps/goto-past-static.cpp statements/jumps/goto-past-nontrivial-destructor.cpp statements/jumps/goto-past-trivial-class.cpp statements/jumps/goto-skips-nontrivial-destructor.cpp classes/constructors/trivial-default-base-nontrivial.cpp classes/constructors/trivial-default-defaulted.cpp classes/constructors/trivial-default-implicit.cpp classes/constructors/trivial-default-member-initializer.cpp classes/constructors/trivial-default-member-nontrivial.cpp classes/constructors/trivial-default-user-provided.cpp classes/constructors/trivial-default-virtual-base.cpp classes/constructors/trivial-default-virtual-function.cpp classes/constructors/trivial-default-defaulted-later.cpp statements/loops/jump-into-for-body-past-initialized-declaration.cpp
+:tests: statements/jumps/goto-past-initialization.cpp statements/jumps/goto-past-class-object.cpp statements/jumps/goto-past-uninitialized-scalar.cpp statements/jumps/goto-past-static.cpp statements/jumps/goto-past-nontrivial-destructor.cpp statements/jumps/goto-past-trivial-class.cpp statements/jumps/goto-skips-nontrivial-destructor.cpp classes/constructors/trivial-default-base-nontrivial.cpp classes/constructors/trivial-default-defaulted.cpp classes/constructors/trivial-default-implicit.cpp classes/constructors/trivial-default-member-initializer.cpp classes/constructors/trivial-default-member-nontrivial.cpp classes/constructors/trivial-default-user-provided.cpp classes/constructors/trivial-default-virtual-base.cpp classes/constructors/trivial-default-virtual-function.cpp classes/constructors/trivial-default-defaulted-later.cpp statements/loops/jump-into-for-body-past-initialized-declaration.cpp statements/loops/jump-into-while-body-past-condition-declaration.cpp statements/loops/jump-into-range-for-body.cpp
 
 A jump must not skip the declaration of a variable with
 {term}`automatic storage` that is in scope at the target. This rule does
@@ -363,7 +363,7 @@ int pick(int v) {
 
 ## Evidence
 
-All eight compilers agree on 62 of 66 tests. The results are in
+All eight compilers agree on 64 of 68 tests. The results are in
 `tests/RESULTS.md`.
 
 ### Divergences

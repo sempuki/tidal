@@ -1,0 +1,38 @@
+{
+ "prelude": "",
+ "template": "{row}\n{col}",
+ "rows": {
+  "A-1 d.Base::~Base() on a Derived": "struct Base { ~Base() {} }; struct Derived : Base { int n = 0; };\nvoid end(Derived& d) { d.Base::~Base(); }",
+  "A-1 p->Base::~Base() on a Derived*": "struct Base { ~Base() {} }; struct Derived : Base { int n = 0; };\nvoid end(Derived* p) { p->Base::~Base(); }",
+  "A-1 d.~Base() on a Derived, no qualifier": "struct Base { ~Base() {} }; struct Derived : Base { int n = 0; };\nvoid end(Derived& d) { d.~Base(); }",
+  "A-1 control: d.~Other() for an unrelated class": "struct Other { ~Other() {} }; struct Derived { int n = 0; };\nvoid end(Derived& d) { d.~Other(); }",
+  "A-4 trivial move assignment of a union, read the new member": "union Value { int whole; float real; };\nconstexpr float moved() { Value from; from.real = 1.5f; Value to; to.whole = 2; to = static_cast<Value&&>(from); return to.real; }\nstatic_assert(moved() == 1.5f);",
+  "A-4 trivial move construction of a union, read the member": "union Value { int whole; float real; };\nconstexpr float moved() { Value from; from.real = 2.5f; Value to = static_cast<Value&&>(from); return to.real; }\nstatic_assert(moved() == 2.5f);",
+  "A-4 trivial move assignment, read the old member": "union Value { int whole; float real; };\nconstexpr int moved() { Value from; from.real = 1.5f; Value to; to.whole = 2; to = static_cast<Value&&>(from); return to.whole; }\nstatic_assert(moved() == 2);",
+  "A-5 const B& from a D xvalue binds to the base subobject": "struct B { int v = 1; }; struct D : B { int w = 2; };\nconstexpr bool direct() { D d; const B& r = static_cast<D&&>(d); return &r == static_cast<const B*>(&d); }\nstatic_assert(direct());",
+  "A-5 const int* const& from an int* xvalue": "constexpr bool direct() { int n = 0; int* p = &n; const int* const& r = static_cast<int*&&>(p); return &r == static_cast<const void*>(&p); }\nstatic_assert(direct());",
+  "A-5 const A& from a class rvalue through operator A&&": "struct A { int v; }; A shared{1};\nstruct X { constexpr operator A&&() const { return static_cast<A&&>(shared); } };\nconstexpr bool via() { const A& r = X{}; return &r == &shared; }\nstatic_assert(via());",
+  "A-5 A&& from a class rvalue through operator A&&": "struct A { int v; }; A shared{1};\nstruct X { constexpr operator A&&() const { return static_cast<A&&>(shared); } };\nconstexpr bool via() { A&& r = X{}; return &r == &shared; }\nstatic_assert(via());",
+  "A-7 goto into a while body past a condition declaration": "int next();\nint run() { goto inside; while (int x = next()) { inside: return x; } return 0; }",
+  "A-7 goto into a for body past a condition declaration": "int next();\nint run() { goto inside; for (; int x = next(); ) { inside: return x; } return 0; }",
+  "A-7 goto into a range-based for body": "int items[3] = {1, 2, 3};\nint run() { goto inside; for (int v : items) { inside: return 1; } return 0; }",
+  "A-7 goto into a range-based for body, reference variable": "int items[3] = {1, 2, 3};\nint run() { goto inside; for (int& v : items) { inside: return 1; } return 0; }",
+  "A-7 control: goto into a while body with no declaration": "int next();\nint run() { int x = 0; goto inside; while ((x = next())) { inside: return x; } return 0; }",
+  "A-7 case label in a range-based for body": "int items[3] = {1, 2, 3};\nint run(int s) { switch (s) { case 0: for (int v : items) { case 1: return 1; } } return 0; }",
+  "A-7 case label in a while body past a condition declaration": "int next();\nint run(int s) { switch (s) { case 0: while (int x = next()) { case 1: return 1; } } return 0; }",
+  "B-6 decltype(make()), the whole operand": "template <class T> struct Broken { static_assert(sizeof(T) == 0); };\nBroken<int> make();\nusing R = decltype(make());\nR* none = nullptr;",
+  "B-6 decltype((make())), parenthesized": "template <class T> struct Broken { static_assert(sizeof(T) == 0); };\nBroken<int> make();\nusing R = decltype((make()));\nR* none = nullptr;",
+  "B-6 decltype(take(make())), make() passed by value": "template <class T> struct Broken { static_assert(sizeof(T) == 0); };\nBroken<int> make();\nint take(Broken<int>);\nusing R = decltype(take(make()));\nR* none = nullptr;",
+  "B-6 decltype(make().size), a member access": "template <class T> struct Broken { static_assert(sizeof(T) == 0); int size; };\nBroken<int> make();\nusing R = decltype(make().size);\nR* none = nullptr;",
+  "B-6 decltype(0, make()), make() on the right of a comma": "template <class T> struct Broken { static_assert(sizeof(T) == 0); };\nBroken<int> make();\nusing R = decltype(0, make());\nR* none = nullptr;",
+  "B-6 decltype(make(), 0), make() on the left of a comma": "template <class T> struct Broken { static_assert(sizeof(T) == 0); };\nBroken<int> make();\nusing R = decltype(make(), 0);\nR* none = nullptr;",
+  "B-6 decltype(take(make())), take by reference": "template <class T> struct Broken { static_assert(sizeof(T) == 0); };\nBroken<int> make();\nint take(const Broken<int>&);\nusing R = decltype(take(make()));\nR* none = nullptr;",
+  "B-7 Lib<T>::f(t), Lib<int> specialized after the template": "template <class T> struct Lib { static constexpr int f(T) { return 1; } };\ntemplate <class T> constexpr int call(T t) { return Lib<T>::f(t); }\ntemplate <> struct Lib<int> { static constexpr int f(int) { return 2; } };\nstatic_assert(call(0) == 2);",
+  "B-7 T::f(t), with T a class": "struct Box { static constexpr int f(Box) { return 3; } };\ntemplate <class T> constexpr int call(T t) { return T::f(t); }\nstatic_assert(call(Box{}) == 3);",
+  "B-7 control: lib::f(t), a later overload in lib": "namespace lib { struct S {}; constexpr int f(S, long) { return 1; } }\ntemplate <class T> constexpr int call(T t) { return lib::f(t, 0); }\nnamespace lib { constexpr int f(S, int) { return 2; } }\nstatic_assert(call(lib::S{}) == 1);"
+ },
+ "cols": {
+  "program": "int main() { return 0; }"
+ },
+ "flags": []
+}

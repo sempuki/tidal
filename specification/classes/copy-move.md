@@ -737,7 +737,8 @@ of 137 tests.
   a copy or move constructor takes the argument with no conversion, as
   Clang 22 and GCC say. EDG and Clang 18 check the constraint. For a
   by-value template and an lvalue that is not `const`, the check runs,
-  and GCC skips it. The gap reviews of the text phase 13 wrote read the
+  and GCC skips it. The gap reviews of the text phase 13 wrote, and the
+  review of the text phase 14 wrote on classes (RV7-A-2), read the
   C++23 text as EDG and Clang 18 do, and `pending.md` row 4 holds the
   case.
 

@@ -54,6 +54,8 @@ The probes of 2026-11-03 added no case where Clang 22, GCC 16, and EDG 7.0 agree
 
 Kept in `pending.md` row 4 on 2026-11-11 (decision 0062, item RV7), because the review still reads against the answer.
 
+Principle text on 2026-11-11 (decision 0062, item RV7): the DEP-P5 sentence on the middle column now says that a row whose middle column says "not valid" reports an error at the definition, so the sentence and the row for this question agree (RV7-B-10). The answer is unchanged.
+
 ## Opinions
 
 ### Gap review, 2026-11-03

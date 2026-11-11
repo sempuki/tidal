@@ -41,8 +41,9 @@ definition. A later declaration does not change the binding. A
 {term}`dependent name` can mean something different for each argument
 list, so its lookup waits for the arguments.
 
-Only an unqualified call with a dependent argument uses both phases
-(DEP-8, DEP-9):
+Only an unqualified call whose name is dependent uses both phases
+(DEP-9). DEP-8 lists the cases, such as a dependent argument or
+dependent explicit template arguments:
 
 | Call | Ordinary lookup | Argument-dependent lookup | Finds a function declared after the template |
 |---|---|---|---|
@@ -152,7 +153,8 @@ name is a type, a template, or a value. The program states the choice:
 | `typename T::template name` with no list, as in `typename T::template box b(1);` | a type whose template arguments are deduced | the name is a class template or alias template (DEP-26, {question}`Q-0226`) |
 
 The middle column is the reading that the parser chooses at the
-definition, and the choice reports no error. The right column is
+definition. A row whose middle column says "not valid" reports an error
+there, and the other rows report none. The right column is
 checked at the instantiation, when the lookup of the name has the
 arguments.
 
@@ -173,14 +175,15 @@ definition:
 | Error in a template that is not instantiated | Requirement | Rule |
 |---|---|---|
 | a syntax error | rejects | DEP-29 |
-| an independent name that lookup does not find | rejects | DEP-6 |
+| an independent name that lookup does not find, other than a name of DEP-17 | rejects | DEP-6 |
+| a qualified name into the current instantiation, or a member access through `this`, that lookup does not find | need not diagnose | {rule}`DEP-17`, DEP-30 |
 | an unqualified name that only a dependent base declares | rejects | DEP-12 |
 | an independent construct that is not valid | need not diagnose | DEP-30 |
 | an independent construct whose meaning changes before the instantiation | need not diagnose | DEP-31 |
 | a construct that no argument list makes valid | need not diagnose | DEP-32 |
 | a pack that every valid argument list leaves empty, such as a base list that expands one pack twice | need not diagnose | DEP-33 |
 | an operator function that only an empty pack makes valid | rejects | DEP-37 |
-| a template-id with independent arguments that fail its template's constraints | rejects | {rule}`CNS-13` |
+| a template-id with independent arguments that fail its template's constraints | need not diagnose; every baseline compiler rejects | {rule}`CNS-13`, DEP-30 |
 | a dependent construct that some argument list makes valid | accepts | DEP-28 |
 
 The condition of a `static_assert` in a template is checked only at the
@@ -287,12 +290,12 @@ An expression is {term}`value-dependent` if one of these holds:
 - the expression names a `const` integer variable or a `constexpr`
   variable whose initializer is value-dependent,
 - the expression is type-dependent,
-- the expression is `sizeof`, `alignof`, or `noexcept` of a dependent
-  type or a type-dependent operand,
+- the expression is `sizeof`, `alignof`, `noexcept`, or `typeid` of a
+  dependent type or a type-dependent operand,
 - the expression is `sizeof...` ({rule}`PACK-19`) or a fold
   expression,
 - an operand is value-dependent, other than the operand of `sizeof`,
-  `alignof`, or `noexcept`
+  `alignof`, `noexcept`, or `typeid`
   ({question}`Q-0432`).
 
 The value of such an expression is computed for each specialization.
@@ -320,12 +323,13 @@ lookup ({rule}`NAM-27`), both at the definition.
 A name that is not dependent must be declared before the definition of
 the template, also when no specialization is made. A declaration
 between the definition and the use does not make an instantiation
-valid.
+valid. A qualified name into the current instantiation and a member
+access through `this` follow {rule}`DEP-17` instead.
 :::
 
 :::{rule} DEP-7
 :kind: required
-:tests: templates/dependent-names/per-specialization.cpp templates/dependent-names/per-specialization-type.cpp
+:tests: templates/dependent-names/per-specialization.cpp templates/dependent-names/per-specialization-type.cpp templates/dependent-names/qualified-call-dependent-qualifier-late.cpp
 
 A {term}`dependent name` is looked up again for each specialization,
 with the template arguments in place of the parameters. Two
@@ -434,13 +438,15 @@ member defined outside the class.
 
 :::{rule} DEP-40
 :kind: required
-:tests: templates/dependent-names/qualified-call-dependent-argument-bound-early.cpp templates/dependent-names/member-found-call-no-argument-lookup.cpp
+:tests: templates/dependent-names/qualified-call-dependent-argument-bound-early.cpp templates/dependent-names/member-found-call-no-argument-lookup.cpp templates/dependent-names/qualified-call-dependent-qualifier-late.cpp
 
-A qualified call looks up its name at the definition, in the scope that
-the qualifier names, also when an argument is dependent. Such a call
-and an unqualified call whose name finds a class member (DEP-14) take
-no argument-dependent lookup. So neither call finds a function declared
-after the definition.
+A qualified call whose qualifier names a namespace, or a class that is
+not dependent, looks up its name at the definition, in that scope, also
+when an argument is dependent. Such a call and an unqualified call
+whose name finds a class member (DEP-14) take no argument-dependent
+lookup. So neither call finds a function declared after the
+definition. A call with a dependent qualifier, such as `Lib<T>::pick(t)`,
+looks up its name at the instantiation ({rule}`DEP-7`).
 :::
 
 ### The current instantiation
@@ -673,7 +679,7 @@ parameters of each operator function, and DEP-33 gives the general case.
 
 :::{rule} DEP-30
 :kind: no-diagnostic
-:tests: templates/dependent-names/independent-error-unused-conversion.cpp templates/dependent-names/independent-error-unused-call.cpp templates/dependent-names/current-member-missing.cpp templates/dependent-names/this-member-missing-specialized.cpp templates/dependent-names/this-member-missing.cpp declarations/functions/default-arguments/template-default-independent-unused.cpp classes/virtual/override-independent-base-unused.cpp templates/dependent-names/other-specialization-constant-argument-member-missing.cpp
+:tests: templates/dependent-names/independent-error-unused-conversion.cpp templates/dependent-names/independent-error-unused-call.cpp templates/dependent-names/current-member-missing.cpp templates/dependent-names/this-member-missing-specialized.cpp templates/dependent-names/this-member-missing.cpp declarations/functions/default-arguments/template-default-independent-unused.cpp classes/virtual/override-independent-base-unused.cpp templates/dependent-names/other-specialization-constant-argument-member-missing.cpp templates/constraints/independent-template-id.cpp templates/constraints/independent-alias-template-id.cpp
 
 A specialization made right after the definition of a template must not
 fail because of a construct in its {term}`templated context` that does
@@ -683,6 +689,10 @@ is made ({question}`Q-0223`). These are such constructs:
 
 - an expression, a conversion, or a name in the body that lookup
   finds, since DEP-6 and DEP-12 reject a name that it does not find,
+- a qualified name into the current instantiation, or a member access
+  through `this`, that lookup does not find (DEP-17),
+- a template-id whose independent arguments fail its template's
+  constraints ({rule}`CNS-13`),
 - a default argument of a function template that does not depend on
   the parameters ({rule}`DEFARG-10`), although {rule}`INST-9`
   instantiates a default argument only for a call that uses it,
@@ -871,8 +881,8 @@ template <class... T> int count() {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 117
-of 144 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 120
+of 147 tests.
 
 ### Divergences
 
@@ -916,6 +926,10 @@ waits on the maintainer (`documentation/decisions/pending.md`).
   a member with no argument list after it. Only before a template
   template argument or a class or alias template. GCC accepts a data
   member, and Clang rejects a class template with deduced arguments.
+  The DEP-P5 row for the deduced form follows GCC and EDG. The gap
+  review of the text phase 14 wrote on templates reads that row against
+  the C++23 text (RV7-B-1), and `pending.md` row 4 holds the deduced
+  form.
 - {question}`Q-0227` (DEP-27; open): whether `template` can follow the
   qualifier of a name that a declaration declares. It cannot. GCC and
   EDG accept it for a member function, and EDG for a member class
@@ -1070,10 +1084,22 @@ and the questions say so.
 - DEP-6, DEP-12, CNS-13: every compiler rejects an undeclared name, a
   name that only a dependent base declares, and a template-id whose
   independent arguments fail the constraints, in a template that is
-  never instantiated (I6-7, I6-8).
+  never instantiated (I6-7, I6-8). The gap review of the text phase 14
+  wrote on templates (`reports/review/2026-11-11-gap-review-phase-14-expressions-overloading-templates.md`,
+  RV7-B-2, RV7-B-5) reads two of these cases as ones that need no
+  diagnostic: a template-id whose independent arguments fail the
+  constraints, and a qualified name into the current instantiation, or
+  a member access through `this`, that finds nothing. DEP-P6, DEP-6,
+  DEP-30, and CNS-13 now give both cases to DEP-30, which allows the
+  rejection. An unqualified name that is not declared stays a rejection
+  under DEP-6.
 - DEP-4: in the grid `sizeof-operand.json`, Clang also treats
   `alignof(decltype(N))` as value-dependent, and GCC does not. No test
   holds that form.
+- DEP-4 and `typeid`: the gap review of the text phase 14 wrote on
+  templates (RV7-B-12) reads `typeid` with the other three operators.
+  No test checks `typeid`, because the tests use no standard header and
+  `typeid` stays referenced (decision 0051).
 
 ### Probe grids
 

@@ -70,7 +70,7 @@ A program reaches the new object through the pointer that placement
 `new` returns. A cast of the array's address still points to a byte.
 A `T*` cast from that address steps `sizeof(T)` bytes to the position
 one past the byte, and placement `new` can build the next object there
-({rule}`ADD-14`).
+({rule}`ADD-14`, {question}`Q-0430`).
 
 A program that includes no header has no launder operation. So a class
 that keeps several objects in one byte array that is a member keeps the
@@ -946,9 +946,11 @@ only that the programs are valid.
 - {question}`Q-0323` (STG-28; settled): whether a `T*` from an allocation
   points to element 0 of an array of `T` whose elements are not built.
   It does.
-- {question}`Q-0430` (STG-29, ADD-14; open): whether placement `new`
-  can use the position one past the byte that a cast `T*` points to.
-  It can, and the position is `sizeof(T)` bytes on. No family differs.
+- {question}`Q-0430` (STG-28, STG-29, ADD-14; open): whether placement
+  `new` can use the position one past the byte that a cast `T*` points
+  to. It can, and the position is `sizeof(T)` bytes on. No family
+  differs. Both gap reviews of the text phase 14 wrote read the step as
+  undefined, and the question waits on `pending.md` row 4.
 - {question}`Q-0324` (STG-29; settled on STG-P2): whether a cast of a
   byte array's address reaches an object that the array created. The
   cast still points to a byte. No family differs.
@@ -1066,5 +1068,21 @@ rejection.
   address and undefined sanitizers.
 - STG-27: every configuration keeps the address in a copy of an invalid
   pointer value, and no sanitizer reports the copy.
+- STG-28, STG-29, STG-P2: the gap reviews of the text phase 14 wrote
+  (`reports/review/2026-11-11-gap-review-phase-14-classes-declarations-foundations.md`,
+  RV7-A-10, and
+  `reports/review/2026-11-11-gap-review-phase-14-expressions-overloading-templates.md`,
+  RV7-B-3) read the C++23 text as making any arithmetic on a `T*` that
+  points to a byte undefined, so the typed step has no address. Every
+  compiler that runs the tests gives the address `sizeof(T)` bytes on,
+  no sanitizer reports the step, and the rules keep that answer
+  ({question}`Q-0430`). The reviews give a path that they read as
+  defined: arithmetic on the byte pointer, then placement `new` at the
+  address it reaches, then use of the pointer that placement `new`
+  returns. For STG-28's `T*` at a multiple of `sizeof(T)` bytes into
+  allocated storage, the reviews differ. Part A reads that pointer as
+  pointing to a byte. Part B lets the allocation create an array of `T`
+  there, as STG-28 says. STG-28's sentence on a `T*` cast straight from
+  the result of the allocation is not affected.
 
 Inputs: clang-diag-sema.

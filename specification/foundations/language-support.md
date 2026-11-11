@@ -217,12 +217,12 @@ an alias of the core type:
 The library defines the nothrow forms of the global allocation and
 deallocation functions, and the object `std::nothrow`. A program can
 declare these names itself in this shape. The program does not define
-`std::nothrow`:
+`std::nothrow`, so its declaration is `extern` and has no initializer:
 
 | Name | Shape |
 |---|---|
 | `std::nothrow_t` | an empty class with an `explicit` {term}`default constructor` |
-| `std::nothrow` | an object of type `const std::nothrow_t` |
+| `std::nothrow` | `extern const std::nothrow_t nothrow;` |
 | `operator new`, `operator new[]` | parameters `std::size_t` and `const std::nothrow_t&`, and `noexcept` |
 | `operator delete`, `operator delete[]` | parameters `void*` and `const std::nothrow_t&`, and `noexcept` |
 
@@ -573,7 +573,9 @@ of 74 tests. EDG compiles the run tests and does not run them.
 - {question}`Q-0431` (LSUP-1; open): whether an
   implementation must reject a declared `std::initializer_list` with the
   count before the pointer, or a count of another type. It must, as
-  Clang and GCC say. EDG accepts both.
+  Clang and GCC say. EDG accepts both. The gap review of the text phase
+  14 wrote finds the reference silent on the shape (RV7-A-9), so the
+  answer is Tidal's own choice and waits on `pending.md` row 10.
 - {question}`Q-0323` (LSUP-11; settled): whether a `T*` from an
   allocation function points to element 0 of an array whose elements
   are not built yet. It does. The test builds each element with

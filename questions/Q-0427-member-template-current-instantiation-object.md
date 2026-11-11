@@ -58,6 +58,8 @@ Rule text on 2026-11-10 (decision 0061, item RV6): DEP-24 and the DEP-P5 row say
 
 Kept open on 2026-11-11 under decision 0054 (item RV7). The review supports the answer with no doubt, and every compiler agrees. The DEP-P5 row for `x.name<...>`, where `x` has the type of the current instantiation, gives a template-id, so the model rules out option 2. DEP-P5 changed in phase 14, so it gives no answer until a reader or a review uses it (decision 0055). The review reads DEP-24 and does not use DEP-P5.
 
+Principle text on 2026-11-11 (decision 0062, item RV7): the DEP-P5 sentence on the middle column now says that a row whose middle column says "not valid" reports an error at the definition (RV7-B-10). The row for this question is unchanged.
+
 ## Opinions
 
 ### Gap review, 2026-11-10 (phase 13 text, expressions, overloading, and templates)

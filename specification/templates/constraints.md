@@ -130,7 +130,7 @@ of the declaration needs them. The use decides what a failure does:
 | any other use of a function's name: a call of a single function, `&`, `decltype` | known | the program is not valid | CNS-12 |
 | a {term}`template-id` of a class, variable, or {term}`alias template` | known | the program is not valid | CNS-13 |
 | a template-id inside a template | depend on parameters | checked at {term}`instantiation` | CNS-14 |
-| a template-id inside a template | do not depend on parameters | the program is not valid | CNS-13 |
+| a template-id inside a template | do not depend on parameters | the program is not valid, with no diagnostic required if the template is never instantiated | CNS-13, {rule}`DEP-30` |
 | a use of a {term}`template template parameter` inside the template | do not depend on parameters | the program is not valid, with no diagnostic required | CNS-38 |
 | an {term}`explicit instantiation` or {term}`specialization` | known | the program is not valid | CNS-13 |
 | an {term}`explicit specialization` of a {term}`member template`, outside the class | the class's arguments | the member does not match | CNS-37 |
@@ -393,9 +393,10 @@ function from a set of several.
 The template arguments of these must satisfy the template's
 constraints:
 
-- a template-id that names a class, a variable, or an alias, also
-  inside a template that is never instantiated if the arguments do not
-  depend on template parameters,
+- a template-id that names a class, a variable, or an alias. Inside a
+  template that is never instantiated, a template-id whose arguments do
+  not depend on template parameters falls under {rule}`DEP-30`, and an
+  implementation need not diagnose it,
 - an explicit instantiation ({rule}`INST-16`), also of a single member
   function of a class template specialization ({question}`Q-0291`),
 - an explicit specialization ({rule}`TSP-1`, {rule}`TSP-2`).
@@ -967,8 +968,11 @@ family column gives the outcome that the test expects on that family.
 - CNS-13: every compiler rejects a template-id with arguments that do
   not depend on template parameters and fail the constraints, inside a
   template that is never instantiated. The gap review describes that
-  case as one that needs no diagnostic (item 6), and {rule}`DEP-30`
-  covers the general case. The rule follows the compilers.
+  case as one that needs no diagnostic (item 6), and so does the gap
+  review of the text phase 14 wrote on templates
+  (`reports/review/2026-11-11-gap-review-phase-14-expressions-overloading-templates.md`,
+  RV7-B-2). CNS-13 leaves the case to {rule}`DEP-30`, which allows the
+  compilers' rejection, and the two tests of the case cite DEP-30.
 - CNS-18: the rule is about lambdas that are not templates, and EDG
   rejects the clause on each of them, so every test of CNS-18 needs an
   override for EDG.

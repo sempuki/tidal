@@ -341,11 +341,16 @@ of 67 tests.
   past the subobject. The subobject acts as an array of one element, so
   a move of two, a read through the pointer one past, and a difference
   of pointers into two elements are undefined, as Clang and EDG say.
-  GCC accepts all three.
+  GCC accepts all three. The gap review of the text phase 14 wrote
+  reads any move of such a pointer as undefined, also the move to one
+  past. Every compiler accepts that move, and `pending.md` row 4 holds
+  the case as the item "ADD-14, ADD-P6".
 - {question}`Q-0430` (ADD-14, STG-29; open): where `p + 1` is when
   `p` is a `T*` that points to a byte, and whether placement `new` can
   use that position. The position is `sizeof(T)` bytes after `p`, and
-  placement `new` can use it. No family differs.
+  placement `new` can use it. No family differs. Both gap reviews of
+  the text phase 14 wrote read the step as undefined, and the question
+  waits on `pending.md` row 4.
 - {question}`Q-0304` (ADD-6, ADD-10, ADD-14; open): whether a pointer
   to a character type can step through the bytes of an object that is
   not an array of bytes. It can. No family differs, and constant
@@ -443,6 +448,16 @@ EDG skips the tests that use `-fsanitize`.
   reaches the difference. The front end's interpreter cannot hold an
   array of that size. No tool stops ADD-18 at run time, and no run test
   covers the rule.
+- ADD-14: the gap review of the text phase 14 wrote on expressions
+  (`reports/review/2026-11-11-gap-review-phase-14-expressions-overloading-templates.md`,
+  RV7-B-3) reads the C++23 text as making any arithmetic undefined when
+  the pointer's type is not similar to the element type of the array.
+  The review reads the new paragraph on a `T*` that points to a byte,
+  and the older sentence on an array of one, against that reading.
+  Every compiler accepts the move to one past in both forms, and ADD-14
+  keeps the compilers' answer. `pending.md` row 4 holds both cases
+  ({question}`Q-0430`, and the item "ADD-14, ADD-P6" for
+  {question}`Q-0049`).
 
 ### Sources
 

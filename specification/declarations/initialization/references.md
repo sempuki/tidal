@@ -131,16 +131,20 @@ that is `volatile`, must not bind to a bit-field.
 
 :::{rule} REF-2
 :kind: required
-:tests: declarations/initialization/references/const-ref-binds-rvalue.cpp declarations/initialization/references/bit-field-const-ref.cpp declarations/initialization/references/const-ref-xvalue-direct.cpp declarations/initialization/references/const-ref-through-converting-constructor.cpp overloading/overload-resolution/const-ref-parameter-through-converting-constructor.cpp
+:tests: declarations/initialization/references/const-ref-binds-rvalue.cpp declarations/initialization/references/bit-field-const-ref.cpp declarations/initialization/references/const-ref-xvalue-direct.cpp declarations/initialization/references/const-ref-through-converting-constructor.cpp overloading/overload-resolution/const-ref-parameter-through-converting-constructor.cpp declarations/initialization/references/const-ref-derived-xvalue-direct.cpp declarations/initialization/references/const-ref-conversion-xvalue-direct.cpp
 
 A `const` lvalue reference that is not `volatile` can also bind to an
 rvalue, to an expression of a different type that converts to its type,
-and to a bit-field. If the rvalue is an xvalue of the same type, or a
-class rvalue, the reference binds to that object directly. A prvalue of
-a type that REF-1 lets the reference bind becomes a temporary object,
-and the reference binds directly to it ({rule}`ICS-11`). In the other
-cases, the reference binds to a temporary object that holds the
-converted value. REF-9 lists what is not valid.
+and to a bit-field. The reference binds directly in these cases:
+
+- an xvalue or a class rvalue of a type that REF-1 lets the reference
+  bind, such as a class derived from the referenced class,
+- the rvalue of such a type that a conversion function of an unrelated
+  class gives ({rule}`ICS-11`),
+- a prvalue of such a type, which becomes a temporary object first.
+
+In the other cases, the reference binds to a temporary object that
+holds the converted value. REF-9 lists what is not valid.
 :::
 
 :::{rule} REF-9
@@ -355,7 +359,7 @@ int& m{s};                   // rejected: a temporary needs const or &&
 
 ## Evidence
 
-All eight compilers agree on 57 of 72 tests. The results are in
+All eight compilers agree on 59 of 74 tests. The results are in
 `tests/RESULTS.md`.
 
 ### Divergences
@@ -469,6 +473,17 @@ the compile. EDG skips the tests that use `-Werror`.
   cannot tell a direct binding through an inaccessible base from no
   binding, because both reject. The rule takes the base relation alone,
   as COND-16 and DED-15 do (front-end finding G153).
+- REF-2: the gap review of the text phase 14 wrote
+  (`reports/review/2026-11-11-gap-review-phase-14-classes-declarations-foundations.md`,
+  RV7-A-5) reads two more direct cases: an xvalue of any type that
+  REF-1 lets the reference bind, and the rvalue that a conversion
+  function of an unrelated class gives. Every compiler binds a derived
+  class xvalue and the result of `operator Item&&` directly, and the
+  tests compare addresses in a `static_assert`. For an `int*` xvalue
+  bound to `const int* const&`, Clang and GCC give the address of the
+  pointer, and EDG does not evaluate the comparison
+  (`reports/clean-room/roadmap-11/writer-probes/rv7-points.out`), so no
+  test checks the pointer form.
 
 ### Sources
 
