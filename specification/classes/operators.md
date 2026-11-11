@@ -473,7 +473,7 @@ of 134 tests.
   Port exercise asked for the sentence (P4-7).
 - OPR-8, PRIM-15: a floating literal whose value is outside the range
   of `long double` and that calls the `long double` form follows
-  PRIM-15. Clang and GCC accept `1e5000_v` with a warning, and EDG
+  PRIM-15. Clang and GCC accept `1e5000_ld` with a warning, and EDG
   rejects it as it rejects `1e5000L`
   (`literal-float-form-out-of-range.cpp`). The raw form and the
   template accept the same literal on every compiler. Under `-Werror`,

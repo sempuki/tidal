@@ -217,7 +217,8 @@ use. These uses instantiate the class:
 - the definition of a function whose parameter or return type is the
   class, when the definition is made (for a member of a class template,
   {rule}`INST-7`, and for a function defined in a class, after the
-  outermost enclosing class, {rule}`FN-12` and {rule}`INST-30`),
+  outermost class definition that holds it, {rule}`FN-12` and
+  {rule}`INST-30`),
 - a call to a function that returns the class, unless the call is the
   whole operand of `decltype` (INST-2),
 - a call that passes the class by value,
@@ -560,7 +561,7 @@ of a class.
 
 :::{rule} INST-30
 :kind: required
-:tests: templates/instantiation/class-point-sees-earlier.cpp templates/instantiation/class-point-in-specialization.cpp templates/instantiation/class-point-not-later-member-type.cpp templates/instantiation/class-point-after-enclosing-class.cpp templates/instantiation/class-point-after-enclosing-class-not-later.cpp declarations/functions/definitions/member-in-class-specialization-over-class.cpp
+:tests: templates/instantiation/class-point-sees-earlier.cpp templates/instantiation/class-point-in-specialization.cpp templates/instantiation/class-point-not-later-member-type.cpp templates/instantiation/class-point-after-enclosing-class.cpp templates/instantiation/class-point-after-enclosing-class-not-later.cpp declarations/functions/definitions/member-in-class-specialization-over-class.cpp templates/instantiation/noexcept-operand-sees-complete-class.cpp
 
 The {term}`point of instantiation` of a class specialization is right
 before the namespace-scope declaration that first needs the class. If
@@ -571,7 +572,8 @@ definition, these uses have their point right after the definition
 
 - a use in the body of a member function, or of a friend function
   defined in the class,
-- a use in a default argument.
+- a use in a default argument,
+- a use in the operand of a `noexcept` specifier.
 
 The same places in a class nested in the definition count too. The
 class sees the declarations before its point.
@@ -805,8 +807,8 @@ extern template constexpr int size_of<long>;  // rejected: constexpr (INST-25)
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 146
-of 177 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 147
+of 178 tests.
 
 ### Divergences
 
@@ -1010,6 +1012,15 @@ the compile.
   that place. EDG also rejects a default argument that reads a
   `static constexpr` member of the specialization whose initializer
   needs the class, and accepts `sizeof` of the specialization there.
+- INST-30: every compiler accepts `Holder<Coin>` in the operand of a
+  `noexcept` specifier inside `Coin`, also when `Holder<Coin>` needs a
+  member that `Coin` declares after the operand
+  (`noexcept-operand-sees-complete-class.cpp`). Every compiler rejects
+  a default template argument of a member template that reads a member
+  of `Holder<Coin>`, so INST-30 does not name that place
+  ({rule}`CLS-2`). The read of the RV9 repair diff
+  asked for the three places (RV10-R-1,
+  `reports/clean-room/roadmap-14/writer-probes/rv10-points.json`).
 - INST-5, INST-7: every compiler accepts an object of a class whose
   friend function has a body that is not valid, and rejects a call of
   the friend (I6-16).

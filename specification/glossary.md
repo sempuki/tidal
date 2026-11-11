@@ -439,6 +439,13 @@ integral type
   `bool`, `char`, and the wide character types are integral types that
   are not integer types.
 
+label
+  A name, or a `case` or `default` clause, followed by a colon, which
+  marks a statement or the end of a block ({doc}`/statements/blocks`).
+  An identifier label is a target of `goto` in its own function
+  ({doc}`/statements/jumps`). A `case` or `default` label belongs to the
+  innermost `switch` that holds it ({doc}`/statements/switch`).
+
 layout-compatible
   Said of two types with the same layout: the same type apart from
   cv-qualifiers, two enumerations with one underlying type, or two

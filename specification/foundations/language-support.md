@@ -712,9 +712,10 @@ different exit codes.
   and `reports/clean-room/roadmap-13/writer-probes/x25-rules.json`).
   The gap reviews of phases 13, 15, and 16 (RV6-A-13, RV8-A-8, RV9-7)
   read the reference as allowing only storage that `std::allocator`
-  gave or an object whose lifetime began, and a member that is not
-  active has not begun. LSUP-10 follows the compilers, as UNI-14 does,
-  and `documentation/decisions/pending.md` row 4 holds the case. UNI-14
+  gave or an object whose lifetime began in the same evaluation, and a
+  member that is not active has not begun. LSUP-10 follows the
+  compilers, as UNI-14 does, and `documentation/decisions/pending.md`
+  row 4 holds the case. UNI-14
   also gives the case of an object inside such a member, such as an
   element of an array member.
 - LSUP-11: Clang, GCC, and EDG run the calls of `::operator new` and

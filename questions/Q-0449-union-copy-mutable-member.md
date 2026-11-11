@@ -1,7 +1,7 @@
 # Q-0449: Can constant evaluation copy a union whose active member is `mutable` from a union that the evaluation did not create?
 
 **Status:** provisional
-**Affects:** CE-22, `tests/foundations/constant-evaluation/union-copy-mutable-member-outside.cpp`, `tests/foundations/constant-evaluation/union-copy-mutable-member-assignment-outside.cpp`, `tests/foundations/constant-evaluation/union-copy-mutable-member-inside.cpp`
+**Affects:** CE-22, CE-3, `tests/foundations/constant-evaluation/union-copy-mutable-member-outside.cpp`, `tests/foundations/constant-evaluation/union-copy-mutable-member-assignment-outside.cpp`, `tests/foundations/constant-evaluation/union-copy-mutable-member-inside.cpp`, `tests/foundations/constant-evaluation/union-copy-inactive-mutable-member-outside.cpp`, `tests/foundations/constant-evaluation/struct-copy-mutable-member-outside.cpp`, `tests/foundations/constant-evaluation/mutable-member-read-outside.cpp`
 **Source:** point RV9-10 of the gap review of the phase 16 text (`reports/review/2026-11-11-gap-review-phase-16.md`), with the writer probe `reports/clean-room/roadmap-13/writer-probes/rv9-points.json`.
 **Waits for:** a review (doubt); newest families that agree; a principle (CE-P3)
 
@@ -59,6 +59,8 @@ that form.
 Opened on 2026-11-11 (decision 0064, item RV9). No principle gives the answer. CE-P3 says that a trivial copy or move of a union reads no part, and it says nothing of a `mutable` member. A reader of CE-P3 alone reaches option 3, so CE-P3 fails step 3 of the principle test.
 
 Kept open on 2026-11-11 under decision 0054 (decision 0064, item RV9). The read of the RV9 repair diff gives the first reading and supports the answer with a doubt (RV10-R-4). For the copy assignment, the reference does not say whether the union whose lifetime must begin in the evaluation is the source or the target. CE-22 reads the source, and GCC's acceptance fits the target. GCC 16 and EDG 7.0 still differ in the assignment form, and CE-P3 still fails step 3 of the principle test. The read also finds the copy valid when the `mutable` member is not active. Clang and GCC read against in that form, and CE-22 sets no limit there, as the sentence above says.
+
+Rule text on 2026-11-11 (decision 0065, item F7): tests hold the three forms of the table that no test held. CE-3 says that a `mutable` member of a usable variable is not usable, as the read of the RV9 repair diff gives. `mutable-member-read-outside.cpp` and `struct-copy-mutable-member-outside.cpp` expect the rejection, with EDG as an override. CE-22 says that a `mutable` member that is not active sets no limit, and `union-copy-inactive-mutable-member-outside.cpp` expects acceptance, with Clang and GCC as overrides. Two newest families stand against that form, as against the assignment form. The answer and the **Waits for:** line do not change.
 
 ## Opinions
 

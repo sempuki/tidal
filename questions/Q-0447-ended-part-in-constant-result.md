@@ -1,7 +1,7 @@
 # Q-0447: Does a part that an explicit destructor call ended count as a part with no value in the result of a constant expression?
 
 **Status:** provisional
-**Affects:** CE-21, OBJ-2, `tests/foundations/constant-evaluation/result-ended-element.cpp`, `tests/foundations/constant-evaluation/result-union-ended-element.cpp`, `tests/foundations/objects/write-after-pseudo-destructor-element-constant.cpp`, `tests/foundations/objects/write-after-pseudo-destructor-variable-constant.cpp`
+**Affects:** CE-21, OBJ-2, `tests/foundations/constant-evaluation/result-ended-element.cpp`, `tests/foundations/constant-evaluation/result-union-ended-element.cpp`, `tests/foundations/objects/write-after-pseudo-destructor-element-constant.cpp`, `tests/foundations/objects/write-after-pseudo-destructor-variable-constant.cpp`, `tests/foundations/objects/write-after-pseudo-destructor-union-array-element-constant.cpp`, `tests/foundations/objects/write-after-pseudo-destructor-union-member-constant.cpp`
 **Source:** X25-7 (`reports/clean-room/X25/report.md`, probe `a10.cpp`), rerun on the matrix in `reports/clean-room/roadmap-13/writer-probes/x25-rules.json`, and by the item F6 writer with `tools/probe_grid.py`.
 **Waits for:** a review (doubt); newest families that agree
 
@@ -19,6 +19,9 @@ pseudo-destructor call. A `constexpr` variable then holds the object.
 | a struct whose element of class type ends by its destructor call | rejects | accepts | rejects | rejects |
 | a struct, the `int` element ended and then assigned 3 | rejects | accepts | accepts | accepts |
 | a local `int` variable ended and then assigned 3 | rejects | rejects | rejects | accepts |
+| a union's `int` array member, an element ended and then assigned 3 | rejects | accepts | accepts | accepts |
+| a union's struct member, its `int` member ended and then assigned 3 | rejects | accepts | accepts | accepts |
+| a union's `int` member, ended and then assigned 3 through its name | accepts | accepts | accepts | accepts |
 
 In the last two rows, Clang rejects the assignment after the end. GCC
 rejects it for a variable and reads it as a new value for an array
@@ -44,6 +47,8 @@ Kept open on 2026-11-11 under decision 0054 (decision 0064, item RV9). The gap r
 Rule text on 2026-11-11 (decision 0064, item RV9): OBJ-2 lists an assignment to a scalar that an explicit destructor call ended, and says that the assignment creates no new object, as the RV9-9 reading gives. `write-after-pseudo-destructor-element-constant.cpp` expects the rejection, with GCC and EDG as overrides, and `write-after-pseudo-destructor-variable-constant.cpp` expects it with EDG as an override (`reports/clean-room/roadmap-13/writer-probes/rv9-points.json`).
 
 Kept open on 2026-11-11 under decision 0054 (decision 0064, item RV9). The read of the RV9 repair diff agrees with the records of RV9-9 and gives no new reading of the answer, so the doubt of RV9-9 stays. The read adds a condition to OBJ-2's item (RV10-R-3). An assignment through the name of a scalar union member that a destructor call ended creates a new object of the member's type, so the assignment is valid, as UNI-5 and UNI-14 give. OBJ-2's item holds for each form of the table, and no test holds the union member form. GCC 16 and EDG 7.0 still differ in the table's fifth row.
+
+Rule text on 2026-11-11 (decision 0065, item F7): OBJ-2's item gains the condition of RV10-R-3. An assignment through the name of a scalar union member that a destructor call ended makes the member active and is valid (UNI-5, UNI-14), and every compiler accepts the form (`write-after-pseudo-destructor-union-member-constant.cpp`). An element of a union's array member does not count, so OBJ-2's item holds for it. `write-after-pseudo-destructor-union-array-element-constant.cpp` expects the rejection, with GCC and EDG as overrides (`reports/clean-room/roadmap-14/writer-probes/rv10-points.json`). The table gains the three union rows. No test holds the row for a struct member of a union. The answer and the **Waits for:** line do not change.
 
 ## Opinions
 

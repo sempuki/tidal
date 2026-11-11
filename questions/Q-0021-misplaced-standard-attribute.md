@@ -1,7 +1,7 @@
 # Q-0021: Is a standard attribute applied to the wrong kind of entity rejected or ignored?
 
 **Status:** provisional
-**Affects:** ATTR-2, `tests/declarations/attributes/noreturn-on-variable.cpp`, `nodiscard-on-variable.cpp`, `no-unique-address-bitfield.cpp`, `nodiscard-on-type-alias.cpp`
+**Affects:** ATTR-2, `tests/declarations/attributes/noreturn-on-variable.cpp`, `nodiscard-on-variable.cpp`, `no-unique-address-bitfield.cpp`, `nodiscard-on-type-alias.cpp`, `maybe-unused-on-type.cpp`
 **Waits for:** newest families that agree
 
 ## Context
@@ -17,6 +17,7 @@ warning, even under `-pedantic-errors`.
 | `[[nodiscard]]` on a variable | accepts, "only applies to ... functions" | accepts, "can only be applied to functions" | rejects |
 | `[[nodiscard]]` on a type alias | accepts, "ignored when applied to a typedef" | accepts, "can only be applied to functions or to class or enumeration types" | rejects |
 | `[[no_unique_address]]` on a bit-field | rejects | accepts, "cannot be applied to a bit-field" | rejects |
+| `[[maybe_unused]]` after the type specifiers, where it applies to the type | rejects, "cannot be applied to types" | accepts, "attribute ignored" | rejects |
 
 The host GCC 16.2 and Clang 22.1 give the same results. No newer
 version of any compiler settles a row.
@@ -49,6 +50,8 @@ option 1 for all three, so that one rule covers every misplaced
 standard attribute.
 
 Kept open on 2026-11-03 under decision 0054, because two of the newest families differ from the answer for `nodiscard` on a variable. Clang 22 and GCC 16 accept that program with a warning. For `noreturn` on a variable and `no_unique_address` on a bit-field, only GCC 16 differs, and ATTR-P1 gives the answer: each standard attribute has a fixed set of places where it can go.
+
+Rule text on 2026-11-11 (decision 0065, item F7): ATTR-2 lists `maybe_unused` on a type, as in `int [[maybe_unused]] c;`, where the attribute applies to the type `int` (ATTR-19). The round 14 writer probe found the form (`reports/clean-room/roadmap-14/writer-probes/grammar-forms.json`). Clang and EDG reject it, and GCC accepts it with a warning, as in the rows above. `maybe-unused-on-type.cpp` expects the rejection with GCC as an override. The answer and the **Waits for:** line do not change.
 
 ## Opinions
 

@@ -807,7 +807,13 @@ Q-0285, and Q-0286 to the EDG project waits on the maintainer
   gap review of the phase 16 text (RV9-14) reaches `false` for the
   concept through the failed substitution into its constraint, and
   finds no sentence in the reference for a failure in the parameter
-  list.
+  list. The read of the RV9 repair diff (RV10-R-5) finds that the
+  reference is silent for a variable template and an `if constexpr`
+  condition, where no constraint is checked. The test's second and
+  third assertions rest on CPT-28 alone. The round 14 writer probe
+  (`reports/clean-room/roadmap-14/writer-probes/rv10-points.json`)
+  gives `false` on every compiler in those two places and in a
+  requires clause.
 - CPT-14: every compiler rejects a trailing clause on a function
   declared at block scope inside a function template. The gap review
   expected a split there (item 27).

@@ -435,7 +435,7 @@ UNI-10 describes.
 
 :::{rule} UNI-5
 :kind: required
-:tests: classes/unions/assign-changes-active.cpp classes/unions/nontrivial-member-needs-construction.cpp classes/unions/union-copy-preserves-active.cpp classes/unions/default-init-no-active-member.cpp foundations/storage/implicit-union-member-assignment.cpp
+:tests: classes/unions/assign-changes-active.cpp classes/unions/nontrivial-member-needs-construction.cpp classes/unions/union-copy-preserves-active.cpp classes/unions/default-init-no-active-member.cpp foundations/storage/implicit-union-member-assignment.cpp foundations/objects/write-after-pseudo-destructor-union-member-constant.cpp
 
 An assignment to a member makes that member active if the assignment
 uses the built-in operator or a trivial assignment operator
@@ -465,7 +465,7 @@ Constant evaluation follows this rule.
 
 :::{rule} UNI-14
 :kind: required
-:tests: classes/unions/construct-activates-constant.cpp classes/unions/construct-switches-active-constant.cpp classes/unions/placement-new-activates.cpp classes/unions/slot-array-constant.cpp classes/unions/destroyed-member-read-constant.cpp classes/unions/array-member-element-address-no-active-member.cpp classes/unions/construct-in-member-of-inactive-member-union-constant.cpp classes/unions/placement-into-union-member-of-new-array-element.cpp classes/unions/array-member-element-steps-no-active-member-constant.cpp classes/unions/construct-at-array-member-element-constant.cpp classes/unions/construct-in-member-of-inactive-member-union-run.cpp classes/unions/trivial-copy-changes-active-member-constant.cpp classes/unions/trivial-move-changes-active-member-constant.cpp
+:tests: classes/unions/construct-activates-constant.cpp classes/unions/construct-switches-active-constant.cpp classes/unions/placement-new-activates.cpp classes/unions/slot-array-constant.cpp classes/unions/destroyed-member-read-constant.cpp classes/unions/array-member-element-address-no-active-member.cpp classes/unions/construct-in-member-of-inactive-member-union-constant.cpp classes/unions/placement-into-union-member-of-new-array-element.cpp classes/unions/array-member-element-steps-no-active-member-constant.cpp classes/unions/construct-at-array-member-element-constant.cpp classes/unions/construct-in-member-of-inactive-member-union-run.cpp classes/unions/trivial-copy-changes-active-member-constant.cpp classes/unions/trivial-move-changes-active-member-constant.cpp foundations/objects/write-after-pseudo-destructor-union-member-constant.cpp
 
 If placement `new` ({rule}`STG-5`, with a form that {rule}`LSUP-7`
 gives) or `std::construct_at` ({rule}`LSUP-10`) creates an object of a member's type at the address of
@@ -767,8 +767,8 @@ active member.
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 159
-of 179 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 160
+of 180 tests.
 
 ### Divergences
 
@@ -918,10 +918,10 @@ configuration.
   13 wrote on classes
   (`reports/review/2026-11-10-gap-review-phase-13-classes-declarations-foundations.md`,
   RV6-A-13) reads the C++23 allowance for `std::construct_at` in
-  constant evaluation as naming only objects whose lifetime began, and
-  a member that is not active has not begun. UNI-14 follows the
-  compilers, which read the lifetime of the union as enough. The gap
-  reviews of phases 15 and 16 (RV8-A-8, RV9-7) keep that reading, and
+  constant evaluation as naming only objects whose lifetime began in
+  the same evaluation, and a member that is not active has not begun.
+  UNI-14 follows the compilers, which read the lifetime of the union as
+  enough. The gap reviews of phases 15 and 16 (RV8-A-8, RV9-7) keep that reading, and
   `documentation/decisions/pending.md` row 4 holds the case with
   {rule}`LSUP-10`.
 - UNI-14, UNI-6: at run time, the same review reads a construction

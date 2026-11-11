@@ -1041,6 +1041,12 @@ and the questions say so.
   GCC 16, Clang 22, and EDG reject, for a call and for a data member,
   also when an explicit specialization declares the member. DEP-30
   allows each result.
+- DEP-30: a jump condition of {rule}`JMP-7` or {rule}`JMP-14` does not
+  depend on the parameters and is not on DEP-30's list. JMP-14 checks
+  the labels at the definition, also in a template that no
+  specialization uses. Every compiler rejects a label name that occurs
+  twice and a `break` or `continue` outside a loop in such a template.
+  GCC alone accepts a `goto` to a missing label there (X24-3).
 - DEP-29: every compiler rejects `template <class T> int take(T::type)`
   with a body at the definition, with no specialization. Clang reports
   a missing `typename`, GCC expects `;` before the body, and EDG reports

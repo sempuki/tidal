@@ -164,7 +164,7 @@ must also obey this rule.
 
 :::{rule} CE-3
 :kind: reject
-:tests: foundations/constant-evaluation/read-non-const-variable.cpp foundations/constant-evaluation/read-const-runtime-init.cpp foundations/constant-evaluation/read-const-constant-init.cpp foundations/constant-evaluation/read-parameter-outside.cpp foundations/constant-evaluation/const-enum-usable.cpp foundations/constant-evaluation/const-volatile-not-usable.cpp foundations/constant-evaluation/read-extended-temporary-not-const.cpp foundations/constant-evaluation/read-extended-temporary-class.cpp foundations/constant-evaluation/read-extended-temporary-nested.cpp foundations/constant-evaluation/reference-reads-constant-object.cpp foundations/constant-evaluation/parameter-if-constexpr-consteval.cpp foundations/constant-evaluation/parameter-nested-call.cpp foundations/constant-evaluation/parameter-static-assert.cpp foundations/constant-evaluation/parameter-template-argument-consteval.cpp foundations/constant-evaluation/reference-runtime-initializer.cpp foundations/constant-evaluation/reference-constant-initializer.cpp foundations/constant-evaluation/reference-to-local-not-usable.cpp
+:tests: foundations/constant-evaluation/read-non-const-variable.cpp foundations/constant-evaluation/read-const-runtime-init.cpp foundations/constant-evaluation/read-const-constant-init.cpp foundations/constant-evaluation/read-parameter-outside.cpp foundations/constant-evaluation/const-enum-usable.cpp foundations/constant-evaluation/const-volatile-not-usable.cpp foundations/constant-evaluation/read-extended-temporary-not-const.cpp foundations/constant-evaluation/read-extended-temporary-class.cpp foundations/constant-evaluation/read-extended-temporary-nested.cpp foundations/constant-evaluation/reference-reads-constant-object.cpp foundations/constant-evaluation/parameter-if-constexpr-consteval.cpp foundations/constant-evaluation/parameter-nested-call.cpp foundations/constant-evaluation/parameter-static-assert.cpp foundations/constant-evaluation/parameter-template-argument-consteval.cpp foundations/constant-evaluation/reference-runtime-initializer.cpp foundations/constant-evaluation/reference-constant-initializer.cpp foundations/constant-evaluation/reference-to-local-not-usable.cpp foundations/constant-evaluation/mutable-member-read-outside.cpp foundations/constant-evaluation/struct-copy-mutable-member-outside.cpp
 
 Constant evaluation must not do either of these with a variable that
 the evaluation did not create, unless the variable is
@@ -186,6 +186,9 @@ These variables are usable:
   cannot refer to such an object (CE-14),
 - a `const` temporary that the initializer of a `constexpr` reference
   extends (CE-14, {question}`Q-0193`).
+
+A `mutable` member of a usable variable is not usable, so constant
+evaluation must not read the member ({question}`Q-0449`).
 
 A function parameter is usable only during an evaluation that called
 the function, and {rule}`CE-30` gives the places where a new
@@ -410,7 +413,7 @@ value to each of its scalar parts. These conditions apply:
 
 :::{rule} CE-22
 :kind: reject
-:tests: foundations/constant-evaluation/copy-unset-member.cpp foundations/constant-evaluation/copy-unset-array-element.cpp foundations/constant-evaluation/unset-member-not-copied.cpp foundations/constant-evaluation/copy-after-every-part-set.cpp foundations/constant-evaluation/result-returned-local-unset-element.cpp declarations/initialization/forms/copy-indeterminate-unsigned-char.cpp foundations/constant-evaluation/read-returned-local-unset-element.cpp foundations/constant-evaluation/return-local-unset-member.cpp foundations/constant-evaluation/return-prvalue-unset-member-read.cpp foundations/constant-evaluation/union-copy-part-with-no-value.cpp foundations/constant-evaluation/union-copy-part-with-no-value-read.cpp foundations/constant-evaluation/union-copy-mutable-member-outside.cpp foundations/constant-evaluation/union-copy-mutable-member-assignment-outside.cpp foundations/constant-evaluation/union-copy-mutable-member-inside.cpp
+:tests: foundations/constant-evaluation/copy-unset-member.cpp foundations/constant-evaluation/copy-unset-array-element.cpp foundations/constant-evaluation/unset-member-not-copied.cpp foundations/constant-evaluation/copy-after-every-part-set.cpp foundations/constant-evaluation/result-returned-local-unset-element.cpp declarations/initialization/forms/copy-indeterminate-unsigned-char.cpp foundations/constant-evaluation/read-returned-local-unset-element.cpp foundations/constant-evaluation/return-local-unset-member.cpp foundations/constant-evaluation/return-prvalue-unset-member-read.cpp foundations/constant-evaluation/union-copy-part-with-no-value.cpp foundations/constant-evaluation/union-copy-part-with-no-value-read.cpp foundations/constant-evaluation/union-copy-mutable-member-outside.cpp foundations/constant-evaluation/union-copy-mutable-member-assignment-outside.cpp foundations/constant-evaluation/union-copy-mutable-member-inside.cpp foundations/constant-evaluation/struct-copy-mutable-member-outside.cpp foundations/constant-evaluation/union-copy-inactive-mutable-member-outside.cpp
 
 Constant evaluation must not read a scalar object that has no value
 ({rule}`OBJ-2`). The rule also applies where a run-time read is not
@@ -423,7 +426,8 @@ copies its active member and reads none of the member's parts. A part
 that has no value in the source has no value in the target
 ({question}`Q-0448`). If the source's active member is `mutable`, the
 evaluation must have created the source
-({question}`Q-0449`).
+({question}`Q-0449`). A `mutable` member that is not active sets no
+such limit.
 :::
 
 :::{rule} CE-23
@@ -668,7 +672,7 @@ constexpr All all{.a = 1};            // rejected: All is not literal (CE-23)
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 136
-of 171 tests.
+of 174 tests.
 
 ### Divergences
 
@@ -736,12 +740,16 @@ of 171 tests.
   whether a part that has no value in the source of a union's trivial
   copy has a value in the copy. It has none, so a read of it is
   rejected, as Clang and GCC say. EDG accepts the read.
-- {question}`Q-0449` (CE-22; open): whether
+- {question}`Q-0449` (CE-3, CE-22; open): whether
   constant evaluation can copy a union whose active member is
   `mutable` from a union that the evaluation did not create. It
   cannot, with the copy constructor or the copy assignment, as Clang
   says. GCC rejects the constructor and accepts the assignment, and EDG
-  accepts both.
+  accepts both. A read of a `mutable` member of a `constexpr` variable,
+  and the copy of a struct with such a member, are not valid (CE-3), as
+  Clang and GCC say, and EDG accepts them. The copy of a union whose
+  `mutable` member is not active is valid, as EDG says, and Clang and
+  GCC reject it.
 - {question}`Q-0447` (CE-21; open):
   whether a part that an explicit destructor call ended counts as a
   part with no value in a constant. It does, as every newest compiler
@@ -773,6 +781,7 @@ family column gives the outcome that the test expects on that family.
 | `foundations/storage/allocation-assign-before-construction-pod-member.cpp` | LSUP-11, CE-9 | reject | reject | accept | accept | {question}`Q-0421` |
 | `foundations/storage/allocation-assign-before-construction-user-assignment.cpp` | LSUP-11, CE-9 | reject | reject | accept | accept | {question}`Q-0421` |
 | `literal-temporary-volatile-member.cpp` | CE-17, CE-23 | accept | Clang 22: accept; Clang 18: reject | reject | reject | {question}`Q-0335` |
+| `mutable-member-read-outside.cpp` | CE-3 | reject | reject | reject | accept | {question}`Q-0449` |
 | `nonliteral-temporary-in-function.cpp` | CE-17 | accept | Clang 22: accept; Clang 18: reject | reject | accept | {question}`Q-0335` |
 | `nonliteral-variable-reached.cpp` | CE-17 | accept | Clang 22: accept; Clang 18: reject | accept | accept | {question}`Q-0335` |
 | `read-extended-temporary-class.cpp` | CE-3, CE-14 | accept | accept | reject | accept | {question}`Q-0193` |
@@ -785,6 +794,8 @@ family column gives the outcome that the test expects on that family.
 | `return-local-unset-member.cpp` | CE-22, CPY-12 | reject | reject | accept | reject | {question}`Q-0115` |
 | `string-literal-identity-variables.cpp` | CE-13 | reject | reject | accept | accept | {question}`Q-0033` |
 | `string-literal-identity.cpp` | CE-13 | reject | reject | accept | accept | {question}`Q-0033` |
+| `struct-copy-mutable-member-outside.cpp` | CE-3, CE-22 | reject | reject | reject | accept | {question}`Q-0449` |
+| `union-copy-inactive-mutable-member-outside.cpp` | CE-22 | accept | reject | reject | accept | {question}`Q-0449` |
 | `union-copy-mutable-member-assignment-outside.cpp` | CE-22 | reject | reject | accept | accept | {question}`Q-0449` |
 | `union-copy-mutable-member-outside.cpp` | CE-22 | reject | reject | reject | accept | {question}`Q-0449` |
 | `union-copy-part-with-no-value-read.cpp` | CE-22 | reject | reject | reject | accept | {question}`Q-0448` |
@@ -867,7 +878,12 @@ family column gives the outcome that the test expects on that family.
   Clang and GCC also reject the copy of a union whose `mutable` member
   is not active, and of a struct with a `mutable` member, from a
   `constexpr` variable, and EDG accepts both. CE-22 names only the
-  active member, and no test holds the other forms.
+  active member. The read of the RV9 repair diff (RV10-R-4) reads the
+  copy of the union as valid, and the copy of the struct and a read of
+  the `mutable` member as not valid. CE-3 states the second case, and
+  `union-copy-inactive-mutable-member-outside.cpp`,
+  `struct-copy-mutable-member-outside.cpp`, and
+  `mutable-member-read-outside.cpp` hold the three forms.
 - CE-26: all eight compilers accept constant evaluation of
   `i++ + i++`, `i + i++`, `i++ * i`, `(i = 1) + (i = 2)`, and
   `i - ++i`. CE-26 is class `no-diagnostic` because no compiler detects

@@ -487,6 +487,8 @@ status, and the first sentence of its answer section.
 | [Q-0448](Q-0448-union-copy-part-with-no-value.md) | After a trivial copy of a union in constant evaluation, does a part that had no value in the source have a value in the copy? | provisional | The part has no value in the copy, and a read of it is rejected |
 | [Q-0449](Q-0449-union-copy-mutable-member.md) | Can constant evaluation copy a union whose active member is `mutable` from a union that the evaluation did not create? | provisional | The copy is not valid when the source's active member is `mutable` and the evaluation did not create the source, for the constructor and for the assignment |
 | [Q-0450](Q-0450-decltype-base-braced-member-initializer.md) | Can a member initializer that names its base with `decltype` take a braced list? | provisional | The braced form is valid |
+| [Q-0451](Q-0451-goto-missing-label-in-template.md) | Is a `goto` to a missing label rejected in a templated function that no specialization uses or in a discarded statement? | provisional | The implementation rejects each form |
+| [Q-0452](Q-0452-statement-scope-end-in-constant-evaluation.md) | In constant evaluation, when does a `return` or a `break` end the condition and initializer variables of a statement? | provisional | Constant evaluation ends the objects as a run does |
 
 ## Status values
 

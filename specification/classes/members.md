@@ -155,7 +155,7 @@ of its own type. A pointer to the class type is valid.
 
 :::{rule} CLS-2
 :kind: required
-:tests: classes/members/complete-in-member-bodies.cpp classes/members/complete-in-default-member-init.cpp classes/members/complete-in-default-argument.cpp classes/members/noexcept-complete-class.cpp expressions/postfix/default-template-argument-incomplete-class.cpp declarations/functions/definitions/member-in-class-specialization-over-class.cpp declarations/functions/definitions/nested-member-type-completed-in-enclosing-class.cpp declarations/functions/definitions/friend-in-class-specialization-over-class.cpp templates/instantiation/class-point-after-enclosing-class.cpp foundations/constant-evaluation/static-constexpr-member-calls-own-member.cpp
+:tests: classes/members/complete-in-member-bodies.cpp classes/members/complete-in-default-member-init.cpp classes/members/complete-in-default-argument.cpp classes/members/noexcept-complete-class.cpp expressions/postfix/default-template-argument-incomplete-class.cpp declarations/functions/definitions/member-in-class-specialization-over-class.cpp declarations/functions/definitions/nested-member-type-completed-in-enclosing-class.cpp declarations/functions/definitions/friend-in-class-specialization-over-class.cpp templates/instantiation/class-point-after-enclosing-class.cpp foundations/constant-evaluation/static-constexpr-member-calls-own-member.cpp templates/instantiation/noexcept-operand-sees-complete-class.cpp
 
 The class is complete inside:
 
@@ -714,8 +714,8 @@ struct Pointers { char c; int& r; int Plain::* p; void (Shape::* f)(); };
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 163
-of 179 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 164
+of 180 tests.
 
 ### Divergences
 

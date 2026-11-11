@@ -158,10 +158,12 @@ A change to the range in the body does not move the end.
 
 :::{rule} RFOR-4
 :kind: required
-:tests: statements/range-for/temporary-range-lives.cpp statements/range-for/temporary-in-range-expression.cpp
+:tests: statements/range-for/temporary-range-lives.cpp statements/range-for/temporary-in-range-expression.cpp foundations/objects/statement-scope-ends-after-goto.cpp foundations/objects/statement-scope-ends-after-return.cpp
 
 Each {term}`temporary object` that the range expression creates lives until the
-loop ends.
+loop ends. A jump, a `return`, or an exception that leaves the loop
+also ends it. The temporary then ends after the objects of the body
+({rule}`OBJ-3`).
 :::
 
 ## Examples

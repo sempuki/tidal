@@ -7,7 +7,8 @@ The following statements transfer control:
 - `return`,
 - `goto`.
 
-A label names a statement that `goto` can transfer control to.
+An identifier {term}`label` names a statement that `goto` can transfer
+control to.
 
 ## Principles
 
@@ -38,15 +39,15 @@ rejects a `goto` that it reaches ({rule}`CE-17`).
 
 A label belongs to the whole function and to no other name space
 ({principle}`NAM-P4`), so a `goto` can name a label that comes later,
-and a label can share a name with a variable. A lambda body is a
-different function, so a jump cannot cross the boundary of a lambda body
-in either direction.
+and a label can share a name with a variable. A lambda body and a member
+function of a local class are different functions, so a jump cannot
+cross the boundary of such a body in either direction.
 
 Some regions limit the jumps that enter or leave them:
 
 | Region | Entry | Exit | Jumps | Rule |
 |---|---|---|---|---|
-| A lambda body | not valid | not valid | `break`, `continue`, `goto` | JMP-7, JMP-14 |
+| A lambda body, or a member function of a local class | not valid | not valid | `break`, `continue`, `goto` | JMP-7, JMP-14 |
 | A try block or a {term}`handler` | not valid | valid | `goto`, `case`, `default` | {rule}`TRY-7` |
 | A branch of `if constexpr` or `if consteval` | not valid | valid | `goto`, `case`, `default` | {rule}`IF-17` |
 | A handler of a constructor's function try block | | no `return` | `return` | {rule}`TRY-17` |
@@ -63,9 +64,9 @@ enters a scope must not skip the creation of an object at the target
 
 | Jump | Result |
 |---|---|
-| Out of a block | The block's variables are destroyed in the order of {rule}`OBJ-3`. `return` also destroys the variables, after `return` has taken its value. |
+| Out of a block, or out of the scope of an `if`, a `switch`, or a loop | The block's or the scope's variables are destroyed in the order of {rule}`OBJ-3`. `return` also destroys the variables, after `return` has taken its value. |
 | Backward past a declaration | The variable is destroyed, and the declaration makes the variable again. |
-| Forward past an initialization | Rejected, because the variable would exist without a value |
+| A `goto`, `case`, or `default` forward past an initialization | Rejected, because the variable would exist without a value. `break`, `continue`, and `return` only leave scopes, so they skip no declaration. |
 
 A declaration with no initializer whose {term}`default initialization` does
 nothing has nothing to skip, so a jump can pass it. The variable still
@@ -105,11 +106,13 @@ storage belongs to the caller.
 
 :::{rule} JMP-7
 :kind: reject
-:tests: statements/jumps/break-outside.cpp statements/jumps/continue-outside.cpp statements/jumps/break-in-lambda-in-loop.cpp
+:tests: statements/jumps/break-outside.cpp statements/jumps/continue-outside.cpp statements/jumps/break-in-lambda-in-loop.cpp statements/jumps/break-in-local-class-member.cpp statements/jumps/continue-outside-loop-template-never-used.cpp
 
 `break` must be inside a loop or a `switch`. `continue` must be inside a
-loop. A lambda body is a separate function, so the loop or `switch` must
-be inside the lambda too.
+loop. A lambda body and a member function of a local class are separate
+functions, so the loop or `switch` must be inside that body too. The
+implementation checks these conditions at the definition, also in a
+template that no specialization uses.
 :::
 
 :::{rule} JMP-3
@@ -133,7 +136,7 @@ other than `void` (JMP-3).
 
 :::{rule} JMP-5
 :kind: required
-:tests: statements/jumps/label-function-scope.cpp statements/jumps/label-separate-names.cpp
+:tests: statements/jumps/label-function-scope.cpp statements/jumps/label-separate-names.cpp statements/jumps/label-name-in-lambda-and-function.cpp statements/jumps/label-name-in-local-class-and-function.cpp
 
 A label is visible in all of its function. A `goto` can name a label
 that comes before or after the `goto`. A label name does not conflict
@@ -143,20 +146,26 @@ variables or types.
 
 :::{rule} JMP-14
 :kind: reject
-:tests: statements/jumps/duplicate-label.cpp statements/jumps/goto-undefined-label.cpp statements/jumps/goto-other-function.cpp statements/jumps/goto-out-of-lambda.cpp
+:tests: statements/jumps/duplicate-label.cpp statements/jumps/goto-undefined-label.cpp statements/jumps/goto-other-function.cpp statements/jumps/goto-out-of-lambda.cpp statements/jumps/goto-out-of-local-class-member.cpp statements/jumps/label-name-in-lambda-and-function.cpp statements/jumps/label-name-in-local-class-and-function.cpp statements/jumps/duplicate-label-template-never-used.cpp statements/jumps/goto-missing-label-template-never-used.cpp statements/jumps/goto-missing-label-class-template-member.cpp statements/jumps/goto-missing-label-generic-lambda.cpp statements/jumps/goto-missing-label-discarded-branch.cpp
 
 These conditions apply to labels (JMP-5):
 
 - Each label name must occur only once in a function.
-- A `goto` must name a label of its own function. A lambda body is a
-  separate function.
+- A `goto` must name a label of its own function. A lambda body and a
+  member function of a local class are separate functions.
+
+The implementation checks these conditions at the definition of the
+function. The check also applies in a template that no specialization
+uses, and in a {term}`discarded statement` ({rule}`IF-22`,
+{question}`Q-0451`).
 :::
 
 :::{rule} JMP-6
 :kind: reject
-:tests: statements/jumps/goto-past-initialization.cpp statements/jumps/goto-past-class-object.cpp statements/jumps/goto-past-uninitialized-scalar.cpp statements/jumps/goto-past-static.cpp statements/jumps/goto-past-nontrivial-destructor.cpp statements/jumps/goto-past-trivial-class.cpp statements/jumps/goto-skips-nontrivial-destructor.cpp classes/constructors/trivial-default-base-nontrivial.cpp classes/constructors/trivial-default-defaulted.cpp classes/constructors/trivial-default-implicit.cpp classes/constructors/trivial-default-member-initializer.cpp classes/constructors/trivial-default-member-nontrivial.cpp classes/constructors/trivial-default-user-provided.cpp classes/constructors/trivial-default-virtual-base.cpp classes/constructors/trivial-default-virtual-function.cpp classes/constructors/trivial-default-defaulted-later.cpp statements/loops/jump-into-for-body-past-initialized-declaration.cpp statements/loops/jump-into-while-body-past-condition-declaration.cpp statements/loops/jump-into-range-for-body.cpp
+:tests: statements/jumps/goto-past-initialization.cpp statements/jumps/goto-past-class-object.cpp statements/jumps/goto-past-uninitialized-scalar.cpp statements/jumps/goto-past-static.cpp statements/jumps/goto-past-nontrivial-destructor.cpp statements/jumps/goto-past-trivial-class.cpp statements/jumps/goto-skips-nontrivial-destructor.cpp classes/constructors/trivial-default-base-nontrivial.cpp classes/constructors/trivial-default-defaulted.cpp classes/constructors/trivial-default-implicit.cpp classes/constructors/trivial-default-member-initializer.cpp classes/constructors/trivial-default-member-nontrivial.cpp classes/constructors/trivial-default-user-provided.cpp classes/constructors/trivial-default-virtual-base.cpp classes/constructors/trivial-default-virtual-function.cpp classes/constructors/trivial-default-defaulted-later.cpp statements/loops/jump-into-for-body-past-initialized-declaration.cpp statements/loops/jump-into-while-body-past-condition-declaration.cpp statements/loops/jump-into-range-for-body.cpp statements/jumps/continue-before-later-declaration.cpp
 
-A jump must not skip the declaration of a variable with
+A `goto`, or a transfer to a `case` or `default` label ({rule}`SW-5`),
+must not skip the declaration of a variable with
 {term}`automatic storage` that is in scope at the target. This rule does
 not apply to a declaration with no initializer whose type is one of
 these:
@@ -167,7 +176,9 @@ these:
 
 The destructor of the class plays no part ({question}`Q-0041`).
 
-A jump can skip the declaration of a `static` local variable.
+A jump can skip the declaration of a `static` local variable. `break`,
+`continue`, and `return` only leave scopes, so this rule does not apply
+to them.
 :::
 
 :::{rule} JMP-16
@@ -240,7 +251,7 @@ statement always acts on the innermost loop or `switch` (JMP-1, JMP-2).
 
 :::{rule} JMP-2
 :kind: required
-:tests: statements/jumps/continue-for.cpp statements/jumps/continue-while-condition.cpp statements/jumps/continue-in-switch.cpp statements/jumps/continue-range-for.cpp statements/jumps/continue-ends-blocks-before-step.cpp
+:tests: statements/jumps/continue-for.cpp statements/jumps/continue-while-condition.cpp statements/jumps/continue-in-switch.cpp statements/jumps/continue-range-for.cpp statements/jumps/continue-ends-blocks-before-step.cpp statements/jumps/continue-before-later-declaration.cpp
 
 `continue` goes to the end of the body of the innermost loop that contains
 it. The objects of each block that `continue` leaves, the body
@@ -267,10 +278,12 @@ local variables in scope, in the order of {rule}`OBJ-3`.
 
 :::{rule} JMP-9
 :kind: required
-:tests: statements/jumps/goto-out-destroys.cpp statements/jumps/goto-back-recreates.cpp
+:tests: statements/jumps/goto-out-destroys.cpp statements/jumps/goto-back-recreates.cpp foundations/objects/statement-scope-ends-after-goto.cpp
 
 A jump out of a block destroys the variables of the block
-({rule}`OBJ-3`). A jump back to
+({rule}`OBJ-3`). A jump out of an `if`, a `switch`, or a loop also
+destroys the variables of its initializer and condition, after those of
+its body. A jump back to
 a point before a declaration destroys the variable. The declaration then
 creates the variable again.
 :::
@@ -344,6 +357,10 @@ void g() { return; }
 again:
   if (++n < 3) goto again;       // backward jump
 
+auto step = [] {
+again:;                          // valid: the lambda body has its own labels
+};
+
 goto skip;
 int x = 1;                       // rejected: the jump skips this
 skip:
@@ -363,7 +380,7 @@ int pick(int v) {
 
 ## Evidence
 
-All eight compilers agree on 65 of 69 tests. The results are in
+All eight compilers agree on 73 of 81 tests. The results are in
 `tests/RESULTS.md`.
 
 ### Divergences
@@ -379,6 +396,12 @@ All eight compilers agree on 65 of 69 tests. The results are in
   write a variable whose declaration a jump skipped. It can, and a read
   after the write gives the value, as Clang says. GCC and EDG reject
   the write.
+- {question}`Q-0451` (JMP-14; open):
+  whether a `goto` to a missing label is rejected in a function
+  template that no specialization uses, in a member function of a
+  class template, in a generic lambda never called, and in a discarded
+  statement of a template. It is, as Clang and EDG say. GCC accepts
+  each form.
 - {question}`Q-0422` (JMP-10; settled on JMP-P3): whether a structured binding named
   in a `return` statement is an xvalue. It is not, and the name stays an
   lvalue, as Clang and GCC give. EDG gives another type.
@@ -387,6 +410,10 @@ All eight compilers agree on 65 of 69 tests. The results are in
 
 | Test | Rules | Expected | Clang | GCC | EDG | Question |
 |---|---|---|---|---|---|---|
+| `goto-missing-label-class-template-member.cpp` | JMP-14 | reject | reject | accept | reject | {question}`Q-0451` |
+| `goto-missing-label-discarded-branch.cpp` | JMP-14 | reject | reject | accept | reject | {question}`Q-0451` |
+| `goto-missing-label-generic-lambda.cpp` | JMP-14 | reject | reject | accept | reject | {question}`Q-0451` |
+| `goto-missing-label-template-never-used.cpp` | JMP-14 | reject | reject | accept | reject | {question}`Q-0451` |
 | `goto-past-nontrivial-destructor.cpp` | JMP-6 | accept | reject | accept | reject | {question}`Q-0041` |
 | `goto-skips-nontrivial-destructor.cpp` | JMP-6 | accept | reject | accept | reject | {question}`Q-0041` |
 | `return-structured-binding-lvalue.cpp` | JMP-10 | accept | accept | accept | reject | {question}`Q-0422` |
@@ -394,6 +421,22 @@ All eight compilers agree on 65 of 69 tests. The results are in
 
 ### Notes
 
+- JMP-6: every compiler accepts a `continue`, a `break`, and a
+  `return` before a later initialized declaration in the same body,
+  also of a class with a constructor and a destructor in constant
+  evaluation (`continue-before-later-declaration.cpp`). Every compiler
+  rejects a `goto` to the end of the body past such a declaration
+  (`reports/clean-room/roadmap-14/writer-probes/x24-compile.json`,
+  X24-2).
+- JMP-7, JMP-14: every compiler rejects a `break`, a `continue`, and a
+  `goto` that leave a member function of a local class, and accepts one
+  label name in such a member function and in its enclosing function,
+  as for a lambda body (X24-6, X24-7).
+- JMP-7, JMP-14: every compiler rejects, in a function template that no
+  specialization uses, a label name that occurs twice and a `continue`
+  outside a loop. Every compiler rejects a `break` outside a loop in a
+  discarded branch of a used function template. Only the `goto` to a
+  missing label splits (X24-3).
 - JMP-17: GCC rejects `break outer;` as a missing `;`. Clang names the
   form "named break" and accepts it only in a later C mode.
 - JMP-16: every compiler rejects a read before the write during

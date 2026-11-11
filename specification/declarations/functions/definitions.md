@@ -180,12 +180,13 @@ not be inside a function body.
 
 :::{rule} FN-12
 :kind: reject
-:tests: declarations/functions/definitions/incomplete-param-definition.cpp declarations/functions/definitions/incomplete-param-declaration.cpp declarations/functions/definitions/typedef-function-definition.cpp declarations/functions/definitions/member-in-class-specialization-over-class.cpp declarations/functions/definitions/member-in-class-type-completed-after-class.cpp declarations/functions/definitions/nested-member-type-completed-in-enclosing-class.cpp declarations/functions/definitions/friend-in-class-specialization-over-class.cpp declarations/functions/definitions/friend-in-class-type-completed-after-class.cpp
+:tests: declarations/functions/definitions/incomplete-param-definition.cpp declarations/functions/definitions/incomplete-param-declaration.cpp declarations/functions/definitions/typedef-function-definition.cpp declarations/functions/definitions/member-in-class-specialization-over-class.cpp declarations/functions/definitions/member-in-class-type-completed-after-class.cpp declarations/functions/definitions/nested-member-type-completed-in-enclosing-class.cpp declarations/functions/definitions/friend-in-class-specialization-over-class.cpp declarations/functions/definitions/friend-in-class-type-completed-after-class.cpp declarations/functions/definitions/nested-class-defined-later-return-types.cpp declarations/functions/definitions/nested-class-defined-later-incomplete-return.cpp
 
 In a function definition, each parameter type and the return type must
 be complete, except `void` and except in a deleted definition. If a
 class defines a member or friend function, its types must be complete
-where the outermost enclosing class ends. A declaration that is not a definition can
+where the outermost class definition that contains the function
+definition ends. A declaration that is not a definition can
 use incomplete types. A definition must use a function
 {term}`declarator`, and a `typedef` name of a function type cannot
 define a function.
@@ -259,7 +260,7 @@ function.
 
 :::{rule} FN-7
 :kind: recommended
-:tests: declarations/functions/definitions/flow-off-end-warns.cpp declarations/functions/definitions/switch-every-enumerator-no-return.cpp declarations/functions/definitions/flow-off-end-constant-paths.cpp declarations/functions/definitions/flow-off-end-ending-calls.cpp declarations/functions/definitions/flow-off-end-loop-break-warns.cpp declarations/functions/definitions/flow-off-end-switch-no-default-warns.cpp declarations/functions/definitions/flow-off-end-plain-call-warns.cpp declarations/functions/definitions/flow-off-end-goto-loop.cpp declarations/functions/definitions/flow-off-end-main-no-warning.cpp
+:tests: declarations/functions/definitions/flow-off-end-warns.cpp declarations/functions/definitions/switch-every-enumerator-no-return.cpp declarations/functions/definitions/flow-off-end-constant-paths.cpp declarations/functions/definitions/flow-off-end-ending-calls.cpp declarations/functions/definitions/flow-off-end-loop-break-warns.cpp declarations/functions/definitions/flow-off-end-switch-no-default-warns.cpp declarations/functions/definitions/flow-off-end-plain-call-warns.cpp declarations/functions/definitions/flow-off-end-goto-loop.cpp declarations/functions/definitions/flow-off-end-main-no-warning.cpp declarations/functions/definitions/flow-off-end-goto-out-of-loop-warns.cpp declarations/functions/definitions/flow-off-end-inner-break-no-warning.cpp
 
 An implementation should warn if control can reach the end of a function
 that returns a value, other than `main`. Reaching the end of `main`
@@ -269,7 +270,9 @@ end a path:
 - a `return` statement,
 - a throw-expression,
 - a call of a function declared `[[noreturn]]`,
-- a loop whose condition is a constant `true`, if no `break` leaves it.
+- a loop whose condition is a constant `true`, if no `break` of that
+  loop and no `goto` to a label outside it leaves it. A `break` in a
+  nested loop or `switch` ends only that statement.
 
 An `if` with a constant condition takes only the selected branch. A
 `switch` without a `default` label can complete, whatever its cases are.
@@ -298,7 +301,7 @@ void name() {
 
 ## Evidence
 
-All eight compilers agree on 55 of 68 tests. The results are in
+All eight compilers agree on 59 of 72 tests. The results are in
 `tests/RESULTS.md`.
 
 ### Divergences
@@ -409,6 +412,21 @@ EDG skips the tests that use `-Wall` or `-Werror`.
     with a member of the class's type, and cannot return a type that is
     completed only after the class (`friend-in-class-specialization-over-class.cpp`,
     `friend-in-class-type-completed-after-class.cpp`).
+- FN-12: a nested class can be defined after its enclosing class, with
+  a qualified name. Its member and friend functions check their types
+  where that definition ends. Every compiler accepts such functions
+  that return the nested class or `Holder<Inner>`, and rejects a return
+  type that is completed only after the definition
+  (`nested-class-defined-later-return-types.cpp`,
+  `nested-class-defined-later-incomplete-return.cpp`). The read of the
+  RV9 repair diff asked for the case (RV10-R-2).
+- FN-7: under `-Werror -Wreturn-type`, every Clang and GCC warns when
+  a `goto` leaves a `while (true)` or a `for (;;)` loop, and when a
+  `break` leaves the loop itself. None warns when a `break` leaves only
+  an inner `switch`, `for`, or `while`
+  (`reports/clean-room/roadmap-14/writer-probes/x24-warnings.json`,
+  X24-4). GCC gives the warning only when it generates code, and the
+  matrix compiles each test to an object file.
 - FN-10: Clang 22 and GCC 16 destroy a by-value parameter at the end of
   the caller's full expression, after the next operand of a comma.
 - FN-6, FN-10, FN-11 with `-m32`: the matrix runs no program built with

@@ -140,7 +140,7 @@ executes at least one time.
 
 :::{rule} LOOP-3
 :kind: required
-:tests: statements/loops/for-order.cpp statements/loops/for-sequence.cpp statements/loops/for-parts-optional.cpp statements/loops/for-condition-destroyed-after-step.cpp statements/loops/for-init-destroyed-once.cpp
+:tests: statements/loops/for-order.cpp statements/loops/for-sequence.cpp statements/loops/for-parts-optional.cpp statements/loops/for-condition-destroyed-after-step.cpp statements/loops/for-init-destroyed-once.cpp foundations/objects/statement-scope-ends-after-goto.cpp foundations/objects/statement-scope-ends-after-return.cpp foundations/objects/statement-scope-ends-after-return-constant.cpp
 
 `for` executes its initializer one time. In each iteration, `for`:
 
@@ -151,7 +151,9 @@ executes at least one time.
 A variable that the condition declares is destroyed after the
 iteration expression. Each part can be absent, and an absent condition is
 `true`. A variable that the initializer declares is created one time and
-destroyed one time, when the statement ends, also after a `break`.
+destroyed one time, when the statement ends. The statement also ends
+after a `break`, a `goto`, a `return`, or an exception that leaves it
+({rule}`OBJ-3`).
 :::
 
 :::{rule} LOOP-9
@@ -202,12 +204,19 @@ compile.
   expression. It is destroyed after, as Clang and GCC 16 do at run time.
   GCC 14 destroys it before. During constant evaluation EDG destroys it
   before the body.
+- {question}`Q-0452` (LOOP-3,
+  OBJ-3; open): whether constant evaluation ends a statement's
+  condition and initializer variables after a `return` as a run does.
+  It does, as Clang and GCC 14 give. GCC 16 skips the condition
+  variable's destructor after a `return`, and EDG ends the variables
+  before the body's objects.
 
 ### Split tests
 
 | Test | Rules | Expected | Clang | GCC | EDG | Question |
 |---|---|---|---|---|---|---|
 | `for-condition-destroyed-after-step.cpp` | LOOP-3 | run | run | GCC 16: run; GCC 14: run-fail | accept | {question}`Q-0044` |
+| `foundations/objects/statement-scope-ends-after-return-constant.cpp` | OBJ-3, LOOP-3 | run | run | GCC 16: reject; GCC 14: run | reject | {question}`Q-0044`, {question}`Q-0452` |
 
 ### Notes
 

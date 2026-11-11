@@ -115,7 +115,7 @@ The {term}`lifetime` of an object begins and ends at these points:
 |---|---|---|
 | A class object | Its initialization completes. That is the constructor, with the body of a delegating constructor, or the initialization of each element of an aggregate. | Its destructor call starts. |
 | A scalar object | Its storage is obtained and its initializer completes. A scalar with no initializer begins with its storage, before it has a value. | It is destroyed ({rule}`DTOR-6`), or its storage is released or reused (OBJ-10). |
-| An array | Its storage is obtained and its initialization, if any, completes, or an operation of {rule}`STG-8` creates it. If the array has an initializer, or its elements have a constructor that is not {term}`trivial`, the array begins when the initialization of its last element completes. Each element begins as the row of its own type says. An element of an array that an operation creates can begin later than the array ({rule}`STG-28`). | It is destroyed, or its storage is released or reused (OBJ-10). Each element ends as the row of its own type says. |
+| An array | Its storage is obtained and its initialization, if any, completes, or an operation of {rule}`STG-8` creates it. If the array has an initializer, or its element type is a class whose {term}`default constructor` is not {term}`trivial`, the array begins when the initialization of its last element completes. Each element begins as the row of its own type says. An element of an array that an operation creates can begin later than the array ({rule}`STG-28`). | It is destroyed, or its storage is released or reused (OBJ-10). Each element ends as the row of its own type says. |
 
 So a read or a write of a scalar during its own initializer is outside
 its lifetime ({rule}`OBJ-2`, {question}`Q-0368`). For destruction, an
@@ -128,12 +128,16 @@ operation creates it, and {rule}`STG-27` gives the end of storage.
 
 :::{rule} OBJ-3
 :kind: required
-:tests: foundations/objects/block-reverse-order.cpp foundations/objects/nested-block-ends-first.cpp foundations/objects/early-return-destroys.cpp foundations/objects/loop-body-each-iteration.cpp foundations/objects/constant-evaluation-same-order.cpp foundations/objects/unbraced-substatement-ends-object.cpp
+:tests: foundations/objects/block-reverse-order.cpp foundations/objects/nested-block-ends-first.cpp foundations/objects/early-return-destroys.cpp foundations/objects/loop-body-each-iteration.cpp foundations/objects/constant-evaluation-same-order.cpp foundations/objects/unbraced-substatement-ends-object.cpp foundations/objects/statement-scope-ends-after-goto.cpp foundations/objects/statement-scope-ends-after-return.cpp foundations/objects/statement-scope-ends-after-return-constant.cpp
 
 Objects with {term}`automatic storage` duration are destroyed when control
 leaves their block, in the reverse of the order of their construction.
 A branch or a loop body without braces counts as a block here
-({rule}`IF-8`, {rule}`LOOP-4`). This rule applies to every exit, such as
+({rule}`IF-8`, {rule}`LOOP-4`). The scope of an `if`, a `switch`, or a
+loop also counts as a block. That scope holds the variables of the
+initializer and the condition, and the hidden variables of a
+range-based `for`. These variables end after the objects of the
+statement's body. This rule applies to every exit, such as
 the end of the block, a jump, a `return`, an exception, and the end of
 each iteration of a loop. The rule also applies to constant
 evaluation. The rule assumes that a function body runs to its
@@ -227,7 +231,7 @@ element of an array.
 
 :::{rule} OBJ-2
 :kind: undefined
-:tests: foundations/objects/read-before-init-constant.cpp foundations/storage/allocation-array-unbuilt-element-constant.cpp foundations/objects/read-after-end-constant.cpp foundations/objects/uninitialized-member-read-constant.cpp foundations/objects/deleted-object-read-constant.cpp foundations/objects/reference-after-end-constant.cpp foundations/objects/read-after-block-ends-sanitizer.cpp foundations/objects/reference-does-not-extend-named.cpp foundations/constant-evaluation/copy-unset-member.cpp foundations/constant-evaluation/copy-unset-array-element.cpp declarations/initialization/forms/default-init-member-no-value.cpp declarations/initialization/forms/default-init-member-not-named-no-value.cpp statements/switch/skipped-declaration-read-first.cpp declarations/initialization/static/member-read-before-constructor-constant.cpp expressions/unary/indirection-dangling-constant.cpp classes/constructors/use-after-dtor-constant.cpp classes/constructors/use-after-delete-sanitizer.cpp foundations/objects/write-after-end-constant.cpp classes/unions/chain-assign-other-part-no-value-constant.cpp declarations/initialization/references/returned-reference-temporary-sanitizer.cpp declarations/functions/return-deduction/decltype-auto-paren-local-sanitizer.cpp foundations/objects/scalar-write-in-own-initializer-constant.cpp foundations/objects/scalar-write-through-pointer-in-own-initializer-constant.cpp classes/constructors/init-order-reads-later-run.cpp foundations/objects/storage-reuse-ends-old-object-sanitizer.cpp classes/constructors/base-init-calls-member-of-member-constant.cpp foundations/objects/write-after-pseudo-destructor-element-constant.cpp foundations/objects/write-after-pseudo-destructor-variable-constant.cpp
+:tests: foundations/objects/read-before-init-constant.cpp foundations/storage/allocation-array-unbuilt-element-constant.cpp foundations/objects/read-after-end-constant.cpp foundations/objects/uninitialized-member-read-constant.cpp foundations/objects/deleted-object-read-constant.cpp foundations/objects/reference-after-end-constant.cpp foundations/objects/read-after-block-ends-sanitizer.cpp foundations/objects/reference-does-not-extend-named.cpp foundations/constant-evaluation/copy-unset-member.cpp foundations/constant-evaluation/copy-unset-array-element.cpp declarations/initialization/forms/default-init-member-no-value.cpp declarations/initialization/forms/default-init-member-not-named-no-value.cpp statements/switch/skipped-declaration-read-first.cpp declarations/initialization/static/member-read-before-constructor-constant.cpp expressions/unary/indirection-dangling-constant.cpp classes/constructors/use-after-dtor-constant.cpp classes/constructors/use-after-delete-sanitizer.cpp foundations/objects/write-after-end-constant.cpp classes/unions/chain-assign-other-part-no-value-constant.cpp declarations/initialization/references/returned-reference-temporary-sanitizer.cpp declarations/functions/return-deduction/decltype-auto-paren-local-sanitizer.cpp foundations/objects/scalar-write-in-own-initializer-constant.cpp foundations/objects/scalar-write-through-pointer-in-own-initializer-constant.cpp classes/constructors/init-order-reads-later-run.cpp foundations/objects/storage-reuse-ends-old-object-sanitizer.cpp classes/constructors/base-init-calls-member-of-member-constant.cpp foundations/objects/write-after-pseudo-destructor-element-constant.cpp foundations/objects/write-after-pseudo-destructor-variable-constant.cpp foundations/objects/write-after-pseudo-destructor-union-member-constant.cpp foundations/objects/write-after-pseudo-destructor-union-array-element-constant.cpp
 
 If a program reads or writes an object outside its lifetime, or reads
 a scalar object or member that has no value yet, the behavior is
@@ -240,7 +244,10 @@ included:
 - an access to a class object after its destructor runs,
 - an assignment to a scalar that an explicit destructor call ended
   ({rule}`DTOR-6`), such as an array element. The assignment creates no
-  new object ({question}`Q-0447`).
+  new object ({question}`Q-0447`). If the left side names a scalar
+  member of a union, the assignment makes the member active and is
+  valid ({rule}`UNI-5`). An element of a union's array member does not
+  count.
 - an implicit copy or move function ({rule}`CPY-8`) of an object with a
   scalar part that has no value, because the function reads each scalar
   part. An unnamed bit-field is padding and no such part ({rule}`BF-12`).
@@ -344,8 +351,8 @@ int v = s.source.next;           // undefined: the object has ended
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 58
-of 65 tests. EDG runs no programs, so its results for the run tests say
+The results are in `tests/RESULTS.md`. All eight compilers agree on 61
+of 70 tests. EDG runs no programs, so its results for the run tests say
 only that the programs are valid.
 
 ### Divergences
@@ -366,7 +373,20 @@ only that the programs are valid.
   scalar that an explicit destructor call ended gives the scalar a new
   value. It does not. The write is outside the scalar's lifetime, so
   constant evaluation rejects it, as Clang does. GCC and EDG accept the
-  write to an array element, and EDG accepts it for a variable.
+  write to an array element, also in an array member of a union, and
+  EDG accepts it for a variable.
+- {question}`Q-0044` (LOOP-3; compiler defect): whether a `for`
+  condition variable ends before or after the iteration expression. It
+  ends after, as Clang and GCC 16 give at run time. During constant
+  evaluation EDG ends it before the body, which
+  `statement-scope-ends-after-return-constant.cpp` also shows.
+- {question}`Q-0452` (OBJ-3,
+  LOOP-3; open): whether constant evaluation ends a statement's
+  condition and initializer variables after a `return` as a run does.
+  It does, so the body's objects end first, then the condition
+  variable, then the initializer variable, as Clang and GCC 14 give.
+  GCC 16 skips the condition variable's destructor, and EDG ends the
+  statement's variables before the body's objects.
 
 ### Split tests
 
@@ -377,7 +397,9 @@ only that the programs are valid.
 | `foundations/constant-evaluation/copy-unset-member.cpp` | CE-22, OBJ-2 | reject | reject | accept | reject | {question}`Q-0115` |
 | `scalar-write-in-own-initializer-constant.cpp` | OBJ-1, OBJ-2 | reject | reject | accept | accept | {question}`Q-0368` |
 | `scalar-write-through-pointer-in-own-initializer-constant.cpp` | OBJ-1, OBJ-2 | reject | reject | accept | accept | {question}`Q-0368` |
+| `statement-scope-ends-after-return-constant.cpp` | OBJ-3, LOOP-3 | run | run | GCC 16: reject; GCC 14: run | reject | {question}`Q-0044`, {question}`Q-0452` |
 | `write-after-pseudo-destructor-element-constant.cpp` | OBJ-2 | reject | reject | accept | accept | {question}`Q-0447` |
+| `write-after-pseudo-destructor-union-array-element-constant.cpp` | OBJ-2 | reject | reject | accept | accept | {question}`Q-0447` |
 | `write-after-pseudo-destructor-variable-constant.cpp` | OBJ-2 | reject | reject | reject | accept | {question}`Q-0447` |
 
 ### Notes
@@ -402,6 +424,18 @@ only that the programs are valid.
   starts. The destructor body and its parts still run, as
   {principle}`OBJ-P1` draws. No compiler of the matrix gives a result
   that separates this point from the end of the destructor.
+- OBJ-3: a run probe of the round 14 writer
+  (`reports/clean-room/roadmap-14/writer-probes/run-probes.out`) built
+  nested loops and left them by a `goto`, a `return`, and a throw, and
+  left an `if`, a `while`, and a `switch` by a `goto`. Each compiler
+  that builds ends the body's objects first, then each statement's
+  condition and initializer variables and the range temporary,
+  statement by statement from the inside out. EDG does not link and
+  takes part only in the constant-evaluation test.
+- OBJ-2: an assignment through the name of a scalar union member that
+  a pseudo-destructor call ended is valid in constant evaluation on
+  every compiler (`write-after-pseudo-destructor-union-member-constant.cpp`).
+  The read of the RV9 repair diff gives the condition (RV10-R-3).
 - OBJ-1: the row for an array has no test. No program observes when an
   array's own lifetime begins or ends apart from its elements. The X25
   Propose exercise asked for the row (X25-2), and STG-28 gives the case
