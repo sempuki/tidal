@@ -338,7 +338,7 @@ calls `instantiation::substitute`.
 | 3. A specialization by substitution | `templates::instantiation` holds the `Specialization` record, its points (INST-30, INST-31, INST-33), its states, the order of INST-P2, `busy`, and the nesting limit (INST-15, with TR-13 from `foundations::translation`). The substitution walks the definition's tree. It copies a node with no dependence, and it calls the page's check again for a dependent node with the arguments in place (DEP-28). `templates::specialization` chooses the source (TSP-13 to TSP-16) and links a partial specialization to its primary when it is declared (TSP-31). | `sem::Specialization` |
 | 4. Substitution failure and the immediate context | `templates::deduction` decides where an error falls (DED-24 to DED-29). `templates::dependent_names` holds the kind table of `Member(T, name, reading)` (DEP-19, DEP-22, DEP-26). | `sem::Subst<T>`; an error outside the immediate context goes to `diag` |
 | 5. Checks at the definition | each row of the model's table sits in the page of its rule: DEP-6, DEP-17, DEP-24, DEP-29, DEP-30, and DEP-37 in `templates::dependent_names`; IF-22 in `statements::if_stmt`; PACK-8 in `templates::packs`; CNS-29 in `templates::constraints`; SA-5 in `declarations::static_assert`. An independent node is checked when it is made, by the same code as a node outside a template. | the list of definition checks, which a proposal can extend (section 7) |
-| 6. The 32 tests | section 5 of this document | the marks file |
+| 6. The 36 tests | section 5 of this document | the marks file |
 | 7. What the model keeps | `templates::deduction` (DED-P3), `templates::ordering` (ORD-P2), `templates::specialization` (TSP-P2), `templates::constraints` (CNS-P1) | `DepType` with its new forms |
 | 8. Rules that can change | section 10 of this document | none |
 
@@ -351,17 +351,17 @@ member check of `expressions::postfix`.
 
 ## 5. The tests the rewrite takes over first
 
-The rewrite takes over the 32 tests of the marks file
+The rewrite takes over the 36 tests of the marks file
 (`reports/clean-room/rust-frontend/rewrite-marks.tsv`) first, by model
 section (decision 0064). The marks file is the list; the table gives
-the tests at the time of decision 0064. Paths are under `tests/`.
+the tests after front-end round 27. Paths are under `tests/`.
 
 | Model section | Count | Tests |
 |---|---|---|
 | 1 | 4 | `templates/dependent-names/`: `other-specialization-constant-argument-member-missing`, `other-specialization-constant-argument-no-typename`, `sizeof-value-dependent-operand-call-bound-early`, `sizeof-value-dependent-operand-no-typename` |
 | 2 | 6 | `templates/dependent-names/`: `current-instantiation-enclosing-base`, `member-template-current-instantiation-pointer`, `member-template-current-instantiation-qualifier-dependent-base`, `member-template-non-dependent-base`, `member-template-through-current-instantiation-object`; `classes/copy-move/class-template-ctor-by-value` |
-| 3 | 11 | `templates/instantiation/`: `class-point-not-later-member-type`, `class-point-not-later-type`, `class-point-not-later`, `class-point-static-const-member`, `class-point-static-constexpr-made-at-use`, `class-static-constexpr-member-initializer-waits`, `static-inline-member-incomplete-argument`, `local-class-default-argument`, `local-class-exception-specification`, `recursion-endless-function`; `templates/specialization/partial-no-primary-variable` |
-| 4 | 4 | `templates/deduction/`: `substitution-explicit-specifier`, `substitution-lambda-body`, `substitution-lambda-default`, `substitution-member-wrong-kind` |
+| 3 | 13 | `templates/instantiation/`: `class-point-not-later-member-type`, `class-point-not-later-type`, `class-point-not-later`, `class-point-static-const-member`, `class-point-static-constexpr-made-at-use`, `class-static-constexpr-member-initializer-waits`, `static-inline-member-incomplete-argument`, `class-point-after-enclosing-class-not-later`, `local-class-default-argument`, `local-class-exception-specification`, `recursion-endless-function`; `templates/specialization/partial-no-primary-variable` |; `templates/packs/member-template-pack-length`
+| 4 | 6 | `templates/deduction/`: `substitution-explicit-specifier`, `substitution-lambda-body`, `substitution-lambda-default`, `substitution-member-wrong-kind` |; `templates/arguments/argument-makes-parameter-invalid`; `templates/dependent-names/type-only-positions-more`
 | 5 | 7 | `statements/if/constexpr-template-nondependent-call-checked`; `templates/constraints/`: `out-of-class-other-clause`, `out-of-class-without-clause`; `templates/dependent-names/`: `binary-operator-pack-never-fits`, `operator-pack-never-fits`; `templates/packs/`: `fold-in-outer-pattern`, `size-operator-in-outer-pattern` |
 
 Each name ends in `.cpp`. A round that marks a test adds it to the
@@ -420,9 +420,9 @@ pages it reaches are written.
 | 2 | `syntax` and the `syntax.rs` part of each page; the oracle over a declare pass that only records names and their kinds; the nonterminal point, with P22's syntax part as its unit test | none | `next: parse`; each nonterminal has one function |
 | 3 | The node-check point of section 7 first; then `sem`, `target`, `machine`; the foundations, declarations, expressions, and statements pages outside templates; constant evaluation; the `Ext` node point | none | `next: shadow` by chapter, against the old front end's passes on those chapters |
 | 4 | The classes, overloading, and exceptions pages; the rule override point | none | `next: shadow` |
-| 5 | The templates pages with the parts the model keeps (model section 7); model sections 1, 2, and 5, with the definition-check point | the 17 tests of sections 1, 2, and 5 | `next: owned` 17; the marked count on the completion line goes from 32 to 15 |
-| 6 | Model section 3 | the 11 tests of section 3 | the marked count goes from 15 to 4 |
-| 7 | Model section 4 | the 4 tests of section 4 | the marked count goes from 4 to 0 |
+| 5 | The templates pages with the parts the model keeps (model section 7); model sections 1, 2, and 5, with the definition-check point | the 17 tests of sections 1, 2, and 5 | `next: owned` 17; the marked count on the completion line goes from 36 to 19 |
+| 6 | Model section 3 | the 13 tests of section 3 | the marked count goes from 19 to 6 |
+| 7 | Model section 4 | the 6 tests of section 4 | the marked count goes from 6 to 0 |
 | 8 | Page by page, the new front end takes over each page whose tests it passes wherever the old one passes | the tests of each page | `next: owned` grows by the page's tests, 0 worse |
 | 9 | The old front end is removed when the new one owns every test that the old one passed (decision 0060) | all | the completion line counts the new front end only |
 
@@ -651,7 +651,7 @@ A front-end round that works on the rewrite keeps the form of report
   (report 25). A target at or above that rate for owned tests fits the
   implementer view of roadmap round 12 (process change 5).
 - `TEMPLATE-MODEL.md` section 8 lists Q-0427, Q-0432, Q-0433, Q-0434,
-  Q-0441, and RV9. An answer that changes a rule there changes the
+  Q-0441, and the open rows RV10-R-1 and RV10-R-3. An answer that changes a rule there changes the
   module that section 4 of this document names for it.
 - The kind of each rule comes from `specification/` at run time, as in
   the old harness. A table built into the crate would make the binary

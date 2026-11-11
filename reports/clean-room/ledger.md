@@ -26,7 +26,8 @@ commit leaves an ID such as `RV5-A-3`, and the point gets a row here.
 The rows RV4-1 to RV4-7 give IDs to the doubts that the RV4 repair
 commit (7cf4574b) left for the next review. The RV5 reviews gave their
 own IDs (RV5-A-n and RV5-B-n), and so do the RV6, RV7, and RV8 reviews
-(RV6-A-n, RV7-B-n, and so on). The read of a repair diff gives IDs of
+(RV6-A-n, RV7-B-n, and so on). The RV9 review gives IDs of the form
+RV9-n. The read of a repair diff gives IDs of
 the form RV8-R-n (the read of RV7's repair diff), RV9-R-n (the read of
 RV8's), or RV10-R-n (the read of RV9's). The rows RM12-1 to RM12-3
 give IDs to three findings that only a commit message or a probe README held until the round 12
