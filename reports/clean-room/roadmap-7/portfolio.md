@@ -82,9 +82,9 @@ A `new` expression for a type with more than the default new alignment either ca
 
 A class cannot overload `operator,`. The left operand of a built-in comma must have type `void` or be a call. Today COMMA-5 only recommends a warning for a left operand with no effect, and OPR-7 keeps an overloaded comma's order.
 
-- **Pages:** `expressions/comma.md`, `classes/operators.md`, `foundations/evaluation-order.md`.
-- **Changes existing behavior:** yes. `grep` finds 8 test files that declare `operator,`, one of them a program. Each program whose comma has a left operand with a value that is not a call becomes invalid.
-- **Cites:** COMMA-P1, COMMA-P3, COMMA-1, COMMA-4, COMMA-5, COMMA-7, OPR-P2, OPR-7, STMT-1, STMT-4.
+- **Pages:** `expressions/comma.md`, `classes/operators.md`, `foundations/evaluation-order.md`, `expressions/primary.md` (folds over the comma).
+- **Changes existing behavior:** yes. `grep` finds 5 test files that declare `operator,`, and no program. Each program whose comma has a left operand with a value that is not a call becomes invalid.
+- **Cites:** COMMA-P1, COMMA-P3, COMMA-1, COMMA-4, COMMA-5, COMMA-7, OPR-P2, OPR-7, PRIM-27, STMT-1, STMT-4.
 - **Settled from Tidal:** the comma's order, its result, and the lists where a comma is a separator (COMMA-4) are stated.
-- **Not settled:** whether "a call" includes a call of an operator function and a call through a pointer. Whether a cast to `void` stays the way to keep a value (COMMA-5 says so for the warning).
+- **Not settled:** whether "a call" includes a call of an operator function and a call through a pointer. Whether a cast to `void` stays the way to keep a value (COMMA-5 says so for the warning). Whether an assignment or an increment counts as a left operand with no value. Whether a fold over the comma (PRIM-27) is checked for each element or once. When a left operand of class type has a value.
 - **Rating:** ready.

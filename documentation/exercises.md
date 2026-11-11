@@ -438,6 +438,14 @@ specification/.
 > happened, and a suggestion. Name the commit you read in the header
 > paragraph, as ``Commit read: `<commit>`.``
 
+For this prompt, the shared rules also let the reader read
+tests/programs/, the Propose reports under reports/clean-room/ with the
+refresh notes beside them, and the rule tests that an impact count
+names. The prompt names the portfolio of its round, such as
+`reports/clean-room/roadmap-7/portfolio.md` for P22 to P26. The report
+gives a version line ("C++23 only") and writes its change table in the
+form that `tools/propose_check.py --strict` reads.
+
 ### Implement
 
 The Implement prompt names one component and its pages. In a blind

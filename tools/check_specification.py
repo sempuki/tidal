@@ -280,6 +280,11 @@ def check_ledger(errors: list[str]) -> None:
                 continue  # a question ID, not a finding
             if fid not in exercise_rows:
                 errors.append(f"{rel}: finding {fid} has no row in {EXERCISE_LEDGER.relative_to(ROOT)}")
+    # Each point ID of a gap review has a row too (decision 0059, item R7 of 0061).
+    for review in sorted((ROOT / "reports" / "review").glob("*.md")):
+        for pid in sorted(set(re.findall(r"\bRV\d+-[A-Z]-\d+\b", review.read_text()))):
+            if pid not in exercise_rows:
+                errors.append(f"{review.relative_to(ROOT)}: review point {pid} has no row in {where}")
 
 
 def ended_items() -> set[tuple[str, str]]:
