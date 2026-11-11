@@ -1017,3 +1017,20 @@ own IDs (RV5-A-n and RV5-B-n).
 | I6-18 | `I6/report.md` | planned | decision 0062, item F4: DEP-19, DEP-29, DEP-6: why T::x * p; and T::x p; are rejected at the definition |
 | I6-19 | `I6/report.md` | planned | decision 0062, item F4: DEP-20: the return type of a member function |
 | I6-20 | `I6/report.md` | planned | decision 0062, item F4: outside knowledge: overload ranking, lookup scope, operator arities, this in a local class |
+| I7-1 | `I7/report.md` | open | missing: CTAD-10 does not say that a member whose type is not dependent follows LIST-4 |
+| I7-2 | `I7/report.md` | open | needs example: CTAD-25 and CTAD-26, step 5 chooses the constructor again |
+| I7-3 | `I7/report.md` | open | unclear: CTAD-16 and DER-8, the inherited copy candidate gives a type that the initialization rejects; the note of inherited-copy-candidate-user-guide |
+| I7-4 | `I7/report.md` | text | a mistake in the component (CTAD-12, a template guide declared twice) |
+| I7-5 | `I7/report.md` | open | unclear: CTAD-5 and CTAD-6, whether implicitly declared constructors give guides |
+| I7-6 | `I7/report.md` | open | missing: CTAD-18, no rule defines an initializer-list guide; an empty list and the first phase |
+| I7-7 | `I7/report.md` | open | needs example: CTAD-14, a worked match of an alias |
+| I7-8 | `I7/report.md` | open | missing: CTAD-14, an alias of an alias and its constraints |
+| I7-9 | `I7/report.md` | open | unclear: CTAD-16, which guides a derived class inherits |
+| I7-10 | `I7/report.md` | open | unclear: CTAD-P1 says every guide is a function template; OVL-27 for a user guide with no template head |
+| I7-11 | `I7/report.md` | open | unclear: CTAD-17, whether OVL-14 and ICS-10 limit a guide in copy initialization |
+| I7-12 | `I7/report.md` | open | hard to find: CTAD-18 against ILC-3 for one object of the same class |
+| I7-13 | `I7/report.md` | open | unclear: CTAD-2, a new expression and a static member with no initializer |
+| I7-14 | `I7/report.md` | open | unclear: CTAD-5 and CTAD-17, when a conditional explicit is evaluated |
+| I7-15 | `I7/report.md` | open | outside knowledge: the rank of a braced list to an aggregate (CTAD-9), conversion ranks |
+| I7-16 | `I7/report.md` | open | front end: an aggregate candidate with designators stops; test templates/class-template-deduction/aggregate-candidate.cpp |
+| I7-17 | `I7/report.md` | open | front end: a braced copy of a class whose list constructor takes another type stops; test classes/initializer-lists/braced-copy-list-ctor-other-element-type.cpp |

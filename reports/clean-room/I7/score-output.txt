@@ -1,0 +1,308 @@
+ok   grids/forms.json: parentheses / constructor: want C<int>, got C<int>
+ok   grids/forms.json: parentheses / constructor template: want C<int>, got C<int>
+ok   grids/forms.json: parentheses / explicit constructor: want C<int>, got C<int>
+ok   grids/forms.json: parentheses / initializer-list constructor: want reject, got reject:CTAD-24
+ok   grids/forms.json: parentheses / aggregate: want C<int>, got C<int>
+ok   grids/forms.json: parentheses / user guide: want C<int>, got C<int>
+ok   grids/forms.json: parentheses / explicit user guide: want C<int>, got C<int>
+ok   grids/forms.json: parentheses / alias template: want D<int>, got D<int>
+ok   grids/forms.json: parentheses / inherited constructor: want C<int>, got C<int>
+ok   grids/forms.json: braces / constructor: want C<int>, got C<int>
+ok   grids/forms.json: braces / constructor template: want C<int>, got C<int>
+ok   grids/forms.json: braces / explicit constructor: want C<int>, got C<int>
+ok   grids/forms.json: braces / initializer-list constructor: want C<int>, got C<int>
+ok   grids/forms.json: braces / aggregate: want C<int>, got C<int>
+ok   grids/forms.json: braces / user guide: want C<int>, got C<int>
+ok   grids/forms.json: braces / explicit user guide: want C<int>, got C<int>
+ok   grids/forms.json: braces / alias template: want D<int>, got D<int>
+ok   grids/forms.json: braces / inherited constructor: want C<int>, got C<int>
+ok   grids/forms.json: copy / constructor: want C<int>, got C<int>
+ok   grids/forms.json: copy / constructor template: want C<int>, got C<int>
+ok   grids/forms.json: copy / explicit constructor: want reject, got reject:CTAD-24
+ok   grids/forms.json: copy / initializer-list constructor: want reject, got reject:CTAD-24
+ok   grids/forms.json: copy / aggregate: want reject, got reject:CTAD-24
+ok   grids/forms.json: copy / user guide: want C<int>, got C<int>
+ok   grids/forms.json: copy / explicit user guide: want reject, got reject:CTAD-24
+ok   grids/forms.json: copy / alias template: want D<int>, got D<int>
+ok   grids/forms.json: copy / inherited constructor: want C<int>, got C<int>
+ok   grids/forms.json: copy-list / constructor: want C<int>, got C<int>
+ok   grids/forms.json: copy-list / constructor template: want C<int>, got C<int>
+ok   grids/forms.json: copy-list / explicit constructor: want reject, got reject:CTAD-23
+ok   grids/forms.json: copy-list / initializer-list constructor: want C<int>, got C<int>
+ok   grids/forms.json: copy-list / aggregate: want C<int>, got C<int>
+ok   grids/forms.json: copy-list / user guide: want C<int>, got C<int>
+ok   grids/forms.json: copy-list / explicit user guide: want reject, got reject:CTAD-23
+ok   grids/forms.json: copy-list / alias template: want D<int>, got D<int>
+ok   grids/forms.json: copy-list / inherited constructor: want C<int>, got C<int>
+ok   grids/forms.json: functional cast / constructor: want C<int>, got C<int>
+ok   grids/forms.json: functional cast / constructor template: want C<int>, got C<int>
+ok   grids/forms.json: functional cast / explicit constructor: want C<int>, got C<int>
+ok   grids/forms.json: functional cast / initializer-list constructor: want reject, got reject:CTAD-24
+ok   grids/forms.json: functional cast / aggregate: want C<int>, got C<int>
+ok   grids/forms.json: functional cast / user guide: want C<int>, got C<int>
+ok   grids/forms.json: functional cast / explicit user guide: want C<int>, got C<int>
+ok   grids/forms.json: functional cast / alias template: want D<int>, got D<int>
+ok   grids/forms.json: functional cast / inherited constructor: want C<int>, got C<int>
+ok   grids/forms.json: braced cast / constructor: want C<int>, got C<int>
+ok   grids/forms.json: braced cast / constructor template: want C<int>, got C<int>
+ok   grids/forms.json: braced cast / explicit constructor: want C<int>, got C<int>
+ok   grids/forms.json: braced cast / initializer-list constructor: want C<int>, got C<int>
+ok   grids/forms.json: braced cast / aggregate: want C<int>, got C<int>
+ok   grids/forms.json: braced cast / user guide: want C<int>, got C<int>
+ok   grids/forms.json: braced cast / explicit user guide: want C<int>, got C<int>
+ok   grids/forms.json: braced cast / alias template: want D<int>, got D<int>
+ok   grids/forms.json: braced cast / inherited constructor: want C<int>, got C<int>
+ok   grids/forms.json: new / constructor: want C<int>, got C<int>
+ok   grids/forms.json: new / constructor template: want C<int>, got C<int>
+ok   grids/forms.json: new / explicit constructor: want C<int>, got C<int>
+ok   grids/forms.json: new / initializer-list constructor: want reject, got reject:CTAD-24
+ok   grids/forms.json: new / aggregate: want C<int>, got C<int>
+ok   grids/forms.json: new / user guide: want C<int>, got C<int>
+ok   grids/forms.json: new / explicit user guide: want C<int>, got C<int>
+ok   grids/forms.json: new / alias template: want D<int>, got D<int>
+ok   grids/forms.json: new / inherited constructor: want C<int>, got C<int>
+ok   grids/forms.json: copy, parentheses / constructor: want C<int>, got C<int>
+ok   grids/forms.json: copy, parentheses / constructor template: want C<int>, got C<int>
+ok   grids/forms.json: copy, parentheses / explicit constructor: want C<int>, got C<int>
+ok   grids/forms.json: copy, parentheses / initializer-list constructor: want C<int>, got C<int>
+ok   grids/forms.json: copy, parentheses / aggregate: want C<int>, got C<int>
+ok   grids/forms.json: copy, parentheses / user guide: want C<int>, got C<int>
+ok   grids/forms.json: copy, parentheses / explicit user guide: want C<int>, got C<int>
+ok   grids/forms.json: copy, parentheses / alias template: want D<int>, got D<int>
+ok   grids/forms.json: copy, parentheses / inherited constructor: want C<int>, got C<int>
+ok   grids/forms.json: copy, braces / constructor: want C<int>, got C<int>
+ok   grids/forms.json: copy, braces / constructor template: want C<int>, got C<int>
+ok   grids/forms.json: copy, braces / explicit constructor: want C<int>, got C<int>
+ok   grids/forms.json: copy, braces / initializer-list constructor: want C<int>, got C<int>
+ok   grids/forms.json: copy, braces / aggregate: want C<int>, got C<int>
+ok   grids/forms.json: copy, braces / user guide: want C<int>, got C<int>
+ok   grids/forms.json: copy, braces / explicit user guide: want C<int>, got C<int>
+ok   grids/forms.json: copy, braces / alias template: want D<int>, got D<int>
+ok   grids/forms.json: copy, braces / inherited constructor: want C<int>, got C<int>
+ok   grids/forms.json: copy, equals / constructor: want C<int>, got C<int>
+ok   grids/forms.json: copy, equals / constructor template: want C<int>, got C<int>
+ok   grids/forms.json: copy, equals / explicit constructor: want C<int>, got C<int>
+ok   grids/forms.json: copy, equals / initializer-list constructor: want C<int>, got C<int>
+ok   grids/forms.json: copy, equals / aggregate: want C<int>, got C<int>
+ok   grids/forms.json: copy, equals / user guide: want C<int>, got C<int>
+ok   grids/forms.json: copy, equals / explicit user guide: want C<int>, got C<int>
+ok   grids/forms.json: copy, equals / alias template: want D<int>, got D<int>
+ok   grids/forms.json: copy, equals / inherited constructor: want C<int>, got C<int>
+ok   aggregate-base: Wrap x{{1}, 2}: want Wrap<int>, got Wrap<int>
+ok   aggregate-base-no-elision: Wrap y{1, 2}: want reject:CTAD-24, got reject:CTAD-24
+ok   aggregate-candidate-arrays: Array numbers{{1,2,3}}: want Array<int, 3>, got Array<int, 3>
+ok   aggregate-candidate-arrays: Array text{"abc"}: want Array<char, 4>, got Array<char, 4>
+ok   aggregate-candidate: Pair a{1,'c'}: want Pair<int, char>, got Pair<int, char>
+ok   aggregate-candidate: Pair b(1, 2.0): want Pair<int, double>, got Pair<int, double>
+ok   aggregate-candidate: Pair c{.first=1L,.second=2u}: want Pair<long, unsigned int>, got Pair<long, unsigned int>
+ok   aggregate-candidate: Twice t{1,2}: want Twice<int>, got Twice<int>
+ok   aggregate-conflict: Twice t{1, 2L}: want reject:CTAD-24, got reject:CTAD-24
+ok   aggregate-candidate-pack: Overloads all{ByInt{}, ByDouble{}}: want Overloads<ByInt, ByDouble>, got Overloads<ByInt, ByDouble>
+ok   aggregate-dependent-bound: Row r{1,2,3}: want reject:CTAD-24, got reject:CTAD-24
+ok   aggregate-dependent-element: Three numbers{1,2,3}: want Three<int>, got Three<int>
+ok   aggregate-dependent-element: Three words{"ab"}: want Three<const char*>, got Three<const char*>
+ok   aggregate-dependent-element: Mixed m{1,2,3,4}: want Mixed<int>, got Mixed<int>
+ok   aggregate-elision: Outer a{In<int>{1,2}}: want Outer<int>, got Outer<int>
+WRONG aggregate-elision: Mixed b{1,2,3L}: want Mixed<long>, got reject:CTAD-24
+ok   aggregate-no-elision: Outer o{1,2}: want reject:CTAD-24, got reject:CTAD-24
+ok   aggregate-empty-list: Agg a{}: want Agg<int>, got Agg<int>
+ok   aggregate-new-parentheses: new Agg(1): want Agg<int>, got Agg<int>
+ok   aggregate-too-many: Agg a{1,2}: want reject:CTAD-24, got reject:CTAD-24
+ok   aggregate-user-guide: Agg a{1} with a user guide: want reject:CTAD-24, got reject:CTAD-24
+ok   aggregate-pack-length-conflict: Bases b{List<X,Y,Z>{}, {}, ToY{}}: want reject:CTAD-24, got reject:CTAD-24
+ok   aggregate-pack-length-fewer: Bases b{List<X,Y,Z>{}, X{}}: want Bases<X, Y, Z>, got Bases<X, Y, Z>
+ok   aggregate-pack-length-fixed: Bases b{List<X,Y,Z>{}, {}, {}}: want Bases<X, Y, Z>, got Bases<X, Y, Z>
+ok   aggregate-pack-length-parentheses: Bases b(List<X,Y,Z>{}, X{}): want Bases<X, Y, Z>, got Bases<X, Y, Z>
+ok   aggregate-pack-length-position: Bases b{List<X,Y,Z>{}, Y{}}: want reject:CTAD-24, got reject:CTAD-24
+ok   aggregate-pack-not-last: Tail t{5}: want Tail<>, got Tail<>
+ok   aggregate-pack-not-last-element: Tail t{Empty{}, 5}: want reject:CTAD-24, got reject:CTAD-24
+ok   aggregate-pack-parentheses: Both both(Left{}, Right{}): want Both<Left, Right>, got Both<Left, Right>
+ok   aggregate-string-element-type: Bytes u{"abc"}: want reject:CTAD-24, got reject:CTAD-24
+WRONG aggregate-string-fixed-array: Named b{"ab", 1}: want Named<int>, got reject:CTAD-24
+ok   alias-template-conflict: Same s(1, 'c'): want reject:CTAD-24, got reject:CTAD-24
+ok   alias-template: Same s(1, 2): want Pair<int, int>, got Pair<int, int>
+ok   alias-template-constraints: Plain p(&d, &d): want Pair<double*, double*>, got Pair<double*, double*>
+ok   alias-template-constraints: Indexed q(&i, &i): want Pair<int*, int*>, got Pair<int*, int*>
+ok   alias-template-constraints: Indexed r(&d, &d): want reject:CTAD-24, got reject:CTAD-24
+ok   alias-template-dependent-qualifier: A a(1): want reject:CTAD-15, got reject:CTAD-15  [caller marks the qualifier]
+ok   alias-template-fixed-argument: IntPair p(1L, 'c'): want Pair<int, char>, got Pair<int, char>
+ok   alias-template-fixed-argument: LongFirst q(1, 'c'): want Pair<long, char>, got Pair<long, char>
+ok   alias-template-fixed-argument-exact: IntPair p(1, 'c'): want Pair<int, char>, got Pair<int, char>
+ok   alias-template-fixed-argument-exact: LongFirst q(1L, 'c'): want Pair<long, char>, got Pair<long, char>
+ok   alias-template-guides: Alias a(&n): want Box<int>, got Box<int>
+ok   alias-template-guides: Alias b(one): want Box<char>, got Box<char>
+ok   alias-template-guides: IntAgg c{1, 'c'}: want Agg<int, char>, got Agg<int, char>
+ok   alias-template-not-class: Pointer p = ...: want reject:CTAD-15, got reject:CTAD-15  [caller marks the alias]
+ok   alias-template-result-check: Pair plain(&i, 1L): want Pair<int*, long>, got Pair<int*, long>
+ok   alias-template-result-check: Same s(&i, 1L): want reject:CTAD-24, got reject:CTAD-24
+ok   alias-template-rvalue-reference: Alias a(i): want reject:CTAD-24, got reject:CTAD-24
+ok   alias-template-unreachable: PointerBox b(&n): want Box<int*>, got Box<int*>
+ok   alias-template-unreachable: Box b(&n) (no alias): want Box<long>, got Box<long>
+ok   ambiguous-guides: Two t(1, 2): want reject:CTAD-24, got reject:CTAD-24
+ok   braced-cast-class-template-member: Wrapper{v}, V = long: want Wrapper<long>, got Wrapper<long>  [after substitution]
+ok   braced-cast-function-template-return: Wrapper{v}, V = int: want Wrapper<int>, got Wrapper<int>  [after substitution]
+ok   braced-cast-function-template-variable: Wrapper{closure}: want Wrapper<closure>, got Wrapper<closure>  [after substitution]
+ok   conditional-explicit-copy-list: Narrow b = {1}: want reject:CTAD-23, got reject:CTAD-23
+ok   conditional-explicit: Narrow a = {'c'}: want Narrow<char>, got Narrow<char>
+ok   conditional-explicit: Narrow b = 'c': want Narrow<char>, got Narrow<char>
+ok   conditional-explicit: Narrow c{1}: want Narrow<int>, got Narrow<int>
+ok   constant-parameter-guide: Hold<3>: want Size<long>, got Size<long>
+ok   constant-parameter-guide: Hold<'a'>: want Size<char>, got Size<char>
+ok   constant-parameter-guide: place: constant parameter: want accept, got accept
+ok   constructor-guides: Ptr a(&n): want Ptr<int>, got Ptr<int>
+ok   constructor-guides: Ptr b(&n, 'c'): want Ptr<char>, got Ptr<char>
+ok   constructor-guides: Opt o(1): want Opt<int>, got Opt<int>
+ok   constructor-guides: Tuple t(1, 'c', 2.0): want Tuple<int, char, double>, got Tuple<int, char, double>
+ok   constructor-guides: Tuple e: want Tuple<>, got Tuple<>
+ok   constructor-member-alias: Wrap w(1): want Wrap<int>, got Wrap<int>  [caller resolves value_type to T]
+ok   constructor-nondeduced: Wrap w(1): want reject:CTAD-24, got reject:CTAD-24
+ok   constructor-rvalue-reference: Hold h(1): want Hold<int>, got Hold<int>
+ok   constructor-rvalue-reference-lvalue: Hold h(n): want reject:CTAD-24, got reject:CTAD-24
+ok   constructor-template-forwarding: Hold h(1, i): want Hold<int>, got Hold<int>
+ok   copy-candidate: Box a(one): want Box<int>, got Box<int>
+ok   copy-candidate: Box b = one: want Box<int>, got Box<int>
+ok   copy-candidate: Box c{one}: want Box<int>, got Box<int>
+ok   copy-candidate: Box d = {one}: want Box<int>, got Box<int>
+ok   copy-candidate-only: Box two(one): want Box<int>, got Box<int>
+ok   declared-not-defined-no-guide: Only d: want reject:CTAD-24, got reject:CTAD-24
+ok   declared-not-defined: Only d(1): want Only<int>, got Only<int>
+ok   dependent-qualifier: typename Outer<T>::In x(1): want In<int>, got In<int>  [after substitution]
+ok   dependent-qualifier-template-keyword: typename Outer<T>::template In x(1): want In<int>, got In<int>  [after substitution]
+ok   empty-argument-list: Box<> a(2): no deduction: want accept, got accept
+ok   empty-argument-list: Box b(2.5): want Box<double>, got Box<double>
+ok   explicit-copy-list: Strict s = {1}: want reject:CTAD-23, got reject:CTAD-23
+ok   selection-explicit-copy: Strict s = 1: want reject:CTAD-24, got reject:CTAD-24
+ok   explicit-user-guide-copy: Box a(&n): want Box<int>, got Box<int>
+ok   explicit-user-guide-copy: Box b = &n: want Box<int*>, got Box<int*>
+ok   explicit-user-guide-copy-list: Box b = {&n}: want reject:CTAD-23, got reject:CTAD-23
+WRONG guide-redeclared: the same guide twice: want reject:CTAD-12, got accept
+ok   guide-result-not-specialization: -> int: want reject:CTAD-12, got reject:CTAD-12
+ok   guide-result-other-template: -> Other<T>: want reject:CTAD-12, got reject:CTAD-12
+ok   guide-result-qualified: -> const Box<T>: want reject:CTAD-12, got reject:CTAD-12
+ok   guide-same-parameters: Box(int) twice: want reject:CTAD-12, got reject:CTAD-12
+ok   guide-not-deducible-constant: template <T, int N> Box(T): want reject:CTAD-13, got reject:CTAD-13
+ok   guide-not-deducible: template <T, U> Box(T) -> Box<U>: want reject:CTAD-13, got reject:CTAD-13
+ok   guide-not-deducible-used: template <T, U> Box(T) -> Box<U>: want reject:CTAD-13, got reject:CTAD-13
+ok   guide-template-same-parameters: declarations: want accept, got accept
+ok   guide-template-same-parameters: Box b(&i): want reject:CTAD-24, got reject:CTAD-24
+ok   guide-after-use: Box a(1L) before: want Box<long>, got Box<long>
+ok   guide-after-use: Box b(1L) after: want Box<char>, got Box<char>
+ok   guide-before-instantiation: make(1): want Box<long>, got Box<long>  [caller gives the point]
+ok   guide-before-instantiation: fixed<char>(): want Box<long>, got Box<long>  [caller gives the point]
+ok   guide-before-instantiation: early = later(1): want Cell<int>, got Cell<int>  [caller gives the point]
+ok   guide-before-instantiation: z = later(1): want Cell<int>, got Cell<int>  [caller gives the point]
+ok   guide-constraints-absent-ambiguous: Box box(1, 'a'): want reject:CTAD-24, got reject:CTAD-24
+ok   guide-constraints: Box box(1, 'a'): want Box<char>, got Box<char>
+ok   guide-constraints: Pad pad(1): want Pad<int>, got Pad<int>
+ok   guide-constraints-none-satisfied: Box box('a', 'a'): want reject:CTAD-24, got reject:CTAD-24
+ok   inherited-constructors: Derived d(1): want Derived<int>, got Derived<int>
+WRONG inherited-copy-candidate: Derived d(b): want reject:CTAD-26, got Derived<int>
+WRONG inherited-copy-candidate-user-guide: Derived d(b): want reject:CTAD-24, got Derived<int>
+ok   inherited-guide-unused-parameter-default: D d(1.5): want D<double, int>, got D<double, int>
+ok   inherited-not-deducible: Derived d(1): want reject:CTAD-24, got reject:CTAD-24
+ok   inherited-user-guide: Derived d(&n): want Derived<int>, got Derived<int>
+ok   inherited-without-using: Derived d(1): want reject:CTAD-24, got reject:CTAD-24
+ok   list-single-specialization-alias: Alias copy{one}: want List<int>, got List<int>
+ok   list-single-specialization-alias: Alias two{one, one}: want List<List<int>>, got List<List<int>>
+ok   list-single-specialization: List one{1, 2}: want List<int>, got List<int>
+ok   list-single-specialization: List copy{one}: want List<int>, got List<int>
+ok   list-single-specialization: List copy_list = {one}: want List<int>, got List<int>
+ok   list-single-specialization: List nested{one, one}: want List<List<int>>, got List<List<int>>
+ok   list-single-specialization: List from_derived{more}: want List<int>, got List<int>
+ok   list-single-specialization: List single{1L}: want List<long>, got List<long>
+ok   member-guide: Outer::In i(&n): want In<int>, got In<int>
+ok   no-constructor: Tag a: want Tag<int>, got Tag<int>
+ok   no-constructor: Tag b{}: want Tag<int>, got Tag<int>
+ok   no-initializer: Box b: want reject:CTAD-24, got reject:CTAD-24
+ok   partial-argument-list: Pair<int> p(1, 2.5): no deduction: want accept, got accept
+WRONG result-then-initialize: Pair p(1, 2): want reject:CTAD-26, got Pair<int>
+ok   result-then-initialize-deleted: Gone g(1): want reject:CTAD-26, got reject:CTAD-26
+ok   result-type: Wide w(2): want Wide<long long>, got Wide<long long>
+ok   selection-forms: Pick a(&n): want Pick<int>, got Pick<int>
+ok   selection-forms: Pick b = &n: want Pick<int*>, got Pick<int*>
+ok   selection-private-constructor: Secret s(&n): want reject:CTAD-26, got reject:CTAD-26
+ok   several-declarators-copy-init: Box e = 1, f = 'c': want reject:CTAD-3, got reject:CTAD-3
+ok   several-declarators: Box a(1), b(2): want Box<int>, got Box<int>
+ok   several-declarators: Box c(1), d(2.0): want reject:CTAD-3, got reject:CTAD-3
+ok   site-array: array: want reject:CTAD-2, got reject:CTAD-2
+ok   site-member: nonstatic-member: want reject:CTAD-2, got reject:CTAD-2
+ok   site-parameter: function-param: want reject:CTAD-2, got reject:CTAD-2
+ok   site-pointer: pointer: want reject:CTAD-2, got reject:CTAD-2
+ok   site-reference: reference: want reject:CTAD-2, got reject:CTAD-2
+ok   site-return-type: return: want reject:CTAD-2, got reject:CTAD-2
+ok   sites: Box a(1): want Box<int>, got Box<int>
+ok   sites: Box b{2L}: want Box<long>, got Box<long>
+ok   sites: Box c = 'c': want Box<char>, got Box<char>
+ok   sites: Box d = {1.0}: want Box<double>, got Box<double>
+ok   sites: const Box e(1u): want Box<unsigned int>, got Box<unsigned int>
+ok   sites: new Box(3): want Box<int>, got Box<int>
+ok   sites: new const Box{4}: want Box<int>, got Box<int>
+ok   sites: Box(1): want Box<int>, got Box<int>
+ok   sites: Box{1u}: want Box<unsigned int>, got Box<unsigned int>
+ok   sites: static constexpr Box member = Box<int>(1): want Box<int>, got Box<int>
+ok   sites: static inline Box other = 2: want Box<int>, got Box<int>
+ok   sites: place: variable: want accept, got accept
+ok   sites: place: static-member-init: want accept, got accept
+ok   sites: place: new-init: want accept, got accept
+ok   sites: place: functional-cast: want accept, got accept
+ok   sites: place: constant-param: want accept, got accept
+ok   sites-for-and-condition: for (Pair p : items): want Pair<int, char>, got Pair<int, char>
+ok   sites-for-and-condition: if (Box b = Box(2)): want Box<int>, got Box<int>
+ok   sites-for-and-condition: if (Box b{3}): want Box<int>, got Box<int>
+ok   sites-for-and-condition: place: range-for: want accept, got accept
+ok   sites-for-and-condition: place: condition: want accept, got accept
+ok   specialization-constructors: Shape s(&i, 1): want reject:CTAD-24, got reject:CTAD-24
+ok   template-template-parameter-alias: A a(1), W = Box: want Box<int>, got Box<int>  [after substitution]
+ok   template-template-parameter: W w(1), W = Box: want Box<int>, got Box<int>  [after substitution]
+ok   tie-copy-candidate: Copy two(one): want Copy<int>, got Copy<int>
+ok   tie-copy-candidate-forms: Copy two = one: want Copy<char>, got Copy<char>
+ok   tie-copy-candidate-forms: Copy three{one}: want Copy<char>, got Copy<char>
+ok   tie-non-template: Mark m = {1}: want Mark<int>, got Mark<int>
+ok   tie-non-template-explicit: Mark m = {1}: want reject:CTAD-23, got reject:CTAD-23
+ok   tie-own-constructor: Derived d = {1}: want Derived<int>, got Derived<int>
+ok   tie-own-constructor-template: Derived d = {1}: want reject:CTAD-23, got reject:CTAD-23
+ok   tie-own-constructor-types-differ: Derived d(1): want reject:CTAD-24, got reject:CTAD-24
+ok   tie-own-constructor-user-guide: Derived d = {1}: want reject:CTAD-23, got reject:CTAD-23
+ok   tie-user-guide-conversion: Box a(small): want Box<short>, got Box<short>
+ok   tie-user-guide-conversion: Box b(1): want Box<long>, got Box<long>
+ok   tie-user-guide-copy: Box two(one): want Box<Box<int>>, got Box<Box<int>>
+ok   tie-user-guide: Box b(1): want Box<long>, got Box<long>
+ok   user-guide-beside-constrained-constructor-template: Pack(1, 'x'): want Pack<int, char>, got Pack<int, char>
+ok   user-guides: Box a(n): want Box<int&>, got Box<int&>
+ok   user-guides: Box b(1): want Box<int>, got Box<int>
+ok   user-guides: Box c("text"): want Box<long>, got Box<long>
+ok   user-guides: Box d(&n, &n): want Box<short>, got Box<short>
+ok   user-guides: Item e(&n): want Item<int>, got Item<int>
+ok   expressions/lambdas/closure-as-base-overload-set: Overload o{[](int){}, [](auto){}}: want Overload<c1, c2>, got Overload<c1, c2>
+ok   programs/W18/visitor: Overload{lambdas...}: want Overload<c1, c2>, got Overload<c1, c2>
+ok   templates/declarations/constant-parameter-class-template: Wrap{3}: want Wrap<int>, got Wrap<int>
+ok   templates/declarations/constant-parameter-class-template: Hold<4>: want Wrap<int>, got Wrap<int>
+ok   templates/declarations/constant-parameter-class-template: Hold<'a'>: want Wrap<char>, got Wrap<char>
+ok   programs/roadmap/r11-expected: Unexpected{Err::not_digit}: want Unexpected<Err>, got Unexpected<Err>
+ok   programs/roadmap/r11-expected-first-try: Unexpected{Err::not_digit}: want Unexpected<Err>, got Unexpected<Err>
+ok   programs/P1/parse: Err{ParseError::Empty()}: want Err<ParseError>, got Err<ParseError>
+ok   programs/W10/cleanup_guard: Defer a([&]{...}): want Defer<closure>, got Defer<closure>
+ok   programs/W7/small_string: SmallString hello = "hello": want SmallString<5>, got SmallString<5>
+ok   programs/W7/small_string: SmallString(" you"): want SmallString<4>, got SmallString<4>
+ok   programs/roadmap/r6-text: Pair p{1, 2.5}: want Pair<int, double>, got Pair<int, double>
+ok   programs/P1/stats: Slice(words): want Slice<Word>, got Slice<Word>
+ok   programs/roadmap/r8-pipeline: filter_view(r, a.f): want filter_view<FixedVec<int>, closure>, got filter_view<FixedVec<int>, closure>  [after substitution]
+ok   programs/W20/span_sort: Span(numbers): want Span<int>, got Span<int>
+ok   programs/W20/span_sort: Indirect{lambda}: want Indirect<closure>, got Indirect<closure>
+ok   programs/roadmap/r8-tasks: Tuple t{1, 'x', 2L}: want Tuple<int, char, long>, got Tuple<int, char, long>
+ok   programs/roadmap/r8-tasks: Tuple u{3, 4, 5}: want Tuple<int, int, int>, got Tuple<int, int, int>
+ok   programs/roadmap/r11-views: Span(data): want Span<int>, got Span<int>
+ok   programs/roadmap/r11-views: Filter(move(r), pred): want Filter<Span<int>, closure>, got Filter<Span<int>, closure>  [after substitution]
+ok   programs/roadmap/r11-views: Adaptor([pred](auto r){...}): want Adaptor<closure>, got Adaptor<closure>
+
+assertions: 290 of 296 right
+tests: 126 of 132 with every assertion right
+rule of a reject: 52 of 52 name the test's rule
+not expressible: 4 tests: guide-access, guide-definition, guide-specifier, guide-wrong-scope
+wrong:
+   | aggregate-elision | Mixed b{1,2,3L} | Mixed<long> | reject:CTAD-24
+   | aggregate-string-fixed-array | Named b{"ab", 1} | Named<int> | reject:CTAD-24
+   | guide-redeclared | the same guide twice | reject:CTAD-12 | accept
+   | inherited-copy-candidate | Derived d(b) | reject:CTAD-26 | Derived<int>
+   | inherited-copy-candidate-user-guide | Derived d(b) | reject:CTAD-24 | Derived<int>
+   | result-then-initialize | Pair p(1, 2) | reject:CTAD-26 | Pair<int>
