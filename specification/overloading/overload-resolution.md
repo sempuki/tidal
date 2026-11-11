@@ -410,7 +410,7 @@ the program is not valid.
 
 :::{rule} OVL-14
 :kind: required
-:tests: overloading/overload-resolution/init-constructor-against-conversion.cpp overloading/overload-resolution/init-constructor-conversion-tie.cpp overloading/overload-resolution/init-conversion-to-derived.cpp overloading/overload-resolution/init-qualified-result.cpp overloading/overload-resolution/init-copy-explicit-conversion.cpp overloading/overload-resolution/init-copy-constructor-standard-only.cpp classes/constructors/return-owner-converts-to-base-owner.cpp overloading/overload-resolution/direct-init-through-conversion-function.cpp classes/copy-move/assign-from-int-through-converting-constructor.cpp classes/copy-move/assign-from-lambda-through-constructor-template.cpp
+:tests: overloading/overload-resolution/init-constructor-against-conversion.cpp overloading/overload-resolution/init-constructor-conversion-tie.cpp overloading/overload-resolution/init-conversion-to-derived.cpp overloading/overload-resolution/init-qualified-result.cpp overloading/overload-resolution/init-copy-explicit-conversion.cpp overloading/overload-resolution/init-copy-constructor-standard-only.cpp classes/constructors/return-owner-converts-to-base-owner.cpp overloading/overload-resolution/direct-init-through-conversion-function.cpp classes/copy-move/assign-from-int-through-converting-constructor.cpp classes/copy-move/assign-from-lambda-through-constructor-template.cpp foundations/values/copy-init-converting-constructor-no-copy.cpp
 
 The initialization of an object of class `T` from one initializer `v`
 has these candidates:
@@ -849,8 +849,8 @@ struct Self {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 176
-of 206 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 177
+of 207 tests.
 
 ### Divergences
 

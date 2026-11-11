@@ -1,9 +1,9 @@
 # Q-0435: Is a literal operator template whose head is one pack of `char` valid, and which literals call it?
 
 **Status:** provisional
-**Affects:** OPR-8, OPR-10, `tests/classes/operators/literal-operator-template-char-pack.cpp`, `tests/classes/operators/literal-operator-template-long-digits.cpp`, `tests/classes/operators/literal-operator-template-head-not-char-pack.cpp`, `tests/programs/roadmap/r12-bigint-second-try.cpp`
+**Affects:** OPR-8, OPR-10, OPR-16, `tests/classes/operators/literal-operator-template-char-pack.cpp`, `tests/classes/operators/literal-operator-template-long-digits.cpp`, `tests/classes/operators/literal-operator-template-head-not-char-pack.cpp`, `tests/classes/operators/literal-operator-template-numeric-form-wins.cpp`, `tests/classes/operators/literal-operator-template-and-raw-form.cpp`, `tests/classes/operators/literal-operator-template-string-literal.cpp`, `tests/programs/roadmap/r12-bigint-second-try.cpp`
 **Source:** the round 12 programmer report (`reports/clean-room/roadmap-12/programmer.md`, sections 1.5 and 6), reduction `literal_operator_template.cpp`, and the programmer's sketch `bigint_second_try.cpp`.
-**Waits for:** a rule; a first review
+**Waits for:** a first review
 
 ## Context
 
@@ -67,6 +67,8 @@ Valid, for integer and floating literals (option 1). Every compiler
 accepts the form and gives the same results, and a library type for big
 numbers or units uses it. The tests follow option 1. Item F5 of
 decision 0063 writes the text for OPR-8 and OPR-10.
+
+Rule text on 2026-11-11 (decision 0063, item F5): OPR-8 defines the literal operator template, the characters that an integer or floating literal passes, and the choice of the numeric form when both exist. OPR-10 accepts the form, and OPR-16 rejects a numeric literal when only the `const char*` form and the template exist. Three tests join: `literal-operator-template-numeric-form-wins.cpp`, `literal-operator-template-and-raw-form.cpp`, and `literal-operator-template-string-literal.cpp`, and every baseline compiler passes them. The question now waits for a first review.
 
 ## Opinions
 

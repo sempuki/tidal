@@ -58,7 +58,9 @@ the prefix form, and `operator->` chains until a pointer appears.
 :rules: OPR-8 OPR-9 OPR-10 OPR-16
 
 A literal with a suffix is a call to the literal operator for that
-suffix, and the form of the literal picks the parameter list. The
+suffix, and the form of the literal picks the parameter list. A
+numeric literal can also pass its characters to a template, one
+template argument per character. The
 literal supplies every argument, so a literal operator has no default
 arguments, as for the other operator functions. Literal
 operators live at namespace scope, where lookup by suffix finds them.
@@ -232,7 +234,7 @@ candidate makes the expression not valid. The rule is a specific case of
 
 :::{rule} OPR-8
 :kind: required
-:tests: classes/operators/literal-block-scope.cpp classes/operators/literal-char.cpp classes/operators/literal-constexpr.cpp classes/operators/literal-float.cpp classes/operators/literal-in-namespace.cpp classes/operators/literal-integer.cpp classes/operators/literal-numeric-over-raw.cpp classes/operators/literal-raw-float.cpp classes/operators/literal-raw.cpp classes/operators/literal-string-concat-suffix.cpp classes/operators/literal-string.cpp classes/operators/literal-builtin-suffix-wins.cpp classes/operators/integer-suffix-mixed-case.cpp classes/operators/literal-raw-long-digits.cpp classes/operators/literal-operator-template-char-pack.cpp classes/operators/literal-operator-template-long-digits.cpp
+:tests: classes/operators/literal-block-scope.cpp classes/operators/literal-char.cpp classes/operators/literal-constexpr.cpp classes/operators/literal-float.cpp classes/operators/literal-in-namespace.cpp classes/operators/literal-integer.cpp classes/operators/literal-numeric-over-raw.cpp classes/operators/literal-raw-float.cpp classes/operators/literal-raw.cpp classes/operators/literal-string-concat-suffix.cpp classes/operators/literal-string.cpp classes/operators/literal-builtin-suffix-wins.cpp classes/operators/integer-suffix-mixed-case.cpp classes/operators/literal-raw-long-digits.cpp classes/operators/literal-operator-template-char-pack.cpp classes/operators/literal-operator-template-long-digits.cpp classes/operators/literal-numeric-form-value-too-large.cpp classes/operators/literal-operator-template-numeric-form-wins.cpp classes/operators/literal-operator-template-string-literal.cpp
 
 A literal with a suffix calls a literal operator with that suffix. A
 literal whose suffix is a form in the syntax of
@@ -241,13 +243,20 @@ literal operator. The form of the literal selects the parameter list:
 
 | Literal | Parameter list |
 |---|---|
-| An integer literal | `unsigned long long`, or `const char*` for the raw digits |
-| A floating literal | `long double`, or `const char*` |
+| An integer literal | `unsigned long long`, or `const char*` for the raw digits, or a template |
+| A floating literal | `long double`, or `const char*`, or a template |
 | A character literal | The character type |
 | A string literal | A pointer to the character type, and the length |
 
-If both a numeric form and the `const char*` form exist for a suffix, a
-numeric or floating literal uses the numeric form. Adjacent string
+A *literal operator template* has one template parameter, a pack of
+`char`, and an empty parameter list. An integer or floating literal
+calls the template with the characters of the literal as the template
+arguments ({question}`Q-0435`). The characters are those of the raw
+form, with a prefix such as `0x`, a point, and digit separators.
+
+If a numeric form exists for a suffix, a numeric or floating literal
+uses the numeric form, also when the `const char*` form or the template
+exists. Adjacent string
 literals with the same suffix, or with a suffix on only one of them, are
 joined and then passed to the literal operator. A literal operator can
 be `constexpr`.
@@ -255,9 +264,12 @@ be `constexpr`.
 
 :::{rule} OPR-16
 :kind: reject
-:tests: classes/operators/literal-integer-for-float-missing.cpp classes/operators/literal-not-found.cpp
+:tests: classes/operators/literal-integer-for-float-missing.cpp classes/operators/literal-not-found.cpp classes/operators/literal-operator-template-and-raw-form.cpp classes/operators/literal-operator-template-string-literal.cpp
 
 A literal for which no matching literal operator exists is not valid.
+If the `const char*` form and the template both exist for a suffix,
+and no numeric form exists, a numeric or floating literal with the
+suffix is not valid.
 :::
 
 :::{rule} OPR-10
@@ -267,7 +279,8 @@ A literal for which no matching literal operator exists is not valid.
 A literal operator must:
 
 - be a non-member function with C++ linkage,
-- have one of the parameter lists that OPR-8 gives,
+- have one of the parameter lists that OPR-8 gives, or be a literal
+  operator template of the form that OPR-8 gives ({question}`Q-0435`),
 - have no default argument ({question}`Q-0060`).
 
 A literal operator is a function of a namespace. A program can declare
@@ -345,11 +358,22 @@ Meters len = 2.5_m;
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 115
-of 118 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 118
+of 122 tests.
 
 ### Divergences
 
+- {question}`Q-0435` (OPR-8, OPR-10; open): whether a literal operator
+  template whose head is one pack of `char` is valid, and which literals
+  call it. It is valid for integer and floating literals, as every
+  compiler says.
+- {question}`Q-0436` (OPR-8; open): whether a literal whose digits no
+  integer type holds can call the raw form or the template. It can, as
+  every compiler says.
+- {question}`Q-0440` (PRIM-2,
+  OPR-8; open): whether a literal whose suffix calls only the
+  `unsigned long long` form must have a value that the type holds. It
+  must, as Clang and EDG say. GCC accepts the literal with a warning.
 - {question}`Q-0060` (OPR-10; settled on OPR-P3): whether a literal
   operator can have a default argument. It cannot, as Clang and EDG
   say. GCC accepts the default argument.
@@ -364,6 +388,7 @@ of 118 tests.
 | Test | Rules | Expected | Clang | GCC | EDG | Question |
 |---|---|---|---|---|---|---|
 | `literal-default-arg.cpp` | OPR-10 | reject | reject | accept | reject | {question}`Q-0060` |
+| `literal-numeric-form-value-too-large.cpp` | PRIM-2, OPR-8 | reject | reject | accept | reject | {question}`Q-0440` |
 | `literal-reserved-suffix-u8.cpp` | OPR-9 | accept | reject | accept | reject | {question}`Q-0383` |
 | `literal-reserved-suffix-used.cpp` | OPR-9 | accept | reject | accept | accept | {question}`Q-0383` |
 
@@ -377,6 +402,18 @@ of 118 tests.
   `ll`, `f`, or `L` its built-in type, even when the program declares a
   literal operator for that suffix. GCC warns that the implementation
   shadows the operator.
+- OPR-8, OPR-16: for one suffix, every compiler calls the numeric form
+  when a template also exists, and rejects a numeric literal when only
+  the `const char*` form and the template exist. GCC rejects the second
+  declaration, and Clang and EDG reject the call
+  (`literal-operator-template-numeric-form-wins.cpp`,
+  `literal-operator-template-and-raw-form.cpp`).
+- OPR-8, OPR-10: every compiler also accepts a literal operator template
+  whose one template parameter is a constant of class type, called by a
+  string literal. The page does not specify that form. The probes split
+  on which operator a string literal calls when the template and the
+  string form both exist, and on a literal whose length does not fit the
+  class.
 - OPR-7: for `a[x, y]`, every compiler evaluates `a` first and then the
   arguments from left to right, at run time and in constant evaluation.
   At run time, GCC 14 and GCC 16 evaluate the arguments of the call

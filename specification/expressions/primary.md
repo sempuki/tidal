@@ -260,11 +260,14 @@ of the literal.
 
 :::{rule} PRIM-2
 :kind: reject
-:tests: expressions/primary/int-too-large-signed-decimal.cpp expressions/primary/int-too-large.cpp classes/operators/literal-raw-long-digits.cpp classes/operators/literal-operator-template-long-digits.cpp
+:tests: expressions/primary/int-too-large-signed-decimal.cpp expressions/primary/int-too-large.cpp classes/operators/literal-raw-long-digits.cpp classes/operators/literal-operator-template-long-digits.cpp classes/operators/literal-numeric-form-value-too-large.cpp
 
 An integer literal must have a type in its list. A decimal literal with
 no `u` suffix that only an unsigned type can hold is not valid
-({question}`Q-0064`).
+({question}`Q-0064`). A literal whose suffix calls a literal operator
+({rule}`OPR-8`) has no such list. Its value must fit in `unsigned long
+long` only when it calls the numeric form ({question}`Q-0436`,
+{question}`Q-0440`).
 :::
 
 :::{rule} PRIM-3
@@ -775,7 +778,7 @@ bool same_text(const char* a, const char* b) {
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 134
-of 146 tests.
+of 147 tests.
 
 ### Divergences
 
@@ -783,6 +786,14 @@ of 146 tests.
   hexadecimal literal with a `z` suffix gets when only `std::size_t`
   can hold it. The type is `std::size_t`, as Clang and EDG say. GCC
   gives the signed type with no diagnostic.
+- {question}`Q-0436` (PRIM-2, OPR-8; open): whether PRIM-2 applies to
+  an integer literal whose suffix calls a raw literal operator or a
+  literal operator template. It does not, and any number of digits is
+  valid, as every compiler says.
+- {question}`Q-0440` (PRIM-2,
+  OPR-8; open): whether a literal whose suffix calls only the
+  `unsigned long long` form must have a value that the type holds. It
+  must, as Clang and EDG say. GCC accepts the literal with a warning.
 - {question}`Q-0064` (PRIM-2; settled on PRIM-P1): whether a decimal
   literal that fits only an unsigned type is valid. It is not, as Clang
   and GCC say under `-pedantic-errors`. EDG accepts it.
@@ -816,6 +827,7 @@ EDG skips the tests that use `-Wall` or `-Werror`.
 | `char-encoding-ilp32.cpp` | PRIM-32 | accept | accept | accept | reject | |
 | `char-encoding-lp64.cpp` | PRIM-32 | accept | accept | accept | reject | |
 | `char-unknown-escape.cpp` | PRIM-35 | reject | reject | reject | accept | {question}`Q-0330` |
+| `classes/operators/literal-numeric-form-value-too-large.cpp` | PRIM-2, OPR-8 | reject | reject | accept | reject | {question}`Q-0440` |
 | `double-overflow.cpp` | PRIM-15 | accept | accept | accept | reject | {question}`Q-0063` |
 | `expressions/comparison/chained-fold-not-chain.cpp` | CMP-14, PRIM-27 | accept | Clang 22: reject; Clang 18: accept | accept | skips | {question}`Q-0029` |
 | `float-extended-suffix.cpp` | PRIM-22 | accept | reject | accept | accept | |

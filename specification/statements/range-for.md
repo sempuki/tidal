@@ -32,6 +32,11 @@ plain `for` loop, so the same forms are valid in each of the four
 statements. A lone `;` is one of the forms. The loop variable is not
 yet declared when the range expression is evaluated, so a name there
 means the outer entity (RFOR-8).
+
+Coroutines are outside Tidal's scope ({rule}`KW-1`). So a sequence that
+is computed on demand is a class with its own state. Its iterator
+computes the next value in `++`, and `end` can return a separate type
+that the iterator compares with (RFOR-2).
 :::
 
 :::{principle} RFOR-P2
@@ -181,6 +186,29 @@ for (int v : p) use(v);              // rejected: a pointer is not a range
 
 for (int v : make().items()) use(v); // the result of make() lives
                                      // until the loop ends
+```
+
+A sequence computed on demand, with an end type of its own (RFOR-2).
+The iterator holds the state, and `!=` with `Done` ends the loop:
+
+```cpp
+struct Done {};
+struct Squares {
+  int first, limit;
+  struct Step {
+    int i, limit;
+    int operator*() const { return i * i; }
+    Step& operator++() { ++i; return *this; }
+    bool operator!=(Done) const { return i < limit; }
+  };
+  Step begin() const { return {first, limit}; }
+  Done end() const { return {}; }
+};
+int total() {
+  int sum = 0;
+  for (int sq : Squares{1, 4}) sum += sq;   // 1, 4, 9
+  return sum;                               // 14
+}
 ```
 
 ## Evidence

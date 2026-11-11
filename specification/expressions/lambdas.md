@@ -503,6 +503,40 @@ int dispatch(int base) {
 }
 ```
 
+The same form as a class template that owns one closure. `Action`
+deletes through the base, so the base has a virtual destructor
+({principle}`VIRT-P3`). The copy operations are deleted, so two owners
+never delete one closure ({principle}`NEW-P2`). Copy initialization
+from a closure calls the converting constructor template and makes no
+copy ({principle}`VC-P2`):
+
+```cpp
+template <class Arg> struct Callable {
+  virtual void operator()(Arg) = 0;
+  virtual ~Callable() = default;
+};
+template <class Arg, class F> struct CallableOf : Callable<Arg> {
+  F f;
+  CallableOf(F g) : f(g) {}
+  void operator()(Arg a) override { f(a); }
+};
+template <class Arg> struct Action {
+  Callable<Arg>* target;
+  template <class F> Action(F f) : target(new CallableOf<Arg, F>(f)) {}
+  Action(const Action&) = delete;
+  Action& operator=(const Action&) = delete;
+  ~Action() { delete target; }
+  void operator()(Arg a) { (*target)(a); }
+};
+int run() {
+  int total = 0;
+  Action<int> add = [&total](int v) { total += v; };
+  add(2);
+  add(3);
+  return total;                       // 5
+}
+```
+
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 95

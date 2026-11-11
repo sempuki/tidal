@@ -513,9 +513,13 @@ convert it to `void*`, for example to give the address to placement
 If an allocation function creates an array of `T`, a `T*` from its
 result points to element 0 ({question}`Q-0323`). A `T*` made from the
 result plus a multiple of `sizeof(T)` bytes points to the element at
-that address.
-The elements exist also when `T` is not an implicit-lifetime type, and
-their lifetimes begin when the program constructs them. Pointer
+that address. So a `T*` cast from a pointer to the byte at the start of
+element `k` points to element `k`. The cast can pass through a byte
+pointer such as `unsigned char*` ({question}`Q-0430`).
+The elements exist also when `T` is not an implicit-lifetime type, such
+as a class with a constructor. Their lifetimes begin when the program
+constructs them, for example with placement `new` at the element's
+address, and the `T*` then reaches the new object. Pointer
 arithmetic over the elements ({rule}`ADD-6`) is valid before then.
 :::
 

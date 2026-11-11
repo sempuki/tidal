@@ -28,10 +28,11 @@ forms of initialization, aggregates, inherited constructors.
 The program writes `Box b(1);`, and the implementation finds `Box<int>`.
 The implementation does not need a new algorithm for the purpose. The
 {term}`class template` gets a set of {term}`deduction guides <deduction guide>`.
-Each guide is a {term}`function template` that takes the arguments of an
+Each guide acts as a {term}`function template` that takes the arguments of an
 initializer and returns a {term}`specialization`. Overload resolution chooses
 one guide, as for a call, and the result type of that guide is the
-type. The procedure runs in these steps:
+type. A user guide with no template head is a function and no template,
+so {rule}`OVL-27` prefers it in a tie. The procedure runs in these steps:
 
 ```text
 a class template name with no argument list, and an initializer
@@ -63,9 +64,11 @@ an argument list. The result only names the specialization, so the
 guide writes no {term}`cv-qualifier` on it. A declaration that uses the
 guide adds its own cv-qualifiers (CTAD-1, CTAD-12).
 
-Step 5 is a separate initialization. {term}`Deduction <deduction>` can succeed and the
-initialization can still fail, for example on access or a deleted
-constructor (CTAD-26).
+Step 5 is a separate initialization. It chooses a constructor of the
+deduced type again, and that constructor can differ from the one that
+gave the chosen guide. {term}`Deduction <deduction>` can succeed and the
+initialization can still fail, for example on access, a deleted
+constructor, or a tie between constructors (CTAD-26).
 :::
 
 :::{principle} CTAD-P2
@@ -104,8 +107,8 @@ in the same way (CTAD-16).
 
 The guides compete as the constructors of a class would, so the usual
 rules of overload resolution apply first ({rule}`OVL-25` to
-{rule}`OVL-28`). Every guide is a function template, so {term}`partial ordering`
-often decides. If two guides still tie, these tie-breakers
+{rule}`OVL-28`). Every guide except a user guide with no template head
+is a function template, so {term}`partial ordering` often decides. If two guides still tie, these tie-breakers
 decide, in this order:
 
 | Order | Wins | Over | Rule |
@@ -121,8 +124,9 @@ usual rules. For a `short` argument, the guide from `Box(T)` needs no
 conversion, so it wins over the user guide `Box(int) -> Box<long>`
 (CTAD-20). The copy candidate wins over the guide
 from a copy constructor, so a copy is not ambiguous. The fourth
-tie-breaker follows {rule}`OVL-27` for the guides from constructors.
-The first follows {rule}`OVL-31`. The tests
+tie-breaker is modeled on {rule}`OVL-27`. OVL-27 itself does not order
+two guides from constructors, because both are templates over the
+class's parameters. The first tie-breaker follows {rule}`OVL-31`. The tests
 `tie-own-constructor-template.cpp` and
 `tie-own-constructor-user-guide.cpp` place the first tie-breaker before
 the second and the fourth.
@@ -145,7 +149,7 @@ A `deduction_guide` is a `declaration`, and in a class it is a
 
 :::{rule} CTAD-1
 :kind: required
-:tests: templates/class-template-deduction/sites.cpp templates/class-template-deduction/dependent-qualifier.cpp templates/class-template-deduction/sites-for-and-condition.cpp templates/class-template-deduction/dependent-qualifier-template-keyword.cpp templates/class-template-deduction/template-template-parameter.cpp templates/class-template-deduction/template-template-parameter-alias.cpp templates/class-template-deduction/constant-parameter-guide.cpp templates/declarations/constant-parameter-class-template.cpp templates/class-template-deduction/no-constructor.cpp templates/class-template-deduction/braced-cast-class-template-member.cpp templates/class-template-deduction/braced-cast-function-template-return.cpp templates/class-template-deduction/braced-cast-function-template-variable.cpp
+:tests: templates/class-template-deduction/sites.cpp templates/class-template-deduction/dependent-qualifier.cpp templates/class-template-deduction/sites-for-and-condition.cpp templates/class-template-deduction/dependent-qualifier-template-keyword.cpp templates/class-template-deduction/template-template-parameter.cpp templates/class-template-deduction/template-template-parameter-alias.cpp templates/class-template-deduction/constant-parameter-guide.cpp templates/declarations/constant-parameter-class-template.cpp templates/class-template-deduction/no-constructor.cpp templates/class-template-deduction/braced-cast-class-template-member.cpp templates/class-template-deduction/braced-cast-function-template-return.cpp templates/class-template-deduction/braced-cast-function-template-variable.cpp templates/class-template-deduction/site-new-no-initializer.cpp
 
 The name of a class template, or of an alias template (CTAD-14), can
 stand with no argument list in these places:
@@ -154,7 +158,7 @@ stand with no argument list in these places:
 - the type of a static data member with an initializer,
 - the type of the variable of a range-based `for` loop,
 - the type of a variable declared in a condition,
-- the type in a `new` expression with an initializer,
+- the type in a `new` expression, with or without an initializer,
 - the type of a functional cast, with parentheses or braces,
 - the type of a constant template parameter ({rule}`TPL-11`).
 
@@ -167,14 +171,16 @@ class template that it names after substitution ({question}`Q-0275`).
 
 :::{rule} CTAD-2
 :kind: reject
-:tests: templates/class-template-deduction/site-pointer.cpp templates/class-template-deduction/site-reference.cpp templates/class-template-deduction/site-array.cpp templates/class-template-deduction/site-parameter.cpp templates/class-template-deduction/site-return-type.cpp templates/class-template-deduction/site-member.cpp
+:tests: templates/class-template-deduction/site-pointer.cpp templates/class-template-deduction/site-reference.cpp templates/class-template-deduction/site-array.cpp templates/class-template-deduction/site-parameter.cpp templates/class-template-deduction/site-return-type.cpp templates/class-template-deduction/site-member.cpp templates/class-template-deduction/site-static-member-no-initializer.cpp
 
 A class template name with no argument list must not be used in other
 places. In particular, it must not be:
 
 - part of a pointer, reference, or array {term}`declarator`,
 - the type of a function parameter or a return type,
-- the declared type of a class member that is not `static`.
+- the declared type of a class member that is not `static`,
+- the type of a `static` data member with no initializer, also an
+  `inline` one ({question}`Q-0439`).
 
 The name with `const` or `volatile` is valid. {rule}`TARG-10` is the
 general rule.
@@ -201,9 +207,10 @@ their defaults ({rule}`TARG-9`).
 
 :::{rule} CTAD-5
 :kind: required
-:tests: templates/class-template-deduction/constructor-guides.cpp templates/class-template-deduction/specialization-constructors.cpp templates/class-template-deduction/conditional-explicit.cpp templates/class-template-deduction/conditional-explicit-copy-list.cpp
+:tests: templates/class-template-deduction/constructor-guides.cpp templates/class-template-deduction/specialization-constructors.cpp templates/class-template-deduction/conditional-explicit.cpp templates/class-template-deduction/conditional-explicit-copy-list.cpp templates/class-template-deduction/conditional-explicit-dropped-before-choice.cpp
 
-Each constructor of the primary class template gives a guide. The
+Each constructor that the primary class template declares gives a
+guide. An implicitly declared constructor gives none. The
 constructors of partial and {term}`explicit specializations <explicit specialization>` give no guide.
 A guide from a constructor has these parts:
 
@@ -220,7 +227,7 @@ deduced arguments.
 
 :::{rule} CTAD-6
 :kind: required
-:tests: templates/class-template-deduction/no-constructor.cpp templates/class-template-deduction/no-initializer.cpp templates/class-template-deduction/aggregate-empty-list.cpp templates/class-template-deduction/declared-not-defined.cpp templates/class-template-deduction/declared-not-defined-no-guide.cpp
+:tests: templates/class-template-deduction/no-constructor.cpp templates/class-template-deduction/no-initializer.cpp templates/class-template-deduction/aggregate-empty-list.cpp templates/class-template-deduction/declared-not-defined.cpp templates/class-template-deduction/declared-not-defined-no-guide.cpp templates/class-template-deduction/inherited-no-guide-without-parameters.cpp templates/class-template-deduction/site-new-no-initializer.cpp
 
 If the class template declares no constructor, or is declared and not
 defined, the class template has one guide with no parameters. Its
@@ -270,7 +277,7 @@ are not satisfied is not viable ({rule}`CNS-13`).
 
 :::{rule} CTAD-9
 :kind: required
-:tests: templates/class-template-deduction/aggregate-base.cpp templates/class-template-deduction/aggregate-candidate.cpp templates/class-template-deduction/aggregate-candidate-arrays.cpp templates/class-template-deduction/aggregate-candidate-pack.cpp templates/class-template-deduction/aggregate-conflict.cpp templates/class-template-deduction/aggregate-new-parentheses.cpp templates/class-template-deduction/aggregate-string-element-type.cpp templates/class-template-deduction/aggregate-string-fixed-array.cpp templates/class-template-deduction/aggregate-pack-not-last.cpp templates/class-template-deduction/aggregate-pack-not-last-element.cpp templates/class-template-deduction/aggregate-pack-length-fixed.cpp templates/class-template-deduction/aggregate-pack-length-conflict.cpp templates/class-template-deduction/aggregate-pack-length-position.cpp templates/class-template-deduction/aggregate-pack-length-parentheses.cpp templates/class-template-deduction/aggregate-pack-parentheses.cpp templates/class-template-deduction/braced-cast-class-template-member.cpp templates/class-template-deduction/braced-cast-function-template-return.cpp templates/class-template-deduction/braced-cast-function-template-variable.cpp
+:tests: templates/class-template-deduction/aggregate-base.cpp templates/class-template-deduction/aggregate-candidate.cpp templates/class-template-deduction/aggregate-candidate-arrays.cpp templates/class-template-deduction/aggregate-candidate-pack.cpp templates/class-template-deduction/aggregate-conflict.cpp templates/class-template-deduction/aggregate-new-parentheses.cpp templates/class-template-deduction/aggregate-string-element-type.cpp templates/class-template-deduction/aggregate-string-fixed-array.cpp templates/class-template-deduction/aggregate-pack-not-last.cpp templates/class-template-deduction/aggregate-pack-not-last-element.cpp templates/class-template-deduction/aggregate-pack-length-fixed.cpp templates/class-template-deduction/aggregate-pack-length-conflict.cpp templates/class-template-deduction/aggregate-pack-length-position.cpp templates/class-template-deduction/aggregate-pack-length-parentheses.cpp templates/class-template-deduction/aggregate-pack-parentheses.cpp templates/class-template-deduction/braced-cast-class-template-member.cpp templates/class-template-deduction/braced-cast-function-template-return.cpp templates/class-template-deduction/braced-cast-function-template-variable.cpp templates/class-template-deduction/aggregate-elision-fixed-int-array.cpp templates/class-template-deduction/inherited-no-aggregate-candidate.cpp
 
 An aggregate class template can have an {term}`aggregate candidate`.
 The candidate has one parameter for each element of the initializer
@@ -287,7 +294,9 @@ of each parameter is one of these:
 - for a pack of bases, the parameters that CTAD-27 gives.
 
 The elements match the members as in aggregate initialization
-({rule}`LIST-3`, {rule}`LIST-4`, {rule}`LIST-5`).
+({rule}`LIST-3`, {rule}`LIST-4`, {rule}`LIST-5`). A braced element for
+an aggregate member or base has the conversion sequence of
+{rule}`ICS-18`.
 :::
 
 :::{rule} CTAD-27
@@ -314,7 +323,7 @@ each base, and the list in braces or parentheses
 
 :::{rule} CTAD-10
 :kind: required
-:tests: templates/class-template-deduction/aggregate-base.cpp templates/class-template-deduction/aggregate-base-no-elision.cpp templates/class-template-deduction/aggregate-user-guide.cpp templates/class-template-deduction/aggregate-too-many.cpp templates/class-template-deduction/aggregate-no-elision.cpp templates/class-template-deduction/aggregate-elision.cpp templates/class-template-deduction/aggregate-empty-list.cpp templates/class-template-deduction/aggregate-dependent-bound.cpp templates/class-template-deduction/aggregate-dependent-element.cpp
+:tests: templates/class-template-deduction/aggregate-base.cpp templates/class-template-deduction/aggregate-base-no-elision.cpp templates/class-template-deduction/aggregate-user-guide.cpp templates/class-template-deduction/aggregate-too-many.cpp templates/class-template-deduction/aggregate-no-elision.cpp templates/class-template-deduction/aggregate-elision.cpp templates/class-template-deduction/aggregate-empty-list.cpp templates/class-template-deduction/aggregate-dependent-bound.cpp templates/class-template-deduction/aggregate-dependent-element.cpp templates/class-template-deduction/aggregate-elision-fixed-int-array.cpp templates/class-template-deduction/aggregate-string-fixed-array.cpp
 
 The aggregate candidate exists only if all of these hold:
 
@@ -330,7 +339,9 @@ these cases:
 - The member is an array whose bound depends on a template parameter.
 
 An array with a dependent element type and a fixed bound has its braces
-elided, also for a string literal ({question}`Q-0277`).
+elided, also for a string literal ({question}`Q-0277`). A member or base
+whose type is not dependent follows LIST-4 as in any aggregate
+initialization.
 :::
 
 ### User guides
@@ -384,7 +395,7 @@ value from the guide's parameters ({question}`Q-0241`).
 
 :::{rule} CTAD-14
 :kind: required
-:tests: templates/class-template-deduction/alias-template.cpp templates/class-template-deduction/alias-template-fixed-argument.cpp templates/class-template-deduction/alias-template-guides.cpp templates/class-template-deduction/alias-template-unreachable.cpp templates/class-template-deduction/alias-template-conflict.cpp templates/class-template-deduction/alias-template-fixed-argument-exact.cpp
+:tests: templates/class-template-deduction/alias-template.cpp templates/class-template-deduction/alias-template-fixed-argument.cpp templates/class-template-deduction/alias-template-guides.cpp templates/class-template-deduction/alias-template-unreachable.cpp templates/class-template-deduction/alias-template-conflict.cpp templates/class-template-deduction/alias-template-fixed-argument-exact.cpp templates/class-template-deduction/alias-of-alias-constraint.cpp
 
 An alias template can stand for a specialization of a class template,
 directly or through another alias. Each guide of that class template
@@ -399,12 +410,14 @@ then gives a guide of the alias ({question}`Q-0240`):
   guide.
 
 The new guide keeps the explicit, copy, and user status of its source.
-CTAD-28 gives when the new guide is viable.
+CTAD-28 gives when the new guide is viable. For an alias of another
+alias, the steps run once for each alias, the inner alias first. The
+constraints of each alias apply (CTAD-28).
 :::
 
 :::{rule} CTAD-28
 :kind: required
-:tests: templates/class-template-deduction/alias-template-result-check.cpp templates/class-template-deduction/alias-template-constraints.cpp templates/class-template-deduction/alias-template-rvalue-reference.cpp
+:tests: templates/class-template-deduction/alias-template-result-check.cpp templates/class-template-deduction/alias-template-constraints.cpp templates/class-template-deduction/alias-template-rvalue-reference.cpp templates/class-template-deduction/alias-of-alias-constraint.cpp
 
 A guide of an alias template is viable only if both of these hold after
 its deduction:
@@ -430,39 +443,61 @@ qualifier.
 
 :::{rule} CTAD-16
 :kind: required
-:tests: templates/class-template-deduction/inherited-constructors.cpp templates/class-template-deduction/inherited-user-guide.cpp templates/class-template-deduction/inherited-without-using.cpp templates/class-template-deduction/inherited-not-deducible.cpp templates/class-template-deduction/inherited-copy-candidate.cpp templates/class-template-deduction/inherited-copy-candidate-user-guide.cpp templates/class-template-deduction/inherited-guide-unused-parameter-default.cpp
+:tests: templates/class-template-deduction/inherited-constructors.cpp templates/class-template-deduction/inherited-user-guide.cpp templates/class-template-deduction/inherited-without-using.cpp templates/class-template-deduction/inherited-not-deducible.cpp templates/class-template-deduction/inherited-copy-candidate.cpp templates/class-template-deduction/inherited-copy-candidate-user-guide.cpp templates/class-template-deduction/inherited-guide-unused-parameter-default.cpp templates/class-template-deduction/inherited-no-guide-without-parameters.cpp templates/class-template-deduction/inherited-no-aggregate-candidate.cpp
 
 A class template that inherits the constructors of a base
-({rule}`DER-8`) gets the guides of that base, with the user guides and
-the copy candidate. The
+({rule}`DER-8`) takes these guides of that base:
+
+- the guides from the constructors that the base declares,
+- the user guides of the base,
+- the copy candidate of the base.
+
+The guide with no parameters (CTAD-6) and the aggregate candidate
+(CTAD-9) of the base stay with the base. The
 base type acts as an alias of the derived parameters (CTAD-14), and the
 result is mapped back to the derived class template
 ({question}`Q-0239`). A derived parameter that the base type does not
 use gets no value from an inherited guide. The parameter then takes its
 default, and without a default the guide fails
 ({question}`Q-0408`). A class template that
-inherits no constructors gets no guides from its bases.
+inherits no constructors gets no guides from its bases. The inherited
+copy candidate can give a type whose initialization fails, because the
+copy constructor of the base is not inherited (DER-8, CTAD-26).
 :::
 
 ### Choosing a guide
 
 :::{rule} CTAD-17
 :kind: required
-:tests: templates/class-template-deduction/selection-forms.cpp templates/class-template-deduction/selection-explicit-copy.cpp templates/class-template-deduction/explicit-user-guide-copy.cpp templates/class-template-deduction/selection-private-constructor.cpp templates/class-template-deduction/conditional-explicit.cpp
+:tests: templates/class-template-deduction/selection-forms.cpp templates/class-template-deduction/selection-explicit-copy.cpp templates/class-template-deduction/explicit-user-guide-copy.cpp templates/class-template-deduction/selection-private-constructor.cpp templates/class-template-deduction/conditional-explicit.cpp templates/class-template-deduction/initializer-list-guide-with-default.cpp templates/class-template-deduction/initializer-list-guide-empty-list.cpp templates/class-template-deduction/copy-init-guide-user-conversion.cpp templates/class-template-deduction/conditional-explicit-dropped-before-choice.cpp
 
 The guides act as the constructors of a class, and the initializer
-chooses one as {rule}`OVL-14` gives. Copy initialization with `=` and no
-braces leaves out the explicit guides. All guides are accessible,
-whatever the access of their constructor.
+chooses one as {rule}`OVL-14` gives. These points apply:
+
+- Copy initialization with `=` and no braces leaves out the explicit
+  guides. A conditional `explicit` (CTAD-5) is evaluated for each
+  guide's own deduced arguments before the choice
+  ({question}`Q-0437`).
+- The limit of OVL-14 and {rule}`ICS-10` to a standard sequence does
+  not apply to the guides. The limit applies to the constructors that
+  step 5 chooses.
+- All guides are accessible, whatever the access of their constructor.
 :::
 
 :::{rule} CTAD-18
 :kind: required
-:tests: templates/class-template-deduction/list-single-specialization.cpp templates/class-template-deduction/list-single-specialization-alias.cpp
+:tests: templates/class-template-deduction/list-single-specialization.cpp templates/class-template-deduction/list-single-specialization-alias.cpp templates/class-template-deduction/initializer-list-guide-with-default.cpp templates/class-template-deduction/initializer-list-guide-empty-list.cpp
+
+An *initializer-list guide* is a guide whose first parameter is
+`std::initializer_list<E>` and whose other parameters have defaults. A
+braced list chooses a guide in the two phases of {rule}`ILC-3`, with
+the initializer-list guides in the first phase. An empty list skips
+the first phase if a guide with no parameters exists
+({question}`Q-0438`).
 
 A braced list can have one element whose type is a specialization of
 the class template, or a class derived from one. The choice then skips
-the phase of {rule}`ILC-3` that tries only the initializer-list guides.
+the first phase, unlike ILC-3 for constructors ({question}`Q-0081`).
 The same holds for a name of an alias template of the class template
 ({question}`Q-0279`).
 :::
@@ -513,7 +548,7 @@ explicit guides take part in the choice ({rule}`ILC-8`).
 
 :::{rule} CTAD-24
 :kind: reject
-:tests: templates/class-template-deduction/no-initializer.cpp templates/class-template-deduction/ambiguous-guides.cpp templates/class-template-deduction/constructor-rvalue-reference-lvalue.cpp templates/class-template-deduction/constructor-nondeduced.cpp templates/class-template-deduction/aggregate-user-guide.cpp templates/class-template-deduction/aggregate-too-many.cpp templates/class-template-deduction/aggregate-conflict.cpp templates/class-template-deduction/aggregate-no-elision.cpp templates/class-template-deduction/alias-template-conflict.cpp templates/class-template-deduction/inherited-without-using.cpp templates/class-template-deduction/inherited-not-deducible.cpp templates/class-template-deduction/selection-explicit-copy.cpp templates/class-template-deduction/specialization-constructors.cpp templates/class-template-deduction/declared-not-defined-no-guide.cpp templates/class-template-deduction/aggregate-dependent-bound.cpp templates/class-template-deduction/aggregate-pack-not-last-element.cpp templates/class-template-deduction/aggregate-pack-length-conflict.cpp templates/class-template-deduction/aggregate-pack-length-position.cpp templates/class-template-deduction/aggregate-string-element-type.cpp templates/class-template-deduction/alias-template-result-check.cpp templates/class-template-deduction/alias-template-constraints.cpp templates/class-template-deduction/alias-template-rvalue-reference.cpp templates/class-template-deduction/tie-own-constructor-types-differ.cpp templates/class-template-deduction/guide-template-same-parameters.cpp templates/class-template-deduction/guide-constraints-none-satisfied.cpp templates/class-template-deduction/guide-constraints-absent-ambiguous.cpp templates/class-template-deduction/inherited-copy-candidate-user-guide.cpp templates/class-template-deduction/aggregate-base-no-elision.cpp
+:tests: templates/class-template-deduction/no-initializer.cpp templates/class-template-deduction/ambiguous-guides.cpp templates/class-template-deduction/constructor-rvalue-reference-lvalue.cpp templates/class-template-deduction/constructor-nondeduced.cpp templates/class-template-deduction/aggregate-user-guide.cpp templates/class-template-deduction/aggregate-too-many.cpp templates/class-template-deduction/aggregate-conflict.cpp templates/class-template-deduction/aggregate-no-elision.cpp templates/class-template-deduction/alias-template-conflict.cpp templates/class-template-deduction/inherited-without-using.cpp templates/class-template-deduction/inherited-not-deducible.cpp templates/class-template-deduction/selection-explicit-copy.cpp templates/class-template-deduction/specialization-constructors.cpp templates/class-template-deduction/declared-not-defined-no-guide.cpp templates/class-template-deduction/aggregate-dependent-bound.cpp templates/class-template-deduction/aggregate-pack-not-last-element.cpp templates/class-template-deduction/aggregate-pack-length-conflict.cpp templates/class-template-deduction/aggregate-pack-length-position.cpp templates/class-template-deduction/aggregate-string-element-type.cpp templates/class-template-deduction/alias-template-result-check.cpp templates/class-template-deduction/alias-template-constraints.cpp templates/class-template-deduction/alias-template-rvalue-reference.cpp templates/class-template-deduction/tie-own-constructor-types-differ.cpp templates/class-template-deduction/guide-template-same-parameters.cpp templates/class-template-deduction/guide-constraints-none-satisfied.cpp templates/class-template-deduction/guide-constraints-absent-ambiguous.cpp templates/class-template-deduction/inherited-copy-candidate-user-guide.cpp templates/class-template-deduction/aggregate-base-no-elision.cpp templates/class-template-deduction/alias-of-alias-constraint.cpp templates/class-template-deduction/inherited-no-guide-without-parameters.cpp templates/class-template-deduction/inherited-no-aggregate-candidate.cpp
 
 The guides must give one best guide. If no guide is viable, or no guide
 is better than all others, the program is not valid. The rule is the
@@ -528,12 +563,14 @@ case of {rule}`OVL-35` and {rule}`OVL-36` for guides (decision 0042).
 
 The result type of the chosen guide replaces the class template name.
 The initialization then runs as for a declaration with that type, and
-its own rules apply.
+its own rules apply. The initialization chooses a constructor of that
+type again, and the constructor can differ from the one that gave the
+guide.
 :::
 
 :::{rule} CTAD-26
 :kind: reject
-:tests: templates/class-template-deduction/result-then-initialize.cpp templates/class-template-deduction/result-then-initialize-deleted.cpp templates/class-template-deduction/selection-private-constructor.cpp templates/class-template-deduction/inherited-copy-candidate.cpp
+:tests: templates/class-template-deduction/result-then-initialize.cpp templates/class-template-deduction/result-then-initialize-deleted.cpp templates/class-template-deduction/selection-private-constructor.cpp templates/class-template-deduction/inherited-copy-candidate.cpp templates/class-template-deduction/inherited-copy-candidate-user-guide.cpp
 
 The initialization with the deduced type must be valid. Its own rules
 apply, such as {rule}`CTOR-25`, {rule}`DEL-1`, and {rule}`ACC-3`.
@@ -683,10 +720,45 @@ Bases b{List<X, Y, Z>{}, X{}};    // Bases<X, Y, Z>: Y and Z get empty lists
 Bases c{List<X, Y, Z>{}, Y{}};    // rejected: Y stands where X is fixed
 ```
 
+A member whose type is not dependent has its braces elided as in any
+aggregate initialization (CTAD-10, {rule}`LIST-4`):
+
+```cpp
+struct Plain { int x; int y; };
+template <class T> struct Mixed { Plain p; T z; };
+Mixed m{1, 2, 3L};                // Mixed<long>: 1 and 2 fill p
+template <class T> struct Counts { int v[2]; T total; };
+Counts c{1, 2, 3L};               // Counts<long>: 1 and 2 fill v
+```
+
+The match of CTAD-14, step by step. The guide from `Pair(T, U)` is
+`Pair(T, U) -> Pair<T, U>`. The alias `IntPair<V>` is `Pair<int, V>`.
+The match of `Pair<T, U>` with `Pair<int, V>` fixes `T = int` and gives
+`U = V`. The new guide is `IntPair(int, V) -> Pair<int, V>`. Clang 18
+has no deduction through an alias ({question}`Q-0240`):
+
+% tidal-example: diverges
+```cpp
+template <class T, class U> struct Pair { constexpr Pair(T, U) {} };
+template <class V> using IntPair = Pair<int, V>;
+IntPair p(1, 2.0);                // Pair<int, double>: V = double
+```
+
+The guide and the constructor that runs are two choices (CTAD-25,
+CTAD-26). The user guide gives `Pair<int>`. The constructors of
+`Pair<int>` then tie for two `int` arguments:
+
+% tidal-example: reject
+```cpp
+template <class T> struct Pair { Pair(T, long) {} Pair(long, T) {} };
+template <class T> Pair(T, T) -> Pair<T>;
+Pair p(1, 2);                     // rejected: Pair<int>, then a tie
+```
+
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 101
-of 123 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 107
+of 133 tests.
 
 ### Divergences
 
@@ -755,6 +827,23 @@ waits on the maintainer (`documentation/decisions/pending.md`).
   parameter that the base does not use lets an inherited guide succeed.
   It does, as GCC and EDG say. Clang finds no viable guide, as the gap
   review of 2026-11-05 reads.
+- {question}`Q-0020` (CTAD-17; open): how a test records a compiler
+  that does not implement a feature yet. Clang 18 applies the limit of
+  OVL-14 to a guide in copy initialization, and Clang 22 does not
+  (`copy-init-guide-user-conversion.cpp`).
+- {question}`Q-0439` (CTAD-2; open):
+  whether a `static` data member can have a deduced class template type
+  with no initializer. It cannot, also when `inline`, as Clang and EDG
+  say. GCC deduces from the guide with no parameters.
+- {question}`Q-0437` (CTAD-17,
+  CTAD-5; open): whether copy initialization leaves out a guide that is
+  explicit for its own deduced arguments before the choice. It does, as
+  Clang and EDG say. GCC chooses that guide and then rejects the
+  initialization.
+- {question}`Q-0438` (CTAD-18;
+  open): whether an empty list skips the initializer-list guides when a
+  guide with no parameters exists. It does, as Clang says and as ILC-3
+  does for constructors. GCC and EDG choose the initializer-list guide.
 
 ### Split tests
 
@@ -764,13 +853,15 @@ waits on the maintainer (`documentation/decisions/pending.md`).
 | `aggregate-pack-length-conflict.cpp` | CTAD-27, CTAD-9, CTAD-24 | reject | reject | accept | reject | {question}`Q-0276` |
 | `aggregate-pack-length-parentheses.cpp` | CTAD-27, CTAD-9 | accept | accept | reject | accept | {question}`Q-0352` |
 | `aggregate-pack-parentheses.cpp` | CTAD-27, CTAD-9 | accept | accept | reject | accept | {question}`Q-0352` |
-| `aggregate-string-fixed-array.cpp` | CTAD-9 | accept | accept | accept | reject | {question}`Q-0277` |
+| `aggregate-string-fixed-array.cpp` | CTAD-9, CTAD-10 | accept | accept | accept | reject | {question}`Q-0277` |
 | `alias-template-fixed-argument-exact.cpp` | CTAD-14 | accept | Clang 22: accept; Clang 18: reject | accept | accept | {question}`Q-0240` |
 | `alias-template-fixed-argument.cpp` | CTAD-14 | accept | Clang 22: accept; Clang 18: reject | accept | reject | {question}`Q-0240` |
 | `alias-template-guides.cpp` | CTAD-14 | accept | Clang 22: accept; Clang 18: reject | accept | accept | {question}`Q-0240` |
 | `alias-template-rvalue-reference.cpp` | CTAD-28, CTAD-8, CTAD-24 | reject | reject | reject | accept | {question}`Q-0278` |
 | `alias-template-unreachable.cpp` | CTAD-14 | accept | Clang 22: accept; Clang 18: reject | accept | accept | |
 | `alias-template.cpp` | CTAD-14 | accept | Clang 22: accept; Clang 18: reject | accept | accept | {question}`Q-0240` |
+| `conditional-explicit-dropped-before-choice.cpp` | CTAD-17, CTAD-5 | accept | accept | reject | accept | {question}`Q-0437` |
+| `copy-init-guide-user-conversion.cpp` | CTAD-17 | accept | Clang 22: accept; Clang 18: reject | accept | accept | {question}`Q-0020` |
 | `dependent-qualifier-template-keyword.cpp` | CTAD-1 | accept | reject | accept | accept | {question}`Q-0243` |
 | `guide-not-deducible-constant.cpp` | CTAD-13 | reject | reject | accept | accept | {question}`Q-0241` |
 | `guide-not-deducible.cpp` | CTAD-13 | reject | reject | accept | accept | {question}`Q-0241` |
@@ -779,7 +870,9 @@ waits on the maintainer (`documentation/decisions/pending.md`).
 | `inherited-constructors.cpp` | CTAD-16 | accept | reject | accept | accept | {question}`Q-0239` |
 | `inherited-guide-unused-parameter-default.cpp` | CTAD-16 | accept | reject | accept | accept | {question}`Q-0408` |
 | `inherited-user-guide.cpp` | CTAD-16 | accept | reject | accept | accept | {question}`Q-0239` |
+| `initializer-list-guide-empty-list.cpp` | CTAD-18, CTAD-17 | accept | accept | reject | reject | {question}`Q-0438` |
 | `list-single-specialization-alias.cpp` | CTAD-18 | accept | Clang 22: accept; Clang 18: reject | accept | reject | {question}`Q-0240`, {question}`Q-0279` |
+| `site-static-member-no-initializer.cpp` | CTAD-2 | reject | reject | accept | reject | {question}`Q-0439` |
 | `template-template-parameter-alias.cpp` | CTAD-1 | accept | Clang 22: accept; Clang 18: reject | accept | accept | {question}`Q-0240`, {question}`Q-0275` |
 | `tie-own-constructor-types-differ.cpp` | CTAD-19, CTAD-24 | reject | accept | reject | reject | {question}`Q-0239` |
 
@@ -831,6 +924,28 @@ waits on the maintainer (`documentation/decisions/pending.md`).
 - CTAD-26: in each test of the rule, the message names the
   constructor of the deduced specialization, so deduction succeeded
   first.
+- CTAD-10: every compiler elides the braces of a member of type
+  `Plain` and of a member `int v[2]`, neither dependent
+  (`aggregate-elision.cpp`, `aggregate-elision-fixed-int-array.cpp`).
+- CTAD-16: every compiler reports a class template that inherits
+  constructors as not an aggregate, and gives a derived class neither
+  the base's guide with no parameters nor the base's aggregate candidate
+  (`inherited-no-guide-without-parameters.cpp`,
+  `inherited-no-aggregate-candidate.cpp`).
+- CTAD-14, CTAD-28: every compiler applies the constraint of an inner
+  alias through an outer alias (`alias-of-alias-constraint.cpp`).
+  CTAD-14 drops a guide whose result cannot match the alias. Keeping the
+  guide to fail CTAD-28 gives the same outcome, and no probe separates
+  the two readings.
+- CTAD-17: in copy initialization, a user guide that needs a
+  user-defined conversion to its parameter is viable on Clang 22, GCC,
+  and EDG. Clang 18 finds no viable guide
+  (`copy-init-guide-user-conversion.cpp`).
+- CTAD-1: every compiler deduces `new Box` with no initializer from the
+  guide with no parameters (`site-new-no-initializer.cpp`).
+- CTAD-5: no probe separates a guide from an implicitly declared
+  constructor from the copy candidate or the guide with no parameters,
+  which give the same types.
 - CTAD-21: without the tie-breaker, the copy candidate and the guide
   from `Copy(const Copy&)` would make `tie-copy-candidate.cpp`
   ambiguous. Every compiler accepts the test.

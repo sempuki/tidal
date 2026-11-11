@@ -66,11 +66,11 @@ The definitions of most members wait for a use:
 | Member | Made with the class |
 |---|---|
 | data member, its type | yes |
-| member function, its type | the declaration only |
+| member function, its type | the declaration only; its parameter and return types need not be complete |
 | member function body, default arguments, exception specification | no (INST-7, INST-9) |
 | friend function defined in the class, its body | no; a call makes it (INST-7) |
 | default member initializer | no (INST-10) |
-| `static` data member, also `inline` or `constexpr` | the declaration only (INST-8) |
+| `static` data member, also `inline` or `constexpr` | the declaration only, and its type need not be complete (INST-8, {question}`Q-0441`) |
 | `static const` member of integer or enumeration type, neither `inline` nor `constexpr`, with its initializer in the class | yes ({question}`Q-0433`) |
 | nested class | the declaration only |
 | {term}`member template` | the declaration only |
@@ -191,7 +191,7 @@ definition.
 
 :::{rule} INST-1
 :kind: required
-:tests: templates/instantiation/class-object.cpp templates/instantiation/class-sizeof.cpp templates/instantiation/class-member-access.cpp templates/instantiation/class-delete.cpp templates/instantiation/class-base-conversion.cpp templates/instantiation/class-function-definition-parameter.cpp templates/instantiation/class-function-definition-return.cpp templates/instantiation/class-call-return.cpp templates/instantiation/class-deduction-from-derived.cpp templates/instantiation/class-deduction-from-derived-error.cpp templates/instantiation/class-qualified-name.cpp templates/instantiation/class-call-passes-by-value.cpp templates/instantiation/class-decltype-call-argument-instantiated.cpp templates/instantiation/class-decltype-member-access-instantiated.cpp templates/instantiation/lambda-return-specialization-braced-return.cpp
+:tests: templates/instantiation/class-object.cpp templates/instantiation/class-sizeof.cpp templates/instantiation/class-member-access.cpp templates/instantiation/class-delete.cpp templates/instantiation/class-base-conversion.cpp templates/instantiation/class-function-definition-parameter.cpp templates/instantiation/class-function-definition-return.cpp templates/instantiation/class-call-return.cpp templates/instantiation/class-deduction-from-derived.cpp templates/instantiation/class-deduction-from-derived-error.cpp templates/instantiation/class-qualified-name.cpp templates/instantiation/class-call-passes-by-value.cpp templates/instantiation/class-decltype-call-argument-instantiated.cpp templates/instantiation/class-decltype-member-access-instantiated.cpp templates/instantiation/lambda-return-specialization-braced-return.cpp templates/instantiation/member-parameter-type-waits-for-definition.cpp
 
 A specialization of a {term}`class template` is instantiated when a use needs
 a complete class, or when the definition can change the meaning of the
@@ -202,7 +202,8 @@ use. These uses instantiate the class:
 - `delete` through a pointer,
 - a conversion of a pointer or reference to a base class,
 - the definition of a function whose parameter or return type is the
-  class,
+  class, when the definition is made (for a member of a class template,
+  {rule}`INST-7`),
 - a call to a function that returns the class, unless the call is the
   whole operand of `decltype` (INST-2),
 - a call that passes the class by value,
@@ -235,7 +236,7 @@ use is not valid ({rule}`TSP-20` gives the same for an {term}`explicit specializ
 
 :::{rule} INST-5
 :kind: required
-:tests: templates/instantiation/class-member-definitions-unused.cpp templates/instantiation/class-inline-static-member-unused.cpp templates/instantiation/class-scoped-enumeration-unused.cpp templates/instantiation/class-deleted-member-specialized.cpp templates/packs/member-template-enclosing-pack-after-deduced.cpp templates/packs/member-template-enclosing-pack-before-deduced.cpp templates/instantiation/friend-body-waits-for-use.cpp templates/instantiation/class-static-const-member-initializer-made.cpp templates/instantiation/class-static-constexpr-member-initializer-waits.cpp templates/instantiation/class-point-static-constexpr-made-at-use.cpp templates/instantiation/class-point-static-const-member.cpp templates/instantiation/member-return-type-waits-for-definition.cpp templates/instantiation/member-constructor-made-at-call.cpp
+:tests: templates/instantiation/class-member-definitions-unused.cpp templates/instantiation/class-inline-static-member-unused.cpp templates/instantiation/class-scoped-enumeration-unused.cpp templates/instantiation/class-deleted-member-specialized.cpp templates/packs/member-template-enclosing-pack-after-deduced.cpp templates/packs/member-template-enclosing-pack-before-deduced.cpp templates/instantiation/friend-body-waits-for-use.cpp templates/instantiation/class-static-const-member-initializer-made.cpp templates/instantiation/class-static-constexpr-member-initializer-waits.cpp templates/instantiation/class-point-static-constexpr-made-at-use.cpp templates/instantiation/class-point-static-const-member.cpp templates/instantiation/member-return-type-waits-for-definition.cpp templates/instantiation/member-constructor-made-at-call.cpp templates/instantiation/member-deduced-return-waits-for-definition.cpp templates/instantiation/member-parameter-type-waits-for-definition.cpp templates/instantiation/static-inline-member-incomplete-argument.cpp templates/instantiation/static-member-incomplete-argument-declared.cpp
 
 The instantiation of a class makes the declarations of its members. It
 does not make these definitions:
@@ -252,6 +253,12 @@ does not make these definitions:
 The initializer in the class of a `static const` member of integer or
 enumeration type is made with the class, if the member is neither
 `inline` nor `constexpr` ({question}`Q-0433`).
+
+The declaration of a member function names its parameter and return
+types. Those types need to be complete only when the definition is made
+(INST-1, INST-7). The type of a `static` data member also need not be
+complete when the class is made
+({question}`Q-0441`).
 :::
 
 :::{rule} INST-6
@@ -274,7 +281,7 @@ must not become the same partial specialization ({question}`Q-0251`).
 
 :::{rule} INST-7
 :kind: required
-:tests: templates/instantiation/function-unevaluated.cpp templates/instantiation/function-called.cpp templates/instantiation/function-address.cpp templates/instantiation/function-deduced-return.cpp templates/instantiation/member-function-called.cpp templates/instantiation/function-unevaluated-braced.cpp templates/instantiation/function-unevaluated-braced-untaken.cpp templates/instantiation/function-unevaluated-parentheses.cpp templates/instantiation/function-unevaluated-sizeof-constant.cpp templates/instantiation/virtual-called-through-pointer.cpp templates/instantiation/friend-body-made-at-call.cpp templates/instantiation/member-return-type-waits-for-definition.cpp templates/instantiation/member-constructor-made-at-call.cpp
+:tests: templates/instantiation/function-unevaluated.cpp templates/instantiation/function-called.cpp templates/instantiation/function-address.cpp templates/instantiation/function-deduced-return.cpp templates/instantiation/member-function-called.cpp templates/instantiation/function-unevaluated-braced.cpp templates/instantiation/function-unevaluated-braced-untaken.cpp templates/instantiation/function-unevaluated-parentheses.cpp templates/instantiation/function-unevaluated-sizeof-constant.cpp templates/instantiation/virtual-called-through-pointer.cpp templates/instantiation/friend-body-made-at-call.cpp templates/instantiation/member-return-type-waits-for-definition.cpp templates/instantiation/member-constructor-made-at-call.cpp templates/instantiation/member-deduced-return-waits-for-definition.cpp templates/instantiation/member-parameter-type-waits-for-definition.cpp
 
 A {term}`function template` specialization, a member function of a class
 specialization, and a friend function that a class specialization
@@ -774,8 +781,8 @@ extern template constexpr int size_of<long>;  // rejected: constexpr (INST-25)
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 135
-of 164 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 137
+of 168 tests.
 
 ### Divergences
 
@@ -791,6 +798,12 @@ waits on the maintainer (`documentation/decisions/pending.md`).
   open): whether the initializer in the class of a `static const`
   member that is neither `inline` nor `constexpr` is made with the
   class. It is, as Clang and EDG say. GCC waits for a use of the member.
+- {question}`Q-0441`
+  (INST-5; open): whether the instantiation of a class needs the type
+  of a `static` data member complete, when that type is a specialization
+  over an incomplete class argument. It does not, as Clang says. GCC
+  needs the type for a declaration with no definition, and GCC and EDG
+  need it for an `inline` member.
 - {question}`Q-0232` (INST-5; settled on INST-P2): whether the
   enumerators of a scoped member enumeration are instantiated with the
   class. They wait for a use, as Clang and EDG say. GCC 16 instantiates
@@ -899,10 +912,19 @@ the compile.
 | `local-class-requires-clause-waits.cpp` | INST-12 | run | run | run | reject | {question}`Q-0392` |
 | `member-partial-specializations-collide.cpp` | INST-6 | reject | reject | accept | accept | {question}`Q-0251` |
 | `specialization-after-explicit-declaration.cpp` | INST-19 | reject | reject | reject | accept | {question}`Q-0237` |
+| `static-inline-member-incomplete-argument.cpp` | INST-5 | accept | accept | reject | reject | {question}`Q-0231`, {question}`Q-0441` |
+| `static-member-incomplete-argument-declared.cpp` | INST-5 | accept | accept | reject | accept | {question}`Q-0441` |
 | `virtual-called-through-pointer.cpp` | INST-7, INST-6 | reject | reject | reject | accept | {question}`Q-0428` |
 
 ### Notes
 
+- INST-5, INST-7: every compiler accepts a base class template over an
+  incomplete derived class whose member function, in the class or
+  outside it, `virtual` or not, returns or takes a specialization that
+  needs the derived class complete, or has a deduced return type. Every
+  compiler rejects such a specialization as the type of a data member
+  that is not `static` (`member-parameter-type-waits-for-definition.cpp`,
+  `member-deduced-return-waits-for-definition.cpp`).
 - INST-5: every compiler accepts an explicit specialization of a
   deleted member function after the class is instantiated. The review
   predicts that the class makes the deleted definition, so that the

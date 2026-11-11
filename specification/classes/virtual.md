@@ -393,14 +393,14 @@ before linking.
 
 :::{rule} VIRT-13
 :kind: recommended
-:tests: classes/virtual/delete-nonvirtual-warns.cpp classes/virtual/delete-nonvirtual-abstract-warns.cpp classes/virtual/delete-nonvirtual-final-no-warning.cpp classes/virtual/hidden-virtual-warns.cpp classes/virtual/missing-override-inconsistent-warns.cpp classes/virtual/missing-override-all-marked-no-warning.cpp classes/virtual/missing-override-destructor-unmarked-no-warning.cpp classes/virtual/missing-override-marked-destructor-warns.cpp
+:tests: classes/virtual/delete-nonvirtual-warns.cpp classes/virtual/delete-nonvirtual-abstract-warns.cpp classes/virtual/delete-nonvirtual-final-no-warning.cpp classes/virtual/hidden-virtual-warns.cpp classes/virtual/missing-override-inconsistent-warns.cpp classes/virtual/missing-override-all-marked-no-warning.cpp classes/virtual/missing-override-destructor-unmarked-no-warning.cpp classes/virtual/missing-override-marked-destructor-warns.cpp classes/virtual/hidden-virtual-one-overload-overridden-no-warning.cpp
 
 An implementation should warn about these cases:
 
 - `delete` through a pointer to a polymorphic class whose destructor is
   not virtual, unless the class is `final`,
-- a derived function that hides a virtual function of a base and does not
-  override it,
+- a derived function that hides a virtual function of a base, when no
+  derived function of that name overrides a function of the base,
 - an override with neither `override` nor `final`, in a class where
   another override has `override`.
 
@@ -526,8 +526,8 @@ move-only, converts from `Owner<U>&&` for a derived `U`, and has a
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 140
-of 146 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 141
+of 147 tests.
 
 ### Divergences
 
@@ -594,8 +594,11 @@ Q-0087 and Q-0394 wait on the maintainer
 - VIRT-13: under `-Wall`, Clang and GCC warn about a hidden virtual
   function only when the derived function overrides none of the base
   functions with that name. A derived function that overrides one
-  overload and hides the others draws no warning. GCC warns about that
-  case under `-Woverloaded-virtual=2`. A `using` declaration of the base
+  overload and hides the others draws no warning
+  (`hidden-virtual-one-overload-overridden-no-warning.cpp`). GCC warns
+  about that case under `-Woverloaded-virtual=2`, and also under
+  `-Woverloaded-virtual` alone. Clang warns under neither `-Wall` nor
+  `-Woverloaded-virtual`. A `using` declaration of the base
   name keeps the other overloads visible ({rule}`DER-3`).
 - VIRT-12: the address sanitizer reports `delete` through a base without
   a virtual destructor only when the base and the derived class differ

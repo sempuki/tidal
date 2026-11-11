@@ -299,6 +299,20 @@ decltype(true ? i : i) r = i;  // int&
 decltype(true ? i : h) t;      // int: the operands differ, so a prvalue
 ```
 
+A function that is declared and never defined can name the type of a
+call inside `decltype`. The operand is not evaluated, so the function
+is not used ({rule}`ODR-3`) and needs no definition, and a function
+template is not instantiated ({rule}`INST-7`):
+
+```cpp
+template <class T> T&& value_of();          // declared only
+template <class F, class T>
+using call_result = decltype(value_of<F&>()(value_of<T&>()));
+
+struct Square { long operator()(int& v) const { return v * v; } };
+call_result<Square, int> r = 0;             // long
+```
+
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 49

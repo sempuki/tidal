@@ -30,7 +30,11 @@ xvalue, and anything else gives a prvalue.
 
 A prvalue is not an object until something needs an object. If a prvalue
 initializes an object of its own type, that object is the result, and no
-copy and no move takes place. There is no object to copy from. The
+copy and no move takes place. There is no object to copy from.
+Copy initialization from a value of another type can call a converting
+constructor ({rule}`OVL-14`). The call is a prvalue of the object's
+type, so the constructor initializes the object directly. A class with
+deleted copy operations can be initialized in this way. The
 language makes a {term}`temporary object` from a prvalue only where an object
 is unavoidable:
 
@@ -173,7 +177,7 @@ and the destructor is not needed (UNEV-1).
 
 :::{rule} VC-4
 :kind: required
-:tests: foundations/values/guaranteed-elision.cpp foundations/values/materialization-binds.cpp foundations/values/prvalue-no-object-until-needed.cpp foundations/constant-evaluation/return-prvalue-unset-member-read.cpp
+:tests: foundations/values/guaranteed-elision.cpp foundations/values/materialization-binds.cpp foundations/values/prvalue-no-object-until-needed.cpp foundations/constant-evaluation/return-prvalue-unset-member-read.cpp foundations/values/copy-init-converting-constructor-no-copy.cpp
 
 A prvalue that initializes an object of the same type initializes that
 object directly. No temporary object exists, and no copy or move
@@ -306,7 +310,7 @@ NoCopy a = NoCopy(NoCopy(5));      // fine: no copy occurs
 
 ## Evidence
 
-All eight compilers agree on 65 of 67 tests. The results are in
+All eight compilers agree on 66 of 68 tests. The results are in
 `tests/RESULTS.md`.
 
 ### Divergences

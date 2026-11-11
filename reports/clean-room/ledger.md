@@ -884,18 +884,18 @@ own IDs (RV5-A-n and RV5-B-n).
 | P2-7 | `P2/report.md` | text | decision 0062: the report names no change to the text; outside knowledge: a pointer or nullptr for a missing value (CMP-6, CMP-15, NEW-4) |
 | P2-8 | `P2/report.md` | commit | 1130ceb8, decision 0062, item F4: DCL-19 links CE-3 and CV-8 for the variables that a bound can read |
 | P2-9 | `P2/report.md` | commit | b035efd4 (front-end round 25, decision 0062, item FE): the test passes; front end: "unspecified" is the first word when every explored order gives one result (SEQ-1); the text needs no change, and the front end's first line changes; test programs/P2/ledger.cpp |
-| P3-1 | `P3/report.md` | planned | decision 0063, item F5: missing, needs example: no lazy-generator form (KW-1), and no iterator example over a computed sequence (RFOR-2) |
-| P3-2 | `P3/report.md` | planned | decision 0063, item F5: needs example: the delegate form of LAM-P4 (VIRT-P3, NEW-P2, CPY-P3) |
-| P3-3 | `P3/report.md` | planned | decision 0063, item F5: outside knowledge, needs example: naming a call's result type with a declared-only function in decltype (ODR-3, INST-7) |
-| P3-4 | `P3/report.md` | planned | decision 0063, item F5: hard to find: == on two const char* compares addresses (PRIM-9); the comparison page does not say so |
-| P3-5 | `P3/report.md` | planned | decision 0063, item F5: needs example: a stage that holds its source by reference dangles (OBJ-9) |
-| P3-6 | `P3/report.md` | planned | decision 0063, item F5: unclear: INST-1 and INST-5 on when a member definition's return type is made |
-| P3-7 | `P3/report.md` | planned | decision 0063, item F5: front end: an unused member definition in a base over the derived class is checked early (NAM-9, INST-5); test templates/instantiation/member-return-type-waits-for-definition.cpp |
-| P3-8 | `P3/report.md` | planned | decision 0063, item F5: front end: a constructor body checked while the derived class is incomplete (TYN-7, INST-5); test templates/instantiation/member-constructor-made-at-call.cpp |
-| P3-9 | `P3/report.md` | planned | decision 0063, item F5: front end: range-based for with begin and end from a base over the derived class (RFOR-2); test statements/range-for/begin-end-from-base-over-derived.cpp |
-| P3-10 | `P3/report.md` | planned | decision 0063, item F5: front end: a user operator= with a class parameter stops as class assignment (OVL-7); test overloading/overload-resolution/assignment-operator-class-parameter.cpp |
-| P3-11 | `P3/report.md` | planned | decision 0063, item F5: outside knowledge: copy-initialization through a converting constructor makes no copy (VC-4) |
-| P3-12 | `P3/report.md` | planned | decision 0063, item F5: hard to find: no glossary entry for closure type, iterator, or range (LAM-2) |
+| P3-1 | `P3/report.md` | planned | decision 0063, item F5: done: RFOR-P1 says that a sequence computed on demand is a class with its own state, because coroutines are out of scope (KW-1); an example under RFOR-2 with an iterator and a separate end type |
+| P3-2 | `P3/report.md` | planned | decision 0063, item F5: done: an example on the lambdas page of a callable class template that owns its closure, with a virtual destructor and deleted copies (VIRT-P3, NEW-P2, VC-P2) |
+| P3-3 | `P3/report.md` | planned | decision 0063, item F5: done: an example on the decltype page that names a call's result type through a declared-only function template (ODR-3, INST-7) |
+| P3-4 | `P3/report.md` | planned | decision 0063, item F5: done: an example on the comparison page that == on two const char* compares addresses (CMP-15, PRIM-9) |
+| P3-5 | `P3/report.md` | planned | decision 0063, item F5: done: an example under OBJ-9 of a class that keeps a reference to a temporary argument |
+| P3-6 | `P3/report.md` | question | Q-0441; decision 0063, item F5: INST-5, INST-1, and INST-P2 say that a member function's parameter and return types need to be complete only when the definition is made; tests member-parameter-type-waits-for-definition.cpp, member-deduced-return-waits-for-definition.cpp, static-member-incomplete-argument-declared.cpp, static-inline-member-incomplete-argument.cpp |
+| P3-7 | `P3/report.md` | planned | decision 0063, item FE: front end: an unused member definition in a base over the derived class is checked early (NAM-9, INST-5); test templates/instantiation/member-return-type-waits-for-definition.cpp |
+| P3-8 | `P3/report.md` | planned | decision 0063, item FE: front end: a constructor body checked while the derived class is incomplete (TYN-7, INST-5); test templates/instantiation/member-constructor-made-at-call.cpp |
+| P3-9 | `P3/report.md` | planned | decision 0063, item FE: front end: range-based for with begin and end from a base over the derived class (RFOR-2); test statements/range-for/begin-end-from-base-over-derived.cpp |
+| P3-10 | `P3/report.md` | planned | decision 0063, item FE: front end: a user operator= with a class parameter stops as class assignment (OVL-7); test overloading/overload-resolution/assignment-operator-class-parameter.cpp |
+| P3-11 | `P3/report.md` | planned | decision 0063, item F5: done: VC-P2 says that copy initialization through a converting constructor initializes the object directly; new test foundations/values/copy-init-converting-constructor-no-copy.cpp |
+| P3-12 | `P3/report.md` | planned | decision 0063, item F5: done: glossary entries for closure type (LAM-2) and range (RFOR-2) |
 | I4-1 | `I4/report.md` | commit | ee6085aa: COND-16 base row |
 | I4-2 | `I4/report.md` | commit | ee6085aa: COND-16 step 1, Q-0418 |
 | I4-3 | `I4/report.md` | commit | ee6085aa: COND-P2 and COND-11 |
@@ -1066,20 +1066,20 @@ own IDs (RV5-A-n and RV5-B-n).
 | I6-18 | `I6/report.md` | commit | 1130ceb8, decision 0062, item F4: the example "The keywords" gives DEP-6 for the product with the undeclared q, and a line C::value_type count; with DEP-29 |
 | I6-19 | `I6/report.md` | commit | 1130ceb8, decision 0062, item F4: DEP-20 names the return type of a member function |
 | I6-20 | `I6/report.md` | commit | 1130ceb8, decision 0062, item F4: DEP-2 says that this in a local class of a function template is not type-dependent (Q-0434; test this-in-local-class-not-type-dependent.cpp); DEP-9 links NAM-P1 and OVL-P1, and DEP-37 links OPR-2 |
-| I7-1 | `I7/report.md` | planned | decision 0063, item F5: missing: CTAD-10 does not say that a member whose type is not dependent follows LIST-4 |
-| I7-2 | `I7/report.md` | planned | decision 0063, item F5: needs example: CTAD-25 and CTAD-26, step 5 chooses the constructor again |
-| I7-3 | `I7/report.md` | planned | decision 0063, item F5: unclear: CTAD-16 and DER-8, the inherited copy candidate gives a type that the initialization rejects; the note of inherited-copy-candidate-user-guide |
+| I7-1 | `I7/report.md` | planned | decision 0063, item F5: done: CTAD-10 says that a member or base whose type is not dependent follows LIST-4; an example with Plain and int v[2]; new test aggregate-elision-fixed-int-array.cpp, and aggregate-string-fixed-array.cpp cites CTAD-10 |
+| I7-2 | `I7/report.md` | planned | decision 0063, item F5: done: CTAD-25 and CTAD-P1 say that step 5 chooses a constructor of the deduced type again, which can differ from the one that gave the guide; a reject example with the tie of result-then-initialize |
+| I7-3 | `I7/report.md` | planned | decision 0063, item F5: done: CTAD-16 notes that the inherited copy candidate can give a type whose initialization fails (DER-8, CTAD-26); inherited-copy-candidate-user-guide.cpp cites CTAD-26 and its note drops the aggregate candidate |
 | I7-4 | `I7/report.md` | text | a mistake in the component (CTAD-12, a template guide declared twice) |
-| I7-5 | `I7/report.md` | planned | decision 0063, item F5: unclear: CTAD-5 and CTAD-6, whether implicitly declared constructors give guides |
-| I7-6 | `I7/report.md` | planned | decision 0063, item F5: missing: CTAD-18, no rule defines an initializer-list guide; an empty list and the first phase |
-| I7-7 | `I7/report.md` | planned | decision 0063, item F5: needs example: CTAD-14, a worked match of an alias |
-| I7-8 | `I7/report.md` | planned | decision 0063, item F5: missing: CTAD-14, an alias of an alias and its constraints |
-| I7-9 | `I7/report.md` | planned | decision 0063, item F5: unclear: CTAD-16, which guides a derived class inherits |
-| I7-10 | `I7/report.md` | planned | decision 0063, item F5: unclear: CTAD-P1 says every guide is a function template; OVL-27 for a user guide with no template head |
-| I7-11 | `I7/report.md` | planned | decision 0063, item F5: unclear: CTAD-17, whether OVL-14 and ICS-10 limit a guide in copy initialization |
-| I7-12 | `I7/report.md` | planned | decision 0063, item F5: hard to find: CTAD-18 against ILC-3 for one object of the same class |
-| I7-13 | `I7/report.md` | planned | decision 0063, item F5: unclear: CTAD-2, a new expression and a static member with no initializer |
-| I7-14 | `I7/report.md` | planned | decision 0063, item F5: unclear: CTAD-5 and CTAD-17, when a conditional explicit is evaluated |
-| I7-15 | `I7/report.md` | planned | decision 0063, item F5: outside knowledge: the rank of a braced list to an aggregate (CTAD-9), conversion ranks |
+| I7-5 | `I7/report.md` | planned | decision 0063, item F5: done: CTAD-5 says that only the constructors that the class declares give guides; an Evidence note says that no probe separates the readings |
+| I7-6 | `I7/report.md` | question | Q-0438; decision 0063, item F5: CTAD-18 defines the initializer-list guide; tests initializer-list-guide-with-default.cpp and initializer-list-guide-empty-list.cpp |
+| I7-7 | `I7/report.md` | planned | decision 0063, item F5: done: a worked example of the CTAD-14 match with IntPair; an Evidence note says that no probe separates dropping a guide that cannot match from failing it under CTAD-28 |
+| I7-8 | `I7/report.md` | planned | decision 0063, item F5: done: CTAD-14 says that the steps run once per alias, inner first, and that each alias's constraints apply; new test alias-of-alias-constraint.cpp |
+| I7-9 | `I7/report.md` | planned | decision 0063, item F5: done: CTAD-16 lists the guides that a derived class takes and says that the guide with no parameters and the aggregate candidate stay with the base; new tests inherited-no-guide-without-parameters.cpp and inherited-no-aggregate-candidate.cpp |
+| I7-10 | `I7/report.md` | planned | decision 0063, item F5: done: CTAD-P1 says that a user guide with no template head is a function and OVL-27 prefers it; CTAD-P3 says that CTAD-22 is modeled on OVL-27 |
+| I7-11 | `I7/report.md` | planned | decision 0063, item F5: done: CTAD-17 says that the limit of OVL-14 and ICS-10 does not apply to the guides; new test copy-init-guide-user-conversion.cpp (Clang 18 override, Q-0020) |
+| I7-12 | `I7/report.md` | planned | decision 0063, item F5: done: CTAD-18 says "unlike ILC-3 for constructors" and cites Q-0081 |
+| I7-13 | `I7/report.md` | question | Q-0439; decision 0063, item F5: CTAD-1 lists a new expression with or without an initializer, CTAD-2 lists a static data member with no initializer; tests site-new-no-initializer.cpp and site-static-member-no-initializer.cpp |
+| I7-14 | `I7/report.md` | question | Q-0437; decision 0063, item F5: CTAD-17 says that each guide's condition is evaluated for its own deduced arguments before the choice; test conditional-explicit-dropped-before-choice.cpp |
+| I7-15 | `I7/report.md` | planned | decision 0063, item F5: done: CTAD-9 links ICS-18 for the sequence of a braced element to an aggregate member or base |
 | I7-16 | `I7/report.md` | commit | b035efd4 (front-end round 25, decision 0062, item FE): the test passes; front end: an aggregate candidate with designators stops; test templates/class-template-deduction/aggregate-candidate.cpp |
 | I7-17 | `I7/report.md` | commit | b035efd4 (front-end round 25, decision 0062, item FE): the test passes; front end: a braced copy of a class whose list constructor takes another type stops; test classes/initializer-lists/braced-copy-list-ctor-other-element-type.cpp |

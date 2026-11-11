@@ -473,6 +473,11 @@ status, and the first sentence of its answer section.
 | [Q-0434](Q-0434-this-member-access-type-dependent.md) | Is `this->n` type-dependent when the type of `n` does not depend on the parameters? | provisional | A member access through `this` is type-dependent only for a dependent member type or a dependent base |
 | [Q-0435](Q-0435-literal-operator-template-char-pack.md) | Is a literal operator template whose head is one pack of `char` valid, and which literals call it? | provisional | Valid, for integer and floating literals |
 | [Q-0436](Q-0436-literal-suffix-digits-no-integer-type.md) | Does PRIM-2 apply to an integer literal whose suffix calls a raw literal operator or a literal operator template? | provisional | PRIM-2 does not apply to such a literal |
+| [Q-0437](Q-0437-ctad-conditional-explicit-before-choice.md) | Does copy initialization leave out a guide that is explicit for its own deduced arguments before the choice? | provisional | Copy initialization leaves out a guide that is explicit for its own deduced arguments before the choice |
+| [Q-0438](Q-0438-ctad-empty-list-initializer-list-guide.md) | Does an empty braced list skip the initializer-list guides when a guide with no parameters exists? | provisional | An empty list skips the initializer-list guides when a guide with no parameters exists |
+| [Q-0439](Q-0439-ctad-static-member-no-initializer.md) | Can a static data member with no initializer have a class template name with no argument list as its type? | provisional | A static data member with no initializer cannot deduce |
+| [Q-0440](Q-0440-literal-operator-numeric-value-too-large.md) | Must an integer literal that calls the numeric form of a literal operator have a value that `unsigned long long` holds? | provisional | The literal must have a value that `unsigned long long` holds |
+| [Q-0441](Q-0441-static-member-type-incomplete-class-argument.md) | Does the instantiation of a class need the type of a static data member complete? | provisional | The instantiation of the class does not need the type of a `static` data member complete, also when the member is `inline` |
 
 ## Status values
 

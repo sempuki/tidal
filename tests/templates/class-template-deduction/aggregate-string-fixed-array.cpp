@@ -1,4 +1,4 @@
-// tidal-rules: CTAD-9
+// tidal-rules: CTAD-9 CTAD-10
 // tidal-expect: accept
 // tidal-expect-edg: reject
 // tidal-error-edg: no instance of constructor "Named" matches

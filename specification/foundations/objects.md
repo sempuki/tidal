@@ -323,6 +323,21 @@ int main() {
 }                             // then 6, then 3
 ```
 
+A class that keeps a reference to a temporary argument. The temporary
+ends with the full expression of the declaration (OBJ-9), so the
+reference dangles after it:
+
+```cpp
+struct Numbers { int next = 0; };
+struct Stage {
+  Numbers& source;               // a reference to the source
+  Stage(Numbers& s) : source(s) {}
+};
+Stage keep(Numbers&& n) { return Stage(n); }
+Stage s = keep(Numbers{});       // the Numbers temporary ends here
+int v = s.source.next;           // undefined: the object has ended
+```
+
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 58

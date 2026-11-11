@@ -494,6 +494,21 @@ balance <=> count      // valid if long is wider than unsigned
                        // rejected if they have the same size
 ```
 
+`==` on two `const char*` compares addresses (CMP-15), and never the
+characters. Whether two string literals with the same characters have
+one address is unspecified ({rule}`PRIM-9`). A program compares text
+with a loop over the characters:
+
+% tidal-example: fragment
+```cpp
+const char* event = read_event();
+event == "coin"                  // compares addresses
+bool same(const char* a, const char* b) {
+  while (*a && *a == *b) { ++a; ++b; }
+  return *a == *b;               // compares characters
+}
+```
+
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 84

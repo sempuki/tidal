@@ -3,7 +3,7 @@
 **Status:** provisional
 **Affects:** PRIM-2, OPR-8, `tests/classes/operators/literal-raw-long-digits.cpp`, `tests/classes/operators/literal-operator-template-long-digits.cpp`, `tests/programs/roadmap/r12-bigint-second-try.cpp`
 **Source:** the round 12 programmer report (`reports/clean-room/roadmap-12/programmer.md`, sections 1.5 and 6), reduction `raw_literal_operator_long_literal.cpp`, and the programmer's sketches `bigint_first_try.cpp` and `bigint_second_try.cpp`.
-**Waits for:** a rule; a first review
+**Waits for:** a first review
 
 ## Context
 
@@ -56,6 +56,8 @@ A neighbor case stays outside this answer. When the suffix calls the
 30-digit literal. GCC 16 accepts the program with a warning that the
 literal exceeds the range of the type, and Clang 22 rejects it. No test
 holds the case yet.
+
+Rule text on 2026-11-11 (decision 0063, item F5): PRIM-2 says that a literal whose suffix calls a literal operator has no type list, and that its value must fit in `unsigned long long` only when it calls the numeric form. The neighbor case of the numeric form now has its own question, Q-0440, and the test `literal-numeric-form-value-too-large.cpp`. The question now waits for a first review.
 
 ## Opinions
 

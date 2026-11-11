@@ -101,6 +101,10 @@ class template argument deduction
   initializer, when the program writes the template name with no
   argument list ({rule}`CTAD-1`).
 
+closure type
+  The class type of the object that a lambda expression makes. Each
+  lambda expression has its own closure type ({rule}`LAM-2`).
+
 common initial sequence
   The longest run of members, from the first, in which two
   standard-layout structs match in type, width, alignment, and
@@ -625,6 +629,11 @@ prospective destructor
   One of several destructors that a class declares with different
   constraints. At the end of the class, the destructor is chosen from
   them ({rule}`CNS-19`).
+
+range
+  An object that a range-based `for` loop can walk: an array, or an
+  object for which `begin` and `end` are found ({rule}`RFOR-2`,
+  {principle}`RFOR-P1`).
 
 requires clause
   The keyword `requires` and a constraint, after a template parameter
