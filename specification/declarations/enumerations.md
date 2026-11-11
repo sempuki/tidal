@@ -88,7 +88,11 @@ cast is undefined.
    enum_head: "enum" {`attribute_spec`} [[`nested_name`] `identifier`]
             : | "enum" ("class" | "struct") {`attribute_spec`} [`nested_name`] `identifier`
    enumerator: `identifier` {`attribute_spec`} ["=" `constant_expr`]
+   using_enum_decl: "using" "enum" [`nested_name`] `identifier` ";"
 ```
+
+A `using_enum_decl` is the `using enum` declaration of ENUM-9. It can
+appear at namespace scope, in a block, and in a class.
 
 ## Constraints
 
@@ -235,7 +239,7 @@ integer is not valid.
 
 :::{rule} ENUM-9
 :kind: required
-:tests: declarations/enumerations/using-enum.cpp declarations/enumerations/using-declaration-enumerator.cpp declarations/enumerations/using-enum-alias.cpp
+:tests: declarations/enumerations/using-enum.cpp declarations/enumerations/using-declaration-enumerator.cpp declarations/enumerations/using-enum-alias.cpp declarations/enumerations/using-enum-qualified.cpp
 
 `using enum E;` declares the enumerators of `E` in the current scope.
 `E` can be a type alias of an enumeration. A using declaration can also
@@ -411,7 +415,7 @@ static_assert(sizeof names / sizeof names[0] ==
 
 ## Evidence
 
-All eight compilers agree on 78 of 81 tests. The results are in
+All eight compilers agree on 79 of 82 tests. The results are in
 `tests/RESULTS.md`.
 
 ### Divergences

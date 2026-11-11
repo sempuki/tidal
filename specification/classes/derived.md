@@ -94,8 +94,10 @@ constructor builds the base subobject and leaves the rest to {term}`default init
 ```{eval-rst}
 .. productionlist:: tidal
    base_clause: ":" `base_spec` ["..."] {"," `base_spec` ["..."]}
-   base_spec: [`access_specifier`] ["virtual"] [`nested_name`] `class_name`
-            : | "virtual" `access_specifier` [`nested_name`] `class_name`
+   base_spec: {`attribute_spec`} [`access_specifier`] ["virtual"] `base_type`
+            : | {`attribute_spec`} "virtual" `access_specifier` `base_type`
+   base_type: [`nested_name`] (`class_name` | `template_id`)
+            : | `decltype_spec`
    class_head: ("class" | "struct") {`attribute_spec` | `alignment_specifier`}
              :    [[`nested_name`] (`class_name` | `template_id`) ["final"]] [`base_clause`]
    inheriting_decl: "using" [`nested_name`] `class_name` "::" `class_name` ["..."] ";"
@@ -128,7 +130,7 @@ base list. `final` after the class name is a marker only in that position
 
 :::{rule} DER-2
 :kind: required
-:tests: classes/derived/aggregate-with-base.cpp classes/derived/inherits-members.cpp classes/derived/repeated-base-two-subobjects.cpp classes/derived/sizeof-at-least-base.cpp
+:tests: classes/derived/aggregate-with-base.cpp classes/derived/inherits-members.cpp classes/derived/repeated-base-two-subobjects.cpp classes/derived/sizeof-at-least-base.cpp classes/derived/base-qualified-template-id.cpp
 
 An object of a derived class contains one subobject of each non-virtual
 direct base. The members of a base are members of the derived class. If
@@ -502,8 +504,8 @@ static_assert(make(true) == 3);  // rejected: Left() is not constexpr
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 90
-of 91 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 91
+of 92 tests.
 
 ### Divergences
 

@@ -205,7 +205,7 @@ In a pointer declarator, an attribute specifier comes after the
 
 :::{rule} ATTR-19
 :kind: required
-:tests: declarations/attributes/attribute-positions.cpp declarations/attributes/attribute-positions-base-and-new-bound.cpp
+:tests: declarations/attributes/attribute-positions.cpp declarations/attributes/attribute-positions-base-and-new-bound.cpp expressions/lambdas/attribute-without-template-head.cpp
 
 An attribute specifier can be written in each position in the table.
 The specifier applies to the entity in the last column.
@@ -224,6 +224,7 @@ The specifier applies to the entity in the last column.
 | After `namespace` | `namespace [[a]] tools {}` | The namespace |
 | After the name in an alias declaration | `using Count [[a]] = int;` | The alias |
 | Before a base class | `struct D : [[a]] Base {};` | The base class |
+| After the captures of a lambda, or after its template head | `[] [[a]] (int x) {}` | The function call operator |
 | After the type in a `new` expression, or after its array bound | `new int [[a]]` | The type |
 | Before a statement or a label | `[[a]] return 0;` | The statement or the label |
 :::
@@ -400,8 +401,8 @@ switch (k) {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 72
-of 90 tests. EDG skips the tests that use `-Werror`.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 73
+of 91 tests. EDG skips the tests that use `-Werror`.
 
 ### Divergences
 

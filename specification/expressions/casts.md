@@ -74,10 +74,16 @@ is undefined:
    cast_keyword: "static_cast" | "const_cast" | "reinterpret_cast"
    functional_cast: `cast_type` "(" [`expression_list`] ")"
                   : | `cast_type` `braced_init`
-   cast_type: [`nested_name`] `identifier` | `decltype_spec` | "auto"
+   cast_type: [`nested_name`] (`identifier` | `template_id`)
+            : | `decltype_spec` | `typename_specifier` | "auto"
             : | "bool" | "void" | "int" | "short" | "long" | "signed" | "unsigned"
             : | "float" | "double" | "char" | "wchar_t" | "char8_t" | "char16_t" | "char32_t"
 ```
+
+If lookup finds that the name or the {term}`template-id` in a
+`cast_type` denotes a type, the `functional_cast` is a cast. Otherwise
+the same tokens are a call ({doc}`postfix`). A dependent qualified name
+needs `typename` to denote a type ({rule}`DEP-19`).
 
 ## Constraints
 

@@ -84,7 +84,7 @@ whose last review finds the reference silent.
 | 9 | Decide the row; answers may change | 9: Q-0006, Q-0008, Q-0116, Q-0119, Q-0182, Q-0183, Q-0186, Q-0312, Q-0412 | 1 | at most 1 |
 | 10 | Record each answer as Tidal's own choice; answers stay | 17: Q-0020, Q-0079, Q-0165, Q-0176, Q-0179, Q-0180, Q-0184, Q-0185, Q-0321, Q-0325, Q-0349, Q-0361, Q-0372, Q-0381, Q-0384, Q-0423, Q-0431 | 32 | 0 |
 
-Rows 1 to 9 hold 122 of the 200 open questions (61%). With row 10, the rows hold 137 (68%).
+Rows 1 to 9 hold 122 of the 201 open questions (61%). With row 10, the rows hold 137 (68%).
 
 85 open questions wait for a review that supports the answer with no doubt. By what the last review found: 59 doubt, 17 silent, 8 against, 1 part.
 

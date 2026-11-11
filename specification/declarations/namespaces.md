@@ -68,14 +68,18 @@ Neither form belongs in a class.
 
 ```{eval-rst}
 .. productionlist:: tidal
-   namespace_def: ["inline"] "namespace" [`ns_path`]
+   namespace_def: ["inline"] "namespace" {`attribute_spec`} [`identifier`]
                 :    "{" {`declaration`} "}"
+                : | "namespace" `ns_path` "{" {`declaration`} "}"
    ns_path: ["inline"] `identifier` {"::" ["inline"] `identifier`}
-   namespace_alias: "namespace" `identifier` "=" `qualified_name` ";"
+   namespace_alias: "namespace" `identifier` "=" [`nested_name`] `identifier` ";"
    using_decl: "using" ["typename"] `qualified_name` ["..."]
              : {"," ["typename"] `qualified_name` ["..."]} ";"
-   using_directive: "using" "namespace" `qualified_name` ";"
+   using_directive: "using" "namespace" [`nested_name`] `identifier` ";"
 ```
+
+An attribute specifier after `namespace` is valid only in a definition
+whose name is one identifier or absent ({rule}`ATTR-19`).
 
 A `using_decl` with `...` expands a pack of bases ({rule}`PACK-21`).
 

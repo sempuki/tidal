@@ -162,12 +162,15 @@ not local:
    constant_param: `parameter`
                  : | `decl_specifiers` {`ptr_part`} "..." [`identifier`]
    template_template_param: `template_head` `type_key` ["..."] [`identifier`]
-                          : | `template_head` `type_key` [`identifier`] "=" [`nested_name`] `identifier`
+                          : | `template_head` `type_key` [`identifier`] "="
+                          :    [`nested_name`] ["template"] `identifier`
 ```
 
-A `template_decl` is a `declaration`, and in a class it is a
-`member_decl`. The `parameter` of a `constant_param` gives the type, the
-name, and the default after `=`.
+A `template_decl` is a `declaration`. In a class, a `template_head` and
+the `member_decl` after it declare a member template (TPL-24). That
+`member_decl` can have no decl-specifiers, as for a constructor template
+or a conversion function template. The `parameter` of a
+`constant_param` gives the type, the name, and the default after `=`.
 
 ## Constraints
 

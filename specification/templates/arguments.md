@@ -107,9 +107,11 @@ argument.
 ```{eval-rst}
 .. productionlist:: tidal
    template_id: `template_name` "<" [`template_args`] ">"
+              : | (`operator_function_id` | `literal_operator_id`) "<" [`template_args`] ">"
    template_name: `identifier`
    template_args: `template_arg` ["..."] {"," `template_arg` ["..."]}
-   template_arg: `type_id` | `constant_expr` | [`nested_name`] `template_name`
+   template_arg: `type_id` | `constant_expr` | `braced_init`
+               : | [`nested_name`] `template_name`
 ```
 
 A `template_arg` with `...` is a {term}`pack expansion` ({rule}`PACK-10`).
@@ -117,8 +119,11 @@ A `template_arg` with `...` is a {term}`pack expansion` ({rule}`PACK-10`).
 A `template_id` is an `unqualified_id` ({doc}`../expressions/primary`),
 and it can name a class in a `simple_type`. A `template_name` is an
 `identifier` that lookup finds to be a template (TARG-1). A
+`template_id` can also name an operator function template or a literal
+operator template, as in `x.operator()<int>()`. A
 `constant_expr` in a `template_arg` does not contain a `>` outside
-parentheses, brackets, or braces (TARG-3).
+parentheses, brackets, or braces (TARG-3). A `braced_init` is an
+argument for a constant parameter of class type (TARG-16).
 
 ## Constraints
 

@@ -88,12 +88,14 @@ program stays valid while no use needs that specifier.
 
 ```{eval-rst}
 .. productionlist:: tidal
+   exception_spec: `noexcept_specifier` | "throw" "(" ")"
    noexcept_specifier: "noexcept" ["(" `constant_expr` ")"]
 ```
 
 The specifier follows the parameter list and the qualifiers of a
 function {term}`declarator`. `noexcept` alone means `noexcept(true)`. A function
-with `noexcept(true)` is a *non-throwing* function.
+with `noexcept(true)` is a *non-throwing* function. EXS-5 gives the
+`throw()` form ({question}`Q-0077`).
 
 ## Constraints
 

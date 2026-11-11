@@ -121,7 +121,7 @@ run time.
    if_stmt: "if" ["constexpr"] "(" [`init_stmt`] `condition` ")"
           :    `branch` ["else" `branch`]
           : | "if" ["!"] "consteval" `block` ["else" `block`]
-   init_stmt: `expression_stmt` | `null_stmt` | `simple_decl` | `alias_decl`
+   init_stmt: `expression_stmt` | `null_stmt` | `simple_decl` | `sb_decl` | `alias_decl`
    condition: `expression` | `cond_decl`
    cond_decl: {`attribute_spec`} `decl_specifiers` `declarator`
             :    ("=" `assignment_expr` | "=" `braced_init` | `braced_init`)
@@ -175,7 +175,7 @@ A condition declaration must:
 
 :::{rule} IF-7
 :kind: required
-:tests: statements/if/init-expression.cpp statements/if/init-declaration.cpp statements/if/init-alias.cpp statements/if/init-empty.cpp statements/if/init-declaration-kinds.cpp statements/if/constexpr-with-init.cpp
+:tests: statements/if/init-expression.cpp statements/if/init-declaration.cpp statements/if/init-alias.cpp statements/if/init-empty.cpp statements/if/init-declaration-kinds.cpp statements/if/constexpr-with-init.cpp statements/if/init-structured-binding.cpp
 
 The ordinary form and the `if constexpr` form can start with an
 initializer. The initializer can be:
@@ -185,7 +185,8 @@ initializer. The initializer can be:
 - an alias declaration,
 - a simple declaration, including a declaration of several variables or
   of a `static` variable, a class or enumeration definition, and a
-  function declaration.
+  function declaration,
+- a structured binding declaration.
 :::
 
 :::{rule} IF-21
@@ -475,7 +476,7 @@ void conditions() {
 ## Evidence
 
 All rules in this page are `required` or `reject`. All eight compilers
-agree on 80 of 81 tests. The results are in `tests/RESULTS.md`.
+agree on 81 of 82 tests. The results are in `tests/RESULTS.md`.
 
 ### Divergences
 

@@ -142,13 +142,14 @@ reference. A prvalue of a non-class type has no cv-qualifiers.
 
 :::{rule} DTY-3
 :kind: required
-:tests: expressions/decltype/as-type-specifier.cpp expressions/decltype/base-specifier.cpp expressions/decltype/decltype-auto-function.cpp expressions/decltype/nested-name.cpp expressions/decltype/trailing-return.cpp expressions/decltype/destructor-call.cpp
+:tests: expressions/decltype/as-type-specifier.cpp expressions/decltype/base-specifier.cpp expressions/decltype/decltype-auto-function.cpp expressions/decltype/nested-name.cpp expressions/decltype/trailing-return.cpp expressions/decltype/destructor-call.cpp expressions/decltype/member-initializer-base.cpp expressions/decltype/member-initializer-base-braces.cpp
 
 `decltype` can occur where a type name can occur. These places include:
 
 - a variable or function type,
 - a trailing return type,
 - a base list,
+- the name of a base in a member initializer list,
 - the qualified name of a member, such as `decltype(s)::type`,
 - the name after `~` in an explicit destructor call.
 :::
@@ -315,8 +316,8 @@ call_result<Square, int> r = 0;             // long
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 49
-of 54 tests. The UNEV-4 tests turn the warning into an error, so EDG
+The results are in `tests/RESULTS.md`. All eight compilers agree on 50
+of 56 tests. The UNEV-4 tests turn the warning into an error, so EDG
 skips them.
 
 ### Divergences
@@ -328,6 +329,10 @@ skips them.
 - {question}`Q-0089` (DTY-3; settled on DTY-P2): whether `decltype` can
   name the class after `~` in an explicit destructor call. It can, as
   Clang and EDG say. GCC rejects the call.
+- {question}`Q-0450` (DTY-3;
+  open): whether a member initializer that names its base with
+  `decltype` can take a braced list. It can, as Clang and EDG say. GCC
+  rejects the braced form and accepts the form with parentheses.
 
 ### Split tests
 
@@ -336,6 +341,7 @@ skips them.
 | `declarative-nested-name-static-member.cpp` | DTY-5 | reject | reject | accept | reject | {question}`Q-0065` |
 | `declarative-nested-name.cpp` | DTY-5 | reject | reject | accept | reject | {question}`Q-0065` |
 | `destructor-call.cpp` | DTY-3 | accept | accept | reject | accept | {question}`Q-0089` |
+| `member-initializer-base-braces.cpp` | DTY-3 | run | run | reject | accept | {question}`Q-0450` |
 | `side-effect-decltype-warns.cpp` | UNEV-4 | reject | reject | accept | skips | |
 | `side-effect-unevaluated-warns.cpp` | UNEV-4 | reject | reject | accept | skips | |
 

@@ -166,8 +166,10 @@ extra storage, and the array starts at that address.
 .. productionlist:: tidal
    new_expr: ["::"] "new" [`placement`] (`new_type` | "(" `type_id` ")") [`new_init`]
    placement: "(" `expression_list` ")"
-   new_type: `type_specifier` {`type_specifier`} {"*" {`cv`}} [`new_bounds`]
-   new_bounds: "[" [`expression`] "]" {"[" `constant_expr` "]"}
+   new_type: `type_specifier` {`type_specifier`} {`attribute_spec`}
+           :    {"*" {`cv`}} [`new_bounds`]
+   new_bounds: "[" [`expression`] "]" {`attribute_spec`}
+             :    {"[" `constant_expr` "]" {`attribute_spec`}}
    new_init: "(" [`expression_list`] ")" | `braced_init`
    delete_expr: ["::"] "delete" ["[" "]"] `cast_expr`
 ```

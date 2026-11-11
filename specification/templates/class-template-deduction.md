@@ -141,7 +141,8 @@ the second and the fourth.
 ```
 
 A `deduction_guide` is a `declaration`, and in a class it is a
-`member_decl`. A {term}`template head` before it makes a `template_decl`.
+`member_decl`. A {term}`template head` before it makes a `template_decl`,
+or in a class a member template.
 
 ## Constraints
 

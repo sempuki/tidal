@@ -158,7 +158,8 @@ value is the obvious answer, so a fold of an empty pack needs `&&`,
           : | "+=" | "-=" | "*=" | "/=" | "%=" | "^=" | "&=" | "|=" | "<<=" | ">>=" | "="
           : | "==" | "!=" | "<" | ">" | "<=" | ">=" | "&&" | "||" | "," | ".*" | "->*"
    id_expression: `unqualified_id` | `qualified_name`
-   unqualified_id: `identifier` | "~" `class_name`
+   unqualified_id: `identifier`
+                 : | "~" (`class_name` | `template_id` | `decltype_spec`)
                  : | `operator_function_id` | `literal_operator_id`
                  : | `conversion_function_id`
                  : | `template_id`

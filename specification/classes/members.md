@@ -130,8 +130,10 @@ CLS-31, BF-9, and CLS-35 give the choices of the matrix targets.
               : | `friend_decl`
               : | `alias_decl`
               : | `using_decl`
+              : | `using_enum_decl`
+              : | `enum_opaque`
               : | `static_assert_decl`
-              : | `template_decl`
+              : | `template_head` `member_decl`
               : | `explicit_specialization`
               : | `deduction_guide`
    member_declarator: `declarator` [`virt_specifiers`] [`pure_specifier` | `member_init`]

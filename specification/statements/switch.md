@@ -91,7 +91,7 @@ so a label in such a body belongs to no enclosing `switch`.
 
 :::{rule} SW-4
 :kind: required
-:tests: statements/switch/init-statement.cpp statements/switch/condition-declaration.cpp
+:tests: statements/switch/init-statement.cpp statements/switch/condition-declaration.cpp statements/switch/init-structured-binding.cpp
 
 A `switch` can have an initializer statement, as in IF-7. The condition
 can be a declaration, as in IF-5. The scope rules of IF-9 and IF-10
@@ -228,7 +228,7 @@ int code(State s) {
 
 ## Evidence
 
-All eight compilers agree on 43 of 44 tests. The results are in
+All eight compilers agree on 44 of 45 tests. The results are in
 `tests/RESULTS.md`. The SW-8 tests use `-Wall -Werror`, so EDG skips
 them ({ref}`baseline compilers <baseline-compilers>`).
 

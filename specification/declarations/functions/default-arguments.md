@@ -84,7 +84,7 @@ end up with the same defaults everywhere.
 
 ```{eval-rst}
 .. productionlist:: tidal
-   parameter: ["this"] `decl_specifiers` [`declarator` | `abstract_declarator`]
+   parameter: {`attribute_spec`} ["this"] `decl_specifiers` [`declarator` | `abstract_declarator`]
             :    ["=" (`assignment_expr` | `braced_init`)]
 ```
 

@@ -106,11 +106,11 @@ warn about the implicit capture.
 
 ```{eval-rst}
 .. productionlist:: tidal
-   lambda_expr: "[" [`captures`] "]" [`lambda_template`]
+   lambda_expr: "[" [`captures`] "]" [`lambda_template`] {`attribute_spec`}
               :    ["(" `parameters` ")"] {`lambda_specifier`}
               :    [`noexcept_specifier`] ["->" `type_id`] [`requires_clause`]
               :    `compound_stmt`
-   lambda_template: "<" `template_params` ">" [`requires_clause`] {`attribute_spec`}
+   lambda_template: "<" `template_params` ">" [`requires_clause`]
    captures: `capture_default` {"," `capture`}
            : | `capture` {"," `capture`}
    capture_default: "=" | "&"

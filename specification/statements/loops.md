@@ -66,7 +66,7 @@ names.
 
 :::{rule} LOOP-4
 :kind: required
-:tests: statements/loops/for-init-scope.cpp statements/loops/for-condition-declaration.cpp statements/loops/body-own-scope.cpp statements/loops/for-init-alias.cpp
+:tests: statements/loops/for-init-scope.cpp statements/loops/for-condition-declaration.cpp statements/loops/body-own-scope.cpp statements/loops/for-init-alias.cpp statements/loops/for-init-structured-binding.cpp
 
 The body of each loop has its own scope, also without braces. In a `for`
 or `while` statement:

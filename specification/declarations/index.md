@@ -68,12 +68,13 @@ static-assert
              : | `static_assert_decl`
              : | `using_decl`
              : | `using_directive`
+             : | `using_enum_decl`
              : | `namespace_alias`
    simple_decl: {`attribute_spec` | `alignment_specifier`} `decl_specifiers`
               :    [`init_declarator` {"," `init_declarator`}] ";"
    init_declarator: `declarator` [`init`]
                   : | `declarator` `requires_clause`
-   decl_specifiers: `decl_specifier` {`decl_specifier`}
+   decl_specifiers: `decl_specifier` {`decl_specifier`} {`attribute_spec`}
    decl_specifier: `type_specifier`
                  : | `storage_class`
                  : | "typedef" | "friend" | "inline" | "virtual" | `explicit_spec`

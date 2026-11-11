@@ -55,7 +55,7 @@ function.
    conversion_decl: {`cvf_specifier`} `conversion_function_id` "(" ")" [`cv`] [`ref_qualifier`]
    cvf_specifier: "constexpr" | "virtual" | "inline" | `explicit_spec`
    conversion_function_id: "operator" `conversion_type`
-   conversion_type: `type_specifiers` {"*" | "&" | "&&"}
+   conversion_type: `type_specifiers` {`ptr_part`}
 ```
 
 The *target type* of a conversion function is its `conversion_type`. The

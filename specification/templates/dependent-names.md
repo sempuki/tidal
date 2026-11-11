@@ -196,11 +196,14 @@ A {term}`discarded statement` is not instantiated ({rule}`IF-13`).
 
 ```{eval-rst}
 .. productionlist:: tidal
-   typename_specifier: "typename" `nested_name` `identifier`
+   typename_specifier: "typename" `nested_name` ["template"] `identifier`
                      : | "typename" `nested_name` ["template"] `template_id`
 ```
 
-A `typename_specifier` is a type specifier. The keyword `template` can
+A `typename_specifier` is a type specifier, and it can be the type of a
+functional cast ({doc}`../expressions/casts`). The keyword `template`
+before a name with no argument list is valid where DEP-26 allows it
+({question}`Q-0226`). The keyword `template` can
 also come right after the `::` of a `nested_name`, and right after the
 `.` or `->` of a member access, when a `template_id` follows. The
 keyword `typename` can start the name of a using-declaration that
@@ -528,7 +531,7 @@ bases.
 
 :::{rule} DEP-19
 :kind: reject
-:tests: templates/dependent-names/typename-needed-block.cpp templates/dependent-names/typename-needed-parameter.cpp templates/dependent-names/typename-needed-template-argument.cpp templates/dependent-names/typename-needed-expression.cpp templates/dependent-names/typename-needed-using.cpp templates/dependent-names/value-read-as-value.cpp templates/dependent-names/value-was-type.cpp templates/dependent-names/other-specialization-needs-typename.cpp templates/dependent-names/partial-primary-form-needs-typename.cpp templates/dependent-names/current-instantiation-constant-member.cpp templates/dependent-names/parameter-position-variable-template.cpp
+:tests: templates/dependent-names/typename-needed-block.cpp templates/dependent-names/typename-needed-parameter.cpp templates/dependent-names/typename-needed-template-argument.cpp templates/dependent-names/typename-needed-expression.cpp templates/dependent-names/typename-needed-using.cpp templates/dependent-names/value-read-as-value.cpp templates/dependent-names/value-was-type.cpp templates/dependent-names/other-specialization-needs-typename.cpp templates/dependent-names/partial-primary-form-needs-typename.cpp templates/dependent-names/current-instantiation-constant-member.cpp templates/dependent-names/parameter-position-variable-template.cpp templates/dependent-names/typename-functional-cast.cpp
 
 Let `T` be dependent and not the current instantiation. Outside the
 positions of DEP-20, the parser reads `T::name` as a value. A
@@ -884,8 +887,8 @@ template <class... T> int count() {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 120
-of 147 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 121
+of 148 tests.
 
 ### Divergences
 

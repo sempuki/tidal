@@ -121,7 +121,7 @@ deprecated.
                 : | [`nested_name`] "~" `class_name`
    array_suffix: "[" [`constant_expr`] "]" {`attribute_spec`}
    function_suffix: "(" `parameters` ")" {`cv`} [`ref_qualifier`]
-                  :    [`noexcept_specifier`] {`attribute_spec`} ["->" `type_id`]
+                  :    [`exception_spec`] {`attribute_spec`} ["->" `type_id`]
    parameters: [`parameter` {"," `parameter`} [[","] "..."]]
              : | "..."
              : | "void"

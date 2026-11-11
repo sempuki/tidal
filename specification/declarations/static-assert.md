@@ -36,7 +36,8 @@ checked.
 
 ```{eval-rst}
 .. productionlist:: tidal
-   static_assert_decl: "static_assert" "(" `constant_expr` ["," `string_literal`] ")" ";"
+   static_assert_decl: "static_assert" "(" `constant_expr`
+                     :    ["," `string_literal` {`string_literal`}] ")" ";"
 ```
 
 ## Constraints
