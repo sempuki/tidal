@@ -930,6 +930,14 @@ drift").
 | X23-5 | `X23/report.md` | commit | ee6085aa: STG-5 and NEW-29 |
 | X23-6 | `X23/report.md` | commit | 0f3f522f |
 | X23-7 | `X23/report.md` | commit | 0f3f522f |
+| X24-1 | `X24/report.md` | open | OBJ-3, JMP-9, LOOP-3, RFOR-4: a statement's own scope variables (a for initializer, a condition, a range-based for's hidden variables) have no stated end after a goto, return, or throw |
+| X24-2 | `X24/report.md` | open | JMP-6, JMP-P2: read literally, JMP-6 rejects a continue before a later initialized declaration in the same body, which both host compilers accept |
+| X24-3 | `X24/report.md` | open | JMP-14, DEP-30: no rule says whether a goto to a missing label needs a diagnostic in a template never instantiated or in a discarded branch; the host compilers split |
+| X24-4 | `X24/report.md` | open | FN-7: if no break leaves it does not exclude an inner loop's or switch's break, and does not mention a goto that leaves the loop |
+| X24-5 | `X24/report.md` | open | JMP-P1, STMT-5, ATTR-P1: no glossary entry for label; the facts sit on four pages |
+| X24-6 | `X24/report.md` | open | JMP-7, JMP-14, SW-3: JMP-7 and JMP-14 name only the lambda body, SW-3 also the member functions of a local class |
+| X24-7 | `X24/report.md` | open | JMP-5, JMP-14: no example or test of one label name in a lambda body and in its enclosing function |
+| X24-8 | `X24/report.md` | open | outside knowledge: other languages and later work have similar forms; the design uses none |
 | X25-1 | `X25/report.md` | planned | decision 0064, item F6: LSUP-10, UNI-14: LSUP-10's two places for std::construct_at in constant evaluation do not cover a union member that is not active, which UNI-14 accepts |
 | X25-2 | `X25/report.md` | planned | decision 0064, item F6: OBJ-1, STG-28: no row for when an array's own lifetime begins |
 | X25-3 | `X25/report.md` | planned | decision 0064, item F6: glossary lifetime, OBJ-1: the entry ends a class object's lifetime when its destructor completes, and OBJ-1 when the call starts; the scalar start differs too |

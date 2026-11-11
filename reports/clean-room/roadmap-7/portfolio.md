@@ -15,7 +15,7 @@ P17 was "opaque type aliases". Tidal uses "opaque" for an enumeration declared w
 | # | Proposal | Pages it aims at | Changes existing behavior | Round 7 | Now | What still holds it back |
 |---|---|---|---|---|---|---|
 | P17 | Explicit aliases (was "opaque type aliases") | type-names, template arguments, enumerations | no | done (X20) | done | |
-| P22 | Labeled `break` and `continue` | jumps, loops, blocks, switch | no | new | ready | The marker of the target. Version marking (pending row 7) |
+| P22 | Labeled `break` and `continue` | jumps, loops, blocks, switch | no | new | done (X24) | The marker of the target. Version marking (pending row 7) |
 | P23a | Template bodies checked against their constraints, form 1: template-ids | constraints, concepts, dependent-names, instantiation, attributes | no (opt-in) | new | done (X22) | X22-1 to X22-7 |
 | P23b | Template bodies checked against their constraints, form 2: expressions against requirements | concepts, constraints, dependent-names, overload-resolution | no if opt-in. Yes if it becomes the default | new | partial | No rule matches an expression in a body to a requirement (X22-8) |
 | P24 | Flag enumerations: a marked scoped enumeration gets `\|`, `&`, `^` and `~` in its own type | bitwise, enumerations, overload-resolution | no | new | ready | The marker, which must not clash with X12's `final` |
@@ -25,7 +25,7 @@ P17 was "opaque type aliases". Tidal uses "opaque" for an enumeration declared w
 | P28 | Arithmetic that wraps on request | additive, multiplicative, conversions | no | new | partial | The marker, and whether it applies to a type or an operator |
 | P29 | A pointer comparison with a string literal operand is not valid | comparison, primary | yes | new | partial | Whether the rule covers a pointer that a literal initialized; the count of programs it makes invalid |
 
-Totals for P22 onward: 3 ready (P22, P24, P26), 3 partial (P23b, P28, P29), 3 done (P23a by X22, P25 by X23, P27 by X25), 0 blocked. P26 is the one ready proposal that changes existing behavior. X24 takes P22 or P26 next.
+Totals for P22 onward: 2 ready (P24, P26), 3 partial (P23b, P28, P29), 4 done (P22 by X24, P23a by X22, P25 by X23, P27 by X25), 0 blocked. P26 is the one ready proposal that changes existing behavior. The rewrite's first prototype follows X24 (decision 0064).
 
 ## 3. The proposals
 
@@ -38,7 +38,7 @@ A loop or a `switch` can carry a label, and `break name;` or `continue name;` ac
 - **Cites:** JMP-P1, JMP-1, JMP-2, JMP-5 (a label is visible in all of its function), JMP-7, JMP-9 (a jump out of a block destroys its variables), JMP-14, JMP-17 (the rule P22 reverses), LOOP-P1, LOOP-4, STMT-5, NAM-P4 (labels have their own name space). LOOP-9 (a jump into a loop body goes on as after a normal pass of the body, the model of a labeled `continue`).
 - **Settled from Tidal:** labels, their scope and their name space exist. JMP-9 already gives the destruction order for a jump out of nested blocks, so a labeled `break` needs no new lifetime rule.
 - **Not settled:** whether the label names the loop statement itself or any statement that holds it. Whether a labeled `continue` may target a `switch` (it cannot today). What a `break` inside a lambda body does with an outer label (a lambda is its own function, JMP-5).
-- **Rating:** ready.
+- **Rating:** done (X24). The design changes no valid program; two tests go from reject to accept. Eight findings (X24-1 to X24-8).
 
 ### P23a. Template bodies checked against their constraints, form 1: template-ids
 

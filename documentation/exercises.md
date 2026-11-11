@@ -161,6 +161,7 @@ programs, the programs with more than one unit, and the lines.
 | X21 | P15, declared initialization order across translation units | no |
 | X22 | P23, template bodies checked against their constraints (form 1, template-ids) | no |
 | X23 | P25, `new` and `delete` that honor every alignment | yes |
+| X24 | P22, labeled `break` and `continue` | no |
 | X25 | P27, an in-object array whose elements start their lives one at a time | yes |
 
 ## 5. Predict and Diagnose batches
@@ -266,6 +267,7 @@ No page has only a Predict batch that showed test names.
 | X18 | done: 21 rule changes, no test changes outcome; findings X18-1 to X18-11 | `reports/clean-room/X18/` |
 | X19 | done: 34 rule changes, 1 test changes outcome; findings X19-1 to X19-11 | `reports/clean-room/X19/` |
 | X20 | done: 58 rule changes, no test changes outcome; findings X20-1 to X20-11 | `reports/clean-room/X20/` |
+| X24 | done: 33 rule changes, 2 tests change outcome; findings X24-1 to X24-8 | `reports/clean-room/X24/` |
 | X25 | done: 31 rule changes, 1 test changes outcome; findings X25-1 to X25-9 | `reports/clean-room/X25/` |
 | X23 | done: 33 rule changes, 2 tests change outcome; findings X23-1 to X23-7 | `reports/clean-room/X23/` |
 | X22 | done: 36 rule changes, no test changes outcome; findings X22-1 to X22-9; refresh note for X19 | `reports/clean-room/X22/` |

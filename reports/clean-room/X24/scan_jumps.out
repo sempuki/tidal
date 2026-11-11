@@ -1,0 +1,13 @@
+files scanned: 7171
+== break or continue followed by an identifier ==
+tests/statements/jumps/break-with-label.cpp:11: break outer
+tests/statements/jumps/continue-with-label.cpp:11: continue outer
+total: 2
+== label before a loop or switch, and goto, all files ==
+tests/statements/jumps/break-with-label.cpp:8: label outer on for
+tests/statements/jumps/continue-with-label.cpp:8: label outer on for
+labels on a loop or switch: 2
+goto statements: 46
+== programs with a label on a loop or switch, or a goto ==
+tests/programs/W3/nested.cpp: labels on loops 0 (); goto 1 (done)
+programs: 1
