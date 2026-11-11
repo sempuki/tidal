@@ -25,14 +25,18 @@ templates/instantiation/class-point-static-const-member.cpp	3	The same, and the 
 templates/instantiation/class-point-static-constexpr-made-at-use.cpp	3	A static constexpr member's initializer is made with the class and not at its first use (INST-33, INST-5, INST-8).
 templates/instantiation/class-static-constexpr-member-initializer-waits.cpp	3	The same (INST-5).
 templates/instantiation/static-inline-member-incomplete-argument.cpp	3	An inline static member's initializer is made with the class, so its type is completed while the class argument is incomplete (INST-5, Q-0231).
+templates/instantiation/class-point-after-enclosing-class-not-later.cpp	3	Lookup in Holder<Coin>, made at the end of Coin, sees extra, declared after the point of instantiation (INST-30, INST-33).
 templates/instantiation/local-class-default-argument.cpp	3	The members of a local class in a specialization are made with the function and not at their use (INST-12, INST-6).
 templates/instantiation/local-class-exception-specification.cpp	3	The same (INST-12, INST-6).
 templates/instantiation/recursion-endless-function.cpp	3	Function bodies made at the end of the unit have no busy state, so endless nesting is not caught (INST-15, TR-13).
 templates/specialization/partial-no-primary-variable.cpp	3	A variable partial specialization with no primary does not reach the check (TSP-31).
+templates/packs/member-template-pack-length.cpp	3	The member template's head is not substituted with the class's arguments, so the pack W that expands T has no fixed length (PACK-26, PACK-6).
 templates/deduction/substitution-explicit-specifier.cpp	4	Substitution into the operand of a conditional explicit is not done (DED-24).
 templates/deduction/substitution-lambda-body.cpp	4	A substitution mutes every error, and the lambda body is outside the immediate context (DED-29).
 templates/deduction/substitution-lambda-default.cpp	4	The same, in a template parameter's default (DED-29).
 templates/deduction/substitution-member-wrong-kind.cpp	4	A member of the wrong kind stops the replay as unsupported (DED-24).
+templates/arguments/argument-makes-parameter-invalid.cpp	4	The constant parameter's type typename T::size_type is an opaque dependent type, so its substitution with int cannot tell a failure from an unknown result (TARG-24, DED-24).
+templates/dependent-names/type-only-positions-more.cpp	4	The same opaque type for a constant parameter of type T::type, so value<Has, 3> has no known type (DEP-20).
 statements/if/constexpr-template-nondependent-call-checked.cpp	5	The pattern's parse does not check an independent call in a discarded statement (IF-22, DEP-6).
 templates/constraints/out-of-class-other-clause.cpp	5	The member's trailing clause is not kept for the definition outside the class (CNS-29).
 templates/constraints/out-of-class-without-clause.cpp	5	The same, with no clause on the definition (CNS-29).

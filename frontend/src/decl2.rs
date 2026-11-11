@@ -5918,7 +5918,9 @@ impl P {
         // INST-5: a member function of an instance whose body waits for a
         // use needs them when the body is made (`run_lazy_body`).
         let lazy_member = in_class_body && !self.force_bodies && member_class.is_some_and(|c| self.in_instance(c)) && self.func(id).is_some_and(|f| !matches!(f.kind, FnKind::Ctor | FnKind::Dtor));
-        if !self.in_template() && !template && !sig_only && !lazy_member {
+        // A member function defined in its class needs them at the end of
+        // the class, when its body is parsed (FN-12, `run_deferred`).
+        if !self.in_template() && !template && !sig_only && !lazy_member && !in_class_body {
             let (ret, params) = {
                 let f = self.func(id).unwrap();
                 (f.fty.ret.clone(), f.fty.params.clone())
@@ -6108,6 +6110,25 @@ impl P {
                 // INST-5: the body of a constructor of an instance is made
                 // with its class, and its diagnostics wait for a use.
                 let keep = !self.force_bodies && self.in_instance(df.class) && self.func(fid).is_some_and(|f| f.kind == FnKind::Ctor && !f.constexpr && !f.consteval);
+                if !self.in_template() && self.func(fid).is_some_and(|f| !f.template) {
+                    // FN-12, INST-1: the parameter and return types of a
+                    // member function defined in its class are complete at
+                    // the end of the class.
+                    let line = self.decls[fid].line;
+                    let (ret, params) = {
+                        let f = self.func(fid).unwrap();
+                        (f.fty.ret.clone(), f.fty.params.clone())
+                    };
+                    self.require_ty(&ret, line);
+                    for p in &params {
+                        self.require_ty(p, line);
+                    }
+                    if matches!(ret.t, Ty::Class(c) if !self.classes[c].complete && !self.class_uncertain(c)) {
+                        self.error(line, "FN-12", "function definition with an incomplete return type at the end of its class");
+                    } else if params.iter().any(|p| matches!(p.t, Ty::Class(c) if !self.classes[c].complete && !self.class_uncertain(c))) {
+                        self.error(line, "FN-12", "function definition with a parameter of incomplete type at the end of its class");
+                    }
+                }
                 let mark = self.d.list.len();
                 let saved_uses = if keep { self.collect_uses.replace(Vec::new()) } else { self.collect_uses.take() };
                 if let Err(e) = self.parse_function_body(fid, scope, Some(df.class), auto_ret) {
@@ -6384,6 +6405,7 @@ impl P {
             if kind == FnKind::Ctor && !self.in_template() {
                 if let Some(c) = class {
                     self.check_virtual_base_inits(c, fid);
+                    self.check_member_default_inits(c, fid);
                 }
             }
             let body = self.parse_compound_in(param_scope)?;
@@ -6774,6 +6796,38 @@ impl P {
             if no_default {
                 let line = self.decls[fid].line;
                 self.error(line, "DER-13", format!("the constructor of '{}' does not initialize the virtual base '{}', which has no default constructor", self.classes[c].name, self.classes[v].name));
+            }
+        }
+    }
+
+    /// INIT-9, CTOR-25: a constructor that names neither a member of class
+    /// type nor its default member initializer default-initializes the
+    /// member, which needs a default constructor.
+    fn check_member_default_inits(&mut self, c: usize, fid: DeclId) {
+        if self.classes[c].key == 2 || self.class_uncertain(c) {
+            return;
+        }
+        let Some(f) = self.func(fid) else { return };
+        if f.mem_inits.iter().any(|m| m.base == Some(c)) {
+            // A delegating constructor.
+            return;
+        }
+        let named: Vec<DeclId> = f.mem_inits.iter().filter_map(|m| m.field).collect();
+        for fd in self.classes[c].fields.clone() {
+            let DK::Field(fi) = &self.decls[fd].k else { continue };
+            if fi.init.is_some() || named.contains(&fd) || self.deferred.iter().any(|d| d.field == Some(fd)) || fi.class != c {
+                continue;
+            }
+            let Ty::Class(m) = fi.ty.t else { continue };
+            let ci = &self.classes[m];
+            if !ci.complete || ci.key == 2 || ci.ctors.is_empty() || ci.template || self.class_uncertain(m) || self.decls[fd].name.is_empty() {
+                continue;
+            }
+            let no_default = ci.ctors.iter().all(|&k| self.func(k).is_some_and(|f| !f.template && !f.fty.variadic && f.params.len() > f.defaults && !self.inherited_from.contains_key(&k)));
+            if no_default {
+                let line = self.decls[fid].line;
+                self.error(line, "CTOR-25", format!("the constructor of '{}' default-initializes the member '{}', and no constructor of '{}' takes no arguments (INIT-9)", self.classes[c].name, self.decls[fd].name, self.classes[m].name));
+                return;
             }
         }
     }

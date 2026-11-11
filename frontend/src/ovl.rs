@@ -112,7 +112,7 @@ impl P {
 
     /// The types that the built-in candidates can take from an operand:
     /// its own type, or the result types of its conversion functions.
-    fn op_type_pool(&self, ops: &[Expr]) -> Option<Vec<QTy>> {
+    fn op_type_pool(&self, ops: &[Expr], logical: bool) -> Option<Vec<QTy>> {
         let mut pool: Vec<QTy> = Vec::new();
         let mut add = |t: QTy| {
             let mut t = nonref(&t).unqual();
@@ -129,9 +129,16 @@ impl P {
             match nonref(&o.ty).t {
                 Ty::Class(c) => {
                     let mut fns = Vec::new();
-                    self.conv_fns(c, 0, &mut fns);
+                    self.conv_fns_all(c, 0, &mut fns);
                     for f in fns {
                         let fi = self.func(f)?;
+                        if fi.explicit && !logical {
+                            // OVL-9, ICS-45: an explicit conversion function
+                            // gives an operand of a built-in candidate only
+                            // in the contextual conversion of `!`, `&&`, and
+                            // `||`.
+                            continue;
+                        }
                         if fi.template || fi.fty.ret.is_unknown() {
                             return None;
                         }
@@ -147,7 +154,7 @@ impl P {
     /// The parameter lists of the built-in candidates for `op` (OVL-9, the
     /// table of OVL-P4). Only the operators that this module handles.
     fn builtin_params(&self, op: &str, arity: usize, ops: &[Expr]) -> Option<Vec<Vec<QTy>>> {
-        let pool = self.op_type_pool(ops)?;
+        let pool = self.op_type_pool(ops, matches!(op, "!" | "&&" | "||"))?;
         let q = QTy::new;
         let ptrs: Vec<QTy> = pool.iter().filter(|t| matches!(t.t, Ty::Ptr(_))).cloned().collect();
         let obj_ptrs: Vec<QTy> = ptrs.iter().filter(|t| matches!(&t.t, Ty::Ptr(p) if !matches!(p.t, Ty::Func(_) | Ty::Void))).cloned().collect();
@@ -198,6 +205,9 @@ impl P {
                 }
             }
             ("&" | ",", _) => {}
+            // OVL-P4, ICS-10: the left operand of a built-in `=` takes only a
+            // standard sequence, which a class operand does not have.
+            ("=", 2) if matches!(nonref(&ops[0].ty).t, Ty::Class(_)) => {}
             ("*=" | "/=" | "+=" | "-=" | "%=" | "&=" | "^=" | "|=" | "<<=" | ">>=", 2) => {
                 let ints = matches!(op, "%=" | "&=" | "^=" | "|=" | "<<=" | ">>=");
                 let rights: &[Ty] = if ints { &i } else { &a };
@@ -404,7 +414,10 @@ impl P {
                 return OpRes::NotHandled;
             }
             if let Ty::Class(c) = nonref(&o.ty).t {
-                if !self.class_ok(c) || self.init_list_elem(c).is_some() {
+                // An object of std::initializer_list is an operand like any
+                // other once its class is made and has the shape (OPR-6,
+                // LSUP-1).
+                if !self.class_ok(c) || (self.init_list_elem(c).is_some() && (self.classes[c].opaque || !self.classes[c].complete || !self.init_list_shape_ok())) {
                     return OpRes::NotHandled;
                 }
                 has_class = true;
@@ -795,7 +808,9 @@ impl P {
                         // template (ILC-2).
                         Some(Ty::Class(lc)) => p.init_list_elem(lc).is_none() && !p.inst_of.get(&lc).is_some_and(|(t, _)| p.templs[*t].name == "initializer_list"),
                         Some(Ty::Unknown) => false,
-                        Some(_) => !f.template,
+                        // A pointer, an array, or a scalar is no
+                        // std::initializer_list, also in a template (ILC-2).
+                        Some(t) => !f.template || !matches!(t, Ty::Dep(_)),
                     }
                 };
                 if !ctors.iter().all(|&cid| plain_param(self, cid)) {

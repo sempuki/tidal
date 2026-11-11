@@ -2,12 +2,12 @@
 
 This document gives the model of templates that the rewrite of the
 front end needs (decision 0060, decision 0062 item RP). It comes from
-the templates chapter of the specification, from the 32 tests that
+the templates chapter of the specification, from the 36 tests that
 fail on the current front end because of its model, and from the three
 facts that the I6 component could not compute
 (`reports/clean-room/I6/report.md`, section "Score").
 `reports/clean-room/rust-frontend/rewrite-marks.tsv` (the marks file)
-names the 32 tests and the section of this document that passes each.
+names the 36 tests and the section of this document that passes each.
 The rewrite takes them over, and the gate of decisions 0062 and 0063
 does not count them (decision 0063, item GC). `DESIGN-current.md`
 describes the current template record, and this document refers to it
@@ -264,11 +264,11 @@ dependent construct valid. DEP-32 and DEP-33 need no diagnostic, so an
 implementation that accepts follows the text (TR-P1). DEP-37 is the
 case of that kind that the text requires the implementation to reject.
 
-## 6. The 32 tests
+## 6. The 36 tests
 
 The marks file, `reports/clean-room/rust-frontend/rewrite-marks.tsv`,
 names the tests that fail on the current front end because of its
-model. Report 25 section 7 marked 30 of them, and report 26 marked two more, and `tools/frontend_check.py`
+model. Report 25 section 7 marked 30 of them, report 26 marked two more, and report 27 marked four more, and `tools/frontend_check.py`
 counts them apart on its completion line (decision 0063). This table
 follows the marks file, by the section of this model that passes each
 test. A test path is under `tests/`.
@@ -296,10 +296,14 @@ test. A test path is under `tests/`.
 | `templates/instantiation/local-class-exception-specification.cpp` | INST-12, INST-6 | missed reject | 3 | the same |
 | `templates/instantiation/recursion-endless-function.cpp` | INST-15, TR-13 | missed reject | 3 | the `busy` state and the nesting limit |
 | `templates/specialization/partial-no-primary-variable.cpp` | TSP-31 | missed reject | 3 | a partial specialization links to its primary when declared |
+| `templates/packs/member-template-pack-length.cpp` | PACK-26, PACK-6 | missed reject | 3 | the member template's head is substituted with the class's arguments when the class is made, so the pack that expands `T` has a fixed length |
+| `templates/instantiation/class-point-after-enclosing-class-not-later.cpp` | INST-30, INST-33 | missed reject | 3 | lookup sees only the declarations before the point after the enclosing class |
 | `templates/deduction/substitution-explicit-specifier.cpp` | DED-24 | unsupported | 4 | the operand of a conditional `explicit` is in the immediate context |
 | `templates/deduction/substitution-lambda-body.cpp` | DED-29 | missed reject | 4 | the lambda body is outside the immediate context |
 | `templates/deduction/substitution-lambda-default.cpp` | DED-29 | missed reject | 4 | the same, in a template parameter's default |
 | `templates/deduction/substitution-member-wrong-kind.cpp` | DED-24 | unsupported | 4 | the kind table gives a failure, and the fallback wins |
+| `templates/arguments/argument-makes-parameter-invalid.cpp` | TARG-24 | missed reject | 4 | `Member(T, name, reading)` computes `typename T::size_type`, and a `T` that is not a class is a failure |
+| `templates/dependent-names/type-only-positions-more.cpp` | DEP-20 | unsupported | 4 | the same substitution gives the type of a constant parameter of type `T::type` |
 | `statements/if/constexpr-template-nondependent-call-checked.cpp` | IF-22 | missed reject | 5 | the independent call `g()` is checked at the definition |
 | `templates/constraints/out-of-class-other-clause.cpp` | CNS-29 | missed reject | 5 | the member's clause is in its record |
 | `templates/constraints/out-of-class-without-clause.cpp` | CNS-29 | missed reject | 5 | the same, with no clause on the definition |
@@ -308,8 +312,8 @@ test. A test path is under `tests/`.
 | `templates/packs/fold-in-outer-pattern.cpp` | PACK-8 | missed reject | 5 | the fold empties the outer mark |
 | `templates/packs/size-operator-in-outer-pattern.cpp` | PACK-8 | missed reject | 5 | `sizeof...` empties the outer mark |
 
-By section: 4 tests need section 1, 6 need section 2, 11 need section
-3, 4 need section 4, and 7 need section 5.
+By section: 4 tests need section 1, 6 need section 2, 13 need section
+3, 6 need section 4, and 7 need section 5.
 
 Front-end round 26 passes the false rejects of Port suite P3 that a
 base class template with the derived class as its argument caused:

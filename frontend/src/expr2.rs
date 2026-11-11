@@ -384,6 +384,11 @@ impl P {
             *certain = false;
             return;
         }
+        // A class seen before adds nothing new, as when a class is its own
+        // base's template argument (`struct R : Base<R>`).
+        if !outer && cls.contains(&c) {
+            return;
+        }
         let ci = &self.classes[c];
         if ci.template || ci.opaque {
             *certain = false;
@@ -2675,6 +2680,12 @@ impl P {
                         // LSUP-1: the program declares std::initializer_list
                         // with its shape first.
                         self.error(line, "LSUP-1", "a braced list needs std::initializer_list, which is not declared as a class template of the needed shape");
+                    } else if !self.in_template() && d.ops.is_empty() && types.iter().all(|t| t.is_some()) {
+                        // AUTO-7: the type is std::initializer_list<E>, with
+                        // E the one type that the elements deduce.
+                        let el = QTy::new(types[0].clone().unwrap());
+                        let lc = self.init_list_class(el, line);
+                        return Some(QTy::new(Ty::Class(lc)));
                     }
                 }
                 return Some(QTy::unknown());

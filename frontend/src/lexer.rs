@@ -770,9 +770,11 @@ fn lex_quoted(b: &[char], mut i: usize, prefix: Prefix, line: u32, out: &mut Vec
         }
     }
     if i >= b.len() || b[i] != q {
-        d.error(line, None, "unterminated literal");
+        // TR-12: an open literal derives from no production.
+        d.error(line, Some("TR-12"), "unterminated literal");
     }
-    i += 1;
+    // A literal still open at the end of the file ends there (G180).
+    i = (i + 1).min(b.len());
     // user-defined literal suffix
     let mut udl = false;
     let suf_start = i;

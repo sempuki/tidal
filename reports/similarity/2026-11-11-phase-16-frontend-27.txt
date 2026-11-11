@@ -1,0 +1,58 @@
+Similarity report: run threshold 8 words, overlap threshold 0.25
+
+ok   fe27sim/DESIGN-current.md:Design of the current front end longest=0   overlap=0.00
+ok   fe27sim/DESIGN-current.md:Stages longest=0   overlap=0.00
+ok   fe27sim/DESIGN-current.md:Lexing longest=0   overlap=0.00
+ok   fe27sim/DESIGN-current.md:Parsing and semantic analysis longest=0   overlap=0.00
+ok   fe27sim/DESIGN-current.md:Constant evaluation longest=0   overlap=0.00
+ok   fe27sim/DESIGN-current.md:Interpretation longest=0   overlap=0.00
+ok   fe27sim/DESIGN-current.md:Tokens longest=0   overlap=0.00
+ok   fe27sim/DESIGN-current.md:Entities and scopes longest=0   overlap=0.00
+ok   fe27sim/DESIGN-current.md:Typed trees longest=0   overlap=0.00
+ok   fe27sim/DESIGN-current.md:Diagnostics longest=0   overlap=0.04
+ok   fe27sim/DESIGN-current.md:The template record longest=0   overlap=0.00
+ok   fe27sim/DESIGN-current.md:Values and places of the interpreter longest=0   overlap=0.00
+ok   fe27sim/DESIGN-current.md:Where each chapter's rules sit longest=0   overlap=0.00
+ok   fe27sim/DESIGN-current.md:Files over 2000 lines longest=0   overlap=0.00
+ok   fe27sim/DESIGN-current.md:Facts for the rewrite longest=0   overlap=0.00
+ok   fe27sim/README.md:tidal-fe       longest=0   overlap=0.00
+ok   fe27sim/README.md:Build          longest=0   overlap=0.00
+ok   fe27sim/README.md:Check one file longest=0   overlap=0.01
+ok   fe27sim/README.md:Run one program longest=0   overlap=0.01
+ok   fe27sim/README.md:C library functions longest=0   overlap=0.00
+ok   fe27sim/README.md:Choices of the run that follow the matri longest=0   overlap=0.03
+ok   fe27sim/README.md:Run the conformance tests longest=0   overlap=0.00
+ok   fe27sim/README.md:Layout         longest=0   overlap=0.01
+ok   fe27sim/README.md:The rewrite    longest=0   overlap=0.00
+ok   fe27sim/README.md:The conditional operator longest=0   overlap=0.00
+ok   fe27sim/README.md:Templates      longest=0   overlap=0.02
+ok   fe27sim/README.md:Bytes          longest=0   overlap=0.01
+ok   fe27sim/README.md:Allocated storage in constant evaluation longest=0   overlap=0.03
+ok   fe27sim/README.md:Exception specifications longest=0   overlap=0.02
+ok   fe27sim/TEMPLATE-MODEL.md:Template model for the rewrite longest=0   overlap=0.00
+ok   fe27sim/TEMPLATE-MODEL.md:The current model and its limits longest=0   overlap=0.02
+ok   fe27sim/TEMPLATE-MODEL.md:1. A template definition is a typed tree longest=0   overlap=0.00
+ok   fe27sim/TEMPLATE-MODEL.md:2. The current instantiation is a class  longest=0   overlap=0.01
+ok   fe27sim/TEMPLATE-MODEL.md:3. A specialization is the definition pl longest=0   overlap=0.02
+ok   fe27sim/TEMPLATE-MODEL.md:4. Substitution failure needs the immedi longest=0   overlap=0.02
+ok   fe27sim/TEMPLATE-MODEL.md:5. Checks at the definition longest=0   overlap=0.01
+ok   fe27sim/TEMPLATE-MODEL.md:6. The 36 tests longest=0   overlap=0.00
+ok   fe27sim/TEMPLATE-MODEL.md:7. What the model keeps from the current longest=0   overlap=0.02
+ok   fe27sim/TEMPLATE-MODEL.md:8. Rules the model depends on that can s longest=0   overlap=0.01
+ok   fe27sim/report-27.md:Front end, round 27: the T5, P4, F6, and longest=0   overlap=0.00
+ok   fe27sim/report-27.md:Method      longest=0   overlap=0.01
+ok   fe27sim/report-27.md:Counts      longest=0   overlap=0.01
+ok   fe27sim/report-27.md:The checks  longest=0   overlap=0.00
+ok   fe27sim/report-27.md:2. Group 1: the T5 tests longest=0   overlap=0.01
+ok   fe27sim/report-27.md:3. Group 2: P4 and the ledger rows of it longest=0   overlap=0.01
+ok   fe27sim/report-27.md:4. Group 3: the F6 and RV9 tests longest=0   overlap=0.01
+ok   fe27sim/report-27.md:5. Group 4: other failures longest=0   overlap=0.02
+ok   fe27sim/report-27.md:6. Ledger rows of `reports/clean-room/le longest=0   overlap=0.00
+ok   fe27sim/report-27.md:7. Tests added during the round longest=0   overlap=0.02
+ok   fe27sim/report-27.md:8. Decision 0060: the completion test longest=0   overlap=0.00
+ok   fe27sim/report-27.md:Marks added longest=0   overlap=0.01
+ok   fe27sim/report-27.md:The 38 tests that count toward the gate longest=0   overlap=0.02
+ok   fe27sim/report-27.md:9. Run stops longest=0   overlap=0.00
+ok   fe27sim/report-27.md:10. Findings longest=0   overlap=0.00
+
+0 flagged

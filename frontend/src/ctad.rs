@@ -385,6 +385,9 @@ impl P {
                     // CTAD-29: the constraints of the constructor template,
                     // with its parameters after those of the class.
                     let cc = self.templs[ct].cons.clone().map(|x| self.cons_subst(&x, cd, &mine));
+                    // The constraint can name the class's parameters too,
+                    // which the guide deduces first (CTAD-29).
+                    let cc = cc.map(|x| crate::cons::with_outer_params(&x, &params, &all[..n]));
                     (head, ps, self.templs[ct].fn_pack, crate::cons::and(cons.clone(), cc))
                 } else {
                     let fp = f.params.iter().position(|p| self.pack_params.contains(p));

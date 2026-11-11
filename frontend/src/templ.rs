@@ -2153,6 +2153,14 @@ impl P {
         if let Some(x) = self.templs[tid].insts.iter().find(|x| x.0 == args) {
             return match &x.1 {
                 Inst::Type(q) => q.clone(),
+                Inst::Fail => {
+                    // DED-24, CPT-28: the substitution failed before; a
+                    // muted use fails again.
+                    if self.d.muted > 0 {
+                        self.d.muted_errors += 1;
+                    }
+                    QTy::unknown()
+                }
                 _ => QTy::unknown(),
             };
         }
@@ -2164,12 +2172,14 @@ impl P {
         }
         self.templs[tid].insts.push((args.clone(), Inst::Busy, None));
         let ctx = src.ctx;
+        let me = self.d.muted_errors;
         let r = self.replay(&src, &params, &args, Some(InstReq::Alias), |p| {
             let _ = p.parse_declaration(ctx);
         });
+        let failed = self.d.muted > 0 && self.d.muted_errors != me;
         let k = self.templs[tid].insts.iter().position(|x| x.0 == args).unwrap();
         match r {
-            Some((_, Some(InstOut::Type(q)))) => {
+            Some((_, Some(InstOut::Type(q)))) if !(failed && q.is_unknown()) => {
                 self.templs[tid].insts[k].1 = Inst::Type(q.clone());
                 q
             }

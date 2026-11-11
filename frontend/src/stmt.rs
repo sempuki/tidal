@@ -1360,8 +1360,15 @@ impl P {
             decl = Some(self.parse_declarator(false, false)?);
         }
         self.expect(":")?;
-        let range = if self.at("{") { self.parse_braced_init()? } else { self.parse_expression()? };
+        let braced_range = self.at("{");
+        let range = if braced_range { self.parse_braced_init()? } else { self.parse_expression()? };
         self.expect(")")?;
+        if braced_range && !self.in_template() && !self.init_list_shape_ok() && matches!(&range.k, EK::InitList(v) if !v.is_empty()) {
+            // LSUP-1, RFOR-2: the range of a braced list is an object of
+            // std::initializer_list, which the program must declare first.
+            self.error(line, "LSUP-1", "a braced list as the range needs std::initializer_list, which is not declared as a class template of the needed shape");
+            return Ok(Stmt::Unsupported("range-based for".into()));
+        }
         // the loop variable's type
         let rt = nonref(&range.ty);
         let elem = match &rt.t {

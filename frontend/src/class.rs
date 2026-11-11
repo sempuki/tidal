@@ -256,6 +256,28 @@ impl P {
                 if (self.classes[c].key == 2) != (key == 2) {
                     self.error(line, "TYN-10", "class key does not match the earlier declaration");
                 }
+                // ACC-20: a friend declaration inside a class template
+                // declared this class template first, with its parameters
+                // one level deeper. The definition gives the template its
+                // own parameters and place.
+                if let (Some(pt), Some(&t)) = (&pending, self.class_tid.get(&c)) {
+                    if self.templs[t].depth != pt.depth && !self.classes[c].complete {
+                        let stack = {
+                            let mut v = self.stack.clone();
+                            while v.last().is_some_and(|&s| self.scopes[s].kind == SK::Template) {
+                                v.pop();
+                            }
+                            v
+                        };
+                        let scope = self.decl_scope();
+                        let ti = &mut self.templs[t];
+                        ti.depth = pt.depth;
+                        ti.params = pt.tparams.clone();
+                        ti.dependent = pt.dependent;
+                        ti.stack = stack;
+                        ti.scope = scope;
+                    }
+                }
                 c
             }
             None => {

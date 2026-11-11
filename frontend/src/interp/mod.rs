@@ -326,6 +326,9 @@ pub struct Machine<'a> {
     pub unbuilt: std::collections::HashSet<(usize, usize)>,
     /// Complete objects that an explicit destructor call ended (DTOR-7).
     pub ended_by_call: std::collections::HashSet<usize>,
+    /// Scalar subobjects that a pseudo-destructor call ended in constant
+    /// evaluation, by object and path (OBJ-2, CE-21).
+    pub ended_parts: std::collections::HashSet<(usize, Vec<usize>)>,
     /// Storage from `operator new[]` called by name (NEW-40).
     pub raw_array: std::collections::HashSet<usize>,
     /// The size and the alignment argument of each allocation by name,
@@ -421,6 +424,7 @@ impl<'a> Machine<'a> {
             no_set: Default::default(),
             unbuilt: Default::default(),
             ended_by_call: Default::default(),
+            ended_parts: Default::default(),
             raw_array: Default::default(),
             raw_args: Default::default(),
             raw_align: Default::default(),
@@ -990,6 +994,17 @@ impl<'a> Machine<'a> {
     }
 
     pub fn write(&mut self, p: &Ptr, v: Val, init: bool) -> R<()> {
+        if !self.ended_parts.is_empty() && !p.bytes {
+            let key = (p.obj, full_path(p));
+            if self.ended_parts.contains(&key) {
+                if !init {
+                    // OBJ-2: an assignment makes no object, so it writes
+                    // the ended element outside its lifetime.
+                    return ub("OBJ-2", "assignment to an object whose lifetime a destructor call ended");
+                }
+                self.ended_parts.remove(&key);
+            }
+        }
         if !init {
             self.record(p, true);
             self.implicit_use(p)?;
@@ -1086,12 +1101,20 @@ impl<'a> Machine<'a> {
                 ub("UNI-6", "read of a union member that is not active")
             }
             Val::Agg(_) if self.constant && first_not_usable(&v).is_some() => limit("CE-3", first_not_usable(&v).unwrap()),
-            Val::Agg(_) if self.constant && has_unset(&v) => limit("CE-22", "copy of an object that has a scalar part with no value"),
+            // CE-22: the trivial copy of a union reads none of the parts of
+            // its active member.
+            Val::Agg(_) if self.constant && has_unset(&v) && !self.is_union_at(p) => limit("CE-22", "copy of an object that has a scalar part with no value"),
+            Val::Agg(_) if self.constant && self.is_union_at(p) && !self.objs[p.obj].own && matches!(self.type_at(p).map(|t| t.t), Some(Ty::Class(c)) if self.union_copy_mutable(p, c, &v).is_err()) => limit("CE-22", "copy of a union whose active member is mutable, from an object that began outside the evaluation"),
             // OBJ-2: an implicit copy or move reads each scalar part.
             Val::Agg(_) if has_unset(&v) => ub("OBJ-2", "implicit copy of an object that has a scalar part with no value"),
             Val::NotUsable(m) => limit("CE-3", m),
             v => Ok(v),
         }
+    }
+
+    /// Whether the object at `p` has a union type.
+    fn is_union_at(&self, p: &Ptr) -> bool {
+        matches!(self.type_at(p).map(|t| t.t), Some(Ty::Class(c)) if self.p.classes[c].key == 2)
     }
 
     /// The rule that a use of an object after its lifetime breaks:

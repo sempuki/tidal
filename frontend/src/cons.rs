@@ -94,6 +94,44 @@ fn is_param_arg(a: &TArg, depth: u32, i: usize) -> bool {
     }
 }
 
+/// Each atom of `n`, with the parameters of an enclosing head put before
+/// its own, so that its tokens can name them: a constructor template's
+/// constraint inside the guide that CTAD-29 makes from it.
+pub fn with_outer_params(n: &Rc<CNorm>, outer: &[TParam], args: &[TArg]) -> Rc<CNorm> {
+    match &**n {
+        CNorm::And(a, b) => Rc::new(CNorm::And(with_outer_params(a, outer, args), with_outer_params(b, outer, args))),
+        CNorm::Or(a, b) => Rc::new(CNorm::Or(with_outer_params(a, outer, args), with_outer_params(b, outer, args))),
+        CNorm::Atom(a) => {
+            if a.type_of.is_some() || outer.is_empty() {
+                return n.clone();
+            }
+            let own: Vec<&str> = a.params.iter().map(|p| p.name.as_str()).collect();
+            let mut params: Vec<TParam> = Vec::new();
+            let mut map: Vec<TArg> = Vec::new();
+            let mut used: Vec<bool> = Vec::new();
+            for (p, x) in outer.iter().zip(args.iter()) {
+                if p.name.is_empty() || own.contains(&p.name.as_str()) {
+                    continue;
+                }
+                params.push(p.clone());
+                map.push(x.clone());
+                used.push(a.src.toks.iter().any(|t| t.kind == TK::Ident && t.text == p.name));
+            }
+            if !used.iter().any(|&u| u) {
+                return n.clone();
+            }
+            params.extend(a.params.iter().cloned());
+            map.extend(a.map.iter().cloned());
+            used.extend(a.used.iter().copied());
+            let mut a2 = (**a).clone();
+            a2.params = Rc::new(params);
+            a2.map = map;
+            a2.used = used;
+            Rc::new(CNorm::Atom(Rc::new(a2)))
+        }
+    }
+}
+
 /// The tokens that end a constraint operand in a requires clause.
 fn clause_operand_ok(t: &Token) -> bool {
     if t.kind == TK::Eof {
@@ -141,6 +179,20 @@ impl P {
 
     fn cons_clause_primary(&mut self, lambda: bool) -> PR<Option<Rc<CNorm>>> {
         let line = self.line();
+        // A fold in parentheses is a primary expression, and one atomic
+        // constraint (CNS-3).
+        let fold = self.at("(") && self.clause_fold_at();
+        if fold {
+            let start = self.pos;
+            let e = self.parse_primary_pub()?;
+            self.atom_type_check(&e, line);
+            if !lambda && !clause_operand_ok(self.tok()) {
+                self.error(line, "CPT-10", "an operand of a requires clause is not a primary expression");
+                self.pos = start;
+                let _ = self.parse_binary_pub(3);
+            }
+            return Ok(Some(self.make_atom(start, self.pos, line)));
+        }
         if self.at("(") {
             self.pos += 1;
             let save = self.no_gt;
@@ -184,6 +236,37 @@ impl P {
             let _ = self.parse_binary_pub(3);
         }
         Ok(Some(self.make_atom(start, self.pos, line)))
+    }
+
+    /// Whether the group that opens at the current `(` is a fold: a `...`
+    /// at its top level right after `(`, or right after a binary operator
+    /// and before `)` or a binary operator (PRIM-27).
+    fn clause_fold_at(&self) -> bool {
+        let close = self.matching_close(0);
+        let mut depth = 0i32;
+        for k in 1..close {
+            let t = self.peek(k);
+            if t.kind != TK::Punct {
+                continue;
+            }
+            match t.text.as_str() {
+                "(" | "[" | "{" => depth += 1,
+                ")" | "]" | "}" => depth -= 1,
+                "..." if depth == 0 => {
+                    if k == 1 {
+                        return true;
+                    }
+                    let prev = self.peek(k - 1);
+                    let next = self.peek(k + 1);
+                    let op = |t: &Token| t.kind == TK::Punct && matches!(t.text.as_str(), "&&" | "||" | "+" | "-" | "*" | "/" | "%" | "^" | "&" | "|" | "<<" | ">>" | "==" | "!=" | "<" | ">" | "<=" | ">=" | "," | ".*" | "->*" | "=");
+                    if op(prev) && (k + 1 == close || op(next)) {
+                        return true;
+                    }
+                }
+                _ => {}
+            }
+        }
+        false
     }
 
     /// A constraint expression: `&&` and `||` over operands (CNS-2).
@@ -1067,6 +1150,7 @@ impl P {
         let pattern = self.in_template();
         let sfinae = !pattern && self.inst_depth > 0;
         let depth = self.stack.len();
+        let mut param_fail = false;
         if self.at("(") {
             let pl = self.line();
             if self.at_k(1, "void") && self.at_k(2, ")") {
@@ -1111,7 +1195,22 @@ impl P {
                     }
                 }
                 let mut names_tparam = None;
-                let f = self.parse_params()?;
+                // CPT-28: a parameter type that the arguments make not valid
+                // makes the requires expression false.
+                let (me, mu) = (self.d.muted_errors, self.d.muted_unsup);
+                if sfinae {
+                    self.d.muted += 1;
+                }
+                let f = self.parse_params();
+                if sfinae {
+                    self.d.muted -= 1;
+                    if self.d.muted_errors != me && self.d.muted_unsup == mu {
+                        param_fail = true;
+                    }
+                    self.d.muted_errors = me;
+                    self.d.muted_unsup = mu;
+                }
+                let f = f?;
                 if let Some(m) = bad {
                     if !sfinae {
                         self.error(pl, "CPT-29", m);
@@ -1147,8 +1246,8 @@ impl P {
             self.error(line, "CPT-34", "a requires expression with no requirement");
         }
         self.in_unevaluated += 1;
-        let mut val = Some(true);
-        let mut done = false;
+        let mut val = Some(!param_fail);
+        let mut done = param_fail;
         let r = (|| -> PR<()> {
             while !self.at("}") && self.tok().kind != TK::Eof {
                 if done {

@@ -2103,7 +2103,12 @@ impl P {
                     template_args: false,
                     pack: false,
                 };
-                self.parse_declarator_name(&mut d)?;
+                // The template arguments after the name stay for the
+                // template-id (DED-2).
+                self.member_op_name = true;
+                let r = self.parse_declarator_name(&mut d);
+                self.member_op_name = false;
+                r?;
                 let name = d.name.unwrap_or_default();
                 // The global allocation and deallocation functions exist in
                 // every program, next to any that the program declares, so a
@@ -2118,6 +2123,9 @@ impl P {
                     // not depend on a parameter is looked up at the
                     // definition, which does not search a dependent base.
                     self.error(line, "DEP-12", format!("'{}' is not declared, and lookup at the definition does not search a dependent base", name));
+                }
+                if let Some(x) = self.operator_templ_id(&found, line)? {
+                    return Ok(x);
                 }
                 return Ok(match found {
                     Some(ids) => self.name_expr(ids, line),
@@ -2257,6 +2265,22 @@ impl P {
         if sure && !has_pack {
             self.error(line, "PRIM-29", "the operand of a fold expression names no pack");
         }
+    }
+
+    /// DED-2, OPR-1: an operator function template named with explicit
+    /// template arguments, such as a literal operator template.
+    fn operator_templ_id(&mut self, found: &Option<Vec<DeclId>>, line: u32) -> PR<Option<Expr>> {
+        let Some(ids) = found else { return Ok(None) };
+        if !self.at("<") || !ids.iter().any(|&i| self.func(i).is_some_and(|f| f.template)) {
+            return Ok(None);
+        }
+        if self.in_template() {
+            self.skip_template_args()?;
+            return Ok(Some(Expr::unknown(line, "function template specialization")));
+        }
+        let raw = self.parse_raw_targs()?;
+        let fids: Vec<DeclId> = ids.iter().copied().filter(|&i| self.func(i).is_some()).collect();
+        Ok(Some(Expr::new(EK::TemplId(None, fids, std::rc::Rc::new(raw)), QTy::unknown(), Cat::L, line)))
     }
 
     pub fn is_fold(&self) -> bool {
@@ -2531,7 +2555,13 @@ impl P {
             }
             Lit::Float { value, .. } => {
                 if let Some(&f) = fids.iter().find(|&&f| one(self, f, &|q| q.unqual().t == Ty::LDouble)) {
-                    let a = Expr::new(EK::Float(value), QTy::new(Ty::LDouble), Cat::PR, line);
+                    // OPR-8, TYP-10: the value of the literal as a literal
+                    // of type long double, from its digits.
+                    let a = if crate::interp::f80::F80::parse(&raw).is_some() {
+                        Expr::new(EK::LFloat(raw.clone().into()), QTy::new(Ty::LDouble), Cat::PR, line)
+                    } else {
+                        Expr::new(EK::Float(value), QTy::new(Ty::LDouble), Cat::PR, line)
+                    };
                     return self.call_overloads(None, vec![f], vec![a], line);
                 }
                 if let Some(e) = self.literal_raw_or_template(&fids, &char_templs, &raw, suffix, line) {
@@ -3914,7 +3944,10 @@ impl P {
         if self.at("operator") {
             // operator function name
             self.pos = start;
-            let d = self.parse_declarator(false, false)?;
+            self.member_op_name = true;
+            let d = self.parse_declarator(false, false);
+            self.member_op_name = false;
+            let d = d?;
             let name = d.name.clone().unwrap_or_default();
             let independent_conv = d.kind == crate::decl::NameKind::Conversion && d.conv_ty.as_ref().is_some_and(|t| !t.is_unknown());
             let class_scope = matches!(scope, Some(Ok(s)) if matches!(self.scopes[s].kind, SK::Class(_)));
@@ -3930,6 +3963,9 @@ impl P {
                 // depend on a parameter is looked up at the definition,
                 // which does not search a dependent base.
                 self.error(line, "DEP-12", format!("'{}' is not declared, and lookup at the definition does not search a dependent base", name));
+            }
+            if let Some(x) = self.operator_templ_id(&found, line)? {
+                return Ok(x);
             }
             return Ok(match found {
                 Some(ids) => self.name_expr(ids, line),
@@ -4404,8 +4440,10 @@ impl P {
             }
         }
         let id = ids[0];
-        if ids.len() == 1 && self.func(id).is_some_and(|f| f.deleted) && !self.in_template() {
-            // DEL-1: no reference to a deleted function.
+        if ids.len() == 1 && self.func(id).is_some_and(|f| f.deleted) && !self.in_template() && !(self.at("(") && self.func(id).is_some_and(|f| f.template)) {
+            // DEL-1: no reference to a deleted function. The name of a
+            // deleted template in a call waits for overload resolution,
+            // which argument-dependent lookup can join (NAM-5, OVL-27).
             self.error(line, "DEL-1", format!("use of the deleted function '{}'", self.decls[id].name));
         }
         if ids.len() == 1 && !self.in_template() && self.lazy_bodies.contains_key(&id) && self.func(id).is_some_and(|f| f.ret_auto.is_some() && f.fty.ret.is_unknown()) {
@@ -4883,7 +4921,7 @@ impl P {
             return false;
         }
         let mut fns = Vec::new();
-        self.conv_fns(c, 0, &mut fns);
+        self.conv_fns_all(c, 0, &mut fns);
         !fns.is_empty()
             && fns.iter().all(|&f| {
                 self.func(f).is_some_and(|fi| {
@@ -5214,6 +5252,15 @@ impl P {
                     if let Ok(Some(crate::ics::Ics { kind: crate::ics::IK::User, .. })) = self.ics_user_from_class(&plain, sc, &target.unqual(), None) {
                         return Err(format!("the conversion function of '{}' is not const or volatile, and the object is", self.classes[sc].name));
                     }
+                }
+            }
+            if !self.in_template() && !self.class_uncertain(sc) && !self.generic_conv.contains(&sc) {
+                // OVL-24: each conversion function's trailing constraints
+                // fail, so none is viable.
+                let mut all = Vec::new();
+                self.conv_fns_all(sc, 0, &mut all);
+                if !all.is_empty() && all.iter().all(|&f| self.func(f).is_some_and(|fi| !fi.template) && self.fn_cons.contains_key(&f) && matches!(self.fn_sat(f), crate::cons::Sat::No)) {
+                    return Err(format!("the constraints of each conversion function of '{}' fail, so none is viable", self.classes[sc].name));
                 }
             }
             return match self.class_converts(sc) {
@@ -5838,7 +5885,36 @@ impl P {
             return None;
         }
         if self.in_template() {
+            // An operator whose operands depend on nothing is formed in a
+            // template too, so that it can be the value of a constant
+            // template argument in a pattern (TSP-14). A choice that raises
+            // a diagnostic stays unknown.
+            let independent = |p: &P, e: &Expr| {
+                let t = nonref(&e.ty);
+                !t.is_unknown() && !matches!(t.t, Ty::Dep(_)) && !crate::templ::has_unknown(e) && !matches!(t.t, Ty::Class(c) if p.classes[c].template || p.class_uncertain(c))
+            };
+            if op != "," && op != "=" && independent(self, l) && r.is_none_or(|r| independent(self, r)) {
+                let saved = self.templ;
+                self.templ = 0;
+                let mark = self.d.list.len();
+                let ops: Vec<Expr> = std::iter::once(l.clone()).chain(r.cloned()).collect();
+                let res = self.op_resolve(op, &ops, postfix, line);
+                let clean = self.d.list.len() == mark;
+                self.d.list.truncate(mark);
+                self.templ = saved;
+                if let crate::ovl::OpRes::Done(x) = res {
+                    if clean && !matches!(x.k, EK::Unknown(_)) && !crate::templ::has_unknown(&x) {
+                        return Some(x);
+                    }
+                }
+            }
             return Some(Expr::unknown(line, "class operand in template"));
+        }
+        // INST-1: the search for member operator functions needs each class
+        // operand complete, also for the result of a call in an unevaluated
+        // operand (INST-2).
+        for &c in &classes {
+            self.require_class(c, line);
         }
         let all_known = classes.iter().all(|&c| self.class_converts(c) == Some(false) && self.classes[c].complete);
         if all_known && !self.operator_visible(op, &classes) {
@@ -6601,6 +6677,44 @@ impl P {
         }
     }
 
+    /// OVL-7, OVL-25: `x = y` for an object of class `c` whose declared
+    /// assignment operators are the whole candidate set: the class declares
+    /// a copy assignment operator, so it has no implicit one, or the right
+    /// operand is of an unrelated class that converts to `c` in no way.
+    fn declared_assign(&mut self, c: usize, l: &Expr, r: &Expr, line: u32) -> Option<Expr> {
+        // A member operator= takes a class prvalue too, such as a proxy
+        // object that a call returns.
+        if self.in_template() || self.class_uncertain(c) || matches!(l.k, EK::Unknown(_)) || matches!(r.k, EK::Unknown(_) | EK::InitList(_)) || r.ty.is_unknown() {
+            return None;
+        }
+        let ids = self.lookup_member(c, "operator=")?;
+        if ids.is_empty() || ids.iter().any(|&d| self.func(d).is_none() || self.decls[d].scope != self.classes[c].scope) {
+            return None;
+        }
+        let user_copy = ids.iter().any(|&d| self.func(d).is_some_and(|f| !f.template) && self.copy_param(d, c, true) == Some(false));
+        let unrelated = match nonref(&r.ty).t {
+            Ty::Class(rc) => {
+                let mut fns = Vec::new();
+                self.conv_fns(rc, 0, &mut fns);
+                rc != c && !self.is_base_of(c, rc) && !self.class_uncertain(rc) && fns.is_empty() && self.classes[c].ctors.iter().all(|&k| self.copy_param(k, c, false).is_some())
+            }
+            _ => false,
+        };
+        if !user_copy && !unrelated {
+            return None;
+        }
+        // A choice that raises a diagnostic, or that the front end cannot
+        // form, stays with the paths below.
+        let mark = self.d.list.len();
+        match self.op_resolve("=", &[l.clone(), r.clone()], false, line) {
+            crate::ovl::OpRes::Done(x) if self.d.list.len() == mark && !matches!(x.k, EK::Unknown(_)) && !crate::templ::has_unknown(&x) => Some(x),
+            _ => {
+                self.d.list.truncate(mark);
+                None
+            }
+        }
+    }
+
     pub fn build_assign(&mut self, op: &str, l: Expr, r: Expr, line: u32) -> Expr {
         if op == "=" && !self.in_template() {
             // BF-8: a constant assignment that the width changes.
@@ -6662,6 +6776,9 @@ impl P {
             }
             if op == "=" {
                 if let Some(x) = self.operator_select("=", &l, Some(&r), line) {
+                    return x;
+                }
+                if let Some(x) = self.declared_assign(c, &l, &r, line) {
                     return x;
                 }
                 // The implicit copy or move assignment (CPY rules), when the
@@ -7367,6 +7484,22 @@ impl P {
                 return mk(self, a, b, QTy::unknown(), Cat::PR);
             }
         }
+        // COND-3: a pointer to member and a null pointer constant, or two
+        // pointers to members of one type, have that type.
+        if matches!(at, Ty::MemPtr(..)) && (bnull || bt == Ty::NullPtr) {
+            let t = a.ty.unqual();
+            let b = self.conv(b, Conv::NullPtr, t.clone());
+            return mk(self, a, b, t, Cat::PR);
+        }
+        if matches!(bt, Ty::MemPtr(..)) && (anull || at == Ty::NullPtr) {
+            let t = b.ty.unqual();
+            let a = self.conv(a, Conv::NullPtr, t.clone());
+            return mk(self, a, b, t, Cat::PR);
+        }
+        if matches!(at, Ty::MemPtr(..)) && at == bt {
+            let t = a.ty.unqual();
+            return mk(self, a, b, t, Cat::PR);
+        }
         if matches!(at, Ty::MemPtr(..)) || matches!(bt, Ty::MemPtr(..)) {
             return mk(self, a, b, QTy::unknown(), Cat::PR);
         }
@@ -7684,7 +7817,13 @@ impl P {
             // A class temporary from the initialization of a class object,
             // for the interpreter. A form that raises a diagnostic stays
             // unknown, as before.
-            if !self.in_template() && !self.class_uncertain(c) && self.classes[c].complete {
+            // In a template, a temporary of a class that is not a pattern,
+            // from operands that depend on nothing, is formed too, so that
+            // it can be the value of a constant template argument in a
+            // pattern (TSP-14, TARG-P4).
+            let independent = !self.in_template()
+                || (braced && !self.classes[c].template && items.iter().all(|a| !a.ty.is_unknown() && !matches!(a.ty.t, Ty::Dep(_)) && !crate::templ::has_unknown(a)));
+            if independent && !self.class_uncertain(c) && self.classes[c].complete {
                 let mark = self.d.list.len();
                 let form = if braced || items.is_empty() { InitForm::DirectList } else { InitForm::Paren(items.len()) };
                 let x = self.convert_init(init.clone(), &ty.unqual(), form, line);

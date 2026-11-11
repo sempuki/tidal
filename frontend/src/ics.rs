@@ -472,7 +472,21 @@ impl P {
 
     /// The conversion functions of class `c` and its bases. A function
     /// of a derived class hides one of a base with the same target type.
-    pub fn conv_fns(&self, c: usize, depth: u32, out: &mut Vec<DeclId>) {
+    /// The conversion functions of class `c` and its bases that can be
+    /// viable: a function whose trailing constraints fail is not
+    /// (OVL-24, CNS-12).
+    pub fn conv_fns(&mut self, c: usize, depth: u32, out: &mut Vec<DeclId>) {
+        let before = out.len();
+        self.conv_fns_all(c, depth, out);
+        let found: Vec<DeclId> = out.drain(before..).collect();
+        for d in found {
+            if !self.fn_cons.contains_key(&d) || !matches!(self.fn_sat(d), crate::cons::Sat::No | crate::cons::Sat::Error) {
+                out.push(d);
+            }
+        }
+    }
+
+    pub fn conv_fns_all(&self, c: usize, depth: u32, out: &mut Vec<DeclId>) {
         if depth > 16 {
             return;
         }
@@ -496,7 +510,7 @@ impl P {
         }
         for b in self.classes[c].bases.clone() {
             if let Some(bc) = b.class {
-                self.conv_fns(bc, depth + 1, out);
+                self.conv_fns_all(bc, depth + 1, out);
             }
         }
     }

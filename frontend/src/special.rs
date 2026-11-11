@@ -679,6 +679,20 @@ impl P {
             self.error(line, "UNI-11", format!("the {} of '{}' is deleted (UNI-3)", shown.what(), name));
             return;
         }
+        if !assign && !self.class_uncertain(c) {
+            // CPY-1, CPY-4, OVL-24: the class declares copy or move
+            // constructors, so it has no implicit copy constructor, and a
+            // constructor whose trailing constraints fail is not viable.
+            let mut cands = self.copy_cands(c, false, false).unwrap_or_default();
+            if rv {
+                cands.extend(self.copy_cands(c, false, true).unwrap_or_default());
+            }
+            let user = cands.iter().any(|&f| self.func(f).is_some_and(|fi| !fi.first_defaulted || fi.deleted) || self.fn_cons.contains_key(&f));
+            if user && !cands.is_empty() && cands.iter().all(|&f| self.fn_cons.contains_key(&f) && matches!(self.fn_sat(f), crate::cons::Sat::No)) {
+                self.error(line, "CTOR-25", format!("no constructor of '{}' is viable for the {}: the constraints of each copy or move constructor fail (OVL-24)", name, sm.what()));
+                return;
+            }
+        }
         let st = if rv { self.rv_status(c, assign, 0) } else { self.lv_status(c, assign, 0) };
         match st {
             CopySt::Unknown => {}

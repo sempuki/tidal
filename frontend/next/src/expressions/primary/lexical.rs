@@ -560,9 +560,10 @@ pub fn quoted(b: &[char], mut i: usize, prefix: Prefix, sp: Span, out: &mut Vec<
         }
     }
     if i >= b.len() || b[i] != q {
-        d.error(sp, None, "unterminated literal");
+        // TR-12: an open literal derives from no production.
+        d.error(sp, Some("TR-12"), "unterminated literal");
     }
-    // The old front end went past the end here at the end of a file.
+    // A literal still open at the end of the file ends there (G180).
     i = (i + 1).min(b.len());
     // user-defined literal suffix
     let suf_start = i;

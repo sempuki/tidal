@@ -1034,6 +1034,13 @@ impl<'a> Machine<'a> {
                     // OBJ-1: the destroyed member of a union ends, so no
                     // member is active.
                     *self.slot(&p, true)? = Val::Inactive;
+                } else if self.constant && !matches!(t.t, Ty::Class(_) | Ty::Array(..)) {
+                    // CE-21 (Q-0447): a scalar subobject whose lifetime the
+                    // call ended has no value.
+                    if let Ok(v) = self.slot(&p, true) {
+                        *v = Val::Uninit;
+                    }
+                    self.ended_parts.insert((p.obj, crate::interp::full_path(&p)));
                 }
                 Ok(Val::Void)
             }
@@ -4706,14 +4713,33 @@ impl<'a> Machine<'a> {
         self.copy_parts(place, src, c, mv)
     }
 
+    /// CE-22 (Q-0449): in constant evaluation, the trivial copy of a union
+    /// whose active member is mutable reads that member, which is not
+    /// valid when the source object began outside the evaluation.
+    pub fn union_copy_mutable(&self, src: &Ptr, c: usize, v: &Val) -> R<()> {
+        if !self.constant || self.p.classes[c].key != 2 || self.objs[src.obj].own {
+            return Ok(());
+        }
+        let Val::Agg(items) = v else { return Ok(()) };
+        for (_, fi) in self.fields(c) {
+            if fi.mutable && items.get(fi.index).is_some_and(|x| !matches!(x, Val::Inactive)) {
+                return limit("CE-22", "copy of a union whose active member is mutable, from an object that began outside the evaluation");
+            }
+        }
+        Ok(())
+    }
+
     /// The implicit or defaulted copy or move: each base and member in
     /// order (CPY-8).
     pub fn copy_parts(&mut self, place: &Ptr, src: &Ptr, c: usize, mv: bool) -> R<()> {
         if !self.copy_runs_code(c) {
             let v = self.get_at(src)?.clone();
-            if self.constant && has_unset(&v) {
+            // CE-22: a trivial copy of a union copies its active member and
+            // reads none of its parts.
+            if self.constant && has_unset(&v) && self.p.classes[c].key != 2 {
                 return limit("CE-22", "copy of an object that has a scalar part with no value");
             }
+            self.union_copy_mutable(src, c, &v)?;
             return self.write(place, v, true);
         }
         self.class_ok(c)?;
@@ -4809,9 +4835,10 @@ impl<'a> Machine<'a> {
         }
         if !self.copy_runs_code(c) && !self.assign_runs_code(c) {
             let v = self.get_at(src)?.clone();
-            if self.constant && has_unset(&v) {
+            if self.constant && has_unset(&v) && self.p.classes[c].key != 2 {
                 return limit("CE-22", "copy of an object that has a scalar part with no value");
             }
+            self.union_copy_mutable(src, c, &v)?;
             return self.write(dst, v, false);
         }
         if self.p.classes[c].key == 2 {

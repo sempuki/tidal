@@ -925,6 +925,10 @@ impl P {
                     if self.at("::") {
                         // DTY: decltype as a nested name qualifier
                         if let Ty::Class(c) = nonref(&q).t {
+                            // INST-1: a qualified name that names a member
+                            // makes the class.
+                            let l = self.line();
+                            self.require_class(c, l);
                             if self.peek(1).kind == TK::Ident {
                                 let n = self.peek(1).text.clone();
                                 if let Some(ids) = self.lookup_member(c, &n) {

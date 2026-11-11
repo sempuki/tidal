@@ -10,6 +10,7 @@ pass	classes/access/enclosing-not-access-nested-function.cpp
 pass	classes/access/enclosing-not-access-nested.cpp
 pass	classes/access/friend-class-key-enclosing-from-nested-template.cpp
 pass	classes/access/friend-class-key-enclosing-from-nested.cpp
+pass	classes/access/friend-class-template-declared-later.cpp
 pass	classes/access/friend-class-template.cpp
 pass	classes/access/friend-class-then-operator-calls.cpp
 pass	classes/access/friend-class.cpp
@@ -322,6 +323,8 @@ pass	classes/constructors/mem-init-static-member.cpp
 pass	classes/constructors/mem-init-two-specializations-one-template.cpp
 pass	classes/constructors/mem-init-type-alias-base.cpp
 pass	classes/constructors/mem-init-uses-param.cpp
+pass	classes/constructors/member-no-default-constructor-not-initialized.cpp
+pass	classes/constructors/member-no-default-constructor-object.cpp
 EDG-ONLY	classes/constructors/nested-default-member-init-before-complete.cpp
 EDG-ONLY	classes/constructors/nested-default-member-init-read-in-default-argument.cpp
 pass	classes/constructors/no-implicit-default-with-copy-ctor.cpp
@@ -438,6 +441,7 @@ pass	classes/copy-move/constant-evaluation-no-nrvo.cpp
 pass	classes/copy-move/copy-assign-forms.cpp
 pass	classes/copy-move/copy-assign-nonmember.cpp
 pass	classes/copy-move/copy-assign-static.cpp
+pass	classes/copy-move/copy-constructor-constraint-fails.cpp
 EDG-ONLY	classes/copy-move/copy-constructor-exact-skips-template-constraint.cpp
 pass	classes/copy-move/copy-ctor-by-value.cpp
 pass	classes/copy-move/copy-ctor-const-ref.cpp
@@ -633,8 +637,8 @@ pass	classes/derived/virtual-base-shared.cpp
 pass	classes/derived/virtual-keyword-order.cpp
 pass	classes/initializer-lists/backing-array-copy-elements.cpp
 pass	classes/initializer-lists/backing-array-lives-with-list.cpp
-run-unsupported	classes/initializer-lists/braced-beside-constructor-template-deduction-fails.cpp
-run-unsupported	classes/initializer-lists/braced-beside-constructor-template-no-conversion.cpp
+pass	classes/initializer-lists/braced-beside-constructor-template-deduction-fails.cpp
+pass	classes/initializer-lists/braced-beside-constructor-template-no-conversion.cpp
 pass	classes/initializer-lists/braced-copy-list-ctor-other-element-type.cpp
 pass	classes/initializer-lists/constexpr-list-ctor.cpp
 pass	classes/initializer-lists/copy-from-single-same-class.cpp
@@ -854,6 +858,7 @@ pass	classes/operators/default-argument.cpp
 pass	classes/operators/enum-builtin-still-used.cpp
 pass	classes/operators/enum-operator.cpp
 pass	classes/operators/explicit-call-syntax.cpp
+pass	classes/operators/initializer-list-parameter.cpp
 pass	classes/operators/integer-suffix-mixed-case.cpp
 pass	classes/operators/left-operand-conversion-nonmember.cpp
 pass	classes/operators/left-operand-no-conversion-member.cpp
@@ -865,6 +870,7 @@ pass	classes/operators/literal-constexpr.cpp
 pass	classes/operators/literal-default-arg.cpp
 pass	classes/operators/literal-double-underscore-suffix.cpp
 pass	classes/operators/literal-extern-c.cpp
+EDG-ONLY	classes/operators/literal-float-form-out-of-range.cpp
 pass	classes/operators/literal-float.cpp
 pass	classes/operators/literal-friend.cpp
 pass	classes/operators/literal-in-namespace.cpp
@@ -875,9 +881,12 @@ pass	classes/operators/literal-no-underscore-floating-warns.cpp
 pass	classes/operators/literal-no-underscore-warns.cpp
 pass	classes/operators/literal-not-found.cpp
 pass	classes/operators/literal-numeric-form-value-too-large.cpp
+pass	classes/operators/literal-numeric-form-value.cpp
 pass	classes/operators/literal-numeric-over-raw.cpp
 pass	classes/operators/literal-operator-template-and-raw-form-declared.cpp
 pass	classes/operators/literal-operator-template-and-raw-form.cpp
+pass	classes/operators/literal-operator-template-called-by-name-value.cpp
+pass	classes/operators/literal-operator-template-called-by-name.cpp
 pass	classes/operators/literal-operator-template-char-pack.cpp
 EDG-ONLY	classes/operators/literal-operator-template-class-parameter-and-string-form.cpp
 pass	classes/operators/literal-operator-template-class-parameter-integer.cpp
@@ -1398,7 +1407,7 @@ pass	declarations/auto/constrained-decltype-auto-reference.cpp
 pass	declarations/auto/constrained-not-satisfied.cpp
 pass	declarations/auto/constrained-satisfied.cpp
 pass	declarations/auto/constrained-with-arguments.cpp
-unsupported	declarations/auto/copy-list-deduces-initializer-list.cpp
+pass	declarations/auto/copy-list-deduces-initializer-list.cpp
 pass	declarations/auto/copy-list-empty.cpp
 pass	declarations/auto/copy-list-mixed-types.cpp
 pass	declarations/auto/copy-list-without-library.cpp
@@ -1798,6 +1807,8 @@ pass	declarations/functions/definitions/flow-off-end-switch-no-default-warns.cpp
 pass	declarations/functions/definitions/flow-off-end-value.cpp
 pass	declarations/functions/definitions/flow-off-end-void.cpp
 pass	declarations/functions/definitions/flow-off-end-warns.cpp
+pass	declarations/functions/definitions/friend-in-class-specialization-over-class.cpp
+pass	declarations/functions/definitions/friend-in-class-type-completed-after-class.cpp
 pass	declarations/functions/definitions/func-in-member-initializer.cpp
 pass	declarations/functions/definitions/func-name-impl.cpp
 pass	declarations/functions/definitions/func-name-member.cpp
@@ -1826,8 +1837,11 @@ pass	declarations/functions/definitions/main-three-params.cpp
 EDG-ONLY	declarations/functions/definitions/main-wrong-first-param-ilp32.cpp
 EDG-ONLY	declarations/functions/definitions/main-wrong-first-param.cpp
 pass	declarations/functions/definitions/main-wrong-return-type.cpp
+pass	declarations/functions/definitions/member-in-class-specialization-over-class.cpp
+pass	declarations/functions/definitions/member-in-class-type-completed-after-class.cpp
 pass	declarations/functions/definitions/nested-function-definition-member.cpp
 pass	declarations/functions/definitions/nested-function-definition.cpp
+pass	declarations/functions/definitions/nested-member-type-completed-in-enclosing-class.cpp
 pass	declarations/functions/definitions/parameter-destruction-order-operator.cpp
 pass	declarations/functions/definitions/parameter-destruction-order.cpp
 pass	declarations/functions/definitions/parameter-duplicate.cpp
@@ -1844,6 +1858,8 @@ pass	declarations/functions/definitions/switch-every-enumerator-no-return.cpp
 pass	declarations/functions/definitions/typedef-function-definition.cpp
 pass	declarations/functions/definitions/unnamed-parameters.cpp
 pass	declarations/functions/deleted/address-of-deleted.cpp
+pass	declarations/functions/deleted/adl-function-beside-deleted-template-concept.cpp
+pass	declarations/functions/deleted/adl-function-beside-deleted-template.cpp
 pass	declarations/functions/deleted/call-deleted.cpp
 pass	declarations/functions/deleted/declare-deleted-unused.cpp
 pass	declarations/functions/deleted/default-non-member.cpp
@@ -2434,6 +2450,8 @@ pass	declarations/type-names/enum-fixed-after-not-fixed.cpp
 pass	declarations/type-names/enum-fixed-mismatch.cpp
 pass	declarations/type-names/enum-scoped-long-then-default.cpp
 pass	declarations/type-names/enum-scoped-mismatch.cpp
+pass	declarations/type-names/explicit-instantiation-attribute.cpp
+pass	declarations/type-names/explicit-specialization-attributes.cpp
 pass	declarations/type-names/forward-after-definition.cpp
 pass	declarations/type-names/forward-class-attributes.cpp
 pass	declarations/type-names/forward-class-function-definition-param.cpp
@@ -2449,6 +2467,7 @@ pass	declarations/type-names/forward-enum-scoped-int-then-none.cpp
 pass	declarations/type-names/forward-nested-class.cpp
 pass	declarations/type-names/forward-nested-wrong-scope.cpp
 pass	declarations/type-names/function-name-changes-meaning.cpp
+pass	declarations/type-names/partial-specialization-attributes.cpp
 pass	declarations/type-names/typedef-initializer.cpp
 pass	declarations/type-names/typedef-multiple.cpp
 pass	declarations/type-names/typedef-name-in-class-redeclared.cpp
@@ -3101,7 +3120,7 @@ pass	expressions/conditional/grouping.cpp
 pass	expressions/conditional/lvalue-and-xvalue-types.cpp
 pass	expressions/conditional/lvalue-result.cpp
 pass	expressions/conditional/lvalue-xvalue-deleted-move.cpp
-unsupported	expressions/conditional/member-pointer-nullptr.cpp
+pass	expressions/conditional/member-pointer-nullptr.cpp
 pass	expressions/conditional/mixed-category-prvalue.cpp
 pass	expressions/conditional/mixed-enum-types.cpp
 pass	expressions/conditional/no-common-type.cpp
@@ -3992,6 +4011,7 @@ unsupported	foundations/constant-evaluation/reference-to-local-not-usable.cpp
 pass	foundations/constant-evaluation/reinterpret-cast.cpp
 pass	foundations/constant-evaluation/relational-unrelated-array-elements.cpp
 pass	foundations/constant-evaluation/relational-unrelated-pointers.cpp
+pass	foundations/constant-evaluation/result-ended-element.cpp
 pass	foundations/constant-evaluation/result-every-part-set.cpp
 pass	foundations/constant-evaluation/result-points-to-local.cpp
 pass	foundations/constant-evaluation/result-points-to-static.cpp
@@ -3999,6 +4019,7 @@ pass	foundations/constant-evaluation/result-refers-to-static-temporary.cpp
 pass	foundations/constant-evaluation/result-refers-to-temporary.cpp
 pass	foundations/constant-evaluation/result-returned-local-every-element.cpp
 pass	foundations/constant-evaluation/result-returned-local-unset-element.cpp
+pass	foundations/constant-evaluation/result-union-ended-element.cpp
 pass	foundations/constant-evaluation/result-union-no-active-member.cpp
 pass	foundations/constant-evaluation/result-union-one-active-member.cpp
 pass	foundations/constant-evaluation/result-unset-array-element.cpp
@@ -4022,6 +4043,11 @@ pass	foundations/constant-evaluation/try-around-constexpr-variable.cpp
 pass	foundations/constant-evaluation/try-without-throw.cpp
 pass	foundations/constant-evaluation/undefined-behavior-dangling.cpp
 pass	foundations/constant-evaluation/undefined-behavior.cpp
+EDG-ONLY	foundations/constant-evaluation/union-copy-mutable-member-assignment-outside.cpp
+pass	foundations/constant-evaluation/union-copy-mutable-member-inside.cpp
+EDG-ONLY	foundations/constant-evaluation/union-copy-mutable-member-outside.cpp
+EDG-ONLY	foundations/constant-evaluation/union-copy-part-with-no-value-read.cpp
+pass	foundations/constant-evaluation/union-copy-part-with-no-value.cpp
 pass	foundations/constant-evaluation/unknown-reference-not-read.cpp
 pass	foundations/constant-evaluation/unknown-reference-static-member.cpp
 pass	foundations/constant-evaluation/unsequenced-assignments-not-detected.cpp
@@ -4276,6 +4302,7 @@ pass	foundations/language-support/exception-classes-bad-cast.cpp
 pass	foundations/language-support/initializer-list-auto-deduction.cpp
 pass	foundations/language-support/initializer-list-candidate-not-viable.cpp
 EDG-ONLY	foundations/language-support/initializer-list-count-before-pointer.cpp
+pass	foundations/language-support/initializer-list-missing-range-for.cpp
 pass	foundations/language-support/initializer-list-missing.cpp
 pass	foundations/language-support/initializer-list-no-members.cpp
 pass	foundations/language-support/initializer-list-not-template.cpp
@@ -4588,6 +4615,8 @@ pass	foundations/objects/unbraced-substatement-ends-object.cpp
 pass	foundations/objects/uninitialized-member-read-constant.cpp
 pass	foundations/objects/virtual-bases-first.cpp
 pass	foundations/objects/write-after-end-constant.cpp
+EDG-ONLY	foundations/objects/write-after-pseudo-destructor-element-constant.cpp
+EDG-ONLY	foundations/objects/write-after-pseudo-destructor-variable-constant.cpp
 EDG-ONLY	foundations/odr/class-constant-copy-in-lambda.cpp
 pass	foundations/odr/class-differs-across-units.cpp
 pass	foundations/odr/class-template-differs-across-units.cpp
@@ -4858,6 +4887,7 @@ pass	foundations/translation/main-with-args.cpp
 EDG-ONLY	foundations/translation/main-wrong-parameter-types-ilp32.cpp
 EDG-ONLY	foundations/translation/main-wrong-parameter-types.cpp
 pass	foundations/translation/observable-volatile-kept-optimized.cpp
+pass	foundations/translation/string-literal-open-at-end-of-file.cpp
 pass	foundations/translation/undefined-at-link.cpp
 pass	foundations/translation/undefined-on-taken-path-only.cpp
 pass	foundations/translation/undefined-on-taken-path-sanitizer.cpp
@@ -5146,11 +5176,13 @@ pass	overloading/overload-resolution/address-of-deleted-chosen.cpp
 pass	overloading/overload-resolution/address-plain-over-template.cpp
 pass	overloading/overload-resolution/address-static-member-template.cpp
 pass	overloading/overload-resolution/address-targets.cpp
-run-unsupported	overloading/overload-resolution/assignment-operator-class-parameter.cpp
+pass	overloading/overload-resolution/assignment-beside-converting-assignment.cpp
+pass	overloading/overload-resolution/assignment-operator-class-parameter.cpp
 pass	overloading/overload-resolution/best-beats-each.cpp
 pass	overloading/overload-resolution/best-no-single-winner.cpp
 pass	overloading/overload-resolution/better-crossing-arguments.cpp
 pass	overloading/overload-resolution/better-one-argument.cpp
+pass	overloading/overload-resolution/binary-operator-beside-explicit-conversion-template.cpp
 pass	overloading/overload-resolution/builtin-arithmetic.cpp
 pass	overloading/overload-resolution/builtin-assignment.cpp
 pass	overloading/overload-resolution/builtin-bool-increment.cpp
@@ -5192,6 +5224,9 @@ pass	overloading/overload-resolution/call-through-address.cpp
 pass	overloading/overload-resolution/chosen-deleted.cpp
 pass	overloading/overload-resolution/chosen-not-accessible.cpp
 pass	overloading/overload-resolution/const-ref-parameter-through-converting-constructor.cpp
+pass	overloading/overload-resolution/conversion-function-constraint-fails-explicit-cast.cpp
+pass	overloading/overload-resolution/conversion-function-constraint-fails-implicit.cpp
+pass	overloading/overload-resolution/conversion-functions-constraints-choose.cpp
 pass	overloading/overload-resolution/current-object-argument.cpp
 pass	overloading/overload-resolution/current-object-default-member-init.cpp
 pass	overloading/overload-resolution/current-object-explicit-extra-argument.cpp
@@ -5300,11 +5335,16 @@ pass	programs/P1/stats.cpp
 pass	programs/P2/buckets.cpp
 pass	programs/P2/chain.cpp
 pass	programs/P2/ledger.cpp
-run-unsupported	programs/P3/events-first-try.cpp
+pass	programs/P3/events-first-try.cpp
 pass	programs/P3/events.cpp
 pass	programs/P3/machine.cpp
-run-unsupported	programs/P3/pipeline-first-try.cpp
+pass	programs/P3/pipeline-first-try.cpp
 pass	programs/P3/pipeline.cpp
+pass	programs/P4/buffer.cpp
+EDG-ONLY	programs/P4/money-first-try.cpp
+EDG-ONLY	programs/P4/money.cpp
+pass	programs/P4/sequences-first-try.cpp
+pass	programs/P4/sequences.cpp
 pass	programs/W0/accounts.cpp
 pass-partial	programs/W0/calc.cpp
 pass	programs/W0/owner.cpp
@@ -5393,7 +5433,7 @@ pass-partial	programs/roadmap/r10-list-first-try.cpp
 pass-partial	programs/roadmap/r10-list.cpp
 pass	programs/roadmap/r10-smart-ptr-first-try.cpp
 pass	programs/roadmap/r10-smart-ptr.cpp
-unsupported	programs/roadmap/r10-tuple-second-try.cpp
+pass-partial	programs/roadmap/r10-tuple-second-try.cpp
 pass-partial	programs/roadmap/r10-tuple.cpp
 pass	programs/roadmap/r10-variant.cpp
 pass	programs/roadmap/r11-arena.cpp
@@ -5412,6 +5452,20 @@ pass-partial	programs/roadmap/r12-ring-fifth-try.cpp
 pass-partial	programs/roadmap/r12-ring-third-try.cpp
 pass-partial	programs/roadmap/r12-ring.cpp
 pass-partial	programs/roadmap/r12-sso.cpp
+pass-partial	programs/roadmap/r13-algo-third-try.cpp
+pass-partial	programs/roadmap/r13-algo.cpp
+pass	programs/roadmap/r13-bits-first-try.cpp
+pass	programs/roadmap/r13-bits.cpp
+pass	programs/roadmap/r13-intrusive-second-try.cpp
+pass	programs/roadmap/r13-intrusive.cpp
+pass	programs/roadmap/r13-slotmap.cpp
+EDG-ONLY	programs/roadmap/r13-units-fifth-try.cpp
+EDG-ONLY	programs/roadmap/r13-units-fourth-try.cpp
+EDG-ONLY	programs/roadmap/r13-units-second-try.cpp
+EDG-ONLY	programs/roadmap/r13-units-seventh-try.cpp
+EDG-ONLY	programs/roadmap/r13-units-sixth-try.cpp
+EDG-ONLY	programs/roadmap/r13-units-third-try.cpp
+EDG-ONLY	programs/roadmap/r13-units.cpp
 pass	programs/roadmap/r4-aligned.cpp
 pass	programs/roadmap/r4-bits.cpp
 pass	programs/roadmap/r4-condtriv2.cpp
@@ -5631,7 +5685,7 @@ pass	statements/loops/while-condition-declaration.cpp
 pass	statements/loops/while-condition-destroyed-after-body.cpp
 pass	statements/loops/while-condition-redeclared.cpp
 pass	statements/range-for/array.cpp
-run-unsupported	statements/range-for/begin-end-from-base-over-derived.cpp
+pass	statements/range-for/begin-end-from-base-over-derived.cpp
 pass	statements/range-for/begin-end-not-adl.cpp
 pass	statements/range-for/braced-list-mixed-types.cpp
 pass	statements/range-for/braced-list.cpp
@@ -5645,6 +5699,7 @@ pass	statements/range-for/empty-init-statement.cpp
 pass	statements/range-for/end-computed-once.cpp
 pass	statements/range-for/equality-only-iterator.cpp
 pass	statements/range-for/extern-loop-variable.cpp
+pass	statements/range-for/filter-adaptor-any-range.cpp
 pass	statements/range-for/free-begin-end.cpp
 pass	statements/range-for/incomplete-element.cpp
 pass	statements/range-for/init-statement.cpp
@@ -5935,7 +5990,7 @@ pass	templates/class-template-deduction/tie-own-constructor.cpp
 pass	templates/class-template-deduction/tie-user-guide-conversion.cpp
 pass	templates/class-template-deduction/tie-user-guide-copy.cpp
 pass	templates/class-template-deduction/tie-user-guide.cpp
-unsupported	templates/class-template-deduction/user-guide-beside-constrained-constructor-template.cpp
+pass	templates/class-template-deduction/user-guide-beside-constrained-constructor-template.cpp
 pass	templates/class-template-deduction/user-guides.cpp
 pass	templates/concepts/attribute-deprecated-used.cpp
 pass	templates/concepts/attribute.cpp
@@ -6015,8 +6070,10 @@ pass	templates/concepts/requires-expression-value.cpp
 pass	templates/concepts/requires-parameter-default.cpp
 pass	templates/concepts/requires-parameter-ellipsis.cpp
 pass	templates/concepts/requires-parameter-enclosing-parameter-name.cpp
+pass	templates/concepts/requires-parameter-iterator-type.cpp
 pass	templates/concepts/requires-parameter-placeholder.cpp
 pass	templates/concepts/requires-parameter-template-parameter-name.cpp
+pass	templates/concepts/requires-parameter-type-not-valid-false.cpp
 pass	templates/concepts/requires-parameters-adjusted.cpp
 pass	templates/concepts/requires-parameters-void-template.cpp
 pass	templates/concepts/requires-parameters-void.cpp
@@ -6106,7 +6163,10 @@ pass	templates/constraints/explicit-instantiation-members.cpp
 pass	templates/constraints/explicit-specialization-class.cpp
 pass	templates/constraints/explicit-specialization-function.cpp
 pass	templates/constraints/explicit-specialization-variable.cpp
+pass	templates/constraints/fold-atomic-one-satisfied.cpp
 pass	templates/constraints/fold-atomic.cpp
+pass	templates/constraints/fold-in-requires-clause-plain-expression.cpp
+pass	templates/constraints/fold-in-requires-clause.cpp
 pass	templates/constraints/friend-declaration.cpp
 EDG-ONLY	templates/constraints/friend-definition-per-specialization.cpp
 EDG-AGREES	templates/constraints/friend-distinct-from-namespace.cpp
@@ -6630,6 +6690,8 @@ pass	templates/instantiation/class-member-definitions-unused.cpp
 pass	templates/instantiation/class-object.cpp
 pass	templates/instantiation/class-overload-two-candidates.cpp
 pass	templates/instantiation/class-overload-void-pointer.cpp
+MISSED-REJECT	templates/instantiation/class-point-after-enclosing-class-not-later.cpp
+pass	templates/instantiation/class-point-after-enclosing-class.cpp
 pass	templates/instantiation/class-point-in-specialization.cpp
 MISSED-REJECT	templates/instantiation/class-point-not-later-member-type.cpp
 MISSED-REJECT	templates/instantiation/class-point-not-later-type.cpp
@@ -6645,6 +6707,9 @@ pass	templates/instantiation/class-static-const-member-initializer-made.cpp
 EDG-AGREES	templates/instantiation/class-static-constexpr-member-initializer-waits.cpp
 pass	templates/instantiation/class-static-member-function-type.cpp
 pass	templates/instantiation/class-unscoped-enumeration.cpp
+pass	templates/instantiation/decltype-call-qualifier-instantiates.cpp
+pass	templates/instantiation/decltype-nested-call-argument-instantiates.cpp
+pass	templates/instantiation/decltype-operator-call-qualifier-instantiates.cpp
 pass	templates/instantiation/default-argument-each-own.cpp
 pass	templates/instantiation/default-argument-explicit-instantiation.cpp
 pass	templates/instantiation/default-argument-explicit-specialization.cpp
@@ -6976,6 +7041,7 @@ pass	templates/specialization/member-template-nested-explicit.cpp
 pass	templates/specialization/partial-after-use-variable.cpp
 NO-DIAGNOSTIC-ALLOWED	templates/specialization/partial-after-use.cpp
 pass	templates/specialization/partial-array-and-const-array.cpp
+pass	templates/specialization/partial-class-type-constant-argument.cpp
 pass	templates/specialization/partial-constant-type-exact.cpp
 pass	templates/specialization/partial-default.cpp
 pass	templates/specialization/partial-dependent-type-value.cpp

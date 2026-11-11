@@ -460,6 +460,16 @@ A lambda that the look-ahead of class template argument deduction
 parses keeps its closure type when the initializer is parsed again, so
 the deduced class names that type (CTAD-1).
 
+A guide made from a constructor template keeps the constructor's
+constraint, and the constraint can name the class's parameters, which
+the guide deduces first (CTAD-29). In a template, a class temporary and
+an operator call whose operands depend on no parameter are formed as
+outside a template, so that such a value can be a constant template
+argument of a partial specialization (TSP-14, TARG-19). A substitution
+failure of an alias template is remembered, and a muted use of the same
+specialization fails again, so a requires expression whose parameter
+type is not valid is false (CPT-28).
+
 ## Bytes
 
 The value of each object stays the interpreter's record. The bytes of an
