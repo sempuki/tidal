@@ -42,9 +42,11 @@ The test in **Affects**, and the probe in **Context**. The test checks `p + 1 - 
 
 1. `p + 1` is the position one past the object, as for an array of
    one. A read through it, and a move of two, are undefined (ADD-14).
-2. Any addition other than zero on such a pointer is undefined, because
-   the pointer's type and the element type are not similar. The
-   pointer has no position one past.
+2. Every addition and every subtraction on such a pointer is undefined,
+   a step of zero included, and so is the difference of two such
+   pointers. The pointer's type and the element type are not similar,
+   so the pointer has no position in the array and no position one
+   past.
 
 ## Provisional answer
 
@@ -53,8 +55,14 @@ that runs the program gives the address `sizeof(int)` bytes after `p`,
 and ADD-14 states the case. The read of the RV7 repair diff reads the
 case against the answer, so the question waits with `pending.md` row 4.
 
+Kept open on 2026-11-11 (decision 0063, item RV8). The read of the RV8 repair diff reads the case against the answer (RV9-R-3), as the read of the RV7 repair diff did. Option 2 now covers a step of zero and the difference of two such pointers, because the read sets neither apart. The test takes the difference `end - p`, which option 2 also makes undefined, and its note says so. No compiler or sanitizer reports the step or the difference, so the test keeps its expectation. The question still waits with `pending.md` row 4.
+
 ## Opinions
 
 ### Read of the RV7 repair diff, 2026-11-11
 
 The source-reader read of the RV7 repair diff (`reports/review/2026-11-11-read-of-rv7-repair-diff.md`) reads the case: reads against the answer (RV8-R-9). The pointer's type and the element type of the array are not similar, so the reference makes any addition on the pointer undefined, the move to one past included. The reference's own example of the rule uses this integer case. The case differs from a pointer to a base class subobject, which is no element of an array, and for which ADD-14 and the reference agree (Q-0049).
+
+### Read of the RV8 repair diff, 2026-11-11
+
+The source-reader read of the RV8 repair diff (`reports/review/2026-11-11-read-of-rv8-repair-diff.md`) reads the case: reads against the answer (RV8-R-9, RV9-R-3). The pointer's type and the element type of the array are not similar, so every step and every difference on such a pointer is undefined. The reference's own example of the rule uses this integer case. The rule sets apart neither the move to one past nor a step of zero, so option 2 is the closest once its exception for zero is gone. The read through the pointer stays valid, as STG-14 says. The read finds that the ADD-14 Note, the Q-0442 line, and the row 4 item state RV8-R-9 correctly.

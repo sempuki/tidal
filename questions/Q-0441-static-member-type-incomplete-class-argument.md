@@ -58,3 +58,7 @@ Rule text on 2026-11-11 (decision 0063, item RV8): INST-5 says that the paramete
 ### Gap review, 2026-11-11 (phase 15 text, expressions, overloading, and templates)
 
 The source-reader gap review of the phase 15 text on expressions, overloading, and templates (`reports/review/2026-11-11-gap-review-phase-15-expressions-overloading-templates.md`) reads the question: supports with a doubt (RV8-B-9). Making the class makes the declaration of a static data member and not its definition, and a member that is not inline may be declared in its class with an incomplete type. For an inline member, the declaration in the class is a definition outside templates, and a definition needs a complete type. The class instantiation still makes only the declaration, and the reference treats such a declaration as a definition only for the checks of a redeclaration, so the review leans toward option 1 for the inline form too. The doubt is whether making the declaration of an inline member must check its type, as GCC and EDG do. The review also finds the word "only" in INST-5 too narrow, because a call that passes or returns the class by value also needs the types complete (INST-1).
+
+### Read of the RV8 repair diff, 2026-11-11
+
+The source-reader read of the RV8 repair diff (`reports/review/2026-11-11-read-of-rv8-repair-diff.md`) reads the INST-5 hunk: agrees. The repair of the word "only" closes part of RV8-B-9, and the doubt on the inline member stays with this question. The read gives no new reading of the question's answer.

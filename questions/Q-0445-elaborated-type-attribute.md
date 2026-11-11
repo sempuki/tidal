@@ -3,7 +3,7 @@
 **Status:** provisional
 **Affects:** TYN-10, `tests/declarations/type-names/elaborated-attribute-not-forward-declaration.cpp`
 **Source:** ledger row RM12-2 (`reports/clean-room/roadmap-12/editor.md`, from the grammar finding of commit 9359cc42), with the writer probe `reports/clean-room/roadmap-12/writer-probes/rv8-points.json`.
-**Waits for:** a first review
+**Waits for:** a review (doubt)
 
 ## Context
 
@@ -43,6 +43,10 @@ agree, and GCC alone differs. The grammar of the type names page gives
 the attributes to `elaborated_type`, and TYN-10 rejects them outside a
 forward declaration.
 
+Kept open on 2026-11-11 under decision 0054 (decision 0063, item RV8). The read of the RV8 repair diff supports the answer with a doubt (RV9-R-4), and GCC 16 alone differs. The read finds one more declaration that can carry the attribute in the reference, a class key with a template-id alone in an explicit specialization or a partial specialization. TYN-10 allows the attribute only in `forward_class`, which ends in an identifier. No test holds the template-id form, and no rule changes.
+
 ## Opinions
 
-<!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+### Read of the RV8 repair diff, 2026-11-11
+
+The source-reader read of the RV8 repair diff (`reports/review/2026-11-11-read-of-rv8-repair-diff.md`) gives the first reading of the question: supports with a doubt (option 1). An attribute after the class key is allowed only in a declaration that holds the elaborated type and nothing else, so a variable, a function, or a friend declaration cannot carry one. The doubt is RV9-R-4. The reference allows the attribute in one more such declaration: a class key with a template-id, inside an explicit specialization or a partial specialization. The reference's own grammar for an elaborated type with a template-id gives no place for the attribute, so the reference is not consistent on that form. The read calls the doubt small. It finds that the `elaborated_type` hunk and the TYN-10 hunk agree with this doubt, and that the TYN-6 hunk and the Q-0445 line agree.

@@ -66,3 +66,7 @@ The source-reader gap review of the text phase 14 wrote on expressions, overload
 ### Read of the RV7 repair diff, 2026-11-11
 
 The source-reader read of the RV7 repair diff (`reports/review/2026-11-11-read-of-rv7-repair-diff.md`) reads the RV7 repair of the additive page. RV7-B-3's reading is too wide for this question's case: the move one past a base class subobject agrees with the reference, so ADD-14 and this answer agree with it, and the row 4 item "ADD-14, ADD-P6" records no disagreement there (RV8-R-9). The disagreement that remains is in the byte case (Q-0430) and in a signed or unsigned integer of the same width.
+
+### Read of the RV8 repair diff, 2026-11-11
+
+The source-reader read of the RV8 repair diff (`reports/review/2026-11-11-read-of-rv8-repair-diff.md`) reads the Q-0049 line on the additive page: agrees. The line states RV8-R-9 correctly, and the ADD-14 Note and row 4 now hold only the element cases. The read gives no new reading of the question's answer.

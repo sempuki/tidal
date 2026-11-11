@@ -70,3 +70,7 @@ The source-reader gap review of the phase 15 text on classes, declarations, foun
 ### Gap review, 2026-11-11 (phase 15 text, expressions, overloading, and templates)
 
 The source-reader gap review of the phase 15 text on expressions, overloading, and templates (`reports/review/2026-11-11-gap-review-phase-15-expressions-overloading-templates.md`) reads PRIM-2 with the question's case: agrees (RV8-B-10). The raw form and the template receive the characters, and the reference sets no limit on the digits for them.
+
+### Read of the RV8 repair diff, 2026-11-11
+
+The source-reader read of the RV8 repair diff (`reports/review/2026-11-11-read-of-rv8-repair-diff.md`) names the question among the records that state a review's reading correctly. The read gives no new reading of the question's answer.

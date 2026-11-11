@@ -59,3 +59,7 @@ The source-reader read of the RV7 repair diff (`reports/review/2026-11-11-read-o
 ### Gap review, 2026-11-11 (phase 15 text, classes, declarations, foundations, and statements)
 
 The source-reader gap review of the phase 15 text on classes, declarations, foundations, statements, and the glossary (`reports/review/2026-11-11-gap-review-phase-15-classes-declarations-foundations.md`) names the question in RV8-A-1 and takes its answer, ADD-6, as given. A byte pointer can step through the bytes of an object, and the stepped pointer then points to a byte of the storage. For a cast of that pointer to `T*` to reach the element that starts at the byte, STG-16 would need the byte and the element to be pointer-interconvertible, and STG-16 gives no such case. So the review reads ADD-6 as not enough to make part B of the RV7 reading consistent, and differs there from RV8-R-10. The review gives no new reading of this question's answer.
+
+### Read of the RV8 repair diff, 2026-11-11
+
+The source-reader read of the RV8 repair diff (`reports/review/2026-11-11-read-of-rv8-repair-diff.md`) names the question among the records that state a review's reading correctly. The note of 2026-11-11 states correctly where RV8-A-1 differs from RV8-R-10. The read gives no new reading of the question's answer.

@@ -81,3 +81,7 @@ The source-reader read of the RV7 repair diff (`reports/review/2026-11-11-read-o
 ### Gap review, 2026-11-11 (phase 15 text, expressions, overloading, and templates)
 
 The source-reader gap review of the phase 15 text on expressions, overloading, and templates (`reports/review/2026-11-11-gap-review-phase-15-expressions-overloading-templates.md`) reads the question: reads against the answer (RV8-B-2). In a position that allows only a type, the reference takes the last name as a template name, so the `<` after it opens an argument list with no keyword. The three tests of the DEP-P5 row for this question expect rejection, and the review reads all three forms as valid. The other rows of DEP-P5 agree.
+
+### Read of the RV8 repair diff, 2026-11-11
+
+The source-reader read of the RV8 repair diff (`reports/review/2026-11-11-read-of-rv8-repair-diff.md`) names the question with RV8-B-2, which the repair left as it was. The record states the review's reading correctly, and the question still holds its row. The read gives no new reading of the question's answer.

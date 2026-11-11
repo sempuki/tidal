@@ -44,3 +44,7 @@ The source-reader gap review of the text phase 14 wrote on classes, declarations
 ### Read of the RV7 repair diff, 2026-11-11
 
 The source-reader read of the RV7 repair diff (`reports/review/2026-11-11-read-of-rv7-repair-diff.md`) reads the RV7 repair: the question's line now says the reference is silent on the shape, which the read finds correct.
+
+### Read of the RV8 repair diff, 2026-11-11
+
+The source-reader read of the RV8 repair diff (`reports/review/2026-11-11-read-of-rv8-repair-diff.md`) names the question among the records that state a review's reading correctly. The read gives no new reading of the question's answer.

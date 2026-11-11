@@ -65,3 +65,7 @@ The source-reader gap review of question cluster 5 (`reports/review/2026-11-03-g
 ### Gap review, 2026-11-11 (phase 15 text, expressions, overloading, and templates)
 
 The source-reader gap review of the phase 15 text on expressions, overloading, and templates (`reports/review/2026-11-11-gap-review-phase-15-expressions-overloading-templates.md`) names the question in its reading of CTAD-10. The new sentence on a member or base whose type is not dependent agrees: braces are elided as usual, because the reference turns elision off only for the dependent cases. The older sentence on a string literal for an array member of dependent element type stays with this question, whose cluster 5 review reads against it. The review gives no new reading of that case.
+
+### Read of the RV8 repair diff, 2026-11-11
+
+The source-reader read of the RV8 repair diff (`reports/review/2026-11-11-read-of-rv8-repair-diff.md`) names the question among the records that state a review's reading correctly. The read gives no new reading of the question's answer.

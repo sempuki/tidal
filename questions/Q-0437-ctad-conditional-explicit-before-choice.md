@@ -46,3 +46,7 @@ Kept open on 2026-11-11 under decision 0054 (decision 0063, item RV8). The revie
 ### Gap review, 2026-11-11 (phase 15 text, expressions, overloading, and templates)
 
 The source-reader gap review of the phase 15 text on expressions, overloading, and templates (`reports/review/2026-11-11-gap-review-phase-15-expressions-overloading-templates.md`) reads the question: supports with no doubt. For a candidate whose explicit condition depends on template parameters, the reference deduces first. A context that takes only candidates that are not explicit then drops the specialization when the condition is true. A guide keeps the explicit condition of its constructor. So copy initialization drops the guide that is explicit for its own deduced arguments before the choice, as Clang and EDG do (option 1).
+
+### Read of the RV8 repair diff, 2026-11-11
+
+The source-reader read of the RV8 repair diff (`reports/review/2026-11-11-read-of-rv8-repair-diff.md`) names the question among the records that state a review's reading correctly. The read gives no new reading of the question's answer.

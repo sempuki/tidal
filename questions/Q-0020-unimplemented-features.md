@@ -56,3 +56,7 @@ The source-reader gap review of the open questions on expressions, declarations,
 ### Gap review, 2026-11-11 (phase 15 text, expressions, overloading, and templates)
 
 The source-reader gap review of the phase 15 text on expressions, overloading, and templates (`reports/review/2026-11-11-gap-review-phase-15-expressions-overloading-templates.md`) names the question in its reading of CTAD-17 (RV8-B-5) and does not read the question of the test format. The review reads the second bullet of CTAD-17 against the reference. The guides act as the constructors of a class, and nothing in the reference exempts them from the limit on a user-defined conversion for the first parameter in copy initialization. Read so, Clang 18, whose override in `copy-init-guide-user-conversion.cpp` names this question, follows the text, and Clang 22, GCC, and EDG do not. The review adds that the choice of a guide runs no conversion, which may explain the newer compilers, and that the text does not make that distinction.
+
+### Read of the RV8 repair diff, 2026-11-11
+
+The source-reader read of the RV8 repair diff (`reports/review/2026-11-11-read-of-rv8-repair-diff.md`) reads the Q-0020 line on the class template deduction page: agrees as a record. The line states RV8-B-5 correctly. The text keeps the compilers' answer for CTAD-17, and the CTAD-17 Note and `pending.md` row 4 record the review. The read gives no new reading of the question's answer.

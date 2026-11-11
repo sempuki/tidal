@@ -46,3 +46,7 @@ Evidence on 2026-11-11 (decision 0063, item RV8): the test `site-static-inline-m
 ### Gap review, 2026-11-11 (phase 15 text, expressions, overloading, and templates)
 
 The source-reader gap review of the phase 15 text on expressions, overloading, and templates (`reports/review/2026-11-11-gap-review-phase-15-expressions-overloading-templates.md`) reads the question: supports for a static member that is not inline, and reads against for an inline member (RV8-B-4). A deduced class type is allowed in the declaration that sets up a variable's initialization, and default initialization counts. The in-class declaration of a member that is not inline is no definition, so with no initializer it sets up no initialization, and CTAD-2 agrees for that form. An inline member is defined in its class, and that definition default-initializes it. So deduction runs with no arguments, as for a variable with no initializer, which is GCC's answer. The test declares both members in one class, so its rejection holds through the member that is not inline alone, and no test checks the inline form.
+
+### Read of the RV8 repair diff, 2026-11-11
+
+The source-reader read of the RV8 repair diff (`reports/review/2026-11-11-read-of-rv8-repair-diff.md`) reads the Q-0439 line and the Note on CTAD-1 and CTAD-2: agrees as a record. The lines state RV8-B-4 correctly. The new test holds the inline form apart, and the reference allows that form, so its row reads against, as recorded. The read gives no new reading of the question's answer.

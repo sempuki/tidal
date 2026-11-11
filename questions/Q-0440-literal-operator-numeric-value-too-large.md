@@ -45,3 +45,7 @@ The source-reader gap review of the phase 15 text on expressions, overloading, a
 ### Gap review, 2026-11-11 (phase 15 text, classes, declarations, foundations, and statements)
 
 The source-reader gap review of the phase 15 text on classes, declarations, foundations, statements, and the glossary (`reports/review/2026-11-11-gap-review-phase-15-classes-declarations-foundations.md`) names the question in RV8-A-5 and agrees that the plain literal of the call must fit its type. The review adds a small doubt for an implementation whose extended integer types hold the value. There the argument has that type and converts to `unsigned long long` in the call.
+
+### Read of the RV8 repair diff, 2026-11-11
+
+The source-reader read of the RV8 repair diff (`reports/review/2026-11-11-read-of-rv8-repair-diff.md`) names the question among the records that state a review's reading correctly. The read gives no new reading of the question's answer.

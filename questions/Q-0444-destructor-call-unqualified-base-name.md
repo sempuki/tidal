@@ -3,7 +3,7 @@
 **Status:** provisional
 **Affects:** DTOR-8, `tests/classes/constructors/dtor-call-unqualified-base.cpp`
 **Source:** the writer probe of RV7 (`reports/clean-room/roadmap-11/writer-probes/README.md`), point RV8-R-1 of the read of the RV7 repair diff (`reports/review/2026-11-11-read-of-rv7-repair-diff.md`), and ledger row RM12-3 (`reports/clean-room/roadmap-12/editor.md`). The writer probe `reports/clean-room/roadmap-12/writer-probes/rv8-points.json` reran the forms on the matrix.
-**Waits for:** the maintainer (pending.md row 4)
+**Waits for:** a principle (CTOR-P1)
 
 ## Context
 
@@ -40,12 +40,10 @@ in **Source**.
 ## Provisional answer
 
 The unqualified name must denote the class of the object (option 1).
-DTOR-8 states the rule, and Clang and EDG agree. The read of the RV7
-repair diff leans toward option 2: the base's name is found in the
-derived class, a member access can name a member of a base, and a call
-on an object of a derived class is assumed elsewhere. GCC alone follows
-that reading, so the answer stays and the question waits with
-`pending.md` row 4.
+DTOR-8 states the rule, and Clang and EDG agree. GCC alone differs. The
+read of the RV8 repair diff supports the answer.
+
+Kept open on 2026-11-11 under decision 0054 (decision 0063, item RV8). The read of the RV8 repair diff supports the answer with no doubt (RV9-R-1), and GCC 16 alone differs. The read withdraws RV8-R-1 and RV8-A-6, so no review reads against the answer, and `pending.md` row 4 no longer holds the item "DTOR-8, Q-0444". No principle gives the answer. CTOR-P1 says that a program can end an object by calling its destructor by name, and it does not say which names denote the object's type. A reader of CTOR-P1 alone can reach option 2, so CTOR-P1 fails step 3 of the principle test.
 
 ## Opinions
 
@@ -56,3 +54,7 @@ The source-reader read of the RV7 repair diff (`reports/review/2026-11-11-read-o
 ### Gap review, 2026-11-11 (phase 15 text, classes, declarations, foundations, and statements)
 
 The source-reader gap review of the phase 15 text on classes, declarations, foundations, statements, and the glossary (`reports/review/2026-11-11-gap-review-phase-15-classes-declarations-foundations.md`) reads DTOR-8 as a whole block and keeps the same doubt (RV8-A-6): the unqualified base name on a derived object reads as allowed.
+
+### Read of the RV8 repair diff, 2026-11-11
+
+The source-reader read of the RV8 repair diff (`reports/review/2026-11-11-read-of-rv8-repair-diff.md`) reads the question: supports (option 1, RV9-R-1). The read withdraws the two readings above (RV8-R-1 and RV8-A-6), because they missed a lookup rule. In a member access, the name after `~` has the object's type as its context, and the type that the name finds must be that type, cv-qualifiers aside. For `d.~Base()` on a `Derived`, the context is `Derived` and the name finds `Base`, so the call is not valid. In `d.Base::~Base()`, the context is the base that the qualifier names, so the base's destructor runs, as DTOR-8 says. The points that RV8-R-1 listed do not override that rule. DTOR-8, Clang, and EDG agree with the reference, and GCC reads against it.

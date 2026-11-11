@@ -6,7 +6,7 @@ last column lists the questions that the decision closes or changes.
 
 Rows 1, 4a, and 10 come first (decision 0059, item PK3). Each has an
 option under which no test's expectation changes, and together they
-hold 92 open questions and the 18 rule items of row 4a. The
+hold 92 open questions and the 17 rule items of row 4a. The
 [decision packet](#decision-packet) gives the questions and tests of
 each option.
 
@@ -73,10 +73,10 @@ whose last review finds the reference silent.
 | 3 | Decide the row; answers may change | 12: Q-0195, Q-0197, Q-0198, Q-0201, Q-0203, Q-0235, Q-0266, Q-0272, Q-0277, Q-0278, Q-0280, Q-0282 | 23 | at most 23 |
 | 4a | Follow the compilers; answers stay | 20: Q-0140, Q-0142, Q-0181, Q-0225, Q-0243, Q-0246, Q-0275, Q-0277, Q-0280, Q-0300, Q-0336, Q-0394, Q-0405, Q-0406, Q-0407, Q-0409, Q-0410, Q-0416, Q-0430, Q-0442 | 36 | 0 |
 | 4a | Follow the review; answers change | 20: Q-0140, Q-0142, Q-0181, Q-0225, Q-0243, Q-0246, Q-0275, Q-0277, Q-0280, Q-0300, Q-0336, Q-0394, Q-0405, Q-0406, Q-0407, Q-0409, Q-0410, Q-0416, Q-0430, Q-0442 | 36 | at most 36 |
-| 4b | Follow the compilers; answers stay | 24: Q-0074, Q-0077, Q-0087, Q-0123, Q-0131, Q-0190, Q-0191, Q-0205, Q-0226, Q-0307, Q-0330, Q-0362, Q-0366, Q-0369, Q-0371, Q-0389, Q-0393, Q-0401, Q-0404, Q-0408, Q-0418, Q-0426, Q-0439, Q-0444 | 51 | 0 |
-| 4b | Follow the review; answers change | 24: Q-0074, Q-0077, Q-0087, Q-0123, Q-0131, Q-0190, Q-0191, Q-0205, Q-0226, Q-0307, Q-0330, Q-0362, Q-0366, Q-0369, Q-0371, Q-0389, Q-0393, Q-0401, Q-0404, Q-0408, Q-0418, Q-0426, Q-0439, Q-0444 | 51 | at most 51 |
-| 4a | Follow the compilers, rule items; answers stay | 18: THR-3; TRY-2; UNW-3; NAM-40, NAM-41; STG-9; LSUP-11; TR-P6, TR-13, TR-14, TR-15; UNW-1; OBJ-11; ENUM-10, ENUM-P1; NS-12; NEW-P5; ICS-45; DEP-15, DEP-P4; CTAD-17; INST-1, INST-2; CTAD-16; CMP-8 | 228 | 0 |
-| 4a | Follow the review, rule items; answers change | 18: THR-3; TRY-2; UNW-3; NAM-40, NAM-41; STG-9; LSUP-11; TR-P6, TR-13, TR-14, TR-15; UNW-1; OBJ-11; ENUM-10, ENUM-P1; NS-12; NEW-P5; ICS-45; DEP-15, DEP-P4; CTAD-17; INST-1, INST-2; CTAD-16; CMP-8 | 228 | at most 228 |
+| 4b | Follow the compilers; answers stay | 23: Q-0074, Q-0077, Q-0087, Q-0123, Q-0131, Q-0190, Q-0191, Q-0205, Q-0226, Q-0307, Q-0330, Q-0362, Q-0366, Q-0369, Q-0371, Q-0389, Q-0393, Q-0401, Q-0404, Q-0408, Q-0418, Q-0426, Q-0439 | 50 | 0 |
+| 4b | Follow the review; answers change | 23: Q-0074, Q-0077, Q-0087, Q-0123, Q-0131, Q-0190, Q-0191, Q-0205, Q-0226, Q-0307, Q-0330, Q-0362, Q-0366, Q-0369, Q-0371, Q-0389, Q-0393, Q-0401, Q-0404, Q-0408, Q-0418, Q-0426, Q-0439 | 50 | at most 50 |
+| 4a | Follow the compilers, rule items; answers stay | 17: THR-3; TRY-2; UNW-3; NAM-40, NAM-41; STG-9; LSUP-11; TR-P6, TR-13, TR-14, TR-15; UNW-1; OBJ-11; ENUM-10, ENUM-P1; NS-12; NEW-P5; ICS-45; DEP-15, DEP-P4; CTAD-17; CTAD-16; CMP-8 | 204 | 0 |
+| 4a | Follow the review, rule items; answers change | 17: THR-3; TRY-2; UNW-3; NAM-40, NAM-41; STG-9; LSUP-11; TR-P6, TR-13, TR-14, TR-15; UNW-1; OBJ-11; ENUM-10, ENUM-P1; NS-12; NEW-P5; ICS-45; DEP-15, DEP-P4; CTAD-17; CTAD-16; CMP-8 | 204 | at most 204 |
 | 5 | Decide the row; answers may change | 1: Q-0235 | 3 | at most 3 |
 | 6 | Decide the row; answers may change | 2: Q-0041, Q-0343 | 5 | at most 5 |
 | 7 | Decide the row; answers may change | 5: Q-0007, Q-0087, Q-0116, Q-0181, Q-0188 | 5 | at most 5 |
@@ -84,7 +84,7 @@ whose last review finds the reference silent.
 | 9 | Decide the row; answers may change | 9: Q-0006, Q-0008, Q-0116, Q-0119, Q-0182, Q-0183, Q-0186, Q-0312, Q-0412 | 1 | at most 1 |
 | 10 | Record each answer as Tidal's own choice; answers stay | 17: Q-0020, Q-0079, Q-0165, Q-0176, Q-0179, Q-0180, Q-0184, Q-0185, Q-0321, Q-0325, Q-0349, Q-0361, Q-0372, Q-0381, Q-0384, Q-0423, Q-0431 | 32 | 0 |
 
-Rows 1 to 9 hold 120 of the 197 open questions (61%). With row 10, the rows hold 135 (69%).
+Rows 1 to 9 hold 119 of the 197 open questions (60%). With row 10, the rows hold 134 (68%).
 
 83 open questions wait for a review that supports the answer with no doubt. By what the last review found: 56 doubt, 17 silent, 9 against, 1 part.
 
@@ -163,8 +163,6 @@ each item, except Q-0307, where Tidal follows the review.
 | ADD-14, Q-0442 | `p + 1` with no read, for a pointer to the signed or unsigned integer type that matches the element type of an array, such as an `unsigned*` to an element of an `int` array; ADD-14 gives the position one past, the reviews make any move undefined. For a `B*` to a base class subobject (Q-0049, settled), the read of the RV7 repair agrees with ADD-14 | matrix | matrix | runs no program | `2026-11-11-gap-review-phase-14-expressions-overloading-templates`, `2026-11-11-read-of-rv7-repair-diff` |
 | CTAD-2, Q-0439 | `static inline Box b;` in a class, with no initializer, for a class template `Box` whose parameter has a default; CTAD-2 rejects, the review deduces with no arguments, as for a variable | matrix | review | matrix | `2026-11-11-gap-review-phase-15-expressions-overloading-templates` |
 | CTAD-17 | copy initialization from a class whose conversion function gives the parameter type of a user guide; CTAD-17 keeps the guide viable, the review applies the limit on a user-defined conversion for the first parameter, which is Clang 18's answer | matrix | matrix | matrix | `2026-11-11-gap-review-phase-15-expressions-overloading-templates` |
-| DTOR-8, Q-0444 | `d.~Base()` with no qualifier on a `Derived` object; DTOR-8 rejects the call, the review leans toward a call of the base destructor | matrix | review | matrix | `2026-11-11-read-of-rv7-repair-diff`, `2026-11-11-gap-review-phase-15-classes-declarations-foundations` |
-| INST-1, INST-2 | a call to a `consteval` function that returns a class template specialization, as the whole operand of `decltype`; INST-2 leaves the class not instantiated, the review instantiates it because the call is an immediate invocation | matrix | matrix | matrix | `2026-11-11-read-of-rv7-repair-diff`, `2026-11-11-gap-review-phase-15-expressions-overloading-templates` |
 | CTAD-16 | the guide with no parameters and the aggregate candidate of a base, for a class template that inherits its constructors; CTAD-16 keeps them with the base, the review gives the derived class the base's whole guide set | matrix (Clang makes no inherited guides) | matrix | matrix | `2026-11-11-gap-review-phase-15-expressions-overloading-templates` |
 | CMP-8 | a relational comparison of pointers to two members of a union, or to a member that occupies no storage, during constant evaluation; Tidal keeps a result | matrix | matrix | matrix | `2026-11-04-gap-review-phase-8-expressions-foundations-templates` |
 

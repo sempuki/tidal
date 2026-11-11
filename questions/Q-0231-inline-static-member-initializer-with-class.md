@@ -46,3 +46,7 @@ The source-reader gap review of question cluster 5 (`reports/review/2026-11-03-g
 ### Gap review, 2026-11-11 (phase 15 text, expressions, overloading, and templates)
 
 The source-reader gap review of the phase 15 text on expressions, overloading, and templates (`reports/review/2026-11-11-gap-review-phase-15-expressions-overloading-templates.md`) names the question in its reading of INST-5 and Q-0441 (RV8-B-9). Making a class makes the declaration of a static data member and not its definition. The reference treats an instantiated declaration that comes from a definition as a definition only for the checks of a redeclaration. So the review leans toward this answer also for an inline member. The doubt that the review records belongs to Q-0441: whether making the declaration of an inline member also checks that its type is complete.
+
+### Read of the RV8 repair diff, 2026-11-11
+
+The source-reader read of the RV8 repair diff (`reports/review/2026-11-11-read-of-rv8-repair-diff.md`) names the question among the records that state a review's reading correctly. The read gives no new reading of the question's answer.

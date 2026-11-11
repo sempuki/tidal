@@ -51,3 +51,7 @@ Rule text on 2026-11-11 (decision 0063, item RV8): CTAD-18 says that an empty li
 ### Gap review, 2026-11-11 (phase 15 text, expressions, overloading, and templates)
 
 The source-reader gap review of the phase 15 text on expressions, overloading, and templates (`reports/review/2026-11-11-gap-review-phase-15-expressions-overloading-templates.md`) reads the question: supports with a doubt (RV8-B-8). For an empty list and a class with a default constructor, the reference skips the phase of initializer-list constructors and value-initializes. The guides act as the constructors of a notional class, and a guide that takes no arguments is the natural default constructor of that class. That is Clang's reading and option 1. The reference does not say what a default constructor of the notional class is. The review adds two doubts on CTAD-18. A guide whose parameters all have defaults also takes no arguments, and CTAD-18 speaks only of a guide with no parameters. CTAD-18's definition of an initializer-list guide leaves out a first parameter that is a reference to an initializer list type.
+
+### Read of the RV8 repair diff, 2026-11-11
+
+The source-reader read of the RV8 repair diff (`reports/review/2026-11-11-read-of-rv8-repair-diff.md`) reads the Q-0438 line on a guide whose parameters all have defaults: agrees, with the doubt that RV8-B-8 gave the question. The CTAD-18 repairs close both doubts of RV8-B-8 on CTAD-18. The doubt on what a default constructor of the notional class is stays with this question. The read gives no new reading of the question's answer.

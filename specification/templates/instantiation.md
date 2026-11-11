@@ -961,18 +961,18 @@ the compile.
 - INST-1, INST-2: every compiler instantiates a class that a call
   passes by value, and none instantiates the result class of a call
   inside `decltype` (I6-13).
-- INST-1, INST-2, INST-P1: the read of the RV7 repair diff
-  (`reports/review/2026-11-11-read-of-rv7-repair-diff.md`, RV8-R-4)
-  reads a call that is an immediate invocation as an exception to the
-  `decltype` rule, because the call is evaluated as a constant and
-  needs its class result complete. Every compiler leaves the class not
+- INST-1, INST-2, INST-P1: every compiler leaves the class not
   instantiated for a call to a `consteval` function as the whole
   operand of `decltype`, with and without parentheses, and for a
   `consteval` function template
-  (`class-decltype-consteval-call-not-instantiated.cpp`). In the
-  writer's probe, `sizeof` of the same call instantiates the class on
-  every compiler. INST-2 keeps
-  the compilers' answer, and `pending.md` row 4 holds the case.
+  (`class-decltype-consteval-call-not-instantiated.cpp`). The read of
+  the RV8 repair diff
+  (`reports/review/2026-11-11-read-of-rv8-repair-diff.md`, RV9-R-2)
+  agrees. The operand of `decltype` is not evaluated, so such a call is
+  no immediate invocation and needs no complete class. The read
+  withdraws RV8-R-4 of the read of the RV7 repair diff. In the writer's
+  probe, `sizeof` of the same call instantiates the class on every
+  compiler, because `sizeof` needs a complete type.
 - INST-5, INST-7: every compiler accepts an object of a class whose
   friend function has a body that is not valid, and rejects a call of
   the friend (I6-16).

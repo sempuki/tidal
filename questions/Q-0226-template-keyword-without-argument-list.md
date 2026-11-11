@@ -79,3 +79,7 @@ The source-reader read of the RV7 repair diff (`reports/review/2026-11-11-read-o
 ### Gap review, 2026-11-11 (phase 15 text, expressions, overloading, and templates)
 
 The source-reader gap review of the phase 15 text on expressions, overloading, and templates (`reports/review/2026-11-11-gap-review-phase-15-expressions-overloading-templates.md`) reads the question: reads against the deduced form (RV8-B-2). The reference's form for a deduced class type has no place for the keyword `template`, and its qualifier must not be dependent, so the test that accepts the form reads against the reference. The review adds a small doubt on DEP-25: the keyword with no list before a template template argument is allowed and deprecated, and Tidal states it with no mark.
+
+### Read of the RV8 repair diff, 2026-11-11
+
+The source-reader read of the RV8 repair diff (`reports/review/2026-11-11-read-of-rv8-repair-diff.md`) names the question with RV8-B-2, which the repair left as it was. The record states the review's reading correctly, and the doubt on DEP-25 stays. The read gives no new reading of the question's answer.

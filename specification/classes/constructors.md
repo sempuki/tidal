@@ -707,8 +707,8 @@ of 207 tests.
 - {question}`Q-0444` (DTOR-8;
   open): whether `d.~Base()` on a `Derived` object names the base
   destructor. It does not, and the call is rejected, as Clang and EDG
-  say. GCC accepts the call. The read of the RV7 repair diff leans
-  toward GCC, and the question waits on `pending.md` row 4.
+  say. GCC accepts the call. The read of the RV8 repair diff reads the
+  reference as Clang and EDG do.
 - {question}`Q-0082` (DTOR-3; open): whether `new` can create an array
   of a class whose destructor is deleted. It cannot, as Clang says. GCC
   and EDG accept the array `new`.
