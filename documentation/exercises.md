@@ -163,6 +163,7 @@ programs, the programs with more than one unit, and the lines.
 | X23 | P25, `new` and `delete` that honor every alignment | yes |
 | X24 | P22, labeled `break` and `continue` | no |
 | X25 | P27, an in-object array whose elements start their lives one at a time | yes |
+| X26 | P26, no overloaded comma and a checked left operand | yes |
 
 ## 5. Predict and Diagnose batches
 
@@ -267,6 +268,7 @@ No page has only a Predict batch that showed test names.
 | X18 | done: 21 rule changes, no test changes outcome; findings X18-1 to X18-11 | `reports/clean-room/X18/` |
 | X19 | done: 34 rule changes, 1 test changes outcome; findings X19-1 to X19-11 | `reports/clean-room/X19/` |
 | X20 | done: 58 rule changes, no test changes outcome; findings X20-1 to X20-11 | `reports/clean-room/X20/` |
+| X26 | done: 39 rule changes, 20 tests change outcome; findings X26-1 to X26-6 | `reports/clean-room/X26/` |
 | X24 | done: 33 rule changes, 2 tests change outcome; findings X24-1 to X24-8 | `reports/clean-room/X24/` |
 | X25 | done: 31 rule changes, 1 test changes outcome; findings X25-1 to X25-9 | `reports/clean-room/X25/` |
 | X23 | done: 33 rule changes, 2 tests change outcome; findings X23-1 to X23-7 | `reports/clean-room/X23/` |

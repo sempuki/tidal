@@ -948,6 +948,12 @@ drift").
 | X25-7 | `X25/report.md` | commit | aa8c8e60 (front-end round 27, decision 0064, item FE): the tests pass; text in b3f17197 (item F6); CE-21 says that a part whose lifetime ended, as by an explicit destructor call, has no value; an example; tests foundations/constant-evaluation/result-ended-element.cpp and result-union-ended-element.cpp, with a GCC 14 override (Q-0447); front end: accepts both constants (missed rejects) |
 | X25-8 | `X25/report.md` | commit | bcf30b72, decision 0063, item E: the portfolio entry of P27 says no only for a new declaration form, and the table of exercises.md section 4 gains X25 |
 | X25-9 | `X25/report.md` | text | outside knowledge: no rule rests on it, and the specification needs no change (decision 0064, item F6) |
+| X26-1 | `X26/report.md` | open | UNEV-P2, UNEV-2, COMMA-1: a discarded class temporary is said to be destroyed at once, and COMMA-1 and its test show that it lives to the end of the full expression |
+| X26-2 | `X26/report.md` | open | LOOP-3: the iteration expression of a for is not listed as a discarded-value expression, and nothing says what happens to its value |
+| X26-3 | `X26/report.md` | open | COMMA-5, UNEV-3, STMT-4: each asks for a warning about no effect, and no page defines an effect; the host compilers disagree on which operands get it |
+| X26-4 | `X26/report.md` | open | discarded-value expression is defined only on the decltype page, with no glossary entry and no link from comma.md |
+| X26-5 | `X26/report.md` | open | PRIM-28: no example that a fold over class elements can call an overloaded comma |
+| X26-6 | `X26/report.md` | open | outside knowledge: libraries that overload the comma; Tidal does not say whether a library type in its scope declares operator, |
 | RV4-1 | `../review/2026-11-05-gap-review-phase-10-expressions-templates.md` | commit | 3bed9cb5: LAM-6 says simple capture (RV5-B-14) |
 | RV4-2 | `../review/2026-11-05-gap-review-phase-10-expressions-templates.md` | text | LAM-29 states the right result (RV5-B-15) |
 | RV4-3 | `../review/2026-11-05-gap-review-phase-10-classes-declarations-foundations.md` | commit | 3bed9cb5: SW-P1 (RV5-A-18) |

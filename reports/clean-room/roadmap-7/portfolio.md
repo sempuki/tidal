@@ -20,12 +20,13 @@ P17 was "opaque type aliases". Tidal uses "opaque" for an enumeration declared w
 | P23b | Template bodies checked against their constraints, form 2: expressions against requirements | concepts, constraints, dependent-names, overload-resolution | no if opt-in. Yes if it becomes the default | new | partial | No rule matches an expression in a body to a requirement (X22-8) |
 | P24 | Flag enumerations: a marked scoped enumeration gets `\|`, `&`, `^` and `~` in its own type | bitwise, enumerations, overload-resolution | no | new | ready | The marker, which must not clash with X12's `final` |
 | P25 | `new` and `delete` that honor every alignment, or reject at compile time | new-delete, alignment, storage | yes | new | done (X23) | Q-0300 is open. P25 uses the answer that `pending.md` row 4 keeps |
-| P26 | No overloaded comma, and a discarded left operand of `,` must have no value or be a call | comma, operators, evaluation-order | yes | new | ready | The meaning of "has no value" for a class result |
+| P26 | No overloaded comma, and a discarded left operand of `,` must have no value or be a call | comma, operators, evaluation-order | yes | new | done (X26) | The meaning of "has no value" for a class result |
 | P27 | An in-object array whose elements start their lives one at a time | storage, unions, language-support | yes, narrowly (X25 section 4) | new | done (X25) | How an element's lifetime starts and ends, and what constant evaluation allows (Q-0425) |
 | P28 | Arithmetic that wraps on request | additive, multiplicative, conversions | no | new | partial | The marker, and whether it applies to a type or an operator |
 | P29 | A pointer comparison with a string literal operand is not valid | comparison, primary | yes | new | partial | Whether the rule covers a pointer that a literal initialized; the count of programs it makes invalid |
+| P30 | A label on a block that `break` can leave | jumps, blocks, functions | no | new | ready | Which statement a label names; the warning of FN-7 |
 
-Totals for P22 onward: 2 ready (P24, P26), 3 partial (P23b, P28, P29), 4 done (P22 by X24, P23a by X22, P25 by X23, P27 by X25), 0 blocked. P26 is the one ready proposal that changes existing behavior. The rewrite's first prototype follows X24 (decision 0064).
+Totals for P22 onward: 2 ready (P24, P30), 3 partial (P23b, P28, P29), 5 done (P22 by X24, P23a by X22, P25 by X23, P26 by X26, P27 by X25), 0 blocked. P30 is the one ready proposal from phase 17.
 
 ## 3. The proposals
 
@@ -90,7 +91,7 @@ A class cannot overload `operator,`. The left operand of a built-in comma must h
 - **Cites:** COMMA-P1, COMMA-P3, COMMA-1, COMMA-4, COMMA-5, COMMA-7, OPR-P2, OPR-7, PRIM-27, STMT-1, STMT-4.
 - **Settled from Tidal:** the comma's order, its result, and the lists where a comma is a separator (COMMA-4) are stated.
 - **Not settled:** whether "a call" includes a call of an operator function and a call through a pointer. Whether a cast to `void` stays the way to keep a value (COMMA-5 says so for the warning). Whether an assignment or an increment counts as a left operand with no value. Whether a fold over the comma (PRIM-27) is checked for each element or once. When a left operand of class type has a value.
-- **Rating:** ready.
+- **Rating:** done (X26). The design takes `,` out of the overloadable operators and checks the left operand of an evaluated built-in comma by its form. 20 tests go from accept or run to reject, and no program changes. Six findings (X26-1 to X26-6).
 
 ### P27. An in-object array whose elements start their lives one at a time
 
@@ -124,3 +125,14 @@ A comparison by `==` or `!=` with a string literal operand compares addresses (C
 - **Settled from Tidal:** what the comparison does today and why its result is unspecified for two literals.
 - **Not settled:** whether the rule covers only a literal operand or also a pointer that a literal initialized, and whether a comparison with a null pointer stays valid.
 - **Rating:** partial.
+
+### P30. A label on a block that `break` can leave
+
+A label on a block lets `break name;` leave the block, as a labeled `break` leaves a loop under P22 (X24). Today a forward exit from a block is a `goto`, which constant evaluation does not run (CE-17).
+
+- **Pages:** `statements/jumps.md`, `statements/blocks.md`, `declarations/functions/definitions.md`.
+- **Changes existing behavior:** no. X24 section 1.8 defers the form and states that it changes no program valid under P22.
+- **Cites:** JMP-P1, JMP-1, JMP-9, STMT-5, FN-7, ATTR-7, CE-17; X24:new-1 to X24:new-3.
+- **Settled from Tidal:** labels, their scope and name space, and the destruction order on a jump out of a block (JMP-9).
+- **Not settled:** which of nested loops inside a labeled block a `break` with that label leaves; how FN-7 and ATTR-7 count a `break` that ends a block; whether a labeled `continue` may name a block. It needs X24-1 answered first.
+- **Rating:** ready.
