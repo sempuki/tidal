@@ -875,6 +875,15 @@ own IDs (RV5-A-n and RV5-B-n).
 | P1-7 | `P1/report.md` | commit | 0f3f522f |
 | P1-8 | `P1/report.md` | commit | 0f3f522f |
 | P1-9 | `P1/report.md` | commit | 0f3f522f |
+| P2-1 | `P2/report.md` | open | needs example: no guidance for a program that has no library (LSUP-P1, LAM-P4, NEW-P2, CPY-P2) |
+| P2-2 | `P2/report.md` | open | outside knowledge: the reference-counted shared handle (CPY-P2, CPY-P4, NEW-P2, OPR-5) |
+| P2-3 | `P2/report.md` | open | needs example: == on two const char* holding equal text compares addresses (CMP-15, PRIM-9) |
+| P2-4 | `P2/report.md` | open | hard to find: wrapping arithmetic spread over ADD-9, MUL-10, MUL-8, and CONV-2 |
+| P2-5 | `P2/report.md` | text | NEW-5 points to OBJ-2, and the front end stops the literal port with OBJ-2 as the text says; probe reductions/removeif-literal-port.cpp |
+| P2-6 | `P2/report.md` | open | unclear: LSUP-1 on the access of the initializer_list constructor and the spelling of the count type |
+| P2-7 | `P2/report.md` | open | outside knowledge: a pointer or nullptr for a missing value (CMP-6, CMP-15, NEW-4) |
+| P2-8 | `P2/report.md` | open | hard to find: no page on arrays or members links CE-3 |
+| P2-9 | `P2/report.md` | open | front end: "unspecified" is the first word when every explored order gives one result (SEQ-1); test programs/P2/ledger.cpp |
 | I4-1 | `I4/report.md` | commit | ee6085aa: COND-16 base row |
 | I4-2 | `I4/report.md` | commit | ee6085aa: COND-16 step 1, Q-0418 |
 | I4-3 | `I4/report.md` | commit | ee6085aa: COND-P2 and COND-11 |

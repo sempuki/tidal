@@ -278,6 +278,7 @@ No page has only a Predict batch that showed test names.
 | W8 | done: four programs build and run on GCC and Clang; findings W8-1 to W8-9 | `reports/clean-room/W8/` |
 | W1 | done: five programs build and run on GCC and Clang; findings W1-1 to W1-9 | `reports/clean-room/W1/` |
 | P1 | done: three Rust programs ported to C++ (shapes, parse, stats) build and run on GCC and Clang; the final versions run on the front end; findings P1-1 to P1-9 | `reports/clean-room/P1/` |
+| P2 | done: three Java programs ported to C++ (buckets, chain, ledger) build and run on GCC and Clang and on the front end on the first try; findings P2-1 to P2-9 | `reports/clean-room/P2/` |
 | W18 | done: four programs (a container with a deduced object parameter, comparators, a visitor over a tagged union, a callback table in two units) build and run on GCC and Clang; findings W18-1 to W18-15 | `reports/clean-room/W18/` |
 | W20 | done: four programs (a fixed-capacity vector, a result type, a span with a sort, a type-erased box) build and run on GCC and Clang and on the front end; findings W20-1 to W20-7 | `reports/clean-room/W20/` |
 | W19 | done: four programs (a matrix, a type list, a consteval table, an `if consteval` helper) build and run on GCC and Clang; findings W19-1 to W19-6 | `reports/clean-room/W19/` |
