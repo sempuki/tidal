@@ -114,7 +114,7 @@ so the implementation looks them up there:
 | Inside | Names the current instantiation | Names another specialization |
 |---|---|---|
 | `template <class T> struct Box` | `Box`, `Box<T>`, `::Box<T>`, `Box<self>` after `using self = T;` | `Box<T*>`, `Box<const T>` |
-| `template <int N> struct Box` | `Box`, `Box<N>` | `Box<M>` after `static const int M = N;` |
+| `template <int N> struct Box` | `Box`, `Box<N>` | `Box<M>` after `static const int M = N;`, and `Box<0>`, which is not dependent |
 | a nested class `Box<T>::Inner` | `Inner`, `Box<T>::Inner` | `Box<T*>::Inner` |
 | `template <class T> struct Box<T*>` | `Box`, `Box<T*>`, `Box<pointer>` after `using pointer = T*;` | `Box<T>` |
 
@@ -140,6 +140,7 @@ name is a type, a template, or a value. The program states the choice:
 | `T::name` | a value, except in a type-only position (DEP-20) | the name is not a type (DEP-19) |
 | `typename T::name` | a type | the name is a type (DEP-22) |
 | `T::name<...>`, `x.name<...>` | `name`, then the less-than operator | |
+| `x.name<...>`, where `x` has the type of the current instantiation and the class declares the member template `name` | a {term}`template-id` (DEP-24, {question}`Q-0427`) | |
 | `typename T::name<...>`, `T::name<...>` in a base list or an alias | not valid without `template` (DEP-24, {question}`Q-0225`) | |
 | `T::template name<...>` | a {term}`template-id` | the name is a template (DEP-26) |
 | `typename T::template name<...>` | a type | the name is a class template or {term}`alias template` |
@@ -194,7 +195,7 @@ names a member of a base.
 
 :::{rule} DEP-1
 :kind: required
-:tests: templates/dependent-names/checked-at-instantiation.cpp templates/dependent-names/dependent-type-function-pack.cpp templates/dependent-names/dependent-type-noexcept.cpp templates/dependent-names/dependent-type-template-id.cpp templates/dependent-names/member-alias-independent.cpp
+:tests: templates/dependent-names/checked-at-instantiation.cpp templates/dependent-names/dependent-type-function-pack.cpp templates/dependent-names/dependent-type-noexcept.cpp templates/dependent-names/dependent-type-template-id.cpp templates/dependent-names/member-alias-independent.cpp templates/dependent-names/member-of-other-specialization-constant-argument.cpp templates/dependent-names/other-specialization-constant-argument-no-typename.cpp
 
 A type is a {term}`dependent type` if the type is one of these:
 
@@ -219,7 +220,7 @@ its target type is dependent.
 
 :::{rule} DEP-2
 :kind: required
-:tests: templates/dependent-names/dependent-call-late.cpp templates/dependent-names/type-dependent-placeholder-parameter.cpp templates/dependent-names/type-dependent-placeholder-variable.cpp templates/dependent-names/type-dependent-deduced-return.cpp templates/dependent-names/type-dependent-fold.cpp templates/dependent-names/type-dependent-set-and-binding.cpp templates/dependent-names/member-template-through-current-instantiation-object.cpp
+:tests: templates/dependent-names/dependent-call-late.cpp templates/dependent-names/type-dependent-placeholder-parameter.cpp templates/dependent-names/type-dependent-placeholder-variable.cpp templates/dependent-names/type-dependent-deduced-return.cpp templates/dependent-names/type-dependent-fold.cpp templates/dependent-names/type-dependent-set-and-binding.cpp templates/dependent-names/member-template-through-current-instantiation-object.cpp templates/dependent-names/member-template-current-instantiation-pointer.cpp
 
 An expression is {term}`type-dependent` if one of these holds, and
 DEP-3 does not give a fixed type:
@@ -406,7 +407,7 @@ member defined outside the class.
 
 :::{rule} DEP-15
 :kind: required
-:tests: templates/dependent-names/current-instantiation-forms.cpp templates/dependent-names/current-instantiation-nested.cpp templates/dependent-names/current-instantiation-partial.cpp templates/dependent-names/current-instantiation-partial-alias.cpp templates/dependent-names/current-instantiation-alias.cpp templates/dependent-names/other-specialization-needs-typename.cpp templates/dependent-names/partial-primary-form-needs-typename.cpp templates/dependent-names/current-instantiation-parameter-alias.cpp templates/dependent-names/current-instantiation-constant-member.cpp classes/constructors/mem-init-other-specialization-own-template.cpp templates/dependent-names/member-of-other-specialization-constant-argument.cpp
+:tests: templates/dependent-names/current-instantiation-forms.cpp templates/dependent-names/current-instantiation-nested.cpp templates/dependent-names/current-instantiation-partial.cpp templates/dependent-names/current-instantiation-partial-alias.cpp templates/dependent-names/current-instantiation-alias.cpp templates/dependent-names/other-specialization-needs-typename.cpp templates/dependent-names/partial-primary-form-needs-typename.cpp templates/dependent-names/current-instantiation-parameter-alias.cpp templates/dependent-names/current-instantiation-constant-member.cpp classes/constructors/mem-init-other-specialization-own-template.cpp templates/dependent-names/member-of-other-specialization-constant-argument.cpp templates/dependent-names/other-specialization-constant-argument-no-typename.cpp templates/dependent-names/other-specialization-constant-argument-member-missing.cpp
 
 In a class template, its members, and its nested classes, these names
 name the {term}`current instantiation`:
@@ -423,9 +424,13 @@ name the {term}`current instantiation`:
 - an alias template specialization that gives one of the above
   ({question}`Q-0229`).
 
-Any other argument list names another specialization, which is
-dependent. A `static` constant member whose value is a {term}`constant parameter`
-does not count as that parameter.
+Any other argument list names another specialization. That
+specialization is dependent only if {rule}`DEP-1` makes it so, as for
+`Box<T*>`. An argument list with no dependent argument, such as
+`Box<0>` inside `Box<N>`, names a specialization that is not dependent,
+and the definition looks up its members. A `static` constant member
+whose value is a {term}`constant parameter` does not count as that
+parameter.
 :::
 
 :::{rule} DEP-16
@@ -452,7 +457,7 @@ specialization is made ({question}`Q-0228`).
 
 :::{rule} DEP-39
 :kind: required
-:tests: templates/dependent-names/member-access-dependent-object-late.cpp templates/dependent-names/member-access-dependent-object-never-found.cpp templates/dependent-names/member-of-other-specialization-constant-argument.cpp
+:tests: templates/dependent-names/member-access-dependent-object-late.cpp templates/dependent-names/member-access-dependent-object-never-found.cpp
 
 If the object expression of `.` or `->` is type-dependent and is not
 the current instantiation, the member name is looked up at the
@@ -534,14 +539,16 @@ type is not valid.
 
 :::{rule} DEP-24
 :kind: reject
-:tests: templates/dependent-names/template-keyword-needed-qualified.cpp templates/dependent-names/template-keyword-needed-member.cpp templates/dependent-names/template-keyword-needed-template-argument.cpp templates/dependent-names/template-keyword-needed-after-typename.cpp templates/dependent-names/template-keyword-forms.cpp templates/dependent-names/template-keyword-needed-base.cpp templates/dependent-names/template-keyword-needed-alias-target.cpp expressions/lambdas/template-head-dependent-call.cpp templates/dependent-names/member-template-through-current-instantiation-object.cpp
+:tests: templates/dependent-names/template-keyword-needed-qualified.cpp templates/dependent-names/template-keyword-needed-member.cpp templates/dependent-names/template-keyword-needed-template-argument.cpp templates/dependent-names/template-keyword-needed-after-typename.cpp templates/dependent-names/template-keyword-forms.cpp templates/dependent-names/template-keyword-needed-base.cpp templates/dependent-names/template-keyword-needed-alias-target.cpp expressions/lambdas/template-head-dependent-call.cpp templates/dependent-names/member-template-through-current-instantiation-object.cpp templates/dependent-names/member-template-current-instantiation-dependent-base-needs-template.cpp templates/dependent-names/member-template-current-instantiation-pointer.cpp
 
 A {term}`member template` must have the keyword `template` before its name in
 these places:
 
 - after `::` with a dependent qualifier that is not the current
   instantiation,
-- after `.` or `->` with a type-dependent object.
+- after `.` or `->` with a type-dependent object, unless the object's
+  type is the current instantiation and lookup at the definition finds
+  the member template in the class ({question}`Q-0427`).
 
 Without the keyword, a `<` after the name is the less-than operator
 ({rule}`TARG-2`), and the name is not a template template argument.
@@ -622,7 +629,7 @@ also when no specialization is made. DEP-33 gives the general case.
 
 :::{rule} DEP-30
 :kind: no-diagnostic
-:tests: templates/dependent-names/independent-error-unused-name.cpp templates/dependent-names/independent-error-unused-base-member.cpp templates/dependent-names/independent-error-unused-conversion.cpp templates/dependent-names/independent-error-unused-call.cpp templates/dependent-names/current-member-missing.cpp templates/dependent-names/this-member-missing-specialized.cpp templates/dependent-names/this-member-missing.cpp declarations/functions/default-arguments/template-default-independent-unused.cpp classes/virtual/override-independent-base-unused.cpp
+:tests: templates/dependent-names/independent-error-unused-name.cpp templates/dependent-names/independent-error-unused-base-member.cpp templates/dependent-names/independent-error-unused-conversion.cpp templates/dependent-names/independent-error-unused-call.cpp templates/dependent-names/current-member-missing.cpp templates/dependent-names/this-member-missing-specialized.cpp templates/dependent-names/this-member-missing.cpp declarations/functions/default-arguments/template-default-independent-unused.cpp classes/virtual/override-independent-base-unused.cpp templates/dependent-names/other-specialization-constant-argument-member-missing.cpp
 
 A specialization made right after the definition of a template must not
 fail because of a construct in its {term}`templated context` that does
@@ -818,8 +825,8 @@ template <class... T> int count() {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 108
-of 131 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 112
+of 135 tests.
 
 ### Divergences
 
@@ -884,9 +891,9 @@ waits on the maintainer (`documentation/decisions/pending.md`).
   and uses the other member.
 - {question}`Q-0427` (DEP-24,
   DEP-39; open): whether a member template named after `.` needs
-  `template` when the object's type is the current instantiation. The
-  test follows every compiler, which accept the call without the
-  keyword. DEP-24's bullet for `.` and `->` still asks for it.
+  `template` when the object's type is the current instantiation. It
+  does not when lookup at the definition finds the member template in
+  the class. No family differs.
 
 ### Split tests
 
@@ -929,6 +936,13 @@ The clean-room writer probed each item of the gap review
 with the same compilers. Where the compilers differ from the outcome
 that the review predicts, the rules follow the compilers, and the notes
 and the questions say so.
+
+- DEP-15, DEP-1: every compiler treats `Box<0>` inside `Box<N>` as a
+  type that is not dependent. `Box<0>::type` needs no `typename`, and a
+  missing member of `Box<0>` is rejected in a member function that no
+  program calls. An explicit specialization of `Box<0>` after the
+  template is rejected, because the definition already made `Box<0>`
+  (`reports/clean-room/roadmap-10/writer-probes/f3b-dep-15-constant-argument.json`).
 
 - DEP-30: the gap review of the text phase 8 wrote on expressions, foundations,
   and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`) reads the

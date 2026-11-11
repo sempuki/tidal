@@ -362,13 +362,18 @@ resolution needs the check that is in progress.
 
 :::{rule} CNS-11
 :kind: required
-:tests: templates/constraints/before-function-type.cpp templates/constraints/before-parameters.cpp templates/constraints/default-argument-before-constraints.cpp templates/concepts/placeholder-constant-parameter-fallback.cpp
+:tests: templates/constraints/before-function-type.cpp templates/constraints/before-parameters.cpp templates/constraints/default-argument-before-constraints.cpp templates/concepts/placeholder-constant-parameter-fallback.cpp templates/constraints/exact-non-template-skips-constraint-check.cpp templates/constraints/added-const-non-template-checks-constraint.cpp classes/copy-move/copy-constructor-exact-skips-template-constraint.cpp classes/copy-move/by-value-constructor-template-constraint-checked.cpp
 
 For a function template, the constraints are checked when deduction
 and the {term}`default template arguments <default template argument>` have given every template argument
 ({rule}`DED-1`). The check comes before substitution into the function
 type. If the constraints are not satisfied, the result is a
 {term}`deduction failure`, and the function type is not formed ({question}`Q-0261`).
+
+If a candidate that is not a template takes every argument with no
+conversion, the constraints of the function template candidates are
+not checked ({question}`Q-0426`). Such a parameter has the type of its
+argument, or is a reference to that type that adds no cv-qualifier.
 :::
 
 :::{rule} CNS-12
@@ -812,8 +817,8 @@ bool usable = Usable<Item>;        // rejected: the check needs itself
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 110
-of 141 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 111
+of 145 tests.
 
 ### Divergences
 
@@ -895,11 +900,13 @@ waits on the maintainer (`documentation/decisions/pending.md`).
   concept makes on a type parameter pack in two declarations are one
   atom or two. Two atoms, so neither declaration is more constrained,
   as Clang and GCC say. EDG treats them as one atom.
-- {question}`Q-0426` (CNS-35, CPY-15;
+- {question}`Q-0426` (CNS-35, CPY-15, CNS-11;
   open): whether a copy of a class checks the constraint of a constructor
-  template with the class as the template's argument. It does not, so
-  the check never needs its own result, as Clang 22, GCC, and EDG say.
-  Clang 18 rejects the program.
+  template with the class as the template's argument. It does not when
+  a copy or move constructor takes the argument with no conversion, as
+  Clang 22 and GCC say. EDG and Clang 18 check the constraint. For a
+  by-value template and an lvalue that is not `const`, the check runs,
+  and GCC skips it.
 
 ### Split tests
 
@@ -913,11 +920,14 @@ family column gives the outcome that the test expects on that family.
 | `atomic-not-bool-skipped.cpp` | CNS-39 | reject | reject | accept | reject | {question}`Q-0263` |
 | `before-function-type.cpp` | CNS-11 | accept | Clang 22: accept; Clang 18: reject | accept | accept | {question}`Q-0261` |
 | `by-value-constructor-template-constraint-copies-class.cpp` | CNS-35, CPY-15 | run | Clang 22: run; Clang 18: reject | run | accept | {question}`Q-0426` |
+| `classes/copy-move/by-value-constructor-template-constraint-checked.cpp` | CPY-15, CNS-11 | reject | reject | accept | reject | {question}`Q-0426` |
+| `classes/copy-move/copy-constructor-exact-skips-template-constraint.cpp` | CNS-11, CPY-1 | run | Clang 22: run; Clang 18: reject | run | reject | {question}`Q-0426` |
 | `constant-placeholder-more-constrained.cpp` | CNS-1, CNS-23 | accept | Clang 22: accept; Clang 18: reject | GCC 16: accept; GCC 14: reject | reject | {question}`Q-0281` |
 | `eligible-copy.cpp` | CNS-21 | accept | accept | accept | reject | {question}`Q-0266` |
 | `eligible-default.cpp` | CNS-21 | accept | accept | accept | reject | {question}`Q-0266` |
 | `eligible-more-constrained.cpp` | CNS-21 | accept | accept | accept | reject | {question}`Q-0266` |
 | `eligible-unsatisfied-more-constrained.cpp` | CNS-21 | accept | accept | accept | reject | {question}`Q-0266` |
+| `exact-non-template-skips-constraint-check.cpp` | CNS-11 | accept | Clang 22: accept; Clang 18: reject | accept | reject | {question}`Q-0426` |
 | `explicit-instantiation-member-not-satisfied.cpp` | CNS-13 | reject | Clang 22: reject; Clang 18: accept | reject | reject | {question}`Q-0291` |
 | `friend-definition-per-specialization.cpp` | CNS-32 | accept | accept | accept | reject | {question}`Q-0268` |
 | `friend-distinct-from-namespace.cpp` | CNS-32, CNS-24 | reject | reject | reject | accept | {question}`Q-0268` |

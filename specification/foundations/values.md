@@ -105,7 +105,7 @@ rvalue reference must not bind to that name directly.
 
 :::{rule} VC-2
 :kind: required
-:tests: foundations/values/prvalues.cpp foundations/values/cv-prvalue-dropped.cpp foundations/values/assign-to-class-prvalue.cpp
+:tests: foundations/values/prvalues.cpp foundations/values/cv-prvalue-dropped.cpp foundations/values/assign-to-class-prvalue.cpp templates/deduction/forwarding-const-scalar-prvalue.cpp
 
 These expressions are prvalues:
 
@@ -304,7 +304,7 @@ NoCopy a = NoCopy(NoCopy(5));      // fine: no copy occurs
 
 ## Evidence
 
-All eight compilers agree on 63 of 65 tests. The results are in
+All eight compilers agree on 64 of 66 tests. The results are in
 `tests/RESULTS.md`.
 
 ### Divergences

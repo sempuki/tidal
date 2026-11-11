@@ -1,9 +1,9 @@
 # Q-0425: Can a program build an object inside a union member that is not active, as an element of an array member or a member of a member union?
 
 **Status:** provisional
-**Affects:** UNI-14, UNI-6, CE-6, STG-10, `tests/classes/unions/construct-in-member-of-inactive-member-union-constant.cpp`, `tests/classes/unions/array-member-element-address-no-active-member.cpp`
+**Affects:** UNI-14, UNI-6, CE-6, STG-10, `tests/classes/unions/construct-in-member-of-inactive-member-union-constant.cpp`, `tests/classes/unions/construct-in-member-of-inactive-member-union-run.cpp`, `tests/classes/unions/construct-at-array-member-element-constant.cpp`, `tests/classes/unions/array-member-element-address-no-active-member.cpp`, `tests/classes/unions/array-member-element-steps-no-active-member-constant.cpp`
 **Source:** W20-2 (`reports/clean-room/W20/report.md`) with the writer probe `reports/clean-room/roadmap-10/writer-probes/w20-2-union-array-member.json`, and the round 10 programmer report (`reports/clean-room/roadmap-10/programmer.md`, sections 1.4, 1.5, and 6), reduction `construct_in_member_of_inactive_union_member.cpp`.
-**Waits for:** a first review; a rule
+**Waits for:** a first review; newest families that agree
 
 ## Context
 
@@ -36,9 +36,23 @@ in a constant expression.
 
 ## Evidence
 
-The two tests in **Affects**. The constant test expects GCC's and
-Clang's rejection and records EDG as an override. The run test
-expects a run. The writer probe gives the forms of the array member.
+The tests in **Affects**:
+
+- The constant test with a member union expects GCC's and Clang's
+  rejection and records EDG as an override.
+- The run test with a member union expects the matrix compilers to
+  build the program, and the front end's interpreter to stop (UNI-6).
+- The constant test of `std::construct_at` on an element of an array
+  member expects the rejection of Clang and GCC 14, and records GCC 16
+  and EDG as overrides.
+- The run test forms pointers to two elements of an array member that
+  is not active.
+- The constant test steps between such pointers, subtracts them, and
+  compares them. Every compiler accepts it, also with another member
+  active (`reports/clean-room/roadmap-10/writer-probes/f3b-w20-2-step-in-inactive-array.json`).
+
+The writer probe `reports/clean-room/roadmap-10/writer-probes/w20-2-union-array-member.json`
+gives the forms of the array member.
 
 ## Options
 

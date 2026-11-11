@@ -1,7 +1,7 @@
 # Q-0421: In constant evaluation, can a program assign to an element of storage from `std::allocator` before `std::construct_at` builds it?
 
 **Status:** provisional
-**Affects:** LSUP-11, CE-9, `tests/foundations/storage/allocation-assign-before-construction-int-element.cpp`, `tests/foundations/storage/allocation-assign-before-construction-pod-member.cpp`
+**Affects:** LSUP-11, CE-9, `tests/foundations/storage/allocation-assign-before-construction-int-element.cpp`, `tests/foundations/storage/allocation-assign-before-construction-pod-member.cpp`, `tests/foundations/storage/allocation-assign-before-construction-double-element.cpp`, `tests/foundations/storage/allocation-assign-before-construction-user-assignment.cpp`
 **Source:** Q-0323, which held this form until decision 0059 item QR moved it here, with the probe grid `reports/clean-room/roadmap-9/writer-probes/q-0323-assign-before-construction.json` that a clean-room writer ran for it.
 **Waits for:** newest families that agree; a review (doubt)
 
@@ -28,8 +28,11 @@ compiler rejects a read of an element that nothing has written or built
 
 ## Evidence
 
-The two tests in **Affects**. Each expects Clang's rejection and
-records GCC and EDG as overrides.
+The four tests in **Affects**: an `int` element, a member of a simple
+class element, a `double` element, and an element of a class with its
+own assignment operator. Each expects Clang's rejection and records
+GCC and EDG as overrides. LSUP-11 states the rejection for every
+element type.
 
 ## Options
 

@@ -1,0 +1,7 @@
+| | no active member | flag active |
+|---|---|---|
+| p + 1 == &cells[1] | accept | accept |
+| &cells[2] - &cells[0] == 2 | accept | accept |
+| &cells[0] + 3 (one past) | accept | accept |
+| &cells[0] < &cells[1] | accept | accept |
+| assign cells[1], read p[1] from &cells[0] | accept | accept |

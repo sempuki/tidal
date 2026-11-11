@@ -1,0 +1,16 @@
+{
+ "prelude": "union Store { int cells[3]; char flag; constexpr Store() {} };",
+ "template": "{prelude}\nconstexpr bool probe() {{ Store s; {col} {row} }}\nstatic_assert(probe());\nint main() {{ return 0; }}",
+ "rows": {
+  "p + 1 == &cells[1]": "int* p = &s.cells[0]; return p + 1 == &s.cells[1];",
+  "&cells[2] - &cells[0] == 2": "return &s.cells[2] - &s.cells[0] == 2;",
+  "&cells[0] + 3 (one past)": "int* end = &s.cells[0] + 3; return end != nullptr;",
+  "&cells[0] < &cells[1]": "return &s.cells[0] < &s.cells[1];",
+  "assign cells[1], read p[1] from &cells[0]": "s.cells[1] = 5; int* p = &s.cells[0]; return p[1] == 5;"
+ },
+ "cols": {
+  "no active member": "",
+  "flag active": "s.flag = 'a';"
+ },
+ "flags": []
+}

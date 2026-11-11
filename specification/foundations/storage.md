@@ -72,9 +72,11 @@ A program reaches the new object through the pointer that placement
 A program that includes no header has no launder operation. So a class
 that keeps several objects in one byte array that is a member keeps the
 pointer that placement `new` returns for each object. An index into
-the byte array reaches only bytes. A class that wants index arithmetic
-over its objects takes its storage from an allocation function instead
-({rule}`STG-28`).
+the byte array reaches only bytes. A pointer to the object in one row
+of bytes does not reach the object in the next row, because each object
+is an array of one element for pointer arithmetic ({rule}`ADD-10`). A
+class that wants index arithmetic over its objects takes its storage
+from an allocation function instead ({rule}`STG-28`).
 :::
 
 :::{principle} STG-P3
@@ -285,7 +287,7 @@ member declared `[[no_unique_address]]` ({rule}`ATTR-9`, {rule}`ATTR-16`).
 
 :::{rule} STG-4
 :kind: required
-:tests: foundations/storage/byte-array-hosts-objects.cpp foundations/storage/std-byte-array-hosts-objects.cpp foundations/storage/char-array-holds-object.cpp foundations/language-support/byte-self-declared.cpp foundations/storage/byte-array-rows-host-objects.cpp foundations/storage/byte-array-member-of-array-hosts.cpp
+:tests: foundations/storage/byte-array-hosts-objects.cpp foundations/storage/std-byte-array-hosts-objects.cpp foundations/storage/char-array-holds-object.cpp foundations/language-support/byte-self-declared.cpp foundations/storage/byte-array-rows-host-objects.cpp foundations/storage/byte-array-member-of-array-hosts.cpp foundations/storage/byte-rows-pointer-does-not-reach-next-row.cpp
 
 A *byte array* is an array of `unsigned char` or of `std::byte`
 ({rule}`LSUP-9`). A byte array in its lifetime *hosts* an object
@@ -388,14 +390,15 @@ its lifetime. {rule}`UNI-14` gives a union member that holds no object.
 
 :::{rule} STG-10
 :kind: required
-:tests: foundations/storage/outside-lifetime-allowed-uses.cpp foundations/storage/allocation-array-class-elements.cpp classes/unions/array-member-element-address-no-active-member.cpp
+:tests: foundations/storage/outside-lifetime-allowed-uses.cpp foundations/storage/allocation-array-class-elements.cpp classes/unions/array-member-element-address-no-active-member.cpp classes/unions/array-member-element-steps-no-active-member-constant.cpp
 
 Before the lifetime of an object begins, or after it ends, while its
 storage exists, a program can do these things:
 
 - copy or compare a pointer to the storage,
 - step a pointer over the elements of an array that exists
-  ({rule}`STG-28`),
+  ({rule}`STG-28`), or of an array member of a union that is not
+  active ({rule}`UNI-14`),
 - convert the pointer to `void*`, and then to a pointer to
   `std::byte`, `unsigned char`, or `char`,
 - take the address of a glvalue that refers to the storage, or bind a
@@ -482,7 +485,7 @@ starts at that address ({rule}`ADD-10`).
 
 :::{rule} STG-16
 :kind: required
-:tests: foundations/storage/interconvertible-union-member.cpp foundations/storage/interconvertible-chain.cpp foundations/storage/interconvertible-standard-layout-base.cpp foundations/storage/cast-to-target-then-construct.cpp
+:tests: foundations/storage/interconvertible-union-member.cpp foundations/storage/interconvertible-chain.cpp foundations/storage/interconvertible-standard-layout-base.cpp foundations/storage/cast-to-target-then-construct.cpp expressions/casts/static-cast-void-pointer-round-trip-class.cpp
 
 Two objects are {term}`pointer-interconvertible` in these cases:
 
@@ -786,6 +789,27 @@ public:
 `reinterpret_cast<T*>(rows[i])` points to a byte of row `i` and reaches
 no `T` (STG-29). So the class keeps `items`.
 
+`items[0] + 1` is the pointer past the end of the `T` in row 0, and
+reading through it is undefined ({rule}`ADD-10`). It does not reach the
+`T` in row 1, though the address is the same. So `FixedVec` cannot hand
+out a pointer and a length for a view over its elements. A view over
+`items`, the array of pointers, is valid.
+
+The forms of storage for a sequence of `T` differ in four properties:
+
+| Form | Inside the object | In constant evaluation | One array of `T` for pointer arithmetic | `T` needs a default constructor |
+|---|---|---|---|---|
+| an array member `T items[N]` | yes | yes | yes | yes |
+| a byte row for each slot, as in `FixedVec` | yes | no: placement `new` and a cast from `void*` are not constants | no | no |
+| a union slot for each element, as in `FixedStack` ({doc}`/classes/unions`) | yes | yes, with `std::construct_at` ({rule}`UNI-14`) | no | no |
+| a union with an array member `T items[N]` | yes | only when an assignment makes the member active ({rule}`UNI-13`) | yes, once the member is active | a trivial one, for that assignment |
+| storage from an allocation function, as in `Stack` | no | yes, through `std::allocator` ({rule}`LSUP-11`) | yes ({rule}`STG-28`) | no |
+
+No form inside the object allows constant evaluation, one array of
+`T`, and a `T` with no default constructor together. A construction of
+one element of an array member that is not active does not make the
+member active ({rule}`UNI-14`, {question}`Q-0425`).
+
 A growable array of a class type gets raw storage from the allocation
 function and builds each element in place. `items + count` is valid
 before the element exists (STG-28):
@@ -873,8 +897,8 @@ static_assert(read_old() == 1);       // rejected (CE-9)
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 95
-of 101 tests. EDG runs no programs, so its results for the run tests say
+The results are in `tests/RESULTS.md`. All eight compilers agree on 98
+of 104 tests. EDG runs no programs, so its results for the run tests say
 only that the programs are valid.
 
 ### Divergences

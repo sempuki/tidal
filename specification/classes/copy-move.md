@@ -177,7 +177,7 @@ The four functions are the *copy and move functions* of a class. A
 
 :::{rule} CPY-1
 :kind: required
-:tests: classes/copy-move/copy-ctor-const-ref.cpp classes/copy-move/copy-ctor-default-args.cpp classes/copy-move/copy-ctor-nonconst-ref.cpp classes/copy-move/copy-ctor-volatile.cpp classes/copy-move/template-not-copy-ctor.cpp
+:tests: classes/copy-move/copy-ctor-const-ref.cpp classes/copy-move/copy-ctor-default-args.cpp classes/copy-move/copy-ctor-nonconst-ref.cpp classes/copy-move/copy-ctor-volatile.cpp classes/copy-move/template-not-copy-ctor.cpp classes/copy-move/copy-constructor-exact-skips-template-constraint.cpp
 
 A *copy constructor* of class `T` is a constructor that is not a template.
 Its first parameter is one of these:
@@ -201,14 +201,16 @@ copy a `const` object.
 
 :::{rule} CPY-15
 :kind: reject
-:tests: classes/copy-move/copy-ctor-by-value.cpp classes/copy-move/template-ctor-by-value-own-class.cpp classes/copy-move/class-template-ctor-by-value.cpp templates/constraints/by-value-constructor-template-constraint-copies-class.cpp
+:tests: classes/copy-move/copy-ctor-by-value.cpp classes/copy-move/template-ctor-by-value-own-class.cpp classes/copy-move/class-template-ctor-by-value.cpp templates/constraints/by-value-constructor-template-constraint-copies-class.cpp classes/copy-move/by-value-constructor-template-constraint-checked.cpp
 
 A constructor of class `T` must not have a first parameter of type `T`
 if all other parameters have default arguments. In a {term}`class template`,
 the implementation rejects such a constructor at the template's
 definition, before any {term}`instantiation`. A constructor template
 never gives such a constructor, so a copy of a `T` uses the copy
-constructor ({rule}`CPY-1`).
+constructor ({rule}`CPY-1`). The template's constraints are checked
+before such a specialization is dropped, unless {rule}`CNS-11` skips
+the check ({question}`Q-0426`).
 :::
 
 :::{rule} CPY-2
@@ -698,7 +700,7 @@ Any c(1);                          // the template, with T = int
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 127
-of 134 tests.
+of 136 tests.
 
 ### Divergences
 
@@ -727,17 +729,21 @@ of 134 tests.
   a live object that has a `const` member. The behavior is undefined,
   as {rule}`CV-5` gives. No test can show the difference, and the tests
   copy into a buffer or into an object with no `const` member.
-- {question}`Q-0426` (CPY-15, CNS-35;
+- {question}`Q-0426` (CPY-15, CNS-35, CNS-11;
   open): whether a copy of a class checks the constraint of a constructor
-  template with the class as the template's argument. It does not, so
-  the check never needs its own result, as Clang 22, GCC, and EDG say.
-  Clang 18 rejects the program.
+  template with the class as the template's argument. It does not when
+  a copy or move constructor takes the argument with no conversion, as
+  Clang 22 and GCC say. EDG and Clang 18 check the constraint. For a
+  by-value template and an lvalue that is not `const`, the check runs,
+  and GCC skips it.
 
 ### Split tests
 
 | Test | Rules | Expected | Clang | GCC | EDG | Question |
 |---|---|---|---|---|---|---|
+| `by-value-constructor-template-constraint-checked.cpp` | CPY-15, CNS-11 | reject | reject | accept | reject | {question}`Q-0426` |
 | `classes/unions/union-copy-two-copy-constructors.cpp` | UNI-3, CPY-27 | accept | accept | reject | reject | {question}`Q-0339` |
+| `copy-constructor-exact-skips-template-constraint.cpp` | CNS-11, CPY-1 | run | Clang 22: run; Clang 18: reject | run | reject | {question}`Q-0426` |
 | `defaulted-move-const-param.cpp` | CPY-14 | accept | accept | GCC 16: accept; GCC 14: reject | accept | {question}`Q-0055` |
 | `defaulted-volatile-param.cpp` | CPY-14 | accept | accept | GCC 16: accept; GCC 14: reject | accept | {question}`Q-0055` |
 | `foundations/constant-evaluation/return-local-unset-member.cpp` | CE-22, CPY-12 | reject | reject | accept | reject | {question}`Q-0115` |

@@ -91,14 +91,14 @@ model, and its child questions hold each split between the compilers.
 
 :::{rule} REF-1
 :kind: required
-:tests: declarations/initialization/references/lvalue-ref-binds-lvalue.cpp declarations/initialization/references/base-ref-to-derived.cpp declarations/initialization/references/unknown-bound-ref.cpp declarations/initialization/references/const-element-array-ref.cpp declarations/initialization/references/const-ref-binds-lvalue-directly.cpp declarations/initialization/references/pointer-lvalue-binds-more-qualified-pointer.cpp declarations/initialization/references/member-pointer-and-pointer-array-bind-directly.cpp declarations/initialization/references/noexcept-function-binds-plain-reference.cpp declarations/initialization/references/lvalue-ref-to-ambiguous-base.cpp declarations/initialization/references/lvalue-ref-to-private-base.cpp
+:tests: declarations/initialization/references/lvalue-ref-binds-lvalue.cpp declarations/initialization/references/base-ref-to-derived.cpp declarations/initialization/references/unknown-bound-ref.cpp declarations/initialization/references/const-element-array-ref.cpp declarations/initialization/references/const-ref-binds-lvalue-directly.cpp declarations/initialization/references/pointer-lvalue-binds-more-qualified-pointer.cpp declarations/initialization/references/member-pointer-and-pointer-array-bind-directly.cpp declarations/initialization/references/noexcept-function-binds-plain-reference.cpp declarations/initialization/references/lvalue-ref-to-ambiguous-base.cpp declarations/initialization/references/lvalue-ref-to-private-base.cpp declarations/initialization/references/lvalue-ref-to-private-base-in-member.cpp
 
 An lvalue reference {term}`binds directly <bind directly>` to an
 lvalue that is not a bit-field, if the lvalue has one of these types:
 
 - the same type,
 - the same type with fewer {term}`cv-qualifiers <cv-qualifier>`,
-- a class derived from the type through an accessible base,
+- a class derived from the type,
 - a type that a pointer to the lvalue's type reaches by an implicit
   conversion of the pointer: a qualification adjustment below the top
   level ({rule}`CONV-9`), as an `int*` lvalue for `const int* const&`,
@@ -111,6 +111,11 @@ The reference and the lvalue are then the same object, and no temporary
 object exists. The cv-qualifiers of an array's elements count as those
 of the array ({rule}`CV-6`), and a reference to an array of unknown
 bound binds to an array of known bound. REF-8 lists what is not valid.
+
+The base relation alone decides that a derived class binds directly.
+If the base is ambiguous or not accessible, the binding still counts
+as direct, and the conversion is not valid ({rule}`CONV-17`,
+{rule}`ACC-12`).
 :::
 
 :::{rule} REF-8
@@ -346,7 +351,7 @@ int& m{s};                   // rejected: a temporary needs const or &&
 
 ## Evidence
 
-All eight compilers agree on 56 of 71 tests. The results are in
+All eight compilers agree on 57 of 72 tests. The results are in
 `tests/RESULTS.md`.
 
 ### Divergences
@@ -453,6 +458,13 @@ the compile. EDG skips the tests that use `-Werror`.
   {rule}`ICS-38` and {rule}`ICS-46` give the sequences.
 - REF-1: every compiler binds a reference to an array of `const int`
   directly to an array of `int`, with a known or an unknown bound.
+- REF-1: every compiler rejects a `Base&` bound to a class with a
+  private base or with two `Base` subobjects, and names the
+  inaccessible or ambiguous base. Inside a member, the private base
+  binds directly, and the reference names the base subobject. A test
+  cannot tell a direct binding through an inaccessible base from no
+  binding, because both reject. The rule takes the base relation alone,
+  as COND-16 and DED-15 do (front-end finding G153).
 
 ### Sources
 

@@ -1,0 +1,16 @@
+{
+ "prelude": "",
+ "template": "template <int N> struct Box {{\n  using type = int;\n  int v = N;\n  {row}\n}};\n{col}\nint main() {{ Box<1> one; Box<0> zero; (void)one; (void)zero; return 0; }}",
+ "rows": {
+  "Box<0>::type, no typename": "int f() { Box<0>::type a = 0; return a; }",
+  "typename Box<0>::type": "int f() { typename Box<0>::type a = 0; return a; }",
+  "o.missing on Box<0>, never called": "int f(const Box<0>& o) { return o.missing; }",
+  "Box<0>::missing, never called": "int f() { return Box<0>::missing; }",
+  "sizeof(Box<0>) in a static_assert in a member": "void f() { static_assert(sizeof(Box<0>) > 0); }"
+ },
+ "cols": {
+  "nothing after": "",
+  "explicit specialization Box<0> after": "template <> struct Box<0> { using type = int; int v = 0; int missing = 1; static const int other = 2; };"
+ },
+ "flags": []
+}

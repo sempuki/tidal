@@ -777,7 +777,7 @@ is not valid. Such a use is ambiguous. These rules name specific cases
 
 :::{rule} OVL-37
 :kind: reject
-:tests: overloading/overload-resolution/chosen-deleted.cpp overloading/overload-resolution/chosen-not-accessible.cpp overloading/overload-resolution/address-of-deleted-chosen.cpp overloading/overload-resolution/user-deleted-move-candidate.cpp templates/deduction/two-equal-bases-with-fallback.cpp
+:tests: overloading/overload-resolution/chosen-deleted.cpp overloading/overload-resolution/chosen-not-accessible.cpp overloading/overload-resolution/address-of-deleted-chosen.cpp overloading/overload-resolution/user-deleted-move-candidate.cpp templates/deduction/two-equal-bases-with-fallback.cpp templates/deduction/private-base-with-fallback.cpp templates/deduction/protected-base-with-fallback.cpp
 
 The best viable function must pass these checks. A worse viable function
 never takes its place. Each check has its own rule (decision 0042):
@@ -849,8 +849,8 @@ struct Self {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 168
-of 198 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 170
+of 200 tests.
 
 ### Divergences
 

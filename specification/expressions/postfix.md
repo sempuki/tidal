@@ -270,7 +270,7 @@ one element, and on an integer, the change follows {rule}`UN-20`.
 
 :::{rule} PFX-4
 :kind: undefined
-:tests: expressions/postfix/subscript-out-of-range.cpp expressions/postfix/subscript-write-past-end-constant.cpp expressions/postfix/subscript-form-beyond-end-constant.cpp expressions/postfix/subscript-out-of-range-sanitizer.cpp expressions/postfix/subscript-past-end-heap-sanitizer.cpp
+:tests: expressions/postfix/subscript-out-of-range.cpp expressions/postfix/subscript-write-past-end-constant.cpp expressions/postfix/subscript-form-beyond-end-constant.cpp expressions/postfix/subscript-out-of-range-sanitizer.cpp expressions/postfix/subscript-past-end-heap-sanitizer.cpp foundations/storage/byte-rows-pointer-does-not-reach-next-row.cpp
 
 If a subscript reads or writes an element outside the array, the
 behavior is undefined. Forming the address of an element more than one
@@ -375,8 +375,8 @@ top++;            // undefined
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 74
-of 82 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 75
+of 83 tests.
 
 ### Divergences
 

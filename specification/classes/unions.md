@@ -42,6 +42,10 @@ member active instead:
 - the construction of an object of the member's type at the member's
   address.
 
+The construction of an object inside the member, such as one element
+of an array member or a member of a member union, does not make the
+member active.
+
 The assignment can
 also reach a part of the member, as in `u.a.tag = 7`. A user-provided
 assignment operator is a call on the member, and the member is not an
@@ -299,7 +303,8 @@ union must not have:
 
 - member functions,
 - static data members,
-- nested types,
+- nested types, also an unnamed class that a member declaration
+  defines, as in `struct { int key; } pair;` ({question}`Q-0424`),
 - a member with a name that the enclosing scope has.
 :::
 
@@ -430,7 +435,7 @@ evaluation follows these rules.
 
 :::{rule} UNI-13
 :kind: required
-:tests: classes/unions/chain-assign-activates.cpp classes/unions/common-initial-sequence.cpp classes/unions/chain-assign-other-part-no-value-constant.cpp classes/unions/chain-assign-nontrivial-constant.cpp classes/unions/chain-assign-member-function.cpp classes/unions/chain-assign-member-function-constant.cpp
+:tests: classes/unions/chain-assign-activates.cpp classes/unions/common-initial-sequence.cpp classes/unions/chain-assign-other-part-no-value-constant.cpp classes/unions/chain-assign-nontrivial-constant.cpp classes/unions/chain-assign-member-function.cpp classes/unions/chain-assign-member-function-constant.cpp classes/unions/chain-assign-array-element-nontrivial-constant.cpp
 
 The left operand of an assignment can name its object through a chain
 of member accesses and built-in subscripts, such as `s.u.a.tag` or
@@ -450,7 +455,7 @@ Constant evaluation follows this rule.
 
 :::{rule} UNI-14
 :kind: required
-:tests: classes/unions/construct-activates-constant.cpp classes/unions/construct-switches-active-constant.cpp classes/unions/placement-new-activates.cpp classes/unions/slot-array-constant.cpp classes/unions/destroyed-member-read-constant.cpp classes/unions/array-member-element-address-no-active-member.cpp classes/unions/construct-in-member-of-inactive-member-union-constant.cpp classes/unions/placement-into-union-member-of-new-array-element.cpp
+:tests: classes/unions/construct-activates-constant.cpp classes/unions/construct-switches-active-constant.cpp classes/unions/placement-new-activates.cpp classes/unions/slot-array-constant.cpp classes/unions/destroyed-member-read-constant.cpp classes/unions/array-member-element-address-no-active-member.cpp classes/unions/construct-in-member-of-inactive-member-union-constant.cpp classes/unions/placement-into-union-member-of-new-array-element.cpp classes/unions/array-member-element-steps-no-active-member-constant.cpp classes/unions/construct-at-array-member-element-constant.cpp classes/unions/construct-in-member-of-inactive-member-union-run.cpp
 
 If placement `new` ({rule}`STG-5`, with a form that {rule}`LSUP-7`
 gives) or `std::construct_at` ({rule}`LSUP-10`) creates an object of a member's type at the address of
@@ -458,6 +463,12 @@ the member, the new object is that member, and the member becomes
 active. The rule holds when the union has no active member, and when
 another member is active. An explicit destructor call on the active
 member ({rule}`DTOR-6`) leaves the union with no active member.
+
+A new object inside a member that is not active, such as an element of
+an array member or a member of a member union, does not make the member
+active ({question}`Q-0425`). A program can still form pointers to the
+elements of an array member that is not active, step between them, and
+compare them ({rule}`STG-10`).
 :::
 
 :::{rule} BF-5
@@ -525,7 +536,7 @@ Two array types are layout-compatible only if they are the same type.
 
 :::{rule} UNI-6
 :kind: undefined
-:tests: classes/unions/chain-assign-nontrivial-constant.cpp classes/unions/compound-assign-inactive-constant.cpp classes/unions/read-inactive-after-switch-constant.cpp classes/unions/read-inactive-constant.cpp classes/unions/user-assignment-not-activating-constant.cpp classes/unions/default-init-read-constant.cpp classes/unions/constructor-leaves-union-read-constant.cpp classes/unions/destroyed-member-read-constant.cpp classes/unions/read-inactive-bool-sanitizer.cpp
+:tests: classes/unions/chain-assign-nontrivial-constant.cpp classes/unions/compound-assign-inactive-constant.cpp classes/unions/read-inactive-after-switch-constant.cpp classes/unions/read-inactive-constant.cpp classes/unions/user-assignment-not-activating-constant.cpp classes/unions/default-init-read-constant.cpp classes/unions/constructor-leaves-union-read-constant.cpp classes/unions/destroyed-member-read-constant.cpp classes/unions/read-inactive-bool-sanitizer.cpp classes/unions/construct-at-array-member-element-constant.cpp classes/unions/chain-assign-array-element-nontrivial-constant.cpp classes/unions/construct-in-member-of-inactive-member-union-constant.cpp classes/unions/construct-in-member-of-inactive-member-union-run.cpp
 
 If a program reads a union member that is not active, the behavior is
 undefined. During constant evaluation, {rule}`CE-6` rejects the read.
@@ -535,7 +546,9 @@ assignment operator that is user-provided, uses an object that does not
 exist yet ({question}`Q-0088`). An assignment through a chain of member
 accesses ({rule}`UNI-13`) to a union member whose default constructor is
 not trivial also uses an object that does not exist
-({question}`Q-0213`).
+({question}`Q-0213`). A construction of an object inside a member that
+is not active ({rule}`UNI-14`) uses a member that does not exist
+({question}`Q-0425`).
 :::
 
 ## Implementation Requirements
@@ -733,8 +746,8 @@ active member.
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 154
-of 171 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 156
+of 175 tests.
 
 ### Divergences
 
@@ -796,11 +809,13 @@ that still differs.
   declaration counts as a nested type of an anonymous union. It does,
   as EDG and Clang under `-pedantic-errors` say. GCC accepts the
   program.
-- {question}`Q-0425` (UNI-14, CE-6; open):
+- {question}`Q-0425` (UNI-14, UNI-6, CE-6; open):
   whether building an object inside a union member that is not
   active, as a member of a member union or an element of an array
   member, makes the member active. It does not, so constant evaluation
-  rejects the construction, as Clang and GCC say. EDG accepts it.
+  rejects the construction, as Clang and GCC say for a member union and
+  Clang and GCC 14 say for an array member. EDG accepts both forms, and
+  GCC 16 accepts the array form.
 
 ### Split tests
 
@@ -820,10 +835,12 @@ configuration.
 | `bitfield-width-class-explicit-conversion.cpp` | BF-1 | accept | accept | reject | accept | {question}`Q-0314` |
 | `bitfield-width-class-two-conversions-same-type.cpp` | BF-1 | accept | accept | reject | accept | {question}`Q-0314` |
 | `bitfield-width-scoped-enumeration.cpp` | BF-2 | reject | reject | reject | accept | {question}`Q-0313` |
+| `chain-assign-array-element-nontrivial-constant.cpp` | UNI-6, UNI-13 | reject | reject | reject | accept | {question}`Q-0213` |
 | `chain-assign-nontrivial-constant.cpp` | UNI-6, UNI-13 | reject | reject | reject | accept | {question}`Q-0213` |
 | `classes/copy-move/trivially-copyable-member-selected.cpp` | CPY-27, CPY-19, UNI-3 | accept | accept | reject | reject | {question}`Q-0339` |
 | `classes/copy-move/trivially-copyable-member-template-selected.cpp` | CPY-27, UNI-11 | reject | reject | reject | accept | {question}`Q-0339` |
-| `construct-in-member-of-inactive-member-union-constant.cpp` | UNI-14, CE-6 | reject | reject | reject | accept | {question}`Q-0425` |
+| `construct-at-array-member-element-constant.cpp` | UNI-14, UNI-6 | reject | reject | GCC 16: accept; GCC 14: reject | accept | {question}`Q-0425` |
+| `construct-in-member-of-inactive-member-union-constant.cpp` | UNI-14, UNI-6, CE-6 | reject | reject | reject | accept | {question}`Q-0425` |
 | `destroyed-member-read-constant.cpp` | UNI-14, UNI-6 | reject | reject | accept | reject | {question}`Q-0309` |
 | `union-copy-two-copy-constructors.cpp` | UNI-3, CPY-27 | accept | accept | reject | reject | {question}`Q-0339` |
 | `user-assignment-not-activating-constant.cpp` | UNI-6 | reject | reject | reject | accept | {question}`Q-0088` |
@@ -875,6 +892,10 @@ configuration.
 - UNI-14: Clang and GCC accept the constant evaluations in which
   `std::construct_at` makes a member active, and run the placement
   `new` form with no sanitizer report.
+- UNI-14, STG-10: every compiler accepts a constant evaluation that
+  steps a pointer between the elements of an array member that is not
+  active, subtracts two such pointers, and compares them
+  (`array-member-element-steps-no-active-member-constant.cpp`).
 - UNI-13: every compiler accepts the constant evaluations in which an
   assignment through `.` and `[]` makes members of one or two unions
   active. Every compiler rejects a later read of a part that the

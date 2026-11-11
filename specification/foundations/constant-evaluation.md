@@ -206,7 +206,7 @@ by {rule}`CE-8`.
 
 :::{rule} CE-4
 :kind: reject
-:tests: foundations/constant-evaluation/reinterpret-cast.cpp foundations/constant-evaluation/void-pointer-to-object.cpp foundations/language-support/allocator-self-declared-constant.cpp foundations/constant-evaluation/allocator-result-other-type.cpp
+:tests: foundations/constant-evaluation/reinterpret-cast.cpp foundations/constant-evaluation/void-pointer-to-object.cpp foundations/language-support/allocator-self-declared-constant.cpp foundations/constant-evaluation/allocator-result-other-type.cpp expressions/casts/static-cast-void-pointer-round-trip-constant.cpp
 
 Constant evaluation must not contain a `reinterpret_cast` or convert a
 pointer to `void` to a pointer to an object type. Inside a member of
@@ -271,7 +271,7 @@ point.
 
 :::{rule} CE-9
 :kind: reject
-:tests: foundations/constant-evaluation/undefined-behavior.cpp foundations/constant-evaluation/undefined-behavior-dangling.cpp expressions/postfix/member-call-null-pointer-constant.cpp templates/deduction/substitution-failure-undefined-operation.cpp classes/constructors/reference-default-member-read-constant.cpp foundations/storage/allocation-assign-before-construction-int-element.cpp foundations/storage/allocation-assign-before-construction-pod-member.cpp
+:tests: foundations/constant-evaluation/undefined-behavior.cpp foundations/constant-evaluation/undefined-behavior-dangling.cpp expressions/postfix/member-call-null-pointer-constant.cpp templates/deduction/substitution-failure-undefined-operation.cpp classes/constructors/reference-default-member-read-constant.cpp foundations/storage/allocation-assign-before-construction-int-element.cpp foundations/storage/allocation-assign-before-construction-pod-member.cpp foundations/storage/allocation-assign-before-construction-double-element.cpp foundations/storage/allocation-assign-before-construction-user-assignment.cpp
 
 Constant evaluation must not evaluate an operation that has undefined
 behavior. Each rule of class `undefined` gives such an operation. CE-26
@@ -641,8 +641,8 @@ constexpr All all{.a = 1};            // rejected: All is not literal (CE-23)
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 132
-of 160 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 133
+of 163 tests.
 
 ### Divergences
 
@@ -716,7 +716,7 @@ family column gives the outcome that the test expects on that family.
 | Test | Rules | Expected | Clang | GCC | EDG | Question |
 |---|---|---|---|---|---|---|
 | `allocator-result-other-type.cpp` | CE-4 | reject | reject | accept | accept | {question}`Q-0349` |
-| `classes/unions/construct-in-member-of-inactive-member-union-constant.cpp` | UNI-14, CE-6 | reject | reject | reject | accept | {question}`Q-0425` |
+| `classes/unions/construct-in-member-of-inactive-member-union-constant.cpp` | UNI-14, UNI-6, CE-6 | reject | reject | reject | accept | {question}`Q-0425` |
 | `constant-initializer-trivial-class-array.cpp` | CE-24, CE-21, CINIT-1 | reject | reject | run | accept | {question}`Q-0192` |
 | `constant-initializer-trivial-class-block-static.cpp` | CE-24, CE-21, CINIT-1 | reject | reject | run | accept | {question}`Q-0192` |
 | `constant-initializer-zero-trivial-class.cpp` | CE-24, CE-21, CINIT-1 | reject | reject | run | accept | {question}`Q-0192` |
@@ -728,8 +728,10 @@ family column gives the outcome that the test expects on that family.
 | `expressions/postfix/member-call-null-pointer-constant.cpp` | PFX-21, UN-7, CE-9 | reject | reject | reject | accept | {question}`Q-0318` |
 | `extended-temporary-member.cpp` | CE-14 | accept | accept | accept | reject | {question}`Q-0193` |
 | `extended-temporary-nested.cpp` | CE-14 | accept | accept | accept | reject | {question}`Q-0193` |
+| `foundations/storage/allocation-assign-before-construction-double-element.cpp` | LSUP-11, CE-9 | reject | reject | accept | accept | {question}`Q-0421` |
 | `foundations/storage/allocation-assign-before-construction-int-element.cpp` | LSUP-11, CE-9 | reject | reject | accept | accept | {question}`Q-0421` |
 | `foundations/storage/allocation-assign-before-construction-pod-member.cpp` | LSUP-11, CE-9 | reject | reject | accept | accept | {question}`Q-0421` |
+| `foundations/storage/allocation-assign-before-construction-user-assignment.cpp` | LSUP-11, CE-9 | reject | reject | accept | accept | {question}`Q-0421` |
 | `literal-temporary-volatile-member.cpp` | CE-17, CE-23 | accept | Clang 22: accept; Clang 18: reject | reject | reject | {question}`Q-0335` |
 | `nonliteral-temporary-in-function.cpp` | CE-17 | accept | Clang 22: accept; Clang 18: reject | reject | accept | {question}`Q-0335` |
 | `nonliteral-variable-reached.cpp` | CE-17 | accept | Clang 22: accept; Clang 18: reject | accept | accept | {question}`Q-0335` |

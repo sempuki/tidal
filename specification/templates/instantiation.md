@@ -189,7 +189,7 @@ definition.
 
 :::{rule} INST-1
 :kind: required
-:tests: templates/instantiation/class-object.cpp templates/instantiation/class-sizeof.cpp templates/instantiation/class-member-access.cpp templates/instantiation/class-delete.cpp templates/instantiation/class-base-conversion.cpp templates/instantiation/class-function-definition-parameter.cpp templates/instantiation/class-function-definition-return.cpp templates/instantiation/class-call-return.cpp templates/instantiation/class-deduction-from-derived.cpp templates/instantiation/class-deduction-from-derived-error.cpp
+:tests: templates/instantiation/class-object.cpp templates/instantiation/class-sizeof.cpp templates/instantiation/class-member-access.cpp templates/instantiation/class-delete.cpp templates/instantiation/class-base-conversion.cpp templates/instantiation/class-function-definition-parameter.cpp templates/instantiation/class-function-definition-return.cpp templates/instantiation/class-call-return.cpp templates/instantiation/class-deduction-from-derived.cpp templates/instantiation/class-deduction-from-derived-error.cpp templates/instantiation/class-qualified-name.cpp
 
 A specialization of a {term}`class template` is instantiated when a use needs
 a complete class, or when the definition can change the meaning of the
@@ -202,7 +202,9 @@ use. These uses instantiate the class:
 - the definition of a function whose parameter or return type is the
   class,
 - a call to a function that returns the class,
-- a {term}`deduction` that searches the bases of the class ({rule}`DED-15`).
+- a {term}`deduction` that searches the bases of the class ({rule}`DED-15`),
+- a qualified name that names a member of the class, such as
+  `Box<int>::type`.
 :::
 
 :::{rule} INST-2
@@ -241,7 +243,7 @@ does not make these definitions:
 
 :::{rule} INST-6
 :kind: reject
-:tests: templates/dependent-names/dependent-error-at-instantiation.cpp templates/dependent-names/value-dependent-bound-fails.cpp templates/instantiation/class-base-conversion.cpp templates/instantiation/class-delete.cpp templates/instantiation/class-member-access.cpp templates/instantiation/class-member-declaration-fails.cpp templates/instantiation/class-object.cpp templates/instantiation/class-sizeof.cpp templates/instantiation/class-unscoped-enumeration.cpp templates/instantiation/default-argument-used.cpp templates/instantiation/default-member-initializer-used.cpp templates/instantiation/explicit-class-members.cpp templates/instantiation/explicit-declaration-inline-still-made.cpp templates/instantiation/explicit-member-class.cpp templates/instantiation/function-address.cpp templates/instantiation/function-called.cpp templates/instantiation/function-deduced-return.cpp templates/instantiation/local-class-member.cpp templates/instantiation/member-function-called.cpp templates/instantiation/static-member-used.cpp templates/instantiation/variable-template-used.cpp templates/instantiation/class-static-member-function-type.cpp templates/instantiation/member-partial-specializations-collide.cpp templates/instantiation/class-function-definition-parameter.cpp templates/instantiation/class-function-definition-return.cpp templates/instantiation/class-call-return.cpp templates/instantiation/function-unevaluated-braced.cpp templates/instantiation/function-unevaluated-braced-untaken.cpp templates/instantiation/default-argument-explicit-specialization.cpp templates/instantiation/default-member-initializer-aggregate-left-out.cpp templates/instantiation/local-class-default-argument.cpp templates/instantiation/local-class-member-initializer.cpp templates/instantiation/local-class-exception-specification.cpp templates/instantiation/local-enumeration.cpp templates/instantiation/class-deduction-from-derived-error.cpp templates/instantiation/member-template-pointer-to-member-non-class.cpp templates/instantiation/class-data-member-function-type.cpp
+:tests: templates/dependent-names/dependent-error-at-instantiation.cpp templates/dependent-names/value-dependent-bound-fails.cpp templates/instantiation/class-base-conversion.cpp templates/instantiation/class-delete.cpp templates/instantiation/class-member-access.cpp templates/instantiation/class-member-declaration-fails.cpp templates/instantiation/class-object.cpp templates/instantiation/class-sizeof.cpp templates/instantiation/class-unscoped-enumeration.cpp templates/instantiation/default-argument-used.cpp templates/instantiation/default-member-initializer-used.cpp templates/instantiation/explicit-class-members.cpp templates/instantiation/explicit-declaration-inline-still-made.cpp templates/instantiation/explicit-member-class.cpp templates/instantiation/function-address.cpp templates/instantiation/function-called.cpp templates/instantiation/function-deduced-return.cpp templates/instantiation/local-class-member.cpp templates/instantiation/member-function-called.cpp templates/instantiation/static-member-used.cpp templates/instantiation/variable-template-used.cpp templates/instantiation/class-static-member-function-type.cpp templates/instantiation/member-partial-specializations-collide.cpp templates/instantiation/class-function-definition-parameter.cpp templates/instantiation/class-function-definition-return.cpp templates/instantiation/class-call-return.cpp templates/instantiation/function-unevaluated-braced.cpp templates/instantiation/function-unevaluated-braced-untaken.cpp templates/instantiation/default-argument-explicit-specialization.cpp templates/instantiation/default-member-initializer-aggregate-left-out.cpp templates/instantiation/local-class-default-argument.cpp templates/instantiation/local-class-member-initializer.cpp templates/instantiation/local-class-exception-specification.cpp templates/instantiation/local-enumeration.cpp templates/instantiation/class-deduction-from-derived-error.cpp templates/instantiation/member-template-pointer-to-member-non-class.cpp templates/instantiation/class-data-member-function-type.cpp templates/instantiation/class-qualified-name.cpp templates/instantiation/virtual-called-through-pointer.cpp
 
 Each declaration and definition that an instantiation makes must be
 valid for the arguments of the specialization. These include:
@@ -259,7 +261,7 @@ must not become the same partial specialization ({question}`Q-0251`).
 
 :::{rule} INST-7
 :kind: required
-:tests: templates/instantiation/function-unevaluated.cpp templates/instantiation/function-called.cpp templates/instantiation/function-address.cpp templates/instantiation/function-deduced-return.cpp templates/instantiation/member-function-called.cpp templates/instantiation/function-unevaluated-braced.cpp templates/instantiation/function-unevaluated-braced-untaken.cpp templates/instantiation/function-unevaluated-parentheses.cpp templates/instantiation/function-unevaluated-sizeof-constant.cpp
+:tests: templates/instantiation/function-unevaluated.cpp templates/instantiation/function-called.cpp templates/instantiation/function-address.cpp templates/instantiation/function-deduced-return.cpp templates/instantiation/member-function-called.cpp templates/instantiation/function-unevaluated-braced.cpp templates/instantiation/function-unevaluated-braced-untaken.cpp templates/instantiation/function-unevaluated-parentheses.cpp templates/instantiation/function-unevaluated-sizeof-constant.cpp templates/instantiation/virtual-called-through-pointer.cpp
 
 A {term}`function template` specialization or a member function of a class
 specialization is instantiated when a use needs its definition, such as
@@ -587,7 +589,7 @@ a class specialization, the class is or is not instantiated.
 
 :::{rule} INST-11
 :kind: unspecified
-:tests: templates/instantiation/virtual-object.cpp templates/instantiation/virtual-sizeof.cpp
+:tests: templates/instantiation/virtual-object.cpp templates/instantiation/virtual-sizeof.cpp templates/instantiation/virtual-new-expression.cpp templates/instantiation/virtual-temporary.cpp
 
 When a class specialization is instantiated, a virtual member function
 that no use names is or is not instantiated.
@@ -742,8 +744,8 @@ extern template constexpr int size_of<long>;  // rejected: constexpr (INST-25)
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 119
-of 143 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 122
+of 147 tests.
 
 ### Divergences
 
@@ -767,6 +769,10 @@ waits on the maintainer (`documentation/decisions/pending.md`).
   initializer instantiates each one it names, also on a branch that is
   not taken, and other unevaluated operands do not. EDG differs on the
   braced conditional, and GCC 16 on `sizeof`.
+- {question}`Q-0428` (INST-7, INST-11; open):
+  whether a call of a virtual function through a pointer instantiates
+  the function when the program has no object of the class. The call
+  instantiates it, as Clang and GCC say. EDG does not.
 - {question}`Q-0253` (INST-12; settled on INST-P1): whether the default
   argument of a member function of a local class is instantiated with
   the enclosing function. It is, as Clang and EDG say. GCC 16 waits for
@@ -855,6 +861,7 @@ the compile.
 | `local-class-requires-clause-waits.cpp` | INST-12 | run | run | run | reject | {question}`Q-0392` |
 | `member-partial-specializations-collide.cpp` | INST-6 | reject | reject | accept | accept | {question}`Q-0251` |
 | `specialization-after-explicit-declaration.cpp` | INST-19 | reject | reject | reject | accept | {question}`Q-0237` |
+| `virtual-called-through-pointer.cpp` | INST-7, INST-6 | reject | reject | reject | accept | {question}`Q-0428` |
 
 ### Notes
 
@@ -890,9 +897,25 @@ the compile.
   ({question}`Q-0392`).
 - INST-3: every compiler instantiates the class when a pointer to it
   converts to `void*` in a call. The rule allows either result.
-- INST-11: every compiler instantiates an unused virtual function when
-  the program defines an object of the class, and none does for
-  `sizeof`. The rule allows either result.
+- INST-11: the rule allows either result. On the matrix compilers,
+  these uses of a class specialization instantiate a virtual function
+  that no use names:
+  - an object at namespace scope or at block scope, also in a function
+    that is never called,
+  - a `new` expression,
+  - a temporary,
+  - an object of a class derived from the specialization.
+
+  No compiler instantiates the function for `sizeof`, a pointer, a
+  derived class with no object, or a call of a nonvirtual member
+  through a pointer. After an explicit instantiation declaration of the
+  class, GCC and Clang do not instantiate the function for an object,
+  and EDG does. INST-27 allows both results. The probe is
+  `reports/clean-room/roadmap-10/writer-probes/g157-virtual-instantiation-events.json`,
+  and the tests `virtual-object.cpp`, `virtual-new-expression.cpp`,
+  `virtual-temporary.cpp`, and `virtual-sizeof.cpp` keep its agreed
+  rows. A call of the virtual function names it, so INST-7 covers the
+  call.
 - INST-15: every compiler rejects both tests with its depth message
   ({rule}`TR-13`). On the chain of function templates, Clang 22 and 18
   then end with a segmentation fault.

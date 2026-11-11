@@ -1,0 +1,42 @@
+| | called | not called |
+|---|---|---|
+| w.get<int>(), w a const Wrap& | accept | accept |
+| w.get<int>(), w a const Wrap<T>& | accept | accept |
+| w->get<int>(), w a const Wrap* | accept | accept |
+| local Wrap l; l.get<int>() | accept | accept |
+| w.template get<int>() | accept | accept |
+| other specialization o.get<int>() | reject | reject |
+| w.from_base<int>(), in a dependent base | reject | reject |
+| w.template from_base<int>() | accept | accept |
+other specialization o.get<int>() / called / clang-18: /tidal/build/probes/f3b-dep-24-object-forms/0010-other-specialization-o-get-int--called.cpp:4:52: error: use 'template' keyword to treat 'get' as a dependent template name
+other specialization o.get<int>() / called / clang-22: /tidal/build/probes/f3b-dep-24-object-forms/0010-other-specialization-o-get-int--called.cpp:4:52: error: use 'template' keyword to treat 'get' as a dependent template name
+other specialization o.get<int>() / called / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/f3b-dep-24-object-forms/0010-other-specialization-o-get-int--called.cpp:4:52: error: use 'template' keyword to treat 'get' as a dependent template name
+other specialization o.get<int>() / called / edg-7.0: t--called.cpp", line 4: error: type name is not allowed
+other specialization o.get<int>() / called / edg-7.0-ilp32: t--called.cpp", line 4: error: type name is not allowed
+other specialization o.get<int>() / called / gcc-14: /tidal/build/probes/f3b-dep-24-object-forms/0010-other-specialization-o-get-int--called.cpp:4:56: error: expected primary-expression before 'int'
+other specialization o.get<int>() / called / gcc-16: /tidal/build/probes/f3b-dep-24-object-forms/0010-other-specialization-o-get-int--called.cpp:4:56: error: expected primary-expression before 'int' [-Wtemplate-body]
+other specialization o.get<int>() / called / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/f3b-dep-24-object-forms/0010-other-specialization-o-get-int--called.cpp:4:56: error: expected primary-expression before ‘int’ [-Wtemplate-body]
+other specialization o.get<int>() / not called / clang-18: /tidal/build/probes/f3b-dep-24-object-forms/0011-other-specialization-o-get-int--not-called.cpp:4:52: error: use 'template' keyword to treat 'get' as a dependent template name
+other specialization o.get<int>() / not called / clang-22: /tidal/build/probes/f3b-dep-24-object-forms/0011-other-specialization-o-get-int--not-called.cpp:4:52: error: use 'template' keyword to treat 'get' as a dependent template name
+other specialization o.get<int>() / not called / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/f3b-dep-24-object-forms/0011-other-specialization-o-get-int--not-called.cpp:4:52: error: use 'template' keyword to treat 'get' as a dependent template name
+other specialization o.get<int>() / not called / edg-7.0: t--not-called.cpp", line 4: error: type name is not allowed
+other specialization o.get<int>() / not called / edg-7.0-ilp32: t--not-called.cpp", line 4: error: type name is not allowed
+other specialization o.get<int>() / not called / gcc-14: /tidal/build/probes/f3b-dep-24-object-forms/0011-other-specialization-o-get-int--not-called.cpp:4:56: error: expected primary-expression before 'int'
+other specialization o.get<int>() / not called / gcc-16: /tidal/build/probes/f3b-dep-24-object-forms/0011-other-specialization-o-get-int--not-called.cpp:4:56: error: expected primary-expression before 'int' [-Wtemplate-body]
+other specialization o.get<int>() / not called / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/f3b-dep-24-object-forms/0011-other-specialization-o-get-int--not-called.cpp:4:56: error: expected primary-expression before ‘int’ [-Wtemplate-body]
+w.from_base<int>(), in a dependent base / called / clang-18: /tidal/build/probes/f3b-dep-24-object-forms/0012-w-from-base-int-in-a-dependent-base--called.cpp:4:42: error: use 'template' keyword to treat 'from_base' as a dependent template name
+w.from_base<int>(), in a dependent base / called / clang-22: /tidal/build/probes/f3b-dep-24-object-forms/0012-w-from-base-int-in-a-dependent-base--called.cpp:4:42: error: use 'template' keyword to treat 'from_base' as a dependent template name
+w.from_base<int>(), in a dependent base / called / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/f3b-dep-24-object-forms/0012-w-from-base-int-in-a-dependent-base--called.cpp:4:42: error: use 'template' keyword to treat 'from_base' as a dependent template name
+w.from_base<int>(), in a dependent base / called / edg-7.0: t-base--called.cpp", line 4: error: type name is not allowed
+w.from_base<int>(), in a dependent base / called / edg-7.0-ilp32: t-base--called.cpp", line 4: error: type name is not allowed
+w.from_base<int>(), in a dependent base / called / gcc-14: /tidal/build/probes/f3b-dep-24-object-forms/0012-w-from-base-int-in-a-dependent-base--called.cpp:4:52: error: expected primary-expression before 'int'
+w.from_base<int>(), in a dependent base / called / gcc-16: /tidal/build/probes/f3b-dep-24-object-forms/0012-w-from-base-int-in-a-dependent-base--called.cpp:4:52: error: expected primary-expression before 'int' [-Wtemplate-body]
+w.from_base<int>(), in a dependent base / called / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/f3b-dep-24-object-forms/0012-w-from-base-int-in-a-dependent-base--called.cpp:4:52: error: expected primary-expression before ‘int’ [-Wtemplate-body]
+w.from_base<int>(), in a dependent base / not called / clang-18: /tidal/build/probes/f3b-dep-24-object-forms/0013-w-from-base-int-in-a-dependent-base--not-called.cpp:4:42: error: use 'template' keyword to treat 'from_base' as a dependent template name
+w.from_base<int>(), in a dependent base / not called / clang-22: /tidal/build/probes/f3b-dep-24-object-forms/0013-w-from-base-int-in-a-dependent-base--not-called.cpp:4:42: error: use 'template' keyword to treat 'from_base' as a dependent template name
+w.from_base<int>(), in a dependent base / not called / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/f3b-dep-24-object-forms/0013-w-from-base-int-in-a-dependent-base--not-called.cpp:4:42: error: use 'template' keyword to treat 'from_base' as a dependent template name
+w.from_base<int>(), in a dependent base / not called / edg-7.0: t-base--not-called.cpp", line 4: error: type name is not allowed
+w.from_base<int>(), in a dependent base / not called / edg-7.0-ilp32: t-base--not-called.cpp", line 4: error: type name is not allowed
+w.from_base<int>(), in a dependent base / not called / gcc-14: /tidal/build/probes/f3b-dep-24-object-forms/0013-w-from-base-int-in-a-dependent-base--not-called.cpp:4:52: error: expected primary-expression before 'int'
+w.from_base<int>(), in a dependent base / not called / gcc-16: /tidal/build/probes/f3b-dep-24-object-forms/0013-w-from-base-int-in-a-dependent-base--not-called.cpp:4:52: error: expected primary-expression before 'int' [-Wtemplate-body]
+w.from_base<int>(), in a dependent base / not called / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/f3b-dep-24-object-forms/0013-w-from-base-int-in-a-dependent-base--not-called.cpp:4:52: error: expected primary-expression before ‘int’ [-Wtemplate-body]

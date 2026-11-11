@@ -602,6 +602,19 @@ them.
   accepts `<=>` on the two types on x86-64 and rejects it with `-m32` as
   narrowing. Every compiler accepts a constant that fits the converted
   type, such as `1 <=> 2u`.
+- CMP-15, sanitizer builds: with `-fsanitize=undefined` or
+  `-fsanitize=null`, GCC 14 and 16 reject `!=` on the addresses of two
+  variables in a `static_assert` for these variables:
+  - two specializations of a variable template,
+  - two static members of a class template,
+  - two `inline constexpr` variables.
+
+  GCC accepts two plain `constexpr` variables at namespace scope. Clang
+  accepts every form with both flags. Without the flags, every compiler
+  accepts every form. The writer probes
+  `reports/clean-room/roadmap-10/writer-probes/w20-4-tag-address-*.json`
+  show the results. The matrix builds no constant test with a sanitizer
+  flag, so no test shows the split.
 - CMP-20: inside one array of arrays, every compiler accepts the
   comparison during constant evaluation, as CMP-26 states. Inside one
   class object, every compiler accepts `==` and `<` between the pointer

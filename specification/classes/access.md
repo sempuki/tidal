@@ -271,7 +271,7 @@ ACC-8 gives the access of the other members.
 
 :::{rule} ACC-12
 :kind: reject
-:tests: classes/access/private-base-conversion.cpp foundations/names/adl-ignores-base-access.cpp expressions/conditional/class-private-base-operand.cpp declarations/initialization/references/lvalue-ref-to-private-base.cpp
+:tests: classes/access/private-base-conversion.cpp foundations/names/adl-ignores-base-access.cpp expressions/conditional/class-private-base-operand.cpp declarations/initialization/references/lvalue-ref-to-private-base.cpp templates/deduction/private-base-with-fallback.cpp templates/deduction/protected-base-with-fallback.cpp declarations/initialization/references/lvalue-ref-to-private-base-in-member.cpp expressions/conditional/class-private-base-operand-in-friend.cpp
 
 A conversion from a derived class to one of its bases needs access to
 that base. The rule applies to:
@@ -391,8 +391,8 @@ class Token {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 83
-of 89 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 87
+of 93 tests.
 
 ### Divergences
 

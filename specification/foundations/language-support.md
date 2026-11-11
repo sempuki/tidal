@@ -302,7 +302,7 @@ The same placement `new` in any other function is not valid there
 
 :::{rule} LSUP-11
 :kind: required
-:tests: foundations/language-support/allocator-self-declared-constant.cpp foundations/language-support/allocator-other-namespace-constant.cpp foundations/storage/allocation-array-class-elements-constant.cpp foundations/language-support/allocator-element-not-literal-constant.cpp foundations/storage/allocation-assign-before-construction-int-element.cpp foundations/storage/allocation-assign-before-construction-pod-member.cpp
+:tests: foundations/language-support/allocator-self-declared-constant.cpp foundations/language-support/allocator-other-namespace-constant.cpp foundations/storage/allocation-array-class-elements-constant.cpp foundations/language-support/allocator-element-not-literal-constant.cpp foundations/storage/allocation-assign-before-construction-int-element.cpp foundations/storage/allocation-assign-before-construction-pod-member.cpp foundations/storage/allocation-assign-before-construction-double-element.cpp foundations/storage/allocation-assign-before-construction-user-assignment.cpp
 
 A program that includes no header can declare `std::allocator` as a
 class template with the member functions `allocate` and `deallocate`.
@@ -312,10 +312,9 @@ members ({rule}`NEW-37`, {rule}`STG-28`). A read of an element of
 storage from `allocate` where no object has begun its lifetime is a
 read outside a lifetime ({rule}`OBJ-2`), and constant evaluation
 rejects it ({rule}`CE-22`). Constant evaluation also rejects an
-assignment to such an element before `std::construct_at` builds it,
-for an element of type `int` or a member of an element of a simple
-class ({question}`Q-0421`). The
-element type need not be a literal type.
+assignment to such an element, or to a member of it, before
+`std::construct_at` builds it, for every element type
+({question}`Q-0421`). The element type need not be a literal type.
 :::
 
 ## Implementation Requirements
@@ -539,7 +538,7 @@ int* r = new (raw) int(3);          // raw hosts the int
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 52
-of 71 tests. EDG compiles the run tests and does not run them.
+of 73 tests. EDG compiles the run tests and does not run them.
 
 ### Divergences
 
@@ -607,8 +606,10 @@ different exit codes.
 | `expressions/new-delete/bad-bound-too-few.cpp` | NEW-35, LSUP-8 | run | run-fail | run-fail | accept | {question}`Q-0301` |
 | `expressions/new-delete/bad-bound-too-large.cpp` | NEW-35, LSUP-8 | run | run-fail | run | accept | {question}`Q-0301` |
 | `expressions/new-delete/constant-evaluation-nothrow.cpp` | NEW-37, LSUP-6 | accept | accept | GCC 16: accept; GCC 14: reject | reject | {question}`Q-0303` |
+| `foundations/storage/allocation-assign-before-construction-double-element.cpp` | LSUP-11, CE-9 | reject | reject | accept | accept | {question}`Q-0421` |
 | `foundations/storage/allocation-assign-before-construction-int-element.cpp` | LSUP-11, CE-9 | reject | reject | accept | accept | {question}`Q-0421` |
 | `foundations/storage/allocation-assign-before-construction-pod-member.cpp` | LSUP-11, CE-9 | reject | reject | accept | accept | {question}`Q-0421` |
+| `foundations/storage/allocation-assign-before-construction-user-assignment.cpp` | LSUP-11, CE-9 | reject | reject | accept | accept | {question}`Q-0421` |
 | `initializer-list-candidate-not-viable.cpp` | LSUP-1, ICS-16 | accept | accept | reject | accept | {question}`Q-0321` |
 | `initializer-list-parameter-not-needed.cpp` | LSUP-1 | accept | accept | reject | accept | {question}`Q-0321` |
 | `ordering-declared-after-class.cpp` | LSUP-2 | reject | reject | run | reject | {question}`Q-0402` |

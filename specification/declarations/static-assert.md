@@ -43,7 +43,7 @@ checked.
 
 :::{rule} SA-1
 :kind: reject
-:tests: declarations/static-assert/false-rejected.cpp declarations/static-assert/false-with-message.cpp declarations/static-assert/true-accepted.cpp declarations/static-assert/message-shown.cpp declarations/static-assert/discarded-branch-nontemplate.cpp declarations/static-assert/template-instantiated-false.cpp
+:tests: declarations/static-assert/false-rejected.cpp declarations/static-assert/false-with-message.cpp declarations/static-assert/true-accepted.cpp declarations/static-assert/message-shown.cpp declarations/static-assert/discarded-branch-nontemplate.cpp declarations/static-assert/template-instantiated-false.cpp templates/constraints/added-const-non-template-checks-constraint.cpp
 
 The condition of a static assertion must be `true`. If the condition is
 `false`, the implementation rejects the program. The diagnostic
@@ -155,7 +155,7 @@ static_assert(!addable<Usd, Eur>);    // fine: the sum is not valid
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on all
-29 tests. Clang, GCC, and EDG each show the message of a failed
+30 tests. Clang, GCC, and EDG each show the message of a failed
 assertion.
 
 Inputs: clang-sema-declcxx, clang-diag-sema, clang-diag-parse,

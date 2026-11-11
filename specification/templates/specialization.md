@@ -518,6 +518,19 @@ static_assert(Traits<const int*>::kind == 2);   // const T* is more specialized
 static_assert(Traits<void*>::kind == 3);        // the explicit specialization
 ```
 
+Partial specializations for `T[N]` and `const T[N]` both match an array
+of `const` elements. The one for `const T[N]` is more specialized, so
+TSP-15 selects it:
+
+```cpp
+template <class T> struct Decay { using type = T; };
+template <class T, decltype(sizeof 0) N> struct Decay<T[N]> { using type = T*; };
+template <class T, decltype(sizeof 0) N> struct Decay<const T[N]> { using type = const T*; };
+
+Decay<int[3]>::type a = nullptr;         // int*: only T[N] matches
+Decay<const char[4]>::type b = "abc";    // const char*: both match
+```
+
 A variable template and a function template:
 
 % tidal-example: diverges

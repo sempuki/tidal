@@ -1,0 +1,19 @@
+{
+ "prelude": "template <class T> struct Base { template <class U> U from_base() const { return U(2); } };",
+ "template": "{prelude}\ntemplate <class T> struct Wrap : Base<T> {{\n  template <class U> U get() const {{ return U(1); }}\n  {row}\n}};\nint main() {{ Wrap<double> w; {col} return 0; }}",
+ "rows": {
+  "w.get<int>(), w a const Wrap&": "static int r(const Wrap& w) { return w.get<int>(); }",
+  "w.get<int>(), w a const Wrap<T>&": "static int r(const Wrap<T>& w) { return w.get<int>(); }",
+  "w->get<int>(), w a const Wrap*": "static int r(const Wrap& w) { const Wrap* p = &w; return p->get<int>(); }",
+  "local Wrap l; l.get<int>()": "static int r(const Wrap&) { Wrap l; return l.get<int>(); }",
+  "w.template get<int>()": "static int r(const Wrap& w) { return w.template get<int>(); }",
+  "other specialization o.get<int>()": "static int r(const Wrap&) { Wrap<T*> o; return o.get<int>(); }",
+  "w.from_base<int>(), in a dependent base": "static int r(const Wrap& w) { return w.from_base<int>(); }",
+  "w.template from_base<int>()": "static int r(const Wrap& w) { return w.template from_base<int>(); }"
+ },
+ "cols": {
+  "called": "(void)Wrap<double>::r(w);",
+  "not called": "(void)w;"
+ },
+ "flags": []
+}

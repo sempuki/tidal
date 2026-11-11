@@ -83,7 +83,7 @@ is undefined:
 
 :::{rule} CAST-1
 :kind: required
-:tests: expressions/casts/static-cast-arithmetic.cpp expressions/casts/static-cast-enum.cpp expressions/casts/static-cast-void-pointer.cpp expressions/casts/static-cast-to-void.cpp expressions/casts/static-cast-rvalue-reference.cpp expressions/casts/static-cast-explicit-ctor.cpp expressions/casts/static-cast-float-to-enum.cpp expressions/casts/static-cast-enum-fixed-in-range.cpp expressions/casts/static-cast-null-to-pointer.cpp
+:tests: expressions/casts/static-cast-arithmetic.cpp expressions/casts/static-cast-enum.cpp expressions/casts/static-cast-void-pointer.cpp expressions/casts/static-cast-to-void.cpp expressions/casts/static-cast-rvalue-reference.cpp expressions/casts/static-cast-explicit-ctor.cpp expressions/casts/static-cast-float-to-enum.cpp expressions/casts/static-cast-enum-fixed-in-range.cpp expressions/casts/static-cast-null-to-pointer.cpp expressions/casts/static-cast-void-pointer-round-trip-class.cpp expressions/casts/static-cast-void-pointer-round-trip-constant.cpp
 
 `static_cast` can do these conversions:
 
@@ -96,6 +96,10 @@ is undefined:
 - a pointer to `void` to a pointer to an object type,
 - any expression to `void`,
 - an lvalue to an rvalue reference.
+
+A `static_cast` from `void*` back to the pointer type that gave the
+`void*` gives a pointer to the original object ({rule}`STG-16`).
+Constant evaluation rejects that cast ({rule}`CE-4`).
 :::
 
 :::{rule} CAST-2
@@ -331,7 +335,7 @@ auto* port = reinterpret_cast<volatile unsigned*>(size_t{0x4000'1000});
 
 ## Evidence
 
-All eight compilers agree on 61 of 62 tests. The results are in
+All eight compilers agree on 63 of 64 tests. The results are in
 `tests/RESULTS.md`.
 
 ### Divergences

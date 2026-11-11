@@ -3,7 +3,7 @@
 **Status:** provisional
 **Affects:** UNI-9, `tests/classes/unions/anonymous-union-unnamed-struct-member.cpp`
 **Source:** the round 10 programmer report (`reports/clean-room/roadmap-10/programmer.md`, sections 1.5 and 6), probe `anonymous_struct_member_in_anonymous_union.cpp`.
-**Waits for:** a first review; a rule
+**Waits for:** a first review
 
 ## Context
 
@@ -36,5 +36,9 @@ override.
 
 Yes; the program is rejected (option 1). EDG rejects it, and Clang
 marks it as an extension that strict mode rejects.
+
+Rule text on 2026-11-10 (decision 0061, item F3): UNI-9's list of
+nested types names an unnamed class that a member declaration defines.
+The question waits for a first review.
 
 ## Opinions

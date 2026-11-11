@@ -362,11 +362,11 @@ pointer or reference to `const`.
 
 :::{rule} CV-6
 :kind: required
-:tests: declarations/declarators/cv-on-array-applies-to-elements.cpp declarations/declarators/cv-on-function-alias.cpp
+:tests: declarations/declarators/cv-on-array-applies-to-elements.cpp declarations/declarators/cv-on-function-alias.cpp declarations/declarators/cv-on-function-template-parameter.cpp templates/deduction/function-type-const-dropped.cpp
 
-A cv-qualifier applied to an array type through an alias applies to the
-elements. A cv-qualifier applied to a function type through an alias has
-no effect.
+A cv-qualifier applied to an array type through an alias or a template
+parameter applies to the elements. A cv-qualifier applied to a function
+type through an alias or a template parameter has no effect.
 :::
 
 :::{rule} CV-7
@@ -565,7 +565,7 @@ void send(volatile int* to);   // valid
 
 ## Evidence
 
-All eight compilers agree on 98 of 101 tests. The results are in
+All eight compilers agree on 100 of 103 tests. The results are in
 `tests/RESULTS.md`.
 
 ### Divergences

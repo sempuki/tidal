@@ -312,7 +312,7 @@ A `new` expression must not:
 
 :::{rule} NEW-13
 :kind: required
-:tests: expressions/new-delete/class-allocation-function.cpp expressions/new-delete/class-array-allocation-function.cpp foundations/storage/class-allocation-function-global-placement.cpp foundations/storage/class-allocation-function-hides-placement.cpp
+:tests: expressions/new-delete/class-allocation-function.cpp expressions/new-delete/class-array-allocation-function.cpp foundations/storage/class-allocation-function-global-placement.cpp foundations/storage/class-allocation-function-hides-placement.cpp expressions/new-delete/allocation-function-deleted.cpp expressions/new-delete/allocation-function-private.cpp expressions/new-delete/allocation-function-array-deleted.cpp expressions/new-delete/allocation-function-private-global-form.cpp
 
 A class can declare its own `operator new` and `operator delete`. A
 `new` or `delete` for that class uses those functions. `::new` and
@@ -375,15 +375,19 @@ tried in its place ({question}`Q-0300`).
 
 :::{rule} NEW-25
 :kind: reject
-:tests: expressions/new-delete/deallocation-private.cpp expressions/new-delete/deallocation-private-no-throw.cpp expressions/new-delete/deallocation-deleted.cpp expressions/new-delete/deallocation-deleted-no-throw.cpp expressions/new-delete/deallocation-placement-deleted.cpp expressions/new-delete/placement-matches-usual-form.cpp expressions/new-delete/aligned-deleted-form-beside-unaligned.cpp expressions/new-delete/aligned-private-form-beside-unaligned.cpp
+:tests: expressions/new-delete/deallocation-private.cpp expressions/new-delete/deallocation-private-no-throw.cpp expressions/new-delete/deallocation-deleted.cpp expressions/new-delete/deallocation-deleted-no-throw.cpp expressions/new-delete/deallocation-placement-deleted.cpp expressions/new-delete/placement-matches-usual-form.cpp expressions/new-delete/aligned-deleted-form-beside-unaligned.cpp expressions/new-delete/aligned-private-form-beside-unaligned.cpp expressions/new-delete/allocation-function-deleted.cpp expressions/new-delete/allocation-function-private.cpp expressions/new-delete/allocation-function-array-deleted.cpp expressions/new-delete/allocation-function-private-global-form.cpp
 
-The deallocation function that NEW-21 to NEW-23 choose must be
-accessible and must not be deleted ({question}`Q-0221`). The
-requirement holds also when the initialization cannot throw. With
-placement arguments, the chosen function must not be a usual form
-(NEW-22). A deleted function that matches beside a matching template is
-not chosen ({rule}`NEW-24`), so the requirement does not reach it
-({question}`Q-0220`).
+These functions must be accessible and must not be deleted:
+
+- the allocation function that a `new` expression selects, also where
+  the search of {rule}`NEW-29` ends at it ({question}`Q-0417`),
+- the deallocation function that NEW-21 to NEW-23 choose, also when
+  the initialization cannot throw ({question}`Q-0221`).
+
+With placement arguments, the chosen deallocation function must not be
+a usual form (NEW-22). A deleted function that matches beside a
+matching template is not chosen ({rule}`NEW-24`), so the requirement
+does not reach it ({question}`Q-0220`).
 :::
 
 :::{rule} NEW-15
@@ -506,8 +510,8 @@ function gets the alignment too, after `delete` and after a throw
 If no allocation function accepts the arguments of NEW-28, the `new`
 expression tries again without the alignment argument. A function that
 overload resolution selects accepts them even when it is deleted or
-not accessible, so the expression is then not valid and does not try
-again ({question}`Q-0417`). The
+not accessible, so the expression is then not valid ({rule}`NEW-25`)
+and does not try again ({question}`Q-0417`). The
 non-allocating placement form reaches an over-aligned type this way,
 because no aligned non-allocating form exists ({rule}`STG-5`). A `delete`
 expression for the object finds its deallocation function in the same
@@ -773,8 +777,8 @@ int* q = new (cell) int(4);     // the int is at cell (NEW-33)
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 126
-of 151 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 130
+of 155 tests.
 
 ### Divergences
 
@@ -971,7 +975,10 @@ the compile.
   apply, and NEW-24 follows Clang ({question}`Q-0220`).
 - NEW-25: Clang, GCC, and EDG reject a private deallocation function,
   also when the initialization cannot throw. All three reject a
-  placement form whose match is a usual form.
+  placement form whose match is a usual form. All three reject a `new`
+  expression whose class declares its single-object or array
+  allocation function as deleted or private, and accept `::new` beside
+  a private class form.
 - NEW-5: at run time, `-fsanitize=address` in Clang and GCC stops a
   double delete ("attempting double-free") and `delete` of storage from
   `new[]` ("alloc-dealloc-mismatch"). The tests are

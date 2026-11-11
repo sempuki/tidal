@@ -266,7 +266,7 @@ the sequences tie ({rule}`ICS-25`), neither candidate is better, and
 
 :::{rule} COND-16
 :kind: required
-:tests: expressions/conditional/class-converts-to-reference.cpp expressions/conditional/class-converts-best-conversion.cpp expressions/conditional/class-ambiguous-conversion.cpp expressions/conditional/class-base-less-qualified-rejected.cpp expressions/conditional/class-base-const-derived-prvalue-rejected.cpp expressions/conditional/class-base-does-not-convert-to-derived.cpp expressions/conditional/class-base-target-keeps-cv.cpp expressions/conditional/class-const-and-volatile-lvalues.cpp expressions/conditional/class-converts-to-decayed-array.cpp expressions/conditional/class-deleted-conversion-counts.cpp expressions/conditional/class-private-conversion-counts.cpp expressions/conditional/class-same-type-toward-more-qualified.cpp expressions/conditional/nonclass-and-class-both-ways.cpp expressions/conditional/nonclass-converts-to-class.cpp expressions/conditional/class-derived-prvalue-against-base-xvalue.cpp expressions/conditional/class-derived-prvalue-const-base-lvalue.cpp expressions/conditional/class-const-lvalue-against-xvalue.cpp expressions/conditional/class-derived-xvalue-const-base-lvalue.cpp expressions/conditional/class-cv-lvalues-convert-to-int.cpp expressions/conditional/class-converts-to-int-reference-lvalue.cpp expressions/conditional/class-lvalue-and-int-run.cpp expressions/conditional/class-lvalue-and-other-class-lvalue-run.cpp expressions/conditional/class-lvalue-and-string-literal-run.cpp expressions/conditional/class-prvalue-and-other-class-prvalue-run.cpp expressions/conditional/class-ambiguous-base-operand.cpp expressions/conditional/class-private-base-operand.cpp expressions/conditional/lvalue-and-xvalue-types.cpp expressions/conditional/class-const-and-volatile-xvalues.cpp expressions/conditional/derived-xvalue-base-deleted-move.cpp expressions/conditional/derived-lvalue-base-copied.cpp expressions/conditional/class-explicit-reference-conversion.cpp expressions/conditional/class-converts-to-rvalue-reference.cpp expressions/conditional/class-step3-after-step1.cpp
+:tests: expressions/conditional/class-converts-to-reference.cpp expressions/conditional/class-converts-best-conversion.cpp expressions/conditional/class-ambiguous-conversion.cpp expressions/conditional/class-base-less-qualified-rejected.cpp expressions/conditional/class-base-const-derived-prvalue-rejected.cpp expressions/conditional/class-base-does-not-convert-to-derived.cpp expressions/conditional/class-base-target-keeps-cv.cpp expressions/conditional/class-const-and-volatile-lvalues.cpp expressions/conditional/class-converts-to-decayed-array.cpp expressions/conditional/class-deleted-conversion-counts.cpp expressions/conditional/class-private-conversion-counts.cpp expressions/conditional/class-same-type-toward-more-qualified.cpp expressions/conditional/nonclass-and-class-both-ways.cpp expressions/conditional/nonclass-converts-to-class.cpp expressions/conditional/class-derived-prvalue-against-base-xvalue.cpp expressions/conditional/class-derived-prvalue-const-base-lvalue.cpp expressions/conditional/class-const-lvalue-against-xvalue.cpp expressions/conditional/class-derived-xvalue-const-base-lvalue.cpp expressions/conditional/class-cv-lvalues-convert-to-int.cpp expressions/conditional/class-converts-to-int-reference-lvalue.cpp expressions/conditional/class-lvalue-and-int-run.cpp expressions/conditional/class-lvalue-and-other-class-lvalue-run.cpp expressions/conditional/class-lvalue-and-string-literal-run.cpp expressions/conditional/class-prvalue-and-other-class-prvalue-run.cpp expressions/conditional/class-ambiguous-base-operand.cpp expressions/conditional/class-private-base-operand.cpp expressions/conditional/lvalue-and-xvalue-types.cpp expressions/conditional/class-const-and-volatile-xvalues.cpp expressions/conditional/derived-xvalue-base-deleted-move.cpp expressions/conditional/derived-lvalue-base-copied.cpp expressions/conditional/class-explicit-reference-conversion.cpp expressions/conditional/class-converts-to-rvalue-reference.cpp expressions/conditional/class-step3-after-step1.cpp expressions/conditional/class-private-base-operand-in-friend.cpp
 
 For COND-3, COND-5, and COND-11, when the two operands have different
 types and at least one has class type, each operand `X` is tried
@@ -287,7 +287,11 @@ lvalue or xvalue that a conversion function of `X` returns. A
 conversion function that returns a value gives a prvalue, so steps 1
 and 2 do not use it. A reference does not bind directly to a class
 prvalue, because the prvalue first becomes a temporary object
-({question}`Q-0401`). Each step initializes its target as copy
+({question}`Q-0401`). For a class derived from `T`, steps 1 and 2 ask
+only whether `T` is a base of that class, as step 3 does. An ambiguous
+or inaccessible base still gives the conversion, and {rule}`CONV-17` or
+{rule}`ACC-12` then rejects the conversion. Each step initializes its
+target as copy
 initialization does, so an `explicit` conversion function or an
 `explicit` constructor takes no part ({rule}`CTOR-9`, {rule}`CVF-3`). So a `Derived`
 prvalue against a `Base` xvalue converts by step 3, to a prvalue of
@@ -360,7 +364,7 @@ int m = larger(x, y);          // fine: x and y outlive the call
 
 ## Evidence
 
-All eight compilers agree on 85 of 93 tests. The results are in
+All eight compilers agree on 86 of 94 tests. The results are in
 `tests/RESULTS.md`.
 
 ### Divergences
@@ -429,6 +433,14 @@ All eight compilers agree on 85 of 93 tests. The results are in
   table allows, when the two operands differ in cv-qualifiers or one
   class is a base of the other. The table follows every newest compiler
   and the later reading of the text that the review names.
+- COND-16: in a friend of a class with a private base `Root`, every
+  compiler gives a `Root` lvalue for a `Root` lvalue against an lvalue
+  of the class. Outside, every compiler rejects the expression for a
+  private base and for an ambiguous base. Steps 1 and 2 take the base
+  relation alone, as REF-1 and {rule}`DED-15` do. A step that checks
+  access gives the same rejections, so the probes cannot tell the two
+  readings apart (front-end finding G153,
+  `reports/clean-room/roadmap-10/writer-probes/g153-cond-private-base.json`).
 
 ### Sources
 

@@ -545,8 +545,9 @@ elements are destroyed from the last element to the first, also for
 
 An explicit destructor call runs the destructor and ends the life of the
 object. The storage of the object is not released. The name after `~`
-can be a type alias. A program can also call a destructor on an object
-of scalar type through a type name.
+can be a type alias, or `decltype` of the object ({rule}`DTY-3`). A
+program can also call a destructor on an object of scalar type through
+a type name.
 :::
 
 ## Undefined Behavior

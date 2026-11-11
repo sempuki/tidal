@@ -197,7 +197,7 @@ does not fit in it, the behavior is undefined.
 
 :::{rule} ADD-10
 :kind: undefined
-:tests: expressions/additive/pointer-beyond-array.cpp expressions/additive/intermediate-step-beyond-array.cpp expressions/additive/pointer-before-array.cpp expressions/additive/null-plus-nonzero.cpp expressions/additive/deref-one-past-end.cpp expressions/additive/past-end-of-row.cpp expressions/additive/null-plus-nonzero-sanitizer.cpp expressions/additive/base-pointer-beyond-subobject.cpp expressions/additive/base-pointer-beyond-subobject-run.cpp expressions/additive/pointer-loop-inside-string-literal.cpp
+:tests: expressions/additive/pointer-beyond-array.cpp expressions/additive/intermediate-step-beyond-array.cpp expressions/additive/pointer-before-array.cpp expressions/additive/null-plus-nonzero.cpp expressions/additive/deref-one-past-end.cpp expressions/additive/past-end-of-row.cpp expressions/additive/null-plus-nonzero-sanitizer.cpp expressions/additive/base-pointer-beyond-subobject.cpp expressions/additive/base-pointer-beyond-subobject-run.cpp expressions/additive/pointer-loop-inside-string-literal.cpp foundations/storage/byte-rows-pointer-does-not-reach-next-row.cpp
 
 The behavior is undefined if pointer arithmetic gives a position that
 is:
@@ -322,8 +322,8 @@ bool add_fits(int a, int b) {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 53
-of 62 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 54
+of 63 tests.
 
 ### Divergences
 

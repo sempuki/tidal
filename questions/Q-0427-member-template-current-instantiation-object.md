@@ -1,9 +1,9 @@
 # Q-0427: Does a member template named after `.` need `template` when the object's type is the current instantiation?
 
 **Status:** provisional
-**Affects:** DEP-24, DEP-39, DEP-2, `tests/templates/dependent-names/member-template-through-current-instantiation-object.cpp`
+**Affects:** DEP-24, DEP-39, DEP-2, `tests/templates/dependent-names/member-template-through-current-instantiation-object.cpp`, `tests/templates/dependent-names/member-template-current-instantiation-pointer.cpp`, `tests/templates/dependent-names/member-template-current-instantiation-dependent-base-needs-template.cpp`
 **Source:** the round 10 programmer report (`reports/clean-room/roadmap-10/programmer.md`, sections 1.5 and 6), reduction `member_template_through_current_instantiation_object.cpp`.
-**Waits for:** a first review; a rule
+**Waits for:** a first review
 
 ## Context
 
@@ -23,7 +23,13 @@ The front end follows the text as it stands.
 
 ## Evidence
 
-The test in **Affects**, which expects a run.
+The tests in **Affects**. The two run tests call the member template
+with no `template` through a reference, a pointer, and a local object
+of the current instantiation. The reject test names a member template
+that only a dependent base declares, so lookup at the definition does
+not find it in the class, and every compiler asks for `template`. The
+writer probe `reports/clean-room/roadmap-10/writer-probes/f3b-dep-24-object-forms.json`
+gives each form.
 
 ## Options
 
@@ -40,5 +46,10 @@ The test in **Affects**, which expects a run.
 No; the program runs without `template` (option 1). Every compiler
 accepts the form, and DEP-39 already treats an object of the current
 instantiation as a case for lookup at the definition.
+
+Rule text on 2026-11-10 (decision 0061, item F3): DEP-24's bullet for
+`.` and `->` leaves out an object whose type is the current
+instantiation when lookup at the definition finds the member template
+in the class. The question waits for a first review.
 
 ## Opinions

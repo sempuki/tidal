@@ -1,0 +1,18 @@
+{
+ "prelude": "template <class A, class B> constexpr bool same = false;\ntemplate <class A> constexpr bool same<A, A> = true;\nstruct Box { int v = 0; };\ntemplate <class T> struct Trip { static_assert(!same<T, Box>, \"the constraint is checked for Box\"); static constexpr bool value = true; };",
+ "template": "{prelude}\n{col}\nint main() {{ {row} return 0; }}",
+ "rows": {
+  "const Box lvalue": "const Box b{}; f(b);",
+  "Box lvalue": "Box b{}; f(b);",
+  "Box xvalue": "Box b{}; f(static_cast<Box&&>(b));",
+  "Box prvalue": "f(Box{});"
+ },
+ "cols": {
+  "f(const Box&) + template f(const T&)": "void f(const Box&) {}\ntemplate <class T> requires Trip<T>::value void f(const T&) {}",
+  "f(Box&) + template f(const T&)": "void f(Box&) {}\nvoid f(const Box&) {}\ntemplate <class T> requires Trip<T>::value void f(const T&) {}",
+  "f(Box&&) + f(const Box&) + template f(T&&)": "void f(Box&&) {}\nvoid f(const Box&) {}\ntemplate <class T> requires Trip<T>::value void f(T&&) {}",
+  "f(Box) + template f(const T&)": "void f(Box) {}\ntemplate <class T> requires Trip<T>::value void f(const T&) {}",
+  "f(const Box&) + template f(T)": "void f(const Box&) {}\ntemplate <class T> requires Trip<T>::value void f(T) {}"
+ },
+ "flags": []
+}
