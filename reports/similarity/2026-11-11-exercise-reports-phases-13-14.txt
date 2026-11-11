@@ -1,0 +1,120 @@
+Similarity report: run threshold 8 words, overlap threshold 0.25
+
+ok   sim-ex/I6-report.md:I6: dependent names and the checks befor longest=0   overlap=0.00
+ok   sim-ex/I6-report.md:Inputs       longest=0   overlap=0.02
+ok   sim-ex/I6-report.md:Score        longest=0   overlap=0.00
+ok   sim-ex/I6-report.md:I6-1. DEP-5 does not say that an indepen longest=0   overlap=0.00
+ok   sim-ex/I6-report.md:I6-2. The component missed DEP-34 for a  longest=0   overlap=0.00
+ok   sim-ex/I6-report.md:I6-3. DEP-26 has no example of `template longest=0   overlap=0.02
+ok   sim-ex/I6-report.md:I6-4. The two phases of a qualified name longest=0   overlap=0.00
+ok   sim-ex/I6-report.md:I6-5. A member access through `this` and longest=0   overlap=0.04
+ok   sim-ex/I6-report.md:I6-6. `sizeof` of a value-dependent oper longest=0   overlap=0.00
+ok   sim-ex/I6-report.md:I6-7. DEP-30 against DEP-6 and DEP-12 be longest=0   overlap=0.00
+ok   sim-ex/I6-report.md:I6-8. CNS-13 and the DEP-P6 table give d longest=0   overlap=0.00
+ok   sim-ex/I6-report.md:I6-9. Qualified dependent calls, and mem longest=0   overlap=0.00
+ok   sim-ex/I6-report.md:I6-10. Which point of instantiation argu longest=0   overlap=0.05
+ok   sim-ex/I6-report.md:I6-11. The front end stops on `this->tem longest=0   overlap=0.00
+ok   sim-ex/I6-report.md:I6-12. The front end does not find an op longest=0   overlap=0.00
+ok   sim-ex/I6-report.md:I6-13. Which uses instantiate a class: ` longest=0   overlap=0.01
+ok   sim-ex/I6-report.md:I6-14. A hard error in an instantiated c longest=0   overlap=0.00
+ok   sim-ex/I6-report.md:I6-15. INST-5 and INST-33 on a `static c longest=0   overlap=0.00
+ok   sim-ex/I6-report.md:I6-16. When a friend function defined in longest=0   overlap=0.01
+ok   sim-ex/I6-report.md:I6-17. DEP-37 needs the arity of each op longest=0   overlap=0.02
+ok   sim-ex/I6-report.md:I6-18. Why `T::x * p;` and `T::x p;` are longest=0   overlap=0.00
+ok   sim-ex/I6-report.md:I6-19. DEP-20 and the return type of a m longest=0   overlap=0.05
+ok   sim-ex/I6-report.md:I6-20. Knowledge the pages did not give longest=0   overlap=0.05
+ok   sim-ex/I6-report.md:Programs     longest=0   overlap=0.00
+ok   sim-ex/I6-report.md:Reductions   longest=0   overlap=0.00
+ok   sim-ex/I6-report.md:What worked well longest=0   overlap=0.00
+ok   sim-ex/I7-report.md:I7: class template argument deduction, f longest=0   overlap=0.00
+ok   sim-ex/I7-report.md:Inputs       longest=0   overlap=0.00
+ok   sim-ex/I7-report.md:Score        longest=0   overlap=0.01
+ok   sim-ex/I7-report.md:I7-1. Brace elision for a member whose t longest=0   overlap=0.02
+ok   sim-ex/I7-report.md:I7-2. Step 5 needs a second overload res longest=0   overlap=0.00
+ok   sim-ex/I7-report.md:I7-3. The inherited copy candidate gives longest=0   overlap=0.00
+ok   sim-ex/I7-report.md:I7-4. The component missed a template gu longest=0   overlap=0.00
+ok   sim-ex/I7-report.md:I7-5. Implicit constructors and the guid longest=0   overlap=0.00
+ok   sim-ex/I7-report.md:I7-6. Which guides are initializer-list  longest=0   overlap=0.00
+ok   sim-ex/I7-report.md:I7-7. The match of CTAD-14 needs one wor longest=0   overlap=0.01
+ok   sim-ex/I7-report.md:I7-8. An alias of an alias longest=0   overlap=0.00
+ok   sim-ex/I7-report.md:I7-9. Which guides a derived class inher longest=0   overlap=0.00
+ok   sim-ex/I7-report.md:I7-10. Is every guide a function templat longest=0   overlap=0.02
+ok   sim-ex/I7-report.md:I7-11. Copy initialization and the conve longest=0   overlap=0.00
+ok   sim-ex/I7-report.md:I7-12. CTAD-18 and the sentence on one o longest=0   overlap=0.00
+ok   sim-ex/I7-report.md:I7-13. A new expression and a static mem longest=0   overlap=0.00
+ok   sim-ex/I7-report.md:I7-14. When a conditional explicit is ev longest=0   overlap=0.00
+ok   sim-ex/I7-report.md:I7-15. Knowledge the pages did not give longest=0   overlap=0.00
+ok   sim-ex/I7-report.md:I7-16. The front end stops on an aggrega longest=0   overlap=0.00
+ok   sim-ex/I7-report.md:I7-17. The front end stops on a braced c longest=0   overlap=0.01
+ok   sim-ex/I7-report.md:Programs     longest=0   overlap=0.00
+ok   sim-ex/I7-report.md:Reductions   longest=0   overlap=0.00
+ok   sim-ex/I7-report.md:Host-only claims longest=0   overlap=0.00
+ok   sim-ex/I7-report.md:What worked well longest=0   overlap=0.00
+ok   sim-ex/P2-report.md:P2: Port suite, Java persona longest=0   overlap=0.00
+ok   sim-ex/P2-report.md:Pages read   longest=0   overlap=0.00
+ok   sim-ex/P2-report.md:Rules and principles noted before writin longest=0   overlap=0.00
+ok   sim-ex/P2-report.md:Summary      longest=0   overlap=0.00
+ok   sim-ex/P2-report.md:P2-1: No guidance for a program that has longest=0   overlap=0.00
+ok   sim-ex/P2-report.md:P2-2: The shared reference came from out longest=0   overlap=0.00
+ok   sim-ex/P2-report.md:P2-3: String equality with `==` is a sil longest=0   overlap=0.00
+ok   sim-ex/P2-report.md:P2-4: Java's wrapping arithmetic is spre longest=0   overlap=0.00
+ok   sim-ex/P2-report.md:P2-5: A literal port of `removeIf` reads longest=0   overlap=0.03
+ok   sim-ex/P2-report.md:P2-6: The shape of `std::initializer_lis longest=0   overlap=0.01
+ok   sim-ex/P2-report.md:P2-7: "Null" for a missing value has no  longest=0   overlap=0.01
+ok   sim-ex/P2-report.md:P2-8: A `static const int` member as an  longest=0   overlap=0.00
+ok   sim-ex/P2-report.md:P2-9: The front end reports an unspecifi longest=0   overlap=0.00
+ok   sim-ex/P2-report.md:buckets.cpp  longest=0   overlap=0.01
+ok   sim-ex/P2-report.md:chain.cpp    longest=0   overlap=0.01
+ok   sim-ex/P2-report.md:ledger.cpp   longest=0   overlap=0.01
+ok   sim-ex/P2-report.md:Results      longest=0   overlap=0.00
+ok   sim-ex/P2-report.md:What worked well longest=0   overlap=0.00
+ok   sim-ex/P3-report.md:P3: Port suite, C# persona longest=0   overlap=0.00
+ok   sim-ex/P3-report.md:Pages read   longest=0   overlap=0.00
+ok   sim-ex/P3-report.md:Rules noted before writing longest=0   overlap=0.00
+ok   sim-ex/P3-report.md:Summary      longest=0   overlap=0.00
+ok   sim-ex/P3-report.md:P3-1: no lazy-generator form, and no ite longest=0   overlap=0.00
+ok   sim-ex/P3-report.md:P3-2: the delegate form needs an example longest=0   overlap=0.00
+ok   sim-ex/P3-report.md:P3-3: naming the result type of a closur longest=0   overlap=0.02
+ok   sim-ex/P3-report.md:P3-4: string equality is a trap that onl longest=0   overlap=0.00
+ok   sim-ex/P3-report.md:P3-5: a stage that holds its source by r longest=0   overlap=0.01
+ok   sim-ex/P3-report.md:P3-6: INST-1 and INST-5 do not say when  longest=0   overlap=0.06
+ok   sim-ex/P3-report.md:P3-7: tidal-fe rejects with NAM-9 a memb longest=0   overlap=0.01
+ok   sim-ex/P3-report.md:P3-8: tidal-fe rejects with TYN-7 a cons longest=0   overlap=0.00
+ok   sim-ex/P3-report.md:P3-9: tidal-fe does not run a range-base longest=0   overlap=0.01
+ok   sim-ex/P3-report.md:P3-10: tidal-fe does not run an operator longest=0   overlap=0.00
+ok   sim-ex/P3-report.md:P3-11: copy-initialization from a closur longest=0   overlap=0.00
+ok   sim-ex/P3-report.md:P3-12: "closure type" is not in the glos longest=0   overlap=0.00
+ok   sim-ex/P3-report.md:pipeline.cpp longest=0   overlap=0.02
+ok   sim-ex/P3-report.md:events.cpp   longest=0   overlap=0.00
+ok   sim-ex/P3-report.md:machine.cpp  longest=0   overlap=0.00
+ok   sim-ex/P3-report.md:Results      longest=0   overlap=0.00
+ok   sim-ex/P3-report.md:Host-only claims longest=0   overlap=0.01
+ok   sim-ex/P3-report.md:What worked well longest=0   overlap=0.00
+ok   sim-ex/report-24.md:Front end, round 24: the T2 and F3 tests longest=0   overlap=0.00
+ok   sim-ex/report-24.md:Method       longest=0   overlap=0.01
+ok   sim-ex/report-24.md:Counts       longest=0   overlap=0.01
+ok   sim-ex/report-24.md:The checks   longest=0   overlap=0.01
+ok   sim-ex/report-24.md:2. Group 1: the wrong verdicts and the n longest=0   overlap=0.01
+ok   sim-ex/report-24.md:3. Group 2: root causes behind the unsup longest=0   overlap=0.02
+ok   sim-ex/report-24.md:4. Group 3: run stops that free whole ru longest=0   overlap=0.01
+ok   sim-ex/report-24.md:5. Group 4: missed rejects outside templ longest=0   overlap=0.03
+ok   sim-ex/report-24.md:6. Group 5 and items left, with reasons longest=0   overlap=0.02
+ok   sim-ex/report-24.md:7. Tests added during the round longest=0   overlap=0.02
+ok   sim-ex/report-24.md:G161. The text does not say how a loop g longest=0   overlap=0.02
+ok   sim-ex/report-24.md:G162. LSUP-6 does not say who defines `s longest=0   overlap=0.01
+ok   sim-ex/report-24.md:G163. UNI-6 and the run test disagree on longest=0   overlap=0.00
+ok   sim-ex/report-24.md:9. Decision 0060: the completion test longest=0   overlap=0.00
+ok   sim-ex/report-25.md:Front end, round 25: the T3, F4, RV7, an longest=0   overlap=0.00
+ok   sim-ex/report-25.md:Method       longest=0   overlap=0.01
+ok   sim-ex/report-25.md:Counts       longest=0   overlap=0.01
+ok   sim-ex/report-25.md:The checks   longest=0   overlap=0.00
+ok   sim-ex/report-25.md:2. Group 1: the new tests of T3, F4, RV7 longest=0   overlap=0.00
+ok   sim-ex/report-25.md:3. Group 2: missed rejects outside templ longest=0   overlap=0.02
+ok   sim-ex/report-25.md:4. P2-9: the first line when every order longest=0   overlap=0.00
+ok   sim-ex/report-25.md:5. Ledger rows of `reports/clean-room/le longest=0   overlap=0.00
+ok   sim-ex/report-25.md:6. Tests added during the round longest=0   overlap=0.02
+ok   sim-ex/report-25.md:7. Decision 0060: the completion test longest=0   overlap=0.01
+ok   sim-ex/report-25.md:G164. STG-28 does not say which element  longest=0   overlap=0.01
+ok   sim-ex/report-25.md:G165. VIRT-13 does not say whether a hid longest=0   overlap=0.00
+
+0 flagged
