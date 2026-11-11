@@ -58,6 +58,8 @@ Kept in `pending.md` row 4 on 2026-11-11 (decision 0062, item RV7), because the 
 
 Evidence on 2026-11-11 (decision 0062, item RV7): the DEP-P5 row for the deduced form stays, as GCC 16 and EDG 7.0 accept the form. The divergence line on the dependent-names page names the review, and `pending.md` row 4 holds the deduced form.
 
+Kept in `pending.md` row 4 on 2026-11-11 (decision 0063, item RV8). The gap review of the phase 15 text still reads against the deduced form, and only Clang 22 follows the review. The row 4 item names the review.
+
 ## Opinions
 
 ### Gap review, 2026-11-03
@@ -73,3 +75,7 @@ The source-reader gap review of the text phase 14 wrote on expressions, overload
 ### Read of the RV7 repair diff, 2026-11-11
 
 The source-reader read of the RV7 repair diff (`reports/review/2026-11-11-read-of-rv7-repair-diff.md`) reads the RV7 repair of the deduction page: the divergence line names the RV7 review and row 4, which the read finds correct.
+
+### Gap review, 2026-11-11 (phase 15 text, expressions, overloading, and templates)
+
+The source-reader gap review of the phase 15 text on expressions, overloading, and templates (`reports/review/2026-11-11-gap-review-phase-15-expressions-overloading-templates.md`) reads the question: reads against the deduced form (RV8-B-2). The reference's form for a deduced class type has no place for the keyword `template`, and its qualifier must not be dependent, so the test that accepts the form reads against the reference. The review adds a small doubt on DEP-25: the keyword with no list before a template template argument is allowed and deprecated, and Tidal states it with no mark.

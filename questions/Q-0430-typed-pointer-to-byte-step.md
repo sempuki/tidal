@@ -65,6 +65,8 @@ Evidence on 2026-11-11 (decision 0062, item RV7): the Notes of the storage and a
 
 Rule text on 2026-11-11 (decision 0063, item F5): STG-28 says that a `T*` cast from a pointer to the byte at the start of element `k` of the allocated array points to element `k`, also through `unsigned char*`, and that placement `new` at that address begins the element's lifetime for a `T` with a constructor (front-end finding G164, and the round 12 programmer report, item 3). Part B of RV7 allows the case, and part A reads against it. The question still waits for the maintainer.
 
+Kept in `pending.md` row 4 on 2026-11-11 (decision 0063, item RV8). The gap review of the phase 15 text reads the new STG-28 case of element `k`, reached by byte arithmetic, against the answer, and agrees with the case of element 0 (RV8-A-1). The read of the RV7 repair diff leans toward part A of RV7 for allocated storage (RV8-R-10). Every compiler that runs the programs keeps the matrix's answer, and EDG runs no program. The row 4 item for STG-28 names the element `k` case and both readings.
+
 ## Opinions
 
 ### Gap review, 2026-11-11 (phase 14 text, classes, declarations, foundations, and statements)
@@ -78,3 +80,7 @@ The source-reader gap review of the text phase 14 wrote on expressions, overload
 ### Read of the RV7 repair diff, 2026-11-11
 
 The source-reader read of the RV7 repair diff (`reports/review/2026-11-11-read-of-rv7-repair-diff.md`) reads the RV7 repair: the Q-0430 line names both RV7 reviews and STG-P2 cites the question. The repair keeps the compilers' answer with an Evidence note that states the reviews' readings correctly; the question stays in row 4.
+
+### Gap review, 2026-11-11 (phase 15 text, classes, declarations, foundations, and statements)
+
+The source-reader gap review of the phase 15 text on classes, declarations, foundations, statements, and the glossary (`reports/review/2026-11-11-gap-review-phase-15-classes-declarations-foundations.md`) reads the question: reads against the answer (RV8-A-1). STG-28's new sentence has two cases. For element 0, the byte pointer comes from the allocation's result with no arithmetic, and a cast back to `T*` through `void*` finds element 0; placement `new` there makes a new element 0, which the `T*` reaches. That case agrees. For element `k` above 0, two steps are needed. If the byte pointer points to element 0 of a `T` array, its step across elements is undefined, because the byte type and `T` are not similar. If the byte pointer points into a byte array, the step is defined, and the cast still gives a pointer to the byte, because a byte and the element whose storage holds it are not pointer-interconvertible (STG-16). No choice of created objects makes both steps defined. After placement `new` at the address, only the pointer that placement `new` returns reaches the new element. Option 3 stays the closest, and `allocated-storage-typed-step-after-byte-offset.cpp` keeps the split of RV7-A-10. The review differs from RV8-R-10: under ADD-6 the stepped pointer still points to a byte, so part B's reading also needs a claim that STG-16 does not make.

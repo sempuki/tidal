@@ -54,10 +54,14 @@ Kept on 2026-11-03. The source-reader gap review of question cluster 5 (`reports
 
 Kept open on 2026-11-03 under decision 0054, because the question waits on the maintainer (`documentation/decisions/pending.md`).
 
+Kept open on 2026-11-11 (decision 0063, item RV8). The gap review of the phase 15 text names the question and gives no new reading. The question still waits on the maintainer.
+
 ## Opinions
 
 ### Gap review, 2026-11-03
 
 The source-reader gap review of question cluster 5 (`reports/review/2026-11-03-gap-review-question-cluster-5.md`) reads the reference as supporting option 2 for the first form and option 1 for the second form. The aggregate candidate does not consider brace elision for an array member whose element type is dependent when the element of the list is a string literal. The string literal then corresponds to the whole array, its parameter is a reference to a `const` array of the member's type, and `T` is deduced as `char`. Every compiler gives an array of pointers, so all three share a defect there. In the second form the array does not depend on the parameter, so brace elision is considered, the string literal initializes the whole `char` array, and the other element gives `int`. Clang and GCC give that result, and EDG's rejection is a defect. An example of the reference deduces `char` for a class with a dependent element type and a dependent bound, which points the same way as the first form.
 
-<!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+### Gap review, 2026-11-11 (phase 15 text, expressions, overloading, and templates)
+
+The source-reader gap review of the phase 15 text on expressions, overloading, and templates (`reports/review/2026-11-11-gap-review-phase-15-expressions-overloading-templates.md`) names the question in its reading of CTAD-10. The new sentence on a member or base whose type is not dependent agrees: braces are elided as usual, because the reference turns elision off only for the dependent cases. The older sentence on a string literal for an array member of dependent element type stays with this question, whose cluster 5 review reads against it. The review gives no new reading of that case.

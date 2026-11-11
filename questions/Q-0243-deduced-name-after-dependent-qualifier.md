@@ -54,6 +54,8 @@ Kept on 2026-11-03. The source-reader gap review of question cluster 1 (`reports
 
 Kept open on 2026-11-03 under decision 0054, because the question waits on the maintainer (`documentation/decisions/pending.md`).
 
+Kept in `pending.md` row 4 on 2026-11-11 (decision 0063, item RV8). The gap review of the phase 15 text names the question and gives no new reading.
+
 ## Opinions
 
 ### Gap review, 2026-11-01
@@ -65,3 +67,7 @@ The source-reader gap review of question cluster 1 (`reports/review/2026-11-01-g
 ### Gap review, 2026-10-31
 
 The source-reader gap review of packs and class template argument deduction (`reports/review/2026-10-31-gap-review-packs-and-ctad.md`) reads the qualifier before a deduced class template name as required to be non-dependent, so the reading rejects the program. Compilers accept the dependent form once the template is instantiated. The reading goes against the provisional answer, as the cluster 1 review does, and the review asks the question to keep both.
+
+### Gap review, 2026-11-11 (phase 15 text, expressions, overloading, and templates)
+
+The source-reader gap review of the phase 15 text on expressions, overloading, and templates (`reports/review/2026-11-11-gap-review-phase-15-expressions-overloading-templates.md`) names the question in its reading of CTAD-1. The older sentence of CTAD-1 on a dependent qualifier stays with this question in `pending.md` row 4. The review gives no new reading of the case.

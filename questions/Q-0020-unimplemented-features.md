@@ -43,8 +43,14 @@ visible in the test.
 
 Kept open on 2026-11-03 under decision 0054, because the review finds the reference silent.
 
+Kept open on 2026-11-11 (decision 0063, item RV8). The gap review of the phase 15 text on expressions names the question at CTAD-17 and does not read the question of the test format, so the last reading of the question stays silent. `pending.md` row 4 holds the CTAD-17 case as a rule item.
+
 ## Opinions
 
 ### Gap review, 2026-11-03
 
 The source-reader gap review of the open questions on expressions, declarations, and the other foundations pages (`reports/review/2026-11-03-gap-review-questions-expressions-declarations.md`) finds the reference silent. The question concerns Tidal's test format.
+
+### Gap review, 2026-11-11 (phase 15 text, expressions, overloading, and templates)
+
+The source-reader gap review of the phase 15 text on expressions, overloading, and templates (`reports/review/2026-11-11-gap-review-phase-15-expressions-overloading-templates.md`) names the question in its reading of CTAD-17 (RV8-B-5) and does not read the question of the test format. The review reads the second bullet of CTAD-17 against the reference. The guides act as the constructors of a class, and nothing in the reference exempts them from the limit on a user-defined conversion for the first parameter in copy initialization. Read so, Clang 18, whose override in `copy-init-guide-user-conversion.cpp` names this question, follows the text, and Clang 22, GCC, and EDG do not. The review adds that the choice of a guide runs no conversion, which may explain the newer compilers, and that the text does not make that distinction.

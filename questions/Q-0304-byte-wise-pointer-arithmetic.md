@@ -42,6 +42,8 @@ byte-copy rules (STG-12, CPY-19) need the steps.
 
 Kept open on 2026-11-03 under decision 0054, because the review reads the reference with doubt.
 
+Kept open on 2026-11-11 (decision 0063, item RV8). The read of the RV7 repair diff and the gap review of the phase 15 text name the question at STG-28 and give no new reading of its answer, so the last reading stays one with doubt.
+
 ## Opinions
 
 <!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
@@ -53,3 +55,7 @@ The source-reader gap review of the object model (`reports/review/2026-11-03-gap
 ### Read of the RV7 repair diff, 2026-11-11
 
 The source-reader read of the RV7 repair diff (`reports/review/2026-11-11-read-of-rv7-repair-diff.md`) reads the storage Evidence note of the RV7 repair. The reference gives a byte step through a typed pointer no defined result, which is this question's gap, and part B of RV7 holds only under this question's answer (ADD-6) (RV8-R-10).
+
+### Gap review, 2026-11-11 (phase 15 text, classes, declarations, foundations, and statements)
+
+The source-reader gap review of the phase 15 text on classes, declarations, foundations, statements, and the glossary (`reports/review/2026-11-11-gap-review-phase-15-classes-declarations-foundations.md`) names the question in RV8-A-1 and takes its answer, ADD-6, as given. A byte pointer can step through the bytes of an object, and the stepped pointer then points to a byte of the storage. For a cast of that pointer to `T*` to reach the element that starts at the byte, STG-16 would need the byte and the element to be pointer-interconvertible, and STG-16 gives no such case. So the review reads ADD-6 as not enough to make part B of the RV7 reading consistent, and differs there from RV8-R-10. The review gives no new reading of this question's answer.

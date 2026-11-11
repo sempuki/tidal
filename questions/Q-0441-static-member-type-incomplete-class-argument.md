@@ -3,7 +3,7 @@
 **Status:** provisional
 **Affects:** INST-5, `tests/templates/instantiation/static-member-incomplete-argument-declared.cpp`, `tests/templates/instantiation/static-inline-member-incomplete-argument.cpp`
 **Source:** the P3 report (`reports/clean-room/P3/report.md`, P3-6), the round 12 writer probe `reports/clean-room/roadmap-12/writer-probes/p3-points.json`.
-**Waits for:** a first review; newest families that agree
+**Waits for:** a review (doubt); newest families that agree
 
 ## Context
 
@@ -49,6 +49,10 @@ with the class, and the definition with its initializer waits for a
 use (Q-0231). Clang agrees. GCC differs on both forms, and EDG on the
 `inline` one, so two newest families stand against the `inline` case.
 
+Kept open on 2026-11-11 under decision 0054 (decision 0063, item RV8). The review supports the answer with a doubt, and GCC 16 and EDG 7.0 differ on the inline form.
+
 ## Opinions
 
-<!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+### Gap review, 2026-11-11 (phase 15 text, expressions, overloading, and templates)
+
+The source-reader gap review of the phase 15 text on expressions, overloading, and templates (`reports/review/2026-11-11-gap-review-phase-15-expressions-overloading-templates.md`) reads the question: supports with a doubt (RV8-B-9). Making the class makes the declaration of a static data member and not its definition, and a member that is not inline may be declared in its class with an incomplete type. For an inline member, the declaration in the class is a definition outside templates, and a definition needs a complete type. The class instantiation still makes only the declaration, and the reference treats such a declaration as a definition only for the checks of a redeclaration, so the review leans toward option 1 for the inline form too. The doubt is whether making the declaration of an inline member must check its type, as GCC and EDG do. The review also finds the word "only" in INST-5 too narrow, because a call that passes or returns the class by value also needs the types complete (INST-1).

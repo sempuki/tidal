@@ -3,7 +3,7 @@
 **Status:** provisional
 **Affects:** PRIM-2, OPR-8, `tests/classes/operators/literal-raw-long-digits.cpp`, `tests/classes/operators/literal-operator-template-long-digits.cpp`, `tests/programs/roadmap/r12-bigint-second-try.cpp`
 **Source:** the round 12 programmer report (`reports/clean-room/roadmap-12/programmer.md`, sections 1.5 and 6), reduction `raw_literal_operator_long_literal.cpp`, and the programmer's sketches `bigint_first_try.cpp` and `bigint_second_try.cpp`.
-**Waits for:** a first review
+**Waits for:** a principle (PRIM-P1)
 
 ## Context
 
@@ -59,6 +59,14 @@ holds the case yet.
 
 Rule text on 2026-11-11 (decision 0063, item F5): PRIM-2 says that a literal whose suffix calls a literal operator has no type list, and that its value must fit in `unsigned long long` only when it calls the numeric form. The neighbor case of the numeric form now has its own question, Q-0440, and the test `literal-numeric-form-value-too-large.cpp`. The question now waits for a first review.
 
+Kept open on 2026-11-11 under decision 0054 (decision 0063, item RV8). The review supports the answer with no doubt, and every compiler agrees. No principle gives the answer. PRIM-P1 says that an integer literal that no type in its list can hold is rejected, and it does not set apart a literal whose suffix calls a literal operator. A reader of PRIM-P1 alone can reach option 2, so PRIM-P1 fails step 3 of the principle test. OPR-P3 says nothing on the value.
+
 ## Opinions
 
-<!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+### Gap review, 2026-11-11 (phase 15 text, classes, declarations, foundations, and statements)
+
+The source-reader gap review of the phase 15 text on classes, declarations, foundations, statements, and the glossary (`reports/review/2026-11-11-gap-review-phase-15-classes-declarations-foundations.md`) reads the question: supports with no doubt (RV8-A-5). A literal with a suffix of its own is a separate kind of token, built from the digits and the suffix. The rule that an integer literal must fit a type in its list covers only the plain kind. The raw form receives the digits as a string and the template receives them as characters, so neither needs an integer type to hold the value (option 1). The doubt that the review adds belongs to Q-0440.
+
+### Gap review, 2026-11-11 (phase 15 text, expressions, overloading, and templates)
+
+The source-reader gap review of the phase 15 text on expressions, overloading, and templates (`reports/review/2026-11-11-gap-review-phase-15-expressions-overloading-templates.md`) reads PRIM-2 with the question's case: agrees (RV8-B-10). The raw form and the template receive the characters, and the reference sets no limit on the digits for them.

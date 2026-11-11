@@ -478,6 +478,7 @@ status, and the first sentence of its answer section.
 | [Q-0439](Q-0439-ctad-static-member-no-initializer.md) | Can a static data member with no initializer have a class template name with no argument list as its type? | provisional | A static data member with no initializer cannot deduce |
 | [Q-0440](Q-0440-literal-operator-numeric-value-too-large.md) | Must an integer literal that calls the numeric form of a literal operator have a value that `unsigned long long` holds? | provisional | The literal must have a value that `unsigned long long` holds |
 | [Q-0441](Q-0441-static-member-type-incomplete-class-argument.md) | Does the instantiation of a class need the type of a static data member complete? | provisional | The instantiation of the class does not need the type of a `static` data member complete, also when the member is `inline` |
+| [Q-0442](Q-0442-integer-counterpart-pointer-step.md) | Is `p + 1` defined for a pointer to the matching unsigned type that points to an element of an `int` array? | provisional | `p + 1` is the position one past the object |
 
 ## Status values
 

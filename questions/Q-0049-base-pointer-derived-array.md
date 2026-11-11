@@ -51,6 +51,8 @@ Settled on 2026-11-03 under decision 0054. The source-reader gap review of the o
 
 Kept settled on 2026-11-11 (decision 0062, item RV7). A review of 2026-11-11 reads ADD-14's array of one against the reference, and every compiler accepts `p + 1` with no read, in constant evaluation too. Tidal keeps the answer, and `pending.md` row 4 holds the case as the item "ADD-14, ADD-P6".
 
+Kept settled on 2026-11-11 (decision 0063, item RV8). The read of the RV7 repair diff finds that the reference agrees with this answer (RV8-R-9). A pointer to a base class subobject counts the subobject as the one element of an array of the pointer's own type, so the move to one past is defined and a move of two is undefined. The note of 2026-11-11 under item RV7 does not hold. The `pending.md` row 4 item that named this question now holds the case of a pointer to the matching signed or unsigned integer type (Q-0442), and Q-0430 holds the byte case.
+
 ## Opinions
 
 ### Gap review, 2026-11-03

@@ -56,6 +56,8 @@ Kept in `pending.md` row 4 on 2026-11-11 (decision 0062, item RV7), because the 
 
 Principle text on 2026-11-11 (decision 0062, item RV7): the DEP-P5 sentence on the middle column now says that a row whose middle column says "not valid" reports an error at the definition, so the sentence and the row for this question agree (RV7-B-10). The answer is unchanged.
 
+Kept in `pending.md` row 4 on 2026-11-11 (decision 0063, item RV8). The gap review of the phase 15 text still reads against the answer, and every newest family keeps the matrix's answer. The row 4 item names the review.
+
 ## Opinions
 
 ### Gap review, 2026-11-03
@@ -75,3 +77,7 @@ The source-reader gap review of the text phase 14 wrote on expressions, overload
 ### Read of the RV7 repair diff, 2026-11-11
 
 The source-reader read of the RV7 repair diff (`reports/review/2026-11-11-read-of-rv7-repair-diff.md`) reads the RV7 repair of the DEP-P5 sentence. The sentence and this question's row now agree, and the row's reading still goes against the reference, so the question stays in pending.md row 4.
+
+### Gap review, 2026-11-11 (phase 15 text, expressions, overloading, and templates)
+
+The source-reader gap review of the phase 15 text on expressions, overloading, and templates (`reports/review/2026-11-11-gap-review-phase-15-expressions-overloading-templates.md`) reads the question: reads against the answer (RV8-B-2). In a position that allows only a type, the reference takes the last name as a template name, so the `<` after it opens an argument list with no keyword. The three tests of the DEP-P5 row for this question expect rejection, and the review reads all three forms as valid. The other rows of DEP-P5 agree.

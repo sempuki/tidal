@@ -33,6 +33,8 @@ Clang and GCC reject the other shapes, and EDG alone accepts them.
 
 Kept open on 2026-11-11 under decision 0054 (item RV7). The review finds the reference silent on the shape. The answer is Tidal's own choice, and the question waits with `pending.md` row 10.
 
+Kept open on 2026-11-11 (decision 0063, item RV8). The read of the RV7 repair diff agrees with the Q-0431 line and gives no new reading, so the question still waits with `pending.md` row 10.
+
 ## Opinions
 
 ### Gap review, 2026-11-11 (phase 14 text, classes, declarations, foundations, and statements)

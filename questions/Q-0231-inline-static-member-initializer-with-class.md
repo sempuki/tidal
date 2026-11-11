@@ -35,10 +35,14 @@ Kept on 2026-11-03. The source-reader gap review of question cluster 5 agrees wi
 
 Settled on 2026-11-03 under decision 0054. The source-reader gap review of question cluster 5 (`reports/review/2026-11-03-gap-review-question-cluster-5.md`) supports this answer with no doubt, and INST-P2 gives the same answer: the instantiation of a class makes only the declaration of a `static` data member. EDG 7.0 still differs. Tidal records EDG's result as a deviation, as for the compiler-defect entries Q-0002 and Q-0003, and the tests keep their overrides for EDG.
 
+Kept settled on 2026-11-11 (decision 0063, item RV8). The gap review of the phase 15 text on templates reads the question's ground in line with the answer.
+
 ## Opinions
 
 ### Gap review, 2026-11-03
 
 The source-reader gap review of question cluster 5 (`reports/review/2026-11-03-gap-review-question-cluster-5.md`) reads the reference as supporting option 1. The instantiation of a class instantiates the declarations of its static data members but not their definitions, and the initializer of an inline static member is part of the definition.
 
-<!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+### Gap review, 2026-11-11 (phase 15 text, expressions, overloading, and templates)
+
+The source-reader gap review of the phase 15 text on expressions, overloading, and templates (`reports/review/2026-11-11-gap-review-phase-15-expressions-overloading-templates.md`) names the question in its reading of INST-5 and Q-0441 (RV8-B-9). Making a class makes the declaration of a static data member and not its definition. The reference treats an instantiated declaration that comes from a definition as a definition only for the checks of a redeclaration. So the review leans toward this answer also for an inline member. The doubt that the review records belongs to Q-0441: whether making the declaration of an inline member also checks that its type is complete.

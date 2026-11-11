@@ -3,7 +3,7 @@
 **Status:** provisional
 **Affects:** CTAD-5, CTAD-17, `tests/templates/class-template-deduction/conditional-explicit-dropped-before-choice.cpp`
 **Source:** the I7 report (`reports/clean-room/I7/report.md`, I7-14), the round 12 writer probe `reports/clean-room/roadmap-12/writer-probes/i7-ctad.json`.
-**Waits for:** a first review
+**Waits for:** a principle (CTAD-P1)
 
 ## Context
 
@@ -39,6 +39,10 @@ Copy initialization leaves out a guide that is explicit for its own
 deduced arguments before the choice (option 1). CTAD-17 says so. Clang
 and EDG agree, and GCC alone differs.
 
+Kept open on 2026-11-11 under decision 0054 (decision 0063, item RV8). The review supports the answer with no doubt, and GCC alone differs. No principle gives the answer. CTAD-P1 checks an explicit guide in step 4, after the choice, and names only copy-list initialization, so a reader of CTAD-P1 alone can reach option 2. CTAD-P1 fails step 3 of the principle test.
+
 ## Opinions
 
-<!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+### Gap review, 2026-11-11 (phase 15 text, expressions, overloading, and templates)
+
+The source-reader gap review of the phase 15 text on expressions, overloading, and templates (`reports/review/2026-11-11-gap-review-phase-15-expressions-overloading-templates.md`) reads the question: supports with no doubt. For a candidate whose explicit condition depends on template parameters, the reference deduces first. A context that takes only candidates that are not explicit then drops the specialization when the condition is true. A guide keeps the explicit condition of its constructor. So copy initialization drops the guide that is explicit for its own deduced arguments before the choice, as Clang and EDG do (option 1).

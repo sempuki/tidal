@@ -3,7 +3,7 @@
 **Status:** provisional
 **Affects:** CTAD-18, CTAD-17, `tests/templates/class-template-deduction/initializer-list-guide-empty-list.cpp`
 **Source:** the I7 report (`reports/clean-room/I7/report.md`, I7-6), the round 12 writer probe `reports/clean-room/roadmap-12/writer-probes/i7-ctad.json`.
-**Waits for:** a first review; newest families that agree
+**Waits for:** a review (doubt); newest families that agree
 
 ## Context
 
@@ -42,6 +42,10 @@ parameters exists (option 1). The guides act as the constructors of the
 class (CTAD-17), and ILC-3 gives this order for constructors. GCC and
 EDG differ, so two newest families stand against the answer.
 
+Kept open on 2026-11-11 under decision 0054 (decision 0063, item RV8). The review supports the answer with a doubt, and GCC 16 and EDG 7.0 differ.
+
 ## Opinions
 
-<!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+### Gap review, 2026-11-11 (phase 15 text, expressions, overloading, and templates)
+
+The source-reader gap review of the phase 15 text on expressions, overloading, and templates (`reports/review/2026-11-11-gap-review-phase-15-expressions-overloading-templates.md`) reads the question: supports with a doubt (RV8-B-8). For an empty list and a class with a default constructor, the reference skips the phase of initializer-list constructors and value-initializes. The guides act as the constructors of a notional class, and a guide that takes no arguments is the natural default constructor of that class. That is Clang's reading and option 1. The reference does not say what a default constructor of the notional class is. The review adds two doubts on CTAD-18. A guide whose parameters all have defaults also takes no arguments, and CTAD-18 speaks only of a guide with no parameters. CTAD-18's definition of an initializer-list guide leaves out a first parameter that is a reference to an initializer list type.

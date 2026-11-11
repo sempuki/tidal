@@ -50,6 +50,8 @@ Kept open on 2026-11-11 under decision 0054 (item RV7). The review supports the 
 
 Rule text on 2026-11-11 (decision 0062, item RV7): DED-20 says that it covers only a pack of the template that the call deduces, and that a pack of a member template whose pattern names only the enclosing class's pack is expanded with the class, each element an ordinary parameter. The two tests now cite DED-20. No principle gives the answer yet.
 
+Kept open on 2026-11-11 under decision 0054 (decision 0063, item RV8). The gap review of the phase 15 text supports DED-20 for the question's case with no doubt, and every compiler agrees. The review names no principle, and DED-P2 still fails step 3 of the principle test.
+
 ## Opinions
 
 ### Gap review, 2026-11-11 (phase 14 text, expressions, overloading, and templates)
@@ -59,3 +61,7 @@ The source-reader gap review of the text phase 14 wrote on expressions, overload
 ### Read of the RV7 repair diff, 2026-11-11
 
 The source-reader read of the RV7 repair diff (`reports/review/2026-11-11-read-of-rv7-repair-diff.md`) reads the RV7 repair of DED-20: the rule now covers only a pack of the template that the call deduces, and the divergence line for this question agrees with the reference.
+
+### Gap review, 2026-11-11 (phase 15 text, expressions, overloading, and templates)
+
+The source-reader gap review of the phase 15 text on expressions, overloading, and templates (`reports/review/2026-11-11-gap-review-phase-15-expressions-overloading-templates.md`) reads DED-20 with the question's case: agrees, with no doubt (the DED-20 row of its block table). Making the class makes the declaration of the member template with the class's pack expanded. So a function parameter pack whose pattern names only that pack becomes ordinary parameters, and deduction does not treat it as a pack (option 1). The two pack tests agree.
