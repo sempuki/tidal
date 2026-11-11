@@ -777,6 +777,55 @@ alignas(int) unsigned char cell[sizeof(int)];
 int* q = new (cell) int(4);     // the int is at cell (NEW-33)
 ```
 
+A class that owns an array deletes the array once (NEW-4), with the
+array form (NEW-8). A copy of the owner would delete the same array a
+second time, so the class deletes its copy functions
+({principle}`CPY-P2`):
+
+```cpp
+class Buffer {
+  int* items;
+  int count;
+public:
+  explicit Buffer(int n) : items(new int[n]{}), count(n) {}
+  Buffer(const Buffer&) = delete;              // one owner for each array
+  Buffer& operator=(const Buffer&) = delete;
+  ~Buffer() { delete[] items; }
+  int& operator[](int i) { return items[i]; }
+  int size() const { return count; }
+};
+```
+
+Owners that share one object count it instead. Each copy adds one to
+the count, and the last owner deletes the object. The assignment adds
+to the new count before it releases the old object, so that an
+assignment to itself keeps the object. `operator->` returns a pointer,
+and the member access goes on through it ({rule}`OPR-5`):
+
+```cpp
+template <class T> class Shared {
+  struct Block { T value; int owners; };
+  Block* block;
+  void release() { if (--block->owners == 0) delete block; }
+public:
+  explicit Shared(T value) : block(new Block{value, 1}) {}
+  Shared(const Shared& other) : block(other.block) { ++block->owners; }
+  Shared& operator=(const Shared& other) {
+    ++other.block->owners;                     // first: keeps the block of a self-assignment
+    release();
+    block = other.block;
+    return *this;
+  }
+  ~Shared() { release(); }
+  T* operator->() const { return &block->value; }
+};
+
+struct Account { int balance = 0; };
+Shared<Account> first(Account{});
+Shared<Account> second = first;                // one Account, two owners
+int balance() { return second->balance; }      // 0
+```
+
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 130

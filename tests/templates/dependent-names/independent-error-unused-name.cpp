@@ -1,4 +1,4 @@
-// tidal-rules: DEP-30
+// tidal-rules: DEP-6
 // tidal-expect: reject
 // tidal-error-clang: undeclared identifier 'helper'
 // tidal-error-gcc: declaration of .helper. must be available

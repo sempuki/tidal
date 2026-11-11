@@ -33,7 +33,7 @@ definition. A use needs the definition in these cases:
 
 | Entity | Instantiated by | Not instantiated by | Rule |
 |---|---|---|---|
-| class | an object, `sizeof`, a member access, `delete`, a conversion to a base, a function definition or call with the class by value | a pointer or reference type, an alias, a {term}`template argument`, a function declaration | INST-1, INST-2 |
+| class | an object, `sizeof`, a member access, `delete`, a conversion to a base, a function definition or call with the class by value | a pointer or reference type, an alias, a {term}`template argument`, a function declaration, `decltype` of a call that returns the class | INST-1, INST-2 |
 | function | a call, taking the address, `decltype` of a call when the return type is deduced, a braced initializer that names a `constexpr` function | `decltype`, `sizeof`, or `noexcept` of a call otherwise | INST-7 |
 | `static` data member, {term}`variable template` | a read or other use of the value | `decltype` | INST-8 |
 | default argument | a call that leaves out the argument | a call that gives the argument, an explicit instantiation | INST-9 |
@@ -68,8 +68,10 @@ The definitions of most members wait for a use:
 | data member, its type | yes |
 | member function, its type | the declaration only |
 | member function body, default arguments, exception specification | no (INST-7, INST-9) |
+| friend function defined in the class, its body | no; a call makes it (INST-7) |
 | default member initializer | no (INST-10) |
-| `static` data member | the declaration only (INST-8) |
+| `static` data member, also `inline` or `constexpr` | the declaration only (INST-8) |
+| `static const` member of integer or enumeration type, neither `inline` nor `constexpr`, with its initializer in the class | yes ({question}`Q-0433`) |
 | nested class | the declaration only |
 | {term}`member template` | the declaration only |
 | unscoped enumeration | the whole definition |
@@ -189,7 +191,7 @@ definition.
 
 :::{rule} INST-1
 :kind: required
-:tests: templates/instantiation/class-object.cpp templates/instantiation/class-sizeof.cpp templates/instantiation/class-member-access.cpp templates/instantiation/class-delete.cpp templates/instantiation/class-base-conversion.cpp templates/instantiation/class-function-definition-parameter.cpp templates/instantiation/class-function-definition-return.cpp templates/instantiation/class-call-return.cpp templates/instantiation/class-deduction-from-derived.cpp templates/instantiation/class-deduction-from-derived-error.cpp templates/instantiation/class-qualified-name.cpp
+:tests: templates/instantiation/class-object.cpp templates/instantiation/class-sizeof.cpp templates/instantiation/class-member-access.cpp templates/instantiation/class-delete.cpp templates/instantiation/class-base-conversion.cpp templates/instantiation/class-function-definition-parameter.cpp templates/instantiation/class-function-definition-return.cpp templates/instantiation/class-call-return.cpp templates/instantiation/class-deduction-from-derived.cpp templates/instantiation/class-deduction-from-derived-error.cpp templates/instantiation/class-qualified-name.cpp templates/instantiation/class-call-passes-by-value.cpp
 
 A specialization of a {term}`class template` is instantiated when a use needs
 a complete class, or when the definition can change the meaning of the
@@ -201,7 +203,8 @@ use. These uses instantiate the class:
 - a conversion of a pointer or reference to a base class,
 - the definition of a function whose parameter or return type is the
   class,
-- a call to a function that returns the class,
+- a call to a function that returns the class, outside `decltype`,
+- a call that passes the class by value,
 - a {term}`deduction` that searches the bases of the class ({rule}`DED-15`),
 - a qualified name that names a member of the class, such as
   `Box<int>::type`.
@@ -209,11 +212,12 @@ use. These uses instantiate the class:
 
 :::{rule} INST-2
 :kind: required
-:tests: templates/instantiation/class-pointer-only.cpp templates/instantiation/class-defined-after-pointer.cpp classes/virtual/override-dependent-base-pointer.cpp
+:tests: templates/instantiation/class-pointer-only.cpp templates/instantiation/class-defined-after-pointer.cpp classes/virtual/override-dependent-base-pointer.cpp templates/instantiation/class-decltype-of-call-not-instantiated.cpp
 
 A pointer or reference type, an alias, a template argument, and a
 function declaration can name a specialization of a class template
-without its instantiation.
+without its instantiation. A call inside `decltype` whose result is the
+class does not instantiate the class either.
 :::
 
 :::{rule} INST-4
@@ -227,23 +231,28 @@ use is not valid ({rule}`TSP-20` gives the same for an {term}`explicit specializ
 
 :::{rule} INST-5
 :kind: required
-:tests: templates/instantiation/class-member-definitions-unused.cpp templates/instantiation/class-inline-static-member-unused.cpp templates/instantiation/class-scoped-enumeration-unused.cpp templates/instantiation/class-deleted-member-specialized.cpp templates/packs/member-template-enclosing-pack-after-deduced.cpp templates/packs/member-template-enclosing-pack-before-deduced.cpp
+:tests: templates/instantiation/class-member-definitions-unused.cpp templates/instantiation/class-inline-static-member-unused.cpp templates/instantiation/class-scoped-enumeration-unused.cpp templates/instantiation/class-deleted-member-specialized.cpp templates/packs/member-template-enclosing-pack-after-deduced.cpp templates/packs/member-template-enclosing-pack-before-deduced.cpp templates/instantiation/friend-body-waits-for-use.cpp templates/instantiation/class-static-const-member-initializer-made.cpp templates/instantiation/class-static-constexpr-member-initializer-waits.cpp templates/instantiation/class-point-static-constexpr-made-at-use.cpp templates/instantiation/class-point-static-const-member.cpp
 
 The instantiation of a class makes the declarations of its members. It
 does not make these definitions:
 
 - member function bodies, also deleted ones, default arguments, and
   exception specifications,
+- the bodies of friend functions defined in the class,
 - default member initializers,
 - the definitions and initializers of `static` data members, also
-  `inline` ones ({question}`Q-0231`),
+  `inline` and `constexpr` ones ({question}`Q-0231`),
 - the definitions of nested classes, scoped enumerations
   ({question}`Q-0232`), and member templates.
+
+The initializer in the class of a `static const` member of integer or
+enumeration type is made with the class, if the member is neither
+`inline` nor `constexpr` ({question}`Q-0433`).
 :::
 
 :::{rule} INST-6
 :kind: reject
-:tests: templates/dependent-names/dependent-error-at-instantiation.cpp templates/dependent-names/value-dependent-bound-fails.cpp templates/instantiation/class-base-conversion.cpp templates/instantiation/class-delete.cpp templates/instantiation/class-member-access.cpp templates/instantiation/class-member-declaration-fails.cpp templates/instantiation/class-object.cpp templates/instantiation/class-sizeof.cpp templates/instantiation/class-unscoped-enumeration.cpp templates/instantiation/default-argument-used.cpp templates/instantiation/default-member-initializer-used.cpp templates/instantiation/explicit-class-members.cpp templates/instantiation/explicit-declaration-inline-still-made.cpp templates/instantiation/explicit-member-class.cpp templates/instantiation/function-address.cpp templates/instantiation/function-called.cpp templates/instantiation/function-deduced-return.cpp templates/instantiation/local-class-member.cpp templates/instantiation/member-function-called.cpp templates/instantiation/static-member-used.cpp templates/instantiation/variable-template-used.cpp templates/instantiation/class-static-member-function-type.cpp templates/instantiation/member-partial-specializations-collide.cpp templates/instantiation/class-function-definition-parameter.cpp templates/instantiation/class-function-definition-return.cpp templates/instantiation/class-call-return.cpp templates/instantiation/function-unevaluated-braced.cpp templates/instantiation/function-unevaluated-braced-untaken.cpp templates/instantiation/default-argument-explicit-specialization.cpp templates/instantiation/default-member-initializer-aggregate-left-out.cpp templates/instantiation/local-class-default-argument.cpp templates/instantiation/local-class-member-initializer.cpp templates/instantiation/local-class-exception-specification.cpp templates/instantiation/local-enumeration.cpp templates/instantiation/class-deduction-from-derived-error.cpp templates/instantiation/member-template-pointer-to-member-non-class.cpp templates/instantiation/class-data-member-function-type.cpp templates/instantiation/class-qualified-name.cpp templates/instantiation/virtual-called-through-pointer.cpp
+:tests: templates/dependent-names/dependent-error-at-instantiation.cpp templates/dependent-names/value-dependent-bound-fails.cpp templates/instantiation/class-base-conversion.cpp templates/instantiation/class-delete.cpp templates/instantiation/class-member-access.cpp templates/instantiation/class-member-declaration-fails.cpp templates/instantiation/class-object.cpp templates/instantiation/class-sizeof.cpp templates/instantiation/class-unscoped-enumeration.cpp templates/instantiation/default-argument-used.cpp templates/instantiation/default-member-initializer-used.cpp templates/instantiation/explicit-class-members.cpp templates/instantiation/explicit-declaration-inline-still-made.cpp templates/instantiation/explicit-member-class.cpp templates/instantiation/function-address.cpp templates/instantiation/function-called.cpp templates/instantiation/function-deduced-return.cpp templates/instantiation/local-class-member.cpp templates/instantiation/member-function-called.cpp templates/instantiation/static-member-used.cpp templates/instantiation/variable-template-used.cpp templates/instantiation/class-static-member-function-type.cpp templates/instantiation/member-partial-specializations-collide.cpp templates/instantiation/class-function-definition-parameter.cpp templates/instantiation/class-function-definition-return.cpp templates/instantiation/class-call-return.cpp templates/instantiation/function-unevaluated-braced.cpp templates/instantiation/function-unevaluated-braced-untaken.cpp templates/instantiation/default-argument-explicit-specialization.cpp templates/instantiation/default-member-initializer-aggregate-left-out.cpp templates/instantiation/local-class-default-argument.cpp templates/instantiation/local-class-member-initializer.cpp templates/instantiation/local-class-exception-specification.cpp templates/instantiation/local-enumeration.cpp templates/instantiation/class-deduction-from-derived-error.cpp templates/instantiation/member-template-pointer-to-member-non-class.cpp templates/instantiation/class-data-member-function-type.cpp templates/instantiation/class-qualified-name.cpp templates/instantiation/virtual-called-through-pointer.cpp templates/instantiation/class-call-passes-by-value.cpp templates/instantiation/friend-body-made-at-call.cpp templates/instantiation/class-static-const-member-initializer-made.cpp
 
 Each declaration and definition that an instantiation makes must be
 valid for the arguments of the specialization. These include:
@@ -261,10 +270,11 @@ must not become the same partial specialization ({question}`Q-0251`).
 
 :::{rule} INST-7
 :kind: required
-:tests: templates/instantiation/function-unevaluated.cpp templates/instantiation/function-called.cpp templates/instantiation/function-address.cpp templates/instantiation/function-deduced-return.cpp templates/instantiation/member-function-called.cpp templates/instantiation/function-unevaluated-braced.cpp templates/instantiation/function-unevaluated-braced-untaken.cpp templates/instantiation/function-unevaluated-parentheses.cpp templates/instantiation/function-unevaluated-sizeof-constant.cpp templates/instantiation/virtual-called-through-pointer.cpp
+:tests: templates/instantiation/function-unevaluated.cpp templates/instantiation/function-called.cpp templates/instantiation/function-address.cpp templates/instantiation/function-deduced-return.cpp templates/instantiation/member-function-called.cpp templates/instantiation/function-unevaluated-braced.cpp templates/instantiation/function-unevaluated-braced-untaken.cpp templates/instantiation/function-unevaluated-parentheses.cpp templates/instantiation/function-unevaluated-sizeof-constant.cpp templates/instantiation/virtual-called-through-pointer.cpp templates/instantiation/friend-body-made-at-call.cpp
 
-A {term}`function template` specialization or a member function of a class
-specialization is instantiated when a use needs its definition, such as
+A {term}`function template` specialization, a member function of a class
+specialization, and a friend function that a class specialization
+defines are instantiated when a use needs the definition, such as
 a call or taking its address. `decltype`, `sizeof`, and `noexcept` of a
 call do not instantiate the function, except in these cases:
 
@@ -275,7 +285,7 @@ call do not instantiate the function, except in these cases:
 
 :::{rule} INST-8
 :kind: required
-:tests: templates/instantiation/static-member-used.cpp templates/instantiation/static-member-not-initialized.cpp templates/instantiation/variable-template-unevaluated.cpp templates/instantiation/variable-template-used.cpp
+:tests: templates/instantiation/static-member-used.cpp templates/instantiation/static-member-not-initialized.cpp templates/instantiation/variable-template-unevaluated.cpp templates/instantiation/variable-template-used.cpp templates/instantiation/class-point-static-constexpr-made-at-use.cpp
 
 A `static` data member of a class specialization, or a specialization
 of a variable template, is instantiated when a use needs its
@@ -523,7 +533,7 @@ of a class.
 
 :::{rule} INST-30
 :kind: required
-:tests: templates/instantiation/class-point-sees-earlier.cpp templates/instantiation/class-point-not-later.cpp templates/instantiation/class-point-in-specialization.cpp
+:tests: templates/instantiation/class-point-sees-earlier.cpp templates/instantiation/class-point-in-specialization.cpp templates/instantiation/class-point-not-later-member-type.cpp
 
 The {term}`point of instantiation` of a class specialization is right
 before the namespace-scope declaration that first needs the class. If
@@ -534,7 +544,7 @@ declarations before its point.
 
 :::{rule} INST-31
 :kind: required
-:tests: templates/instantiation/function-point-constant.cpp templates/instantiation/function-point-sees-earlier.cpp templates/instantiation/function-point-end-of-unit.cpp templates/instantiation/virtual-point-after-class.cpp templates/instantiation/function-point-constexpr-later.cpp templates/dependent-names/generic-lambda-argument-lookup.cpp
+:tests: templates/instantiation/function-point-constant.cpp templates/instantiation/function-point-sees-earlier.cpp templates/instantiation/function-point-end-of-unit.cpp templates/instantiation/virtual-point-after-class.cpp templates/instantiation/function-point-constexpr-later.cpp templates/dependent-names/generic-lambda-argument-lookup.cpp templates/instantiation/class-point-not-later.cpp
 
 A specialization of a function or of a `static` data member has these
 points of instantiation:
@@ -559,13 +569,14 @@ lambda expression does not set a point.
 
 :::{rule} INST-33
 :kind: reject
-:tests: templates/instantiation/class-point-not-later.cpp templates/instantiation/class-point-not-later-type.cpp
+:tests: templates/instantiation/class-point-not-later-type.cpp templates/instantiation/class-point-not-later-member-type.cpp templates/instantiation/class-point-static-constexpr-made-at-use.cpp templates/instantiation/class-point-static-const-member.cpp
 
 An instantiation does not see a declaration after its point of
 instantiation. A class specialization that needs such a declaration is
-not valid. The initializer of a `static constexpr` data member in the
-class body is instantiated with the class, so this rule covers it too.
-INST-32 covers a function specialization ({question}`Q-0257`).
+not valid. The rule covers each part that the class makes (INST-5).
+An initializer of a `static` data member that waits for a use has the
+points of INST-31, and INST-32 covers it, as it covers a function
+specialization ({question}`Q-0257`).
 :::
 
 :::{rule} INST-15
@@ -613,7 +624,7 @@ An implementation need not diagnose a break of this rule.
 
 :::{rule} INST-32
 :kind: no-diagnostic
-:tests: templates/instantiation/function-point-end-of-unit.cpp templates/instantiation/function-point-better-later.cpp templates/instantiation/points-in-two-units.cpp templates/instantiation/virtual-point-after-class.cpp templates/instantiation/function-point-constexpr-later.cpp templates/instantiation/function-point-constant.cpp
+:tests: templates/instantiation/function-point-end-of-unit.cpp templates/instantiation/function-point-better-later.cpp templates/instantiation/points-in-two-units.cpp templates/instantiation/virtual-point-after-class.cpp templates/instantiation/function-point-constexpr-later.cpp templates/instantiation/function-point-constant.cpp templates/instantiation/class-point-not-later.cpp
 
 All the points of instantiation of a specialization, in one translation
 unit or in several, must give the specialization the same meaning. An
@@ -724,8 +735,21 @@ The same class with the declaration after the point:
 namespace shop { struct Item {}; }
 template <class T> struct Price { static constexpr int value = cost(T{}); };
 
-int p = Price<shop::Item>::value;        // rejected: the point is before cost (INST-33)
+int p = Price<shop::Item>::value;        // rejected: the first point of value is before cost (INST-32)
 namespace shop { constexpr int cost(Item) { return 3; } }
+```
+
+The class made before the declaration, and the member read after it.
+The initializer of `value` waits for the read (INST-5, INST-33):
+
+% tidal-example: diverges
+```cpp
+namespace shop { struct Item {}; }
+template <class T> struct Price { static constexpr int value = cost(T{}); };
+
+Price<shop::Item> early;                 // the class: the initializer waits
+namespace shop { constexpr int cost(Item) { return 3; } }
+int p = Price<shop::Item>::value;        // 3: the read makes the initializer
 ```
 
 Explicit instantiations of a function with a deduced return type and of
@@ -744,8 +768,8 @@ extern template constexpr int size_of<long>;  // rejected: constexpr (INST-25)
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 124
-of 149 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 129
+of 158 tests.
 
 ### Divergences
 
@@ -755,8 +779,12 @@ waits on the maintainer (`documentation/decisions/pending.md`).
 
 - {question}`Q-0231` (INST-5; settled on INST-P2): whether the
   initializer of an unused `inline static` data member is instantiated
-  with the class. It waits for a use, as Clang and GCC say. EDG
-  instantiates it.
+  with the class. It waits for a use, as Clang and GCC say, also for a
+  `constexpr` member, which is `inline`. EDG instantiates it.
+- {question}`Q-0433` (INST-5, INST-33;
+  open): whether the initializer in the class of a `static const`
+  member that is neither `inline` nor `constexpr` is made with the
+  class. It is, as Clang and EDG say. GCC waits for a use of the member.
 - {question}`Q-0232` (INST-5; settled on INST-P2): whether the
   enumerators of a scoped member enumeration are instantiated with the
   class. They wait for a use, as Clang and EDG say. GCC 16 instantiates
@@ -838,7 +866,11 @@ the compile.
 | Test | Rules | Expected | Clang | GCC | EDG | Question |
 |---|---|---|---|---|---|---|
 | `class-inline-static-member-unused.cpp` | INST-5 | accept | accept | accept | reject | {question}`Q-0231` |
+| `class-point-static-const-member.cpp` | INST-33, INST-5 | reject | reject | accept | reject | {question}`Q-0433` |
+| `class-point-static-constexpr-made-at-use.cpp` | INST-33, INST-5, INST-8 | accept | accept | accept | reject | {question}`Q-0231` |
 | `class-scoped-enumeration-unused.cpp` | INST-5 | accept | accept | reject | accept | {question}`Q-0232` |
+| `class-static-const-member-initializer-made.cpp` | INST-5, INST-6 | reject | reject | accept | reject | {question}`Q-0433` |
+| `class-static-constexpr-member-initializer-waits.cpp` | INST-5 | accept | accept | accept | reject | {question}`Q-0231` |
 | `explicit-array-bound-differs.cpp` | INST-22 | reject | reject | accept | accept | {question}`Q-0346` |
 | `explicit-array-bound-left-out.cpp` | INST-22 | accept | reject | accept | accept | {question}`Q-0236` |
 | `explicit-attribute-after.cpp` | INST-25 | reject | reject | accept | reject | {question}`Q-0233` |
@@ -885,13 +917,22 @@ the compile.
   INST-P4 gives for points that differ ({question}`Q-0257`).
 - INST-32, INST-35: {rule}`ODR-10` and {rule}`ODR-14` state the
   rules for template definitions across translation units.
-- INST-33: the gap review of the text phase 8 wrote on templates
+- INST-33, INST-5: the gap review of the text phase 8 wrote on templates
   (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`)
-  finds no clear support in the reference for instantiating the
-  initializer of a `static constexpr` data member with the class, since
-  the reference delays the initialization of a static data member until
-  a use needs its definition. Every compiler instantiates the
-  initializer with the class, and INST-33 follows the compilers.
+  reads the initializer of a `static constexpr` data member as waiting
+  for a use of the member. Clang 22 and GCC 16 agree. A program that
+  makes the class before a declaration and reads the member after it
+  shows the difference, and EDG alone rejects it
+  (`class-point-static-constexpr-made-at-use.cpp`). A read before the
+  declaration is rejected by every compiler, under INST-32
+  (`class-point-not-later.cpp`). The grid `static-member-point.json`
+  gives each kind of member.
+- INST-1, INST-2: every compiler instantiates a class that a call
+  passes by value, and none instantiates the result class of a call
+  inside `decltype` (I6-13).
+- INST-5, INST-7: every compiler accepts an object of a class whose
+  friend function has a body that is not valid, and rejects a call of
+  the friend (I6-16).
 - INST-12, INST-P1: the same review reads the constraints of a member
   of a local class as left out of the instantiation of the class
   ({question}`Q-0392`).
@@ -951,6 +992,14 @@ column means that the use instantiates the class.
 
 Uses of functions and variables (INST-5, INST-7, INST-8). The bodies
 and initializers have a `static_assert` whose condition is the column.
+
+Points of `static` data members (`static-member-point.json`, INST-5,
+INST-33). Each row is a kind of member whose initializer needs a
+function declared later. The columns make the class before or after the
+declaration and read the member after it. Initializers in the class of
+`static const` members (`static-const-member.json`, INST-5). Each row is
+a member type whose initializer is not valid, and the columns are uses
+of the class that do not name the member.
 
 ### Sources
 

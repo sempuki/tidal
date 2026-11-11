@@ -375,7 +375,8 @@ In the ordinary form, the following can transfer control into a branch:
 - a `default` label of an enclosing `switch`.
 
 The condition is not evaluated in that case. The general rules for jumps
-over initialization apply ({rule}`JMP-6`).
+over initialization apply ({rule}`JMP-6`). {rule}`LOOP-9` gives a jump
+into the body of a loop.
 :::
 
 :::{rule} IF-18

@@ -68,6 +68,9 @@ whose storage it takes, and no destructor runs. The byte array that
 hosts the new object goes on, because the new object is nested in it.
 A program reaches the new object through the pointer that placement
 `new` returns. A cast of the array's address still points to a byte.
+A `T*` cast from that address steps `sizeof(T)` bytes to the position
+one past the byte, and placement `new` can build the next object there
+({rule}`ADD-14`).
 
 A program that includes no header has no launder operation. So a class
 that keeps several objects in one byte array that is a member keeps the
@@ -508,7 +511,9 @@ convert it to `void*`, for example to give the address to placement
 :tests: foundations/storage/allocation-array-class-elements.cpp foundations/storage/allocation-array-class-elements-constant.cpp foundations/storage/allocation-array-unbuilt-element-constant.cpp foundations/storage/implicit-array-for-arithmetic.cpp foundations/storage/allocated-storage-typed-step-after-byte-offset.cpp
 
 If an allocation function creates an array of `T`, a `T*` from its
-result points to element 0 ({question}`Q-0323`).
+result points to element 0 ({question}`Q-0323`). A `T*` made from the
+result plus a multiple of `sizeof(T)` bytes points to the element at
+that address.
 The elements exist also when `T` is not an implicit-lifetime type, and
 their lifetimes begin when the program constructs them. Pointer
 arithmetic over the elements ({rule}`ADD-6`) is valid before then.
@@ -527,7 +532,9 @@ A program reaches such an object through the pointer that placement
 The rule holds for a byte array that is a complete object and for one
 that is a member. The result still gives the address of the storage.
 So placement `new` and `std::construct_at` ({rule}`LSUP-10`) can take
-the result as the place for a new object.
+the result as the place for a new object. They can also take the
+position one past the byte that the result points to ({rule}`ADD-14`,
+{question}`Q-0430`).
 :::
 
 ## Undefined Behavior
@@ -939,6 +946,9 @@ only that the programs are valid.
 - {question}`Q-0323` (STG-28; settled): whether a `T*` from an allocation
   points to element 0 of an array of `T` whose elements are not built.
   It does.
+- {question}`Q-0430` (STG-29, ADD-14; open): whether placement `new`
+  can use the position one past the byte that a cast `T*` points to.
+  It can, and the position is `sizeof(T)` bytes on. No family differs.
 - {question}`Q-0324` (STG-29; settled on STG-P2): whether a cast of a
   byte array's address reaches an object that the array created. The
   cast still points to a byte. No family differs.

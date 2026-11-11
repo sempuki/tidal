@@ -121,7 +121,7 @@ type {rule}`JMP-6` lists ({question}`Q-0041`).
 
 :::{rule} SW-1
 :kind: required
-:tests: statements/switch/dispatch.cpp statements/switch/no-match-no-default.cpp statements/switch/fallthrough.cpp statements/switch/condition-once.cpp statements/switch/break-exits.cpp statements/switch/case-inside-loop.cpp statements/switch/nested-switch-labels.cpp statements/switch/enum-value-outside-cases.cpp
+:tests: statements/switch/dispatch.cpp statements/switch/no-match-no-default.cpp statements/switch/fallthrough.cpp statements/switch/condition-once.cpp statements/switch/break-exits.cpp statements/switch/case-inside-loop.cpp statements/switch/nested-switch-labels.cpp statements/switch/enum-value-outside-cases.cpp statements/loops/jump-into-for-body-constant.cpp statements/loops/jump-into-do-body-constant.cpp
 
 The condition is evaluated one time. Control goes to the first of these
 that exists:
@@ -131,8 +131,9 @@ that exists:
 - the end of the `switch`.
 
 Execution then continues through later labels until a `break`. A label can
-be inside a nested statement of the body, such as a loop. Each label
-belongs to the innermost `switch` that contains it.
+be inside a nested statement of the body, such as a loop
+({rule}`LOOP-9`). Each label belongs to the innermost `switch` that
+contains it.
 :::
 
 ## Recommended Practice
@@ -227,7 +228,7 @@ int code(State s) {
 
 ## Evidence
 
-All eight compilers agree on 41 of 42 tests. The results are in
+All eight compilers agree on 43 of 44 tests. The results are in
 `tests/RESULTS.md`. The SW-8 tests use `-Wall -Werror`, so EDG skips
 them ({ref}`baseline compilers <baseline-compilers>`).
 

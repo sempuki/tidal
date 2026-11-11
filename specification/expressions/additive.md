@@ -239,6 +239,10 @@ pointer are undefined ({question}`Q-0049`):
 The rule covers a pointer to the signed or unsigned integer type that
 matches the element type. A read through such a pointer is valid
 ({rule}`STG-14`). A read of another element through it is undefined.
+
+A move of such a pointer counts in the size of the pointer's type. So
+if a `T*` named `p` points to a byte, `p + 1` holds the address
+`sizeof(T)` bytes after `p` ({question}`Q-0430`).
 :::
 
 :::{rule} ADD-17
@@ -338,6 +342,10 @@ of 67 tests.
   a move of two, a read through the pointer one past, and a difference
   of pointers into two elements are undefined, as Clang and EDG say.
   GCC accepts all three.
+- {question}`Q-0430` (ADD-14, STG-29; open): where `p + 1` is when
+  `p` is a `T*` that points to a byte, and whether placement `new` can
+  use that position. The position is `sizeof(T)` bytes after `p`, and
+  placement `new` can use it. No family differs.
 - {question}`Q-0304` (ADD-6, ADD-10, ADD-14; open): whether a pointer
   to a character type can step through the bytes of an object that is
   not an array of bytes. It can. No family differs, and constant

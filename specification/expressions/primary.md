@@ -754,6 +754,24 @@ all();                    // true
 total(1, 2, 3);           // ((0 + 1) + 2) + 3
 ```
 
+`==` on two `const char*` compares the addresses ({rule}`CMP-15`). Two
+equal literals can be one object or two (PRIM-9), so the result below is
+`true` or `false`. A comparison of the text compares the characters one
+by one:
+
+```cpp
+bool same_object() {
+  const char* a = "pear";
+  const char* b = "pear";
+  return a == b;            // true or false: the addresses
+}
+
+bool same_text(const char* a, const char* b) {
+  while (*a != '\0' && *a == *b) { ++a; ++b; }
+  return *a == *b;          // true for "pear" and "pear"
+}
+```
+
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 132

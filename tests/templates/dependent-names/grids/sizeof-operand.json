@@ -1,0 +1,17 @@
+{
+ "prelude": "namespace lib { template <decltype(sizeof 0) K> struct B { using type = int; }; constexpr int f(B<sizeof(int)>, long) { return 1; } constexpr int f(B<1>, long) { return 1; } }",
+ "template": "{prelude}\n{row}\n{col}\nint main() {{ return 0; }}",
+ "rows": {
+  "call f(B<sizeof(N)>{}, 0)": "template <int N> constexpr int g() { return f(lib::B<sizeof(N)>{}, 0); }\nconstexpr int r = 1;",
+  "call f(B<noexcept(N + 1)>{}, 0)": "template <int N> constexpr int g() { return f(lib::B<noexcept(N + 1)>{}, 0); }\nconstexpr int r = 1;",
+  "call f(B<alignof(decltype(N))>{}, 0) control-ish": "template <int N> constexpr int g() { return f(lib::B<alignof(decltype(N))>{}, 0); }\nconstexpr int r = 1;",
+  "control: call f(B<N>{}, 0)": "template <decltype(sizeof 0) N> constexpr int g() { return f(lib::B<N>{}, 0); }\nconstexpr int r = 1;",
+  "B<sizeof(N)>::type x = 0 in a function, no typename": "template <int N> constexpr int g() { lib::B<sizeof(N)>::type x = 1; return x; }\nconstexpr int r = 1;",
+  "B<noexcept(N + 1)>::type x = 0, no typename": "template <int N> constexpr int g() { lib::B<noexcept(N + 1)>::type x = 1; return x; }\nconstexpr int r = 1;"
+ },
+ "cols": {
+  "no later overload": "static_assert(g<4>() == r);",
+  "later overload": "namespace lib { constexpr int f(B<sizeof(int)>, int) { return 2; } constexpr int f(B<1>, int) { return 2; } }\nstatic_assert(g<4>() == r);"
+ },
+ "flags": []
+}

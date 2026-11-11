@@ -759,6 +759,21 @@ int size(...);
 size(1);                        // int::size_type is not valid; size(...)
 ```
 
+An error in a class that substitution instantiates is not a
+substitution failure (DED-29). The call is not valid, although the
+fallback would take it:
+
+% tidal-example: reject
+```cpp
+template <class T> struct Checked {
+  static_assert(sizeof(T) > 1);
+  using type = int;
+};
+template <class T> typename Checked<T>::type pick(T);
+int pick(...);
+int r = pick('a');              // rejected: Checked<char> fails
+```
+
 An array bound of zero or less is not a valid type, so such a bound
 also removes the template (DED-24):
 

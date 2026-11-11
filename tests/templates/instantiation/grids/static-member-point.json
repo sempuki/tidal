@@ -1,0 +1,20 @@
+{
+ "prelude": "namespace lib { struct Item {}; }",
+ "template": "{prelude}\n{row}\n{col}\nint main() {{ return 0; }}",
+ "rows": {
+  "static constexpr int value = probe(T{})": "template <class T> struct Info { static constexpr int value = probe(T{}); };",
+  "static const int value = probe(T{})": "template <class T> struct Info { static const int value = probe(T{}); };",
+  "static inline const int value = probe(T{})": "template <class T> struct Info { static inline const int value = probe(T{}); };",
+  "static inline int value = probe(T{})": "template <class T> struct Info { static inline int value = probe(T{}); };",
+  "member decltype(probe(T{})) d; value = 4": "template <class T> struct Info { decltype(probe(T{})) d; static constexpr int value = 4; };",
+  "static_assert(probe(T{}) == 4) in class; value = 4": "template <class T> struct Info { static_assert(probe(T{}) == 4); static constexpr int value = 4; };"
+ },
+ "cols": {
+  "no early use, read after": "namespace lib { constexpr int probe(Item) { return 4; } }\nint late = Info<lib::Item>::value;",
+  "object before probe, read after": "Info<lib::Item> early;\nnamespace lib { constexpr int probe(Item) { return 4; } }\nint late = Info<lib::Item>::value;",
+  "sizeof before probe, read after": "static_assert(sizeof(Info<lib::Item>) >= 1);\nnamespace lib { constexpr int probe(Item) { return 4; } }\nint late = Info<lib::Item>::value;",
+  "object before probe, constant read after": "Info<lib::Item> early;\nnamespace lib { constexpr int probe(Item) { return 4; } }\nstatic_assert(Info<lib::Item>::value == 4);",
+  "read before probe": "int late = Info<lib::Item>::value;\nnamespace lib { constexpr int probe(Item) { return 4; } }"
+ },
+ "flags": []
+}

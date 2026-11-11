@@ -875,15 +875,15 @@ own IDs (RV5-A-n and RV5-B-n).
 | P1-7 | `P1/report.md` | commit | 0f3f522f |
 | P1-8 | `P1/report.md` | commit | 0f3f522f |
 | P1-9 | `P1/report.md` | commit | 0f3f522f |
-| P2-1 | `P2/report.md` | planned | decision 0062, item F4: needs example: no guidance for a program that has no library (LSUP-P1, LAM-P4, NEW-P2, CPY-P2) |
-| P2-2 | `P2/report.md` | planned | decision 0062, item F4: outside knowledge: the reference-counted shared handle (CPY-P2, CPY-P4, NEW-P2, OPR-5) |
-| P2-3 | `P2/report.md` | planned | decision 0062, item F4: needs example: == on two const char* holding equal text compares addresses (CMP-15, PRIM-9) |
-| P2-4 | `P2/report.md` | planned | decision 0062, item F4: hard to find: wrapping arithmetic spread over ADD-9, MUL-10, MUL-8, and CONV-2 |
+| P2-1 | `P2/report.md` | planned | decision 0062, item F4: done: DCMP-P1 says that only the comparison operators can be defaulted and a hash is written by the class; an example of an owning array with deleted copy functions on the new-delete page |
+| P2-2 | `P2/report.md` | planned | decision 0062, item F4: done: an example of a counted shared handle on the new-delete page (CPY-P2, NEW-4, OPR-5) |
+| P2-3 | `P2/report.md` | planned | decision 0062, item F4: done: an example after PRIM-9 that compares two const char* at run time, with no constant evaluation |
+| P2-4 | `P2/report.md` | planned | decision 0062, item F4: done: an example on the multiplicative page: a wrapping hash in unsigned, converted back with CONV-2 |
 | P2-5 | `P2/report.md` | text | NEW-5 points to OBJ-2, and the front end stops the literal port with OBJ-2 as the text says; probe reductions/removeif-literal-port.cpp |
-| P2-6 | `P2/report.md` | planned | decision 0062, item F4: unclear: LSUP-1 on the access of the initializer_list constructor and the spelling of the count type |
+| P2-6 | `P2/report.md` | question | Q-0431; decision 0062, item F4: LSUP-1 gives the order, decltype(sizeof 0) for the count, and any access for the constructor; test initializer-list-count-before-pointer.cpp |
 | P2-7 | `P2/report.md` | text | decision 0062: the report names no change to the text; outside knowledge: a pointer or nullptr for a missing value (CMP-6, CMP-15, NEW-4) |
-| P2-8 | `P2/report.md` | planned | decision 0062, item F4: hard to find: no page on arrays or members links CE-3 |
-| P2-9 | `P2/report.md` | planned | decision 0062, item F4: front end: "unspecified" is the first word when every explored order gives one result (SEQ-1); test programs/P2/ledger.cpp |
+| P2-8 | `P2/report.md` | planned | decision 0062, item F4: done: DCL-19 links CE-3 and CV-8 for the variables that a bound can read |
+| P2-9 | `P2/report.md` | planned | decision 0062, item FE: front end: "unspecified" is the first word when every explored order gives one result (SEQ-1); the text needs no change, and the front end's first line changes; test programs/P2/ledger.cpp |
 | I4-1 | `I4/report.md` | commit | ee6085aa: COND-16 base row |
 | I4-2 | `I4/report.md` | commit | ee6085aa: COND-16 step 1, Q-0418 |
 | I4-3 | `I4/report.md` | commit | ee6085aa: COND-P2 and COND-11 |
@@ -997,26 +997,26 @@ own IDs (RV5-A-n and RV5-B-n).
 | I5-9 | `I5/report.md` | commit | 53577f27 (front-end round 24, decision 0061, item FE): the test passes; F3 answered I5-5 in DED-24; front end: T::type with an incomplete T stops as unsupported; test templates/deduction/qualified-name-in-incomplete-class.cpp |
 | I5-10 | `I5/report.md` | commit | 53577f27 (front-end round 24, decision 0061, item FE): the test passes; F3 states the base relation in REF-1, COND-16, and DED-15 (G153); front end: a reference binds a private or ambiguous base; tests declarations/initialization/references/lvalue-ref-to-private-base.cpp, lvalue-ref-to-ambiguous-base.cpp, templates/deduction/two-equal-bases-with-fallback.cpp, private-base-with-fallback.cpp |
 | I5-11 | `I5/report.md` | commit | 0ae4cdb5, decision 0061, item F3: DED-24 names arrays of functions and of void, and DED-11 names the size type as decltype(sizeof 0); test templates/deduction/substitution-failure-array-of-function-or-void.cpp |
-| I6-1 | `I6/report.md` | planned | decision 0062, item F4: DEP-5 and DEP-P1: an independent call uses argument-dependent lookup at the definition |
+| I6-1 | `I6/report.md` | planned | decision 0062, item F4: done: DEP-5 says that an unqualified call with no dependent argument uses ordinary and argument-dependent lookup, both at the definition, and the DEP-P1 table gains a row for it; independent-call-early.cpp decides it |
 | I6-2 | `I6/report.md` | text | decision 0062: the report names no change to the text; a mistake in the component (DEP-34 with no argument list); no text change |
-| I6-3 | `I6/report.md` | planned | decision 0062, item F4: DEP-26 and DEP-P5: an example of template with no list before a deduced class template |
-| I6-4 | `I6/report.md` | planned | decision 0062, item F4: DEP-P5: the first phase chooses a reading and the second reports the error |
-| I6-5 | `I6/report.md` | planned | decision 0062, item F4: DEP-2: whether a member access through this is type-dependent |
-| I6-6 | `I6/report.md` | planned | decision 0062, item F4: DEP-4: sizeof of a value-dependent operand |
-| I6-7 | `I6/report.md` | planned | decision 0062, item F4: DEP-6, DEP-12, DEP-30: must or may before instantiation |
-| I6-8 | `I6/report.md` | planned | decision 0062, item F4: CNS-13 and the DEP-P6 table give different strengths |
-| I6-9 | `I6/report.md` | planned | decision 0062, item F4: DEP-8, DEP-9, DEP-14: qualified dependent calls and member calls with a dependent argument |
-| I6-10 | `I6/report.md` | planned | decision 0062, item F4: DEP-9, INST-31, INST-32: which point of instantiation argument-dependent lookup uses |
+| I6-3 | `I6/report.md` | planned | decision 0062, item F4: done: a DEP-P5 row for typename T::template box with no list, a type whose arguments are deduced (DEP-26, Q-0226) |
+| I6-4 | `I6/report.md` | planned | decision 0062, item F4: done: DEP-P5 says that the parser's reading at the definition reports no error, and that the right column is checked at the instantiation |
+| I6-5 | `I6/report.md` | question | Q-0434; decision 0062, item F4: DEP-2 makes a member access through this or an object of the current instantiation type-dependent only for a dependent member type or a dependent base; test this-member-independent-type-bound-early.cpp |
+| I6-6 | `I6/report.md` | question | Q-0432; decision 0062, item F4: DEP-4's last bullet leaves out the operands of sizeof, alignof, and noexcept, and DEP-P2 says so; tests sizeof-value-dependent-operand-call-bound-early.cpp, sizeof-value-dependent-operand-no-typename.cpp |
+| I6-7 | `I6/report.md` | planned | decision 0062, item F4: done: DEP-6 and DEP-12 apply also when no specialization is made, DEP-30 covers only a name that lookup finds, and DEP-P6 gains two rejects rows; two tests move from DEP-30 to DEP-6 and DEP-12 |
+| I6-8 | `I6/report.md` | planned | decision 0062, item F4: done: the DEP-P6 row for CNS-13 says rejects, as CNS-13 does |
+| I6-9 | `I6/report.md` | planned | decision 0062, item F4: done: new rule DEP-40: a qualified call, and an unqualified call whose name finds a member, look up at the definition with no argument-dependent lookup; DEP-P1 rows; tests qualified-call-dependent-argument-bound-early.cpp, member-found-call-no-argument-lookup.cpp |
+| I6-10 | `I6/report.md` | planned | decision 0062, item F4: done: DEP-9 says a point of instantiation (INST-31) and that INST-32 applies where the points differ; an Evidence note gives the GCC split |
 | I6-11 | `I6/report.md` | commit | 53577f27 (front-end round 24, decision 0061, item FE): the test passes; front end: this->template with a dependent base stops; test templates/dependent-names/template-keyword-this-dependent-base.cpp |
 | I6-12 | `I6/report.md` | commit | 53577f27 (front-end round 24, decision 0061, item FE): the test passes; front end: operator lookup leaves out the namespaces of a base; test overloading/overload-resolution/operator-base-class-namespace.cpp |
-| I6-13 | `I6/report.md` | planned | decision 0062, item F4: INST-1, INST-2: decltype of a call and a call that passes the class by value |
-| I6-14 | `I6/report.md` | planned | decision 0062, item F4: DED-29, INST-6: an example of a hard error that stands against another candidate |
-| I6-15 | `I6/report.md` | planned | decision 0062, item F4: INST-5 and INST-33 on a static constexpr member |
-| I6-16 | `I6/report.md` | planned | decision 0062, item F4: INST-P2: when a friend function defined in a class template is made |
-| I6-17 | `I6/report.md` | planned | decision 0062, item F4: DEP-37: link the operator arities |
-| I6-18 | `I6/report.md` | planned | decision 0062, item F4: DEP-19, DEP-29, DEP-6: why T::x * p; and T::x p; are rejected at the definition |
-| I6-19 | `I6/report.md` | planned | decision 0062, item F4: DEP-20: the return type of a member function |
-| I6-20 | `I6/report.md` | planned | decision 0062, item F4: outside knowledge: overload ranking, lookup scope, operator arities, this in a local class |
+| I6-13 | `I6/report.md` | planned | decision 0062, item F4: done: INST-1 lists a call that passes the class by value and a call outside decltype, INST-2 and the INST-P1 table name a call inside decltype; tests class-call-passes-by-value.cpp, class-decltype-of-call-not-instantiated.cpp |
+| I6-14 | `I6/report.md` | planned | decision 0062, item F4: done: a reject example under DED-29 with a fallback pick(...) |
+| I6-15 | `I6/report.md` | question | Q-0433; decision 0062, item F4: INST-33 no longer makes a static constexpr initializer with the class (Clang 22, GCC 16), INST-5 lists constexpr members and the static const exception, INST-P2 gains rows; five tests |
+| I6-16 | `I6/report.md` | planned | decision 0062, item F4: done: INST-5 and the INST-P2 table: a friend body waits for a call, and INST-7 makes it; tests friend-body-waits-for-use.cpp, friend-body-made-at-call.cpp |
+| I6-17 | `I6/report.md` | planned | decision 0062, item F4: done: DEP-37 links OPR-2 for the number of parameters of each operator function |
+| I6-18 | `I6/report.md` | planned | decision 0062, item F4: done: the example "The keywords" gives DEP-6 for the product with the undeclared q, and a line C::value_type count; with DEP-29 |
+| I6-19 | `I6/report.md` | planned | decision 0062, item F4: done: DEP-20 names the return type of a member function |
+| I6-20 | `I6/report.md` | planned | decision 0062, item F4: done: DEP-2 says that this in a local class of a function template is not type-dependent (Q-0434; test this-in-local-class-not-type-dependent.cpp); DEP-9 links NAM-P1 and OVL-P1, and DEP-37 links OPR-2 |
 | I7-1 | `I7/report.md` | open | missing: CTAD-10 does not say that a member whose type is not dependent follows LIST-4 |
 | I7-2 | `I7/report.md` | open | needs example: CTAD-25 and CTAD-26, step 5 chooses the constructor again |
 | I7-3 | `I7/report.md` | open | unclear: CTAD-16 and DER-8, the inherited copy candidate gives a type that the initialization rejects; the note of inherited-copy-candidate-user-guide |

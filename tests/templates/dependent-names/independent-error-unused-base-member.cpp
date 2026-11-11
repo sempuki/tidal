@@ -1,4 +1,4 @@
-// tidal-rules: DEP-30 DEP-12
+// tidal-rules: DEP-12
 // tidal-expect: reject
 // tidal-error-clang: undeclared identifier 'count'
 // tidal-error-gcc: .count. was not declared in this scope

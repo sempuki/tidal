@@ -21,7 +21,7 @@ argument-dependent lookup, class members.
 ## Principles
 
 :::{principle} DEP-P1
-:rules: DEP-5 DEP-6 DEP-7 DEP-8 DEP-9 DEP-10 DEP-28 DEP-38
+:rules: DEP-5 DEP-6 DEP-7 DEP-8 DEP-9 DEP-10 DEP-28 DEP-38 DEP-40
 
 The implementation reads a template in two phases:
 
@@ -41,13 +41,15 @@ definition. A later declaration does not change the binding. A
 {term}`dependent name` can mean something different for each argument
 list, so its lookup waits for the arguments.
 
-An unqualified call with a dependent argument uses both phases
+Only an unqualified call with a dependent argument uses both phases
 (DEP-8, DEP-9):
 
-| Lookup | Context | Finds a function declared after the template |
-|---|---|---|
-| ordinary unqualified lookup | the definition | no |
-| argument-dependent lookup | the definition and the {term}`point of instantiation` | yes, in an {term}`associated namespace` |
+| Call | Ordinary lookup | Argument-dependent lookup | Finds a function declared after the template |
+|---|---|---|---|
+| `f(x)`, no argument is dependent | at the definition | at the definition | no (DEP-5) |
+| `f(t)`, an argument is dependent | at the definition | at the definition and at a {term}`point of instantiation` | yes, in an {term}`associated namespace` (DEP-9) |
+| `lib::f(t)`, qualified | at the definition, in `lib` | none | no (DEP-40) |
+| `f(t)`, where `f` finds a class member | at the definition | none | no (DEP-40) |
 
 A call whose arguments are all of fundamental type has no associated
 namespace ({rule}`NAM-27`), so it finds only what the definition sees
@@ -72,6 +74,9 @@ Some forms have a fixed type whatever their operands: `sizeof`,
 `sizeof...` ({rule}`PACK-19`), `alignof`, `noexcept`, a literal, and a
 cast to an independent type. A call with such an argument is not dependent on that argument, and
 the implementation chooses its function at the definition (DEP-3).
+`sizeof`, `alignof`, and `noexcept` also have a value that only the
+type of the operand decides, so a value-dependent operand does not make
+them value-dependent (DEP-4).
 :::
 
 :::{principle} DEP-P3
@@ -144,6 +149,12 @@ name is a type, a template, or a value. The program states the choice:
 | `typename T::name<...>`, `T::name<...>` in a base list or an alias | not valid without `template` (DEP-24, {question}`Q-0225`) | |
 | `T::template name<...>` | a {term}`template-id` | the name is a template (DEP-26) |
 | `typename T::template name<...>` | a type | the name is a class template or {term}`alias template` |
+| `typename T::template name` with no list, as in `typename T::template box b(1);` | a type whose template arguments are deduced | the name is a class template or alias template (DEP-26, {question}`Q-0226`) |
+
+The middle column is the reading that the parser chooses at the
+definition, and the choice reports no error. The right column is
+checked at the instantiation, when the lookup of the name has the
+arguments.
 
 In a type-only position, only a type can appear, so the parser reads a
 qualified name as a type without `typename` (DEP-20). Both keywords can
@@ -162,12 +173,14 @@ definition:
 | Error in a template that is not instantiated | Requirement | Rule |
 |---|---|---|
 | a syntax error | rejects | DEP-29 |
+| an independent name that lookup does not find | rejects | DEP-6 |
+| an unqualified name that only a dependent base declares | rejects | DEP-12 |
 | an independent construct that is not valid | need not diagnose | DEP-30 |
 | an independent construct whose meaning changes before the instantiation | need not diagnose | DEP-31 |
 | a construct that no argument list makes valid | need not diagnose | DEP-32 |
 | a pack that every valid argument list leaves empty, such as a base list that expands one pack twice | need not diagnose | DEP-33 |
 | an operator function that only an empty pack makes valid | rejects | DEP-37 |
-| a template-id with independent arguments that fail its template's constraints | need not diagnose; every baseline compiler rejects | {rule}`CNS-13` |
+| a template-id with independent arguments that fail its template's constraints | rejects | {rule}`CNS-13` |
 | a dependent construct that some argument list makes valid | accepts | DEP-28 |
 
 The condition of a `static_assert` in a template is checked only at the
@@ -220,7 +233,7 @@ its target type is dependent.
 
 :::{rule} DEP-2
 :kind: required
-:tests: templates/dependent-names/dependent-call-late.cpp templates/dependent-names/type-dependent-placeholder-parameter.cpp templates/dependent-names/type-dependent-placeholder-variable.cpp templates/dependent-names/type-dependent-deduced-return.cpp templates/dependent-names/type-dependent-fold.cpp templates/dependent-names/type-dependent-set-and-binding.cpp templates/dependent-names/member-template-through-current-instantiation-object.cpp templates/dependent-names/member-template-current-instantiation-pointer.cpp
+:tests: templates/dependent-names/dependent-call-late.cpp templates/dependent-names/type-dependent-placeholder-parameter.cpp templates/dependent-names/type-dependent-placeholder-variable.cpp templates/dependent-names/type-dependent-deduced-return.cpp templates/dependent-names/type-dependent-fold.cpp templates/dependent-names/type-dependent-set-and-binding.cpp templates/dependent-names/member-template-through-current-instantiation-object.cpp templates/dependent-names/member-template-current-instantiation-pointer.cpp templates/dependent-names/this-member-independent-type-bound-early.cpp templates/dependent-names/this-in-local-class-not-type-dependent.cpp
 
 An expression is {term}`type-dependent` if one of these holds, and
 DEP-3 does not give a fixed type:
@@ -237,11 +250,18 @@ DEP-3 does not give a fixed type:
   whose initializer is type-dependent,
 - the expression names a member function of the current instantiation
   whose return type is deduced,
-- the expression is `this` in a member of a class template,
+- the expression is `this` in a member of a class template, which
+  does not include a member of a local class of a function template,
 - the expression is a cast or a `new` whose named type is dependent,
 - the expression is a fold expression,
 - a member access names a member whose type is dependent,
 - an operand or subexpression is type-dependent.
+
+A member access through `this`, or through an object of the current
+instantiation, is an exception to the last item. It is type-dependent
+only if the member's type is dependent, or if the name finds nothing and
+the class has a dependent base ({rule}`DEP-18`,
+{question}`Q-0434`).
 :::
 
 :::{rule} DEP-3
@@ -259,7 +279,7 @@ These expressions are never type-dependent:
 
 :::{rule} DEP-4
 :kind: required
-:tests: templates/dependent-names/value-dependent-bound.cpp templates/dependent-names/value-dependent-bound-fails.cpp templates/dependent-names/value-dependent-constant-variable.cpp templates/dependent-names/value-dependent-pack.cpp
+:tests: templates/dependent-names/value-dependent-bound.cpp templates/dependent-names/value-dependent-bound-fails.cpp templates/dependent-names/value-dependent-constant-variable.cpp templates/dependent-names/value-dependent-pack.cpp templates/dependent-names/sizeof-value-dependent-operand-call-bound-early.cpp templates/dependent-names/sizeof-value-dependent-operand-no-typename.cpp
 
 An expression is {term}`value-dependent` if one of these holds:
 
@@ -271,7 +291,9 @@ An expression is {term}`value-dependent` if one of these holds:
   type or a type-dependent operand,
 - the expression is `sizeof...` ({rule}`PACK-19`) or a fold
   expression,
-- an operand is value-dependent.
+- an operand is value-dependent, other than the operand of `sizeof`,
+  `alignof`, or `noexcept`
+  ({question}`Q-0432`).
 
 The value of such an expression is computed for each specialization.
 Each specialization must then obey the rules for that value, such as
@@ -282,20 +304,23 @@ the array bound rules of {rule}`DCL-19`.
 
 :::{rule} DEP-5
 :kind: required
-:tests: templates/dependent-names/independent-bound-early.cpp templates/dependent-names/independent-call-early.cpp templates/dependent-names/independent-call-pack-size.cpp templates/dependent-names/member-alias-independent.cpp
+:tests: templates/dependent-names/independent-bound-early.cpp templates/dependent-names/independent-call-early.cpp templates/dependent-names/independent-call-pack-size.cpp templates/dependent-names/member-alias-independent.cpp templates/dependent-names/this-member-independent-type-bound-early.cpp templates/dependent-names/sizeof-value-dependent-operand-call-bound-early.cpp
 
 A name that is not dependent is looked up at the definition of the
-template. Every specialization uses the declarations found there. A
-declaration after the definition does not change the result.
+template. Every specialization uses the declarations found there, and a
+later declaration does not change the result. An unqualified call with
+no dependent argument uses ordinary lookup and argument-dependent
+lookup ({rule}`NAM-27`), both at the definition.
 :::
 
 :::{rule} DEP-6
 :kind: reject
-:tests: templates/dependent-names/independent-not-declared.cpp templates/dependent-names/independent-type-not-declared.cpp
+:tests: templates/dependent-names/independent-not-declared.cpp templates/dependent-names/independent-type-not-declared.cpp templates/dependent-names/independent-error-unused-name.cpp
 
 A name that is not dependent must be declared before the definition of
-the template. A declaration between the definition and the use does not
-make an instantiation valid.
+the template, also when no specialization is made. A declaration
+between the definition and the use does not make an instantiation
+valid.
 :::
 
 :::{rule} DEP-7
@@ -327,10 +352,13 @@ cases:
 :tests: templates/dependent-names/argument-lookup-later.cpp templates/dependent-names/argument-lookup-better-later.cpp templates/dependent-names/dependent-call-pack.cpp templates/dependent-names/dependent-call-template-arguments.cpp templates/dependent-names/operator-lookup-later.cpp templates/dependent-names/argument-lookup-later-default.cpp templates/dependent-names/dependent-type-function-pack.cpp templates/dependent-names/dependent-type-noexcept.cpp templates/dependent-names/dependent-type-template-id.cpp templates/dependent-names/type-dependent-deduced-return.cpp templates/dependent-names/type-dependent-fold.cpp templates/dependent-names/type-dependent-placeholder-parameter.cpp templates/dependent-names/type-dependent-placeholder-variable.cpp templates/dependent-names/generic-lambda-argument-lookup.cpp templates/concepts/requires-expression-lookup-outside-constraint.cpp
 
 For a dependent unqualified call, ordinary lookup finds the declarations
-before the definition. {term}`Argument-dependent lookup
+before the definition ({principle}`NAM-P1` gives the scopes it
+searches). {term}`Argument-dependent lookup
 <argument-dependent lookup>` finds the declarations before the
-definition and those before the {term}`point of instantiation`
-({rule}`INST-31`). Overload resolution chooses among all of them. An
+definition and those before a {term}`point of instantiation`
+({rule}`INST-31`). Where the points give different results,
+{rule}`INST-32` applies. Overload resolution chooses among all of them
+({principle}`OVL-P1`). An
 operator expression with a type-dependent operand finds its non-member
 operator functions in the same way. A dependent call inside a requires
 expression uses the same two lookups, also where the requires
@@ -368,7 +396,8 @@ then also searches the dependent bases ({question}`Q-0248`).
 :tests: templates/dependent-names/dependent-base-not-found.cpp templates/dependent-names/dependent-base-type-not-found.cpp templates/dependent-names/independent-error-unused-base-member.cpp templates/dependent-names/dependent-base-conversion-function-independent.cpp
 
 An unqualified name that only a dependent base declares is not found
-(DEP-11). The program must not use such a name as a value or as a type.
+(DEP-11). The program must not use such a name as a value or as a type,
+also when no specialization is made.
 A conversion function name whose type is not dependent, such as
 `operator int`, is not found either.
 :::
@@ -386,7 +415,7 @@ an ambiguous set, the program is not valid ({question}`Q-0230`).
 
 :::{rule} DEP-14
 :kind: required
-:tests: templates/dependent-names/unqualified-member-kept.cpp templates/dependent-names/unqualified-member-function-kept.cpp
+:tests: templates/dependent-names/unqualified-member-kept.cpp templates/dependent-names/unqualified-member-function-kept.cpp templates/dependent-names/member-found-call-no-argument-lookup.cpp
 
 An unqualified name that finds a member at the definition keeps that
 member in every specialization. A member of the same name in a
@@ -401,6 +430,17 @@ In a class template, unqualified lookup searches the class and its
 independent bases before the template parameters. A member found there
 hides a template parameter of the same name. The rule holds also in a
 member defined outside the class.
+:::
+
+:::{rule} DEP-40
+:kind: required
+:tests: templates/dependent-names/qualified-call-dependent-argument-bound-early.cpp templates/dependent-names/member-found-call-no-argument-lookup.cpp
+
+A qualified call looks up its name at the definition, in the scope that
+the qualifier names, also when an argument is dependent. Such a call
+and an unqualified call whose name finds a class member (DEP-14) take
+no argument-dependent lookup. So neither call finds a function declared
+after the definition.
 :::
 
 ### The current instantiation
@@ -499,8 +539,8 @@ qualifier names a type without `typename`:
 - the type of an alias declaration,
 - the type of a variable and the return type of a function, declared
   at namespace scope, and a trailing return type,
-- the type of a member, and the parameter types of a member function
-  or friend declared in a class,
+- the type of a member, and the return type and parameter types of a
+  member function or friend declared in a class,
 - the parameter types of a function declared with a qualified name,
 - a default type template argument, and the type of a constant
   template parameter,
@@ -625,14 +665,15 @@ breaks the grammar.
 A template must not declare an operator function whose parameters
 leave no room for an element of its parameter pack, which only an
 empty pack makes valid. The implementation rejects such a template
-also when no specialization is made. DEP-33 gives the general case.
+also when no specialization is made. {rule}`OPR-2` gives the number of
+parameters of each operator function, and DEP-33 gives the general case.
 :::
 
 ## Implementation Requirements
 
 :::{rule} DEP-30
 :kind: no-diagnostic
-:tests: templates/dependent-names/independent-error-unused-name.cpp templates/dependent-names/independent-error-unused-base-member.cpp templates/dependent-names/independent-error-unused-conversion.cpp templates/dependent-names/independent-error-unused-call.cpp templates/dependent-names/current-member-missing.cpp templates/dependent-names/this-member-missing-specialized.cpp templates/dependent-names/this-member-missing.cpp declarations/functions/default-arguments/template-default-independent-unused.cpp classes/virtual/override-independent-base-unused.cpp templates/dependent-names/other-specialization-constant-argument-member-missing.cpp
+:tests: templates/dependent-names/independent-error-unused-conversion.cpp templates/dependent-names/independent-error-unused-call.cpp templates/dependent-names/current-member-missing.cpp templates/dependent-names/this-member-missing-specialized.cpp templates/dependent-names/this-member-missing.cpp declarations/functions/default-arguments/template-default-independent-unused.cpp classes/virtual/override-independent-base-unused.cpp templates/dependent-names/other-specialization-constant-argument-member-missing.cpp
 
 A specialization made right after the definition of a template must not
 fail because of a construct in its {term}`templated context` that does
@@ -640,7 +681,8 @@ not depend on the parameters. An
 implementation need not diagnose such a template if no specialization
 is made ({question}`Q-0223`). These are such constructs:
 
-- an expression, a conversion, or a name in the body,
+- an expression, a conversion, or a name in the body that lookup
+  finds, since DEP-6 and DEP-12 reject a name that it does not find,
 - a default argument of a function template that does not depend on
   the parameters ({rule}`DEFARG-10`), although {rule}`INST-9`
   instantiates a default argument only for a call that uses it,
@@ -766,7 +808,8 @@ The keywords:
 ```cpp
 template <class C> int first(C& items) {
   typename C::value_type* p = items.data();       // a type
-  C::value_type* q = nullptr;                     // rejected: read as a product
+  C::value_type* q = nullptr;                     // rejected: a product with the undeclared q (DEP-6)
+  C::value_type count;                            // rejected: a value, then a name (DEP-29)
   return items.template get<0>();                 // a member template
 }
 
@@ -828,8 +871,8 @@ template <class... T> int count() {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 115
-of 138 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 117
+of 144 tests.
 
 ### Divergences
 
@@ -837,6 +880,13 @@ Each settled question below keeps its test's override for the family
 that still differs. Reporting the EDG differences to the EDG project
 waits on the maintainer (`documentation/decisions/pending.md`).
 
+- {question}`Q-0434` (DEP-2; open):
+  whether `this->n` is type-dependent when the type of `n` does not
+  depend on the parameters. It is not, also in a local class of a
+  function template, as Clang 22, GCC, and EDG say. Clang 18 differs.
+- {question}`Q-0432` (DEP-4; open):
+  whether `sizeof` or `noexcept` of a value-dependent operand is
+  value-dependent. It is not, as Clang and GCC say. EDG differs.
 - {question}`Q-0354` (DEP-1, DEP-2; settled on DEP-P2): whether `decltype`
   of a generic lambda's parameter makes a call dependent. It does, and
   the program is valid. EDG rejects the call before the instantiation.
@@ -919,6 +969,8 @@ compile.
 | `independent-error-unused-conversion.cpp` | DEP-30 | reject | reject | accept | reject | {question}`Q-0223` |
 | `qualified-call-later-default.cpp` | DEP-31 | run | reject | run | reject | {question}`Q-0249` |
 | `qualified-member-found-again.cpp` | DEP-13 | reject | reject | accept | reject | {question}`Q-0230` |
+| `sizeof-value-dependent-operand-call-bound-early.cpp` | DEP-4, DEP-5 | accept | accept | accept | reject | {question}`Q-0432` |
+| `sizeof-value-dependent-operand-no-typename.cpp` | DEP-4 | run | run | run | reject | {question}`Q-0432` |
 | `template-keyword-destructor-dot.cpp` | DEP-34 | reject | reject | reject | accept | {question}`Q-0245` |
 | `template-keyword-destructor.cpp` | DEP-34 | reject | reject | reject | accept | {question}`Q-0245` |
 | `template-keyword-in-declarator-class.cpp` | DEP-27 | reject | reject | reject | accept | {question}`Q-0227` |
@@ -928,6 +980,8 @@ compile.
 | `template-keyword-needed-base.cpp` | DEP-24 | reject | reject | accept | reject | {question}`Q-0225` |
 | `template-keyword-no-list-class.cpp` | DEP-26 | accept | reject | accept | accept | {question}`Q-0226` |
 | `template-keyword-no-list.cpp` | DEP-26 | reject | reject | accept | reject | {question}`Q-0226` |
+| `this-in-local-class-not-type-dependent.cpp` | DEP-2 | accept | Clang 22: accept; Clang 18: reject | accept | accept | {question}`Q-0434` |
+| `this-member-independent-type-bound-early.cpp` | DEP-2, DEP-5 | accept | Clang 22: accept; Clang 18: reject | accept | accept | {question}`Q-0434` |
 | `this-member-missing-specialized.cpp` | DEP-30, DEP-17 | reject | Clang 22: reject; Clang 18: accept | GCC 16: reject; GCC 14: accept | reject | {question}`Q-0228` |
 | `this-member-missing.cpp` | DEP-30, DEP-17 | reject | Clang 22: reject; Clang 18: accept | GCC 16: reject; GCC 14: accept | reject | {question}`Q-0228` |
 | `typename-needed-expression.cpp` | DEP-19 | reject | reject | reject | accept | {question}`Q-0224` |
@@ -1004,6 +1058,22 @@ and the questions say so.
   compiler accepts it.
 - DEP-38: a better function that only another translation unit
   declares is not used, and no compiler or linker reports it.
+- DEP-5, DEP-40: every compiler binds an independent call through
+  argument-dependent lookup at the definition, a qualified call with a
+  dependent argument, and a call whose name finds a member, and none of
+  them sees a better function declared later (I6-1, I6-9). The writer
+  probe is `reports/clean-room/roadmap-11/writer-probes/i6-call-binding.json`.
+- DEP-9: for a specialization first used before a better function is
+  declared, and checked again after it, GCC sees the later function,
+  and Clang and EDG do not. The points of instantiation differ, and
+  INST-32 allows each result (I6-10).
+- DEP-6, DEP-12, CNS-13: every compiler rejects an undeclared name, a
+  name that only a dependent base declares, and a template-id whose
+  independent arguments fail the constraints, in a template that is
+  never instantiated (I6-7, I6-8).
+- DEP-4: in the grid `sizeof-operand.json`, Clang also treats
+  `alignof(decltype(N))` as value-dependent, and GCC does not. No test
+  holds that form.
 
 ### Probe grids
 
@@ -1015,7 +1085,9 @@ template-keyword grid (DEP-24 to DEP-26) names a member of a class in
 each position, with and without `template`. The current-instantiation
 grid (DEP-15 to DEP-18) names `Box<T>` inside `Box` in each way, and
 reads a member type, a missing member, and a member of a dependent base
-through it.
+through it. The sizeof-operand grid (DEP-4) passes `sizeof`,
+`noexcept`, and `alignof` of a constant parameter as a template
+argument, and a column adds a better function after the template.
 
 ### Sources
 
@@ -1049,6 +1121,7 @@ numbers of
 | DEP-28, DEP-29 | probes; inventory B2, B9, B10 |
 | DEP-30 to DEP-33 | probes; inventory B1, B3, B6 to B8 |
 | DEP-34 to DEP-38 | probes; gap review items 2, 6, 18, 21, 22 |
+| DEP-40 | probes; I6 report, I6-9 |
 
 Gap review items 1 to 23 and 40 also gave probes for DEP-1 to DEP-4,
 DEP-8 to DEP-17, DEP-22, DEP-24 to DEP-26, and DEP-31.

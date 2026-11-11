@@ -31,7 +31,9 @@ definition that the program asks for, so the implementation rejects one
 that would be deleted, as for the copy and move functions
 ({rule}`CPY-17`). The return type of a defaulted `<=>` is the
 weakest ordering among the parts, and a defaulted `<=>` brings a
-defaulted `==` with it.
+defaulted `==` with it. Only the comparison operators can be defaulted
+in this way. A hash of the parts is a function that the class writes
+itself.
 :::
 
 :::{principle} DCMP-P2

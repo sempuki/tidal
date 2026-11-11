@@ -78,3 +78,16 @@ alias for `Box<U>`, and `Pointer<U>` is an alias for `Box<U*>`.
 | Box<T*> | reject | accept | accept |
 | Pointer<T> | reject | accept | accept |
 | Box<const T> | reject | accept | accept |
+
+## sizeof-operand
+
+Grid file `sizeof-operand.json`. Run on 2026-11-11 with `tools/probe_grid.py --errors`.
+
+| | no later overload | later overload |
+|---|---|---|
+| call f(B<sizeof(N)>{}, 0) | accept | accept: gcc-host, gcc-16, clang-18, clang-host, gcc-14, clang-22; reject: edg-7.0-ilp32, edg-7.0 |
+| call f(B<noexcept(N + 1)>{}, 0) | accept | accept: gcc-14, gcc-host, clang-host, clang-18, gcc-16, clang-22; reject: edg-7.0, edg-7.0-ilp32 |
+| call f(B<alignof(decltype(N))>{}, 0) control-ish | accept | accept: gcc-14, gcc-host, gcc-16; reject: edg-7.0, edg-7.0-ilp32, clang-host, clang-18, clang-22 |
+| control: call f(B<N>{}, 0) | accept | reject |
+| B<sizeof(N)>::type x = 0 in a function, no typename | accept: gcc-14, gcc-host, clang-host, gcc-16, clang-18, clang-22; reject: edg-7.0-ilp32, edg-7.0 | accept: gcc-host, gcc-14, gcc-16, clang-18, clang-host, clang-22; reject: edg-7.0, edg-7.0-ilp32 |
+| B<noexcept(N + 1)>::type x = 0, no typename | accept: gcc-host, gcc-16, gcc-14, clang-host, clang-18, clang-22; reject: edg-7.0-ilp32, edg-7.0 | accept: gcc-14, gcc-16, gcc-host, clang-host, clang-18, clang-22; reject: edg-7.0, edg-7.0-ilp32 |

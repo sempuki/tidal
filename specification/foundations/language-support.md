@@ -108,7 +108,7 @@ includes no header declares these names itself.
 
 :::{rule} LSUP-1
 :kind: reject
-:tests: foundations/language-support/initializer-list-pointer-and-size.cpp foundations/language-support/initializer-list-no-members.cpp foundations/language-support/initializer-list-not-template.cpp foundations/language-support/initializer-list-missing.cpp foundations/language-support/initializer-list-auto-deduction.cpp foundations/language-support/initializer-list-parameter-not-needed.cpp foundations/language-support/initializer-list-candidate-not-viable.cpp
+:tests: foundations/language-support/initializer-list-pointer-and-size.cpp foundations/language-support/initializer-list-no-members.cpp foundations/language-support/initializer-list-not-template.cpp foundations/language-support/initializer-list-missing.cpp foundations/language-support/initializer-list-auto-deduction.cpp foundations/language-support/initializer-list-parameter-not-needed.cpp foundations/language-support/initializer-list-candidate-not-viable.cpp foundations/language-support/initializer-list-count-before-pointer.cpp
 
 A program needs an `std::initializer_list<E>` where a braced list
 initializes an object of that type, or where {rule}`AUTO-7` deduces
@@ -118,9 +118,11 @@ braced list has no sequence ({rule}`ICS-16`). Before the point of
 need, the program must declare `std::initializer_list` with this shape:
 
 - a {term}`class template` with one {term}`type parameter` `E`,
-- two non-static data members, a pointer to `const E` and a count of
-  type `std::size_t`,
-- a constructor that takes the pointer and the count.
+- two non-static data members, a pointer to `const E` and then a count
+  of type `std::size_t`, which `decltype(sizeof 0)` can name with no
+  declaration of `std::size_t`
+  ({question}`Q-0431`),
+- a constructor that takes the pointer and the count, with any access.
 :::
 
 :::{rule} LSUP-2
@@ -213,8 +215,9 @@ an alias of the core type:
 :tests: foundations/language-support/nothrow-tag-self-declared.cpp expressions/new-delete/null-result-nothrow-tag.cpp expressions/new-delete/bad-bound-nothrow.cpp expressions/new-delete/constant-evaluation-nothrow.cpp
 
 The library defines the nothrow forms of the global allocation and
-deallocation functions. A program can declare these names itself in
-this shape:
+deallocation functions, and the object `std::nothrow`. A program can
+declare these names itself in this shape. The program does not define
+`std::nothrow`:
 
 | Name | Shape |
 |---|---|
@@ -538,7 +541,7 @@ int* r = new (raw) int(3);          // raw hosts the int
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 52
-of 73 tests. EDG compiles the run tests and does not run them.
+of 74 tests. EDG compiles the run tests and does not run them.
 
 ### Divergences
 
@@ -567,6 +570,10 @@ of 73 tests. EDG compiles the run tests and does not run them.
   Clang and EDG say. GCC checks every definition of the class, so it
   also rejects a parameter that is never initialized and a candidate
   with no conversion sequence.
+- {question}`Q-0431` (LSUP-1; open): whether an
+  implementation must reject a declared `std::initializer_list` with the
+  count before the pointer, or a count of another type. It must, as
+  Clang and GCC say. EDG accepts both.
 - {question}`Q-0323` (LSUP-11; settled): whether a `T*` from an
   allocation function points to element 0 of an array whose elements
   are not built yet. It does. The test builds each element with
@@ -611,6 +618,7 @@ different exit codes.
 | `foundations/storage/allocation-assign-before-construction-pod-member.cpp` | LSUP-11, CE-9 | reject | reject | accept | accept | {question}`Q-0421` |
 | `foundations/storage/allocation-assign-before-construction-user-assignment.cpp` | LSUP-11, CE-9 | reject | reject | accept | accept | {question}`Q-0421` |
 | `initializer-list-candidate-not-viable.cpp` | LSUP-1, ICS-16 | accept | accept | reject | accept | {question}`Q-0321` |
+| `initializer-list-count-before-pointer.cpp` | LSUP-1 | reject | reject | reject | accept | {question}`Q-0431` |
 | `initializer-list-parameter-not-needed.cpp` | LSUP-1 | accept | accept | reject | accept | {question}`Q-0321` |
 | `ordering-declared-after-class.cpp` | LSUP-2 | reject | reject | run | reject | {question}`Q-0402` |
 | `ordering-defaulted-not-equal-zero-only.cpp` | LSUP-12 | accept | accept | reject | accept | {question}`Q-0334` |
@@ -624,7 +632,12 @@ different exit codes.
   the layout of the two members, and also accepts a second pointer in
   place of the count. GCC compares the class with the one in its own
   header and rejects the two-pointer form. EDG looks for the
-  constructor. The rule gives the shape that all three accept.
+  constructor. The rule gives the shape that all three accept. Every
+  compiler accepts a private constructor and a count named
+  `decltype(sizeof 0)` with no declaration of `std::size_t` (P2-6).
+- LSUP-6: GCC and Clang link a program that declares `std::nothrow`
+  and does not define it, because the library defines the object
+  (G162).
 - LSUP-2: the gap review of the text phase 8 wrote on foundations
   (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`)
   reads the reference as Clang and GCC do ({question}`Q-0386`).

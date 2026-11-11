@@ -386,6 +386,20 @@ bool divide_fits(long long a, long long b) {
 }
 ```
 
+A hash that relies on wrapping computes in `unsigned`. In `int`, an
+overflow of `*` or `+` is undefined (MUL-10, {rule}`ADD-9`). In
+`unsigned`, both wrap (MUL-8, {rule}`ADD-5`), and the conversion back to
+`int` keeps the low bits ({rule}`CONV-2`):
+
+```cpp
+int hash(const char* text) {
+  unsigned h = 0;
+  for (; *text != '\0'; ++text)
+    h = h * 31u + static_cast<unsigned char>(*text);   // wraps
+  return static_cast<int>(h);                          // the low 32 bits
+}
+```
+
 ## Evidence
 
 The results for each compiler in the matrix are in `tests/RESULTS.md`.

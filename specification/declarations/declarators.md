@@ -239,8 +239,10 @@ what is not valid.
 
 An array declaration must obey these rules:
 
-- The bound must be a constant expression of a type that DCL-5 lists.
-  A floating-point bound is not valid, even with an integer value.
+- The bound must be a constant expression of a type that DCL-5 lists
+  ({rule}`CE-3` and {rule}`CV-8` give the variables that it can read,
+  such as a `static const int` member). A floating-point bound is not
+  valid, even with an integer value.
 - The value of the bound must convert to the type of `sizeof` without
   loss of value.
 - The bound must not have a scoped enumeration type.

@@ -1,0 +1,20 @@
+{
+ "prelude": "template <int K> struct B { };\nenum Color { red };",
+ "template": "{prelude}\n{row}\n{col}\nint main() {{ return 0; }}",
+ "rows": {
+  "static const int v = B<N>::missing": "template <int N> struct A { static const int v = B<N>::missing; };",
+  "static const long v = B<N>::missing": "template <int N> struct A { static const long v = B<N>::missing; };",
+  "static const bool v = B<N>::missing": "template <int N> struct A { static const bool v = B<N>::missing; };",
+  "static const Color v = B<N>::missing": "template <int N> struct A { static const Color v = B<N>::missing; };",
+  "static inline const int v = B<N>::missing": "template <int N> struct A { static inline const int v = B<N>::missing; };",
+  "static constexpr int v = B<N>::missing": "template <int N> struct A { static constexpr int v = B<N>::missing; };",
+  "static const int v = N / 0 + 1": "template <int N> struct A { static const int v = N / 0 + 1; };"
+ },
+ "cols": {
+  "no use": "",
+  "an object": "A<1> a1;",
+  "sizeof": "static_assert(sizeof(A<1>) >= 1);",
+  "a pointer only": "A<1>* p = nullptr;"
+ },
+ "flags": []
+}

@@ -467,6 +467,10 @@ status, and the first sentence of its answer section.
 | [Q-0428](Q-0428-virtual-call-instantiation.md) | Does a call of a virtual member function instantiate the function when no object of the class exists? | settled | Yes; the call instantiates the function |
 | [Q-0429](Q-0429-member-template-enclosing-pack-parameters.md) | Does a function parameter pack of a member template that expands only the enclosing class's pack take part in deduction as a pack? | provisional | The pack takes part as one ordinary parameter for each element of the class's pack, and deduction finds only the member template's own parameters |
 | [Q-0430](Q-0430-typed-pointer-to-byte-step.md) | Where is `p + 1` when `p` is a `T*` that points to a byte, and can placement `new` use that position? | provisional | `p + 1` holds the address `sizeof(T)` bytes after `p`, and placement `new` can use it |
+| [Q-0431](Q-0431-initializer-list-shape.md) | Must an implementation reject a declared `std::initializer_list` whose count comes before the pointer? | provisional | The shape of LSUP-1 is fixed, and another shape is rejected |
+| [Q-0432](Q-0432-sizeof-operand-value-dependent.md) | Is `sizeof(N)` value-dependent when `N` is a constant template parameter? | provisional | The operands of `sizeof`, `alignof`, and `noexcept` do not make the expression value-dependent |
+| [Q-0433](Q-0433-static-const-member-initializer.md) | Is the initializer in the class of a `static const` member made with the class? | provisional | The initializer is made with the class |
+| [Q-0434](Q-0434-this-member-access-type-dependent.md) | Is `this->n` type-dependent when the type of `n` does not depend on the parameters? | provisional | A member access through `this` is type-dependent only for a dependent member type or a dependent base |
 
 ## Status values
 

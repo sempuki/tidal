@@ -3,7 +3,7 @@
 **Status:** provisional
 **Affects:** ADD-14, STG-29, STG-17, `tests/foundations/storage/byte-array-typed-step-placement.cpp`, `tests/foundations/storage/byte-array-typed-step-distance.cpp`, `tests/expressions/additive/typed-pointer-to-byte-two-past.cpp`
 **Source:** the round 11 programmer report (`reports/clean-room/roadmap-11/programmer.md`, sections 1.5 and 6), reductions `placement_at_typed_step_into_byte_array.cpp` and `typed_step_over_byte_array_distance.cpp`, probe `typed_step_two_past_byte.cpp`.
-**Waits for:** a first review; a rule
+**Waits for:** a first review
 
 ## Context
 
@@ -56,6 +56,8 @@ through `p + 1` itself.
 `new` can use it (option 1). Every compiler gives this result, and an
 arena or a vector over a byte array needs the step. `p + 2` stays
 undefined by ADD-14.
+
+Rule text on 2026-11-11 (decision 0062, item F4): ADD-14 says that a move counts in the size of the pointer's type, so `p + 1` is `sizeof(T)` bytes after a `T*` that points to a byte. STG-29 and STG-P2 say that placement `new` can use that position, and STG-28 says that a `T*` at a multiple of `sizeof(T)` bytes into allocated storage points to that element. The question now waits for a first review.
 
 ## Opinions
 

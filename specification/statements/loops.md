@@ -10,7 +10,7 @@ condition is true:
 ## Principles
 
 :::{principle} LOOP-P1
-:rules: LOOP-1 LOOP-2 LOOP-3 LOOP-5 LOOP-6
+:rules: LOOP-1 LOOP-2 LOOP-3 LOOP-5 LOOP-6 LOOP-9
 
 A loop repeats a body while a condition, converted to `bool` by
 {term}`contextual conversion`, holds. The three forms differ only in
@@ -25,6 +25,16 @@ when the condition is tested and what runs around the body.
 The condition of a `do` cannot be a declaration, because a declaration
 there would have no place to live. A `for` can leave any part out, and
 an absent condition means `true`.
+
+A `goto` or a `case` label can enter a body in the middle. The loop then
+goes on from that point as after a normal pass:
+
+```text
+switch (k) { case 0: for (n = 1; n < 3; ++n) { a(); case 1: b(); } }
+
+k == 1:   b()   ++n   n < 3 ?   a()   b()   ++n   n < 3 ? ...
+          the initializer n = 1 does not run
+```
 :::
 
 :::{principle} LOOP-P2
@@ -144,6 +154,17 @@ iteration expression. Each part can be absent, and an absent condition is
 destroyed one time, when the statement ends, also after a `break`.
 :::
 
+:::{rule} LOOP-9
+:kind: required
+:tests: statements/loops/jump-into-for-body-constant.cpp statements/loops/jump-into-do-body-constant.cpp statements/switch/case-inside-loop.cpp statements/loops/jump-into-for-body-past-initialized-declaration.cpp
+
+If a jump enters the body of a loop, execution goes on from the target
+to the end of the body. Then the loop goes on as after a normal pass of
+the body: a `for` evaluates its iteration expression, and each form
+evaluates its condition. The initializer of a `for` does not run, and
+{rule}`JMP-6` applies to a declaration in it.
+:::
+
 ## Examples
 
 % tidal-example: reject
@@ -186,6 +207,13 @@ compile.
 
 - LOOP-1: Clang and GCC destroy the objects of a `while` body, then
   the condition variable, in each iteration.
+- LOOP-9: every compiler, in constant evaluation, runs the rest of a
+  `while`, `for`, or `do` body after a `case` label inside it, then the
+  iteration expression, then the condition. A `for` initializer that is
+  an expression does not run. Every compiler rejects a jump past a
+  `for` initializer that declares a variable with an initializer
+  (G161). The writer probe is
+  `reports/clean-room/roadmap-11/writer-probes/g161-jump-into-loop.json`.
 
 ### Sources
 
