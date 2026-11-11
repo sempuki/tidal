@@ -69,6 +69,8 @@ Kept in `pending.md` row 4 on 2026-11-11 (decision 0063, item RV8). The gap revi
 
 Rule text on 2026-11-11 (decision 0063, item RV8): STG-28 states the cast to element `k` through a byte pointer as an exception to STG-16, in place of a consequence of its earlier sentence, and STG-16 names the exception (RV8-A-1). The test `allocated-storage-byte-offset-class-placement.cpp` builds a class that is not an implicit-lifetime type at element 1 and reads it through the cast pointer, and every compiler that runs it passes. A storage Note records the readings of RV8-A-1 and RV8-R-10. The answer is unchanged, and the question still waits for the maintainer.
 
+Kept in `pending.md` row 4 on 2026-11-11 (decision 0064, item RV9). The gap review of the phase 16 text names the question at STG-P2 and gives no new reading of its answer.
+
 ## Opinions
 
 ### Gap review, 2026-11-11 (phase 14 text, classes, declarations, foundations, and statements)
@@ -90,3 +92,7 @@ The source-reader gap review of the phase 15 text on classes, declarations, foun
 ### Read of the RV8 repair diff, 2026-11-11
 
 The source-reader read of the RV8 repair diff (`reports/review/2026-11-11-read-of-rv8-repair-diff.md`) reads the Q-0430 line and the storage Note on RV8-A-1 and RV8-R-10: agrees as a record. STG-28 still reads against for element `k` above 0 and agrees for element 0, as RV8-A-1 said. The new wording of STG-28 states the case as an exception to STG-16 and no longer claims a consequence. The read gives no new reading of the question's answer.
+
+### Gap review, 2026-11-11 (phase 16 text)
+
+The source-reader gap review of the phase 16 text (`reports/review/2026-11-11-gap-review-phase-16.md`) names the question in its reading of STG-P2. The link to the storage-form table agrees, and the sentence on the typed step from a byte is unchanged and keeps the split of RV7-A-10. The review gives no new reading of this question's answer.

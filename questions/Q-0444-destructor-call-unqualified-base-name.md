@@ -45,6 +45,8 @@ read of the RV8 repair diff supports the answer.
 
 Kept open on 2026-11-11 under decision 0054 (decision 0063, item RV8). The read of the RV8 repair diff supports the answer with no doubt (RV9-R-1), and GCC 16 alone differs. The read withdraws RV8-R-1 and RV8-A-6, so no review reads against the answer, and `pending.md` row 4 no longer holds the item "DTOR-8, Q-0444". No principle gives the answer. CTOR-P1 says that a program can end an object by calling its destructor by name, and it does not say which names denote the object's type. A reader of CTOR-P1 alone can reach option 2, so CTOR-P1 fails step 3 of the principle test.
 
+Kept open on 2026-11-11 under decision 0054 (decision 0064, item RV9). The gap review of the phase 16 text supports the answer again with no doubt (RV9-3), and GCC 16 alone differs. No principle gives the answer, and CTOR-P1 still fails step 3 of the principle test.
+
 ## Opinions
 
 ### Read of the RV7 repair diff, 2026-11-11
@@ -58,3 +60,7 @@ The source-reader gap review of the phase 15 text on classes, declarations, foun
 ### Read of the RV8 repair diff, 2026-11-11
 
 The source-reader read of the RV8 repair diff (`reports/review/2026-11-11-read-of-rv8-repair-diff.md`) reads the question: supports (option 1, RV9-R-1). The read withdraws the two readings above (RV8-R-1 and RV8-A-6), because they missed a lookup rule. In a member access, the name after `~` has the object's type as its context, and the type that the name finds must be that type, cv-qualifiers aside. For `d.~Base()` on a `Derived`, the context is `Derived` and the name finds `Base`, so the call is not valid. In `d.Base::~Base()`, the context is the base that the qualifier names, so the base's destructor runs, as DTOR-8 says. The points that RV8-R-1 listed do not override that rule. DTOR-8, Clang, and EDG agree with the reference, and GCC reads against it.
+
+### Gap review, 2026-11-11 (phase 16 text)
+
+The source-reader gap review of the phase 16 text (`reports/review/2026-11-11-gap-review-phase-16.md`) reads the bdc27d44 hunks on the question: supports with no doubt (RV9-3). In a member access, the name after `~` is looked up with the object's type as its context, and the name must denote that type, cv-qualifiers aside. On a `Derived` object the base's name fails that test, so `d.~Base()` is not valid, as Clang and EDG say. The constructors divergence line and the note of `dtor-call-unqualified-base.cpp` now state that reading and no longer lean toward GCC.

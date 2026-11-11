@@ -2,7 +2,7 @@
 
 **Status:** provisional
 **Affects:** PRIM-15, `tests/expressions/primary/float-overflow.cpp`
-**Waits for:** a review (against)
+**Waits for:** the maintainer (pending.md row 4)
 
 ## Context
 
@@ -25,6 +25,8 @@ Kept on 2026-11-03. The review reads against the answer with doubt, and PRIM-P4 
 
 Kept open on 2026-11-04 under decision 0054, because the gap review reads against the answer with doubt.
 
+Kept open on 2026-11-11 (decision 0064, item RV9). The gap review of the phase 16 text reads against the answer, and adds the literal whose suffix calls the `long double` form (RV9-6). Clang 22 and GCC 16 accept such a literal with a warning and keep the matrix's answer, and EDG 7.0 rejects it, as the review reads. So the question joins `pending.md` row 4 with the item "PRIM-15, Q-0063".
+
 ## Opinions
 
 ### Gap review, 2026-11-03
@@ -36,3 +38,7 @@ The source-reader gap review of the open questions on expressions, declarations,
   source reader) holds that such a literal is not valid (option 2).
   Clang and GCC still accept the literal in their strictest mode, so the
   provisional answer stays option 1 until more opinions arrive.
+
+### Gap review, 2026-11-11 (phase 16 text)
+
+The source-reader gap review of the phase 16 text (`reports/review/2026-11-11-gap-review-phase-16.md`) reads the question: reads against the answer (RV9-6). A floating literal whose value is outside the range of its type makes the program not valid, and nothing makes the literal conditionally supported. A literal with a suffix that calls the `long double` form becomes a call whose argument is the plain `long double` literal, so the same rule reaches it. A compiler that accepts the literal with a warning has given the diagnostic that the reference asks for. So the sentence that each result conforms holds for Clang and GCC only because they warn. The raw form and the template need no value, and every compiler accepts them, which agrees. The review gives the reading of the earlier review of 2026-11-03 and adds the suffixed case.

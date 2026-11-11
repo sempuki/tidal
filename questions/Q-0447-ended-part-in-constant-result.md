@@ -3,7 +3,7 @@
 **Status:** provisional
 **Affects:** CE-21, `tests/foundations/constant-evaluation/result-ended-element.cpp`, `tests/foundations/constant-evaluation/result-union-ended-element.cpp`
 **Source:** X25-7 (`reports/clean-room/X25/report.md`, probe `a10.cpp`), rerun on the matrix in `reports/clean-room/roadmap-13/writer-probes/x25-rules.json`, and by the item F6 writer with `tools/probe_grid.py`.
-**Waits for:** a first review
+**Waits for:** a review (doubt); newest families that agree
 
 ## Context
 
@@ -38,6 +38,10 @@ The tests in **Affects** and the probes in **Source**.
 The ended part has no value, and the constant is not valid (option 1).
 CE-21 says so. Every newest compiler agrees, and GCC 14 alone differs.
 
+Kept open on 2026-11-11 under decision 0054 (decision 0064, item RV9). The gap review of the phase 16 text supports the answer with a doubt (RV9-9), and every newest compiler agrees. The review also reads the form of the table's last row: an assignment to the `int` element after its end uses the element outside its lifetime, which is undefined, so the evaluation is not constant. OBJ-2 gives the same reading, as Clang does. GCC 16 and EDG 7.0 accept the form, so two newest families differ in that form.
+
 ## Opinions
 
-<!-- Add a subsection per opinion: ### @handle, YYYY-MM-DD -->
+### Gap review, 2026-11-11 (phase 16 text)
+
+The source-reader gap review of the phase 16 text (`reports/review/2026-11-11-gap-review-phase-16.md`) reads the question: supports with a doubt (RV9-9). The value of a constant needs each scalar part to have a value. A pseudo-destructor call in an evaluation ends the scalar's lifetime, and an object's properties hold only during its lifetime, so the ended part has no value that the constant could accept (option 1). The doubt is that the reference reaches the result only through that general statement on lifetimes, and does not say outright what value an ended scalar has. An element of class type that a destructor call ended follows the same reading. The review reads the last row of the table as decided: the assignment after the element's end is a use of the object outside its lifetime, no operation in the row creates a new object, and the undefined use makes the evaluation not constant. Clang's rejection matches, and GCC 16 and EDG read against.
