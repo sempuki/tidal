@@ -189,8 +189,20 @@ def failure(proc: subprocess.CompletedProcess) -> str:
     Notes count: Clang and EDG name the cause of a failed constant
     evaluation only in a note.
     """
-    diags = diagnostics(proc.stderr) or [" ".join(proc.stderr.split())[:200]]
+    diags = diagnostics(proc.stderr) or [" ".join(unlocated(proc.stderr).split())[:200]]
     return " / ".join(diags)
+
+
+LOCATION = re.compile(r"^\S+?:(?:\d+:\d+:)? ", re.M)
+
+
+def unlocated(stderr: str) -> str:
+    """stderr with the file location removed from the start of each line.
+
+    The fallback text of failure() keeps 200 characters, and an absolute
+    path in a long checkout path would push the message past them.
+    """
+    return LOCATION.sub("", stderr)
 
 
 def short(detail: str) -> str:
