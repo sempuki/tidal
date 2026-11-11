@@ -273,7 +273,11 @@ does not hold.
 ## Phase 15: answer the open rows, read the RV7 repairs, and count the rewrite's share of the gate
 
 Decision 0063 (provisional) adopts this phase from the twelfth round of
-clean-room roadmaps (`reports/clean-room/roadmap-12/`).
+clean-room roadmaps (`reports/clean-room/roadmap-12/`). Every item is
+done. Open questions went from 185 to 197: the phase opened 12 (Q-0435
+to Q-0446) and settled none. Front-end round 26 ended with 45 failing
+tests that the marks file does not mark, so the gate of decisions 0062
+and 0063 holds. The close counts 48, because P4 added 3.
 
 | Item | Work | Prerequisites |
 |---|---|---|
