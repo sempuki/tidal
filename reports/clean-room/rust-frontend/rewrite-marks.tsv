@@ -1,0 +1,40 @@
+# The tests that need the template model of frontend/TEMPLATE-MODEL.md.
+# Decision 0063 (item GC) governs this file. "Few" in the gate of decision
+# 0062 counts the tests that fail their check and that this file does not
+# mark, and the rewrite takes over the marked tests.
+# tools/frontend_check.py reads this file. It reports a marked test that
+# does not exist or that passes its check, and prints the marked tests
+# apart on the completion line.
+# A row is a test path under tests/, the section of TEMPLATE-MODEL.md that
+# passes the test, and a short cause, separated by tabs. A line that starts
+# with # is a comment.
+templates/dependent-names/other-specialization-constant-argument-member-missing.cpp	1	A template-id with independent arguments inside its own template is read as dependent, so its member is not checked at the definition (DEP-30, DEP-15).
+templates/dependent-names/other-specialization-constant-argument-no-typename.cpp	1	The same: Meter<0>::unit is read as a member of a dependent specialization (DEP-15, DEP-1).
+templates/dependent-names/sizeof-value-dependent-operand-call-bound-early.cpp	1	No value-dependence mark: Slot<sizeof(N)> is read as dependent, so the call binds late (DEP-4, DEP-5).
+templates/dependent-names/sizeof-value-dependent-operand-no-typename.cpp	1	The same: Box<sizeof(N)>::type is read as a member of a dependent specialization (DEP-4).
+templates/dependent-names/current-instantiation-enclosing-base.cpp	2	The current instantiation of an enclosing class is an unknown base (DEP-11).
+templates/dependent-names/member-template-current-instantiation-pointer.cpp	2	An object of the current instantiation has an unknown type in a pattern, so the member template is not found (DEP-24, DEP-2).
+templates/dependent-names/member-template-current-instantiation-qualifier-dependent-base.cpp	2	The same, so a name that the class does not declare is not known to need template (DEP-24).
+templates/dependent-names/member-template-non-dependent-base.cpp	2	The same, for a member template of an independent base (DEP-24).
+templates/dependent-names/member-template-through-current-instantiation-object.cpp	2	The same, through a reference parameter of the class's own type (DEP-24, DEP-2).
+templates/instantiation/class-point-not-later-member-type.cpp	3	Lookup in a specialization sees declarations after its point of instantiation (INST-33, INST-30).
+templates/instantiation/class-point-not-later-type.cpp	3	The same (INST-33).
+templates/instantiation/class-point-not-later.cpp	3	The same, for a static member's initializer (INST-32, INST-31).
+templates/instantiation/class-point-static-const-member.cpp	3	The same, and the initializer is made with the class (INST-33, INST-5).
+templates/instantiation/class-point-static-constexpr-made-at-use.cpp	3	A static constexpr member's initializer is made with the class and not at its first use (INST-33, INST-5, INST-8).
+templates/instantiation/class-static-constexpr-member-initializer-waits.cpp	3	The same (INST-5).
+templates/instantiation/local-class-default-argument.cpp	3	The members of a local class in a specialization are made with the function and not at their use (INST-12, INST-6).
+templates/instantiation/local-class-exception-specification.cpp	3	The same (INST-12, INST-6).
+templates/instantiation/recursion-endless-function.cpp	3	Function bodies made at the end of the unit have no busy state, so endless nesting is not caught (INST-15, TR-13).
+templates/specialization/partial-no-primary-variable.cpp	3	A variable partial specialization with no primary does not reach the check (TSP-31).
+templates/deduction/substitution-explicit-specifier.cpp	4	Substitution into the operand of a conditional explicit is not done (DED-24).
+templates/deduction/substitution-lambda-body.cpp	4	A substitution mutes every error, and the lambda body is outside the immediate context (DED-29).
+templates/deduction/substitution-lambda-default.cpp	4	The same, in a template parameter's default (DED-29).
+templates/deduction/substitution-member-wrong-kind.cpp	4	A member of the wrong kind stops the replay as unsupported (DED-24).
+statements/if/constexpr-template-nondependent-call-checked.cpp	5	The pattern's parse does not check an independent call in a discarded statement (IF-22, DEP-6).
+templates/constraints/out-of-class-other-clause.cpp	5	The member's trailing clause is not kept for the definition outside the class (CNS-29).
+templates/constraints/out-of-class-without-clause.cpp	5	The same, with no clause on the definition (CNS-29).
+templates/dependent-names/binary-operator-pack-never-fits.cpp	5	No check of an operator function that only an empty pack makes valid (DEP-37).
+templates/dependent-names/operator-pack-never-fits.cpp	5	The same (DEP-37).
+templates/packs/fold-in-outer-pattern.cpp	5	The scan of an expansion pattern does not know that a fold uses up its pack (PACK-8).
+templates/packs/size-operator-in-outer-pattern.cpp	5	The same, for sizeof... (PACK-8).

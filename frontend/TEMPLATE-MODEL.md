@@ -2,10 +2,14 @@
 
 This document gives the model of templates that the rewrite of the
 front end needs (decision 0060, decision 0062 item RP). It comes from
-the templates chapter of the specification, from the 16 tests that
+the templates chapter of the specification, from the 30 tests that
 fail on the current front end because of its model, and from the three
 facts that the I6 component could not compute
-(`reports/clean-room/I6/report.md`, section "Score"). `DESIGN-current.md`
+(`reports/clean-room/I6/report.md`, section "Score").
+`reports/clean-room/rust-frontend/rewrite-marks.tsv` (the marks file)
+names the 30 tests and the section of this document that passes each.
+The rewrite takes them over, and the gate of decisions 0062 and 0063
+does not count them (decision 0063, item GC). `DESIGN-current.md`
 describes the current template record, and this document refers to it
 as "the current model".
 
@@ -26,9 +30,14 @@ positions.
 | In a pattern, the type of an object of the current instantiation is `Ty::Unknown`. | A member access on such an object cannot find the member template, and `<` reads as the less-than operator. | DEP-2, DEP-15, DEP-24 | 4 |
 | A base of a pattern class is a known class or an unknown one (`BaseInfo::class` is `None`). The current instantiation of an enclosing class is an unknown base. | Unqualified lookup in the class is uncertain, and a name that the base declares is unknown. | DEP-11 | 1 |
 | A template-id with independent arguments, inside the template's own definition, gets no special form. | `Meter<0>` inside `Meter<N>` is treated as dependent, so its members are not looked up at the definition. | DEP-1, DEP-15, DEP-30 | 2 |
-| A substitution is a replay with every diagnostic muted, and any muted error is a failure. | An error outside the immediate context, such as in a lambda body, becomes a quiet failure instead of an error. A member of the wrong kind stops the replay as unsupported. | DED-24, DED-29 | 3 |
+| An expression has no value-dependence mark. Any template argument that names a parameter makes the template-id dependent. | `Slot<sizeof(N)>` is treated as dependent, though DEP-4 does not make `sizeof(N)` value-dependent, so a call binds late and `Box<sizeof(N)>::type` needs `typename`. | DEP-4, DEP-5 | 2 |
+| A specialization's lookup has no point of instantiation. | Lookup in a specialization sees declarations after its point, and a `static` member's initializer is made with the class instead of at its use. | INST-5, INST-8, INST-30 to INST-33 | 6 |
+| The members of a local class in a specialization are made at their use. | Errors in a default argument or an exception specification of such a member are missed when nothing uses it. | INST-6, INST-12 | 2 |
+| Function bodies made at the end of the unit have no `busy` state. | Endless nesting of such bodies is not caught. | INST-15, TR-13 | 1 |
+| A substitution is a replay with every diagnostic muted, and any muted error is a failure. | An error outside the immediate context, such as in a lambda body, becomes a quiet failure instead of an error. A member of the wrong kind, or a conditional `explicit`, stops the replay as unsupported. | DED-24, DED-29 | 4 |
 | The check of an expansion pattern scans tokens. | The scan does not know that a fold or `sizeof...` inside the pattern uses up the pack. | PACK-8 | 2 |
 | The pattern's parse does not resolve an independent call in a discarded statement. | A call with too few arguments there is accepted. | IF-22, DEP-6 | 1 |
+| The pattern of an operator function is not checked for a pack that only an empty list fits. | The definition is accepted. | DEP-37 | 2 |
 | The trailing clause of a member of a class template is not kept for the definition outside the class. | A definition with another clause, or none, matches the member. | CNS-29 | 2 |
 | A variable partial specialization with no primary takes a path that does not reach the TSP-31 check. | The program is accepted. | TSP-31 | 1 |
 
@@ -44,9 +53,9 @@ Each expression node carries these marks:
 | Mark | Meaning | Rules |
 |---|---|---|
 | type-dependent | the node's type differs between specializations | DEP-2, DEP-3 |
-| value-dependent | the type is fixed, and the value differs | DEP-4 |
+| value-dependent | the type is fixed, and the value differs; the operand of `sizeof`, `alignof`, `noexcept`, or `typeid` passes on no value-dependence, only type-dependence | DEP-4 |
 | unexpanded packs | the packs that the node names and that no expansion inside the node expands | PACK-8, PACK-13, PACK-19 |
-| binding | for a name: the declarations found at the definition, or "dependent name" | DEP-5, DEP-7, DEP-8 |
+| binding | for a name: the declarations found at the definition, or "dependent name"; a qualified call with an independent qualifier, and an unqualified call whose name finds a member, bind at the definition also with a dependent argument | DEP-5, DEP-7, DEP-8, DEP-40 |
 
 A type is a known type or a dependent type. The dependent forms extend
 the current `Dep` (`types.rs`) with the forms that the current model
@@ -74,7 +83,13 @@ paragraph), and the definition looks up its members.
 
 The first phase only chooses a reading for `T::name`. The second phase
 reports the error when what the name finds does not fit the reading
-(DEP-19, DEP-22, DEP-26; finding I6-4).
+(DEP-P5, DEP-19, DEP-22, DEP-26).
+
+A member access through `this`, or through an object of type
+`CurrentInst`, is type-dependent only when the member's type is
+dependent, or when the name finds nothing and the class has a dependent
+base (DEP-2, the paragraph after the list). So `this->n`, where `n` has
+the type `int`, has the type `int` at the definition.
 
 ## 2. The current instantiation is a class with known members
 
@@ -249,33 +264,69 @@ dependent construct valid. DEP-32 and DEP-33 need no diagnostic, so an
 implementation that accepts follows the text (TR-P1). DEP-37 is the
 case of that kind that the text requires the implementation to reject.
 
-## 6. The 16 tests
+## 6. The 30 tests
 
-The 16 tests that the implementer's round 11 view and report 24
-section 6 attribute to the current model, and the part of this model
-that passes each:
+The marks file, `reports/clean-room/rust-frontend/rewrite-marks.tsv`,
+names the tests that fail on the current front end because of its
+model. Report 25 section 7 marked them, and `tools/frontend_check.py`
+counts them apart on its completion line (decision 0063). This table
+follows the marks file, by the section of this model that passes each
+test. A test path is under `tests/`.
 
-| Test | Rules | Now | Part of the model |
-|---|---|---|---|
-| `templates/dependent-names/member-template-through-current-instantiation-object.cpp` | DEP-24, DEP-2 | false reject | `w` has type `CurrentInst`; lookup finds `get` (section 2) |
-| `templates/dependent-names/member-template-current-instantiation-pointer.cpp` | DEP-24, DEP-2 | false reject | the same for `p->get` and a local `l.get` |
-| `templates/dependent-names/member-template-non-dependent-base.cpp` | DEP-24 | false reject | `get` and `make` are in an independent base (section 2) |
-| `templates/dependent-names/member-template-current-instantiation-qualifier-dependent-base.cpp` | DEP-24 | missed reject | `Wrap::make` finds nothing, the base is dependent, so `<` needs `template` (section 2) |
-| `templates/dependent-names/current-instantiation-enclosing-base.cpp` | DEP-11 | unsupported | `Outer<T>` is the enclosing current instantiation, an independent base (section 2) |
-| `templates/dependent-names/other-specialization-constant-argument-no-typename.cpp` | DEP-15, DEP-1 | unsupported | `Meter<0>` is no `DepType`; `Meter<0>::unit` is a type found at the definition (section 1) |
-| `templates/dependent-names/other-specialization-constant-argument-member-missing.cpp` | DEP-30, DEP-15 | missed reject | `o.missing` is independent and checked at the definition (sections 1 and 5) |
-| `templates/deduction/substitution-member-wrong-kind.cpp` | DED-24 | unsupported | the kind table of section 4 gives a failure, and the fallback wins |
-| `templates/deduction/substitution-lambda-body.cpp` | DED-29 | missed reject | the lambda body is outside the immediate context (section 4) |
-| `templates/deduction/substitution-lambda-default.cpp` | DED-29 | missed reject | the same, in a template parameter's default |
-| `templates/constraints/out-of-class-other-clause.cpp` | CNS-29 | missed reject | the member's clause is in its record (section 5) |
-| `templates/constraints/out-of-class-without-clause.cpp` | CNS-29 | missed reject | the same, with no clause on the definition |
-| `templates/packs/fold-in-outer-pattern.cpp` | PACK-8 | missed reject | the fold empties the outer mark (section 5) |
-| `templates/packs/size-operator-in-outer-pattern.cpp` | PACK-8 | missed reject | `sizeof...` empties the outer mark |
-| `statements/if/constexpr-template-nondependent-call-checked.cpp` | IF-22 | missed reject | the independent call `g()` is checked at the definition (section 5) |
-| `templates/specialization/partial-no-primary-variable.cpp` | TSP-31 | missed reject | a partial specialization links to its primary when declared (section 3) |
+| Test | Rules | Now | Section | Part of the model |
+|---|---|---|---|---|
+| `templates/dependent-names/other-specialization-constant-argument-member-missing.cpp` | DEP-30, DEP-15 | missed reject | 1 | `o.missing` is independent and checked at the definition (sections 1 and 5) |
+| `templates/dependent-names/other-specialization-constant-argument-no-typename.cpp` | DEP-15, DEP-1 | unsupported | 1 | `Meter<0>` is no `DepType`; `Meter<0>::unit` is a type found at the definition |
+| `templates/dependent-names/sizeof-value-dependent-operand-call-bound-early.cpp` | DEP-4, DEP-5 | EDG-AGREES | 1 | `sizeof(N)` is not value-dependent, so `Slot<sizeof(N)>` is no `DepType` and the call binds at the definition |
+| `templates/dependent-names/sizeof-value-dependent-operand-no-typename.cpp` | DEP-4 | EDG-AGREES | 1 | the same, so `Box<sizeof(N)>::type` is a type found at the definition |
+| `templates/dependent-names/current-instantiation-enclosing-base.cpp` | DEP-11 | unsupported | 2 | `Outer<T>` is the enclosing current instantiation, an independent base |
+| `templates/dependent-names/member-template-current-instantiation-pointer.cpp` | DEP-24, DEP-2 | false reject | 2 | `p->get` and a local `l.get` have type `CurrentInst`; lookup finds `get` |
+| `templates/dependent-names/member-template-current-instantiation-qualifier-dependent-base.cpp` | DEP-24 | missed reject | 2 | `Wrap::make` finds nothing, the base is dependent, so `<` needs `template` |
+| `templates/dependent-names/member-template-non-dependent-base.cpp` | DEP-24 | false reject | 2 | `get` and `make` are in an independent base |
+| `templates/dependent-names/member-template-through-current-instantiation-object.cpp` | DEP-24, DEP-2 | false reject | 2 | `w` has type `CurrentInst`; lookup finds `get` |
+| `templates/instantiation/class-point-not-later-member-type.cpp` | INST-33, INST-30 | missed reject | 3 | lookup sees only the declarations before the point |
+| `templates/instantiation/class-point-not-later-type.cpp` | INST-33 | missed reject | 3 | the same |
+| `templates/instantiation/class-point-not-later.cpp` | INST-32, INST-31 | unsupported | 3 | the same, for a `static` member's initializer with the points of INST-31 |
+| `templates/instantiation/class-point-static-const-member.cpp` | INST-33, INST-5 | unsupported | 3 | the initializer is a part of the class, made in the order of INST-P2 |
+| `templates/instantiation/class-point-static-constexpr-made-at-use.cpp` | INST-33, INST-5, INST-8 | unsupported | 3 | a `static constexpr` member's initializer waits for its first use |
+| `templates/instantiation/class-static-constexpr-member-initializer-waits.cpp` | INST-5 | EDG-AGREES | 3 | the same |
+| `templates/instantiation/local-class-default-argument.cpp` | INST-12, INST-6 | missed reject | 3 | a local class's members are made with the enclosing function's specialization |
+| `templates/instantiation/local-class-exception-specification.cpp` | INST-12, INST-6 | missed reject | 3 | the same |
+| `templates/instantiation/recursion-endless-function.cpp` | INST-15, TR-13 | missed reject | 3 | the `busy` state and the nesting limit |
+| `templates/specialization/partial-no-primary-variable.cpp` | TSP-31 | missed reject | 3 | a partial specialization links to its primary when declared |
+| `templates/deduction/substitution-explicit-specifier.cpp` | DED-24 | unsupported | 4 | the operand of a conditional `explicit` is in the immediate context |
+| `templates/deduction/substitution-lambda-body.cpp` | DED-29 | missed reject | 4 | the lambda body is outside the immediate context |
+| `templates/deduction/substitution-lambda-default.cpp` | DED-29 | missed reject | 4 | the same, in a template parameter's default |
+| `templates/deduction/substitution-member-wrong-kind.cpp` | DED-24 | unsupported | 4 | the kind table gives a failure, and the fallback wins |
+| `statements/if/constexpr-template-nondependent-call-checked.cpp` | IF-22 | missed reject | 5 | the independent call `g()` is checked at the definition |
+| `templates/constraints/out-of-class-other-clause.cpp` | CNS-29 | missed reject | 5 | the member's clause is in its record |
+| `templates/constraints/out-of-class-without-clause.cpp` | CNS-29 | missed reject | 5 | the same, with no clause on the definition |
+| `templates/dependent-names/binary-operator-pack-never-fits.cpp` | DEP-37 | missed reject | 5 | an operator function that only an empty pack makes valid is rejected |
+| `templates/dependent-names/operator-pack-never-fits.cpp` | DEP-37 | missed reject | 5 | the same |
+| `templates/packs/fold-in-outer-pattern.cpp` | PACK-8 | missed reject | 5 | the fold empties the outer mark |
+| `templates/packs/size-operator-in-outer-pattern.cpp` | PACK-8 | missed reject | 5 | `sizeof...` empties the outer mark |
 
-The test `programs/roadmap/r10-list-first-try.cpp` stops at the TR-13
-limit, and its cause is open. It is not in the table.
+By section: 4 tests need section 1, 5 need section 2, 10 need section
+3, 4 need section 4, and 7 need section 5.
+
+Three false rejects of Port suite P3 are not marked:
+`templates/instantiation/member-return-type-waits-for-definition.cpp`
+(P3-7), `templates/instantiation/member-constructor-made-at-call.cpp`
+(P3-8), and `programs/P3/pipeline-first-try.cpp`. In each, a base
+class template takes the derived class as its argument, and a member
+defined in the base returns a specialization that needs the derived
+class complete. The current front end completes that return type when
+it makes the member's declaration with the class, while the derived
+class is incomplete. The same body with another return type passes,
+because the current front end already keeps the bodies of an instance's
+members for a use (`DESIGN-current.md`, "Lazy bodies of instances").
+So the current design can take the three tests by keeping the return
+type of a member definition for the same use. A front-end round that
+finds otherwise marks them for section 3. P3-6 asks the text to say
+when such a return type is made.
+
+`programs/roadmap/r10-list-first-try.cpp` passes. The cause of its
+TR-13 stop was in deduction, outside this model (report 25, section 2).
 
 ## 7. What the model keeps from the current front end
 
@@ -290,13 +341,17 @@ and carry over to `DepType` with the new forms added:
 
 ## 8. Rules the model depends on that can still change
 
-The model follows the text as it stands. These findings and questions
-can change it:
+The model follows the text as it stands. These questions and findings
+can change it. Each question is provisional.
 
 | Item | Rules | What depends on it |
 |---|---|---|
-| I6-4 | DEP-P5 | the first phase only reads, and the second reports (sections 1 and 4) |
-| I6-5 | DEP-2 | whether `this->n` with an independent member type is type-dependent; the mark of section 1 |
-| I6-6 | DEP-4 | whether `sizeof` of a value-dependent operand is value-dependent |
-| I6-9 | DEP-8, DEP-9 | the binding of a qualified dependent call, and of a member call with a dependent argument |
-| Q-0427 | DEP-24 | the member template found through an object of the current instantiation (section 2) |
+| Q-0427 | DEP-24, DEP-P5 | the member template found through an object of the current instantiation, with no `template` (section 2); waits for a use of DEP-P5 |
+| Q-0432 | DEP-4, DEP-P2 | that the operand of `sizeof`, `alignof`, `noexcept`, or `typeid` passes on no value-dependence (section 1); waits for a use of DEP-P2 |
+| Q-0434 | DEP-2, DEP-18 | that a member access through `this` or an object of `CurrentInst` with an independent member type is not type-dependent (section 1); waits for a review |
+| P3-6 | INST-1, INST-5 | when the return type of a member definition is made (section 3, and the P3 tests of section 6) |
+| RV8 | DEP-P5, DEP-4, DEP-6, DEP-30, DEP-40, INST-1 | the RV7 repair (b5d925e0) changed these blocks, which sections 1, 4, and 5 cite, and decision 0063's item RV8 reviews them |
+
+Findings I6-4, I6-5, I6-6, and I6-9 are closed. DEP-P5 and DEP-40
+give the text of I6-4 and I6-9, and Q-0434 and Q-0432 hold I6-5 and
+I6-6.

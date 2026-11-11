@@ -51,8 +51,29 @@ The last line gives the count that decision 0060's completion test
 uses: the tests that fail their check, and the program tests under
 tests/programs/ that do not run to their result. Both leave out the
 tests that a row of the front-end ledger in state `out of scope` names
-in its Record (decision 0061). A baseline row is a status and a test path, separated by a tab;
-later columns, if a row has any, are ignored.
+in its Record (decision 0061). The line then splits the tests that fail
+their check by the marks file, reports/clean-room/rust-frontend/rewrite-marks.tsv
+(decision 0063). A marked test needs the template model of
+frontend/TEMPLATE-MODEL.md, and the rewrite takes it over. The rest count
+toward the gate of decisions 0062 and 0063. The line keeps its earlier
+numbers in their order and adds the two counts after the first:
+
+    frontend: completion (decision 0060): N tests fail their check, of which
+    M need the template model (marks file) and N-M count toward the gate of
+    decisions 0062 and 0063; P/Q program tests do not run to their result;
+    K tests out of scope
+
+A row of the marks file is a test path under tests/, the section of
+TEMPLATE-MODEL.md that passes the test, and a cause, separated by tabs.
+The tool reports a marked test that does not exist, that passes its
+check, or that the ledger marks out of scope, and a row whose section
+TEMPLATE-MODEL.md does not have. These reports do not change the exit
+status.
+
+A baseline row is a status and a test path, separated by a tab; later
+columns, if a row has any, are ignored. --update writes the baseline to
+a temporary file and renames it, so that another process that runs the
+tool never reads a part of the file.
 
 Usage:
     tools/frontend_check.py [--update]
@@ -64,6 +85,7 @@ import re
 import shutil
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -71,6 +93,8 @@ FRONTEND = ROOT / "frontend"
 BASELINE = ROOT / "reports" / "clean-room" / "rust-frontend" / "conformance.tsv"
 PASSING = {"pass", "EDG-ONLY", "EDG-ALLOWED", "pass-partial", "NO-DIAGNOSTIC-ALLOWED"}
 LEDGER = ROOT / "reports" / "clean-room" / "rust-frontend" / "ledger.md"
+MARKS = ROOT / "reports" / "clean-room" / "rust-frontend" / "rewrite-marks.tsv"
+MODEL = FRONTEND / "TEMPLATE-MODEL.md"
 SPEC = ROOT / "specification"
 INTERPRETER = re.compile(r"^// tidal-interpreter:\s*run-fail\s*$", re.M)
 
@@ -139,6 +163,30 @@ def out_of_scope() -> set[str]:
     return found
 
 
+def rewrite_marks() -> tuple[dict[str, str], list[str]]:
+    """The marks file: {test path: section of TEMPLATE-MODEL.md}, and its
+    problems (decision 0063)."""
+    marks: dict[str, str] = {}
+    problems: list[str] = []
+    if not MARKS.exists():
+        return marks, [f"{MARKS.relative_to(ROOT)} does not exist"]
+    sections = set(re.findall(r"^## (\d+)\.", MODEL.read_text(), re.M)) if MODEL.exists() else set()
+    for number, line in enumerate(MARKS.read_text().splitlines(), 1):
+        if not line.strip() or line.startswith("#"):
+            continue
+        cells = line.split("\t")
+        if len(cells) != 3 or not all(c.strip() for c in cells):
+            problems.append(f"line {number} does not have a test, a section, and a cause")
+            continue
+        test, section = cells[0].strip(), cells[1].strip()
+        if section not in sections:
+            problems.append(f"line {number}: {MODEL.name} has no section {section}")
+        if test in marks:
+            problems.append(f"line {number}: {test} is marked twice")
+        marks[test] = section
+    return marks, problems
+
+
 def interpreter_tests() -> list[str]:
     """The tests whose run only the interpreter checks (decision 0053)."""
     tests = ROOT / "tests"
@@ -167,7 +215,11 @@ def write_baseline(status: dict[str, str]) -> None:
     lines = ["# The clean-room front end's result for each test. tools/frontend_check.py",
              "# compares with this file and rewrites it with --update."]
     lines += [f"{s}\t{n}" for n, s in sorted(status.items())]
-    BASELINE.write_text("\n".join(lines) + "\n")
+    # Other agents run this tool, so a reader must never see half a file.
+    with tempfile.NamedTemporaryFile("w", dir=BASELINE.parent, prefix=".conformance.",
+                                     suffix=".tmp", delete=False) as f:
+        f.write("\n".join(lines) + "\n")
+    os.replace(f.name, BASELINE)
 
 
 def main() -> int:
@@ -213,11 +265,24 @@ def main() -> int:
     unknown = sorted(oos - set(now))
     if unknown:
         print(f"frontend: out-of-scope rows name tests that do not exist: {', '.join(unknown)}")
-    failed = sum(rank(s) == 0 for n, s in now.items() if n not in oos)
+    marks, problems = rewrite_marks()
+    for p in problems:
+        print(f"frontend: marks file: {p}")
+    for n in sorted(marks):
+        if n not in now:
+            print(f"frontend: marks file: {n} does not exist")
+        elif n in oos:
+            print(f"frontend: marks file: {n} is also out of scope in the ledger")
+        elif rank(now[n]) > 0:
+            print(f"frontend: marks file: {n} passes its check ({now[n]}); remove its row")
+    failing = [n for n, s in now.items() if rank(s) == 0 and n not in oos]
+    marked = sum(n in marks for n in failing)
     programs = [n for n in now if n.startswith("programs/") and n not in oos]
     not_run = sum(rank(now[n]) < 2 for n in programs)
-    print(f"frontend: completion (decision 0060): {failed} tests fail their check, "
-          f"{not_run}/{len(programs)} program tests do not run to their result, "
+    print(f"frontend: completion (decision 0060): {len(failing)} tests fail their check, "
+          f"of which {marked} need the template model (marks file) and "
+          f"{len(failing) - marked} count toward the gate of decisions 0062 and 0063; "
+          f"{not_run}/{len(programs)} program tests do not run to their result; "
           f"{len(oos & set(now))} tests out of scope")
     no_base = sorted(n for n, s in now.items() if s == "NO-BASE")
     if no_base:
