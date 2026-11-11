@@ -7,6 +7,7 @@ use crate::classes::unions::syntax::bitfield;
 use crate::declarations::alignment::syntax::alignment_specifier;
 use crate::declarations::attributes::syntax::attribute_spec;
 use crate::declarations::declarators::syntax::declares_function;
+use crate::declarations::enumerations::syntax::{enum_opaque, using_enum_decl};
 use crate::declarations::initialization::list::syntax::braced_init;
 use crate::declarations::namespaces::syntax::using_decl;
 use crate::declarations::static_assert::syntax::static_assert_decl;
@@ -19,7 +20,7 @@ use crate::syntax::names::{DeclCtx, Enter};
 use crate::syntax::{Kid, Node, PResult, Parser};
 use crate::templates::class_template_deduction::syntax::deduction_guide;
 use crate::templates::concepts::syntax::requires_clause;
-use crate::templates::declarations::syntax::template_decl;
+use crate::templates::declarations::syntax::template_head;
 use crate::templates::specialization::syntax::explicit_specialization;
 
 /// `class_def: class_head "{" {member_decl} "}"`.
@@ -73,8 +74,10 @@ pub fn class_name(p: &mut Parser) -> PResult<Node> {
 }
 
 /// `member_decl`: a member declaration, a function definition, an access
-/// label, a friend, an alias, a using-declaration, a `static_assert`, a
-/// template, an explicit specialization, or a deduction guide.
+/// label, a friend, an alias, a using-declaration, a `using enum`
+/// declaration, an opaque enumeration declaration, a `static_assert`, a
+/// member template (`template_head member_decl`), an explicit
+/// specialization, or a deduction guide.
 pub fn member_decl(p: &mut Parser) -> PResult<Node> {
     if let Some(n) = p.ext("member_decl") {
         return Ok(n);
@@ -90,6 +93,15 @@ pub fn member_decl(p: &mut Parser) -> PResult<Node> {
             return wrap(p, n);
         }
     }
+    if p.at("using") && p.ahead(1) == "enum" {
+        let n = using_enum_decl(p)?;
+        return wrap(p, n);
+    }
+    if p.at("enum") {
+        if let Ok(n) = p.attempt(enum_opaque) {
+            return wrap(p, n);
+        }
+    }
     if p.at("using") {
         let n = if p.ahead_kind(1) == TK::Ident && matches!(p.ahead(2), "=" | "[") { alias_decl(p)? } else { using_decl(p)? };
         return wrap(p, n);
@@ -99,8 +111,22 @@ pub fn member_decl(p: &mut Parser) -> PResult<Node> {
         return wrap(p, n);
     }
     if p.at("template") {
-        let n = if p.ahead(2) == ">" { explicit_specialization(p)? } else { template_decl(p)? };
-        return wrap(p, n);
+        if p.ahead(2) == ">" {
+            let n = explicit_specialization(p)?;
+            return wrap(p, n);
+        }
+        // A member template: the head's parameters are in scope for the
+        // member declaration after it, which can have no decl-specifiers.
+        p.names.enter(Enter::Template);
+        let r = (|| -> PResult<Vec<Kid>> {
+            let h = template_head(p)?;
+            p.template = true;
+            let m = member_decl(p);
+            p.template = false;
+            Ok(vec![Kid::Node(h), Kid::Node(m?)])
+        })();
+        p.names.leave();
+        return Ok(p.node("member_decl", sp, r?));
     }
     if looks_like_guide(p) {
         let n = deduction_guide(p)?;

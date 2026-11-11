@@ -7,7 +7,7 @@ use crate::declarations::alignment::syntax::alignment_specifier;
 use crate::declarations::attributes::syntax::attribute_spec;
 use crate::declarations::auto::syntax::placeholder;
 use crate::declarations::declarators::syntax::{cv, declarator, declares_function, function_suffix_of};
-use crate::declarations::enumerations::syntax::{enum_def, enum_opaque};
+use crate::declarations::enumerations::syntax::{enum_def, enum_opaque, using_enum_decl};
 use crate::declarations::functions::definitions::syntax::function_body;
 use crate::declarations::initialization::forms::syntax::init;
 use crate::declarations::linkage_specifications::syntax::linkage_spec;
@@ -162,7 +162,7 @@ fn block_decl_keyword(p: &mut Parser) -> PResult<Node> {
 
 /// The start of a structured binding: `auto`, an optional `&` or `&&`,
 /// and `[`.
-fn looks_like_sb(p: &Parser) -> bool {
+pub fn looks_like_sb(p: &Parser) -> bool {
     let mut k = 0;
     while matches!(p.ahead(k), "static" | "thread_local" | "const" | "volatile") {
         k += 1;
@@ -178,7 +178,8 @@ fn looks_like_sb(p: &Parser) -> bool {
 }
 
 /// `block_decl: simple_decl | sb_decl | alias_decl | enum_opaque
-/// | static_assert_decl | using_decl | using_directive | namespace_alias`.
+/// | static_assert_decl | using_decl | using_enum_decl | using_directive
+/// | namespace_alias`.
 pub fn block_decl(p: &mut Parser) -> PResult<Node> {
     if let Some(n) = p.ext("block_decl") {
         return Ok(n);
@@ -187,6 +188,8 @@ pub fn block_decl(p: &mut Parser) -> PResult<Node> {
     let k = if p.at("using") {
         if p.ahead(1) == "namespace" {
             using_directive(p)?
+        } else if p.ahead(1) == "enum" {
+            using_enum_decl(p)?
         } else if p.ahead_kind(1) == TK::Ident && (p.ahead(2) == "=" || p.ahead(2) == "[") {
             alias_decl(p)?
         } else {
@@ -356,7 +359,8 @@ pub struct Specs {
     pub builtin: bool,
 }
 
-/// `decl_specifiers: decl_specifier {decl_specifier}`.
+/// `decl_specifiers: decl_specifier {decl_specifier} {attribute_spec}`.
+/// An attribute after the specifiers applies to the type (ATTR-19).
 pub fn decl_specifiers(p: &mut Parser) -> PResult<Node> {
     let sp = p.span();
     let mut st = Specs::default();
@@ -368,6 +372,9 @@ pub fn decl_specifiers(p: &mut Parser) -> PResult<Node> {
     p.ctor_check = saved;
     if kids.is_empty() {
         return Err(p.fail("declaration specifiers"));
+    }
+    while p.at_attr() {
+        kids.push(Kid::Node(attribute_spec(p)?));
     }
     Ok(p.node("decl_specifiers", sp, kids))
 }

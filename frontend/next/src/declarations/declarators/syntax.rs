@@ -4,7 +4,7 @@ use crate::classes::members::syntax::class_name;
 use crate::classes::operators::syntax::{literal_operator_id, operator_function_id};
 use crate::classes::conversion_functions::syntax::conversion_function_id;
 use crate::declarations::attributes::syntax::attribute_spec;
-use crate::declarations::exception_specifications::syntax::noexcept_specifier;
+use crate::declarations::exception_specifications::syntax::exception_spec;
 use crate::declarations::functions::default_arguments::syntax::parameter;
 use crate::declarations::type_specifiers;
 use crate::expressions::primary::syntax::{id_expression, nested_name, unqualified_id};
@@ -106,6 +106,26 @@ pub fn declarator_id(p: &mut Parser) -> PResult<Node> {
     }
     p.decl_qual = q;
     if p.at("operator") {
+        // An operator function template's specialization, named by a
+        // template-id: the `id_expression` alternative.
+        if let Ok(u) = p.attempt(|p| {
+            let u = unqualified_id(p, q, false)?;
+            if u.child("template_id").is_some() {
+                Ok(u)
+            } else {
+                Err(p.fail("a template-id"))
+            }
+        }) {
+            let id = if kids.is_empty() {
+                p.node("id_expression", sp, vec![Kid::Node(u)])
+            } else {
+                kids.push(Kid::Node(u));
+                let qn = p.node("qualified_name", sp, kids);
+                p.node("id_expression", sp, vec![Kid::Node(qn)])
+            };
+            p.decl_qual = q;
+            return Ok(p.node("declarator_id", sp, vec![Kid::Node(id)]));
+        }
         let n = if let Some(n) = p.opt(literal_operator_id) {
             n
         } else if let Some(n) = p.opt(operator_function_id) {
@@ -155,7 +175,7 @@ pub fn array_suffix(p: &mut Parser) -> PResult<Node> {
 }
 
 /// `function_suffix: "(" parameters ")" {cv} [ref_qualifier]
-/// [noexcept_specifier] {attribute_spec} ["->" type_id]`. The parameters
+/// [exception_spec] {attribute_spec} ["->" type_id]`. The parameters
 /// and the trailing return type share a prototype scope.
 pub fn function_suffix(p: &mut Parser) -> PResult<Node> {
     let sp = p.span();
@@ -178,8 +198,8 @@ pub fn function_suffix(p: &mut Parser) -> PResult<Node> {
         if let Some(r) = p.opt(ref_qualifier) {
             kids.push(Kid::Node(r));
         }
-        if p.at("noexcept") {
-            kids.push(Kid::Node(noexcept_specifier(p)?));
+        if p.at("noexcept") || (p.at("throw") && p.ahead(1) == "(" && p.ahead(2) == ")") {
+            kids.push(Kid::Node(exception_spec(p)?));
         }
         attrs(p, &mut kids)?;
         if p.at("->") {

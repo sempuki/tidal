@@ -98,3 +98,17 @@ pub fn enumerator(p: &mut Parser) -> PResult<Node> {
     }
     Ok(p.node("enumerator", sp, kids))
 }
+
+/// `using_enum_decl: "using" "enum" [nested_name] identifier ";"`, the
+/// `using enum` declaration of ENUM-9, at namespace scope, in a block,
+/// and in a class.
+pub fn using_enum_decl(p: &mut Parser) -> PResult<Node> {
+    let sp = p.span();
+    let mut kids = vec![p.expect("using")?, p.expect("enum")?];
+    if p.at("::") || p.ahead(1) == "::" || p.ahead(1) == "<" {
+        kids.push(Kid::Node(nested_name(p)?.0));
+    }
+    kids.push(identifier(p)?);
+    kids.push(p.expect(";")?);
+    Ok(p.node("using_enum_decl", sp, kids))
+}

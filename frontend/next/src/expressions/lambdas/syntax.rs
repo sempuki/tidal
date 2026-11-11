@@ -11,7 +11,7 @@ use crate::syntax::{Kid, Node, PResult, Parser};
 use crate::templates::concepts::syntax::requires_clause;
 use crate::templates::declarations::syntax::template_params;
 
-/// `lambda_expr: "[" [captures] "]" [lambda_template] ["(" parameters ")"]
+/// `lambda_expr: "[" [captures] "]" [lambda_template] {attribute_spec} ["(" parameters ")"]
 /// {lambda_specifier} [noexcept_specifier] ["->" type_id] [requires_clause]
 /// compound_stmt`.
 pub fn lambda_expr(p: &mut Parser) -> PResult<Node> {
@@ -25,6 +25,9 @@ pub fn lambda_expr(p: &mut Parser) -> PResult<Node> {
         kids.push(p.expect("]")?);
         if p.at("<") {
             kids.push(Kid::Node(lambda_template(p)?));
+        }
+        while p.at_attr() {
+            kids.push(Kid::Node(attribute_spec(p)?));
         }
         if p.at("(") {
             kids.push(p.bump());
@@ -54,7 +57,7 @@ pub fn lambda_expr(p: &mut Parser) -> PResult<Node> {
     Ok(p.node("lambda_expr", sp, kids))
 }
 
-/// `lambda_template: "<" template_params ">" [requires_clause] {attribute_spec}`.
+/// `lambda_template: "<" template_params ">" [requires_clause]`.
 pub fn lambda_template(p: &mut Parser) -> PResult<Node> {
     let sp = p.span();
     let lt = p.expect("<")?;
@@ -62,9 +65,6 @@ pub fn lambda_template(p: &mut Parser) -> PResult<Node> {
     let mut kids = vec![lt, Kid::Node(ps), p.close_angle()?];
     if p.at("requires") {
         kids.push(Kid::Node(requires_clause(p)?));
-    }
-    while p.at_attr() {
-        kids.push(Kid::Node(attribute_spec(p)?));
     }
     Ok(p.node("lambda_template", sp, kids))
 }

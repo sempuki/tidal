@@ -4,6 +4,7 @@ use crate::classes::access::syntax::access_specifier;
 use crate::classes::members::syntax::class_name;
 use crate::declarations::alignment::syntax::alignment_specifier;
 use crate::declarations::attributes::syntax::attribute_spec;
+use crate::expressions::decltype::syntax::decltype_spec;
 use crate::expressions::primary::syntax::nested_name;
 use crate::lex::{Token, TK};
 use crate::syntax::names::Qual;
@@ -29,11 +30,14 @@ pub fn base_clause(p: &mut Parser) -> PResult<Node> {
     Ok(p.node("base_clause", sp, kids))
 }
 
-/// `base_spec: [access_specifier] ["virtual"] [nested_name] class_name
-/// | "virtual" access_specifier [nested_name] class_name`.
+/// `base_spec: {attribute_spec} [access_specifier] ["virtual"] base_type
+/// | {attribute_spec} "virtual" access_specifier base_type`.
 pub fn base_spec(p: &mut Parser) -> PResult<Node> {
     let sp = p.span();
     let mut kids = Vec::new();
+    while p.at_attr() {
+        kids.push(Kid::Node(attribute_spec(p)?));
+    }
     if p.at("virtual") {
         kids.push(p.bump());
         if let Some(a) = p.opt(access_specifier) {
@@ -47,11 +51,41 @@ pub fn base_spec(p: &mut Parser) -> PResult<Node> {
             kids.push(k);
         }
     }
-    if p.at("::") || p.ahead(1) == "::" || p.at("decltype") {
-        kids.push(Kid::Node(nested_name(p)?.0));
-    }
-    kids.push(Kid::Node(class_name(p)?));
+    kids.push(Kid::Node(base_type(p)?));
     Ok(p.node("base_spec", sp, kids))
+}
+
+/// `base_type: [nested_name] (class_name | template_id) | decltype_spec`.
+/// A name followed by `<` here is a template-id: a base and a member
+/// initializer name a class.
+pub fn base_type(p: &mut Parser) -> PResult<Node> {
+    let sp = p.span();
+    if p.at("decltype") {
+        if let Ok(d) = p.attempt(|p| {
+            let d = decltype_spec(p)?;
+            if p.at("::") {
+                Err(p.fail("a base"))
+            } else {
+                Ok(d)
+            }
+        }) {
+            return Ok(p.node("base_type", sp, vec![Kid::Node(d)]));
+        }
+    }
+    let mut kids = Vec::new();
+    let mut q = Qual::None;
+    if p.at("::") || p.ahead(1) == "::" || p.at("decltype") || p.ahead(1) == "<" {
+        if let Some((nn, qq, _)) = p.opt(nested_name) {
+            kids.push(Kid::Node(nn));
+            q = qq;
+        }
+    }
+    if p.kind() == TK::Ident && p.ahead(1) == "<" {
+        kids.push(Kid::Node(template_id(p, q, false)?.0));
+    } else {
+        kids.push(Kid::Node(class_name(p)?));
+    }
+    Ok(p.node("base_type", sp, kids))
 }
 
 /// `class_head: ("class" | "struct") {attribute_spec | alignment_specifier}

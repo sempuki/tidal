@@ -130,7 +130,7 @@ pub fn constant_param(p: &mut Parser) -> PResult<Node> {
 }
 
 /// `template_template_param: template_head type_key ["..."] [identifier]
-/// | template_head type_key [identifier] "=" [nested_name] identifier`.
+/// | template_head type_key [identifier] "=" [nested_name] ["template"] identifier`.
 pub fn template_template_param(p: &mut Parser) -> PResult<Node> {
     let sp = p.span();
     p.names.enter(Enter::Template);
@@ -150,6 +150,9 @@ pub fn template_template_param(p: &mut Parser) -> PResult<Node> {
         kids.push(p.bump());
         if p.at("::") || p.ahead(1) == "::" {
             kids.push(Kid::Node(nested_name(p)?.0));
+            if let Some(k) = p.eat("template") {
+                kids.push(k);
+            }
         }
         kids.push(identifier(p)?);
     }

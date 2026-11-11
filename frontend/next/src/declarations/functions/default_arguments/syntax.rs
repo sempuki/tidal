@@ -1,5 +1,6 @@
 //! The Syntax segment of `declarations/functions/default-arguments`.
 
+use crate::declarations::attributes::syntax::attribute_spec;
 use crate::declarations::declarators::syntax::{abstract_declarator, declarator};
 use crate::declarations::decl_specifiers;
 use crate::declarations::initialization::list::syntax::braced_init;
@@ -7,13 +8,16 @@ use crate::expressions::assignment::syntax::assignment_expr;
 use crate::syntax::names::DeclCtx;
 use crate::syntax::{Kid, Node, PResult, Parser};
 
-/// `parameter: ["this"] decl_specifiers [declarator | abstract_declarator]
+/// `parameter: {attribute_spec} ["this"] decl_specifiers [declarator | abstract_declarator]
 /// ["=" (assignment_expr | braced_init)]`. `tparam` says that the
 /// parameter is a template parameter. The name is declared before its
 /// default argument.
 pub fn parameter(p: &mut Parser, tparam: bool) -> PResult<Node> {
     let sp = p.span();
     let mut kids = Vec::new();
+    while p.at_attr() {
+        kids.push(Kid::Node(attribute_spec(p)?));
+    }
     if let Some(k) = p.eat("this") {
         kids.push(k);
     }

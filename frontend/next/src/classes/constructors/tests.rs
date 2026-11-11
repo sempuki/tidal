@@ -29,3 +29,22 @@ fn shapes() {
     let call = members[2].find("expression_stmt").unwrap().find("postfix_expr").unwrap();
     assert!(dtor_call(call, &t));
 }
+
+#[test]
+fn member_initializer_names() {
+    assert!(sx("x", mem_init_id).unwrap() == "(mem_init_id x)");
+    assert!(ok("V<T>", mem_init_id));
+    assert!(ok("decltype(x)", mem_init_id));
+    assert!(ok("N::S", mem_init_id));
+}
+
+#[test]
+fn destructor_calls_by_template_id_or_decltype() {
+    for src in ["p->~V<T>()", "t.~decltype(t)()", "s.~S()"] {
+        let t = toks(src);
+        let mut st = stub();
+        let mut p = crate::syntax::Parser::new(&t, &mut st, &[]);
+        let n = crate::expressions::postfix::syntax::postfix_expr(&mut p).unwrap();
+        assert!(dtor_call(&n, &t), "{}", src);
+    }
+}

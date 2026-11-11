@@ -249,7 +249,7 @@ impl Declare {
             // primary's scope serves its body.
             let f = self.find(if target == self.target() { Qual::None } else { Qual::Scope(target) }, name);
             let s = f.scope.unwrap_or_else(|| self.new_scope(target, SK::Class, ""));
-            return vec![self.copy_scope_for_specialization(s, name)];
+            return vec![self.copy_scope_for_specialization(target, s, name)];
         }
         let cs = self.new_scope(target, SK::Class, name);
         let kind = if ctx.template { Kind::Template(TKind::Class) } else { Kind::Type };
@@ -264,13 +264,20 @@ impl Declare {
             self.scopes[cs as usize].names.insert(name.to_string(), e);
         }
         if let Some(bc) = n.child("base_clause") {
-            for b in bc.children("base_spec") {
+            for b in bc.children("base_spec").filter_map(|b| b.child("base_type")) {
                 let mut q = Qual::None;
                 if let Some(nn) = b.child("nested_name") {
                     q = self.resolve_nested(nn, toks);
                 }
-                let bname = b.child("class_name").map(|c| direct_idents(c, toks)).and_then(|v| v.first().copied()).unwrap_or("");
-                let f = if q == Qual::Dependent { Found::UNKNOWN } else { self.find(q, bname) };
+                // A template-id base with dependent arguments, and a
+                // `decltype` base, are dependent for this pass.
+                let (bname, dep) = if let Some(t) = b.child("template_id") {
+                    let name = t.find("template_name").map(|x| direct_idents(x, toks)).and_then(|v| v.first().copied()).unwrap_or("");
+                    (name, self.args_dependent(t, toks))
+                } else {
+                    (b.child("class_name").map(|c| direct_idents(c, toks)).and_then(|v| v.first().copied()).unwrap_or(""), b.child("decltype_spec").is_some())
+                };
+                let f = if q == Qual::Dependent || dep { Found::UNKNOWN } else { self.find(q, bname) };
                 match f.scope {
                     Some(s) if !f.param && q != Qual::Dependent => self.scopes[cs as usize].bases.push(s),
                     _ => self.scopes[cs as usize].dep_base = true,
@@ -281,9 +288,10 @@ impl Declare {
     }
 
     /// A partial or explicit specialization reads its body in a scope of
-    /// its own whose lookups fall back to the primary's members.
-    fn copy_scope_for_specialization(&mut self, primary: u32, name: &str) -> u32 {
-        let parent = self.target();
+    /// its own whose lookups fall back to the primary's members. Its
+    /// parent is the scope that a qualifier before its name names, so
+    /// that the body sees that scope's names (NAM-21).
+    fn copy_scope_for_specialization(&mut self, parent: u32, primary: u32, name: &str) -> u32 {
         let s = self.new_scope(parent, SK::Class, "");
         self.scopes[s as usize].name = name.to_string();
         if let Some(e) = self.scopes[primary as usize].names.get(name).copied() {
@@ -485,9 +493,8 @@ impl Names for Declare {
                 out
             }
             "namespace_alias" | "using_directive" => {
-                let Some(qn) = n.child("qualified_name") else { return vec![] };
-                let q = qn.child("nested_name").map_or(Qual::None, |nn| self.resolve_nested(nn, toks));
-                let name = qn.child("unqualified_id").map(|u| direct_idents(u, toks)).and_then(|v| v.first().copied()).unwrap_or("");
+                let q = n.child("nested_name").map_or(Qual::None, |nn| self.resolve_nested(nn, toks));
+                let Some(name) = direct_idents(n, toks).last().copied() else { return vec![] };
                 let f = self.find(q, name);
                 let target = self.target();
                 if n.prod == "using_directive" {

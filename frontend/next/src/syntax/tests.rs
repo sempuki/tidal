@@ -167,7 +167,7 @@ fn functions(text: &str) -> Vec<(String, Option<String>)> {
 fn each_nonterminal_has_one_function_in_its_page() {
     let nts = nonterminals();
     let total: usize = nts.values().map(Vec::len).sum();
-    assert_eq!(total, 257, "the Syntax segments hold 257 nonterminals");
+    assert_eq!(total, 260, "the Syntax segments hold 260 nonterminals");
     assert_eq!(nts.len(), 62, "on 62 pages");
     let mut missing = Vec::new();
     let mut doubled = Vec::new();

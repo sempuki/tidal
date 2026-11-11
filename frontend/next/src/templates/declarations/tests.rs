@@ -15,3 +15,9 @@ fn heads_and_parameters() {
     assert!(ok("int... ns", constant_param));
     assert!(ok("template <class> class TT = V", template_template_param));
 }
+
+#[test]
+fn template_template_default_with_template_keyword() {
+    // G179.
+    assert!(ok("template <class> class M = T::template box", template_template_param));
+}

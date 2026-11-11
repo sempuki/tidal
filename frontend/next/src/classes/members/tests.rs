@@ -13,3 +13,11 @@ fn members() {
     assert!(ok("= {1}", member_init));
     assert!(parses("struct Q { void f() { g(); } void g() { } };"));
 }
+
+#[test]
+fn member_templates_and_new_members() {
+    // G173: a member template with no decl-specifiers.
+    assert!(parses("struct S { template <class T> operator T() const; template <class T> S(T); };"));
+    let u = unit("struct S { template <class T> operator long(); };").unwrap();
+    assert!(u[0].contains("(member_decl (template_head"));
+}

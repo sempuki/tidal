@@ -1,19 +1,29 @@
 //! The Syntax segment of `templates/arguments`.
 
+use crate::classes::operators::syntax::{literal_operator_id, operator_function_id};
 use crate::declarations::declarators::syntax::type_id;
+use crate::declarations::initialization::list::syntax::braced_init;
 use crate::expressions::primary::syntax::{identifier, nested_name};
 use crate::foundations::constant_evaluation::syntax::constant_expr;
 use crate::syntax::names::{Kind, Qual, TKind};
 use crate::syntax::{Kid, Node, PResult, Parser};
 
-/// `template_id: template_name "<" [template_args] ">"`. `q` is the
-/// qualifier before the name and `tkw` says that `template` came before
-/// it. Gives the node and whether an argument names a template
-/// parameter, which makes the template-id dependent.
+/// `template_id: template_name "<" [template_args] ">"
+/// | (operator_function_id | literal_operator_id) "<" [template_args] ">"`.
+/// `q` is the qualifier before the name and `tkw` says that `template`
+/// came before it. Gives the node and whether an argument names a
+/// template parameter, which makes the template-id dependent.
 pub fn template_id(p: &mut Parser, q: Qual, tkw: bool) -> PResult<(Node, bool)> {
     let _ = (q, tkw);
     let sp = p.span();
-    let name = template_name(p)?;
+    let name = if p.at("operator") {
+        match p.opt(literal_operator_id) {
+            Some(n) => n,
+            None => operator_function_id(p)?,
+        }
+    } else {
+        template_name(p)?
+    };
     let open = p.expect("<")?;
     let saw = std::mem::replace(&mut p.saw_param, false);
     let r = p.with(false, false, |p| -> PResult<Vec<Kid>> {
@@ -57,11 +67,17 @@ fn arg_ends(p: &Parser) -> bool {
     p.at(",") || p.at("...") || p.peek().starts_with('>') || p.at_eof()
 }
 
-/// `template_arg: type_id | constant_expr | [nested_name] template_name`.
-/// A name of a class template with no arguments is the third form; a
-/// form that is a type is a type (TARG rules).
+/// `template_arg: type_id | constant_expr | braced_init
+/// | [nested_name] template_name`. A name of a class template with no
+/// arguments is the last form; a form that is a type is a type (TARG
+/// rules). A braced list is an argument for a constant parameter of class
+/// type (TARG-16).
 pub fn template_arg(p: &mut Parser) -> PResult<Node> {
     let sp = p.span();
+    if p.at("{") {
+        let b = p.bracketed(braced_init)?;
+        return Ok(p.node("template_arg", sp, vec![Kid::Node(b)]));
+    }
     // A template template argument: a template's name and nothing more.
     if let Ok(n) = p.attempt(|p| {
         let mut kids = Vec::new();

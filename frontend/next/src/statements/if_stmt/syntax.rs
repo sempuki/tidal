@@ -4,7 +4,8 @@ use crate::declarations::attributes::syntax::attribute_spec;
 use crate::declarations::declarators::syntax::declarator;
 use crate::declarations::initialization::list::syntax::braced_init;
 use crate::declarations::type_names::syntax::alias_decl;
-use crate::declarations::{decl_specifiers, simple_decl};
+use crate::declarations::structured_bindings::syntax::sb_decl;
+use crate::declarations::{decl_specifiers, looks_like_sb, simple_decl};
 use crate::expressions::assignment::syntax::assignment_expr;
 use crate::expressions::comma::syntax::expression;
 use crate::statements::blocks::syntax::{compound_stmt, expression_stmt, null_stmt};
@@ -68,10 +69,13 @@ pub fn head(p: &mut Parser) -> PResult<Vec<Kid>> {
     Ok(kids)
 }
 
-/// `init_stmt: expression_stmt | null_stmt | simple_decl | alias_decl`.
+/// `init_stmt: expression_stmt | null_stmt | simple_decl | sb_decl | alias_decl`.
 pub fn init_stmt(p: &mut Parser) -> PResult<Node> {
     let sp = p.span();
-    let n = if p.at(";") {
+    let sb = if looks_like_sb(p) { p.opt(sb_decl) } else { None };
+    let n = if let Some(n) = sb {
+        n
+    } else if p.at(";") {
         null_stmt(p)?
     } else if p.at("using") {
         alias_decl(p)?

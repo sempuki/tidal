@@ -5,8 +5,11 @@ use crate::declarations::initialization::list::syntax::braced_init;
 use crate::declarations::type_start;
 use crate::expressions::{comma, decltype, postfix, unary};
 use crate::expressions::primary::syntax::{identifier, nested_name};
+use crate::lex::TK;
 use crate::syntax::names::Qual;
 use crate::syntax::{Kid, Node, PResult, Parser};
+use crate::templates::arguments::syntax::template_id;
+use crate::templates::dependent_names::syntax::typename_specifier;
 
 /// `cast_expr: unary_expr | "(" type_id ")" cast_expr`.
 pub fn cast_expr(p: &mut Parser) -> PResult<Node> {
@@ -76,8 +79,10 @@ const CAST_KEYWORDS: &[&str] = &[
     "char16_t", "char32_t", "auto",
 ];
 
-/// `cast_type: [nested_name] identifier | decltype_spec | "auto" | "bool" | ...`.
-/// The name must name a type, as the oracle answers.
+/// `cast_type: [nested_name] (identifier | template_id) | decltype_spec
+/// | typename_specifier | "auto" | "bool" | ...`. The name or the
+/// template-id must name a type, as the oracle answers; otherwise the
+/// same tokens are a call.
 pub fn cast_type(p: &mut Parser) -> PResult<Node> {
     let sp = p.span();
     if p.at_any(CAST_KEYWORDS) {
@@ -88,6 +93,10 @@ pub fn cast_type(p: &mut Parser) -> PResult<Node> {
         let d = decltype::syntax::decltype_spec(p)?;
         return Ok(p.node("cast_type", sp, vec![Kid::Node(d)]));
     }
+    if p.at("typename") {
+        let t = typename_specifier(p)?;
+        return Ok(p.node("cast_type", sp, vec![Kid::Node(t)]));
+    }
     let mut kids = Vec::new();
     let mut q = Qual::None;
     if p.at("::") || p.ahead(1) == "::" || p.ahead(1) == "<" {
@@ -97,7 +106,17 @@ pub fn cast_type(p: &mut Parser) -> PResult<Node> {
         }
     }
     let name = p.peek();
-    if !p.names_type(q, name) || p.ahead(1) == "<" {
+    if p.kind() == TK::Ident && p.ahead(1) == "<" {
+        let f = p.find(q, name);
+        let is_type = if q == Qual::Dependent { p.type_only } else { f.is_type() };
+        if !is_type {
+            return Err(p.fail("a type name"));
+        }
+        let (t, _) = template_id(p, q, false)?;
+        kids.push(Kid::Node(t));
+        return Ok(p.node("cast_type", sp, kids));
+    }
+    if !p.names_type(q, name) {
         return Err(p.fail("a type name"));
     }
     kids.push(identifier(p)?);

@@ -15,3 +15,12 @@ fn lambdas() {
     assert!(ok("*this", capture));
     assert!(ok("consteval", lambda_specifier));
 }
+
+#[test]
+fn lambda_attributes() {
+    // An attribute after the captures with no template head, and after a
+    // template head.
+    assert!(ok("[] [[nodiscard]] (int x) { return x; }", lambda_expr));
+    assert!(ok("[] [[nodiscard]] { return 1; }", lambda_expr));
+    assert!(ok("[] <class T> [[nodiscard]] (T x) { return x; }", lambda_expr));
+}

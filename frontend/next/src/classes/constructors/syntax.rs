@@ -3,12 +3,12 @@
 //! (`ctor_def`, `dtor_decl`, `dtor_call`) and the productions only they
 //! use are recognizers over the trees that the general productions make.
 
-use crate::classes::members::syntax::class_name;
+use crate::classes::derived::syntax::base_type;
 use crate::declarations::initialization::list::syntax::braced_init;
 use crate::expressions::postfix::syntax::expression_list;
-use crate::expressions::primary::syntax::{identifier, nested_name};
+use crate::expressions::primary::syntax::identifier;
 use crate::foundations::constant_evaluation::syntax::constant_expr;
-use crate::lex::{Token, TK};
+use crate::lex::Token;
 use crate::syntax::{Kid, Node, PResult, Parser};
 
 /// `explicit_spec: "explicit" ["(" constant_expr ")"]`.
@@ -56,13 +56,14 @@ pub fn mem_init(p: &mut Parser) -> PResult<Node> {
     Ok(p.node("mem_init", sp, kids))
 }
 
-/// `mem_init_id: identifier | [nested_name] class_name`.
+/// `mem_init_id: identifier | base_type`. A qualified name, a
+/// template-id, or `decltype` names a base; a lone identifier names a
+/// member or a base.
 pub fn mem_init_id(p: &mut Parser) -> PResult<Node> {
     let sp = p.span();
-    if p.at("::") || p.ahead(1) == "::" {
-        let (nn, _, _) = nested_name(p)?;
-        let c = class_name(p)?;
-        return Ok(p.node("mem_init_id", sp, vec![Kid::Node(nn), Kid::Node(c)]));
+    if p.at("::") || p.ahead(1) == "::" || p.ahead(1) == "<" || p.at("decltype") {
+        let b = base_type(p)?;
+        return Ok(p.node("mem_init_id", sp, vec![Kid::Node(b)]));
     }
     let id = identifier(p)?;
     Ok(p.node("mem_init_id", sp, vec![id]))
@@ -124,9 +125,10 @@ pub fn dtor_decl(n: &Node, toks: &[Token], class: &str) -> bool {
     specs_ok && w.len() >= 4 && w[0] == "~" && w[1] == class && w[2] == "(" && (w[3] == ")" || (w[3] == "void" && w.get(4).map(String::as_str) == Some(")")))
 }
 
-/// `dtor_call: postfix_expr ("." | "->") [nested_name] "~" identifier "(" ")"`:
-/// a call with no arguments of a member access whose name is `~` and an
-/// identifier.
+/// `dtor_call: postfix_expr ("." | "->") [nested_name] "~"
+/// (identifier | template_id | decltype_spec) "(" ")"`: a call with no
+/// arguments of a member access whose name is `~` and an identifier, a
+/// template-id, or a `decltype` specifier.
 pub fn dtor_call(n: &Node, toks: &[Token]) -> bool {
     if n.prod != "postfix_expr" || n.kids.len() != 3 {
         return false;
@@ -137,7 +139,17 @@ pub fn dtor_call(n: &Node, toks: &[Token]) -> bool {
     if toks[*o].text != "(" || toks[*c].text != ")" || callee.prod != "postfix_expr" {
         return false;
     }
+    let Some(u) = callee.kids.last().and_then(|k| match k {
+        Kid::Node(id) => id.find("unqualified_id"),
+        _ => None,
+    }) else {
+        return false;
+    };
+    let starts_with_tilde = matches!(u.kids.first(), Some(Kid::Tok(t)) if toks[*t].text == "~");
+    let named = match u.kids.get(1) {
+        Some(Kid::Node(x)) => matches!(x.prod, "class_name" | "template_id" | "decltype_spec"),
+        _ => false,
+    };
     let w = words(callee, toks);
-    let k = w.len();
-    k >= 3 && w[k - 2] == "~" && toks.iter().any(|t| t.kind == TK::Ident && t.text == w[k - 1]) && w.iter().any(|x| x == "." || x == "->")
+    starts_with_tilde && named && w.iter().any(|x| x == "." || x == "->")
 }

@@ -1,6 +1,7 @@
 //! The Syntax segment of `classes/conversion-functions`.
 
 use crate::classes::constructors::syntax::parts;
+use crate::declarations::declarators::syntax::ptr_part;
 use crate::declarations::type_specifiers;
 use crate::lex::Token;
 use crate::syntax::{Kid, Node, PResult, Parser};
@@ -13,12 +14,12 @@ pub fn conversion_function_id(p: &mut Parser) -> PResult<Node> {
     Ok(p.node("conversion_function_id", sp, vec![op, Kid::Node(t)]))
 }
 
-/// `conversion_type: type_specifiers {"*" | "&" | "&&"}`.
+/// `conversion_type: type_specifiers {ptr_part}`.
 pub fn conversion_type(p: &mut Parser) -> PResult<Node> {
     let sp = p.span();
     let mut kids = vec![Kid::Node(type_specifiers(p)?)];
-    while p.at_any(&["*", "&", "&&"]) {
-        kids.push(p.bump());
+    while let Some(pp) = p.opt(ptr_part) {
+        kids.push(Kid::Node(pp));
     }
     Ok(p.node("conversion_type", sp, kids))
 }

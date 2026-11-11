@@ -100,3 +100,14 @@ fn literal_values_and_checks() {
     assert_eq!((end, tok.text.as_str()), (7, "a"));
     assert_eq!(encode(&[0xE9], crate::lex::Prefix::U8), vec![0xC3, 0xA9]);
 }
+
+#[test]
+fn unqualified_ids_of_item_gr() {
+    let u = |p: &mut crate::syntax::Parser| unqualified_id(p, crate::syntax::names::Qual::None, false);
+    // G171: a destructor named by a template-id or `decltype`, and an
+    // operator function's template-id.
+    assert!(sx("~V<T>", u).unwrap().starts_with("(unqualified_id ~ (template_id"));
+    assert!(sx("~decltype(x)", u).unwrap().starts_with("(unqualified_id ~ (decltype_spec"));
+    assert!(sx("operator()<int>", u).unwrap().starts_with("(unqualified_id (template_id (operator_function_id"));
+    assert!(sx("operator<", u).unwrap().starts_with("(unqualified_id (operator_function_id"));
+}

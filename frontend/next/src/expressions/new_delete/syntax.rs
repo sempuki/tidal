@@ -1,5 +1,6 @@
 //! The Syntax segment of `expressions/new-delete`.
 
+use crate::declarations::attributes::syntax::attribute_spec;
 use crate::declarations::declarators::syntax::{cv, type_id};
 use crate::declarations::initialization::list::syntax::braced_init;
 use crate::declarations::type_specifier;
@@ -55,7 +56,8 @@ pub fn placement(p: &mut Parser) -> PResult<Node> {
     Ok(p.node("placement", sp, vec![open, Kid::Node(l), close]))
 }
 
-/// `new_type: type_specifier {type_specifier} {"*" {cv}} [new_bounds]`.
+/// `new_type: type_specifier {type_specifier} {attribute_spec}
+/// {"*" {cv}} [new_bounds]`.
 pub fn new_type(p: &mut Parser) -> PResult<Node> {
     let sp = p.span();
     let mut kids = Vec::new();
@@ -65,6 +67,9 @@ pub fn new_type(p: &mut Parser) -> PResult<Node> {
     }
     if kids.is_empty() {
         return Err(p.fail("a type"));
+    }
+    while p.at_attr() {
+        kids.push(Kid::Node(attribute_spec(p)?));
     }
     while p.at("*") {
         kids.push(p.bump());
@@ -78,7 +83,8 @@ pub fn new_type(p: &mut Parser) -> PResult<Node> {
     Ok(p.node("new_type", sp, kids))
 }
 
-/// `new_bounds: "[" [expression] "]" {"[" constant_expr "]"}`.
+/// `new_bounds: "[" [expression] "]" {attribute_spec}
+/// {"[" constant_expr "]" {attribute_spec}}`.
 pub fn new_bounds(p: &mut Parser) -> PResult<Node> {
     let sp = p.span();
     let mut kids = vec![p.expect("[")?];
@@ -86,10 +92,16 @@ pub fn new_bounds(p: &mut Parser) -> PResult<Node> {
         kids.push(Kid::Node(p.bracketed(expression)?));
     }
     kids.push(p.expect("]")?);
-    while p.at("[") {
+    while p.at_attr() {
+        kids.push(Kid::Node(attribute_spec(p)?));
+    }
+    while p.at("[") && !p.at_attr() {
         kids.push(p.bump());
         kids.push(Kid::Node(p.bracketed(constant_expr)?));
         kids.push(p.expect("]")?);
+        while p.at_attr() {
+            kids.push(Kid::Node(attribute_spec(p)?));
+        }
     }
     Ok(p.node("new_bounds", sp, kids))
 }

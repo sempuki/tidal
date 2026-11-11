@@ -123,18 +123,32 @@ pub fn id_expression(p: &mut Parser) -> PResult<Node> {
     Ok(p.node("id_expression", sp, vec![Kid::Node(u)]))
 }
 
-/// `unqualified_id: identifier | "~" class_name | operator_function_id
-/// | literal_operator_id | conversion_function_id | template_id`.
+/// `unqualified_id: identifier | "~" (class_name | template_id | decltype_spec)
+/// | operator_function_id | literal_operator_id | conversion_function_id
+/// | template_id`. An operator function's or a literal operator's name
+/// followed by `<` and a whole argument list is a template-id.
 /// `q` is the qualifier before the name, and `tkw` says that the keyword
 /// `template` came before it.
 pub fn unqualified_id(p: &mut Parser, q: Qual, tkw: bool) -> PResult<Node> {
     let sp = p.span();
     if p.at("~") {
         let t = p.bump();
-        let c = members::syntax::class_name(p)?;
-        return Ok(p.node("unqualified_id", sp, vec![t, Kid::Node(c)]));
+        let n = if p.at("decltype") {
+            decltype::syntax::decltype_spec(p)?
+        } else if p.kind() == TK::Ident && p.ahead(1) == "<" {
+            match p.attempt(|p| arguments::syntax::template_id(p, q, tkw)) {
+                Ok((t, _)) => t,
+                Err(_) => members::syntax::class_name(p)?,
+            }
+        } else {
+            members::syntax::class_name(p)?
+        };
+        return Ok(p.node("unqualified_id", sp, vec![t, Kid::Node(n)]));
     }
     if p.at("operator") {
+        if let Ok((t, _)) = p.attempt(|p| arguments::syntax::template_id(p, q, tkw)) {
+            return Ok(p.node("unqualified_id", sp, vec![Kid::Node(t)]));
+        }
         let n = if let Some(n) = p.opt(operators::syntax::literal_operator_id) {
             n
         } else if let Some(n) = p.opt(operators::syntax::operator_function_id) {

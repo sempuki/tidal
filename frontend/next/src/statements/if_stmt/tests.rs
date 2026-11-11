@@ -15,3 +15,10 @@ fn ifs() {
     assert!(ok("f();", branch));
     assert!(ok("{ }", block));
 }
+
+#[test]
+fn structured_binding_init() {
+    // G174.
+    assert!(sx("auto [a, b] = s;", init_stmt).unwrap().starts_with("(init_stmt (sb_decl"));
+    assert!(parses("struct P { int x, y; }; int f(P s) { if (auto [a, b] = s; b > 2) return a; for (auto [a, b] = s; a < b; ++a) {} return 0; }"));
+}

@@ -1,20 +1,36 @@
 //! The Syntax segment of `declarations/namespaces`.
 
+use crate::declarations::attributes::syntax::attribute_spec;
 use crate::declarations::declaration;
-use crate::expressions::primary::syntax::{identifier, qualified_name};
+use crate::expressions::primary::syntax::{identifier, nested_name, qualified_name};
 use crate::syntax::names::{DeclCtx, Enter};
 use crate::syntax::{Kid, Node, PResult, Parser};
 
-/// `namespace_def: ["inline"] "namespace" [ns_path] "{" {declaration} "}"`.
+/// `namespace_def: ["inline"] "namespace" {attribute_spec} [identifier]
+/// "{" {declaration} "}" | "namespace" ns_path "{" {declaration} "}"`.
+/// The first form's name sits in an `ns_path` node of one identifier, so
+/// the declare pass reads both forms alike.
 pub fn namespace_def(p: &mut Parser) -> PResult<Node> {
     let sp = p.span();
     let mut kids = Vec::new();
+    let inline = p.at("inline");
     if let Some(k) = p.eat("inline") {
         kids.push(k);
     }
     kids.push(p.expect("namespace")?);
+    let attributed = p.at_attr();
+    while p.at_attr() {
+        kids.push(Kid::Node(attribute_spec(p)?));
+    }
     if !p.at("{") {
-        kids.push(Kid::Node(ns_path(p)?));
+        let path = if inline || attributed || p.ahead(1) != "::" {
+            let psp = p.span();
+            let id = identifier(p)?;
+            p.node("ns_path", psp, vec![id])
+        } else {
+            ns_path(p)?
+        };
+        kids.push(Kid::Node(path));
     }
     if !p.at("{") {
         return Err(p.fail("'{'"));
@@ -61,20 +77,25 @@ pub fn ns_path(p: &mut Parser) -> PResult<Node> {
     Ok(p.node("ns_path", sp, kids))
 }
 
-/// `namespace_alias: "namespace" identifier "=" qualified_name ";"`.
+/// `namespace_alias: "namespace" identifier "=" [nested_name] identifier ";"`.
 pub fn namespace_alias(p: &mut Parser) -> PResult<Node> {
     let sp = p.span();
-    let kids = vec![p.expect("namespace")?, identifier(p)?, p.expect("=")?, Kid::Node(qualified_name_or_id(p)?), p.expect(";")?];
+    let mut kids = vec![p.expect("namespace")?, identifier(p)?, p.expect("=")?];
+    namespace_name(p, &mut kids)?;
+    kids.push(p.expect(";")?);
     let n = p.node("namespace_alias", sp, kids);
     p.declared(&n, DeclCtx::default());
     Ok(n)
 }
 
-/// A `qualified_name`. A namespace alias and a using-directive name a
-/// namespace, which can stand without a qualifier; the grammar asks for
-/// `qualified_name` there.
-fn qualified_name_or_id(p: &mut Parser) -> PResult<Node> {
-    qualified_name(p)
+/// `[nested_name] identifier`, the namespace that an alias or a
+/// directive names.
+fn namespace_name(p: &mut Parser, kids: &mut Vec<Kid>) -> PResult<()> {
+    if p.at("::") || p.ahead(1) == "::" {
+        kids.push(Kid::Node(nested_name(p)?.0));
+    }
+    kids.push(identifier(p)?);
+    Ok(())
 }
 
 /// `using_decl: "using" ["typename"] qualified_name ["..."]
@@ -101,10 +122,12 @@ pub fn using_decl(p: &mut Parser) -> PResult<Node> {
     Ok(n)
 }
 
-/// `using_directive: "using" "namespace" qualified_name ";"`.
+/// `using_directive: "using" "namespace" [nested_name] identifier ";"`.
 pub fn using_directive(p: &mut Parser) -> PResult<Node> {
     let sp = p.span();
-    let kids = vec![p.expect("using")?, p.expect("namespace")?, Kid::Node(qualified_name_or_id(p)?), p.expect(";")?];
+    let mut kids = vec![p.expect("using")?, p.expect("namespace")?];
+    namespace_name(p, &mut kids)?;
+    kids.push(p.expect(";")?);
     let n = p.node("using_directive", sp, kids);
     p.declared(&n, DeclCtx::default());
     Ok(n)

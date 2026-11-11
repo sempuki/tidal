@@ -16,3 +16,10 @@ fn new_and_delete() {
     assert!(ok("delete[] p", delete_expr));
     assert!(ok("::delete p", delete_expr));
 }
+
+#[test]
+fn attributes_after_type_and_bound() {
+    assert!(ok("int [[deprecated]]", new_type));
+    assert!(ok("[3] [[deprecated]]", new_bounds));
+    assert!(ok("[n] [[a]] [4] [[b]]", new_bounds));
+}

@@ -1,0 +1,15 @@
+Similarity report: run threshold 8 words, overlap threshold 0.25
+
+ok   rw2sim/report-rw2.md:Front end, rewrite: the parser functions longest=0   overlap=0.00
+ok   rw2sim/report-rw2.md:Method      longest=0   overlap=0.00
+ok   rw2sim/report-rw2.md:Counts      longest=0   overlap=0.00
+ok   rw2sim/report-rw2.md:2. What changed longest=0   overlap=0.01
+ok   rw2sim/report-rw2.md:Unit tests  longest=0   overlap=0.02
+ok   rw2sim/report-rw2.md:3. The G rows longest=0   overlap=0.00
+ok   rw2sim/report-rw2.md:4. The remaining disagreements longest=0   overlap=0.01
+ok   rw2sim/report-rw2.md:5. Faults with no test longest=0   overlap=0.00
+ok   rw2sim/report-rw2.md:6. Findings longest=0   overlap=0.00
+ok   rw2sim/report-rw2.md:7. Ledger rows longest=0   overlap=0.00
+ok   rw2sim/report-rw2.md:8. Tests added during the round longest=0   overlap=0.00
+
+0 flagged

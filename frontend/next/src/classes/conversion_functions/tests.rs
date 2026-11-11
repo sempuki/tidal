@@ -15,3 +15,11 @@ fn conversions() {
     let m = u[0].find("member_decl").unwrap();
     assert!(conversion_decl(m, &t));
 }
+
+#[test]
+fn conversion_to_member_pointer() {
+    // G177.
+    assert!(ok("int S::*", conversion_type));
+    assert!(ok("const int* const&", conversion_type));
+    assert!(parses("struct B { int m; }; struct S { operator int B::*() const; };"));
+}

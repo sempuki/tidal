@@ -402,6 +402,16 @@ impl<'a> Parser<'a> {
                 if self.at("{") && matches!(self.toks[self.pos - 1].text.as_str(), ")" | "}" | "...") {
                     break;
                 }
+                if self.at("decltype") && self.ahead(1) == "(" {
+                    // A base named by `decltype`: its parentheses and a
+                    // braced initializer after them are the initializer's.
+                    self.bump();
+                    self.skip_balanced()?;
+                    if self.at("{") {
+                        self.skip_balanced()?;
+                    }
+                    continue;
+                }
                 if self.at_any(&["(", "[", "{"]) {
                     self.skip_balanced()?;
                 } else {

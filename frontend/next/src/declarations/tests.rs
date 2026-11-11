@@ -38,3 +38,10 @@ fn statement_or_declaration() {
     assert!(e.contains("(expression_stmt"), "{}", e);
     let _ = init_declarator;
 }
+
+#[test]
+fn attributes_after_specifiers() {
+    // G170: an attribute after the decl-specifiers.
+    assert!(sx("int [[deprecated]]", decl_specifiers).unwrap().contains("(attribute_spec"));
+    assert!(parses("int [[deprecated]] c; using enum_free = int;"));
+}

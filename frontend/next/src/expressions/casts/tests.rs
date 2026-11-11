@@ -15,3 +15,15 @@ fn casts() {
     assert!(!ok("x(1)", functional_cast));
     assert!(ok("unsigned", cast_type));
 }
+
+#[test]
+fn cast_types_of_item_gr() {
+    // A class template's template-id is a cast type (G166); a function
+    // template's is not, so the tokens stay a call.
+    assert!(sx("V<int>{1}", functional_cast).unwrap().starts_with("(functional_cast (cast_type (template_id"));
+    assert!(ok("N::V<int>(1)", functional_cast));
+    assert!(!ok("f<int>(1)", functional_cast));
+    // A typename specifier is a cast type.
+    assert!(ok("typename T::type{3}", functional_cast));
+    assert!(ok("typename T::template wrap<int>{5}", functional_cast));
+}
