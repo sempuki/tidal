@@ -357,6 +357,23 @@ def check_ledger(errors: list[str]) -> None:
                 errors.append(f"{review.relative_to(ROOT)}: review point {pid} has no row in {where}")
 
 
+def check_repair_reads(errors: list[str]) -> None:
+    """A review item that a roadmap row marks done has a recorded read of its
+    repair diff under reports/review/ (decision 0062; decision 0063, item R9).
+    The check covers phases from decision 0062 on."""
+    text = (ROOT / "documentation" / "roadmap.md").read_text()
+    reviews = [f.name for f in (ROOT / "reports" / "review").glob("*.md")]
+    for section in re.split(r"^## ", text, flags=re.M):
+        d = re.search(r"Decision (\d{4}) \(provisional\) adopts this phase", section)
+        if not d or int(d.group(1)) < 62:
+            continue
+        for item, work in re.findall(r"^\| (RV\d+) \| ([^|]*)\|", section, re.M):
+            if work.strip().startswith("Done:") and not any(
+                    f"read-of-{item.lower()}-repair-diff" in name for name in reviews):
+                errors.append(f"documentation/roadmap.md: item {item} of decision {d.group(1)} is done, "
+                              f"and no file under reports/review/ records a read of its repair diff")
+
+
 def ended_items() -> set[tuple[str, str]]:
     """(decision, item) for each item of a phase table in the roadmap whose
     Work cell starts with "Done" or "Moved"."""
@@ -642,6 +659,7 @@ def main() -> int:
     check_grammar(errors)
     check_records(errors, warnings)
     check_ledger(errors)
+    check_repair_reads(errors)
     check_evidence(errors, warnings)
     check_thin_evidence(rules, errors, warnings)
 

@@ -23,8 +23,9 @@ P17 was "opaque type aliases". Tidal uses "opaque" for an enumeration declared w
 | P26 | No overloaded comma, and a discarded left operand of `,` must have no value or be a call | comma, operators, evaluation-order | yes | new | ready | The meaning of "has no value" for a class result |
 | P27 | An in-object array whose elements start their lives one at a time | storage, unions, language-support | no | new | ready | How an element's lifetime starts and ends, and what constant evaluation allows (Q-0425) |
 | P28 | Arithmetic that wraps on request | additive, multiplicative, conversions | no | new | partial | The marker, and whether it applies to a type or an operator |
+| P29 | A pointer comparison with a string literal operand is not valid | comparison, primary | yes | new | partial | Whether the rule covers a pointer that a literal initialized; the count of programs it makes invalid |
 
-Totals for P22 onward: 4 ready (P22, P24, P26, P27), 2 partial (P23b, P28), 2 done (P23a by X22, P25 by X23), 0 blocked. P26 is the one ready proposal that changes existing behavior. X24 takes P22 or P26 next, and X25 can take P27.
+Totals for P22 onward: 4 ready (P22, P24, P26, P27), 3 partial (P23b, P28, P29), 2 done (P23a by X22, P25 by X23), 0 blocked. P26 is the one ready proposal that changes existing behavior. X24 takes P22 or P26 next, and X25 can take P27.
 
 ## 3. The proposals
 
@@ -34,7 +35,7 @@ A loop or a `switch` can carry a label, and `break name;` or `continue name;` ac
 
 - **Pages:** `statements/jumps.md`, `statements/loops.md`, `statements/blocks.md`, `statements/switch.md`.
 - **Changes existing behavior:** no. JMP-17 rejects a `break` or `continue` that names a label, so no valid program has the form. Two tests that name a label after `break` or `continue` expect `reject` and would change to `accept` or keep `reject` with another spelling.
-- **Cites:** JMP-P1, JMP-1, JMP-2, JMP-5 (a label is visible in all of its function), JMP-7, JMP-9 (a jump out of a block destroys its variables), JMP-14, JMP-17 (the rule P22 reverses), LOOP-P1, LOOP-4, STMT-5, NAM-P4 (labels have their own name space).
+- **Cites:** JMP-P1, JMP-1, JMP-2, JMP-5 (a label is visible in all of its function), JMP-7, JMP-9 (a jump out of a block destroys its variables), JMP-14, JMP-17 (the rule P22 reverses), LOOP-P1, LOOP-4, STMT-5, NAM-P4 (labels have their own name space). LOOP-9 (a jump into a loop body goes on as after a normal pass of the body, the model of a labeled `continue`).
 - **Settled from Tidal:** labels, their scope and their name space exist. JMP-9 already gives the destruction order for a jump out of nested blocks, so a labeled `break` needs no new lifetime rule.
 - **Not settled:** whether the label names the loop statement itself or any statement that holds it. Whether a labeled `continue` may target a `switch` (it cannot today). What a `break` inside a lambda body does with an outer label (a lambda is its own function, JMP-5).
 - **Rating:** ready.
@@ -55,7 +56,7 @@ In a checked template, an expression whose type depends on a parameter must matc
 - **Changes existing behavior:** no while the marker of P23a is opt-in. Yes if it becomes the default.
 - **Cites:** CPT-P3, CPT-31, CPT-33, CNS-P1, CNS-4, DEP-P1, DEP-P2, DEP-9, DEP-28, OVL-24, and the X22 rules.
 - **Settled from Tidal:** the marker, the constraints in force and the exemptions of X22.
-- **Not settled:** no rule matches an expression in a body to a requirement (X22-8). Tidal says when a requirement holds (CPT-31) and not what it lets a body assume. Calls with dependent arguments find candidates at the instantiation (DEP-P1), so the check must say which candidate a requirement stands for.
+- **Not settled:** no rule matches an expression in a body to a requirement (X22-8). Tidal says when a requirement holds (CPT-31) and not what it lets a body assume. Calls with dependent arguments find candidates at the instantiation (DEP-P1), so the check must say which candidate a requirement stands for. Phase 14 answered I6-1, I6-5, I6-9, and I6-10 (DEP-5, DEP-2, DEP-40, DEP-9), and `frontend/TEMPLATE-MODEL.md` section 1 gives a typed dependent tree in which a matching rule can be stated. The blockers that remain are X22-8, Q-0411, Q-0412, Q-0426, and the strength of CNS-13 for an independent template-id (RV7-B-2).
 - **Rating:** partial. Main blocker: a matching rule, which the design itself must supply. A reader can take P23b, but the first exercise will spend most of its length on that rule.
 
 ### P24. Flag enumerations
@@ -97,7 +98,7 @@ A class holds storage for `N` objects of `T` inside itself, and the program star
 
 - **Pages:** `foundations/storage.md`, `classes/unions.md`, `foundations/language-support.md`.
 - **Changes existing behavior:** no. The proposal adds a form.
-- **Cites:** STG-P2, STG-P3, STG-10, STG-28, UNI-13, UNI-14, UNI-6, ADD-10, LSUP-10, LSUP-11.
+- **Cites:** STG-P2, STG-P3, STG-10, STG-28, UNI-13, UNI-14, UNI-6, ADD-10, LSUP-10, LSUP-11, ADD-14, STG-29; Q-0430 and G164 dispute the case that P27 would define.
 - **Settled from Tidal:** UNI-14 says what a construction inside a member that is not active does, at run time and in constant evaluation (W20-2, Q-0425). The storage-form table states the gap.
 - **Not settled:** how an element's lifetime starts and ends, what `std::construct_at` and placement `new` do on one element, what a pointer and a length over the started elements give, and what constant evaluation allows.
 - **Rating:** ready.
@@ -111,4 +112,15 @@ A program asks for wrapping arithmetic on signed integers in the source, in plac
 - **Cites:** ADD-9, MUL-8, MUL-10, CONV-2.
 - **Settled from Tidal:** the result of unsigned arithmetic and of the conversion back to a signed type.
 - **Not settled:** the marker, whether it applies to a type, an expression, or an operator, and how it meets the usual arithmetic conversions.
+- **Rating:** partial.
+
+### P29. A pointer comparison with a string literal operand is not valid
+
+A comparison by `==` or `!=` with a string literal operand compares addresses (CMP-15), and PRIM-9 leaves unspecified whether two equal literals are one object. Two port suites wrote such a comparison and expected the characters to be compared (P2-3, P3-4).
+
+- **Pages:** `expressions/comparison.md`, `expressions/primary.md`.
+- **Changes existing behavior:** yes, for any program that compares a pointer with a literal. The round 12 designer's text scan finds 18 lines in 6 program files with `==` beside a literal, and reads each as a comparison of a class object, so no program becomes invalid by that reading. The scan cannot tell a class operand from a pointer.
+- **Cites:** CMP-6, CMP-15, PRIM-9.
+- **Settled from Tidal:** what the comparison does today and why its result is unspecified for two literals.
+- **Not settled:** whether the rule covers only a literal operand or also a pointer that a literal initialized, and whether a comparison with a null pointer stays valid.
 - **Rating:** partial.

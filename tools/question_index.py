@@ -431,6 +431,33 @@ def render(text: str, questions: list[Question]) -> str:
     return "\n".join(lines)
 
 
+REQUEST_SENTENCE = re.compile(r"hold \d+ open questions and the \d+ rule items of row 4a")
+
+
+def render_request_sentence(text: str) -> str:
+    """Rewrite the counts in the sentence above the request from the packet (decision 0063, item R9)."""
+    ids: set[str] = set()
+    items = 0
+    for line in text.splitlines():
+        if line.startswith(("| 1 | Widen", "| 4a | Follow the compilers; answers", "| 10 | Record")):
+            ids |= set(QUESTION_ID.findall(line))
+        elif line.startswith("| 4a | Follow the compilers, rule items"):
+            cell = line.split("|")[3].strip()
+            items = int(cell.split(":")[0]) if cell[:1].isdigit() else 0
+    return REQUEST_SENTENCE.sub(f"hold {len(ids)} open questions and the {items} rule items of row 4a", text, count=1)
+
+
+def settlement_problems(text: str) -> list[str]:
+    """Each row of the settlements table that settles questions names its commit (decision 0063, item R9)."""
+    out = []
+    section = text.split("## Settlements under decision 0054", 1)[-1].split("\n## ", 1)[0]
+    for line in section.splitlines():
+        cells = [c.strip() for c in line.strip("|").split("|")]
+        if len(cells) == 3 and cells[0].isdigit() and int(cells[0]) > 0 and not re.fullmatch(r"[0-9a-f]{7,40}", cells[2]):
+            out.append(f"{PENDING.relative_to(ROOT)}: the settlement row '{cells[1][:60]}' names no commit")
+    return out
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--check", action="store_true", help="fail if the table is out of date")
@@ -451,7 +478,9 @@ def main() -> int:
         problems.append(f"{PENDING.relative_to(ROOT)}: no '{PACKET_HEADING}' section")
     else:
         pending_new = packet
+    pending_new = render_request_sentence(pending_new)
     problems.extend(waits_problems(questions, pending_old))
+    problems.extend(settlement_problems(pending_old))
     if args.share:
         if m := re.search(r"^Rows 1 to 9 hold .*$", pending_new, re.M):
             print(m.group(0))
