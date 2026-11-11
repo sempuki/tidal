@@ -178,7 +178,7 @@ The four functions are the *copy and move functions* of a class. A
 
 :::{rule} CPY-1
 :kind: required
-:tests: classes/copy-move/copy-ctor-const-ref.cpp classes/copy-move/copy-ctor-default-args.cpp classes/copy-move/copy-ctor-nonconst-ref.cpp classes/copy-move/copy-ctor-volatile.cpp classes/copy-move/template-not-copy-ctor.cpp classes/copy-move/copy-constructor-exact-skips-template-constraint.cpp
+:tests: classes/copy-move/copy-ctor-const-ref.cpp classes/copy-move/copy-ctor-default-args.cpp classes/copy-move/copy-ctor-nonconst-ref.cpp classes/copy-move/copy-ctor-volatile.cpp classes/copy-move/template-not-copy-ctor.cpp classes/copy-move/copy-constructor-exact-skips-template-constraint.cpp classes/copy-move/copy-constructor-constraint-fails.cpp
 
 A *copy constructor* of class `T` is a constructor that is not a template.
 Its first parameter is one of these:
@@ -248,7 +248,7 @@ valid.
 
 :::{rule} CPY-4
 :kind: required
-:tests: classes/copy-move/defaulted-copy-restores.cpp classes/copy-move/implicit-copy.cpp classes/copy-move/user-dtor-keeps-copy.cpp classes/copy-move/implicit-copy-of-owner-sanitizer.cpp classes/copy-move/move-assign-only-from-prvalue.cpp classes/copy-move/move-assign-deletes-copy-assign.cpp classes/copy-move/assign-from-int-through-converting-constructor.cpp
+:tests: classes/copy-move/defaulted-copy-restores.cpp classes/copy-move/implicit-copy.cpp classes/copy-move/user-dtor-keeps-copy.cpp classes/copy-move/implicit-copy-of-owner-sanitizer.cpp classes/copy-move/move-assign-only-from-prvalue.cpp classes/copy-move/move-assign-deletes-copy-assign.cpp classes/copy-move/assign-from-int-through-converting-constructor.cpp classes/copy-move/copy-constructor-constraint-fails.cpp
 
 A class has an implicit copy constructor if it has no user-declared copy
 constructor, and an implicit copy assignment operator if it has no
@@ -701,8 +701,8 @@ Any c(1);                          // the template, with T = int
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 128
-of 137 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 129
+of 138 tests.
 
 ### Divergences
 

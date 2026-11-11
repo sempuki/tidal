@@ -316,7 +316,7 @@ An implicit conversion uses at most one converting constructor.
 
 :::{rule} CTOR-25
 :kind: reject
-:tests: classes/constructors/ctor-no-match-direct.cpp classes/constructors/ctor-no-match-braces.cpp classes/constructors/ctor-no-match-functional-cast.cpp classes/constructors/ctor-no-match-mem-init.cpp classes/constructors/ctor-no-match-new.cpp foundations/names/adl-suppressed-by-type.cpp classes/constructors/ctor-no-match-list-ctor-not-viable.cpp classes/constructors/ctor-no-match-other-class.cpp classes/constructors/ctor-no-match-nested-braces.cpp classes/constructors/ctor-implicit-copy-move.cpp classes/constructors/ctor-ambiguous-braces.cpp classes/constructors/ctor-ambiguous-copy-list.cpp classes/constructors/ctor-ambiguous-argument-braces.cpp overloading/conversion-sequences/chosen-list-ambiguous.cpp classes/derived/inherited-nothing-not-aggregate.cpp
+:tests: classes/constructors/ctor-no-match-direct.cpp classes/constructors/ctor-no-match-braces.cpp classes/constructors/ctor-no-match-functional-cast.cpp classes/constructors/ctor-no-match-mem-init.cpp classes/constructors/ctor-no-match-new.cpp foundations/names/adl-suppressed-by-type.cpp classes/constructors/ctor-no-match-list-ctor-not-viable.cpp classes/constructors/ctor-no-match-other-class.cpp classes/constructors/ctor-no-match-nested-braces.cpp classes/constructors/ctor-implicit-copy-move.cpp classes/constructors/ctor-ambiguous-braces.cpp classes/constructors/ctor-ambiguous-copy-list.cpp classes/constructors/ctor-ambiguous-argument-braces.cpp overloading/conversion-sequences/chosen-list-ambiguous.cpp classes/derived/inherited-nothing-not-aggregate.cpp classes/constructors/member-no-default-constructor-not-initialized.cpp classes/constructors/member-no-default-constructor-object.cpp classes/copy-move/copy-constructor-constraint-fails.cpp
 
 An initialization of a class object by a constructor must find one best
 constructor for its arguments ({rule}`OVL-34`). A constructor accepts
@@ -678,8 +678,8 @@ Span g{{1}};   // Span(int): {1} gives an int directly (ICS-15). The
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 185
-of 207 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 188
+of 210 tests.
 
 ### Divergences
 

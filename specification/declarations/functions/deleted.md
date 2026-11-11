@@ -29,7 +29,7 @@ because the implementation knows how to write them.
 
 :::{rule} DEL-1
 :kind: reject
-:tests: declarations/functions/deleted/call-deleted.cpp declarations/functions/deleted/declare-deleted-unused.cpp declarations/functions/deleted/address-of-deleted.cpp declarations/functions/deleted/deleted-overload-selected.cpp declarations/functions/deleted/deleted-overload-not-selected.cpp declarations/functions/deleted/deleted-unevaluated.cpp overloading/overload-resolution/chosen-deleted.cpp overloading/overload-resolution/address-of-deleted-chosen.cpp overloading/conversion-sequences/chosen-deleted-constructor.cpp overloading/conversion-sequences/chosen-deleted-conversion-function.cpp statements/range-for/by-value-move-only-elements.cpp
+:tests: declarations/functions/deleted/call-deleted.cpp declarations/functions/deleted/declare-deleted-unused.cpp declarations/functions/deleted/address-of-deleted.cpp declarations/functions/deleted/deleted-overload-selected.cpp declarations/functions/deleted/deleted-overload-not-selected.cpp declarations/functions/deleted/deleted-unevaluated.cpp overloading/overload-resolution/chosen-deleted.cpp overloading/overload-resolution/address-of-deleted-chosen.cpp overloading/conversion-sequences/chosen-deleted-constructor.cpp overloading/conversion-sequences/chosen-deleted-conversion-function.cpp statements/range-for/by-value-move-only-elements.cpp declarations/functions/deleted/adl-function-beside-deleted-template-concept.cpp declarations/functions/deleted/adl-function-beside-deleted-template.cpp
 
 A program must not refer to a deleted function, also in an operand that
 is not evaluated, such as `decltype` or `sizeof`. A deleted function

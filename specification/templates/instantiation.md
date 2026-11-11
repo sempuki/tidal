@@ -191,7 +191,7 @@ definition.
 
 :::{rule} INST-1
 :kind: required
-:tests: templates/instantiation/class-object.cpp templates/instantiation/class-sizeof.cpp templates/instantiation/class-member-access.cpp templates/instantiation/class-delete.cpp templates/instantiation/class-base-conversion.cpp templates/instantiation/class-function-definition-parameter.cpp templates/instantiation/class-function-definition-return.cpp templates/instantiation/class-call-return.cpp templates/instantiation/class-deduction-from-derived.cpp templates/instantiation/class-deduction-from-derived-error.cpp templates/instantiation/class-qualified-name.cpp templates/instantiation/class-call-passes-by-value.cpp templates/instantiation/class-decltype-call-argument-instantiated.cpp templates/instantiation/class-decltype-member-access-instantiated.cpp templates/instantiation/lambda-return-specialization-braced-return.cpp templates/instantiation/member-parameter-type-waits-for-definition.cpp templates/instantiation/class-decltype-consteval-call-not-instantiated.cpp declarations/functions/definitions/member-in-class-specialization-over-class.cpp
+:tests: templates/instantiation/class-object.cpp templates/instantiation/class-sizeof.cpp templates/instantiation/class-member-access.cpp templates/instantiation/class-delete.cpp templates/instantiation/class-base-conversion.cpp templates/instantiation/class-function-definition-parameter.cpp templates/instantiation/class-function-definition-return.cpp templates/instantiation/class-call-return.cpp templates/instantiation/class-deduction-from-derived.cpp templates/instantiation/class-deduction-from-derived-error.cpp templates/instantiation/class-qualified-name.cpp templates/instantiation/class-call-passes-by-value.cpp templates/instantiation/class-decltype-call-argument-instantiated.cpp templates/instantiation/class-decltype-member-access-instantiated.cpp templates/instantiation/lambda-return-specialization-braced-return.cpp templates/instantiation/member-parameter-type-waits-for-definition.cpp templates/instantiation/class-decltype-consteval-call-not-instantiated.cpp declarations/functions/definitions/member-in-class-specialization-over-class.cpp templates/instantiation/decltype-call-qualifier-instantiates.cpp templates/instantiation/decltype-operator-call-qualifier-instantiates.cpp
 
 A specialization of a {term}`class template` is instantiated when a use needs
 a complete class, or when the definition can change the meaning of the
@@ -215,7 +215,7 @@ use. These uses instantiate the class:
 
 :::{rule} INST-2
 :kind: required
-:tests: templates/instantiation/class-pointer-only.cpp templates/instantiation/class-defined-after-pointer.cpp classes/virtual/override-dependent-base-pointer.cpp templates/instantiation/class-decltype-of-call-not-instantiated.cpp templates/instantiation/class-decltype-parenthesized-call-not-instantiated.cpp templates/instantiation/class-decltype-consteval-call-not-instantiated.cpp
+:tests: templates/instantiation/class-pointer-only.cpp templates/instantiation/class-defined-after-pointer.cpp classes/virtual/override-dependent-base-pointer.cpp templates/instantiation/class-decltype-of-call-not-instantiated.cpp templates/instantiation/class-decltype-parenthesized-call-not-instantiated.cpp templates/instantiation/class-decltype-consteval-call-not-instantiated.cpp templates/instantiation/decltype-call-qualifier-instantiates.cpp templates/instantiation/decltype-nested-call-argument-instantiates.cpp templates/instantiation/decltype-operator-call-qualifier-instantiates.cpp
 
 A pointer or reference type, an alias, a template argument, and a
 function declaration can name a specialization of a class template
@@ -784,8 +784,8 @@ extern template constexpr int size_of<long>;  // rejected: constexpr (INST-25)
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 139
-of 170 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 142
+of 173 tests.
 
 ### Divergences
 

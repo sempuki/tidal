@@ -183,7 +183,7 @@ An access label has no effect on a friend declaration.
 
 :::{rule} ACC-20
 :kind: required
-:tests: classes/access/friend-class-template.cpp classes/access/friend-function-template.cpp classes/access/friend-specialization-only.cpp classes/access/friend-one-specialization.cpp classes/access/friend-member-of-every-specialization.cpp classes/access/friend-member-of-explicit-specialization.cpp classes/access/friend-member-of-specialization-other-member.cpp classes/access/friend-member-of-partial-specialization.cpp classes/access/friend-member-pattern-other-specialization.cpp
+:tests: classes/access/friend-class-template.cpp classes/access/friend-function-template.cpp classes/access/friend-specialization-only.cpp classes/access/friend-one-specialization.cpp classes/access/friend-member-of-every-specialization.cpp classes/access/friend-member-of-explicit-specialization.cpp classes/access/friend-member-of-specialization-other-member.cpp classes/access/friend-member-of-partial-specialization.cpp classes/access/friend-member-pattern-other-specialization.cpp classes/access/friend-class-template-declared-later.cpp
 
 A friend declaration with a template head names a class template or a
 function template. Every specialization of that template is a friend. A
@@ -391,8 +391,8 @@ class Token {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 89
-of 95 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 90
+of 96 tests.
 
 ### Divergences
 

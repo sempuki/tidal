@@ -256,7 +256,7 @@ steps:
 
 :::{rule} CNS-3
 :kind: required
-:tests: templates/constraints/negation-atomic.cpp templates/constraints/fold-atomic.cpp templates/concepts/type-constraint-pack-one-atom.cpp
+:tests: templates/constraints/negation-atomic.cpp templates/constraints/fold-atomic.cpp templates/concepts/type-constraint-pack-one-atom.cpp templates/constraints/fold-atomic-one-satisfied.cpp templates/constraints/fold-in-requires-clause.cpp templates/constraints/fold-in-requires-clause-plain-expression.cpp
 
 Every other expression gives one {term}`atomic constraint`. A negation,
 a comparison, a call, a {term}`requires expression`, and a fold expression are
@@ -298,7 +298,7 @@ right operand is not substituted or checked.
 
 :::{rule} CNS-7
 :kind: required
-:tests: templates/constraints/substitution-failure.cpp templates/constraints/atomic-value.cpp templates/constraints/constant-evaluation-context.cpp templates/constraints/mapping-unused-parameter-not-substituted.cpp templates/constraints/lookup-at-check.cpp
+:tests: templates/constraints/substitution-failure.cpp templates/constraints/atomic-value.cpp templates/constraints/constant-evaluation-context.cpp templates/constraints/mapping-unused-parameter-not-substituted.cpp templates/constraints/lookup-at-check.cpp declarations/functions/deleted/adl-function-beside-deleted-template-concept.cpp overloading/overload-resolution/conversion-function-constraint-fails-explicit-cast.cpp overloading/overload-resolution/conversion-functions-constraints-choose.cpp templates/constraints/fold-atomic-one-satisfied.cpp templates/constraints/fold-in-requires-clause.cpp templates/constraints/fold-in-requires-clause-plain-expression.cpp
 
 To check an atomic constraint, the implementation substitutes the
 arguments of its mapping, and no others, into its expression. Names
@@ -818,8 +818,8 @@ bool usable = Usable<Item>;        // rejected: the check needs itself
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 113
-of 147 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 119
+of 153 tests.
 
 ### Divergences
 

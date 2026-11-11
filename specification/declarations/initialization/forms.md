@@ -94,7 +94,7 @@ A {term}`narrowing conversion` is permitted. `nullptr` converts to
 
 :::{rule} INIT-7
 :kind: reject
-:tests: declarations/initialization/forms/copy-init-no-conversion.cpp declarations/initialization/forms/direct-init-multiple.cpp declarations/initialization/forms/copy-init-explicit-rejected.cpp declarations/initialization/forms/scalar-list-in-parens.cpp declarations/initialization/forms/incomplete-type.cpp declarations/initialization/forms/incomplete-type-copy.cpp declarations/initialization/forms/incomplete-type-paren.cpp declarations/initialization/forms/nullptr-bool-copy.cpp foundations/keywords/override-after-class-name.cpp
+:tests: declarations/initialization/forms/copy-init-no-conversion.cpp declarations/initialization/forms/direct-init-multiple.cpp declarations/initialization/forms/copy-init-explicit-rejected.cpp declarations/initialization/forms/scalar-list-in-parens.cpp declarations/initialization/forms/incomplete-type.cpp declarations/initialization/forms/incomplete-type-copy.cpp declarations/initialization/forms/incomplete-type-paren.cpp declarations/initialization/forms/nullptr-bool-copy.cpp foundations/keywords/override-after-class-name.cpp overloading/overload-resolution/conversion-function-constraint-fails-implicit.cpp
 
 A variable with an initializer of any form, braces included, must have
 a complete type. An initializer after `=` or in parentheses must also
@@ -155,7 +155,7 @@ left to right.
 
 :::{rule} INIT-9
 :kind: required
-:tests: declarations/initialization/forms/default-init-member-initializer.cpp declarations/initialization/forms/default-init-member-no-value.cpp declarations/initialization/forms/default-init-base.cpp declarations/initialization/forms/default-init-array-of-class.cpp declarations/initialization/forms/default-init-member-not-named.cpp declarations/initialization/forms/default-init-member-not-named-no-value.cpp declarations/initialization/forms/default-init-scalar-no-value.cpp declarations/initialization/forms/default-init-new-class.cpp declarations/initialization/forms/default-init-array-class-with-constructor-template.cpp
+:tests: declarations/initialization/forms/default-init-member-initializer.cpp declarations/initialization/forms/default-init-member-no-value.cpp declarations/initialization/forms/default-init-base.cpp declarations/initialization/forms/default-init-array-of-class.cpp declarations/initialization/forms/default-init-member-not-named.cpp declarations/initialization/forms/default-init-member-not-named-no-value.cpp declarations/initialization/forms/default-init-scalar-no-value.cpp declarations/initialization/forms/default-init-new-class.cpp declarations/initialization/forms/default-init-array-class-with-constructor-template.cpp classes/constructors/member-no-default-constructor-not-initialized.cpp classes/constructors/member-no-default-constructor-object.cpp
 
 *Default initialization* happens to a variable with no initializer, to
 an object that `new` creates with no initializer, and to a member or
@@ -227,7 +227,7 @@ struct Bits {
 
 ## Evidence
 
-All eight compilers agree on 40 of 41 tests. The results are in
+All eight compilers agree on 43 of 44 tests. The results are in
 `tests/RESULTS.md`.
 
 ### Divergences

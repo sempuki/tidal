@@ -642,7 +642,7 @@ instantiates the body, and DED-29 applies to an error there
 
 :::{rule} DED-31
 :kind: required
-:tests: templates/deduction/context-conversion.cpp templates/deduction/context-conversion-differences.cpp templates/deduction/context-conversion-exact.cpp templates/deduction/context-conversion-reference-qualifiers.cpp templates/deduction/context-conversion-qualification-place.cpp
+:tests: templates/deduction/context-conversion.cpp templates/deduction/context-conversion-differences.cpp templates/deduction/context-conversion-exact.cpp templates/deduction/context-conversion-reference-qualifiers.cpp templates/deduction/context-conversion-qualification-place.cpp overloading/overload-resolution/binary-operator-beside-explicit-conversion-template.cpp
 
 A conversion function template takes its template arguments from the
 type that the initialization needs ({rule}`ICS-4`). Before the match:
@@ -876,8 +876,8 @@ Gadget* g = new (&arena) Gadget;  // both match, and ordering prefers neither: n
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 150
-of 163 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 151
+of 164 tests.
 
 ### Divergences
 

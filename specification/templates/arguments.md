@@ -447,7 +447,7 @@ parameter of the argument with no default and no match, is not valid.
 
 :::{rule} TARG-19
 :kind: required
-:tests: templates/arguments/same-specialization.cpp templates/arguments/same-specialization-pointers.cpp templates/arguments/same-specialization-floating.cpp templates/arguments/same-specialization-class.cpp templates/arguments/same-specialization-kinds.cpp templates/arguments/same-specialization-union-empty.cpp
+:tests: templates/arguments/same-specialization.cpp templates/arguments/same-specialization-pointers.cpp templates/arguments/same-specialization-floating.cpp templates/arguments/same-specialization-class.cpp templates/arguments/same-specialization-kinds.cpp templates/arguments/same-specialization-union-empty.cpp templates/specialization/partial-class-type-constant-argument.cpp
 
 Two template-ids name the same specialization if they name the same
 template and, after defaults are added, each pair of arguments is the
@@ -581,8 +581,8 @@ Use<Small> m;                  // rejected: Small is a concept
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 93
-of 99 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 94
+of 100 tests.
 
 ### Divergences
 

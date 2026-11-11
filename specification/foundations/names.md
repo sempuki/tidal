@@ -624,7 +624,7 @@ where the members act (decision 0042).
 
 :::{rule} NAM-5
 :kind: required
-:tests: foundations/names/adl-finds-function.cpp foundations/names/adl-not-for-fundamental.cpp foundations/names/adl-plus-ordinary.cpp
+:tests: foundations/names/adl-finds-function.cpp foundations/names/adl-not-for-fundamental.cpp foundations/names/adl-plus-ordinary.cpp declarations/functions/deleted/adl-function-beside-deleted-template-concept.cpp declarations/functions/deleted/adl-function-beside-deleted-template.cpp
 
 An unqualified function call also looks in the namespaces of its
 argument types for the function name. This lookup finds a function
@@ -906,8 +906,8 @@ File::File* q = nullptr;        // rejected: names the constructor
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 241
-of 246 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 243
+of 248 tests.
 
 ### Divergences
 

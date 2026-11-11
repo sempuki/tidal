@@ -108,7 +108,7 @@ includes no header declares these names itself.
 
 :::{rule} LSUP-1
 :kind: reject
-:tests: foundations/language-support/initializer-list-pointer-and-size.cpp foundations/language-support/initializer-list-no-members.cpp foundations/language-support/initializer-list-not-template.cpp foundations/language-support/initializer-list-missing.cpp foundations/language-support/initializer-list-auto-deduction.cpp foundations/language-support/initializer-list-parameter-not-needed.cpp foundations/language-support/initializer-list-candidate-not-viable.cpp foundations/language-support/initializer-list-count-before-pointer.cpp classes/operators/initializer-list-parameter.cpp
+:tests: foundations/language-support/initializer-list-pointer-and-size.cpp foundations/language-support/initializer-list-no-members.cpp foundations/language-support/initializer-list-not-template.cpp foundations/language-support/initializer-list-missing.cpp foundations/language-support/initializer-list-auto-deduction.cpp foundations/language-support/initializer-list-parameter-not-needed.cpp foundations/language-support/initializer-list-candidate-not-viable.cpp foundations/language-support/initializer-list-count-before-pointer.cpp classes/operators/initializer-list-parameter.cpp foundations/language-support/initializer-list-missing-range-for.cpp
 
 A program needs an `std::initializer_list<E>` where a braced list
 initializes an object of that type, or where {rule}`AUTO-7` deduces
@@ -540,8 +540,8 @@ int* r = new (raw) int(3);          // raw hosts the int
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 53
-of 75 tests. EDG compiles the run tests and does not run them.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 54
+of 76 tests. EDG compiles the run tests and does not run them.
 
 ### Divergences
 

@@ -305,7 +305,7 @@ those of the function type.
 
 :::{rule} OVL-7
 :kind: required
-:tests: overloading/overload-resolution/operator-sets.cpp overloading/overload-resolution/operator-lookup-skips-members.cpp overloading/overload-resolution/operator-call-by-name-hidden.cpp foundations/names/operator-lookup-block-hides.cpp foundations/names/operator-lookup-namespace-hides.cpp foundations/names/operator-lookup-skips-class.cpp overloading/overload-resolution/operator-base-class-namespace.cpp overloading/overload-resolution/assignment-operator-class-parameter.cpp
+:tests: overloading/overload-resolution/operator-sets.cpp overloading/overload-resolution/operator-lookup-skips-members.cpp overloading/overload-resolution/operator-call-by-name-hidden.cpp foundations/names/operator-lookup-block-hides.cpp foundations/names/operator-lookup-namespace-hides.cpp foundations/names/operator-lookup-skips-class.cpp overloading/overload-resolution/operator-base-class-namespace.cpp overloading/overload-resolution/assignment-operator-class-parameter.cpp overloading/overload-resolution/assignment-beside-converting-assignment.cpp
 
 For an operator with an operand of class or enumeration type, the
 candidates are these ({rule}`OPR-6`):
@@ -334,7 +334,7 @@ right operand, and the second parameter matches the left operand.
 
 :::{rule} OVL-9
 :kind: required
-:tests: overloading/overload-resolution/builtin-arithmetic.cpp overloading/overload-resolution/builtin-pointer.cpp overloading/overload-resolution/builtin-assignment.cpp overloading/overload-resolution/builtin-enumeration.cpp overloading/overload-resolution/builtin-enumeration-no-arithmetic.cpp overloading/overload-resolution/builtin-three-way.cpp overloading/overload-resolution/builtin-integer-only.cpp overloading/overload-resolution/builtin-bool-increment.cpp overloading/overload-resolution/builtin-member-pointer-equality.cpp overloading/overload-resolution/builtin-member-pointer-order.cpp overloading/overload-resolution/builtin-integral-compound.cpp overloading/overload-resolution/builtin-three-way-mixed.cpp overloading/overload-resolution/builtin-three-way-bool-operand.cpp overloading/overload-resolution/builtin-not-callable-by-name.cpp overloading/overload-resolution/builtin-over-template.cpp overloading/overload-resolution/builtin-logical-explicit-bool.cpp overloading/overload-resolution/builtin-logical-explicit-competes.cpp overloading/overload-resolution/builtin-logical-explicit-competes-and.cpp overloading/overload-resolution/builtin-logical-explicit-int.cpp overloading/overload-resolution/builtin-increment-from-conversion.cpp overloading/overload-resolution/builtin-increment-from-value.cpp
+:tests: overloading/overload-resolution/builtin-arithmetic.cpp overloading/overload-resolution/builtin-pointer.cpp overloading/overload-resolution/builtin-assignment.cpp overloading/overload-resolution/builtin-enumeration.cpp overloading/overload-resolution/builtin-enumeration-no-arithmetic.cpp overloading/overload-resolution/builtin-three-way.cpp overloading/overload-resolution/builtin-integer-only.cpp overloading/overload-resolution/builtin-bool-increment.cpp overloading/overload-resolution/builtin-member-pointer-equality.cpp overloading/overload-resolution/builtin-member-pointer-order.cpp overloading/overload-resolution/builtin-integral-compound.cpp overloading/overload-resolution/builtin-three-way-mixed.cpp overloading/overload-resolution/builtin-three-way-bool-operand.cpp overloading/overload-resolution/builtin-not-callable-by-name.cpp overloading/overload-resolution/builtin-over-template.cpp overloading/overload-resolution/builtin-logical-explicit-bool.cpp overloading/overload-resolution/builtin-logical-explicit-competes.cpp overloading/overload-resolution/builtin-logical-explicit-competes-and.cpp overloading/overload-resolution/builtin-logical-explicit-int.cpp overloading/overload-resolution/builtin-increment-from-conversion.cpp overloading/overload-resolution/builtin-increment-from-value.cpp overloading/overload-resolution/binary-operator-beside-explicit-conversion-template.cpp
 
 An operator has the {term}`built-in candidates <built-in candidate>` that
 the table of OVL-P4 lists, each a function with the parameter types of
@@ -619,7 +619,7 @@ cv-qualifiers and ref-qualifier ({question}`Q-0187`).
 
 :::{rule} OVL-24
 :kind: required
-:tests: overloading/overload-resolution/viable-constraints.cpp overloading/overload-resolution/viable-constraints-function-template.cpp expressions/lambdas/template-head-requires-after-head.cpp expressions/lambdas/template-head-trailing-requires.cpp
+:tests: overloading/overload-resolution/viable-constraints.cpp overloading/overload-resolution/viable-constraints-function-template.cpp expressions/lambdas/template-head-requires-after-head.cpp expressions/lambdas/template-head-trailing-requires.cpp classes/copy-move/copy-constructor-constraint-fails.cpp overloading/overload-resolution/conversion-function-constraint-fails-explicit-cast.cpp overloading/overload-resolution/conversion-function-constraint-fails-implicit.cpp overloading/overload-resolution/conversion-functions-constraints-choose.cpp
 
 A candidate whose constraints are not satisfied ({rule}`CNS-7`) is not
 viable. {rule}`CNS-11` says when a function template's constraints are
@@ -630,7 +630,7 @@ checked.
 
 :::{rule} OVL-25
 :kind: required
-:tests: overloading/overload-resolution/better-one-argument.cpp overloading/overload-resolution/better-crossing-arguments.cpp overloading/overload-resolution/defaults-take-no-part.cpp overloading/overload-resolution/static-slot-no-part.cpp overloading/overload-resolution/template-exact-over-plain.cpp overloading/overload-resolution/static-call-operator-over-surrogate.cpp overloading/overload-resolution/static-call-operator-surrogate-ambiguous.cpp expressions/lambdas/static-call-operator.cpp
+:tests: overloading/overload-resolution/better-one-argument.cpp overloading/overload-resolution/better-crossing-arguments.cpp overloading/overload-resolution/defaults-take-no-part.cpp overloading/overload-resolution/static-slot-no-part.cpp overloading/overload-resolution/template-exact-over-plain.cpp overloading/overload-resolution/static-call-operator-over-surrogate.cpp overloading/overload-resolution/static-call-operator-surrogate-ambiguous.cpp expressions/lambdas/static-call-operator.cpp overloading/overload-resolution/assignment-beside-converting-assignment.cpp
 
 A viable function `F1` is better than `F2` if no sequence of `F1` is
 worse than the sequence of `F2` for the same argument
@@ -666,7 +666,7 @@ The identity is better than a function pointer conversion
 
 :::{rule} OVL-27
 :kind: required
-:tests: overloading/overload-resolution/tie-plain-over-template.cpp overloading/overload-resolution/template-exact-over-plain.cpp overloading/overload-resolution/tie-conversion-result-before-template.cpp overloading/overload-resolution/tie-template-before-inherited.cpp overloading/overload-resolution/tie-template-before-rewritten.cpp overloading/overload-resolution/tie-template-before-swapped.cpp overloading/overload-resolution/tie-reference-kind-before-template.cpp overloading/overload-resolution/tie-reference-kind-before-template-lvalue.cpp overloading/overload-resolution/builtin-over-template.cpp expressions/lambdas/closure-as-base-overload-set.cpp templates/deduction/losing-candidate-body-not-instantiated.cpp
+:tests: overloading/overload-resolution/tie-plain-over-template.cpp overloading/overload-resolution/template-exact-over-plain.cpp overloading/overload-resolution/tie-conversion-result-before-template.cpp overloading/overload-resolution/tie-template-before-inherited.cpp overloading/overload-resolution/tie-template-before-rewritten.cpp overloading/overload-resolution/tie-template-before-swapped.cpp overloading/overload-resolution/tie-reference-kind-before-template.cpp overloading/overload-resolution/tie-reference-kind-before-template-lvalue.cpp overloading/overload-resolution/builtin-over-template.cpp expressions/lambdas/closure-as-base-overload-set.cpp templates/deduction/losing-candidate-body-not-instantiated.cpp declarations/functions/deleted/adl-function-beside-deleted-template-concept.cpp declarations/functions/deleted/adl-function-beside-deleted-template.cpp
 
 A function that is not a template specialization wins over a
 specialization. A built-in candidate counts as such a function. The
@@ -849,8 +849,8 @@ struct Self {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 177
-of 207 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 185
+of 215 tests.
 
 ### Divergences
 

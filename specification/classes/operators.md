@@ -124,7 +124,7 @@ does not cover the operator functions for `new` and `delete`
 
 :::{rule} OPR-1
 :kind: required
-:tests: classes/operators/address-of-overload.cpp classes/operators/comma-overload.cpp classes/operators/enum-operator.cpp classes/operators/explicit-call-syntax.cpp classes/operators/member-binary.cpp classes/operators/member-unary.cpp classes/operators/nonmember-binary.cpp classes/operators/nonmember-unary.cpp classes/operators/operator-template-ok.cpp classes/operators/reference-param-nonmember.cpp
+:tests: classes/operators/address-of-overload.cpp classes/operators/comma-overload.cpp classes/operators/enum-operator.cpp classes/operators/explicit-call-syntax.cpp classes/operators/member-binary.cpp classes/operators/member-unary.cpp classes/operators/nonmember-binary.cpp classes/operators/nonmember-unary.cpp classes/operators/operator-template-ok.cpp classes/operators/reference-param-nonmember.cpp classes/operators/literal-operator-template-called-by-name.cpp
 
 An operator function can be a member function or a non-member function.
 For a member, the object is the left operand, or the only operand of a
@@ -235,7 +235,7 @@ candidate makes the expression not valid. The rule is a specific case of
 
 :::{rule} OPR-8
 :kind: required
-:tests: classes/operators/literal-block-scope.cpp classes/operators/literal-char.cpp classes/operators/literal-constexpr.cpp classes/operators/literal-float.cpp classes/operators/literal-in-namespace.cpp classes/operators/literal-integer.cpp classes/operators/literal-numeric-over-raw.cpp classes/operators/literal-raw-float.cpp classes/operators/literal-raw.cpp classes/operators/literal-string-concat-suffix.cpp classes/operators/literal-string.cpp classes/operators/literal-builtin-suffix-wins.cpp classes/operators/integer-suffix-mixed-case.cpp classes/operators/literal-raw-long-digits.cpp classes/operators/literal-operator-template-char-pack.cpp classes/operators/literal-operator-template-long-digits.cpp classes/operators/literal-numeric-form-value-too-large.cpp classes/operators/literal-operator-template-numeric-form-wins.cpp classes/operators/literal-operator-template-string-literal.cpp classes/operators/literal-operator-template-class-parameter.cpp classes/operators/literal-operator-template-class-parameter-and-string-form.cpp classes/operators/literal-operator-template-class-parameter-string-form-fallback.cpp
+:tests: classes/operators/literal-block-scope.cpp classes/operators/literal-char.cpp classes/operators/literal-constexpr.cpp classes/operators/literal-float.cpp classes/operators/literal-in-namespace.cpp classes/operators/literal-integer.cpp classes/operators/literal-numeric-over-raw.cpp classes/operators/literal-raw-float.cpp classes/operators/literal-raw.cpp classes/operators/literal-string-concat-suffix.cpp classes/operators/literal-string.cpp classes/operators/literal-builtin-suffix-wins.cpp classes/operators/integer-suffix-mixed-case.cpp classes/operators/literal-raw-long-digits.cpp classes/operators/literal-operator-template-char-pack.cpp classes/operators/literal-operator-template-long-digits.cpp classes/operators/literal-numeric-form-value-too-large.cpp classes/operators/literal-operator-template-numeric-form-wins.cpp classes/operators/literal-operator-template-string-literal.cpp classes/operators/literal-operator-template-class-parameter.cpp classes/operators/literal-operator-template-class-parameter-and-string-form.cpp classes/operators/literal-operator-template-class-parameter-string-form-fallback.cpp classes/operators/literal-operator-template-called-by-name.cpp
 
 A literal with a suffix calls a literal operator with that suffix. A
 literal whose suffix is a form in the syntax of
@@ -369,8 +369,8 @@ Meters len = 2.5_m;
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 123
-of 130 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 124
+of 131 tests.
 
 ### Divergences
 
