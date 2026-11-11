@@ -114,7 +114,7 @@ be inside the lambda too.
 
 :::{rule} JMP-3
 :kind: required
-:tests: statements/jumps/return-converts.cpp statements/jumps/return-braced.cpp statements/jumps/return-void-expression.cpp statements/jumps/void-function-return-void-expression.cpp classes/constructors/return-owner-converts-to-base-owner.cpp
+:tests: statements/jumps/return-converts.cpp statements/jumps/return-braced.cpp statements/jumps/return-void-expression.cpp statements/jumps/void-function-return-void-expression.cpp classes/constructors/return-owner-converts-to-base-owner.cpp templates/instantiation/lambda-return-specialization-braced-return.cpp
 
 In a function that returns a value, the value of `return` is converted
 to the return type, and a braced list initializes the result. In a
@@ -363,7 +363,7 @@ int pick(int v) {
 
 ## Evidence
 
-All eight compilers agree on 64 of 68 tests. The results are in
+All eight compilers agree on 65 of 69 tests. The results are in
 `tests/RESULTS.md`.
 
 ### Divergences

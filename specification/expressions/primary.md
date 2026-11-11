@@ -260,7 +260,7 @@ of the literal.
 
 :::{rule} PRIM-2
 :kind: reject
-:tests: expressions/primary/int-too-large-signed-decimal.cpp expressions/primary/int-too-large.cpp
+:tests: expressions/primary/int-too-large-signed-decimal.cpp expressions/primary/int-too-large.cpp classes/operators/literal-raw-long-digits.cpp classes/operators/literal-operator-template-long-digits.cpp
 
 An integer literal must have a type in its list. A decimal literal with
 no `u` suffix that only an unsigned type can hold is not valid
@@ -774,8 +774,8 @@ bool same_text(const char* a, const char* b) {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 132
-of 144 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 134
+of 146 tests.
 
 ### Divergences
 

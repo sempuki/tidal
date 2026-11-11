@@ -191,7 +191,7 @@ definition.
 
 :::{rule} INST-1
 :kind: required
-:tests: templates/instantiation/class-object.cpp templates/instantiation/class-sizeof.cpp templates/instantiation/class-member-access.cpp templates/instantiation/class-delete.cpp templates/instantiation/class-base-conversion.cpp templates/instantiation/class-function-definition-parameter.cpp templates/instantiation/class-function-definition-return.cpp templates/instantiation/class-call-return.cpp templates/instantiation/class-deduction-from-derived.cpp templates/instantiation/class-deduction-from-derived-error.cpp templates/instantiation/class-qualified-name.cpp templates/instantiation/class-call-passes-by-value.cpp templates/instantiation/class-decltype-call-argument-instantiated.cpp templates/instantiation/class-decltype-member-access-instantiated.cpp
+:tests: templates/instantiation/class-object.cpp templates/instantiation/class-sizeof.cpp templates/instantiation/class-member-access.cpp templates/instantiation/class-delete.cpp templates/instantiation/class-base-conversion.cpp templates/instantiation/class-function-definition-parameter.cpp templates/instantiation/class-function-definition-return.cpp templates/instantiation/class-call-return.cpp templates/instantiation/class-deduction-from-derived.cpp templates/instantiation/class-deduction-from-derived-error.cpp templates/instantiation/class-qualified-name.cpp templates/instantiation/class-call-passes-by-value.cpp templates/instantiation/class-decltype-call-argument-instantiated.cpp templates/instantiation/class-decltype-member-access-instantiated.cpp templates/instantiation/lambda-return-specialization-braced-return.cpp
 
 A specialization of a {term}`class template` is instantiated when a use needs
 a complete class, or when the definition can change the meaning of the
@@ -774,8 +774,8 @@ extern template constexpr int size_of<long>;  // rejected: constexpr (INST-25)
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 134
-of 163 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 135
+of 164 tests.
 
 ### Divergences
 

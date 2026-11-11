@@ -471,6 +471,8 @@ status, and the first sentence of its answer section.
 | [Q-0432](Q-0432-sizeof-operand-value-dependent.md) | Is `sizeof(N)` value-dependent when `N` is a constant template parameter? | provisional | The operands of `sizeof`, `alignof`, and `noexcept` do not make the expression value-dependent |
 | [Q-0433](Q-0433-static-const-member-initializer.md) | Is the initializer in the class of a `static const` member made with the class? | provisional | The initializer is made with the class |
 | [Q-0434](Q-0434-this-member-access-type-dependent.md) | Is `this->n` type-dependent when the type of `n` does not depend on the parameters? | provisional | A member access through `this` is type-dependent only for a dependent member type or a dependent base |
+| [Q-0435](Q-0435-literal-operator-template-char-pack.md) | Is a literal operator template whose head is one pack of `char` valid, and which literals call it? | provisional | Valid, for integer and floating literals |
+| [Q-0436](Q-0436-literal-suffix-digits-no-integer-type.md) | Does PRIM-2 apply to an integer literal whose suffix calls a raw literal operator or a literal operator template? | provisional | PRIM-2 does not apply to such a literal |
 
 ## Status values
 

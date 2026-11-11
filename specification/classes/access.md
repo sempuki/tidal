@@ -166,7 +166,7 @@ A static protected member has no such limit.
 
 :::{rule} ACC-5
 :kind: required
-:tests: classes/access/friend-function.cpp classes/access/friend-class.cpp classes/access/friend-member-function.cpp classes/access/friend-ignores-label.cpp classes/access/friend-plain-type-name.cpp classes/access/nested-class-friend-reads-enclosing.cpp classes/access/friend-class-then-operator-calls.cpp
+:tests: classes/access/friend-function.cpp classes/access/friend-class.cpp classes/access/friend-member-function.cpp classes/access/friend-ignores-label.cpp classes/access/friend-plain-type-name.cpp classes/access/nested-class-friend-reads-enclosing.cpp classes/access/friend-class-then-operator-calls.cpp classes/access/friend-class-key-enclosing-from-nested.cpp classes/access/friend-class-key-enclosing-from-nested-template.cpp
 
 A friend declaration gives a function or a class the access of a member.
 A friend can be:
@@ -391,8 +391,8 @@ class Token {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 87
-of 93 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 89
+of 95 tests.
 
 ### Divergences
 

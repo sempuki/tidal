@@ -180,7 +180,7 @@ enumerations only, and the class has none of these
 
 :::{rule} TYN-4
 :kind: required
-:tests: declarations/type-names/elaborated-declares.cpp declarations/type-names/elaborated-enum-declared.cpp declarations/type-names/elaborated-hides-function.cpp declarations/type-names/elaborated-in-parameter-scope.cpp declarations/type-names/elaborated-key-class-struct.cpp declarations/type-names/elaborated-in-member-declares-namespace.cpp
+:tests: declarations/type-names/elaborated-declares.cpp declarations/type-names/elaborated-enum-declared.cpp declarations/type-names/elaborated-hides-function.cpp declarations/type-names/elaborated-in-parameter-scope.cpp declarations/type-names/elaborated-key-class-struct.cpp declarations/type-names/elaborated-in-member-declares-namespace.cpp classes/access/friend-class-key-enclosing-from-nested.cpp classes/access/friend-class-key-enclosing-from-nested-template.cpp
 
 An elaborated type specifier refers to a class or enumeration that
 lookup finds with that key. Other names with the same spelling, such as
@@ -294,8 +294,8 @@ void post(Packet* p) {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 59
-of 68 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 61
+of 70 tests.
 
 ### Divergences
 

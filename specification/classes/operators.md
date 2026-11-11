@@ -232,7 +232,7 @@ candidate makes the expression not valid. The rule is a specific case of
 
 :::{rule} OPR-8
 :kind: required
-:tests: classes/operators/literal-block-scope.cpp classes/operators/literal-char.cpp classes/operators/literal-constexpr.cpp classes/operators/literal-float.cpp classes/operators/literal-in-namespace.cpp classes/operators/literal-integer.cpp classes/operators/literal-numeric-over-raw.cpp classes/operators/literal-raw-float.cpp classes/operators/literal-raw.cpp classes/operators/literal-string-concat-suffix.cpp classes/operators/literal-string.cpp classes/operators/literal-builtin-suffix-wins.cpp classes/operators/integer-suffix-mixed-case.cpp
+:tests: classes/operators/literal-block-scope.cpp classes/operators/literal-char.cpp classes/operators/literal-constexpr.cpp classes/operators/literal-float.cpp classes/operators/literal-in-namespace.cpp classes/operators/literal-integer.cpp classes/operators/literal-numeric-over-raw.cpp classes/operators/literal-raw-float.cpp classes/operators/literal-raw.cpp classes/operators/literal-string-concat-suffix.cpp classes/operators/literal-string.cpp classes/operators/literal-builtin-suffix-wins.cpp classes/operators/integer-suffix-mixed-case.cpp classes/operators/literal-raw-long-digits.cpp classes/operators/literal-operator-template-char-pack.cpp classes/operators/literal-operator-template-long-digits.cpp
 
 A literal with a suffix calls a literal operator with that suffix. A
 literal whose suffix is a form in the syntax of
@@ -262,7 +262,7 @@ A literal for which no matching literal operator exists is not valid.
 
 :::{rule} OPR-10
 :kind: reject
-:tests: classes/operators/literal-block-scope.cpp classes/operators/literal-bad-params.cpp classes/operators/literal-default-arg.cpp classes/operators/literal-extern-c.cpp classes/operators/literal-friend.cpp classes/operators/literal-member.cpp classes/operators/literal-string-concat-two-suffixes.cpp classes/operators/literal-three-params.cpp
+:tests: classes/operators/literal-block-scope.cpp classes/operators/literal-bad-params.cpp classes/operators/literal-default-arg.cpp classes/operators/literal-extern-c.cpp classes/operators/literal-friend.cpp classes/operators/literal-member.cpp classes/operators/literal-string-concat-two-suffixes.cpp classes/operators/literal-three-params.cpp classes/operators/literal-operator-template-char-pack.cpp classes/operators/literal-operator-template-long-digits.cpp classes/operators/literal-operator-template-head-not-char-pack.cpp
 
 A literal operator must:
 
@@ -345,8 +345,8 @@ Meters len = 2.5_m;
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 111
-of 114 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 115
+of 118 tests.
 
 ### Divergences
 

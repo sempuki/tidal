@@ -198,7 +198,7 @@ The defaults of the template parameters come before the function type
 
 :::{rule} DED-1
 :kind: required
-:tests: templates/deduction/call-each-argument.cpp templates/deduction/call-member-and-operator.cpp classes/constructors/return-owner-converts-to-base-owner.cpp classes/operators/call-operator-template.cpp classes/operators/static-call-operator-template.cpp declarations/initialization/list/braced-constructor-template.cpp templates/deduction/array-bound-from-converted-elements.cpp classes/copy-move/assign-from-lambda-through-constructor-template.cpp templates/packs/member-template-enclosing-pack-after-deduced.cpp templates/packs/member-template-enclosing-pack-before-deduced.cpp
+:tests: templates/deduction/call-each-argument.cpp templates/deduction/call-member-and-operator.cpp classes/constructors/return-owner-converts-to-base-owner.cpp classes/operators/call-operator-template.cpp classes/operators/static-call-operator-template.cpp declarations/initialization/list/braced-constructor-template.cpp templates/deduction/array-bound-from-converted-elements.cpp classes/copy-move/assign-from-lambda-through-constructor-template.cpp templates/packs/member-template-enclosing-pack-after-deduced.cpp templates/packs/member-template-enclosing-pack-before-deduced.cpp classes/initializer-lists/braced-beside-constructor-template-deduction-fails.cpp
 
 In a call that names a function template, {term}`deduction` finds the
 {term}`template arguments <template argument>` from the call arguments. The specialization that
@@ -583,7 +583,7 @@ them the same function type.
 
 :::{rule} DED-28
 :kind: required
-:tests: templates/deduction/substitution-nondependent-first.cpp templates/deduction/substitution-default-before-check.cpp
+:tests: templates/deduction/substitution-nondependent-first.cpp templates/deduction/substitution-default-before-check.cpp classes/initializer-lists/braced-beside-constructor-template-no-conversion.cpp
 
 After the defaults of the template parameters are substituted, each
 function parameter whose declared type holds no template parameter is
@@ -720,7 +720,7 @@ deleted. The body of the template is not instantiated.
 
 :::{rule} DED-35
 :kind: reject
-:tests: templates/deduction/explicit-fixed-not-deduced.cpp templates/deduction/adjust-reference-rvalue.cpp templates/deduction/forwarding-const-not.cpp templates/deduction/pack-not-last-call.cpp templates/deduction/context-address-mismatch.cpp templates/deduction/match-shape-mismatch.cpp templates/deduction/match-constant-type-differs.cpp templates/deduction/nondeduced-qualified-only.cpp templates/deduction/nondeduced-expression.cpp templates/deduction/nondeduced-decltype.cpp templates/deduction/nondeduced-array-by-value.cpp templates/deduction/default-argument-not-deduced.cpp templates/deduction/difference-derived-two-bases.cpp templates/deduction/braced-elements-differ.cpp templates/deduction/braced-empty.cpp templates/deduction/braced-other-parameter.cpp templates/deduction/combine-conflict.cpp templates/deduction/combine-conflict-one-pair.cpp templates/deduction/combine-missing.cpp templates/deduction/overload-set-two-match.cpp templates/deduction/overload-set-template.cpp templates/deduction/nondeduced-member-template-arguments.cpp templates/deduction/forwarding-nested-not.cpp templates/deduction/pack-not-last-other-position.cpp templates/packs/nondeduced-before-end-call.cpp templates/deduction/nondeduced-alias-unused-parameter.cpp templates/deduction/difference-qualification-not-reached-no-fallback.cpp
+:tests: templates/deduction/explicit-fixed-not-deduced.cpp templates/deduction/adjust-reference-rvalue.cpp templates/deduction/forwarding-const-not.cpp templates/deduction/pack-not-last-call.cpp templates/deduction/context-address-mismatch.cpp templates/deduction/match-shape-mismatch.cpp templates/deduction/match-constant-type-differs.cpp templates/deduction/nondeduced-qualified-only.cpp templates/deduction/nondeduced-expression.cpp templates/deduction/nondeduced-decltype.cpp templates/deduction/nondeduced-array-by-value.cpp templates/deduction/default-argument-not-deduced.cpp templates/deduction/difference-derived-two-bases.cpp templates/deduction/braced-elements-differ.cpp templates/deduction/braced-empty.cpp templates/deduction/braced-other-parameter.cpp templates/deduction/combine-conflict.cpp templates/deduction/combine-conflict-one-pair.cpp templates/deduction/combine-missing.cpp templates/deduction/overload-set-two-match.cpp templates/deduction/overload-set-template.cpp templates/deduction/nondeduced-member-template-arguments.cpp templates/deduction/forwarding-nested-not.cpp templates/deduction/pack-not-last-other-position.cpp templates/packs/nondeduced-before-end-call.cpp templates/deduction/nondeduced-alias-unused-parameter.cpp templates/deduction/difference-qualification-not-reached-no-fallback.cpp classes/initializer-lists/braced-beside-constructor-template-deduction-fails.cpp
 
 A use of a function template name must have a function after
 deduction. These uses are not valid:
@@ -876,8 +876,8 @@ Gadget* g = new (&arena) Gadget;  // both match, and ordering prefers neither: n
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 148
-of 161 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 150
+of 163 tests.
 
 ### Divergences
 

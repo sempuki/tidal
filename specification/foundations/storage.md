@@ -508,7 +508,7 @@ convert it to `void*`, for example to give the address to placement
 
 :::{rule} STG-28
 :kind: required
-:tests: foundations/storage/allocation-array-class-elements.cpp foundations/storage/allocation-array-class-elements-constant.cpp foundations/storage/allocation-array-unbuilt-element-constant.cpp foundations/storage/implicit-array-for-arithmetic.cpp foundations/storage/allocated-storage-typed-step-after-byte-offset.cpp
+:tests: foundations/storage/allocation-array-class-elements.cpp foundations/storage/allocation-array-class-elements-constant.cpp foundations/storage/allocation-array-unbuilt-element-constant.cpp foundations/storage/implicit-array-for-arithmetic.cpp foundations/storage/allocated-storage-typed-step-after-byte-offset.cpp foundations/storage/allocated-storage-byte-pointer-class-placement.cpp foundations/storage/allocated-storage-byte-pointer-destructor-class-placement.cpp
 
 If an allocation function creates an array of `T`, a `T*` from its
 result points to element 0 ({question}`Q-0323`). A `T*` made from the
@@ -904,8 +904,8 @@ static_assert(read_old() == 1);       // rejected (CE-9)
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 102
-of 108 tests. EDG runs no programs, so its results for the run tests say
+The results are in `tests/RESULTS.md`. All eight compilers agree on 104
+of 110 tests. EDG runs no programs, so its results for the run tests say
 only that the programs are valid.
 
 ### Divergences

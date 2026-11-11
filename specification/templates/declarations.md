@@ -259,7 +259,7 @@ can be left out.
 
 :::{rule} TPL-6
 :kind: required
-:tests: templates/declarations/constant-parameter-types.cpp templates/declarations/constant-parameter-void-pointer.cpp templates/declarations/constant-parameter-member-function-pointer-function-template.cpp
+:tests: templates/declarations/constant-parameter-types.cpp templates/declarations/constant-parameter-void-pointer.cpp templates/declarations/constant-parameter-member-function-pointer-function-template.cpp templates/declarations/constant-parameter-specialization-array-member.cpp templates/declarations/constant-parameter-specialization-array-member-constructor.cpp
 
 A {term}`constant parameter` is declared like a function parameter. Its
 type must be a {term}`structural type`, which is one of these:
@@ -294,7 +294,7 @@ an enumeration.
 
 :::{rule} TPL-7
 :kind: reject
-:tests: templates/declarations/constant-parameter-rvalue-reference.cpp templates/declarations/constant-parameter-void.cpp templates/declarations/constant-parameter-private-member.cpp templates/declarations/constant-parameter-mutable-member.cpp templates/declarations/constant-parameter-not-literal.cpp templates/declarations/constant-parameter-auto-void.cpp templates/declarations/constant-parameter-auto-not-structural.cpp templates/declarations/constant-parameter-no-constexpr-constructor.cpp
+:tests: templates/declarations/constant-parameter-rvalue-reference.cpp templates/declarations/constant-parameter-void.cpp templates/declarations/constant-parameter-private-member.cpp templates/declarations/constant-parameter-mutable-member.cpp templates/declarations/constant-parameter-not-literal.cpp templates/declarations/constant-parameter-auto-void.cpp templates/declarations/constant-parameter-auto-not-structural.cpp templates/declarations/constant-parameter-no-constexpr-constructor.cpp templates/declarations/constant-parameter-specialization-array-member.cpp templates/declarations/constant-parameter-specialization-array-member-constructor.cpp
 
 A constant parameter must not have a type that TPL-6 leaves out. Such
 types include:
@@ -833,8 +833,8 @@ template <class U> int pick(Host);                // rejected: the same template
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 127
-of 139 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 129
+of 141 tests.
 
 ### Divergences
 

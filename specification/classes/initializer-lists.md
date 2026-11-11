@@ -95,7 +95,7 @@ constructor, an initializer-list constructor receives an empty list.
 
 :::{rule} ILC-3
 :kind: required
-:tests: classes/initializer-lists/constexpr-list-ctor.cpp classes/initializer-lists/copy-from-single-same-class.cpp classes/initializer-lists/list-ctor-copy-list.cpp classes/initializer-lists/list-ctor-extra-default-params.cpp classes/initializer-lists/list-ctor-not-viable-fallback.cpp classes/initializer-lists/list-ctor-preferred-over-better-match.cpp classes/initializer-lists/list-ctor-preferred.cpp classes/initializer-lists/nested-braces-element.cpp classes/initializer-lists/explicit-not-candidate-equals.cpp classes/initializer-lists/braced-copy-list-ctor-other-element-type.cpp
+:tests: classes/initializer-lists/constexpr-list-ctor.cpp classes/initializer-lists/copy-from-single-same-class.cpp classes/initializer-lists/list-ctor-copy-list.cpp classes/initializer-lists/list-ctor-extra-default-params.cpp classes/initializer-lists/list-ctor-not-viable-fallback.cpp classes/initializer-lists/list-ctor-preferred-over-better-match.cpp classes/initializer-lists/list-ctor-preferred.cpp classes/initializer-lists/nested-braces-element.cpp classes/initializer-lists/explicit-not-candidate-equals.cpp classes/initializer-lists/braced-copy-list-ctor-other-element-type.cpp classes/initializer-lists/braced-beside-constructor-template-deduction-fails.cpp classes/initializer-lists/braced-beside-constructor-template-no-conversion.cpp
 
 Constructor selection from a braced list has two phases:
 
@@ -194,8 +194,8 @@ Point q{1.5, 2};       // rejected: narrowing
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 32
-of 34 tests. The tests declare a minimal `std::initializer_list`.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 34
+of 36 tests. The tests declare a minimal `std::initializer_list`.
 
 ### Divergences
 
