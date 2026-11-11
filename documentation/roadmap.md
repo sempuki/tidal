@@ -254,17 +254,21 @@ RV6).
 ## Phase 14: answer the open rows, review phase 13, and set the gate for the rewrite
 
 Decision 0062 (provisional) adopts this phase from the eleventh round of
-clean-room roadmaps (`reports/clean-room/roadmap-11/`).
+clean-room roadmaps (`reports/clean-room/roadmap-11/`). Every item is
+done. Open questions went from 180 to 185: the phase opened 6 (Q-0429
+to Q-0434) and settled 1 (Q-0422, through item RV7). Front-end round 25
+ended with 104 tests that fail their check, so the gate of decision 0062
+does not hold.
 
 | Item | Work | Prerequisites |
 |---|---|---|
-| T3 | Tests for the round 11 reductions and probes, and the round 11 programs and clean first tries as program tests | none |
-| F4 | Answer the 24 `open` rows and G161 and G162, INST-33, DEP-4, and INST-5 first; text for a typed pointer over bytes | none |
-| FE | Front-end round 25: the T3 and F4 tests, the TR-13 stop, missed rejects outside templates, and a cause for each failure that needs the rewrite | T3; F4 for its tests |
-| RV7 | A gap review of the 22 rules and principles changed after RV6, the rest of 9c009448, F4's text, and a read of the RV6 repair diff; then repairs and a read of their diff | F4 |
-| RP | Rewrite preparation with no code change: a design document, a grammar start symbol, and the template model | none |
-| R8 | Records: front-end ledger hashes and a check; host-only claims in the prompts; the Propose portfolio refreshed | none |
-| E | Port suite P3 on pipelines and events; Implement I7 on class template argument deduction | P3 after FE; I7 none |
+| T3 | Done: tests for the round 11 reductions and probes, and the round 11 programs and clean first tries as program tests | none |
+| F4 | Done: answer the 24 `open` rows and G161 and G162, INST-33, DEP-4, and INST-5 first; text for a typed pointer over bytes | none |
+| FE | Done: front-end round 25: the T3 and F4 tests, the TR-13 stop, missed rejects outside templates, and a cause for each failure that needs the rewrite | T3; F4 for its tests |
+| RV7 | Done: a gap review of the 22 rules and principles changed after RV6, the rest of 9c009448, F4's text, and a read of the RV6 repair diff; then repairs and a read of their diff | F4 |
+| RP | Done: rewrite preparation with no code change: a design document, a grammar start symbol, and the template model | none |
+| R8 | Done: records: front-end ledger hashes and a check; host-only claims in the prompts; the Propose portfolio refreshed | none |
+| E | Done: port suite P3 on pipelines and events; Implement I7 on class template argument deduction | P3 after FE; I7 none |
 
 ## Parallel lanes
 
