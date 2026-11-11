@@ -344,6 +344,29 @@ the run status second (`run-pass`, the run statuses above, and
 | `src/consteval.rs` | constant evaluation, as a client of the interpreter with the limits of `constant-evaluation.md` |
 | `src/conform.rs` | the conformance harness |
 
+## The rewrite
+
+`next/` holds the rewrite (decision 0060, `DESIGN-rewrite.md`), a crate
+of its own with its own `Cargo.lock` and `target/`. Build steps 1 and 2
+are in place: the source map, the diagnostics, the lexer, the parser
+with the `Names` oracle, and the driver. The old front end in `src/`
+stays the front end of record and judges every test.
+
+```sh
+cd next
+cargo build --release
+cargo test --release
+target/release/tidal-next parse FILE...   # tree, or stop LINE: why
+target/release/tidal-next dump FILE       # the syn trees
+target/release/tidal-next lex FILE...     # one token a line
+```
+
+`tidal-next check` gives `reject` with a TR-12 error when the parser
+stops and `unsupported` when the unit parses, since analysis comes at
+build step 3. `tidal-fe lex` prints the same form as `tidal-next lex`,
+and `tools/frontend_check.py --next` compares the two, runs the unit
+tests, and counts the tests that parse as their outcome needs.
+
 ## The conditional operator
 
 When an operand has class type, `class_cond` in `src/expr.rs` follows
@@ -390,7 +413,7 @@ that form (DED-12).
 Partial ordering in a call gives each member template an object
 parameter (ORD-6). For two members, the object parameters name the
 more derived of the two classes, so a member that a using declaration
-brings in from a base counts as a member of the derived class. For the
+brings in from a base counts as the derived class's own member. For the
 whole function types of ORD-9, a `T&&` in one type takes an lvalue
 reference `X&` of the other as `T = X&` (G146). A requires clause of a
 member of a local class in a specialization is parsed with its errors

@@ -1,0 +1,6 @@
+# The tests that the new front end (frontend/next/, tidal-next) owns
+# (decision 0064, frontend/DESIGN-rewrite.md section 5). tools/frontend_check.py
+# reads this file with --next. A row is a test path under tests/, the build step
+# that took the test over, and the commit, separated by tabs. A line that starts
+# with # is a comment. The list has no row while the old front end is the front
+# end of record for every test.

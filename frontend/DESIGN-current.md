@@ -1,7 +1,8 @@
 # Design of the current front end
 
 This document describes the front end in `frontend/src/` as it is after
-front-end round 24 (`53577f27`, the last commit that changed `src/`).
+front-end round 26 (`a91ccc77`) and the `lex` subcommand of decision
+0064, item RW.
 It names the stages, the data that each stage passes on, and the files
 that hold each page's rules. Decision 0060 asks the rewrite for a
 design document of its own. This document is the description of what
@@ -9,7 +10,7 @@ the rewrite replaces. `README.md` gives the use of the binary, the
 harness, and some procedures (the conditional operator, templates,
 bytes), and this document does not repeat them.
 
-The source is 51375 lines of Rust in 28 files. No file has unit tests.
+The source is 52510 lines of Rust in 28 files. No file has unit tests.
 The conformance harness (`src/conform.rs`, `tidal-fe conform`) is the
 only test.
 
@@ -107,22 +108,22 @@ substitution failed (see "The template record").
 
 | File | Lines | What it holds |
 |---|---|---|
-| `parser.rs` | 2396 | `P` and its records: `Decl`, `DK`, `VarInfo`, `FuncInfo`, `FieldInfo`, `ClassInfo`, `EnumInfo`, `ScopeInfo`, `FnCtx`; scopes; unqualified, qualified, and member lookup |
-| `decl.rs` | 3154 | decl-specifiers (`DeclSpec`), declarators (`Declarator`, `DOp`), type-ids, the current-instantiation test of DEP-15 |
-| `decl2.rs` | 7190 | declarations at namespace, class, and block scope; functions and their definitions; template heads; explicit specializations and instantiations; deferred bodies; `parse_translation_unit` |
-| `class.rs` | 1615 | class and enumeration specifiers, base lists, virtual functions |
-| `stmt.rs` | 1896 | statements, jumps, `switch`, range-`for`, statement attributes |
-| `expr.rs` | 7726 | expression parsing by precedence, the built-in operators, member access, lambdas, `new` and `delete`, the conditional operator |
-| `expr2.rs` | 2829 | calls, casts, initialization in each form, list initialization, `auto` deduction |
-| `ics.rs` | 1582 | implicit conversion sequences (`Ics`) and their ranking; `ics_select` for calls |
-| `ovl.rs` | 1437 | overload resolution for operators, constructors, calls on class objects, and the address of an overload set |
+| `parser.rs` | 2421 | `P` and its records: `Decl`, `DK`, `VarInfo`, `FuncInfo`, `FieldInfo`, `ClassInfo`, `EnumInfo`, `ScopeInfo`, `FnCtx`; scopes; unqualified, qualified, and member lookup |
+| `decl.rs` | 3224 | decl-specifiers (`DeclSpec`), declarators (`Declarator`, `DOp`), type-ids, the current-instantiation test of DEP-15 |
+| `decl2.rs` | 7282 | declarations at namespace, class, and block scope; functions and their definitions; template heads; explicit specializations and instantiations; deferred bodies; `parse_translation_unit` |
+| `class.rs` | 1752 | class and enumeration specifiers, base lists, virtual functions |
+| `stmt.rs` | 1912 | statements, jumps, `switch`, range-`for`, statement attributes |
+| `expr.rs` | 8051 | expression parsing by precedence, the built-in operators, member access, lambdas, `new` and `delete`, the conditional operator |
+| `expr2.rs` | 2985 | calls, casts, initialization in each form, list initialization, `auto` deduction |
+| `ics.rs` | 1585 | implicit conversion sequences (`Ics`) and their ranking; `ics_select` for calls |
+| `ovl.rs` | 1474 | overload resolution for operators, constructors, calls on class objects, and the address of an overload set |
 | `special.rs` | 1083 | implicit special member functions: declared, deleted, trivial |
-| `layout.rs` | 421 | class layout on the matrix targets |
+| `layout.rs` | 434 | class layout on the matrix targets |
 | `dcmp.rs` | 313 | bodies of defaulted comparisons, made at the first use |
-| `templ.rs` | 4310 | the template record, argument lists, replay, selection of specializations, deduction, partial ordering, packs, lazy bodies |
-| `cons.rs` | 1594 | concepts and constraints: normal forms, satisfaction, subsumption, requires expressions, abbreviated templates |
-| `ctad.rs` | 1153 | class template argument deduction through guides |
-| `types.rs` | 529 | `Ty`, `QTy`, `FnTy`, the dependent forms `Dep`, `TArg`, `TVal`, `CVal`, sizes and alignments |
+| `templ.rs` | 4360 | the template record, argument lists, replay, selection of specializations, deduction, partial ordering, packs, lazy bodies |
+| `cons.rs` | 1605 | concepts and constraints: normal forms, satisfaction, subsumption, requires expressions, abbreviated templates |
+| `ctad.rs` | 1214 | class template argument deduction through guides |
+| `types.rs` | 531 | `Ty`, `QTy`, `FnTy`, the dependent forms `Dep`, `TArg`, `TVal`, `CVal`, sizes and alignments |
 | `ast.rs` | 408 | `Expr`, `EK`, `Conv`, `Cat`, `Stmt`, `Handler` |
 | `diag.rs` | 59 | `Diag`, `Diags`, `Severity` |
 
@@ -166,9 +167,9 @@ final overrider of a virtual call from the dynamic type.
 | File | Lines | What it holds |
 |---|---|---|
 | `interp/mod.rs` | 1479 | `Machine`, `Val`, `Ptr`, `Obj`, `Frame`, `Cleanup`, `Stop`, `Choice`, the catch stack |
-| `interp/expr.rs` | 4815 | expressions: places, values, conversions, operators, calls, initialization, `new`, `delete`, `throw`, `dynamic_cast` |
+| `interp/expr.rs` | 4865 | expressions: places, values, conversions, operators, calls, initialization, `new`, `delete`, `throw`, `dynamic_cast` |
 | `interp/stmt.rs` | 996 | statements, blocks and their cleanups, `goto`, `switch`, try blocks, static locals |
-| `interp/bytes.rs` | 1156 | the byte view of objects, addresses, `reinterpret_cast`, the access check of STG-14 |
+| `interp/bytes.rs` | 1184 | the byte view of objects, addresses, `reinterpret_cast`, the access check of STG-14 |
 | `interp/run.rs` | 538 | linking, the run of a program, the exploration of choice points |
 | `interp/f80.rs` | 360 | the x87 format of `long double` |
 | `consteval.rs` | 310 | constant evaluation as a client of the machine |
@@ -396,12 +397,12 @@ median, and one file names the rules of many pages:
 
 | File | Pages whose rules it names |
 |---|---|
-| `expr.rs` | 65 |
-| `decl2.rs` | 52 |
+| `expr.rs` | 66 |
+| `decl2.rs` | 53 |
 | `interp/expr.rs` | 48 |
-| `parser.rs` | 46 |
+| `parser.rs` | 48 |
 | `expr2.rs` | 37 |
-| `decl.rs` | 33 |
+| `decl.rs` | 35 |
 
 The map by page, with the number of rule IDs that each file names:
 
@@ -411,85 +412,85 @@ The map by page, with the number of rule IDs that each file names:
 | `foundations/conversions` | CONV | `expr.rs` 26, `interp/expr.rs` 9, `ics.rs` 3, `types.rs` 2 |
 | `foundations/evaluation-order` | SEQ | `interp/expr.rs` 14, `interp/mod.rs` 6, `interp/run.rs` 2, `stmt.rs` 2 |
 | `foundations/keywords` | KW | none |
-| `foundations/language-support` | LSUP | `interp/expr.rs` 10, `expr2.rs` 6, `dcmp.rs` 4, `interp/bytes.rs` 3, and 6 more |
+| `foundations/language-support` | LSUP | `expr2.rs` 10, `interp/expr.rs` 10, `dcmp.rs` 4, `interp/bytes.rs` 3, and 6 more |
 | `foundations/names` | NAM | `parser.rs` 34, `expr.rs` 32, `decl.rs` 24, `decl2.rs` 22, and 4 more |
 | `foundations/objects` | OBJ | `interp/mod.rs` 19, `interp/expr.rs` 11, `interp/stmt.rs` 8, `interp/run.rs` 5, and 1 more |
 | `foundations/odr` | INC, ODR | `decl2.rs` 13, `lexer.rs` 9, `expr.rs` 4, `interp/expr.rs` 2, and 2 more |
-| `foundations/storage` | STG | `interp/expr.rs` 54, `interp/bytes.rs` 38, `interp/mod.rs` 18, `expr.rs` 4, and 3 more |
+| `foundations/storage` | STG | `interp/expr.rs` 56, `interp/bytes.rs` 40, `interp/mod.rs` 18, `expr.rs` 4, and 4 more |
 | `foundations/translation` | TR | `decl2.rs` 9, `interp/run.rs` 7, `expr.rs` 4, `interp/mod.rs` 4, and 11 more |
 | `foundations/types` | TYP | `interp/bytes.rs` 4, `types.rs` 3, `decl.rs` 2, `ast.rs` 1, and 4 more |
 | `foundations/values` | VC | `expr.rs` 7, `interp/expr.rs` 6, `interp/mod.rs` 5, `interp/stmt.rs` 1 |
-| `expressions/additive` | ADD | `interp/expr.rs` 17, `expr.rs` 7, `interp/bytes.rs` 3, `interp/mod.rs` 3 |
+| `expressions/additive` | ADD | `interp/expr.rs` 22, `expr.rs` 7, `interp/bytes.rs` 3, `interp/mod.rs` 3 |
 | `expressions/assignment` | ASN | `expr.rs` 12 |
 | `expressions/bitwise` | BIT | `expr.rs` 7 |
-| `expressions/casts` | CAST | `expr2.rs` 20, `interp/bytes.rs` 15, `interp/mod.rs` 5, `ast.rs` 3, and 3 more |
+| `expressions/casts` | CAST | `expr2.rs` 23, `interp/bytes.rs` 15, `interp/mod.rs` 5, `ast.rs` 3, and 3 more |
 | `expressions/comma` | COMMA | `expr.rs` 4, `stmt.rs` 3 |
 | `expressions/comparison` | CMP | `expr.rs` 43, `interp/expr.rs` 11, `interp/bytes.rs` 2, `interp/run.rs` 2, and 2 more |
 | `expressions/conditional` | COND | `expr.rs` 46, `interp/expr.rs` 1 |
-| `expressions/decltype` | DTY, UNEV | `decl.rs` 2, `interp/expr.rs` 1 |
-| `expressions/lambdas` | LAM | `expr.rs` 57, `parser.rs` 8, `interp/expr.rs` 6, `special.rs` 2, and 5 more |
+| `expressions/decltype` | DTY, UNEV | `decl.rs` 2, `expr.rs` 2, `interp/expr.rs` 1 |
+| `expressions/lambdas` | LAM | `expr.rs` 57, `parser.rs` 9, `interp/expr.rs` 8, `special.rs` 2, and 5 more |
 | `expressions/logical` | LOG | `expr.rs` 9, `interp/expr.rs` 2, `lexer.rs` 1 |
-| `expressions/member-pointers` | MPTR | `expr.rs` 17, `interp/expr.rs` 12, `expr2.rs` 5, `decl.rs` 4, and 2 more |
+| `expressions/member-pointers` | MPTR | `expr.rs` 17, `interp/expr.rs` 12, `expr2.rs` 5, `decl.rs` 4, and 3 more |
 | `expressions/multiplicative` | MUL | `interp/expr.rs` 14, `expr.rs` 4, `interp/bytes.rs` 2, `interp/f80.rs` 1 |
-| `expressions/new-delete` | NEW | `expr.rs` 71, `interp/expr.rs` 56, `ast.rs` 9, `interp/mod.rs` 5, and 3 more |
+| `expressions/new-delete` | NEW | `expr.rs` 75, `interp/expr.rs` 56, `ast.rs` 9, `interp/mod.rs` 5, and 3 more |
 | `expressions/postfix` | PFX | `expr.rs` 15, `interp/expr.rs` 13, `expr2.rs` 11, `interp/mod.rs` 2 |
-| `expressions/primary` | PRIM | `expr.rs` 32, `lexer.rs` 31, `templ.rs` 7, `interp/expr.rs` 6, and 3 more |
+| `expressions/primary` | PRIM | `lexer.rs` 35, `expr.rs` 34, `templ.rs` 7, `interp/expr.rs` 6, and 3 more |
 | `expressions/shift` | SHF | `expr.rs` 6, `interp/expr.rs` 3 |
-| `expressions/unary` | UN | `expr.rs` 28, `interp/expr.rs` 9, `interp/mod.rs` 2, `expr2.rs` 1 |
+| `expressions/unary` | UN | `expr.rs` 30, `interp/expr.rs` 9, `interp/mod.rs` 2, `expr2.rs` 1, and 1 more |
 | `statements/blocks` | STMT | `stmt.rs` 6, `decl2.rs` 1 |
 | `statements/if` | IF | `stmt.rs` 34, `interp/stmt.rs` 8, `decl2.rs` 4, `interp/run.rs` 1, and 1 more |
-| `statements/jumps` | JMP | `stmt.rs` 19, `decl2.rs` 3, `expr.rs` 2, `special.rs` 2, and 1 more |
-| `statements/loops` | LOOP | `stmt.rs` 12, `interp/stmt.rs` 1 |
-| `statements/range-for` | RFOR | `stmt.rs` 17, `interp/stmt.rs` 1, `parser.rs` 1 |
+| `statements/jumps` | JMP | `stmt.rs` 20, `decl2.rs` 3, `expr.rs` 2, `special.rs` 2, and 1 more |
+| `statements/loops` | LOOP | `stmt.rs` 13, `interp/stmt.rs` 1 |
+| `statements/range-for` | RFOR | `stmt.rs` 20, `interp/stmt.rs` 1, `parser.rs` 1 |
 | `statements/switch` | SW | `stmt.rs` 31, `interp/stmt.rs` 2, `decl2.rs` 1, `expr.rs` 1, and 1 more |
-| `declarations/alignment` | ALN | `decl.rs` 15, `decl2.rs` 8, `class.rs` 6, `interp/bytes.rs` 1, and 3 more |
+| `declarations/alignment` | ALN | `decl.rs` 15, `decl2.rs` 10, `class.rs` 6, `interp/bytes.rs` 1, and 3 more |
 | `declarations/attributes` | ATTR | `decl2.rs` 22, `stmt.rs` 17, `decl.rs` 12, `parser.rs` 7, and 5 more |
-| `declarations/auto` | AUTO | `expr2.rs` 27, `decl2.rs` 12, `decl.rs` 4, `expr.rs` 2, and 2 more |
-| `declarations/constexpr` | CEV, CINIT, CX | `decl2.rs` 28, `expr2.rs` 6, `consteval.rs` 6, `expr.rs` 3, and 2 more |
-| `declarations/declarators` | CV, DCL | `decl.rs` 40, `decl2.rs` 15, `expr.rs` 9, `interp/mod.rs` 4, and 8 more |
+| `declarations/auto` | AUTO | `expr2.rs` 27, `decl2.rs` 12, `decl.rs` 4, `expr.rs` 3, and 2 more |
+| `declarations/constexpr` | CEV, CINIT, CX | `decl2.rs` 28, `consteval.rs` 6, `expr2.rs` 6, `expr.rs` 3, and 2 more |
+| `declarations/declarators` | CV, DCL | `decl.rs` 45, `decl2.rs` 15, `expr.rs` 10, `interp/mod.rs` 4, and 9 more |
 | `declarations/enumerations` | ENUM | `class.rs` 22, `expr.rs` 11, `decl2.rs` 5, `interp/expr.rs` 5, and 2 more |
-| `declarations/exception-specifications` | EXS | `decl.rs` 7, `special.rs` 5, `expr.rs` 4, `class.rs` 2, and 1 more |
+| `declarations/exception-specifications` | EXS | `decl.rs` 9, `special.rs` 5, `expr.rs` 4, `decl2.rs` 3, and 2 more |
 | `declarations/functions/default-arguments` | DEFARG | `decl2.rs` 21, `decl.rs` 5, `expr2.rs` 2, `parser.rs` 2, and 1 more |
-| `declarations/functions/definitions` | FN | `decl2.rs` 24, `expr.rs` 2, `interp/expr.rs` 2, `interp/run.rs` 1, and 1 more |
+| `declarations/functions/definitions` | FN | `decl2.rs` 24, `expr.rs` 2, `interp/expr.rs` 2, `interp/run.rs` 1, and 2 more |
 | `declarations/functions/deleted` | DEL | `decl2.rs` 7, `expr.rs` 6, `expr2.rs` 4, `ovl.rs` 3, and 3 more |
 | `declarations/functions/return-deduction` | RET | `decl2.rs` 6, `stmt.rs` 5, `expr.rs` 4 |
 | `declarations/initialization/forms` | INIT | `expr2.rs` 15, `interp/expr.rs` 3, `interp/mod.rs` 3, `expr.rs` 2, and 4 more |
-| `declarations/initialization/list` | LIST | `expr2.rs` 41, `expr.rs` 4, `ics.rs` 3, `interp/expr.rs` 2, and 2 more |
-| `declarations/initialization/references` | REF | `expr.rs` 15, `expr2.rs` 12, `interp/expr.rs` 8, `interp/stmt.rs` 4, and 3 more |
+| `declarations/initialization/list` | LIST | `expr2.rs` 45, `expr.rs` 4, `ics.rs` 3, `interp/expr.rs` 2, and 3 more |
+| `declarations/initialization/references` | REF | `expr.rs` 17, `expr2.rs` 12, `interp/expr.rs` 8, `interp/stmt.rs` 4, and 3 more |
 | `declarations/initialization/static` | SINIT | `interp/run.rs` 4, `decl2.rs` 1, `interp/stmt.rs` 1, `parser.rs` 1 |
 | `declarations/inline` | INL | `decl2.rs` 9, `decl.rs` 2, `parser.rs` 1 |
 | `declarations/linkage-specifications` | LSP | `decl2.rs` 17, `parser.rs` 4, `interp/run.rs` 3, `ics.rs` 1, and 1 more |
 | `declarations/namespaces` | NS | `decl2.rs` 27, `class.rs` 3, `parser.rs` 3 |
 | `declarations/static-assert` | SA | `decl2.rs` 5, `expr.rs` 1, `stmt.rs` 1 |
-| `declarations/storage-linkage` | LNK, STO | `decl2.rs` 21, `interp/expr.rs` 4, `interp/stmt.rs` 3, `interp/mod.rs` 2, and 3 more |
+| `declarations/storage-linkage` | LNK, STO | `decl2.rs` 21, `interp/expr.rs` 4, `interp/stmt.rs` 3, `decl.rs` 2, and 3 more |
 | `declarations/structured-bindings` | SB | `decl2.rs` 47, `expr.rs` 2, `interp/expr.rs` 2, `stmt.rs` 2, and 1 more |
-| `declarations/type-names` | TYN | `class.rs` 21, `decl2.rs` 17, `decl.rs` 3, `expr.rs` 3, and 3 more |
+| `declarations/type-names` | TYN | `class.rs` 24, `decl2.rs` 17, `decl.rs` 3, `expr.rs` 3, and 3 more |
 | `declarations/volatile` | VOL | `expr.rs` 5, `interp/bytes.rs` 3, `decl2.rs` 2, `special.rs` 2, and 1 more |
 | `classes/access` | ACC | `expr.rs` 24, `parser.rs` 19, `decl2.rs` 13, `expr2.rs` 10, and 5 more |
-| `classes/comparisons` | DCMP | `ovl.rs` 14, `dcmp.rs` 11, `decl2.rs` 5, `interp/expr.rs` 2, and 1 more |
-| `classes/constructors` | CTOR, DTOR | `decl2.rs` 42, `expr.rs` 27, `special.rs` 21, `interp/expr.rs` 10, and 9 more |
-| `classes/conversion-functions` | CVF | `decl2.rs` 10, `expr2.rs` 7, `expr.rs` 6, `parser.rs` 3, and 3 more |
+| `classes/comparisons` | DCMP | `ovl.rs` 14, `dcmp.rs` 11, `decl2.rs` 7, `interp/expr.rs` 2, and 1 more |
+| `classes/constructors` | CTOR, DTOR | `decl2.rs` 42, `expr.rs` 29, `special.rs` 21, `expr2.rs` 12, and 9 more |
+| `classes/conversion-functions` | CVF | `decl2.rs` 10, `expr2.rs` 9, `expr.rs` 8, `parser.rs` 3, and 4 more |
 | `classes/copy-move` | CPY | `special.rs` 46, `expr.rs` 8, `interp/expr.rs` 5, `ics.rs` 3, and 5 more |
 | `classes/derived` | DER | `class.rs` 13, `decl2.rs` 13, `expr2.rs` 8, `parser.rs` 7, and 6 more |
-| `classes/initializer-lists` | ILC | `expr2.rs` 11, `ovl.rs` 8, `ics.rs` 2, `ctad.rs` 1, and 2 more |
-| `classes/members` | CLS | `decl2.rs` 45, `layout.rs` 13, `expr.rs` 8, `decl.rs` 5, and 8 more |
-| `classes/operators` | OPR | `expr.rs` 18, `decl2.rs` 16, `ovl.rs` 6, `lexer.rs` 4, and 3 more |
+| `classes/initializer-lists` | ILC | `expr2.rs` 12, `ovl.rs` 9, `ics.rs` 2, `ctad.rs` 1, and 2 more |
+| `classes/members` | CLS | `decl2.rs` 46, `layout.rs` 13, `expr.rs` 8, `decl.rs` 6, and 8 more |
+| `classes/operators` | OPR | `expr.rs` 28, `decl2.rs` 19, `ovl.rs` 6, `lexer.rs` 5, and 3 more |
 | `classes/unions` | BF, UNI | `decl2.rs` 29, `interp/expr.rs` 24, `expr.rs` 12, `special.rs` 12, and 8 more |
-| `classes/virtual` | VIRT | `class.rs` 24, `decl2.rs` 21, `expr2.rs` 14, `interp/expr.rs` 12, and 2 more |
-| `overloading/conversion-sequences` | ICS | `ics.rs` 94, `expr2.rs` 19, `ovl.rs` 10, `expr.rs` 5, and 3 more |
-| `overloading/overload-resolution` | OVL | `ovl.rs` 65, `expr2.rs` 48, `ics.rs` 40, `expr.rs` 23, and 7 more |
-| `templates/arguments` | TARG | `templ.rs` 60, `decl.rs` 6, `expr.rs` 3, `cons.rs` 2, and 4 more |
-| `templates/class-template-deduction` | CTAD | `ctad.rs` 59, `decl2.rs` 8, `decl.rs` 3, `expr.rs` 3, and 3 more |
+| `classes/virtual` | VIRT | `class.rs` 28, `decl2.rs` 21, `expr2.rs` 14, `interp/expr.rs` 12, and 2 more |
+| `overloading/conversion-sequences` | ICS | `ics.rs` 94, `expr2.rs` 23, `ovl.rs` 12, `expr.rs` 8, and 4 more |
+| `overloading/overload-resolution` | OVL | `ovl.rs` 66, `expr2.rs` 49, `ics.rs` 40, `expr.rs` 27, and 7 more |
+| `templates/arguments` | TARG | `templ.rs` 63, `decl.rs` 6, `expr.rs` 3, `types.rs` 3, and 4 more |
+| `templates/class-template-deduction` | CTAD | `ctad.rs` 62, `decl2.rs` 14, `expr.rs` 5, `parser.rs` 4, and 3 more |
 | `templates/concepts` | CPT | `cons.rs` 40, `decl2.rs` 27, `decl.rs` 8, `expr.rs` 5, and 1 more |
-| `templates/constraints` | CNS | `cons.rs` 47, `decl2.rs` 24, `templ.rs` 9, `expr.rs` 6, and 4 more |
-| `templates/declarations` | TPL | `decl2.rs` 72, `templ.rs` 12, `parser.rs` 7, `class.rs` 6, and 4 more |
-| `templates/deduction` | DED | `templ.rs` 61, `expr.rs` 15, `decl2.rs` 13, `expr2.rs` 9, and 8 more |
+| `templates/constraints` | CNS | `cons.rs` 48, `decl2.rs` 24, `expr.rs` 9, `templ.rs` 9, and 4 more |
+| `templates/declarations` | TPL | `decl2.rs` 73, `templ.rs` 12, `parser.rs` 7, `class.rs` 6, and 4 more |
+| `templates/deduction` | DED | `templ.rs` 62, `expr.rs` 15, `decl2.rs` 13, `expr2.rs` 9, and 8 more |
 | `templates/dependent-names` | DEP | `expr.rs` 37, `decl.rs` 31, `parser.rs` 17, `templ.rs` 11, and 3 more |
-| `templates/instantiation` | INST | `decl2.rs` 75, `templ.rs` 15, `parser.rs` 10, `expr.rs` 6, and 6 more |
+| `templates/instantiation` | INST | `decl2.rs` 79, `templ.rs` 16, `parser.rs` 10, `expr.rs` 6, and 6 more |
 | `templates/ordering` | ORD | `templ.rs` 25, `cons.rs` 3, `ovl.rs` 3, `decl2.rs` 2, and 3 more |
-| `templates/packs` | PACK | `decl.rs` 14, `expr.rs` 12, `decl2.rs` 9, `templ.rs` 9, and 3 more |
+| `templates/packs` | PACK | `decl.rs` 15, `expr.rs` 12, `decl2.rs` 9, `templ.rs` 9, and 3 more |
 | `templates/specialization` | TSP | `decl2.rs` 47, `class.rs` 20, `templ.rs` 9, `decl.rs` 3, and 1 more |
-| `exceptions/handlers` | TRY | `decl2.rs` 26, `interp/stmt.rs` 16, `interp/expr.rs` 4, `stmt.rs` 4, and 2 more |
+| `exceptions/handlers` | TRY | `decl2.rs` 28, `interp/stmt.rs` 16, `interp/expr.rs` 4, `stmt.rs` 4, and 2 more |
 | `exceptions/throw` | THR | `special.rs` 9, `interp/expr.rs` 8, `interp/stmt.rs` 6, `interp/mod.rs` 3, and 3 more |
 | `exceptions/unwinding` | UNW | `interp/mod.rs` 20, `interp/expr.rs` 14, `interp/run.rs` 9, `interp/stmt.rs` 4, and 3 more |
 
@@ -500,13 +501,13 @@ lines. Seven files are longer now:
 
 | File | Lines | Pages whose rules it names | Chapters with the most of those pages |
 |---|---|---|---|
-| `expr.rs` | 7726 | 65 | declarations 16, expressions 16, templates 10, classes 9 |
-| `decl2.rs` | 7190 | 52 | declarations 20, templates 10, classes 9, foundations 5 |
-| `interp/expr.rs` | 4815 | 48 | expressions 14, declarations 11, foundations 9, classes 9 |
-| `templ.rs` | 4310 | 22 | templates 10, expressions 4, foundations 3, classes 2 |
-| `decl.rs` | 3154 | 33 | declarations 10, templates 9, classes 6, foundations 4 |
-| `expr2.rs` | 2829 | 37 | declarations 10, classes 10, expressions 6, foundations 5 |
-| `parser.rs` | 2396 | 46 | declarations 14, templates 11, classes 10, foundations 4 |
+| `expr.rs` | 8051 | 66 | expressions 17, declarations 16, templates 10, classes 9 |
+| `decl2.rs` | 7282 | 53 | declarations 21, templates 10, classes 9, foundations 5 |
+| `interp/expr.rs` | 4865 | 48 | expressions 14, declarations 11, classes 9, foundations 9 |
+| `templ.rs` | 4360 | 24 | templates 10, expressions 4, foundations 3, classes 2 |
+| `decl.rs` | 3224 | 35 | declarations 10, templates 9, classes 7, foundations 5 |
+| `expr2.rs` | 2985 | 37 | classes 10, declarations 10, expressions 6, foundations 5 |
+| `parser.rs` | 2421 | 48 | declarations 15, templates 11, classes 10, foundations 4 |
 
 The splits `decl.rs` and `decl2.rs`, and `expr.rs` and `expr2.rs`, are
 by size. A page's rules do not follow the split.
@@ -537,6 +538,9 @@ by size. A page's rules do not follow the split.
   its fields. A field that a replay should save and does not is a
   fault that only some programs show.
 - **Unit tests.** None. `tidal-fe dump FILE [NAME]` prints the trees of
-  one function, as a development aid.
+  one function, as a development aid. `tidal-fe lex FILE...` prints the
+  tokens one a line, with the lexer's diagnostics, in the form that the
+  new front end's `tidal-next lex` prints; `tools/frontend_check.py
+  --next` compares the two. No check reads it for a test status.
 - **The run.** `tidal-fe run` runs on a thread with a 512 MiB stack,
   because the interpreter recurses on the program's own recursion.

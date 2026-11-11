@@ -226,6 +226,29 @@ fn main() {
             run_command(&files, args.iter().any(|a| a == "--m32"))
         }
         "conform" => conform::run(&args[2..]),
+        "lex" => {
+            // One line for each token and each lexer diagnostic, for the
+            // lex count of tools/frontend_check.py --next. The new front
+            // end's `tidal-next lex` prints the same form. No check reads
+            // this subcommand's output for a test status.
+            let files: Vec<&String> = args[2..].iter().filter(|a| !a.starts_with('-')).collect();
+            for path in &files {
+                let src = std::fs::read_to_string(path).unwrap_or_default();
+                let mut d = diag::Diags::default();
+                let toks = lexer::lex_file(&src, Some(std::path::Path::new(path.as_str())), &mut d);
+                if files.len() > 1 {
+                    println!("== {}", path);
+                }
+                let esc = |s: &str| s.replace('\\', "\\\\").replace('\n', "\\n").replace('\t', "\\t").replace('\r', "\\r");
+                for t in &toks {
+                    println!("{:?}\t{}\t{}\t{:?}", t.kind, esc(&t.text), t.line, t.lit);
+                }
+                for x in &d.list {
+                    println!("diag\t{:?}\t{:?}\t{}\t{}", x.sev, x.rule, x.line, x.msg);
+                }
+            }
+            std::process::exit(0)
+        }
         _ => {
             eprintln!("unknown command {}", args[1]);
             std::process::exit(64);

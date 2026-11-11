@@ -8,9 +8,12 @@ Propose design be prototyped. `DESIGN-current.md` describes the code
 that the rewrite replaces, and this document calls that code "the old
 front end".
 
-Decision 0063 starts no rewrite code before the gate of decisions 0062
-and 0063 holds. This document has no code. The structures below are
-sketches, and the Rust types are fixed when the code is written.
+Decision 0064 starts the rewrite as item RW. Build steps 1 and 2 are in
+`frontend/next/`: the crate, `source`, `diag`, `lex`, the driver, the
+`syntax` core, the `syntax.rs` part of each page with a Syntax segment,
+and the declare pass that answers the parser's questions. The
+structures of the later steps below are sketches, and their Rust types
+are fixed when their code is written.
 
 ## 1. Where the rewrite lives
 
@@ -20,7 +23,7 @@ The new front end is a crate of its own beside the old one:
 frontend/
   src/                the old front end (tidal-fe)
   next/               the new front end (tidal-next)
-    Cargo.toml
+    Cargo.toml        Cargo.lock and target/ of its own
     src/
       main.rs         the driver
       source/ diag/ lex/ syntax/ sem/ target/ machine/ conform/   core
@@ -31,8 +34,15 @@ frontend/
 
 `tidal-next` takes the subcommands and exit statuses of `tidal-fe`
 (`check`, `run`, `conform`, `dump`), so the harness and
-`tools/frontend_check.py` read both binaries the same way. The crate
-uses no crate that encodes knowledge of C++ (decision 0035).
+`tools/frontend_check.py` read both binaries the same way. Until
+analysis exists (step 3), `check` gives `reject` with a TR-12 error when
+the parser stops and `unsupported` when the unit parses, `run` gives
+`unsupported`, and `conform` refuses. Both binaries have `lex FILE...`,
+which prints one token a line (kind, text, line in the unit's main
+file, literal) and the lexer's diagnostics, and `tidal-next` has
+`parse FILE...`, which prints `tree` or the stop for each file. The
+crate uses no crate that encodes knowledge of C++ (decision 0035), and
+so far no crate at all.
 
 ## 2. Stages and their data
 
@@ -77,12 +87,23 @@ implements:
 | Is this name a type? | a declaration or an expression statement; a cast or a parenthesized expression | STMT-6, DEP-19, DEP-20 |
 | Is this name a template, and of which kind? | `<` after a name | DEP-24, DEP-26, TARG rules |
 | Is this name a namespace or a class? | `::` after a name | NAM rules |
+| Is a member template of this name known? | `<` after a name after `.` or `->` with no `template` | DEP-24 |
+| Which class is the current instantiation? | a template-id with dependent arguments before `::` | DEP-15, model section 2 |
 
 Under a dependent qualifier, the oracle answers by the reading that the
 syntax chose (`typename`, `template`, or a context of DEP-20). In the
 current instantiation, it answers from the members known so far
 (section 4, model section 2). The parser's unit tests use a stub
 oracle.
+
+The parser tells the oracle what each declaration declares as soon as
+its declarator, head, or parameter is read, and opens and closes the
+scopes of namespaces, classes, blocks, template heads, and function
+prototypes. In step 2 the oracle is `sem::names`, a declare pass that
+records names and their kinds and knows no types. So its answer to the
+fourth question is "a member template of this name is declared in some
+class": the object's type, which DEP-24 needs, comes with analysis
+(section 10).
 
 ### The data
 
@@ -138,7 +159,7 @@ files. Each part sits in one stage:
 
 | File | Stage | Holds |
 |---|---|---|
-| `syntax.rs` | syntax | the productions of the page's Syntax segment, one function each |
+| `syntax.rs` | syntax | the productions of the page's Syntax segment, one function each; `expressions::primary` keeps its lexical productions in `lexical.rs`, which `lex` calls |
 | `check.rs` | analysis, constant evaluation | the page's rules that analysis checks, and the limits of constant evaluation that the page states |
 | `run.rs` | interpretation | the page's rules that the machine follows |
 | `tests.rs` | unit tests | tests of the other parts |
@@ -146,6 +167,13 @@ files. Each part sits in one stage:
 A page with many rules splits `check.rs` by principle (for example
 `check/ranking.rs`), so that no file passes about 2000 lines. The
 module stays the page.
+
+A production marked `shape` (style guide, section 8) names a form that
+a general production also derives. Its function is a recognizer over
+the tree that the general production made, such as `copy_ctor(node,
+tokens, class)`, and the productions that only a shape uses are
+recognizers too. The `preprocessing` productions of `foundations::odr`
+are functions over a directive line, which `lex` calls.
 
 A function that implements a rule names the rule ID in its doc comment.
 A module names only the rule IDs of its own page. When it needs another
@@ -158,7 +186,8 @@ A chapter's index page has no rules. Its chapter module
 `translation_unit` and `declaration` (`declarations/index.md`) or
 `statement` (`statements/index.md`), and calls the page modules. No two
 rule pages share a module. The 10 index pages each give one chapter
-module.
+module, and a chapter module with productions keeps them in its own
+`syntax.rs`.
 
 ### The core
 
@@ -195,7 +224,7 @@ modules. Every module also uses the core.
 | `foundations/objects` | `foundations::objects` | OBJ | A, R | `foundations::types` |
 | `foundations/storage` | `foundations::storage` | STG | A, R | `foundations::objects`, `foundations::types` |
 | `foundations/evaluation-order` | `foundations::evaluation_order` | SEQ | R | `foundations::objects` |
-| `foundations/constant-evaluation` | `foundations::constant_evaluation` | CE | A, C | `foundations::objects`, `foundations::storage` |
+| `foundations/constant-evaluation` | `foundations::constant_evaluation` | CE | S, A, C | `foundations::objects`, `foundations::storage` |
 | `foundations/language-support` | `foundations::language_support` | LSUP | A, R | `foundations::types`, `foundations::storage` |
 | `expressions/primary` | `expressions::primary` | PRIM | L, S, A, R | `foundations::names`, `foundations::values`, `templates::packs` |
 | `expressions/postfix` | `expressions::postfix` | PFX | S, A, R | `foundations::names`, `foundations::conversions`, `classes::access`, `overloading::overload_resolution` |
@@ -248,7 +277,7 @@ modules. Every module also uses the core.
 | `classes/derived` | `classes::derived` | DER | S, A, R | `classes::members` |
 | `classes/virtual` | `classes::virtual` | VIRT | S, A, R | `classes::derived` |
 | `classes/constructors` | `classes::constructors` | CTOR, DTOR | S, A, R | `classes::members`, `declarations::initialization::forms`, `overloading::overload_resolution`, `exceptions::unwinding` |
-| `classes/copy-move` | `classes::copy_move` | CPY | A, R | `classes::constructors`, `overloading::overload_resolution` |
+| `classes/copy-move` | `classes::copy_move` | CPY | S, A, R | `classes::constructors`, `overloading::overload_resolution` |
 | `classes/conversion-functions` | `classes::conversion_functions` | CVF | S, A | `overloading::overload_resolution` |
 | `classes/initializer-lists` | `classes::initializer_lists` | ILC | A, R | `classes::constructors`, `overloading::overload_resolution` |
 | `classes/operators` | `classes::operators` | OPR | S, A | `classes::members`, `overloading::overload_resolution` |
@@ -260,13 +289,13 @@ modules. Every module also uses the core.
 | `templates/arguments` | `templates::arguments` | TARG | S, A | `foundations::conversions`, `foundations::constant_evaluation` |
 | `templates/dependent-names` | `templates::dependent_names` | DEP | S, A | `foundations::names`, `classes::derived`, `templates::packs` |
 | `templates/packs` | `templates::packs` | PACK | A | `templates::arguments` |
-| `templates/instantiation` | `templates::instantiation` | INST | A | `templates::dependent_names`, `templates::specialization`, `templates::deduction` |
+| `templates/instantiation` | `templates::instantiation` | INST | S, A | `templates::dependent_names`, `templates::specialization`, `templates::deduction` |
 | `templates/specialization` | `templates::specialization` | TSP | S, A | `templates::arguments`, `templates::deduction`, `templates::ordering` |
 | `templates/deduction` | `templates::deduction` | DED | A | `foundations::conversions`, `templates::arguments`, `templates::dependent_names` |
 | `templates/ordering` | `templates::ordering` | ORD | A | `templates::deduction`, `templates::constraints` |
 | `templates/concepts` | `templates::concepts` | CPT | S, A, C | `templates::constraints` |
 | `templates/constraints` | `templates::constraints` | CNS | A, C | `foundations::constant_evaluation`, `templates::instantiation` |
-| `templates/class-template-deduction` | `templates::class_template_deduction` | CTAD | A | `templates::deduction`, `overloading::overload_resolution`, `classes::constructors` |
+| `templates/class-template-deduction` | `templates::class_template_deduction` | CTAD | S, A | `templates::deduction`, `overloading::overload_resolution`, `classes::constructors` |
 | `exceptions/throw` | `exceptions::throw` | THR | S, A, R | `declarations::initialization::forms`, `exceptions::unwinding` |
 | `exceptions/handlers` | `exceptions::handlers` | TRY | S, A, R | `foundations::conversions`, `classes::derived`, `exceptions::unwinding` |
 | `exceptions/unwinding` | `exceptions::unwinding` | UNW | R | `foundations::objects` |
@@ -278,7 +307,7 @@ The chapter modules:
 | `foundations/index` | `foundations` | none |
 | `expressions/index` | `expressions` | the table of levels; each level's production sits on its page |
 | `statements/index` | `statements` | `statement`, `plain_stmt` |
-| `declarations/index` | `declarations` | `translation_unit`, `declaration` |
+| `declarations/index` | `declarations` | `translation_unit`, `declaration`, `block_decl`, `simple_decl`, `init_declarator`, `decl_specifiers`, `decl_specifier`, `type_specifiers`, `type_specifier`, `simple_type` |
 | `declarations/functions/index` | `declarations::functions` | none |
 | `declarations/initialization/index` | `declarations::initialization` | none |
 | `classes/index` | `classes` | none |
@@ -309,7 +338,7 @@ calls `instantiation::substitute`.
 | 3. A specialization by substitution | `templates::instantiation` holds the `Specialization` record, its points (INST-30, INST-31, INST-33), its states, the order of INST-P2, `busy`, and the nesting limit (INST-15, with TR-13 from `foundations::translation`). The substitution walks the definition's tree. It copies a node with no dependence, and it calls the page's check again for a dependent node with the arguments in place (DEP-28). `templates::specialization` chooses the source (TSP-13 to TSP-16) and links a partial specialization to its primary when it is declared (TSP-31). | `sem::Specialization` |
 | 4. Substitution failure and the immediate context | `templates::deduction` decides where an error falls (DED-24 to DED-29). `templates::dependent_names` holds the kind table of `Member(T, name, reading)` (DEP-19, DEP-22, DEP-26). | `sem::Subst<T>`; an error outside the immediate context goes to `diag` |
 | 5. Checks at the definition | each row of the model's table sits in the page of its rule: DEP-6, DEP-17, DEP-24, DEP-29, DEP-30, and DEP-37 in `templates::dependent_names`; IF-22 in `statements::if_stmt`; PACK-8 in `templates::packs`; CNS-29 in `templates::constraints`; SA-5 in `declarations::static_assert`. An independent node is checked when it is made, by the same code as a node outside a template. | the list of definition checks, which a proposal can extend (section 7) |
-| 6. The 30 tests | section 5 of this document | the marks file |
+| 6. The 32 tests | section 5 of this document | the marks file |
 | 7. What the model keeps | `templates::deduction` (DED-P3), `templates::ordering` (ORD-P2), `templates::specialization` (TSP-P2), `templates::constraints` (CNS-P1) | `DepType` with its new forms |
 | 8. Rules that can change | section 10 of this document | none |
 
@@ -322,65 +351,84 @@ member check of `expressions::postfix`.
 
 ## 5. The tests the rewrite takes over first
 
-The rewrite takes over the 30 tests of the marks file
+The rewrite takes over the 32 tests of the marks file
 (`reports/clean-room/rust-frontend/rewrite-marks.tsv`) first, by model
-section. Paths are under `tests/`.
+section (decision 0064). The marks file is the list; the table gives
+the tests at the time of decision 0064. Paths are under `tests/`.
 
 | Model section | Count | Tests |
 |---|---|---|
 | 1 | 4 | `templates/dependent-names/`: `other-specialization-constant-argument-member-missing`, `other-specialization-constant-argument-no-typename`, `sizeof-value-dependent-operand-call-bound-early`, `sizeof-value-dependent-operand-no-typename` |
-| 2 | 5 | `templates/dependent-names/`: `current-instantiation-enclosing-base`, `member-template-current-instantiation-pointer`, `member-template-current-instantiation-qualifier-dependent-base`, `member-template-non-dependent-base`, `member-template-through-current-instantiation-object` |
-| 3 | 10 | `templates/instantiation/`: `class-point-not-later-member-type`, `class-point-not-later-type`, `class-point-not-later`, `class-point-static-const-member`, `class-point-static-constexpr-made-at-use`, `class-static-constexpr-member-initializer-waits`, `local-class-default-argument`, `local-class-exception-specification`, `recursion-endless-function`; `templates/specialization/partial-no-primary-variable` |
+| 2 | 6 | `templates/dependent-names/`: `current-instantiation-enclosing-base`, `member-template-current-instantiation-pointer`, `member-template-current-instantiation-qualifier-dependent-base`, `member-template-non-dependent-base`, `member-template-through-current-instantiation-object`; `classes/copy-move/class-template-ctor-by-value` |
+| 3 | 11 | `templates/instantiation/`: `class-point-not-later-member-type`, `class-point-not-later-type`, `class-point-not-later`, `class-point-static-const-member`, `class-point-static-constexpr-made-at-use`, `class-static-constexpr-member-initializer-waits`, `static-inline-member-incomplete-argument`, `local-class-default-argument`, `local-class-exception-specification`, `recursion-endless-function`; `templates/specialization/partial-no-primary-variable` |
 | 4 | 4 | `templates/deduction/`: `substitution-explicit-specifier`, `substitution-lambda-body`, `substitution-lambda-default`, `substitution-member-wrong-kind` |
 | 5 | 7 | `statements/if/constexpr-template-nondependent-call-checked`; `templates/constraints/`: `out-of-class-other-clause`, `out-of-class-without-clause`; `templates/dependent-names/`: `binary-operator-pack-never-fits`, `operator-pack-never-fits`; `templates/packs/`: `fold-in-outer-pattern`, `size-operator-in-outer-pattern` |
 
-Each name ends in `.cpp`. A round that marks the three P3 tests of
-model section 6 for section 3 adds them to the section 3 row.
+Each name ends in `.cpp`. A round that marks a test adds it to the
+marks file, and the step of its model section takes it over.
 
 ### What `tools/frontend_check.py` measures
 
-The tool now runs one front end and prints the completion line with the
-marked tests apart. The rewrite needs three more things from it. Each
-comes with the step that first needs it, and none changes the meaning
-of the lines the tool prints now.
-
-- **A shadow run.** With `--next`, the tool also runs `tidal-next` on
-  every test and prints its counts beside the old ones. The shadow run
-  changes no status and no baseline.
-- **A takeover list.** A file beside `conformance.tsv` names the tests
-  that the new front end owns. For an owned test, the tool takes the
-  new front end's status. A test that either front end makes worse
-  fails the check, so "0 worse" holds for both (decision 0060).
-- **A parse count.** The tool counts the tests that `tidal-next`
-  parses as their outcome needs: each test whose expected outcome is
-  not a parse error gives a tree, and each test that cites TR-12 alone
-  stops in the parser.
+Without `--next`, the tool runs the old front end and prints the lines
+it printed before the rewrite started. With `--next`, it also builds
+`frontend/next/` and prints these lines after them:
 
 ```text
-next: lex: T/T tests give the old front end's tokens
-next: parse: N/T tests parse as their outcome needs
-next: shadow: P/T pass, Q of the old front end's passes; R tests pass on the new front end only
-next: owned: O tests, O pass their check, 0 worse
-frontend: completion (decision 0060): N tests fail their check, of which M need the template model ...
+next: unit: K tests pass
+next: lex: T/N files give the old front end's tokens
+next: parse: N/M tests parse as their outcome needs
+next: parse: R of the D disagreements are reject tests that stop on the line of the old front end's first error
+next: owned: O tests (takeover list)
 ```
+
+- **Unit tests** (step 1). `cargo test` in `frontend/next/`. A failing
+  unit test fails the check.
+- **The lex count** (step 1). Both binaries run `lex` on every test
+  file and extra translation unit, and the dumps must be equal.
+- **The parse count** (step 2). A test needs a tree for each of its
+  units when it expects `accept`, `run`, `run-fail`, or `link-fail`,
+  or when it expects `reject` and the old front end's first error names
+  a rule other than TR-12. It needs a stop when its first error names
+  TR-12. A `reject` test with no error that names a rule is not judged.
+  The tool lists each disagreement, and counts the reject tests that
+  stop on the line of the old front end's first error (section 10).
+- **The takeover list** (read from step 1). `takeover.tsv` beside
+  `conformance.tsv` names the tests that the new front end owns: a test
+  path, the build step, and the commit. The tool reports a row whose
+  test does not exist and a test listed twice. For an owned test the
+  tool will take the new front end's status, and a test that either
+  front end makes worse fails the check, so "0 worse" holds for both
+  (decision 0060). The list has no row while the old front end judges
+  every test.
+- **A shadow run** (step 3). The tool also runs `tidal-next conform`
+  on every test and prints its counts beside the old ones, as
+  `next: shadow: P/T pass, Q of the old front end's passes; R tests
+  pass on the new front end only`. The shadow run changes no status
+  and no baseline.
 
 ### The order of the build
 
 Each step keeps the existing line "0 worse" of `frontend_check.py`.
-Each step adds unit tests for the modules it writes.
+Each step adds unit tests for the modules it writes. The Propose hook
+of section 7 grows with the steps, so that a point exists before the
+pages it reaches are written.
 
 | Step | Work | Takes over | Measure |
 |---|---|---|---|
-| 0 | This design. No code until the gate of decisions 0062 and 0063 holds. | none | the completion line: at most 50 tests outside the marks file |
-| 1 | The crate, `source`, `diag`, `lex`, and the driver; `--next` in the tool | none | `next: lex` reaches T/T |
-| 2 | `syntax` and the `syntax.rs` part of each page; the oracle over a declare pass that only records names and their kinds | none | `next: parse` |
-| 3 | `sem`, `target`, `machine`; the foundations, declarations, expressions, and statements pages outside templates; constant evaluation | none | `next: shadow` by chapter, against the old front end's passes on those chapters |
-| 4 | The classes, overloading, and exceptions pages | none | `next: shadow` |
-| 5 | The templates pages with the parts the model keeps (model section 7); model sections 1, 2, and 5 | the 16 tests of sections 1, 2, and 5 | `next: owned` 16; the marked count on the completion line goes from 30 to 14 |
-| 6 | Model section 3 | the 10 tests of section 3 | the marked count goes from 14 to 4 |
+| 0 | This design, kept to the marks file | none | the completion line, with the marked tests apart |
+| 1 | The crate, `source`, `diag`, `lex`, and the driver with `--proposal` and an empty registry; `--next` in the tool | none | `next: lex` reaches N/N; `next: unit` |
+| 2 | `syntax` and the `syntax.rs` part of each page; the oracle over a declare pass that only records names and their kinds; the nonterminal point, with P22's syntax part as its unit test | none | `next: parse`; each nonterminal has one function |
+| 3 | The node-check point of section 7 first; then `sem`, `target`, `machine`; the foundations, declarations, expressions, and statements pages outside templates; constant evaluation; the `Ext` node point | none | `next: shadow` by chapter, against the old front end's passes on those chapters |
+| 4 | The classes, overloading, and exceptions pages; the rule override point | none | `next: shadow` |
+| 5 | The templates pages with the parts the model keeps (model section 7); model sections 1, 2, and 5, with the definition-check point | the 17 tests of sections 1, 2, and 5 | `next: owned` 17; the marked count on the completion line goes from 32 to 15 |
+| 6 | Model section 3 | the 11 tests of section 3 | the marked count goes from 15 to 4 |
 | 7 | Model section 4 | the 4 tests of section 4 | the marked count goes from 4 to 0 |
 | 8 | Page by page, the new front end takes over each page whose tests it passes wherever the old one passes | the tests of each page | `next: owned` grows by the page's tests, 0 worse |
 | 9 | The old front end is removed when the new one owns every test that the old one passed (decision 0060) | all | the completion line counts the new front end only |
+
+Steps 1 and 2 are in place. Every nonterminal of the Syntax segments
+has its function, and the parse count's disagreements are listed by
+cause in the front end's round report.
 
 Model sections 1, 2, and 5 come first because section 2 needs the marks
 of section 1, and section 5 needs both. Section 3 needs the marks for
@@ -418,7 +466,7 @@ it. The prototype runs only under the flag `--proposal <id>` of
 
 ### The extension points
 
-The page modules offer four points, and a prototype attaches only
+The page modules offer five points, and a prototype attaches only
 there:
 
 | Point | Owner | What a prototype can do |
@@ -426,7 +474,18 @@ there:
 | Nonterminals | `syntax` | add an alternative to any nonterminal; the parser tries it at the start of that nonterminal and makes a `syn::Ext` node |
 | `Ext` nodes | `sem`, `machine` | check its own syn node into ordinary typed nodes, or into a `sem::Ext` node with a `run` function of its own |
 | Rule overrides | `diag` | change the kind of a rule by its ID (as from `recommended` to `reject`), or turn a check off; add rules with the exercise's IDs, which the diagnostics name |
+| Node checks | `sem` | run a check of its own on each typed node of a named kind, after the page's own check; for a dependent node, again at substitution (DEP-28) |
 | Definition checks | `templates::dependent_names` | add a check to the list that runs on a template's definition (model section 5) |
+
+Each point lands with a build step: the `--proposal` flag and the
+registry in step 1, the nonterminal point in step 2, the node-check
+point before step 3 writes the expression pages, the `Ext` node point
+in step 3, rule overrides in step 4, and definition checks in step 5
+(section 5). The node-check point serves a design that adds a
+rejection to an existing construct, such as P26 on the comma and P29 on
+equality, which no rule override can express. It must exist before
+step 3, because a point added later would need edits to the pages it
+reaches.
 
 A page module keeps public only the queries that other modules need,
 and a prototype uses those queries. No page module imports
@@ -488,7 +547,18 @@ and `continue-with-label.cpp`) are the ones the portfolio expects to
 change. The same diff over `tests/programs/` gives the counts of
 sections 4.3 and 4.4 of a Propose report.
 
-A prototype of X22's checked marker uses the fourth point. It adds one
+The prototype follows a Propose design's change table, so that the
+diff tests a reader's design: decision 0064's item E gives P22 its
+design (X24) before the prototype is written. The impact diff prints
+its base, which is the tests that `tidal-next` passes without the
+flag, the tests whose status changes by direction, and the programs
+that become invalid or change their result. Until step 8 the base is
+smaller than the suite, so the count is a lower bound. Prototype tests
+with IDs such as `X24:new-1` live beside their Propose report, since
+`tests/` cites only Tidal's rule IDs, and the harness takes that
+directory under the flag.
+
+A prototype of X22's checked marker uses the fifth point. It adds one
 check to the definition checks, as the designer view of roadmap round
 12 (item 8) describes, and it adds a rule override for the marker.
 
@@ -535,7 +605,8 @@ stack, because the machine recurses on the program's own recursion.
 A front-end round that works on the rewrite keeps the form of report
 25, with these additions:
 
-- the four `next:` lines of `frontend_check.py`,
+- the `next:` lines of `frontend_check.py`, and the parse count's
+  disagreements by cause,
 - the owned tests by page,
 - the marked tests that remain, by model section,
 - the rule IDs that a module names outside its own page, which should
@@ -546,33 +617,52 @@ A front-end round that works on the rewrite keeps the form of report
 - The crate's place and the binary's name (`frontend/next/`,
   `tidal-next`) are provisional.
 - The parser is written by hand from the Syntax segments, one function
-  per production. Decision 0035 also allows a generated parser. A check
-  that each production has one function, and each function one
-  production, would hold either way.
-- The oracle's three questions may not cover every ambiguity of the
-  grammar. A tree with both readings is the fallback for a point the
-  oracle cannot answer when the parser reaches it.
-- `tools/frontend_check.py` has no `--next`, no takeover list, and no
-  parse count yet. Each lands with the step that needs it.
+  per production. Decision 0035 also allows a generated parser. The
+  unit test that each production has one function, and that a function
+  documented as a production is named after it, would hold either way.
+- The oracle's questions may not cover every ambiguity of the grammar.
+  A tree with both readings is the fallback for a point the oracle
+  cannot answer when the parser reaches it.
+- A member name followed by `<` after `.` or `->` with no `template`
+  is a template-id only when the object's type is not dependent and its
+  class has the member template (DEP-24). The parser has no types, so
+  the step 2 oracle answers "a member template of this name is declared
+  in some class". Analysis can answer the question when the object's
+  type is known, as the parse of a declaration waits for its oracle.
+- The step 2 oracle does not see through an alias template to the
+  current instantiation, and it reads a template-id whose arguments are
+  value-dependent only through `sizeof` as dependent (model section 1).
+  The parse count lists the tests these touch.
+- The parser keeps member function bodies as token ranges until the
+  outermost class is complete (NAM-6). Default arguments and default
+  member initializers are parsed in place.
+- The parse count judges a `reject` test by the old front end's first
+  error. Where the grammar does not derive the form and the old front
+  end names a more specific rule first (KW-1, DEL-3 with another rule,
+  register), the new parser's stop is a disagreement; where the grammar
+  derives the form and another rule rejects it (DEL-3, DTY-5, DEP-26),
+  the old front end's TR-12 makes the tree a disagreement. The count of
+  reject tests that stop on the old first error's line separates the
+  first kind.
 - The unit of takeover after step 7 is the page. A page whose tests the
   new front end passes in part could pass test by test instead.
-- The three P3 tests (P3-6, INST-5) join model section 3 if a round
-  marks them.
 - The first-error target for the new code is open. The old front end
   names a cited or linked rule first in 77% of its passing rejects
   (report 25). A target at or above that rate for owned tests fits the
   implementer view of roadmap round 12 (process change 5).
-- The `forward_class` gap of the RP commit (attributes after the class
-  key) has no ledger row. Step 2 meets it in `classes::members` or
-  `declarations::type_names`.
-- `TEMPLATE-MODEL.md` section 8 lists Q-0427, Q-0432, Q-0434, P3-6,
-  and RV8. An answer that changes a rule there changes the module that
-  section 4 of this document names for it.
+- `TEMPLATE-MODEL.md` section 8 lists Q-0427, Q-0432, Q-0433, Q-0434,
+  Q-0441, and RV9. An answer that changes a rule there changes the
+  module that section 4 of this document names for it.
 - The kind of each rule comes from `specification/` at run time, as in
   the old harness. A table built into the crate would make the binary
   stand alone and need a rebuild for each text change.
 - A prototype runs under a run-time flag. Whether prototypes stay in
   the crate after their exercise, or move to a branch, is open.
+- A done design that changes run-time rules (X25 on UNI-14 and LSUP-10,
+  X1, X3, X4) would need a sixth point, a run override by rule ID in the
+  machine and in constant evaluation. No ready proposal needs it.
 - While both front ends exist, a fix in the old front end for a test
   the new one owns changes no result. Rounds then fix owned tests in the
-  new code only.
+  new code only. A round that changes `lexer.rs`, `diag.rs`, `main.rs`,
+  or `conform.rs` makes the same change in the new crate, and the lex
+  count shows a lexer change that reaches one copy only.

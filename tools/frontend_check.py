@@ -75,11 +75,39 @@ columns, if a row has any, are ignored. --update writes the baseline to
 a temporary file and renames it, so that another process that runs the
 tool never reads a part of the file.
 
+With --next, the tool also measures the rewrite (decision 0064, item RW;
+frontend/DESIGN-rewrite.md, section 5) after the lines above, and prints
+nothing else differently:
+
+    next: unit: K tests pass
+    next: lex: T/N files give the old front end's tokens
+    next: parse: N/M tests parse as their outcome needs
+    next: parse: R of the D disagreements are reject tests that stop on the line of the old front end's first error
+    next: owned: O tests (takeover list)
+
+The unit line runs `cargo test` in frontend/next/; a failing unit test
+fails the check. The lex line runs `lex` on both binaries for every test
+file and extra translation unit and compares the dumps (kind, text, line,
+literal, and the lexer's diagnostics). The parse line counts the tests
+whose parse by `tidal-next parse` gives what the test's outcome needs: a
+tree for each unit of an `accept`, `run`, `run-fail`, or `link-fail`
+test, a tree for a `reject` test whose first error on the old front end
+names a rule other than TR-12, and a stop for a `reject` test whose first
+error names TR-12. A `reject` test with no error that names a rule is not
+judged. The tool lists each disagreement, and a further line counts
+the disagreements that are reject tests whose stop is on the line of
+the old front end's first error. The takeover list,
+reports/clean-room/rust-frontend/takeover.tsv, names the tests that the
+new front end owns: a test path, the build step, and the commit, separated
+by tabs. The tool reports a row whose test does not exist and a test
+listed twice. While the list has no row, no status changes.
+
 Usage:
-    tools/frontend_check.py [--update]
+    tools/frontend_check.py [--update] [--next]
 """
 
 import argparse
+import concurrent.futures
 import os
 import re
 import shutil
@@ -95,6 +123,8 @@ PASSING = {"pass", "EDG-ONLY", "EDG-ALLOWED", "pass-partial", "NO-DIAGNOSTIC-ALL
 LEDGER = ROOT / "reports" / "clean-room" / "rust-frontend" / "ledger.md"
 MARKS = ROOT / "reports" / "clean-room" / "rust-frontend" / "rewrite-marks.tsv"
 MODEL = FRONTEND / "TEMPLATE-MODEL.md"
+NEXT = FRONTEND / "next"
+TAKEOVER = ROOT / "reports" / "clean-room" / "rust-frontend" / "takeover.tsv"
 SPEC = ROOT / "specification"
 INTERPRETER = re.compile(r"^// tidal-interpreter:\s*run-fail\s*$", re.M)
 
@@ -225,6 +255,7 @@ def write_baseline(status: dict[str, str]) -> None:
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--update", action="store_true", help="rewrite the baseline")
+    ap.add_argument("--next", action="store_true", help="also measure the rewrite in frontend/next/")
     args = ap.parse_args()
     cargo_bin = cargo()
     if not cargo_bin:
@@ -295,7 +326,158 @@ def main() -> int:
         print(f"frontend: {int(cells[2]) + int(cells[3])}/{cells[1]} passing rejects name a "
               f"cited rule ({cells[2]}) or a linked rule ({cells[3]}) in their first error; "
               f"`tidal-fe conform` gives the table per page")
-    return 1 if worse else 0
+    next_failed = check_next(cargo_bin) if args.next else False
+    return 1 if worse or next_failed else 0
+
+
+def header_expect(path: Path) -> tuple[str | None, list[str]]:
+    """A test's base expectation and its extra translation units."""
+    expect, sources = None, []
+    for line in path.read_text(errors="replace").splitlines():
+        if not line.startswith("//"):
+            break
+        if line.startswith("// tidal-expect:") and expect is None:
+            words = line.split(":", 1)[1].split()
+            expect = words[0] if words else ""
+        if line.startswith("// tidal-sources:"):
+            sources += line.split(":", 1)[1].split()
+    return expect, sources
+
+
+def batches(items: list, size: int = 400):
+    for k in range(0, len(items), size):
+        yield items[k:k + size]
+
+
+def dumps(binary: Path, files: list[str]) -> dict[str, str]:
+    """`BINARY lex` over the files, split by file."""
+    out: dict[str, str] = {}
+    for chunk in batches(files):
+        text = subprocess.run([str(binary), "lex", *chunk], cwd=ROOT, capture_output=True, text=True,
+                              errors="replace").stdout
+        if len(chunk) == 1:
+            out[chunk[0]] = text
+            continue
+        name = None
+        for line in text.splitlines(keepends=True):
+            if line.startswith("== "):
+                name = line[3:].rstrip("\n")
+                out[name] = ""
+            elif name is not None:
+                out[name] += line
+    return out
+
+
+def first_error(binary: Path, test: str) -> tuple[list[str], int] | None:
+    """The rules and the line of the old front end's first error, or None."""
+    r = subprocess.run([str(binary), "check", test], cwd=ROOT, capture_output=True, text=True,
+                       errors="replace", timeout=120)
+    m = re.search(r":(\d+): error \[([^\]]+)\]", r.stdout + r.stderr)
+    return ([x.strip() for x in m.group(2).split(",")], int(m.group(1))) if m else None
+
+
+def read_takeover() -> tuple[list[str], list[str]]:
+    """The takeover list's tests and its problems."""
+    owned: list[str] = []
+    problems: list[str] = []
+    if not TAKEOVER.exists():
+        return owned, [f"{TAKEOVER.relative_to(ROOT)} does not exist"]
+    for number, line in enumerate(TAKEOVER.read_text().splitlines(), 1):
+        if not line.strip() or line.startswith("#"):
+            continue
+        cells = line.split("\t")
+        if len(cells) != 3 or not all(c.strip() for c in cells):
+            problems.append(f"line {number} does not have a test, a step, and a commit")
+            continue
+        test = cells[0].strip()
+        if not (ROOT / "tests" / test).exists():
+            problems.append(f"line {number}: {test} does not exist")
+        if test in owned:
+            problems.append(f"line {number}: {test} is listed twice")
+        owned.append(test)
+    return owned, problems
+
+
+def check_next(cargo_bin: str) -> bool:
+    """The `next:` lines (decision 0064, item RW). Returns True when a unit
+    test fails or the crate does not build."""
+    build = subprocess.run([cargo_bin, "build", "--release", "-q"], cwd=NEXT, capture_output=True, text=True)
+    if build.returncode:
+        print(f"next: build failed\n{build.stderr}")
+        return True
+    unit = subprocess.run([cargo_bin, "test", "--release", "-q"], cwd=NEXT, capture_output=True, text=True)
+    passed = sum(int(m) for m in re.findall(r"test result: \w+\. (\d+) passed", unit.stdout))
+    failed = sum(int(m) for m in re.findall(r"(\d+) failed", unit.stdout))
+    if unit.returncode or failed:
+        print(f"next: unit: {passed} tests pass, {failed} fail")
+        for line in unit.stdout.splitlines():
+            if line.startswith("---- ") or "panicked" in line:
+                print(f"next: unit: {line}")
+    else:
+        print(f"next: unit: {passed} tests pass")
+    old = FRONTEND / "target" / "release" / "tidal-fe"
+    new = NEXT / "target" / "release" / "tidal-next"
+    tests = ROOT / "tests"
+    files = sorted(p.relative_to(ROOT).as_posix() for p in tests.rglob("*.cpp"))
+    a, b = dumps(old, files), dumps(new, files)
+    differ = [f for f in files if a.get(f) != b.get(f)]
+    for f in differ[:20]:
+        print(f"next: lex: {f.removeprefix('tests/')} differs")
+    print(f"next: lex: {len(files) - len(differ)}/{len(files)} files give the old front end's tokens")
+    # The parse count.
+    main = [f for f in files if not f.endswith(".tu.cpp")]
+    want: dict[str, str] = {}
+    first_line: dict[str, int] = {}
+    units: dict[str, list[str]] = {}
+    rejects = []
+    for f in main:
+        expect, sources = header_expect(ROOT / f)
+        units[f] = [f] + [(Path(f).parent / s).as_posix() for s in sources]
+        if expect in ("accept", "run", "run-fail", "link-fail"):
+            want[f] = "tree"
+        elif expect == "reject":
+            rejects.append(f)
+    with concurrent.futures.ThreadPoolExecutor(max_workers=os.cpu_count() or 4) as pool:
+        for f, found in zip(rejects, pool.map(lambda t: first_error(old, t), rejects)):
+            if found is not None:
+                want[f] = "stop" if "TR-12" in found[0] else "tree"
+                first_line[f] = found[1]
+    parsed: dict[str, str] = {}
+    for chunk in batches(sorted({u for f in want for u in units[f]})):
+        text = subprocess.run([str(new), "parse", *chunk], cwd=ROOT, capture_output=True, text=True,
+                              errors="replace").stdout
+        for line in text.splitlines():
+            status, _, name = line.partition("\t")
+            parsed[name] = status
+    agree = 0
+    disagree = []
+    same_line = 0
+    for f in sorted(want):
+        if want[f] == "tree":
+            bad = [(u, parsed.get(u, "missing")) for u in units[f] if parsed.get(u) != "tree"]
+            if not bad:
+                agree += 1
+            else:
+                m = re.match(r"stop (\d+):", bad[0][1])
+                if f in first_line and bad[0][0] == f and m and int(m.group(1)) == first_line[f]:
+                    same_line += 1
+                disagree.append(f"{f}: wants a tree, {bad[0][0].removeprefix('tests/') if bad[0][0] != f else 'the unit'} gives {bad[0][1]}")
+        else:
+            got = parsed.get(f, "missing")
+            if got.startswith("stop"):
+                agree += 1
+            else:
+                disagree.append(f"{f}: wants a stop (TR-12), gives {got}")
+    for d in disagree:
+        print(f"next: parse: {d.removeprefix('tests/')}")
+    print(f"next: parse: {agree}/{len(want)} tests parse as their outcome needs")
+    print(f"next: parse: {same_line} of the {len(disagree)} disagreements are reject tests that stop on the line "
+          f"of the old front end's first error")
+    owned, problems = read_takeover()
+    for p in problems:
+        print(f"next: takeover list: {p}")
+    print(f"next: owned: {len(owned)} tests (takeover list)")
+    return bool(unit.returncode or failed)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,20 @@
+[package]
+name = "tidal-next"
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0 WITH LLVM-exception"
+publish = false
+
+# The rewrite of the front end (decision 0060, frontend/DESIGN-rewrite.md).
+# The crate has its own Cargo.lock and target directory, so the build of
+# frontend/ (tidal-fe) does not change. It uses no crate that encodes
+# knowledge of C++ (decision 0035), and so far no crate at all.
+
+[[bin]]
+name = "tidal-next"
+path = "src/main.rs"
+
+[dependencies]
+
+[profile.release]
+debug = false

@@ -346,8 +346,9 @@ can change it. Each question is provisional.
 | Q-0427 | DEP-24, DEP-P5 | the member template found through an object of the current instantiation, with no `template` (section 2); waits for a use of DEP-P5 |
 | Q-0432 | DEP-4, DEP-P2 | that the operand of `sizeof`, `alignof`, `noexcept`, or `typeid` passes on no value-dependence (section 1); waits for a use of DEP-P2 |
 | Q-0434 | DEP-2, DEP-18 | that a member access through `this` or an object of `CurrentInst` with an independent member type is not type-dependent (section 1); waits for a review |
-| P3-6 | INST-1, INST-5 | when the return type of a member definition is made (section 3, and the P3 tests of section 6) |
-| RV8 | DEP-P5, DEP-4, DEP-6, DEP-30, DEP-40, INST-1 | the RV7 repair (b5d925e0) changed these blocks, which sections 1, 4, and 5 cite, and decision 0063's item RV8 reviews them |
+| Q-0433 | INST-5, INST-33, INST-P2 | whether the initializer in the class of a `static const` member is made with the class (section 3; `class-point-static-const-member.cpp`); waits for a review |
+| Q-0441 | INST-5 | whether making a class needs the type of a static data member complete, which decides the point of `static-inline-member-incomplete-argument.cpp` (section 3); waits for a review and newest families that agree |
+| RV9 | FN-12, INST-1, INST-2, INST-5, DEP-P1, DEP-40 | INST-1, INST-2, INST-5, DEP-P1, and DEP-40 changed after RV8 read the tree, and sections 1 and 3 cite them; FN-12, INST-1's new clause (4431852f), and the hunks of bdc27d44 have no recorded read, and decision 0064's item RV9 reviews them |
 
 Findings I6-4, I6-5, I6-6, and I6-9 are closed. DEP-P5 and DEP-40
 give the text of I6-4 and I6-9, and Q-0434 and Q-0432 hold I6-5 and
