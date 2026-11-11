@@ -45,6 +45,8 @@ The assignment is rejected (option 1). The gap review that read Q-0323
 on 2026-11-03 reads the reference as Clang does for this form, and the
 tests build each element with `std::construct_at` before they use it.
 
+Kept open on 2026-11-10 under decision 0054. The review's doubt is that the tests declare their own `std::allocator`. With `<memory>`'s own `std::allocator` and `std::construct_at`, Clang 22 rejects the assignment to an `int` element and to a member of a class element, and GCC 16 accepts both (`reports/clean-room/roadmap-10/writer-probes/q-0421-library-allocator.cpp`, host compilers only, because EDG has no `<memory>`). The split is the same as with the declared allocator. The probe grid `reports/clean-room/roadmap-10/writer-probes/g156-assign-before-construction-types.json` shows the same split for `double`, a pointer, an enumeration, `char`, a whole element of a simple class, and a class with its own assignment operator. Whether the text exempts a declared template stays for the review.
+
 Kept open on 2026-11-05 under decision 0054, because two newest families differ from the answer and the review reads it with a doubt (item RV5).
 
 ## Opinions

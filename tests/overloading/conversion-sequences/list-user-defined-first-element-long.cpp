@@ -2,7 +2,7 @@
 // tidal-expect: accept
 // tidal-expect-gcc: reject
 // tidal-error-gcc: ambiguous
-// tidal-note: Q-0419. Decision 0059, item F2 (I3-13). The first element converts by Q to long and the second by P to int. The list sequence holds the first element's conversion, so the long form wins. Clang and EDG choose it; GCC calls the call ambiguous.
+// tidal-note: Q-0423. Decision 0059, item F2 (I3-13). The first element converts by Q to long and the second by P to int. The list sequence holds the first element's conversion, so the long form wins. Clang and EDG choose it; GCC calls the call ambiguous.
 namespace std {
 template <class E> class initializer_list {
   const E* first_;

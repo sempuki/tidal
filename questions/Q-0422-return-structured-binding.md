@@ -17,7 +17,12 @@ stays an lvalue.
 |---|---|
 | Clang 18 and 22 | `int&` |
 | GCC 14 and 16 | `int&` |
-| EDG 7.0 | another type: the `static_assert` on `int&` fails |
+| EDG 7.0 | `int&&` |
+
+EDG also gives `int&&` when the binding is declared `auto&` to a local
+object, and Clang and GCC give `int&` there too. For `return a;` with
+the return type `decltype(auto)`, every compiler gives `int`
+(`reports/clean-room/roadmap-10/writer-probes/q-0422-binding-category.json`).
 
 ## Evidence
 

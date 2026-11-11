@@ -514,7 +514,7 @@ sequence.
 When the worst kind is a user-defined sequence, the list sequence is
 the user-defined sequence of the first element that has one. ICS-25
 then compares two list sequences by that element's conversion function
-and third part ({question}`Q-0419`).
+and third part ({question}`Q-0419`, {question}`Q-0423`).
 :::
 
 :::{rule} ICS-17
@@ -953,10 +953,14 @@ of 144 tests.
   lvalue reference to `const` can use an `explicit` conversion function
   that does not return an lvalue. It cannot, as on GCC. Clang accepts
   both forms, and EDG accepts an rvalue reference result.
-- {question}`Q-0419` (ICS-16, ICS-17, ICS-25; open): which element's
-  conversion a list sequence holds when the worst element conversion is
-  user-defined. It holds the first such element's, as Clang and EDG do.
-  GCC calls every such call ambiguous.
+- {question}`Q-0419` (ICS-16, ICS-25; settled on ICS-P5): whether two
+  list sequences whose elements all convert by one conversion function
+  compare by their third parts. They do, as Clang and EDG choose. GCC
+  calls the call ambiguous.
+- {question}`Q-0423` (ICS-16, ICS-17, ICS-25; open):
+  which element's conversion a list sequence holds when the elements do
+  not all use one conversion function. It holds the first user-defined
+  element's, as Clang and EDG do. GCC calls every such call ambiguous.
 
 ### Split tests
 
@@ -968,7 +972,7 @@ cells give the outcome of the test on each compiler.
 |---|---|---|---|---|---|---|
 | `array-known-bound-direct-cv.cpp` | ICS-46 | accept | reject | accept | accept | {question}`Q-0188` |
 | `array-known-bound-direct.cpp` | ICS-46 | accept | reject | accept | accept | {question}`Q-0188` |
-| `array-list-user-defined-first-element.cpp` | ICS-17, ICS-25 | accept | accept | reject | accept | {question}`Q-0419` |
+| `array-list-user-defined-first-element.cpp` | ICS-17, ICS-25 | accept | accept | reject | accept | {question}`Q-0423` |
 | `array-pointer-tie-breaker.cpp` | ICS-33, ICS-36 | accept | accept | reject | accept | {question}`Q-0137` |
 | `bit-field-promotion.cpp` | ICS-2 | accept | accept | reject | reject | {question}`Q-0134` |
 | `chosen-explicit-copy-list.cpp` | ICS-8, ILC-8 | reject | accept | reject | accept | {question}`Q-0132` |
@@ -987,8 +991,8 @@ cells give the outcome of the test on each compiler.
 | `list-string-literal-bound.cpp` | ICS-38, ICS-46 | accept | reject | accept | accept | {question}`Q-0155`, {question}`Q-0188` |
 | `list-string-literal-too-short.cpp` | ICS-38 | accept | reject | accept | accept | {question}`Q-0155` |
 | `list-string-literal-utf8.cpp` | ICS-38 | accept | accept | reject | accept | {question}`Q-0155` |
-| `list-user-defined-first-element-int.cpp` | ICS-16, ICS-25 | accept | accept | reject | accept | {question}`Q-0419` |
-| `list-user-defined-first-element-long.cpp` | ICS-16, ICS-25 | accept | accept | reject | accept | {question}`Q-0419` |
+| `list-user-defined-first-element-int.cpp` | ICS-16, ICS-25 | accept | accept | reject | accept | {question}`Q-0423` |
+| `list-user-defined-first-element-long.cpp` | ICS-16, ICS-25 | accept | accept | reject | accept | {question}`Q-0423` |
 | `list-user-defined-same-function.cpp` | ICS-16, ICS-25 | accept | accept | reject | accept | {question}`Q-0419` |
 | `qualification-array-bound.cpp` | ICS-31 | accept | accept | reject | reject | {question}`Q-0153` |
 | `qualification-reference-temporary.cpp` | ICS-31 | accept | accept | accept | reject | {question}`Q-0153` |

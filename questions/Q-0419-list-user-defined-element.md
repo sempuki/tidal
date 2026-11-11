@@ -1,9 +1,8 @@
-# Q-0419: Which element's conversion does a list sequence hold when the worst element conversion is user-defined?
+# Q-0419: When every element of a braced list converts by the same conversion function, do two list sequences compare by their third parts?
 
-**Status:** provisional
-**Affects:** ICS-16, ICS-17, ICS-25, `tests/overloading/conversion-sequences/list-user-defined-same-function.cpp`, `tests/overloading/conversion-sequences/list-user-defined-first-element-int.cpp`, `tests/overloading/conversion-sequences/list-user-defined-first-element-long.cpp`, `tests/overloading/conversion-sequences/array-list-user-defined-first-element.cpp`
+**Status:** settled
+**Affects:** ICS-16, ICS-25, `tests/overloading/conversion-sequences/list-user-defined-same-function.cpp`
 **Source:** I3 finding I3-13 (`reports/clean-room/I3/report.md`), from the probe grid `reports/clean-room/roadmap-9/writer-probes/i3-13-list-worst-element.json` that a clean-room writer ran for it.
-**Waits for:** a review (doubt)
 
 ## Context
 
@@ -30,10 +29,14 @@ Clang and EDG take the conversion of the first element that has a
 user-defined one. GCC rejects every call in the grid, also the calls
 where every element uses the same conversion function.
 
+This question holds the first row, where every element uses the same
+conversion function. The other rows, where the elements do not all use
+one conversion function, are Q-0423.
+
 ## Evidence
 
-The four tests in **Affects**. Each expects the choice of Clang and
-EDG and records GCC's rejection as an override.
+The test in **Affects** expects the choice of Clang and EDG and
+records GCC's rejection as an override.
 
 ## Options
 
@@ -44,11 +47,14 @@ EDG and records GCC's rejection as an override.
 3. The list sequence holds the worst of the user-defined element
    sequences by some other order, such as the last element.
 
-## Provisional answer
+## Answer
 
-The list sequence holds the user-defined sequence of the first element
-that has one (option 1). Two of three families agree, and the answer
-gives ICS-25 one conversion function to compare.
+Yes. Both list sequences use the one conversion function, so ICS-25
+compares their third parts, as step 3 of ICS-P5 says. Option 1 gives
+this answer for the first row, and option 3 gives it too. Clang and EDG
+choose the `int` form, and GCC calls the call ambiguous.
+
+Settled on 2026-11-10 under decision 0054. The gap review of 2026-11-05 supports the answer for the case where every element uses the same conversion function, and ICS-P5 gives the same answer. GCC 14 and 16 differ, and the test keeps their override. The case where the elements use different conversion functions moved to Q-0423 (decision 0061, item QR2).
 
 Kept open on 2026-11-05 under decision 0054, because the review reads the mixed lists as a choice the reference does not make (item RV5).
 
