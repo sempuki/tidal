@@ -362,7 +362,7 @@ take its address, because the name is a prvalue (TPL-9).
 
 :::{rule} TPL-11
 :kind: required
-:tests: templates/declarations/constant-parameter-auto.cpp templates/declarations/constant-parameter-class-template.cpp templates/class-template-deduction/constant-parameter-guide.cpp templates/declarations/constant-parameter-auto-data-member-pointer.cpp templates/declarations/constant-parameter-auto-member-function-pointer.cpp templates/declarations/constant-parameter-auto-member-pointer-class-from-type.cpp templates/declarations/constant-parameter-auto-member-pointer-class-template.cpp
+:tests: templates/declarations/constant-parameter-auto.cpp templates/declarations/constant-parameter-class-template.cpp templates/class-template-deduction/constant-parameter-guide.cpp templates/declarations/constant-parameter-auto-data-member-pointer.cpp templates/declarations/constant-parameter-auto-member-function-pointer.cpp templates/declarations/constant-parameter-auto-member-pointer-class-from-type.cpp templates/declarations/constant-parameter-auto-member-pointer-class-template.cpp templates/declarations/constant-parameter-class-template-string-literal.cpp
 
 The type of a constant parameter can be one of these:
 
@@ -836,8 +836,8 @@ template <class U> int pick(Host);                // rejected: the same template
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 129
-of 141 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 130
+of 142 tests.
 
 ### Divergences
 

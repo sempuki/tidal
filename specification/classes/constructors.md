@@ -298,7 +298,7 @@ expression `c` is `true`. Only a constructor or conversion function
 
 :::{rule} CTOR-10
 :kind: required
-:tests: classes/constructors/converting-ctor-multi-arg-list.cpp classes/constructors/converting-ctor.cpp classes/constructors/one-user-conversion-plus-standard.cpp classes/constructors/return-owner-converts-to-base-owner.cpp classes/copy-move/assign-converted-owner.cpp declarations/initialization/list/aggregate-member-converting-constructor.cpp
+:tests: classes/constructors/converting-ctor-multi-arg-list.cpp classes/constructors/converting-ctor.cpp classes/constructors/one-user-conversion-plus-standard.cpp classes/constructors/return-owner-converts-to-base-owner.cpp classes/copy-move/assign-converted-owner.cpp declarations/initialization/list/aggregate-member-converting-constructor.cpp classes/constructors/closure-argument-converting-constructor-template.cpp classes/constructors/closure-lvalue-converting-constructor-template-thunk.cpp
 
 A constructor that is not `explicit` is a *{term}`converting constructor`*. An
 implicit conversion can use a converting constructor to make an object
@@ -679,8 +679,8 @@ Span g{{1}};   // Span(int): {1} gives an int directly (ICS-15). The
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 188
-of 210 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 190
+of 212 tests.
 
 ### Divergences
 

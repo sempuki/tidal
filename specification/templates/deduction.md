@@ -198,7 +198,7 @@ The defaults of the template parameters come before the function type
 
 :::{rule} DED-1
 :kind: required
-:tests: templates/deduction/call-each-argument.cpp templates/deduction/call-member-and-operator.cpp classes/constructors/return-owner-converts-to-base-owner.cpp classes/operators/call-operator-template.cpp classes/operators/static-call-operator-template.cpp declarations/initialization/list/braced-constructor-template.cpp templates/deduction/array-bound-from-converted-elements.cpp classes/copy-move/assign-from-lambda-through-constructor-template.cpp templates/packs/member-template-enclosing-pack-after-deduced.cpp templates/packs/member-template-enclosing-pack-before-deduced.cpp classes/initializer-lists/braced-beside-constructor-template-deduction-fails.cpp
+:tests: templates/deduction/call-each-argument.cpp templates/deduction/call-member-and-operator.cpp classes/constructors/return-owner-converts-to-base-owner.cpp classes/operators/call-operator-template.cpp classes/operators/static-call-operator-template.cpp declarations/initialization/list/braced-constructor-template.cpp templates/deduction/array-bound-from-converted-elements.cpp classes/copy-move/assign-from-lambda-through-constructor-template.cpp templates/packs/member-template-enclosing-pack-after-deduced.cpp templates/packs/member-template-enclosing-pack-before-deduced.cpp classes/initializer-lists/braced-beside-constructor-template-deduction-fails.cpp expressions/lambdas/generic-reference-capture-template-argument.cpp classes/constructors/closure-argument-converting-constructor-template.cpp classes/constructors/closure-lvalue-converting-constructor-template-thunk.cpp
 
 In a call that names a function template, {term}`deduction` finds the
 {term}`template arguments <template argument>` from the call arguments. The specialization that
@@ -876,8 +876,8 @@ Gadget* g = new (&arena) Gadget;  // both match, and ordering prefers neither: n
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 151
-of 164 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 154
+of 167 tests.
 
 ### Divergences
 

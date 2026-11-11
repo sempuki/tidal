@@ -150,7 +150,7 @@ or in a class a member template.
 
 :::{rule} CTAD-1
 :kind: required
-:tests: templates/class-template-deduction/sites.cpp templates/class-template-deduction/dependent-qualifier.cpp templates/class-template-deduction/sites-for-and-condition.cpp templates/class-template-deduction/dependent-qualifier-template-keyword.cpp templates/class-template-deduction/template-template-parameter.cpp templates/class-template-deduction/template-template-parameter-alias.cpp templates/class-template-deduction/constant-parameter-guide.cpp templates/declarations/constant-parameter-class-template.cpp templates/class-template-deduction/no-constructor.cpp templates/class-template-deduction/braced-cast-class-template-member.cpp templates/class-template-deduction/braced-cast-function-template-return.cpp templates/class-template-deduction/braced-cast-function-template-variable.cpp templates/class-template-deduction/site-new-no-initializer.cpp
+:tests: templates/class-template-deduction/sites.cpp templates/class-template-deduction/dependent-qualifier.cpp templates/class-template-deduction/sites-for-and-condition.cpp templates/class-template-deduction/dependent-qualifier-template-keyword.cpp templates/class-template-deduction/template-template-parameter.cpp templates/class-template-deduction/template-template-parameter-alias.cpp templates/class-template-deduction/constant-parameter-guide.cpp templates/declarations/constant-parameter-class-template.cpp templates/class-template-deduction/no-constructor.cpp templates/class-template-deduction/braced-cast-class-template-member.cpp templates/class-template-deduction/braced-cast-function-template-return.cpp templates/class-template-deduction/braced-cast-function-template-variable.cpp templates/class-template-deduction/site-new-no-initializer.cpp templates/declarations/constant-parameter-class-template-string-literal.cpp
 
 The name of a class template, or of an alias template (CTAD-14), can
 stand with no argument list in these places:
@@ -761,8 +761,8 @@ Pair p(1, 2);                     // rejected: Pair<int>, then a tie
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 108
-of 137 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 109
+of 138 tests.
 
 ### Divergences
 

@@ -175,7 +175,7 @@ Without `mutable`, the body must not change a variable captured by copy
 
 :::{rule} LAM-5
 :kind: required
-:tests: expressions/lambdas/default-capture-mixed.cpp expressions/lambdas/default-captures.cpp
+:tests: expressions/lambdas/default-capture-mixed.cpp expressions/lambdas/default-captures.cpp expressions/lambdas/generic-reference-capture-object-call.cpp expressions/lambdas/generic-reference-capture-member-pointer.cpp expressions/lambdas/generic-reference-capture-template-argument.cpp expressions/lambdas/generic-reference-capture-closure-parameter.cpp
 
 `[=]` captures by copy each local variable that the body uses. `[&]`
 captures the same variables by reference. An explicit capture after a
@@ -379,7 +379,7 @@ A lambda must not:
 
 :::{rule} LAM-18
 :kind: required
-:tests: expressions/lambdas/capture-visible-in-trailing-return.cpp expressions/decltype/captured-in-lambda.cpp expressions/lambdas/explicit-capture-unevaluated-member.cpp expressions/lambdas/capture-not-visible-in-parameter-list.cpp
+:tests: expressions/lambdas/capture-visible-in-trailing-return.cpp expressions/decltype/captured-in-lambda.cpp expressions/lambdas/explicit-capture-unevaluated-member.cpp expressions/lambdas/capture-not-visible-in-parameter-list.cpp expressions/lambdas/generic-reference-capture-object-call.cpp expressions/lambdas/generic-reference-capture-member-pointer.cpp expressions/lambdas/generic-reference-capture-template-argument.cpp expressions/lambdas/generic-reference-capture-closure-parameter.cpp
 
 The captures of a lambda are visible in its trailing return type and its
 body. In the parameter list, a name refers to the enclosing variable,
@@ -539,8 +539,8 @@ int run() {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 95
-of 99 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 99
+of 103 tests.
 
 ### Divergences
 

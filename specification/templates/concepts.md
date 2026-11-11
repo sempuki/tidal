@@ -436,7 +436,7 @@ checked or substituted.
 
 :::{rule} CPT-26
 :kind: required
-:tests: templates/concepts/requirement-failure-false.cpp templates/concepts/requirement-access-concept.cpp templates/concepts/requirement-access-member.cpp templates/concepts/requirement-access-concept-in-member.cpp templates/concepts/requirement-access-concept-kept.cpp templates/concepts/requirement-access-concept-kept-false.cpp templates/concepts/requirement-false-outside-template.cpp templates/concepts/requires-expression-lookup-outside-constraint.cpp templates/concepts/requirement-deleted-function-false.cpp templates/concepts/requirement-narrowing-in-braces-false.cpp
+:tests: templates/concepts/requirement-failure-false.cpp templates/concepts/requirement-access-concept.cpp templates/concepts/requirement-access-member.cpp templates/concepts/requirement-access-concept-in-member.cpp templates/concepts/requirement-access-concept-kept.cpp templates/concepts/requirement-access-concept-kept-false.cpp templates/concepts/requirement-false-outside-template.cpp templates/concepts/requires-expression-lookup-outside-constraint.cpp templates/concepts/requirement-deleted-function-false.cpp templates/concepts/requirement-narrowing-in-braces-false.cpp templates/concepts/requirement-too-many-values-nested-aggregate.cpp statements/if/constexpr-requirement-too-many-values-discards-binding.cpp
 
 A requirement that depends on template parameters does not hold if
 substitution forms a type or an expression that is not valid. The
@@ -699,8 +699,8 @@ static_assert(!Sequence<int>);             // false: IteratorOf<int> is not vali
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 110
-of 128 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 112
+of 130 tests.
 
 ### Divergences
 

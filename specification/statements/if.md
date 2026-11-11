@@ -234,7 +234,7 @@ declaration hides the first one.
 
 :::{rule} IF-13
 :kind: required
-:tests: statements/if/constexpr-discard-in-template.cpp statements/if/constexpr-discard-generic-lambda.cpp
+:tests: statements/if/constexpr-discard-in-template.cpp statements/if/constexpr-discard-generic-lambda.cpp statements/if/constexpr-requirement-too-many-values-discards-binding.cpp
 
 In the `if constexpr` form, the branch that the condition does not select
 is a {term}`discarded statement`. In a {term}`templated context`, a
@@ -476,7 +476,7 @@ void conditions() {
 ## Evidence
 
 All rules in this page are `required` or `reject`. All eight compilers
-agree on 81 of 82 tests. The results are in `tests/RESULTS.md`.
+agree on 82 of 83 tests. The results are in `tests/RESULTS.md`.
 
 ### Divergences
 

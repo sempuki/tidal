@@ -105,7 +105,7 @@ braces or in parentheses. LIST-12 lists what is not valid.
 
 :::{rule} LIST-12
 :kind: reject
-:tests: declarations/initialization/list/aggregate-too-many.cpp declarations/initialization/list/missing-reference-member.cpp
+:tests: declarations/initialization/list/aggregate-too-many.cpp declarations/initialization/list/missing-reference-member.cpp templates/concepts/requirement-too-many-values-nested-aggregate.cpp statements/if/constexpr-requirement-too-many-values-discards-binding.cpp
 
 The list for an aggregate must not have more values than the aggregate
 has bases and members. A reference member without a default member
@@ -114,7 +114,7 @@ initializer must have a value in the list.
 
 :::{rule} LIST-4
 :kind: required
-:tests: declarations/initialization/list/brace-elision.cpp declarations/initialization/list/no-elision-when-direct.cpp declarations/initialization/list/empty-base-braces-ok.cpp
+:tests: declarations/initialization/list/brace-elision.cpp declarations/initialization/list/no-elision-when-direct.cpp declarations/initialization/list/empty-base-braces-ok.cpp templates/concepts/requirement-too-many-values-nested-aggregate.cpp
 
 The inner braces for a member that is an array or an aggregate can be
 omitted. The values then fill the elements of that member in order. The
@@ -291,7 +291,7 @@ signed char o[] = u8"x";  // rejected: wrong character type
 
 ## Evidence
 
-All eight compilers agree on 69 of 73 tests. The results are in
+All eight compilers agree on 71 of 75 tests. The results are in
 `tests/RESULTS.md`.
 
 ### Divergences

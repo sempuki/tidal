@@ -251,7 +251,7 @@ use is not valid ({rule}`TSP-20` gives the same for an {term}`explicit specializ
 
 :::{rule} INST-5
 :kind: required
-:tests: templates/instantiation/class-member-definitions-unused.cpp templates/instantiation/class-inline-static-member-unused.cpp templates/instantiation/class-scoped-enumeration-unused.cpp templates/instantiation/class-deleted-member-specialized.cpp templates/packs/member-template-enclosing-pack-after-deduced.cpp templates/packs/member-template-enclosing-pack-before-deduced.cpp templates/instantiation/friend-body-waits-for-use.cpp templates/instantiation/class-static-const-member-initializer-made.cpp templates/instantiation/class-static-constexpr-member-initializer-waits.cpp templates/instantiation/class-point-static-constexpr-made-at-use.cpp templates/instantiation/class-point-static-const-member.cpp templates/instantiation/member-return-type-waits-for-definition.cpp templates/instantiation/member-constructor-made-at-call.cpp templates/instantiation/member-deduced-return-waits-for-definition.cpp templates/instantiation/member-parameter-type-waits-for-definition.cpp templates/instantiation/static-inline-member-incomplete-argument.cpp templates/instantiation/static-member-incomplete-argument-declared.cpp
+:tests: templates/instantiation/class-member-definitions-unused.cpp templates/instantiation/class-inline-static-member-unused.cpp templates/instantiation/class-scoped-enumeration-unused.cpp templates/instantiation/class-deleted-member-specialized.cpp templates/packs/member-template-enclosing-pack-after-deduced.cpp templates/packs/member-template-enclosing-pack-before-deduced.cpp templates/instantiation/friend-body-waits-for-use.cpp templates/instantiation/class-static-const-member-initializer-made.cpp templates/instantiation/class-static-constexpr-member-initializer-waits.cpp templates/instantiation/class-point-static-constexpr-made-at-use.cpp templates/instantiation/class-point-static-const-member.cpp templates/instantiation/member-return-type-waits-for-definition.cpp templates/instantiation/member-constructor-made-at-call.cpp templates/instantiation/member-deduced-return-waits-for-definition.cpp templates/instantiation/member-parameter-type-waits-for-definition.cpp templates/instantiation/static-inline-member-incomplete-argument.cpp templates/instantiation/static-member-incomplete-argument-declared.cpp templates/instantiation/class-static-constexpr-member-calls-own-member.cpp
 
 The instantiation of a class makes the declarations of its members. It
 does not make these definitions:
@@ -805,8 +805,8 @@ extern template constexpr int size_of<long>;  // rejected: constexpr (INST-25)
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 145
-of 176 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 146
+of 177 tests.
 
 ### Divergences
 

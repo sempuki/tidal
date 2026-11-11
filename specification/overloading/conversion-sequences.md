@@ -376,7 +376,7 @@ the program. The rule named with each fault is the specific rule.
 
 :::{rule} ICS-9
 :kind: required
-:tests: overloading/conversion-sequences/two-user-defined-none.cpp overloading/conversion-sequences/two-user-defined-function-then-constructor.cpp
+:tests: overloading/conversion-sequences/two-user-defined-none.cpp overloading/conversion-sequences/two-user-defined-function-then-constructor.cpp classes/constructors/closure-argument-converting-constructor-template.cpp classes/constructors/closure-lvalue-converting-constructor-template-thunk.cpp
 
 A sequence holds at most one user-defined conversion. A conversion that
 needs two has no sequence, and {rule}`CTOR-22` and {rule}`CVF-10` reject
@@ -876,8 +876,8 @@ send(s);                    // rejected: Target(Source&) and operator Target()
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 114
-of 145 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 116
+of 147 tests.
 
 ### Divergences
 

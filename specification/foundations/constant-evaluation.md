@@ -362,7 +362,7 @@ where the division has a result at run time ({rule}`MUL-11`).
 
 :::{rule} CE-16
 :kind: reject
-:tests: foundations/constant-evaluation/call-before-definition.cpp foundations/constant-evaluation/member-call-before-definition.cpp
+:tests: foundations/constant-evaluation/call-before-definition.cpp foundations/constant-evaluation/member-call-before-definition.cpp foundations/constant-evaluation/static-constexpr-member-calls-own-member.cpp
 
 If a `constexpr` function has only a declaration at the point where
 constant evaluation calls it, the call is not a constant expression. A
@@ -667,8 +667,8 @@ constexpr All all{.a = 1};            // rejected: All is not literal (CE-23)
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 135
-of 170 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 136
+of 171 tests.
 
 ### Divergences
 
