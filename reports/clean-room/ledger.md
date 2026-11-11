@@ -27,7 +27,8 @@ The rows RV4-1 to RV4-7 give IDs to the doubts that the RV4 repair
 commit (7cf4574b) left for the next review. The RV5 reviews gave their
 own IDs (RV5-A-n and RV5-B-n), and so do the RV6, RV7, and RV8 reviews
 (RV6-A-n, RV7-B-n, and so on). The read of a repair diff gives IDs of
-the form RV8-R-n. The rows RM12-1 to RM12-3 give IDs to three findings
+the form RV8-R-n (the read of RV7's repair diff) or RV9-R-n (the read of
+RV8's). The rows RM12-1 to RM12-3 give IDs to three findings
 that only a commit message or a probe README held until the round 12
 editor report named them (`roadmap-12/editor.md`, "Records that
 drift").
@@ -1064,6 +1065,11 @@ drift").
 | RM12-1 | `roadmap-12/editor.md` | commit | d6fd9cea, decision 0063, item RV8: ADD-11 says that a byte pointer into an object and a pointer into the storage that holds it have no difference, with an accept test whose interpreter expectation is run-fail |
 | RM12-2 | `roadmap-12/editor.md` | commit | d6fd9cea, decision 0063, item RV8: elaborated_type takes attributes after the class key, TYN-10 rejects them outside a forward declaration, and TYN-6 allows them in one, with two tests; Q-0445 holds GCC's acceptance |
 | RM12-3 | `roadmap-12/editor.md` | question | Q-0444 |
+| RV9-R-1 | `../review/2026-11-11-read-of-rv8-repair-diff.md` | open | DTOR-8, Q-0444: the reference agrees with DTOR-8, Clang, and EDG; withdraws RV8-R-1 and RV8-A-6, so Q-0444, its row 4 item, and the test notes hold a disagreement the reference does not have |
+| RV9-R-2 | `../review/2026-11-11-read-of-rv8-repair-diff.md` | open | INST-2, INST-1: a call in an unevaluated decltype operand is not an immediate invocation; withdraws RV8-R-4; the row 4 item INST-1, INST-2, the INST Note, and the test note are wrong |
+| RV9-R-3 | `../review/2026-11-11-read-of-rv8-repair-diff.md` | open | ADD-14, Q-0442: every step and difference on such a pointer is undefined, a step of zero included; option 2 exempts zero, and the test's difference is also undefined |
+| RV9-R-4 | `../review/2026-11-11-read-of-rv8-repair-diff.md` | open | TYN-10, Q-0445: an attribute in a declaration with only a class key and a template-id inside an explicit or partial specialization; small doubt |
+| RV9-R-5 | `../review/2026-11-11-read-of-rv8-repair-diff.md` | open | OPR-8: a literal operator template parameter with a deduced class type; reference silent; small doubt |
 | W20-1 | `W20/report.md` | commit | 0ae4cdb5, decision 0061, item F3: STG-P2 and the FixedVec example say that a pointer to the object in one row does not reach the object in the next row (ADD-10); test foundations/storage/byte-rows-pointer-does-not-reach-next-row.cpp |
 | W20-2 | `W20/report.md` | commit | 53577f27 (front-end round 24, decision 0061, item FE): the test passes; F3 states in UNI-14 that a construction inside a member that is not active does not make it active, and that pointers to the elements of such an array member can be formed, stepped, and compared (STG-10); UNI-6 makes the construction undefined (Q-0425); front end: a subscript of an array member with no active member is unsupported; tests classes/unions/array-member-element-address-no-active-member.cpp, array-member-element-steps-no-active-member-constant.cpp, construct-at-array-member-element-constant.cpp, chain-assign-array-element-nontrivial-constant.cpp |
 | W20-3 | `W20/report.md` | commit | 53577f27 (front-end round 24, decision 0061, item FE): the test passes; F3 states in CNS-11 that the constraints of the template candidates are not checked when a candidate that is not a template takes every argument with no conversion, and in CPY-15 that a by-value constructor template is checked before it is dropped otherwise (Q-0426); front end: CNS-35 false reject; tests templates/constraints/by-value-constructor-template-constraint-copies-class.cpp, exact-non-template-skips-constraint-check.cpp, added-const-non-template-checks-constraint.cpp, classes/copy-move/copy-constructor-exact-skips-template-constraint.cpp, by-value-constructor-template-constraint-checked.cpp |

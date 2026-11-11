@@ -1,0 +1,15 @@
+Similarity report: run threshold 8 words, overlap threshold 0.25
+
+ok   rv8readsim/2026-11-11-read-of-rv8-repair-diff.md:Read of the RV8 repair diff (d6fd9cea) longest=0   overlap=0.00
+ok   rv8readsim/2026-11-11-read-of-rv8-repair-diff.md:Result longest=0   overlap=0.01
+ok   rv8readsim/2026-11-11-read-of-rv8-repair-diff.md:Hunks longest=0   overlap=0.00
+ok   rv8readsim/2026-11-11-read-of-rv8-repair-diff.md:RV8 points longest=0   overlap=0.00
+ok   rv8readsim/2026-11-11-read-of-rv8-repair-diff.md:Question records longest=0   overlap=0.00
+ok   rv8readsim/2026-11-11-read-of-rv8-repair-diff.md:New questions longest=0   overlap=0.03
+ok   rv8readsim/2026-11-11-read-of-rv8-repair-diff.md:RV9-R-1 longest=0   overlap=0.02
+ok   rv8readsim/2026-11-11-read-of-rv8-repair-diff.md:RV9-R-2 longest=0   overlap=0.00
+ok   rv8readsim/2026-11-11-read-of-rv8-repair-diff.md:RV9-R-3 longest=0   overlap=0.02
+ok   rv8readsim/2026-11-11-read-of-rv8-repair-diff.md:RV9-R-4 longest=0   overlap=0.00
+ok   rv8readsim/2026-11-11-read-of-rv8-repair-diff.md:RV9-R-5 longest=0   overlap=0.03
+
+0 flagged
