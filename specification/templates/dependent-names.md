@@ -140,7 +140,7 @@ name is a type, a template, or a value. The program states the choice:
 | `T::name` | a value, except in a type-only position (DEP-20) | the name is not a type (DEP-19) |
 | `typename T::name` | a type | the name is a type (DEP-22) |
 | `T::name<...>`, `x.name<...>` | `name`, then the less-than operator | |
-| `x.name<...>`, where `x` has the type of the current instantiation and the class declares the member template `name` | a {term}`template-id` (DEP-24, {question}`Q-0427`) | |
+| `x.name<...>`, where `x` has the type of the current instantiation and the class or a base that is not dependent declares the member template `name` | a {term}`template-id` (DEP-24, {question}`Q-0427`) | |
 | `typename T::name<...>`, `T::name<...>` in a base list or an alias | not valid without `template` (DEP-24, {question}`Q-0225`) | |
 | `T::template name<...>` | a {term}`template-id` | the name is a template (DEP-26) |
 | `typename T::template name<...>` | a type | the name is a class template or {term}`alias template` |
@@ -539,16 +539,19 @@ type is not valid.
 
 :::{rule} DEP-24
 :kind: reject
-:tests: templates/dependent-names/template-keyword-needed-qualified.cpp templates/dependent-names/template-keyword-needed-member.cpp templates/dependent-names/template-keyword-needed-template-argument.cpp templates/dependent-names/template-keyword-needed-after-typename.cpp templates/dependent-names/template-keyword-forms.cpp templates/dependent-names/template-keyword-needed-base.cpp templates/dependent-names/template-keyword-needed-alias-target.cpp expressions/lambdas/template-head-dependent-call.cpp templates/dependent-names/member-template-through-current-instantiation-object.cpp templates/dependent-names/member-template-current-instantiation-dependent-base-needs-template.cpp templates/dependent-names/member-template-current-instantiation-pointer.cpp templates/dependent-names/template-keyword-this-dependent-base.cpp
+:tests: templates/dependent-names/template-keyword-needed-qualified.cpp templates/dependent-names/template-keyword-needed-member.cpp templates/dependent-names/template-keyword-needed-template-argument.cpp templates/dependent-names/template-keyword-needed-after-typename.cpp templates/dependent-names/template-keyword-forms.cpp templates/dependent-names/template-keyword-needed-base.cpp templates/dependent-names/template-keyword-needed-alias-target.cpp expressions/lambdas/template-head-dependent-call.cpp templates/dependent-names/member-template-through-current-instantiation-object.cpp templates/dependent-names/member-template-current-instantiation-dependent-base-needs-template.cpp templates/dependent-names/member-template-current-instantiation-pointer.cpp templates/dependent-names/template-keyword-this-dependent-base.cpp templates/dependent-names/member-template-non-dependent-base.cpp templates/dependent-names/member-template-current-instantiation-qualifier-dependent-base.cpp
 
 A {term}`member template` must have the keyword `template` before its name in
 these places:
 
 - after `::` with a dependent qualifier that is not the current
-  instantiation,
+  instantiation, or with the current instantiation when lookup at the
+  definition finds no member template, as for a member of a dependent
+  base,
 - after `.` or `->` with a type-dependent object, unless the object's
   type is the current instantiation and lookup at the definition finds
-  the member template in the class ({question}`Q-0427`).
+  the member template in the class or in a base that is not dependent
+  ({question}`Q-0427`).
 
 Without the keyword, a `<` after the name is the less-than operator
 ({rule}`TARG-2`), and the name is not a template template argument.
@@ -825,8 +828,8 @@ template <class... T> int count() {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 113
-of 136 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 115
+of 138 tests.
 
 ### Divergences
 
@@ -983,7 +986,12 @@ and the questions say so.
   constant member equal to the parameter `N`, as another
   specialization. The result holds for `const` and `constexpr` members,
   with or without parentheses. The review predicts the current
-  instantiation.
+  instantiation. The gap review of the text phase 13 wrote on
+  templates (`reports/review/2026-11-10-gap-review-phase-13-expressions-overloading-templates.md`,
+  RV6-B-2) reads a member of the parameter's type, initialized with the
+  parameter's name alone, as standing for the parameter, and the form
+  with parentheses as another specialization. DEP-15 and DEP-P4 follow
+  the compilers, and `pending.md` row 4 holds the case.
 - DEP-31: every compiler rejects `sizeof` of a class that is
   incomplete at the definition, even if the class is complete before
   the use. An explicit specialization declared after an instantiation

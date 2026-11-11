@@ -1004,6 +1004,13 @@ cells give the outcome of the test on each compiler.
 
 ### Notes
 
+- ICS-11, ICS-46: the gap review of the text phase 13 wrote on
+  overloading (`reports/review/2026-11-10-gap-review-phase-13-expressions-overloading-templates.md`,
+  RV6-B-4) reads the C++23 ranking rules as unable to tell
+  `int* const&` from `const int* const&` for an `int*` prvalue, since
+  both sequences are the identity. Every compiler prefers the less
+  qualified reference (`pointer-prvalue-less-qualified-reference.cpp`),
+  and ICS-46 follows the compilers.
 - ICS-8 is a `reject` rule because each fault is rejected once its
   function is chosen. Every test has a fallback function that the call
   would use if the fault removed the sequence.

@@ -317,7 +317,7 @@ alignment ({rule}`NEW-29`), and `p` must be aligned for `T`. The array form `new
 
 :::{rule} STG-6
 :kind: required
-:tests: foundations/storage/reuse-does-not-call-destructor.cpp foundations/storage/byte-array-hosts-objects.cpp foundations/storage/replace-base-ends-enclosing-sanitizer.cpp foundations/storage/arena-reset-reuses-bytes.cpp foundations/storage/byte-array-rows-host-objects.cpp
+:tests: foundations/storage/reuse-does-not-call-destructor.cpp foundations/storage/byte-array-hosts-objects.cpp foundations/storage/replace-base-ends-enclosing-sanitizer.cpp foundations/storage/arena-reset-reuses-bytes.cpp foundations/storage/byte-array-rows-host-objects.cpp classes/unions/construct-in-member-of-inactive-member-union-run.cpp
 
 If a new object takes storage that another object occupies, the
 lifetime of the other object ends, and its destructor does not run.
@@ -802,7 +802,7 @@ The forms of storage for a sequence of `T` differ in four properties:
 | an array member `T items[N]` | yes | yes | yes | yes |
 | a byte row for each slot, as in `FixedVec` | yes | no: placement `new` and a cast from `void*` are not constants | no | no |
 | a union slot for each element, as in `FixedStack` ({doc}`/classes/unions`) | yes | yes, with `std::construct_at` ({rule}`UNI-14`) | no | no |
-| a union with an array member `T items[N]` | yes | only when an assignment makes the member active ({rule}`UNI-13`) | yes, once the member is active | a trivial one, for that assignment |
+| a union with an array member `T items[N]` | yes | only after the union's initializer, an assignment ({rule}`UNI-13`), or `std::construct_at` of the whole member makes the member active | yes, once the member is active | yes. Each of these builds every element, and an assignment needs a trivial one |
 | storage from an allocation function, as in `Stack` | no | yes, through `std::allocator` ({rule}`LSUP-11`) | yes ({rule}`STG-28`) | no |
 
 No form inside the object allows constant evaluation, one array of
@@ -897,8 +897,8 @@ static_assert(read_old() == 1);       // rejected (CE-9)
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 98
-of 104 tests. EDG runs no programs, so its results for the run tests say
+The results are in `tests/RESULTS.md`. All eight compilers agree on 99
+of 105 tests. EDG runs no programs, so its results for the run tests say
 only that the programs are valid.
 
 ### Divergences

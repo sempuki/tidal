@@ -40,8 +40,8 @@ The tests in **Affects**:
 
 - The constant test with a member union expects GCC's and Clang's
   rejection and records EDG as an override.
-- The run test with a member union expects the matrix compilers to
-  build the program, and the front end's interpreter to stop (UNI-6).
+- The run test with a member union expects a run on every compiler
+  that runs programs, and in the front end's interpreter (UNI-14).
 - The constant test of `std::construct_at` on an element of an array
   member expects the rejection of Clang and GCC 14, and records GCC 16
   and EDG as overrides.
@@ -60,7 +60,9 @@ gives the forms of the array member.
    the member active. Constant evaluation rejects the construction. At
    run time, a pointer to an element or to a member of such a member
    can be formed (STG-10), and a program that only forms and compares
-   such pointers runs.
+   such pointers runs. A construction there at run time is valid, and
+   the program can use the new object through the pointer that the
+   construction gives.
 2. Building the object makes the enclosing member active, as UNI-14
    does for an object of the member's type. Constant evaluation accepts
    the construction (EDG, and GCC 16 for an array element).
@@ -74,6 +76,8 @@ program that only forms pointers into the member runs on every
 compiler.
 
 Kept open on 2026-11-10 under decision 0054, because the review reads the answer with a doubt on the run-time form, and two newest families (GCC 16 and EDG) differ in the array form (item RV6).
+
+Rule text on 2026-11-10 (decision 0061, item RV6): UNI-14 and UNI-6 limit the rejection to constant evaluation. At run time the construction is valid, and the program can use the new object through the pointer that the construction gives. The run test now expects a run on every compiler and in the front end's interpreter. Whether the enclosing member then becomes active is the review's remaining doubt, and no test tells the outcomes apart.
 
 ## Opinions
 

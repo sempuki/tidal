@@ -83,7 +83,10 @@ exists after the jump, and the end of the block destroys it as usual.
 
 A local variable or a parameter that is returned by name is about to
 end, so the name is treated as an rvalue and the value is moved out
-({principle}`CPY-P4`). The implementation can go further and make a
+({principle}`CPY-P4`). The rule covers only a variable with automatic
+storage. A `static` or `thread_local` local variable outlives the
+call, and a structured binding is no variable, so each such name stays
+an lvalue. The implementation can go further and make a
 local variable the result object itself, but never a parameter, whose
 storage belongs to the caller.
 :::
@@ -179,7 +182,7 @@ constant evaluation rejects the read.
 
 :::{rule} JMP-10
 :kind: required
-:tests: statements/jumps/return-move-only-parameter.cpp statements/jumps/return-rvalue-ref-param-as-rvalue-ref.cpp statements/jumps/return-parenthesized-move-only.cpp declarations/functions/return-deduction/decltype-auto-paren-local-lvalue-kinds.cpp statements/jumps/return-name-limits.cpp statements/jumps/return-structured-binding-lvalue.cpp
+:tests: statements/jumps/return-move-only-parameter.cpp statements/jumps/return-rvalue-ref-param-as-rvalue-ref.cpp statements/jumps/return-parenthesized-move-only.cpp declarations/functions/return-deduction/decltype-auto-paren-local-lvalue-kinds.cpp statements/jumps/return-name-limits.cpp statements/jumps/return-structured-binding-lvalue.cpp statements/jumps/return-thread-local-local-lvalue.cpp
 
 If the expression of a `return` statement is the name of a local
 variable or a parameter of the function, the name is an xvalue (see
@@ -188,7 +191,7 @@ These details apply:
 
 - A variable or parameter of rvalue reference type counts.
 - Parentheses around the name do not change the result.
-- A `static` local variable does not count.
+- A `static` or `thread_local` local variable does not count.
 - A `volatile` local object, a local variable of lvalue reference
   type, and a variable of rvalue reference type to a `volatile` object
   do not count. Each name stays an lvalue.
@@ -360,7 +363,7 @@ int pick(int v) {
 
 ## Evidence
 
-All eight compilers agree on 60 of 64 tests. The results are in
+All eight compilers agree on 61 of 65 tests. The results are in
 `tests/RESULTS.md`.
 
 ### Divergences

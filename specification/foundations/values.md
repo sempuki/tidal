@@ -105,7 +105,7 @@ rvalue reference must not bind to that name directly.
 
 :::{rule} VC-2
 :kind: required
-:tests: foundations/values/prvalues.cpp foundations/values/cv-prvalue-dropped.cpp foundations/values/assign-to-class-prvalue.cpp templates/deduction/forwarding-const-scalar-prvalue.cpp
+:tests: foundations/values/prvalues.cpp foundations/values/cv-prvalue-dropped.cpp foundations/values/assign-to-class-prvalue.cpp templates/deduction/forwarding-const-scalar-prvalue.cpp templates/deduction/forwarding-const-array-prvalue.cpp
 
 These expressions are prvalues:
 
@@ -117,9 +117,11 @@ These expressions are prvalues:
 - a member access that names a non-static member function. Such an
   expression can only be called ({rule}`PFX-20`).
 
-A prvalue of a type that is not a class type has no {term}`cv-qualifiers <cv-qualifier>`. So a
-function can declare a return type such as `const int`, and a call to
-the function still gives a plain `int`. A class prvalue can be assigned
+A prvalue of a type that is neither a class type nor an array type has
+no {term}`cv-qualifiers <cv-qualifier>`. So a function can declare a
+return type such as `const int`, and a call to the function still gives
+a plain `int`. An array prvalue, such as `Pair{1, 2}` with
+`using Pair = const int[2];`, keeps the cv-qualifiers of its elements. A class prvalue can be assigned
 to, because the assignment is a call of a member function. ASN-6 covers
 a braced list as the right operand.
 :::
@@ -304,7 +306,7 @@ NoCopy a = NoCopy(NoCopy(5));      // fine: no copy occurs
 
 ## Evidence
 
-All eight compilers agree on 64 of 66 tests. The results are in
+All eight compilers agree on 65 of 67 tests. The results are in
 `tests/RESULTS.md`.
 
 ### Divergences

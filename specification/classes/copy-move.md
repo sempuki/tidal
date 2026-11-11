@@ -201,10 +201,11 @@ copy a `const` object.
 
 :::{rule} CPY-15
 :kind: reject
-:tests: classes/copy-move/copy-ctor-by-value.cpp classes/copy-move/template-ctor-by-value-own-class.cpp classes/copy-move/class-template-ctor-by-value.cpp templates/constraints/by-value-constructor-template-constraint-copies-class.cpp classes/copy-move/by-value-constructor-template-constraint-checked.cpp
+:tests: classes/copy-move/copy-ctor-by-value.cpp classes/copy-move/template-ctor-by-value-own-class.cpp classes/copy-move/class-template-ctor-by-value.cpp templates/constraints/by-value-constructor-template-constraint-copies-class.cpp classes/copy-move/by-value-constructor-template-constraint-checked.cpp classes/copy-move/cv-class-by-value-constructor.cpp
 
-A constructor of class `T` must not have a first parameter of type `T`
-if all other parameters have default arguments. In a {term}`class template`,
+A constructor of class `T` must not have a first parameter of type `T`,
+with or without cv-qualifiers, if all other parameters have default
+arguments. In a {term}`class template`,
 the implementation rejects such a constructor at the template's
 definition, before any {term}`instantiation`. A constructor template
 never gives such a constructor, so a copy of a `T` uses the copy
@@ -699,8 +700,8 @@ Any c(1);                          // the template, with T = int
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 127
-of 136 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 128
+of 137 tests.
 
 ### Divergences
 
@@ -735,7 +736,9 @@ of 136 tests.
   a copy or move constructor takes the argument with no conversion, as
   Clang 22 and GCC say. EDG and Clang 18 check the constraint. For a
   by-value template and an lvalue that is not `const`, the check runs,
-  and GCC skips it.
+  and GCC skips it. The gap reviews of the text phase 13 wrote read the
+  C++23 text as EDG and Clang 18 do, and `pending.md` row 4 holds the
+  case.
 
 ### Split tests
 

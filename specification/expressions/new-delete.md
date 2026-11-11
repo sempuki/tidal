@@ -447,7 +447,7 @@ initializer's arguments. The function is an `operator delete`, or an
 
 :::{rule} NEW-22
 :kind: required
-:tests: expressions/new-delete/throw-class-both-usual-forms.cpp expressions/new-delete/aligned-class-both-forms.cpp expressions/new-delete/throw-class-sized-form-only.cpp expressions/new-delete/throw-global-scope-new.cpp expressions/new-delete/aligned-global-delete.cpp exceptions/unwinding/new-single-object-sized-delete.cpp
+:tests: expressions/new-delete/throw-class-both-usual-forms.cpp expressions/new-delete/aligned-class-both-forms.cpp expressions/new-delete/throw-class-sized-form-only.cpp expressions/new-delete/throw-global-scope-new.cpp expressions/new-delete/aligned-global-delete.cpp exceptions/unwinding/new-single-object-sized-delete.cpp expressions/new-delete/aligned-global-delete-sized-form.cpp
 
 Without placement arguments, the deallocation function is a usual form.
 A usual form has a `void*` parameter, and can have a second parameter
@@ -459,7 +459,9 @@ the aligned forms, the forms that the search finds decide the call:
 - If a class declares one form, that form is called.
 - For the global functions, {rule}`UNW-3` gives the form. A single
   object of complete type whose alignment is not more than the default
-  new alignment uses the sized form. In the cases that UNW-3 leaves open, either form can be called.
+  new alignment uses the sized form. After `delete`, a single object of
+  complete type with more alignment uses the sized aligned form. In the
+  cases that UNW-3 leaves open, either form can be called.
 :::
 
 :::{rule} NEW-23
@@ -493,7 +495,7 @@ not freed, in these cases:
 
 :::{rule} NEW-28
 :kind: required
-:tests: expressions/new-delete/aligned-new-passes-alignment.cpp expressions/new-delete/aligned-delete-passes-alignment.cpp expressions/new-delete/aligned-global-delete.cpp expressions/new-delete/aligned-new-constant.cpp foundations/language-support/alignment-enumeration-self-declared.cpp foundations/language-support/alignment-enumeration-not-declared.cpp expressions/new-delete/aligned-class-both-forms.cpp expressions/new-delete/only-aligned-class-form-ordinary-type.cpp
+:tests: expressions/new-delete/aligned-new-passes-alignment.cpp expressions/new-delete/aligned-delete-passes-alignment.cpp expressions/new-delete/aligned-global-delete.cpp expressions/new-delete/aligned-new-constant.cpp foundations/language-support/alignment-enumeration-self-declared.cpp foundations/language-support/alignment-enumeration-not-declared.cpp expressions/new-delete/aligned-class-both-forms.cpp expressions/new-delete/only-aligned-class-form-ordinary-type.cpp expressions/new-delete/aligned-global-delete-sized-form.cpp
 
 If the alignment of `T` is more than the {term}`default new
 alignment`, a `new` expression for `T` or an array of `T` passes
@@ -778,7 +780,7 @@ int* q = new (cell) int(4);     // the int is at cell (NEW-33)
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 130
-of 155 tests.
+of 156 tests.
 
 ### Divergences
 
@@ -846,6 +848,7 @@ the compile.
 |---|---|---|---|---|---|---|
 | `aligned-deleted-form-beside-unaligned.cpp` | NEW-29, NEW-25 | reject | reject | run | reject | {question}`Q-0417` |
 | `aligned-forms-by-name.cpp` | NEW-26, LSUP-5 | run | Clang 22: run; Clang 18: reject | run | accept | {question}`Q-0125` |
+| `aligned-global-delete-sized-form.cpp` | NEW-22, NEW-28 | run | Clang 22: run; Clang 18: run-fail | run | accept | |
 | `aligned-private-form-beside-unaligned.cpp` | NEW-29, NEW-25 | reject | reject | run | reject | {question}`Q-0417` |
 | `array-floating-size-exact.cpp` | NEW-2 | run | run | reject | accept | {question}`Q-0036` |
 | `array-non-integral-size.cpp` | NEW-2 | accept | accept | reject | accept | {question}`Q-0036` |
@@ -886,9 +889,13 @@ the compile.
   usual forms, every compiler calls the form without the size, after
   `delete` and after a constructor throws. When the program replaces
   both global aligned forms, Clang 22 and GCC call the form with the
-  size after `delete`, and Clang 18 calls the form without it. After a
-  throw, both call the form without the size. NEW-22 and UNW-3 let
-  either global aligned form be called.
+  size after `delete`, and Clang 18 calls the form without it
+  (`aligned-global-delete-sized-form.cpp`). NEW-22 follows the newest
+  compilers and the gap review of the text phase 13 wrote on templates
+  (`reports/review/2026-11-10-gap-review-phase-13-expressions-overloading-templates.md`,
+  RV6-B-13) there. After a throw, both call the form without the size,
+  and UNW-3 lets either global aligned form be called
+  (`documentation/decisions/pending.md`, row 4).
 - NEW-22: the gap review of the rules that phase 7 rewrote
   (`reports/review/2026-11-04-gap-review-phase-7-repairs.md`) reads the
   reference as fixing the sized global form for a single object of

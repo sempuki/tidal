@@ -274,7 +274,7 @@ under DED-8, the {term}`value category` of the argument takes no part.
 
 :::{rule} DED-8
 :kind: required
-:tests: templates/deduction/forwarding-reference.cpp templates/deduction/forwarding-const-not.cpp templates/deduction/forwarding-class-parameter-not.cpp templates/deduction/forwarding-nested-not.cpp templates/deduction/forwarding-nested-rvalue.cpp classes/members/explicit-object-deduced-forwarding.cpp classes/members/explicit-object-deduced-constant.cpp templates/deduction/forwarding-const-scalar-prvalue.cpp templates/deduction/forwarding-const-class-prvalue.cpp
+:tests: templates/deduction/forwarding-reference.cpp templates/deduction/forwarding-const-not.cpp templates/deduction/forwarding-class-parameter-not.cpp templates/deduction/forwarding-nested-not.cpp templates/deduction/forwarding-nested-rvalue.cpp classes/members/explicit-object-deduced-forwarding.cpp classes/members/explicit-object-deduced-constant.cpp templates/deduction/forwarding-const-scalar-prvalue.cpp templates/deduction/forwarding-const-class-prvalue.cpp templates/deduction/forwarding-const-array-prvalue.cpp
 
 A {term}`forwarding reference` is a function parameter of type `T&&`,
 with `T` an unqualified type parameter of the template itself. `T&&`
@@ -285,9 +285,10 @@ is no forwarding reference. For an argument of type `A`:
   lvalue reference ({rule}`DCL-4`),
 - otherwise, `T` is `A`.
 
-A prvalue of a type that is not a class has no cv-qualifiers
-({rule}`VC-2`). So for a call of a function that returns `const int`,
-`A` is `int`. A class prvalue keeps its cv-qualifiers in `A`.
+A prvalue of a type that is neither a class nor an array has no
+cv-qualifiers ({rule}`VC-2`). So for a call of a function that returns
+`const int`, `A` is `int`. A class prvalue keeps its cv-qualifiers in
+`A`, and an array prvalue keeps those of its elements.
 :::
 
 :::{rule} DED-9
@@ -508,7 +509,7 @@ a {term}`deduction failure`.
 
 :::{rule} DED-24
 :kind: required
-:tests: templates/deduction/substitution-failure-removes.cpp templates/deduction/substitution-failure-forms.cpp templates/deduction/substitution-adjusted-type.cpp templates/deduction/substitution-explicit-specifier.cpp templates/deduction/substitution-lambda-call-fails.cpp templates/deduction/specialization-distinct-functions.cpp templates/deduction/substitution-failure-undefined-operation.cpp templates/deduction/substitution-failure-evaluation-limit.cpp templates/deduction/substitution-failure-negative-bound.cpp templates/deduction/substitution-failure-negative-bound-computed.cpp templates/deduction/substitution-failure-negative-bound-ellipsis.cpp templates/deduction/constraint-failure-in-return-type.cpp templates/deduction/constraint-failure-in-default-template-argument.cpp templates/deduction/address-declared-result-body-not-instantiated.cpp templates/deduction/qualified-name-in-incomplete-class.cpp templates/deduction/substitution-failure-array-of-function-or-void.cpp
+:tests: templates/deduction/substitution-failure-removes.cpp templates/deduction/substitution-failure-forms.cpp templates/deduction/substitution-adjusted-type.cpp templates/deduction/substitution-explicit-specifier.cpp templates/deduction/substitution-lambda-call-fails.cpp templates/deduction/specialization-distinct-functions.cpp templates/deduction/substitution-failure-undefined-operation.cpp templates/deduction/substitution-failure-evaluation-limit.cpp templates/deduction/substitution-failure-negative-bound.cpp templates/deduction/substitution-failure-negative-bound-computed.cpp templates/deduction/substitution-failure-negative-bound-ellipsis.cpp templates/deduction/constraint-failure-in-return-type.cpp templates/deduction/constraint-failure-in-default-template-argument.cpp templates/deduction/address-declared-result-body-not-instantiated.cpp templates/deduction/qualified-name-in-incomplete-class.cpp templates/deduction/substitution-failure-array-of-function-or-void.cpp templates/deduction/substitution-enumeration-qualifier.cpp templates/deduction/substitution-member-wrong-kind.cpp
 
 The values replace the template parameters in these places, and the
 function type is then adjusted as a declared one is ({rule}`DCL-8`):
@@ -525,8 +526,11 @@ These types are among those that are not valid:
 - a pointer to a reference, or a reference to `void`,
 - an array of references, of functions, or of `void`,
 - a pointer to a member of a type that is not a class,
-- a qualified name such as `T::type`, when `T` is not a class, is an
-  incomplete class, or has no such member,
+- a qualified name such as `T::type`, when `T` is neither a class nor
+  an enumeration, is an incomplete class, or has no such member,
+- a qualified name whose member has the wrong kind: a value where a
+  type is needed, a type where a value is needed, or a name that is
+  not a template after `template`,
 - a function that returns an array or a function,
 - an array whose bound is zero or less ({rule}`DCL-19`,
   {question}`Q-0399`),
@@ -853,8 +857,8 @@ Gadget* g = new (&arena) Gadget;  // both match, and ordering prefers neither: n
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 141
-of 154 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 144
+of 157 tests.
 
 ### Divergences
 

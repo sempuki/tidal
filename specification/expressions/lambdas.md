@@ -531,6 +531,17 @@ of 95 tests.
 
 ### Notes
 
+- LAM-6: the gap review of the text phase 13 wrote on expressions
+  (`reports/review/2026-11-10-gap-review-phase-13-expressions-overloading-templates.md`,
+  RV6-B-5) reads the limit as the innermost enclosing scope. Inside a
+  function, a lambda can have a parameter scope as that scope, such as
+  in the body of a requires expression with parameters, and the review
+  forbids a capture default there. In the writer's probe
+  (`reports/clean-room/roadmap-10/writer-probes/rv6-points.json`),
+  Clang 22 and GCC 16 reject each lambda with a capture in the body of
+  a requires expression inside a function, with or without parameters,
+  and not every message names the capture. EDG and GCC 14 accept each
+  form. LAM-6 does not name the case, and no test checks it.
 - LAM-6: the gap review of the text phase 8 wrote on expressions
   (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`)
   reads the limit as a block around the lambda, so a lambda in a member

@@ -1,0 +1,202 @@
+| | probe |
+|---|---|
+| A-9 thread_local local, decltype(auto) (x) | accept |
+| A-9 thread_local local, move-only return | reject |
+| A-9 static local, move-only return | reject |
+| A-10 const decltype(array) | accept |
+| A-10 const decltype(function)* | accept |
+| A-11 ~decltype(variable) | accept: edg-7.0-ilp32, edg-7.0, clang-host, clang-22, clang-18, clang-22-o2; reject: gcc-14, gcc-host, gcc-16-o2, gcc-16 |
+| A-11 ~decltype(*p) (reference) | reject |
+| A-11 ~decltype(r), r a reference | reject |
+| A-11 ~decltype((s)) (reference) | reject |
+| A-17 anonymous union in anonymous union | accept: gcc-14, gcc-host, gcc-16, gcc-16-o2; reject: edg-7.0, clang-18, clang-host, clang-22, edg-7.0-ilp32, clang-22-o2 |
+| A-17 anonymous struct in anonymous union | reject |
+| A-17 static_assert in anonymous union | accept |
+| A-18 C(const C) | reject |
+| A-18 C(volatile C) | reject |
+| A-18 C(const C) with default arg | reject |
+| A-6 trailing requires clause sees N | accept |
+| A-6 friend, parameter type in inline namespace of N | accept: gcc-host, edg-7.0-ilp32, edg-7.0, gcc-14, gcc-16, gcc-16-o2; reject: clang-host, clang-18, clang-22, clang-22-o2 |
+| A-6 friend, parameter type in N | accept: edg-7.0-ilp32, edg-7.0, gcc-host, gcc-16-o2, gcc-16, gcc-14; reject: clang-host, clang-18, clang-22, clang-22-o2 |
+| A-6 friend, parameter type qualified | accept |
+| B-3 enum qualifier, unscoped, enumerator exists | accept |
+| B-3 enum qualifier, scoped, enumerator exists | accept |
+| B-3 enum qualifier, no such enumerator | accept |
+| B-3 int qualifier | accept |
+| B-3 typename T::x names a value | accept |
+| B-3 T::x value needed, names a type | accept |
+| B-3 T::template x<int>, x not a template | accept |
+| B-5 [=] in requires body with parameters | accept: edg-7.0-ilp32, edg-7.0, gcc-14; reject: gcc-host, gcc-16, gcc-16-o2, clang-host, clang-18, clang-22, clang-22-o2 |
+| B-5 [&] in requires body with parameters | accept: edg-7.0, edg-7.0-ilp32, gcc-14, clang-18; reject: gcc-16-o2, gcc-host, gcc-16, clang-host, clang-22, clang-22-o2 |
+| B-5 [x] in requires body with parameters | accept: edg-7.0-ilp32, edg-7.0, gcc-14, clang-18; reject: gcc-host, gcc-16-o2, gcc-16, clang-host, clang-22, clang-22-o2 |
+| B-5 [=] in requires body, no parameters | accept: edg-7.0, edg-7.0-ilp32, gcc-14, clang-18; reject: gcc-host, gcc-16-o2, gcc-16, clang-host, clang-22, clang-22-o2 |
+| B-5 [=] in trailing return of a lambda | accept: clang-host, clang-18, clang-22, clang-22-o2; reject: edg-7.0, gcc-host, edg-7.0-ilp32, gcc-14, gcc-16, gcc-16-o2 |
+| B-8 forwarding ref, const array prvalue | accept |
+| B-8 decltype of const array prvalue | accept |
+| B-8 forwarding ref, const int prvalue | accept |
+| B-9 . member template of non-dependent base | accept |
+| B-9 :: current inst., member template of non-dependent base | accept |
+| B-9 :: current inst., member template of dependent base, no template | reject |
+| B-9 :: current inst., member template of dependent base, template | accept |
+| A-15 copy assignment of union changes active member | accept |
+| A-15 copy construction of union | accept |
+| A-15 after copy, old member not active | reject |
+A-9 thread_local local, move-only return / probe / clang-18: /tidal/build/probes/rv6-points/0001-a-9-thread-local-local-move-only-return--probe.cpp:4:34: error: call to deleted constructor of 'M'
+A-9 thread_local local, move-only return / probe / clang-22: /tidal/build/probes/rv6-points/0001-a-9-thread-local-local-move-only-return--probe.cpp:4:34: error: call to deleted constructor of 'M'
+A-9 thread_local local, move-only return / probe / clang-22-o2: /tidal/build/probes/rv6-points/0001-a-9-thread-local-local-move-only-return--probe.cpp:4:34: error: call to deleted constructor of 'M'
+A-9 thread_local local, move-only return / probe / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/rv6-points/0001-a-9-thread-local-local-move-only-return--probe.cpp:4:34: error: call to deleted constructor of 'M'
+A-9 thread_local local, move-only return / probe / edg-7.0: robe.cpp", line 4: error: function "M::M(const M &)" (declared at
+A-9 thread_local local, move-only return / probe / edg-7.0-ilp32: robe.cpp", line 4: error: function "M::M(const M &)" (declared at
+A-9 thread_local local, move-only return / probe / gcc-14: /tidal/build/probes/rv6-points/0001-a-9-thread-local-local-move-only-return--probe.cpp:4:34: error: use of deleted function 'M::M(const M&)'
+A-9 thread_local local, move-only return / probe / gcc-16: /tidal/build/probes/rv6-points/0001-a-9-thread-local-local-move-only-return--probe.cpp:4:34: error: use of deleted function 'M::M(const M&)'
+A-9 thread_local local, move-only return / probe / gcc-16-o2: /tidal/build/probes/rv6-points/0001-a-9-thread-local-local-move-only-return--probe.cpp:4:34: error: use of deleted function 'M::M(const M&)'
+A-9 thread_local local, move-only return / probe / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/rv6-points/0001-a-9-thread-local-local-move-only-return--probe.cpp:4:34: error: use of deleted function ‘M::M(const M&)’
+A-9 static local, move-only return / probe / clang-18: /tidal/build/probes/rv6-points/0002-a-9-static-local-move-only-return--probe.cpp:4:28: error: call to deleted constructor of 'M'
+A-9 static local, move-only return / probe / clang-22: /tidal/build/probes/rv6-points/0002-a-9-static-local-move-only-return--probe.cpp:4:28: error: call to deleted constructor of 'M'
+A-9 static local, move-only return / probe / clang-22-o2: /tidal/build/probes/rv6-points/0002-a-9-static-local-move-only-return--probe.cpp:4:28: error: call to deleted constructor of 'M'
+A-9 static local, move-only return / probe / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/rv6-points/0002-a-9-static-local-move-only-return--probe.cpp:4:28: error: call to deleted constructor of 'M'
+A-9 static local, move-only return / probe / edg-7.0: pp", line 4: error: function "M::M(const M &)" (declared at line 3)
+A-9 static local, move-only return / probe / edg-7.0-ilp32: pp", line 4: error: function "M::M(const M &)" (declared at line 3)
+A-9 static local, move-only return / probe / gcc-14: /tidal/build/probes/rv6-points/0002-a-9-static-local-move-only-return--probe.cpp:4:28: error: use of deleted function 'M::M(const M&)'
+A-9 static local, move-only return / probe / gcc-16: /tidal/build/probes/rv6-points/0002-a-9-static-local-move-only-return--probe.cpp:4:28: error: use of deleted function 'M::M(const M&)'
+A-9 static local, move-only return / probe / gcc-16-o2: /tidal/build/probes/rv6-points/0002-a-9-static-local-move-only-return--probe.cpp:4:28: error: use of deleted function 'M::M(const M&)'
+A-9 static local, move-only return / probe / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/rv6-points/0002-a-9-static-local-move-only-return--probe.cpp:4:28: error: use of deleted function ‘M::M(const M&)’
+A-11 ~decltype(variable) / probe / gcc-14: /tidal/build/probes/rv6-points/0005-a-11-decltype-variable--probe.cpp:4:25: error: expected class-name before 'decltype'
+A-11 ~decltype(variable) / probe / gcc-16: /tidal/build/probes/rv6-points/0005-a-11-decltype-variable--probe.cpp:4:25: error: expected class-name before 'decltype'
+A-11 ~decltype(variable) / probe / gcc-16-o2: /tidal/build/probes/rv6-points/0005-a-11-decltype-variable--probe.cpp:4:25: error: expected class-name before 'decltype'
+A-11 ~decltype(variable) / probe / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/rv6-points/0005-a-11-decltype-variable--probe.cpp:4:25: error: expected class-name before ‘decltype’
+A-11 ~decltype(*p) (reference) / probe / clang-18: /tidal/build/probes/rv6-points/0006-a-11-decltype-p-reference--probe.cpp:4:20: error: destructor type 'decltype(*p)' (aka 'S &') in object destruction expression does not match the type 'S' of the object being destroyed
+A-11 ~decltype(*p) (reference) / probe / clang-22: /tidal/build/probes/rv6-points/0006-a-11-decltype-p-reference--probe.cpp:4:20: error: destructor type 'decltype(*p)' (aka 'S &') in object destruction expression does not match the type 'S' of the object being destroyed
+A-11 ~decltype(*p) (reference) / probe / clang-22-o2: /tidal/build/probes/rv6-points/0006-a-11-decltype-p-reference--probe.cpp:4:20: error: destructor type 'decltype(*p)' (aka 'S &') in object destruction expression does not match the type 'S' of the object being destroyed
+A-11 ~decltype(*p) (reference) / probe / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/rv6-points/0006-a-11-decltype-p-reference--probe.cpp:4:20: error: destructor type 'decltype(*p)' (aka 'S &') in object destruction expression does not match the type 'S' of the object being destroyed
+A-11 ~decltype(*p) (reference) / probe / edg-7.0: line 4: error: invalid destructor name for type "S"
+A-11 ~decltype(*p) (reference) / probe / edg-7.0-ilp32: line 4: error: invalid destructor name for type "S"
+A-11 ~decltype(*p) (reference) / probe / gcc-14: /tidal/build/probes/rv6-points/0006-a-11-decltype-p-reference--probe.cpp:4:20: error: expected class-name before 'decltype'
+A-11 ~decltype(*p) (reference) / probe / gcc-16: /tidal/build/probes/rv6-points/0006-a-11-decltype-p-reference--probe.cpp:4:20: error: expected class-name before 'decltype'
+A-11 ~decltype(*p) (reference) / probe / gcc-16-o2: /tidal/build/probes/rv6-points/0006-a-11-decltype-p-reference--probe.cpp:4:20: error: expected class-name before 'decltype'
+A-11 ~decltype(*p) (reference) / probe / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/rv6-points/0006-a-11-decltype-p-reference--probe.cpp:4:20: error: expected class-name before ‘decltype’
+A-11 ~decltype(r), r a reference / probe / clang-18: /tidal/build/probes/rv6-points/0007-a-11-decltype-r-r-a-reference--probe.cpp:4:26: error: destructor type 'decltype(r)' (aka 'S &') in object destruction expression does not match the type 'S' of the object being destroyed
+A-11 ~decltype(r), r a reference / probe / clang-22: /tidal/build/probes/rv6-points/0007-a-11-decltype-r-r-a-reference--probe.cpp:4:26: error: destructor type 'decltype(r)' (aka 'S &') in object destruction expression does not match the type 'S' of the object being destroyed
+A-11 ~decltype(r), r a reference / probe / clang-22-o2: /tidal/build/probes/rv6-points/0007-a-11-decltype-r-r-a-reference--probe.cpp:4:26: error: destructor type 'decltype(r)' (aka 'S &') in object destruction expression does not match the type 'S' of the object being destroyed
+A-11 ~decltype(r), r a reference / probe / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/rv6-points/0007-a-11-decltype-r-r-a-reference--probe.cpp:4:26: error: destructor type 'decltype(r)' (aka 'S &') in object destruction expression does not match the type 'S' of the object being destroyed
+A-11 ~decltype(r), r a reference / probe / edg-7.0: line 4: error: invalid destructor name for type "S"
+A-11 ~decltype(r), r a reference / probe / edg-7.0-ilp32: line 4: error: invalid destructor name for type "S"
+A-11 ~decltype(r), r a reference / probe / gcc-14: /tidal/build/probes/rv6-points/0007-a-11-decltype-r-r-a-reference--probe.cpp:4:26: error: expected class-name before 'decltype'
+A-11 ~decltype(r), r a reference / probe / gcc-16: /tidal/build/probes/rv6-points/0007-a-11-decltype-r-r-a-reference--probe.cpp:4:26: error: expected class-name before 'decltype'
+A-11 ~decltype(r), r a reference / probe / gcc-16-o2: /tidal/build/probes/rv6-points/0007-a-11-decltype-r-r-a-reference--probe.cpp:4:26: error: expected class-name before 'decltype'
+A-11 ~decltype(r), r a reference / probe / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/rv6-points/0007-a-11-decltype-r-r-a-reference--probe.cpp:4:26: error: expected class-name before ‘decltype’
+A-11 ~decltype((s)) (reference) / probe / clang-18: /tidal/build/probes/rv6-points/0008-a-11-decltype-s-reference--probe.cpp:4:25: error: destructor type 'decltype((s))' (aka 'S &') in object destruction expression does not match the type 'S' of the object being destroyed
+A-11 ~decltype((s)) (reference) / probe / clang-22: /tidal/build/probes/rv6-points/0008-a-11-decltype-s-reference--probe.cpp:4:25: error: destructor type 'decltype((s))' (aka 'S &') in object destruction expression does not match the type 'S' of the object being destroyed
+A-11 ~decltype((s)) (reference) / probe / clang-22-o2: /tidal/build/probes/rv6-points/0008-a-11-decltype-s-reference--probe.cpp:4:25: error: destructor type 'decltype((s))' (aka 'S &') in object destruction expression does not match the type 'S' of the object being destroyed
+A-11 ~decltype((s)) (reference) / probe / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/rv6-points/0008-a-11-decltype-s-reference--probe.cpp:4:25: error: destructor type 'decltype((s))' (aka 'S &') in object destruction expression does not match the type 'S' of the object being destroyed
+A-11 ~decltype((s)) (reference) / probe / edg-7.0: line 4: error: invalid destructor name for type "S"
+A-11 ~decltype((s)) (reference) / probe / edg-7.0-ilp32: line 4: error: invalid destructor name for type "S"
+A-11 ~decltype((s)) (reference) / probe / gcc-14: /tidal/build/probes/rv6-points/0008-a-11-decltype-s-reference--probe.cpp:4:25: error: expected class-name before 'decltype'
+A-11 ~decltype((s)) (reference) / probe / gcc-16: /tidal/build/probes/rv6-points/0008-a-11-decltype-s-reference--probe.cpp:4:25: error: expected class-name before 'decltype'
+A-11 ~decltype((s)) (reference) / probe / gcc-16-o2: /tidal/build/probes/rv6-points/0008-a-11-decltype-s-reference--probe.cpp:4:25: error: expected class-name before 'decltype'
+A-11 ~decltype((s)) (reference) / probe / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/rv6-points/0008-a-11-decltype-s-reference--probe.cpp:4:25: error: expected class-name before ‘decltype’
+A-17 anonymous union in anonymous union / probe / clang-18: /tidal/build/probes/rv6-points/0009-a-17-anonymous-union-in-anonymous-union--probe.cpp:3:20: error: anonymous types declared in an anonymous union are an extension [-Werror,-Wnested-anon-types]
+A-17 anonymous union in anonymous union / probe / clang-22: /tidal/build/probes/rv6-points/0009-a-17-anonymous-union-in-anonymous-union--probe.cpp:3:20: error: anonymous types declared in an anonymous union are an extension [-Werror,-Wnested-anon-types]
+A-17 anonymous union in anonymous union / probe / clang-22-o2: /tidal/build/probes/rv6-points/0009-a-17-anonymous-union-in-anonymous-union--probe.cpp:3:20: error: anonymous types declared in an anonymous union are an extension [-Werror,-Wnested-anon-types]
+A-17 anonymous union in anonymous union / probe / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/rv6-points/0009-a-17-anonymous-union-in-anonymous-union--probe.cpp:3:20: error: anonymous types declared in an anonymous union are an extension [-Werror,-Wnested-anon-types]
+A-17 anonymous union in anonymous union / probe / edg-7.0: robe.cpp", line 3: error: types cannot be declared in anonymous
+A-17 anonymous union in anonymous union / probe / edg-7.0-ilp32: robe.cpp", line 3: error: types cannot be declared in anonymous
+A-17 anonymous struct in anonymous union / probe / clang-18: /tidal/build/probes/rv6-points/0010-a-17-anonymous-struct-in-anonymous-union--probe.cpp:3:20: error: anonymous structs are a GNU extension [-Werror,-Wgnu-anonymous-struct]
+A-17 anonymous struct in anonymous union / probe / clang-22: /tidal/build/probes/rv6-points/0010-a-17-anonymous-struct-in-anonymous-union--probe.cpp:3:20: error: anonymous structs are a GNU extension [-Werror,-Wgnu-anonymous-struct]
+A-17 anonymous struct in anonymous union / probe / clang-22-o2: /tidal/build/probes/rv6-points/0010-a-17-anonymous-struct-in-anonymous-union--probe.cpp:3:20: error: anonymous structs are a GNU extension [-Werror,-Wgnu-anonymous-struct]
+A-17 anonymous struct in anonymous union / probe / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/rv6-points/0010-a-17-anonymous-struct-in-anonymous-union--probe.cpp:3:20: error: anonymous structs are a GNU extension [-Werror,-Wgnu-anonymous-struct]
+A-17 anonymous struct in anonymous union / probe / edg-7.0: probe.cpp", line 3: error: declaration does not declare anything
+A-17 anonymous struct in anonymous union / probe / edg-7.0-ilp32: probe.cpp", line 3: error: declaration does not declare anything
+A-17 anonymous struct in anonymous union / probe / gcc-14: /tidal/build/probes/rv6-points/0010-a-17-anonymous-struct-in-anonymous-union--probe.cpp:3:27: error: ISO C++ prohibits anonymous structs [-Wpedantic]
+A-17 anonymous struct in anonymous union / probe / gcc-16: /tidal/build/probes/rv6-points/0010-a-17-anonymous-struct-in-anonymous-union--probe.cpp:3:27: error: ISO C++ prohibits anonymous structs [-Wpedantic]
+A-17 anonymous struct in anonymous union / probe / gcc-16-o2: /tidal/build/probes/rv6-points/0010-a-17-anonymous-struct-in-anonymous-union--probe.cpp:3:27: error: ISO C++ prohibits anonymous structs [-Wpedantic]
+A-17 anonymous struct in anonymous union / probe / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/rv6-points/0010-a-17-anonymous-struct-in-anonymous-union--probe.cpp:3:27: error: ISO C++ prohibits anonymous structs [-Wpedantic]
+A-18 C(const C) / probe / clang-18: /tidal/build/probes/rv6-points/0012-a-18-c-const-c--probe.cpp:3:28: error: copy constructor must pass its first argument by reference
+A-18 C(const C) / probe / clang-22: /tidal/build/probes/rv6-points/0012-a-18-c-const-c--probe.cpp:3:28: error: copy constructor must pass its first argument by reference
+A-18 C(const C) / probe / clang-22-o2: /tidal/build/probes/rv6-points/0012-a-18-c-const-c--probe.cpp:3:28: error: copy constructor must pass its first argument by reference
+A-18 C(const C) / probe / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/rv6-points/0012-a-18-c-const-c--probe.cpp:3:28: error: copy constructor must pass its first argument by reference
+A-18 C(const C) / probe / edg-7.0: "/tidal/build/probes/rv6-points/0012-a-18-c-const-c--probe.cpp", line 3: error:
+A-18 C(const C) / probe / edg-7.0-ilp32: "/tidal/build/probes/rv6-points/0012-a-18-c-const-c--probe.cpp", line 3: error:
+A-18 C(const C) / probe / gcc-14: /tidal/build/probes/rv6-points/0012-a-18-c-const-c--probe.cpp:3:19: error: invalid constructor; you probably meant 'C (const C&)'
+A-18 C(const C) / probe / gcc-16: /tidal/build/probes/rv6-points/0012-a-18-c-const-c--probe.cpp:3:19: error: invalid constructor; you probably meant 'C (const C&)'
+A-18 C(const C) / probe / gcc-16-o2: /tidal/build/probes/rv6-points/0012-a-18-c-const-c--probe.cpp:3:19: error: invalid constructor; you probably meant 'C (const C&)'
+A-18 C(const C) / probe / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/rv6-points/0012-a-18-c-const-c--probe.cpp:3:19: error: invalid constructor; you probably meant ‘C (const C&)’
+A-18 C(volatile C) / probe / clang-18: /tidal/build/probes/rv6-points/0013-a-18-c-volatile-c--probe.cpp:3:31: error: copy constructor must pass its first argument by reference
+A-18 C(volatile C) / probe / clang-22: /tidal/build/probes/rv6-points/0013-a-18-c-volatile-c--probe.cpp:3:31: error: copy constructor must pass its first argument by reference
+A-18 C(volatile C) / probe / clang-22-o2: /tidal/build/probes/rv6-points/0013-a-18-c-volatile-c--probe.cpp:3:31: error: copy constructor must pass its first argument by reference
+A-18 C(volatile C) / probe / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/rv6-points/0013-a-18-c-volatile-c--probe.cpp:3:31: error: copy constructor must pass its first argument by reference
+A-18 C(volatile C) / probe / edg-7.0: error: copy constructor for class "C" may not have a parameter of
+A-18 C(volatile C) / probe / edg-7.0-ilp32: error: copy constructor for class "C" may not have a parameter of
+A-18 C(volatile C) / probe / gcc-14: /tidal/build/probes/rv6-points/0013-a-18-c-volatile-c--probe.cpp:3:19: error: invalid constructor; you probably meant 'C (const C&)'
+A-18 C(volatile C) / probe / gcc-16: /tidal/build/probes/rv6-points/0013-a-18-c-volatile-c--probe.cpp:3:19: error: invalid constructor; you probably meant 'C (const C&)'
+A-18 C(volatile C) / probe / gcc-16-o2: /tidal/build/probes/rv6-points/0013-a-18-c-volatile-c--probe.cpp:3:19: error: invalid constructor; you probably meant 'C (const C&)'
+A-18 C(volatile C) / probe / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/rv6-points/0013-a-18-c-volatile-c--probe.cpp:3:19: error: invalid constructor; you probably meant ‘C (const C&)’
+A-18 C(const C) with default arg / probe / clang-18: /tidal/build/probes/rv6-points/0014-a-18-c-const-c-with-default-arg--probe.cpp:3:28: error: copy constructor must pass its first argument by reference
+A-18 C(const C) with default arg / probe / clang-22: /tidal/build/probes/rv6-points/0014-a-18-c-const-c-with-default-arg--probe.cpp:3:28: error: copy constructor must pass its first argument by reference
+A-18 C(const C) with default arg / probe / clang-22-o2: /tidal/build/probes/rv6-points/0014-a-18-c-const-c-with-default-arg--probe.cpp:3:28: error: copy constructor must pass its first argument by reference
+A-18 C(const C) with default arg / probe / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/rv6-points/0014-a-18-c-const-c-with-default-arg--probe.cpp:3:28: error: copy constructor must pass its first argument by reference
+A-18 C(const C) with default arg / probe / edg-7.0: ", line 3: error: copy constructor for class "C" may not have a
+A-18 C(const C) with default arg / probe / edg-7.0-ilp32: ", line 3: error: copy constructor for class "C" may not have a
+A-18 C(const C) with default arg / probe / gcc-14: /tidal/build/probes/rv6-points/0014-a-18-c-const-c-with-default-arg--probe.cpp:3:19: error: invalid constructor; you probably meant 'C (const C&)'
+A-18 C(const C) with default arg / probe / gcc-16: /tidal/build/probes/rv6-points/0014-a-18-c-const-c-with-default-arg--probe.cpp:3:19: error: invalid constructor; you probably meant 'C (const C&)'
+A-18 C(const C) with default arg / probe / gcc-16-o2: /tidal/build/probes/rv6-points/0014-a-18-c-const-c-with-default-arg--probe.cpp:3:19: error: invalid constructor; you probably meant 'C (const C&)'
+A-18 C(const C) with default arg / probe / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/rv6-points/0014-a-18-c-const-c-with-default-arg--probe.cpp:3:19: error: invalid constructor; you probably meant ‘C (const C&)’
+A-6 friend, parameter type in inline namespace of N / probe / clang-18: /tidal/build/probes/rv6-points/0016-a-6-friend-parameter-type-in-inline-namespace-of-n--probe.cpp:4:29: error: unknown type name 'P'; did you mean 'N::P'?
+A-6 friend, parameter type in inline namespace of N / probe / clang-22: /tidal/build/probes/rv6-points/0016-a-6-friend-parameter-type-in-inline-namespace-of-n--probe.cpp:4:29: error: unknown type name 'P'; did you mean 'N::P'?
+A-6 friend, parameter type in inline namespace of N / probe / clang-22-o2: /tidal/build/probes/rv6-points/0016-a-6-friend-parameter-type-in-inline-namespace-of-n--probe.cpp:4:29: error: unknown type name 'P'; did you mean 'N::P'?
+A-6 friend, parameter type in inline namespace of N / probe / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/rv6-points/0016-a-6-friend-parameter-type-in-inline-namespace-of-n--probe.cpp:4:29: error: unknown type name 'P'; did you mean 'N::P'?
+A-6 friend, parameter type in N / probe / clang-18: /tidal/build/probes/rv6-points/0017-a-6-friend-parameter-type-in-n--probe.cpp:4:29: error: unknown type name 'P'; did you mean 'N::P'?
+A-6 friend, parameter type in N / probe / clang-22: /tidal/build/probes/rv6-points/0017-a-6-friend-parameter-type-in-n--probe.cpp:4:29: error: unknown type name 'P'; did you mean 'N::P'?
+A-6 friend, parameter type in N / probe / clang-22-o2: /tidal/build/probes/rv6-points/0017-a-6-friend-parameter-type-in-n--probe.cpp:4:29: error: unknown type name 'P'; did you mean 'N::P'?
+A-6 friend, parameter type in N / probe / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/rv6-points/0017-a-6-friend-parameter-type-in-n--probe.cpp:4:29: error: unknown type name 'P'; did you mean 'N::P'?
+B-5 [=] in requires body with parameters / probe / clang-18: /tidal/build/probes/rv6-points/0026-b-5-in-requires-body-with-parameters--probe.cpp:3:76: error: constraint variable 'p' cannot be used in an evaluated context
+B-5 [=] in requires body with parameters / probe / clang-22: /tidal/build/probes/rv6-points/0026-b-5-in-requires-body-with-parameters--probe.cpp:3:60: error: non-local lambda expression cannot have a capture-default
+B-5 [=] in requires body with parameters / probe / clang-22-o2: /tidal/build/probes/rv6-points/0026-b-5-in-requires-body-with-parameters--probe.cpp:3:60: error: non-local lambda expression cannot have a capture-default
+B-5 [=] in requires body with parameters / probe / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/rv6-points/0026-b-5-in-requires-body-with-parameters--probe.cpp:3:60: error: non-local lambda expression cannot have a capture-default
+B-5 [=] in requires body with parameters / probe / gcc-16: /tidal/build/probes/rv6-points/0026-b-5-in-requires-body-with-parameters--probe.cpp:3:59: error: no matching function for call to 'h()::<lambda()>::._anon_0(<brace-enclosed initializer list>)'
+B-5 [=] in requires body with parameters / probe / gcc-16-o2: /tidal/build/probes/rv6-points/0026-b-5-in-requires-body-with-parameters--probe.cpp:3:59: error: no matching function for call to 'h()::<lambda()>::._anon_0(<brace-enclosed initializer list>)'
+B-5 [=] in requires body with parameters / probe / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/rv6-points/0026-b-5-in-requires-body-with-parameters--probe.cpp:3:59: error: no matching function for call to ‘h()::<lambda()>::._anon_0(<brace-enclosed initializer list>)’
+B-5 [&] in requires body with parameters / probe / clang-22: /tidal/build/probes/rv6-points/0027-b-5-in-requires-body-with-parameters--probe.cpp:3:60: error: non-local lambda expression cannot have a capture-default
+B-5 [&] in requires body with parameters / probe / clang-22-o2: /tidal/build/probes/rv6-points/0027-b-5-in-requires-body-with-parameters--probe.cpp:3:60: error: non-local lambda expression cannot have a capture-default
+B-5 [&] in requires body with parameters / probe / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/rv6-points/0027-b-5-in-requires-body-with-parameters--probe.cpp:3:60: error: non-local lambda expression cannot have a capture-default
+B-5 [&] in requires body with parameters / probe / gcc-16: /tidal/build/probes/rv6-points/0027-b-5-in-requires-body-with-parameters--probe.cpp:3:59: error: no matching function for call to 'h()::<lambda()>::._anon_0(<brace-enclosed initializer list>)'
+B-5 [&] in requires body with parameters / probe / gcc-16-o2: /tidal/build/probes/rv6-points/0027-b-5-in-requires-body-with-parameters--probe.cpp:3:59: error: no matching function for call to 'h()::<lambda()>::._anon_0(<brace-enclosed initializer list>)'
+B-5 [&] in requires body with parameters / probe / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/rv6-points/0027-b-5-in-requires-body-with-parameters--probe.cpp:3:59: error: no matching function for call to ‘h()::<lambda()>::._anon_0(<brace-enclosed initializer list>)’
+B-5 [x] in requires body with parameters / probe / clang-22: /tidal/build/probes/rv6-points/0028-b-5-x-in-requires-body-with-parameters--probe.cpp:3:60: error: reference to local variable 'x' declared in enclosing function 'h'
+B-5 [x] in requires body with parameters / probe / clang-22-o2: /tidal/build/probes/rv6-points/0028-b-5-x-in-requires-body-with-parameters--probe.cpp:3:60: error: reference to local variable 'x' declared in enclosing function 'h'
+B-5 [x] in requires body with parameters / probe / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/rv6-points/0028-b-5-x-in-requires-body-with-parameters--probe.cpp:3:60: error: reference to local variable 'x' declared in enclosing function 'h'
+B-5 [x] in requires body with parameters / probe / gcc-16: /tidal/build/probes/rv6-points/0028-b-5-x-in-requires-body-with-parameters--probe.cpp:3:59: error: no matching function for call to 'h()::<lambda()>::._anon_0(<brace-enclosed initializer list>)'
+B-5 [x] in requires body with parameters / probe / gcc-16-o2: /tidal/build/probes/rv6-points/0028-b-5-x-in-requires-body-with-parameters--probe.cpp:3:59: error: no matching function for call to 'h()::<lambda()>::._anon_0(<brace-enclosed initializer list>)'
+B-5 [x] in requires body with parameters / probe / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/rv6-points/0028-b-5-x-in-requires-body-with-parameters--probe.cpp:3:59: error: no matching function for call to ‘h()::<lambda()>::._anon_0(<brace-enclosed initializer list>)’
+B-5 [=] in requires body, no parameters / probe / clang-22: /tidal/build/probes/rv6-points/0029-b-5-in-requires-body-no-parameters--probe.cpp:3:53: error: non-local lambda expression cannot have a capture-default
+B-5 [=] in requires body, no parameters / probe / clang-22-o2: /tidal/build/probes/rv6-points/0029-b-5-in-requires-body-no-parameters--probe.cpp:3:53: error: non-local lambda expression cannot have a capture-default
+B-5 [=] in requires body, no parameters / probe / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/rv6-points/0029-b-5-in-requires-body-no-parameters--probe.cpp:3:53: error: non-local lambda expression cannot have a capture-default
+B-5 [=] in requires body, no parameters / probe / gcc-16: /tidal/build/probes/rv6-points/0029-b-5-in-requires-body-no-parameters--probe.cpp:3:52: error: no matching function for call to 'h()::<lambda()>::._anon_0(<brace-enclosed initializer list>)'
+B-5 [=] in requires body, no parameters / probe / gcc-16-o2: /tidal/build/probes/rv6-points/0029-b-5-in-requires-body-no-parameters--probe.cpp:3:52: error: no matching function for call to 'h()::<lambda()>::._anon_0(<brace-enclosed initializer list>)'
+B-5 [=] in requires body, no parameters / probe / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/rv6-points/0029-b-5-in-requires-body-no-parameters--probe.cpp:3:52: error: no matching function for call to ‘h()::<lambda()>::._anon_0(<brace-enclosed initializer list>)’
+B-5 [=] in trailing return of a lambda / probe / edg-7.0: cpp", line 3: error: a parameter is not allowed
+B-5 [=] in trailing return of a lambda / probe / edg-7.0-ilp32: cpp", line 3: error: a parameter is not allowed
+B-5 [=] in trailing return of a lambda / probe / gcc-14: /tidal/build/probes/rv6-points/0030-b-5-in-trailing-return-of-a-lambda--probe.cpp:3:54: error: non-local lambda expression cannot have a capture-default
+B-5 [=] in trailing return of a lambda / probe / gcc-16: /tidal/build/probes/rv6-points/0030-b-5-in-trailing-return-of-a-lambda--probe.cpp:3:67: error: use of parameter outside function body before ';' token
+B-5 [=] in trailing return of a lambda / probe / gcc-16-o2: /tidal/build/probes/rv6-points/0030-b-5-in-trailing-return-of-a-lambda--probe.cpp:3:67: error: use of parameter outside function body before ';' token
+B-5 [=] in trailing return of a lambda / probe / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/rv6-points/0030-b-5-in-trailing-return-of-a-lambda--probe.cpp:3:67: error: use of parameter outside function body before ‘;’ token
+B-9 :: current inst., member template of dependent base, no template / probe / clang-18: /tidal/build/probes/rv6-points/0036-b-9-current-inst-member-template-of-dependent-base-no-template--probe.cpp:4:62: error: use 'template' keyword to treat 'get' as a dependent template name
+B-9 :: current inst., member template of dependent base, no template / probe / clang-22: /tidal/build/probes/rv6-points/0036-b-9-current-inst-member-template-of-dependent-base-no-template--probe.cpp:4:62: error: use 'template' keyword to treat 'get' as a dependent template name
+B-9 :: current inst., member template of dependent base, no template / probe / clang-22-o2: /tidal/build/probes/rv6-points/0036-b-9-current-inst-member-template-of-dependent-base-no-template--probe.cpp:4:62: error: use 'template' keyword to treat 'get' as a dependent template name
+B-9 :: current inst., member template of dependent base, no template / probe / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/rv6-points/0036-b-9-current-inst-member-template-of-dependent-base-no-template--probe.cpp:4:62: error: use 'template' keyword to treat 'get' as a dependent template name
+B-9 :: current inst., member template of dependent base, no template / probe / edg-7.0: ent-base-no-template--probe.cpp", line 4: error: type name is not
+B-9 :: current inst., member template of dependent base, no template / probe / edg-7.0-ilp32: ent-base-no-template--probe.cpp", line 4: error: type name is not
+B-9 :: current inst., member template of dependent base, no template / probe / gcc-14: /tidal/build/probes/rv6-points/0036-b-9-current-inst-member-template-of-dependent-base-no-template--probe.cpp:4:66: error: expected primary-expression before 'int'
+B-9 :: current inst., member template of dependent base, no template / probe / gcc-16: /tidal/build/probes/rv6-points/0036-b-9-current-inst-member-template-of-dependent-base-no-template--probe.cpp:4:66: error: expected primary-expression before 'int' [-Wtemplate-body]
+B-9 :: current inst., member template of dependent base, no template / probe / gcc-16-o2: /tidal/build/probes/rv6-points/0036-b-9-current-inst-member-template-of-dependent-base-no-template--probe.cpp:4:66: error: expected primary-expression before 'int' [-Wtemplate-body]
+B-9 :: current inst., member template of dependent base, no template / probe / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/rv6-points/0036-b-9-current-inst-member-template-of-dependent-base-no-template--probe.cpp:4:66: error: expected primary-expression before ‘int’ [-Wtemplate-body]
+A-15 after copy, old member not active / probe / clang-18: /tidal/build/probes/rv6-points/0040-a-15-after-copy-old-member-not-active--probe.cpp:5:15: error: static assertion expression is not an integral constant expression
+A-15 after copy, old member not active / probe / clang-22: /tidal/build/probes/rv6-points/0040-a-15-after-copy-old-member-not-active--probe.cpp:5:15: error: static assertion expression is not an integral constant expression
+A-15 after copy, old member not active / probe / clang-22-o2: /tidal/build/probes/rv6-points/0040-a-15-after-copy-old-member-not-active--probe.cpp:5:15: error: static assertion expression is not an integral constant expression
+A-15 after copy, old member not active / probe / clang-host: /home/ryanm/Code/tidal/build/clang-host/probes/rv6-points/0040-a-15-after-copy-old-member-not-active--probe.cpp:5:15: error: static assertion expression is not an integral constant expression
+A-15 after copy, old member not active / probe / edg-7.0: be.cpp", line 5: error: expression must have a constant value
+A-15 after copy, old member not active / probe / edg-7.0-ilp32: be.cpp", line 5: error: expression must have a constant value
+A-15 after copy, old member not active / probe / gcc-14: /tidal/build/probes/rv6-points/0040-a-15-after-copy-old-member-not-active--probe.cpp:5:19: error: non-constant condition for static assertion
+A-15 after copy, old member not active / probe / gcc-16: /tidal/build/probes/rv6-points/0040-a-15-after-copy-old-member-not-active--probe.cpp:5:19: error: non-constant condition for static assertion
+A-15 after copy, old member not active / probe / gcc-16-o2: /tidal/build/probes/rv6-points/0040-a-15-after-copy-old-member-not-active--probe.cpp:5:19: error: non-constant condition for static assertion
+A-15 after copy, old member not active / probe / gcc-host: /home/ryanm/Code/tidal/build/gcc-host/probes/rv6-points/0040-a-15-after-copy-old-member-not-active--probe.cpp:5:19: error: non-constant condition for static assertion

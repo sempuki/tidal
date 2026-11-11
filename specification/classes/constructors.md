@@ -422,11 +422,13 @@ implicit and user-declared destructors.
 
 :::{rule} DTOR-8
 :kind: reject
-:tests: classes/constructors/dtor-address.cpp classes/constructors/dtor-call-wrong-type.cpp classes/constructors/dtor-without-call.cpp classes/constructors/pseudo-dtor-wrong-type.cpp
+:tests: classes/constructors/dtor-address.cpp classes/constructors/dtor-call-wrong-type.cpp classes/constructors/dtor-without-call.cpp classes/constructors/pseudo-dtor-wrong-type.cpp classes/constructors/dtor-call-decltype-reference.cpp
 
 A program must call a destructor with `()` and cannot take the address
 of a destructor. In an explicit destructor call, the name after `~` must
-denote the type of the object, also for a {term}`scalar type`.
+denote the type of the object, also for a {term}`scalar type`. A
+`decltype` that gives a reference type, such as `decltype(*p)`, does
+not denote it.
 :::
 
 :::{rule} CTOR-18
@@ -545,7 +547,8 @@ elements are destroyed from the last element to the first, also for
 
 An explicit destructor call runs the destructor and ends the life of the
 object. The storage of the object is not released. The name after `~`
-can be a type alias, or `decltype` of the object ({rule}`DTY-3`). A
+can be a type alias, or a `decltype` that gives the class type, such as
+`decltype` of a variable of the class ({rule}`DTY-3`). A
 program can also call a destructor on an object of scalar type through
 a type name.
 :::
@@ -671,8 +674,8 @@ Span g{{1}};   // Span(int): {1} gives an int directly (ICS-15). The
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 183
-of 204 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 184
+of 205 tests.
 
 ### Divergences
 

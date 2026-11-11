@@ -34,17 +34,19 @@ first byte
 +----+
 ```
 
-The initializer picks the first active member. Two actions make another
-member active instead:
+The initializer picks the first active member. These actions make
+another member active instead:
 
 - an assignment to the member through the built-in operator or a
   trivial assignment operator,
 - the construction of an object of the member's type at the member's
-  address.
+  address,
+- a trivial copy or move of the whole union, which makes active the
+  member that is active in the source.
 
-The construction of an object inside the member, such as one element
-of an array member or a member of a member union, does not make the
-member active.
+During constant evaluation, the construction of an object inside the
+member, such as one element of an array member or a member of a member
+union, does not make the member active.
 
 The assignment can
 also reach a part of the member, as in `u.a.tag = 7`. A user-provided
@@ -74,7 +76,9 @@ and leaves the job to the union's own code
 
 An anonymous union adds its members to the scope around it, as if the
 scope held the members, while the members still share one storage. An
-anonymous union can therefore hold only plain public data members. At
+anonymous union can therefore hold only plain public data members. It
+declares no type, so a member whose declaration defines an unnamed
+class, and an anonymous union inside it, are not valid. At
 namespace scope an anonymous union needs `static` because its members
 have no name to link by.
 :::
@@ -294,7 +298,7 @@ union is not valid ({rule}`LIST-14`). An anonymous union can be:
 
 :::{rule} UNI-9
 :kind: reject
-:tests: classes/unions/anonymous-union-function.cpp classes/unions/anonymous-union-name-conflict.cpp classes/unions/anonymous-union-namespace-nonstatic.cpp classes/unions/anonymous-union-nested-type.cpp classes/unions/anonymous-union-private.cpp classes/unions/anonymous-union-static-member.cpp classes/unions/anonymous-union-unnamed-namespace.cpp classes/unions/anonymous-union-unnamed-struct-member.cpp
+:tests: classes/unions/anonymous-union-function.cpp classes/unions/anonymous-union-name-conflict.cpp classes/unions/anonymous-union-namespace-nonstatic.cpp classes/unions/anonymous-union-nested-type.cpp classes/unions/anonymous-union-private.cpp classes/unions/anonymous-union-static-member.cpp classes/unions/anonymous-union-unnamed-namespace.cpp classes/unions/anonymous-union-unnamed-struct-member.cpp classes/unions/anonymous-union-nested-anonymous-union.cpp classes/unions/anonymous-union-static-assertion.cpp
 
 At namespace scope outside an unnamed namespace, an anonymous union
 needs `static`, as {rule}`STO-11` gives ({question}`Q-0045`). The members of the anonymous
@@ -304,8 +308,11 @@ union must not have:
 - member functions,
 - static data members,
 - nested types, also an unnamed class that a member declaration
-  defines, as in `struct { int key; } pair;` ({question}`Q-0424`),
+  defines, as in `struct { int key; } pair;`, and an anonymous union
+  ({question}`Q-0424`),
 - a member with a name that the enclosing scope has.
+
+An anonymous union can contain a `static_assert` declaration.
 :::
 
 :::{rule} BF-1
@@ -455,20 +462,24 @@ Constant evaluation follows this rule.
 
 :::{rule} UNI-14
 :kind: required
-:tests: classes/unions/construct-activates-constant.cpp classes/unions/construct-switches-active-constant.cpp classes/unions/placement-new-activates.cpp classes/unions/slot-array-constant.cpp classes/unions/destroyed-member-read-constant.cpp classes/unions/array-member-element-address-no-active-member.cpp classes/unions/construct-in-member-of-inactive-member-union-constant.cpp classes/unions/placement-into-union-member-of-new-array-element.cpp classes/unions/array-member-element-steps-no-active-member-constant.cpp classes/unions/construct-at-array-member-element-constant.cpp classes/unions/construct-in-member-of-inactive-member-union-run.cpp
+:tests: classes/unions/construct-activates-constant.cpp classes/unions/construct-switches-active-constant.cpp classes/unions/placement-new-activates.cpp classes/unions/slot-array-constant.cpp classes/unions/destroyed-member-read-constant.cpp classes/unions/array-member-element-address-no-active-member.cpp classes/unions/construct-in-member-of-inactive-member-union-constant.cpp classes/unions/placement-into-union-member-of-new-array-element.cpp classes/unions/array-member-element-steps-no-active-member-constant.cpp classes/unions/construct-at-array-member-element-constant.cpp classes/unions/construct-in-member-of-inactive-member-union-run.cpp classes/unions/trivial-copy-changes-active-member-constant.cpp
 
 If placement `new` ({rule}`STG-5`, with a form that {rule}`LSUP-7`
 gives) or `std::construct_at` ({rule}`LSUP-10`) creates an object of a member's type at the address of
 the member, the new object is that member, and the member becomes
 active. The rule holds when the union has no active member, and when
 another member is active. An explicit destructor call on the active
-member ({rule}`DTOR-6`) leaves the union with no active member.
+member ({rule}`DTOR-6`) leaves the union with no active member. A
+trivial copy constructor or copy assignment of the whole union makes
+active in the target the member that is active in the source.
 
-A new object inside a member that is not active, such as an element of
-an array member or a member of a member union, does not make the member
-active ({question}`Q-0425`). A program can still form pointers to the
-elements of an array member that is not active, step between them, and
-compare them ({rule}`STG-10`).
+During {term}`constant evaluation`, a new object inside a member that
+is not active, such as an element of an array member or a member of a
+member union, does not make the member active ({question}`Q-0425`). At
+run time, the construction is valid, and the program can use the new
+object through the pointer that the construction gives. A program can
+still form pointers to the elements of an array member that is not
+active, step between them, and compare them ({rule}`STG-10`).
 :::
 
 :::{rule} BF-5
@@ -536,7 +547,7 @@ Two array types are layout-compatible only if they are the same type.
 
 :::{rule} UNI-6
 :kind: undefined
-:tests: classes/unions/chain-assign-nontrivial-constant.cpp classes/unions/compound-assign-inactive-constant.cpp classes/unions/read-inactive-after-switch-constant.cpp classes/unions/read-inactive-constant.cpp classes/unions/user-assignment-not-activating-constant.cpp classes/unions/default-init-read-constant.cpp classes/unions/constructor-leaves-union-read-constant.cpp classes/unions/destroyed-member-read-constant.cpp classes/unions/read-inactive-bool-sanitizer.cpp classes/unions/construct-at-array-member-element-constant.cpp classes/unions/chain-assign-array-element-nontrivial-constant.cpp classes/unions/construct-in-member-of-inactive-member-union-constant.cpp classes/unions/construct-in-member-of-inactive-member-union-run.cpp
+:tests: classes/unions/chain-assign-nontrivial-constant.cpp classes/unions/compound-assign-inactive-constant.cpp classes/unions/read-inactive-after-switch-constant.cpp classes/unions/read-inactive-constant.cpp classes/unions/user-assignment-not-activating-constant.cpp classes/unions/default-init-read-constant.cpp classes/unions/constructor-leaves-union-read-constant.cpp classes/unions/destroyed-member-read-constant.cpp classes/unions/read-inactive-bool-sanitizer.cpp classes/unions/construct-at-array-member-element-constant.cpp classes/unions/chain-assign-array-element-nontrivial-constant.cpp classes/unions/construct-in-member-of-inactive-member-union-constant.cpp
 
 If a program reads a union member that is not active, the behavior is
 undefined. During constant evaluation, {rule}`CE-6` rejects the read.
@@ -546,9 +557,9 @@ assignment operator that is user-provided, uses an object that does not
 exist yet ({question}`Q-0088`). An assignment through a chain of member
 accesses ({rule}`UNI-13`) to a union member whose default constructor is
 not trivial also uses an object that does not exist
-({question}`Q-0213`). A construction of an object inside a member that
-is not active ({rule}`UNI-14`) uses a member that does not exist
-({question}`Q-0425`).
+({question}`Q-0213`). During constant evaluation, a construction of an
+object inside a member that is not active ({rule}`UNI-14`) uses a
+member that does not exist ({question}`Q-0425`).
 :::
 
 ## Implementation Requirements
@@ -746,8 +757,8 @@ active member.
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 156
-of 175 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 158
+of 178 tests.
 
 ### Divergences
 
@@ -808,14 +819,15 @@ that still differs.
   whether a member whose type is an unnamed class defined in its own
   declaration counts as a nested type of an anonymous union. It does,
   as EDG and Clang under `-pedantic-errors` say. GCC accepts the
-  program.
+  program, and also an anonymous union inside an anonymous union.
 - {question}`Q-0425` (UNI-14, UNI-6, CE-6; open):
   whether building an object inside a union member that is not
   active, as a member of a member union or an element of an array
   member, makes the member active. It does not, so constant evaluation
   rejects the construction, as Clang and GCC say for a member union and
   Clang and GCC 14 say for an array member. EDG accepts both forms, and
-  GCC 16 accepts the array form.
+  GCC 16 accepts the array form. At run time the construction is
+  valid, and Clang and GCC run the member-union form.
 
 ### Split tests
 
@@ -825,6 +837,7 @@ configuration.
 
 | Test | Rules | Expected | Clang | GCC | EDG | Question |
 |---|---|---|---|---|---|---|
+| `anonymous-union-nested-anonymous-union.cpp` | UNI-9 | reject | reject | accept | reject | {question}`Q-0424` |
 | `anonymous-union-unnamed-namespace.cpp` | UNI-9 | accept | accept | reject | reject | {question}`Q-0045` |
 | `anonymous-union-unnamed-struct-member.cpp` | UNI-9 | reject | reject | accept | reject | {question}`Q-0424` |
 | `bitfield-next-unit-ilp32.cpp` | BF-9 | accept | accept | accept | reject | {question}`Q-0120` |
@@ -891,7 +904,23 @@ configuration.
   sanitizer stops a read whose bytes give a valid value.
 - UNI-14: Clang and GCC accept the constant evaluations in which
   `std::construct_at` makes a member active, and run the placement
-  `new` form with no sanitizer report.
+  `new` form with no sanitizer report. The gap review of the text phase
+  13 wrote on classes
+  (`reports/review/2026-11-10-gap-review-phase-13-classes-declarations-foundations.md`,
+  RV6-A-13) reads the C++23 allowance for `std::construct_at` in
+  constant evaluation as naming only objects whose lifetime began, and
+  a member that is not active has not begun. UNI-14 follows the
+  compilers, which read the lifetime of the union as enough.
+- UNI-14, UNI-6: at run time, the same review reads a construction
+  inside a member that is not active as valid. The new object reuses
+  the storage of the union ({rule}`STG-6`), or, when a whole object of
+  the member's type fits at the member's address, the member becomes
+  active and holds the new object. No test tells the two outcomes
+  apart. The run test reads the new object only through the pointer
+  that `new` returns, which is valid in both.
+- UNI-14, UNI-P1: every compiler keeps the active member through a
+  trivial copy of the union in constant evaluation, and rejects a read
+  of the member that was active in the target before a copy assignment.
 - UNI-14, STG-10: every compiler accepts a constant evaluation that
   steps a pointer between the elements of an array member that is not
   active, subtracts two such pointers, and compares them

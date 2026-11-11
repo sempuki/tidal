@@ -3,7 +3,7 @@
 **Status:** provisional
 **Affects:** JMP-10, RET-6, `tests/statements/jumps/return-structured-binding-lvalue.cpp`
 **Source:** point RV5-A-16 of the gap review of the text phase 12 wrote on classes, declarations, and foundations (`reports/review/2026-11-05-gap-review-phase-12-classes-declarations-foundations.md`), with a probe that a clean-room writer ran for it.
-**Waits for:** a principle (JMP-P3)
+**Waits for:** a use of JMP-P3
 
 ## Context
 
@@ -41,6 +41,8 @@ The name stays an lvalue (option 1). Two of three families agree, and
 the review reads the C++23 text this way.
 
 Kept open on 2026-11-10 under decision 0054 (item RV6). The review supports the answer with no doubt, and only EDG differs. No principle gives the answer. JMP-P3 names a local variable and a parameter, and a reader cannot tell from JMP-P3 whether a structured binding is a local variable. Both options fit JMP-P3, so JMP-P3 fails step 3 of the principle test.
+
+Principle text on 2026-11-10 (decision 0061, item RV6): JMP-P3 says that the move covers only a variable with automatic storage, and that a structured binding is no variable, so its name stays an lvalue. JMP-P3 now rules out option 2. The principle changed in this phase, so it gives no answer until a reader or a review uses it (decision 0055).
 
 ## Opinions
 

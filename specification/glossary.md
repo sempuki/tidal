@@ -77,8 +77,10 @@ best viable function
 
 bind directly
   Said of a reference that refers to the object or function that its
-  initializer names, with no {term}`temporary object` in between
-  ({rule}`REF-1`, {rule}`REF-2`, {rule}`REF-6`).
+  initializer names, with no conversion to a new {term}`temporary object`
+  in between ({rule}`REF-1`, {rule}`REF-2`, {rule}`REF-6`). A prvalue
+  of a type that the reference can bind becomes a temporary object, and
+  the reference binds directly to that object ({rule}`ICS-11`).
 
 built-in candidate
   A candidate function that stands for a built-in operator, with fixed

@@ -99,8 +99,8 @@ lvalue that is not a bit-field, if the lvalue has one of these types:
 - the same type,
 - the same type with fewer {term}`cv-qualifiers <cv-qualifier>`,
 - a class derived from the type,
-- a type that a pointer to the lvalue's type reaches by an implicit
-  conversion of the pointer: a qualification adjustment below the top
+- a type whose pointer converts to a pointer to the referenced type by
+  an implicit conversion: a qualification adjustment below the top
   level ({rule}`CONV-9`), as an `int*` lvalue for `const int* const&`,
   a pointer to member for a pointer to member of a more qualified
   type, or an array of `int*` for an array of `const int* const`, or
@@ -110,7 +110,9 @@ lvalue that is not a bit-field, if the lvalue has one of these types:
 The reference and the lvalue are then the same object, and no temporary
 object exists. The cv-qualifiers of an array's elements count as those
 of the array ({rule}`CV-6`), and a reference to an array of unknown
-bound binds to an array of known bound. REF-8 lists what is not valid.
+bound binds to an array of known bound. A reference also binds
+directly to the lvalue that a conversion function returns
+({rule}`OVL-15`). REF-8 lists what is not valid.
 
 The base relation alone decides that a derived class binds directly.
 If the base is ambiguous or not accessible, the binding still counts
@@ -134,9 +136,11 @@ that is `volatile`, must not bind to a bit-field.
 A `const` lvalue reference that is not `volatile` can also bind to an
 rvalue, to an expression of a different type that converts to its type,
 and to a bit-field. If the rvalue is an xvalue of the same type, or a
-class rvalue, the reference binds to that object directly. In the other
-cases, the reference binds to a temporary object that holds a copy of
-the value. REF-9 lists what is not valid.
+class rvalue, the reference binds to that object directly. A prvalue of
+a type that REF-1 lets the reference bind becomes a temporary object,
+and the reference binds directly to it ({rule}`ICS-11`). In the other
+cases, the reference binds to a temporary object that holds the
+converted value. REF-9 lists what is not valid.
 :::
 
 :::{rule} REF-9

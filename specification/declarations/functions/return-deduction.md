@@ -107,16 +107,18 @@ A virtual function must not have a deduced return type ({rule}`VIRT-2`).
 
 :::{rule} RET-6
 :kind: undefined
-:tests: declarations/functions/return-deduction/decltype-auto-dangling.cpp declarations/functions/return-deduction/decltype-auto-paren-local-xvalue.cpp declarations/functions/return-deduction/decltype-auto-paren-local-sanitizer.cpp declarations/functions/return-deduction/trailing-auto.cpp declarations/functions/return-deduction/decltype-auto-paren-local-lvalue-kinds.cpp statements/jumps/return-name-limits.cpp
+:tests: declarations/functions/return-deduction/decltype-auto-dangling.cpp declarations/functions/return-deduction/decltype-auto-paren-local-xvalue.cpp declarations/functions/return-deduction/decltype-auto-paren-local-sanitizer.cpp declarations/functions/return-deduction/trailing-auto.cpp declarations/functions/return-deduction/decltype-auto-paren-local-lvalue-kinds.cpp statements/jumps/return-name-limits.cpp statements/jumps/return-thread-local-local-lvalue.cpp
 
 If a `decltype(auto)` function returns a parenthesized variable that
 {rule}`JMP-10` counts, the return type is an rvalue reference (CPY-11).
 For a local object, the reference names the object, and a use of the
 reference after the call is undefined, because the object's lifetime
 has ended. {term}`Constant evaluation` rejects the use ({rule}`CE-9`).
-For a variable of rvalue reference type, the reference names the
-object that the variable refers to, which can outlive the function.
-For a `static` local, a global variable, a `volatile` local, a local of
+For a parameter of object type, the parameter ends where {rule}`VC-10`
+puts its destruction, and a use of the reference after that point is
+undefined. For a variable of rvalue reference type, the reference
+names the object that the variable refers to, which can outlive the
+function. For a `static` or `thread_local` local, a global variable, a `volatile` local, a local of
 lvalue reference type, or a structured binding, the return type is an
 lvalue reference.
 :::
@@ -168,7 +170,7 @@ auto [w, r] = split(47);            // 4 and 7 (SB-3)
 
 ## Evidence
 
-All eight compilers agree on all 27 tests. The results are in
+All eight compilers agree on all 28 tests. The results are in
 `tests/RESULTS.md`.
 
 - RET-6: the address sanitizer stops the use of the result on GCC and

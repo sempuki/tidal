@@ -525,7 +525,7 @@ In `E::x`, `x` must be an enumerator of `E` (NAM-19).
 
 :::{rule} NAM-21
 :kind: required
-:tests: foundations/names/definition-body-sees-namespace.cpp foundations/names/definition-initializer-sees-namespace.cpp foundations/names/definition-parameter-sees-class.cpp foundations/names/definition-trailing-return-sees-class.cpp foundations/names/definition-bound-default-noexcept-see-scope.cpp foundations/names/definition-template-member-alias.cpp foundations/names/definition-class-body-sees-namespace.cpp foundations/names/definition-class-base-sees-namespace.cpp foundations/names/definition-enumeration-body-sees-namespace.cpp foundations/language-support/tuple-protocol-page-example.cpp foundations/names/qualified-enum-underlying-type-lookup.cpp foundations/names/friend-qualified-declarator-lookup.cpp
+:tests: foundations/names/definition-body-sees-namespace.cpp foundations/names/definition-initializer-sees-namespace.cpp foundations/names/definition-parameter-sees-class.cpp foundations/names/definition-trailing-return-sees-class.cpp foundations/names/definition-bound-default-noexcept-see-scope.cpp foundations/names/definition-template-member-alias.cpp foundations/names/definition-class-body-sees-namespace.cpp foundations/names/definition-class-base-sees-namespace.cpp foundations/names/definition-enumeration-body-sees-namespace.cpp foundations/language-support/tuple-protocol-page-example.cpp foundations/names/qualified-enum-underlying-type-lookup.cpp foundations/names/friend-qualified-declarator-lookup.cpp foundations/names/definition-trailing-requires-sees-namespace.cpp
 
 A declaration can name a member with a qualified name, such as `N::f`
 or `C::f`. After that name, the declaration sees the members of `N` or
@@ -535,6 +535,7 @@ or `C::f`. After that name, the declaration sees the members of `N` or
 - an array bound,
 - an exception specification,
 - a trailing return type,
+- a trailing requires clause,
 - the function body,
 - the initializer,
 - the base clause and the body of a class that the declaration defines
@@ -905,8 +906,8 @@ File::File* q = nullptr;        // rejected: names the constructor
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 240
-of 245 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 241
+of 246 tests.
 
 ### Divergences
 
@@ -947,6 +948,14 @@ of 245 tests.
 
 ### Notes
 
+- NAM-21: a friend declaration `friend void N::g(P);`, where `P` is
+  declared only in an inline namespace of `N`, is accepted by GCC and
+  EDG and rejected by Clang, as Clang rejects the form where `N`
+  declares `P` itself ({question}`Q-0415`). The gap review of the text
+  phase 13 wrote on classes (`reports/review/2026-11-10-gap-review-phase-13-classes-declarations-foundations.md`,
+  RV6-A-6) reads the search in the named scope as a search that does
+  not enter inline namespaces, so the reference rejects the form. NAM-21
+  does not decide the case, and no test checks it.
 - NAM-21: the gap reviews of the text phase 8 wrote
   (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`
   and `reports/review/2026-11-04-gap-review-phase-8-declarations-statements.md`)

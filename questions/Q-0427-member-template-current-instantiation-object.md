@@ -1,7 +1,7 @@
 # Q-0427: Does a member template named after `.` need `template` when the object's type is the current instantiation?
 
 **Status:** provisional
-**Affects:** DEP-24, DEP-39, DEP-2, `tests/templates/dependent-names/member-template-through-current-instantiation-object.cpp`, `tests/templates/dependent-names/member-template-current-instantiation-pointer.cpp`, `tests/templates/dependent-names/member-template-current-instantiation-dependent-base-needs-template.cpp`
+**Affects:** DEP-24, DEP-39, DEP-2, `tests/templates/dependent-names/member-template-through-current-instantiation-object.cpp`, `tests/templates/dependent-names/member-template-current-instantiation-pointer.cpp`, `tests/templates/dependent-names/member-template-current-instantiation-dependent-base-needs-template.cpp`, `tests/templates/dependent-names/member-template-non-dependent-base.cpp`, `tests/templates/dependent-names/member-template-current-instantiation-qualifier-dependent-base.cpp`
 **Source:** the round 10 programmer report (`reports/clean-room/roadmap-10/programmer.md`, sections 1.5 and 6), reduction `member_template_through_current_instantiation_object.cpp`.
 **Waits for:** a review (doubt)
 
@@ -53,6 +53,8 @@ instantiation when lookup at the definition finds the member template
 in the class. The question waits for a first review.
 
 Kept open on 2026-11-10 under decision 0054, because the review reads the answer with a doubt on DEP-24's wording (item RV6).
+
+Rule text on 2026-11-10 (decision 0061, item RV6): DEP-24 and the DEP-P5 row say that the member template can come from the class or from a base that is not dependent. A new run test shows the base form after `.` and after `::`, and a reject test shows `::` with the current instantiation for a member of a dependent base. The doubt stays until a review reads the new text.
 
 ## Opinions
 

@@ -74,8 +74,8 @@ whose last review finds the reference silent.
 | 4a | Follow the review; answers change | 18: Q-0140, Q-0142, Q-0181, Q-0225, Q-0243, Q-0246, Q-0275, Q-0277, Q-0280, Q-0300, Q-0336, Q-0394, Q-0405, Q-0406, Q-0407, Q-0409, Q-0410, Q-0416 | 32 | at most 32 |
 | 4b | Follow the compilers; answers stay | 22: Q-0074, Q-0077, Q-0087, Q-0123, Q-0131, Q-0190, Q-0191, Q-0205, Q-0226, Q-0307, Q-0330, Q-0362, Q-0366, Q-0369, Q-0371, Q-0389, Q-0393, Q-0401, Q-0404, Q-0408, Q-0418, Q-0426 | 48 | 0 |
 | 4b | Follow the review; answers change | 22: Q-0074, Q-0077, Q-0087, Q-0123, Q-0131, Q-0190, Q-0191, Q-0205, Q-0226, Q-0307, Q-0330, Q-0362, Q-0366, Q-0369, Q-0371, Q-0389, Q-0393, Q-0401, Q-0404, Q-0408, Q-0418, Q-0426 | 48 | at most 48 |
-| 4a | Follow the compilers, rule items; answers stay | 14: THR-3; TRY-2; UNW-3; NAM-40, NAM-41; STG-9; LSUP-11; TR-P6, TR-13, TR-14, TR-15; UNW-1; OBJ-11; ENUM-10, ENUM-P1; NS-12; NEW-P5; ICS-45; CMP-8 | 171 | 0 |
-| 4a | Follow the review, rule items; answers change | 14: THR-3; TRY-2; UNW-3; NAM-40, NAM-41; STG-9; LSUP-11; TR-P6, TR-13, TR-14, TR-15; UNW-1; OBJ-11; ENUM-10, ENUM-P1; NS-12; NEW-P5; ICS-45; CMP-8 | 171 | at most 171 |
+| 4a | Follow the compilers, rule items; answers stay | 15: THR-3; TRY-2; UNW-3; NAM-40, NAM-41; STG-9; LSUP-11; TR-P6, TR-13, TR-14, TR-15; UNW-1; OBJ-11; ENUM-10, ENUM-P1; NS-12; NEW-P5; ICS-45; DEP-15, DEP-P4; CMP-8 | 185 | 0 |
+| 4a | Follow the review, rule items; answers change | 15: THR-3; TRY-2; UNW-3; NAM-40, NAM-41; STG-9; LSUP-11; TR-P6, TR-13, TR-14, TR-15; UNW-1; OBJ-11; ENUM-10, ENUM-P1; NS-12; NEW-P5; ICS-45; DEP-15, DEP-P4; CMP-8 | 185 | at most 185 |
 | 5 | Decide the row; answers may change | 1: Q-0235 | 3 | at most 3 |
 | 6 | Decide the row; answers may change | 2: Q-0041, Q-0343 | 5 | at most 5 |
 | 7 | Decide the row; answers may change | 5: Q-0007, Q-0087, Q-0116, Q-0181, Q-0188 | 5 | at most 5 |
@@ -112,10 +112,10 @@ each item, except Q-0307, where Tidal follows the review.
 | Q-0336 | the read of an enumeration value that a byte copy stored | matrix (the sanitizer stops the read) | matrix (the sanitizer stops the read) | runs no program | `2026-11-03-gap-review-object-model` |
 | THR-3 | a usable copy constructor when no copy runs | matrix | matrix | matrix | `2026-11-03-gap-review-exceptions` |
 | TRY-2 | a handler of a reference to a pointer that is not `const` | matrix | matrix | runs no program | `2026-11-03-gap-review-exceptions` |
-| UNW-3 | the global deallocation form for a single object with extended alignment; UNW-3 allows both forms | matrix | matrix | runs no program | `2026-11-03-gap-review-exceptions` |
+| UNW-3 | the global deallocation form for a single object with extended alignment after a throw; UNW-3 allows both forms | matrix | matrix | runs no program | `2026-11-03-gap-review-exceptions`, `2026-11-10-gap-review-phase-13-classes-declarations-foundations` |
 | NAM-40, NAM-41 | a class name in the type of a conversion function | matrix | matrix | matrix | `2026-11-03-gap-review-names` |
 | STG-9 | a new object in the place of a member of a base subobject | matrix | matrix | matrix | `2026-11-03-gap-review-object-model` |
-| LSUP-11 | an `std::allocator` whose element type is not a literal type | matrix | matrix | matrix | `2026-11-03-gap-review-object-model` |
+| LSUP-11 | an `std::allocator` whose element type is not a literal type | matrix | matrix | matrix | `2026-11-03-gap-review-object-model`, `2026-11-10-gap-review-phase-13-classes-declarations-foundations` |
 | TR-P6, TR-13, TR-14, TR-15 | rejection of a program past a translation limit | matrix | matrix | matrix | `2026-11-03-gap-review-program-structure` |
 | Q-0140 | a call that uses equal default arguments from two scopes; OVL-38's test of when two default arguments are the same is Tidal's own | matrix | matrix | matrix | `2026-10-31-gap-review-overload-resolution`, `2026-11-03-gap-review-questions-overloading`, `2026-11-04-gap-review-phase-8-classes-overloading` |
 | Q-0142 | the address of two plain functions with different parameter lists and no target; only Clang 18 follows the review | matrix | matrix | matrix | `2026-11-03-gap-review-questions-overloading` |
@@ -156,6 +156,7 @@ each item, except Q-0307, where Tidal follows the review.
 | ICS-45 | an `explicit` conversion function whose result is a class derived from `C`, for the copy or move constructor of `C` in direct initialization | matrix | matrix | matrix | `2026-11-05-gap-review-phase-12-expressions-overloading-templates` |
 | CNS-11, CPY-15, Q-0426 | the constraint check of a function template candidate when a candidate that is not a template takes every argument with no conversion; CNS-11 skips the check, the review checks every template candidate | matrix | matrix | review | `2026-11-10-gap-review-phase-13-expressions-overloading-templates`, `2026-11-10-gap-review-phase-13-classes-declarations-foundations` |
 | CPY-15, Q-0426 | the W20-3 copy of a `Holder` beside a constructor template whose constraint needs its own result; the program runs, the review checks the constraint for `Holder` | matrix | matrix | review (checks, then accepts) | `2026-11-10-gap-review-phase-13-expressions-overloading-templates` |
+| DEP-15, DEP-P4 | `Box<M>` inside `Box<N>`, where `M` is a `static` constant member of the parameter's type initialized with `N` alone; DEP-15 names another specialization, the review the current instantiation | matrix | matrix | matrix | `2026-11-10-gap-review-phase-13-expressions-overloading-templates` |
 | CMP-8 | a relational comparison of pointers to two members of a union, or to a member that occupies no storage, during constant evaluation; Tidal keeps a result | matrix | matrix | matrix | `2026-11-04-gap-review-phase-8-expressions-foundations-templates` |
 
 ## EDG report

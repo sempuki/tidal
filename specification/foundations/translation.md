@@ -539,6 +539,14 @@ compile.
 
 ### Notes
 
+- TR-P1: the gap review of the text phase 13 wrote on classes
+  (`reports/review/2026-11-10-gap-review-phase-13-classes-declarations-foundations.md`,
+  RV6-A-8) notes that the C++23 text also has undefined behavior that
+  arises during translation, with no run, such as some preprocessing
+  and lexical forms. No `undefined` rule of this specification covers
+  such a form. The review also names a program that adds declarations
+  to namespace `std`. Tidal's tests do so by its own choice, which
+  {doc}`/foundations/language-support` gives.
 - TR-17: the gap review of the text phase 8 wrote on expressions, foundations,
   and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`) doubts the class of a
   program with no `main`. The reference waives the diagnostic for a

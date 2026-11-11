@@ -100,7 +100,10 @@ arithmetic:
 
 - `bool`, the character types, `short`, and `unsigned short`. Such a
   type promotes to `int` if `int` can hold all its values, and
-  otherwise to `unsigned int`. {rule}`TYP-3` gives the underlying type
+  otherwise to `unsigned int`. For `wchar_t`, `char8_t`, `char16_t`,
+  and `char32_t`, the list goes on with `long`, `unsigned long`,
+  `long long`, and `unsigned long long`, and the type promotes to the
+  first that can hold all its values. {rule}`TYP-3` gives the underlying type
   of each character type, which decides its values. On both matrix targets, `char32_t`
   promotes to `unsigned int`, and the other types promote to `int`.
 - a bit-field of integer type, by its width and not by its declared
