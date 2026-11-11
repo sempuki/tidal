@@ -883,7 +883,7 @@ own IDs (RV5-A-n and RV5-B-n).
 | P2-6 | `P2/report.md` | question | Q-0431; decision 0062, item F4: LSUP-1 gives the order, decltype(sizeof 0) for the count, and any access for the constructor; test initializer-list-count-before-pointer.cpp |
 | P2-7 | `P2/report.md` | text | decision 0062: the report names no change to the text; outside knowledge: a pointer or nullptr for a missing value (CMP-6, CMP-15, NEW-4) |
 | P2-8 | `P2/report.md` | commit | 1130ceb8, decision 0062, item F4: DCL-19 links CE-3 and CV-8 for the variables that a bound can read |
-| P2-9 | `P2/report.md` | planned | decision 0062, item FE: front end: "unspecified" is the first word when every explored order gives one result (SEQ-1); the text needs no change, and the front end's first line changes; test programs/P2/ledger.cpp |
+| P2-9 | `P2/report.md` | commit | b035efd4 (front-end round 25, decision 0062, item FE): the test passes; front end: "unspecified" is the first word when every explored order gives one result (SEQ-1); the text needs no change, and the front end's first line changes; test programs/P2/ledger.cpp |
 | I4-1 | `I4/report.md` | commit | ee6085aa: COND-16 base row |
 | I4-2 | `I4/report.md` | commit | ee6085aa: COND-16 step 1, Q-0418 |
 | I4-3 | `I4/report.md` | commit | ee6085aa: COND-P2 and COND-11 |
@@ -1059,5 +1059,5 @@ own IDs (RV5-A-n and RV5-B-n).
 | I7-13 | `I7/report.md` | open | unclear: CTAD-2, a new expression and a static member with no initializer |
 | I7-14 | `I7/report.md` | open | unclear: CTAD-5 and CTAD-17, when a conditional explicit is evaluated |
 | I7-15 | `I7/report.md` | open | outside knowledge: the rank of a braced list to an aggregate (CTAD-9), conversion ranks |
-| I7-16 | `I7/report.md` | open | front end: an aggregate candidate with designators stops; test templates/class-template-deduction/aggregate-candidate.cpp |
-| I7-17 | `I7/report.md` | open | front end: a braced copy of a class whose list constructor takes another type stops; test classes/initializer-lists/braced-copy-list-ctor-other-element-type.cpp |
+| I7-16 | `I7/report.md` | commit | b035efd4 (front-end round 25, decision 0062, item FE): the test passes; front end: an aggregate candidate with designators stops; test templates/class-template-deduction/aggregate-candidate.cpp |
+| I7-17 | `I7/report.md` | commit | b035efd4 (front-end round 25, decision 0062, item FE): the test passes; front end: a braced copy of a class whose list constructor takes another type stops; test classes/initializer-lists/braced-copy-list-ctor-other-element-type.cpp |
