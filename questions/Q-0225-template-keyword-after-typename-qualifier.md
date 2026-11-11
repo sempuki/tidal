@@ -71,3 +71,7 @@ The source-reader gap review of dependent names and instantiation (`reports/revi
 ### Gap review, 2026-11-11 (phase 14 text, expressions, overloading, and templates)
 
 The source-reader gap review of the text phase 14 wrote on expressions, overloading, and templates (`reports/review/2026-11-11-gap-review-phase-14-expressions-overloading-templates.md`) names the question in its reading of DEP-P5 (RV7-B-10). In C++23, a name in a position that allows only a type, other than the last name before `::`, opens an argument list at the `<` with no keyword. That is the reading of the cluster 6 review, and it reads against the answer. The review also finds that the DEP-P5 sentence on the middle column, which says the parser's choice reports no error, does not fit the row for this question, which puts a rejection in that column.
+
+### Read of the RV7 repair diff, 2026-11-11
+
+The source-reader read of the RV7 repair diff (`reports/review/2026-11-11-read-of-rv7-repair-diff.md`) reads the RV7 repair of the DEP-P5 sentence. The sentence and this question's row now agree, and the row's reading still goes against the reference, so the question stays in pending.md row 4.

@@ -38,3 +38,7 @@ Kept open on 2026-11-11 under decision 0054 (item RV7). The review finds the ref
 ### Gap review, 2026-11-11 (phase 14 text, classes, declarations, foundations, and statements)
 
 The source-reader gap review of the text phase 14 wrote on classes, declarations, foundations, and statements (`reports/review/2026-11-11-gap-review-phase-14-classes-declarations-foundations.md`) reads the question: the reference is silent (RV7-A-9). The reference gives no layout for the template, and its library text names two possible representations only as a note. The reference also requires the library's own declaration of the template to be reachable at each use, and a program must not add declarations to the standard namespace. So the reference does not decide which shapes of a program's own declaration work. The rejection by Clang and GCC and the acceptance by EDG are both outside what the reference decides, and LSUP-1 records Tidal's own choice.
+
+### Read of the RV7 repair diff, 2026-11-11
+
+The source-reader read of the RV7 repair diff (`reports/review/2026-11-11-read-of-rv7-repair-diff.md`) reads the RV7 repair: the question's line now says the reference is silent on the shape, which the read finds correct.

@@ -72,3 +72,7 @@ The source-reader gap review of the text phase 14 wrote on classes, declarations
 ### Gap review, 2026-11-11 (phase 14 text, expressions, overloading, and templates)
 
 The source-reader gap review of the text phase 14 wrote on expressions, overloading, and templates (`reports/review/2026-11-11-gap-review-phase-14-expressions-overloading-templates.md`) reads the question: reads against the answer (RV7-B-3). Addition and subtraction are undefined when the pointer's type and the element type of the array are not similar, and a `T*` to a byte of a byte array meets that condition. So the step by one is undefined and has no address. The review reads ADD-14's older sentence, which counts the object as an array of one for a pointer of another type, against the reference for the same reason (Q-0049). The allocated-storage case of STG-28 differs, because the objects that the allocation creates can supply an array of the pointer's type. A declared byte array gets no new pointer value from a cast.
+
+### Read of the RV7 repair diff, 2026-11-11
+
+The source-reader read of the RV7 repair diff (`reports/review/2026-11-11-read-of-rv7-repair-diff.md`) reads the RV7 repair: the Q-0430 line names both RV7 reviews and STG-P2 cites the question. The repair keeps the compilers' answer with an Evidence note that states the reviews' readings correctly; the question stays in row 4.

@@ -60,3 +60,7 @@ The source-reader gap review of the open questions on expressions, declarations,
 ### Gap review, 2026-11-11 (phase 14 text, expressions, overloading, and templates)
 
 The source-reader gap review of the text phase 14 wrote on expressions, overloading, and templates (`reports/review/2026-11-11-gap-review-phase-14-expressions-overloading-templates.md`) names the question in its reading of ADD-14 (RV7-B-3). Addition and subtraction on a pointer are undefined when the pointed-to type and the element type of the array are not similar. The review reads ADD-14's sentence that counts the object as an array of one for a pointer of another type against that rule, because the sentence allows the move to one past. That reading matches option 1 of the question. It differs from the settled answer and from the gap review of 2026-11-03.
+
+### Read of the RV7 repair diff, 2026-11-11
+
+The source-reader read of the RV7 repair diff (`reports/review/2026-11-11-read-of-rv7-repair-diff.md`) reads the RV7 repair of the additive page. RV7-B-3's reading is too wide for this question's case: the move one past a base class subobject agrees with the reference, so ADD-14 and this answer agree with it, and the row 4 item "ADD-14, ADD-P6" records no disagreement there (RV8-R-9). The disagreement that remains is in the byte case (Q-0430) and in a signed or unsigned integer of the same width.

@@ -55,3 +55,7 @@ Rule text on 2026-11-11 (decision 0062, item RV7): DED-20 says that it covers on
 ### Gap review, 2026-11-11 (phase 14 text, expressions, overloading, and templates)
 
 The source-reader gap review of the text phase 14 wrote on expressions, overloading, and templates (`reports/review/2026-11-11-gap-review-phase-14-expressions-overloading-templates.md`) reads the question: supports with no doubt (RV7-B-16). The instantiation of the class makes the declaration of the member template with the class's pack known. A function parameter pack whose pattern names only the class's pack becomes one ordinary parameter for each element. Those parameters hold no parameter of the member template, so deduction does not compare them, and DED-20 does not reach them (option 1). The review finds no single place in the reference that states the case. The reading follows from several rules, and every compiler agrees.
+
+### Read of the RV7 repair diff, 2026-11-11
+
+The source-reader read of the RV7 repair diff (`reports/review/2026-11-11-read-of-rv7-repair-diff.md`) reads the RV7 repair of DED-20: the rule now covers only a pack of the template that the call deduces, and the divergence line for this question agrees with the reference.

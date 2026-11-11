@@ -69,3 +69,7 @@ The source-reader gap review of question cluster 6 (`reports/review/2026-11-03-g
 ### Gap review, 2026-11-11 (phase 14 text, expressions, overloading, and templates)
 
 The source-reader gap review of the text phase 14 wrote on expressions, overloading, and templates (`reports/review/2026-11-11-gap-review-phase-14-expressions-overloading-templates.md`) names the question in its reading of DEP-P5 (RV7-B-1). The new DEP-P5 row states as valid a member class template after `typename T::template` with no argument list, as the type of a declaration whose arguments are deduced. The review reads against that row on two grounds. The C++23 form of a deduced class type has an optional `typename`, an optional qualifier, and the template's name, with no place for `template`. And the qualifier of a deduced class type must not be dependent. The review reads the form after `typename` that uses `template` as one that needs an argument list.
+
+### Read of the RV7 repair diff, 2026-11-11
+
+The source-reader read of the RV7 repair diff (`reports/review/2026-11-11-read-of-rv7-repair-diff.md`) reads the RV7 repair of the deduction page: the divergence line names the RV7 review and row 4, which the read finds correct.

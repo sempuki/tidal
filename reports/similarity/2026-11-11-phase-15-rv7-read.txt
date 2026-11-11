@@ -1,0 +1,18 @@
+Similarity report: run threshold 8 words, overlap threshold 0.25
+
+ok   rv7read/2026-11-11-read-of-rv7-repair-diff.md:Read of the RV7 repair diff (b5d925e0) longest=0   overlap=0.00
+ok   rv7read/2026-11-11-read-of-rv7-repair-diff.md:Result longest=0   overlap=0.02
+ok   rv7read/2026-11-11-read-of-rv7-repair-diff.md:Hunks longest=0   overlap=0.00
+ok   rv7read/2026-11-11-read-of-rv7-repair-diff.md:RV7 points longest=0   overlap=0.00
+ok   rv7read/2026-11-11-read-of-rv7-repair-diff.md:RV8-R-1 longest=0   overlap=0.04
+ok   rv7read/2026-11-11-read-of-rv7-repair-diff.md:RV8-R-2 longest=0   overlap=0.01
+ok   rv7read/2026-11-11-read-of-rv7-repair-diff.md:RV8-R-3 longest=0   overlap=0.02
+ok   rv7read/2026-11-11-read-of-rv7-repair-diff.md:RV8-R-4 longest=0   overlap=0.00
+ok   rv7read/2026-11-11-read-of-rv7-repair-diff.md:RV8-R-5 longest=0   overlap=0.04
+ok   rv7read/2026-11-11-read-of-rv7-repair-diff.md:RV8-R-6 longest=0   overlap=0.01
+ok   rv7read/2026-11-11-read-of-rv7-repair-diff.md:RV8-R-7 longest=0   overlap=0.00
+ok   rv7read/2026-11-11-read-of-rv7-repair-diff.md:RV8-R-8 longest=0   overlap=0.02
+ok   rv7read/2026-11-11-read-of-rv7-repair-diff.md:RV8-R-9 longest=0   overlap=0.04
+ok   rv7read/2026-11-11-read-of-rv7-repair-diff.md:RV8-R-10 longest=0   overlap=0.01
+
+0 flagged

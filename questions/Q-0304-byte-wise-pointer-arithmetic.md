@@ -49,3 +49,7 @@ Kept open on 2026-11-03 under decision 0054, because the review reads the refere
 ### Gap review, 2026-11-03
 
 The source-reader gap review of the object model (`reports/review/2026-11-03-gap-review-object-model.md`) reads the reference as unclear, with option 1 supported by its intent. By the letter, a cast of a pointer to an object to a pointer to `unsigned char` still points to the object, because no byte object is pointer-interconvertible with it. Arithmetic on that pointer is then undefined, because the type of the pointer and the type of the element are not similar. The reference still calls the object representation a sequence of `unsigned char` objects, and it promises byte copies, which need the step. The review knows of a proposal to fix access to object representations that C++23 did not adopt. Option 1 matches the intent and every implementation.
+
+### Read of the RV7 repair diff, 2026-11-11
+
+The source-reader read of the RV7 repair diff (`reports/review/2026-11-11-read-of-rv7-repair-diff.md`) reads the storage Evidence note of the RV7 repair. The reference gives a byte step through a typed pointer no defined result, which is this question's gap, and part B of RV7 holds only under this question's answer (ADD-6) (RV8-R-10).
