@@ -25,7 +25,12 @@ A gap review under `reports/review/` gives each point that its repair
 commit leaves an ID such as `RV5-A-3`, and the point gets a row here.
 The rows RV4-1 to RV4-7 give IDs to the doubts that the RV4 repair
 commit (7cf4574b) left for the next review. The RV5 reviews gave their
-own IDs (RV5-A-n and RV5-B-n).
+own IDs (RV5-A-n and RV5-B-n), and so do the RV6, RV7, and RV8 reviews
+(RV6-A-n, RV7-B-n, and so on). The read of a repair diff gives IDs of
+the form RV8-R-n. The rows RM12-1 to RM12-3 give IDs to three findings
+that only a commit message or a probe README held until the round 12
+editor report named them (`roadmap-12/editor.md`, "Records that
+drift").
 
 | Finding | Report | State | Record |
 |---|---|---|---|
@@ -1028,6 +1033,9 @@ own IDs (RV5-A-n and RV5-B-n).
 | RV8-R-8 | `../review/2026-11-11-read-of-rv7-repair-diff.md` | planned | decision 0063, item RV8: DEP-6, DEP-17, DEP-P6: a member access through any object of the current instantiation; small doubt |
 | RV8-R-9 | `../review/2026-11-11-read-of-rv7-repair-diff.md` | planned | decision 0063, item RV8: RV7-B-3 is too wide: the move one past a base subobject agrees with the reference; the row 4 item ADD-14 with ADD-P6 records no disagreement; the same-width integer case has none |
 | RV8-R-10 | `../review/2026-11-11-read-of-rv7-repair-diff.md` | planned | decision 0063, item RV8: the storage Evidence note: part B holds only under Q-0304 (ADD-6) |
+| RM12-1 | `roadmap-12/editor.md` | planned | decision 0063, item RV8: the ADD-11 doubt from d0597264 has no test: an unsigned char* into an object in the storage, subtracted from the storage pointer (ADD-11 with ADD-14 and STG-28) |
+| RM12-2 | `roadmap-12/editor.md` | planned | decision 0063, item RV8: the forward_class shape takes attributes after the class key and elaborated_type does not, so that form has no general derivation (9359cc42) |
+| RM12-3 | `roadmap-12/editor.md` | planned | decision 0063, item RV8: the probe split on an unqualified d.~Base() on a derived object (GCC accepts, Clang and EDG reject; b5d925e0 and roadmap-11/writer-probes/README.md) has no test or question; DTOR-8, with RV8-R-1 |
 | W20-1 | `W20/report.md` | commit | 0ae4cdb5, decision 0061, item F3: STG-P2 and the FixedVec example say that a pointer to the object in one row does not reach the object in the next row (ADD-10); test foundations/storage/byte-rows-pointer-does-not-reach-next-row.cpp |
 | W20-2 | `W20/report.md` | commit | 53577f27 (front-end round 24, decision 0061, item FE): the test passes; F3 states in UNI-14 that a construction inside a member that is not active does not make it active, and that pointers to the elements of such an array member can be formed, stepped, and compared (STG-10); UNI-6 makes the construction undefined (Q-0425); front end: a subscript of an array member with no active member is unsupported; tests classes/unions/array-member-element-address-no-active-member.cpp, array-member-element-steps-no-active-member-constant.cpp, construct-at-array-member-element-constant.cpp, chain-assign-array-element-nontrivial-constant.cpp |
 | W20-3 | `W20/report.md` | commit | 53577f27 (front-end round 24, decision 0061, item FE): the test passes; F3 states in CNS-11 that the constraints of the template candidates are not checked when a candidate that is not a template takes every argument with no conversion, and in CPY-15 that a by-value constructor template is checked before it is dropped otherwise (Q-0426); front end: CNS-35 false reject; tests templates/constraints/by-value-constructor-template-constraint-copies-class.cpp, exact-non-template-skips-constraint-check.cpp, added-const-non-template-checks-constraint.cpp, classes/copy-move/copy-constructor-exact-skips-template-constraint.cpp, by-value-constructor-template-constraint-checked.cpp |
