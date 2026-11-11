@@ -266,8 +266,11 @@ def check_ledger(errors: list[str]) -> None:
             if state == "commit" and not re.search(r"\b[0-9a-f]{7,40}\b", record):
                 errors.append(f"{where}: {fid} is in state commit, and its Record names no commit")
             # A planned row names an item that has not ended (decision 0059).
-            if state == "planned" and (p := re.match(r"decision (\d{4}), items? ([A-Z0-9]+(?: and [A-Z0-9]+)*)", record)):
-                for item in p.group(2).split(" and "):
+            # A front-end finding names its test (decision 0059; decision 0061, item R7).
+            if state in ("open", "planned") and "front end" in record and ".cpp" not in record:
+                errors.append(f"{where}: {fid} is a front-end finding in state {state}, and its Record names no test")
+            if state == "planned" and (p := re.match(r"decision (\d{4}), items? ([A-Z0-9]+(?:(?:, and |, | and )[A-Z0-9]+)*)", record)):
+                for item in re.split(r", and |, | and ", p.group(2)):
                     if (p.group(1), item) in ended:
                         errors.append(f"{where}: {fid} is planned for item {item} of decision {p.group(1)}, "
                                       "which the roadmap marks done or moved")
