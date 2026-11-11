@@ -1,0 +1,21 @@
+Similarity report: run threshold 8 words, overlap threshold 0.25
+
+ok   p4sim/report.md:P4: Port suite, Swift persona longest=0   overlap=0.00
+ok   p4sim/report.md:Pages read       longest=0   overlap=0.00
+ok   p4sim/report.md:Rules noted before writing longest=0   overlap=0.00
+ok   p4sim/report.md:Summary          longest=0   overlap=0.02
+ok   p4sim/report.md:P4-1             longest=0   overlap=0.02
+ok   p4sim/report.md:P4-2             longest=0   overlap=0.02
+ok   p4sim/report.md:P4-3             longest=0   overlap=0.00
+ok   p4sim/report.md:P4-4             longest=0   overlap=0.01
+ok   p4sim/report.md:P4-5             longest=0   overlap=0.00
+ok   p4sim/report.md:P4-6             longest=0   overlap=0.00
+ok   p4sim/report.md:P4-7             longest=0   overlap=0.01
+ok   p4sim/report.md:sequences.cpp    longest=0   overlap=0.00
+ok   p4sim/report.md:buffer.cpp       longest=0   overlap=0.00
+ok   p4sim/report.md:money.cpp        longest=0   overlap=0.01
+ok   p4sim/report.md:Results          longest=0   overlap=0.00
+ok   p4sim/report.md:Host-only claims longest=0   overlap=0.03
+ok   p4sim/report.md:What worked well longest=0   overlap=0.00
+
+0 flagged

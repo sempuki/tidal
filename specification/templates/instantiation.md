@@ -191,7 +191,7 @@ definition.
 
 :::{rule} INST-1
 :kind: required
-:tests: templates/instantiation/class-object.cpp templates/instantiation/class-sizeof.cpp templates/instantiation/class-member-access.cpp templates/instantiation/class-delete.cpp templates/instantiation/class-base-conversion.cpp templates/instantiation/class-function-definition-parameter.cpp templates/instantiation/class-function-definition-return.cpp templates/instantiation/class-call-return.cpp templates/instantiation/class-deduction-from-derived.cpp templates/instantiation/class-deduction-from-derived-error.cpp templates/instantiation/class-qualified-name.cpp templates/instantiation/class-call-passes-by-value.cpp templates/instantiation/class-decltype-call-argument-instantiated.cpp templates/instantiation/class-decltype-member-access-instantiated.cpp templates/instantiation/lambda-return-specialization-braced-return.cpp templates/instantiation/member-parameter-type-waits-for-definition.cpp templates/instantiation/class-decltype-consteval-call-not-instantiated.cpp
+:tests: templates/instantiation/class-object.cpp templates/instantiation/class-sizeof.cpp templates/instantiation/class-member-access.cpp templates/instantiation/class-delete.cpp templates/instantiation/class-base-conversion.cpp templates/instantiation/class-function-definition-parameter.cpp templates/instantiation/class-function-definition-return.cpp templates/instantiation/class-call-return.cpp templates/instantiation/class-deduction-from-derived.cpp templates/instantiation/class-deduction-from-derived-error.cpp templates/instantiation/class-qualified-name.cpp templates/instantiation/class-call-passes-by-value.cpp templates/instantiation/class-decltype-call-argument-instantiated.cpp templates/instantiation/class-decltype-member-access-instantiated.cpp templates/instantiation/lambda-return-specialization-braced-return.cpp templates/instantiation/member-parameter-type-waits-for-definition.cpp templates/instantiation/class-decltype-consteval-call-not-instantiated.cpp declarations/functions/definitions/member-in-class-specialization-over-class.cpp
 
 A specialization of a {term}`class template` is instantiated when a use needs
 a complete class, or when the definition can change the meaning of the
@@ -203,7 +203,8 @@ use. These uses instantiate the class:
 - a conversion of a pointer or reference to a base class,
 - the definition of a function whose parameter or return type is the
   class, when the definition is made (for a member of a class template,
-  {rule}`INST-7`),
+  {rule}`INST-7`, and for a member function defined in its class, at
+  the end of that class, {rule}`FN-12`),
 - a call to a function that returns the class, unless the call is the
   whole operand of `decltype` (INST-2),
 - a call that passes the class by value,
@@ -783,8 +784,8 @@ extern template constexpr int size_of<long>;  // rejected: constexpr (INST-25)
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 138
-of 169 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 139
+of 170 tests.
 
 ### Divergences
 

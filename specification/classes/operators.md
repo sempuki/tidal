@@ -206,7 +206,7 @@ end in a pointer.
 
 :::{rule} OPR-6
 :kind: required
-:tests: classes/operators/argument-dependent-lookup.cpp classes/operators/assign-not-from-other.cpp classes/operators/builtin-candidate-via-conversion.cpp classes/operators/enum-builtin-still-used.cpp classes/operators/left-operand-conversion-nonmember.cpp classes/operators/member-hides-not-nonmember.cpp foundations/names/operator-lookup-block-hides.cpp foundations/names/operator-lookup-namespace-hides.cpp templates/declarations/member-operator-outside.cpp classes/access/friend-class-then-operator-calls.cpp
+:tests: classes/operators/argument-dependent-lookup.cpp classes/operators/assign-not-from-other.cpp classes/operators/builtin-candidate-via-conversion.cpp classes/operators/enum-builtin-still-used.cpp classes/operators/left-operand-conversion-nonmember.cpp classes/operators/member-hides-not-nonmember.cpp foundations/names/operator-lookup-block-hides.cpp foundations/names/operator-lookup-namespace-hides.cpp templates/declarations/member-operator-outside.cpp classes/access/friend-class-then-operator-calls.cpp classes/operators/initializer-list-parameter.cpp
 
 An expression with an operand of class or enumeration type selects the
 operator function from these candidates:
@@ -369,8 +369,8 @@ Meters len = 2.5_m;
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 122
-of 129 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 123
+of 130 tests.
 
 ### Divergences
 

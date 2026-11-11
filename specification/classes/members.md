@@ -153,7 +153,7 @@ of its own type. A pointer to the class type is valid.
 
 :::{rule} CLS-2
 :kind: required
-:tests: classes/members/complete-in-member-bodies.cpp classes/members/complete-in-default-member-init.cpp classes/members/complete-in-default-argument.cpp classes/members/noexcept-complete-class.cpp expressions/postfix/default-template-argument-incomplete-class.cpp
+:tests: classes/members/complete-in-member-bodies.cpp classes/members/complete-in-default-member-init.cpp classes/members/complete-in-default-argument.cpp classes/members/noexcept-complete-class.cpp expressions/postfix/default-template-argument-incomplete-class.cpp declarations/functions/definitions/member-in-class-specialization-over-class.cpp
 
 The class is complete inside:
 
@@ -712,8 +712,8 @@ struct Pointers { char c; int& r; int Plain::* p; void (Shape::* f)(); };
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 158
-of 174 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 159
+of 175 tests.
 
 ### Divergences
 

@@ -902,6 +902,13 @@ drift").
 | P3-10 | `P3/report.md` | open | front-end round 26 (a91ccc77): the test passes its check and stops in the run (report-26 section 9); front end: a user operator= with a class parameter stops as class assignment (OVL-7); test overloading/overload-resolution/assignment-operator-class-parameter.cpp |
 | P3-11 | `P3/report.md` | commit | 232ac618, decision 0063, item F5: VC-P2 says that copy initialization through a converting constructor initializes the object directly; new test foundations/values/copy-init-converting-constructor-no-copy.cpp |
 | P3-12 | `P3/report.md` | commit | 232ac618, decision 0063, item F5: glossary entries for closure type (LAM-2) and range (RFOR-2) |
+| P4-1 | `P4/report.md` | open | FN-12, CLS-2, INST-1: FN-12 read as rejecting a member function defined in its class whose type is a specialization over the class; the P4 commit adds the FN-12 sentence from the matrix; front end: tests declarations/functions/definitions/member-in-class-specialization-over-class.cpp (false reject) and member-in-class-type-completed-after-class.cpp (missed reject) |
+| P4-2 | `P4/report.md` | open | LSUP-1, OPR-6: front end: an operator function whose parameter is std::initializer_list<E> stops; test classes/operators/initializer-list-parameter.cpp |
+| P4-3 | `P4/report.md` | open | RFOR-P1, RFOR-2, CPT-P3: no example of an adaptor over any sequence |
+| P4-4 | `P4/report.md` | open | CPT-P3, CPT-28: no example that names a member call's result type without the library (outside knowledge) |
+| P4-5 | `P4/report.md` | open | STG-P2 Maybe example, CPY-5, CPY-8: the example shows no move constructor, and the sentence after it cites CPY-8 where CPY-5 applies |
+| P4-6 | `P4/report.md` | text | DEL-1: the specification needs no change; the front-end message names a deleted move constructor where the deleted copy constructor is selected, and no test can observe a message's wording (frontend_check.py reads the verdict and the rule ID, which are right) |
+| P4-7 | `P4/report.md` | open | OPR-8, CONV-4: OPR-8 does not say which value the numeric literal form receives |
 | I4-1 | `I4/report.md` | commit | ee6085aa: COND-16 base row |
 | I4-2 | `I4/report.md` | commit | ee6085aa: COND-16 step 1, Q-0418 |
 | I4-3 | `I4/report.md` | commit | ee6085aa: COND-P2 and COND-11 |

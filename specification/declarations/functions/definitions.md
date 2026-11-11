@@ -180,13 +180,15 @@ not be inside a function body.
 
 :::{rule} FN-12
 :kind: reject
-:tests: declarations/functions/definitions/incomplete-param-definition.cpp declarations/functions/definitions/incomplete-param-declaration.cpp declarations/functions/definitions/typedef-function-definition.cpp
+:tests: declarations/functions/definitions/incomplete-param-definition.cpp declarations/functions/definitions/incomplete-param-declaration.cpp declarations/functions/definitions/typedef-function-definition.cpp declarations/functions/definitions/member-in-class-specialization-over-class.cpp declarations/functions/definitions/member-in-class-type-completed-after-class.cpp
 
 In a function definition, each parameter type and the return type must
-be complete, except `void` and except in a deleted definition. A
-declaration that is not a definition can use incomplete types. A
-definition must use a function {term}`declarator`. A `typedef` name of a
-function type cannot define a function.
+be complete, except `void` and except in a deleted definition. For a
+member function defined in its class, the types must be complete at the
+end of the class definition. A declaration that is not a definition can
+use incomplete types. A definition must use a function
+{term}`declarator`, and a `typedef` name of a function type cannot
+define a function.
 :::
 
 ## Runtime Behavior
@@ -296,7 +298,7 @@ void name() {
 
 ## Evidence
 
-All eight compilers agree on 50 of 63 tests. The results are in
+All eight compilers agree on 52 of 65 tests. The results are in
 `tests/RESULTS.md`.
 
 ### Divergences
@@ -383,6 +385,18 @@ EDG skips the tests that use `-Wall` or `-Werror`.
   gives no warning, and GCC warns that the function has no `return`
   statement. For `while (k)` with a `constexpr bool k = true`, GCC 16
   at `-O2` warns, and at `-O0` it does not.
+- FN-12: a probe grid ran on every compiler of the matrix, and the
+  compilers agree on each case. They accept these member functions
+  defined in their class:
+
+  - a return or parameter type that is a specialization with a member
+    of the class's type, such as `Holder<Coin>` in `Coin`,
+  - such a specialization over a nested class that the class defines
+    after the function.
+
+  They reject a return type that is completed only after the class, and
+  `sizeof` of such a specialization in a member declaration
+  ({rule}`CLS-22`).
 - FN-10: Clang 22 and GCC 16 destroy a by-value parameter at the end of
   the caller's full expression, after the next operand of a comma.
 - FN-6, FN-10, FN-11 with `-m32`: the matrix runs no program built with
