@@ -115,7 +115,7 @@ The {term}`lifetime` of an object begins and ends at these points:
 |---|---|---|
 | A class object | Its initialization completes. That is the constructor, with the body of a delegating constructor, or the initialization of each element of an aggregate. | Its destructor call starts. |
 | A scalar object | Its storage is obtained and its initializer completes. A scalar with no initializer begins with its storage, before it has a value. | It is destroyed ({rule}`DTOR-6`), or its storage is released or reused (OBJ-10). |
-| An array | Its storage is obtained, or an operation of {rule}`STG-8` creates it. Each element begins as the row of its own type says, so an element can begin later than the array ({rule}`STG-28`). | Its storage is released or reused (OBJ-10). Each element ends as the row of its own type says. |
+| An array | Its storage is obtained and its initialization, if any, completes, or an operation of {rule}`STG-8` creates it. If the array has an initializer, or its elements have a constructor that is not {term}`trivial`, the array begins when the initialization of its last element completes. Each element begins as the row of its own type says. An element of an array that an operation creates can begin later than the array ({rule}`STG-28`). | It is destroyed, or its storage is released or reused (OBJ-10). Each element ends as the row of its own type says. |
 
 So a read or a write of a scalar during its own initializer is outside
 its lifetime ({rule}`OBJ-2`, {question}`Q-0368`). For destruction, an
@@ -227,7 +227,7 @@ element of an array.
 
 :::{rule} OBJ-2
 :kind: undefined
-:tests: foundations/objects/read-before-init-constant.cpp foundations/storage/allocation-array-unbuilt-element-constant.cpp foundations/objects/read-after-end-constant.cpp foundations/objects/uninitialized-member-read-constant.cpp foundations/objects/deleted-object-read-constant.cpp foundations/objects/reference-after-end-constant.cpp foundations/objects/read-after-block-ends-sanitizer.cpp foundations/objects/reference-does-not-extend-named.cpp foundations/constant-evaluation/copy-unset-member.cpp foundations/constant-evaluation/copy-unset-array-element.cpp declarations/initialization/forms/default-init-member-no-value.cpp declarations/initialization/forms/default-init-member-not-named-no-value.cpp statements/switch/skipped-declaration-read-first.cpp declarations/initialization/static/member-read-before-constructor-constant.cpp expressions/unary/indirection-dangling-constant.cpp classes/constructors/use-after-dtor-constant.cpp classes/constructors/use-after-delete-sanitizer.cpp foundations/objects/write-after-end-constant.cpp classes/unions/chain-assign-other-part-no-value-constant.cpp declarations/initialization/references/returned-reference-temporary-sanitizer.cpp declarations/functions/return-deduction/decltype-auto-paren-local-sanitizer.cpp foundations/objects/scalar-write-in-own-initializer-constant.cpp foundations/objects/scalar-write-through-pointer-in-own-initializer-constant.cpp classes/constructors/init-order-reads-later-run.cpp foundations/objects/storage-reuse-ends-old-object-sanitizer.cpp classes/constructors/base-init-calls-member-of-member-constant.cpp
+:tests: foundations/objects/read-before-init-constant.cpp foundations/storage/allocation-array-unbuilt-element-constant.cpp foundations/objects/read-after-end-constant.cpp foundations/objects/uninitialized-member-read-constant.cpp foundations/objects/deleted-object-read-constant.cpp foundations/objects/reference-after-end-constant.cpp foundations/objects/read-after-block-ends-sanitizer.cpp foundations/objects/reference-does-not-extend-named.cpp foundations/constant-evaluation/copy-unset-member.cpp foundations/constant-evaluation/copy-unset-array-element.cpp declarations/initialization/forms/default-init-member-no-value.cpp declarations/initialization/forms/default-init-member-not-named-no-value.cpp statements/switch/skipped-declaration-read-first.cpp declarations/initialization/static/member-read-before-constructor-constant.cpp expressions/unary/indirection-dangling-constant.cpp classes/constructors/use-after-dtor-constant.cpp classes/constructors/use-after-delete-sanitizer.cpp foundations/objects/write-after-end-constant.cpp classes/unions/chain-assign-other-part-no-value-constant.cpp declarations/initialization/references/returned-reference-temporary-sanitizer.cpp declarations/functions/return-deduction/decltype-auto-paren-local-sanitizer.cpp foundations/objects/scalar-write-in-own-initializer-constant.cpp foundations/objects/scalar-write-through-pointer-in-own-initializer-constant.cpp classes/constructors/init-order-reads-later-run.cpp foundations/objects/storage-reuse-ends-old-object-sanitizer.cpp classes/constructors/base-init-calls-member-of-member-constant.cpp foundations/objects/write-after-pseudo-destructor-element-constant.cpp foundations/objects/write-after-pseudo-destructor-variable-constant.cpp
 
 If a program reads or writes an object outside its lifetime, or reads
 a scalar object or member that has no value yet, the behavior is
@@ -238,6 +238,9 @@ included:
   has ended,
 - an access to a dynamic object after `delete`,
 - an access to a class object after its destructor runs,
+- an assignment to a scalar that an explicit destructor call ended
+  ({rule}`DTOR-6`), such as an array element. The assignment creates no
+  new object ({question}`Q-0447`).
 - an implicit copy or move function ({rule}`CPY-8`) of an object with a
   scalar part that has no value, because the function reads each scalar
   part. An unnamed bit-field is padding and no such part ({rule}`BF-12`).
@@ -342,7 +345,7 @@ int v = s.source.next;           // undefined: the object has ended
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 58
-of 63 tests. EDG runs no programs, so its results for the run tests say
+of 65 tests. EDG runs no programs, so its results for the run tests say
 only that the programs are valid.
 
 ### Divergences
@@ -359,6 +362,11 @@ only that the programs are valid.
   function on a member that is not yet initialized is undefined when the
   function reads nothing. It is, so constant evaluation rejects the
   call, as Clang does. GCC and EDG accept it.
+- {question}`Q-0447` (OBJ-2, CE-21; open): whether an assignment to a
+  scalar that an explicit destructor call ended gives the scalar a new
+  value. It does not. The write is outside the scalar's lifetime, so
+  constant evaluation rejects it, as Clang does. GCC and EDG accept the
+  write to an array element, and EDG accepts it for a variable.
 
 ### Split tests
 
@@ -369,6 +377,8 @@ only that the programs are valid.
 | `foundations/constant-evaluation/copy-unset-member.cpp` | CE-22, OBJ-2 | reject | reject | accept | reject | {question}`Q-0115` |
 | `scalar-write-in-own-initializer-constant.cpp` | OBJ-1, OBJ-2 | reject | reject | accept | accept | {question}`Q-0368` |
 | `scalar-write-through-pointer-in-own-initializer-constant.cpp` | OBJ-1, OBJ-2 | reject | reject | accept | accept | {question}`Q-0368` |
+| `write-after-pseudo-destructor-element-constant.cpp` | OBJ-2 | reject | reject | accept | accept | {question}`Q-0447` |
+| `write-after-pseudo-destructor-variable-constant.cpp` | OBJ-2 | reject | reject | reject | accept | {question}`Q-0447` |
 
 ### Notes
 
@@ -393,9 +403,11 @@ only that the programs are valid.
   {principle}`OBJ-P1` draws. No compiler of the matrix gives a result
   that separates this point from the end of the destructor.
 - OBJ-1: the row for an array has no test. No program observes when an
-  array's own lifetime begins apart from its elements. The X25 Propose
-  exercise asked for the row (X25-2), and STG-28 gives the case of
-  elements that begin after the array.
+  array's own lifetime begins or ends apart from its elements. The X25
+  Propose exercise asked for the row (X25-2), and STG-28 gives the case
+  of elements that begin after the array. The gap review of the phase
+  16 text (RV9-11) asked for the array's initialization at the start
+  and its destruction at the end.
 - OBJ-4: Clang and GCC destroy a constant-initialized object at the
   place of its definition in the order. A dynamically initialized
   object defined before it is destroyed after it. Clang and GCC destroy

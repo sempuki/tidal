@@ -324,8 +324,9 @@ alignment ({rule}`NEW-29`), and `p` must be aligned for `T`. The array form `new
 :kind: required
 :tests: foundations/storage/reuse-does-not-call-destructor.cpp foundations/storage/byte-array-hosts-objects.cpp foundations/storage/replace-base-ends-enclosing-sanitizer.cpp foundations/storage/arena-reset-reuses-bytes.cpp foundations/storage/byte-array-rows-host-objects.cpp classes/unions/construct-in-member-of-inactive-member-union-run.cpp
 
-If a new object takes storage that another object occupies, the
-lifetime of the other object ends, and its destructor does not run.
+If a new object takes all or part of the storage that another object
+occupies, the lifetime of the other object ends, and its destructor
+does not run.
 An object that the new object is nested in keeps its lifetime, such as
 the byte array that hosts the new object ({rule}`OBJ-10`). After the
 new object ends, its bytes hold no object until the program creates
@@ -779,12 +780,14 @@ public:
 ```
 
 The implicit copy of `Maybe` copies `held`, which then points into the
-bytes of the other object ({rule}`CPY-8`). So `Maybe` writes its own
-copy and move functions. A declared copy constructor removes the
-implicit move constructor ({rule}`CPY-5`), and an rvalue then uses the
-deleted copy constructor ({principle}`CPY-P2`). So without its move
-constructor, `Maybe` cannot be returned from a local variable, as in
-`return last;`.
+bytes of the other object ({rule}`CPY-8`). So `Maybe` deletes its copy
+functions and writes its own move constructor. A declared copy
+constructor removes the implicit move constructor ({rule}`CPY-5`), and
+an rvalue then uses the deleted copy constructor ({principle}`CPY-P2`).
+So without its move constructor, `Maybe` cannot be returned from a
+local variable, as in `return last;`. `Maybe` declares no move
+assignment, so an assignment from an rvalue uses the deleted copy
+assignment and is not valid.
 
 A container of fixed capacity keeps one row of bytes for each slot,
 and an array of the pointers that placement `new` returns. Each row is
@@ -1005,7 +1008,10 @@ rejection.
   and accepts it with the move constructor, and for a prvalue
   (`reports/clean-room/roadmap-13/writer-probes/p4-points.json`). The P4
   Port exercise asked for the move constructor and the citation of
-  CPY-5 (P4-5).
+  CPY-5 (P4-5). Every compiler rejects an assignment from an rvalue to
+  such a class, which uses the deleted copy assignment
+  (`reports/clean-room/roadmap-13/writer-probes/rv9-points.json`,
+  RV9-12).
 - STG-12: the gap review of the text phase 8 wrote on expressions, foundations,
   and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`) notes that the reference
   names an unsigned ordinary character type and `std::byte` for a copy

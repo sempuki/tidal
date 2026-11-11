@@ -1,0 +1,14 @@
+{
+ "prelude": "",
+ "template": "{prelude}\n{row}\n{col}",
+ "rows": {
+  "RV9-6 1e5000 through the long double form, -Werror": "constexpr long double operator\"\"_ld(long double v) { return v; }\nlong double huge = 1e5000_ld;",
+  "RV9-6 1e999f, -Werror": "float x = 1e999f;"
+ },
+ "cols": {
+  "program": ""
+ },
+ "flags": [
+  "-Werror"
+ ]
+}

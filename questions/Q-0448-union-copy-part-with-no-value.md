@@ -44,6 +44,8 @@ depends on the form of the copy.
 
 Kept open on 2026-11-11 under decision 0054 (decision 0064, item RV9). The gap review of the phase 16 text supports the answer with a doubt (RV9-10), and EDG 7.0 alone differs.
 
+Rule text on 2026-11-11 (decision 0064, item RV9): CE-22 adds the limit that RV9-10 reads, for a union whose active member is `mutable`. Q-0449 holds that case and its splits. The answer of this question is unchanged.
+
 ## Opinions
 
 ### Gap review, 2026-11-11 (phase 16 text)

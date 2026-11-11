@@ -410,7 +410,9 @@ of 134 tests.
   literal outside the range of its type is valid. The value is
   implementation-defined, and an implementation can reject the literal.
   Clang and GCC accept such a literal that calls the `long double`
-  form, and EDG rejects it. Each result conforms.
+  form, with a warning, and EDG rejects it. Each result conforms. The
+  gap reviews read the literal as not valid, with the warning as the
+  diagnostic (`pending.md` row 4).
 - {question}`Q-0060` (OPR-10; settled on OPR-P3): whether a literal
   operator can have a default argument. It cannot, as Clang and EDG
   say. GCC accepts the default argument.
@@ -471,9 +473,17 @@ of 134 tests.
   Port exercise asked for the sentence (P4-7).
 - OPR-8, PRIM-15: a floating literal whose value is outside the range
   of `long double` and that calls the `long double` form follows
-  PRIM-15. Clang and GCC accept `1e5000_v`, and EDG rejects it as it
-  rejects `1e5000L` (`literal-float-form-out-of-range.cpp`). The raw
-  form and the template accept the same literal on every compiler.
+  PRIM-15. Clang and GCC accept `1e5000_v` with a warning, and EDG
+  rejects it as it rejects `1e5000L`
+  (`literal-float-form-out-of-range.cpp`). The raw form and the
+  template accept the same literal on every compiler. Under `-Werror`,
+  every Clang and GCC rejects `1e5000_ld`
+  (`reports/clean-room/roadmap-13/writer-probes/rv9-warnings.json`).
+  The gap review of the phase 16 text (RV9-6) reads the call as one
+  whose argument is the plain `long double` literal, so the program is
+  not valid, and a warning is its diagnostic. OPR-8 and PRIM-15 follow
+  the compilers
+  (`documentation/decisions/pending.md`, row 4, {question}`Q-0063`).
 - OPR-1, OPR-8: every compiler accepts a call of a literal operator
   template by its name, with the characters as explicit template
   arguments or with an empty list, and gives the value of the literal

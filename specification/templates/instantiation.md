@@ -154,6 +154,19 @@ int main() { return read<A>(); }
   ── point of read<A>   right after main                     (INST-31)
 ```
 
+A class that a member function body needs has its point right after
+the class definition that holds the body, where that class is complete
+(INST-30):
+
+```text
+template <class T> struct Holder { T value; };
+struct Coin {
+  Holder<Coin> wrap() const;     // declared only: no point yet
+  int cents() const { return sizeof(Holder<Coin>); }
+};
+  ── point of Holder<Coin>   right after Coin                (INST-30)
+```
+
 A function or `static` data member has a point after the declaration
 that uses it, and another point at the end of the translation unit. A
 virtual member function has a point right after the point of its
@@ -191,7 +204,7 @@ definition.
 
 :::{rule} INST-1
 :kind: required
-:tests: templates/instantiation/class-object.cpp templates/instantiation/class-sizeof.cpp templates/instantiation/class-member-access.cpp templates/instantiation/class-delete.cpp templates/instantiation/class-base-conversion.cpp templates/instantiation/class-function-definition-parameter.cpp templates/instantiation/class-function-definition-return.cpp templates/instantiation/class-call-return.cpp templates/instantiation/class-deduction-from-derived.cpp templates/instantiation/class-deduction-from-derived-error.cpp templates/instantiation/class-qualified-name.cpp templates/instantiation/class-call-passes-by-value.cpp templates/instantiation/class-decltype-call-argument-instantiated.cpp templates/instantiation/class-decltype-member-access-instantiated.cpp templates/instantiation/lambda-return-specialization-braced-return.cpp templates/instantiation/member-parameter-type-waits-for-definition.cpp templates/instantiation/class-decltype-consteval-call-not-instantiated.cpp declarations/functions/definitions/member-in-class-specialization-over-class.cpp templates/instantiation/decltype-call-qualifier-instantiates.cpp templates/instantiation/decltype-operator-call-qualifier-instantiates.cpp
+:tests: templates/instantiation/class-object.cpp templates/instantiation/class-sizeof.cpp templates/instantiation/class-member-access.cpp templates/instantiation/class-delete.cpp templates/instantiation/class-base-conversion.cpp templates/instantiation/class-function-definition-parameter.cpp templates/instantiation/class-function-definition-return.cpp templates/instantiation/class-call-return.cpp templates/instantiation/class-deduction-from-derived.cpp templates/instantiation/class-deduction-from-derived-error.cpp templates/instantiation/class-qualified-name.cpp templates/instantiation/class-call-passes-by-value.cpp templates/instantiation/class-decltype-call-argument-instantiated.cpp templates/instantiation/class-decltype-member-access-instantiated.cpp templates/instantiation/lambda-return-specialization-braced-return.cpp templates/instantiation/member-parameter-type-waits-for-definition.cpp templates/instantiation/class-decltype-consteval-call-not-instantiated.cpp declarations/functions/definitions/member-in-class-specialization-over-class.cpp templates/instantiation/decltype-call-qualifier-instantiates.cpp templates/instantiation/decltype-operator-call-qualifier-instantiates.cpp declarations/functions/definitions/friend-in-class-specialization-over-class.cpp
 
 A specialization of a {term}`class template` is instantiated when a use needs
 a complete class, or when the definition can change the meaning of the
@@ -203,8 +216,8 @@ use. These uses instantiate the class:
 - a conversion of a pointer or reference to a base class,
 - the definition of a function whose parameter or return type is the
   class, when the definition is made (for a member of a class template,
-  {rule}`INST-7`, and for a member function defined in its class, at
-  the end of that class, {rule}`FN-12`),
+  {rule}`INST-7`, and for a function defined in a class, after the
+  outermost enclosing class, {rule}`FN-12` and {rule}`INST-30`),
 - a call to a function that returns the class, unless the call is the
   whole operand of `decltype` (INST-2),
 - a call that passes the class by value,
@@ -547,13 +560,21 @@ of a class.
 
 :::{rule} INST-30
 :kind: required
-:tests: templates/instantiation/class-point-sees-earlier.cpp templates/instantiation/class-point-in-specialization.cpp templates/instantiation/class-point-not-later-member-type.cpp
+:tests: templates/instantiation/class-point-sees-earlier.cpp templates/instantiation/class-point-in-specialization.cpp templates/instantiation/class-point-not-later-member-type.cpp templates/instantiation/class-point-after-enclosing-class.cpp templates/instantiation/class-point-after-enclosing-class-not-later.cpp declarations/functions/definitions/member-in-class-specialization-over-class.cpp
 
 The {term}`point of instantiation` of a class specialization is right
 before the namespace-scope declaration that first needs the class. If
 that declaration is in another specialization, the point is right
-before the point of that specialization. The class sees the
-declarations before its point.
+before the point of that specialization. If that declaration is a class
+definition, these uses have their point right after the definition
+({rule}`CLS-2`, {rule}`FN-12`):
+
+- a use in the body of a member function, or of a friend function
+  defined in the class,
+- a use in a default argument.
+
+The same places in a class nested in the definition count too. The
+class sees the declarations before its point.
 :::
 
 :::{rule} INST-31
@@ -583,7 +604,7 @@ lambda expression does not set a point.
 
 :::{rule} INST-33
 :kind: reject
-:tests: templates/instantiation/class-point-not-later-type.cpp templates/instantiation/class-point-not-later-member-type.cpp templates/instantiation/class-point-static-constexpr-made-at-use.cpp templates/instantiation/class-point-static-const-member.cpp
+:tests: templates/instantiation/class-point-not-later-type.cpp templates/instantiation/class-point-not-later-member-type.cpp templates/instantiation/class-point-static-constexpr-made-at-use.cpp templates/instantiation/class-point-static-const-member.cpp templates/instantiation/class-point-after-enclosing-class-not-later.cpp
 
 An instantiation does not see a declaration after its point of
 instantiation. A class specialization that needs such a declaration is
@@ -784,8 +805,8 @@ extern template constexpr int size_of<long>;  // rejected: constexpr (INST-25)
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 142
-of 173 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 145
+of 176 tests.
 
 ### Divergences
 
@@ -973,6 +994,22 @@ the compile.
   withdraws RV8-R-4 of the read of the RV7 repair diff. In the writer's
   probe, `sizeof` of the same call instantiates the class on every
   compiler, because `sizeof` needs a complete type.
+- INST-30, INST-1, FN-12: every compiler makes a class specialization
+  that a member function body or a default argument needs after the
+  class that holds the use. The specialization sees that class as
+  complete, also from a body in a nested class, and does not see a
+  declaration after the class (`class-point-after-enclosing-class.cpp`,
+  `class-point-after-enclosing-class-not-later.cpp`,
+  `reports/clean-room/roadmap-13/writer-probes/rv9-points.json`). The
+  gap review of the phase 16 text (RV9-2) reads the general point as
+  before the class, where the class is incomplete, and finds the
+  reference not consistent with its rule on the places where a class
+  is complete. INST-30 states the case as an exception, as FN-12 and
+  the compilers do. For a default member initializer, Clang and GCC
+  accept the same use, and EDG rejects it, so INST-30 does not name
+  that place. EDG also rejects a default argument that reads a
+  `static constexpr` member of the specialization whose initializer
+  needs the class, and accepts `sizeof` of the specialization there.
 - INST-5, INST-7: every compiler accepts an object of a class whose
   friend function has a body that is not valid, and rejects a call of
   the friend (I6-16).

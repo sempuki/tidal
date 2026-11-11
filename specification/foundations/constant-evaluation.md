@@ -410,7 +410,7 @@ value to each of its scalar parts. These conditions apply:
 
 :::{rule} CE-22
 :kind: reject
-:tests: foundations/constant-evaluation/copy-unset-member.cpp foundations/constant-evaluation/copy-unset-array-element.cpp foundations/constant-evaluation/unset-member-not-copied.cpp foundations/constant-evaluation/copy-after-every-part-set.cpp foundations/constant-evaluation/result-returned-local-unset-element.cpp declarations/initialization/forms/copy-indeterminate-unsigned-char.cpp foundations/constant-evaluation/read-returned-local-unset-element.cpp foundations/constant-evaluation/return-local-unset-member.cpp foundations/constant-evaluation/return-prvalue-unset-member-read.cpp foundations/constant-evaluation/union-copy-part-with-no-value.cpp foundations/constant-evaluation/union-copy-part-with-no-value-read.cpp
+:tests: foundations/constant-evaluation/copy-unset-member.cpp foundations/constant-evaluation/copy-unset-array-element.cpp foundations/constant-evaluation/unset-member-not-copied.cpp foundations/constant-evaluation/copy-after-every-part-set.cpp foundations/constant-evaluation/result-returned-local-unset-element.cpp declarations/initialization/forms/copy-indeterminate-unsigned-char.cpp foundations/constant-evaluation/read-returned-local-unset-element.cpp foundations/constant-evaluation/return-local-unset-member.cpp foundations/constant-evaluation/return-prvalue-unset-member-read.cpp foundations/constant-evaluation/union-copy-part-with-no-value.cpp foundations/constant-evaluation/union-copy-part-with-no-value-read.cpp foundations/constant-evaluation/union-copy-mutable-member-outside.cpp foundations/constant-evaluation/union-copy-mutable-member-assignment-outside.cpp foundations/constant-evaluation/union-copy-mutable-member-inside.cpp
 
 Constant evaluation must not read a scalar object that has no value
 ({rule}`OBJ-2`). The rule also applies where a run-time read is not
@@ -421,7 +421,9 @@ of a returned local variable ({rule}`CPY-12`), and a user-provided one
 reads only what its body reads. A trivial copy or move of a union
 copies its active member and reads none of the member's parts. A part
 that has no value in the source has no value in the target
-({question}`Q-0448`).
+({question}`Q-0448`). If the source's active member is `mutable`, the
+evaluation must have created the source
+({question}`Q-0449`).
 :::
 
 :::{rule} CE-23
@@ -665,8 +667,8 @@ constexpr All all{.a = 1};            // rejected: All is not literal (CE-23)
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 134
-of 167 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 135
+of 170 tests.
 
 ### Divergences
 
@@ -734,6 +736,12 @@ of 167 tests.
   whether a part that has no value in the source of a union's trivial
   copy has a value in the copy. It has none, so a read of it is
   rejected, as Clang and GCC say. EDG accepts the read.
+- {question}`Q-0449` (CE-22; open): whether
+  constant evaluation can copy a union whose active member is
+  `mutable` from a union that the evaluation did not create. It
+  cannot, with the copy constructor or the copy assignment, as Clang
+  says. GCC rejects the constructor and accepts the assignment, and EDG
+  accepts both.
 - {question}`Q-0447` (CE-21; open):
   whether a part that an explicit destructor call ended counts as a
   part with no value in a constant. It does, as every newest compiler
@@ -777,6 +785,8 @@ family column gives the outcome that the test expects on that family.
 | `return-local-unset-member.cpp` | CE-22, CPY-12 | reject | reject | accept | reject | {question}`Q-0115` |
 | `string-literal-identity-variables.cpp` | CE-13 | reject | reject | accept | accept | {question}`Q-0033` |
 | `string-literal-identity.cpp` | CE-13 | reject | reject | accept | accept | {question}`Q-0033` |
+| `union-copy-mutable-member-assignment-outside.cpp` | CE-22 | reject | reject | accept | accept | {question}`Q-0449` |
+| `union-copy-mutable-member-outside.cpp` | CE-22 | reject | reject | reject | accept | {question}`Q-0449` |
 | `union-copy-part-with-no-value-read.cpp` | CE-22 | reject | reject | reject | accept | {question}`Q-0448` |
 | `unknown-reference-not-read.cpp` | CE-18 | accept | Clang 22: accept; Clang 18: reject | accept | accept | {question}`Q-0090` |
 | `unknown-reference-static-member.cpp` | CE-18 | accept | Clang 22: accept; Clang 18: reject | accept | accept | {question}`Q-0090` |
@@ -850,6 +860,14 @@ family column gives the outcome that the test expects on that family.
   (`union-copy-part-with-no-value.cpp`). The same copy of a struct is
   rejected by Clang and EDG ({question}`Q-0115`). The X25 Propose
   exercise asked for the sentence (X25-5).
+- CE-22: the gap review of the phase 16 text
+  (`reports/review/2026-11-11-gap-review-phase-16.md`, RV9-10) adds the
+  limit on a union whose active member is `mutable`. In the writer's
+  probe (`reports/clean-room/roadmap-13/writer-probes/rv9-points.json`),
+  Clang and GCC also reject the copy of a union whose `mutable` member
+  is not active, and of a struct with a `mutable` member, from a
+  `constexpr` variable, and EDG accepts both. CE-22 names only the
+  active member, and no test holds the other forms.
 - CE-26: all eight compilers accept constant evaluation of
   `i++ + i++`, `i + i++`, `i++ * i`, `(i = 1) + (i = 2)`, and
   `i - ++i`. CE-26 is class `no-diagnostic` because no compiler detects

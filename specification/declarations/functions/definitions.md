@@ -180,12 +180,12 @@ not be inside a function body.
 
 :::{rule} FN-12
 :kind: reject
-:tests: declarations/functions/definitions/incomplete-param-definition.cpp declarations/functions/definitions/incomplete-param-declaration.cpp declarations/functions/definitions/typedef-function-definition.cpp declarations/functions/definitions/member-in-class-specialization-over-class.cpp declarations/functions/definitions/member-in-class-type-completed-after-class.cpp
+:tests: declarations/functions/definitions/incomplete-param-definition.cpp declarations/functions/definitions/incomplete-param-declaration.cpp declarations/functions/definitions/typedef-function-definition.cpp declarations/functions/definitions/member-in-class-specialization-over-class.cpp declarations/functions/definitions/member-in-class-type-completed-after-class.cpp declarations/functions/definitions/nested-member-type-completed-in-enclosing-class.cpp declarations/functions/definitions/friend-in-class-specialization-over-class.cpp declarations/functions/definitions/friend-in-class-type-completed-after-class.cpp
 
 In a function definition, each parameter type and the return type must
-be complete, except `void` and except in a deleted definition. For a
-member function defined in its class, the types must be complete at the
-end of the class definition. A declaration that is not a definition can
+be complete, except `void` and except in a deleted definition. If a
+class defines a member or friend function, its types must be complete
+where the outermost enclosing class ends. A declaration that is not a definition can
 use incomplete types. A definition must use a function
 {term}`declarator`, and a `typedef` name of a function type cannot
 define a function.
@@ -298,7 +298,7 @@ void name() {
 
 ## Evidence
 
-All eight compilers agree on 52 of 65 tests. The results are in
+All eight compilers agree on 55 of 68 tests. The results are in
 `tests/RESULTS.md`.
 
 ### Divergences
@@ -397,6 +397,18 @@ EDG skips the tests that use `-Wall` or `-Werror`.
   They reject a return type that is completed only after the class, and
   `sizeof` of such a specialization in a member declaration
   ({rule}`CLS-22`).
+- FN-12: the gap review of the phase 16 text (RV9-1) reads the check
+  as made in the body, where the class is complete. The review names
+  two more cases, and every compiler of the matrix agrees on each
+  (`reports/clean-room/roadmap-13/writer-probes/rv9-points.json`):
+
+  - A member function of a nested class can return a type that the
+    enclosing class completes after the nested class
+    (`nested-member-type-completed-in-enclosing-class.cpp`).
+  - A friend function defined in a class can return a specialization
+    with a member of the class's type, and cannot return a type that is
+    completed only after the class (`friend-in-class-specialization-over-class.cpp`,
+    `friend-in-class-type-completed-after-class.cpp`).
 - FN-10: Clang 22 and GCC 16 destroy a by-value parameter at the end of
   the caller's full expression, after the next operand of a comma.
 - FN-6, FN-10, FN-11 with `-m32`: the matrix runs no program built with

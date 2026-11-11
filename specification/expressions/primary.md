@@ -801,7 +801,8 @@ of 148 tests.
   the range of its type is valid. The value is implementation-defined,
   and an implementation can reject the literal. Clang and GCC accept
   `1e999f` with a warning and give infinity, and EDG rejects it. Each
-  result conforms.
+  result conforms. The gap reviews read the literal as not valid, with
+  the warning as the diagnostic (`pending.md` row 4).
 - {question}`Q-0194` (PRIM-29; settled on PRIM-P6): whether an operand
   of a fold can hold a binary operator without parentheses. It cannot,
   as Clang and GCC say. EDG accepts the fold.
@@ -844,6 +845,12 @@ EDG skips the tests that use `-Wall` or `-Werror`.
 - PRIM-15: PRIM-15 is `conditionally-supported`. Every test of PRIM-15
   has an override, and each override records a result that the class
   allows.
+- PRIM-15: the gap reviews of 2026-11-03 and of the phase 16 text
+  (`reports/review/2026-11-11-gap-review-phase-16.md`, RV9-6) read a
+  floating literal outside the range of its type as not valid. Under
+  that reading, the warning of Clang and GCC is the diagnostic that the
+  program needs. PRIM-15 follows the compilers, and
+  `documentation/decisions/pending.md` row 4 holds the case.
 - PRIM-22: GCC and EDG accept the extended floating suffixes. Clang
   accepts `f16` and `F16` and rejects the others. Support is
   conditional.

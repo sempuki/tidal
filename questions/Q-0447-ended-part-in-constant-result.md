@@ -1,7 +1,7 @@
 # Q-0447: Does a part that an explicit destructor call ended count as a part with no value in the result of a constant expression?
 
 **Status:** provisional
-**Affects:** CE-21, `tests/foundations/constant-evaluation/result-ended-element.cpp`, `tests/foundations/constant-evaluation/result-union-ended-element.cpp`
+**Affects:** CE-21, OBJ-2, `tests/foundations/constant-evaluation/result-ended-element.cpp`, `tests/foundations/constant-evaluation/result-union-ended-element.cpp`, `tests/foundations/objects/write-after-pseudo-destructor-element-constant.cpp`, `tests/foundations/objects/write-after-pseudo-destructor-variable-constant.cpp`
 **Source:** X25-7 (`reports/clean-room/X25/report.md`, probe `a10.cpp`), rerun on the matrix in `reports/clean-room/roadmap-13/writer-probes/x25-rules.json`, and by the item F6 writer with `tools/probe_grid.py`.
 **Waits for:** a review (doubt); newest families that agree
 
@@ -18,10 +18,11 @@ pseudo-destructor call. A `constexpr` variable then holds the object.
 | a struct or a union, the element ended in a function that returns the object | rejects | accepts | rejects | rejects |
 | a struct whose element of class type ends by its destructor call | rejects | accepts | rejects | rejects |
 | a struct, the `int` element ended and then assigned 3 | rejects | accepts | accepts | accepts |
+| a local `int` variable ended and then assigned 3 | rejects | rejects | rejects | accepts |
 
-In the last row, Clang rejects the assignment to the element after its
-end. The other compilers read the assignment as a new value. No rule
-of the constant-evaluation page names the form, and no test holds it.
+In the last two rows, Clang rejects the assignment after the end. GCC
+rejects it for a variable and reads it as a new value for an array
+element, and EDG reads it as a new value in both.
 
 ## Evidence
 
@@ -39,6 +40,8 @@ The ended part has no value, and the constant is not valid (option 1).
 CE-21 says so. Every newest compiler agrees, and GCC 14 alone differs.
 
 Kept open on 2026-11-11 under decision 0054 (decision 0064, item RV9). The gap review of the phase 16 text supports the answer with a doubt (RV9-9), and every newest compiler agrees. The review also reads the form of the table's last row: an assignment to the `int` element after its end uses the element outside its lifetime, which is undefined, so the evaluation is not constant. OBJ-2 gives the same reading, as Clang does. GCC 16 and EDG 7.0 accept the form, so two newest families differ in that form.
+
+Rule text on 2026-11-11 (decision 0064, item RV9): OBJ-2 lists an assignment to a scalar that an explicit destructor call ended, and says that the assignment creates no new object, as the RV9-9 reading gives. `write-after-pseudo-destructor-element-constant.cpp` expects the rejection, with GCC and EDG as overrides, and `write-after-pseudo-destructor-variable-constant.cpp` expects it with EDG as an override (`reports/clean-room/roadmap-13/writer-probes/rv9-points.json`).
 
 ## Opinions
 

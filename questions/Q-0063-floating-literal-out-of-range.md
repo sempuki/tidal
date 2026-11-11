@@ -1,7 +1,7 @@
 # Q-0063: Is a floating literal outside the range of its type valid?
 
 **Status:** provisional
-**Affects:** PRIM-15, `tests/expressions/primary/float-overflow.cpp`
+**Affects:** PRIM-15, OPR-8, `tests/expressions/primary/float-overflow.cpp`, `tests/expressions/primary/double-overflow.cpp`, `tests/classes/operators/literal-float-form-out-of-range.cpp`
 **Waits for:** the maintainer (pending.md row 4)
 
 ## Context

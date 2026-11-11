@@ -1,0 +1,40 @@
+{
+ "prelude": "",
+ "template": "{prelude}\n{row}\n{col}",
+ "rows": {
+  "RV9-1 nested class body returns a type that the enclosing class completes after the nested class": "struct Outer {\n  struct Later;\n  struct Inner { Later make() const { return Later{4}; } };\n  struct Later { int k; };\n};\nint use() { return Outer::Inner{}.make().k; }",
+  "RV9-2 nested class body: Holder<Outer> sees Outer complete": "template <class T> struct Holder { T value; static constexpr int n = sizeof(T); };\nstruct Outer {\n  struct Inner { int size() const { return Holder<Outer>::n; } };\n  int a; int b;\n};",
+  "RV9-2 body in class: Holder<Coin> member type calls extra declared inside Coin as a friend": "template <class T> struct Holder { T value; using tag = decltype(extra(value)); };\nstruct Coin { int c; Holder<Coin> wrap() const { return {*this}; } friend int extra(Coin) { return 0; } };",
+  "RV9-1 nested class body returns Holder<Outer>": "template <class T> struct Holder { T value; };\nstruct Outer {\n  struct Inner { Holder<Outer> wrap() const { return {}; } };\n  int k = 0;\n};",
+  "RV9-1 friend defined in class returns Holder<Coin>": "template <class T> struct Holder { T value; };\nstruct Coin {\n  int cents;\n  friend Holder<Coin> wrap(Coin c) { return {c}; }\n};\nint use() { return wrap(Coin{3}).value.cents; }",
+  "RV9-1 friend defined in class returns a type completed after the class": "struct Later;\nstruct User {\n  friend Later make(User) { throw 0; }\n};\nstruct Later { int k; };",
+  "RV9-1 control: nested class body returns a type completed after the outermost class": "struct Later;\nstruct Outer {\n  struct Inner { Later make() const { throw 0; } };\n};\nstruct Later { int k; };",
+  "RV9-2 body in class: Holder<Coin> member type calls extra declared after Coin": "template <class T> struct Holder { T value; using tag = decltype(extra(value)); };\nstruct Coin { int c; Holder<Coin> wrap() const { return {*this}; } };\nint extra(Coin);",
+  "RV9-2 control: extra declared before Coin is defined": "template <class T> struct Holder { T value; using tag = decltype(extra(value)); };\nstruct Coin;\nint extra(Coin);\nstruct Coin { int c; Holder<Coin> wrap() const { return {*this}; } };",
+  "RV9-2 body in class: Holder<Coin> sees a member that Coin declares after the body": "template <class T> struct Holder { T value; static constexpr int n = sizeof(T); };\nstruct Coin { int c; int size() const { return Holder<Coin>::n; } int d; };\nstatic_assert(sizeof(Coin) == 2 * sizeof(int));\nint probe() { return Coin{}.size(); }\nconstexpr int k = Holder<Coin>::n;\nstatic_assert(k == 2 * sizeof(int));",
+  "RV9-2 default member initializer in class uses Holder<Coin>": "template <class T> struct Holder { T value; };\nstruct Coin { int c = 0; int n = sizeof(Holder<Coin>); };",
+  "RV9-2 default argument in class uses Holder<Coin>": "template <class T> struct Holder { T value; };\nstruct Coin { int c = 0; int f(int n = sizeof(Holder<Coin>)) const { return n; } };",
+  "RV9-2 control: member declaration uses sizeof(Holder<Coin>)": "template <class T> struct Holder { T value; };\nstruct Coin { int c = 0; char pad[sizeof(Holder<Coin>)]; };",
+  "RV9-10 constexpr copy of a constexpr union whose active member is mutable": "union U { mutable int m; int n; };\nconstexpr U a{1};\nconstexpr U b = a;",
+  "RV9-10 copy of such a union inside one evaluation": "union U { mutable int m; int n; };\nconstexpr int f() { U a{1}; U b = a; return b.m; }\nstatic_assert(f() == 1);",
+  "RV9-10 constexpr copy of a constexpr union whose active member is not mutable, beside a mutable one": "union U { mutable int m; int n; };\nconstexpr U a{.n = 1};\nconstexpr U b = a;\nstatic_assert(b.n == 1);",
+  "RV9-10 control: constexpr copy of a struct with a mutable member": "struct S { mutable int m; };\nconstexpr S a{1};\nconstexpr S b = a;",
+  "RV9-10 control: read of the mutable member of a constexpr union": "union U { mutable int m; int n; };\nconstexpr U a{1};\nconstexpr int r = a.m;",
+  "RV9-10 copy assignment from a constexpr union whose active member is mutable": "union U { mutable int m; int n; };\nconstexpr U a{1};\nconstexpr int f() { U b{.n = 2}; b = a; return b.n + 1; }\nconstexpr int g() { U b{.n = 2}; b = a; return 1; }\nstatic_assert(g() == 1);",
+  "RV9-9 int element ended, then assigned 3, then read, in a constexpr function": "using Int = int;\nstruct Row { int v[2]; };\nconstexpr int f() { Row r{{1, 2}}; r.v[1].~Int(); r.v[1] = 3; return r.v[1]; }\nstatic_assert(f() == 3);",
+  "RV9-9 int variable ended, then assigned 3, in a constexpr function": "using Int = int;\nconstexpr int f() { int x = 1; x.~Int(); x = 3; return x; }\nstatic_assert(f() == 3);",
+  "RV9-9 int element ended, then assigned, no read after": "using Int = int;\nstruct Row { int v[2]; };\nconstexpr int f() { Row r{{1, 2}}; r.v[1].~Int(); r.v[1] = 3; return r.v[0]; }\nstatic_assert(f() == 1);",
+  "RV9-9 control: int element ended, then rebuilt with placement new": "void* operator new(decltype(sizeof 0), void* p) noexcept;\nusing Int = int;\nstruct Row { int v[2]; };\nint f() { Row r{{1, 2}}; r.v[1].~Int(); new (&r.v[1]) int(3); return r.v[1]; }",
+  "RV9-12 Maybe: move assignment from an rvalue": "struct Maybe { Maybe() = default; Maybe(const Maybe&) = delete; Maybe& operator=(const Maybe&) = delete; Maybe(Maybe&&) {} };\nvoid f() { Maybe a, b; a = static_cast<Maybe&&>(b); }",
+  "RV9-12 Maybe: move construction from an rvalue": "struct Maybe { Maybe() = default; Maybe(const Maybe&) = delete; Maybe& operator=(const Maybe&) = delete; Maybe(Maybe&&) {} };\nvoid f() { Maybe b; Maybe a = static_cast<Maybe&&>(b); }",
+  "RV9-14 requires expression in a variable template, parameter type not valid": "template <class T> T&& value_of();\ntemplate <class R> using IteratorOf = decltype(value_of<R&>().begin());\ntemplate <class R> constexpr bool steps = requires(IteratorOf<R> it) { ++it; };\nstatic_assert(!steps<int>);",
+  "RV9-14 requires expression in a concept, parameter type not valid": "template <class T> T&& value_of();\ntemplate <class R> using IteratorOf = decltype(value_of<R&>().begin());\ntemplate <class R> concept Steps = requires(IteratorOf<R> it) { ++it; };\nstatic_assert(!Steps<int>);",
+  "RV9-14 requires expression in an if constexpr in a template, parameter type not valid": "template <class T> T&& value_of();\ntemplate <class R> using IteratorOf = decltype(value_of<R&>().begin());\ntemplate <class R> constexpr int pick() { if constexpr (requires(IteratorOf<R> it) { ++it; }) return 1; else return 2; }\nstatic_assert(pick<int>() == 2);",
+  "RV9-11 array element initializer reads an earlier element": "constexpr int f() { int a[3] = {1, a[0] + 1, a[1] + 1}; return a[2]; }\nstatic_assert(f() == 3);",
+  "RV9-6 1e5000 through the long double form": "constexpr long double operator\"\"_ld(long double v) { return v; }\nlong double huge = 1e5000_ld;"
+ },
+ "cols": {
+  "program": ""
+ },
+ "flags": []
+}

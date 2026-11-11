@@ -485,7 +485,7 @@ object through the pointer that the construction gives. The enclosing
 member does not become active at run time either, so a read through
 its name, such as `u.items[1]`, is a read of a member that is not
 active ({rule}`UNI-6`). A member that was active stays active, unless
-the new object takes its storage ({rule}`STG-6`). A program can
+the new object takes all or part of its storage ({rule}`STG-6`). A program can
 still form pointers to the elements of an array member that is not
 active, step between them, and compare them ({rule}`STG-10`).
 :::
@@ -920,7 +920,10 @@ configuration.
   RV6-A-13) reads the C++23 allowance for `std::construct_at` in
   constant evaluation as naming only objects whose lifetime began, and
   a member that is not active has not begun. UNI-14 follows the
-  compilers, which read the lifetime of the union as enough.
+  compilers, which read the lifetime of the union as enough. The gap
+  reviews of phases 15 and 16 (RV8-A-8, RV9-7) keep that reading, and
+  `documentation/decisions/pending.md` row 4 holds the case with
+  {rule}`LSUP-10`.
 - UNI-14, UNI-6: at run time, the same review reads a construction
   inside a member that is not active as valid. The new object reuses
   the storage of the union ({rule}`STG-6`), or, when a whole object of

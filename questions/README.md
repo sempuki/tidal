@@ -485,6 +485,7 @@ status, and the first sentence of its answer section.
 | [Q-0446](Q-0446-literal-operator-template-class-parameter.md) | Which literal operator does a string literal call when a literal operator template with a class-type parameter exists? | provisional | The template wins when the string literal is a valid argument for it |
 | [Q-0447](Q-0447-ended-part-in-constant-result.md) | Does a part that an explicit destructor call ended count as a part with no value in the result of a constant expression? | provisional | The ended part has no value, and the constant is not valid |
 | [Q-0448](Q-0448-union-copy-part-with-no-value.md) | After a trivial copy of a union in constant evaluation, does a part that had no value in the source have a value in the copy? | provisional | The part has no value in the copy, and a read of it is rejected |
+| [Q-0449](Q-0449-union-copy-mutable-member.md) | Can constant evaluation copy a union whose active member is `mutable` from a union that the evaluation did not create? | provisional | The copy is not valid when the source's active member is `mutable` and the evaluation did not create the source, for the constructor and for the assignment |
 
 ## Status values
 

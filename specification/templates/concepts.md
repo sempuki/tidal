@@ -464,13 +464,15 @@ too, even if the template is never instantiated.
 
 :::{rule} CPT-28
 :kind: required
-:tests: templates/concepts/requires-parameters.cpp templates/concepts/requires-parameters-adjusted.cpp templates/concepts/requires-parameters-void.cpp templates/concepts/requires-parameters-void-template.cpp templates/concepts/requires-parameter-iterator-type.cpp
+:tests: templates/concepts/requires-parameters.cpp templates/concepts/requires-parameters-adjusted.cpp templates/concepts/requires-parameters-void.cpp templates/concepts/requires-parameters-void-template.cpp templates/concepts/requires-parameter-iterator-type.cpp templates/concepts/requires-parameter-type-not-valid-false.cpp
 
 A parameter of a requires expression is a name with a type, which the
 requirements can use. No object is made, so the type need not be
 constructible or destructible. A later parameter can use an earlier one.
 The parameter types adjust as in a function ({rule}`DCL-8`), and
-`(void)` means no parameters ({question}`Q-0290`).
+`(void)` means no parameters ({question}`Q-0290`). If substitution
+into a parameter type forms a type that is not valid, the requires
+expression is `false`, as for a requirement ({rule}`CPT-26`).
 :::
 
 :::{rule} CPT-29
@@ -692,13 +694,13 @@ struct Digits {
   Step end() { return {10}; }
 };
 static_assert(Sequence<Digits>);
-static_assert(!Sequence<int>);             // IteratorOf<int> is not valid
+static_assert(!Sequence<int>);             // false: IteratorOf<int> is not valid
 ```
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 109
-of 127 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 110
+of 128 tests.
 
 ### Divergences
 
@@ -797,6 +799,15 @@ Q-0285, and Q-0286 to the EDG project waits on the maintainer
   (`reports/clean-room/roadmap-13/writer-probes/p4-4-warnings.json`).
   So the example uses the declared function. The P4 Port exercise
   asked for the example (P4-4).
+- CPT-28: every compiler gives `false` for a requires expression whose
+  parameter type is not valid after substitution, in a concept, in a
+  variable template, and in an `if constexpr` condition
+  (`requires-parameter-type-not-valid-false.cpp`,
+  `reports/clean-room/roadmap-13/writer-probes/rv9-points.json`). The
+  gap review of the phase 16 text (RV9-14) reaches `false` for the
+  concept through the failed substitution into its constraint, and
+  finds no sentence in the reference for a failure in the parameter
+  list.
 - CPT-14: every compiler rejects a trailing clause on a function
   declared at block scope inside a function template. The gap review
   expected a split there (item 27).
