@@ -64,3 +64,7 @@ The source-reader read of the RV8 repair diff (`reports/review/2026-11-11-read-o
 ### Gap review, 2026-11-11 (phase 16 text)
 
 The source-reader gap review of the phase 16 text (`reports/review/2026-11-11-gap-review-phase-16.md`) reads the bdc27d44 hunks on the question: supports with no doubt (RV9-3). In a member access, the name after `~` is looked up with the object's type as its context, and the name must denote that type, cv-qualifiers aside. On a `Derived` object the base's name fails that test, so `d.~Base()` is not valid, as Clang and EDG say. The constructors divergence line and the note of `dtor-call-unqualified-base.cpp` now state that reading and no longer lean toward GCC.
+
+### Read of the RV9 repair diff, 2026-11-11
+
+The source-reader read of the RV9 repair diff (`reports/review/2026-11-11-read-of-rv9-repair-diff.md`) reads the dated note and the gap review's entry of decision 0064, item RV9: agrees as a record. Both state RV9-3 correctly. The read gives no new reading of the question's answer.

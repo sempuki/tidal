@@ -51,3 +51,7 @@ Rule text on 2026-11-11 (decision 0064, item RV9): CE-22 adds the limit that RV9
 ### Gap review, 2026-11-11 (phase 16 text)
 
 The source-reader gap review of the phase 16 text (`reports/review/2026-11-11-gap-review-phase-16.md`) reads the question: supports with a doubt (RV9-10). For constant evaluation, the trivial copy or move of a union copies its active member, if it has one, and that copy is trivial. Read as a copy of the active member's representation, the copy reads no part, and a part with no value in the source has none in the target (option 1), as Clang and GCC say. The doubt is that the reference does not choose in words between that reading and a copy of each part. Under the second reading the copy itself would read the element with no value and would not be constant, and every compiler reads against that. The review adds a condition that CE-22 does not state: the implicit copy or move of a union whose active member is `mutable` is not constant, unless the union's lifetime began in the evaluation.
+
+### Read of the RV9 repair diff, 2026-11-11
+
+The source-reader read of the RV9 repair diff (`reports/review/2026-11-11-read-of-rv9-repair-diff.md`) reads the gap review's entry on the question: agrees as a record. The entry states RV9-10 correctly, with the limit on a `mutable` active member, and the doubt of RV9-10 on the form of the copy stays. The read's doubt on the new CE-22 sentence (RV10-R-4) concerns the case of Q-0449. The read gives no new reading of this question's answer.

@@ -27,9 +27,9 @@ The rows RV4-1 to RV4-7 give IDs to the doubts that the RV4 repair
 commit (7cf4574b) left for the next review. The RV5 reviews gave their
 own IDs (RV5-A-n and RV5-B-n), and so do the RV6, RV7, and RV8 reviews
 (RV6-A-n, RV7-B-n, and so on). The read of a repair diff gives IDs of
-the form RV8-R-n (the read of RV7's repair diff) or RV9-R-n (the read of
-RV8's). The rows RM12-1 to RM12-3 give IDs to three findings
-that only a commit message or a probe README held until the round 12
+the form RV8-R-n (the read of RV7's repair diff), RV9-R-n (the read of
+RV8's), or RV10-R-n (the read of RV9's). The rows RM12-1 to RM12-3
+give IDs to three findings that only a commit message or a probe README held until the round 12
 editor report named them (`roadmap-12/editor.md`, "Records that
 drift").
 
@@ -1099,6 +1099,14 @@ drift").
 | RV9-12 | `../review/2026-11-11-gap-review-phase-16.md` | commit | 8d33fcb1, decision 0064, item RV9: the Maybe sentence says that the class deletes its copy functions and that an assignment from an rvalue uses the deleted copy assignment |
 | RV9-13 | `../review/2026-11-11-gap-review-phase-16.md` | text | the adaptor example under RFOR-2 and filter-adaptor-any-range.cpp agree |
 | RV9-14 | `../review/2026-11-11-gap-review-phase-16.md` | commit | 8d33fcb1, decision 0064, item RV9: CPT-28 says that a parameter type that is not valid makes the requires expression false, and the example's comment says false; test templates/concepts/requires-parameter-type-not-valid-false.cpp |
+| RV10-R-1 | `../review/2026-11-11-read-of-rv9-repair-diff.md` | open | INST-30, INST-1, INST-P4: the exception names a member or friend function body and a default argument; the class is also complete in a default template argument, a noexcept operand, and a default member initializer, and only the last has a Note; CLS-2 leaves out the default template argument of a member template; small doubt |
+| RV10-R-2 | `../review/2026-11-11-read-of-rv9-repair-diff.md` | open | FN-12: the outermost enclosing class does not fit a nested class defined after its enclosing class with a qualified name, where the check falls at the end of the nested class; no test; small doubt |
+| RV10-R-3 | `../review/2026-11-11-read-of-rv9-repair-diff.md` | open | OBJ-2, Q-0447: an assignment through the name of a scalar union member that a destructor call ended creates a new object and is valid, as UNI-5 and UNI-14 give; OBJ-2's item needs that condition; the tests' forms agree |
+| RV10-R-4 | `../review/2026-11-11-read-of-rv9-repair-diff.md` | question | Q-0449: for the copy assignment, the reference does not say whether the source or the target union must have begun in the evaluation; CE-22 and union-copy-mutable-member-assignment-outside.cpp read the source |
+| RV10-R-5 | `../review/2026-11-11-read-of-rv9-repair-diff.md` | open | CPT-28: a parameter type that is not valid makes a concept's requires expression false through the constraint; for a variable template and an if constexpr condition the reference is silent, and the test's second and third assertions rest on CPT-28 alone; small doubt |
+| RV10-R-6 | `../review/2026-11-11-read-of-rv9-repair-diff.md` | open | LSUP-10, UNI-14, pending.md row 4: the Note and the row 4 item leave out that the object's lifetime began in the same evaluation; the conclusion stands; small |
+| RV10-R-7 | `../review/2026-11-11-read-of-rv9-repair-diff.md` | open | OBJ-1: the array row names any element constructor that is not trivial, where vacuous initialization depends on the default constructor; no program observes the difference; small |
+| RV10-R-8 | `../review/2026-11-11-read-of-rv9-repair-diff.md` | open | the OPR Note on OPR-8 and PRIM-15 names the suffix _v, and literal-float-form-out-of-range.cpp declares only _ld; no reference content; small |
 | W20-1 | `W20/report.md` | commit | 0ae4cdb5, decision 0061, item F3: STG-P2 and the FixedVec example say that a pointer to the object in one row does not reach the object in the next row (ADD-10); test foundations/storage/byte-rows-pointer-does-not-reach-next-row.cpp |
 | W20-2 | `W20/report.md` | commit | 53577f27 (front-end round 24, decision 0061, item FE): the test passes; F3 states in UNI-14 that a construction inside a member that is not active does not make it active, and that pointers to the elements of such an array member can be formed, stepped, and compared (STG-10); UNI-6 makes the construction undefined (Q-0425); front end: a subscript of an array member with no active member is unsupported; tests classes/unions/array-member-element-address-no-active-member.cpp, array-member-element-steps-no-active-member-constant.cpp, construct-at-array-member-element-constant.cpp, chain-assign-array-element-nontrivial-constant.cpp |
 | W20-3 | `W20/report.md` | commit | 53577f27 (front-end round 24, decision 0061, item FE): the test passes; F3 states in CNS-11 that the constraints of the template candidates are not checked when a candidate that is not a template takes every argument with no conversion, and in CPY-15 that a by-value constructor template is checked before it is dropped otherwise (Q-0426); front end: CNS-35 false reject; tests templates/constraints/by-value-constructor-template-constraint-copies-class.cpp, exact-non-template-skips-constraint-check.cpp, added-const-non-template-checks-constraint.cpp, classes/copy-move/copy-constructor-exact-skips-template-constraint.cpp, by-value-constructor-template-constraint-checked.cpp |

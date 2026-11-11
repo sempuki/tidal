@@ -72,3 +72,7 @@ The source-reader read of the RV8 repair diff (`reports/review/2026-11-11-read-o
 ### Gap review, 2026-11-11 (phase 16 text)
 
 The source-reader gap review of the phase 16 text (`reports/review/2026-11-11-gap-review-phase-16.md`) reads the question: supports with a doubt (RV9-4). Only a declaration that holds the elaborated type and nothing else can carry an attribute after the class key. The template-id form inside an explicit specialization or a partial specialization is one such declaration, and an explicit instantiation can carry no attribute at all. So TYN-10's item, its last sentence, and `explicit-instantiation-attribute.cpp` agree, and GCC reads against. The friend forms have no place for an attribute. The doubt is the qualified form. The reference allows the template-id form with an attribute only without a qualifier, and a qualified partial specialization with no body fits none of its listed forms. Every compiler accepts the qualified forms of `explicit-specialization-attributes.cpp`, and the review calls the doubt small.
+
+### Read of the RV9 repair diff, 2026-11-11
+
+The source-reader read of the RV9 repair diff (`reports/review/2026-11-11-read-of-rv9-repair-diff.md`) reads the dated note and the gap review's entry of decision 0064, item RV9: agrees as a record. Both state RV9-4 correctly, with its doubt on the qualified template-id form, and the doubt stays. The read gives no new reading of the question's answer.

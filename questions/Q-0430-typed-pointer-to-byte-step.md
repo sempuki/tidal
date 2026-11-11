@@ -96,3 +96,7 @@ The source-reader read of the RV8 repair diff (`reports/review/2026-11-11-read-o
 ### Gap review, 2026-11-11 (phase 16 text)
 
 The source-reader gap review of the phase 16 text (`reports/review/2026-11-11-gap-review-phase-16.md`) names the question in its reading of STG-P2. The link to the storage-form table agrees, and the sentence on the typed step from a byte is unchanged and keeps the split of RV7-A-10. The review gives no new reading of this question's answer.
+
+### Read of the RV9 repair diff, 2026-11-11
+
+The source-reader read of the RV9 repair diff (`reports/review/2026-11-11-read-of-rv9-repair-diff.md`) reads the gap review's entry on the question: agrees as a record. The entry says correctly that the gap review of the phase 16 text gives no new reading. The read gives no new reading of the question's answer.

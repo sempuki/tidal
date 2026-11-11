@@ -86,7 +86,7 @@ whose last review finds the reference silent.
 
 Rows 1 to 9 hold 122 of the 200 open questions (61%). With row 10, the rows hold 137 (68%).
 
-84 open questions wait for a review that supports the answer with no doubt. By what the last review found: 58 doubt, 17 silent, 8 against, 1 part.
+85 open questions wait for a review that supports the answer with no doubt. By what the last review found: 59 doubt, 17 silent, 8 against, 1 part.
 
 ## Matrix against review
 
