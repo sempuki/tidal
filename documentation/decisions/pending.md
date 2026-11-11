@@ -6,7 +6,7 @@ last column lists the questions that the decision closes or changes.
 
 Rows 1, 4a, and 10 come first (decision 0059, item PK3). Each has an
 option under which no test's expectation changes, and together they
-hold 85 open questions and the 14 rule items of row 4a. The
+hold 86 open questions and the 15 rule items of row 4a. The
 [decision packet](#decision-packet) gives the questions and tests of
 each option.
 
@@ -44,8 +44,8 @@ each option.
 | 2 | phase 10 item PU3, the principle-use batch PU3: Q-0370, Q-0376 | 75e4fab |
 | 4 | phase 11 item RV4, the gap reviews of the text phase 10 wrote: Q-0263, Q-0386, Q-0395, Q-0413 | 1e51073 |
 | 2 | phase 12 item QR, question records: Q-0323, Q-0383 | da51ae9 |
-| 1 | phase 13 item QR2, question records: Q-0419 | |
-| 1 | phase 13 item RV6, the gap reviews of the text phase 13 wrote: Q-0428 | |
+| 1 | phase 13 item QR2, question records: Q-0419 | 4045bbd |
+| 1 | phase 13 item RV6, the gap reviews of the text phase 13 wrote: Q-0428 | 7dd6d7c |
 | -8 | phase 8 item PQ reopened these under the principle test of the style guide: Q-0064, Q-0067, Q-0111, Q-0242, Q-0259, Q-0319, Q-0329, Q-0373. Item PU settled Q-0067 and Q-0329 again | |
 
 ## Decision packet

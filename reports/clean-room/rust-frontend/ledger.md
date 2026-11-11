@@ -173,11 +173,11 @@ that has no row.
 | G150 | `report-21.md` | commit | decision 0057, item G: CMP-8, Q-0387 |
 | G151 | `report-21.md` | commit | decision 0057, item G: BF-1, ALN-8, Q-0314 |
 | G152 | `report-22.md` | commit | decision 0058, item F: DED-29 |
-| G153 | `report-23.md` | commit | decision 0061, item F3: REF-1, COND-16, DED-15, and DED-P4 state the base relation; access and ambiguity are checked after the choice (ACC-12, CONV-17, OVL-37) |
+| G153 | `report-23.md` | commit | 0ae4cdb5, decision 0061, item F3: REF-1, COND-16, DED-15, and DED-P4 state the base relation; access and ambiguity are checked after the choice (ACC-12, CONV-17, OVL-37) |
 | G154 | `report-23.md` | commit | decision 0061, item T2: ACC-3 tests classes/access/private-copy-constructor-copy-initialization.cpp, private-copy-constructor-by-value-argument.cpp, private-copy-constructor-return-parameter.cpp, private-copy-constructor-return-local.cpp, private-move-constructor-xvalue-initialization.cpp, and private-move-constructor-return-local.cpp |
-| G155 | `report-23.md` | commit | decision 0061, item F3: NEW-25 covers the allocation function that a new expression selects, deleted or inaccessible; four tests in `expressions/new-delete/` |
-| G156 | `report-23.md` | commit | decision 0061, item F3: LSUP-11 rejects an assignment before construction for every element type; Q-0421 |
-| G157 | `report-23.md` | commit | decision 0061, item F3: the INST-11 Evidence lists the uses that instantiate a virtual function; INST-7 and Q-0428 for a call through a pointer; the front end misses `templates/instantiation/virtual-new-expression.cpp` and `templates/instantiation/virtual-temporary.cpp` (item FE) |
+| G155 | `report-23.md` | commit | 0ae4cdb5, decision 0061, item F3: NEW-25 covers the allocation function that a new expression selects, deleted or inaccessible; four tests in `expressions/new-delete/` |
+| G156 | `report-23.md` | commit | 0ae4cdb5, decision 0061, item F3: LSUP-11 rejects an assignment before construction for every element type; Q-0421 |
+| G157 | `report-23.md` | commit | 0ae4cdb5, decision 0061, item F3: the INST-11 Evidence lists the uses that instantiate a virtual function; INST-7 and Q-0428 for a call through a pointer; front-end round 24 (53577f27) passes `templates/instantiation/virtual-new-expression.cpp` and `templates/instantiation/virtual-temporary.cpp` |
 | G158 | `report-23.md` | out of scope | decision 0061, item CT: `<cstdarg>` and `va_list` come from the library, which is out of scope; the matrix runs the tests; tests `expressions/postfix/ellipsis-argument-conversions.cpp`, `expressions/postfix/ellipsis-nullptr-becomes-void-pointer.cpp` |
 | G159 | `report-23.md` | out of scope | decision 0061, item CT: a named escape needs the table of character names, which is data and not a rule; the matrix runs the tests; tests `expressions/primary/char-named-escape.cpp`, `expressions/primary/char-named-escape-unknown.cpp` |
 | G160 | `report-23.md` | out of scope | decision 0061, item CT: `#include <...>` names a library header, which the front end does not have; tests `foundations/odr/include-missing-file-angle.cpp` |

@@ -199,7 +199,8 @@ forward-progress rule belongs with threads, which are out of scope.
    P2-6 to P2-9), the open front-end rows G161 and G162, the 22 rules
    and principles that changed after RV6 read the tree, and the
    completion count of front-end round 24 (127 tests that fail their
-   check, 2 of 126 program tests that do not run).
+   check, and 2 of 123 program tests that do not run; P2 then added 3
+   program tests that run, so the line now reads 2 of 126).
 
 After the front end meets the completion test of decision 0060, a
 phase item rewrites it (roadmap item FR).
