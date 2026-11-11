@@ -8,7 +8,7 @@ current state only. The history of how the project got here is in
 
 | Section | Rules | Classes | Tests | Single-test rules | Overrides | Report mentions | Questions | Evidence words | Similarity |
 |---|---|---|---|---|---|---|---|---|---|
-| [Translation, execution, and behavior classes](../specification/foundations/translation.md) | 17 | 4 required, 5 reject, 1 undefined, 1 unspecified, 5 impl-defined, 1 recommended | 89 | 0 | 24 | 163 | Q-0012, Q-0024, Q-0029, Q-0312, Q-0350, Q-0351, Q-0366 | 2492 | none flagged ([2026-11-11-phase-16-f6](../reports/similarity/2026-11-11-phase-16-f6.txt)) |
+| [Translation, execution, and behavior classes](../specification/foundations/translation.md) | 17 | 4 required, 5 reject, 1 undefined, 1 unspecified, 5 impl-defined, 1 recommended | 90 | 0 | 24 | 164 | Q-0012, Q-0024, Q-0029, Q-0312, Q-0350, Q-0351, Q-0366 | 2492 | none flagged ([2026-11-11-phase-16-f6](../reports/similarity/2026-11-11-phase-16-f6.txt)) |
 | [Fundamental types](../specification/foundations/types.md) | 14 | 7 required, 1 reject, 6 impl-defined | 63 | 0 | 2 | 76 | Q-0120 | 470 | none flagged ([2026-11-11-phase-16-f6](../reports/similarity/2026-11-11-phase-16-f6.txt)) |
 | [Language-support types](../specification/foundations/language-support.md) | 13 | 8 required, 4 reject, 1 no-diagnostic | 79 | 0 | 22 | 208 | Q-0125, Q-0299, Q-0301, Q-0302, Q-0303, Q-0321, Q-0323, Q-0334, Q-0386, Q-0402, Q-0421, Q-0431 | 1835 | none flagged ([2026-11-11-phase-16-f6](../reports/similarity/2026-11-11-phase-16-f6.txt)) |
 | [Keywords and reserved names](../specification/foundations/keywords.md) | 4 | 2 required, 1 reject, 1 no-diagnostic | 101 | 0 | 1 | 58 | Q-0382 | 210 | none flagged ([2026-11-11-phase-16-f6](../reports/similarity/2026-11-11-phase-16-f6.txt)) |
@@ -111,7 +111,7 @@ page, and `tools/check_specification.py` fails when one is stale.
 
 ## Test matrix
 
-The matrix has 8 baseline compilers, and 7015 of 7015 tests pass on each. The tree has 7061 test files, and 46 of them have no row in `tests/RESULTS.md`. Two
+The matrix has 8 baseline compilers, and 7015 of 7015 tests pass on each. The tree has 7062 test files, and 47 of them have no row in `tests/RESULTS.md`. Two
 report compilers build at `-O2` (decision 0043). Tests may
 span several translation units (decision 0014). CI runs the
 containerized compilers on every push and pull request (decision 0012).
@@ -160,7 +160,7 @@ settled questions. See `questions/README.md`.
   that the front end does not pass ("new test ... not passing"). The
   next front-end round takes them.
 
-- 3194 tests carry `tidal-error` patterns. A pattern checks that a
+- 3195 tests carry `tidal-error` patterns. A pattern checks that a
   compiler rejects the test, fails to link the test, or stops the test
   at run time, for the reason the test's rule gives.
   In 62 tests, some compiler family has no pattern, because that
@@ -217,7 +217,7 @@ the decision closes.
 
 | Chapter | Pages | Live rules | Words |
 |---|---|---|---|
-| Foundations | 12 | 224 | 49506 |
+| Foundations | 12 | 224 | 49507 |
 | Statements | 6 | 77 | 10408 |
 | Expressions | 17 | 324 | 44738 |
 | Declarations | 23 | 315 | 47929 |
@@ -225,7 +225,7 @@ the decision closes.
 | Overloading | 2 | 91 | 14191 |
 | Templates | 11 | 376 | 66295 |
 | Exceptions | 3 | 40 | 9308 |
-| Total | 85 | 1685 | 282464 |
+| Total | 85 | 1685 | 282465 |
 
 Every topic in scope has a page (section "Topics in scope with no page
 yet"), so these counts give the size of the scope. The expressions and

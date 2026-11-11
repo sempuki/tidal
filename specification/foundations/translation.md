@@ -250,7 +250,7 @@ program there.
 
 :::{rule} TR-12
 :kind: reject
-:tests: foundations/translation/grammar-for-constexpr.cpp foundations/translation/grammar-else-without-if.cpp foundations/translation/grammar-mismatched-bracket.cpp foundations/translation/grammar-missing-operand.cpp exceptions/handlers/param-default-argument.cpp exceptions/handlers/param-storage-class.cpp declarations/enumerations/scoped-unnamed.cpp
+:tests: foundations/translation/grammar-for-constexpr.cpp foundations/translation/grammar-else-without-if.cpp foundations/translation/grammar-mismatched-bracket.cpp foundations/translation/grammar-missing-operand.cpp exceptions/handlers/param-default-argument.cpp exceptions/handlers/param-storage-class.cpp declarations/enumerations/scoped-unnamed.cpp foundations/translation/string-literal-open-at-end-of-file.cpp
 
 The tokens of each translation unit must form a sequence of zero or
 more `declaration` that the grammar derives. The grammar is the set of
@@ -468,8 +468,8 @@ static_assert(Even<100>::value == 100);
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 65
-of 89 tests. EDG takes no optimization flag, so the three `-O2` tests
+The results are in `tests/RESULTS.md`. All eight compilers agree on 66
+of 90 tests. EDG takes no optimization flag, so the three `-O2` tests
 are skipped there. EDG runs and links no programs, so its results for
 the run and link tests say only that the programs are valid.
 
