@@ -101,7 +101,9 @@ Constant evaluation runs no placement form that the program defines
 ({rule}`NEW-37`), and no call of an allocation function by name. The
 implementation recognizes `std::construct_at` and `std::allocator` by
 their names and runs the operations inside them. A program that
-includes no header declares these names itself.
+includes no header declares these names itself. The
+{ref}`table of storage forms <storage-forms>` compares the storage of
+`std::allocator` with the forms inside an object.
 :::
 
 ## Constraints
@@ -281,7 +283,7 @@ declaration gives a scoped enumeration with the underlying type
 
 :::{rule} LSUP-10
 :kind: required
-:tests: foundations/language-support/construct-at-self-declared.cpp foundations/language-support/construct-at-other-namespace-constant.cpp foundations/language-support/construct-at-object-outside-evaluation.cpp foundations/storage/replace-const-member-constant.cpp foundations/storage/replace-through-reference-constant.cpp foundations/storage/replace-array-element-constant.cpp foundations/storage/reuse-other-union-member-constant.cpp
+:tests: foundations/language-support/construct-at-self-declared.cpp foundations/language-support/construct-at-other-namespace-constant.cpp foundations/language-support/construct-at-object-outside-evaluation.cpp foundations/storage/replace-const-member-constant.cpp foundations/storage/replace-through-reference-constant.cpp foundations/storage/replace-array-element-constant.cpp foundations/storage/reuse-other-union-member-constant.cpp classes/unions/construct-activates-constant.cpp classes/unions/construct-switches-active-constant.cpp classes/unions/slot-array-constant.cpp
 
 A program that includes no header can declare `std::construct_at`
 itself, in this shape:
@@ -297,7 +299,10 @@ During {term}`constant evaluation`, the placement `new` in
 points to one of these:
 
 - storage that `std::allocator` gave in the same evaluation (LSUP-11),
-- an object whose lifetime began in the same evaluation.
+- an object whose lifetime began in the same evaluation,
+- a member of a union whose lifetime began in the same evaluation, also
+  a member that is not active, when the new object has the member's
+  type ({rule}`UNI-14`).
 
 The same placement `new` in any other function is not valid there
 ({rule}`NEW-37`).
@@ -540,8 +545,8 @@ int* r = new (raw) int(3);          // raw hosts the int
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 54
-of 76 tests. EDG compiles the run tests and does not run them.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 57
+of 79 tests. EDG compiles the run tests and does not run them.
 
 ### Divergences
 
@@ -701,6 +706,15 @@ different exit codes.
   another namespace, and a call whose pointer points to a variable that
   the evaluation did not create. With no placement form declared, every
   compiler rejects the template's placement `new` ({rule}`NEW-20`).
+- LSUP-10, UNI-14: every compiler accepts `std::construct_at` of a
+  whole member of a local union during constant evaluation, with
+  another member active and with none (the X25 Propose exercise, X25-1,
+  and `reports/clean-room/roadmap-13/writer-probes/x25-rules.json`).
+  The gap reviews of phases 13 and 15 (RV6-A-13, RV8-A-8) read the
+  reference as allowing only an object whose lifetime began, and a
+  member that is not active has not begun. LSUP-10 follows the
+  compilers, as UNI-14 does. UNI-14 also gives the case of an object
+  inside such a member, such as an element of an array member.
 - LSUP-11: Clang, GCC, and EDG run the calls of `::operator new` and
   `::operator delete` inside an `std::allocator` that the program
   declares, during constant evaluation. Each rejects the same class

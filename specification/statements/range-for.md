@@ -64,7 +64,7 @@ would give the name two meanings, so both are rejected.
 
 :::{rule} RFOR-2
 :kind: required
-:tests: statements/range-for/member-begin-end.cpp statements/range-for/free-begin-end.cpp statements/range-for/sentinel-end.cpp statements/range-for/data-member-named-begin.cpp statements/range-for/equality-only-iterator.cpp statements/range-for/member-begin-only-uses-free.cpp statements/range-for/callable-data-members.cpp statements/range-for/data-member-function-pointers.cpp statements/range-for/view-over-string-literal.cpp statements/range-for/begin-end-from-base-over-derived.cpp
+:tests: statements/range-for/member-begin-end.cpp statements/range-for/free-begin-end.cpp statements/range-for/sentinel-end.cpp statements/range-for/data-member-named-begin.cpp statements/range-for/equality-only-iterator.cpp statements/range-for/member-begin-only-uses-free.cpp statements/range-for/callable-data-members.cpp statements/range-for/data-member-function-pointers.cpp statements/range-for/view-over-string-literal.cpp statements/range-for/begin-end-from-base-over-derived.cpp statements/range-for/filter-adaptor-any-range.cpp
 
 For a range of class type, `begin` and `end` are found as follows:
 
@@ -143,7 +143,7 @@ binding ({rule}`SB-1`). A braced list gives a
 
 :::{rule} RFOR-3
 :kind: required
-:tests: statements/range-for/range-evaluated-once.cpp statements/range-for/init-statement.cpp statements/range-for/end-computed-once.cpp statements/range-for/empty-init-statement.cpp statements/range-for/range-held-by-reference.cpp
+:tests: statements/range-for/range-evaluated-once.cpp statements/range-for/init-statement.cpp statements/range-for/end-computed-once.cpp statements/range-for/empty-init-statement.cpp statements/range-for/range-held-by-reference.cpp statements/range-for/filter-adaptor-any-range.cpp
 
 Before the first iteration, the loop evaluates these parts one time
 each, in this order:
@@ -211,6 +211,46 @@ int total() {
 }
 ```
 
+An adaptor wraps any range and keeps the elements that a test accepts.
+The test is a closure, so its type is a template parameter
+({principle}`LAM-P4`), and aggregate deduction gives both parameters
+({rule}`CTAD-9`). `decltype` of a call to a function that is only
+declared names the iterator type and the end type of the range
+({doc}`/expressions/decltype`). The adaptor's iterator stops at the end
+of the range, and the loop finds `begin` and `end` once (RFOR-2,
+RFOR-3):
+
+% tidal-example: fragment
+```cpp
+template <class T> T&& value_of();             // declared only
+template <class R> using IteratorOf = decltype(value_of<const R&>().begin());
+template <class R> using EndOf = decltype(value_of<const R&>().end());
+
+template <class R, class Keep>
+struct Filtered {
+  R range;
+  Keep keep;
+  struct Step {
+    IteratorOf<R> at;
+    EndOf<R> last;
+    Keep keep;
+    void skip() { while (at != last && !keep(*at)) ++at; }
+    auto operator*() const { return *at; }
+    Step& operator++() { ++at; skip(); return *this; }
+    bool operator!=(Done) const { return at != last; }
+  };
+  Step begin() const { Step s{range.begin(), range.end(), keep}; s.skip(); return s; }
+  Done end() const { return {}; }
+};
+
+int even_total() {
+  auto even = [](int v) { return v % 2 == 0; };
+  int sum = 0;
+  for (int sq : Filtered{Squares{1, 5}, even}) sum += sq;   // 4, 16
+  return sum;                                             // 20
+}
+```
+
 ## Evidence
 
 The results are in `tests/RESULTS.md`.
@@ -250,6 +290,12 @@ The results are in `tests/RESULTS.md`.
 
 ### Notes
 
+- RFOR-2, RFOR-3: every compiler accepts an adaptor over any range
+  whose closure type is a template parameter that aggregate deduction
+  gives, in a range-based `for` over an end type that the iterator
+  compares with `!=` or with `==` alone
+  (`filter-adaptor-any-range.cpp`). The P4 Port exercise asked for the
+  example (P4-3).
 - RFOR-2: a data member named `begin` with no member `end` does not
   stop the use of free `begin` and `end` on any compiler.
 - RFOR-3: every compiler accepts a prvalue range of a class with no

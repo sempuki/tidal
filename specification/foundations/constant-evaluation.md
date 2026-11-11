@@ -73,7 +73,9 @@ placed in memory. So an evaluation rejects these operations:
 A read of a scalar that has no value is rejected, also where a run
 permits the read, as in a copy into `unsigned char`. Copying an object
 reads each of its parts, so a copy of an object with a part that has no
-value is rejected too. An exception has no {term}`handler` at translation time,
+value is rejected too. A trivial copy or move of a union reads no part.
+The target's active member then has the same parts with no value as
+the source's. An exception has no {term}`handler` at translation time,
 so a `throw` that the evaluation reaches ends the evaluation. For the
 same reason an evaluation never reaches a point where the program would
 terminate.
@@ -388,12 +390,15 @@ evaluation does not take.
 
 :::{rule} CE-21
 :kind: reject
-:tests: foundations/constant-evaluation/result-unset-member.cpp foundations/constant-evaluation/result-unset-array-element.cpp foundations/constant-evaluation/result-every-part-set.cpp foundations/constant-evaluation/result-returned-local-unset-element.cpp foundations/constant-evaluation/result-returned-local-every-element.cpp foundations/constant-evaluation/read-returned-local-unset-element.cpp foundations/constant-evaluation/result-union-no-active-member.cpp foundations/constant-evaluation/result-union-one-active-member.cpp foundations/constant-evaluation/constant-initializer-zero-trivial-class.cpp foundations/constant-evaluation/constant-initializer-trivial-class-block-static.cpp foundations/constant-evaluation/constant-initializer-trivial-class-array.cpp
+:tests: foundations/constant-evaluation/result-unset-member.cpp foundations/constant-evaluation/result-unset-array-element.cpp foundations/constant-evaluation/result-every-part-set.cpp foundations/constant-evaluation/result-returned-local-unset-element.cpp foundations/constant-evaluation/result-returned-local-every-element.cpp foundations/constant-evaluation/read-returned-local-unset-element.cpp foundations/constant-evaluation/result-union-no-active-member.cpp foundations/constant-evaluation/result-union-one-active-member.cpp foundations/constant-evaluation/constant-initializer-zero-trivial-class.cpp foundations/constant-evaluation/constant-initializer-trivial-class-block-static.cpp foundations/constant-evaluation/constant-initializer-trivial-class-array.cpp foundations/constant-evaluation/result-ended-element.cpp foundations/constant-evaluation/result-union-ended-element.cpp
 
 The value of a constant expression of class or array type must give a
 value to each of its scalar parts. These conditions apply:
 
 - Each element of an array member is a part.
+- A part whose lifetime has ended, such as an element that an explicit
+  destructor call ended ({rule}`DTOR-6`), has no value
+  ({question}`Q-0447`).
 - In a union, only the active member is a part. A union with no active
   member is valid ({question}`Q-0117`).
 - The result of a {term}`constant initializer` must meet the same
@@ -405,7 +410,7 @@ value to each of its scalar parts. These conditions apply:
 
 :::{rule} CE-22
 :kind: reject
-:tests: foundations/constant-evaluation/copy-unset-member.cpp foundations/constant-evaluation/copy-unset-array-element.cpp foundations/constant-evaluation/unset-member-not-copied.cpp foundations/constant-evaluation/copy-after-every-part-set.cpp foundations/constant-evaluation/result-returned-local-unset-element.cpp declarations/initialization/forms/copy-indeterminate-unsigned-char.cpp foundations/constant-evaluation/read-returned-local-unset-element.cpp foundations/constant-evaluation/return-local-unset-member.cpp foundations/constant-evaluation/return-prvalue-unset-member-read.cpp
+:tests: foundations/constant-evaluation/copy-unset-member.cpp foundations/constant-evaluation/copy-unset-array-element.cpp foundations/constant-evaluation/unset-member-not-copied.cpp foundations/constant-evaluation/copy-after-every-part-set.cpp foundations/constant-evaluation/result-returned-local-unset-element.cpp declarations/initialization/forms/copy-indeterminate-unsigned-char.cpp foundations/constant-evaluation/read-returned-local-unset-element.cpp foundations/constant-evaluation/return-local-unset-member.cpp foundations/constant-evaluation/return-prvalue-unset-member-read.cpp foundations/constant-evaluation/union-copy-part-with-no-value.cpp foundations/constant-evaluation/union-copy-part-with-no-value-read.cpp
 
 Constant evaluation must not read a scalar object that has no value
 ({rule}`OBJ-2`). The rule also applies where a run-time read is not
@@ -413,7 +418,10 @@ undefined, such as a copy into an `unsigned char` ({rule}`INIT-1`,
 {question}`Q-0039`). An implicit copy or move function
 ({rule}`CPY-8`) reads each scalar part of its source, also in the move
 of a returned local variable ({rule}`CPY-12`), and a user-provided one
-reads only what its body reads.
+reads only what its body reads. A trivial copy or move of a union
+copies its active member and reads none of the member's parts. A part
+that has no value in the source has no value in the target
+({question}`Q-0448`).
 :::
 
 :::{rule} CE-23
@@ -587,6 +595,22 @@ constexpr Table bad = make();         // rejected: v[3] has no value
 struct Filled { int v[4] = {}; };     // every element starts at 0, so a
                                       // builder can set only some
 
+union Slots { int v[3]; constexpr Slots() {} };
+constexpr int copy_first() {
+  Slots a;
+  a.v[0] = 7;                         // v[1] and v[2] have no value
+  Slots b = a;                        // fine: the copy reads no part (CE-22)
+  return b.v[0] + b.v[1];             // b.v[1] has no value
+}
+static_assert(copy_first() == 7);     // rejected: the read of b.v[1]
+
+using Int = int;
+struct Row {
+  int v[2];
+  constexpr Row() : v{1, 2} { v[1].~Int(); }   // v[1] ends
+};
+constexpr Row row;                    // rejected: v[1] has no value (CE-21)
+
 struct Pair { int first; int second; };
 struct Empty {};
 constinit int counter;                // fine: the zero is the value
@@ -641,8 +665,8 @@ constexpr All all{.a = 1};            // rejected: All is not literal (CE-23)
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 133
-of 163 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 134
+of 167 tests.
 
 ### Divergences
 
@@ -706,6 +730,14 @@ of 163 tests.
   active, as a member of a member union or an element of an array
   member, makes the member active. It does not, so constant evaluation
   rejects the construction, as Clang and GCC say. EDG accepts it.
+- {question}`Q-0448` (CE-22; open):
+  whether a part that has no value in the source of a union's trivial
+  copy has a value in the copy. It has none, so a read of it is
+  rejected, as Clang and GCC say. EDG accepts the read.
+- {question}`Q-0447` (CE-21; open):
+  whether a part that an explicit destructor call ended counts as a
+  part with no value in a constant. It does, as every newest compiler
+  says. GCC 14 accepts the constant.
 
 ### Split tests
 
@@ -738,11 +770,14 @@ family column gives the outcome that the test expects on that family.
 | `read-extended-temporary-class.cpp` | CE-3, CE-14 | accept | accept | reject | accept | {question}`Q-0193` |
 | `read-extended-temporary-nested.cpp` | CE-3, CE-14 | accept | accept | reject | reject | {question}`Q-0193` |
 | `read-returned-local-unset-element.cpp` | CE-22, CE-21 | reject | reject | accept | reject | {question}`Q-0115` |
+| `result-ended-element.cpp` | CE-21 | reject | reject | GCC 16: reject; GCC 14: accept | reject | {question}`Q-0447` |
 | `result-returned-local-unset-element.cpp` | CE-21, CE-22 | reject | reject | accept | reject | {question}`Q-0115` |
+| `result-union-ended-element.cpp` | CE-21 | reject | reject | GCC 16: reject; GCC 14: accept | reject | {question}`Q-0447` |
 | `result-union-no-active-member.cpp` | CE-21 | accept | accept | reject | accept | {question}`Q-0117` |
 | `return-local-unset-member.cpp` | CE-22, CPY-12 | reject | reject | accept | reject | {question}`Q-0115` |
 | `string-literal-identity-variables.cpp` | CE-13 | reject | reject | accept | accept | {question}`Q-0033` |
 | `string-literal-identity.cpp` | CE-13 | reject | reject | accept | accept | {question}`Q-0033` |
+| `union-copy-part-with-no-value-read.cpp` | CE-22 | reject | reject | reject | accept | {question}`Q-0448` |
 | `unknown-reference-not-read.cpp` | CE-18 | accept | Clang 22: accept; Clang 18: reject | accept | accept | {question}`Q-0090` |
 | `unknown-reference-static-member.cpp` | CE-18 | accept | Clang 22: accept; Clang 18: reject | accept | accept | {question}`Q-0090` |
 
@@ -803,6 +838,18 @@ family column gives the outcome that the test expects on that family.
 - CE-21: every compiler rejects a constant whose value has a scalar part
   with no value, for `constexpr` and `constinit` alike, when a
   constructor leaves the part without a value.
+- CE-21: every newest compiler rejects a constant of a class or of a
+  union whose `int` array has an element that a pseudo-destructor call
+  ended, in the constructor or in a function that returns the object,
+  and the same for an element of class type
+  (`reports/clean-room/roadmap-13/writer-probes/x25-rules.json`). The
+  X25 Propose exercise asked for the example (X25-7).
+- CE-22, CE-P3: every compiler accepts a trivial copy, a trivial move,
+  and a trivial copy assignment of a union whose active member has a
+  part with no value, for an `int` array and for a member of class type
+  (`union-copy-part-with-no-value.cpp`). The same copy of a struct is
+  rejected by Clang and EDG ({question}`Q-0115`). The X25 Propose
+  exercise asked for the sentence (X25-5).
 - CE-26: all eight compilers accept constant evaluation of
   `i++ + i++`, `i + i++`, `i++ * i`, `(i = 1) + (i = 2)`, and
   `i - ++i`. CE-26 is class `no-diagnostic` because no compiler detects

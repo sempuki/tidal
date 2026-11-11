@@ -1,4 +1,4 @@
-// tidal-rules: UNI-14
+// tidal-rules: UNI-14 LSUP-10
 // tidal-expect: accept
 // tidal-note: The construction at the address of label makes label the active member in place of count.
 inline constexpr void* operator new(decltype(sizeof 0), void* place) noexcept { return place; }

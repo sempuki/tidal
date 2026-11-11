@@ -1,4 +1,4 @@
-// tidal-rules: UNI-14
+// tidal-rules: UNI-14 LSUP-10
 // tidal-expect: run
 // tidal-note: A fixed-capacity stack of a type with no default constructor. Point has no default constructor and a destructor that is not trivial, so Slot declares its own constructor and destructor (UNI-3, UNI-11).
 inline constexpr void* operator new(decltype(sizeof 0), void* place) noexcept { return place; }

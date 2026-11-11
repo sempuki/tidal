@@ -481,7 +481,11 @@ During {term}`constant evaluation`, a new object inside a member that
 is not active, such as an element of an array member or a member of a
 member union, does not make the member active ({question}`Q-0425`). At
 run time, the construction is valid, and the program can use the new
-object through the pointer that the construction gives. A program can
+object through the pointer that the construction gives. The enclosing
+member does not become active at run time either, so a read through
+its name, such as `u.items[1]`, is a read of a member that is not
+active ({rule}`UNI-6`). A member that was active stays active, unless
+the new object takes its storage ({rule}`STG-6`). A program can
 still form pointers to the elements of an array member that is not
 active, step between them, and compare them ({rule}`STG-10`).
 :::
@@ -689,7 +693,9 @@ constexpr int use() {
 
 A union slot holds an object of a type that has no default
 constructor. The slot starts with no active member, `std::construct_at`
-fills it, and an explicit destructor call empties it (UNI-14):
+fills it, and an explicit destructor call empties it (UNI-14). The
+{ref}`table of storage forms <storage-forms>` compares the slot with
+the other forms of storage for a sequence:
 
 % tidal-example: fragment
 ```cpp
@@ -921,7 +927,14 @@ configuration.
   the member's type fits at the member's address, the member becomes
   active and holds the new object. No test tells the two outcomes
   apart. The run test reads the new object only through the pointer
-  that `new` returns, which is valid in both.
+  that `new` returns, which is valid in both. The gap review of the
+  phase 15 text (RV8-A-8) reads the enclosing member as not active at
+  run time too, and UNI-14 follows that reading. On the six compilers
+  that run programs, a read through the member's name after a
+  construction at an element of an array member gives the new value,
+  and a read of the member that was active gives its old value, with no
+  sanitizer report (`reports/clean-room/roadmap-13/writer-probes/run-probes.out`,
+  X25-4). The first read is undefined, so no test holds it.
 - UNI-14, UNI-P1: every compiler keeps the active member through a
   trivial copy of the union in constant evaluation, and rejects a read
   of the member that was active in the target before a copy assignment.

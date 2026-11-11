@@ -464,7 +464,7 @@ too, even if the template is never instantiated.
 
 :::{rule} CPT-28
 :kind: required
-:tests: templates/concepts/requires-parameters.cpp templates/concepts/requires-parameters-adjusted.cpp templates/concepts/requires-parameters-void.cpp templates/concepts/requires-parameters-void-template.cpp
+:tests: templates/concepts/requires-parameters.cpp templates/concepts/requires-parameters-adjusted.cpp templates/concepts/requires-parameters-void.cpp templates/concepts/requires-parameters-void-template.cpp templates/concepts/requires-parameter-iterator-type.cpp
 
 A parameter of a requires expression is a name with a type, which the
 requirements can use. No object is made, so the type need not be
@@ -665,10 +665,40 @@ static_assert(Ordered<const char*>);
 static_assert(!Ordered<Opaque>);
 ```
 
+A parameter of a requires expression can have a type that no object
+of the program has yet, such as the iterator type of a range. `decltype`
+of a call to a function that is only declared names the type
+({doc}`/expressions/decltype`). No iterator is made ({rule}`CPT-28`):
+
+```cpp
+template <class T> T&& value_of();          // declared only
+template <class R> using IteratorOf = decltype(value_of<R&>().begin());
+
+template <class R>
+concept Sequence = requires(IteratorOf<R> it, R& range) {
+  ++it;
+  *it;
+  bool(it != range.end());
+};
+
+struct Digits {
+  struct Step {
+    int i;
+    int operator*() const { return i; }
+    Step& operator++() { ++i; return *this; }
+    bool operator!=(const Step& other) const { return i != other.i; }
+  };
+  Step begin() { return {0}; }
+  Step end() { return {10}; }
+};
+static_assert(Sequence<Digits>);
+static_assert(!Sequence<int>);             // IteratorOf<int> is not valid
+```
+
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 108
-of 126 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 109
+of 127 tests.
 
 ### Divergences
 
@@ -757,6 +787,16 @@ Q-0285, and Q-0286 to the EDG project waits on the maintainer
 
 ### Notes
 
+- CPT-28: every compiler names the iterator type of a range with
+  `decltype` of a member call through a null pointer of the range's
+  type, and through a call to a function that is only declared, and
+  accepts a parameter of that type in a requires expression
+  (`requires-parameter-iterator-type.cpp`). Under `-Wall`, GCC 14 warns
+  that the `this` pointer is null for the null-pointer form, and no
+  compiler warns for the declared function
+  (`reports/clean-room/roadmap-13/writer-probes/p4-4-warnings.json`).
+  So the example uses the declared function. The P4 Port exercise
+  asked for the example (P4-4).
 - CPT-14: every compiler rejects a trailing clause on a function
   declared at block scope inside a function template. The gap review
   expected a split there (item 27).

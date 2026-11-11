@@ -115,6 +115,7 @@ The {term}`lifetime` of an object begins and ends at these points:
 |---|---|---|
 | A class object | Its initialization completes. That is the constructor, with the body of a delegating constructor, or the initialization of each element of an aggregate. | Its destructor call starts. |
 | A scalar object | Its storage is obtained and its initializer completes. A scalar with no initializer begins with its storage, before it has a value. | It is destroyed ({rule}`DTOR-6`), or its storage is released or reused (OBJ-10). |
+| An array | Its storage is obtained, or an operation of {rule}`STG-8` creates it. Each element begins as the row of its own type says, so an element can begin later than the array ({rule}`STG-28`). | Its storage is released or reused (OBJ-10). Each element ends as the row of its own type says. |
 
 So a read or a write of a scalar during its own initializer is outside
 its lifetime ({rule}`OBJ-2`, {question}`Q-0368`). For destruction, an
@@ -391,6 +392,10 @@ only that the programs are valid.
   starts. The destructor body and its parts still run, as
   {principle}`OBJ-P1` draws. No compiler of the matrix gives a result
   that separates this point from the end of the destructor.
+- OBJ-1: the row for an array has no test. No program observes when an
+  array's own lifetime begins apart from its elements. The X25 Propose
+  exercise asked for the row (X25-2), and STG-28 gives the case of
+  elements that begin after the array.
 - OBJ-4: Clang and GCC destroy a constant-initialized object at the
   place of its definition in the order. A dynamically initialized
   object defined before it is destroyed after it. Clang and GCC destroy

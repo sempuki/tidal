@@ -662,7 +662,7 @@ addresses of such literals ({question}`Q-0033`).
 
 :::{rule} PRIM-15
 :kind: conditionally-supported
-:tests: expressions/primary/float-overflow.cpp expressions/primary/double-overflow.cpp
+:tests: expressions/primary/float-overflow.cpp expressions/primary/double-overflow.cpp classes/operators/literal-float-form-out-of-range.cpp
 
 A floating literal outside the range of its type is conditionally
 supported. An implementation that accepts such a literal documents the
@@ -778,7 +778,7 @@ bool same_text(const char* a, const char* b) {
 ## Evidence
 
 The results are in `tests/RESULTS.md`. All eight compilers agree on 134
-of 147 tests.
+of 148 tests.
 
 ### Divergences
 
@@ -827,6 +827,7 @@ EDG skips the tests that use `-Wall` or `-Werror`.
 | `char-encoding-ilp32.cpp` | PRIM-32 | accept | accept | accept | reject | |
 | `char-encoding-lp64.cpp` | PRIM-32 | accept | accept | accept | reject | |
 | `char-unknown-escape.cpp` | PRIM-35 | reject | reject | reject | accept | {question}`Q-0330` |
+| `classes/operators/literal-float-form-out-of-range.cpp` | OPR-8, PRIM-15 | accept | accept | accept | reject | {question}`Q-0063` |
 | `classes/operators/literal-numeric-form-value-too-large.cpp` | PRIM-2, OPR-8 | reject | reject | accept | reject | {question}`Q-0440` |
 | `double-overflow.cpp` | PRIM-15 | accept | accept | accept | reject | {question}`Q-0063` |
 | `expressions/comparison/chained-fold-not-chain.cpp` | CMP-14, PRIM-27 | accept | Clang 22: reject; Clang 18: accept | accept | skips | {question}`Q-0029` |

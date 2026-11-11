@@ -483,6 +483,8 @@ status, and the first sentence of its answer section.
 | [Q-0444](Q-0444-destructor-call-unqualified-base-name.md) | Can an explicit destructor call on a derived object name the base class without a qualifier? | provisional | The unqualified name must denote the class of the object |
 | [Q-0445](Q-0445-elaborated-type-attribute.md) | Can an elaborated type specifier that is not a forward declaration have an attribute after its class key? | provisional | Only a forward declaration can have one |
 | [Q-0446](Q-0446-literal-operator-template-class-parameter.md) | Which literal operator does a string literal call when a literal operator template with a class-type parameter exists? | provisional | The template wins when the string literal is a valid argument for it |
+| [Q-0447](Q-0447-ended-part-in-constant-result.md) | Does a part that an explicit destructor call ended count as a part with no value in the result of a constant expression? | provisional | The ended part has no value, and the constant is not valid |
+| [Q-0448](Q-0448-union-copy-part-with-no-value.md) | After a trivial copy of a union in constant evaluation, does a part that had no value in the source have a value in the copy? | provisional | The part has no value in the copy, and a read of it is rejected |
 
 ## Status values
 

@@ -80,6 +80,22 @@ Kept open on 2026-11-10 under decision 0054, because the review reads the answer
 Rule text on 2026-11-10 (decision 0061, item RV6): UNI-14 and UNI-6 limit the rejection to constant evaluation. At run time the construction is valid, and the program can use the new object through the pointer that the construction gives. The run test now expects a run on every compiler and in the front end's interpreter. Whether the enclosing member then becomes active is the review's remaining doubt, and no test tells the outcomes apart.
 
 Kept open on 2026-11-11 under decision 0054 (item RV7). The review agrees with the run-time text of UNI-14 and keeps the RV6 doubt on the constant form, and two newest families still differ in the array form.
+
+Rule text on 2026-11-11 (decision 0064, item F6, ledger row X25-4):
+UNI-14 says that the enclosing member does not become active at run
+time either, as the RV8-A-8 reading of the phase 15 review gives. A
+read through the member's name is then a read of a member that is not
+active (UNI-6), and a member that was active stays active unless the
+new object takes its storage. On the six compilers that run programs,
+the X25 probe `a4.cpp -DRUN` reads the new element through the
+member's name and the old value of the member that was active, with
+no sanitizer report
+(`reports/clean-room/roadmap-13/writer-probes/run-probes.out`). The
+read through the name is undefined, so no test holds it. The constant
+form of the array case still splits. GCC 16 and EDG accept the
+construction, and Clang 22 rejects it
+(`reports/clean-room/roadmap-13/writer-probes/x25-constant.json`).
+
 ## Opinions
 
 ### Gap review, 2026-11-10 (phase 13 text, classes, declarations, foundations, and statements)

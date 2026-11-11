@@ -79,7 +79,9 @@ the byte array reaches only bytes. A pointer to the object in one row
 of bytes does not reach the object in the next row, because each object
 is an array of one element for pointer arithmetic ({rule}`ADD-10`). A
 class that wants index arithmetic over its objects takes its storage
-from an allocation function instead ({rule}`STG-28`).
+from an allocation function instead ({rule}`STG-28`). The
+{ref}`table of storage forms <storage-forms>` in the Examples compares
+these forms with an array member and a union slot.
 :::
 
 :::{principle} STG-P3
@@ -755,6 +757,15 @@ class Maybe {
   alignas(T) unsigned char storage[sizeof(T)];
   T* held = nullptr;                  // null, or the result of placement new
 public:
+  Maybe() = default;
+  Maybe(const Maybe&) = delete;
+  Maybe& operator=(const Maybe&) = delete;
+  Maybe(Maybe&& other) {              // builds the T in its own bytes
+    if (other.held) {
+      held = new (storage) T(static_cast<T&&>(*other.held));
+      other.reset();
+    }
+  }
   template <class... Args>
   void emplace(Args&&... args) {
     reset();
@@ -768,8 +779,12 @@ public:
 ```
 
 The implicit copy of `Maybe` copies `held`, which then points into the
-bytes of the other object. So `Maybe` must write its own copy and move
-functions ({rule}`CPY-8`).
+bytes of the other object ({rule}`CPY-8`). So `Maybe` writes its own
+copy and move functions. A declared copy constructor removes the
+implicit move constructor ({rule}`CPY-5`), and an rvalue then uses the
+deleted copy constructor ({principle}`CPY-P2`). So without its move
+constructor, `Maybe` cannot be returned from a local variable, as in
+`return last;`.
 
 A container of fixed capacity keeps one row of bytes for each slot,
 and an array of the pointers that placement `new` returns. Each row is
@@ -808,6 +823,7 @@ reading through it is undefined ({rule}`ADD-10`). It does not reach the
 out a pointer and a length for a view over its elements. A view over
 `items`, the array of pointers, is valid.
 
+(storage-forms)=
 The forms of storage for a sequence of `T` differ in four properties:
 
 | Form | Inside the object | In constant evaluation | One array of `T` for pointer arithmetic | `T` needs a default constructor |
@@ -984,6 +1000,12 @@ rejection.
 
 ### Notes
 
+- STG-P2, the `Maybe` example: every compiler rejects `return last;`
+  for a `Maybe` with deleted copy functions and no move constructor,
+  and accepts it with the move constructor, and for a prvalue
+  (`reports/clean-room/roadmap-13/writer-probes/p4-points.json`). The P4
+  Port exercise asked for the move constructor and the citation of
+  CPY-5 (P4-5).
 - STG-12: the gap review of the text phase 8 wrote on expressions, foundations,
   and templates (`reports/review/2026-11-04-gap-review-phase-8-expressions-foundations-templates.md`) notes that the reference
   names an unsigned ordinary character type and `std::byte` for a copy

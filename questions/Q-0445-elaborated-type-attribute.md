@@ -1,7 +1,7 @@
 # Q-0445: Can an elaborated type specifier that is not a forward declaration have an attribute after its class key?
 
 **Status:** provisional
-**Affects:** TYN-10, `tests/declarations/type-names/elaborated-attribute-not-forward-declaration.cpp`
+**Affects:** TYN-10, TYN-6, `tests/declarations/type-names/elaborated-attribute-not-forward-declaration.cpp`, `tests/declarations/type-names/explicit-instantiation-attribute.cpp`
 **Source:** ledger row RM12-2 (`reports/clean-room/roadmap-12/editor.md`, from the grammar finding of commit 9359cc42), with the writer probe `reports/clean-room/roadmap-12/writer-probes/rv8-points.json`.
 **Waits for:** a review (doubt)
 
@@ -24,11 +24,15 @@ struct [[maybe_unused]] Node* head = nullptr;
 | `struct [[maybe_unused]] Fwd* p = nullptr;` | rejects: an attribute list cannot appear here | accepts | rejects: attributes are not allowed here |
 | `struct [[maybe_unused]] Fwd* f();` | rejects | accepts | rejects |
 | `friend struct [[maybe_unused]] Fwd;` in a class | rejects | accepts | rejects |
+| `template <> struct [[deprecated]] S<int>;`, a specialization with no body | accepts | accepts | accepts |
+| `template <class T> struct [[deprecated]] S<T*>;`, a partial specialization with no body | accepts | accepts | accepts |
+| `template struct [[deprecated]] S<int>;`, an explicit instantiation | rejects: an attribute list cannot appear here | accepts | rejects: attributes are not allowed on explicit instantiations |
 
 ## Evidence
 
-The test in **Affects**, `forward-class-attributes.cpp`, and the probe
-in **Source**.
+The tests in **Affects**, `forward-class-attributes.cpp`,
+`explicit-specialization-attributes.cpp`,
+`partial-specialization-attributes.cpp`, and the probe in **Source**.
 
 ## Options
 
@@ -44,6 +48,18 @@ the attributes to `elaborated_type`, and TYN-10 rejects them outside a
 forward declaration.
 
 Kept open on 2026-11-11 under decision 0054 (decision 0063, item RV8). The read of the RV8 repair diff supports the answer with a doubt (RV9-R-4), and GCC 16 alone differs. The read finds one more declaration that can carry the attribute in the reference, a class key with a template-id alone in an explicit specialization or a partial specialization. TYN-10 allows the attribute only in `forward_class`, which ends in an identifier. No test holds the template-id form, and no rule changes.
+
+Rule text on 2026-11-11 (decision 0064, item F6): the shape
+`specialization_class` takes the template-id form in a specialization
+with no body, and TYN-6 and TYN-10 accept an attribute or an alignment
+specifier there, as every compiler does
+(`reports/clean-room/roadmap-13/writer-probes/q0445-template-id.json`).
+`explicit-specialization-attributes.cpp` and
+`partial-specialization-attributes.cpp` hold the form. An explicit
+instantiation is not such a declaration, and
+`explicit-instantiation-attribute.cpp` expects its rejection, with
+GCC as an override. The answer for the other declarations is
+unchanged, and the question waits for a review of GCC's acceptance.
 
 ## Opinions
 

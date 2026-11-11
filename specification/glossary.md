@@ -447,9 +447,12 @@ layout-compatible
 lifetime
   The time during which an object exists in its storage. The lifetime
   of a class object starts when its initialization completes and ends
-  when its destructor completes. The lifetime of a scalar object starts
-  with its storage. The release or reuse of the storage also ends the
-  lifetime ({rule}`OBJ-1`, {rule}`OBJ-10`).
+  when its destructor call starts. The lifetime of a scalar object
+  starts when its storage is obtained and its initializer completes, or
+  with its storage if it has no initializer. The lifetime of an array
+  starts with its storage, and each element follows its own type. The
+  release or reuse of the storage also ends the lifetime
+  ({rule}`OBJ-1`, {rule}`OBJ-10`).
 
 linkage
   The property that controls if two declarations of a name refer to the

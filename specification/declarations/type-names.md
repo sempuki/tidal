@@ -84,7 +84,7 @@ not valid, and an implementation need not notice ({principle}`NAM-P4`).
 
 ## Syntax
 
-% tidal-grammar: shape typedef_decl forward_class
+% tidal-grammar: shape typedef_decl forward_class specialization_class
 ```{eval-rst}
 .. productionlist:: tidal
    typedef_decl: "typedef" `decl_specifiers` `declarator` {"," `declarator`} ";"
@@ -94,12 +94,19 @@ not valid, and an implementation need not notice ({principle}`NAM-P4`).
                   : | "enum" [`nested_name`] `identifier`
    class_key: "class" | "struct" | "union"
    forward_class: `class_key` {`attribute_spec` | `alignment_specifier`} `identifier` ";"
+   specialization_class: `class_key` {`attribute_spec` | `alignment_specifier`}
+                       :    [`nested_name`] `template_id` ";"
 ```
 
 A *forward declaration* declares a class or enumeration without its
 body. The production `enum_opaque` of {doc}`/declarations/enumerations`
 gives the forward declaration of an enumeration. The class is
 incomplete until its definition.
+
+A `specialization_class` is the `declaration` of an explicit
+specialization or a partial specialization of a class template that
+has no body ({doc}`/templates/specialization`). It follows the
+template head.
 
 ## Constraints
 
@@ -198,7 +205,7 @@ not valid.
 
 :::{rule} TYN-10
 :kind: reject
-:tests: declarations/type-names/elaborated-declares-in-namespace.cpp declarations/type-names/elaborated-enum-undeclared.cpp declarations/type-names/elaborated-key-enum-mismatch.cpp declarations/type-names/elaborated-key-union-mismatch.cpp declarations/type-names/elaborated-qualified-undeclared.cpp declarations/type-names/typedef-name-not-class-key.cpp declarations/type-names/elaborated-declares-in-block.cpp declarations/type-names/elaborated-scoped-enum-key.cpp declarations/type-names/elaborated-attribute-not-forward-declaration.cpp
+:tests: declarations/type-names/elaborated-declares-in-namespace.cpp declarations/type-names/elaborated-enum-undeclared.cpp declarations/type-names/elaborated-key-enum-mismatch.cpp declarations/type-names/elaborated-key-union-mismatch.cpp declarations/type-names/elaborated-qualified-undeclared.cpp declarations/type-names/typedef-name-not-class-key.cpp declarations/type-names/elaborated-declares-in-block.cpp declarations/type-names/elaborated-scoped-enum-key.cpp declarations/type-names/elaborated-attribute-not-forward-declaration.cpp declarations/type-names/explicit-instantiation-attribute.cpp
 
 These uses of an elaborated type specifier (TYN-4) are not valid:
 
@@ -210,18 +217,21 @@ These uses of an elaborated type specifier (TYN-4) are not valid:
 - a class that `struct S` or `class S` declared, used outside the scope
   that TYN-4 gives it,
 - an attribute or an alignment specifier after the class key, outside
-  a forward declaration (`forward_class`)
-  ({question}`Q-0445`).
+  a forward declaration (`forward_class`) and outside the declaration
+  of a specialization (`specialization_class`) ({question}`Q-0445`).
+  An explicit instantiation is not such a declaration.
 :::
 
 :::{rule} TYN-6
 :kind: required
-:tests: declarations/type-names/complete-after-definition-in-scope.cpp declarations/type-names/forward-after-definition.cpp declarations/type-names/forward-class-reference-param.cpp declarations/type-names/forward-class.cpp declarations/type-names/forward-enum-opaque.cpp declarations/type-names/forward-enum-scoped-default-base.cpp declarations/type-names/forward-enum-scoped-int-then-none.cpp declarations/type-names/forward-nested-class.cpp declarations/type-names/deleted-incomplete-types.cpp declarations/type-names/forward-class-attributes.cpp
+:tests: declarations/type-names/complete-after-definition-in-scope.cpp declarations/type-names/forward-after-definition.cpp declarations/type-names/forward-class-reference-param.cpp declarations/type-names/forward-class.cpp declarations/type-names/forward-enum-opaque.cpp declarations/type-names/forward-enum-scoped-default-base.cpp declarations/type-names/forward-enum-scoped-int-then-none.cpp declarations/type-names/forward-nested-class.cpp declarations/type-names/deleted-incomplete-types.cpp declarations/type-names/forward-class-attributes.cpp declarations/type-names/explicit-specialization-attributes.cpp declarations/type-names/partial-specialization-attributes.cpp
 
 These rules apply to forward declarations and complete types:
 
 - A forward declaration can have attributes and alignment specifiers
-  after the class key.
+  after the class key. So can an explicit specialization or a partial
+  specialization of a class template that is declared without its
+  body (`specialization_class`).
 - After a forward declaration, a program can declare pointers and
   references to the class, and functions that take or return the class.
 - A class is complete after its definition.
@@ -300,8 +310,8 @@ void post(Packet* p) {
 
 ## Evidence
 
-The results are in `tests/RESULTS.md`. All eight compilers agree on 62
-of 72 tests.
+The results are in `tests/RESULTS.md`. All eight compilers agree on 64
+of 75 tests.
 
 ### Divergences
 
@@ -321,7 +331,9 @@ of 72 tests.
 - {question}`Q-0445` (TYN-10; open): whether
   an elaborated type specifier that is not a forward declaration can
   have an attribute after its class key. It cannot, as Clang and EDG
-  say. GCC accepts the attribute.
+  say, except in the declaration of a specialization with no body,
+  where every compiler accepts it. GCC accepts the attribute in every
+  form, an explicit instantiation included.
 
 ### Split tests
 
@@ -330,6 +342,7 @@ of 72 tests.
 | `alias-shadow-changes-meaning.cpp` | TYN-5 | accept | accept | reject | accept | {question}`Q-0066` |
 | `elaborated-attribute-not-forward-declaration.cpp` | TYN-10 | reject | reject | accept | reject | {question}`Q-0445` |
 | `elaborated-qualified-declaration-only.cpp` | TYN-7 | reject | reject | accept | reject | {question}`Q-0093` |
+| `explicit-instantiation-attribute.cpp` | TYN-10 | reject | reject | accept | reject | {question}`Q-0445` |
 | `function-name-changes-meaning.cpp` | TYN-5 | accept | accept | reject | accept | {question}`Q-0066` |
 | `typedef-unnamed-class-base.cpp` | TYN-9 | reject | reject | GCC 16: reject; GCC 14: accept | reject | {question}`Q-0067` |
 | `typedef-unnamed-class-default-member-initializer.cpp` | TYN-9 | reject | reject | GCC 16: reject; GCC 14: accept | reject | {question}`Q-0067` |
@@ -353,6 +366,15 @@ of 72 tests.
   class template can name the class with a class key and a qualified
   name. Every compiler accepts these declarations, which start with
   `template`.
+- TYN-6, TYN-10: every compiler accepts `[[deprecated]]`,
+  `[[maybe_unused]]`, and `alignas(8)` after the class key of an
+  explicit specialization or a partial specialization with no body,
+  also with a qualified name, and a later definition of the
+  specialization (`explicit-specialization-attributes.cpp`,
+  `partial-specialization-attributes.cpp`). The read of the RV8 repair
+  diff named the form (RV9-R-4). A class key and a template-id with no
+  template head before them is not a specialization. Clang and EDG
+  reject it, and GCC accepts it.
 
 ### Sources
 
